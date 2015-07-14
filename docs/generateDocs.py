@@ -33,7 +33,7 @@ class Config(object):
         self.BREAK_ON_STOP_ERRORS = False
         # whitelisted namespaces to generate pages for
         self.NAMESPACE_WHITELIST = ["ci"]
-        self.CLASS_LIST_BLACKLIST = ["glm"]
+        self.CLASS_LIST_BLACKLIST = ["glm", "@"]
 
         # directory for the class template mustache file
         self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "class_template.mustache")
@@ -49,9 +49,11 @@ class Config(object):
         self.HOME_TEMPLATE = os.path.join(TEMPLATE_PATH, "home-template.mustache")
 
         # file prefixes that indicate that the file should be parsed with the class template
-        self.CLASS_FILE_PREFIXES = ["class", "struct", "interface", "group"]
+        self.CLASS_FILE_PREFIXES = ["class", "struct", "interface"]
         # file prefixes that indicate that the file should be parsed with the namespace template
         self.NAMESPACE_FILE_PREFIXES = ["namespace"]
+        # file prefixes that indicate that the file should be parsed with the group template
+        self.GROUP_FILE_PREFIXES = ["group"]
 
         self.ADDITIONAL_REF_DATA = [
             {
@@ -578,6 +580,7 @@ class FileData(object):
         self.name = ""
         self.title = ""
         self.page_header = ""
+        self.search_tags = []
 
     def get_content(self):
         content = {
@@ -1496,39 +1499,88 @@ def generate_namespace_nav():
     iterate_namespace(bs4, namespaces, ul, 0, "")
     return tree
 
-
-def process_class_xml_file(in_path, out_path):
-    global g_currentFile
-    print "Processing file: " + in_path + " > " + out_path
+def process_xml_file_definition(in_path, out_path, file_type):
+    """
+    Process an xml file definition, such as a class, namespace, or group
+    :param in_path: xml file location
+    :param out_path: final html file location
+    :param file_type: "class", "namespace", or "group"
+    :return:
+    """
 
     # define the tree that contains all the data we need to populate this page
     tree = parse_xml(in_path)
-    bs4 = BeautifulSoup()
 
     if tree is None:
         return
 
-    # get common data for the file
+    if file_type == "class":
+        html_template = config.CLASS_TEMPLATE
+        file_data = fill_class_content(tree)
+    elif file_type == "namespace":
+        html_template = config.NAMESPACE_TEMPLATE
+        file_data = fill_namespace_content(tree)
+    elif file_type == "group":
+        html_template = config.CLASS_TEMPLATE   # TODO: replace with GROUP_TEMPLATE
+        file_data = fill_class_content(tree)    # TODO: replace with fill_group_content()
+    else:
+        log("Skipping " + in_path, 1)
+        return
+
+    print "Processing file: " + in_path + " > " + out_path
+
+    # Generate the html file from the template and inject content
+    bs4 = render_template(html_template, file_data.get_content())
+    if not bs4:
+        print log("Skipping class due to something nasty. Bother Greg and try again some other time. Error rendering: " + in_path, 2)
+        return
+
+    # print output
+    # update links in the template
+    update_links(bs4, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
+
+    # replace any code chunks with <pre> tags, which is not possible on initial creation
+    replace_code_chunks(bs4)
+
+    # link up all ci tags
+    for tag in bs4.find_all('ci'):
+        process_ci_tag(bs4, tag, in_path, out_path)
+
+    # add to search index
+    link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)["href"]
+    add_to_search_index(bs4, link_path, file_data.search_tags)
+
+    # write the file
+    write_html(bs4, out_path)
+
+
+def fill_class_content(tree):
+    """
+    Populates the class content object with data
+    :param tree:
+    :return:
+    """
+
+    bs4 = BeautifulSoup()
     file_data = ClassFileData(tree)
-    g_currentFile = file_data
+
     include_file = ""
     include_tag = tree.find(r"compounddef/includes")
     if include_tag is not None:
         include_file = include_tag.text
-    class_name = g_currentFile.name
+    class_name = file_data.name
     file_def = g_symbolMap.find_file(include_file)
     class_def = g_symbolMap.find_class(class_name)
-    # kind = g_currentFile.kind_explicit
 
     # class template stuff ------------------------------ #
     file_data.is_template = True if tree.find(r"compounddef/templateparamlist") is not None else False
     if file_data.is_template:
         try:
-            # print Et.dump(tree.find(r"compounddef/templateparamlist/param"))
-            def_name = tree.find(r"compounddef/templateparamlist/param/defname")
+            def_name = tree.find(r"compounddef/templateparamlist/param/type")
             file_data.template_def_name = def_name.text if def_name is not None else ""
-        except:
+        except Exception as e:
             file_data.template_def_name = ""
+            log(e.message, 1)
 
     if not class_def:
         log("NO CLASS OBJECT DEFINED FOR: " + class_name, 1)
@@ -1553,7 +1605,6 @@ def process_class_xml_file(in_path, out_path):
 
     if include_file:
         file_obj = g_symbolMap.find_file(include_file)
-        # print file_obj
         if file_obj:
             include_link = LinkData(file_obj.githubPath, include_file)
     file_data.includes = include_link
@@ -1678,41 +1729,14 @@ def process_class_xml_file(in_path, out_path):
         friends.append(member_obj)
     file_data.friends = friends
 
-    # Generate the html file from the template and inject content
-    bs4 = render_template(config.CLASS_TEMPLATE, file_data.get_content())
-    if not bs4:
-        print "\t** ERROR: Skipping class due to something nasty. Bother Greg and try again some other time. Error rendering: " + in_path
-        return
-
-    # print output
-    # update links in the template
-    update_links(bs4, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
-
-    # replace any code chunks with <pre> tags, which is not possible on initial creation
-    replace_code_chunks(bs4)
-
-    # link up all ci tags
-    for tag in bs4.find_all('ci'):
-        process_ci_tag(bs4, tag, in_path, out_path)
-
-    # add file to search index
-    search_tags = []
     if class_def:
-        search_tags = class_def.tags
+        file_data.search_tags = class_def.tags
 
-    link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)["href"]
-    add_to_search_index(bs4, link_path, search_tags)
-
-    # # write the file
-    write_html(bs4, out_path)
+    return file_data
 
 
-def process_namespace_xml_file(in_path, out_path):
-    global g_currentFile
-    print "Processing namespace file: " + in_path + " > " + out_path
+def fill_namespace_content(tree):
 
-    # define the tree that contains all the data we need to populate this page
-    tree = parse_xml(in_path)
     bs4 = BeautifulSoup()
 
     if tree is None:
@@ -1720,7 +1744,6 @@ def process_namespace_xml_file(in_path, out_path):
 
     # get common data for the file
     file_data = NamespaceFileData(tree)
-    g_currentFile = file_data
     ns_def = g_symbolMap.find_namespace(file_data.name)
 
     # page title ---------------------------------------- #
@@ -1784,24 +1807,19 @@ def process_namespace_xml_file(in_path, out_path):
         variables.append(var_obj)
     file_data.variables = variables
 
-    bs4 = render_template(config.NAMESPACE_TEMPLATE, file_data.get_content())
-
-    # update links in the template
-    update_links(bs4, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
-
-    # add file to search index
-    search_tags = ["namespace"]
+    # define search tags
     if ns_def:
-        search_tags = ns_def.tags
+        file_data.search_tags = ns_def.tags
+    else:
+        file_data.search_tags = []
 
-    link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)["href"]
+    file_data.search_tags.extend(["namespace"])
 
-    # add file to search index
-    add_to_search_index(bs4, link_path, search_tags)
+    return file_data
 
-    # write the file
-    write_html(bs4, out_path)
-
+def fill_group_content(tree):
+    log("This is where we are going to parse group content")
+    return None
 
 def process_html_file(in_path, out_path):
     """ Parses an html file.
@@ -2544,6 +2562,20 @@ def render_template(path, content):
     return bs4
 
 
+def get_file_type(file_prefix):
+    """
+    Determines the file type based on the file prefix
+    :param file_prefix: prefix in file name
+    :return: string indicating the type of file to parse
+    """
+    if is_class_type(file_prefix):
+        return "class"
+    elif is_namespace_type(file_prefix):
+        return "namespace"
+    elif is_group_type(file_prefix):
+        return "group"
+
+
 def is_class_type(class_str):
     """
     Tests whether the filename is a class type
@@ -2562,6 +2594,17 @@ def is_namespace_type(ns_str):
     :return: ns_str
     """
     if any([ns_str.startswith(prefix) for prefix in config.NAMESPACE_FILE_PREFIXES]):
+        return True
+    return False
+
+
+def is_group_type(group_str):
+    """
+    Tests whether the filename is a group type
+    :param group_str:
+    :return: Boolean
+    """
+    if any([group_str.startswith(prefix) for prefix in config.GROUP_FILE_PREFIXES]):
         return True
     return False
 
@@ -2589,19 +2632,12 @@ def process_file(in_path, out_path=None):
         process_html_file(HTML_SOURCE_PATH + file_path, save_path)
 
     else:
+        file_type = get_file_type(file_prefix)
         # process html directory always, since they may generate content for class or namespace reference pages
         if not PROCESSED_HTML_DIR and not config.SKIP_HTML_PARSING:
             process_html_dir(HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)
 
-        if is_class_type(file_prefix):
-            process_class_xml_file(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path))
-
-        elif is_namespace_type(file_prefix):
-            process_namespace_xml_file(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path))
-
-        else:
-             print "SKIPPING: " + file_path
-             # TODO: base template and just iterate do an html iteration
+        process_xml_file_definition(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path), file_type)
 
 
 def process_dir(in_path, out_path):
@@ -2737,6 +2773,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 1: # no args; run all docs
         # process_html_dir(HTML_SOURCE_PATH, "html/")
         process_dir("xml/", "html/")
+        log("SUCCESSFULLY GENERATED CINDER DOCS!")
     elif len(sys.argv) == 2:
         inPath = sys.argv[1]
         # process a specific file
