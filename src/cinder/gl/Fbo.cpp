@@ -502,7 +502,13 @@ Texture2dRef Fbo::getTexture2d( GLenum attachment )
 
 TextureBaseRef Fbo::getTextureBase( GLenum attachment )
 {
-	if( ( (attachment < GL_COLOR_ATTACHMENT0) || (attachment > MAX_COLOR_ATTACHMENT) ) && ( (attachment != GL_DEPTH_ATTACHMENT) &&  (attachment != GL_DEPTH_STENCIL_ATTACHMENT) ) ) {
+	if( ( (attachment < GL_COLOR_ATTACHMENT0) || (attachment > MAX_COLOR_ATTACHMENT) ) && (attachment != GL_DEPTH_ATTACHMENT)
+#if ! defined( CINDER_GL_ES_2 )
+		&& (attachment != GL_DEPTH_STENCIL_ATTACHMENT) )
+#else
+	)
+#endif
+	{
 		CI_LOG_W( "Illegal constant for texture attachment: " << gl::constantToString( attachment ) );
 	}
 	
