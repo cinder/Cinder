@@ -102,7 +102,6 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	mPolygonModeStack.push_back( GL_FILL );
 #endif
 	
-
 	mImmediateMode = gl::VertBatch::create();
 	
 	GLint params[4];
@@ -130,6 +129,10 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	// set default shader
 	pushGlslProg( getStockShader( ShaderDef().color() ) );
 	
+	// enable unpremultiplied alpha blending by default
+	pushBoolState( GL_BLEND, GL_TRUE );
+	pushBlendFuncSeparate( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
 #if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 	if( mPlatformData->mDebug ) {
 		mDebugLogSeverity = mPlatformData->mDebugLogSeverity;
