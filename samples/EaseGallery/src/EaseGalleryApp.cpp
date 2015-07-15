@@ -156,7 +156,6 @@ void EaseGalleryApp::sizeRectangles()
 void EaseGalleryApp::draw()
 {
 	gl::clear( Color( 0.9f, 0.9f, 0.9f ) ); 
-	gl::enableAlphaBlending();
 	gl::lineWidth( 4.0f );
 
 	// time cycles every 1 / TWEEN_SPEED seconds, with a 50% pause at the end
