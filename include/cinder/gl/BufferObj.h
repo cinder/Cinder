@@ -59,8 +59,10 @@ class BufferObj {
 	void*				map( GLenum access ) const;
 #endif
 #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
-	//! Abstracts glMapBuffer() vs. glMapBufferRange() with appropriate write-only parameters for the platform. Passing \c true for \a invalidPrevious allows the GL to flush the contents of the buffer as an optimization.
-	void*				mapWriteOnly( bool invalidatePrevious );
+	//! Maps the Buffer for writing, but does not invalidate the Buffer's existing contents. Slower than mapReplace(). Abstracts glMapBuffer() vs. glMapBufferRange() with appropriate write-only parameters for the platform.
+	void*				mapWriteOnly();
+	//! Invalidates the Buffer's existing contents and maps it for writing. Preferable to mapWriteOnly() when invalidation is acceptable. Abstracts glMapBuffer() vs. glMapBufferRange() with appropriate write-only parameters for the platform.
+	void*				mapReplace();
 	//! Analogous to glMapBufferRange(). On iOS ES 2 only \c GL_WRITE_ONLY_OES is valid.
 	void*				mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const;
 	void				unmap() const;
