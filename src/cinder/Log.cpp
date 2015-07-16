@@ -432,7 +432,11 @@ fs::path LoggerFile::getDefaultLogFilePath() const
 void LoggerFile::ensureDirectoryExists()
 {
 	fs::path dir = mFilePath.parent_path();
-	if( ! fs::is_directory( dir ) ) {
+	if( dir.empty() ) {
+		// make single file path names explicitly next to executable
+		mFilePath = app::Platform::get()->getExecutablePath() / mFilePath;
+	}
+	else if( ! fs::is_directory( dir ) ) {
 		bool success = fs::create_directories( dir );
 		if( ! success ) {
 			// not using CI_LOG_E since it could lead to recursion
