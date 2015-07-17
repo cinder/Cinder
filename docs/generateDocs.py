@@ -39,6 +39,8 @@ class Config(object):
         self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "class_template.mustache")
         # directory for the namespace template mustache file
         self.NAMESPACE_TEMPLATE = os.path.join(TEMPLATE_PATH, "namespace_template.mustache")
+        # directory for the namespace template mustache file
+        self.GROUP_TEMPLATE = os.path.join(TEMPLATE_PATH, "group_template.mustache")
         # default html template mustache file
         self.HTML_TEMPLATE = os.path.join(TEMPLATE_PATH, "default_template.mustache")
         # guide html template mustache file
@@ -167,7 +169,10 @@ class SymbolMap(object):
 
         def add_function(self, fn_name, fn_obj):
             self.functionList.append(fn_obj)
-            self.tags.append(fn_name)
+
+            # add as a tag if not a duplicate name
+            if not any(tag == fn_name for tag in self.tags):
+                self.tags.append(fn_name)
 
     class Namespace(object):
         def __init__(self, name, file_name):
@@ -179,7 +184,10 @@ class SymbolMap(object):
 
         def add_function(self, fn_name, fn_obj):
             self.functionList.append(fn_obj)
-            self.tags.append(fn_name)
+
+            # add as a tag if not a duplicate name
+            if not any(tag == fn_name for tag in self.tags):
+                self.tags.append(fn_name)
 
     class Typedef(object):
         def __init__(self, name, type_def, path):
@@ -221,8 +229,12 @@ class SymbolMap(object):
             self.path = HTML_SOURCE_PATH + tree.find('filename').text
             self.src_path = (XML_SOURCE_PATH + tree.find('filename').text).replace(".html", ".xml")
             self.description = self.extract_description()
+            self.functionList = []
             self.subgroup_names = []
             self.subgroups = []
+            self.tags = []
+            self.tags.append(strip_compound_name(self.name))
+            print strip_compound_name(self.name)
 
         def extract_description(self):
             xml_tree = parse_xml(self.src_path)
@@ -244,6 +256,12 @@ class SymbolMap(object):
                 description = None
 
             return str(description) if str(description) else ""
+
+        def add_function(self, fn_name, fn_obj):
+            self.functionList.append(fn_obj)
+
+            if not any(tag == fn_name for tag in self.tags):
+                self.tags.append(fn_name)
 
     def add_function(self, ns, fn_name, fn_obj):
         self.functions[ns + "::" + fn_name] = fn_obj
@@ -753,6 +771,58 @@ class NamespaceFileData(FileData):
         return content
 
 
+class GroupFileData(FileData):
+
+    def __init__(self, tree):
+        FileData.__init__(self, tree)
+        self.description = ""
+        self.prefix = ""
+        self.typedefs = []
+        self.name = str(find_compound_name(tree))
+        # self.enumerations = []
+        self.public_functions = []
+        # self.public_types = []
+        self.anchors = []
+        # self.name = self.compoundName
+        print self.name
+
+    def get_content(self):
+        orig_content = super(GroupFileData, self).get_content()
+        content = orig_content.copy()
+        group_content = {
+            "name": self.name,
+            "description": self.description,
+            "prefix": self.prefix,
+            "typedefs": {
+                "anchor": "typedefs",
+                "list": self.typedefs,
+                "length": len(self.typedefs)
+            },
+            "subgroups": {
+                "anchor": "subgroups",
+                "list": self.subgroups,
+                "length": len(self.subgroups)
+            },
+            # "enumerations": {
+            #     "anchor": "enumerations",
+            #     "list": self.enumerations,
+            #     "length": len(self.enumerations)
+            # },
+            "public_functions": {
+                "anchor": "public-member-functions",
+                "list": self.public_functions,
+                "length": len(self.public_functions)
+            }
+            # "public_types": {
+            #     "anchor": "public-types",
+            #     "list": self.public_types,
+            #     "length": len(self.public_types)
+            # }
+        }
+        content.update(group_content)
+        return content
+
+
 class HtmlFileData(FileData):
 
     def __init__(self):
@@ -1204,7 +1274,7 @@ def iterate_markup(bs4, tree, parent):
     # tail is any extra text that isn't wrapped in another tag
     # that exists before the next tag
     if tree.tail is not None:
-        parent.append(tree.tail.strip())
+        parent.append(tree.tail)
         if tree.tail.endswith(";"):
             parent.append(gen_tag(bs4, "br"))
 
@@ -1521,8 +1591,8 @@ def process_xml_file_definition(in_path, out_path, file_type):
         html_template = config.NAMESPACE_TEMPLATE
         file_data = fill_namespace_content(tree)
     elif file_type == "group":
-        html_template = config.CLASS_TEMPLATE   # TODO: replace with GROUP_TEMPLATE
-        file_data = fill_class_content(tree)    # TODO: replace with fill_group_content()
+        html_template = config.GROUP_TEMPLATE
+        file_data = fill_group_content(tree)    # TODO: replace with fill_group_content()
     else:
         log("Skipping " + in_path, 1)
         return
@@ -1818,8 +1888,83 @@ def fill_namespace_content(tree):
     return file_data
 
 def fill_group_content(tree):
-    log("This is where we are going to parse group content")
-    return None
+    bs4 = BeautifulSoup()
+    # file_data = ClassFileData(tree)
+    file_data = GroupFileData(tree)
+
+    group_name = file_data.name
+    group_def = g_symbolMap.find_group(group_name)
+
+    if not group_def:
+        log("NO CLASS OBJECT DEFINED FOR: " + group_name, 1)
+        # raise
+        # return
+
+    # page title ---------------------------------------- #
+    file_data.title = file_data.name
+
+    # page header --------------------------------------- #
+    file_data.page_header = file_data.name
+
+    # add description ----------------------------------- #
+    description = markup_description(bs4, tree.find(r'compounddef'))
+    file_data.description = str(description) if description is not None else ""
+
+    # submodules ---------------------------------------- #
+    subgroups = []
+    for subgroup in group_def.subgroups:
+        print subgroup.name
+        subgroup_obj = {
+            "label": subgroup.name,
+            "link": subgroup.path
+        }
+        subgroups.append(subgroup_obj)
+    file_data.subgroups = subgroups
+
+    # typedefs ------------------------------------------ #
+    typedefs = []
+    for member in tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']"):
+        typedef_obj = parse_member_definition(bs4, member)
+        typedefs.append(typedef_obj)
+    file_data.typedefs = typedefs
+
+    # ci prefix / description --------------------------- #
+    # if the class has a prefix, add it here
+    if hasattr(group_def, 'prefixPath') is True and group_def.prefixPath is not None:
+        prefix_html = generate_bs4(group_def.prefixPath).body
+        prefix_content = ""
+        for c in prefix_html.contents:
+            prefix_content += str(c)
+        file_data.prefix = prefix_content
+
+    # # enumerations -------------------------------------- #
+    # enumerations = []
+    # for e in tree.findall(r"compounddef/sectiondef/memberdef[@kind='enum']"):
+    #     member_obj = parse_enum(bs4, e)
+    #     enumerations.append(member_obj)
+    # file_data.enumerations = enumerations
+    #
+    # public member Functions --------------------------- #
+    public_fns = []
+    public_static_fns = []
+    for memberFn in tree.findall(r'compounddef/sectiondef/memberdef[@kind="function"][@prot="public"]'):
+
+        function_obj = parse_function(bs4, memberFn, group_name)
+        is_static = memberFn.attrib["static"]
+
+        if is_static == 'yes':
+            public_static_fns.append(function_obj)
+        else:
+            public_fns.append(function_obj)
+
+    file_data.public_functions = public_fns
+    file_data.public_static_functions = public_static_fns
+
+    if group_def:
+        file_data.search_tags = group_def.tags
+
+    return file_data
+
 
 def process_html_file(in_path, out_path):
     """ Parses an html file.
@@ -2430,24 +2575,31 @@ def get_symbol_to_file_map():
     # find groups
     group_tags = g_tag_xml.findall(r'compound/[@kind="group"]')
     for member in group_tags:
-        group = SymbolMap.Group(member)
+        group_obj = SymbolMap.Group(member)
         subgroups = member.findall('subgroup')
 
         # add subgroup names
         if len(subgroups) > 0:
             for subgroup in subgroups:
-                group.subgroup_names.append(subgroup.text)
+                group_obj.subgroup_names.append(subgroup.text)
 
-        symbol_map.groups[group.name] = group
+        # find functions and add to symbol map
+        functions = member.findall(r"member[@kind='function']")
+        for function in functions:
+            function_obj = SymbolMap.Function(function, "glm")
+            # print "\tFUNCTION NAME: " + function_obj.name
+            group_obj.add_function(function_obj.name, function_obj)
+
+        symbol_map.groups[group_obj.name] = group_obj
 
     # link up subgroups to parent groups
     for group_names in symbol_map.groups:
-        group = symbol_map.find_group(group_names)
-        if len(group.subgroup_names) > 0:
+        group_obj = symbol_map.find_group(group_names)
+        if len(group_obj.subgroup_names) > 0:
             # print group.name
-            for subgroup_name in group.subgroup_names:
+            for subgroup_name in group_obj.subgroup_names:
                 subgroup = symbol_map.find_group(subgroup_name)
-                group.subgroups.append(subgroup)
+                group_obj.subgroups.append(subgroup)
 
     if len(file_tags) == 0:
         print "\t** Warning: no compound of type 'file' found in tag file. Check doxygen SHOW_FILES setting."
