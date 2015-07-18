@@ -12,6 +12,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="ANGLE">
+      <UniqueIdentifier>{45946981-8d7c-4a51-9f4d-11d6addf5727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ANGLE\Win32">
+      <UniqueIdentifier>{d846cdb2-0586-4557-8da0-656e4b7482fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ANGLE\x64">
+      <UniqueIdentifier>{96d88de8-ede7-4c87-baf2-c228e16226b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\DebugTestApp.cpp">
@@ -30,8 +39,17 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resources.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    <None Include="..\..\..\lib\winrt\x86\libEGL.dll">
+      <Filter>ANGLE\Win32</Filter>
+    </None>
+    <None Include="..\..\..\lib\winrt\x86\libGLESv2.dll">
+      <Filter>ANGLE\Win32</Filter>
+    </None>
+    <None Include="..\..\..\lib\winrt\x64\libEGL.dll">
+      <Filter>ANGLE\x64</Filter>
+    </None>
+    <None Include="..\..\..\lib\winrt\x64\libGLESv2.dll">
+      <Filter>ANGLE\x64</Filter>
+    </None>
   </ItemGroup>
 </Project>
