@@ -163,6 +163,7 @@ void LogManager::restoreToDefault()
 	mBreakOnLogEnabled = false;
 
 	switch( CI_MAX_LOG_LEVEL ) {
+		case 6: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
 		case 5: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
 		case 4: mSystemLoggingLevel = LEVEL_INFO;		break;
 		case 3: mSystemLoggingLevel = LEVEL_WARNING;	break;
@@ -451,7 +452,7 @@ void LoggerFile::ensureDirectoryExists()
 
 void LoggerBreakpoint::write( const Metadata &meta, const string &text )
 {
-	if( meta.mLevel >= mTriggerLevel ) {
+	if( meta.mLevel <= mTriggerLevel ) {
 		CI_BREAKPOINT();
 	}
 }
@@ -496,6 +497,7 @@ protected:
 				// We never return lower than LOG_NOTICE for OS X SysLog to ensure the message arrives
 				// http://apple.stackexchange.com/questions/13484/messages-issued-by-syslog-not-showing-up-in-system-logs
 			case LEVEL_INFO:	return LOG_NOTICE;
+			case LEVEL_DEBUG:	return LOG_NOTICE;
 			case LEVEL_VERBOSE:	return LOG_NOTICE;
 			default: CI_ASSERT_NOT_REACHABLE();
 		}
@@ -565,6 +567,7 @@ protected:
 			case LEVEL_ERROR:	return EVENTLOG_ERROR_TYPE;
 			case LEVEL_WARNING:	return EVENTLOG_WARNING_TYPE;
 			case LEVEL_INFO:	return EVENTLOG_INFORMATION_TYPE;
+			case LEVEL_DEBUG:	return EVENTLOG_INFORMATION_TYPE;
 			case LEVEL_VERBOSE:	return EVENTLOG_INFORMATION_TYPE;
 			default: CI_ASSERT_NOT_REACHABLE();
 		}
@@ -598,7 +601,7 @@ LoggerSystem::~LoggerSystem()
 void LoggerSystem::write( const Metadata &meta, const std::string &text )
 {
 #if ! defined( CINDER_WINRT ) // Currently no system logging support on WinRT
-	if( meta.mLevel >= mMinLevel ) {
+	if( meta.mLevel <= mMinLevel ) {
 		mImpl->write( meta, text );
 	}
 #endif
@@ -625,6 +628,7 @@ ostream& operator<<( ostream &lhs, const Level &rhs )
 {
 	switch( rhs ) {
 		case LEVEL_VERBOSE:		lhs << "|verbose|";	break;
+		case LEVEL_DEBUG:		lhs << "|debug  |";	break;
 		case LEVEL_INFO:		lhs << "|info   |";	break;
 		case LEVEL_WARNING:		lhs << "|warning|";	break;
 		case LEVEL_ERROR:		lhs << "|error  |";	break;

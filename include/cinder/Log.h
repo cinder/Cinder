@@ -38,11 +38,12 @@
 namespace cinder { namespace log {
 
 typedef enum {
-	LEVEL_VERBOSE,
-	LEVEL_INFO,
-	LEVEL_WARNING,
-	LEVEL_ERROR,
-	LEVEL_FATAL
+	LEVEL_VERBOSE = 6,
+	LEVEL_DEBUG = 5,
+	LEVEL_INFO = 4,
+	LEVEL_WARNING = 3,
+	LEVEL_ERROR = 2,
+	LEVEL_FATAL = 1
 } Level;
 
 struct Location {
@@ -288,16 +289,22 @@ typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
 
 #if ! defined( CI_MAX_LOG_LEVEL )
 	#if ! defined( NDEBUG )
-		#define CI_MAX_LOG_LEVEL 5	// debug mode default is LEVEL_VERBOSE
+		#define CI_MAX_LOG_LEVEL 6	// debug mode default is LEVEL_VERBOSE
 	#else
 		#define CI_MAX_LOG_LEVEL 4	// release mode default is LEVEL_INFO
 	#endif
 #endif
 
-#if( CI_MAX_LOG_LEVEL >= 5 )
+#if( CI_MAX_LOG_LEVEL >= 6 )
 	#define CI_LOG_V( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_VERBOSE, stream )
 #else
 	#define CI_LOG_V( stream )	((void)0)
+#endif
+
+#if( CI_MAX_LOG_LEVEL >= 5 )
+#define CI_LOG_D( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_DEBUG, stream )
+#else
+#define CI_LOG_D( stream )	((void)0)
 #endif
 
 #if( CI_MAX_LOG_LEVEL >= 4 )

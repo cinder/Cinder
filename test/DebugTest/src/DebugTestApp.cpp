@@ -1,5 +1,7 @@
 #include "cinder/app/App.h"
 
+//#define CI_MAX_LOG_LEVEL 4
+
 #include "cinder/Log.h"
 
 #define CI_ASSERT_DEBUG_BREAK
@@ -32,12 +34,12 @@ void DebugTestApp::setup()
 {
 	//testEnableFileLogger();
 	testEnableSysLogger();
-//	testEnableBadFilePath();
-//	testEnableDisable();
-//	testAddRemove();
+	//testEnableBadFilePath();
+	testEnableDisable();
+	//testAddRemove();
 	//testRotatingFile();
-	//testEnableDisable();
-//	testSystemLevel();
+	testEnableDisable();
+	testSystemLevel();
 	//testAddFile();
 	//testAddRemove();
 	//testAsserts();
@@ -58,9 +60,10 @@ void DebugTestApp::testAsserts()
 void DebugTestApp::testBreakOnLog()
 {
 	log::manager()->enableBreakOnError();
-	//log::manager()->enableBreakOnLevel( log::LEVEL_WARNING );
+	log::manager()->enableBreakOnLevel( log::LEVEL_DEBUG );
 
 	CI_LOG_V( "bang" );
+	CI_LOG_D( "bang" );
 	CI_LOG_I( "bang" );
 	CI_LOG_W( "bang" );
 	CI_LOG_E( "bang" );
@@ -94,6 +97,7 @@ void DebugTestApp::testEnableSysLogger()
 	log::manager()->enableSystemLogging();
 	CI_LOG_I( "enabled system logging" );
 	CI_LOG_V( "verbose message" );
+	CI_LOG_D( "debug message" );
 }
 
 void DebugTestApp::testSystemLevel()
@@ -101,10 +105,11 @@ void DebugTestApp::testSystemLevel()
 	log::manager()->enableSystemLogging();
 	log::manager()->setSystemLoggingLevel(log::LEVEL_ERROR);
 	CI_LOG_I( "This should not show up in the sys log." );
+	CI_LOG_D( "This should not show up in the sys log." );
 	CI_LOG_E( "This should show up in the sys log." );
 	log::manager()->setSystemLoggingLevel(log::LEVEL_VERBOSE);
 	CI_LOG_V( "This should show up in the sys log as well." );
-	
+	CI_LOG_D( "This should show up in the sys log as well." );
 }
 
 void DebugTestApp::testEnableDisable()
