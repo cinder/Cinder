@@ -10,7 +10,9 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#define USE_HW_TEXTURE
+#if defined( CINDER_ANDROID )
+    #define USE_HW_TEXTURE
+#endif    
 
 class CaptureBasicApp : public App {
   public:
