@@ -1,20 +1,16 @@
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Capture.h"
-<<<<<<< HEAD
-=======
 #include "cinder/Log.h"
 
->>>>>>> upstream/master
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#include "cinder/android/app/CinderNativeActivity.h"
-
-//#define USE_HW_TEXTURE
+#define USE_HW_TEXTURE
 
 class CaptureBasicApp : public App {
   public:
@@ -31,19 +27,7 @@ class CaptureBasicApp : public App {
 
 void CaptureBasicApp::setup()
 {
-<<<<<<< HEAD
-	// print the devices
-	for( auto device = Capture::getDevices().begin(); device != Capture::getDevices().end(); ++device ) {
-		console() << "Device: " << (*device)->getName() << " "
-#if ( defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID ) )
-					<< ( (*device)->isFrontFacing() ? "Front" : "Rear" ) << "-facing"
-#endif
-					<< std::endl;
-	}
-=======
 	printDevices();
->>>>>>> upstream/master
-
 
 	try {
 		mCapture = Capture::create( 640, 480 );
@@ -52,8 +36,6 @@ void CaptureBasicApp::setup()
 	catch( ci::Exception &exc ) {
 		CI_LOG_EXCEPTION( "Failed to init capture ", exc );
 	}
-
-    //ci::android::app::CinderNativeActivity::getInstance()->startCapture();
 }
 
 void CaptureBasicApp::update()
@@ -78,27 +60,19 @@ void CaptureBasicApp::update()
 
 void CaptureBasicApp::draw()
 {
-<<<<<<< HEAD
-	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
-	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-
-	if( mTexture ) {
-    gl::pushModelMatrix();
-#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
-		//change iPhone/Android to landscape orientation
-=======
 	gl::clear();
 
 	if( mTexture ) {
 		gl::ScopedModelMatrix modelScope;
-
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 		// change iphone to landscape orientation
->>>>>>> upstream/master
 		gl::rotate( M_PI / 2 );
 		gl::translate( 0, - getWindowWidth() );
 
 		Rectf flippedBounds( 0, 0, getWindowHeight(), getWindowWidth() );
+  #if defined( CINDER_ANDROID )
+  		std::swap( flippedBounds.y1, flippedBounds.y2 );
+  #endif
 		gl::draw( mTexture, flippedBounds );
 #else
 		gl::draw( mTexture );
@@ -110,7 +84,7 @@ void CaptureBasicApp::printDevices()
 {
 	for( const auto &device : Capture::getDevices() ) {
 		console() << "Device: " << device->getName() << " "
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 		<< ( device->isFrontFacing() ? "Front" : "Rear" ) << "-facing"
 #endif
 		<< endl;
