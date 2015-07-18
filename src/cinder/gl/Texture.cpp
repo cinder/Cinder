@@ -325,28 +325,6 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 		case GL_RGBA32I:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_INT;								break;
 		case GL_RGBA32UI:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_UNSIGNED_INT;						break;
 #else
-<<<<<<< HEAD
-  #if ! defined( CINDER_ANDROID )
-		case GL_RGB8_OES:				*resultDataFormat = GL_RGB;				*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_RGBA8_OES:				*resultDataFormat = GL_RGBA;			*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_ALPHA8_EXT:				*resultDataFormat = GL_ALPHA;			*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_LUMINANCE8_EXT:			*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_LUMINANCE8_ALPHA8_EXT:	*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_RGBA32F_EXT:			*resultDataFormat = GL_RGBA;			*resultDataType = GL_FLOAT;				break;
-		case GL_RGB32F_EXT:				*resultDataFormat = GL_RGB;				*resultDataType = GL_FLOAT;				break;
-		case GL_ALPHA32F_EXT:			*resultDataFormat = GL_ALPHA;			*resultDataType = GL_FLOAT;				break;
-		case GL_LUMINANCE32F_EXT:		*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_FLOAT;				break;
-		case GL_LUMINANCE_ALPHA32F_EXT:	*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_FLOAT;				break;
-		case GL_RGBA16F_EXT:			*resultDataFormat = GL_RGBA;			*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_RGB16F_EXT:				*resultDataFormat = GL_RGB;				*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_ALPHA16F_EXT:			*resultDataFormat = GL_ALPHA;			*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_LUMINANCE16F_EXT:		*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_LUMINANCE_ALPHA16F_EXT:	*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_BGRA8_EXT:				*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_R32F_EXT:				*resultDataFormat = GL_RED;				*resultDataType = GL_FLOAT;				break;
-		case GL_R16F_EXT:				*resultDataFormat = GL_RED;				*resultDataType = GL_HALF_FLOAT_OES;	break;
-  #endif		
-=======
 		case GL_RGB8_OES:				dataFormat = GL_RGB;				dataType = GL_UNSIGNED_BYTE;			break;
 		case GL_RGBA8_OES:				dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
 		case GL_ALPHA8_EXT:				dataFormat = GL_ALPHA;				dataType = GL_UNSIGNED_BYTE;			break;
@@ -365,7 +343,6 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 		case GL_BGRA8_EXT:				dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_HALF_FLOAT_OES;			break;
 		case GL_R32F_EXT:				dataFormat = GL_RED;				dataType = GL_FLOAT;					break;
 		case GL_R16F_EXT:				dataFormat = GL_RED;				dataType = GL_HALF_FLOAT_OES;			break;
->>>>>>> upstream/master
 #endif
 		case GL_RGB5_A1:				dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
 		case GL_RGBA4:					dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
