@@ -840,6 +840,7 @@ class HtmlFileData(FileData):
         FileData.__init__(self, None)
 
         self.html_content = ""
+        self.group = None
 
     def get_content(self):
         orig_content = super(HtmlFileData, self).get_content()
@@ -2063,6 +2064,14 @@ def process_html_file(in_path, out_path):
         for meta_tag in orig_html.head.findAll(attrs={"name": "keywords"}):
             for keyword in meta_tag['content'].split(','):
                 search_tags.append(keyword.encode('utf-8').strip())
+
+        # look for any meta 'group' tags to tell us that it's part of a grpup that will need nav
+        for meta_tag in orig_html.head.findAll(attrs={"name": "group"}):
+            print "FOUND GROUP META"
+            print meta_tag['content']
+            if meta_tag['content']:
+                file_data.group = meta_tag['content']
+
 
     # link up all ci tags
     for tag in bs4.find_all('ci'):
