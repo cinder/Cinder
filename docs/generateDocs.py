@@ -234,7 +234,6 @@ class SymbolMap(object):
             self.subgroups = []
             self.tags = []
             self.tags.append(strip_compound_name(self.name))
-            print strip_compound_name(self.name)
 
         def extract_description(self):
             xml_tree = parse_xml(self.src_path)
@@ -301,7 +300,6 @@ class SymbolMap(object):
             # check to see if parent is a typedef
             searchname_parts = searchname.split("::")
             if len(searchname_parts) > 1:
-
                 parent_name = searchname_parts[-2]
                 typedef = self.find_typedef(parent_name)
 
@@ -371,9 +369,13 @@ class SymbolMap(object):
         if searchname in self.typedefs.keys():
             return self.typedefs[searchname]
 
-            # key with "cinder::" prepended
+        # key with "cinder::" prepended
         elif ("cinder::" + searchname) in self.typedefs:
             return self.typedefs["cinder::" + searchname]
+
+        # key with "glm::" prepended
+        elif ("glm::" + searchname) in self.typedefs:
+            return self.typedefs["glm::" + searchname]
 
         else:
             # iterate through all of the classes with namespace "cinder::" and test against just class name
@@ -417,6 +419,15 @@ class SymbolMap(object):
             for fn in ref_obj.functionList:
                 if re.match(fn.name, fn_name):
                     fn_list.append(fn)
+
+        # iterate through glm groups
+        if len(fn_list) == 0:
+            for group in self.groups:
+                group_ref = self.groups[group]
+                for fn in group_ref.functionList:
+                    if re.match(fn.name, fn_name):
+                        fn_list.append(fn)
+
         # else:
         #     for fn_key in self.functions:
         #         # print self.func
@@ -433,7 +444,7 @@ class SymbolMap(object):
             fn_list.append(fn_obj)
 
         fn_index = 0
-        # if we have a bunch of options, we want to widdle it down to the best one
+        # if we have a bunch of options, we want to whittle it down to the best one
         if len(fn_list) > 1:
             best_score = 0
 
@@ -2261,6 +2272,7 @@ def find_ci_tag_ref(link):
             if fn_obj is not None:
                 ref_obj = fn_obj
 
+        # find enum link
         elif link.get('kind') == 'enum':
             enum_obj = g_symbolMap.find_enum(searchstring)
             if enum_obj is not None:
@@ -2271,8 +2283,8 @@ def find_ci_tag_ref(link):
             existing_class = g_symbolMap.find_class(searchstring)
             if existing_class is not None:
                 ref_obj = existing_class
-            else:
 
+            else:
                 count = 0
                 # try a bunch of other things before giving up
                 while (ref_obj is None) and count < 3:
@@ -2491,36 +2503,37 @@ def get_symbol_to_file_map():
         ns_obj = SymbolMap.Namespace(namespace_name, file_name)
         symbol_map.namespaces[namespace_name] = ns_obj
 
-        for member in ns.findall(r"member/[@kind='typedef']"):
-            name = member.find("name").text
-            type_name = member.find("type").text
-            name = namespace_name + "::" + name
-            shared_from_class = None
-
-            if type_name.startswith("class") > 0:
-                shared_from_class = symbol_map.find_class(type_name.split("class ")[1])
-
-            elif type_name.find("shared") > 0:
-                shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type_name)
-                if len(shareds) > 0:
-                    base = namespace_name + "::" + shareds[0]
-                    shared_from_class = symbol_map.find_class(base)
-
-            if not shared_from_class:
-                # find based on the string in type that's not explicitly a shared_ptr
-                # such as <type>SurfaceT&lt; uint8_t &gt;</type>
-                shareds = re.findall(r"([A-Za-z]*)", type_name)
-                shared_from_class = symbol_map.find_class(shareds[0])
-
-            file_path = member.find('anchorfile').text + "#" + member.find("anchor").text
-            type_def_obj = SymbolMap.Typedef(name, type_name, file_path)
-
-            if shared_from_class is not None:
-                type_def_obj.sharedFrom = shared_from_class
-                # let the class know that it has some typedefs associated with it
-                shared_from_class.add_type_def(type_def_obj)
-
-            symbol_map.typedefs[name] = type_def_obj
+        add_typedefs(ns.findall(r"member/[@kind='typedef']"), namespace_name, symbol_map)
+        # for member in ns.findall(r"member/[@kind='typedef']"):
+        #     name = member.find("name").text
+        #     type_name = member.find("type").text
+        #     name = namespace_name + "::" + name
+        #     shared_from_class = None
+        #
+        #     if type_name.startswith("class") > 0:
+        #         shared_from_class = symbol_map.find_class(type_name.split("class ")[1])
+        #
+        #     elif type_name.find("shared") > 0:
+        #         shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type_name)
+        #         if len(shareds) > 0:
+        #             base = namespace_name + "::" + shareds[0]
+        #             shared_from_class = symbol_map.find_class(base)
+        #
+        #     if not shared_from_class:
+        #         # find based on the string in type that's not explicitly a shared_ptr
+        #         # such as <type>SurfaceT&lt; uint8_t &gt;</type>
+        #         shareds = re.findall(r"([A-Za-z]*)", type_name)
+        #         shared_from_class = symbol_map.find_class(shareds[0])
+        #
+        #     file_path = member.find('anchorfile').text + "#" + member.find("anchor").text
+        #     type_def_obj = SymbolMap.Typedef(name, type_name, file_path)
+        #
+        #     if shared_from_class is not None:
+        #         type_def_obj.sharedFrom = shared_from_class
+        #         # let the class know that it has some typedefs associated with it
+        #         shared_from_class.add_type_def(type_def_obj)
+        #
+        #     symbol_map.typedefs[name] = type_def_obj
 
         # find enums
         for member in ns.findall(r"member/[@kind='enumeration']"):
@@ -2534,11 +2547,6 @@ def get_symbol_to_file_map():
         # find functions and add to symbol map
         members = ns.findall(r"member[@kind='function']")
         for member in members:
-            # fn_name = member.find("name").text
-            # anchor = member.find("anchor").text
-            # file_path = member.find("anchorfile").text + "#" + anchor
-            # args = member.find("argsstring").text if member.find("argsstring") else ""
-            # function_obj = SymbolMap.Function(fn_name, base_class, args, file_path)
             function_obj = SymbolMap.Function(member, base_class)
             ns_obj.functionList.append(function_obj)
             ns_obj.add_function(function_obj.name, function_obj)
@@ -2564,12 +2572,7 @@ def get_symbol_to_file_map():
 
         # find functions for each file
         for member in f.findall(r'member[@kind="function"]'):
-            # fn_name = f.find("name").text
-            # file_path = f.find('anchorfile').text + "#" + f.find("anchor").text
-            # args = member.find("argsstring").text if member.find("argsstring") else ""
-            # fn = SymbolMap.Function(fn_name, "", args, file_path)
             function_obj = SymbolMap.Function(member, "")
-            # symbol_map.functions[function_obj.name] = function_obj
             symbol_map.add_function("", function_obj.name, function_obj)
 
     # find groups
@@ -2577,6 +2580,9 @@ def get_symbol_to_file_map():
     for member in group_tags:
         group_obj = SymbolMap.Group(member)
         subgroups = member.findall('subgroup')
+
+        # hardcode this for now since all groups are part of glm
+        ns = "glm"
 
         # add subgroup names
         if len(subgroups) > 0:
@@ -2586,9 +2592,13 @@ def get_symbol_to_file_map():
         # find functions and add to symbol map
         functions = member.findall(r"member[@kind='function']")
         for function in functions:
-            function_obj = SymbolMap.Function(function, "glm")
-            # print "\tFUNCTION NAME: " + function_obj.name
+            function_obj = SymbolMap.Function(function, ns)
             group_obj.add_function(function_obj.name, function_obj)
+            symbol_map.add_function(ns, function_obj.name, function_obj)
+
+        # find typedefs
+        typedefs = member.findall(r"member/[@kind='typedef']")
+        add_typedefs(typedefs, "glm", symbol_map)
 
         symbol_map.groups[group_obj.name] = group_obj
 
@@ -2606,6 +2616,38 @@ def get_symbol_to_file_map():
 
     return symbol_map
 
+
+def add_typedefs(typedefs, ns_name, symbol_map):
+    for typdef in typedefs:
+        name = typdef.find("name").text
+        type_name = typdef.find("type").text
+        name = ns_name + "::" + name
+        shared_from_class = None
+
+        if type_name.startswith("class") > 0:
+            shared_from_class = symbol_map.find_class(type_name.split("class ")[1])
+
+        elif type_name.find("shared") > 0:
+            shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type_name)
+            if len(shareds) > 0:
+                base = ns_name + "::" + shareds[0]
+                shared_from_class = symbol_map.find_class(base)
+
+        if not shared_from_class:
+            # find based on the string in type that's not explicitly a shared_ptr
+            # such as <type>SurfaceT&lt; uint8_t &gt;</type>
+            shareds = re.findall(r"([A-Za-z]*)", type_name)
+            shared_from_class = symbol_map.find_class(shareds[0])
+
+        file_path = typdef.find('anchorfile').text + "#" + typdef.find("anchor").text
+        type_def_obj = SymbolMap.Typedef(name, type_name, file_path)
+
+        if shared_from_class is not None:
+            type_def_obj.sharedFrom = shared_from_class
+            # let the class know that it has some typedefs associated with it
+            shared_from_class.add_type_def(type_def_obj)
+
+        symbol_map.typedefs[name] = type_def_obj
 
 def get_file_prefix(file_path):
     return os.path.splitext(os.path.basename(file_path))[0]
