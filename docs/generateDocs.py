@@ -1597,9 +1597,18 @@ def process_xml_file_definition(in_path, out_path, file_type):
         return
 
     if file_type == "class":
+        if any(in_path.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
+            log("Skipping file | Class " + in_path + " blacklisted", 0)
+            return
+
         html_template = config.CLASS_TEMPLATE
         file_data = fill_class_content(tree)
+
     elif file_type == "namespace":
+        if any(in_path.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
+            log("Skipping file | Namespace " + in_path + " blacklisted", 0)
+            return
+
         html_template = config.NAMESPACE_TEMPLATE
         file_data = fill_namespace_content(tree)
     elif file_type == "group":
