@@ -50,6 +50,7 @@ public:
 	static cinder::fs::path 		getCacheDirectory();
 	static void 					setWallpaper( const Surface8u& surf );
 	static int 						getDisplayRotation();
+	static void 					setKeepScreenOn( bool keepScreenOn );
 	static void 					setFullScreen( bool fullScreen );
 	static void 					launchWebBrowser( const Url &url );
 	static void 					launchTwitter( const std::string& text = "", const Surface8u* surf = nullptr );
@@ -64,6 +65,7 @@ private:
 		static jmethodID 	getCacheDirectory;
 		static jmethodID 	setWallpaper;
 		static jmethodID 	getDisplayRotation;
+		static jmethodID 	setKeepScreenOn;
 		static jmethodID 	setFullScreen;
 		static jmethodID 	launchWebBrowser;
 		static jmethodID 	launchTwitter;

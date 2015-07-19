@@ -37,6 +37,7 @@ public class CinderNativeActivity extends NativeActivity {
 
     private Handler mHandler = null;
 
+    private boolean mKeepScreenOn = false;
     private boolean mFullScreen = false;
 
     public static CinderNativeActivity getInstance() {
@@ -65,6 +66,11 @@ public class CinderNativeActivity extends NativeActivity {
         super.onStart();
 
         Log.i(TAG, "onStart | -------------- ");
+
+        if( mKeepScreenOn ) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            Log.i(TAG, "KEEPING SCREEN ON | -------------- ");
+        }
     }
 
     @Override
@@ -83,12 +89,12 @@ public class CinderNativeActivity extends NativeActivity {
         if( mFullScreen && hasFocus ) {
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             );
 
             Log.i(TAG, "GOING IMMERSIVE | -------------- ");
@@ -194,6 +200,12 @@ public class CinderNativeActivity extends NativeActivity {
     public int getDisplayRotation() {
         int result = getDefaultDisplay().getRotation();
         return result;
+    }
+
+    public void setKeepScreenOn( boolean keepScreenOn ) {
+        mKeepScreenOn = keepScreenOn;
+
+        Log.i(TAG, "setKeepScreenOn : keepScreenOn=" + keepScreenOn + " | -------------- ");
     }
 
     public void setFullScreen( boolean fullScreen ) {

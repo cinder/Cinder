@@ -40,6 +40,21 @@ class AppAndroid : public AppBase {
 		virtual ~SavedState() {}
 	};
 
+	//! Android specific settings
+	class Settings : public AppBase::Settings {
+	  public:
+
+	  	//! If enabled screen stays on for Android instead of dimming
+	  	void 	setKeepScreenOn( bool enable = true ) { mKeepScreenOn = enable; }
+	  	//! Returns if screen stays on for Android
+	  	bool 	isKeepScreenOn() const { return mKeepScreenOn; }
+
+	  private:
+	  	bool 	mKeepScreenOn = false;
+
+		friend AppAndroid;
+	};	
+
     typedef std::function<void ( Settings *settings )>	SettingsFn;
 
     AppAndroid();
@@ -68,6 +83,11 @@ class AppAndroid : public AppBase {
 	void		showCursor() override;
 	ivec2		getMousePos() const override;
 
+	//! If enabled screen stays on for Android instead of dimming
+	static void 	setKeepScreenOn( bool enable = true ) { mKeepScreenOn = enable; }
+	  	//! Returns if screen stays on for Android
+	static bool 	isKeepScreenOn() { return mKeepScreenOn; }
+
 	//! \cond
 	// Called during application instanciation via CINDER_APP_ANDROID macro
 	template<typename AppT>
@@ -75,7 +95,7 @@ class AppAndroid : public AppBase {
 	// Called from EventManagerAndroid::NativeHandleCmd
 	template <typename AppT>
 	static void deferredMain( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn );
-	// Called from main, forwards to AppBase::initialize() and calls AndroidImplAndroid::setNdkAdroidApp
+	// Called from main, forwards to AppBase::initialize()
 	static void	initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title );
 	//! \endcond
 
@@ -84,6 +104,7 @@ class AppAndroid : public AppBase {
 
  private:
 	std::unique_ptr<AppImplAndroid>		mImpl;
+	static bool 						mKeepScreenOn;
 };
 
 template<typename AppT>
@@ -119,6 +140,13 @@ ci::android::dbg_app_log( "Calling AppBase::executeLaunch" );
 template<typename AppT>
 void AppAndroid::main( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn )
 {
+	// TODO: Merge this functionality with deferredMain
+	if( settingsFn ) {
+		Settings settings;
+		settingsFn( &settings );
+		AppAndroid::setKeepScreenOn( settings.isKeepScreenOn() );
+	}
+
 	std::function<void()> deferredMainFn  = std::bind( &AppAndroid::deferredMain<AppT>, defaultRenderer, title, nativeApp, settingsFn );
 	std::function<void()> cleanupLaunchFn = std::bind( &AppBase::cleanupLaunch );
 

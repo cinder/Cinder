@@ -30,6 +30,8 @@ using namespace ci::android;
 
 namespace cinder { namespace app {
 
+bool AppAndroid::mKeepScreenOn = false;
+
 AppAndroid::AppAndroid()
 	: AppBase()
 {

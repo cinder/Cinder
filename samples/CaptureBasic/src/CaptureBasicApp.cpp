@@ -94,4 +94,11 @@ void CaptureBasicApp::printDevices()
 	}
 }
 
-CINDER_APP( CaptureBasicApp, RendererGl )
+void prepareSettings( CaptureBasicApp::Settings* settings )
+{
+#if defined( CINDER_ANDROID )
+	settings->setKeepScreenOn( true );
+#endif
+}
+
+CINDER_APP( CaptureBasicApp, RendererGl, prepareSettings )

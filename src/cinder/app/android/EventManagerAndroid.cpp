@@ -22,6 +22,7 @@
 */
 
 #include "cinder/app/android/EventManagerAndroid.h"
+#include "cinder/app/android/AppAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
 #include "cinder/app/android/PlatformAndroid.h"
 
@@ -640,6 +641,9 @@ void EventManagerAndroid::execute()
 
 	ci::android::JniHelper::Initialize( mNativeApp->activity );
 	ci::android::app::CinderNativeActivity::registerComponents();
+
+	// Set keep screen on before the window gets initialized
+	ci::android::app::CinderNativeActivity::setKeepScreenOn( ci::app::AppAndroid::isKeepScreenOn() );
 
 dbg_app_log( "Starting Event Loop" );
 	// Event loop

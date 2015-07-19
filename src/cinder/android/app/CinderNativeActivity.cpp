@@ -39,6 +39,7 @@ jclass  	CinderNativeActivity::Java::ClassObject 		= nullptr;
 jmethodID 	CinderNativeActivity::Java::getCacheDirectory	= nullptr;
 jmethodID 	CinderNativeActivity::Java::setWallpaper		= nullptr;
 jmethodID 	CinderNativeActivity::Java::getDisplayRotation	= nullptr;
+jmethodID 	CinderNativeActivity::Java::setKeepScreenOn		= nullptr;
 jmethodID 	CinderNativeActivity::Java::setFullScreen		= nullptr;
 jmethodID 	CinderNativeActivity::Java::launchWebBrowser	= nullptr;
 jmethodID 	CinderNativeActivity::Java::launchTwitter		= nullptr;
@@ -75,12 +76,14 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 				Java::getCacheDirectory 	= JniHelper::Get()->GetMethodId( Java::ClassObject, "getCacheDirectory", "()Ljava/lang/String;" ); 
 				Java::setWallpaper			= JniHelper::Get()->GetMethodId( Java::ClassObject, "setWallpaper", "(Ljava/lang/String;)V" ); 
 				Java::getDisplayRotation 	= JniHelper::Get()->GetMethodId( Java::ClassObject, "getDisplayRotation", "()I" ); 
+				Java::setKeepScreenOn		= JniHelper::Get()->GetMethodId( Java::ClassObject, "setKeepScreenOn", "(Z)V" ); 
 				Java::setFullScreen			= JniHelper::Get()->GetMethodId( Java::ClassObject, "setFullScreen", "(Z)V" ); 
 				Java::launchWebBrowser		= JniHelper::Get()->GetMethodId( Java::ClassObject, "launchWebBrowser", "(Ljava/lang/String;)V" ); 
 				Java::launchTwitter			= JniHelper::Get()->GetMethodId( Java::ClassObject, "launchTwitter", "(Ljava/lang/String;Ljava/lang/String;)V" ); 
 				jni_obtained_check( CinderNativeActivity::Java::getCacheDirectory );				
 				jni_obtained_check( CinderNativeActivity::Java::setWallpaper );				
 				jni_obtained_check( CinderNativeActivity::Java::getDisplayRotation );				
+				jni_obtained_check( CinderNativeActivity::Java::setKeepScreenOn );				
 				jni_obtained_check( CinderNativeActivity::Java::setFullScreen );				
 				jni_obtained_check( CinderNativeActivity::Java::launchWebBrowser );				
 				jni_obtained_check( CinderNativeActivity::Java::launchTwitter );				
@@ -104,6 +107,7 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 		Java::getCacheDirectory		= nullptr;
 		Java::setWallpaper			= nullptr;
 		Java::getDisplayRotation	= nullptr;
+		Java::setKeepScreenOn		= nullptr;
 		Java::setFullScreen			= nullptr;
 		Java::launchWebBrowser		= nullptr;
 		Java::launchTwitter			= nullptr;
@@ -190,6 +194,11 @@ int CinderNativeActivity::getDisplayRotation()
 {
 	jint result = JniHelper::Get()->CallIntMethod( getInstance()->getJavaObject(), Java::getDisplayRotation );
 	return (int)result;
+}
+
+void CinderNativeActivity::setKeepScreenOn( bool keepScreenOn )
+{
+	JniHelper::Get()->CallVoidMethod( getInstance()->getJavaObject(), Java::setKeepScreenOn, (jboolean)keepScreenOn );
 }
 
 void CinderNativeActivity::setFullScreen( bool fullScreen )
