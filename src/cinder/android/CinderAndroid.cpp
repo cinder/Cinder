@@ -25,6 +25,45 @@
 #include "cinder/android/app/CinderNativeActivity.h" 
 #include "cinder/app/android/AssetFileSystem.h"
 
+#include <cstdlib>
+#include <sstream>
+
+int stoi( const std::string& str )
+{
+    return strtol( str.c_str(), nullptr, 10 );
+}
+
+namespace std {
+
+std::string to_string( int value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+std::string to_string( long value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+std::string to_string( long long value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+std::string to_string( unsigned value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+std::string to_string( unsigned long value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+std::string to_string( unsigned long long value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+std::string to_string( float value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+std::string to_string( double value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+std::string to_string( long double value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+} // namespace std
+
 namespace cinder { namespace android {
 
 namespace fs {
