@@ -26,6 +26,8 @@
 #include "cinder/audio/Utilities.h"
 #include "cinder/audio/Exception.h"
 
+#include <string>
+
 using namespace std;
 
 namespace cinder { namespace audio {
