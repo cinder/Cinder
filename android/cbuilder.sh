@@ -177,7 +177,7 @@ for plat in ${PLATFORMS[@]}; do
             if (( $plat <= 19 )); then
                 case $arch in
                     arm64-v8a|x86_64|mips64) 
-                        echo "\n(CINDER-ANDROID): [ERROR] 64-bit require android-21 or later"
+                        echo -e "\n(CINDER-ANDROID): [ERROR] 64-bit require android-21 or later"
                         continue 
                     ;;
                 esac
@@ -215,7 +215,7 @@ for plat in ${PLATFORMS[@]}; do
             cmake ../../../.. -DCMAKE_BUILD_TYPE=$build -DNDK_ARCH=$arch -DNDK_PLATFORM=$plat ${ES2}
             if [ $? -ne 0 ]
             then
-                echo "\n(CINDER-ANDROID): CMake failed for PLATFORM: android-$plat, ARCH: $arch, BUILD_TYPE: $build"
+                echo -e "\n(CINDER-ANDROID): CMake failed for PLATFORM: android-$plat, ARCH: $arch, BUILD_TYPE: $build"
                 exit 1
             fi
 
@@ -223,7 +223,7 @@ for plat in ${PLATFORMS[@]}; do
             make -j ${NUMPROCS} ${VERBOSE}
             if [ $? -ne 0 ]
             then
-                echo "\n(CINDER-ANDROID): Compile (make) failed for PLATFORM: android-$plat, ARCH: $arch, BUILD_TYPE: $build ${ES2_INFO}"
+                echo -e "\n(CINDER-ANDROID): Compile (make) failed for PLATFORM: android-$plat, ARCH: $arch, BUILD_TYPE: $build ${ES2_INFO}"
                 exit 1
             fi
         done
@@ -231,5 +231,5 @@ for plat in ${PLATFORMS[@]}; do
 done
 
 
-echo "\n(CINDER-ANDROID): Build complete\n"
+echo -e "\n(CINDER-ANDROID): Build complete\n"
 
