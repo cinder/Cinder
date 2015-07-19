@@ -82,8 +82,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 //	configAttribs.push_back( EGL_SAMPLE_BUFFERS ); configAttribs.push_back( 1 );
 	configAttribs.push_back( EGL_NONE );
 
-	EGLint surfaceAttribList[] =
-	{
+	EGLint surfaceAttribList[] = {
 		EGL_NONE, EGL_NONE
 	};
 
@@ -92,7 +91,10 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 		return false;
 
 #if defined( CINDER_MSW )
-	const EGLint displayAttributes[] = { EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE, EGL_NONE };
+	const EGLint displayAttributes[] = {
+		EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
+		EGL_NONE
+	};
 
 	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, dc, displayAttributes );
 #else
@@ -100,16 +102,37 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 		EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
 		EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER, EGL_TRUE, 
 		EGL_NONE,
-    };
+	};
 
 	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, displayAttributes );
 #endif
-	if( mDisplay == EGL_NO_DISPLAY)
+	if( mDisplay == EGL_NO_DISPLAY )
 		return false;
 
 	EGLint majorVersion, minorVersion;
-	if( ! eglInitialize( mDisplay, &majorVersion, &minorVersion ) )
+	if( eglInitialize( mDisplay, &majorVersion, &minorVersion ) == EGL_FALSE ) {
+#if defined( CINDER_MSW )
+		// try again with D3D11 Feature Level 9.3 if 10.0+ is unavailable
+		const EGLint fl9_3DisplayAttributes[] = {
+			EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
+			EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_DEVICE_TYPE_HARDWARE_ANGLE,
+			EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE, 9,
+			EGL_PLATFORM_ANGLE_MAX_VERSION_MINOR_ANGLE, 3,
+			EGL_NONE,
+		};
+
+		mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, fl9_3DisplayAttributes );
+		if( mDisplay == EGL_NO_DISPLAY )
+			return false;
+
+		if( eglInitialize( mDisplay, &majorVersion, &minorVersion ) == EGL_FALSE ) {
+			// NB: could try again with D3D11 Feature Level 11.0 on WARP if 9.3+ is unavailable
+			return false;
+		}
+#else
 		return false;
+#endif
+	}
 
 	eglBindAPI( EGL_OPENGL_ES_API );
 	if( eglGetError() != EGL_SUCCESS )
@@ -124,7 +147,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 	mSurface = eglCreateWindowSurface( mDisplay, config, wnd, NULL );
 #else
 	Windows::Foundation::Collections::PropertySet^ surfaceCreationProperties = ref new Windows::Foundation::Collections::PropertySet();
-    surfaceCreationProperties->Insert( ref new ::Platform::String(EGLNativeWindowTypeProperty), wnd.Get() );
+	surfaceCreationProperties->Insert( ref new ::Platform::String(EGLNativeWindowTypeProperty), wnd.Get() );
 
 	mSurface = eglCreateWindowSurface( mDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), NULL );
 #endif
@@ -133,24 +156,23 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 	if( err != EGL_SUCCESS )
 		return false;
 
-    EGLint contextAttibutes[] = {
+	EGLint contextAttibutes[] = {
 #if defined( CINDER_GL_ES_3 )
 		EGL_CONTEXT_CLIENT_VERSION, 3,
 #else
 		EGL_CONTEXT_CLIENT_VERSION, 2,
 #endif
 		EGL_NONE
-    };
+	};
 
-    mContext = eglCreateContext( mDisplay, config, NULL, contextAttibutes );
-    if( eglGetError() != EGL_SUCCESS )
+	mContext = eglCreateContext( mDisplay, config, EGL_NO_CONTEXT, contextAttibutes );
+	if( mContext == EGL_NO_CONTEXT )
 		return false;
 	checkGlStatus();
 
 	eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
 	if( eglGetError() != EGL_SUCCESS )
 		return false;
-	
 	checkGlStatus();
 
 	gl::Environment::setEs();

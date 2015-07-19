@@ -45,7 +45,7 @@ typedef std::shared_ptr<class ImageTargetFile>	ImageTargetFileRef;
 class ImageIo {
   public:
 	typedef enum ColorModel { CM_RGB, CM_GRAY, CM_UNKNOWN } ColorModel;
-	typedef enum DataType { UINT8, UINT16, FLOAT32, DATA_UNKNOWN } DataType;
+	typedef enum DataType { UINT8, UINT16, FLOAT32, FLOAT16, DATA_UNKNOWN } DataType;
 	typedef enum ChannelType { CHAN_RGB_R, CHAN_RGB_G, CHAN_RGB_B, CHAN_GRAY, CHAN_ALPHA, CHAN_MASK, CHAN_LAB_L, CHAN_LAB_A, CHAN_LAB_B,
 					CHAN_YUV_Y, CHAN_YUV_U, CHAN_YUV_V, CHAN_CMYK_C, CHAN_CMYK_M, CHAN_CMYK_Y, CHAN_CMYK_K,
 					CHAN_UNKNOWN } ChannelType;

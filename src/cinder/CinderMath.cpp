@@ -315,5 +315,77 @@ vec2 getClosestPointEllipse( const vec2& center, const vec2& axisA, const vec2& 
 	return result;
 }
 
+union float32_t
+{
+	float f;
+	uint u;
+	struct {
+		uint Mantissa : 23;
+		uint Exponent : 8;
+		uint Sign : 1;
+	};
+};
+
+// Algorithm due to Fabian "ryg" Giesen.
+static half_float float_to_half( float32_t f )
+{
+    float32_t f32infty = { 255 << 23 };
+    float32_t f16infty = { 31 << 23 };
+    float32_t magic = { 15 << 23 };
+    uint sign_mask = 0x80000000u;
+    uint round_mask = ~0xfffu; 
+    half_float o = { 0 };
+ 
+    uint sign = f.u & sign_mask;
+    f.u ^= sign;
+ 
+    // NOTE all the integer compares in this function can be safely
+    // compiled into signed compares since all operands are below
+    // 0x80000000. Important if you want fast straight SSE2 code
+    // (since there's no unsigned PCMPGTD).
+ 
+    if (f.u >= f32infty.u) // Inf or NaN (all exponent bits set)
+        o.u = (f.u > f32infty.u) ? 0x7e00 : 0x7c00; // NaN->qNaN and Inf->Inf
+    else // (De)normalized number or zero
+    {
+        f.u &= round_mask;
+        f.f *= magic.f;
+        f.u -= round_mask;
+        if (f.u > f16infty.u) f.u = f16infty.u; // Clamp to signed infinity if overflowed
+ 
+        o.u = f.u >> 13; // Take the bits!
+    }
+ 
+    o.u |= sign >> 16;
+    return o;
+}
+
+cinder::half_float floatToHalf( float f )
+{
+	return float_to_half( float32_t( { f } ) );
+}
+
+// Algorithm due to Fabian "ryg" Giesen.
+float halfToFloat( cinder::half_float h )
+{
+	static const float32_t magic = { 113 << 23 };
+	static const uint shifted_exp = 0x7c00 << 13; // exponent mask after shift
+	float32_t o;
+
+	o.u = (h.u & 0x7fff) << 13;     // exponent/mantissa bits
+	uint exp = shifted_exp & o.u;   // just the exponent
+	o.u += (127 - 15) << 23;        // exponent adjust
+
+	// handle exponent special cases
+	if (exp == shifted_exp) // Inf/NaN?
+		o.u += (128 - 16) << 23;    // extra exp adjust
+	else if (exp == 0) { // Zero/Denormal?
+		o.u += 1 << 23;             // extra exp adjust
+		o.f -= magic.f;             // renormalize
+	}
+
+	o.u |= (h.u & 0x8000) << 16;    // sign bit
+	return o.f;
+}
 
 } // namespace cinder

@@ -14,9 +14,10 @@ struct Satellite {
 
 class DynamicCubeMappingApp : public App {
   public:
-	void setup();
-	void resize();
-	void update();
+	void setup() override;
+	void resize() override;
+	void update() override;
+	void keyDown( KeyEvent event ) override;
 
 	void drawSatellites();
 	void drawSkyBox();
@@ -24,10 +25,11 @@ class DynamicCubeMappingApp : public App {
 
 	gl::TextureCubeMapRef	mSkyBoxCubeMap;
 	gl::BatchRef			mTeapotBatch, mSkyBoxBatch;
-	mat4				mObjectRotation;
+	mat4					mObjectRotation;
 	CameraPersp				mCam;
 	
 	gl::FboCubeMapRef		mDynamicCubeMapFbo;
+	bool					mDrawCubeMap;
 	
 	std::vector<Satellite>	mSatellites;
 	gl::BatchRef			mSatelliteBatch;
@@ -65,6 +67,8 @@ void DynamicCubeMappingApp::setup()
 	}
 	mSatelliteBatch = gl::Batch::create( geom::Sphere(), getStockShader( gl::ShaderDef().color() ) );
 
+	mDrawCubeMap = true;
+
 	gl::enableDepthRead();
 	gl::enableDepthWrite();	
 }
@@ -87,6 +91,12 @@ void DynamicCubeMappingApp::update()
 		float angle = i / 33.0f;
 		mSatellites[i].mPos = vec3( cos( angle * 2 * M_PI ) * 7, 6 * sin( getElapsedSeconds() * 2 + angle * 4 * M_PI ), sin( angle * 2 * M_PI ) * 7 );
 	}	
+}
+
+void DynamicCubeMappingApp::keyDown( KeyEvent event )
+{
+	if( event.getChar() == 'd' )
+		mDrawCubeMap = ! mDrawCubeMap;
 }
 
 void DynamicCubeMappingApp::drawSatellites()
@@ -140,6 +150,13 @@ void DynamicCubeMappingApp::draw()
 		gl::scale( vec3( 4 ) );
 		mTeapotBatch->draw();
 	gl::popMatrices();
+
+	if( mDrawCubeMap ) {
+		gl::setMatricesWindow( getWindowSize() );
+		gl::ScopedDepth d( false );
+		gl::drawHorizontalCross( mDynamicCubeMapFbo->getTextureCubeMap(), Rectf( 0, 0, 300, 150 ) );
+		//gl::drawEquirectangular( mDynamicCubeMapFbo->getTextureCubeMap(), Rectf( 0, getWindowHeight() - 200, 400, getWindowHeight() ) ); // try this alternative
+	}
 }
 
 CINDER_APP( DynamicCubeMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )

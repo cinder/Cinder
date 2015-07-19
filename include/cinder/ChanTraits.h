@@ -23,6 +23,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/CinderMath.h"
 
 namespace cinder {
 
@@ -39,8 +40,9 @@ struct CHANTRAIT<uint8_t>
 	typedef int32_t SignedSum;
 	static uint8_t max() { return 255; }
 	static uint8_t convert( uint8_t v ) { return v; }
-	static uint8_t convert( uint16_t v ) { return v / 257; }	
-	static uint8_t convert( float v ) { return static_cast<uint8_t>( v * 255 ); }
+	static uint8_t convert( uint16_t v ) { return v / 257; }
+	static uint8_t convert( half_float v ) { return static_cast<uint8_t>( glm::clamp( halfToFloat( v ), 0.0f, 1.0f ) * 255 ); }
+	static uint8_t convert( float v ) { return static_cast<uint8_t>( glm::clamp( v, 0.0f, 1.0f ) * 255 ); }
 	static uint8_t grayscale( uint8_t r, uint8_t g, uint8_t b ) { return ( r * 54 + g * 183 + b * 19 ) >> 8; } // luma coefficients from Rec. 709
 	static uint8_t premultiply( uint8_t c, uint8_t a ) { return a * c / 255; }
 	//static uint8_t premultiply( uint8_t c, uint8_t a ) { uint16_t t = c * a + 0x80f; return ( ( t >> 8 ) + t ) >> 8; }
@@ -55,8 +57,9 @@ struct CHANTRAIT<uint16_t>
 	typedef int32_t SignedSum;
 	static uint16_t max() { return 65535; }
 	static uint16_t convert( uint8_t v ) { return ( v << 8 ) | v; }
-	static uint16_t convert( uint16_t v ) { return v; }	
-	static uint16_t convert( float v ) { return static_cast<uint16_t>( v * 65535 ); }
+	static uint16_t convert( uint16_t v ) { return v; }
+	static uint16_t convert( half_float v ) { return static_cast<uint16_t>( glm::clamp( halfToFloat( v ), 0.0f, 1.0f ) * 65535 ); }
+	static uint16_t convert( float v ) { return static_cast<uint16_t>( glm::clamp( v, 0.0f, 1.0f ) * 65535 ); }
 	static uint16_t grayscale( uint16_t r, uint16_t g, uint16_t b ) { return ( r * 6966 + g * 23436 + b * 2366 ) >> 15; } // luma coefficients from Rec. 709
 };
 
@@ -69,6 +72,7 @@ struct CHANTRAIT<float>
 	static float max() { return 1.0f; }
 	static float convert( uint8_t v ) { return v / 255.0f; }
 	static float convert( uint16_t v ) { return v / 65535.0f; }
+	static float convert( half_float v ) { return halfToFloat( v ); }
 	static float convert( float v ) { return v; }
 	static float grayscale( float r, float g, float b ) { return r * 0.2126f + g * 0.7152f + b * 0.0722f; } // luma coefficients from Rec. 709
 	//! Calculates the multiplied version of a color component \a c by alpha \a a
@@ -76,6 +80,25 @@ struct CHANTRAIT<float>
 	static float inverse( float c ) { return 1.0f - c; }	
 };
 
+template<>
+struct CHANTRAIT<half_float>
+{
+	typedef float Sum;
+	typedef float Accum;
+	typedef float SignedSum;
+	static half_float max() { return floatToHalf( 1.0f ); }
+	static half_float convert( uint8_t v ) { return floatToHalf( v / 255.0f ); }
+	static half_float convert( uint16_t v ) { return floatToHalf( v / 65535.0f ); }
+	static half_float convert( half_float v ) { return v; }
+	static half_float convert( float v ) { return floatToHalf( v ); }
+	static half_float grayscale( half_float r, half_float g, half_float b ) {
+		return floatToHalf( halfToFloat( r ) * 0.2126f + halfToFloat( g ) * 0.7152f + halfToFloat( b ) * 0.0722f ); } // luma coefficients from Rec. 709
+	//! Calculates the multiplied version of a color component \a c by alpha \a a
+	static float premultiply( float c, float a ) { return c * a; }
+	static float inverse( float c ) { return 1.0f - c; }	
+};
+
+// Instantiated for ChannelT and SurfaceT
 #define CHANNEL_TYPES (uint8_t)(float)
 
 } // namespace cinder

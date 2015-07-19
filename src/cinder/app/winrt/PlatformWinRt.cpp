@@ -30,6 +30,7 @@
 #include "cinder/ImageSourceFileWic.h"
 #include "cinder/ImageTargetFileWic.h"
 #include "cinder/ImageSourceFileRadiance.h"
+#include "cinder/ImageFileTinyExr.h"
 
 #include <wrl/client.h>
 #include <agile.h>
@@ -58,6 +59,8 @@ PlatformWinRt::PlatformWinRt()
 	ImageSourceFileWic::registerSelf();
 	ImageTargetFileWic::registerSelf();
 	ImageSourceFileRadiance::registerSelf();
+	ImageSourceFileTinyExr::registerSelf();
+	ImageTargetFileTinyExr::registerSelf();
 }
 
 DataSourceRef PlatformWinRt::loadResource( const fs::path &resourcePath  )

@@ -36,6 +36,7 @@ using namespace Windows::Storage;
 using namespace Concurrency;
 #endif
 
+#include "cinder/ChanTraits.h"
 #include "cinder/ImageIo.h"
 #include "cinder/ip/Fill.h"
 

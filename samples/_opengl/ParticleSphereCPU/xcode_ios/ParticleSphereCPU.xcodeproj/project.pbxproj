@@ -10,6 +10,7 @@
 		0087D25512CD809F002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D25412CD809F002CD69F /* CoreText.framework */; };
 		00A66A361965AC8800B17EB3 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00A66A351965AC8800B17EB3 /* Accelerate.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
+		116235CC1B5057100067BDA6 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 00748057165D41390024B57A /* assets */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		1FA9F8BEE71A464FB237EA62 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7EECEF145E074C0BA32DFE56 /* Default-568h@2x.png */; };
@@ -197,6 +198,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				116235CC1B5057100067BDA6 /* assets in Resources */,
 				F3B5F08BC9924637A121607A /* CinderApp_ios.png in Resources */,
 				1FA9F8BEE71A464FB237EA62 /* Default-568h@2x.png in Resources */,
 			);

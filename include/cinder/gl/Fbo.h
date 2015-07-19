@@ -331,6 +331,9 @@ class FboCubeMap : public Fbo {
 	void 	bindFramebufferFace( GLenum faceTarget, GLint level = 0, GLenum target = GL_FRAMEBUFFER, GLenum attachment = GL_COLOR_ATTACHMENT0 );
 	//! Returns the view matrix appropriate for a given face (in the \c GL_TEXTURE_CUBE_MAP_POSITIVE_X family) looking from the position \a eyePos
 	mat4	calcViewMatrix( GLenum face, const vec3 &eyePos );
+
+	//! Returns a TextureCubeMapRef attached at \a attachment (default \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a TextureCubeMap is not bound at \a attachment.
+	TextureCubeMapRef	getTextureCubeMap( GLenum attachment = GL_COLOR_ATTACHMENT0 );
 	
   protected:
 	FboCubeMap( int32_t faceWidth, int32_t faceHeight, const Format &format, const TextureCubeMapRef &textureCubeMap );

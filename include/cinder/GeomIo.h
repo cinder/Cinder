@@ -812,13 +812,13 @@ class WireCircle : public WireSource {
   public:
 	WireCircle();
 
-	//!
+	//! Sets the center point of the circle to \a center.
 	WireCircle&	center( const vec2 &center ) { mCenter = vec3( center, 0 ); return *this; }
-	//!
+	//! Sets the center point of the circle to \a center.
 	WireCircle&	center( const vec3 &center ) { mCenter = center; return *this; }
-	//!
+	//! Sets the radius of the circle to \a radius.
 	WireCircle&	radius( float radius ) { mRadius = radius; return *this; }
-	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	//! Specifies the number of segments that make up the circle. Defaults to \c 12.
 	WireCircle&	subdivisions( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
 
 	size_t		getNumVertices() const override;
@@ -1055,7 +1055,7 @@ class WireTorus : public WireSource {
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Modifiers
-//! "Bakes" a mat4 transformation into the positions, normals and tangents of a geom::Source
+//! "Bakes" a mat4 transformation into the positions, normals and tangents of a geom::Source. Promotes 2D positions to 3D.
 class Transform : public Modifier {
   public:
 	//! Does not currently support a projection matrix (i.e. doesn't divide by 'w' )
@@ -1063,14 +1063,17 @@ class Transform : public Modifier {
 		: mTransform( transform )
 	{}
 
+	//! Returns the mat4 used to transform positions, normals and tangents.
 	const mat4&			getMatrix() const { return mTransform; }
+	//! Sets the mat4 used to transform positions, normals and tangents.
 	void				setMatrix( const mat4 &transform ) { mTransform = transform; }
 	
 	// Inherited from Modifier
 	Modifier*			clone() const override { return new Transform( mTransform ); }
 	uint8_t				getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
 	void				process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
+
+  protected:
 	mat4		mTransform;
 };
 
@@ -1094,7 +1097,10 @@ class Scale : public Transform {
 //! "Bakes" a rotation into the positions, normals and tangents of a geom::Source
 class Rotate : public Transform {
   public:
-	Rotate( const glm::quat &q ) : Transform( glm::toMat4( q ) ) {}
+	//! Transforms geometry by a rotation by quaternion \a quat. Promotes 2D positions to 3D.
+	Rotate( const glm::quat &quat ) : Transform( glm::toMat4( quat ) ) {}
+	//! Transforms geometry by a rotation of \a angle radians around \a axis. Promotes 2D positions to 3D.
+	Rotate( float angle, const vec3 &axis ) : Transform( glm::rotate( angle, axis ) ) {}
 };
 
 //! Twists a geom::Source around a given axis
