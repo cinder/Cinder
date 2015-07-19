@@ -222,7 +222,9 @@ dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 void Camera::destroyJni()
-{
+{	
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );
+
 	Camera::DeviceInfo::destroyJni();
 
 	if( JniHelper::Get()->AttachCurrentThread() ) {
@@ -244,6 +246,8 @@ void Camera::destroyJni()
 		Java::stopCapture 	= nullptr;
 		*/
 	}
+
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 Camera* Camera::getInstance()
@@ -265,6 +269,21 @@ Camera* Camera::getInstance()
 	}
 
 	return Camera::sInstance.get();
+}
+
+void Camera::destroyInstance()
+{
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );
+
+	if( Camera::sInstance ) {
+		if( Camera::sInstance->mCapturing ) {
+			Camera::sInstance->stopCapture();
+		}
+
+		Camera::sInstance.reset();
+	}
+		
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 void Camera::initialize()
@@ -330,35 +349,54 @@ void Camera::startCapture( const std::string& deviceId, int width, int height )
 	jstring jstrDeviceId = JniHelper::Get()->NewStringUTF( deviceId );	
 	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_startCapture, jstrDeviceId, (jint)mWidth, (jint)mHeight );
 	JniHelper::Get()->DeleteLocalRef( jstrDeviceId );
+
+	mCapturing = true;
 }
 
 void Camera::stopCapture()
 {
 	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
 	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_stopCapture );
+
+	mCapturing = false;
 }
 
 bool Camera::isNewFrameAvailable() const
 {
-	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
-	bool result = JniHelper::Get()->CallBooleanMethod( javaObject, Java::hardware_camera_isNewFrameAvailable );
+	bool result = false;
+	if( mCapturing ) {
+		jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
+		result = JniHelper::Get()->CallBooleanMethod( javaObject, Java::hardware_camera_isNewFrameAvailable );
+	}
 	return result;
 }
 
 void Camera::clearNewFrameAvailable()
 {
+	if( ! mCapturing ) {
+		return;
+	}
+
 	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
 	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_clearNewFrameAvailable );
 }
 
 void Camera::initPreviewTexture(int textureId)
 {
+	if( ! mCapturing ) {
+		return;
+	}
+
 	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
 	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_initPreviewTexture, (jint)textureId );	
 }
 
 void Camera::updateTexImage()
 {
+	if( ! mCapturing ) {
+		return;
+	}
+
 	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
 	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_updateTexImage );
 }

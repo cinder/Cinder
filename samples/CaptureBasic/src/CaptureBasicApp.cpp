@@ -58,10 +58,12 @@ void CaptureBasicApp::update()
 		}
 	}
 #endif
+
 }
 
 void CaptureBasicApp::draw()
 {
+
 	gl::clear();
 
 	if( mTexture ) {
@@ -80,6 +82,7 @@ void CaptureBasicApp::draw()
 		gl::draw( mTexture );
 #endif
 	}
+
 }
 
 void CaptureBasicApp::printDevices()

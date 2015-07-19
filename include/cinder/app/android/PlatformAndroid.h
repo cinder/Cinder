@@ -33,6 +33,8 @@ class PlatformAndroid : public Platform {
 	PlatformAndroid();
 	virtual ~PlatformAndroid();
 
+	static void 					destroyStaticInstances();
+
 	static PlatformAndroid*			get();
 
 	virtual DataSourceRef			loadAsset( const fs::path &relativePath );

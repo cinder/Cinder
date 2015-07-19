@@ -278,6 +278,7 @@ public abstract class Camera {
      *
      */
     public void stopSession() {
+        Log.i(TAG, "Camera.stopSession");
         stopSessionImpl();
         stopOrientationListener();
     }
@@ -330,6 +331,7 @@ public abstract class Camera {
      *
      */
     public void stopCapture() {
+        Log.i(TAG, "Camera.stopCapture");
         stopSession();
         stopCaptureImpl();
 

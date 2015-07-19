@@ -23,6 +23,7 @@
 
 #include "cinder/app/android/EventManagerAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
+#include "cinder/app/android/PlatformAndroid.h"
 
 #include "cinder/android/app/CinderNativeActivity.h"
 #include "cinder/android/JniHelper.h"
@@ -430,7 +431,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * (or NULL).
 		 */
 		case APP_CMD_INPUT_CHANGED: {
-			//LOGI( "APP_CMD_INPUT_CHANGED" );
+			LOGI( "APP_CMD_INPUT_CHANGED" );
 		}
 		break;
 
@@ -440,7 +441,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * surface.
 		 */
 		case APP_CMD_INIT_WINDOW: {
-			//LOGI( "APP_CMD_INIT_WINDOW" );
+			LOGI( "APP_CMD_INIT_WINDOW" );
 
 			if( nullptr != ndkApp->window ) {
 				if( ! eventMan->deferredMainHasBeenCalled() ) {
@@ -462,9 +463,9 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * it will be set to NULL.
 		 */
 		case APP_CMD_TERM_WINDOW: {
-			//LOGI( "APP_CMD_TERM_WINDOW" );	
+			LOGI( "APP_CMD_TERM_WINDOW" );	
 
-			// NOTE: Do not kill or quit here. This message is swent when 
+			// NOTE: Do not kill or quit here. This message is sent when 
 			//       the app is APP_CMD_PAUSE is sent. Quitting here will 
 			//       cause the app to crash when APP_CMD_RESUME is sent.
 		}
@@ -525,7 +526,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the current device configuration has changed.
 		 */
 		case APP_CMD_CONFIG_CHANGED: {
-			//LOGI( "APP_CMD_CONFIG_CHANGED" );			
+			LOGI( "APP_CMD_CONFIG_CHANGED" );			
 		}
 		break;
 
@@ -542,7 +543,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the app's activity has been started.
 		 */
 		case APP_CMD_START: {
-			//LOGI( "APP_CMD_START" );	
+			LOGI( "APP_CMD_START" );	
 		}
 		break;
 
@@ -550,7 +551,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the app's activity has been resumed.
 		 */
 		case APP_CMD_RESUME: {
-			//LOGI( "APP_CMD_RESUME" );
+			LOGI( "APP_CMD_RESUME" );
 
 			eventMan->appResume();
 		}
@@ -564,7 +565,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * later.
 		 */
 		case APP_CMD_SAVE_STATE: {
-			//LOGI( "APP_CMD_SAVE_STATE" );
+			LOGI( "APP_CMD_SAVE_STATE" );
 		}
 		break;
 
@@ -572,7 +573,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the app's activity has been paused.
 		 */
 		case APP_CMD_PAUSE: {
-			//LOGI( "APP_CMD_PAUSE" );
+			LOGI( "APP_CMD_PAUSE" );
 
 			eventMan->appPause();
 		}
@@ -582,7 +583,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the app's activity has been stopped.
 		 */
 		case APP_CMD_STOP: {
-			//LOGI( "APP_CMD_STOP" );
+			LOGI( "APP_CMD_STOP" );
 		}
 		break;
 
@@ -595,8 +596,11 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 *
 		 */
 		case APP_CMD_DESTROY: {
-			//LOGI( "APP_CMD_DESTROY" );
+			LOGI( "APP_CMD_DESTROY" );
 			eventMan->appQuit();
+			
+			// Destroy any and all static instances
+			ci::app::PlatformAndroid::destroyStaticInstances();
 		}
 		break;
 	}

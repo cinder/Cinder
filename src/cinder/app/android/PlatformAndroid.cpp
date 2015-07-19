@@ -30,6 +30,7 @@
 #include "cinder/ImageTargetFileStbImage.h"
 
 #include "cinder/android/app/CinderNativeActivity.h"
+#include "cinder/android/hardware/Camera.h"
 
 #include "cinder/android/AndroidDevLog.h"
 using namespace cinder::android;
@@ -49,6 +50,13 @@ PlatformAndroid::PlatformAndroid()
 PlatformAndroid::~PlatformAndroid()
 {	
 	dbg_app_log( "PlatformAndroid::~PlatformAndroid" );
+}
+
+void PlatformAndroid::destroyStaticInstances()
+{
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );
+	cinder::android::hardware::Camera::destroyInstance();
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 PlatformAndroid* PlatformAndroid::get() 

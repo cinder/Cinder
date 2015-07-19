@@ -97,6 +97,7 @@ public:
 	virtual ~Camera();
 
 	static Camera*				getInstance();
+	static void 				destroyInstance();
 
 	void 						initialize();
 	std::vector<DeviceInfoRef>	enumerateDevices() const;
@@ -133,6 +134,8 @@ private:
 
 	int 							mWidth = 0;
 	int 							mHeight = 0;
+
+	bool 							mCapturing = false;
 
 private:
 	friend class ci::android::app::CinderNativeActivity;

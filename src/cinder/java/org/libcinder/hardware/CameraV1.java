@@ -286,6 +286,8 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
      *
      */
     private void stopPreview() {
+        Log.i(TAG, "CameraV1.stopPreview");
+
         if(null == mCamera) {
             return;
         }
@@ -443,6 +445,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
      */
     @Override
     protected void stopSessionImpl() {
+        Log.i(TAG, "CameraV1.stopSessionImpl");
         stopPreview();
         stopDevice();
     }
@@ -462,6 +465,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
      */
     @Override
     protected void stopCaptureImpl() {
+        Log.i(TAG, "CameraV1.stopCaptureImpl");
         stopCameraThread();
         mDummyTexture = null;
     }

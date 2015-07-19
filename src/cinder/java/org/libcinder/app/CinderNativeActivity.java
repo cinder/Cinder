@@ -338,28 +338,45 @@ public class CinderNativeActivity extends NativeActivity {
      *
      */
     public void hardware_camera_stopCapture() {
-        Log.i(TAG, "hardware_camera_stopCapture");
+        Log.i(TAG, "hardware_camera_stopCapture: mHandler=" + mHandler);
 
         if(null == mCamera) {
             return;
         }
 
+        mCamera.stopCapture();
+        mCamera = null;
+
+        /*
         if(1 != Thread.currentThread().getId()) {
-            final ConditionVariable condition = new ConditionVariable(false);
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mCamera.stopCapture();
-                    condition.open();
-                }
-            });
-            condition.block();
+            try {
+                Log.i(TAG, "hardware_camera_stopCapture: Mark 0.0");
+                final ConditionVariable condition = new ConditionVariable(false);
+                Log.i(TAG, "hardware_camera_stopCapture: Mark 0.1");
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "hardware_camera_stopCapture: Mark 0.5");
+                        mCamera.stopCapture();
+                        condition.open();
+                    }
+                });
+                Log.i(TAG, "hardware_camera_stopCapture: Mark 0.6");
+                condition.block();
+                Log.i(TAG, "hardware_camera_stopCapture: Mark 0.7");
+            }
+            catch(Exception e) {
+                Log.e(TAG, "hardware_camera_stopCapture failed: " + e.getMessage());
+            }
         }
         else {
+            Log.i(TAG, "hardware_camera_stopCapture: Mark 1.0");
             mCamera.stopCapture();
         }
 
+        Log.i(TAG, "hardware_camera_stopCapture: Mark 2.0");
         mCamera = null;
+        */
     }
 
     /**
