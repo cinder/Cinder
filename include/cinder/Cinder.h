@@ -98,6 +98,7 @@ using std::uint64_t;
 #endif
 
 #include <memory>
+#include "cinder/CinderFwd.h"
 
 // Create a namepace alias as shorthand for cinder::
 #if ! defined( CINDER_NO_NS_ALIAS )

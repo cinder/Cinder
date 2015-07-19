@@ -1,14 +1,13 @@
 /*
- Copyright (c) 2015, The Cinder Project
-
- This code is intended to be used with the Cinder C++ library, http://libcinder.org
+ Copyright (c) 2015, The Barbarian Group
+ All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
- * Redistributions of source code must retain the above copyright notice, this list of conditions and
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -23,8 +22,7 @@
 
 #pragma once
 
-#include "cinder/Filesystem.h"
-#include "cinder/Surface.h" 
+#if defined( CINDER_ANDROID )
 
 int stoi( const std::string& str );
 
@@ -42,24 +40,4 @@ std::string to_string( long double value );
 
 } // namespace std
 
-namespace cinder { namespace android {
-
-enum DisplayRotation {
-	 ROTATION_0 	= 0x00000000,
-	 ROTATION_90 	= 0x00000001,
-	 ROTATION_180 	= 0x00000002,
-	 ROTATION_270 	= 0x00000003,
-};
-
-namespace fs {
-
-//! Returns true if path exists on asset fs or regular fs
-bool exists( const ci::fs::path& path );
-
-} // namespace fs
-
-cinder::fs::path getCacheDirectory();
-void setWallpaper( const ci::Surface8u& surf );
-void launchTwitter( const std::string& text = "", const ci::Surface8u* surf = nullptr );
-
-}} // namespace cinder::android
+#endif // defined( CINDER_ANDROID )
