@@ -26,6 +26,9 @@
 #include "cinder/android/net/UrlLoader.h"
 #include "cinder/android/video/VideoPlayer.h"
 #include "cinder/android/AndroidDevLog.h"
+
+#include "cinder/audio/Context.h"
+
 using namespace cinder::android;
 
 #include "cinder/ImageIo.h"
@@ -139,6 +142,7 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 	ci::android::hardware::Camera::destroyJni();
 	ci::android::net::UrlLoader::destroyJni();
 	ci::android::video::VideoPlayer::destroyJni();
+	ci::audio::Context::setMaster( nullptr, nullptr );
 
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
