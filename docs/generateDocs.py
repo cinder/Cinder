@@ -82,6 +82,14 @@ class Config(object):
         ]
 
 
+class State(object):
+    def __init__(self):
+        self.html_files = []
+
+    def add_html_file(self, file):
+        self.html_files.append(file)
+
+
 # convert docygen markup to html markup
 tagDictionary = {
     "linebreak": "br",
@@ -122,6 +130,7 @@ g_symbolMap = None
 g_currentFile = None
 g_search_index = None
 config = Config()
+state = State()
 
 
 # ================================================== START SYMBOL MAP ==================================================
@@ -610,6 +619,7 @@ class FileData(object):
         self.title = ""
         self.page_header = ""
         self.search_tags = []
+        self.path = ""
 
     def get_content(self):
         content = {
@@ -841,16 +851,40 @@ class HtmlFileData(FileData):
 
         self.html_content = ""
         self.group = None
+        self.subnav = None
 
     def get_content(self):
         orig_content = super(HtmlFileData, self).get_content()
         content = orig_content.copy()
         template_content = {
-            "html_content": self.html_content
+            "html_content": self.html_content,
+            "subnav":{
+                "list": self.subnav,
+                "length": len(self.subnav)
+            }
         }
         content.update(template_content)
         return content
 
+
+class GuideConfig(object):
+
+    def __init__(self, config_json, path):
+
+        config_data = config_json["data"]
+
+        # parse subnav
+        subnav_list = []
+        if config_data["subnav"]:
+            for subnav in config_data["subnav"]:
+                link_data = LinkData(os.path.join(path, subnav["link"]), subnav["label"])
+                subnav_list.append(link_data)
+
+        self.subnav = subnav_list
+
+        # add keywords
+
+        # add seealso ci links
 
 def find_compound_name(tree):
     for compound_def in tree.iter("compounddef"):
@@ -2002,6 +2036,9 @@ def process_html_file(in_path, out_path):
     is_searchable = True
     search_tags = []
     local_rel_path = os.path.relpath(in_path, HTML_SOURCE_PATH)
+    in_dir = os.path.dirname(in_path)
+    # load config (if present in current directory)
+    config_data = parse_config(in_dir)
 
     # get correct template
     template = config.HTML_TEMPLATE
@@ -2038,6 +2075,12 @@ def process_html_file(in_path, out_path):
             for content in markup.body.contents:
                 dynamic_div.append(content)
             insert_div_id = data["element_id"]
+
+    # plug in subnav data if it exists
+    # TODO: pass config data into template
+    # if len(config_data["data"]["subnav"]) > 0:
+    file_data.subnav = config_data.subnav
+        # print "WE HAVE SUBNAV, PLUG IT IN HERE"
 
     bs4 = render_template(template, file_data.get_content())
     update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
@@ -2076,11 +2119,8 @@ def process_html_file(in_path, out_path):
 
         # look for any meta 'group' tags to tell us that it's part of a grpup that will need nav
         for meta_tag in orig_html.head.findAll(attrs={"name": "group"}):
-            print "FOUND GROUP META"
-            print meta_tag['content']
             if meta_tag['content']:
                 file_data.group = meta_tag['content']
-
 
     # link up all ci tags
     for tag in bs4.find_all('ci'):
@@ -2090,7 +2130,74 @@ def process_html_file(in_path, out_path):
         if is_searchable:
             add_to_search_index(bs4, out_path, search_tags)
 
+        state.add_html_file(file_data)
+        file_data.path = out_path
         write_html(bs4, out_path)
+
+
+def parse_config(path):
+    # if "config.json" exists in path directory
+
+    config_path = os.path.join(path, "config.json")
+    print config_path
+    if os.path.exists(config_path):
+        # load and turn into dict
+        with open(config_path) as data_file:
+            config_data = json.load(data_file)
+            guide_config = GuideConfig(config_data, path)
+        # print config_data["data"]["subnav"][0]["label"]
+
+        return guide_config
+    else:
+        return None
+
+
+
+def process_sub_nav():
+    group_dict = {}
+    print "PROCESS SUB NAV"
+    # find the different unique groups in the html_files
+    # groups_names = set(html_file.group for html_file in state.html_files)
+
+    # remove None values
+    # groups_names = filter(None, groups_names)
+
+    # for each group name, find the html files that go with it
+    # for group in groups_names:
+    #     print state.html_files.
+
+    for html_file in state.html_files:
+        if not html_file.group:
+            continue
+        # add or find group in dictionary
+
+        if html_file.group not in group_dict:
+            group_dict[html_file.group] = []
+
+        group_list = group_dict[html_file.group]
+        group_list.append(html_file)
+
+    for group in group_dict:
+
+        # find html file
+        print group.path
+        # open html file
+
+        # find subnav element
+        # load subnav template
+        # inject data into template
+        # add resulting html into subnav element
+
+
+    print group_dict
+
+        # add object to dictionary value
+
+    # for f in state.html_files:
+        # print f.group
+
+    # for each of the groups, find the files that go with the group
+
 
 def generate_glm_reference():
 
@@ -2847,7 +2954,7 @@ def process_file(in_path, out_path=None):
         file_type = get_file_type(file_prefix)
         # process html directory always, since they may generate content for class or namespace reference pages
         if not PROCESSED_HTML_DIR and not config.SKIP_HTML_PARSING:
-            process_html_dir(HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)
+            process_html_dir(HTML_SOURCE_PATH)
 
         process_xml_file_definition(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path), file_type)
 
@@ -2863,7 +2970,6 @@ def process_dir(in_path, out_path):
 
     for file_path in os.listdir(in_path):
         if file_path.endswith(".xml"):
-
             process_file(os.path.join(in_path, file_path))
 
     # save search index to json file
@@ -2871,7 +2977,7 @@ def process_dir(in_path, out_path):
     write_search_index()
 
 
-def process_html_dir(in_path, out_path):
+def process_html_dir(in_path):
     global PROCESSED_HTML_DIR
     print "PROCESS HTML DIR"
 
@@ -2891,6 +2997,9 @@ def process_html_dir(in_path, out_path):
 
                 src_path = src_path + "/" + name
                 process_file(src_path)
+
+    # add subnav for all guides that need them
+    process_sub_nav()
 
     PROCESSED_HTML_DIR = True
 
@@ -2991,5 +3100,11 @@ if __name__ == "__main__":
         # process a specific file
         if os.path.isfile(inPath):
             process_file(inPath, sys.argv[2] if len(sys.argv) > 2 else None)
+        elif os.path.isdir(inPath):
+            # print inPath
+            if inPath == "htmlsrc/":
+                process_html_dir(HTML_SOURCE_PATH)
+            else:
+                process_dir(inPath, "html/")
     else:
         print "Unknown usage"

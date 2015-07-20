@@ -13,6 +13,19 @@
 
 
     <div id="container" class="row content-row">
+        {{#subnav.length}}
+        {{#subnav}}
+        <div>
+        
+            <ul>
+                {{#list}}
+                <a href="{{link}}">{{label}}</a>
+                {{/list}}
+            </ul>
+        </div>
+        {{/subnav}}
+        {{/subnav.length}}
+
       <div id="template-content" class="columns large-12">
       
       </div>
