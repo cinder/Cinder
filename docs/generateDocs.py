@@ -851,7 +851,7 @@ class HtmlFileData(FileData):
 
         self.html_content = ""
         self.group = None
-        self.subnav = None
+        self.subnav = []
 
     def get_content(self):
         orig_content = super(HtmlFileData, self).get_content()
@@ -883,6 +883,14 @@ class GuideConfig(object):
         self.subnav = subnav_list
 
         # add keywords
+        keywords = []
+        metadata = config_data["metadata"]
+        if metadata:
+            if metadata["keywords"]:
+                for k in metadata["keywords"]:
+                    keywords.append(k)
+        self.keywords = keywords
+        print keywords
 
         # add seealso ci links
 
@@ -2040,6 +2048,12 @@ def process_html_file(in_path, out_path):
     # load config (if present in current directory)
     config_data = parse_config(in_dir)
 
+    if config_data:
+        for k in config_data.keywords:
+            search_tags.append(k)
+
+        file_data.subnav = config_data.subnav
+
     # get correct template
     template = config.HTML_TEMPLATE
     if in_path.find("htmlsrc/index.html") > -1:
@@ -2079,7 +2093,7 @@ def process_html_file(in_path, out_path):
     # plug in subnav data if it exists
     # TODO: pass config data into template
     # if len(config_data["data"]["subnav"]) > 0:
-    file_data.subnav = config_data.subnav
+
         # print "WE HAVE SUBNAV, PLUG IT IN HERE"
 
     bs4 = render_template(template, file_data.get_content())
@@ -2137,11 +2151,9 @@ def process_html_file(in_path, out_path):
 
 def parse_config(path):
     # if "config.json" exists in path directory
-
     config_path = os.path.join(path, "config.json")
-    print config_path
     if os.path.exists(config_path):
-        # load and turn into dict
+        # load and turn into GuideConfig object
         with open(config_path) as data_file:
             config_data = json.load(data_file)
             guide_config = GuideConfig(config_data, path)
@@ -2153,40 +2165,40 @@ def parse_config(path):
 
 
 
-def process_sub_nav():
-    group_dict = {}
-    print "PROCESS SUB NAV"
-    # find the different unique groups in the html_files
-    # groups_names = set(html_file.group for html_file in state.html_files)
-
-    # remove None values
-    # groups_names = filter(None, groups_names)
-
-    # for each group name, find the html files that go with it
-    # for group in groups_names:
-    #     print state.html_files.
-
-    for html_file in state.html_files:
-        if not html_file.group:
-            continue
-        # add or find group in dictionary
-
-        if html_file.group not in group_dict:
-            group_dict[html_file.group] = []
-
-        group_list = group_dict[html_file.group]
-        group_list.append(html_file)
-
-    for group in group_dict:
-
-        # find html file
-        print group.path
-        # open html file
-
-        # find subnav element
-        # load subnav template
-        # inject data into template
-        # add resulting html into subnav element
+# def process_sub_nav():
+#     group_dict = {}
+#     print "PROCESS SUB NAV"
+#     # find the different unique groups in the html_files
+#     # groups_names = set(html_file.group for html_file in state.html_files)
+#
+#     # remove None values
+#     # groups_names = filter(None, groups_names)
+#
+#     # for each group name, find the html files that go with it
+#     # for group in groups_names:
+#     #     print state.html_files.
+#
+#     for html_file in state.html_files:
+#         if not html_file.group:
+#             continue
+#         # add or find group in dictionary
+#
+#         if html_file.group not in group_dict:
+#             group_dict[html_file.group] = []
+#
+#         group_list = group_dict[html_file.group]
+#         group_list.append(html_file)
+#
+#     for group in group_dict:
+#
+#         # find html file
+#         print group.path
+#         # open html file
+#
+#         # find subnav element
+#         # load subnav template
+#         # inject data into template
+#         # add resulting html into subnav element
 
 
     print group_dict
@@ -2845,6 +2857,8 @@ def write_search_index():
 def add_to_search_index(html, save_path, tags=[]):
     global g_search_index
 
+    # TODO: remove any duplicates from tags list
+
     if not g_search_index:
         g_search_index = {"data": []}
 
@@ -2999,7 +3013,7 @@ def process_html_dir(in_path):
                 process_file(src_path)
 
     # add subnav for all guides that need them
-    process_sub_nav()
+    # process_sub_nav()
 
     PROCESSED_HTML_DIR = True
 
