@@ -81,6 +81,15 @@ class Config(object):
             }
         ]
 
+        # config for parsing glm group. In the future, we will standardize and externalize this so that we can
+        # include and document additional modules
+        self.GLM_MODULE_CONFIG = {
+            "namespace": "glm",
+            "url_prefix": "https://github.com/g-truc/glm/blob/master/",
+            "group_keys": ["glm", "gtc", "gtx"],
+            "source_file_ext": "hpp"
+        }
+
 
 class State(object):
     def __init__(self):
@@ -797,7 +806,7 @@ class NamespaceFileData(FileData):
 
 class GroupFileData(FileData):
 
-    def __init__(self, tree):
+    def __init__(self, tree, module_config):
         FileData.__init__(self, tree)
         self.description = ""
         self.prefix = ""
@@ -805,6 +814,7 @@ class GroupFileData(FileData):
         self.name = str(find_compound_name(tree))
         self.public_functions = []
         self.anchors = []
+        self.config = module_config
 
         self.kind = "module"
         self.kind_explicit = self.kind
@@ -1066,6 +1076,20 @@ def gen_rel_link_tag(bs4, text, link, src_dir, dest_dir):
     return link_tag
 
 
+def replace_element(bs4, element, replacement_tag):
+    """
+    Replaces an html element with another one, keeping the text contents.
+    Use Case: Useful for replacing links with em tags or divs with spans
+    :param bs4: Beautiful Soup instance doing the work
+    :param element: element to change
+    :param replacement_tag: new element type to change to
+    :return:
+    """
+    text_content = element.text
+    replacement = gen_tag(bs4, replacement_tag, None, text_content)
+    element.replace_with(replacement)
+
+
 def extract_anchor(element):
     if element.attrib["id"]:
         return element.attrib["id"].split("_1")[-1]
@@ -1111,7 +1135,7 @@ def parse_member_definition(bs4, member, member_name=None):
     Parses a function tree and generates an object out of it
     :param bs4: beautifulsoup instance
     :param member: the member to parse
-    :param class_name: the name of the class that's being parsed
+    :param member_name: the name of the class that's being parsed
     :return: the data object
     """
     if not member_name:
@@ -1122,7 +1146,13 @@ def parse_member_definition(bs4, member, member_name=None):
 
     # return type
     return_div = gen_tag(bs4, "span")
-    return_str = str(iterate_markup(bs4, member.find(r"type"), return_div))
+    return_markup = iterate_markup(bs4, member.find(r"type"), return_div)
+
+    # if id has a glm group key, replace link with <em>. The links are irrelevent atm
+    if any(member.attrib["id"].find(group_key) > -1 for group_key in config.GLM_MODULE_CONFIG["group_keys"]):
+        replace_element(bs4, return_markup.a, "em")
+
+    return_str = str(return_markup)
 
     # get args
     argstring = member.find("argsstring")
@@ -1367,6 +1397,7 @@ def markup_brief_description(bs4, tree, description_el=None):
         iterate_markup(bs4, tree.find(r'briefdescription/'), description_el)
 
     return description_el
+
 
 def markup_description(bs4, tree):
     description_el = gen_tag(bs4, "div", ["description", "content"])
@@ -1676,7 +1707,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
         file_data = fill_namespace_content(tree)
     elif file_type == "module":
         html_template = config.GROUP_TEMPLATE
-        file_data = fill_group_content(tree)    # TODO: replace with fill_group_content()
+        file_data = fill_group_content(tree, config.GLM_MODULE_CONFIG)
     else:
         log("Skipping " + in_path, 1)
         return
@@ -1971,10 +2002,10 @@ def fill_namespace_content(tree):
 
     return file_data
 
-def fill_group_content(tree):
+def fill_group_content(tree, module_config):
     bs4 = BeautifulSoup()
     # file_data = ClassFileData(tree)
-    file_data = GroupFileData(tree)
+    file_data = GroupFileData(tree, module_config)
 
     group_name = file_data.name
     group_def = g_symbolMap.find_group(group_name)
@@ -2442,7 +2473,13 @@ def update_links(html, src_path, dest_path):
     # a links
     for a in html.find_all("a"):
         if a.has_attr("href"):
-            a["href"] = update_link(a["href"], src_path, dest_path)
+            link_href = a["href"]
+
+            # if the link is an hpp file, lets link to the github link since we likely don't have it in our docs
+            if link_href.find(config.GLM_MODULE_CONFIG["source_file_ext"]) > -1:
+                a["href"] = config.GLM_MODULE_CONFIG["url_prefix"] + a.text
+            else:
+                a["href"] = update_link(a["href"], src_path, dest_path)
 
     # script links
     for script in html.find_all("script"):
