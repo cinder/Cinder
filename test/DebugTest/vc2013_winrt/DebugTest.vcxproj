@@ -18,7 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3797E8AE-A55C-440A-B7A4-F7AE891EE082}</ProjectGuid>
+    <ProjectGuid>{50A78F0F-0AB1-421E-B1E7-BD4D4E8EA3E1}</ProjectGuid>
     <RootNamespace>DebugTest</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>

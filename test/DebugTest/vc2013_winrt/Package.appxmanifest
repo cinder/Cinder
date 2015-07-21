@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="4578d4b0-1ee0-464c-9220-fe3c8f335b76" Publisher="CN=cinderuser" Version="1.0.0.0" />
+  <Identity Name="5275f21b-69de-4405-9b15-d06b524017a1" Publisher="CN=cinderuser" Version="1.0.0.0" />
   <Properties>
     <DisplayName>DebugTest</DisplayName>
     <PublisherDisplayName>cinderuser</PublisherDisplayName>
