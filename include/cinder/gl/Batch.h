@@ -33,8 +33,10 @@
 
 namespace cinder { namespace gl {
 
-typedef std::shared_ptr<class Batch>		BatchRef;
-typedef std::shared_ptr<class VertBatch>	VertBatchRef;
+class Batch;
+typedef std::shared_ptr<Batch>		BatchRef;
+class VertBatch;
+typedef std::shared_ptr<VertBatch>	VertBatchRef;
 
 class Batch {
   public:
@@ -90,47 +92,99 @@ class Batch {
 	friend class BatchGeomTarget;
 };
 
-//! Cannot be shared across contexts
-class VertBatch {
+//! Allows simple creation of basic geometry in a style similar to OpenGL immediate mode.
+//! Can be used to construct a gl::Batch for better performance, or can draw() directly.
+//! Used with a series of calls to color(), normal(), and/or texCoord(), followed by a call to vertex(), per-vertex.
+class VertBatch : public geom::Source {
   public:
-	//! If \a useContextDefaultBuffers is \c true, uses default buffers for the context, saving allocations; suitable for single draw.
+	//! Constructs a VertBatch with primitive type \a primType. Default is \c GL_POINTS. If \a useContextDefaultBuffers is \c true, uses default buffers for the context, saving allocations; suitable for single draw.
 	VertBatch( GLenum primType = GL_POINTS, bool useContextDefaultBuffers = true );
-	//! If \a useContextDefaultBuffers is \c false, allocates and uses internal buffers and VAO; suitable for multiple draws.
+	//! Creates a VertBatchRef with primitive type \a primType. Default is \c GL_POINTS. If \a useContextDefaultBuffers is \c false, allocates and uses internal buffers and VAO; suitable for multiple draws.
 	static VertBatchRef create( GLenum primType = GL_POINTS, bool useContextDefaultBuffers = false );
 
+	//! Sets the primitive type of the VertBatch. Default is \c GL_POINTS.
 	void	setType( GLenum type );
+	//! Returns the primitive type of the VertBatch. Default is \c GL_POINTS.
 	GLenum	getType() const { return mPrimType; }
-	
+
+	//! Sets the color for the current vertex (attribute geom::COLOR)
 	void	color( float r, float g, float b, float a = 1.0f ) { color( ColorAf( r, g, b, a ) ); }
+	//! Sets the color for the current vertex (attribute geom::COLOR)
 	void	color( const Colorf &color );
+	//! Sets the color for the current vertex (attribute geom::COLOR)
 	void	color( const ColorAf &color );
 
+	//! Sets the normal for the current vertex (attribute geom::NORMAL)
 	void	normal( float x, float y, float z ) { normal( vec3( x, y, z ) ); }
+	//! Sets the normal for the current vertex (attribute geom::NORMAL)
 	void	normal( const vec3 &n );
 
+	//! Sets the texCoord0 for the current vertex (attribute geom::TEX_COORD_0)
+	void	texCoord( float s, float t, float r = 0, float q = 1 ) { texCoord0( vec4( s, t, r, q ) ); }
+	//! Sets the texCoord0 for the current vertex (attribute geom::TEX_COORD_0)
+	void	texCoord( const vec2 &t ) { texCoord0( vec4( t.x, t.y, 0, 1 ) ); }
+	//! Sets the texCoord0 for the current vertex (attribute geom::TEX_COORD_0)
+	void	texCoord( const vec3 &t ) { texCoord0( vec4( t.x, t.y, t.z, 1 ) ); }
+	//! Sets the texCoord0 for the current vertex (attribute geom::TEX_COORD_0)
+	void	texCoord( const vec4 &t ) { texCoord0( t ); }
+
+	//! Sets the texCoord0 for the current vertex (attribute geom::TEX_COORD_0)
+	void	texCoord0( float s, float t, float r = 0, float q = 1 ) { texCoord0( vec4( s, t, r, q ) ); }
+	//! Sets the texCoord0 for the current vertex (attribute geom::TEX_COORD_0)
+	void	texCoord0( const vec2 &t ) { texCoord0( vec4( t.x, t.y, 0, 1 ) ); }
+	//! Sets the texCoord0 for the current vertex (attribute geom::TEX_COORD_0)
+	void	texCoord0( const vec3 &t ) { texCoord0( vec4( t.x, t.y, t.z, 1 ) ); }
+	//! Sets the texCoord0 for the current vertex (attribute geom::TEX_COORD_0)
+	void	texCoord0( const vec4 &t );
+
+	//! Sets the texCoord1 for the current vertex (attribute geom::TEX_COORD_1)
+	void	texCoord1( float s, float t, float r = 0, float q = 1 ) { texCoord1( vec4( s, t, r, q ) ); }
+	//! Sets the texCoord1 for the current vertex (attribute geom::TEX_COORD_1)
+	void	texCoord1( const vec2 &t ) { texCoord1( vec4( t.x, t.y, 0, 1 ) ); }
+	//! Sets the texCoord1 for the current vertex (attribute geom::TEX_COORD_1)
+	void	texCoord1( const vec3 &t ) { texCoord1( vec4( t.x, t.y, t.z, 1 ) ); }
+	//! Sets the texCoord1 for the current vertex (attribute geom::TEX_COORD_1)
+	void	texCoord1( const vec4 &t );
+
+	//! Locks the values for the current vertex and sets its position (attribute geom::POSITION). Call after any corresponding calls to color(), normal() and/or texCoord().
 	void	vertex( float x, float y, float z = 0, float w = 1 ) { addVertex( vec4( x, y, z, w ) ); }
+	//! Locks the values for the current vertex and sets its position (attribute geom::POSITION). Call after any corresponding calls to color(), normal() and/or texCoord().
 	void	vertex( const vec2 &v ) { addVertex( vec4( v.x, v.y, 0, 1 ) ); }
+	//! Locks the values for the current vertex and sets its position (attribute geom::POSITION). Call after any corresponding calls to color(), normal() and/or texCoord().
 	void	vertex( const vec3 &v ) { addVertex( vec4( v.x, v.y, v.z, 1 ) ); }
+	//! Locks the values for the current vertex and sets its position (attribute geom::POSITION). Call after any corresponding calls to color(), normal() and/or texCoord().
 	void	vertex( const vec4 &v );
-	//! Sets the vertex and the color simultaneously. Should not be called if you have called color() prior.
+	//! Locks the values for the current vertex and sets its position (attribute geom::POSITION) and color (geom::COLOR). Call after any corresponding calls to color(), normal() and/or texCoord(). Should not be called if you have called color() prior.
 	void	vertex( const vec4 &v, const ColorAf &c );
 
-	void	texCoord( float s, float t, float r = 0, float q = 1 ) { texCoord( vec4( s, t, r, q ) ); }	
-	void	texCoord( const vec2 &t ) { texCoord( vec4( t.x, t.y, 0, 1 ) ); }
-	void	texCoord( const vec3 &t ) { texCoord( vec4( t.x, t.y, t.z, 1 ) ); }
-	void	texCoord( const vec4 &t );
-	
+	//! Resets the sequence of vertices and sets the VertBatch's primitive type.
 	void	begin( GLenum type );
-	void	end();
+	//! No-op. Present for parity with legacy immediate mode.
+	void	end() {}
+	
+	//! Clears all vertices recorded by the VertBatch
 	void	clear();
 
+	//! Returns \c true if no vertices have been added to the VertBatch.
 	bool	empty() const { return mVertices.empty(); }
 	
+	//! Draws the VertBatch using the gl::Context's currently active shader. For multiple draws consider constructing a gl::Batch using the VertBatch instead.
 	void	draw();
 	
   protected:
 	void	addVertex( const vec4 &v );
 	void	setupBuffers();
+
+	// geom::Source implementation
+	size_t			getNumVertices() const override;
+	size_t			getNumIndices() const override;
+	geom::Primitive	getPrimitive() const override;
+	uint8_t			getAttribDims( geom::Attrib attr ) const override;
+
+	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+
+	geom::AttribSet	getAvailableAttribs() const override;
+	
 
 	GLenum					mPrimType;
 
@@ -138,7 +192,7 @@ class VertBatch {
 	
 	std::vector<vec3>		mNormals;
 	std::vector<ColorAf>	mColors;
-	std::vector<vec4>		mTexCoords;
+	std::vector<vec4>		mTexCoords0, mTexCoords1;
 	
 	bool					mOwnsBuffers;
 	Vao*					mVao;
