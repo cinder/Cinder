@@ -620,6 +620,8 @@ class FileData(object):
         self.page_header = ""
         self.search_tags = []
         self.path = ""
+        self.kind = ""
+        self.kind_explicit = ""
 
     def get_content(self):
         content = {
@@ -751,6 +753,7 @@ class NamespaceFileData(FileData):
         self.variables = []
         self.namespace_nav = None
         self.kind = find_file_kind(tree)
+        self.kind_explicit = self.kind
 
     def get_content(self):
         orig_content = super(NamespaceFileData, self).get_content()
@@ -800,12 +803,11 @@ class GroupFileData(FileData):
         self.prefix = ""
         self.typedefs = []
         self.name = str(find_compound_name(tree))
-        # self.enumerations = []
         self.public_functions = []
-        # self.public_types = []
         self.anchors = []
-        # self.name = self.compoundName
-        print self.name
+
+        self.kind = "module"
+        self.kind_explicit = self.kind
 
     def get_content(self):
         orig_content = super(GroupFileData, self).get_content()
@@ -846,12 +848,19 @@ class GroupFileData(FileData):
 
 class HtmlFileData(FileData):
 
-    def __init__(self):
+    def __init__(self, in_path):
         FileData.__init__(self, None)
 
         self.html_content = ""
         self.group = None
         self.subnav = []
+
+        self.kind = "html"
+        self.kind_explicit = self.kind
+        if in_path.find("guides/") > -1:
+            self.kind_explicit = "guide"
+        if in_path.find("reference/") > -1:
+            self.kind_explicit = "reference"
 
     def get_content(self):
         orig_content = super(HtmlFileData, self).get_content()
@@ -1665,7 +1674,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
 
         html_template = config.NAMESPACE_TEMPLATE
         file_data = fill_namespace_content(tree)
-    elif file_type == "group":
+    elif file_type == "module":
         html_template = config.GROUP_TEMPLATE
         file_data = fill_group_content(tree)    # TODO: replace with fill_group_content()
     else:
@@ -1693,7 +1702,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
 
     # add to search index
     link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)["href"]
-    add_to_search_index(bs4, link_path, file_data.search_tags)
+    add_to_search_index(bs4, link_path, file_data.kind_explicit, file_data.search_tags)
 
     # write the file
     write_html(bs4, out_path)
@@ -2050,7 +2059,7 @@ def process_html_file(in_path, out_path):
     print "processHtmlFile: " + in_path
 
     # get common data for the file
-    file_data = HtmlFileData()
+    file_data = HtmlFileData(in_path)
     # searchable by default
     is_searchable = True
     search_tags = []
@@ -2165,7 +2174,7 @@ def process_html_file(in_path, out_path):
 
     if in_path.find("_docs/") < 0:
         if is_searchable:
-            add_to_search_index(bs4, out_path, search_tags)
+            add_to_search_index(bs4, out_path, file_data.kind_explicit, search_tags)
 
         state.add_html_file(file_data)
         file_data.path = out_path
@@ -2183,53 +2192,6 @@ def parse_config(path, file_name):
         return guide_config
     else:
         return None
-
-
-
-# def process_sub_nav():
-#     group_dict = {}
-#     print "PROCESS SUB NAV"
-#     # find the different unique groups in the html_files
-#     # groups_names = set(html_file.group for html_file in state.html_files)
-#
-#     # remove None values
-#     # groups_names = filter(None, groups_names)
-#
-#     # for each group name, find the html files that go with it
-#     # for group in groups_names:
-#     #     print state.html_files.
-#
-#     for html_file in state.html_files:
-#         if not html_file.group:
-#             continue
-#         # add or find group in dictionary
-#
-#         if html_file.group not in group_dict:
-#             group_dict[html_file.group] = []
-#
-#         group_list = group_dict[html_file.group]
-#         group_list.append(html_file)
-#
-#     for group in group_dict:
-#
-#         # find html file
-#         print group.path
-#         # open html file
-#
-#         # find subnav element
-#         # load subnav template
-#         # inject data into template
-#         # add resulting html into subnav element
-
-
-    print group_dict
-
-        # add object to dictionary value
-
-    # for f in state.html_files:
-        # print f.group
-
-    # for each of the groups, find the files that go with the group
 
 
 def generate_glm_reference():
@@ -2875,7 +2837,7 @@ def write_search_index():
     with codecs.open(DOXYGEN_HTML_PATH + 'search_index.js', "w", "UTF-8") as outFile:
         outFile.write(document)
 
-def add_to_search_index(html, save_path, tags=[]):
+def add_to_search_index(html, save_path, search_type, tags=[]):
     global g_search_index
 
     # TODO: remove any duplicates from tags list
@@ -2888,6 +2850,7 @@ def add_to_search_index(html, save_path, tags=[]):
     search_obj["title"] = html.head.find("title").text if html.head.find("title") else ""
     search_obj["link"] = save_path
     search_obj["tags"] = tags
+    search_obj["type"] = search_type
     g_search_index["data"].append(search_obj)
 
 
@@ -2926,8 +2889,8 @@ def get_file_type(file_prefix):
         return "class"
     elif is_namespace_type(file_prefix):
         return "namespace"
-    elif is_group_type(file_prefix):
-        return "group"
+    elif is_module_type(file_prefix):
+        return "module"
 
 
 def is_class_type(class_str):
@@ -2952,13 +2915,13 @@ def is_namespace_type(ns_str):
     return False
 
 
-def is_group_type(group_str):
+def is_module_type(module_str):
     """
     Tests whether the filename is a group type
-    :param group_str:
+    :param module_str:
     :return: Boolean
     """
-    if any([group_str.startswith(prefix) for prefix in config.GROUP_FILE_PREFIXES]):
+    if any([module_str.startswith(prefix) for prefix in config.GROUP_FILE_PREFIXES]):
         return True
     return False
 
