@@ -869,15 +869,20 @@ class HtmlFileData(FileData):
 
 class GuideConfig(object):
 
-    def __init__(self, config_json, path):
+    def __init__(self, config_json, path, file_name):
 
         config_data = config_json["data"]
 
         # parse subnav
         subnav_list = []
+        self.order = None
         if config_data["subnav"]:
-            for subnav in config_data["subnav"]:
+            for index, subnav in enumerate(config_data["subnav"]):
                 link_data = LinkData(os.path.join(path, subnav["link"]), subnav["label"])
+
+                # find order of file in group
+                if re.match(file_name, subnav["link"]):
+                    self.order = index
                 subnav_list.append(link_data)
 
         self.subnav = subnav_list
@@ -890,9 +895,16 @@ class GuideConfig(object):
                 for k in metadata["keywords"]:
                     keywords.append(k)
         self.keywords = keywords
-        print keywords
 
         # add seealso ci links
+        see_also = config_data["seealso"]
+        self.see_also_label = ""
+        self.see_also_tags = []
+        if see_also:
+            self.see_also_label = config_data["seealso"]["label"]
+            for ci in config_data["seealso"]["dox"]:
+                self.see_also_tags.append(ci)
+
 
 def find_compound_name(tree):
     for compound_def in tree.iter("compounddef"):
@@ -2039,19 +2051,21 @@ def process_html_file(in_path, out_path):
 
     # get common data for the file
     file_data = HtmlFileData()
-    g_currentFile = file_data
     # searchable by default
     is_searchable = True
     search_tags = []
     local_rel_path = os.path.relpath(in_path, HTML_SOURCE_PATH)
     in_dir = os.path.dirname(in_path)
-    # load config (if present in current directory)
-    config_data = parse_config(in_dir)
+    in_file_name = os.path.basename(in_path)
 
+    # parse guide config (if present in current directory)
+    config_data = parse_config(in_dir, in_file_name)
     if config_data:
+        # add search tags
         for k in config_data.keywords:
             search_tags.append(k)
 
+        # plug in subnav data
         file_data.subnav = config_data.subnav
 
     # get correct template
@@ -2081,11 +2095,8 @@ def process_html_file(in_path, out_path):
     dynamic_div = gen_tag(orig_html, "body")
     for data in config.ADDITIONAL_REF_DATA:
         if "reference_html" in data and data["reference_html"] == local_rel_path:
-            # print "\tWE NEED TO DO SOMETHING ABOUT THIS. GREG, IT'S UP TO YOU NOW."
             is_searchable = bool(data["searchable"])
-
             markup = generate_dynamic_markup(data)
-            # print markup
             for content in markup.body.contents:
                 dynamic_div.append(content)
             insert_div_id = data["element_id"]
@@ -2126,6 +2137,18 @@ def process_html_file(in_path, out_path):
             for d in orig_html.head.find_all("ci"):
                 bs4.head.append(d)
 
+        # add ci seealso tags from config to bs4 head if it's the first in a group
+        if config_data and config_data.order == 0:
+            seealso_label = config_data.see_also_label
+            for tag in config_data.see_also_tags:
+
+                ci_tag = gen_tag(bs4, "ci")
+                ci_tag.attrs["seealso"] = ""
+                ci_tag.attrs["label"] = seealso_label
+                ci_tag.attrs["dox"] = tag
+
+                bs4.head.append(ci_tag)
+
         # add tags from the meta keywords tag
         for meta_tag in orig_html.head.findAll(attrs={"name": "keywords"}):
             for keyword in meta_tag['content'].split(','):
@@ -2149,16 +2172,14 @@ def process_html_file(in_path, out_path):
         write_html(bs4, out_path)
 
 
-def parse_config(path):
+def parse_config(path, file_name):
     # if "config.json" exists in path directory
     config_path = os.path.join(path, "config.json")
     if os.path.exists(config_path):
         # load and turn into GuideConfig object
         with open(config_path) as data_file:
             config_data = json.load(data_file)
-            guide_config = GuideConfig(config_data, path)
-        # print config_data["data"]["subnav"][0]["label"]
-
+            guide_config = GuideConfig(config_data, path, file_name)
         return guide_config
     else:
         return None
