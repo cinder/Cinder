@@ -2380,10 +2380,21 @@ def process_ci_prefix_tag(bs4, tag, in_path):
     obj_ref = find_ci_tag_ref(tag)
     if obj_ref and type(obj_ref) is SymbolMap.Class:
 
-        # define content
+        # get tag content
         prefix_content = ""
         for c in tag.contents:
             prefix_content += str(c)
+
+        # generate bs4 from content and update links as reltive from the template path
+        # could alternatively set the absolute paths of content, which would then be turned into rel paths later
+        new_bs4 = generate_bs4_from_string(prefix_content)
+        update_links(new_bs4, in_path, TEMPLATE_PATH)
+
+        # get updated body content and assign as prefix_content
+        prefix_content = ""
+        for c in new_bs4.body:
+            prefix_content += str(c)
+
         obj_ref.define_prefix(prefix_content)
 
 
@@ -2498,15 +2509,19 @@ def update_links(html, src_path, dest_path):
             if link_src.startswith('javascript') or link_src.startswith('http'):
                 return
 
-            src_file = urlparse.urljoin(src_path, link_src)
-            dest_file = src_file.replace("htmlsrc", "html")
-            update_link(iframe["src"], src_path, dest_path)
+            src_base = src_path.split(BASE_PATH)[1].split("/")[0]
+            dest_base = dest_path.split(BASE_PATH)[1].split("/")[0]
 
-            # iframe_link = update_link(iframe["src"], src_path)
-            iframe["src"] = dest_file
+            new_link = update_link(link_src, src_path, dest_path)
+            iframe["src"] = new_link
+
+            src_file = urlparse.urljoin(src_path, link_src)
+            dest_file = urlparse.urljoin(src_path.replace(src_base, dest_base), link_src)
 
             try:
-                shutil.copy2(src_file, dest_file)
+                # copy file as long as the source and destination is not the same
+                if SM(None, src_file, dest_file).ratio() < 1.0:
+                    shutil.copy2(src_file, dest_file)
             except IOError as e:
                 print "\t ** ERROR: Cannot copy src_file because it doesn't exist"
                 print e.strerror
@@ -2536,7 +2551,9 @@ def update_link(link, in_path, out_path):
     abs_link_path = urlparse.urljoin(in_path, link)
 
     # convert to relative link in relation to the out path
-    rel_link_path = os.path.relpath(abs_link_path.replace("htmlsrc", "html"), os.path.dirname(out_path))
+    src_base = in_path.split(BASE_PATH)[1].split("/")[0]        # likely htmlsrc
+    dest_base = out_path.split(BASE_PATH)[1].split("/")[0]      # htmlsrc or html
+    rel_link_path = os.path.relpath(abs_link_path.replace(src_base, dest_base), os.path.dirname(out_path))
 
     return rel_link_path
 
