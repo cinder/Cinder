@@ -58,6 +58,11 @@ public:
 	void 						enableGravity( SensorCallbackFn updateFn, int32_t usec = -1 );
 	void 						enableRotationVector( SensorCallbackFn updateFn, int32_t usec = -1 );
 
+	void 						setActivityGainedFocusCallback( std::function<void()> fn );
+	void 						clearActivityGainedFocusCallback();
+	void 						setActivityLostFocusCallback( std::function<void()> fn );
+	void 						clearActivityLostFocusCallback();
+
 private:
 	bool 						enableAccelerometer();
 	bool 						enableMagneticField();
@@ -124,6 +129,9 @@ public:
 
 	AppImplAndroid 				*mAppImplInst;
 	void 						setAppImplInst( AppImplAndroid* appInst );
+
+	std::function<void()> 		mActivityGainedFocusCallbackFn;
+	std::function<void()>		mActivityLostFocusCallbackFn;
 
 	friend class AppImplAndroid;
 

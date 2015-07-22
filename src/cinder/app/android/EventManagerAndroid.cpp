@@ -257,6 +257,26 @@ void EventManagerAndroid::disableRotationVector()
 	}
 }
 
+void EventManagerAndroid::setActivityGainedFocusCallback( std::function<void()> fn )
+{
+	mActivityGainedFocusCallbackFn = fn;
+}
+
+void EventManagerAndroid::clearActivityGainedFocusCallback()
+{
+	mActivityGainedFocusCallbackFn = nullptr;
+}
+
+void EventManagerAndroid::setActivityLostFocusCallback( std::function<void()> fn )
+{
+	mActivityLostFocusCallbackFn = fn;
+}
+
+void EventManagerAndroid::clearActivityLostFocusCallback()
+{
+	mActivityLostFocusCallbackFn = nullptr;
+}
+
 void EventManagerAndroid::appLostFocus()
 {
 	mFocused = false;
@@ -267,6 +287,10 @@ void EventManagerAndroid::appLostFocus()
 	disableGyroscope();
 	disableGravity();
 	disableRotationVector();
+
+	if( mActivityLostFocusCallbackFn ) {
+		mActivityLostFocusCallbackFn();
+	}	
 }
 
 void EventManagerAndroid::appGainedFocus()
@@ -294,6 +318,10 @@ void EventManagerAndroid::appGainedFocus()
 		if( mRotationVectorSensor && mRotationVectorSensor->mRequested ) {
 			enableRotationVector();
 		}
+	}
+
+	if( mActivityGainedFocusCallbackFn ) {
+		mActivityGainedFocusCallbackFn();
 	}
 }
 
@@ -508,7 +536,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		case APP_CMD_GAINED_FOCUS: {
 			LOGI( "APP_CMD_GAINED_FOCUS" );
 
-			eventMan->appGainedFocus();
+			eventMan->appGainedFocus();		
 		}
 		break;
 
@@ -544,7 +572,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the app's activity has been started.
 		 */
 		case APP_CMD_START: {
-			LOGI( "APP_CMD_START" );	
+			LOGI( "APP_CMD_START" );
 		}
 		break;
 

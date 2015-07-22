@@ -24,6 +24,7 @@
 #include "cinder/android/CinderAndroid.h"
 #include "cinder/android/app/CinderNativeActivity.h" 
 #include "cinder/app/android/AssetFileSystem.h"
+#include "cinder/app/android/EventManagerAndroid.h"
 
 #include <cstdlib>
 #include <sstream>
@@ -88,6 +89,26 @@ void setWallpaper( const ci::Surface8u& surf )
 void launchTwitter( const std::string& text, const ci::Surface8u* surf )
 {
 	cinder::android::app::CinderNativeActivity::launchTwitter( text, surf );
+}
+
+void setActivityGainedFocusCallback( std::function<void()> fn )
+{
+	ci::app::EventManagerAndroid::instance()->setActivityGainedFocusCallback( fn );
+}
+
+void clearActivityGainedFocusCallback()
+{
+	ci::app::EventManagerAndroid::instance()->clearActivityGainedFocusCallback();
+}
+
+void setActivityLostFocusCallback( std::function<void()> fn )
+{
+	ci::app::EventManagerAndroid::instance()->setActivityLostFocusCallback( fn );
+}
+
+void clearActivityLostFocusCallback()
+{
+	ci::app::EventManagerAndroid::instance()->clearActivityLostFocusCallback();
 }
 
 } } // namespace cinder::android

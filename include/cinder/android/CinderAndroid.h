@@ -62,4 +62,9 @@ cinder::fs::path getCacheDirectory();
 void setWallpaper( const ci::Surface8u& surf );
 void launchTwitter( const std::string& text = "", const ci::Surface8u* surf = nullptr );
 
+void setActivityGainedFocusCallback( std::function<void()> fn );
+void clearActivityGainedFocusCallback();
+void setActivityLostFocusCallback( std::function<void()> fn );
+void clearActivityLostFocusCallback();
+
 }} // namespace cinder::android
