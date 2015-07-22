@@ -7,8 +7,8 @@
 // license:			BSD
 //
 // Outline: Falling gears bounce into shapes (the 'Island' class) and Walls, triggering Synth's.
-// AudioController maintain's a bank of Synth subclasses - of type AltoSynth for Island collisions
-// and BassSynth for wall colissions.  Musical chords are created by the collisions that descend
+// AudioController maintains a bank of Synth subclasses - of type AltoSynth for Island collisions
+// and BassSynth for wall collisions.  Musical chords are created by the collisions that descend
 // through the circle of fifths.  The SceneController class maintains a Box2D physics world, which
 // triggers the interaction between visuals and audio.
 
@@ -42,6 +42,7 @@ class FallingGearsApp : public App {
 	void update() override;
 	void draw() override;
 
+  private:
 	void setupGraphics();
 	void setupParams();
 	void drawBackground();
@@ -62,7 +63,7 @@ void FallingGearsApp::setup()
 {
 	mDrawDebug = false;
 	mDrawInfo = false;
-	mMasterGain = 84.0f;
+	mMasterGain = 84;
 
 	mAudio.setup();
 	mAudio.setMasterGain( mMasterGain );
@@ -189,26 +190,25 @@ void FallingGearsApp::drawBackground()
 
 	gl::color( Color::white() );
 
-	gl::pushModelMatrix();
+	gl::ScopedModelMatrix modelScope;
 	gl::translate( 0, decentMod * 0.5f );
 
 	gl::draw( mBackgroundTex, destRect, destRect );
 
-	gl::popModelMatrix();
 }
 
 void FallingGearsApp::drawDebug()
 {
 	float pointsPerMeter = mScene.getPointsPerMeter();
-	gl::pushModelMatrix();
-		gl::scale( pointsPerMeter, pointsPerMeter );
-		mScene.getWorld()->DrawDebugData();
-	gl::popModelMatrix();
+
+	gl::ScopedModelMatrix modelScope;
+	gl::scale( pointsPerMeter, pointsPerMeter );
+	mScene.getWorld()->DrawDebugData();
 }
 
 void FallingGearsApp::drawInfo()
 {
-	gl::enableAlphaBlending();
+	gl::ScopedBlendAlpha blendScope;
 
 	TextLayout layout;
 	layout.setFont( Font( "Arial", 14 ) );
@@ -223,9 +223,8 @@ void FallingGearsApp::drawInfo()
 	gl::color( Color::white() );
 	gl::draw( tex, offset );
 
-	gl::disableAlphaBlending();
 }
 
-CINDER_APP( FallingGearsApp, RendererGl, []( App::Settings *settings ) {
+CINDER_APP( FallingGearsApp, RendererGl( RendererGl::Options().msaa( 8 ) ), []( App::Settings *settings ) {
 	settings->setWindowSize( 1200, 800 );
 } )
