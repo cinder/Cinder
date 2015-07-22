@@ -150,9 +150,19 @@ void Island::handleCollision( const Gear *gear, const vec2 &contactPoint )
 	app::timeline().apply( &mVibrationLevel, 0.0f, 1.4f, EaseOutQuart() );
 }
 
-void Island::makeBumpers()
+void Island::setupGeometry()
 {
 	CI_ASSERT( mOuterVerts.size() == 6 && mInnerVerts.size() == 5 );
+
+	// create the body of the island
+	{
+		Path2d path;
+		path.moveTo( mOuterVerts[0] );
+		for( int i = 1; i < mOuterVerts.size(); ++i )
+			path.lineTo( mOuterVerts[i] );
+
+		mBatchBody = gl::Batch::create( Triangulator( path ).calcMesh(), gl::getStockShader( gl::ShaderDef().color() ) );
+	}
 
 	mBumpers.clear();
 
@@ -242,17 +252,12 @@ void Island::draw()
 	gl::ScopedModelMatrix modelScope;
 	gl::translate( centerPos );
 
-	Path2d path;
-	path.moveTo( mOuterVerts[0] );
-	for( int i = 1; i < mOuterVerts.size(); ++i )
-		path.lineTo( mOuterVerts[i] );
-
 	Color color = Color::gray( 0.34f );
 	color.r *= 1 - mVibrationLevel * 0.5;
 	color.g *= 1 - mVibrationLevel * 0.2;
 	gl::color( color );
 
-	gl::drawSolid( path );
+	mBatchBody->draw();
 
 	for( const auto &bumper : mBumpers ) {
 		Color color = Color::gray( 0.42f );

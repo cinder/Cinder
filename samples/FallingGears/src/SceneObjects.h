@@ -39,7 +39,7 @@ struct Gear : public SceneObject {
 struct Island : public SceneObject {
 	Island( AudioController *audio ) : SceneObject( audio ), mVibrationLevel( 0 )	{}
 
-	void makeBumpers();
+	void setupGeometry();
 	void addBumper( const ci::Path2d& path );
 
 	void handleCollision( const Gear *gear, const ci::vec2 &contactPoint ) override;
@@ -57,6 +57,7 @@ struct Island : public SceneObject {
 	std::vector<Bumper>	mBumpers;
 	ci::Anim<float>		mVibrationLevel;
 	float				mFreqMidi;
+	ci::gl::BatchRef	mBatchBody;
 };
 
 struct Wall : public SceneObject {
