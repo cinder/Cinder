@@ -13,18 +13,15 @@ from bs4 import BeautifulSoup, Tag, NavigableString
 from pystache.renderer import Renderer
 # from argparse import ArgumentParser
 
+# static path vars
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep
 XML_SOURCE_PATH = BASE_PATH + 'xml' + os.sep
-DOXYGEN_HTML_PATH = BASE_PATH + 'html' + os.sep
+HTML_DEST_PATH = BASE_PATH + 'html' + os.sep
 HTML_SOURCE_PATH = BASE_PATH + 'htmlsrc' + os.sep
 TEMPLATE_PATH = BASE_PATH + 'htmlsrc' + os.sep + "_templates" + os.sep
 PARENT_DIR = BASE_PATH.split('/docs')[0]
-GITHUB_PATH = "http://github.com/cinder/Cinder/tree/master"
 
-# state vars
-PROCESSED_HTML_DIR = False
-
-
+# various config settings
 class Config(object):
     def __init__(self):
         # skip html directory parsing - speeds up debugging
@@ -33,7 +30,10 @@ class Config(object):
         self.BREAK_ON_STOP_ERRORS = False
         # whitelisted namespaces to generate pages for
         self.NAMESPACE_WHITELIST = ["ci"]
+        # blacklisted class strings - any class containing these strings will be skipped
         self.CLASS_LIST_BLACKLIST = ["glm", "@"]
+        # cinder github repo path
+        self.GITHUB_PATH = "http://github.com/cinder/Cinder/tree/master"
 
         # directory for the class template mustache file
         self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "class_template.mustache")
@@ -57,7 +57,9 @@ class Config(object):
         # file prefixes that indicate that the file should be parsed with the group template
         self.GROUP_FILE_PREFIXES = ["group"]
 
-        self.ADDITIONAL_REF_DATA = [
+        # configuration properties for different kinds of pages whose content is mostly dynamic from cinder.tag file
+        self.DYNAMIC_PAGES_CONFIG = [
+            # namespace list page
             {
                 "id": "namespaces",
                 "reference_html": "namespaces.html",
@@ -65,6 +67,7 @@ class Config(object):
                 "template": "namespace-list.mustache",
                 "searchable": False
             },
+            # class list page
             {
                 "id": "classes",
                 "reference_html": "classes.html",
@@ -72,6 +75,7 @@ class Config(object):
                 "template": "class-list.mustache",
                 "searchable": False
             },
+            # glm reference page
             {
                 "id": "glm",
                 "reference_html": "reference/glm.html",
@@ -91,9 +95,11 @@ class Config(object):
         }
 
 
+# various state vars
 class State(object):
     def __init__(self):
         self.html_files = []
+        self.processed_html_files = False
 
     def add_html_file(self, file):
         self.html_files.append(file)
@@ -110,39 +116,16 @@ tagDictionary = {
     "para": "p"
 }
 
-titleDictionary = {
-    "namespace": "Namespace",
-    "class": "Class",
-    "struct": "Struct"
-}
 
-headerDictionary = {
-    "namespace": "Namespace Reference",
-    "class": "Class Reference",
-    "class_template": "<T> Class Template Reference",
-    "struct": "Struct Reference",
-    "struct_template": "<T> Struct Template Reference"
-}
-
-public_function_header = {
-    "class": "Public Member Functions",
-    "interface": "Instance Methods"
-}
-
-public_static_function_header = {
-    "class": "Static Public Member Functions",
-    "interface": "Class Methods"
-}
-
+# globals
 g_tag_xml = None
 g_symbolMap = None
-g_currentFile = None
 g_search_index = None
 config = Config()
 state = State()
 
 
-# ================================================== START SYMBOL MAP ==================================================
+# =========================================================================================================== SYMBOL MAP
 
 # mapping for the tag file with helper functions
 class SymbolMap(object):
@@ -231,7 +214,7 @@ class SymbolMap(object):
 
             rel_path_arr = self.path.split(PARENT_DIR)
             if len(rel_path_arr) > 1:
-                self.githubPath = GITHUB_PATH + self.path.split(PARENT_DIR)[-1]
+                self.githubPath = config.GITHUB_PATH + self.path.split(PARENT_DIR)[-1]
             else:
                 print "NO PATH FOR " + name
 
@@ -576,45 +559,7 @@ class SymbolMap(object):
         return ns_classes
 
 
-# --------------------------------------------------- END SYMBOL MAP ---------------------------------------------------
-
-class LinkData(object):
-
-    def __init__(self, link=None, label=None):
-        self.link = link
-        self.label = label
-
-
-def convert_rel_path(link, src_dir, dest_dir):
-    """
-    Converts a relative path from one directory to another
-    :param link: Link to convert
-    :param src_dir: current relative directory
-    :param dest_dir: destination relative directory
-    :return: link with new relative path
-    """
-
-    if link.startswith("http") or link.startswith("javascript:"):
-        return link
-
-    # if a relative path, make it absolute
-    if src_dir.find(BASE_PATH) < 0:
-        src_dir = BASE_PATH + src_dir
-
-    # get absolute in path, converted from htmlsrc to html
-    # abs_link_path =
-    abs_src_path = urlparse.urljoin(src_dir, link).replace("htmlsrc", "html")
-
-    # destination absolute path
-    # abs_dest_path = os.path.join(os.path.dirname(dest_dir), link)
-    abs_dest_path = dest_dir
-
-    # print "ABS SRC:  " + abs_src_path
-    # print "ABS DEST: " + abs_dest_path
-
-    new_link = os.path.relpath(abs_src_path, abs_dest_path)
-    # print "new link: " + new_link
-    return new_link
+# ====================================================================================================== FILE DATA TYPES
 
 
 class FileData(object):
@@ -886,6 +831,9 @@ class HtmlFileData(FileData):
         return content
 
 
+# ================================================================================================== Misc helper classes
+
+
 class GuideConfig(object):
 
     def __init__(self, config_json, path, file_name):
@@ -924,6 +872,47 @@ class GuideConfig(object):
             for ci in config_data["seealso"]["dox"]:
                 self.see_also_tags.append(ci)
 
+
+class LinkData(object):
+
+    def __init__(self, link=None, label=None):
+        self.link = link
+        self.label = label
+
+
+# ==================================================================================================== Utility functions
+
+
+def convert_rel_path(link, src_dir, dest_dir):
+    """
+    Converts a relative path from one directory to another
+    :param link: Link to convert
+    :param src_dir: current relative directory
+    :param dest_dir: destination relative directory
+    :return: link with new relative path
+    """
+
+    if link.startswith("http") or link.startswith("javascript:"):
+        return link
+
+    # if a relative path, make it absolute
+    if src_dir.find(BASE_PATH) < 0:
+        src_dir = BASE_PATH + src_dir
+
+    # get absolute in path, converted from htmlsrc to html
+    # abs_link_path =
+    abs_src_path = urlparse.urljoin(src_dir, link).replace("htmlsrc", "html")
+
+    # destination absolute path
+    # abs_dest_path = os.path.join(os.path.dirname(dest_dir), link)
+    abs_dest_path = dest_dir
+
+    # print "ABS SRC:  " + abs_src_path
+    # print "ABS DEST: " + abs_dest_path
+
+    new_link = os.path.relpath(abs_src_path, abs_dest_path)
+    # print "new link: " + new_link
+    return new_link
 
 def find_compound_name(tree):
     for compound_def in tree.iter("compounddef"):
@@ -1180,6 +1169,7 @@ def parse_member_definition(bs4, member, member_name=None):
 
     return member_obj
 
+
 def parse_function(bs4, member, class_name=None):
 
     member_name = member.find(r"name")
@@ -1287,7 +1277,7 @@ def gen_class_hierarchy(bs4, class_def):
         if index < len(hierarchy) - 1:
             a = gen_tag(bs4, "a", [], base.name)
             define_link_tag(a, {'href': base.path})
-            a = gen_rel_link_tag(bs4, base.name, a["href"], TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+            a = gen_rel_link_tag(bs4, base.name, a["href"], TEMPLATE_PATH, HTML_DEST_PATH)
             li.append(a)
         else:
             li.append(base.name)
@@ -1678,6 +1668,10 @@ def generate_namespace_nav():
     iterate_namespace(bs4, namespaces, ul, 0, "")
     return tree
 
+
+# ============================================================================================ File Processing Functions
+
+
 def process_xml_file_definition(in_path, out_path, file_type):
     """
     Process an xml file definition, such as a class, namespace, or group
@@ -1735,7 +1729,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
         process_ci_tag(bs4, tag, in_path, out_path)
 
     # add to search index
-    link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)["href"]
+    link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, HTML_DEST_PATH)["href"]
     add_to_search_index(bs4, link_path, file_data.kind_explicit, file_data.search_tags)
 
     # write the file
@@ -1803,7 +1797,7 @@ def fill_class_content(tree):
         for t in file_def.typedefs:
             link_data = LinkData()
             link_data.label = t.name
-            link_path = DOXYGEN_HTML_PATH + t.path
+            link_path = HTML_DEST_PATH + t.path
             link_data.link = link_path
             typedefs.append(link_data)
     file_data.typedefs = typedefs
@@ -1819,7 +1813,7 @@ def fill_class_content(tree):
         link_data = LinkData()
         link_data.label = strip_compound_name(classDef.text)
         # link_data.link = convert_rel_path(classDef.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
-        link_data.link = DOXYGEN_HTML_PATH + classDef.attrib["refid"] + ".html"
+        link_data.link = HTML_DEST_PATH + classDef.attrib["refid"] + ".html"
         classes.append(link_data)
     file_data.classes = classes
 
@@ -1912,7 +1906,7 @@ def fill_class_content(tree):
 
         # link up friend, if class exists
         if friend_class:
-            friend_link = gen_rel_link_tag(bs4, friend_class.name, friend_class.path, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+            friend_link = gen_rel_link_tag(bs4, friend_class.name, friend_class.path, TEMPLATE_PATH, HTML_DEST_PATH)
             member_obj["definition"]["name"] = str(friend_link)
         friends.append(member_obj)
     file_data.friends = friends
@@ -1944,7 +1938,7 @@ def fill_namespace_content(tree):
     namespaces = []
     for member in tree.findall(r"compounddef/innernamespace"):
         # link = convert_rel_path(member.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
-        link = DOXYGEN_HTML_PATH + member.attrib["refid"] + ".html"
+        link = HTML_DEST_PATH + member.attrib["refid"] + ".html"
         link_data = LinkData(link, member.text)
         namespaces.append(link_data)
     file_data.namespaces = namespaces
@@ -1954,7 +1948,7 @@ def fill_namespace_content(tree):
     for member in tree.findall(r"compounddef/innerclass[@prot='public']"):
         link = member.attrib["refid"] + ".html"
         # rel_link = convert_rel_path(link, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
-        rel_link = DOXYGEN_HTML_PATH + link
+        rel_link = HTML_DEST_PATH + link
         link_data = LinkData(rel_link, member.text)
 
         kind = "struct" if link.startswith("struct") else "class"
@@ -2005,9 +1999,9 @@ def fill_namespace_content(tree):
 
     return file_data
 
+
 def fill_group_content(tree, module_config):
     bs4 = BeautifulSoup()
-    # file_data = ClassFileData(tree)
     file_data = GroupFileData(tree, module_config)
 
     group_name = file_data.name
@@ -2136,7 +2130,7 @@ def process_html_file(in_path, out_path):
     # if there is a specific page that needs some special dynmic content, this is where we do it
     insert_div_id = ""
     dynamic_div = gen_tag(orig_html, "body")
-    for data in config.ADDITIONAL_REF_DATA:
+    for data in config.DYNAMIC_PAGES_CONFIG:
         if "reference_html" in data and data["reference_html"] == local_rel_path:
             is_searchable = bool(data["searchable"])
             markup = generate_dynamic_markup(data)
@@ -2228,6 +2222,30 @@ def parse_config(path, file_name):
         return None
 
 
+# ============================================================================================== Dynamic Page Generation
+
+
+def generate_dynamic_markup(ref_data):
+
+    # find template if it exists
+
+    ref_id = ref_data["id"]
+    if ref_id == "glm":
+        return_markup = generate_glm_reference()
+    elif ref_id == "namespaces":
+        return_markup = generate_namespace_data()
+    elif ref_id == "classes":
+        return_markup = generate_class_list_data()
+    else:
+        return_markup = "NOTHING FOUND"
+        print "\t*** No rules for generating dynamic content for id'" + ref_id + "' was found"
+
+    # plug data into template (if it exists)
+    template_path = os.path.join(TEMPLATE_PATH, ref_data["template"])
+    markup = render_template(template_path, return_markup)
+    return markup
+
+
 def generate_glm_reference():
 
     glm_group_data = {
@@ -2289,31 +2307,8 @@ def generate_class_list_data():
 
     return classlist_data
 
-def generate_dynamic_markup(ref_data):
 
-    # find template if it exists
-
-    ref_id = ref_data["id"]
-    if ref_id == "glm":
-        return_markup = generate_glm_reference()
-    elif ref_id == "namespaces":
-        return_markup = generate_namespace_data()
-    elif ref_id == "classes":
-        return_markup = generate_class_list_data()
-    else:
-        return_markup = "NOTHING FOUND"
-        print "\t*** No rules for generating dynamic content for id'" + ref_id + "' was found"
-
-    # plug data into template (if it exists)
-    template_path = os.path.join(TEMPLATE_PATH, ref_data["template"])
-    markup = render_template(template_path, return_markup)
-    # print str(markup)
-    return markup
-    # return return_markup
-    # return ""
-
-
-# -------------------------------------------------- CI TAG FUNCTIONS --------------------------------------------------
+# ===================================================================================================== CI Tag Functions
 
 
 def process_ci_tag(bs4, tag, in_path, out_path):
@@ -2342,7 +2337,7 @@ def replace_ci_tag(bs4, link, in_path, out_path):
     ref_obj = find_ci_tag_ref(link)
 
     if ref_obj:
-        ref_location = DOXYGEN_HTML_PATH + ref_obj.path
+        ref_location = HTML_DEST_PATH + ref_obj.path
         new_link = gen_rel_link_tag(bs4, link.contents[0], ref_location, in_path, out_path)
         link.replace_with(new_link)
         # print "\tSuccess: " + str(new_link)
@@ -2457,7 +2452,9 @@ def find_ci_tag_ref(link):
 
     return ref_obj
 
-# ----------------------------------------------- END CI TAG FUNCTIONS -------------------------------------------------
+
+# ======================================================================================================== Link Updating
+
 
 def update_links(html, src_path, dest_path):
     """
@@ -2519,8 +2516,6 @@ def update_links(html, src_path, dest_path):
                 print e.strerror
                 return
 
-    # coy over any iframe html files, if any
-
 
 def update_link(link, in_path, out_path):
     """
@@ -2546,6 +2541,9 @@ def update_link(link, in_path, out_path):
     return rel_link_path
 
 
+# =============================================================================================== File Utility Functions
+
+
 def generate_bs4(file_path):
     output_file = open(os.path.join(file_path)).read()
     output_file.decode("utf-8")
@@ -2559,6 +2557,7 @@ def generate_bs4(file_path):
     bs4 = BeautifulSoup(output_file)
 
     return bs4
+
 
 def generate_bs4_from_string(string):
     output_string = string.decode("UTF-8")
@@ -2664,36 +2663,6 @@ def get_symbol_to_file_map():
         symbol_map.namespaces[namespace_name] = ns_obj
 
         add_typedefs(ns.findall(r"member/[@kind='typedef']"), namespace_name, symbol_map)
-        # for member in ns.findall(r"member/[@kind='typedef']"):
-        #     name = member.find("name").text
-        #     type_name = member.find("type").text
-        #     name = namespace_name + "::" + name
-        #     shared_from_class = None
-        #
-        #     if type_name.startswith("class") > 0:
-        #         shared_from_class = symbol_map.find_class(type_name.split("class ")[1])
-        #
-        #     elif type_name.find("shared") > 0:
-        #         shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type_name)
-        #         if len(shareds) > 0:
-        #             base = namespace_name + "::" + shareds[0]
-        #             shared_from_class = symbol_map.find_class(base)
-        #
-        #     if not shared_from_class:
-        #         # find based on the string in type that's not explicitly a shared_ptr
-        #         # such as <type>SurfaceT&lt; uint8_t &gt;</type>
-        #         shareds = re.findall(r"([A-Za-z]*)", type_name)
-        #         shared_from_class = symbol_map.find_class(shareds[0])
-        #
-        #     file_path = member.find('anchorfile').text + "#" + member.find("anchor").text
-        #     type_def_obj = SymbolMap.Typedef(name, type_name, file_path)
-        #
-        #     if shared_from_class is not None:
-        #         type_def_obj.sharedFrom = shared_from_class
-        #         # let the class know that it has some typedefs associated with it
-        #         shared_from_class.add_type_def(type_def_obj)
-        #
-        #     symbol_map.typedefs[name] = type_def_obj
 
         # find enums
         for member in ns.findall(r"member/[@kind='enumeration']"):
@@ -2872,9 +2841,9 @@ def write_search_index():
     # save search index to js file
     document = "var search_index_data = " + json.dumps(g_search_index).encode('utf-8')
     # print document
-    if not os.path.exists(os.path.dirname(DOXYGEN_HTML_PATH + 'search_index.js')):
-        os.makedirs(os.path.dirname(DOXYGEN_HTML_PATH + 'search_index.js'))
-    with codecs.open(DOXYGEN_HTML_PATH + 'search_index.js', "w", "UTF-8") as outFile:
+    if not os.path.exists(os.path.dirname(HTML_DEST_PATH + 'search_index.js')):
+        os.makedirs(os.path.dirname(HTML_DEST_PATH + 'search_index.js'))
+    with codecs.open(HTML_DEST_PATH + 'search_index.js', "w", "UTF-8") as outFile:
         outFile.write(document)
 
 def add_to_search_index(html, save_path, search_type, tags=[]):
@@ -2980,9 +2949,9 @@ def process_file(in_path, out_path=None):
 
     if is_html_file:
         file_path = "/".join(in_path.split('htmlsrc/')[1:])
-        save_path = out_path if out_path is not None else DOXYGEN_HTML_PATH + file_path
+        save_path = out_path if out_path is not None else HTML_DEST_PATH + file_path
     else:
-        save_path = out_path if out_path is not None else DOXYGEN_HTML_PATH + get_file_prefix(in_path) + ".html"
+        save_path = out_path if out_path is not None else HTML_DEST_PATH + get_file_prefix(in_path) + ".html"
 
     if is_html_file:
         # print "process: " + HTML_SOURCE_PATH + file_path
@@ -2991,10 +2960,10 @@ def process_file(in_path, out_path=None):
     else:
         file_type = get_file_type(file_prefix)
         # process html directory always, since they may generate content for class or namespace reference pages
-        if not PROCESSED_HTML_DIR and not config.SKIP_HTML_PARSING:
+        if not state.processed_html_files and not config.SKIP_HTML_PARSING:
             process_html_dir(HTML_SOURCE_PATH)
 
-        process_xml_file_definition(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path), file_type)
+        process_xml_file_definition(in_path, os.path.join(HTML_DEST_PATH, save_path), file_type)
 
 
 def process_dir(in_path, out_path):
@@ -3016,7 +2985,7 @@ def process_dir(in_path, out_path):
 
 
 def process_html_dir(in_path):
-    global PROCESSED_HTML_DIR
+    global state
     print "PROCESS HTML DIR"
 
     for path, subdirs, files in os.walk(in_path):
@@ -3039,13 +3008,13 @@ def process_html_dir(in_path):
     # add subnav for all guides that need them
     # process_sub_nav()
 
-    PROCESSED_HTML_DIR = True
+    state.processed_html_files = True
 
 
 # def copyFiles( HTML_SOURCE_PATH, DOXYGEN_HTML_PATH ):
 def copy_files():
     src = HTML_SOURCE_PATH
-    dest = DOXYGEN_HTML_PATH
+    dest = HTML_DEST_PATH
 
     try:
         copytree(src, dest, ignore=shutil.ignore_patterns("_templates*", "*.html"))
