@@ -85,8 +85,8 @@ class Config(object):
         # include and document additional modules
         self.GLM_MODULE_CONFIG = {
             "namespace": "glm",
-            "url_prefix": "https://github.com/g-truc/glm/blob/master/",
-            "group_keys": ["glm", "gtc", "gtx"],
+            "url_prefix": "https://github.com/g-truc/glm/tree/0.9.6.3/",
+            "group_keys": ["glm", "gtc", "gtx", "group__core"],
             "source_file_ext": "hpp"
         }
 
@@ -1085,6 +1085,9 @@ def replace_element(bs4, element, replacement_tag):
     :param replacement_tag: new element type to change to
     :return:
     """
+    if not element:
+        return
+
     text_content = element.text
     replacement = gen_tag(bs4, replacement_tag, None, text_content)
     element.replace_with(replacement)
