@@ -218,16 +218,14 @@ void Island::addBumper( const ci::Path2d& path )
 {
 	const float boundingBoxExpansion = 1.1f;
 
-	auto mesh = Triangulator( path ).calcMesh();
 	mBumpers.push_back( Bumper() );
-
 	auto &bumper = mBumpers.back();
-	bumper.mBatch = gl::Batch::create( mesh, gl::getStockShader( gl::ShaderDef().color() ) );
+	bumper.mPath = path;
+	bumper.mBatch = gl::Batch::create( Triangulator( path ).calcMesh(), gl::getStockShader( gl::ShaderDef().color() ) );
 	bumper.mVibrationLevel = 0;
 
 	// calculate an expanded bounding box for each bumper to do hit detection, ensuring that the entire edge is covered.
 	Rectf bbox = bumper.mPath.calcBoundingBox();
-
 	vec2 center = bbox.getCenter();
 	bbox -= center;
 	bbox *= boundingBoxExpansion;
