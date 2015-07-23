@@ -162,13 +162,13 @@ void LogManager::restoreToDefault()
 	mSystemLoggingEnabled = false;
 	mBreakOnLogEnabled = false;
 
-	switch( CI_MAX_LOG_LEVEL ) {
-		case 6: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
-		case 5: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
-		case 4: mSystemLoggingLevel = LEVEL_INFO;		break;
-		case 3: mSystemLoggingLevel = LEVEL_WARNING;	break;
-		case 2: mSystemLoggingLevel = LEVEL_ERROR;		break;
-		case 1: mSystemLoggingLevel = LEVEL_FATAL;		break;
+	switch( CI_MIN_LOG_LEVEL ) {
+		case 6: mSystemLoggingLevel = LEVEL_FATAL;      break;
+		case 5: mSystemLoggingLevel = LEVEL_ERROR;      break;
+		case 4: mSystemLoggingLevel = LEVEL_WARNING;	break;
+		case 3: mSystemLoggingLevel = LEVEL_INFO;       break;
+		case 2: mSystemLoggingLevel = LEVEL_DEBUG;		break;
+		case 1: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
 		default: CI_ASSERT_NOT_REACHABLE();
 	}
 }
@@ -452,7 +452,7 @@ void LoggerFile::ensureDirectoryExists()
 
 void LoggerBreakpoint::write( const Metadata &meta, const string &text )
 {
-	if( meta.mLevel <= mTriggerLevel ) {
+	if( meta.mLevel >= mTriggerLevel ) {
 		CI_BREAKPOINT();
 	}
 }
@@ -601,7 +601,7 @@ LoggerSystem::~LoggerSystem()
 void LoggerSystem::write( const Metadata &meta, const std::string &text )
 {
 #if ! defined( CINDER_WINRT ) // Currently no system logging support on WinRT
-	if( meta.mLevel <= mMinLevel ) {
+	if( meta.mLevel >= mMinLevel ) {
 		mImpl->write( meta, text );
 	}
 #endif
