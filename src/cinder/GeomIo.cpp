@@ -4304,26 +4304,26 @@ void Subdivide::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
-// SourceModsBase
-size_t SourceModsBase::getNumVertices() const
+// SourceMods
+size_t SourceMods::getNumVertices() const
 {
 	cacheVariables();
 	return mParamsStack.back().getNumVertices();
 }
 
-size_t SourceModsBase::getNumIndices() const
+size_t SourceMods::getNumIndices() const
 {
 	cacheVariables();
 	return mParamsStack.back().getNumIndices();
 }
 
-Primitive SourceModsBase::getPrimitive() const
+Primitive SourceMods::getPrimitive() const
 {
 	cacheVariables();
 	return mParamsStack.back().getPrimitive();
 }
 
-uint8_t	SourceModsBase::getAttribDims( Attrib attr ) const
+uint8_t	SourceMods::getAttribDims( Attrib attr ) const
 {
 	cacheVariables();
 	
@@ -4335,7 +4335,7 @@ uint8_t	SourceModsBase::getAttribDims( Attrib attr ) const
 	return result;
 }
 
-AttribSet SourceModsBase::getAvailableAttribs() const
+AttribSet SourceMods::getAvailableAttribs() const
 {
 	cacheVariables();
 	return mParamsStack.back().getAvailableAttribs();
@@ -4346,9 +4346,9 @@ AttribSet SourceModsBase::getAvailableAttribs() const
 // First we store the Source's values for the above variables; then we iterate the modifiers, updating all variables in turn
 // A Modifier's various get*() methods (getNumVertices() for example) will call back into 'this' in some instances.
 // For example, the geom::Lines modifier must call getPrimitive() in order to calculate the numIndices
-// In this example, the SourceModsBase::getPrimitive() method will reflect whatever the primitive is as of the previous modifier in the iteration,
+// In this example, the SourceMods::getPrimitive() method will reflect whatever the primitive is as of the previous modifier in the iteration,
 // or the Source if this is the first modifier, because we are setting 'mCachedPrimitive' in the loop
-void SourceModsBase::cacheVariables() const
+void SourceMods::cacheVariables() const
 {
 	if( mVariablesCached )
 		return;
@@ -4377,7 +4377,7 @@ void SourceModsBase::cacheVariables() const
 	}
 }
 
-void SourceModsBase::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+void SourceMods::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	// if we have no modifiers (not typical) just do a standard loadInto
 	if( mModifiers.empty() ) {
@@ -4389,7 +4389,7 @@ void SourceModsBase::loadInto( Target *target, const AttribSet &requestedAttribs
 	}
 }
 
-void SourceModsBase::addModifier( const Modifier &modifier )
+void SourceMods::addModifier( const Modifier &modifier )
 {
 	mModifiers.push_back( std::unique_ptr<Modifier>( modifier.clone() ) );
 	mVariablesCached = false;
@@ -4397,7 +4397,7 @@ void SourceModsBase::addModifier( const Modifier &modifier )
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SourceModsContext
-SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
+SourceModsContext::SourceModsContext( const SourceMods *sourceMods )
 	: mNumIndices( 0 ), mNumVertices( 0 ), mAttribMask( nullptr )
 {
 	mSource = sourceMods->getSource();

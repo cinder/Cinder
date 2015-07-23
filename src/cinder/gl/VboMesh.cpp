@@ -37,7 +37,8 @@ class VboMeshSource : public geom::Source {
   public:
 	static std::shared_ptr<VboMeshSource>	create( const gl::VboMesh *vboMesh );
 	
-	void	loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	VboMeshSource*	clone() const override { return new VboMeshSource( *this ); }
 	
 	size_t			getNumVertices() const override;
 	size_t			getNumIndices() const override;

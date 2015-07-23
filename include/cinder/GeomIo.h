@@ -49,7 +49,7 @@ namespace cinder {
 namespace cinder { namespace geom {
 
 class Target;
-class SourceModsBase;
+class SourceMods;
 class SourceModsContext;
 typedef std::shared_ptr<class Source>	SourceRef;
 
@@ -144,10 +144,10 @@ class Source {
 	virtual size_t		getNumIndices() const = 0;
 	virtual Primitive	getPrimitive() const = 0;
 	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;
-
-	virtual void		loadInto( Target *target, const AttribSet &requestedAttribs ) const = 0;
-
 	virtual AttribSet	getAvailableAttribs() const = 0;
+	
+	virtual void		loadInto( Target *target, const AttribSet &requestedAttribs ) const = 0;
+	virtual Source*		clone() const = 0;
 
   protected:
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
@@ -189,7 +189,7 @@ class Modifier {
 		Primitive	mPrimitive;
 		AttribSet	mAvaliableAttribs;
 		
-		friend class SourceModsBase;
+		friend class SourceMods;
 	};
 	
 	virtual ~Modifier() {}
@@ -225,6 +225,7 @@ class Rect : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Rect*		clone() const override { return new Rect( *this ); }
 
   protected:
 	void					setDefaultColors();
@@ -247,12 +248,13 @@ class RoundedRect : public Source {
 	RoundedRect&	texCoords( const vec2 &upperLeft, const vec2 &lowerRight );
 	RoundedRect&	colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
 	
-	size_t		getNumVertices() const override { return mNumVertices; }
-	size_t		getNumIndices() const override { return 0; }
-	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	size_t			getNumVertices() const override { return mNumVertices; }
+	size_t			getNumIndices() const override { return 0; }
+	Primitive		getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
+	uint8_t			getAttribDims( Attrib attr ) const override;
+	AttribSet		getAvailableAttribs() const override;
+	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	RoundedRect*	clone() const override { return new RoundedRect( *this ); }
 	
   protected:
 	void updateVertexCount();
@@ -288,6 +290,7 @@ class Cube : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Cube*		clone() const override { return new Cube( *this ); }
 
   protected:
 	ivec3					mSubdivisions;
@@ -303,12 +306,13 @@ class Icosahedron : public Source {
 	// Enables colors. Disabled by default.
 	Icosahedron&	colors( bool enable = true ) { mHasColors = enable; return *this; }
 	
-	size_t		getNumVertices() const override;
-	size_t		getNumIndices() const override;
-	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	size_t			getNumVertices() const override;
+	size_t			getNumIndices() const override;
+	Primitive		getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t			getAttribDims( Attrib attr ) const override;
+	AttribSet		getAvailableAttribs() const override;
+	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Icosahedron*	clone() const override { return new Icosahedron( *this ); }
 
   protected:
 	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<vec2> *texcoords, std::vector<uint32_t> *indices ) const;
@@ -337,6 +341,7 @@ class Icosphere : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Icosphere*	clone() const override { return new Icosphere( *this ); }
 
   protected:
 	void	calculate() const;
@@ -363,6 +368,7 @@ class Teapot : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Teapot*		clone() const override { return new Teapot( *this ); }
 
   protected:
 	void			calculate( std::vector<float> *positions, std::vector<float> *normals, std::vector<float> *texCoords, std::vector<uint32_t> *indices ) const;
@@ -399,6 +405,7 @@ class Circle : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Circle*		clone() const override { return new Circle( *this ); }
 
   private:
 	void	updateVertexCounts();
@@ -410,7 +417,7 @@ class Circle : public Source {
 };
 
 class Ring : public Source {
-public:
+  public:
 	Ring();
 
 	Ring&		center( const vec2 &center ) { mCenter = center; return *this; }
@@ -424,6 +431,7 @@ public:
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Ring*		clone() const override { return new Ring( *this ); }
 
 private:
 	void	updateVertexCounts();
@@ -452,6 +460,7 @@ class Sphere : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Sphere*		clone() const override { return new Sphere( *this ); }
 
   protected:
 	void		numRingsAndSegments( int *numRings, int *numSegments ) const;
@@ -485,6 +494,7 @@ class Capsule : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Capsule*	clone() const override { return new Capsule( *this ); }
 
   private:
 	void	updateCounts();
@@ -522,6 +532,7 @@ class Torus : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Torus*		clone() const override { return new Torus( *this ); }
 
   protected:
 	void		updateCounts();
@@ -589,6 +600,7 @@ class Cylinder : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Cylinder*	clone() const override { return new Cylinder( *this ); }
 
   protected:
 	void	updateCounts();
@@ -656,6 +668,7 @@ class Plane : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Plane*		clone() const override { return new Plane( *this ); }
 
   protected:
 	ivec2		mSubdivisions;
@@ -684,6 +697,7 @@ class Extrude : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	Extrude*	clone() const override { return new Extrude( *this ); }
 	
   protected:
 	void		updatePathSubdivision();
@@ -713,12 +727,13 @@ class ExtrudeSpline : public Source {
 	//! Sets the number of subdivisions along the axis of extrusion
 	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
 
-	size_t		getNumVertices() const override;
-	size_t		getNumIndices() const override;
-	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	size_t			getNumVertices() const override;
+	size_t			getNumIndices() const override;
+	Primitive		getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t			getAttribDims( Attrib attr ) const override;
+	AttribSet		getAvailableAttribs() const override;
+	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	ExtrudeSpline*	clone() const override { return new ExtrudeSpline( *this ); }
 	
   protected:
 	void updatePathSubdivision();
@@ -748,6 +763,7 @@ class BSpline : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	BSpline*	clone() const override { return new BSpline( *this ); }
 	
   protected:
 	template<typename T>
@@ -780,7 +796,7 @@ class WireSource : public Source {
 
 
 class WireCapsule : public WireSource {
-public:
+  public:
 	WireCapsule();
 
 	WireCapsule&		center( const vec3 &center ) { mCenter = center; return *this; }
@@ -796,10 +812,11 @@ public:
 	//! Conveniently sets center, length and direction
 	WireCapsule&		set( const vec3 &from, const vec3 &to );
 
-	size_t		getNumVertices() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	size_t			getNumVertices() const override;
+	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WireCapsule*	clone() const override { return new WireCapsule( *this ); }
 
-private:
+  private:
 	void	calculate( std::vector<vec3> *positions ) const;
 	void	calculateRing( float radius, float d, std::vector<vec3> *positions ) const;
 
@@ -823,6 +840,7 @@ class WireCircle : public WireSource {
 
 	size_t		getNumVertices() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WireCircle*	clone() const override { return new WireCircle( *this ); }
 
   private:
 	vec3		mCenter;
@@ -840,8 +858,9 @@ class WireRoundedRect : public WireSource {
 	WireRoundedRect&	cornerSubdivisions( int cornerSubdivisions );
 	WireRoundedRect&	cornerRadius( float cornerRadius );
 	
-	size_t		getNumVertices() const override { return mNumVertices; }
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	size_t				getNumVertices() const override { return mNumVertices; }
+	void				loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WireRoundedRect*	clone() const override { return new WireRoundedRect( *this ); }
 	
   protected:
 	void updateVertexCount();
@@ -869,7 +888,8 @@ class WireCube : public WireSource {
 
 	size_t		getNumVertices() const override { return ( mSubdivisions.x - 1 ) * 8 + ( mSubdivisions.y - 1 ) * 8 + ( mSubdivisions.z - 1 ) * 8 + 24; }
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-
+	WireCube*	clone() const override { return new WireCube( *this ); }
+	
   protected:
 	ivec3					mSubdivisions;
 	vec3					mSize;
@@ -901,8 +921,9 @@ class WireCylinder : public WireSource {
 	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
 	WireCylinder&	set( const vec3 &from, const vec3 &to );
 
-	size_t		getNumVertices() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	size_t			getNumVertices() const override;
+	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WireCylinder*	clone() const override { return new WireCylinder( *this ); }
 
   protected:
 	vec3		mOrigin;
@@ -943,14 +964,17 @@ class WireCone : public WireCylinder {
 	WireCone&	direction( const vec3 &direction ) { WireCylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
 	WireCone&	set( const vec3 &from, const vec3 &to ) { WireCylinder::set( from, to ); return *this; }
+
+	WireCone*	clone() const override { return new WireCone( *this ); }
 };
 
 class WireIcosahedron : public WireSource {
 public:
 	WireIcosahedron() {}
 
-	size_t		getNumVertices() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	size_t				getNumVertices() const override;
+	void				loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WireIcosahedron*	clone() const override { return new WireIcosahedron( *this ); }
 
 protected:
 	void		calculate() const;
@@ -965,8 +989,9 @@ class WireFrustum : public WireSource {
 	//template<typename T>
 	//WireFrustum( const Frustum<T> &frustum );
 
-	size_t		getNumVertices() const override { return 24; }
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	size_t			getNumVertices() const override { return 24; }
+	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WireFrustum*	clone() const override { return new WireFrustum( *this ); }
 
   private:
 	vec3 ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr;
@@ -991,6 +1016,7 @@ class WirePlane : public WireSource {
 
 	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 2 + ( mSubdivisions.y + 1 ) * 2; }
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WirePlane*	clone() const override { return new WirePlane( *this ); }
 
   protected:
 	ivec2		mSubdivisions;
@@ -1013,6 +1039,7 @@ class WireSphere : public WireSource {
 
 	size_t		getNumVertices() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WireSphere*	clone() const override { return new WireSphere( *this ); }
 
   protected:
 	vec3		mCenter;
@@ -1040,6 +1067,7 @@ class WireTorus : public WireSource {
 
 	size_t		getNumVertices() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WireTorus*	clone() const override { return new WireTorus( *this ); }
 
   protected:
 	vec3		mCenter;
@@ -1311,11 +1339,11 @@ class Subdivide : public Modifier {
 //! Used by Modifiers to process Source -> Target
 class SourceModsContext : public Target {
   public:
-	SourceModsContext( const SourceModsBase *sourceMods );
+	SourceModsContext( const SourceMods *sourceMods );
 	//! Can be used to capture a Source. Calling loadInto() in this case is an error.
 	SourceModsContext();
 
-	// called by SourceModsBase::loadInto()
+	// called by SourceMods::loadInto()
 	void			loadInto( Target *target, const AttribSet &requestedAttribs );
 	
 	// Target virtuals; also used by Modifiers
@@ -1357,11 +1385,39 @@ class SourceModsContext : public Target {
 	geom::Primitive							mPrimitive;
 };
 
-class SourceModsBase : public Source {
+class SourceMods : public Source {
   public:
-	SourceModsBase()
-		: mVariablesCached( false )
+	SourceMods()
+		: mVariablesCached( false ), mSourcePtr( nullptr )
 	{}
+
+	SourceMods( const SourceMods &sourceMods )
+		: mVariablesCached( false )	
+	{
+		mSourceStorage = std::unique_ptr<Source>( sourceMods.mSourcePtr->clone() );
+		mSourcePtr = mSourceStorage.get();
+		for( auto &modifier : sourceMods.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( modifier->clone() ) );
+	}
+
+	SourceMods( SourceMods &&sourceMods )
+		: mVariablesCached( false )
+	{
+		mSourceStorage = std::move( sourceMods.mSourceStorage );
+		mSourcePtr = sourceMods.mSourcePtr;
+		mModifiers = std::move( sourceMods.mModifiers );
+	}
+
+	explicit SourceMods( const Source *source, bool clone )
+		: mVariablesCached( false )
+	{
+		if( clone ) {
+			mSourceStorage = std::unique_ptr<Source>( source->clone() );
+			mSourcePtr = mSourceStorage.get();
+		}
+		else
+			mSourcePtr = source;
+	}
 
 	// geom::Source methods
 	size_t		getNumVertices() const override;
@@ -1370,16 +1426,21 @@ class SourceModsBase : public Source {
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	SourceMods*	clone() const override { return new SourceMods( *this ); }
 	
 	void											addModifier( const Modifier &modifier );
 	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
 	
-	virtual const Source*		getSource() const = 0;
+	const Source*		getSource() const { return mSourcePtr; }
+	
+	//! Not generally useful. Use getSource() instead. Maps to nullptr when the SourceMods is not responsible for ownership.
+	const std::unique_ptr<Source>&	getSourceStorage() const { return mSourceStorage; }
 
   protected:
 	void		cacheVariables() const;
 	
-	const Source* 							mSourceBase;
+	const Source* 							mSourcePtr;
+	std::unique_ptr<Source>					mSourceStorage; // null if we don't have ownership
 	std::vector<std::unique_ptr<Modifier>>	mModifiers;
 	
 	mutable bool							mVariablesCached;
@@ -1388,173 +1449,35 @@ class SourceModsBase : public Source {
 	friend class SourceModsContext;
 };
 
-template<typename T>
-class SourceMods;
-
-//! In general you should not return this as the result of a function or even instantiate it directly
-//! Similar to SourceMods<> but stores a pointer to the SOURCE rather than a copy of it
-template<typename SOURCE>
-class SourceModsPtr : public SourceModsBase {
-  public:
-	SourceModsPtr( const SOURCE *srcPtr )
-		: SourceModsBase(), mSrcPtr( srcPtr )
-	{}
-
-	SourceModsPtr( const SourceModsPtr<SOURCE> &rhs )
-		: SourceModsBase(), mSrcPtr( rhs.mSrcPtr )
-	{
-		for( const auto &rhsMod : rhs.mModifiers )
-			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
-	}
-
-	SourceModsPtr( const SOURCE* srcPtr, const std::vector<std::unique_ptr<Modifier>>& srcModifiers )
-		: SourceModsBase(), mSrcPtr( srcPtr )
-	{
-		for( const auto &rhsMod : srcModifiers )
-			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
-	}
-	
-	SourceModsPtr( SourceModsPtr<SOURCE> &&rhs )
-		: SourceModsBase(), mSrcPtr( rhs.mSrcPtr )
-	{
-		for( auto &rhsMod : rhs.mModifiers )
-			mModifiers.push_back( std::move( rhsMod ) );
-	}
-	
-	SourceModsPtr& operator=( const SourceModsPtr<SOURCE> &rhs )
-	{
-		mSourceBase = rhs.mSrcPtr;
-		mSrcPtr = rhs.mSrcPtr;
-		
-		for( const auto &rhsMod : rhs.mModifiers )
-			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
-
-		return *this;
-	}
-	
-	SourceModsPtr& operator=( SourceModsPtr<SOURCE> &&rhs )
-	{
-		mSourceBase = rhs.mSrcPtr;
-		mSrcPtr = std::move( rhs.mSrc );
-		
-		for( auto &rhsMod : rhs.mModifiers )
-			mModifiers.push_back( std::move( rhsMod ) );
-
-		return *this;
-	}
-	
-	const Source*		getSource() const override { return mSrcPtr; }
-	
-	const SOURCE		*mSrcPtr;
-};
-
-template<typename SOURCE>
-class SourceMods : public SourceModsBase {
-  public:
-	SourceMods( const SOURCE &src )
-		: SourceModsBase(), mSrc( src )
-	{}
-	
-	SourceMods( SOURCE &&src )
-		: SourceModsBase(), mSrc( std::move( src ) )
-	{}
-
-	SourceMods( const SourceMods<SOURCE> &rhs )
-		: SourceModsBase(), mSrc( rhs.mSrc )
-	{
-		for( const auto &rhsMod : rhs.mModifiers )
-			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
-	}
-
-	SourceMods( SourceMods<SOURCE> &&rhs )
-		: SourceModsBase(), mSrc( std::move( rhs.mSrc ) )
-	{
-		for( auto &rhsMod : rhs.mModifiers )
-			mModifiers.push_back( std::move( rhsMod ) );
-	}
-
-	SourceMods( const SourceModsPtr<SOURCE> &rhs )
-		: SourceModsBase(), mSrc( *rhs.mSrcPtr )
-	{
-		for( const auto &rhsMod : rhs.mModifiers )
-			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
-	}
-	
-	SourceMods& operator=( const SourceMods<SOURCE> &rhs )
-	{
-		mSourceBase = &mSrc;
-		mSrc = rhs.mSrc;
-		
-		for( const auto &rhsMod : rhs.mModifiers )
-			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
-
-		return *this;
-	}
-	
-	SourceMods& operator=( SourceMods<SOURCE> &&rhs )
-	{
-		mSourceBase = &mSrc;
-		mSrc = std::move( rhs.mSrc );
-		
-		for( auto &rhsMod : rhs.mModifiers )
-			mModifiers.push_back( std::move( rhsMod ) );
-
-		return *this;
-	}
-	
-	const Source*		getSource() const override { return &mSrc; }
-	
-	SOURCE		mSrc;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Source
-template<typename SOURCE>
-SourceModsPtr<SOURCE> operator>>( SourceMods<SOURCE> &sourceMod, const Modifier &modifier )
+inline SourceMods operator>>( const SourceMods &source, const Modifier &modifier )
 {
-	SourceModsPtr<SOURCE> result( &sourceMod.mSrc, sourceMod.getModifiers() );
+	SourceMods result = source;
 	result.addModifier( modifier );
 	return result;
 }
 
-template<typename SOURCE>
-SourceMods<SOURCE>&& operator>>( SourceMods<SOURCE> &&sourceMod, const Modifier &modifier )
+inline SourceMods&& operator>>( SourceMods &&source, const Modifier &modifier )
 {
-	sourceMod.addModifier( modifier );
-	return std::move(sourceMod);
+	source.addModifier( modifier );
+	return std::move( source );
 }
 
-template<typename SOURCE>
-SourceModsPtr<SOURCE> operator>>( SourceModsPtr<SOURCE> &sourceMod, const Modifier &modifier )
+inline SourceMods operator>>( const Source &source, const Modifier &modifier )
 {
-	SourceModsPtr<SOURCE> result( sourceMod );
+	SourceMods result( &source, true ); // clone the source since it's a temporary
 	result.addModifier( modifier );
 	return result;
 }
 
-template<typename SOURCE>
-SourceModsPtr<SOURCE>&& operator>>( SourceModsPtr<SOURCE> &&sourceMod, const Modifier &modifier )
+inline SourceMods operator>>( const Source *source, const Modifier &modifier )
 {
-	sourceMod.addModifier( modifier );
-	return std::move(sourceMod);
-}
-
-template<typename SOURCE>
-SourceMods<SOURCE> operator>>( const SOURCE &source, const Modifier &modifier )
-{
-	SourceMods<SOURCE> result( source );
+	SourceMods result( source, false ); // don't clone the source since we were passed its address
 	result.addModifier( modifier );
 	return result;
 }
-
-template<typename SOURCE>
-typename std::enable_if<std::is_base_of<Source,SOURCE>::value, SourceMods<SOURCE>>::type operator>>( SOURCE &&source, const Modifier &modifier )
-{
-	SourceMods<SOURCE> result( std::forward<SOURCE>( source ) );
-	result.addModifier( modifier );
-	return result;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 class Exc : public Exception {
