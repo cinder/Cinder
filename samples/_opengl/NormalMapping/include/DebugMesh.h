@@ -41,6 +41,7 @@ class DebugMesh : public ci::geom::Source {
 
 	ci::geom::AttribSet	getAvailableAttribs() const override;
 	void				loadInto( ci::geom::Target *target, const ci::geom::AttribSet &requestedAttribs ) const override;
+	DebugMesh*			clone() const override { return new DebugMesh( *this ); }
 
   private:
 	std::vector<ci::vec3>		mVertices;
