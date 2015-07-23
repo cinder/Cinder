@@ -1408,85 +1408,35 @@ def markup_description(bs4, tree):
 
 
 def replace_code_chunks(bs4):
-    """ Looks though the html and replaces any code chunks that exist
-        in a paragraph and splits them up so that we can use pre tags.
     """
-    # find all p tags
-    p_tags = bs4.find_all("p")
-    for p in p_tags:
+    Looks though the html and replaces any code chunks that exist
+    in a paragraph and splits them up so that we can use pre tags.
+    :param bs4:
+    :return:
+    """
+    # find all the code chunks
+    code_chunks = bs4.find_all("div", "programlisting")
+    for chunk in code_chunks:
+        pre_tag = bs4.new_tag("pre")
+        code_tag = bs4.new_tag("code")
+        add_class_to_tag(code_tag, "language-cpp")
 
-        # if the paragraph as a "div.computeroutput"
-        # codeChunks = p.find_all( "div", "computeroutput" )
-        code_chunks = p.find_all("div", "programlisting")
+        # for each code line, add a line of that text to the new div
+        for line in chunk.find("div", "codeline"):
+            line_text = ""
+            for c in line.contents:
+                if type(c) is Tag:
+                    line_text += c.text
+                else:
+                    line_text += c
+            code_tag.append(line_text + "\n")
+        pre_tag.append(code_tag)
 
-        if len(code_chunks) > 0:
-
-            new_tags = []
-            cur_p = None
-
-            for c in p.contents:
-
-                # create a new paragraph to wrap content in
-                if cur_p is None:
-                    cur_p = gen_tag(bs4, "p")
-                    new_tags.append(cur_p)
-
-                add_to_p = True
-
-                if type(c) == Tag:
-                    if c.has_attr("class"):
-
-                        # look for any tags with "computeroutput"
-                        if "programlisting" in c["class"]:
-
-                            # add a new pre
-                            pre_tag = gen_tag(bs4, "pre")
-
-                            for code in c.contents:
-
-                                # clone code
-                                c_clone = clone(code)
-
-                                # code string
-                                code_string = ""
-                                if type(code) == Tag:
-
-                                    # clear the original tag
-                                    code.clear()
-
-                                    # add clone to holder so that we can iterate through
-                                    holder = gen_tag(bs4, "div")
-                                    holder.append(c_clone)
-
-                                    # append line breaks for each line of code
-                                    for content in holder.code.contents:
-                                        code_string += content.getText() + "\n"
-
-                                if len(c_clone) > 0:
-                                    code.append(code_string)
-                                    pre_tag.append(code)
-
-                            new_tags.append(pre_tag)
-
-                            # create a new p tag for any following content to add itself to
-                            cur_p = gen_tag(bs4, "p")
-                            new_tags.append(cur_p)
-                            add_to_p = False
-
-                if add_to_p:
-                    c_clone = clone(c)
-                    cur_p.append(c_clone)
-
-            # replace p tag with an empty span
-            replacement_tag = gen_tag(bs4, "span")
-            p.replace_with(replacement_tag)
-
-            # add the newly organized tags to the new span
-            for t in new_tags:
-                replacement_tag.append(t)
-
-            # unwrap / remove the span since that was only there to place this new content into
-            replacement_tag.unwrap()
+        # replace content in code chunks
+        chunk.clear()
+        replacement_span = gen_tag(bs4, "span")
+        replacement_span.append(pre_tag)
+        chunk.append(pre_tag)
 
 
 # clone an element
