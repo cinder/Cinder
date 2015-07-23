@@ -1,6 +1,6 @@
 #include "cinder/app/App.h"
 
-//#define CI_MIN_LOG_LEVEL 4
+//#define CI_MIN_LOG_LEVEL 1
 
 #include "cinder/Log.h"
 
@@ -34,16 +34,16 @@ class DebugTestApp : public App {
 void DebugTestApp::setup()
 {
     testLevels();
-    //testEnableFileLogger();
+    testEnableFileLogger();
     //testEnableSysLogger();
     //testEnableBadFilePath();
     //testEnableDisable();
     //testAddRemove();
     //testRotatingFile();
-    //testSystemLevel();
+    testSystemLevel();
     //testAddFile();
     //testAsserts();
-    //testBreakOnLog();
+    testBreakOnLog();
     //testRestore();
 }
 

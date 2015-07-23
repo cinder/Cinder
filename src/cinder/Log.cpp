@@ -163,12 +163,12 @@ void LogManager::restoreToDefault()
 	mBreakOnLogEnabled = false;
 
 	switch( CI_MIN_LOG_LEVEL ) {
-		case 6: mSystemLoggingLevel = LEVEL_FATAL;      break;
-		case 5: mSystemLoggingLevel = LEVEL_ERROR;      break;
-		case 4: mSystemLoggingLevel = LEVEL_WARNING;	break;
-		case 3: mSystemLoggingLevel = LEVEL_INFO;       break;
-		case 2: mSystemLoggingLevel = LEVEL_DEBUG;		break;
-		case 1: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
+		case 5: mSystemLoggingLevel = LEVEL_FATAL;      break;
+		case 4: mSystemLoggingLevel = LEVEL_ERROR;      break;
+		case 3: mSystemLoggingLevel = LEVEL_WARNING;	break;
+		case 2: mSystemLoggingLevel = LEVEL_INFO;       break;
+		case 1: mSystemLoggingLevel = LEVEL_DEBUG;		break;
+		case 0: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
 		default: CI_ASSERT_NOT_REACHABLE();
 	}
 }
