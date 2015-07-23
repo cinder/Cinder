@@ -46,6 +46,12 @@ Frustum<T>::Frustum( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const
 }
 
 template<typename T>
+Frustum<T>::Frustum( const Mat4T &mat )
+{
+	set( mat );
+}
+
+template<typename T>
 void Frustum<T>::set( const Camera &cam )
 {
 	vec3 ntl, ntr, nbl, nbr;
@@ -80,6 +86,19 @@ void Frustum<T>::set( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, cons
 	mFrustumPlanes[RIGHT].set( nbr, ntr, fbr );
 	mFrustumPlanes[NEAR].set( ntl, ntr, nbr );
 	mFrustumPlanes[FAR].set( ftr, ftl, fbl );
+}
+
+template<typename T>
+void Frustum<T>::set( const Mat4T &mat )
+{
+	// Based on: Fast Extraction of Viewing Frustum Planes from the WorldView-Projection Matrix
+	//       by: Gil Gribb and Klaus Hartmann
+	mFrustumPlanes[TOP].set( mat[0][3] - mat[0][1], mat[1][3] - mat[1][1], mat[2][3] - mat[2][1], -mat[3][3] + mat[3][1] );
+	mFrustumPlanes[BOTTOM].set( mat[0][3] + mat[0][1], mat[1][3] + mat[1][1], mat[2][3] + mat[2][1], -mat[3][3] - mat[3][1] );
+	mFrustumPlanes[LEFT].set( mat[0][3] + mat[0][0], mat[1][3] + mat[1][0], mat[2][3] + mat[2][0], -mat[3][3] - mat[3][0] );
+	mFrustumPlanes[RIGHT].set( mat[0][3] - mat[0][0], mat[1][3] - mat[1][0], mat[2][3] - mat[2][0], -mat[3][3] + mat[3][0] );
+	mFrustumPlanes[NEAR].set( mat[0][3] + mat[0][2], mat[1][3] + mat[1][2], mat[2][3] + mat[2][2], -mat[3][3] - mat[3][2] );
+	mFrustumPlanes[FAR].set( mat[0][3] - mat[0][2], mat[1][3] - mat[1][2], mat[2][3] - mat[2][2], -mat[3][3] + mat[3][2] );
 }
 
 template<typename T>

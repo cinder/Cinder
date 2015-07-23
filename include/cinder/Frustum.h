@@ -45,18 +45,25 @@ class Frustum {
 	enum FrustumSection { NEAR, FAR, LEFT, RIGHT, TOP, BOTTOM };
 
 	typedef glm::tvec3<T, glm::defaultp> Vec3T;
+	typedef glm::tmat4x4<T, glm::defaultp> Mat4T;
 
   public:
 	Frustum() {}
+	//! Creates a world space frustum based on the camera's parameters.
 	Frustum( const Camera &cam );
+	//! Creates a frustum based on the corners of a near and far portal.
 	Frustum( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr );
+	//! Creates a frustum based on a (projection) matrix. The six planes of the frustum are derived from the matrix. To create a world space frustum, use a view-projection matrix.
+	Frustum( const Mat4T &mat );
 
-	//! Creates a frustum based on the camera's parameters.
+	//! Creates a world space frustum based on the camera's parameters.
 	void set( const Camera &cam );
-	//! Creates a frustum based on the camera's parameters and four corners of a portal.
+	//! Creates a world space frustum based on the camera's parameters and four corners of a portal.
 	void set( const Camera &cam, const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr );
 	//! Creates a frustum based on the corners of a near and far portal.
 	void set( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr );
+	//! Creates a frustum based on a (projection) matrix. The six planes of the frustum are derived from the matrix. To create a world space frustum, use a view-projection matrix.
+	void set( const Mat4T &mat );
 
 	//! Returns true if point is within frustum.
 	bool contains( const Vec3T &loc ) const;
