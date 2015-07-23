@@ -1071,9 +1071,9 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 			}
 
 			if( ! format.mSwizzleSpecified ) {
-				std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_GREEN };
-				if( defaultInternalFormat == GL_RED )
-					swizzleMask[3] = GL_ONE;
+				std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
+				if( imageSource->hasAlpha() )
+					swizzleMask[3] = GL_GREEN;
 				format.setSwizzleMask( swizzleMask );
 			}
 #endif
