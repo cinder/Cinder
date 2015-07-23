@@ -43,7 +43,7 @@ void DebugTestApp::setup()
     testSystemLevel();
     //testAddFile();
     //testAsserts();
-    testBreakOnLog();
+    //testBreakOnLog();
     //testRestore();
 }
 
