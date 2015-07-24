@@ -3089,6 +3089,12 @@ if __name__ == "__main__":
     #    sys.exit("ERROR: Sorry buddy, you must use python 2.7.6+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
     # if sys.version
 
+    if len(sys.argv) == 2:
+        inPath = sys.argv[1]
+        if not os.path.isfile(inPath) and not os.path.isdir(inPath):
+            log("Nice try! Directory or file '" + inPath  + "' doesn't even exist, so we're going to stop right... now!")
+            quit()
+
     # Load tag file
     print "parsing tag file"
     g_tag_xml = ET.ElementTree(ET.parse("doxygen/cinder.tag").getroot())
