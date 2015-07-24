@@ -1288,19 +1288,35 @@ class Remove : public Modifier {
 //! Combines an additional Source. Requires the Primitive types to match. Attributes not available on Source will be filled with \c 0
 class Combine : public Modifier {
   public:
+	Combine( const Source &source )
+	{
+		mSourceStorage = std::unique_ptr<Source>( source.clone() );
+		mSource = mSourceStorage.get();
+	}
 	Combine( const Source *source )
 		: mSource( source )
 	{}
+	Combine( const Combine &combine )
+	{
+		if( combine.mSourceStorage ) {
+			mSourceStorage = std::unique_ptr<Source>( combine.mSourceStorage->clone() );
+			mSource = mSourceStorage.get();
+		}
+		else {
+			mSource = combine.mSource;
+		}
+	}
 	
-	Modifier*	clone() const override { return new Combine( mSource ); }
-	
+	Modifier*	clone() const override { return new Combine( *this ); }
+
 	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
 	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
 	
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
   protected:
-	const Source		*mSource;
+	const Source				*mSource;
+	std::unique_ptr<Source>		mSourceStorage;
 };
 
 //! Calculates the 3D bounding box of the geometry.
@@ -1385,11 +1401,18 @@ class SourceModsContext : public Target {
 	geom::Primitive							mPrimitive;
 };
 
+//! Represents a geom::Source with 0 or more geom::Modifiers concatenated.
 class SourceMods : public Source {
   public:
 	SourceMods()
 		: mVariablesCached( false ), mSourcePtr( nullptr )
 	{}
+	SourceMods( const geom::Source &source )
+		: mVariablesCached( false )
+	{
+		mSourceStorage = std::unique_ptr<Source>( source.clone() );
+		mSourcePtr = mSourceStorage.get();
+	}
 
 	SourceMods( const SourceMods &sourceMods )
 		: mVariablesCached( false )	
@@ -1418,6 +1441,14 @@ class SourceMods : public Source {
 		else
 			mSourcePtr = source;
 	}
+	
+	void	append( const Modifier &modifier );
+	void	append( const Source &source );
+	
+	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
+	const Source*		getSource() const { return mSourcePtr; }
+	//! Not generally useful. Use getSource() instead. Maps to nullptr when the SourceMods is not responsible for ownership.
+	const std::unique_ptr<Source>&	getSourceStorage() const { return mSourceStorage; }
 
 	// geom::Source methods
 	size_t		getNumVertices() const override;
@@ -1427,14 +1458,6 @@ class SourceMods : public Source {
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	SourceMods*	clone() const override { return new SourceMods( *this ); }
-	
-	void											addModifier( const Modifier &modifier );
-	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
-	
-	const Source*		getSource() const { return mSourcePtr; }
-	
-	//! Not generally useful. Use getSource() instead. Maps to nullptr when the SourceMods is not responsible for ownership.
-	const std::unique_ptr<Source>&	getSourceStorage() const { return mSourceStorage; }
 
   protected:
 	void		cacheVariables() const;
@@ -1455,27 +1478,27 @@ class SourceMods : public Source {
 inline SourceMods operator>>( const SourceMods &source, const Modifier &modifier )
 {
 	SourceMods result = source;
-	result.addModifier( modifier );
+	result.append( modifier );
 	return result;
 }
 
 inline SourceMods&& operator>>( SourceMods &&source, const Modifier &modifier )
 {
-	source.addModifier( modifier );
+	source.append( modifier );
 	return std::move( source );
 }
 
 inline SourceMods operator>>( const Source &source, const Modifier &modifier )
 {
 	SourceMods result( &source, true ); // clone the source since it's a temporary
-	result.addModifier( modifier );
+	result.append( modifier );
 	return result;
 }
 
 inline SourceMods operator>>( const Source *source, const Modifier &modifier )
 {
 	SourceMods result( source, false ); // don't clone the source since we were passed its address
-	result.addModifier( modifier );
+	result.append( modifier );
 	return result;
 }
 ////////////////////////////////////////////////////////////////////////////////

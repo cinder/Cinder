@@ -4389,10 +4389,22 @@ void SourceMods::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 	}
 }
 
-void SourceMods::addModifier( const Modifier &modifier )
+void SourceMods::append( const Modifier &modifier )
 {
 	mModifiers.push_back( std::unique_ptr<Modifier>( modifier.clone() ) );
 	mVariablesCached = false;
+}
+
+void SourceMods::append( const Source &source )
+{
+	if( mSourcePtr ) { // if we already have a Source, append a Combine modifier
+		mModifiers.push_back( std::unique_ptr<Modifier>( new geom::Combine( source ) ) );
+		mVariablesCached = false;
+	}
+	else {
+		mSourceStorage = std::unique_ptr<Source>( source.clone() );
+		mSourcePtr = mSourceStorage.get();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
