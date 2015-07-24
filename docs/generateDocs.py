@@ -362,7 +362,6 @@ class SymbolMap(object):
 
         # sort by lowercased name
         namespaces = sorted(namespaces, key=lambda s: s.name.lower())
-        print namespaces
         return namespaces
 
     def find_typedef(self, name):
@@ -595,7 +594,7 @@ class ClassFileData(FileData):
 
     def __init__(self, tree):
         FileData.__init__(self, tree)
-        self.description = ""
+        self.description = None
         self.is_template = False
         self.template_def_name = ""
         self.includes = None
@@ -1159,7 +1158,7 @@ def parse_member_definition(bs4, member, member_name=None):
 
     # description
     description_div = markup_description(bs4, member)
-    description_str = str(description_div) if description_div is not None else None
+    description_str = str(description_div) if len(description_div.text) > 0 else None
 
     member_obj = {
         "name": member_name,
@@ -1835,6 +1834,8 @@ def fill_class_content(tree):
             public_static_fns.append(function_obj)
         else:
             public_fns.append(function_obj)
+
+        print function_obj
 
     file_data.public_functions = public_fns
     file_data.public_static_functions = public_static_fns
