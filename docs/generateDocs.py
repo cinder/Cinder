@@ -362,6 +362,7 @@ class SymbolMap(object):
 
         # sort by lowercased name
         namespaces = sorted(namespaces, key=lambda s: s.name.lower())
+        print namespaces
         return namespaces
 
     def find_typedef(self, name):
@@ -2231,7 +2232,7 @@ def generate_namespace_data():
         "namespaces": []
     }
 
-    namespaces = g_symbolMap.get_ordered_namespaces()
+    namespaces = g_symbolMap.get_whitelisted_namespaces()
     for ns in namespaces:
         ns = {
             "link": ns.path,
