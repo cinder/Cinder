@@ -2840,18 +2840,27 @@ def write_search_index():
         outFile.write(document)
 
 def add_to_search_index(html, save_path, search_type, tags=[]):
+    """
+    Adds the html page to the search index
+    :param html:
+    :param save_path:
+    :param search_type:
+    :param tags:
+    :return:
+    """
     global g_search_index
-
-    # TODO: remove any duplicates from tags list
 
     if not g_search_index:
         g_search_index = {"data": []}
+
+    # creates new list from tags minus any dupes
+    search_list = list(set(tags))
 
     search_obj = {"id": None, "title": None, "tags": []}
     search_obj["id"] = len(g_search_index["data"])
     search_obj["title"] = html.head.find("title").text if html.head.find("title") else ""
     search_obj["link"] = save_path
-    search_obj["tags"] = tags
+    search_obj["tags"] = search_list
     search_obj["type"] = search_type
     g_search_index["data"].append(search_obj)
 
