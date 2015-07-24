@@ -1,4 +1,5 @@
 #! /usr/bin/python
+# -*- coding: utf-8 -*-
 import sys
 import codecs
 import re
@@ -9,9 +10,11 @@ import shutil
 import stat
 import urlparse
 from difflib import SequenceMatcher as SM
+
+# Third party in libs folder
+sys.path.append("libs")
 from bs4 import BeautifulSoup, Tag, NavigableString
 from pystache.renderer import Renderer
-# from argparse import ArgumentParser
 
 # static path vars
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep
@@ -1632,6 +1635,10 @@ def process_xml_file_definition(in_path, out_path, file_type):
     :return:
     """
 
+    # we dont like files that start with '_'
+    if os.path.basename(in_path).startswith("_"):
+        return
+
     # define the tree that contains all the data we need to populate this page
     tree = parse_xml(in_path)
 
@@ -2527,12 +2534,16 @@ def generate_bs4(file_path):
 
 
 def generate_bs4_from_string(string):
-    output_string = string.decode("UTF-8")
-    # print output_file
+
+    # make sure it's a unicode object
+    if type(string) != unicode:
+        output_string = string.decode("utf-8", errors="replace")
+    else:
+        output_string = string
 
     # wrap in body tag if none exists
     if string.find("<body") < 0:
-        output_string = "<body>" + string + "</body>"
+        output_string = "<body>" + output_string + "</body>"
         print "\t [generate_bs4_from_string] ** WARNING: No body tag found "
 
     bs4 = BeautifulSoup(output_string)
@@ -2758,35 +2769,47 @@ def get_file_name(file_path):
 
 
 def parse_xml(in_path):
+    """
+    Opens the xml file and turns it into an ETree
+    :param in_path:
+    :return:
+    """
+
+    # print "parse : " + in_path
     tree = None
     try:
-        with open(in_path, 'r') as xml_file:
-            tree = ET.parse(xml_file)
+        with open(in_path, "rb") as xml_file:
+            content = xml_file.read().decode("utf-8", errors="replace")
+            new_content = content.encode("utf-8", errors="replace")
+            parser = ET.XMLParser(encoding="utf-8")
+            tree = ET.fromstring(new_content, parser)
 
     except:
         exc = sys.exc_info()[0]
         print "\n--- PARSE ERROR ---"
         print "COULD NOT PARSE FILE: " + in_path
         print exc
-        # write the file with error
-        # bs4.append('COULD NOT PARSE FILE: ' + in_path)
-        # write_html(bs4, out_path)
         print "-------------------\n"
-
     return tree
 
 
-def write_html(html, save_path):
+def write_html(bs4, save_path):
+    """
+    Writes the html file to disk
+    :param bs4:
+    :param save_path:
+    :return:
+    """
 
     # prettify descriptions
-    for markup in html.find_all("div", "description"):
+    for markup in bs4.find_all("div", "description"):
         if type(markup) is Tag:
             pretty = BeautifulSoup(markup.prettify())
             if pretty is not None and markup is not None:
                 markup.replaceWith(pretty)
 
     # convert entities in code blocks
-    for c in html.find_all("code"):
+    for c in bs4.find_all("code"):
         for child in c.children:
             # replaces with escaped code
             try:
@@ -2797,7 +2820,9 @@ def write_html(html, save_path):
                 print child
                 print "\t** VALUE ENCODE ERROR: " + e.message
 
-    document = html.encode( 'utf-8', formatter="html" )
+    # enode bs4, decode, and then re-encode and write
+    document = bs4.encode(formatter="html")
+    document = codecs.decode(document, "utf-8", "xmlcharrefreplace")
 
     if not os.path.exists(os.path.dirname(save_path)):
         os.makedirs(os.path.dirname(save_path))
@@ -2831,12 +2856,15 @@ def add_to_search_index(html, save_path, search_type, tags=[]):
 
 
 def render_template(path, content):
-
-    # Generate the html file from the template and inject content
-    renderer = Renderer()
-    renderer.search_dirs.append(TEMPLATE_PATH)
-
+    """
+    Generates a BeautifulSoup instance from the template and injects content
+    :param path:
+    :param content:
+    :return:
+    """
     try:
+        renderer = Renderer(file_encoding="utf-8", string_encoding="utf-8", decode_errors="xmlcharrefreplace")
+        renderer.search_dirs.append(TEMPLATE_PATH)
         output = renderer.render_path(path, content)
     except:
         exc = sys.exc_info()[0]
@@ -2849,8 +2877,6 @@ def render_template(path, content):
         else:
             return
 
-    # print output
-    # print "OUTPUT: " + output
     bs4 = generate_bs4_from_string(output)
     return bs4
 
