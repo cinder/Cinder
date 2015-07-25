@@ -39,19 +39,19 @@ class Config(object):
         self.GITHUB_PATH = "http://github.com/cinder/Cinder/tree/master"
 
         # directory for the class template mustache file
-        self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "class_template.mustache")
+        self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-class-template.mustache")
         # directory for the namespace template mustache file
-        self.NAMESPACE_TEMPLATE = os.path.join(TEMPLATE_PATH, "namespace_template.mustache")
+        self.NAMESPACE_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-namespace-template.mustache")
         # directory for the namespace template mustache file
-        self.GROUP_TEMPLATE = os.path.join(TEMPLATE_PATH, "group_template.mustache")
+        self.GROUP_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-group-template.mustache")
         # default html template mustache file
-        self.HTML_TEMPLATE = os.path.join(TEMPLATE_PATH, "default_template.mustache")
+        self.HTML_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-default-template.mustache")
         # guide html template mustache file
-        self.GUIDE_TEMPLATE = os.path.join(TEMPLATE_PATH, "guide_template.mustache")
+        self.GUIDE_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-guide-template.mustache")
         # reference html template mustache file
-        self.REFERENCE_TEMPLATE = os.path.join(TEMPLATE_PATH, "reference_template.mustache")
+        self.REFERENCE_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-reference-template.mustache")
         # home page template mustache file
-        self.HOME_TEMPLATE = os.path.join(TEMPLATE_PATH, "home-template.mustache")
+        self.HOME_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-home-template.mustache")
 
         # file prefixes that indicate that the file should be parsed with the class template
         self.CLASS_FILE_PREFIXES = ["class", "struct", "interface"]
@@ -1835,8 +1835,6 @@ def fill_class_content(tree):
         else:
             public_fns.append(function_obj)
 
-        print function_obj
-
     file_data.public_functions = public_fns
     file_data.public_static_functions = public_static_fns
 
@@ -2877,12 +2875,12 @@ def render_template(path, content):
         renderer = Renderer(file_encoding="utf-8", string_encoding="utf-8", decode_errors="xmlcharrefreplace")
         renderer.search_dirs.append(TEMPLATE_PATH)
         output = renderer.render_path(path, content)
-    except:
-        exc = sys.exc_info()[0]
+    except Exception as exc:
         print "\t**--------------------------------"
         print "\t** Warning: cannot render template"
         print "\t**--------------------------------"
         print exc
+        print exc.message
         if config.BREAK_ON_STOP_ERRORS:
             raise
         else:

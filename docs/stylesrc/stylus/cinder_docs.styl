@@ -1,30 +1,19 @@
 // TODO: import stylus reset
 global-reset()
-
-/*
-* Colors
-*/
-
-cinder-orange = #c64b24
-light-gray = #949494
-
-background-gray = #252726
-background-gray-light = #292d2c
-gray-gradient-1 = linear-gradient(to bottom, background-gray 0%,#292d2c 100%); /* W3C */
-gray-gradient-2 = linear-gradient(to bottom, background-gray 0%,#292d2c 100%); /* W3C */
+@import global
 
 left-col-width = 300px
 
 body
 	font-size: 16px
 	font-family: 'Open Sans', sans-serif
-	background: background-gray-light gray-gradient-1 no-repeat
+	background: $$background-gray-light $gray-gradient-1 no-repeat
 	
 div
 	line-height: 16px
 	
 a
-	color: cinder-orange
+	color: $cinder-orange
 	font-weight: 700
 	
 em
@@ -43,7 +32,7 @@ em
 // #container
 	
 #top-primary
-	background: background-gray
+	background: $background-gray
 	
 	// padding: 0 0 48px 0
 	padding: 0 0 0 0
@@ -82,13 +71,10 @@ em
 				text-decoration: underline
 
 	.content
-		// 
 		height: 100%
 		
 	.branding
-		//width: left-col-width
 		height: 100%
-		//float: left
 		
 	.col-right
 		width: 100%
@@ -130,9 +116,9 @@ em
 			margin-right: 20px
 			
 			&.current
-				border-bottom: solid 2px cinder-orange
+				border-bottom: solid 2px $cinder-orange
 				a
-					color: cinder-orange
+					color: $cinder-orange
 
 			a
 				display: inline-block
@@ -141,7 +127,7 @@ em
 				padding-top: 50px
 				
 				&:hover
-					color: cinder-orange
+					color: $cinder-orange
 	
 	#MSearchBox
 		margin-top: 50px
@@ -241,7 +227,7 @@ em
 		margin: 0 0 20px 0
 
 		h1
-			color: cinder-orange
+			color: $cinder-orange
 			text-align: center
 			font-weight: 700
 			text-transform: uppercase
@@ -370,7 +356,7 @@ button.expand
 	background: #252726
 	
 	h3
-		color: cinder-orange
+		color: $cinder-orange
 		font-weight: 700
 	
 	input[type="checkbox"] + label
@@ -423,7 +409,7 @@ ul.library-features
 			position: relative
 			display: block;
 			border: solid 1px light-gray
-			background: background-gray
+			background: $background-gray
 			transition: all 250ms
 			
 			img.over
@@ -445,7 +431,7 @@ ul.library-features
 				font-weight: 400
 
 			&:hover
-				background: cinder-orange
+				background: $cinder-orange
 				
 				img.over
 					opacity: 1

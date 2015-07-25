@@ -89,19 +89,14 @@ td {
 a img {
   border: none;
 }
-/*
-* Colors
-*/
-/* W3C */
-/* W3C */
 body {
   font-size: 16px;
   font-family: 'Open Sans', sans-serif;
-  background: #292d2c -webkit-linear-gradient(top, #252726 0%, #292d2c 100%) no-repeat;
-  background: #292d2c -moz-linear-gradient(top, #252726 0%, #292d2c 100%) no-repeat;
-  background: #292d2c -o-linear-gradient(top, #252726 0%, #292d2c 100%) no-repeat;
-  background: #292d2c -ms-linear-gradient(top, #252726 0%, #292d2c 100%) no-repeat;
-  background: #292d2c linear-gradient(to bottom, #252726 0%, #292d2c 100%) no-repeat;
+  background: $$background-gray-light -webkit-linear-gradient(top, background-gray 0%, #292d2c 100%) no-repeat;
+  background: $$background-gray-light -moz-linear-gradient(top, background-gray 0%, #292d2c 100%) no-repeat;
+  background: $$background-gray-light -o-linear-gradient(top, background-gray 0%, #292d2c 100%) no-repeat;
+  background: $$background-gray-light -ms-linear-gradient(top, background-gray 0%, #292d2c 100%) no-repeat;
+  background: $$background-gray-light linear-gradient(to bottom, background-gray 0%, #292d2c 100%) no-repeat;
 }
 div {
   line-height: 16px;
@@ -172,7 +167,7 @@ em {
   float: left;
   position: relative;
   width: 200px;
-  color: #949494;
+  color: light-gray;
   margin-top: 25px;
 }
 #top-primary .navbar-header a.navbar-brand {
@@ -223,11 +218,7 @@ em {
   margin-top: 50px;
 }
 #top-secondary {
-  background: -webkit-linear-gradient(top, #252726 0%, #292d2c 100%);
-  background: -moz-linear-gradient(top, #252726 0%, #292d2c 100%);
-  background: -o-linear-gradient(top, #252726 0%, #292d2c 100%);
-  background: -ms-linear-gradient(top, #252726 0%, #292d2c 100%);
-  background: linear-gradient(to bottom, #252726 0%, #292d2c 100%);
+  background: gray-gradient-2;
   height: 100%;
   min-height: 250px;
 }
@@ -547,7 +538,7 @@ ul.library-features li {
 ul.library-features li a {
   position: relative;
   display: block;
-  border: solid 1px #949494;
+  border: solid 1px light-gray;
   background: #252726;
   -webkit-transition: all 250ms;
   -moz-transition: all 250ms;
