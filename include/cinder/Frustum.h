@@ -40,7 +40,7 @@
 namespace cinder {
 
 template<typename T>
-class Frustum {
+class FrustumT {
   public:
 	enum FrustumSection { NEAR, FAR, LEFT, RIGHT, TOP, BOTTOM };
 
@@ -48,13 +48,13 @@ class Frustum {
 	typedef glm::tmat4x4<T, glm::defaultp> Mat4T;
 
   public:
-	Frustum() {}
+	FrustumT() {}
 	//! Creates a world space frustum based on the camera's parameters.
-	Frustum( const Camera &cam );
+	FrustumT( const Camera &cam );
 	//! Creates a frustum based on the corners of a near and far portal.
-	Frustum( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr );
+	FrustumT( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr );
 	//! Creates a frustum based on a (projection) matrix. The six planes of the frustum are derived from the matrix. To create a world space frustum, use a view-projection matrix.
-	Frustum( const Mat4T &mat );
+	FrustumT( const Mat4T &mat );
 
 	//! Creates a world space frustum based on the camera's parameters.
 	void set( const Camera &cam );
@@ -94,8 +94,9 @@ class Frustum {
 	Plane<T>	mFrustumPlanes[6];
 };
 
-typedef Frustum<float>		Frustumf;
-typedef Frustum<double>		Frustumd;
+typedef FrustumT<float>		Frustum;
+typedef FrustumT<float>		Frustumf;
+typedef FrustumT<double>	Frustumd;
 
 #if defined( CINDER_MSW )
 	#pragma pop_macro( "FAR" )
