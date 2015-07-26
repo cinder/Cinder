@@ -41,7 +41,7 @@ public:
 	void 				start();
 	void 				stop();
 
-	bool				isCapturing();
+	bool				isCapturing() const;
 	bool				checkNewFrame() const;
 
 	int32_t				getWidth() const { return mWidth; }
@@ -87,6 +87,7 @@ private:
 	Capture::DeviceRef	mDevice;
 	int 				mWidth = 0;
 	int 				mHeight = 0;
+	bool 				mCapturing = false;
 
 	std::shared_ptr<class SurfaceCache>	mSurfaceCache;
 	mutable Surface8uRef				mCurrentFrame;

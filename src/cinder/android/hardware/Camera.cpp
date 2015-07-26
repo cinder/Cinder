@@ -281,6 +281,7 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 		}
 
 		Camera::sInstance.reset();
+		dbg_app_log( "Camera::destroyInstance(): destroyed sInstance!" );
 	}
 		
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );

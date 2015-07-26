@@ -170,6 +170,8 @@ CaptureImplJni::~CaptureImplJni()
 	//
 	CaptureImplJni::sDevicesEnumerated = false;
 	CaptureImplJni::sDevices.clear();
+
+	ci::android::hardware::Camera::destroyInstance();
 }
 
 void CaptureImplJni::start()
@@ -183,30 +185,34 @@ void CaptureImplJni::start()
 	auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
 	if( fullDevice ) {
 		fullDevice->start(mWidth, mHeight);
+		mCapturing = true;
 	}
 }
 
 void CaptureImplJni::stop()
 {
-	if( ! mDevice ) {
-		return;
-	}
+	mCapturing = false;
 
-	auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
-	if( fullDevice ) {
+	if( mDevice ) {
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
 		fullDevice->stop();
+		mDevice.reset();
 	}
 }
 
-bool CaptureImplJni::isCapturing()
+bool CaptureImplJni::isCapturing() const
 {
-	return false;
+	return mCapturing;
 }
 
 bool CaptureImplJni::checkNewFrame() const
 {
-	auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
-	return fullDevice && fullDevice->getNative() && fullDevice->getNative()->isNewFrameAvailable();
+	bool result = false;
+	if( isCapturing() && mDevice ) {
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
+		result = fullDevice && fullDevice->getNative() && fullDevice->getNative()->isNewFrameAvailable();
+	}
+	return result;
 }
 
 Surface8uRef CaptureImplJni::getSurface() const

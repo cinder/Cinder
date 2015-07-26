@@ -310,6 +310,7 @@ public class CinderNativeActivity extends NativeActivity {
 
         if(null != mCamera) {
             result = mCamera.enumerateDevices();
+            Log.i(TAG, "hardware_camera_enumerateDevices: Found " + result.length + " devices");
         }
 
         return result;

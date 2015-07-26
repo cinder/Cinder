@@ -288,9 +288,9 @@ void EventManagerAndroid::appLostFocus()
 	disableGravity();
 	disableRotationVector();
 
-	// if( mActivityLostFocusCallbackFn ) {
-	// 	mActivityLostFocusCallbackFn();
-	// }	
+	if( mActivityLostFocusCallbackFn ) {
+		mActivityLostFocusCallbackFn();
+	}	
 }
 
 void EventManagerAndroid::appGainedFocus()
@@ -320,9 +320,9 @@ void EventManagerAndroid::appGainedFocus()
 		}
 	}
 
-	// if( mActivityGainedFocusCallbackFn ) {
-	// 	mActivityGainedFocusCallbackFn();
-	// }
+	if( mActivityGainedFocusCallbackFn ) {
+		mActivityGainedFocusCallbackFn();
+	}
 }
 
 void EventManagerAndroid::appPause()
