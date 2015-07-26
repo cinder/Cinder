@@ -211,6 +211,12 @@ void Environment::makeContextCurrent( const Context *context )
 	else {
 		::wglMakeCurrent( NULL, NULL );
 	}
+#elif defined( CINDER_ANDROID )
+	if( context ) {
+		auto platformData = dynamic_pointer_cast<PlatformDataAndroid>( context->getPlatformData() );
+		EGLBoolean status = ::eglMakeCurrent( platformData->mDisplay, platformData->mSurface, platformData->mSurface, platformData->mContext );
+		assert( status );
+	}
 #endif
 }
 

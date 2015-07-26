@@ -37,11 +37,11 @@
 // These aren't defined on ARM32 or ARM64 for OpenGL ES 2. They 
 // get loaded in RendererGlAndroid::initialize via eglGetProcAddress.
 #if defined(CINDER_ANDROID) && defined(CINDER_GL_ES_2) && (defined(__arm__) || defined(__aarch64__))
-PFNGLGENVERTEXARRAYSOESPROC 				glGenVertexArraysOESEXT = nullptr;
-PFNGLBINDVERTEXARRAYOESPROC 				glBindVertexArrayOESEXT = nullptr;
-PFNGLDELETEVERTEXARRAYSOESPROC 				glDeleteVertexArraysOESEXT = nullptr;
-PFNGLISVERTEXARRAYOESPROC 					glIsVertexArrayOESEXT = nullptr;
-PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC	glRenderbufferStorageMultisampleIMGEXT = nullptr;
+	PFNGLGENVERTEXARRAYSOESPROC 				glGenVertexArraysOESEXT = nullptr;
+	PFNGLBINDVERTEXARRAYOESPROC 				glBindVertexArrayOESEXT = nullptr;
+	PFNGLDELETEVERTEXARRAYSOESPROC 				glDeleteVertexArraysOESEXT = nullptr;
+	PFNGLISVERTEXARRAYOESPROC 					glIsVertexArrayOESEXT = nullptr;
+	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC	glRenderbufferStorageMultisampleIMGEXT = nullptr;
 #endif
 
 namespace cinder { namespace app {
@@ -165,11 +165,12 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	}
 
 	mCinderContext->makeCurrent();
-
 	checkGlStatus();
 
-	eglSwapInterval( mDisplay, 0 );
-	checkGlStatus();
+	// NOTE: This causes the Samsung S6 to not render correctly on startup.
+	//
+	//eglSwapInterval( mDisplay, 0 );
+	//checkGlStatus();
 
 	return true;
 }

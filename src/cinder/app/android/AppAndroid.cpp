@@ -60,6 +60,7 @@ void AppAndroid::launch()
 	// NOTE: Don't call AppImplAndroid's event loop functions from here.
 	//
 
+	dbg_app_log( "AppAndroid::launch() - calling mImpl->setup()" );
 	mImpl->setup();
 }
 

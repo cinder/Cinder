@@ -288,9 +288,9 @@ void EventManagerAndroid::appLostFocus()
 	disableGravity();
 	disableRotationVector();
 
-	if( mActivityLostFocusCallbackFn ) {
-		mActivityLostFocusCallbackFn();
-	}	
+	// if( mActivityLostFocusCallbackFn ) {
+	// 	mActivityLostFocusCallbackFn();
+	// }	
 }
 
 void EventManagerAndroid::appGainedFocus()
@@ -320,9 +320,9 @@ void EventManagerAndroid::appGainedFocus()
 		}
 	}
 
-	if( mActivityGainedFocusCallbackFn ) {
-		mActivityGainedFocusCallbackFn();
-	}
+	// if( mActivityGainedFocusCallbackFn ) {
+	// 	mActivityGainedFocusCallbackFn();
+	// }
 }
 
 void EventManagerAndroid::appPause()
@@ -671,7 +671,7 @@ void EventManagerAndroid::execute()
 	ci::android::app::CinderNativeActivity::registerComponents();
 
 	// Set keep screen on before the window gets initialized
-	ci::android::app::CinderNativeActivity::setKeepScreenOn( ci::app::AppAndroid::isKeepScreenOn() );
+	//ci::android::app::CinderNativeActivity::setKeepScreenOn( ci::app::AppAndroid::isKeepScreenOn() );
 
 dbg_app_log( "Starting Event Loop" );
 	// Event loop

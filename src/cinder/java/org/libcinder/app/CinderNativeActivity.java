@@ -67,10 +67,10 @@ public class CinderNativeActivity extends NativeActivity {
 
         Log.i(TAG, "onStart | -------------- ");
 
-        if( mKeepScreenOn ) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            Log.i(TAG, "KEEPING SCREEN ON | -------------- ");
-        }
+//        if( mKeepScreenOn ) {
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//            Log.i(TAG, "KEEPING SCREEN ON | -------------- ");
+//        }
     }
 
     @Override

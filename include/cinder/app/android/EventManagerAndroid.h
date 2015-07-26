@@ -130,8 +130,8 @@ public:
 	AppImplAndroid 				*mAppImplInst;
 	void 						setAppImplInst( AppImplAndroid* appInst );
 
-	std::function<void()> 		mActivityGainedFocusCallbackFn;
-	std::function<void()>		mActivityLostFocusCallbackFn;
+	std::function<void()> 		mActivityGainedFocusCallbackFn = nullptr;
+	std::function<void()>		mActivityLostFocusCallbackFn = nullptr;
 
 	friend class AppImplAndroid;
 
