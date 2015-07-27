@@ -1682,22 +1682,15 @@ def process_xml_file_definition(in_path, out_path, file_type):
 
     print "Processing file: " + in_path + " > " + out_path
 
-
     # Generate the html file from the template and inject content
     file_content = file_data.get_content()
     bs4 = render_template(html_template, file_content)
-    # print in_path
-    # quit()
-    # update_links_abs(bs4, TEMPLATE_PATH)
-    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': 'section_home'}
+    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4)}
+
+    # render within main template
     bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
     # make sure all links are absolute
     update_links_abs(bs4, TEMPLATE_PATH)
-
-
-
-
-
 
     if not bs4:
         print log("Skipping class due to something nasty. Bother Greg and try again some other time. Error rendering: " + in_path, 2)
@@ -2067,14 +2060,20 @@ def process_html_file(in_path, out_path):
 
     # get common data for the file
     file_data = HtmlFileData(in_path)
+
     # searchable by default
     is_searchable = True
+    # tags for search engine
     search_tags = []
+    # relative path in relation to the in_path (htmlsrc/)
     local_rel_path = os.path.relpath(in_path, HTML_SOURCE_PATH)
+    # directory name of the path
     in_dir = os.path.dirname(in_path)
+    # file name
     in_file_name = os.path.basename(in_path)
 
     # parse guide config (if present in current directory)
+    # this determines which function is used to generate dynamic page, which template to use, etc
     config_data = parse_config(in_dir, in_file_name)
     if config_data:
         # add search tags
@@ -2084,21 +2083,24 @@ def process_html_file(in_path, out_path):
         # plug in subnav data
         file_data.subnav = config_data.subnav
 
-    # get correct template
+    # get correct template for the type of file
     template = config.HTML_TEMPLATE
+    body_class = "default"
     if in_path.find("htmlsrc/index.html") > -1:
         template = config.HOME_TEMPLATE
         is_searchable = False
+        body_class = "section_home"
     elif in_path.find("reference/") > -1:
         template = config.REFERENCE_TEMPLATE
+        body_class = "reference"
     elif in_path.find("guides/") > -1:
         template = config.GUIDE_TEMPLATE
+        body_class = "guide"
 
     # fill content ----------------------------------------
 
     # get source file body content
     orig_html = generate_bs4(in_path)
-
 
     # get title
     if orig_html.head:
@@ -2121,59 +2123,22 @@ def process_html_file(in_path, out_path):
         insert_el = orig_html.find(id=insert_div_id)
         inject_html(dynamic_div, insert_el, in_path, out_path)
 
-
+    # get body content out of bs4 and plug into file_data
     body_content = get_body_content(orig_html)
     file_data.html_content = body_content
-
-
-
-    # plug in subnav data if it exists
-    # TODO: pass config data into template
-    # if len(config_data["data"]["subnav"]) > 0:
-    #
-    #     # print "WE HAVE SUBNAV, PLUG IT IN HERE"
     file_content = file_data.get_content()
 
+    # render file tempalte
     bs4 = render_template(template, file_content)
     update_links_abs(bs4, in_path)
-    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': 'section_home'}
-    # update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
+    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class}
 
-    # print file_content
-    # print "TITLE: " + file_content['title']
-
-
-    # print content_dict
-    # print "\n\n *** "
-    # print bs4
-    # quit()
-
+    # plug everything into the master tempalte
     bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
     # make sure all links are absolute
     update_links_abs(bs4, TEMPLATE_PATH)
-
-    # print bs4
-    # quit()
-
-    # content_dict = {'page_title': "TEST TITLE", 'main_content': "THIS IS SOME CONTENT"}
-    # renderer = Renderer(file_encoding="utf-8", string_encoding="utf-8", decode_errors="xmlcharrefreplace")
-    # path = os.path.join(TEMPLATE_PATH, )
-    # output = content_renderer.render_path(path, content_dict)
-
-
-
     # now all links shoul be relative to out path
     update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
-
-
-
-
-    # template_content_el = bs4.body.find(id="template-content")
-
-    # inject html into a template content div
-    # inject_html(orig_html, template_content_el, in_path, out_path)
-    # add dynamic content into specifed div
-
 
     if bs4 is None:
         print log("Error generating file, so skipping: " + in_path, 2)

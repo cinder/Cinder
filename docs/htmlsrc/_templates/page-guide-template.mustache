@@ -1,0 +1,25 @@
+{{!-- START page-guide-template.mustache ============= -->}}
+
+{{!-- main content area --}}
+<div class="columns large-12 content" data-equalizer-watch="content">
+
+  <div id="container" class="row">
+
+    {{#subnav.length}}
+    {{#subnav}}
+        <div>
+
+            <ul>
+                {{#list}}
+                <a href="{{link}}">{{label}}</a>
+                {{/list}}
+            </ul>
+        </div>
+    {{/subnav}}
+    {{/subnav.length}}
+
+    {{{ html_content }}}
+  
+  </div>
+
+</div>

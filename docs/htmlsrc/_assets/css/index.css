@@ -13,6 +13,7 @@ body.section_home #top-primary #sub-nav {
 }
 body.section_home #intro {
   padding: 50px 0 75px 0;
+  border-top: 2px solid #fff;
 }
 body.section_home #intro .content {
   padding: 0 200px 0 0;
