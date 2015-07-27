@@ -9,12 +9,13 @@ import os
 import shutil
 import stat
 import urlparse
+import traceback
 from difflib import SequenceMatcher as SM
 
 # Third party in libs folder
 sys.path.append("libs")
-from bs4 import BeautifulSoup, Tag, NavigableString
-from pystache.renderer import Renderer
+from bs4 import BeautifulSoup, Tag, NavigableString, Comment
+from pystache.renderer import Renderer, Loader
 
 # static path vars
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep
@@ -30,7 +31,7 @@ class Config(object):
         # skip html directory parsing - speeds up debugging
         self.SKIP_HTML_PARSING = False
         # break on errors that would prevent the file from being generated
-        self.BREAK_ON_STOP_ERRORS = False
+        self.BREAK_ON_STOP_ERRORS = True
         # whitelisted namespaces to generate pages for
         self.NAMESPACE_WHITELIST = ["ci"]
         # blacklisted class strings - any class containing these strings will be skipped
@@ -39,6 +40,7 @@ class Config(object):
         self.GITHUB_PATH = "http://github.com/cinder/Cinder/tree/master"
 
         # directory for the class template mustache file
+        # self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-class-template.mustache")
         self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-class-template.mustache")
         # directory for the namespace template mustache file
         self.NAMESPACE_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-namespace-template.mustache")
@@ -823,10 +825,10 @@ class HtmlFileData(FileData):
 
     def get_content(self):
         orig_content = super(HtmlFileData, self).get_content()
-        content = orig_content.copy()
+        content = dict(orig_content)
         template_content = {
             "html_content": self.html_content,
-            "subnav":{
+            "subnav": {
                 "list": self.subnav,
                 "length": len(self.subnav)
             }
@@ -1085,6 +1087,16 @@ def replace_element(bs4, element, replacement_tag):
     replacement = gen_tag(bs4, replacement_tag, None, text_content)
     element.replace_with(replacement)
 
+def get_body_content(bs4):
+    return_str = ""
+    for content in bs4.body.contents:
+        # return_str += str(content).encode("utf-8", errors="replace")
+        content_str = str(content).decode("utf-8", errors="replace")
+        if type(content) is Comment:
+            return_str += "<!-- " + content_str + "-->"
+        else:
+            return_str += content_str
+    return return_str
 
 def extract_anchor(element):
     if element.attrib["id"]:
@@ -1483,6 +1495,7 @@ def inject_html(src_content, dest_el, src_path, dest_path):
     :param src_path: The path of the src file so that we can gix teh relative links
     :return:
     """
+
     if not dest_el:
         log("destination element does not exist", 1)
 
@@ -1669,8 +1682,23 @@ def process_xml_file_definition(in_path, out_path, file_type):
 
     print "Processing file: " + in_path + " > " + out_path
 
+
     # Generate the html file from the template and inject content
-    bs4 = render_template(html_template, file_data.get_content())
+    file_content = file_data.get_content()
+    bs4 = render_template(html_template, file_content)
+    # print in_path
+    # quit()
+    # update_links_abs(bs4, TEMPLATE_PATH)
+    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': 'section_home'}
+    bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
+    # make sure all links are absolute
+    update_links_abs(bs4, TEMPLATE_PATH)
+
+
+
+
+
+
     if not bs4:
         print log("Skipping class due to something nasty. Bother Greg and try again some other time. Error rendering: " + in_path, 2)
         return
@@ -2066,19 +2094,18 @@ def process_html_file(in_path, out_path):
     elif in_path.find("guides/") > -1:
         template = config.GUIDE_TEMPLATE
 
-    # FILL CONTENT
+    # fill content ----------------------------------------
+
+    # get source file body content
     orig_html = generate_bs4(in_path)
+
+
+    # get title
     if orig_html.head:
         if orig_html.head.title:
             file_data.title = orig_html.head.title.text
 
-    # print orig_html
-    body_content = ""
-
-    for content in orig_html.body.contents:
-        body_content += str(content)
-
-    # if there is a specific page that needs some special dynmic content, this is where we do it
+    # if there is a specific page that needs some special dynamic content, this is where we do it
     insert_div_id = ""
     dynamic_div = gen_tag(orig_html, "body")
     for data in config.DYNAMIC_PAGES_CONFIG:
@@ -2089,23 +2116,64 @@ def process_html_file(in_path, out_path):
                 dynamic_div.append(content)
             insert_div_id = data["element_id"]
 
+    # inject dynamic content into orig_html
+    if insert_div_id:
+        insert_el = orig_html.find(id=insert_div_id)
+        inject_html(dynamic_div, insert_el, in_path, out_path)
+
+
+    body_content = get_body_content(orig_html)
+    file_data.html_content = body_content
+
+
+
     # plug in subnav data if it exists
     # TODO: pass config data into template
     # if len(config_data["data"]["subnav"]) > 0:
+    #
+    #     # print "WE HAVE SUBNAV, PLUG IT IN HERE"
+    file_content = file_data.get_content()
 
-        # print "WE HAVE SUBNAV, PLUG IT IN HERE"
+    bs4 = render_template(template, file_content)
+    update_links_abs(bs4, in_path)
+    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': 'section_home'}
+    # update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
 
-    bs4 = render_template(template, file_data.get_content())
+    # print file_content
+    # print "TITLE: " + file_content['title']
+
+
+    # print content_dict
+    # print "\n\n *** "
+    # print bs4
+    # quit()
+
+    bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
+    # make sure all links are absolute
+    update_links_abs(bs4, TEMPLATE_PATH)
+
+    # print bs4
+    # quit()
+
+    # content_dict = {'page_title': "TEST TITLE", 'main_content': "THIS IS SOME CONTENT"}
+    # renderer = Renderer(file_encoding="utf-8", string_encoding="utf-8", decode_errors="xmlcharrefreplace")
+    # path = os.path.join(TEMPLATE_PATH, )
+    # output = content_renderer.render_path(path, content_dict)
+
+
+
+    # now all links shoul be relative to out path
     update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
 
-    template_content_el = bs4.body.find(id="template-content")
+
+
+
+    # template_content_el = bs4.body.find(id="template-content")
 
     # inject html into a template content div
-    inject_html(orig_html, template_content_el, in_path, out_path)
+    # inject_html(orig_html, template_content_el, in_path, out_path)
     # add dynamic content into specifed div
-    if insert_div_id:
-        insert_el = template_content_el.find(id=insert_div_id)
-        inject_html(dynamic_div, insert_el, in_path, out_path)
+
 
     if bs4 is None:
         print log("Error generating file, so skipping: " + in_path, 2)
@@ -2422,6 +2490,70 @@ def find_ci_tag_ref(link):
 
 
 # ======================================================================================================== Link Updating
+
+def update_links_abs(html, src_path):
+    """
+    Replace all of the relative a links with absolut links
+    :param html:
+    :param src_path:
+    :param dest_path:
+    :return:
+    """
+
+    # css links
+    for link in html.find_all("link"):
+        if link.has_attr("href"):
+            link["href"] = update_link_abs(link["href"], src_path)
+
+    # a links
+    for a in html.find_all("a"):
+        if a.has_attr("href"):
+            link_href = a["href"]
+
+            # if the link is an hpp file, lets link to the github link since we likely don't have it in our docs
+            if link_href.find(config.GLM_MODULE_CONFIG["source_file_ext"]) > -1:
+                a["href"] = config.GLM_MODULE_CONFIG["url_prefix"] + a.text
+            else:
+                a["href"] = update_link_abs(a["href"], src_path)
+
+    # script links
+    for script in html.find_all("script"):
+        if script.has_attr("src"):
+            script["src"] = update_link_abs(script["src"], src_path)
+
+    # images
+    for img in html.find_all("img"):
+        if img.has_attr("src"):
+            img["src"] = update_link_abs(img["src"], src_path)
+
+    # iframes
+    for iframe in html.find_all("iframe"):
+        if iframe.has_attr("src"):
+            link_src = iframe["src"]
+            if link_src.startswith('javascript') or link_src.startswith('http'):
+                return
+
+            new_link = update_link_abs(link_src, src_path)
+            iframe["src"] = new_link
+
+def update_link_abs(link, in_path):
+    """
+    Update the given link to point to something relative to the new path
+    :param link: The link to change
+    :param in_path: the original path to the file that the link lives in
+    :return:
+    """
+
+    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#"):
+        return link
+
+    # if a relative path, make it absolute
+    if in_path.find(BASE_PATH) < 0:
+        in_path = BASE_PATH + in_path
+
+    # get absolute in path
+    abs_link_path = urlparse.urljoin(in_path, link)
+    return abs_link_path
 
 
 def update_links(html, src_path, dest_path):
@@ -2871,20 +3003,50 @@ def render_template(path, content):
     :param content:
     :return:
     """
-    try:
-        renderer = Renderer(file_encoding="utf-8", string_encoding="utf-8", decode_errors="xmlcharrefreplace")
-        renderer.search_dirs.append(TEMPLATE_PATH)
-        output = renderer.render_path(path, content)
-    except Exception as exc:
-        print "\t**--------------------------------"
-        print "\t** Warning: cannot render template"
-        print "\t**--------------------------------"
-        print exc
-        print exc.message
-        if config.BREAK_ON_STOP_ERRORS:
-            raise
-        else:
-            return
+    # try:
+    # renderer = Renderer(file_encoding="utf-8", string_encoding="utf-8", decode_errors="xmlcharrefreplace")
+    # renderer.search_dirs.append(TEMPLATE_PATH)
+    # output = renderer.render_path(path, content)
+
+
+    # print content
+    # print path
+    # step 1: render content in template
+    content_renderer = Renderer(file_encoding="utf-8", string_encoding="utf-8", decode_errors="xmlcharrefreplace")
+    content_renderer.search_dirs.append(TEMPLATE_PATH)
+    output = content_renderer.render_path(path, content)
+
+    # print "RENDERED:"
+    # print rendered_content
+
+    # step 2: place rendered content into main template
+    # - should have the following custom partials:
+    #   - page title (define in object for page templates)
+    #   - page content (rendered page content)
+    #   - any other common partials that may lie outside the basic content area
+
+
+
+    # loader = Loader()
+    # template = loader.read("title")
+    # title_partial = loader.load_name(os.path.join(CLASS_TEMPLATE_DIR, "title"))
+
+
+    # except Exception as exc:
+    #     print "\t**--------------------------------"
+    #     print "\t** Warning: cannot render template"
+    #     print "\t**--------------------------------"
+    #     print exc
+    #     print exc.message
+    #     print(traceback.format_exc())
+    #     exc_type, exc_obj, exc_tb = sys.exc_info()
+    #     fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+    #     print(exc_type, fname, exc_tb.tb_lineno)
+    #
+    #     if config.BREAK_ON_STOP_ERRORS:
+    #         quit()
+    #     else:
+    #         return
 
     bs4 = generate_bs4_from_string(output)
     return bs4
