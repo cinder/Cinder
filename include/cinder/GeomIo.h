@@ -1203,6 +1203,30 @@ class ColorFromAttrib : public Modifier {
 	std::function<Colorf(vec3)>		mFnColor3;
 };
 
+//! Sets an attribute of a geom::Source to be a constant value for every vertex. Determines dimension from constructor (vec4 -> 4, for example)
+class Constant : public Modifier {
+  public:
+	Constant( geom::Attrib attrib, float &v )
+		: mAttrib( attrib ), mValue( v, 0, 0, 0 ), mDims( 1 ) {}
+	Constant( geom::Attrib attrib, const vec2 &v )
+		: mAttrib( attrib ), mValue( v, 0, 0 ), mDims( 2 ) {}
+	Constant( geom::Attrib attrib, const vec3 &v )
+		: mAttrib( attrib ), mValue( v, 0 ), mDims( 3 ) {}
+	Constant( geom::Attrib attrib, const vec4 &v )
+		: mAttrib( attrib ), mValue( v ), mDims( 4 ) {}
+
+	Modifier*	clone() const override { return new geom::Constant( *this ); }
+	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
+	
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	geom::Attrib	mAttrib;
+	vec4			mValue;
+	int				mDims;
+};
+
 //! Maps an attribute as a function of another attribute. Valid types are: float, vec2, vec3, vec4
 template<typename S, typename D>
 class AttribFn : public Modifier {

@@ -2825,6 +2825,63 @@ void ColorFromAttrib::process( SourceModsContext *ctx, const AttribSet &requeste
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// Color
+uint8_t Constant::getAttribDims( Attrib attr, uint8_t upstreamDims ) const
+{
+	if( attr == mAttrib )
+		return mDims;
+
+	return upstreamDims;
+}
+
+AttribSet Constant::getAvailableAttribs( const Modifier::Params &upstreamParams ) const
+{
+	AttribSet result = upstreamParams.getAvailableAttribs();
+	result.insert( mAttrib );
+	return result;
+}
+
+void Constant::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
+{
+	ctx->processUpstream( requestedAttribs );
+
+	const size_t numVertices = ctx->getNumVertices();
+	
+	switch( mDims ) {
+		case 1: {
+			unique_ptr<float[]> mColorData( new float[numVertices] );
+			for( size_t v = 0; v < numVertices; ++v )
+				mColorData[v] = mValue.x;
+			ctx->copyAttrib( mAttrib, 1, 0, (const float*)mColorData.get(), numVertices );
+		}
+		break;
+		case 2: {
+			unique_ptr<vec2[]> mColorData( new vec2[numVertices] );
+			for( size_t v = 0; v < numVertices; ++v )
+				mColorData[v] = vec2( mValue.x, mValue.y );
+			ctx->copyAttrib( mAttrib, 2, 0, (const float*)mColorData.get(), numVertices );
+		}
+		break;
+		case 3: {
+			unique_ptr<vec3[]> mColorData( new vec3[numVertices] );
+			for( size_t v = 0; v < numVertices; ++v )
+				mColorData[v] = vec3( mValue.x, mValue.y, mValue.z );
+			ctx->copyAttrib( mAttrib, 3, 0, (const float*)mColorData.get(), numVertices );
+		}
+		break;
+		case 4: {
+			unique_ptr<vec4[]> mColorData( new vec4[numVertices] );
+			for( size_t v = 0; v < numVertices; ++v )
+				mColorData[v] = mValue;
+			ctx->copyAttrib( mAttrib, 4, 0, (const float*)mColorData.get(), numVertices );
+		}
+		break;
+		default:
+			CI_LOG_E( "Illegal dimensions." );
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 // AttribFn
 template<typename S, typename D>
 uint8_t AttribFn<S,D>::getAttribDims( Attrib attr, uint8_t upstreamDims ) const
@@ -4304,6 +4361,15 @@ void Combine::process( SourceModsContext *ctx, const AttribSet &requestedAttribs
 				float *ptr = outAttribData.get() + ( numVertices * dims );
 				for( size_t i = 0; i < dims * sourceNumVertices; ++i )
 					ptr[i] = 0;
+			}
+			
+			if( attrib == geom::COLOR ) {
+				std::cout << "COLOR: " << std::endl;
+				for( int v = 0; v < ( numVertices + sourceNumVertices ); ++v ) {
+					for( int d = 0; d < dims; ++d )
+						std::cout << outAttribData.get()[v*dims+d] << " ";
+					std::cout << std::endl;
+				}
 			}
 			
 			// output attribute
