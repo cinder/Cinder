@@ -70,7 +70,7 @@ void TriMeshGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *
 	}
 			
 	mMesh->mIndices.resize( targetNumIndices );
-	copyIndexDataForceTriangles( primitive, source, numIndices, mMesh->mIndices.data() );
+	copyIndexDataForceTriangles( primitive, source, numIndices, 0, mMesh->mIndices.data() );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////

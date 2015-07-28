@@ -168,11 +168,16 @@ class Target {
 	//! For non-indexed geometry, this generates appropriate indices and then calls the copyIndices() virtual method.
 	void	generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices );
 
+	static void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t indexOffset, uint32_t *target );
+	static void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint16_t indexOffset, uint16_t *target );
+	static void copyIndexDataForceLines( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t indexOffset, uint32_t *target );
+	
+	static void generateIndicesForceTriangles( Primitive primitive, size_t numInputIndices, uint32_t indexOffset, uint32_t *target );
+	static void generateIndicesForceLines( Primitive primitive, size_t numInputIndices, uint32_t indexOffset, uint32_t *target );
+
   protected:
 	void copyIndexData( const uint32_t *source, size_t numIndices, uint32_t *target );
 	void copyIndexData( const uint32_t *source, size_t numIndices, uint16_t *target );
-	void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t *target );
-	void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint16_t *target );
 };
 
 class Modifier {
@@ -794,7 +799,6 @@ class WireSource : public Source {
 };
 
 
-
 class WireCapsule : public WireSource {
   public:
 	WireCapsule();
@@ -825,7 +829,7 @@ class WireCapsule : public WireSource {
 	int			mSubdivisionsHeight, mSubdivisionsAxis, mNumSegments;
 };
 
-class WireCircle : public WireSource {
+class WireCircle : public Source {
   public:
 	WireCircle();
 
@@ -838,9 +842,14 @@ class WireCircle : public WireSource {
 	//! Specifies the number of segments that make up the circle. Defaults to \c 12.
 	WireCircle&	subdivisions( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
 
-	size_t		getNumVertices() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	WireCircle*	clone() const override { return new WireCircle( *this ); }
+	size_t			getNumIndices() const override { return 0; }
+	Primitive		getPrimitive() const override { return geom::LINE_STRIP; }
+	uint8_t			getAttribDims( Attrib attr ) const override	{ return ( attr == Attrib::POSITION ) ? 3 : 0; }
+	AttribSet		getAvailableAttribs() const override { return{ Attrib::POSITION }; }
+
+	size_t			getNumVertices() const override;
+	void			loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	WireCircle*		clone() const override { return new WireCircle( *this ); }
 
   private:
 	vec3		mCenter;
@@ -1285,7 +1294,7 @@ class Remove : public Modifier {
 	Attrib		mAttrib;
 };
 
-//! Combines an additional Source. Requires the Primitive types to match. Attributes not available on Source will be filled with \c 0
+//! Combines an additional Source. Requires the Primitive types to be compatible (both triangles or both lines). Heterogenous Primitive types always results in indexed geometry. Attributes not available on Source will be filled with \c 0. 
 class Combine : public Modifier {
   public:
 	Combine( const Source &source )
@@ -1311,10 +1320,15 @@ class Combine : public Modifier {
 
 	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
 	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
+	Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const override;
 	
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
+	//! Returns the Primitive type that accommodates both 'a' and 'b'. Returns \c NUM_PRIMITIVES if none can.
+	static Primitive	determineCombinedPrimitive( Primitive a, Primitive b );
+	
   protected:
+
 	const Source				*mSource;
 	std::unique_ptr<Source>		mSourceStorage;
 };
@@ -1444,6 +1458,7 @@ class SourceMods : public Source {
 	
 	void	append( const Modifier &modifier );
 	void	append( const Source &source );
+	void	append( const SourceMods &sourceMods );
 	
 	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
 	const Source*		getSource() const { return mSourcePtr; }
@@ -1475,17 +1490,17 @@ class SourceMods : public Source {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Source
-inline SourceMods operator>>( const SourceMods &source, const Modifier &modifier )
+inline SourceMods operator>>( const SourceMods &sourceMods, const Modifier &modifier )
 {
-	SourceMods result = source;
+	SourceMods result = sourceMods;
 	result.append( modifier );
 	return result;
 }
 
-inline SourceMods&& operator>>( SourceMods &&source, const Modifier &modifier )
+inline SourceMods&& operator>>( SourceMods &&sourceMods, const Modifier &modifier )
 {
-	source.append( modifier );
-	return std::move( source );
+	sourceMods.append( modifier );
+	return std::move( sourceMods );
 }
 
 inline SourceMods operator>>( const Source &source, const Modifier &modifier )
@@ -1501,6 +1516,14 @@ inline SourceMods operator>>( const Source *source, const Modifier &modifier )
 	result.append( modifier );
 	return result;
 }
+
+inline SourceMods operator>>( const SourceMods &sourceModsL, const SourceMods &sourceModsR )
+{
+	SourceMods result = sourceModsL;
+	result.append( sourceModsR );
+	return result;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 class Exc : public Exception {

@@ -305,13 +305,19 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 
 namespace { 
 template<typename T>
-void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *source, size_t numIndices, T *target )
+void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *source, size_t numIndices, T indexOffset, T *target )
 {
 	switch( primitive ) {
 		case Primitive::LINES:
 		case Primitive::LINE_STRIP:
 		case Primitive::TRIANGLES:
-			memcpy( target, source, sizeof(uint32_t) * numIndices );
+			if( indexOffset == 0 ) {
+				memcpy( target, source, sizeof(uint32_t) * numIndices );
+			}
+			else {
+				for( size_t i = 0; i < numIndices; ++i )
+					target[i] = source[i] + indexOffset;
+			}
 		break;
 		case Primitive::TRIANGLE_STRIP: { // ABC, CBD, CDE, EDF, etc
 			if( numIndices < 3 )
@@ -423,14 +429,96 @@ void calculateTangents( size_t numIndices, const uint32_t *indices, size_t numVe
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Target
-void Target::copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t *target )
+void Target::copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t indexOffset, uint32_t *target )
 {
-	copyIndexDataForceTrianglesImpl<uint32_t>( primitive, source, numIndices, target );
+	copyIndexDataForceTrianglesImpl<uint32_t>( primitive, source, numIndices, indexOffset, target );
 }
 
-void Target::copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint16_t *target )
+void Target::copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint16_t indexOffset, uint16_t *target )
 {
-	copyIndexDataForceTrianglesImpl<uint16_t>( primitive, source, numIndices, target );
+	copyIndexDataForceTrianglesImpl<uint16_t>( primitive, source, numIndices, indexOffset, target );
+}
+
+void Target::copyIndexDataForceLines( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t indexOffset, uint32_t *target )
+{
+	switch( primitive ) {
+		case Primitive::LINES:
+			for( size_t i = 0; i < numIndices; ++i )
+				target[i] = (uint32_t)(source[i] + indexOffset);
+		break;
+		case Primitive::LINE_STRIP: {
+			size_t outIdx = 0;
+			for( size_t i = 0; i < numIndices - 1; ++i ) {
+				target[outIdx++] = (uint32_t)(source[i + 0] + indexOffset);
+				target[outIdx++] = (uint32_t)(source[i + 1] + indexOffset);
+			}
+		}
+		break;
+		default:
+			throw ExcIllegalPrimitiveType();
+	}
+}
+
+// Used for creating appropriate indices for non-indexed geometry
+void Target::generateIndicesForceTriangles( Primitive primitive, size_t numInputIndices, uint32_t indexOffset, uint32_t *target )
+{
+	switch( primitive ) {
+		case Primitive::TRIANGLES:
+			for( int i = 0; i < numInputIndices; ++i )
+				target[i] = (uint32_t)(indexOffset + i);
+		break;
+		case Primitive::TRIANGLE_FAN: {
+			if( numInputIndices < 3 )
+				return;
+			size_t outIdx = 0;
+			for( size_t i = 0; i < numInputIndices - 2; ++i ) {
+				target[outIdx++] = (uint32_t)indexOffset;
+				target[outIdx++] = (uint32_t)(i + 1 + indexOffset);
+				target[outIdx++] = (uint32_t)(i + 2 + indexOffset);
+			}
+		}
+		break;
+		case Primitive::TRIANGLE_STRIP: {
+			if( numInputIndices < 3 )
+				return;
+			size_t outIdx = 0; // (012, 213), (234, 435), etc : (odd,even), (odd,even), etc
+			for( size_t i = 0; i < numInputIndices - 2; ++i ) {
+				if( i & 1 ) { // odd
+					target[outIdx++] = (uint32_t)(i + 1 + indexOffset);
+					target[outIdx++] = (uint32_t)(i + 0 + indexOffset);
+					target[outIdx++] = (uint32_t)(i + 2 + indexOffset);
+				}
+				else { // even
+					target[outIdx++] = (uint32_t)(i + 0 + indexOffset);
+					target[outIdx++] = (uint32_t)(i + 1 + indexOffset);
+					target[outIdx++] = (uint32_t)(i + 2 + indexOffset);
+				}
+			}
+		}
+		break;
+		default:
+			throw ExcIllegalPrimitiveType();
+	}
+}
+
+void Target::generateIndicesForceLines( Primitive primitive, size_t numInputIndices, uint32_t indexOffset, uint32_t *target )
+{
+	switch( primitive ) {
+		case Primitive::LINES:
+			for( int i = 0; i < numInputIndices; ++i )
+				target[i] = (uint32_t)(indexOffset + i);
+		break;
+		case Primitive::LINE_STRIP: {
+			size_t outIdx = 0;
+			for( int i = 0; i < numInputIndices - 1; ++i ) {
+				target[outIdx++] = (uint32_t)(indexOffset + i);
+				target[outIdx++] = (uint32_t)(indexOffset + i + 1);
+			}
+		}
+		break;
+		default:
+			throw ExcIllegalPrimitiveType();
+	}
 }
 
 void Target::copyIndexData( const uint32_t *source, size_t numIndices, uint32_t *target )
@@ -3359,7 +3447,7 @@ WireCircle::WireCircle()
 
 size_t WireCircle::getNumVertices() const
 {
-	return 2 * mNumSegments;
+	return mNumSegments + 1;
 }
 
 void WireCircle::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -3373,10 +3461,8 @@ void WireCircle::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 
 	float angle = float( 2.0 * M_PI / mNumSegments );
 
-	*ptr++ = mCenter + mRadius * vec3( 1, 0, 0 );
-	for( int i = 1; i < mNumSegments; ++i ) {
+	for( int i = 0; i < mNumSegments; ++i ) {
 		vec3 v = mCenter + mRadius * vec3( glm::cos( i * angle ), glm::sin( i * angle ), 0 );
-		*ptr++ = v;
 		*ptr++ = v;
 	}
 	*ptr++ = mCenter + mRadius * vec3( 1, 0, 0 );
@@ -4058,6 +4144,44 @@ void Remove::process( SourceModsContext *ctx, const AttribSet &requestedAttribs 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Combine
+// Assume indexed geometry will result
+namespace {
+size_t determineRequiredIndices( Primitive sourcePrimitive, Primitive destPrimitive, size_t numIndices )
+{
+	switch( destPrimitive ) {
+		case Primitive::TRIANGLES:
+			switch( sourcePrimitive ) {
+				case Primitive::TRIANGLES:
+					return numIndices;
+				break;
+				case Primitive::TRIANGLE_STRIP: // ABC, CBD, CDE, EDF, etc
+					return ( numIndices - 2 ) * 3; // Triangles: 3:1  4:2  5:3;
+				break;
+				case Primitive::TRIANGLE_FAN: // ABC, ACD, ADE, etc
+					return ( numIndices - 2 ) * 3; // Triangles: 3:1  4:2  5:3;
+				break;
+				default:
+					return 0;
+			}
+		break;
+		case Primitive::LINES:
+			switch( sourcePrimitive ) {
+				case Primitive::LINES:
+					return numIndices;
+				break;
+				case Primitive::LINE_STRIP:
+					return (numIndices - 1) * 2;
+				break;
+				default:
+					return 0;
+			}
+		break;
+		default:
+			return 0;
+	}
+}
+}
+
 size_t Combine::getNumVertices( const Modifier::Params &upstreamParams ) const
 {
 	return upstreamParams.getNumVertices() + mSource->getNumVertices();
@@ -4065,76 +4189,100 @@ size_t Combine::getNumVertices( const Modifier::Params &upstreamParams ) const
 
 size_t Combine::getNumIndices( const Modifier::Params &upstreamParams ) const
 {
-	// we have to return indexed geometry if either upstream or
 	size_t numIndices = upstreamParams.getNumIndices();
 	size_t sourceNumIndices = mSource->getNumIndices();
-	if( numIndices || sourceNumIndices ) {
-		if( numIndices == 0 )
-			numIndices = upstreamParams.getNumVertices();
-		if( sourceNumIndices == 0 )
-			sourceNumIndices = mSource->getNumVertices();
-		return numIndices + sourceNumIndices;
-	}
-	else
-		return 0;
+
+	// if we were nonindexed, our number of indices will be our vertex count
+	if( numIndices == 0 )
+		numIndices = upstreamParams.getNumVertices();
+	if( sourceNumIndices == 0 )
+		sourceNumIndices = mSource->getNumVertices();
+
+	Primitive primitive = upstreamParams.getPrimitive();
+	Primitive sourcePrimitive = mSource->getPrimitive();
+	Primitive combinedPrimitive = determineCombinedPrimitive( primitive, sourcePrimitive );
+	
+	// correct num indices based on our output primitive; for example TRIANGLE_FAN becomes TRIANGLES, and will be more indices
+	numIndices = determineRequiredIndices( primitive, combinedPrimitive, numIndices );
+	sourceNumIndices = determineRequiredIndices( sourcePrimitive, combinedPrimitive, sourceNumIndices );
+	
+	return numIndices + sourceNumIndices;
+}
+
+Primitive Combine::getPrimitive( const Modifier::Params &upstreamParams ) const
+{
+	return determineCombinedPrimitive( upstreamParams.getPrimitive(), mSource->getPrimitive() );
+}
+
+Primitive Combine::determineCombinedPrimitive( Primitive a, Primitive b )
+{
+	auto isTriangle = []( Primitive p ) { return p == TRIANGLES || p == TRIANGLE_FAN || p == TRIANGLE_STRIP; };
+	auto isLines = []( Primitive p ) { return p == LINES || p == LINE_STRIP; };
+
+	if( isTriangle( a ) && isTriangle( b ) ) // triangles
+		return Primitive::TRIANGLES;
+	else if( isLines( a ) && isLines( b ) ) // lines
+		return Primitive::LINES;
+	else // unknown
+		return Primitive::NUM_PRIMITIVES;
 }
 
 void Combine::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
 {
 	ctx->processUpstream( requestedAttribs );
 	
-	if( mSource->getPrimitive() != ctx->getPrimitive() ) {
-		CI_LOG_W( "geom::Combine() primitive types don't match: " << primitiveToString( ctx->getPrimitive() ) << " vs. "
-					<< primitiveToString( mSource->getPrimitive() ) );
-		return;
-	}
-
 	SourceModsContext sourceCtx;
 	mSource->loadInto( &sourceCtx, requestedAttribs );
 
+	Primitive sourcePrimitive = mSource->getPrimitive();
+	Primitive combinedPrimitive = determineCombinedPrimitive( ctx->getPrimitive(), sourcePrimitive );
+	if( (combinedPrimitive != Primitive::LINES) && (combinedPrimitive != Primitive::TRIANGLES) ) {
+		CI_LOG_E( "geom::Combine() can't combine Primitive: " << primitiveToString( ctx->getPrimitive() ) << " with "
+					<< primitiveToString( sourcePrimitive ) );
+		return;
+	}
+
 	// Handle indices
 	size_t numIndices = ctx->getNumIndices(); // upstream indices
-	size_t sourceNumIndices = mSource->getNumIndices(); // mSource indices
+	size_t sourceNumIndices = sourceCtx.getNumIndices(); // mSource indices
 	size_t numVertices = ctx->getNumVertices(); // upstream vertices
-	size_t sourceNumVertices = mSource->getNumVertices(); // mSource vertices
-	// indexed output if either upstream or mSource is indexed
-	if( ( numIndices > 0 ) || ( sourceNumIndices > 0 ) ) {
-		// allocate space for the output indices
-		size_t numOutIndices = numIndices + sourceNumIndices;
-		if( numIndices == 0 )
-			numOutIndices += ctx->getNumVertices();
-		if( sourceNumIndices == 0 )
-			numOutIndices += mSource->getNumVertices();
-		std::vector<uint32_t> outIndices;
-		
-		if( numIndices > 0 ) { // is upstream geometry indexed?
-			outIndices.resize( numOutIndices );
-			memcpy( outIndices.data(), ctx->getIndicesData(), sizeof(uint32_t) * numIndices );
-			if( sourceNumIndices > 0 ) { // both upstream and mSource are indexed
-				const uint32_t *sourceIndicesData = sourceCtx.getIndicesData();
-				for( size_t i = 0; i < sourceNumIndices; ++i ) // append index data from mSource, offseting values by # of upstream indices
-					outIndices[numIndices+i] = (uint32_t)(sourceIndicesData[i] + numVertices);
-			}
-			else { // source is non-indexed
-				for( size_t i = 0; i < sourceNumVertices; ++i )
-					outIndices[numIndices+i] = (uint32_t)(numVertices + i);
-			}
-		}
-		else { // upstream geometry is non-indexed; implies mSource geometry is though
-			for( size_t i = 0; i < numVertices; ++i )
-				outIndices.push_back( (uint32_t)i );
-			// we need to increment the values of mSource indices by 'numVertices'
-			const uint32_t *sourceIndicesData = sourceCtx.getIndicesData();
-			for( size_t i = 0; i < sourceNumVertices; ++i )
-				outIndices.push_back( (uint32_t)(sourceIndicesData[i] + numVertices) );
-		}
-		
-		// output indices
-		ctx->copyIndices( ctx->getPrimitive(), outIndices.data(), outIndices.size(), 4 );
+	size_t sourceNumVertices = sourceCtx.getNumVertices(); // mSource vertices
+	
+	size_t numOutIndices = determineRequiredIndices( ctx->getPrimitive(), combinedPrimitive, numIndices ? numIndices : numVertices );
+	size_t sourceNumOutIndices = determineRequiredIndices( sourcePrimitive, combinedPrimitive, sourceNumIndices ? sourceNumIndices : sourceNumVertices );
+	size_t totalOutIndices = numOutIndices + sourceNumOutIndices;
+	
+	std::vector<uint32_t> outIndices;
+	outIndices.resize( totalOutIndices );
+	
+	if( combinedPrimitive == Primitive::TRIANGLES ) {
+		if( ctx->getNumIndices() ) // ctx is indexed
+			Target::copyIndexDataForceTriangles( ctx->getPrimitive(), ctx->getIndicesData(), numIndices, 0, outIndices.data() );
+		else // 'ctx' wasn't previously indexed but needs to be
+			Target::generateIndicesForceTriangles( ctx->getPrimitive(), numVertices, 0, outIndices.data() );
+
+		// source
+		if( sourceCtx.getNumIndices() ) // mSource is indexed
+			Target::copyIndexDataForceTriangles( sourcePrimitive, sourceCtx.getIndicesData(),
+				sourceNumIndices, (uint32_t)numVertices, outIndices.data() + numOutIndices );
+		else // 'mSource' wasn't previously indexed but needs to be
+			Target::generateIndicesForceTriangles( sourcePrimitive, sourceNumVertices, (uint32_t)numVertices, outIndices.data() + numOutIndices );
 	}
-	else { // non-indexed output
-		ctx->clearIndices();
+	else if( combinedPrimitive == Primitive::LINES ) {
+		if( ctx->getNumIndices() ) // ctx is indexed
+			Target::copyIndexDataForceLines( ctx->getPrimitive(), ctx->getIndicesData(), numIndices, 0, outIndices.data() );
+		else // 'ctx' wasn't previously indexed but needs to be
+			Target::generateIndicesForceLines( ctx->getPrimitive(), numVertices, 0, outIndices.data() );
+
+		// source
+		if( sourceCtx.getNumIndices() ) // mSource is indexed
+			Target::copyIndexDataForceLines( sourcePrimitive, sourceCtx.getIndicesData(),
+				sourceNumIndices, (uint32_t)numVertices, outIndices.data() + numOutIndices );
+		else // 'mSource' wasn't previously indexed but needs to be
+			Target::generateIndicesForceLines( sourcePrimitive, sourceNumVertices, (uint32_t)numVertices, outIndices.data() + numOutIndices );
 	}
+
+	ctx->copyIndices( combinedPrimitive, outIndices.data(), outIndices.size(), 4 );
 	
 	// Handle Attributes
 	for( const auto &attrib : requestedAttribs ) {
@@ -4407,10 +4555,23 @@ void SourceMods::append( const Source &source )
 	}
 }
 
+void SourceMods::append( const SourceMods &sourceMods )
+{
+	// append 'sourceMods's Source as Combine modifier
+	if( sourceMods.mSourcePtr ) {
+		mModifiers.push_back( std::unique_ptr<Modifier>( new geom::Combine( sourceMods ) ) );
+		mVariablesCached = false;
+	}
+	
+	// and append clones of its modifiers
+	for( auto &modifier : sourceMods.mModifiers )
+		mModifiers.push_back( std::unique_ptr<Modifier>( modifier->clone() ) );
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SourceModsContext
 SourceModsContext::SourceModsContext( const SourceMods *sourceMods )
-	: mNumIndices( 0 ), mNumVertices( 0 ), mAttribMask( nullptr )
+	: mNumIndices( 0 ), mNumVertices( 0 ), mAttribMask( nullptr ), mPrimitive( NUM_PRIMITIVES )
 {
 	mSource = sourceMods->getSource();
 	
@@ -4425,7 +4586,7 @@ SourceModsContext::SourceModsContext( const SourceMods *sourceMods )
 }
 
 SourceModsContext::SourceModsContext()
-	: mNumIndices( 0 ), mNumVertices( 0 ), mSource( nullptr ), mAttribMask( nullptr )
+	: mNumIndices( 0 ), mNumVertices( 0 ), mSource( nullptr ), mAttribMask( nullptr ), mPrimitive( NUM_PRIMITIVES )
 {
 }
 
