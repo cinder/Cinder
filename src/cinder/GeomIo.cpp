@@ -613,6 +613,7 @@ RoundedRect& RoundedRect::texCoords( const vec2 &upperLeft, const vec2 &lowerRig
 
 RoundedRect& RoundedRect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
 {
+	mHasColors = true;
 	mColors[0] = lowerLeft;  
 	mColors[1] = lowerRight; 
 	mColors[2] = upperRight; 
