@@ -6,6 +6,7 @@ import org.libcinder.app.CinderNativeActivity;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.opengl.GLES20;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -28,6 +29,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
 
     private android.hardware.Camera mCamera = null;
 
+    private final int [] mDummyTextureHandle = new int[1];
     private SurfaceTexture mDummyTexture = null;
 
     private HandlerThread mCameraHandlerThread;
@@ -55,7 +57,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
                 unlockPixels();
             }
 
-            camera.addCallbackBuffer(data);
+            //camera.addCallbackBuffer(data);
         }
     };
 
@@ -232,7 +234,11 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
             setPreferredPreviewSize(params.getPreviewSize().width, params.getPreviewSize().height);
 
             if(null == mDummyTexture) {
-                mDummyTexture = new SurfaceTexture(0);
+                GLES20.glGenTextures(1, mDummyTextureHandle, 0);
+                Log.i(TAG, "Created mDummyTextureHandle: " + mDummyTextureHandle[0]);
+
+                mDummyTexture = new SurfaceTexture(mDummyTextureHandle[0]);
+                //mDummyTexture = new SurfaceTexture(0);
                 mDummyTexture.setDefaultBufferSize( params.getPreviewSize().width, params.getPreviewSize().height );
             }
 
@@ -249,16 +255,19 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
      *
      */
     private void stopDevice() {
+        Log.i(TAG, "CameraV1.stopDevice");
         try {
             mActiveDeviceId = null;
 
             if (null != mCamera) {
-                mCamera.setPreviewTexture(null);
-                mCamera.setPreviewCallback(null);
-                mCamera.stopPreview();
+                //mCamera.setPreviewCallback(null);
+                //mCamera.stopPreview();
                 mCamera.release();
                 mCamera = null;
             }
+
+            GLES20.glDeleteTextures(1, mDummyTextureHandle, 0);
+            Log.i(TAG, "Deleted mDummyTextureHandle: " + mDummyTextureHandle[0]);
         }
         catch(Exception e ) {
             Log.e(Cinder.TAG, "CinderCamera.stopDevice error: " + e.getMessage());
@@ -275,7 +284,6 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
         }
 
         mNewFrameAvailable.set(false);
-        //mCamera.setPreviewCallback(this);
         mCamera.setPreviewCallback(mPreviewCallback);
         mCamera.startPreview();
 
@@ -292,8 +300,14 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
             return;
         }
 
-        mNewFrameAvailable.set(false);
-        mCamera.stopPreview();
+        try {
+            mNewFrameAvailable.set(false);
+            mCamera.setPreviewCallback(null);
+            mCamera.stopPreview();
+        }
+        catch(Exception e) {
+            Log.e(TAG, "CameraV1.stopPreview failed: " + e.getMessage());
+        }
     }
 
     private void flushCameraHandler() {

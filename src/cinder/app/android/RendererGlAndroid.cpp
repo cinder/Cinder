@@ -167,10 +167,10 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	mCinderContext->makeCurrent();
 	checkGlStatus();
 
-	// NOTE: This causes the Samsung S6 to not render correctly on startup.
+	// NOTE: 'interval' value of 0 causes the Samsung S6 to not render correctly on startup.
 	//
-	//eglSwapInterval( mDisplay, 0 );
-	//checkGlStatus();
+	eglSwapInterval( mDisplay, 1 );
+	checkGlStatus();
 
 	return true;
 }

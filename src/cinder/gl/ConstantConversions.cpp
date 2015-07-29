@@ -66,6 +66,9 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_SAMPLER_2D_ARRAY_SHADOW] = "SAMPLER_2D_ARRAY_SHADOW";
 		sSymbols[GL_SAMPLER_CUBE_SHADOW] = "GL_SAMPLER_CUBE_SHADOW";
 #endif
+#if defined( CINDER_ANDROID )
+		sSymbols[GL_SAMPLER_EXTERNAL_OES] = "GL_SAMPLER_EXTERNAL_OES";
+#endif
 		sSymbols[GL_INT_VEC2] = "INT_VEC2";
 		sSymbols[GL_INT_VEC3] = "INT_VEC3";
 		sSymbols[GL_INT_VEC4] = "INT_VEC4";
@@ -292,6 +295,7 @@ uint8_t typeToBytes( GLenum type )
 		case GL_UNSIGNED_INT:		return sizeof(uint32_t); break;
 		case GL_INT:				return sizeof(int); break;
 		case GL_SAMPLER_2D:			return sizeof(int); break;
+
 #if ! defined( CINDER_GL_ES )
 		case GL_SAMPLER_1D:						return sizeof(int); break;
 		case GL_SAMPLER_BUFFER_EXT:				return sizeof(int); break;
@@ -299,6 +303,7 @@ uint8_t typeToBytes( GLenum type )
 		case GL_INT_SAMPLER_2D_RECT:			return sizeof(int); break;
 		case GL_UNSIGNED_INT_SAMPLER_2D_RECT:	return sizeof(int); break;
 #endif
+
 #if ! defined( CINDER_GL_ES_2 )
 		case GL_SAMPLER_2D_ARRAY:				return sizeof(int); break;
 		case GL_SAMPLER_2D_SHADOW:				return sizeof(int); break;
@@ -316,14 +321,21 @@ uint8_t typeToBytes( GLenum type )
 #else
 		case GL_SAMPLER_2D_SHADOW_EXT: return sizeof(int); break;
 #endif
+
+#if defined( CINDER_ANDROID )
+		case GL_SAMPLER_EXTERNAL_OES: return sizeof(int); break;
+#endif // defined( CINDER_ANDROID )		
+
 		case GL_SAMPLER_CUBE:		return sizeof(int); break;
 		case GL_FLOAT:				return sizeof(float); break;
 		case GL_BOOL:				return sizeof(bool); break;
+
 #if ! defined( CINDER_GL_ES_2 )
 		case GL_UNSIGNED_INT_VEC2:	return sizeof(glm::uvec2); break;
 		case GL_UNSIGNED_INT_VEC3:	return sizeof(glm::uvec3); break;
 		case GL_UNSIGNED_INT_VEC4:	return sizeof(glm::uvec4); break;
 #endif
+		
 		case GL_INT_VEC2:			return sizeof(ivec2); break;
 		case GL_FLOAT_VEC2:			return sizeof(vec2); break;
 		case GL_BOOL_VEC2:			return sizeof(glm::bvec2); break;
