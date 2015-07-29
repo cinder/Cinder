@@ -175,6 +175,9 @@ class Target {
 	static void generateIndicesForceTriangles( Primitive primitive, size_t numInputIndices, uint32_t indexOffset, uint32_t *target );
 	static void generateIndicesForceLines( Primitive primitive, size_t numInputIndices, uint32_t indexOffset, uint32_t *target );
 
+	//! Returns the Primitive type that accommodates both 'a' and 'b'. Returns \c NUM_PRIMITIVES if none can.
+	static Primitive	determineCombinedPrimitive( Primitive a, Primitive b );
+
   protected:
 	void copyIndexData( const uint32_t *source, size_t numIndices, uint32_t *target );
 	void copyIndexData( const uint32_t *source, size_t numIndices, uint16_t *target );
@@ -1348,8 +1351,6 @@ class Combine : public Modifier {
 	
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
-	//! Returns the Primitive type that accommodates both 'a' and 'b'. Returns \c NUM_PRIMITIVES if none can.
-	static Primitive	determineCombinedPrimitive( Primitive a, Primitive b );
 	
   protected:
 
@@ -1420,7 +1421,13 @@ class SourceModsContext : public Target {
 	void			processUpstream( const AttribSet &requestedAttribs );
 
 	float*			getAttribData( Attrib attr );
+	const float*	getAttribData( Attrib attr ) const { return const_cast<SourceModsContext*>( this )->getAttribData( attr ); }
 	uint32_t*		getIndicesData();
+	const uint32_t*	getIndicesData() const { return const_cast<SourceModsContext*>( this )->getIndicesData(); }
+	
+	void			preload( const AttribSet &requestedAttribs );
+	void			combine( const SourceModsContext &rhs );
+	void			complete( Target *target, const AttribSet &requestedAttribs );
 	
   private:
 	const Source					*mSource;
@@ -1452,21 +1459,24 @@ class SourceMods : public Source {
 		mSourcePtr = mSourceStorage.get();
 	}
 
-	SourceMods( const SourceMods &sourceMods )
+	SourceMods( const SourceMods &rhs )
 		: mVariablesCached( false )	
 	{
-		mSourceStorage = std::unique_ptr<Source>( sourceMods.mSourcePtr->clone() );
+		mSourceStorage = std::unique_ptr<Source>( rhs.mSourcePtr->clone() );
 		mSourcePtr = mSourceStorage.get();
-		for( auto &modifier : sourceMods.mModifiers )
+		for( auto &modifier : rhs.mModifiers )
 			mModifiers.push_back( std::unique_ptr<Modifier>( modifier->clone() ) );
+		for( auto &sibling : rhs.mSiblings )
+			mSiblings.push_back( std::unique_ptr<SourceMods>( sibling->clone() ) );
 	}
 
-	SourceMods( SourceMods &&sourceMods )
+	SourceMods( SourceMods &&rhs )
 		: mVariablesCached( false )
 	{
-		mSourceStorage = std::move( sourceMods.mSourceStorage );
-		mSourcePtr = sourceMods.mSourcePtr;
-		mModifiers = std::move( sourceMods.mModifiers );
+		mSourceStorage = std::move( rhs.mSourceStorage );
+		mSourcePtr = rhs.mSourcePtr;
+		mModifiers = std::move( rhs.mModifiers );
+		mSiblings = std::move( rhs.mSiblings );
 	}
 
 	explicit SourceMods( const Source *source, bool clone )
@@ -1482,7 +1492,7 @@ class SourceMods : public Source {
 	
 	void	append( const Modifier &modifier );
 	void	append( const Source &source );
-	void	append( const SourceMods &sourceMods );
+	void	combine( const SourceMods &sourceMods );
 	
 	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
 	const Source*		getSource() const { return mSourcePtr; }
@@ -1508,6 +1518,8 @@ class SourceMods : public Source {
 	mutable bool							mVariablesCached;
 	mutable std::vector<Modifier::Params>	mParamsStack;
 	
+	std::vector<std::unique_ptr<SourceMods>>	mSiblings;
+	
 	friend class SourceModsContext;
 };
 
@@ -1527,13 +1539,6 @@ inline SourceMods&& operator>>( SourceMods &&sourceMods, const Modifier &modifie
 	return std::move( sourceMods );
 }
 
-inline SourceMods operator>>( const Source &source, const Modifier &modifier )
-{
-	SourceMods result( &source, true ); // clone the source since it's a temporary
-	result.append( modifier );
-	return result;
-}
-
 inline SourceMods operator>>( const Source *source, const Modifier &modifier )
 {
 	SourceMods result( source, false ); // don't clone the source since we were passed its address
@@ -1541,10 +1546,24 @@ inline SourceMods operator>>( const Source *source, const Modifier &modifier )
 	return result;
 }
 
-inline SourceMods operator>>( const SourceMods &sourceModsL, const SourceMods &sourceModsR )
+inline SourceMods operator&( const Source &source, const Modifier &modifier )
+{
+	SourceMods result( &source, true ); // clone the source since it's a temporary
+	result.append( modifier );
+	return result;
+}
+
+inline SourceMods operator&( const SourceMods &sourceModsL, const SourceMods &sourceModsR )
 {
 	SourceMods result = sourceModsL;
-	result.append( sourceModsR );
+	result.combine( sourceModsR );
+	return result;
+}
+
+inline SourceMods operator&( const Source *source, const Modifier &modifier )
+{
+	SourceMods result( source, false ); // don't clone the source since we were passed its address
+	result.append( modifier );
 	return result;
 }
 

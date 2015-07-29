@@ -553,6 +553,19 @@ void Target::generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices
 	copyIndices( sourcePrimitive, indices.get(), sourceNumIndices, requiredBytesPerIndex );
 }
 
+Primitive Target::determineCombinedPrimitive( Primitive a, Primitive b )
+{
+	auto isTriangle = []( Primitive p ) { return p == TRIANGLES || p == TRIANGLE_FAN || p == TRIANGLE_STRIP; };
+	auto isLines = []( Primitive p ) { return p == LINES || p == LINE_STRIP; };
+
+	if( isTriangle( a ) && isTriangle( b ) ) // triangles
+		return Primitive::TRIANGLES;
+	else if( isLines( a ) && isLines( b ) ) // lines
+		return Primitive::LINES;
+	else // unknown
+		return Primitive::NUM_PRIMITIVES;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // Rect
 //float Rect::sPositions[4*2] = { 0.5f,-0.5f,	-0.5f,-0.5f,	0.5f,0.5f,	-0.5f,0.5f };
@@ -4257,7 +4270,7 @@ size_t Combine::getNumIndices( const Modifier::Params &upstreamParams ) const
 
 	Primitive primitive = upstreamParams.getPrimitive();
 	Primitive sourcePrimitive = mSource->getPrimitive();
-	Primitive combinedPrimitive = determineCombinedPrimitive( primitive, sourcePrimitive );
+	Primitive combinedPrimitive = Target::determineCombinedPrimitive( primitive, sourcePrimitive );
 	
 	// correct num indices based on our output primitive; for example TRIANGLE_FAN becomes TRIANGLES, and will be more indices
 	numIndices = determineRequiredIndices( primitive, combinedPrimitive, numIndices );
@@ -4268,31 +4281,19 @@ size_t Combine::getNumIndices( const Modifier::Params &upstreamParams ) const
 
 Primitive Combine::getPrimitive( const Modifier::Params &upstreamParams ) const
 {
-	return determineCombinedPrimitive( upstreamParams.getPrimitive(), mSource->getPrimitive() );
-}
-
-Primitive Combine::determineCombinedPrimitive( Primitive a, Primitive b )
-{
-	auto isTriangle = []( Primitive p ) { return p == TRIANGLES || p == TRIANGLE_FAN || p == TRIANGLE_STRIP; };
-	auto isLines = []( Primitive p ) { return p == LINES || p == LINE_STRIP; };
-
-	if( isTriangle( a ) && isTriangle( b ) ) // triangles
-		return Primitive::TRIANGLES;
-	else if( isLines( a ) && isLines( b ) ) // lines
-		return Primitive::LINES;
-	else // unknown
-		return Primitive::NUM_PRIMITIVES;
+	return Target::determineCombinedPrimitive( upstreamParams.getPrimitive(), mSource->getPrimitive() );
 }
 
 void Combine::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
 {
 	ctx->processUpstream( requestedAttribs );
-	
+
+std::cout << "Prepping SourceModsContext" << std::endl;
 	SourceModsContext sourceCtx;
 	mSource->loadInto( &sourceCtx, requestedAttribs );
 
 	Primitive sourcePrimitive = mSource->getPrimitive();
-	Primitive combinedPrimitive = determineCombinedPrimitive( ctx->getPrimitive(), sourcePrimitive );
+	Primitive combinedPrimitive = Target::determineCombinedPrimitive( ctx->getPrimitive(), sourcePrimitive );
 	if( (combinedPrimitive != Primitive::LINES) && (combinedPrimitive != Primitive::TRIANGLES) ) {
 		CI_LOG_E( "geom::Combine() can't combine Primitive: " << primitiveToString( ctx->getPrimitive() ) << " with "
 					<< primitiveToString( sourcePrimitive ) );
@@ -4364,7 +4365,7 @@ void Combine::process( SourceModsContext *ctx, const AttribSet &requestedAttribs
 			}
 			
 			if( attrib == geom::COLOR ) {
-				std::cout << "COLOR: " << std::endl;
+				std::cout << "About to send COLOR from Combine: " << std::endl;
 				for( int v = 0; v < ( numVertices + sourceNumVertices ); ++v ) {
 					for( int d = 0; d < dims; ++d )
 						std::cout << outAttribData.get()[v*dims+d] << " ";
@@ -4522,19 +4523,28 @@ void Subdivide::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 size_t SourceMods::getNumVertices() const
 {
 	cacheVariables();
-	return mParamsStack.back().getNumVertices();
+	size_t result = mParamsStack.back().getNumVertices();
+	for( auto& sibling : mSiblings )
+		result += sibling->getNumVertices();
+	return result;
 }
 
 size_t SourceMods::getNumIndices() const
 {
 	cacheVariables();
-	return mParamsStack.back().getNumIndices();
+	size_t result = mParamsStack.back().getNumIndices();
+	for( auto& sibling : mSiblings )
+		result += sibling->getNumIndices();
+	return result;
 }
 
 Primitive SourceMods::getPrimitive() const
 {
 	cacheVariables();
-	return mParamsStack.back().getPrimitive();
+	Primitive result = mParamsStack.back().getPrimitive();
+	for( auto& sibling : mSiblings )
+		result = Target::determineCombinedPrimitive( result, sibling->getPrimitive() );
+	return result;
 }
 
 uint8_t	SourceMods::getAttribDims( Attrib attr ) const
@@ -4593,14 +4603,24 @@ void SourceMods::cacheVariables() const
 
 void SourceMods::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
-	// if we have no modifiers (not typical) just do a standard loadInto
-	if( mModifiers.empty() ) {
-		getSource()->loadInto( target, requestedAttribs );
+	// load ourselves
+	SourceModsContext context( this );
+	context.preload( requestedAttribs );
+	for( auto &sibling : mSiblings ) {
+		SourceModsContext siblingContext( sibling.get() );
+		siblingContext.preload( requestedAttribs );
+		context.combine( siblingContext );
 	}
-	else {
-		SourceModsContext context( this );
-		context.loadInto( target, requestedAttribs );
-	}
+	
+	context.complete( target, requestedAttribs );
+//	// if we have no modifiers (not typical) just do a standard loadInto
+//	if( mModifiers.empty() ) {
+//		getSource()->loadInto( target, requestedAttribs );
+//	}
+//	else {
+//		SourceModsContext context( this );
+//		context.loadInto( target, requestedAttribs );
+//	}
 }
 
 void SourceMods::append( const Modifier &modifier )
@@ -4621,17 +4641,9 @@ void SourceMods::append( const Source &source )
 	}
 }
 
-void SourceMods::append( const SourceMods &sourceMods )
+void SourceMods::combine( const SourceMods &sourceMods )
 {
-	// append 'sourceMods's Source as Combine modifier
-	if( sourceMods.mSourcePtr ) {
-		mModifiers.push_back( std::unique_ptr<Modifier>( new geom::Combine( sourceMods ) ) );
-		mVariablesCached = false;
-	}
-	
-	// and append clones of its modifiers
-	for( auto &modifier : sourceMods.mModifiers )
-		mModifiers.push_back( std::unique_ptr<Modifier>( modifier->clone() ) );
+	mSiblings.push_back( std::unique_ptr<SourceMods>( sourceMods.clone() ) );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4646,7 +4658,6 @@ SourceModsContext::SourceModsContext( const SourceMods *sourceMods )
 	else // this allows for a non-indexed Source to have never specified the primitive via copyIndices()
 		mPrimitive = sourceMods->mParamsStack.front().mPrimitive;
 	
-	
 	for( auto &modifier : sourceMods->mModifiers )
 		mModiferStack.push_back( modifier.get() );
 }
@@ -4654,6 +4665,115 @@ SourceModsContext::SourceModsContext( const SourceMods *sourceMods )
 SourceModsContext::SourceModsContext()
 	: mNumIndices( 0 ), mNumVertices( 0 ), mSource( nullptr ), mAttribMask( nullptr ), mPrimitive( NUM_PRIMITIVES )
 {
+}
+
+void SourceModsContext::preload( const AttribSet &requestedAttribs )
+{
+	if( ! mSource ) {
+		CI_LOG_E( "SourceModsContext::preload() called with a NULL source." );
+		return;
+	}
+
+	// If we have modifiers, initiate the chain by calling the last modifier's process() method.
+	// This in turn will call processUpstream(), which will call the next modifier's process(), until there
+	// are no remaining modifiers. Finally processUpstream() will call loadInto() on the Source
+	if( ! mModiferStack.empty() ) {
+		auto modifier = mModiferStack.back();
+		mModiferStack.pop_back();
+		modifier->process( this, requestedAttribs );
+	}
+	else { // no modifiers; just loadInto on the soucre directly
+		mSource->loadInto( this, requestedAttribs );
+	}
+}
+
+// Expects preload to have been called on 'this' and 'rhs'
+void SourceModsContext::combine( const SourceModsContext &rhs )
+{
+	Primitive rhsPrimitive = rhs.getPrimitive();
+	Primitive combinedPrimitive = determineCombinedPrimitive( getPrimitive(), rhsPrimitive );
+	if( (combinedPrimitive != Primitive::LINES) && (combinedPrimitive != Primitive::TRIANGLES) ) {
+		CI_LOG_E( "Can't combine Primitives: " << primitiveToString( getPrimitive() ) << " with "
+					<< primitiveToString( rhsPrimitive ) );
+		return;
+	}
+
+	// Handle indices
+	size_t numIndices = getNumIndices(); // upstream indices
+	size_t rhsNumIndices = rhs.getNumIndices(); // rhs indices
+	size_t numVertices = getNumVertices(); // upstream vertices
+	size_t rhsNumVertices = rhs.getNumVertices(); // rhs vertices
+	
+	size_t numOutIndices = determineRequiredIndices( getPrimitive(), combinedPrimitive, numIndices ? numIndices : numVertices );
+	size_t rhsNumOutIndices = determineRequiredIndices( rhsPrimitive, combinedPrimitive, rhsNumIndices ? rhsNumIndices : rhsNumVertices );
+	size_t totalOutIndices = numOutIndices + rhsNumOutIndices;
+	
+	std::vector<uint32_t> outIndices;
+	outIndices.resize( totalOutIndices );
+	
+	if( combinedPrimitive == Primitive::TRIANGLES ) {
+		if( getNumIndices() ) // 'this is indexed
+			Target::copyIndexDataForceTriangles( getPrimitive(), getIndicesData(), numIndices, 0, outIndices.data() );
+		else // 'this' wasn't previously indexed but needs to be
+			Target::generateIndicesForceTriangles( getPrimitive(), numVertices, 0, outIndices.data() );
+
+		// rhs
+		if( rhs.getNumIndices() ) // 'rhs' is indexed
+			Target::copyIndexDataForceTriangles( rhsPrimitive, rhs.getIndicesData(),
+				rhsNumIndices, (uint32_t)numVertices, outIndices.data() + numOutIndices );
+		else // 'rhs' wasn't previously indexed but needs to be
+			Target::generateIndicesForceTriangles( rhsPrimitive, rhsNumVertices, (uint32_t)numVertices, outIndices.data() + numOutIndices );
+	}
+	else if( combinedPrimitive == Primitive::LINES ) {
+		if( getNumIndices() ) // 'this' is indexed
+			Target::copyIndexDataForceLines( getPrimitive(), getIndicesData(), numIndices, 0, outIndices.data() );
+		else // 'this' wasn't previously indexed but needs to be
+			Target::generateIndicesForceLines( getPrimitive(), numVertices, 0, outIndices.data() );
+
+		// rhs
+		if( rhs.getNumIndices() ) // 'rhs' is indexed
+			Target::copyIndexDataForceLines( rhsPrimitive, rhs.getIndicesData(),
+				rhsNumIndices, (uint32_t)numVertices, outIndices.data() + numOutIndices );
+		else // 'rhs' wasn't previously indexed but needs to be
+			Target::generateIndicesForceLines( rhsPrimitive, rhsNumVertices, (uint32_t)numVertices, outIndices.data() + numOutIndices );
+	}
+
+	this->copyIndices( combinedPrimitive, outIndices.data(), outIndices.size(), 4 );
+	
+	// Handle Attributes
+	for( const auto &attribInfo : mAttribInfo ) {
+		uint8_t dims = getAttribDims( attribInfo.first );
+		if( dims > 0 ) {
+			uint8_t rhsDims = rhs.getAttribDims( attribInfo.first );
+			// if 'rhs' has data for the attribute, copy that
+if( rhsDims > 0 ) {
+const float *rhsAttribData = rhs.getAttribData( attribInfo.first );
+this->appendAttrib( attribInfo.first, dims, rhsAttribData, rhsNumVertices );
+			}
+			else { // 'rhs' has no data for this attribute. Fill with zeros.
+//				float *ptr = outAttribData.get() + ( numVertices * dims );
+//				for( size_t i = 0; i < dims * rhsNumVertices; ++i )
+//					ptr[i] = 0;
+			}
+		}
+	}
+}
+
+// Expects preload() to have been called, with 0 or more combine()s preceding
+void SourceModsContext::complete( Target *target, const AttribSet &requestedAttribs )
+{
+	// first let's verify that all counts on our requested attributes are the same. If not, we'll continue to process but with an error
+	for( const auto &attribCount : mAttribCount )
+		if( attribCount.second != mNumVertices && ( requestedAttribs.count( attribCount.first ) > 0 ) )
+			CI_LOG_E( "Attribute " << attribToString( attribCount.first ) << " count is " << attribCount.first << " instead of " << mNumVertices );
+	
+	for( const auto &attribInfoPair : mAttribInfo ) {
+		Attrib attrib = attribInfoPair.first;
+		const AttribInfo &attribInfo = attribInfoPair.second;
+		target->copyAttrib( attrib, attribInfo.getDims(), attribInfo.getStride(), mAttribData[attrib].get(), mAttribCount[attrib] );
+	}
+
+	target->copyIndices( mPrimitive, mIndices.get(), mNumIndices, calcIndicesRequiredBytes( mNumIndices ) );	
 }
 
 void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttribs )
@@ -4786,6 +4906,12 @@ void SourceModsContext::copyAttrib( Attrib attr, uint8_t dims, size_t strideByte
 	}
 	
 	copyData( dims, strideBytes, srcData, count, dims, 0, mAttribData.at( attr ).get() );
+if( attr == COLOR ) {
+	std::cout << "Received COLOR" << std::endl;
+	for( int v = 0; v < count; ++v ) {
+		std::cout << mAttribData[attr][v*3+0] << " " << mAttribData[attr][v*3+1] << " " << mAttribData[attr][v*3+2] << std::endl;
+	}
+}
 }
 
 void SourceModsContext::appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count )
