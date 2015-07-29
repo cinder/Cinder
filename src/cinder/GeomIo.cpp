@@ -4523,46 +4523,77 @@ void Subdivide::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 size_t SourceMods::getNumVertices() const
 {
 	cacheVariables();
-	size_t result = mParamsStack.back().getNumVertices();
-	for( auto& sibling : mSiblings )
-		result += sibling->getNumVertices();
-	return result;
+	if( mSourcePtr ) {
+		return mParamsStack.back().getNumVertices();
+	}
+	else {
+		size_t result = 0;
+		for( auto& child : mChildren )
+			result += child->getNumVertices();
+		return result;
+	}
 }
 
 size_t SourceMods::getNumIndices() const
 {
 	cacheVariables();
-	size_t result = mParamsStack.back().getNumIndices();
-	for( auto& sibling : mSiblings )
-		result += sibling->getNumIndices();
-	return result;
+	if( mSourcePtr ) {
+		return mParamsStack.back().getNumIndices();
+	}
+	else {
+		size_t result = 0;
+		for( auto& child : mChildren )
+			result += child->getNumIndices();
+		return result;
+	}
 }
 
 Primitive SourceMods::getPrimitive() const
 {
 	cacheVariables();
-	Primitive result = mParamsStack.back().getPrimitive();
-	for( auto& sibling : mSiblings )
-		result = Target::determineCombinedPrimitive( result, sibling->getPrimitive() );
-	return result;
+	if( mSourcePtr ) {
+		return mParamsStack.back().getPrimitive();
+	}
+	else {
+		if( ! mChildren.empty() ) {
+			Primitive result = mChildren.front()->getPrimitive();
+			for( auto& childIt = ++mChildren.begin(); childIt != mChildren.end(); ++childIt )
+				result = Target::determineCombinedPrimitive( result, (*childIt)->getPrimitive() );
+			return result;
+		}
+		else
+			return Primitive::NUM_PRIMITIVES;
+	}
 }
 
 uint8_t	SourceMods::getAttribDims( Attrib attr ) const
 {
 	cacheVariables();
 	
-	uint8_t result = getSource()->getAttribDims( attr );
-	for( auto &mod : mModifiers ) {
-		result = mod->getAttribDims( attr, result );
+	if( mSourcePtr ) {
+		uint8_t result = mSourcePtr->getAttribDims( attr );
+		for( auto &mod : mModifiers )
+			result = mod->getAttribDims( attr, result );
+		
+		return result;
 	}
-	
-	return result;
+	else {
+		if( ! mChildren.empty() )
+			return mChildren.front()->getAttribDims( attr );
+		else
+			return 0;
+	}
 }
 
 AttribSet SourceMods::getAvailableAttribs() const
 {
 	cacheVariables();
-	return mParamsStack.back().getAvailableAttribs();
+	if( mSourcePtr )
+		return mParamsStack.back().getAvailableAttribs();
+	else if( ! mChildren.empty() )
+		return mChildren.front()->getAvailableAttribs();
+	else
+		return AttribSet();
 }
 
 // Caches out 'mCachedNumVertices', 'mCachedNumIndices', 'mCachedPrimitive' & 'mCachedAvailableAttribs'
@@ -4574,7 +4605,7 @@ AttribSet SourceMods::getAvailableAttribs() const
 // or the Source if this is the first modifier, because we are setting 'mCachedPrimitive' in the loop
 void SourceMods::cacheVariables() const
 {
-	if( mVariablesCached )
+	if( mVariablesCached || ( ! mSourcePtr ) )
 		return;
 
 	// this is important to set first; modifiers' get*() methods might call into one of our get*() methods
@@ -4582,10 +4613,10 @@ void SourceMods::cacheVariables() const
 	mVariablesCached = true;
 	
 	mParamsStack.push_back( Modifier::Params() );
-	mParamsStack.back().mNumVertices = getSource()->getNumVertices();
-	mParamsStack.back().mNumIndices = getSource()->getNumIndices();
-	mParamsStack.back().mPrimitive = getSource()->getPrimitive();
-	mParamsStack.back().mAvaliableAttribs = getSource()->getAvailableAttribs();
+	mParamsStack.back().mNumVertices = mSourcePtr->getNumVertices();
+	mParamsStack.back().mNumIndices = mSourcePtr->getNumIndices();
+	mParamsStack.back().mPrimitive = mSourcePtr->getPrimitive();
+	mParamsStack.back().mAvaliableAttribs = mSourcePtr->getAvailableAttribs();
 	for( auto &mod : mModifiers ) {
 		// we store these values in temporaries so that they aren't yet returned by get*()
 		auto numVertices = mod->getNumVertices( mParamsStack.back() );
@@ -4603,24 +4634,26 @@ void SourceMods::cacheVariables() const
 
 void SourceMods::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
-	// load ourselves
-	SourceModsContext context( this );
-	context.preload( requestedAttribs );
-	for( auto &sibling : mSiblings ) {
-		SourceModsContext siblingContext( sibling.get() );
-		siblingContext.preload( requestedAttribs );
-		context.combine( siblingContext );
+	if( mSourcePtr ) { // normal, no children
+		if( mModifiers.empty() ) {
+			mSourcePtr->loadInto( target, requestedAttribs );
+		}
+		else {
+			SourceModsContext context( this );
+			context.loadInto( target, requestedAttribs );
+		}	
 	}
+	else if( ! mChildren.empty() ) { // children
+		SourceModsContext context( mChildren.front().get() );
+		context.preload( requestedAttribs );
+		for( auto& childIt = ++mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
+			SourceModsContext siblingContext( childIt->get() );
+			siblingContext.preload( requestedAttribs );
+			context.combine( siblingContext );
+		}
 	
-	context.complete( target, requestedAttribs );
-//	// if we have no modifiers (not typical) just do a standard loadInto
-//	if( mModifiers.empty() ) {
-//		getSource()->loadInto( target, requestedAttribs );
-//	}
-//	else {
-//		SourceModsContext context( this );
-//		context.loadInto( target, requestedAttribs );
-//	}
+		context.complete( target, requestedAttribs );	
+	}
 }
 
 void SourceMods::append( const Modifier &modifier )
@@ -4632,8 +4665,8 @@ void SourceMods::append( const Modifier &modifier )
 void SourceMods::append( const Source &source )
 {
 	if( mSourcePtr ) { // if we already have a Source, append a Combine modifier
-		mModifiers.push_back( std::unique_ptr<Modifier>( new geom::Combine( source ) ) );
-		mVariablesCached = false;
+		SourceMods sourceMods( &source, true ); // clone the source since it's a temporary
+		append( sourceMods );
 	}
 	else {
 		mSourceStorage = std::unique_ptr<Source>( source.clone() );
@@ -4641,9 +4674,22 @@ void SourceMods::append( const Source &source )
 	}
 }
 
-void SourceMods::combine( const SourceMods &sourceMods )
+void SourceMods::append( const SourceMods &sourceMods )
 {
-	mSiblings.push_back( std::unique_ptr<SourceMods>( sourceMods.clone() ) );
+	// if we don't have a Source, this is no problem
+	if( ! mSourcePtr ) {
+		mChildren.push_back( std::unique_ptr<SourceMods>( sourceMods.clone() ) );
+	}
+	else { // we were a bachelor SouceMods before; now we need to make a child of ourselves and then add 'sourceMods' as a second child
+		CI_ASSERT( mChildren.empty() );
+		mChildren.push_back( std::unique_ptr<SourceMods>( clone() ) );
+		// clear traces of when we owned our Source & Modifiers
+		mSourcePtr = nullptr;
+		mSourceStorage.reset();
+		mModifiers.clear();
+		// add the original SourceMods we were combining with
+		mChildren.push_back( std::unique_ptr<SourceMods>( sourceMods.clone() ) );
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

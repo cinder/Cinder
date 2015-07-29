@@ -1462,12 +1462,17 @@ class SourceMods : public Source {
 	SourceMods( const SourceMods &rhs )
 		: mVariablesCached( false )	
 	{
-		mSourceStorage = std::unique_ptr<Source>( rhs.mSourcePtr->clone() );
-		mSourcePtr = mSourceStorage.get();
+		if( rhs.mSourcePtr ) {
+			mSourceStorage = std::unique_ptr<Source>( rhs.mSourcePtr->clone() );
+			mSourcePtr = mSourceStorage.get();
+		}
+		else
+			mSourcePtr = nullptr;
+
 		for( auto &modifier : rhs.mModifiers )
 			mModifiers.push_back( std::unique_ptr<Modifier>( modifier->clone() ) );
-		for( auto &sibling : rhs.mSiblings )
-			mSiblings.push_back( std::unique_ptr<SourceMods>( sibling->clone() ) );
+		for( auto &child : rhs.mChildren )
+			mChildren.push_back( std::unique_ptr<SourceMods>( child->clone() ) );
 	}
 
 	SourceMods( SourceMods &&rhs )
@@ -1476,7 +1481,7 @@ class SourceMods : public Source {
 		mSourceStorage = std::move( rhs.mSourceStorage );
 		mSourcePtr = rhs.mSourcePtr;
 		mModifiers = std::move( rhs.mModifiers );
-		mSiblings = std::move( rhs.mSiblings );
+		mChildren = std::move( rhs.mChildren );
 	}
 
 	explicit SourceMods( const Source *source, bool clone )
@@ -1492,12 +1497,12 @@ class SourceMods : public Source {
 	
 	void	append( const Modifier &modifier );
 	void	append( const Source &source );
-	void	combine( const SourceMods &sourceMods );
+	void	append( const SourceMods &sourceMods );
 	
 	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
-	const Source*		getSource() const { return mSourcePtr; }
+	const Source*									getSource() const { return mSourcePtr; }
 	//! Not generally useful. Use getSource() instead. Maps to nullptr when the SourceMods is not responsible for ownership.
-	const std::unique_ptr<Source>&	getSourceStorage() const { return mSourceStorage; }
+	const std::unique_ptr<Source>&					getSourceStorage() const { return mSourceStorage; }
 
 	// geom::Source methods
 	size_t		getNumVertices() const override;
@@ -1511,14 +1516,14 @@ class SourceMods : public Source {
   protected:
 	void		cacheVariables() const;
 	
-	const Source* 							mSourcePtr;
+	const Source* 							mSourcePtr; // null if we have children
 	std::unique_ptr<Source>					mSourceStorage; // null if we don't have ownership
 	std::vector<std::unique_ptr<Modifier>>	mModifiers;
 	
 	mutable bool							mVariablesCached;
 	mutable std::vector<Modifier::Params>	mParamsStack;
 	
-	std::vector<std::unique_ptr<SourceMods>>	mSiblings;
+	std::vector<std::unique_ptr<SourceMods>>	mChildren;
 	
 	friend class SourceModsContext;
 };
@@ -1556,7 +1561,7 @@ inline SourceMods operator&( const Source &source, const Modifier &modifier )
 inline SourceMods operator&( const SourceMods &sourceModsL, const SourceMods &sourceModsR )
 {
 	SourceMods result = sourceModsL;
-	result.combine( sourceModsR );
+	result.append( sourceModsR );
 	return result;
 }
 
