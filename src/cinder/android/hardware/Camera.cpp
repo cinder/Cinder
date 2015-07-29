@@ -459,10 +459,10 @@ static void ConvertYUV2RGB(const unsigned char *src0,const unsigned char *src1,u
 		InitConvertTable();
 	}
 
-	register int y1,y2,u,v;
-	register const unsigned char *py1,*py2;
-	register int i,j, c1, c2, c3, c4;
-	register unsigned char *d1, *d2;
+	int y1,y2,u,v;
+	const unsigned char *py1,*py2;
+	int i,j, c1, c2, c3, c4;
+	unsigned char *d1, *d2;
 
 	int width3 = 3*width;
 	py1=src0;

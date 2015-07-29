@@ -12,9 +12,11 @@ if (( $# == 0 )); then
     echo -e "\t-j [n]   Number of compile processes, ex: -j 4"
     echo -e ""
     echo -e "flags:"
-    echo -e "\t-es   2Build for OpenGL ES 2 instead of OpenGL ES 3"
-    echo -e "\t-r    Rebuild instead of full build"
-    echo -e "\t-v    Turns on verbose mode"
+    echo -e "\t-es2    Build for OpenGL ES 2 instead of OpenGL ES 3"
+    echo -e "\t-r      Rebuild instead of full build"
+    echo -e "\t-v      Turns on verbose mode"
+    echo -e "\t-v      Turns on verbose mode"
+    echo -e "\t-clang  Uses clang3.5 toolchain (experimental)"
     echo -e ""
     exit 0
 fi
@@ -28,6 +30,7 @@ ES2_INFO=
 NUMPROCS=4
 FULLBUILD=true
 VERBOSE=
+TOOLCHAIN=gcc49
 
 # Process arguments
 while (( $# >= 1 )) 
@@ -140,6 +143,11 @@ do
             ES2_INFO="GLES2: true"
         ;;
 
+        # Clang 3.5
+        -clang)
+            TOOLCHAIN=clang35
+        ;;
+
         # Rebuild
         -r)
             FULLBUILD=false
@@ -212,7 +220,7 @@ for plat in ${PLATFORMS[@]}; do
             echo "(CINDER-ANDROID): Changed dir: $(pwd)"
             
             # cmake
-            cmake ../../../.. -DCMAKE_BUILD_TYPE=$build -DNDK_ARCH=$arch -DNDK_PLATFORM=$plat ${ES2}
+            cmake ../../../.. -DCMAKE_BUILD_TYPE=$build -DNDK_ARCH=$arch -DNDK_PLATFORM=$plat -DNDK_TOOLCHAIN=${TOOLCHAIN} ${ES2}
             if [ $? -ne 0 ]
             then
                 echo -e "\n(CINDER-ANDROID): CMake failed for PLATFORM: android-$plat, ARCH: $arch, BUILD_TYPE: $build"
