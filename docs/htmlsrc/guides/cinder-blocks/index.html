@@ -1,16 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-	<link rel="stylesheet" href="../_common/css/cinder.css" type="text/css" media="screen" />
 	<meta http-equiv="content-type" content="text/html; charset=windows-1252">
 	<title>CinderBlocks</title>
 </head>
 <body>
 
-<div class="wrapper">
-	<div class="header">
-		<h1><a href="http://libcinder.org">Cinder</a><h1>
-	</div>
 	
 	<div class="contents">
 
@@ -77,29 +72,13 @@
     This file enumerates the files and dependencies of the CinderBlock using XML of the following form:
   </div>
 
-  <div>
-    <code>&lt;cinder&gt;</code>
-  </div>
-
-  <div>
-    <code>&nbsp; &lt;block&gt;</code>
-  </div>
-
-  <div>
-    <code>&nbsp; ...</code>
-  </div>
-
-  <div>
-    <code>&nbsp; &lt;block&gt;</code>
-  </div>
-
-  <div>
-    <code>&lt;/cinder&gt;<br /></code>
-  </div>
-
-  <div>
-    <br />
-  </div>
+<pre><code class="language-markup">
+&lt;cinder&gt;
+    &lt;block&gt;
+    ...
+    &lt;block&gt;
+&lt;/cinder&gt;
+</code></pre>
 
   <div>
     The <code>&lt;block&gt;</code> tag supports the following attributes:
@@ -167,8 +146,10 @@
   </div>
 
   <div>
-    <b>Example:</b> <code>
-    &lt;header&gt;include/example.h&lt;/header&gt;</code><b><br /></b>
+    <b>Example:</b>
+  <pre><code class="language-markup">
+    &lt;header&gt;include/example.h&lt;/header&gt;
+  </code></pre>
   </div>
 
   <div>
@@ -403,47 +384,17 @@
     boolean-ANDing of the conditions. For example
   </div>
 
-  <div>
-    <code>&lt;platform os="msw"&gt;</code>
-  </div>
-
-  <div>
-    <code>&nbsp; &lt;header&gt;include/myLib.h&lt;/header&gt;</code>
-  </div>
-
-  <div>
-    <code>&nbsp; &lt;platform config="debug"&gt;</code>
-  </div>
-
-  <div>
-    <code>&nbsp; &nbsp;
-    &lt;staticLibrary&gt;myLib_d.lib&lt;/staticLibrary&gt;</code>
-  </div>
-
-  <div>
-    <code>&nbsp; &lt;/platform&gt;</code>
-  </div>
-
-  <div>
-    <code>&nbsp; &lt;platform config="release"&gt;</code>
-  </div>
-
-  <div>
-    <code>&nbsp;
-    &nbsp;&nbsp;&lt;staticLibrary&gt;myLib.lib&lt;/staticLibrary&gt;</code>
-  </div>
-
-  <div>
-    <code>&nbsp; &lt;/platform&gt;</code>
-  </div>
-
-  <div>
-    <code>&lt;/platform&gt;</code>
-  </div>
-
-  <div>
-    <b><br /></b>
-  </div>
+  <pre><code class="language-markup">
+&lt;platform os="msw"&gt;
+    &lt;header&gt;include/myLib.h&lt;/header&gt;
+    &lt;platform config="debug"&gt;
+      &lt;staticLibrary&gt;myLib_d.lib&lt;/staticLibrary&gt;
+    &lt;/platform&gt;
+    &lt;platform config="release"&gt;
+        &lt;staticLibrary&gt;myLib.lib&lt;/staticLibrary&gt;
+    &lt;/platform&gt;
+&lt;/platform&gt;
+</code></pre>
 
   <div>
     In the example above, both debug and release configurations on MSW would include the
@@ -474,46 +425,16 @@
     <code>&lt;block&gt;</code>
   </div>
 
-  <code>
-  <div>
-    &lt;cinder&gt;
-  </div>
-
-  <div>
-    &nbsp; &lt;block&gt;
-  </div>
-
-  <div>
-    &nbsp; ...
-  </div>
-
-  <div>
-    &nbsp; &lt;block /&gt;
-  </div>
-
-
-  <div>
-    &nbsp;
-    &lt;template&gt;<i>path/to/template.xml</i>&lt;\template&gt;
-  </div>
-
-  <div>
-    &nbsp; ...
-  </div>
-
-  <div>
-    &nbsp;
-    &lt;template&gt;<i>path/to/another/template.xml</i>&lt;\template&gt;
-  </div>
-
-  <div>
-    <code>&lt;/cinder&gt;<br /></code>
-  </div>
-
-  <div>
-    <b><br /></b>
-  </div>
-  </code>
+<pre><code class="language-markup">
+&lt;cinder&gt;
+  &lt;block&gt;
+    ...
+  &lt;block /&gt;
+  &lt;template&gt;path/to/template.xml&lt;\template&gt;
+    ...
+  &lt;template&gt;path/to/another/template.xml&lt;\template&gt;
+&lt;/cinder&gt;
+</code></pre>
 
   <div>
     A <em>template.xml</em> file is structured very similarly to a <em>cinderblock.xml</em>
@@ -524,32 +445,14 @@
     these, the parent's unique ID should be cited in a <i>parent</i>&nbsp;attribute:
   </div>
 
-  <code>
-  <div>
-    &lt;cinder&gt;
-  </div>
-
-  <div>
+<pre><code class="language-markup">
+&lt;cinder&gt;
     &lt;template name="OpenCV: Basic"
-    <b>parent="org.libcinder.apptemplates.basicopengl"</b>&gt;
-  </div>
-
-  <div>
-    ...
-  </div>
-
-  <div>
+        parent="org.libcinder.apptemplates.basicopengl"&gt;
+        ...
     &lt;/template&gt;
-  </div>
-
-  <div>
-    &lt;/cinder&gt;
-  </div>
-
-  <div>
-    <b><br /></b>
-  </div>
-  </code>
+&lt;/cinder&gt;
+</code></pre>
 
   <h2>Best Practices for Maintainers</h2>
 
@@ -650,6 +553,5 @@
 <p>Very advanced users may find cause to modify lower level parameters of the Xcode and Visual C++ project files TinderBox creates. If you are familiar with the internals of your compiler's project files, you can modify the files located at <em>Cinder/blocks/__AppTemplates/__Foundation</em>. A key attribute of these files is that the string <code>_TBOX_CINDER_PATH_</code> will be replaced with the absolute file path to Cinder, and the string <code>_TBOX_PREFIX_</code> will be replaced with the user-provided project name.</p>
 
 
-</div>
 </body>
 </html>

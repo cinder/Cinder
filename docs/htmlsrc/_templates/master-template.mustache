@@ -19,7 +19,7 @@
 <body class="{{section_class}}">
 
     <!-- start offcanvas content for responsive sliding nav -->
-    <div class="off-canvas-wrap" data-offcanvas>
+    <div class="off-canvas-wrap wrapper" data-offcanvas>
         <main class="inner-wrap">
 
             <section class="main-section">
@@ -74,7 +74,7 @@
 
                 
                 {{!-- main content --}}
-                <div data-equalizer="content">
+                <div id="main-content" data-equalizer="content">
 
                     {{{ main_content }}} <!-- dynamic partial defined in python -->
                 </div> {{!-- end row --}}
@@ -83,12 +83,14 @@
             <a class="exit-off-canvas"></a>
         </main>
 
+        {{! start footer part }}
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
     </div>
     
-    {{! start footer part }}
-    <footer>
-      <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
-    </footer>
+    
 
     
     {{! scripts }}

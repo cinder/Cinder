@@ -2641,7 +2641,6 @@ def generate_bs4_from_string(string):
     # wrap in body tag if none exists
     if string.find("<body") < 0:
         output_string = "<body>" + output_string + "</body>"
-        print "\t [generate_bs4_from_string] ** WARNING: No body tag found "
 
     bs4 = BeautifulSoup(output_string)
     return bs4
