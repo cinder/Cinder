@@ -655,9 +655,13 @@ void EventManagerAndroid::execute()
 	mLightSensor->mSensor         	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_LIGHT );
 	mProximitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_PROXIMITY );
 	mGravitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GRAVITY );
-	//mRotationVectorSensor->mSensor 	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_ROTATION_VECTOR );
 	mRotationVectorSensor->mSensor 	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GAME_ROTATION_VECTOR );
-	mSensorEventQueue    		  	= ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
+	if( nullptr == mRotationVectorSensor->mSensor ) {
+		mRotationVectorSensor->mSensor = ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_ROTATION_VECTOR );
+		mHasGameRotationVector = false;
+	}
+	
+	mSensorEventQueue = ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
 
 	dbg_log_sensor( "mAccelerometerSensor    ", mAccelerometerSensor );
 	dbg_log_sensor( "mMagneticFieldSensor    ", mMagneticFieldSensor );
@@ -665,7 +669,12 @@ void EventManagerAndroid::execute()
 	dbg_log_sensor( "mLightSensor            ", mLightSensor );
 	dbg_log_sensor( "mProximitySensor        ", mProximitySensor );
 	dbg_log_sensor( "mGravitySensor          ", mGravitySensor );
-	dbg_log_sensor( "mRotationVectorSensor(G)", mRotationVectorSensor );
+	if( mHasGameRotationVector ) {
+		dbg_log_sensor( "mRotationVectorSensor(G)", mRotationVectorSensor );
+	}
+	else {
+		dbg_log_sensor( "mRotationVectorSensor   ", mRotationVectorSensor );
+	}
 
 	ci::android::JniHelper::Initialize( mNativeApp->activity );
 	ci::android::app::CinderNativeActivity::registerComponents();
@@ -743,7 +752,6 @@ dbg_app_log( "Starting Event Loop" );
 							}
 							break;
 
-							//case ASENSOR_TYPE_ROTATION_VECTOR: {
 							case ASENSOR_TYPE_GAME_ROTATION_VECTOR: {
 								if( mRotationVectorSensor && ( mRotationVectorSensor->mCallbackFn ) ) {
 									const size_t n = 4;
@@ -751,7 +759,17 @@ dbg_app_log( "Starting Event Loop" );
 									mRotationVectorSensor->mCallbackFn( n, data );
 								}
 							}
-							break;										
+							break;
+
+							// For devices that don't have GAME ROTATION VECTOR.
+							case ASENSOR_TYPE_ROTATION_VECTOR: {
+								if( mRotationVectorSensor && ( mRotationVectorSensor->mCallbackFn ) ) {
+									const size_t n = 4;
+									const float* data = reinterpret_cast<const float*>( &(sensorEvent.data) );
+									mRotationVectorSensor->mCallbackFn( n, data );
+								}
+							}
+							break;							
 						}
 					}
 				}

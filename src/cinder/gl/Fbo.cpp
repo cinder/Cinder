@@ -287,6 +287,10 @@ Fbo::Fbo( int width, int height, const Format &format )
 {
 	init();
 	gl::context()->framebufferCreated( this );
+
+#if defined( CINDER_ANDROID )
+	CI_LOG_I( "Fbo::Fbo size=" << width << "x" << height) ;
+#endif	
 }
 
 Fbo::~Fbo()

@@ -119,6 +119,7 @@ public:
 	std::shared_ptr<Sensor> 	mGravitySensor;
 	std::shared_ptr<Sensor> 	mRotationVectorSensor;
  	ASensorEventQueue 			*mSensorEventQueue = nullptr;
+ 	bool 						mHasGameRotationVector = true;
 
 	bool 						mDeferredMainHasBeenCalled;
 	std::function<void()> 		mDeferredMainFn;
