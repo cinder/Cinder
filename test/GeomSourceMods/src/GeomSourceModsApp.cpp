@@ -66,21 +66,21 @@ gl::BatchRef visualTest1()
 {
 	std::cout << "non-indexed LINE_STRIP + non-indexed LINE_STRIP" << std::endl;
 	return gl::Batch::create( geom::WireCircle().center( vec2( -1 ) ).subdivisions( 21 )
-		>> geom::Combine( geom::WireCircle().center( vec2( 1 ) ).subdivisions( 3 ) ), gl::getStockShader( gl::ShaderDef().color() ) );
+		& geom::WireCircle().center( vec2( 1 ) ).subdivisions( 3 ), gl::getStockShader( gl::ShaderDef().color() ) );
 }
 
 gl::BatchRef visualTest2()
 {
 	std::cout << "non-indexed LINES + non-indexed LINE_STRIP" << std::endl;
 	return gl::Batch::create( geom::WireCube()
-		>> geom::Combine( geom::WireCircle().center( vec2( 1 ) ).subdivisions( 3 ) ), gl::getStockShader( gl::ShaderDef().color() ) );
+		& geom::WireCircle().center( vec2( 1 ) ).subdivisions( 3 ), gl::getStockShader( gl::ShaderDef().color() ) );
 }
 
 gl::BatchRef visualTest3()
 {
 	std::cout << "indexed LINES + non-indexed LINE_STRIP" << std::endl;
 	return gl::Batch::create( geom::Sphere() >> geom::Lines()
-		>> geom::Combine( geom::WireCircle().center( vec2( 1 ) ).subdivisions( 3 ) ), gl::getStockShader( gl::ShaderDef().color() ) );
+		& geom::WireCircle().center( vec2( 1 ) ).subdivisions( 3 ), gl::getStockShader( gl::ShaderDef().color() ) );
 }
 
 gl::BatchRef visualTest4()
@@ -89,14 +89,14 @@ gl::BatchRef visualTest4()
 	auto sphere1 = geom::Sphere().center( vec3( -1 ) ) >> geom::Lines();
 	auto sphere2 = geom::Sphere().center( vec3( 1 ) ) >> geom::Lines();
 	auto sphere3 = sphere1 >> geom::Translate( 0, 1, 0 );
-	return gl::Batch::create( sphere1 >> sphere2 >> sphere3, gl::getStockShader( gl::ShaderDef().color() ) );
+	return gl::Batch::create( sphere1 & sphere2 & sphere3, gl::getStockShader( gl::ShaderDef().color() ) );
 }
 
 gl::BatchRef visualTest5()
 {
 	std::cout << "non-indexed TRIANGLE_STRIP + non-indexed TRIANGLE_FAN" << std::endl;
 	return gl::Batch::create( geom::Rect()
-		>> geom::Combine( geom::Circle().center( vec2( 1 ) ).subdivisions( 3 ) ), gl::getStockShader( gl::ShaderDef().color() ) );
+		& geom::Circle().center( vec2( 1 ) ).subdivisions( 3 ), gl::getStockShader( gl::ShaderDef().color() ) );
 }
 
 gl::BatchRef visualTest6()
@@ -105,17 +105,15 @@ gl::BatchRef visualTest6()
 	auto sphere1 = geom::Sphere().center( vec3( -1 ) );
 	auto sphere2 = geom::Sphere().center( vec3( 1 ) );
 	auto sphere3 = sphere1 >> geom::Translate( 0, 1, 0 );
-	return gl::Batch::create( sphere1 >> sphere2 >> sphere3, gl::getStockShader( gl::ShaderDef().lambert() ) );
+	return gl::Batch::create( sphere1 & sphere2 & sphere3, gl::getStockShader( gl::ShaderDef().lambert() ) );
 }
 
 gl::BatchRef visualTest7()
 {
 	std::cout << "indexed TRIANGLES + indexed TRIANGLES + indexed TRIANGLES" << std::endl;
-	auto sphere1 = geom::Cube() >> geom::Constant( geom::COLOR, vec3( 1, 0.25f, 0 ) );
-	auto sphere2 = geom::Cube() >> geom::Translate( 0, 1.5f, 0 ) >> geom::Constant( geom::COLOR, vec3( 1, 0.5f, 0.25f ) );
-	gl::VboMeshRef v = gl::VboMesh::create( sphere1 >> sphere2 );
-	v->echoVertexRange( std::cout, 0, 200 );
-	return gl::Batch::create( sphere1 >> sphere2, gl::getStockShader( gl::ShaderDef().lambert().color() ) );
+	auto cube1 = geom::Cube() >> geom::Constant( geom::COLOR, vec3( 0.22, 0.33f, 0.77f ) );
+	auto cube2 = geom::Cube() >> geom::Translate( 0, 1.5f, 0 ) >> geom::Constant( geom::COLOR, vec3( 1, 0.5f, 0.25f ) );
+	return gl::Batch::create( (cube1 >> geom::Translate( 0, 0, 3 ) & cube2) >> geom::Translate( 0, 1.5, 0 ), gl::getStockShader( gl::ShaderDef().lambert().color() ) );
 }
 
 gl::BatchRef visualTest8()
@@ -178,6 +176,7 @@ void GeomSourceModsApp::setup()
 	gl::enableDepthRead();
 
 	// triangles visual tests
+	mVisualTestSetups.push_back( visualTest8 );
 	mVisualTestSetups.push_back( visualTest7 );
 	mVisualTestSetups.push_back( visualTest6 );
 	mVisualTestSetups.push_back( visualTest5 );

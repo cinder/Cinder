@@ -1321,43 +1321,6 @@ class Remove : public Modifier {
 	Attrib		mAttrib;
 };
 
-//! Combines an additional Source. Requires the Primitive types to be compatible (both triangles or both lines). Heterogenous Primitive types always results in indexed geometry. Attributes not available on Source will be filled with \c 0. 
-class Combine : public Modifier {
-  public:
-	Combine( const Source &source )
-	{
-		mSourceStorage = std::unique_ptr<Source>( source.clone() );
-		mSource = mSourceStorage.get();
-	}
-	Combine( const Source *source )
-		: mSource( source )
-	{}
-	Combine( const Combine &combine )
-	{
-		if( combine.mSourceStorage ) {
-			mSourceStorage = std::unique_ptr<Source>( combine.mSourceStorage->clone() );
-			mSource = mSourceStorage.get();
-		}
-		else {
-			mSource = combine.mSource;
-		}
-	}
-	
-	Modifier*	clone() const override { return new Combine( *this ); }
-
-	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
-	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
-	Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const override;
-	
-	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
-	
-  protected:
-
-	const Source				*mSource;
-	std::unique_ptr<Source>		mSourceStorage;
-};
-
 //! Calculates the 3D bounding box of the geometry.
 class Bounds : public Modifier {
   public:
