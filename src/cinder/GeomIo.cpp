@@ -198,8 +198,14 @@ void copyData( uint8_t srcDimensions, size_t srcStrideBytes, const float *srcDat
 	if( dstStrideBytes == 0 )
 		dstStrideBytes = dstDimensions * sizeof(float);
 
-	// call equivalent method that doesn't support srcStrideBytes
-	if( srcStrideBytes == srcDimensions * sizeof(float) )
+	if( srcDimensions == 0 ) { // fill with zeros
+		for( size_t v = 0; v < numElements; ++v ) {
+			for( uint8_t d = 0; d < dstDimensions; ++d )
+				dstData[d] = 0;
+			dstData = (float*)((uint8_t*)dstData + dstStrideBytes);	
+		}
+	}
+	else if( srcStrideBytes == srcDimensions * sizeof(float) ) 	// call equivalent method that doesn't support srcStrideBytes
 		copyData( srcDimensions, srcData, numElements, dstDimensions, dstStrideBytes, dstData );
 	// we can get away with a memcpy
 	else if( (srcDimensions == dstDimensions) && (dstStrideBytes == dstDimensions * sizeof(float)) && (srcStrideBytes == dstStrideBytes) ) {
@@ -255,7 +261,14 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 		dstStrideBytes = dstDimensions * sizeof(float);
 
 	// we can get away with a memcpy
-	if( (srcDimensions == dstDimensions) && (dstStrideBytes == dstDimensions * sizeof(float)) ) {
+	if( srcDimensions == 0 ) { // fill with zeros
+		for( size_t v = 0; v < numElements; ++v ) {
+			for( uint8_t d = 0; d < dstDimensions; ++d )
+				dstData[d] = 0;
+			dstData = (float*)((uint8_t*)dstData + dstStrideBytes);	
+		}
+	}	
+	else if( (srcDimensions == dstDimensions) && (dstStrideBytes == dstDimensions * sizeof(float)) ) {
 		memcpy( dstData, srcData, numElements * srcDimensions * sizeof(float) );
 	}
 	else {
@@ -4674,15 +4687,8 @@ void SourceModsContext::combine( const SourceModsContext &rhs )
 		if( dims > 0 ) {
 			uint8_t rhsDims = rhs.getAttribDims( attribInfo.first );
 			// if 'rhs' has data for the attribute, copy that
-if( rhsDims > 0 ) {
-const float *rhsAttribData = rhs.getAttribData( attribInfo.first );
-this->appendAttrib( attribInfo.first, dims, rhsAttribData, rhsNumVertices );
-			}
-			else { // 'rhs' has no data for this attribute. Fill with zeros.
-//				float *ptr = outAttribData.get() + ( numVertices * dims );
-//				for( size_t i = 0; i < dims * rhsNumVertices; ++i )
-//					ptr[i] = 0;
-			}
+			const float *rhsAttribData = rhs.getAttribData( attribInfo.first );
+			this->appendAttrib( attribInfo.first, rhsDims, rhsAttribData, rhsNumVertices );
 		}
 	}
 }
@@ -4855,10 +4861,6 @@ void SourceModsContext::appendAttrib( Attrib attr, uint8_t dims, const float *sr
 	}
 	auto attribInfoIt = mAttribInfo.at( attr );
 	uint8_t existingDims = attribInfoIt.getDims();
-	if( existingDims != dims ) {
-		CI_LOG_E( "Attribute dimensions don't match" );
-		return;
-	}
 	size_t existingCount = mAttribCount[attr];
 	const float *existingData = mAttribData[attr].get();
 
@@ -4866,7 +4868,7 @@ void SourceModsContext::appendAttrib( Attrib attr, uint8_t dims, const float *sr
 	// copy old data
 	memcpy( newData.get(), existingData, sizeof(float) * existingCount * existingDims );
 	// append new data
-	memcpy( newData.get() + existingCount * existingDims, srcData, sizeof(float) * count * existingDims );
+	copyData( dims, 0, srcData, count, existingDims, 0, newData.get() + existingCount * existingDims );
 	// reassign data
 	mAttribData[attr] = std::move( newData );
 	mAttribCount[attr] = existingCount + count;

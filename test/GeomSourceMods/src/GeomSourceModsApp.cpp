@@ -112,7 +112,7 @@ gl::BatchRef visualTest7()
 {
 	std::cout << "indexed TRIANGLES + indexed TRIANGLES + indexed TRIANGLES" << std::endl;
 	auto cube1 = geom::Cube() >> geom::Constant( geom::COLOR, vec3( 0.22, 0.33f, 0.77f ) );
-	auto cube2 = geom::Cube() >> geom::Translate( 0, 1.5f, 0 ) >> geom::Constant( geom::COLOR, vec3( 1, 0.5f, 0.25f ) );
+	auto cube2 = geom::Cube() >> geom::Translate( 0, 1.5f, 0 ) >> geom::Constant( geom::COLOR, vec4( 1, 0.5f, 0.25f, 0.5f ) );
 	return gl::Batch::create( (cube1 >> geom::Translate( 0, 0, 3 ) & cube2) >> geom::Translate( 0, 1.5, 0 ), gl::getStockShader( gl::ShaderDef().lambert().color() ) );
 }
 
