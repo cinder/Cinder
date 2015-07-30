@@ -29,7 +29,40 @@
 		#define ASIO_WINDOWS_RUNTIME 1
 	#endif
 #endif
-#include "asio/asio.hpp"
+
+#if defined( __ANDROID__ ) && defined( __clang__ )
+ 	#if defined( __GNUC__ )
+ 		#define SAVED__GNUC__ __GNUC__
+ 		#undef __GNUC__
+ 	#endif
+
+ 	#if defined( __GNUC_MINOR__ )
+ 		#define SAVED__GNUC_MINOR__ __GNUC_MINOR__
+ 		#undef __GNUC_MINOR__
+ 	#endif
+
+ 	#define __GNUC__ 		4
+ 	#define __GNUC_MINOR__	9
+	#include "asio/asio.hpp"
+
+ 	#if defined( SAVED__GNUC__ )
+ 		#undef  __GNUC__
+ 		#define __GNUC__ SAVED__GNUC__
+ 		#undef  SAVED__GNUC__
+ 	#else
+		#undef __GNUC__
+ 	#endif 
+
+ 	#if defined( SAVED__GNUC_MINOR__ )
+ 		#undef  __GNUC_MINOR__
+ 		#define __GNUC_MINOR__ SAVED__GNUC_MINOR__
+ 		#undef  SAVED__GNUC_MINOR__
+ 	#else
+		#undef __GNUC_MINOR__
+ 	#endif
+#else
+	#include "asio/asio.hpp"
+#endif
 
 #include "cinder/app/AppBase.h"
 #include "cinder/app/Renderer.h"
