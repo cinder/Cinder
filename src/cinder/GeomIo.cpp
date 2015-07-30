@@ -4442,7 +4442,7 @@ Primitive SourceMods::getPrimitive() const
 	else {
 		if( ! mChildren.empty() ) {
 			Primitive result = mChildren.front()->getPrimitive();
-			for( auto& childIt = ++mChildren.begin(); childIt != mChildren.end(); ++childIt )
+			for( auto childIt = ++mChildren.begin(); childIt != mChildren.end(); ++childIt )
 				result = Target::determineCombinedPrimitive( result, (*childIt)->getPrimitive() );
 			return result;
 		}
