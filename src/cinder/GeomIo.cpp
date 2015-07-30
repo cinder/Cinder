@@ -4644,10 +4644,9 @@ void SourceMods::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 		}	
 	}
 	else if( ! mChildren.empty() ) { // children
-		SourceModsContext context( mChildren.front().get() );
-		context.preload( requestedAttribs );
-		for( auto& childIt = ++mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
-			SourceModsContext siblingContext( childIt->get() );
+		SourceModsContext context( this );
+		for( auto& child : mChildren ) {
+			SourceModsContext siblingContext( child.get() );
 			siblingContext.preload( requestedAttribs );
 			context.combine( siblingContext );
 		}
@@ -4699,9 +4698,7 @@ SourceModsContext::SourceModsContext( const SourceMods *sourceMods )
 {
 	mSource = sourceMods->getSource();
 	
-	if( sourceMods->mParamsStack.empty() )
-		CI_LOG_E( "SourceModsContext constructed with empty mParamsStack" );
-	else // this allows for a non-indexed Source to have never specified the primitive via copyIndices()
+	if( ! sourceMods->mParamsStack.empty() ) // this allows for a non-indexed Source to have never specified the primitive via copyIndices()
 		mPrimitive = sourceMods->mParamsStack.front().mPrimitive;
 	
 	for( auto &modifier : sourceMods->mModifiers )
@@ -4733,9 +4730,22 @@ void SourceModsContext::preload( const AttribSet &requestedAttribs )
 	}
 }
 
-// Expects preload to have been called on 'this' and 'rhs'
+// Expects preload() to have been called on 'rhs'
 void SourceModsContext::combine( const SourceModsContext &rhs )
 {
+	// This is our first SourceModsContext to be combined with; just copy its contents and return
+	if( mPrimitive == NUM_PRIMITIVES ) {
+		mPrimitive = rhs.getPrimitive();
+		this->copyIndices( rhs.getPrimitive(), rhs.getIndicesData(), rhs.getNumIndices(), 4 );
+		for( auto &attribInfo : rhs.mAttribInfo ) {
+			const auto &data = rhs.mAttribData.find( attribInfo.first )->second;
+			const auto &count = rhs.mAttribCount.find( attribInfo.first )->second;
+			this->copyAttrib( attribInfo.first, attribInfo.second.getDims(), attribInfo.second.getStride(), data.get(), count );
+		}
+			
+		return;
+	}
+
 	Primitive rhsPrimitive = rhs.getPrimitive();
 	Primitive combinedPrimitive = determineCombinedPrimitive( getPrimitive(), rhsPrimitive );
 	if( (combinedPrimitive != Primitive::LINES) && (combinedPrimitive != Primitive::TRIANGLES) ) {
@@ -4808,6 +4818,15 @@ this->appendAttrib( attribInfo.first, dims, rhsAttribData, rhsNumVertices );
 // Expects preload() to have been called, with 0 or more combine()s preceding
 void SourceModsContext::complete( Target *target, const AttribSet &requestedAttribs )
 {
+	if( ( mSource == nullptr ) && ( ! mModiferStack.empty() ) ) {
+		// If we have modifiers, initiate the chain by calling the last modifier's process() method.
+		// This in turn will call processUpstream(), which will call the next modifier's process(), until there
+		// are no remaining modifiers. Finally processUpstream() will call loadInto() on the Source
+		auto modifier = mModiferStack.back();
+		mModiferStack.pop_back();
+		modifier->process( this, requestedAttribs );
+	}
+
 	// first let's verify that all counts on our requested attributes are the same. If not, we'll continue to process but with an error
 	for( const auto &attribCount : mAttribCount )
 		if( attribCount.second != mNumVertices && ( requestedAttribs.count( attribCount.first ) > 0 ) )
@@ -4864,7 +4883,8 @@ void SourceModsContext::processUpstream( const AttribSet &requestedAttribs )
 	// next 'modifier' is actually the Source, because we're at the end of the stack of modifiers
 	if( mModiferStack.empty() ) {
 		mAttribMask = &requestedAttribs;
-		mSource->loadInto( this, requestedAttribs );
+		if( mSource )
+			mSource->loadInto( this, requestedAttribs );
 		mAttribMask = nullptr;
 	}
 	else {
@@ -4952,12 +4972,6 @@ void SourceModsContext::copyAttrib( Attrib attr, uint8_t dims, size_t strideByte
 	}
 	
 	copyData( dims, strideBytes, srcData, count, dims, 0, mAttribData.at( attr ).get() );
-if( attr == COLOR ) {
-	std::cout << "Received COLOR" << std::endl;
-	for( int v = 0; v < count; ++v ) {
-		std::cout << mAttribData[attr][v*3+0] << " " << mAttribData[attr][v*3+1] << " " << mAttribData[attr][v*3+2] << std::endl;
-	}
-}
 }
 
 void SourceModsContext::appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count )
