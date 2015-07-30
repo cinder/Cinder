@@ -402,7 +402,7 @@ void calculateTangentsImpl( size_t numIndices, const uint32_t *indices, size_t n
 		float t2 = w2.y - w0.y;
 
 		float r = (s1 * t2 - s2 * t1);
-		if( r != 0.0f ) r = 1.0 / r;
+		if( r != 0.0f ) r = 1.0f / r;
 
 		vec3 tangent( (t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r );
 
@@ -3597,7 +3597,7 @@ void WireRoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &r
 {
 	std::vector<vec2> verts( mNumVertices );
 	vec2* ptr = verts.data();
-	const float angleDelta = 1 / (float)mCornerSubdivisions * M_PI / 2;
+	const float angleDelta = (float)(1 / (float)mCornerSubdivisions * M_PI / 2);
 	const std::array<vec2, 4> cornerCenterVerts = {
 		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y2 - mCornerRadius ),
 		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y2 - mCornerRadius ),
@@ -4085,7 +4085,7 @@ void VertexNormalLines::process( SourceModsContext *ctx, const AttribSet &reques
 	if( indices ) {
 		for( size_t i = 0; i < numInIndices; i++ ) { // lines connecting first vertex ("hub") and all others
 			outPositions.emplace_back( positions[indices[i]] ); outPositions.emplace_back( positions[indices[i]] + attrib[indices[i]] * mLength );
-			outCustom0.emplace_back( 0 ); outCustom0.emplace_back( 1 );
+			outCustom0.emplace_back( 0.0f ); outCustom0.emplace_back( 1.0f );
 			if( texCoords ) {
 				for( size_t d = 0; d < texCoordDims; ++d )
 					outTexCoord0.push_back( texCoords[indices[i] * texCoordDims + d] );
@@ -4097,7 +4097,7 @@ void VertexNormalLines::process( SourceModsContext *ctx, const AttribSet &reques
 	else {
 		for( size_t i = 0; i < numInVertices; i++ ) { // lines connecting first vertex ("hub") and all others
 			outPositions.emplace_back( positions[i] ); outPositions.emplace_back( positions[i] + attrib[i] * mLength );
-			outCustom0.emplace_back( 0 ); outCustom0.emplace_back( 1 );
+			outCustom0.emplace_back( 0.0f ); outCustom0.emplace_back( 1.0f );
 			if( texCoords ) {
 				for( size_t d = 0; d < texCoordDims; ++d )
 					outTexCoord0.push_back( texCoords[i * texCoordDims + d] );
@@ -4405,6 +4405,23 @@ void Subdivide::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 
 //////////////////////////////////////////////////////////////////////////////////////
 // SourceMods
+void SourceMods::copyImpl( const SourceMods &rhs )
+{
+	mVariablesCached = false;
+
+	if( rhs.mSourcePtr ) {
+		mSourceStorage = std::unique_ptr<Source>( rhs.mSourcePtr->clone() );
+		mSourcePtr = mSourceStorage.get();
+	}
+	else
+		mSourcePtr = nullptr;
+
+	for( auto &modifier : rhs.mModifiers )
+		mModifiers.push_back( std::unique_ptr<Modifier>( modifier->clone() ) );
+	for( auto &child : rhs.mChildren )
+		mChildren.push_back( std::unique_ptr<SourceMods>( child->clone() ) );
+}
+
 size_t SourceMods::getNumVertices() const
 {
 	cacheVariables();

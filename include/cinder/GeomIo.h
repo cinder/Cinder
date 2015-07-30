@@ -1428,19 +1428,8 @@ class SourceMods : public Source {
 	}
 
 	SourceMods( const SourceMods &rhs )
-		: mVariablesCached( false )	
 	{
-		if( rhs.mSourcePtr ) {
-			mSourceStorage = std::unique_ptr<Source>( rhs.mSourcePtr->clone() );
-			mSourcePtr = mSourceStorage.get();
-		}
-		else
-			mSourcePtr = nullptr;
-
-		for( auto &modifier : rhs.mModifiers )
-			mModifiers.push_back( std::unique_ptr<Modifier>( modifier->clone() ) );
-		for( auto &child : rhs.mChildren )
-			mChildren.push_back( std::unique_ptr<SourceMods>( child->clone() ) );
+		copyImpl( rhs );
 	}
 
 	SourceMods( SourceMods &&rhs )
@@ -1466,7 +1455,8 @@ class SourceMods : public Source {
 	void	append( const Modifier &modifier );
 	void	append( const Source &source );
 	void	append( const SourceMods &sourceMods );
-	
+
+	SourceMods& operator=( const SourceMods &rhs ) { copyImpl( rhs ); return *this; }	
 	SourceMods&	operator&=( const SourceMods &sourceMods ) { append( sourceMods ); return *this; }
 	SourceMods&	operator&=( const Source &source ) { append( source ); return *this; }	
 	
@@ -1485,6 +1475,7 @@ class SourceMods : public Source {
 	SourceMods*	clone() const override { return new SourceMods( *this ); }
 
   protected:
+	void		copyImpl( const SourceMods &rhs );
 	void		cacheVariables() const;
 	
 	const Source* 							mSourcePtr; // null if we have children
