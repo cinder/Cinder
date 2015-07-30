@@ -1467,6 +1467,9 @@ class SourceMods : public Source {
 	void	append( const Source &source );
 	void	append( const SourceMods &sourceMods );
 	
+	SourceMods&	operator&=( const SourceMods &sourceMods ) { append( sourceMods ); return *this; }
+	SourceMods&	operator&=( const Source &source ) { append( source ); return *this; }	
+	
 	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
 	const Source*									getSource() const { return mSourcePtr; }
 	//! Not generally useful. Use getSource() instead. Maps to nullptr when the SourceMods is not responsible for ownership.

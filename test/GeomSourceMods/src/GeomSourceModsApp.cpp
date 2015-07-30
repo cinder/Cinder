@@ -123,7 +123,6 @@ gl::BatchRef visualTest8()
 	
 	for( float a = 0; a < 1.0f; a += 0.05f ) {
 		vec3 color = vec3( Color( CM_HSV, randFloat(), 1, 1 ) );
-		std::cout << color << std::endl;
 		result.append(
 			geom::Circle().center( vec2( cos(a * M_PI*2), sin(a * M_PI*2) ) * 2.5f ).radius( 0.3f ).subdivisions( int( 3 + a * 20 ) )
 			>> geom::Constant( geom::COLOR, color ) );
@@ -138,6 +137,20 @@ gl::BatchRef visualTest9()
 	TriMesh tm = geom::Sphere();
 	
 	return gl::Batch::create( &tm & &tm >> geom::Translate( 0, 1, 0 ), gl::getStockShader( gl::ShaderDef().lambert().color() ) );
+}
+
+// &= version of 8
+gl::BatchRef visualTest10()
+{
+	geom::SourceMods combination;
+	
+	for( float a = 0; a < 1.0f; a += 0.025f ) {
+		vec3 color = vec3( Color( CM_HSV, a, 1, 1 ) );
+		combination &= geom::Circle().center( vec2( cos(a * M_PI*2), sin(a * M_PI*2) ) * 2.5f ).radius( 0.17f ).subdivisions( 7 )
+						>> geom::Constant( geom::COLOR, color );
+	}
+	
+	return gl::Batch::create( combination, gl::getStockShader( gl::ShaderDef().color() ) );
 }
 
 void GeomSourceModsApp::setup()
@@ -184,6 +197,7 @@ void GeomSourceModsApp::setup()
 	gl::enableDepthRead();
 
 	// triangles visual tests
+	mVisualTestSetups.push_back( visualTest10 );
 	mVisualTestSetups.push_back( visualTest9 );
 	mVisualTestSetups.push_back( visualTest8 );
 	mVisualTestSetups.push_back( visualTest7 );
