@@ -477,7 +477,7 @@ void Target::generateIndicesForceTriangles( Primitive primitive, size_t numInput
 {
 	switch( primitive ) {
 		case Primitive::TRIANGLES:
-			for( int i = 0; i < numInputIndices; ++i )
+			for( size_t i = 0; i < numInputIndices; ++i )
 				target[i] = (uint32_t)(indexOffset + i);
 		break;
 		case Primitive::TRIANGLE_FAN: {
@@ -518,12 +518,12 @@ void Target::generateIndicesForceLines( Primitive primitive, size_t numInputIndi
 {
 	switch( primitive ) {
 		case Primitive::LINES:
-			for( int i = 0; i < numInputIndices; ++i )
+			for( size_t i = 0; i < numInputIndices; ++i )
 				target[i] = (uint32_t)(indexOffset + i);
 		break;
 		case Primitive::LINE_STRIP: {
 			size_t outIdx = 0;
-			for( int i = 0; i < numInputIndices - 1; ++i ) {
+			for( size_t i = 0; i < numInputIndices - 1; ++i ) {
 				target[outIdx++] = (uint32_t)(indexOffset + i);
 				target[outIdx++] = (uint32_t)(indexOffset + i + 1);
 			}
@@ -801,7 +801,7 @@ void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &reque
 		colors[0] = (mColors[0] / 4.0f) + (mColors[1] / 4.0f) + (mColors[2] / 4.0f) + (mColors[3] / 4.0f);
 	
 	size_t tri = 1;
-	const float angleDelta = 1 / (float)mSubdivisions * M_PI / 2;
+	const float angleDelta = (float)(1 / (float)mSubdivisions * M_PI / 2);
 	const std::array<vec2, 4> cornerCenterVerts = {
 		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y2 - mCornerRadius ),
 		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y2 - mCornerRadius ),
@@ -816,7 +816,7 @@ void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &reque
 		vec2( mRectTexCoords.x2 - texCoordOffset.x, mRectTexCoords.y2 - texCoordOffset.y )	// upper right
 	};
 	for( size_t corner = 0; corner < 4; ++corner ) {
-		float angle = corner * M_PI / 2.0f;
+		float angle = (float)(corner * M_PI / 2.0f);
 		vec2 cornerCenter( cornerCenterVerts[corner] );
 		vec2 cornerTexCoord( cornerCenterTexCoords[corner] );
 		vec4 cornerColor( mColors[corner] );
@@ -1898,9 +1898,9 @@ void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	auto normIt = normals.begin();
 	auto texIt = texCoords.begin();
 	auto colorIt = colors.begin();
-	for( size_t r = 0; r < numRings; r++ ) {
+	for( int r = 0; r < numRings; r++ ) {
 		float v = r * ringIncr;
-		for( size_t s = 0; s < numSegments; s++ ) {
+		for( int s = 0; s < numSegments; s++ ) {
 			float u = 1.0f - s * segIncr;
 			float x = math<float>::sin( float(M_PI * 2) * u ) * math<float>::sin( float(M_PI) * v );
 			float y = math<float>::sin( float(M_PI) * (v - 0.5f) );
@@ -1915,8 +1915,8 @@ void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	}
 
 	auto indexIt = indices.begin();
-	for( size_t r = 0; r < numRings - 1; r++ ) {
-		for( size_t s = 0; s < numSegments - 1 ; s++ ) {
+	for( int r = 0; r < numRings - 1; r++ ) {
+		for( int s = 0; s < numSegments - 1 ; s++ ) {
 			*indexIt++ = (uint32_t)(r * numSegments + ( s + 1 ));
 			*indexIt++ = (uint32_t)(r * numSegments + s);
 			*indexIt++ = (uint32_t)(( r + 1 ) * numSegments + ( s + 1 ));
@@ -1985,18 +1985,18 @@ void Capsule::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<
 
 	float bodyIncr = 1.0f / (float)( ringsBody - 1 );
 	float ringIncr = 1.0f / (float)( mSubdivisionsHeight - 1 );
-	for( size_t r = 0; r < mSubdivisionsHeight / 2; r++ )
+	for( int r = 0; r < mSubdivisionsHeight / 2; r++ )
 		calculateRing( mNumSegments, math<float>::sin( float(M_PI) * r * ringIncr), math<float>::sin( float(M_PI) * ( r * ringIncr - 0.5f ) ), -0.5f,
 							positions, normals, texCoords, colors );
 	for( size_t r = 0; r < ringsBody; r++ )
 		calculateRing( mNumSegments, 1.0f, 0.0f, r * bodyIncr - 0.5f,
 							positions, normals, texCoords, colors );
-	for( size_t r = mSubdivisionsHeight / 2; r < mSubdivisionsHeight; r++ )
+	for( int r = mSubdivisionsHeight / 2; r < mSubdivisionsHeight; r++ )
 		calculateRing( mNumSegments, math<float>::sin( float(M_PI) * r * ringIncr), math<float>::sin( float(M_PI) * ( r * ringIncr - 0.5f ) ), +0.5f,
 							positions, normals, texCoords, colors );
 
 	for( size_t r = 0; r < ringsTotal - 1; r++ ) {
-		for( size_t s = 0; s < mNumSegments - 1; s++ ) {
+		for( int s = 0; s < mNumSegments - 1; s++ ) {
 			indices->push_back( (uint32_t)(r * mNumSegments + ( s + 1 )) );
 			indices->push_back( (uint32_t)(r * mNumSegments + ( s + 0 )) );
 			indices->push_back( (uint32_t)(( r + 1 ) * mNumSegments + ( s + 1 )) );
@@ -2145,12 +2145,12 @@ void Torus::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<ve
 	float twist = angle * mTwist * minorIncr * majorIncr;
 
 	// vertex, normal, tex coord and color buffers
-	for( size_t i = 0; i < mNumAxis; ++i ) {
+	for( int i = 0; i < mNumAxis; ++i ) {
 		float phi = i * majorIncr * angle;
 		float cosPhi = -math<float>::cos( phi );
 		float sinPhi =  math<float>::sin( phi );
 
-		for( size_t j = 0; j < mNumRings; ++j ) {
+		for( int j = 0; j < mNumRings; ++j ) {
 			float theta = j * minorIncr * float(M_PI * 2) + i * twist + mTwistOffset;
 			float cosTheta = -math<float>::cos( theta );
 			float sinTheta =  math<float>::sin( theta );
@@ -2171,8 +2171,8 @@ void Torus::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<ve
 	}
 
 	// index buffer
-	for( size_t i = 0; i < mNumAxis - 1; ++i ) {
-		for ( size_t j = 0; j < mNumRings - 1; ++j ) {
+	for( int i = 0; i < mNumAxis - 1; ++i ) {
+		for ( int j = 0; j < mNumRings - 1; ++j ) {
 			indices->push_back( (uint32_t)((i + 0) * mNumRings + (j + 0)) );
 			indices->push_back( (uint32_t)((i + 1) * mNumRings + (j + 1)) );
 			indices->push_back( (uint32_t)((i + 1) * mNumRings + (j + 0)) );
@@ -2292,8 +2292,8 @@ void Cylinder::calculate( vector<vec3> *positions, vector<vec3> *normals, vector
 	const quat axis( vec3( 0, 1, 0 ), mDirection );
 
 	// vertex, normal, tex coord and color buffers
-	for( size_t i = 0; i < mNumSegments; ++i ) {
-		for( size_t j = 0; j < mNumSlices; ++j ) {
+	for( int i = 0; i < mNumSegments; ++i ) {
+		for( int j = 0; j < mNumSlices; ++j ) {
 			float cosPhi = -math<float>::cos( i * segmentIncr * float(M_PI * 2) );
 			float sinPhi =  math<float>::sin( i * segmentIncr * float(M_PI * 2) );
 
@@ -2311,8 +2311,8 @@ void Cylinder::calculate( vector<vec3> *positions, vector<vec3> *normals, vector
 	}
 
 	// index buffer
-	for ( size_t j = 0; j < mNumSlices - 1; ++j ) {
-		for( size_t i = 0; i < mNumSegments - 1; ++i ) {
+	for ( int j = 0; j < mNumSlices - 1; ++j ) {
+		for( int i = 0; i < mNumSegments - 1; ++i ) {
 			indices->push_back( (uint32_t)((i + 0) * mNumSlices + (j + 0)) );
 			indices->push_back( (uint32_t)((i + 1) * mNumSlices + (j + 0)) );
 			indices->push_back( (uint32_t)((i + 1) * mNumSlices + (j + 1)) );
@@ -2343,7 +2343,7 @@ void Cylinder::calculateCap( bool flip, float height, float radius, vector<vec3>
 
 	// vertices
 	const float segmentIncr = 1.0f / (mNumSegments - 1);
-	for( size_t i = 0; i < mNumSegments; ++i ) {
+	for( int i = 0; i < mNumSegments; ++i ) {
 		// center point
 		positions->emplace_back( mOrigin + mDirection * height );
 		texCoords->emplace_back( i * segmentIncr, 1.0f - height / mHeight );
@@ -2363,7 +2363,7 @@ void Cylinder::calculateCap( bool flip, float height, float radius, vector<vec3>
 	// index buffer
 	indices->reserve( indices->size() + 3 * (mNumSegments - 1) );
 
-	for( size_t i = 0; i < mNumSegments - 1; ++i ) {
+	for( int i = 0; i < mNumSegments - 1; ++i ) {
 		if( flip ) {
 			indices->push_back( (uint32_t)(index + i * 2 + 0) );
 			indices->push_back( (uint32_t)(index + i * 2 + 3) );
@@ -3444,7 +3444,7 @@ void WireCapsule::calculate( vector<vec3> *positions ) const
 	positions->reserve( getNumVertices() );
 
 	float bodyIncr = 1.0f / (float) ( mSubdivisionsHeight );
-	for( size_t r = 1; r < mSubdivisionsHeight; ++r ) {
+	for( int r = 1; r < mSubdivisionsHeight; ++r ) {
 		float t = r * bodyIncr - 0.5f;
 		float h = ( mLength + 2 * mRadius ) * t;
 		float radius = mRadius;
@@ -3461,7 +3461,7 @@ void WireCapsule::calculate( vector<vec3> *positions ) const
 	float axisIncr = 1.0f / (float) ( mSubdivisionsAxis );
 	int numSegments = mNumSegments / 2;
 	float segIncr = 1.0f / (float) ( numSegments );
-	for( size_t i = 0; i < subdivisionsAxis; ++i ) {
+	for( int i = 0; i < subdivisionsAxis; ++i ) {
 		// Straight lines.
 		float a = float( M_PI * 2 ) * i * axisIncr;
 		float x = math<float>::cos( a );
@@ -3470,7 +3470,7 @@ void WireCapsule::calculate( vector<vec3> *positions ) const
 		positions->emplace_back( mCenter + quaternion * vec3( x * mRadius, +0.5f * mLength, z * mRadius ) );
 
 		// Caps.
-		for( size_t j = 0; j < numSegments; ++j ) {
+		for( int j = 0; j < numSegments; ++j ) {
 			float a1 = float( M_PI / 2 ) * j * segIncr;
 			float a2 = float( M_PI / 2 ) * ( j + 1 ) * segIncr;
 			float r1 = math<float>::cos( a1 ) * mRadius;
@@ -3492,7 +3492,7 @@ void WireCapsule::calculateRing( float radius, float d, vector<vec3> *positions 
 	float length = mLength + 2 * mRadius;
 	float segIncr = 1.0f / (float) ( mNumSegments );
 	positions->emplace_back( mCenter + ( quaternion * glm::vec3( radius, d * length, 0 ) ) );
-	for( size_t s = 1; s < mNumSegments; s++ ) {
+	for( int s = 1; s < mNumSegments; s++ ) {
 		float a = float( M_PI * 2 ) * s * segIncr;
 		float x = math<float>::cos( a ) * radius;
 		float z = math<float>::sin( a ) * radius;
@@ -3605,10 +3605,10 @@ void WireRoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &r
 		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y1 + mCornerRadius )
 	};
 	// provide the last vert as the starting point to loop around to.
-	*ptr++ = vec2( cornerCenterVerts[3].x + math<float>::cos( ( 3 * M_PI / 2.0f ) + ( angleDelta * mCornerSubdivisions ) ) * mCornerRadius,
-				 cornerCenterVerts[3].y + math<float>::sin( ( 3 * M_PI / 2.0f ) + ( angleDelta * mCornerSubdivisions ) ) * mCornerRadius );
+	*ptr++ = vec2( cornerCenterVerts[3].x + math<float>::cos( ( 3 * (float)M_PI / 2 ) + ( angleDelta * mCornerSubdivisions ) ) * mCornerRadius,
+				 cornerCenterVerts[3].y + math<float>::sin( ( 3 * (float)M_PI / 2 ) + ( angleDelta * mCornerSubdivisions ) ) * mCornerRadius );
 	for( size_t corner = 0; corner < 4; ++corner ) {
-		float angle = corner * M_PI / 2.0f;
+		float angle = corner * (float)M_PI / 2;
 		vec2 cornerCenter( cornerCenterVerts[corner] );
 		for( int s = 0; s <= mCornerSubdivisions; s++ ) {
 			// This is the ending point of the first line
