@@ -132,6 +132,14 @@ gl::BatchRef visualTest8()
 	return gl::Batch::create( result, gl::getStockShader( gl::ShaderDef().color() ) );
 }
 
+// Optimiziation to pass &-of instead of value
+gl::BatchRef visualTest9()
+{
+	TriMesh tm = geom::Sphere();
+	
+	return gl::Batch::create( &tm & &tm >> geom::Translate( 0, 1, 0 ), gl::getStockShader( gl::ShaderDef().lambert().color() ) );
+}
+
 void GeomSourceModsApp::setup()
 {
 	// temporary geom::Source; should create a clone
@@ -176,6 +184,7 @@ void GeomSourceModsApp::setup()
 	gl::enableDepthRead();
 
 	// triangles visual tests
+	mVisualTestSetups.push_back( visualTest9 );
 	mVisualTestSetups.push_back( visualTest8 );
 	mVisualTestSetups.push_back( visualTest7 );
 	mVisualTestSetups.push_back( visualTest6 );

@@ -1421,6 +1421,11 @@ class SourceMods : public Source {
 		mSourceStorage = std::unique_ptr<Source>( source.clone() );
 		mSourcePtr = mSourceStorage.get();
 	}
+	SourceMods( const geom::Source *source )
+		: mVariablesCached( false )
+	{
+		mSourcePtr = source;
+	}
 
 	SourceMods( const SourceMods &rhs )
 		: mVariablesCached( false )	
