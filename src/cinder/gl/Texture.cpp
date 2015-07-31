@@ -992,7 +992,7 @@ Texture2d::Texture2d( const Surface32f &surface, Format format )
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB, GL_FLOAT );
 #else
 	initParams( format, surface.hasAlpha() ? GL_RGBA32F : GL_RGB32F, GL_FLOAT );
@@ -1009,7 +1009,7 @@ Texture2d::Texture2d( const Channel32f &channel, Format format )
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	initParams( format, GL_LUMINANCE, GL_FLOAT );
 #else
 	if( ! format.mSwizzleSpecified ) {
