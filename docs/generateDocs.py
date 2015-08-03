@@ -1293,7 +1293,7 @@ def gen_class_hierarchy(bs4, class_def):
         if index < len(hierarchy) - 1:
             a = gen_tag(bs4, "a", [], base.name)
             define_link_tag(a, {'href': base.path})
-            a = gen_rel_link_tag(bs4, base.name, a["href"], TEMPLATE_PATH, HTML_DEST_PATH)
+            a = gen_link_tag(bs4, base.name, os.path.join(HTML_DEST_PATH, a["href"]))
             li.append(a)
         else:
             li.append(base.name)
