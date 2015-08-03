@@ -16,9 +16,24 @@ a
 	color: $cinder-red
 	font-weight: 700
 	
+	&:hover
+	&:focus
+		color: $cinder-red
+		text-decoration: underline
+	
+	&.cta-arrow
+		padding-right: 25px
+		background: url('../images/cta_arrow.png') no-repeat right center
+	
+p a
+	font-weight: inherit
+	
 em
 	font-style: normal
 	font-weight: 700
+
+label
+	font-family: 'Open Sans', sans-serif;
 
 h1, h2, h3
 	font-family: 'Open Sans', sans-serif;
@@ -37,6 +52,11 @@ h3
 
 .row
 	max-width: 80rem
+	
+ul.fancy>li
+	font-family: 'Libre Baskerville', serif;
+	font-style: italic
+	
 	
 // code
 // 	margin: 1em 0
@@ -409,41 +429,6 @@ button.expand
 	.css-treeview input + label + ul
 		margin: 0
 
-ul.library-features
-	
-	li
-		display: block
-
-		a
-			position: relative
-			display: block;
-			border: solid 1px light-gray
-			background: $background-gray
-			transition: all 250ms
-			
-			img.over
-				position: absolute
-				top: 0
-				left: 0
-				z-index: 10
-				opacity: 0
-				transition: all 250ms
-
-			.title
-				position: absolute
-				color: #fff
-				width: 100%
-				text-align: center
-				display: inline-block
-				bottom: 10px
-				text-transform: uppercase
-				font-weight: 400
-
-			&:hover
-				background: $cinder-orange
-				
-				img.over
-					opacity: 1
 
 .wrapper
 	min-height: 100%

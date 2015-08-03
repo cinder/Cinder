@@ -92,11 +92,11 @@ a img {
 body {
   font-size: 16px;
   font-family: 'Open Sans', sans-serif;
-  background: $$background-gray-light -webkit-linear-gradient(top, background-gray 0%, #292d2c 100%) no-repeat;
-  background: $$background-gray-light -moz-linear-gradient(top, background-gray 0%, #292d2c 100%) no-repeat;
-  background: $$background-gray-light -o-linear-gradient(top, background-gray 0%, #292d2c 100%) no-repeat;
-  background: $$background-gray-light -ms-linear-gradient(top, background-gray 0%, #292d2c 100%) no-repeat;
-  background: $$background-gray-light linear-gradient(to bottom, background-gray 0%, #292d2c 100%) no-repeat;
+  background: $$background-gray-light -webkit-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
+  background: $$background-gray-light -moz-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
+  background: $$background-gray-light -o-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
+  background: $$background-gray-light -ms-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
+  background: $$background-gray-light linear-gradient(to bottom, #252726 0%, #313836 100%) no-repeat;
 }
 div {
   line-height: 16px;
@@ -105,9 +105,24 @@ a {
   color: #a41c12;
   font-weight: 700;
 }
+a:hover,
+a:focus {
+  color: #a41c12;
+  text-decoration: underline;
+}
+a.cta-arrow {
+  padding-right: 25px;
+  background: url("../images/cta_arrow.png") no-repeat right center;
+}
+p a {
+  font-weight: inherit;
+}
 em {
   font-style: normal;
   font-weight: 700;
+}
+label {
+  font-family: 'Open Sans', sans-serif;
 }
 h1,
 h2,
@@ -128,6 +143,10 @@ h3 {
 }
 .row {
   max-width: 80rem;
+}
+ul.fancy>li {
+  font-family: 'Libre Baskerville', serif;
+  font-style: italic;
 }
 #top-primary,
 #top-content {
@@ -196,11 +215,11 @@ h3 {
 }
 #top-primary ul.nav li.current,
 #top-content ul.nav li.current {
-  border-bottom: solid 2px #c64b24;
+  border-bottom: solid 2px #cb791c;
 }
 #top-primary ul.nav li.current a,
 #top-content ul.nav li.current a {
-  color: #c64b24;
+  color: #cb791c;
 }
 #top-primary ul.nav li a,
 #top-content ul.nav li a {
@@ -211,7 +230,7 @@ h3 {
 }
 #top-primary ul.nav li a:hover,
 #top-content ul.nav li a:hover {
-  color: #c64b24;
+  color: #cb791c;
 }
 #top-primary #MSearchBox,
 #top-content #MSearchBox {
@@ -315,7 +334,7 @@ ul.master-class-list {
   margin: 0 0 20px 0;
 }
 #container .reference-content .header h1 {
-  color: #c64b24;
+  color: #cb791c;
   text-align: center;
   font-weight: 700;
   text-transform: uppercase;
@@ -540,52 +559,6 @@ button.expand {
 }
 #side-nav .css-treeview input + label + ul {
   margin: 0;
-}
-ul.library-features li {
-  display: block;
-}
-ul.library-features li a {
-  position: relative;
-  display: block;
-  border: solid 1px light-gray;
-  background: #252726;
-  -webkit-transition: all 250ms;
-  -moz-transition: all 250ms;
-  -o-transition: all 250ms;
-  -ms-transition: all 250ms;
-  transition: all 250ms;
-}
-ul.library-features li a img.over {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10;
-  opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
-  -webkit-transition: all 250ms;
-  -moz-transition: all 250ms;
-  -o-transition: all 250ms;
-  -ms-transition: all 250ms;
-  transition: all 250ms;
-}
-ul.library-features li a .title {
-  position: absolute;
-  color: #fff;
-  width: 100%;
-  text-align: center;
-  display: inline-block;
-  bottom: 10px;
-  text-transform: uppercase;
-  font-weight: 400;
-}
-ul.library-features li a:hover {
-  background: #c64b24;
-}
-ul.library-features li a:hover img.over {
-  opacity: 1;
-  -ms-filter: none;
-  filter: none;
 }
 .wrapper {
   min-height: 100%;

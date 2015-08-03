@@ -1,85 +1,130 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<link rel="stylesheet" type="text/css" href="_assets/css/index.css">
-</head>
-<body class="section_home">
+	<head>
+		<link rel="stylesheet" type="text/css" href="_assets/css/index.css">
+	</head>
+
+	<body class="section_home">
+
+		<div id="top-content">
+		    <div id="intro" class="row collapse">
+		        <!-- cinder download links -->
+		        <div id="downloads" class="columns medium-4 large-3">
+		            <ul>
+		                <li><a href="http://libcinder.org/download/">Latest Release (0.9.0)</a></li>
+		                <li><a href="https://github.com/cinder/Cinder">Edge Cinder</a></li>
+		                <li><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.6">Version (0.8.6)</a></li>
+		                <li><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.5">Version (0.8.5)</a></li>
+		                <li><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.4">Version (0.8.4)</a></li>
+		            </ul>
+		        </div>
+
+		        <!-- intro -->
+		        <div class="content content-column columns medium-7 large-8 end">
+		            <h1>Cinder Documentation</h1>
+		            <p>If you are just getting started, we recommend you begin with the <a href="guides/tour/hello_cinder.html">Hello, Cinder</a> guide. If you'd like to just get a sense of what's in Cinder, take a look at the <a href="namespaces.html">Namespace list</a>. And don't forget, the samples are still the best way to learn Cinder for now as we work to fill out the documentation.
+		            </p>
+		        </div>
+		    </div>
+		</div>
 
 		<!-- guides and features section -->
-		<div class="row">
+		<div id="mid-content">
+			<div class="row">
 
-			<!-- guide links -->
-			<div class="columns large-3">
-			<h3>Cinder Guides</h3>
-			<ul>
-				<li><a href="guides/mac-setup/index.html">Setup Cinder on Mac OS X</a></li>
-					<li><a href="guides/windows-setup/index.html">Setup Cinder on Windows</a></li>
-					<li><a href="guides/git/index.html">Cinder + Git</a></li>
-					<li><a href="guides/TinderBox/index.html">TinderBox</a></li>
-					<li><a href="guides/cinder-blocks/index.html">Cinder Blocks</a></li>
-					<li><a href="guides/tour/hello_cinder.html">Hello, Cinder</a></li>
-					<li><a href="guides/index.html">All Guides</a></li>
-				</ul>
-			</div>
+				<!-- guide links -->
+				<div class="columns large-3">
+					<label>Cinder Guides</label>
+					<ul class="fancy">	
+						<li><a href="guides/mac-setup/index.html">Setup Cinder on Mac OS X</a></li>
+						<li><a href="guides/windows-setup/index.html">Setup Cinder on Windows</a></li>
+						<li><a href="guides/git/index.html">Cinder + Git</a></li>
+						<li><a href="guides/TinderBox/index.html">TinderBox</a></li>
+						<li><a href="guides/cinder-blocks/index.html">Cinder Blocks</a></li>
+						<li><a href="guides/tour/hello_cinder.html">Hello, Cinder</a></li>
+					</ul>
+					<a class="cta-arrow" href="guides/index.html">All Guides</a>
+				</div>
 
-			<!-- library features -->
-			<div class="columns content-column large-9">
-				<h3>Library Features</h3>
-				<ul class="library-features clearing-thumbs small-block-grid-2 medium-block-grid-3 large-block-grid-4">
-					<li>
-						<a href="reference/geometry.html">
-							<img src="_assets/images/icon_buttons/geometry_gray.png">
-							<img src="_assets/images/icon_buttons/geometry_orange.png" class="over">
-						<span class="title">Geometry</span></a></li>
-					<li>
-						<a href="reference/math.html">
-							<img src="_assets/images/icon_buttons/math_gray.png"> 
-							<img src="_assets/images/icon_buttons/math_orange.png" class="over">
-						<span class="title">Math</span></a></li>
-					<li>
-						<a href="reference/system.html">
-							<img src="_assets/images/icon_buttons/system_gray.png" > 
-							<img src="_assets/images/icon_buttons/system_orange.png" class="over">
-						<span class="title">System</span></a></li>
-					<li>
-						<a href="reference/platform.html">
-							<img src="_assets/images/icon_buttons/platform_gray.png"> 
-							<img src="_assets/images/icon_buttons/platform_orange.png" class="over">
-						<span class="title">Platform</span></a></li>
-					<li>
-						<a href="reference/opengl.html">
-							<img src="_assets/images/icon_buttons/opengl_gray.png">
-							<img src="_assets/images/icon_buttons/opengl_orange.png" class="over">
-						<span class="title">Open GL</span></a></li>
-					<li>
-						<a href="reference/2dgraphics.html">
-							<img src="_assets/images/icon_buttons/2d_gray.png">
-							<img src="_assets/images/icon_buttons/2d_orange.png" class="over">
-						<span class="title">2D Graphics</span></a></li>
-					<li>
-						<a href="reference/audio.html">
-							<img src="_assets/images/icon_buttons/audio_gray.png">
-							<img src="_assets/images/icon_buttons/audio_orange.png" class="over">
-						<span class="title">Audio</span></a></li>
-					<li>
-						<a href="reference/video.html">
-							<img src="_assets/images/icon_buttons/video_gray.png">
-							<img src="_assets/images/icon_buttons/video_orange.png" class="over">
-						<span class="title">video</span></a></li>
-					<li>
-						<a href="reference/images.html">
-							<img src="_assets/images/icon_buttons/images_gray.png" > 
-							<img src="_assets/images/icon_buttons/images_orange.png" class="over">
-						<span class="title">Images</span></a></li>
-					<li>
-						<a href="reference/application.html">
-							<img src="_assets/images/icon_buttons/app_gray.png" >
-							<img src="_assets/images/icon_buttons/app_orange.png" class="over">
-						<span class="title">Application</span></a></li>
-				</ul>
+				<!-- library features -->
+				<div class="columns content-column large-8 collapse end">
+					<label>Library Features</label>
+					<ul class="library-features clearing-thumbs small-block-grid-2 medium-block-grid-3 large-block-grid-5">
+						<li>
+							<a href="reference/geometry.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/geom_gray.svg">
+									<img src="_assets/images/icons/geom_red.svg" class="over">
+								</div>
+							<div class="title">Geometry</div></a></li>
+						<li>
+							<a href="reference/math.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/math_gray.svg"> 
+									<img src="_assets/images/icons/math_red.svg" class="over">
+								</div>
+							<div class="title">Math</div></a></li>
+						<li>
+							<a href="reference/system.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/system_gray.svg" > 
+									<img src="_assets/images/icons/system_red.svg" class="over">
+								</div>
+							<div class="title">System</div></a></li>
+						<li>
+							<a href="reference/platform.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/platform_gray.svg"> 
+									<img src="_assets/images/icons/platform_red.svg" class="over">
+								</div>
+							<div class="title">Platform</div></a></li>
+						<li>
+							<a href="reference/opengl.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/opengl_gray.svg">
+									<img src="_assets/images/icons/opengl_red.svg" class="over">
+								</div>
+							<div class="title">Open GL</div></a></li>
+						<li>
+							<a href="reference/2dgraphics.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/2d_gray.svg">
+									<img src="_assets/images/icons/2d_red.svg" class="over">
+								</div>
+							<div class="title">2D Graphics</div></a></li>
+						<li>
+							<a href="reference/audio.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/audio_gray.svg">
+									<img src="_assets/images/icons/audio_red.svg" class="over">
+								</div>
+							<div class="title">Audio</div></a></li>
+						<li>
+							<a href="reference/video.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/video_gray.svg">
+									<img src="_assets/images/icons/video_red.svg" class="over">
+								</div>
+							<div class="title">video</div></a></li>
+						<li>
+							<a href="reference/images.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/images_gray.svg" > 
+									<img src="_assets/images/icons/images_red.svg" class="over">
+								</div>
+							<div class="title">Images</div></a></li>
+						<li>
+							<a href="reference/application.html">
+								<div class="img-holder">
+									<img src="_assets/images/icons/app_gray.svg" >
+									<img src="_assets/images/icons/app_red.svg" class="over">
+								</div>
+							<div class="title">Application</div></a></li>
+					</ul>
 
-			</div> <!-- content-column -->
-		</div> <!-- row -->
+				</div> <!-- content-column -->
+			</div> <!-- row -->
+		</div>
 
 	</body>
 </html>
