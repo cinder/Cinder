@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve">
+<g id="app_gray">
+	<g>
+		<g>
+			<g enable-background="new    ">
+				<g>
+					<polygon id="SVGID_5_" fill="#676767" points="14.6,16.1 30,21.7 15.4,27.6 0,22 					"/>
+				</g>
+				<g>
+					<defs>
+						<polygon id="SVGID_1_" points="14.6,16.1 30,21.7 15.4,27.6 0,22 						"/>
+					</defs>
+					<clipPath id="SVGID_2_">
+						<use xlink:href="#SVGID_1_"  overflow="visible"/>
+					</clipPath>
+					<g clip-path="url(#SVGID_2_)">
+						<polyline fill="#646868" points="15.4,27.6 0,22 14.6,16.1 30,21.7 15.4,27.6 						"/>
+					</g>
+				</g>
+			</g>
+		</g>
+		<g>
+			<g enable-background="new    ">
+				<g>
+					<polygon id="SVGID_7_" fill="#464646" points="14.6,13.7 30,19.3 15.4,25.2 0,19.6 					"/>
+				</g>
+				<g>
+					<defs>
+						<polygon id="SVGID_3_" points="14.6,13.7 30,19.3 15.4,25.2 0,19.6 						"/>
+					</defs>
+					<clipPath id="SVGID_4_">
+						<use xlink:href="#SVGID_3_"  overflow="visible"/>
+					</clipPath>
+					<g clip-path="url(#SVGID_4_)">
+						<polyline fill="#444747" points="15.4,25.2 0,19.6 14.6,13.7 30,19.3 15.4,25.2 						"/>
+					</g>
+				</g>
+			</g>
+		</g>
+		<polygon fill="#FFFFFF" points="18.2,4.3 17,4.3 17,3.1 15.9,3.1 15.9,4.3 14.7,4.3 14.7,5.4 15.9,5.4 15.9,6.6 17,6.6 17,5.4 
+			18.2,5.4 		"/>
+		<polygon fill="#FFFFFF" points="14.3,3.2 13.5,3.2 13.5,2.4 12.7,2.4 12.7,3.2 11.9,3.2 11.9,4 12.7,4 12.7,4.8 13.5,4.8 13.5,4 
+			14.3,4 		"/>
+		<polygon fill="#FFFFFF" points="15.8,7.4 14.6,7.4 14.6,6.2 13.5,6.2 13.5,7.4 12.3,7.4 12.3,8.5 13.5,8.5 13.5,9.7 14.6,9.7 
+			14.6,8.5 15.8,8.5 		"/>
+		<g>
+			<polygon fill="#646868" points="10.8,19.6 17.1,8.8 23.3,19.6 			"/>
+			<polygon fill="#646868" points="7.2,19.6 12.5,10.4 17.8,19.6 			"/>
+		</g>
+	</g>
+</g>
+</svg>

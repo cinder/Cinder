@@ -140,15 +140,6 @@ $(document).ready(function() {
 
  } );
 
-// Calling foundation runs through any calls
-// related to foundation 5.
-// One such thing is making sure the column sizes stay in sync
-try{
-	$(document).foundation();	
-} catch( e ){
-
-}
-
 window.setSection = function( sectionName ){	
 	section = sectionName;
 };

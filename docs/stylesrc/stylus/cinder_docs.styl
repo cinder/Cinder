@@ -1,38 +1,62 @@
 // TODO: import stylus reset
 global-reset()
-
-/*
-* Colors
-*/
-
-cinder-orange = #c64b24
-light-gray = #949494
-
-background-gray = #252726
-background-gray-light = #292d2c
-gray-gradient-1 = linear-gradient(to bottom, background-gray 0%,#292d2c 100%); /* W3C */
-gray-gradient-2 = linear-gradient(to bottom, background-gray 0%,#292d2c 100%); /* W3C */
+@import global
 
 left-col-width = 300px
 
 body
 	font-size: 16px
 	font-family: 'Open Sans', sans-serif
-	background: background-gray-light gray-gradient-1 no-repeat
+	background: $$background-gray-light $gray-gradient-1 no-repeat
 	
 div
 	line-height: 16px
 	
 a
-	color: cinder-orange
+	color: $cinder-red
 	font-weight: 700
+	
+	&:hover
+	&:focus
+		color: $cinder-red
+		text-decoration: underline
+	
+	&.cta-arrow
+		padding-right: 25px
+		background: url('../images/cta_arrow.png') no-repeat right center
+	
+p a
+	font-weight: inherit
 	
 em
 	font-style: normal
 	font-weight: 700
-	
+
+label
+	font-family: 'Open Sans', sans-serif;
+
+h1, h2, h3
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300
+	margin-bottom: 0.5em
+
+h1
+	font-size: 2.0em
+	color: $cinder-red
+
+h2
+	font-size: 1.25em
+
+h3
+	font-size: 1.0em
+
 .row
 	max-width: 80rem
+	
+ul.fancy>li
+	font-family: 'Libre Baskerville', serif;
+	font-style: italic
+	
 	
 // code
 // 	margin: 1em 0
@@ -42,8 +66,9 @@ em
 
 // #container
 	
-#top-primary
-	background: background-gray
+#top-primary,
+#top-content
+	background: $background-gray
 	
 	// padding: 0 0 48px 0
 	padding: 0 0 0 0
@@ -52,43 +77,12 @@ em
 	
 	h1
 		color: #fff
-	
-	#main-nav
-		height: 105px
-		border-bottom: 2px solid white
-		
-		.columns
-			height: 105px
-		
-	#sub-nav
-		height: 50px
-		
-		ul
-			text-align: right
-			position: relative
-			top: 50%
-			transform: translateY(-50%)
-			
-			li
-				display: inline-block
-				margin-left: 10px
-				
-		a
-			color: #fff
-			font-weight: normal
-			font-size: .8em
-			
-			&:hover
-				text-decoration: underline
 
 	.content
-		// 
 		height: 100%
 		
 	.branding
-		//width: left-col-width
 		height: 100%
-		//float: left
 		
 	.col-right
 		width: 100%
@@ -129,10 +123,10 @@ em
 			height: 100%
 			margin-right: 20px
 			
-			&.current
-				border-bottom: solid 2px cinder-orange
+			&.active
+				border-bottom: solid 3px $cinder-red
 				a
-					color: cinder-orange
+					color: $cinder-red
 
 			a
 				display: inline-block
@@ -141,10 +135,41 @@ em
 				padding-top: 50px
 				
 				&:hover
-					color: cinder-orange
+					color: $cinder-red
 	
 	#MSearchBox
 		margin-top: 50px
+
+
+#main-nav
+	height: 105px
+	
+	.columns
+		height: 105px
+	
+
+#sub-nav
+	height: 50px
+	
+	ul
+		
+		li
+			display: inline-block
+			// margin-right: 10px
+			
+			a
+				color: $cinder-red
+				font-weight: normal
+				
+				&:hover
+					text-decoration: underline
+			
+			&:not(:last-child)
+				
+				a
+					&::after
+						content: " | "
+		
 
 #top-secondary
 	background: gray-gradient-2
@@ -169,15 +194,6 @@ em
 
 	p
 		margin-bottom: 1em
-
-	h1, h2, h3
-		font-size: 1.5em
-		font-family: 'Open Sans', sans-serif;
-		font-weight: 300
-		margin-bottom: 0.5em
-	
-	h2
-		font-size: 1.25em
 		
 	section
 		margin-bottom: 1em
@@ -241,7 +257,7 @@ em
 		margin: 0 0 20px 0
 
 		h1
-			color: cinder-orange
+			color: $cinder-orange
 			text-align: center
 			font-weight: 700
 			text-transform: uppercase
@@ -307,8 +323,6 @@ button.expand
 	z-index: 100
 
 .side
-	
-	margin-top: 40px
 
 	a
 		font-weight: normal
@@ -367,11 +381,12 @@ button.expand
 
 #side-nav
 	
-	background: #252726
+	background: $light-gray
 	
 	h3
-		color: cinder-orange
+		color: $cinder-red
 		font-weight: 700
+		text-transform: uppercase
 	
 	input[type="checkbox"] + label
 		margin-left: -18px
@@ -389,7 +404,7 @@ button.expand
 			margin-bottom: 5px;
 			
 			a
-				color: #fff
+				color: $cinder-red
 			
 
 	.css-treeview label::before
@@ -414,43 +429,24 @@ button.expand
 	.css-treeview input + label + ul
 		margin: 0
 
-ul.library-features
-	
-	li
-		display: block
 
-		a
-			position: relative
-			display: block;
-			border: solid 1px light-gray
-			background: background-gray
-			transition: all 250ms
-			
-			img.over
-				position: absolute
-				top: 0
-				left: 0
-				z-index: 10
-				opacity: 0
-				transition: all 250ms
+.wrapper
+	min-height: 100%
+	position: relative
 
-			.title
-				position: absolute
-				color: #fff
-				width: 100%
-				text-align: center
-				display: inline-block
-				bottom: 10px
-				text-transform: uppercase
-				font-weight: 400
+	.inner-wrap
+		padding-bottom: 60px
 
-			&:hover
-				background: cinder-orange
-				
-				img.over
-					opacity: 1
+#main-content
+	.row.content
+		padding: 50px 0
 
 footer
 	font-size: .8em
 	color: #fff
 	padding: 20px	
+	background-color: $background-gray
+	position: absolute
+	bottom: 0
+	width: 100%
+	height: 60px

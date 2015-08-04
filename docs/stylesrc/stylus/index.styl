@@ -1,47 +1,145 @@
-cinder-orange = #c64b24
-light-gray = #949494
-background-gray = #252726
+@import global
 
 body.section_home
 	background: white
 	
-	h1
-		font-size: 3em
-		font-weight: 700
+	label
+		text-transform: uppercase
 	
-	#top-primary
-		color: light-gray
+	#main-content
+		li	
+			a
+				transition: all 250ms
+				display: block
+				color: $light-gray-text
+				font-weight: 400
+				font-size: 0.8em
+				width: 100%
+				line-height: 1.8em
+				
+	
+	#top-content
+		background: $gray-gradient-1
+		color: $light-gray-text
+		
+		h1
+			font-size: 3em
+			font-weight: 700
+			margin-bottom: 0			
 
 		#sub-nav
 			display: none
+	
+	#mid-content
+		// background: $background-gray
+		
+		&>.row
+			padding: 40px 0
+		
+		label
+			color: $cinder-red
+			margin-bottom: 0.5em
+			
+		ul
+			margin-bottom: 10px
+		
+		ul.fancy>li a:hover
+			color: $cinder-orange
+			
+	ul.library-features
+	
+		li
+			display: block
+			text-align: center
+			height: 120px
+			margin-bottom: 20px
+			// max-height: 120px
+
+			a
+				position: relative
+				display: block;
+				// background: $background-gray
+				transition: all 250ms
+				width: auto
+				height: 100%
+
+				.title
+					// position: absolute
+					color: $light-gray-text
+					width: 100%
+					text-align: center
+					// display: inline-block
+					bottom: 10px
+					text-transform: uppercase
+					font-weight: 400
+					transition: all 250ms
+
+				&:hover
+					// background: $cinder-orange
+					text-decoration: none
+					
+					img.over
+						opacity: 1
+						
+					.title
+						color: $cinder-red
+						
+			
+		.img-holder
+			display: block
+			height: 100%
+			width: auto
+			position:relative
+			left: 50%
+			transform: translatex(-25%)
+			// clear:both
+
+			img
+				position: absolute
+				left: 0
+				top: 0
+				// width: 100%
+				height: 80%
+				max-height: 90px
+				display: block
+				
+				&::after
+					clear: both
+				
+
+			img.over
+				// position: absolute
+				// top: 0
+				// left: 0
+				// transform: translatey(-100%)
+				z-index: 10
+				opacity: 0
+				transition: all 250ms
+				
+			// &::after
+				// clear: both
+			
 		
 	#intro
-		padding: 50px 0 75px 0	
+		padding: 40px 0 75px 0	
+		border-top: 2px solid white
 		
 		.content
-			padding: 0 200px 0 0
+			// padding: 0 200px 0 0
 			
 			p
 				font-size: 1.1em
 		
 		#downloads
-			padding: 20px 0 0 0
+			padding-top: 20px
 			
 			li 
 				padding: 0 2em 0 0
 				
 				a
-					transition: all 250ms
-					display: block
-					padding: 0.2em 0.9375em 0.2em 0.9375em
-					color: light-gray
-					font-weight: 400
-					font-size: 0.8em
-					width: 100%
+					padding: 0em 0.9375em
 					
 					&:hover
-						background: cinder-orange
+						background: $cinder-orange
 						color: #fff
-
-	footer
-		background: background-gray
+				
