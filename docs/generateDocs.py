@@ -70,6 +70,7 @@ class Config(object):
                 "reference_html": "namespaces.html",
                 "element_id": "namespace-content",
                 "template": "namespace-list.mustache",
+                "section": "namespaces",
                 "searchable": False
             },
             # class list page
@@ -78,6 +79,7 @@ class Config(object):
                 "reference_html": "classes.html",
                 "element_id": "classes-content",
                 "template": "class-list.mustache",
+                "section": "classes",
                 "searchable": False
             },
             # glm reference page
@@ -86,6 +88,7 @@ class Config(object):
                 "reference_html": "reference/glm.html",
                 "element_id": "glm-reference",
                 "template": "glm-reference.mustache",
+                "section": "reference",
                 "searchable": True
             }
         ]
@@ -1665,6 +1668,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
 
         html_template = config.CLASS_TEMPLATE
         file_data = fill_class_content(tree)
+        section = "classes"
 
     elif file_type == "namespace":
         if any(in_path.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
@@ -1673,9 +1677,11 @@ def process_xml_file_definition(in_path, out_path, file_type):
 
         html_template = config.NAMESPACE_TEMPLATE
         file_data = fill_namespace_content(tree)
+        section = "namespaces"
     elif file_type == "module":
         html_template = config.GROUP_TEMPLATE
         file_data = fill_group_content(tree, config.GLM_MODULE_CONFIG)
+        section = "reference"
     else:
         log("Skipping " + in_path, 1)
         return
@@ -1685,7 +1691,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
     # Generate the html file from the template and inject content
     file_content = file_data.get_content()
     bs4 = render_template(html_template, file_content)
-    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4)}
+    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), str("section_" + section): "true"}
 
     # render within main template
     bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
@@ -2071,6 +2077,8 @@ def process_html_file(in_path, out_path):
     in_dir = os.path.dirname(in_path)
     # file name
     in_file_name = os.path.basename(in_path)
+    # selected section of the website
+    section = ""
 
     # parse guide config (if present in current directory)
     # this determines which function is used to generate dynamic page, which template to use, etc
@@ -2090,12 +2098,15 @@ def process_html_file(in_path, out_path):
         template = config.HOME_TEMPLATE
         is_searchable = False
         body_class = "section_home"
+        section = "home"
     elif in_path.find("reference/") > -1:
         template = config.REFERENCE_TEMPLATE
         body_class = "reference"
+        section = "reference"
     elif in_path.find("guides/") > -1:
         template = config.GUIDE_TEMPLATE
         body_class = "guide"
+        section = "guides"
 
     # fill content ----------------------------------------
 
@@ -2117,6 +2128,11 @@ def process_html_file(in_path, out_path):
             for content in markup.body.contents:
                 dynamic_div.append(content)
             insert_div_id = data["element_id"]
+            
+            if "section" in data:
+                print in_path
+                print "SECTION: " + data["section"]
+                section = data["section"]
 
     # inject dynamic content into orig_html
     if insert_div_id:
@@ -2131,7 +2147,7 @@ def process_html_file(in_path, out_path):
     # render file tempalte
     bs4 = render_template(template, file_content)
     update_links_abs(bs4, in_path)
-    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class}
+    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class, str("section_" + section): "true"}
 
     # plug everything into the master tempalte
     bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)

@@ -213,13 +213,13 @@ ul.fancy>li {
   height: 100%;
   margin-right: 20px;
 }
-#top-primary ul.nav li.current,
-#top-content ul.nav li.current {
-  border-bottom: solid 2px #cb791c;
+#top-primary ul.nav li.active,
+#top-content ul.nav li.active {
+  border-bottom: solid 3px #a41c12;
 }
-#top-primary ul.nav li.current a,
-#top-content ul.nav li.current a {
-  color: #cb791c;
+#top-primary ul.nav li.active a,
+#top-content ul.nav li.active a {
+  color: #a41c12;
 }
 #top-primary ul.nav li a,
 #top-content ul.nav li a {
@@ -230,7 +230,7 @@ ul.fancy>li {
 }
 #top-primary ul.nav li a:hover,
 #top-content ul.nav li a:hover {
-  color: #cb791c;
+  color: #a41c12;
 }
 #top-primary #MSearchBox,
 #top-content #MSearchBox {
