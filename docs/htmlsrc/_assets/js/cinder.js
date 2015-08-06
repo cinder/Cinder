@@ -130,6 +130,27 @@ $(document).ready(function() {
 			 });
 		}
 	}
+
+	// scroll to anchor
+	$(function() {
+	  $('a[href*=#]:not([href=#])').click(function() {
+	    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+	      var target = $(this.hash);
+	      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+	      if (target.length) {
+	      	var limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight) - window.innerHeight; 
+	      	var top = Math.min(target.offset().top, limit);
+	      	var diff = top - $(this).scrollTop();
+	      	var time = Math.max(Math.min(diff * 0.5, 1200), 500);
+	        $('html,body').animate({
+	          scrollTop: top,
+	          easing: "easeInOutCubic"
+	        }, time);
+	        return false;
+	      }
+	    }
+	  });
+	});
 	
 
  	setSection( section );

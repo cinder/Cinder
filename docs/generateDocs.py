@@ -1542,13 +1542,7 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
         ns_li = gen_tag(bs4, "li")
 
         # create link for each item
-        # print ns.path
-        # a_tag = gen_rel_link_tag(bs4, name, "../" + ns.path, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
         a_tag = gen_link_tag(bs4, name, HTML_SOURCE_PATH + ns.path)
-        # print a_tag
-        # a_tag = gen_tag(bs4, "a")
-        # define_link_tag(a_tag, {"href": ns.path})
-        # a_tag.append(name)
 
         # is decendent of parent namespace
         if prefix == parent_ns:
@@ -1564,11 +1558,15 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
 
                 # if there are children, add to the parent ul
                 if iterate_namespace(bs4, namespaces, ns_ul, count + 1, node_label) > 0:
-                    # addClassToTag( nsLi, "item" )
                     # add input
                     input_el = gen_tag(bs4, "input")
                     input_el["type"] = "checkbox"
                     input_el["id"] = "item-" + "-".join(list(node_label))
+
+                    # root is expanded by default
+                    if index == 0:
+                        input_el.attrs["checked"] = "true"
+
                     label_tag = gen_tag(bs4, "label")
                     label_tag["for"] = "item-" + "-".join(list(node_label))
                     label_tag.append(a_tag)
