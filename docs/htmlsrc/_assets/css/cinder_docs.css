@@ -155,7 +155,6 @@ ci {
 body#guide-contents {
   max-width: 960px;
   margin: 20px auto 0 auto;
-  font-size: 0.8em;
 }
 #top-primary {
   -webkit-box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
@@ -285,19 +284,23 @@ body#guide-contents {
   padding-top: 40px;
   min-height: 400px;
 }
-#container {
+#container,
+body#guide-contents {
   background: #fff;
   height: auto;
   font-size: 0.8em;
   line-height: 1em;
 }
-#container p {
+#container p,
+body#guide-contents p {
   margin-bottom: 1em;
 }
-#container section {
+#container section,
+body#guide-contents section {
   margin-bottom: 1em;
 }
-#container .contents section > ul > li {
+#container .contents section > ul > li,
+body#guide-contents .contents section > ul > li {
   height: 100%;
   padding: 6px 10px;
   -webkit-transform: translateZ(0);
@@ -306,25 +309,32 @@ body#guide-contents {
   -ms-transform: translateZ(0);
   transform: translateZ(0);
 }
-#container .contents section > ul > li:nth-child(odd) {
+#container .contents section > ul > li:nth-child(odd),
+body#guide-contents .contents section > ul > li:nth-child(odd) {
   background: #f8f8f8;
 }
-#container .contents p:last {
+#container .contents p:last,
+body#guide-contents .contents p:last {
   margin-bottom: 0;
 }
-#container .contents .row {
+#container .contents .row,
+body#guide-contents .contents .row {
   padding-left: 18px;
 }
-#container .contents .description {
+#container .contents .description,
+body#guide-contents .contents .description {
   color: #7c827f;
 }
-#container .contents p {
+#container .contents p,
+body#guide-contents .contents p {
   margin: 0;
 }
-#container .contents p:first-child {
+#container .contents p:first-child,
+body#guide-contents .contents p:first-child {
   margin-top: 5px;
 }
-#container .contents button.expand {
+#container .contents button.expand,
+body#guide-contents .contents button.expand {
   top: 8px;
   left: 9px;
 }

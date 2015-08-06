@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <title></title>
+      <title>Quicktime MovieWriter Guide</title>
+
+      <meta name="keywords" content="quicktime">
+
+      <link rel="stylesheet" href="../../_assets/css/foundation.css">
+      <link rel="stylesheet" href="../../_assets/css/cinder_docs.css">
+      <link rel="stylesheet" href="../../_assets/css/prism.css">
+
+      <ci seealso dox="ci::qtime::MovieWriter"></ci>
    </head>
-   <ci seealso dox="ci::qtime::MovieWriter"></ci>
-   <body>
-      <div class="textblock">
+   
+   <body id="guide-contents">
+
+      <h1>Quicktime MovieWriter Guide</h1>
+      
          <h2>Introduction</h2>
          <p>Cinder makes writing QuickTime movies a straightforward task via the <ci>qtime::MovieWriter</ci> class. Creating a basic QuickTime movie is easy, and <ci>qtime::MovieWriter</ci> also exposes more advanced options which allow you to take full advantage of the features of modern codecs like <a href="http://en.wikipedia.org/wiki/H.264/MPEG-4_AVC">H.264</a>. <br />
          </p>
@@ -78,6 +88,8 @@ if( qtime::MovieWriter::getUserCompressionSettings( &format, previewImage ) ) {
             <br />
             Also currently <ci>qtime::MovieWriter</ci> does not support audio exporting, and this will be introduced in future revisions. 
          </p>
-      </div>
+         
+
+         <script src="../../_assets/js/prism.js" type="text/javascript"></script>
    </body>
 </html>
