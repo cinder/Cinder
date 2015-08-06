@@ -1094,8 +1094,8 @@ def replace_element(bs4, element, replacement_tag):
 def get_body_content(bs4):
     return_str = ""
     for content in bs4.body.contents:
-        # return_str += str(content).encode("utf-8", errors="replace")
-        content_str = str(content).decode("utf-8", errors="replace")
+        content_utf = unicode(content).encode("utf-8", errors="replace")
+        content_str = content_utf.decode("utf-8", errors="replace")
         if type(content) is Comment:
             return_str += "<!-- " + content_str + "-->"
         else:
@@ -2631,18 +2631,24 @@ def update_link(link, in_path, out_path):
 
 
 def generate_bs4(file_path):
-    output_file = open(os.path.join(file_path)).read()
-    output_file.decode("utf-8")
-    # print output_file
 
-    # wrap in body tag if none exists
-    if output_file.find("<body") < 0:
-        output_file = "<body>" + output_file + "</body>"
-        print "\t ** WARNING: No body tag found in file: " + file_path
+    # tree = None
+    try:
+        with open(file_path, "rb") as html_file:
+            content = html_file.read().decode("utf-8", errors="replace")
+            new_content = content.encode("utf-8", errors="replace")
 
-    bs4 = BeautifulSoup(output_file)
+        # wrap in body tag if none exists
+        if new_content.find("<body") < 0:
+            new_content = "<body>" + new_content + "</body>"
+            log("No body tag found in file: " + file_path)
 
-    return bs4
+        bs4 = BeautifulSoup(new_content)
+        return bs4
+
+    except Exception as e:
+        log(e.message, 2)
+        return None
 
 
 def generate_bs4_from_string(string):
@@ -2924,12 +2930,10 @@ def write_html(bs4, save_path):
         for child in c.children:
             # replaces with escaped code
             try:
-                child.replace_with(str(child))
-            except UnicodeEncodeError as e:
-                print "\t** UNICODE ENCODE ERROR: " + e.reason
-            except ValueError as e:
-                print child
-                print "\t** VALUE ENCODE ERROR: " + e.message
+                child_utf = unicode(child).encode("utf-8", errors="replace")
+                child.replace_with(str(child_utf))
+            except Exception as e:
+                log("Writing HTML | " + str(e), 2)
 
     # enode bs4, decode, and then re-encode and write
     document = bs4.encode(formatter="html")
