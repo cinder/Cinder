@@ -24,6 +24,7 @@ HTML_DEST_PATH = BASE_PATH + 'html' + os.sep
 HTML_SOURCE_PATH = BASE_PATH + 'htmlsrc' + os.sep
 TEMPLATE_PATH = BASE_PATH + 'htmlsrc' + os.sep + "_templates" + os.sep
 PARENT_DIR = BASE_PATH.split('/docs')[0]
+TAG_FILE_PATH = "doxygen/cinder.tag"
 
 # various config settings
 class Config(object):
@@ -3231,16 +3232,22 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         inPath = sys.argv[1]
         if not os.path.isfile(inPath) and not os.path.isdir(inPath):
-            log("Nice try! Directory or file '" + inPath  + "' doesn't even exist, so we're going to stop right... now!")
+            log("Nice try! Directory or file '" + inPath + "' doesn't even exist, so we're going to stop right... now!")
             quit()
 
+    if not os.path.exists(TAG_FILE_PATH):
+        log("I got nothin for you. The tag file [" + TAG_FILE_PATH + "] doesn't exist yet. "
+            "Run doxygen first and try me again later.", 2)
+        quit()
+
     # Load tag file
-    print "parsing tag file"
-    g_tag_xml = ET.ElementTree(ET.parse("doxygen/cinder.tag").getroot())
+    log("parsing tag file")
+    g_tag_xml = ET.ElementTree(ET.parse(TAG_FILE_PATH).getroot())
     # generate symbol map from tag file
     g_symbolMap = get_symbol_to_file_map()
 
     # copy files from htmlsrc/ to html/
+    log("copying files")
     copy_files()
 
     # generate namespace navigation
