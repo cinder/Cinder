@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta charset="us-ascii" />
+<meta charset="utf-8" />
 	<title>Transitioning to Cinder 0.9</title>
 	<meta name="keywords" content="guide">
 	<!-- master stylesheet - these links will be replaced when compiled -->
@@ -75,7 +75,7 @@ For basic transformations, use the built-in scale(), translate() and rotate() me
 <pre><code class="lang-cpp">
 mat4 ex = rotate( 0.04f, vec3( 0, 1, 0 )  ); // returns a rotation by 0.04 radians around Y axis
 mat4 ex2 = scale( ex, vec3( 2 ) ); // returns &lsquo;ex&rsquo; uniformly scaled by 2
-</pre></code>
+</code></pre>
 
 <h4>Quaternions:</h4>
 <p>
@@ -83,13 +83,13 @@ To construct a quaternion that represents the rotation from vec3 <em>vecA</em> t
 </p>
 <pre><code class="lang-cpp">
 quat myQuat = rotation( vecA, vecB )
-</pre></code>
+</code></pre>
 <p>
 To construct a quaternion that represents a rotation by <em>angle</em> radians around <em>axis</em>:
 </p>
 <pre><code class="lang-cpp">
 quat myQuat = angleAxis( angle, axis );
-</pre></code>
+</code></pre>
 <p>
 Additionally, note that in glm quaternion multiplication order is reversed relative to Cinder&rsquo;s former <code>Quatf</code> class. So <code>myQuatA * myQuatB</code> is now <code>myQuatB * myQuatA</code>.
 </p>
@@ -103,27 +103,29 @@ For 2D transformations, Cinder formerly used a custom class <code>MatrixAffine2f
 <pre><code class="lang-cpp">
 mat3 ex = scale( mat3(), vec2( 2 ) ); // returns a uniform scale by 2
 mat3 ex2 = rotate( ex, 0.04f ); // returns &lsquo;ex&rsquo; rotated by 0.04 radians around the z-axis
-</pre></code>
+</code></pre>
 </p>
 
 <h3>App-related Changes:</h3>
 <p>
 A key change is that Cinder applications now derive from <ci>app::App</ci> rather than <code>app::AppBasic</code> (with the exception of things like screensavers). Additionally, Cinder apps are instantiated with the <code>CINDER_APP()</code> macro now instead of <code>CINDER_APP_BASIC()</code>. Finally, the <ci>App::prepareSettings()</ci> virtual method has been removed in favor of an optional third parameter to the macro. This change allows the construction of GL objects in app constructors, among other things. This third parameter can be a lambda:
+</p>
 
 <pre><code class="lang-cpp">
 CINDER_APP( ExampleApp, RendererGl(), [&amp;]( App::Settings *settings ) {
   settings-&gt;setWindowSize( 1280, 720 );
 })
-</pre></code>
-
-or it can be a function pointer:
-<pre><code class="lang-cpp">
-<code>CINDER_APP( ExampleApp, RendererGl(), ExampleApp::prepareSettings )</code>
-</pre></code>
-</p>
+</code></pre>
 
 <p>
-While the <a href="http://http://www.boost.org/">Boost</a> libraries still ship with Cinder, we&rsquo;ve begun the process of deprecating them in this release, as much of the functionality we originally relied on is now part of C++11 and later. Users are obviously welcome to continue using Boost in their own code, but CinderBlock authors are encouraged to remove dependencies where possible. As a first step toward this change, Cinder&rsquo;s Boost directory has moved from <code><em>$(CINDER)<em>/boost</code> to <code><em>$(CINDER)</em>/include/boost</code>.
+or it can be a function pointer:
+</p>
+<pre><code class="lang-cpp">
+CINDER_APP( ExampleApp, RendererGl(), ExampleApp::prepareSettings )
+</code></pre>
+
+<p>
+While the <a href="http://http://www.boost.org/">Boost</a> libraries still ship with Cinder, we&rsquo;ve begun the process of deprecating them in this release, as much of the functionality we originally relied on is now part of C++11 and later. Users are obviously welcome to continue using Boost in their own code, but CinderBlock authors are encouraged to remove dependencies where possible. As a first step toward this change, Cinder&rsquo;s Boost directory has moved from <em><code>$(CINDER)<code></em><code>/boost</code> to <em><code>$(CINDER)</code></em><code>/include/boost</code>.
 </p>
 
 <h4>Mac-specific Changes:</h4>
@@ -138,8 +140,8 @@ And these are no longer necessary:<br />
 QuickTime, QTKit
 </p>
 
-<p>
 <h4>MSW-specific Changes:</h4>
+<p>
 Visual C++ 2015 is supported. Additionally, the <a href="https://code.google.com/p/angleproject/">ANGLE renderer</a> allows Cinder apps to run without GL drivers. 
 </p>
 
