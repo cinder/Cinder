@@ -35,13 +35,13 @@ em
 label
 	font-family: 'Open Sans', sans-serif;
 
-h1, h2, h3
+h1, h2, h3, h4, h5, h6
 	font-family: 'Open Sans', sans-serif;
 	font-weight: 300
 	margin-bottom: 0.5em
 
 h1
-	font-size: 2.0em
+	font-size: 1.5em
 	color: $cinder-red
 
 h2
@@ -176,9 +176,8 @@ body#guide-contents
 			
 			&:not(:last-child)
 				
-				a
-					&::after
-						content: " | "
+				&::after
+					content: " | "
 		
 
 #top-secondary
@@ -254,8 +253,6 @@ body#guide-contents
 	.returnCol
 		text-align: right
 		
-	.content-column
-		padding: 0
 	
 	ul.master-class-list
 		column-count: 4
@@ -463,3 +460,18 @@ footer
 	bottom: 0
 	width: 100%
 	height: 60px
+
+
+@media all and (min-width: 640px)
+	
+	h1
+		font-size: 2.0em
+	
+	h2
+		font-size: 1.25em
+
+	h3
+		font-size: 1.0em
+	
+	.content-column
+		padding: 0

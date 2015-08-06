@@ -26,7 +26,7 @@ body.section_home #top-content {
   color: #949494;
 }
 body.section_home #top-content h1 {
-  font-size: 3em;
+  font-size: 2em;
   font-weight: 700;
   margin-bottom: 0;
 }
@@ -140,4 +140,9 @@ body.section_home ul.library-features .img-holder img.over {
 #intro #downloads li a:hover {
   background: #cb791c;
   color: #fff;
+}
+@media all and (min-width: 640px) {
+  #top-content h1 {
+    font-size: 3em;
+  }
 }
