@@ -11,19 +11,14 @@
 <body id="guide-contents" >
 <h1>Cinder 0.9 Transition Guide</h1>
 <p>
-If you&rsquo;ve been participating in or just tracking Cinder&rsquo;s latest development work, you&rsquo;re already familiar with the glNext branch. It&rsquo;s finally time to merge this branch into master , in anticipation of the next release, which will be labeled 0.9.0. The version discontinuity is meant to signify significant changes to certain parts of Cinder&rsquo;s API. This guide is meant to help get you up to speed on what&rsquo;s new.
-</p>
-
-<p>
-As a quick note, if you have are just joining us on master, you will likely need to do do this after you git pull due to a change in the Boost submodule:
-<code>git submodule update --init</code>
+This guide is meant to help users of previous versions of Cinder transition to version 0.9+. This release represents a number of changes and improvements, which are summarized below.
 </p>
 
 <h3>Highlights:</h3>
 <p>
 <ul>
 <li>All of Cinder&rsquo;s OpenGL code has been updated to reflect the modern (OpenGL 3.2+) API.</li>
-<li>Cinder&rsquo;s math libraries have been replaced with <a href="http://glm.g-truc.net/">glm</a>.</li>
+<li>Cinder&rsquo;s math libraries have been replaced with <a href="http://glm.g-truc.net/">GLM</a>.</li>
 <li>Cinder&rsquo; app:: internals have been refactored</li>
 </ul>
 </p>
@@ -35,41 +30,43 @@ OpenGL itself has evolved substantially in recent versions, and Cinder&rsquo;s O
 
 <h4>Fundamental Changes:</h4>
 <p>
-In many ways, the evolution of OpenGL has been as focused on removing features as adding them. Probably the most important change is the removal of the &ldquo;fixed function&rdquo; pipeline. One implication is that a shader is always necessary in order to draw. Furthermore, &ldquo;immediate mode&rdquo; (glBegin(), glVertex(), glEnd(), etc) calls are no longer supported. Instead, any vertex data (positions, normals, etc) must be supplied in blocks of memory called vertex buffers (VBOs). These are just a few of the many changes that Cinder 0.9.0&rsquo;s GL functionality has been designed to respond to. We&rsquo;ve endeavored to keep a relatively straightforward API while still exposing the most recent functionality in OpenGL.
+In many ways, the evolution of OpenGL has been as focused on removing features as adding them. Probably the most important change is the removal of the &ldquo;fixed function&rdquo; pipeline. One implication is that a shader is always necessary in order to draw. Furthermore, &ldquo;immediate mode&rdquo; (<code>glBegin()</code>, <code>glVertex()</code>, <code>glEnd()</code>, etc) calls are no longer supported. Instead, any vertex data (positions, normals, etc) must be supplied in blocks of memory called vertex buffers (VBOs). These are just a few of the many changes that Cinder 0.9.0&rsquo;s GL functionality has been designed to respond to. We&rsquo;ve endeavored to keep a relatively straightforward API while still exposing the most recent functionality in OpenGL.
 </p>
 
 <p>
-A separate guide provides more in-depth documentation of Cinder&rsquo;s new GL API. In addition, please consult the samples/_opengl directory for useful examples.
+A separate guide provides more in-depth documentation of Cinder&rsquo;s new GL API. In addition, please consult the <a href="https://github.com/cinder/Cinder/tree/master/samples/_opengl">samples/_opengl</a> directory for useful examples.
 </p>
 
 <h3>Math Changes:</h3>
 <p>
-Cinder no longer uses its own classes for mathematics, and instead has moved to the popular GLM library. This library is designed to closely match the math primitives and functions in GLSL. Most of glm&rsquo;s functions are promoted into the ci:: namespace, but for less common names you may need to qualify using glm::.
+Cinder no longer uses its own classes for mathematics, and instead has moved to the popular GLM library. This library is designed to closely match the math primitives and functions in GLSL. Most of GLM&rsquo;s functions are promoted into the <code>ci::</code> namespace, but for less common names you may need to qualify using <code>glm::</code>.
 </p>
 
 <h4>Types:</h4>
 <p>
 <ul>
-<li><code>ci::Vec2f</code>, <code>ci::Vec3f</code>, <code>ci::Vec4f</code> &#8594; <ci>vec2</ci>, <ci>vec3</ci>, <ci>vec4</ci></li>
-<li><code>ci::Vec2d</code>, <code>ci::Vec3d</code>, <code>ci::Vec4d</code> &#8594; <ci>dvec2</ci>, <ci>dvec3</ci>, <ci>dvec4</ci></li>
-<li><code>ci::Vec2i</code>, <code>ci::Vec3i</code>, <code>ci::Vec4i</code> &#8594; <ci>ivec2</ci>, <ci>ivec3</ci>, <ci>ivec4</ci></li>
-<li><code>ci::Matrix33f</code>, <code>ci::Matrix44f</code> &#8594; <ci>mat3</ci>, <ci>mat4</ci></li>
-<li><code>ci::Matrix33d</code>, <code>ci::Matrix44d</code> &#8594; <ci>dmat3</ci>, <ci>dmat4</ci></li>
-<li><code>ci::Quatf</code>, <code>ci::Quatd</code> &#8594; <ci>quat</ci>, <ci>dquat</ci></li>
-<li><code>ci::MatrixAffine2f</code> &#8594; <ci>mat3</ci> (see below)</li>
+<li><code>ci::Vec2f</code>, <code>ci::Vec3f</code>, <code>ci::Vec4f</code> &rarr; <ci>vec2</ci>, <ci>vec3</ci>, <ci>vec4</ci></li>
+<li><code>ci::Vec2d</code>, <code>ci::Vec3d</code>, <code>ci::Vec4d</code> &rarr; <ci>dvec2</ci>, <ci>dvec3</ci>, <ci>dvec4</ci></li>
+<li><code>ci::Vec2i</code>, <code>ci::Vec3i</code>, <code>ci::Vec4i</code> &rarr; <ci>ivec2</ci>, <ci>ivec3</ci>, <ci>ivec4</ci></li>
+<li><code>ci::Matrix33f</code>, <code>ci::Matrix44f</code> &rarr; <ci>mat3</ci>, <ci>mat4</ci></li>
+<li><code>ci::Matrix33d</code>, <code>ci::Matrix44d</code> &rarr; <ci>dmat3</ci>, <ci>dmat4</ci></li>
+<li><code>ci::Quatf</code>, <code>ci::Quatd</code> &rarr; <ci>quat</ci>, <ci>dquat</ci></li>
+<li><code>ci::MatrixAffine2f</code> &rarr; <ci>mat3</ci> (see below)</li>
 </ul>
 </p>
 
 <p>
-One key difference to Cinder's math classes is that these primitives provide default constructors. The vectors default construct to zero, and the matrix and quaternion variants default construct to the identity transformation.
+One key difference to Cinder's math classes is that these primitives provide default constructors. The vectors default construct to zero, and the matrix and quaternion variants default construct to the identity transformation. Consequently, there's no equivalent to <code>Vec2f::zero()</code>, for example. Simply use the default constructor for <ci>vec2</ci>. Additionally, a few convenience functions like <code>Vec3f::zAxis()</code> do not have equivalents; simply use <code>vec3( 0, 0, 1 )</code> in that case.
 </p>
 
 <h4>Functions:</h4>
 <p>
 GLM, like GLSL, uses free functions in places where Cinder&rsquo;s own math classes formerly used member functions:
-<code>myVec2f.length()</code> &#8594; <code>length( myVec2 )</code>
-<code>myVecA.dot( myVecB )</code> &#8594; <code>dot( myVecA, myVecB )</code>
-For basic transformations, use the built-in scale(), translate() and rotate() methods. These methods have 2 variants. The first takes an existing mat4 and returns a copy of this matrix with the transformation applied. The second one does not take a mat4, simply returning the transformation applied to the identity matrix.
+</p>
+<code>myVec2f.length()</code> &rarr; <code>length( myVec2 )</code><br />
+<code>myVecA.dot( myVecB )</code> &rarr; <code>dot( myVecA, myVecB )</code>
+<p>
+For basic transformations, use the built-in <ci>scale()</ci>, <ci>translate()</ci> and <ci>rotate()</ci> methods. These methods have 2 variants. The first takes an existing <ci>mat4</ci> and returns a copy of this matrix with the transformation applied. The second one does not take a <ci>mat4</ci>, simply returning the transformation applied to the identity matrix.
 </p>
 
 <pre><code class="lang-cpp">
@@ -108,7 +105,7 @@ mat3 ex2 = rotate( ex, 0.04f ); // returns &lsquo;ex&rsquo; rotated by 0.04 radi
 
 <h3>App-related Changes:</h3>
 <p>
-A key change is that Cinder applications now derive from <ci>app::App</ci> rather than <code>app::AppBasic</code> (with the exception of things like screensavers). Additionally, Cinder apps are instantiated with the <code>CINDER_APP()</code> macro now instead of <code>CINDER_APP_BASIC()</code>. Finally, the <ci>App::prepareSettings()</ci> virtual method has been removed in favor of an optional third parameter to the macro. This change allows the construction of GL objects in app constructors, among other things. This third parameter can be a lambda:
+A key change is that Cinder applications now derive from <ci>app::App</ci> rather than <code>app::AppBasic</code> (with the exception of things like screensavers). Additionally, Cinder apps are instantiated with the <code>CINDER_APP()</code> macro now instead of <code>CINDER_APP_BASIC()</code>. A parallel change to the headers means <code>"cinder/app/App.h"</code> should now be <code>#include</code>d instead of <code>"cinder/app/AppBasic.h"</code>. Finally, the <code>App::prepareSettings()</code> virtual method has been removed in favor of an optional third parameter to the macro. This change allows the construction of GL objects in app constructors, among other things. This third parameter can be a lambda:
 </p>
 
 <pre><code class="lang-cpp">
