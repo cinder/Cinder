@@ -56,8 +56,16 @@ h3
 ul.fancy>li
 	font-family: 'Libre Baskerville', serif;
 	font-style: italic
-	
-	
+
+ci
+	color: purple;
+	font-weight: 700;
+
+body#guide-contents {
+	max-width: 960px;
+	margin: 20px auto 0 auto;
+	font-size: 0.8em
+}
 // code
 // 	margin: 1em 0
 // 	display: inline-block
@@ -65,12 +73,14 @@ ul.fancy>li
 // 	line-height: 2em
 
 // #container
+#top-primary
+	box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3)
+	z-index: 100
 	
 #top-primary,
 #top-content
 	background: $background-gray
-	
-	// padding: 0 0 48px 0
+	position: relative
 	padding: 0 0 0 0
 	margin: 0
 	color: #fff
@@ -414,7 +424,7 @@ button.expand
 		background-position: 0 0
 		width: 13px
 		height: 13px
-		margin: -2px 2px 0 0
+		margin: 1px 5px 0 0
 		
 	.css-treeview input:checked + label::before
 		
@@ -438,6 +448,9 @@ button.expand
 		padding-bottom: 60px
 
 #main-content
+	position: relative;
+	z-index: 0
+	
 	.row.content
 		padding: 50px 0
 

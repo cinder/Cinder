@@ -1,0 +1,41 @@
+<html>
+	<head>
+		<title>Guide Title</title>
+
+		<!-- keywords used for searching -->
+		<meta name="keywords" content="guide">
+
+		<!-- reference to cinder classes -->
+   		<!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+   		<!-- master stylesheet - this link will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/cinder_docs.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+
+		<!-- Place additional stylsheet links here (optional) -->
+		
+	</head>
+
+	<body id="guide-contents" >
+		<h1>Cinder template</h1>
+		This is <ci>Some class</ci>.
+
+<pre class="lang-cpp"><code>
+gl::clear( Color( 0, 0, 0 ) );
+gl::setMatricesWindowPersp( getWindowSize() );
+gl::enableDepthRead();
+gl::enableDepthWrite();
+
+gl::ScopedGlslProg render( mRenderProg );
+gl::ScopedVao vao( mAttributes[mSourceIndex] );
+gl::context()->setDefaultShaderVars();
+gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
+</code></pre>
+
+
+		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+		<!-- Place additional scripts here (optional) -->
+		<!-- <script type="text/javascript"></script> -->
+
+	</body>
+</html>
