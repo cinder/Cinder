@@ -1668,6 +1668,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
         html_template = config.CLASS_TEMPLATE
         file_data = fill_class_content(tree)
         section = "classes"
+        body_class = "classes"
 
     elif file_type == "namespace":
         if any(in_path.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
@@ -1677,10 +1678,13 @@ def process_xml_file_definition(in_path, out_path, file_type):
         html_template = config.NAMESPACE_TEMPLATE
         file_data = fill_namespace_content(tree)
         section = "namespaces"
+        body_class = "namespaces"
+
     elif file_type == "module":
         html_template = config.GROUP_TEMPLATE
         file_data = fill_group_content(tree, config.GLM_MODULE_CONFIG)
         section = "reference"
+        body_class = "reference"
     else:
         log("Skipping " + in_path, 1)
         return
@@ -1690,7 +1694,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
     # Generate the html file from the template and inject content
     file_content = file_data.get_content()
     bs4 = render_template(html_template, file_content)
-    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), str("section_" + section): "true"}
+    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class, str("section_" + section): "true"}
 
     # render within main template
     bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
