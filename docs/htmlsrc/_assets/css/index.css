@@ -17,9 +17,12 @@ body.section_home #main-content li a {
   display: block;
   color: #949494;
   font-weight: 400;
-  font-size: 0.8em;
   width: 100%;
   line-height: 1.8em;
+}
+body.section_home #top-primary {
+  -webkit-box-shadow: none;
+  box-shadow: none;
 }
 body.section_home #top-content {
   background: -webkit-linear-gradient(top, #252726 0%, #313836 100%);
@@ -30,7 +33,6 @@ body.section_home #top-content {
   color: #949494;
 }
 body.section_home #top-content h1 {
-  font-size: 2em;
   font-weight: 700;
   margin-bottom: 0;
 }
@@ -43,6 +45,7 @@ body.section_home #mid-content>.row {
 body.section_home #mid-content label {
   color: #a41c12;
   margin-bottom: 0.5em;
+  font-size: 1.2em;
 }
 body.section_home #mid-content ul {
   margin-bottom: 10px;
@@ -130,7 +133,7 @@ body.section_home ul.library-features .img-holder img.over {
   border-top: 2px solid #fff;
 }
 #intro .content p {
-  font-size: 1.1em;
+  font-size: 1.3em;
 }
 #intro #downloads {
   padding-top: 20px;
@@ -139,11 +142,13 @@ body.section_home ul.library-features .img-holder img.over {
   padding: 0 2em 0 0;
 }
 #intro #downloads li a {
-  padding: 0em 0.9375em;
+  padding: 0em 0 0 0.9375em;
+  margin-left: -0.9375em;
 }
 #intro #downloads li a:hover {
   background: #d74f02;
   color: #fff;
+  text-decoration: none;
 }
 @media all and (min-width: 640px) {
   #top-content h1 {
