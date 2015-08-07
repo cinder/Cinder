@@ -182,6 +182,7 @@ class VertBatch : public geom::Source {
 	uint8_t			getAttribDims( geom::Attrib attr ) const override;
 
 	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	VertBatch*		clone() const override { return new VertBatch( *this ); }
 
 	geom::AttribSet	getAvailableAttribs() const override;
 	
