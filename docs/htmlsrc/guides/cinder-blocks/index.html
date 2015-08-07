@@ -24,7 +24,7 @@
   <p>
     <a href="../tinderbox/index.html">TinderBox</a> (Cinder's application-creation tool) is the most straightforward way to use CinderBlocks, though it is not
     strictly necessary and an experienced C++ user can add a CinderBlock to a project by
-    hand. TinderBox parses the <i>blocks</i> directory of a Cinder installation and
+    hand. TinderBox parses the <em>blocks</em> directory of a Cinder installation and
     presents the user with a graphical interface like this:
   </p>
 
@@ -132,19 +132,18 @@
   </div>
 
   <div>
-    <code>&lt;tag&gt;<i>path to the file relative
-    cinderblock.xml</i>&lt;/tag&gt;</code>
+    <code>&lt;tag&gt;</code><em><code>path to the file relative cinderblock.xml</code></em><code>&lt;/tag&gt;</code>
   </div>
 
   <div>
     <strong>Example:</strong>
-  <pre><code class="language-markup">
-    &lt;header&gt;include/example.h&lt;/header&gt;
-  </code></pre>
+<pre><code class="language-markup">
+&lt;header&gt;include/example.h&lt;/header&gt;
+</code></pre>
   </div>
 
   <div>
-    This path is replicated in the output, so a file that lives at <code>include/example.h</code> will be copied to <code><em>project-path</em>/blocks/<em>blockName</em>/include/example.h.</code>
+    This path is replicated in the output, so a file that lives at <code>include/example.h</code> will be copied to <code><span style="font-style: italic;">project-path</span>/blocks/<em>blockName</em>/include/example.h.</code>
   </div>
 
   <div>
@@ -180,7 +179,7 @@
   </div>
 
   <div>
-    <strong><code>&lt;asset&gt;:</code></strong> An asset file, added to the project's <i>assets</i>
+    <strong><code>&lt;asset&gt;:</code></strong> An asset file, added to the project's <em>assets</em>
     directory. <strong>Note:</strong> Uniquely, assets are copied to the project's <em>assets</em> folder regardless of the install type the user has selected for the CinderBlock.<br />
   </div>
 
@@ -208,37 +207,37 @@
 
   <div>
     <strong>&nbsp;
-    "replaceContents"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong>&nbsp;When&nbsp;<i>true</i>, the
-    string&nbsp;<span style="white-space: pre;"><i>_TBOX_PREFIX_</i> is replaced with the
+    "replaceContents"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong>&nbsp;When&nbsp;<em>true</em>, the
+    string&nbsp;<span style="white-space: pre;">em>_TBOX_PREFIX_</em> is replaced with the
     project's name throughout the file's contents</span><br />
   </div>
 
   <div>
     <strong>&nbsp; "replaceName"</strong><strong>&nbsp;(boolean)</strong><strong>:&nbsp;</strong><strong><span style=
     "font-weight: normal;">&nbsp;When&nbsp;</span><span style=
-    "font-weight: normal;"><i>true</i></span><span style="font-weight: normal;">, the
+    "font-weight: normal;"><em>true</em></span><span style="font-weight: normal;">, the
     string&nbsp;</span><span style="font-weight: normal;"><span style=
-    "white-space: pre;"><i>_TBOX_PREFIX_</i> is replaced in the output file's
+    "white-space: pre;"><em>_TBOX_PREFIX_</em> is replaced in the output file's
     name</span></span><br /></strong>
   </div>
 
   <div>
-    <strong>&nbsp; "absolute"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <i>true</i>, the file
+    <strong>&nbsp; "absolute"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <em>true</em>, the file
     path is considered to be absolute and will not be made relative to the output
   </div>
 
   <div>
-    <strong>&nbsp; "sdk"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <i>true</i>, the file path is
+    <strong>&nbsp; "sdk"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <em>true</em>, the file path is
     considered to be considered relative to the Mac/iOS system SDK (Mac/iOS-only)
   </div>
 
   <div>
-    <strong>&nbsp; "cinder"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <i>true,</i> the file path
+    <strong>&nbsp; "cinder"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <em>true,</em> the file path
     is considered to be relative to the Cinder installation
   </div>
 
   <div>
-    <strong>&nbsp; "buildExclude" (boolean):</strong> When <i>true</i>, the file is included in the
+    <strong>&nbsp; "buildExclude" (boolean):</strong> When <em>true</em>, the file is included in the
     project but is not added to a build step<strong><br /></strong>
   </div>
 
@@ -261,7 +260,7 @@
   </div>
 
   <div>
-    &nbsp; <strong>"system" (boolean):</strong> When <i>true</i>&nbsp;specifies a system
+    &nbsp; <strong>"system" (boolean):</strong> When <em>true</em>&nbsp;specifies a system
     header,&nbsp;i.e.&nbsp;<code>#include &lt;something.h&gt;</code>
     rather than <code>#include "something.h"</code>
   </div>
@@ -389,8 +388,8 @@
 
   <div>
     In the example above, both debug and release configurations on MSW would include the
-    header <i>myLib.h</i>, but the MSW project's debug config would have
-    <i>myLib_d.lib</i> added, while its release config would have <i>myLib.lib</i> added.
+    header <em>myLib.h</em>, but the MSW project's debug config would have
+    <em>myLib_d.lib</em> added, while its release config would have <em>myLib.lib</em> added.
     A hypothetical Mac project would receive none of these files.
   </div>
 
@@ -433,7 +432,7 @@
     starting point for a new project, and it in turn will usually (but not necessarily)
     be based on one of the core App templates which ship with Cinder, located in the
     blocks/__AppTemplates folder. For a CinderBlock's template to be derived from one of
-    these, the parent's unique ID should be cited in a <i>parent</i>&nbsp;attribute:
+    these, the parent's unique ID should be cited in a <em>parent</em>&nbsp;attribute:
   </div>
 
 <pre><code class="language-markup">
@@ -451,7 +450,7 @@
     <li>
       <div>
         <strong>Include an icon:</strong> TinderBox will detect and show a
-        <i>cinderblock.png</i>&nbsp;if present. This should be at least a 72x72 pixel PNG
+        <em>cinderblock.png</em>&nbsp;if present. This should be at least a 72x72 pixel PNG
         with an alpha channel.<br />
       </div>
     </li>
@@ -477,7 +476,7 @@
     <li>
       <div>
         <strong>Pursue loose coupling:</strong> For visually-oriented
-        CinderBlocks<i>,</i>&nbsp;this may mean separating the render logic out into
+        CinderBlocks<em>,</em>&nbsp;this may mean separating the render logic out into
         other classes or functions, particularly in the sense of not assuming an application is
         using OpenGL.
       </div>
