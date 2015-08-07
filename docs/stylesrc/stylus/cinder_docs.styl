@@ -5,12 +5,11 @@ global-reset()
 left-col-width = 300px
 
 body
-	font-size: 16px
-	font-family: 'Open Sans', sans-serif
+	font-size: 14px
+	font-family: 'Open Sans', Helvetica, Arial, sans-serif
 	background: $$background-gray-light $gray-gradient-1 no-repeat
+	line-height: 1.6em
 	
-div
-	line-height: 16px
 	
 a
 	color: $cinder-red
@@ -28,9 +27,23 @@ a
 p a
 	font-weight: inherit
 	
+p
+	margin-bottom: 1.25em
+	
+	&:last
+		margin-bottom: 0
+	
+	li
+		list-style: disc
+		margin-left: 20px
+	
 em
-	font-style: normal
+	font-style: italic
+	font-weight: 600
+
+strong
 	font-weight: 700
+	font-style: italic
 
 label
 	font-family: 'Open Sans', sans-serif;
@@ -41,14 +54,27 @@ h1, h2, h3, h4, h5, h6
 	margin-bottom: 0.5em
 
 h1
-	font-size: 1.5em
-	color: $cinder-red
+	font-size: 2.25em
+	color: $cinder-brown
+	font-weight: 400;
 
 h2
-	font-size: 1.25em
+	font-size: 2.0em
+	color: $cinder-red
 
 h3
+	font-size: 1.5em
+	font-weight: 700;
+	color: $dark-gray-text
+
+h4
+	font-size: 1.25em
+
+h5
 	font-size: 1.0em
+
+ul
+	margin-bottom: 20px
 
 .row
 	max-width: 80rem
@@ -64,7 +90,22 @@ ci
 body#guide-contents
 	max-width: 960px;
 	margin: 20px auto 0 auto;
+
+code
+	font-family: Consolas, Monaco, 'Andale Mono', monospace;
+	font-size: .85em
+	padding: 2px 4px
+	background: #fafafa
+	color: #666
+
+pre > code
+	background: none
 	
+pre[class*="language-"]
+	margin: 1em 0
+
+.plain
+	font-family: Helvetica, Arial, sans-serif
 
 // code
 // 	margin: 1em 0
@@ -76,6 +117,9 @@ body#guide-contents
 #top-primary
 	box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3)
 	z-index: 100
+	
+	.nav
+		font-size: 1.25em
 	
 #top-primary,
 #top-content
@@ -198,11 +242,9 @@ body#guide-contents
 	background: white
 	height: auto
 	// padding-top: 40px
-	font-size: 0.8em
-	line-height: 1em
+	// font-size: 0.8em
+	// line-height: 1em
 
-	p
-		margin-bottom: 1em
 		
 	section
 		margin-bottom: 1em
@@ -236,9 +278,7 @@ body#guide-contents
 				// padding-top: 5px
 				color: #7c827f
 			
-			p
-				margin: 0
-			
+			p			
 				&:first-child
 					margin-top: 5px
 				
@@ -323,7 +363,7 @@ button.expand
 	margin: 0
 	padding: 0
 	display: block
-	top: 11px
+	top: 16px
 	left: 7px
 	position: absolute
 	outline: none
@@ -400,7 +440,7 @@ button.expand
 	
 	.css-treeview
 		
-		font-size: 0.8em
+		// font-size: 0.8em
 		
 		label
 			color: #fff
@@ -447,12 +487,8 @@ button.expand
 #main-content
 	position: relative;
 	z-index: 0
-	
-	.row.content
-		padding: 50px 0
 
 footer
-	font-size: .8em
 	color: #fff
 	padding: 20px	
 	background-color: $background-gray
@@ -463,15 +499,6 @@ footer
 
 
 @media all and (min-width: 640px)
-	
-	h1
-		font-size: 2.0em
-	
-	h2
-		font-size: 1.25em
-
-	h3
-		font-size: 1.0em
-	
+		
 	.content-column
 		padding: 0

@@ -2626,7 +2626,6 @@ def update_link(link, in_path, out_path):
 
     return rel_link_path
 
-
 # =============================================================================================== File Utility Functions
 
 

@@ -4,6 +4,10 @@ body.section_home {
 body.section_home label {
   text-transform: uppercase;
 }
+body.section_home li {
+  list-style: none;
+  margin-left: 0;
+}
 body.section_home #main-content li a {
   -webkit-transition: all 250ms;
   -moz-transition: all 250ms;
@@ -44,7 +48,7 @@ body.section_home #mid-content ul {
   margin-bottom: 10px;
 }
 body.section_home #mid-content ul.fancy>li a:hover {
-  color: #cb791c;
+  color: #d74f02;
 }
 body.section_home ul.library-features li {
   display: block;
@@ -138,7 +142,7 @@ body.section_home ul.library-features .img-holder img.over {
   padding: 0em 0.9375em;
 }
 #intro #downloads li a:hover {
-  background: #cb791c;
+  background: #d74f02;
   color: #fff;
 }
 @media all and (min-width: 640px) {

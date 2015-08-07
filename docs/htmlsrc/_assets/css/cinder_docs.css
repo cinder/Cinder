@@ -90,16 +90,14 @@ a img {
   border: none;
 }
 body {
-  font-size: 16px;
-  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   background: $$background-gray-light -webkit-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
   background: $$background-gray-light -moz-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
   background: $$background-gray-light -o-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
   background: $$background-gray-light -ms-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
   background: $$background-gray-light linear-gradient(to bottom, #252726 0%, #313836 100%) no-repeat;
-}
-div {
-  line-height: 16px;
+  line-height: 1.6em;
 }
 a {
   color: #a41c12;
@@ -117,9 +115,23 @@ a.cta-arrow {
 p a {
   font-weight: inherit;
 }
+p {
+  margin-bottom: 1.25em;
+}
+p:last {
+  margin-bottom: 0;
+}
+p li {
+  list-style: disc;
+  margin-left: 20px;
+}
 em {
-  font-style: normal;
+  font-style: italic;
+  font-weight: 600;
+}
+strong {
   font-weight: 700;
+  font-style: italic;
 }
 label {
   font-family: 'Open Sans', sans-serif;
@@ -135,14 +147,27 @@ h6 {
   margin-bottom: 0.5em;
 }
 h1 {
-  font-size: 1.5em;
-  color: #a41c12;
+  font-size: 2.25em;
+  color: #3e2b20;
+  font-weight: 400;
 }
 h2 {
-  font-size: 1.25em;
+  font-size: 2em;
+  color: #a41c12;
 }
 h3 {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #333;
+}
+h4 {
+  font-size: 1.25em;
+}
+h5 {
   font-size: 1em;
+}
+ul {
+  margin-bottom: 20px;
 }
 .row {
   max-width: 80rem;
@@ -159,10 +184,29 @@ body#guide-contents {
   max-width: 960px;
   margin: 20px auto 0 auto;
 }
+code {
+  font-family: Consolas, Monaco, 'Andale Mono', monospace;
+  font-size: 0.85em;
+  padding: 2px 4px;
+  background: #fafafa;
+  color: #666;
+}
+pre > code {
+  background: none;
+}
+pre[class*="language-"] {
+  margin: 1em 0;
+}
+.plain {
+  font-family: Helvetica, Arial, sans-serif;
+}
 #top-primary {
   -webkit-box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
   box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
   z-index: 100;
+}
+#top-primary .nav {
+  font-size: 1.25em;
 }
 #top-primary,
 #top-content {
@@ -291,12 +335,6 @@ body#guide-contents {
 body#guide-contents {
   background: #fff;
   height: auto;
-  font-size: 0.8em;
-  line-height: 1em;
-}
-#container p,
-body#guide-contents p {
-  margin-bottom: 1em;
 }
 #container section,
 body#guide-contents section {
@@ -328,10 +366,6 @@ body#guide-contents .contents .row {
 body#guide-contents .contents .description {
   color: #7c827f;
 }
-#container .contents p,
-body#guide-contents .contents p {
-  margin: 0;
-}
 #container .contents p:first-child,
 body#guide-contents .contents p:first-child {
   margin-top: 5px;
@@ -359,7 +393,7 @@ ul.master-class-list {
   margin: 0 0 20px 0;
 }
 #container .reference-content .header h1 {
-  color: #cb791c;
+  color: #d74f02;
   text-align: center;
   font-weight: 700;
   text-transform: uppercase;
@@ -469,7 +503,7 @@ button.expand {
   margin: 0;
   padding: 0;
   display: block;
-  top: 11px;
+  top: 16px;
   left: 7px;
   position: absolute;
   outline: none;
@@ -540,9 +574,6 @@ button.expand {
 #side-nav input[type="checkbox"] + label {
   margin-left: -18px;
 }
-#side-nav .css-treeview {
-  font-size: 0.8em;
-}
 #side-nav .css-treeview label {
   color: #fff;
 }
@@ -596,11 +627,7 @@ button.expand {
   position: relative;
   z-index: 0;
 }
-#main-content .row.content {
-  padding: 50px 0;
-}
 footer {
-  font-size: 0.8em;
   color: #fff;
   padding: 20px;
   background-color: #252726;
@@ -610,15 +637,6 @@ footer {
   height: 60px;
 }
 @media all and (min-width: 640px) {
-  h1 {
-    font-size: 2em;
-  }
-  h2 {
-    font-size: 1.25em;
-  }
-  h3 {
-    font-size: 1em;
-  }
   .content-column {
     padding: 0;
   }
