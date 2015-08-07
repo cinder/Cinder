@@ -1,4 +1,4 @@
-/* http://prismjs.com/download.html?themes=prism&languages=markup+css+clike+javascript+c+cpp+http+markdown+objectivec+python&plugins=line-highlight+line-numbers+show-invisibles+file-highlight+show-language+highlight-keywords */
+/* http://prismjs.com/download.html?themes=prism&languages=markup+css+clike+javascript+c+cpp+http+markdown+objectivec+python&plugins=line-highlight+line-numbers+show-invisibles+file-highlight+highlight-keywords */
 /**
  * prism.js default theme for JavaScript, CSS and HTML
  * Based on dabblet (http://dabblet.com)
@@ -9,7 +9,7 @@ code[class*="language-"],
 pre[class*="language-"] {
 	color: black;
 	text-shadow: 0 1px white;
-	font-family: Consolas, Monaco, 'Andale Mono', monospace;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
 	direction: ltr;
 	text-align: left;
 	white-space: pre;
@@ -243,19 +243,3 @@ pre.line-numbers > code {
     content: '\240A';
 }
 
-pre[class*='language-'] {
-	position: relative;
-}
-pre[class*='language-'][data-language]::before {
-	content: attr(data-language);
-	color: black;
-	background-color: #CFCFCF;
-	display: inline-block;
-	position: absolute;
-	top: 0;
-	right: 0;
-	font-size: 0.9em;
-	border-radius: 0 0 0 5px;
-	padding: 0 0.5em;
-	text-shadow: none;
-}
