@@ -95,11 +95,16 @@ void AppMac::main( const RendererRef &defaultRenderer, const char *title, int ar
 	AppBase::cleanupLaunch();
 }
 
+template< typename AppType, typename RendererType, typename ...Args >
+void launch( const char* title, Args... args ) {
+	cinder::app::RendererRef renderer( new RendererType );
+	cinder::app::AppMac::main<AppType>( renderer, title, args... );
+}
+
 #define CINDER_APP_MAC( APP, RENDERER, ... )										\
-int main( int argc, char* argv[] )											\
+int main( int argc, char* argv[] )													\
 {																					\
-	cinder::app::RendererRef renderer( new RENDERER );								\
-	cinder::app::AppMac::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\
+	cinder::app::launch< APP, RENDERER >( #APP, argc, argv, ##__VA_ARGS__ );		\
 	return 0;																		\
 }
 

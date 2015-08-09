@@ -25,6 +25,11 @@
 
 #include "cinder/Cinder.h"
 
+namespace cinder { namespace app {
+template< typename AppType, typename RendererType, typename ...Args >
+void launch( const char* title, Args... args );
+} } // namespace cinder::app
+
 #if defined( CINDER_MAC )
 	#include "cinder/app/cocoa/AppMac.h"
 	namespace cinder { namespace app {
