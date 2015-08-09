@@ -1,6 +1,6 @@
 {{#include}}
 <div class="row side">
-    <h4>#include</h4>
+    <label>#include</label>
     <div class="content">
       <a href="{{ include.link }}">{{ include.label }}</a>
     </div>
@@ -9,9 +9,9 @@
 
  {{#typedefs.length}}
 <div class="row side expandable">
-    <h4>Typedefs:</h4>
     <div class="content">
       <ul>
+        <label>Typedefs:</label>
         {{#typedefs.list}}
         <li><a href="{{ link }}">{{ label }}</a></li>
         {{/typedefs.list}}
@@ -22,16 +22,16 @@
 
 {{#class_hierarchy}}
 <div class="row side expandable">
-    <h4>Class Hierarchy:</h4>
+    <label>Class Hierarchy:</label>
     {{{class_hierarchy}}}
 </div>
 {{/class_hierarchy}}
 
 {{#classes.length}}
 <div class="row side expandable">
-    <h4>Classes:</h4>
     <div class="content">
       <ul>
+        <label>Classes:</label>
         {{#classes.list}}
         <li><a href="{{ link }}">{{ label }}</a></li>
         {{/classes.list}}
@@ -42,9 +42,9 @@
 
 {{#related.length}}
 <div class="row side expandable">
-    <h4>Related Links:</h4>
     <div class="content">
       <ul>
+        <label>Related Links:</label>
         {{#related.list}}
         <li><a href="{{ link }}">{{ label }}</a></li>
         {{/related.list}}

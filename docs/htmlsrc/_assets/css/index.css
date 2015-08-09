@@ -4,7 +4,7 @@ body.section_home {
 body.section_home label {
   text-transform: uppercase;
 }
-body.section_home li {
+body.section_home #main-content li {
   list-style: none;
   margin-left: 0;
 }

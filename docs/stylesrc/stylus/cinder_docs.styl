@@ -34,17 +34,11 @@ p
 	&:last
 		margin-bottom: 0
 	
-	li
-		list-style: disc
-		margin-left: 20px
-	
 em
 	font-style: italic
-	font-weight: 600
 
 strong
 	font-weight: 700
-	font-style: italic
 
 label
 	font-family: 'Open Sans', sans-serif;
@@ -82,6 +76,7 @@ ul
 .row
 	max-width: 80rem
 	
+	
 ul.fancy>li
 	font-family: 'Libre Baskerville', serif;
 	font-style: italic
@@ -94,7 +89,7 @@ body#guide-contents
 	max-width: 960px;
 	margin: 20px auto 0 auto;
 
-code
+code, .cod
 	font-family: Consolas, Monaco, 'Andale Mono', monospace;
 	font-size: .85em
 	padding: 2px 4px
@@ -213,6 +208,7 @@ pre[class*="language-"]
 		li
 			display: inline-block
 			// margin-right: 10px
+			margin-left: 0
 			
 			a
 				color: $cinder-red
@@ -376,6 +372,13 @@ button.expand
 	outline: none
 	z-index: 100
 
+// .row.functionDef:before, .row.functionDef:after
+	// display: none
+
+.row a.anchor
+	display: none
+	
+
 .side
 
 	a
@@ -406,6 +409,8 @@ button.expand
 		
 	
 	ul
+		margin-bottom: 0
+		
 		&.inheritence
 			
 			li
@@ -431,6 +436,10 @@ button.expand
 				&.depth5
 					padding-left: 68px
 					background-position: 41px -3px;
+					
+	label
+		font-size: 1.25em
+		margin-bottom: 0.5em
 	
 
 #side-nav
@@ -451,6 +460,7 @@ button.expand
 		
 		label
 			color: #fff
+			font-size: inherit
 		
 		li
 			margin-left: 18px
@@ -495,9 +505,26 @@ button.expand
 	position: relative;
 	z-index: 0
 	
+	li
+		list-style: disc
+		margin-left: 20px
+	
+	li.row, .side li
+		list-style: none
+		margin-left: 0
+	
+	#side-nav li
+		list-style: none
+
+	
 	// #container > .content
 		// padding-top: 50px;
 
+body.reference
+	#main-content
+		li
+			margin-left: 0
+			list-style: none
 
 footer
 	color: #fff

@@ -24,7 +24,7 @@
             {{/is_template}}
 
             {{^is_template}}
-            <em>{{name}}</em> 
+            <strong>{{name}}</strong> 
             Class Reference
             {{/is_template}}
         </h1>
@@ -60,8 +60,8 @@
             {{#public_types}}
             <a name="{{anchor}}"></a>
             <section>
-                <h1>Public Types</h1>
-                <ul>
+                <h2>Public Types</h2>
+                <ul class="rows">
                     {{#list}}
                         {{> function-markup }}
                     {{/list}}
@@ -76,8 +76,8 @@
             {{#enumerations}}
             <a name="{{anchor}}"></a>
             <section>
-                <h1>Enumerations</h1>
-                <ul>
+                <h2>Enumerations</h2>
+                <ul class="rows">
                     {{#list}}
                     {{> enum-markup}}
                     {{/list}}
@@ -91,10 +91,10 @@
             {{#public_functions.length}}
             <a name="{{public_functions.anchor}}"></a>
             <section>
-                <h1>Public Member Functions</h1>
+                <h2>Public Member Functions</h2>
                 {{! function -> "Public Member Functions", }}
                 {{! interface -> "interface": "Instance Methods" }}
-                <ul>
+                <ul class="rows">
                     {{#public_functions.list}}
                         {{> function-markup }}
                     {{/public_functions.list}}
@@ -107,8 +107,8 @@
             {{#public_static_functions.length}}
             <a name="{{public_static_functions.anchor}}"></a>
             <section>
-                <h1>Static Public Member Functions</h1>
-                <ul>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
                     {{#public_static_functions.list}}
                         {{> function-markup }}
                     {{/public_static_functions.list}}
@@ -122,8 +122,8 @@
             {{#length}}
             <a name="{{anchor}}"></a>
             <section>
-                <h1>Protected Member Functions</h1>
-                <ul>
+                <h2>Protected Member Functions</h2>
+                <ul class="rows">
                     {{#list}}
                         {{> function-markup }}
                     {{/list}}
@@ -138,8 +138,8 @@
             {{#length}}
             <a name="{{anchor}}"></a>
             <section>
-                <h1>Protected Attributes</h1>
-                <ul>
+                <h2>Protected Attributes</h2>
+                <ul class="rows">
                     {{#list}}
                         {{> function-markup }}
                     {{/list}}
@@ -154,8 +154,8 @@
             {{#length}}
             <a name="{{anchor}}"></a>
             <section>
-                <h1>Friends</h1>
-                <ul>
+                <h2>Friends</h2>
+                <ul class="rows">
                     {{#list}}
                         {{> function-markup }}
                     {{/list}}

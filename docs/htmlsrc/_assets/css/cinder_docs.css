@@ -121,17 +121,11 @@ p {
 p:last {
   margin-bottom: 0;
 }
-p li {
-  list-style: disc;
-  margin-left: 20px;
-}
 em {
   font-style: italic;
-  font-weight: 600;
 }
 strong {
   font-weight: 700;
-  font-style: italic;
 }
 label {
   font-family: 'Open Sans', sans-serif;
@@ -186,7 +180,8 @@ body#guide-contents {
   max-width: 960px;
   margin: 20px auto 0 auto;
 }
-code {
+code,
+.cod {
   font-family: Consolas, Monaco, 'Andale Mono', monospace;
   font-size: 0.85em;
   padding: 2px 4px;
@@ -310,6 +305,7 @@ pre[class*="language-"] {
 }
 #sub-nav ul li {
   display: inline-block;
+  margin-left: 0;
 }
 #sub-nav ul li a {
   color: #a41c12;
@@ -511,6 +507,9 @@ button.expand {
   outline: none;
   z-index: 100;
 }
+.row a.anchor {
+  display: none;
+}
 .side a {
   font-weight: normal;
 }
@@ -534,6 +533,9 @@ button.expand {
 }
 .side .row:nth-child(odd):first-child {
   background: #fff;
+}
+.side ul {
+  margin-bottom: 0;
 }
 .side ul.inheritence li {
   background-image: url("../images/class_node_parent_and_child_2x.png");
@@ -565,6 +567,10 @@ button.expand {
   padding-left: 68px;
   background-position: 41px -3px;
 }
+.side label {
+  font-size: 1.25em;
+  margin-bottom: 0.5em;
+}
 #side-nav {
   background: #f2f2f2;
 }
@@ -578,6 +584,7 @@ button.expand {
 }
 #side-nav .css-treeview label {
   color: #fff;
+  font-size: inherit;
 }
 #side-nav .css-treeview li {
   margin-left: 18px;
@@ -628,6 +635,22 @@ button.expand {
 #main-content {
   position: relative;
   z-index: 0;
+}
+#main-content li {
+  list-style: disc;
+  margin-left: 20px;
+}
+#main-content li.row,
+#main-content .side li {
+  list-style: none;
+  margin-left: 0;
+}
+#main-content #side-nav li {
+  list-style: none;
+}
+body.reference #main-content li {
+  margin-left: 0;
+  list-style: none;
 }
 footer {
   color: #fff;
