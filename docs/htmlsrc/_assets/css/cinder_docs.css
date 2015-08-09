@@ -118,7 +118,7 @@ p a {
 p {
   margin-bottom: 1.25em;
 }
-p:last {
+p:last-child {
   margin-bottom: 0;
 }
 em {
@@ -342,7 +342,8 @@ body#guide-contents section {
 #container .contents section > ul > li,
 body#guide-contents .contents section > ul > li {
   height: 100%;
-  padding: 6px 10px;
+  width: 100%;
+  padding: 10px 10px;
   -webkit-transform: translateZ(0);
   -moz-transform: translateZ(0);
   -o-transform: translateZ(0);
@@ -353,13 +354,14 @@ body#guide-contents .contents section > ul > li {
 body#guide-contents .contents section > ul > li:nth-child(odd) {
   background: #f8f8f8;
 }
+#container .contents .definitionCol,
+body#guide-contents .contents .definitionCol {
+  padding-right: 0;
+  padding-left: 0;
+}
 #container .contents p:last,
 body#guide-contents .contents p:last {
   margin-bottom: 0;
-}
-#container .contents .row,
-body#guide-contents .contents .row {
-  padding-left: 18px;
 }
 #container .contents .description,
 body#guide-contents .contents .description {
@@ -371,7 +373,7 @@ body#guide-contents .contents p:first-child {
 }
 #container .contents button.expand,
 body#guide-contents .contents button.expand {
-  top: 8px;
+  top: 14px;
   left: 9px;
 }
 #show-hide {
@@ -506,9 +508,6 @@ button.expand {
   position: absolute;
   outline: none;
   z-index: 100;
-}
-.row a.anchor {
-  display: none;
 }
 .side a {
   font-weight: normal;

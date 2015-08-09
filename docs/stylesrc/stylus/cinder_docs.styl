@@ -31,7 +31,7 @@ p a
 p
 	margin-bottom: 1.25em
 	
-	&:last
+	&:last-child
 		margin-bottom: 0
 	
 em
@@ -256,18 +256,22 @@ pre[class*="language-"]
 			> ul > li
 				
 				height: 100%
-				padding: 6px 10px
+				width: 100%
+				padding: 10px 10px
 				transform: translateZ(0)
 				
 				&:nth-child(odd)
 					background: #f8f8f8	
+					
+		.definitionCol
+			padding-right: 0
+			padding-left: 0
 				
 		p:last
 			margin-bottom: 0
 		
-
 		.row
-			padding-left: 18px
+			// padding-left: 18px
 			// margin: 5px 0
 			
 			// .definition
@@ -283,7 +287,7 @@ pre[class*="language-"]
 					margin-top: 5px
 				
 			button.expand
-				top: 8px
+				top: 14px
 				left: 9px
 				
 	#show-hide
@@ -297,6 +301,8 @@ pre[class*="language-"]
 	ul.master-class-list
 		column-count: 4
 		column-gap: 50px
+
+
 
 #container .reference-content
 		
@@ -371,12 +377,6 @@ button.expand
 	position: absolute
 	outline: none
 	z-index: 100
-
-// .row.functionDef:before, .row.functionDef:after
-	// display: none
-
-.row a.anchor
-	display: none
 	
 
 .side

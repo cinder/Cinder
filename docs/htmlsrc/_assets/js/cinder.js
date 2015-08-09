@@ -1,7 +1,23 @@
 var section;
 $(document).ready(function() {
 
-	var cinderJs = this;
+	var _this = this;
+	var cinderJs = {
+		/**
+ 	 	* Unhides a piece of content if it contains a anchor tag with a specific hash
+ 	 	* @param {[type]} hash Hash name of the link
+ 	 	*/
+		showContent: function( hash ){
+	 		if( !hash )
+	 			return;
+	 		// find section with this hash
+	 		var linkTag = $('a[name='+hash+']')[0];
+	 		// find parent
+	 		var linkParent = $(linkTag.parentNode);
+	 		// toggle show for this section
+	 		linkParent.removeClass("hidden");
+ 		}
+	};
 	
 	// look for all dom items with class
 
@@ -57,21 +73,6 @@ $(document).ready(function() {
  	$( '#show-hide a.hide-all' ).on( 'click', hideAll );
  	
 
- 	/**
- 	 * Unhides a piece of content if it contains a anchor tag with a specific hash
- 	 * @param {[type]} hash Hash name of the link
- 	 */
- 	var showContent = function(hash){
- 		if( !hash )
- 			return;
- 		// find section with this hash
- 		var linkTag = $('a[name='+hash+']')[0];
- 		// find parent
- 		var linkParent = $(linkTag.parentNode);
- 		// toggle show for this section
- 		linkParent.removeClass("hidden");
- 	};
- 	
  	// get anchor tag if there is one
  	var hash = window.location.hash.substring(1);
  	
@@ -133,29 +134,38 @@ $(document).ready(function() {
 
 	// scroll to anchor
 	// https://css-tricks.com/snippets/jquery/smooth-scrolling/
-	$(function() {
-	  $('a[href*=#]:not([href=#])').click(function() {
-	    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-	      var target = $(this.hash);
-	      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-	      if (target.length) {
-	      	var limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight) - window.innerHeight; 
-	      	var top = Math.min(target.offset().top, limit);
-	      	var diff = top - $(this).scrollTop();
-	      	var time = Math.max(Math.min(diff * 0.5, 1200), 500);
-	        $('html,body').animate({
+	$( function() {
+	  $( 'a[href*=#]:not([href=#])' ).click( function() {
+	    if( location.pathname.replace(/^\//,'') == this.pathname.replace( /^\//,'' ) && location.hostname == this.hostname ) {
+	    	var hash = this.hash;
+	    	console.log( hash )
+	      	var target = $( hash );
+	      target = target.length ? target : $( '[name=' + this.hash.slice(1) +']' );
+	      if( target.length ) {
+	      	var limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight ) - window.innerHeight; 
+	      	var top = Math.min( target.offset().top, limit );
+	      	var diff = top - $( this ).scrollTop();
+	      	var time = Math.max( Math.min( diff * 0.5, 1200 ), 500 );
+	        
+	        // animate to anchor
+	        $( 'html,body' ).animate( {
 	          scrollTop: top,
 	          easing: "easeInOutCubic"
+	        }, time );
+
+	        // open content at anchor
+	        setTimeout(function() {
+	        	cinderJs.showContent( hash.split('#')[1] );
 	        }, time);
 	        return false;
 	      }
 	    }
-	  });
-	});
+	  } );
+	} );
 	
 
  	setSection( section );
- 	showContent( hash );
+ 	cinderJs.showContent( hash );
  	if( search_index_data )
 	 	initSearch();
  	return cinderJs;
