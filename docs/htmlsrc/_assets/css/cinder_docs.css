@@ -148,7 +148,7 @@ h1 {
   font-weight: 400;
 }
 h2 {
-  font-size: 2em;
+  font-size: 1.9em;
   color: #a41c12;
 }
 h3 {
@@ -172,6 +172,10 @@ ul.fancy>li {
   font-family: 'Libre Baskerville', serif;
   font-style: italic;
 }
+li {
+  list-style: disc;
+  margin-left: 20px;
+}
 ci {
   color: #800080;
   font-weight: 700;
@@ -179,9 +183,10 @@ ci {
 body#guide-contents {
   max-width: 960px;
   margin: 20px auto 0 auto;
+  width: 100%;
 }
 code,
-.cod {
+.code {
   font-family: Consolas, Monaco, 'Andale Mono', monospace;
   font-size: 0.85em;
   padding: 2px 4px;
@@ -270,6 +275,7 @@ pre[class*="language-"] {
   display: inline-block;
   height: 100%;
   margin-right: 20px;
+  margin-left: 0;
 }
 #top-primary ul.nav li.active,
 #top-content ul.nav li.active {
@@ -337,7 +343,17 @@ body#guide-contents {
 }
 #container section,
 body#guide-contents section {
-  margin-bottom: 1em;
+  margin-bottom: 3em;
+}
+#container img.shadow,
+body#guide-contents img.shadow {
+  max-width: 550px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  display: block;
+  margin: 50px auto;
+  -webkit-box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
+  box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
 }
 #container .contents section > ul > li,
 body#guide-contents .contents section > ul > li {
@@ -634,10 +650,6 @@ button.expand {
 #main-content {
   position: relative;
   z-index: 0;
-}
-#main-content li {
-  list-style: disc;
-  margin-left: 20px;
 }
 #main-content li.row,
 #main-content .side li {

@@ -56,7 +56,7 @@ h1
 	font-weight: 400;
 
 h2
-	font-size: 2.0em
+	font-size: 1.9em
 	color: $cinder-red
 
 h3
@@ -80,16 +80,22 @@ ul
 ul.fancy>li
 	font-family: 'Libre Baskerville', serif;
 	font-style: italic
+	
+li
+	list-style: disc
+	margin-left: 20px
 
 ci
 	color: purple;
 	font-weight: 700;
 
+// for guide template
 body#guide-contents
-	max-width: 960px;
-	margin: 20px auto 0 auto;
+	max-width: 960px
+	margin: 20px auto 0 auto
+	width: 100%
 
-code, .cod
+code, .code
 	font-family: Consolas, Monaco, 'Andale Mono', monospace;
 	font-size: .85em
 	padding: 2px 4px
@@ -174,6 +180,7 @@ pre[class*="language-"]
 			display: inline-block
 			height: 100%
 			margin-right: 20px
+			margin-left: 0
 			
 			&.active
 				border-bottom: solid 3px $cinder-red
@@ -247,7 +254,14 @@ pre[class*="language-"]
 
 		
 	section
-		margin-bottom: 1em
+		margin-bottom: 3em
+	
+	img.shadow
+		max-width: 550px
+		border-radius: 5px
+		display: block
+		margin: 50px auto
+		box-shadow: rgba(0,0,0,0.5) 0 10px 20px
 	
 	.contents
 		
@@ -504,10 +518,6 @@ button.expand
 #main-content
 	position: relative;
 	z-index: 0
-	
-	li
-		list-style: disc
-		margin-left: 20px
 	
 	li.row, .side li
 		list-style: none
