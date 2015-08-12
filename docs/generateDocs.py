@@ -431,6 +431,20 @@ class SymbolMap(object):
                 if re.match(fn.name, fn_name):
                     fn_list.append(fn)
 
+        # try with cinder::app prefix
+        # TODO: refactor a bit with the ability to whitespace different namespaces test
+        if len(fn_list) is 0:
+            ns_search = class_name
+            if class_name == "":
+                ns_search = "cinder::app"
+            ref_obj = g_symbolMap.find_namespace(ns_search)
+
+        # iterate through class/namespace functions
+        if ref_obj:
+            for fn in ref_obj.functionList:
+                if re.match(fn.name, fn_name):
+                    fn_list.append(fn)
+
         # iterate through glm groups
         if len(fn_list) == 0:
             for group in self.groups:
