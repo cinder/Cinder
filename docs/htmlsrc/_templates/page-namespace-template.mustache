@@ -104,6 +104,22 @@
             {{/enumerations}}
             {{/enumerations.length}}
 
+            <!-- free functions -->
+            {{#free_functions.length}}
+            {{#free_functions}}
+            <a name="{{anchor}}"></a>
+            <section>
+                <h2>Free Functions</h2>
+                <ul>
+                    {{#list}}
+                        {{> function-markup }}
+                    {{/list}}
+                </ul>
+            </section>
+            <hr/>
+            {{/free_functions}}
+            {{/free_functions.length}}
+            
             <!-- functions -->
             {{#public_functions.length}}
             {{#public_functions}}

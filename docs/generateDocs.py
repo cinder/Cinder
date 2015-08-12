@@ -714,6 +714,7 @@ class NamespaceFileData(FileData):
         self.typedefs = []
         self.enumerations = []
         self.functions = []
+        self.free_functions = []
         self.variables = []
         self.namespace_nav = None
         self.kind = find_file_kind(tree)
@@ -748,6 +749,11 @@ class NamespaceFileData(FileData):
                 "anchor": "functions",
                 "list": self.functions,
                 "length": len(self.functions)
+            },
+            "free_functions": {
+                "anchor": "free_functions",
+                "list": self.free_functions,
+                "length": len(self.free_functions)
             },
             "variables": {
                 "anchor": "variables",
@@ -1965,6 +1971,14 @@ def fill_namespace_content(tree):
         function_obj = parse_member_definition(bs4, member)
         fns.append(function_obj)
     file_data.functions = fns
+
+    # free functions ------------------------------------ #
+    free_fns = []
+    for member in tree.findall(r"compounddef/sectiondef/[@kind='user-defined']/memberdef/[@kind='function']"):
+        print member
+        function_obj = parse_member_definition(bs4, member)
+        free_fns.append(function_obj)
+    file_data.free_functions = free_fns
 
     # variables ----------------------------------------- #
     variables = []
