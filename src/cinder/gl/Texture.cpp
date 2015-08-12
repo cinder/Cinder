@@ -1538,6 +1538,10 @@ class ImageSourceTexture : public ImageSource {
 			case GL_RGB32F_ARB: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGB; break;
 			case GL_R32F: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_RED; break;
 			case GL_RG32F: setChannelOrder( ImageIo::YA ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_RG; break;
+			case GL_RGBA16F_ARB: setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGBA; break;
+			case GL_RGB16F_ARB: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGB; break;
+			case GL_R16F: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 ); format = GL_RED; break;
+			case GL_RG16F: setChannelOrder( ImageIo::YA ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 ); format = GL_RG; break;
 			default:
 				setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); format = GL_RGBA; break;
 		}
@@ -1553,6 +1557,14 @@ class ImageSourceTexture : public ImageSource {
 		int dataSize = 1;
 		if( mDataType == ImageIo::UINT16 ) {
 			dataType = GL_UNSIGNED_SHORT;
+			dataSize = 2;
+		}
+		else if( mDataType == ImageIo::FLOAT16 ) {
+#if defined( CINDER_GL_ES_2 )
+			dataType = GL_HALF_FLOAT_OES;
+#else
+			dataType = GL_HALF_FLOAT;
+#endif
 			dataSize = 2;
 		}
 		else if( mDataType == ImageIo::FLOAT32 ) {
