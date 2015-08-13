@@ -162,19 +162,25 @@ h4 {
 h5 {
   font-size: 1em;
 }
-ul {
+ul,
+ol {
   margin-bottom: 20px;
 }
-.row {
-  max-width: 80rem;
+ul {
+  list-style: disc;
+}
+ol {
+  list-style: decimal;
 }
 ul.fancy>li {
   font-family: 'Libre Baskerville', serif;
   font-style: italic;
 }
 li {
-  list-style: disc;
   margin-left: 20px;
+}
+.row {
+  max-width: 80rem;
 }
 ci {
   color: #800080;
@@ -347,13 +353,30 @@ body#guide-contents section {
 }
 #container img.shadow,
 body#guide-contents img.shadow {
-  max-width: 550px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
   display: block;
-  margin: 50px auto;
+  max-width: 550px;
+  margin-top: 50px;
+  margin-bottom: 50px;
   -webkit-box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
   box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
+}
+#container img.center,
+body#guide-contents img.center {
+  display: block;
+  max-width: 550px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#container img.rounded,
+body#guide-contents img.rounded {
+  display: block;
+  max-width: 550px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
 #container .contents section > ul > li,
 body#guide-contents .contents section > ul > li {

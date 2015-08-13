@@ -70,11 +70,14 @@ h4
 h5
 	font-size: 1.0em
 
-ul
+ul, ol
 	margin-bottom: 20px
 
-.row
-	max-width: 80rem
+ul 
+	list-style: disc
+
+ol
+	list-style: decimal
 	
 	
 ul.fancy>li
@@ -82,8 +85,10 @@ ul.fancy>li
 	font-style: italic
 	
 li
-	list-style: disc
 	margin-left: 20px
+	
+.row
+	max-width: 80rem
 
 ci
 	color: purple;
@@ -256,12 +261,25 @@ pre[class*="language-"]
 	section
 		margin-bottom: 3em
 	
-	img.shadow
-		max-width: 550px
-		border-radius: 5px
+	img-base()
 		display: block
-		margin: 50px auto
+		max-width: 550px
+		margin-top: 50px
+		margin-bottom: 50px
+
+	img.shadow
+		img-base()
 		box-shadow: rgba(0,0,0,0.5) 0 10px 20px
+		
+	
+	img.center
+		img-base()
+		margin-left: auto
+		margin-right: auto
+		
+	img.rounded
+		img-base()
+		border-radius: 5px
 	
 	.contents
 		
