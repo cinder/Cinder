@@ -43,7 +43,7 @@ gl::drawSolidCircle( vec2( 100, 100 ), 50 );
 </code></pre>
 
 <p>
-As in previous versions, <ci>gl::drawSolidCircle()</ci> takes a center point and a radius. However the preceding line is new. <ci>gl::bindStockShader()</ci> accepts a <ci>gl::ShaderDef()</ci> and either generates a shader (a <ci>gl::GlslProg</ci>) as is necessary. It also caches these <ci>gl::GlslProg</ci>&rsquo;s to avoid unnecessary compilation. In this example, we&rsquo;re using <ci dox="gl::ShaderDef::color">.color()</ci> on the <ci dox="gl::ShaderDef">ShaderDef</ci> in order to request that the current color be used, which defaults to white.
+As in previous versions, <ci>gl::drawSolidCircle()</ci> takes a center point and a radius. However the preceding line is new. <ci>gl::bindStockShader()</ci> accepts a <ci>gl::ShaderDef</ci> and either generates a shader (a <ci>gl::GlslProg</ci>) as is necessary. It also caches these <ci>gl::GlslProg</ci>&rsquo;s to avoid unnecessary compilation. In this example, we&rsquo;re using <ci dox="gl::ShaderDef::color">.color()</ci> on the <ci dox="gl::ShaderDef">ShaderDef</ci> in order to request that the current color be used, which defaults to white.
 </p>
 
 <p>
@@ -90,11 +90,11 @@ This code touches on several different new concepts. First, we&rsquo;re using ou
 </p>
 
 <p>
-Let&rsquo;s look at the first parameter to our Batch construction, the geometry portion: <code>geom::Circle().center( 100, 100 ).radius( 50 )</code>. This uses <ci>geom::Circle</ci>, which is one of many classes provided with Cinder that can be used to create geometry. Other examples include <ci>geom::Sphere</ci>, <ci>geom::Teapot()</ci>, <ci>geom::WireCone</ci>, and many others. The pairing of one of these <ci>geom::Source</ci>s (or another source of geometry, such as a <ci>TriMesh</ci> or a <ci dox="gl::VboMesh">VboMesh</ci>) with a shader (<ci dox="gl::GlslProg">GlslProg</ci>) is expressed with a <ci>gl::Batch</ci>.
+Let&rsquo;s look at the first parameter to our Batch construction, the geometry portion: <code>geom::Circle().center( 100, 100 ).radius( 50 )</code>. This uses <ci>geom::Circle</ci>, which is one of many classes provided with Cinder that can be used to create geometry. Other examples include <ci>geom::Sphere</ci>, <ci>geom::Teapot</ci>, <ci>geom::WireCone</ci>, and many others. The pairing of one of these <ci>geom::Source</ci>s (or another source of geometry, such as a <ci>TriMesh</ci> or a <ci dox="gl::VboMesh">VboMesh</ci>) with a shader (<ci dox="gl::GlslProg">GlslProg</ci>) is expressed with a <ci>gl::Batch</ci>.
 </p>
 
 <p>
-To draw a <ci>gl::Batch</ci> we simply use its <ci dox="gl::Batch::draw">draw()</ci> member method. Notice that we still set the color with <ci>gl::color()</ci>. Cinder &ldquo;knows&rdquo; that the <ci dox>gl::Batch</ci>&rsquo;s shader requires the current color, and it passes it along in a uniform automatically. We&rsquo;ll look at how that machinery works later.
+To draw a <ci>gl::Batch</ci> we simply use its <ci dox="gl::Batch::draw">draw()</ci> member method. Notice that we still set the color with <ci>gl::color()</ci>. Cinder &ldquo;knows&rdquo; that the <ci>gl::Batch</ci>&rsquo;s shader requires the current color, and it passes it along in a uniform automatically. We&rsquo;ll look at how that machinery works later.
 </p>
 
 <h3>Transformations</h3>
