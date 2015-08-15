@@ -377,13 +377,7 @@ class SymbolMap(object):
                 blacklisted = True
 
             if whitelisted and not blacklisted:
-                print "\t+ ADD ME: " + ns.name
                 namespaces.append(ns)
-            else:
-                print "\tx I AM SCUM: " + ns.name
-
-            # remove blacklisted namespaces
-            # print "WHITE LISTED: " + str(namespaces)
 
         # sort by lowercased name
         namespaces = sorted(namespaces, key=lambda s: s.name.lower())
@@ -447,7 +441,7 @@ class SymbolMap(object):
         fn_list = []
         if ref_obj:
             for fn in ref_obj.functionList:
-                if re.match(fn.name, fn_name):
+                if fn.name == fn_name:
                     fn_list.append(fn)
 
         # try with cinder::app prefix
@@ -461,7 +455,7 @@ class SymbolMap(object):
         # iterate through class/namespace functions
         if ref_obj:
             for fn in ref_obj.functionList:
-                if re.match(fn.name, fn_name):
+                if fn.name == fn_name:
                     fn_list.append(fn)
 
         # iterate through glm groups
@@ -469,7 +463,7 @@ class SymbolMap(object):
             for group in self.groups:
                 group_ref = self.groups[group]
                 for fn in group_ref.functionList:
-                    if re.match(fn.name, fn_name):
+                    if fn.name == fn_name:
                         fn_list.append(fn)
 
         # else:
@@ -2732,7 +2726,7 @@ def get_symbol_to_file_map():
 
         # skip over blacklisted classes that belong to a blacklisted namespace
         if any(name.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
-            print "SKIPPING " + name
+            # print "SKIPPING " + name
             continue
 
         base_class = class_obj.base
@@ -2741,9 +2735,10 @@ def get_symbol_to_file_map():
         # find functions and add to symbol map
         members = c.findall(r"member[@kind='function']")
         for member in members:
-            # print "FUNCTION " + name + "::" + fn_name
+
             # function_obj = SymbolMap.Function(fn_name, base_class, args, file_path)
             function_obj = SymbolMap.Function(member, base_class)
+
             # symbol_map.functions[name + "::" + function_obj.name] = function_obj
             symbol_map.add_function(name, function_obj.name, function_obj)
             class_obj.add_function(function_obj.name, function_obj)
