@@ -35,6 +35,8 @@ class Config(object):
         self.BREAK_ON_STOP_ERRORS = True
         # whitelisted namespaces to generate pages for
         self.NAMESPACE_WHITELIST = ["ci"]
+        # blacklisted namespaces to generate pages for
+        self.NAMESPACE_BLACKLIST = ["cinder::signals::detail", "cinder::audio::dsp::ooura", "cinder::detail"]
         # blacklisted class strings - any class containing these strings will be skipped
         self.CLASS_LIST_BLACKLIST = ["glm", "@"]
         # cinder github repo path
@@ -362,9 +364,26 @@ class SymbolMap(object):
         namespaces = []
         for nsKey in self.namespaces:
             ns = self.namespaces[nsKey]
+            print "NAMESPACE: " + ns.name
 
+            # get whitelisted namespaces
+            whitelisted = False
             if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_WHITELIST]):
+                whitelisted = True
+                print ns.name
+
+            blacklisted = False
+            if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_BLACKLIST]):
+                blacklisted = True
+
+            if whitelisted and not blacklisted:
+                print "\t+ ADD ME: " + ns.name
                 namespaces.append(ns)
+            else:
+                print "\tx I AM SCUM: " + ns.name
+
+            # remove blacklisted namespaces
+            # print "WHITE LISTED: " + str(namespaces)
 
         # sort by lowercased name
         namespaces = sorted(namespaces, key=lambda s: s.name.lower())
