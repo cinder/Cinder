@@ -146,12 +146,12 @@ In Cinder 0.9.0 you&rsquo;ll see a number of classes which begin with gl::Scoped
 </p>
 
 <pre class="lang-cpp"><code>
- for( float angle = 0; angle &lt; 2 * M_PI; angle += 0.2f ) {
+for( float angle = 0; angle &lt; 2 * M_PI; angle += 0.2f ) {
     gl::ScopedModelMatrix scpModelMtx;
     gl::translate( getWindowCenter() + 200.0f * vec2( sin( angle ), cos( angle ) ) );
     gl::color( Color( CM_HSV, angle / (2 * M_PI), 1, 1 ) );
     mCircleBatch-&gt;draw();
-  }
+}
 </code></pre>
 
 <p>
@@ -232,7 +232,7 @@ We see this:
 <br />
 
 <p>
-Here we see the global color is ignored as <ci>geom::Rect</ci> has generated per-vertex colors upon our request. For the curious, this automatic variable uploading occurs in the <ci>gl::Batch::draw()</ci> call, and it can be invoked manually in advanced usage scenarios. Furthermore, there are mechanisms for manually configuring the mapping to attributes and uniforms in <ci dox="gl::GlslProg::Format">GlslProg::Format</ci> for users that have some reason to use a non - default configuration.
+Here we see the global color is ignored as <ci>geom::Rect</ci> has generated per-vertex colors upon our request. For the curious, this automatic variable uploading occurs in the <ci>gl::Batch::draw()</ci> call, and it can be invoked manually in advanced usage scenarios. Furthermore, there are mechanisms for manually configuring the mapping to attributes and uniforms in <ci dox="gl::GlslProg::Format">GlslProg::Format</ci> for users that have some reason to use a custom configuration.
 </p>
 
 <h3>Conclusion</h3>
