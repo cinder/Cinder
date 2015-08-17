@@ -266,7 +266,7 @@ code[class*="language-"] {
 #top-content .navbar-header .cinder-version {
   display: inline-block;
   position: absolute;
-  top: 26px;
+  top: 13px;
   left: 160px;
   font-weight: bold;
   font-size: 14px;
@@ -285,6 +285,7 @@ code[class*="language-"] {
   height: 100%;
   margin-right: 20px;
   margin-left: 0;
+  background: none;
 }
 #top-primary ul.nav li.active,
 #top-content ul.nav li.active {
@@ -300,6 +301,8 @@ code[class*="language-"] {
   color: #fff;
   text-decoration: none;
   padding-top: 50px;
+  padding-right: 0;
+  background: none;
 }
 #top-primary ul.nav li a:hover,
 #top-content ul.nav li a:hover {
@@ -711,6 +714,7 @@ nav.top-bar .top-bar-section ul li,
 nav.top-bar .top-bar-section li:not(.has-form) a:not(.button) {
   background: transparent;
   line-height: initial;
+  margin-left: 0;
 }
 nav.top-bar .title-area .name img {
   width: 220px;
@@ -722,8 +726,11 @@ nav.top-bar .top-bar-section .right > li {
   margin-top: 40px;
 }
 nav.top-bar .top-bar-section ul li > a {
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  padding: inherit;
+  text-decoration: none;
 }
 nav.top-bar .top-bar-section ul li > a:hover {
   color: #c64b24;

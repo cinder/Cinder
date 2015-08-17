@@ -171,7 +171,7 @@ code[class*="language-"]
 		.cinder-version
 			display: inline-block
 			position: absolute
-			top: 26px
+			top: 13px
 			left: 160px
 			font-weight: bold
 			font-size: 14px
@@ -189,6 +189,7 @@ code[class*="language-"]
 			height: 100%
 			margin-right: 20px
 			margin-left: 0
+			background: none
 			
 			&.active
 				border-bottom: solid 3px $cinder-red
@@ -200,6 +201,8 @@ code[class*="language-"]
 				color: white
 				text-decoration: none
 				padding-top: 50px
+				padding-right: 0
+				background: none
 				
 				&:hover
 					color: $cinder-red
@@ -581,6 +584,7 @@ nav.top-bar .top-bar-section ul li,
 nav.top-bar .top-bar-section li:not(.has-form) a:not(.button) {
 	background: transparent;
 	line-height: initial;
+	margin-left: 0;
 }
 nav.top-bar .title-area .name img {
 	width: 220px;
@@ -592,8 +596,11 @@ nav.top-bar .top-bar-section .right > li {
 	margin-top: 40px;
 }
 nav.top-bar .top-bar-section ul li > a {
-	font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	font-size: 16px;
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	padding: inherit;
+	text-decoration: none;
 }
 nav.top-bar .top-bar-section ul li > a:hover {
 	color: #c64b24;
