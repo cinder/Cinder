@@ -35,6 +35,8 @@ class Config(object):
         self.BREAK_ON_STOP_ERRORS = True
         # whitelisted namespaces to generate pages for
         self.NAMESPACE_WHITELIST = ["ci"]
+        # blacklisted namespaces to generate pages for
+        self.NAMESPACE_BLACKLIST = ["cinder::signals::detail", "cinder::audio::dsp::ooura", "cinder::detail"]
         # blacklisted class strings - any class containing these strings will be skipped
         self.CLASS_LIST_BLACKLIST = ["glm", "@"]
         # cinder github repo path
@@ -362,8 +364,19 @@ class SymbolMap(object):
         namespaces = []
         for nsKey in self.namespaces:
             ns = self.namespaces[nsKey]
+            print "NAMESPACE: " + ns.name
 
+            # get whitelisted namespaces
+            whitelisted = False
             if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_WHITELIST]):
+                whitelisted = True
+                print ns.name
+
+            blacklisted = False
+            if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_BLACKLIST]):
+                blacklisted = True
+
+            if whitelisted and not blacklisted:
                 namespaces.append(ns)
 
         # sort by lowercased name
@@ -428,7 +441,7 @@ class SymbolMap(object):
         fn_list = []
         if ref_obj:
             for fn in ref_obj.functionList:
-                if re.match(fn.name, fn_name):
+                if fn.name == fn_name:
                     fn_list.append(fn)
 
         # try with cinder::app prefix
@@ -442,7 +455,7 @@ class SymbolMap(object):
         # iterate through class/namespace functions
         if ref_obj:
             for fn in ref_obj.functionList:
-                if re.match(fn.name, fn_name):
+                if fn.name == fn_name:
                     fn_list.append(fn)
 
         # iterate through glm groups
@@ -450,7 +463,7 @@ class SymbolMap(object):
             for group in self.groups:
                 group_ref = self.groups[group]
                 for fn in group_ref.functionList:
-                    if re.match(fn.name, fn_name):
+                    if fn.name == fn_name:
                         fn_list.append(fn)
 
         # else:
@@ -2713,7 +2726,7 @@ def get_symbol_to_file_map():
 
         # skip over blacklisted classes that belong to a blacklisted namespace
         if any(name.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
-            print "SKIPPING " + name
+            # print "SKIPPING " + name
             continue
 
         base_class = class_obj.base
@@ -2722,9 +2735,10 @@ def get_symbol_to_file_map():
         # find functions and add to symbol map
         members = c.findall(r"member[@kind='function']")
         for member in members:
-            # print "FUNCTION " + name + "::" + fn_name
+
             # function_obj = SymbolMap.Function(fn_name, base_class, args, file_path)
             function_obj = SymbolMap.Function(member, base_class)
+
             # symbol_map.functions[name + "::" + function_obj.name] = function_obj
             symbol_map.add_function(name, function_obj.name, function_obj)
             class_obj.add_function(function_obj.name, function_obj)

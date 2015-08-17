@@ -30,20 +30,18 @@
 		<section>
 			<h2>Documentation Anatomy</h2>
 
-			<h3>Documentation Generation</h3>
+			<h3>The Docs Generation Process</h3>
 			<p>Cinder documentation generation is a 2 step approach; </p>
 			<ol>
-				<li>Exporting source code documentation</li>
-				<li>Html generation and integration with guides</li>
+				<li><strong>Exporting source code documentation</strong>
+					<p>This step uses Doxygen to generate a series of xml files, one for each namespace, class, struct, and interface in the library and a master tag file (cinder.tag) which encapsulates the relationships between all of those files.</p>
+				</li>
+				<li><strong>Html generation and integration with guides</strong>
+					<p>The Cinder documentation framework includes a way to add documentation to a class' specific documentation page as well as a way to easily link in to specific areas of the documentation in your html files. The integration happens via a python script, generateDocs.py, that parses all of the information and exports an html directory, ready for consumption.</p>
+				</li>
 			</ol>
 			
-			<h4>1. Exporting source code documentation</h3>
-			
-			<p>The first part uses Doxygen to generate a series of xml files, one for each namespace, class, struct, and interface in the library and a master tag file (cinder.tag) which encapsulates the relationships between all of those files. Once we have all of that source data, we move on to the next step, which involves integration with supplemental material.</p>
-
-			<h4>2. HTML generation and integration with guides</h3>
-			<p>The Cinder documentation framework includes a way to add documentation to a classes specific documentation page as well as a way to easily link in to specific areas of the documentation in your html files. The integration happens via a python script, generateDocs.py, that parses all of the information and exports an html directory, ready for consumption.</p>
-
+			<a name="file-structure"></a>
 			<h3>Docs File Structure</h3>
 			<ul>
 				<li><strong>doxygen/</strong> - for doxygen related files
@@ -72,9 +70,10 @@
 
 		<section>
 			<h2>Documenting Source Code</h2>
-			<p>All of the inline comments within the cinder source code is turned into documentation in the Doxygen export step. For instance, if you open up a header file, you will commonly see block comments above each method that look like this. (from Surface.h)</p>
+			<p>All of the inline comments within the cinder source code is turned into documentation in the Doxygen export step. For instance, if you open up a header file, you will commonly see block comments above each method that look like this.</p>
 
 <pre><code>
+[from from Surface.h]
 /** \brief Constructs asynchronously a Surface from an images located at \a path. The loaded Surface is returned in \a surface.
 If you are creating a Surface from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
 **/
@@ -84,16 +83,23 @@ If you are creating a Surface from an image that is located outside of the WinRT
 <pre><code>
 //! Returns the width of the Surface in pixels
 </code></pre>
+
+			<p>If you choose to contribute to the inline source documentation, you can follow this Doxygen markup guide [INSERT DOXYGEN GUIDE LINK] to incorporate some simple inline styling and functionality, such as defining what they call "bried descriptions", and adding links.</p>
+		</section>
+
+		<section>
+			<h2>External Documentation</h2>
+			<p>If you want to write supplemental documentation and guides for the docs, there is a seperate process. All external documentation is written in HTML and lives in the <em>htmlsrc</em> directory. You can refer to the <a href="#file-structure">Docs File Structure</a> for specifics. Unless you are contributing to the overall documentation site markup, you will be mainly concerned with the <em>_docs</em> and <em>guides</em> directories. The <em>_docs</em> directory includes markup and additional assets for class descriptions, while the <em>guides</em> directory includes all of the Cinder guide's markup. Before, we go into the specifics of writing each type of external docs, let me introduce you to the <code>&lt;ci&gt;</code> tag.</p>
 		</section>
 
 		<section>
 			<h2>The &lt;ci&gt; tag</h2>
-			<p>For writing supplemental material for the docs, we've created a special markup tag known internally as the &lt;ci&gt; tag. This tag is used to specify any content within the supplmental documentation html that needs to be linked into the source reference.</p>
+			<p>To assist in bridging the gap between the cinder reference pages and the suplemental html markup, we've created a special markup tag known internally as the <strong>&lt;ci&gt; tag</strong>. This tag is used to specify any content within the supplmental documentation html that needs to be linked into the source reference as well as provide a way for reference pages to link back to our guides.</p>
 
 			<p>These are the use-cases for the <code>&lt;ci&gt;</code> tag:
 			
 			<h3>To generate a link into a source documentation page</h3>
-			<p>When writing guides, you may frequently want to reference specific source code constructs, such as a class, namespace, function, or enum. Since the docs are dynamically generated and the links may have long names that may change as the cinder library changes, you shouldn't have to worry about the specific linkage. So the ci tag makes it easy to link to that specific source code entry.</p>
+			<p>When writing guides, you may frequently want to reference specific source code constructs, such as a class, namespace, function, or enum. Since the docs are dynamically generated and the links may have long names that may change as the cinder library changes, you shouldn't have to worry about the specific linkage. So the ci tag makes it easy to link to that specific source code reference entry.</p>
 
 			<p>For example, if you were writing a guide for FBOs and you wanted to link to Cinder's Fbo class, you could simply write:</p>
 <pre lang="language-markup"><code>
@@ -103,6 +109,22 @@ An &lt;ci&gt;Fbo&lt;/ci&gt; represents an OpenGL Framebuffer Object.
 <pre lang="language-markup"><code>
 An &lt;a href=&quot;../../classcinder_1_1gl_1_1_fbo.html&quot;&gt;Fbo&lt;/a&gt; represents an OpenGL Framebuffer Object.
 </code></pre>
+			
+			<p>When using the &lt;ci&gt; tag this way, you can either specifiy the target between the opening and closing tags like this:</p>
+<pre lang="language-markup"><code>
+&lt;ci&gt;Fbo&lt;/ci&gt;
+</code></pre>
+			<p>or if you want to link to it using a different label than the one given, you can say:</p>
+<pre lang="language-markup"><code>
+&lt;ci dox="Fbo"&gt;This is an Fbo&lt;/ci&gt;
+</code></pre>
+
+			<p>If you happen to know the namespace of the source code you are linking to, you can avoid ambiguity, by specifying the namespace:</p>
+<pre lang="language-markup"><code>
+&lt;ci dox="ci::gl::Fbo"&gt;This is an Fbo&lt;/ci&gt;
+</code></pre>
+			<p>Take a look at <a href="../../ci_tag_test.html">this test file</a> to see a list of different combinations.</p>
+
 
 			<h3>To add a description to a specific class, interface, or struct</h3>
 			<p>To avoid poluting the Cinder library header files, you can write additional descriptions in a separate html file and have it injected into the actual class' description. We do this by placing all of your content into a ci tag, giving it an atrtibute of <code>prefix</code> and setting the <code>dox</code> attribute to the class that you are documenting.</p>
@@ -115,23 +137,38 @@ An &lt;a href=&quot;../../classcinder_1_1gl_1_1_fbo.html&quot;&gt;Fbo&lt;/a&gt; 
 </code></pre>
 
 			<h3>To link a guide to a specific class reference page</h3>
-			<p>Guides are made way better when you can find them. So we've made it easy for you to link your guides up to any classes make sense to link to. For instance, The guide to using images in Cinder discusses Textures, Surfaces, and Channels. To associate that guide to those specific class pages, all you need to do is add these ci tags with a <code>seelalso</code> attribute to the html page head:</p>
+			<p>Guides are made way better when you can find them. So we've made it easy for you to link your guides up to any classes that it makes sense to link to. For instance, The guide for <a href="../cinder-images/index.html">using images in Cinder</a> discusses Textures, Surfaces, and Channels. To associate that guide to those specific class pages, all you need to do is add these ci tags with a <code>seelalso</code> attribute to the html page head:</p>
 
 <pre lang="language-markup"><code>
-&lt;ci seealso dox=&quot;ci::Surface&quot; label=&quot;Images in Cinder&quot;&gt;&lt;/ci&gt;
-&lt;ci seealso dox=&quot;cinder::ChannelT&quot; label=&quot;Images in Cinder&quot;&gt;&lt;/ci&gt;
-&lt;ci seealso dox=&quot;cinder::gl::Texture2d&quot; label=&quot;Images in Cinder&quot;&gt;&lt;/ci&gt;
+&lt;head&gt;
+	...
+	&lt;ci seealso dox=&quot;ci::Surface&quot; label=&quot;Images in Cinder&quot;&gt;&lt;/ci&gt;
+	&lt;ci seealso dox=&quot;cinder::ChannelT&quot; label=&quot;Images in Cinder&quot;&gt;&lt;/ci&gt;
+	&lt;ci seealso dox=&quot;cinder::gl::Texture2d&quot; label=&quot;Images in Cinder&quot;&gt;&lt;/ci&gt;
+	...
+&lt;/head&gt;
 </code></pre>
 			
 			<p>Once those specific class reference pages are generated, a link to the guide will appear in the class detail side bar under "Related Links".
 			<img class="shadow center" src="images/related_links.png" />
 			</p>
+
+			<h4>Tips</h4>
+			<ul>
+				<li>When using the base &lt;ci&gt; tag, you can either put </li>
+			</ul>
 			
 		</section>
 
 		<section>
 			<h2>Writing Guides</h2>
 			<p>To write a guide for cinder, follow these steps:</p>
+			<ol>
+				<li>Create a new directory within the <em>guides/</em> directory.</li>
+				<li>Copy the html file at <a href="../_start-here/start-here.html">_start-here/start-here.html</a>. It includes all of the css and javascript linkages that you would like to have. This is not essential, but will give you an accurate preview of how your guide will look once integrated.</li>
+				<li>Create a config file.</li>
+			</ol>
+
 			<ul>
 				<li>adding meta tags for searchability</li>
 				<li>config and linking guides</li>

@@ -205,6 +205,9 @@ pre > code {
 pre[class*="language-"] {
   margin: 1em 0;
 }
+code[class*="language-"] {
+  padding: 0;
+}
 .plain {
   font-family: Helvetica, Arial, sans-serif;
 }
