@@ -567,18 +567,54 @@ footer
 	height: 60px
 
 
-// @media all and (min-width: 640px)
-		
-	// .content-column
-		// padding: 0
+
+/* NAVBAR STYLING */
+nav.top-bar {
+	height: 100px;
+	background: transparent;
+	border-bottom: 2px solid #434747;
+}
+nav.top-bar .cinder-logo-container {
+	padding-left: 0;
+}
+nav.top-bar .top-bar-section ul li,
+nav.top-bar .top-bar-section li:not(.has-form) a:not(.button) {
+	background: transparent;
+	line-height: initial;
+}
+nav.top-bar .title-area .name img {
+	width: 220px;
+}
+nav.top-bar .top-bar-section .left > li {
+	margin-top: 50px;
+}
+nav.top-bar .top-bar-section .right > li {
+	margin-top: 40px;
+}
+nav.top-bar .top-bar-section ul li > a {
+	font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 16px;
+}
+nav.top-bar .top-bar-section ul li > a:hover {
+	color: #c64b24;
+}
+nav.top-bar .top-bar-section ul li:first-of-type a {
+	padding-left: 0;
+}
+
+/* SEARCH RESULTS STYLING */
+#nav_search > #search {
+	position: relative;
+}
+
 #nav_search > #search > input {
 	display: inline-block;
 	margin-bottom: 0;
 	width: 290px;
 	font-size: 12px;
-	border: 0;
-	float: left;
+	top: 0;
 	height: 30px;
+	border-radius: 10px;
 }
 #nav_search > #search > button {
 	padding-top: 0;
@@ -597,6 +633,9 @@ footer
 	max-height: 80vh;
 	overflow-y: scroll;
 	overflow-x: hidden;
+	top: 30px;
+    border-radius: 10px;
+    width: 400px;
 }
 #nav_search > #search > #search-results ul {
 	margin-left: 0;
@@ -606,11 +645,36 @@ footer
 	padding: 10px 0 10px 10px;
 	margin-right: 0;
 	font-size: 12px;
+	background: transparent;
+	width: 100%;
 }
-#nav_search > #search > #search-results li:hover {
-	background: gold;
+#nav_search > #search > #search-results li:hover,
+#nav_search > #search > #search-results li:hover a {
+	background: #c64b24;
+	color: white;
 }
 #nav_search > #search > #search-results a {
 	padding: 0;
+	color: #c64b24;
+	background: transparent;
+	font-size: 12px;
+}
+#nav_search > #search > #search-results li a:before {
+	content: "\00bb";
+}
+#nav_search #search-results-view-all {
+	display: inline-block;
+	width: 100%;
+	background: #949494;
+	padding: 10px 0;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+#nav_search > #search > #search-results > #search-results-view-all a {
+	color: white;
+}
+#nav_search > #search > #search-results > #search-results-view-all a:hover {
 	color: #c64b24;
 }

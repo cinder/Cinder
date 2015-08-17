@@ -83,9 +83,10 @@ $(document).ready(function() {
 	    var results = search_index.search(term); 
 		var resultsDiv = $('#search-results');
 		var resultsUl = $( "<ul>" );
+		var viewAllResults = '<div id="search-results-view-all"><a href="#">View All Results &raquo;</a></div>';
 
-		resultsDiv.empty();
-		resultsDiv.append( resultsUl );
+		resultsDiv.empty();	
+		resultsDiv.append( resultsUl, viewAllResults );
 
 		// resultsDiv.append( resultsUl );
 		for( var i in results ){
@@ -95,10 +96,14 @@ $(document).ready(function() {
 			var data = search_index_data.data[result.ref];
 			var a = $("<a href=" + data.link + "> " +  data.title +"</a>");
 			li.append(a);
-			li.append(" score: " +  result.score + "</b> ->" );
-			
-			li.append(data.link);
+			// li.append(" score: " +  result.score + "</b> ->" );
+			// li.append(data.link);
 			resultsUl.append( li );
+		}
+
+		// hide view all results append when search is empty or no results
+		if(!$('#search-input').val() || $('#search-results ul').children().length <= 0) {
+			$('#search-results-view-all').hide();
 		}
 	};
 
@@ -169,7 +174,6 @@ $(document).ready(function() {
  	if( search_index_data )
 	 	initSearch();
  	return cinderJs;
-
  } );
 
 window.setSection = function( sectionName ){	
