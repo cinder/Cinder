@@ -364,13 +364,11 @@ class SymbolMap(object):
         namespaces = []
         for nsKey in self.namespaces:
             ns = self.namespaces[nsKey]
-            print "NAMESPACE: " + ns.name
 
             # get whitelisted namespaces
             whitelisted = False
             if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_WHITELIST]):
                 whitelisted = True
-                print ns.name
 
             blacklisted = False
             if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_BLACKLIST]):
@@ -2002,7 +2000,6 @@ def fill_namespace_content(tree):
     # free functions ------------------------------------ #
     free_fns = []
     for member in tree.findall(r"compounddef/sectiondef/[@kind='user-defined']/memberdef/[@kind='function']"):
-        print member
         function_obj = parse_member_definition(bs4, member)
         free_fns.append(function_obj)
     file_data.free_functions = free_fns
@@ -2174,8 +2171,6 @@ def process_html_file(in_path, out_path):
             insert_div_id = data["element_id"]
             
             if "section" in data:
-                print in_path
-                print "SECTION: " + data["section"]
                 section = data["section"]
 
     # inject dynamic content into orig_html
