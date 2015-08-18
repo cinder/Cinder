@@ -181,7 +181,7 @@ code[class*="language-"]
 		position: relative
 		list-style: none
 		font-weight: bold
-		height: 100%
+		height: 100% !important
 		
 		li
 			position: relative
@@ -200,8 +200,7 @@ code[class*="language-"]
 				display: inline-block
 				color: white
 				text-decoration: none
-				padding-top: 50px
-				padding-right: 0
+				padding: 50px 0 0 0
 				background: none
 				
 				&:hover
@@ -575,10 +574,12 @@ footer
 nav.top-bar {
 	height: 100px;
 	background: transparent;
-	border-bottom: 2px solid #434747;
 }
 nav.top-bar .cinder-logo-container {
 	padding-left: 0;
+}
+nav.top-bar .top-bar-section {
+	height: 100%;
 }
 nav.top-bar .top-bar-section ul li,
 nav.top-bar .top-bar-section li:not(.has-form) a:not(.button) {
@@ -643,6 +644,7 @@ nav.top-bar .top-bar-section ul li:first-of-type a {
 	top: 30px;
     border-radius: 10px;
     width: 400px;
+    border: 1px $light-gray solid
 }
 #nav_search > #search > #search-results ul {
 	margin-left: 0;

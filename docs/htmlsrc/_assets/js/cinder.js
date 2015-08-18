@@ -85,8 +85,11 @@ $(document).ready(function() {
 		var resultsUl = $( "<ul>" );
 		var viewAllResults = '<div id="search-results-view-all"><a href="#">View All Results &raquo;</a></div>';
 
-		resultsDiv.empty();	
-		resultsDiv.append( resultsUl, viewAllResults );
+		resultsDiv.empty();
+		debugger;
+		if( results.length > 0 ){
+			resultsDiv.append( resultsUl, viewAllResults );
+		}
 
 		// resultsDiv.append( resultsUl );
 		for( var i in results ){
