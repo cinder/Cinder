@@ -2154,10 +2154,20 @@ def process_html_file(in_path, out_path):
     # get source file body content
     orig_html = generate_bs4(in_path)
 
+    # extract original scripts to append later
+    orig_scripts = []
+    for x in orig_html.findAll("script"):
+        orig_scripts.append(x.extract())
+
+    orig_links = []
+
     # get title
     if orig_html.head:
         if orig_html.head.title:
             file_data.title = orig_html.head.title.text
+
+        for x in orig_html.findAll('link', rel="stylesheet"):
+            orig_links.append(x.extract())
 
     # if there is a specific page that needs some special dynamic content, this is where we do it
     insert_div_id = ""
@@ -2169,7 +2179,7 @@ def process_html_file(in_path, out_path):
             for content in markup.body.contents:
                 dynamic_div.append(content)
             insert_div_id = data["element_id"]
-            
+
             if "section" in data:
                 section = data["section"]
 
@@ -2183,12 +2193,12 @@ def process_html_file(in_path, out_path):
     file_data.html_content = body_content
     file_content = file_data.get_content()
 
-    # render file tempalte
+    # render file template
     bs4 = render_template(template, file_content)
     update_links_abs(bs4, in_path)
     content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class, str("section_" + section): "true"}
 
-    # plug everything into the master tempalte
+    # plug everything into the master template
     bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
     # make sure all links are absolute
     update_links_abs(bs4, TEMPLATE_PATH)
@@ -2199,12 +2209,24 @@ def process_html_file(in_path, out_path):
         print log("Error generating file, so skipping: " + in_path, 2)
         return
 
-    # copy all js and css paths that may be in the original html and paste into new file
-    for link in orig_html.find_all("link"):
+    # get list of all the css and js links in the new bs4
+    link_list = bs4.head.find_all("link")
+    script_list = bs4.body.find_all("script")
+
+    # copy any css paths that may be in the original html and paste into new file
+    for link in orig_links:
+        # do not add duplicates
+        if any(link_item["href"] == link["href"] for link_item in link_list):
+            continue
+
         if bs4.head:
             bs4.head.append(link)
 
-    for script in orig_html.find_all("script"):
+    # append original scripts to the end
+    for script in orig_scripts:
+        # do not add duplicates
+        if script.has_attr("src") and any(script_item.has_attr("src") and script_item["src"] == script["src"] for script_item in script_list):
+            continue
         if bs4.body:
             bs4.body.append(script)
 
