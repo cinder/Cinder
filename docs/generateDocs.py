@@ -2246,7 +2246,8 @@ def process_html_file(in_path, out_path):
 
     if in_path.find("_docs/") < 0:
         if is_searchable:
-            add_to_search_index(bs4, out_path, file_data.kind_explicit, search_tags)
+            link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, HTML_DEST_PATH)["href"]
+            add_to_search_index(bs4, link_path, file_data.kind_explicit, search_tags)
 
         state.add_html_file(file_data)
         file_data.path = out_path
