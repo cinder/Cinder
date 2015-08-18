@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>geom::Extrude</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>Extrude</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+
+          		<li><a href="#protected-functions">Protected Member Functions</a></li>
+
+          		<li><a href="#protected-attrs">Protected Attributes</a></li>
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/GeomIo.h">GeomIo.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder_1_1geom.html#a7782e5968713b3438724db0f83738b0b">SourceRef</a></li>
+                        <li><a href="namespacecinder_1_1geom.html#a2badbb495ab5d12531dadff21f9b0b22">AttribSet</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <label>Class Hierarchy:</label>
+                    <ul class="inheritence"><li class="depth1"><a href="classcinder_1_1geom_1_1_source.html">cinder::geom::Source</a></li><li class="depth2">cinder::geom::Extrude</li></ul>
+                </div>
+
+
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a9f6e8d426710f5535dfbd63d3ca1be09"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Extrude</strong> (const Shape2d &amp;shape, float distance, float approximationScale=1.0f)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8b3c55aba304fad79336666fbbdb7d03"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1geom_1_1_extrude.html">Extrude</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>distance</strong> (float dist)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the distance of extrusion along the axis.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4f06dc3b1d4c920acb5167e76e034cac"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1geom_1_1_extrude.html">Extrude</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>caps</strong> (bool caps)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables or disables front and back caps. Enabled by default.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ada8fc96d66c3655465865c2be2910242"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1geom_1_1_extrude.html">Extrude</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>frontCap</strong> (bool cap)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables or disables front cap. Enabled by default.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9159432bbce22fe795856682312293ab"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1geom_1_1_extrude.html">Extrude</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>backCap</strong> (bool cap)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables or disables back cap. Enabled by default.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af037de5a86d064e4a3e76a257023c00c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1geom_1_1_extrude.html">Extrude</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>subdivisions</strong> (int sub)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the number of subdivisions along the axis of extrusion.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a75a96abda070a8a7fd931e92de2536cf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">size_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getNumVertices</strong> () const  override</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a2f5525184d9c9503b245c977dc2548ef"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">size_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getNumIndices</strong> () const  override</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a86b714b68f05cfcad0b12b101636dc7c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1geom.html#af9ff7d21e3730a33d4416ccb1a2aac99">Primitive</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getPrimitive</strong> () const  override</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a4b3e9a2c7c776be2889022ffe70e9c67"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint8_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAttribDims</strong> (Attrib attr) const  override</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a26e53d692cedcfc040a8032e2844a415"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1geom.html#a2badbb495ab5d12531dadff21f9b0b22">AttribSet</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAvailableAttribs</strong> () const  override</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af1cdd361cb4496b819c22b0edc8cf73f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>loadInto</strong> (Target *target, const AttribSet &amp;requestedAttribs) const  override</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+
+            <!-- protected member functions -->
+            <a name="protected-functions"></a>
+            <section>
+                <h2>Protected Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a69c0e08ded8b52ac67d2b8e605315683"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>updatePathSubdivision</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aaa551827d425d63bdbf1acf652890c22"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calculate</strong> (std::vector&lt; vec3 &gt; *positions, std::vector&lt; vec3 &gt; *normals, std::vector&lt; vec3 &gt; *texCoords, std::vector&lt; uint32_t &gt; *indices) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a074fb55639726dac746e88085dfad56b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>copyIndicesNonIndexed</strong> (uint16_t *dest) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Builds a sequential list of vertices to simulate an indexed geometry when
+   <a href="classcinder_1_1geom_1_1_source.html">
+    Source
+   </a>
+   is non-indexed. Assumes
+   <em>
+    dest
+   </em>
+   contains storage for
+   <a href="classcinder_1_1geom_1_1_source.html#a9e711e38ac72fea2ad4a9fd8870d2f08">
+    getNumVertices()
+   </a>
+   entries.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a347287363167d884eb3ac846e61a6138"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>copyIndicesNonIndexed</strong> (uint32_t *dest) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Builds a sequential list of vertices to simulate an indexed geometry when
+   <a href="classcinder_1_1geom_1_1_source.html">
+    Source
+   </a>
+   is non-indexed. Assumes
+   <em>
+    dest
+   </em>
+   contains storage for
+   <a href="classcinder_1_1geom_1_1_source.html#a9e711e38ac72fea2ad4a9fd8870d2f08">
+    getNumVertices()
+   </a>
+   entries.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a1858d7970cb6f0b2fb4e386195bbd0b7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>forceCopyIndicesTrianglesImpl</strong> (T *dest) const </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected attributes -->
+            <a name="protected-attrs"></a>
+            <section>
+                <h2>Protected Attributes</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a31bbc8900486f109fc703836db7388ec"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::vector&lt; <a href="classcinder_1_1_path2d.html">Path2d</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mPaths</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a600712809999d00447a08e90c8aa8cbd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mApproximationScale</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a24f72a050365d2d877044ca5138207a3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mDistance</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a04e0f0798a586459d1544108a5350fd4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mFrontCap</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a062a6ccff3aee9194e41b0ff22bb4f16"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mBackCap</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3acfe530c1650a75c33e797d3d529c2f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mSubdivisions</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a44a3a888c30de1c0425a850e89fe5050"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_tri_mesh.html">TriMesh</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mCap</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abf7843aad4b26f925ebd48df80012d61"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mCapBounds</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0cec82e41f669bfe00b546b245fba51d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::vector&lt; std::vector&lt; vec2 &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mPathSubdivisionPositions</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a859f6f06b5278a69b0d6daf54f203b9f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::vector&lt; std::vector&lt; vec2 &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mPathSubdivisionTangents</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

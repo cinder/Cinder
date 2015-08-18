@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>RectT</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>RectT &lt;typename&gt; </strong> 
+            Class Template Reference
+
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+
+
+          		<li><a href="#friends">Friends</a></li>
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/Rect.h">Rect.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></li>
+                        <li><a href="namespacecinder.html#a90596ab49684a517407bd53ab6cb80aa">Rectd</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+
+
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a2ddcab89512f8371a7382efabaf07e9a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RectT</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4d00c4c420e66e8b3ffcecba205870d7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RectT</strong> (const std::vector&lt; Vec2T &gt; &amp;points)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Initializes the rectangle to be the bounding box of
+   <em>
+    points
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="adf917a76e5a25087be8094989d4e352d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RectT</strong> (T aX1, T aY1, T aX2, T aY2)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa9b008bf02dbc9c8ead3e0f14924b8b1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RectT</strong> (const Vec2T &amp;v1, const Vec2T &amp;v2)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a83ad4453d33a5ed16d849b09ac5f431b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RectT</strong> (const Area &amp;area)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7a468b6413ab83ce4eee461906120795"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>set</strong> (T aX1, T aY1, T aX2, T aY2)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af6a8fea974a88165079b3a1a5d81f0b5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWidth</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a58d6f17e0f68e3a60bb9c4641e9ca63f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getHeight</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3834d27ebe51e66907ffd928f21d8f16"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAspectRatio</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a4e418c62cc8271435cf1a91fa2af9826"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calcArea</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8eb0751485beb955814203be374b0bb4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>canonicalize</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3a50f9776a77f5d6ddf6638c0eadd2d7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>canonicalized</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a245ce706fc320f2e370a0ca29163550f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>clipBy</strong> (const RectT &amp;clip)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac2f6706b967ef017c0c4f9717e7af7de"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getClipBy</strong> (const RectT &amp;clip) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="acd5dafa5f955609b6ec46190c2da54a2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getInteriorArea</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a6b6a810ed4efae6e255ee4adcc973058"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>offset</strong> (const Vec2T &amp;offset)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a67a933b9f62875367550de7cdef1c082"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getOffset</strong> (const Vec2T &amp;off) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a873903b3c1b314d723b74e2cf16b1d49"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>inflate</strong> (const Vec2T &amp;amount)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a1f66f7a4c5b571c7d1daa896067c35da"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>inflated</strong> (const Vec2T &amp;amount) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2f337e3bbc1cb495eac9ed6a3c1812c7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>offsetCenterTo</strong> (const Vec2T &amp;center)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Translates the rectangle so that its center is at
+   <em>
+    center
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab7e3ece8d97fa57314b91803fe3b2266"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scaleCentered</strong> (const Vec2T &amp;scale)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0605cae5c3c121b0d5e889a5884a954c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scaleCentered</strong> (T scale)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af9debe8e07a96c39ab59685abbbfea42"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scaledCentered</strong> (T scale) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5240c7ab19c85d3fb4477f335c38905d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scale</strong> (T scale)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8c95422f3ab09283f15ba0d6c37b1bac"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scale</strong> (const Vec2T &amp;scale)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9dc51a3d962de0f313e4635199112aa9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scaled</strong> (T scale) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a43ef59a50e150745c107eb309019ec6c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scaled</strong> (const Vec2T &amp;scale) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8f69e7bd339152a66d65f549916c8c13"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>transform</strong> (const Mat3T &amp;matrix)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Transforms the Rect by
+   <em>
+    matrix
+   </em>
+   . Represents the bounding box of the transformed Rect when
+   <em>
+    matrix
+   </em>
+   expresses non-scale/translate operations.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4ae7cd5c67b2e068760e3b542d3903ff"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>transformed</strong> (const Mat3T &amp;matrix) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a copy of the Rect transformed by
+   <em>
+    matrix
+   </em>
+   . Represents the bounding box of the transformed Rect when
+   <em>
+    matrix
+   </em>
+   expresses non-scale/translate operations.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a990a9fa174d3414ad98e85df0d206c8f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>contains</strong> (const glm::tvec2&lt; Y, glm::defaultp &gt; &amp;pt) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Is a point
+   <em>
+    pt
+   </em>
+   inside the rectangle.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad2f001a72360aa3f4729bb3071157a5f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>contains</strong> (const Vec2T &amp;pt) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aeaa54fad5c57ac428d43c45c966e5b36"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>intersects</strong> (const RectT &amp;rect) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether
+   <em>
+    rect
+   </em>
+   intersects with this.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac82e7fe0bf13c6bc263c22bb65ef85fd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>distance</strong> (const Vec2T &amp;pt) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the distance between the point
+   <em>
+    pt
+   </em>
+   and the rectangle. Points inside the rectangle return
+   <code>
+    0
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a61baf575e978ea5dbdbe0bfa8c5b7416"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>distanceSquared</strong> (const Vec2T &amp;pt) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the squared distance between the point
+   <em>
+    pt
+   </em>
+   and the rectangle. Points inside the rectangle return
+   <code>
+    0
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa6bad264fb933acb15a6daadf740304a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html#a0416597c322ec396da0748cc2b88f011">Vec2T</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>closestPoint</strong> (const Vec2T &amp;pt) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the nearest point on the Rect
+   <em>
+    rect
+   </em>
+   . Points inside the rectangle return
+   <em>
+    pt
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a81f0abf266f4494d4a914c5187f297c1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getX1</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac805c67afc00659f69ba58eea551aaed"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getY1</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7884be3e6b861c94ec20dac94290e746"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getX2</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad6f96b66fac7a175d62d0d704e14ecd2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getY2</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac63640e2571e717c93d89d5ef8b7a330"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html#a0416597c322ec396da0748cc2b88f011">Vec2T</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getUpperLeft</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a800b4df2402c50ecc3ae87c7c9f6de26"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html#a0416597c322ec396da0748cc2b88f011">Vec2T</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getUpperRight</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a92e2aa86262a9e7d2f8a8d686c43154f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html#a0416597c322ec396da0748cc2b88f011">Vec2T</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getLowerRight</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a70d4d683c56a002b244464483a9fd855"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html#a0416597c322ec396da0748cc2b88f011">Vec2T</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getLowerLeft</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a57e7a62bc5d66cf77163630f9aebf3f8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html#a0416597c322ec396da0748cc2b88f011">Vec2T</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getCenter</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a78d302795944abee927f092cc737021c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html#a0416597c322ec396da0748cc2b88f011">Vec2T</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSize</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac2566f9b86697782719ea7639e39e25e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getCenteredFit</strong> (const RectT &amp;other, bool expand) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Scaled copy with the same aspect ratio centered relative to and scaled to fit inside
+    <em>
+     other
+    </em>
+    . If
+    <em>
+     expand
+    </em>
+    then the rectangle is expanded if it is smaller than
+    <em>
+     other
+    </em>
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3be9b511c51d140304b92e52c8a58565"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getCenteredFill</strong> (const RectT &amp;other, bool contract) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Scaled copy with the same aspect ratio centered relative to and scaled so it completely fills
+    <em>
+     other
+    </em>
+    . If
+    <em>
+     contract
+    </em>
+    then the rectangle is contracted if it is larger than
+    <em>
+     other
+    </em>
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7f71b19b02d5238d274b713274d4b4a6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>include</strong> (const Vec2T &amp;point)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Expands the Rect to include
+   <em>
+    point
+   </em>
+   in its interior
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acd8d2092a522d3926eaf99ced9cf5a5e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>include</strong> (const std::vector&lt; Vec2T &gt; &amp;points)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Expands the Rect to include all points in
+   <em>
+    points
+   </em>
+   in its interior
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a366e7fbce80e12cdb9e7326f72f04842"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>include</strong> (const RectT &amp;rect)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Expands the Rect to include
+   <em>
+    rect
+   </em>
+   in its interior
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3a7783615f538725cc4c31cf2d9ac72e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator+</strong> (const Vec2T &amp;o) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a2a23b94bcf2d64b9b29a77cb9d6d8a94"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator-</strong> (const Vec2T &amp;o) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a734bef0bf278afc3536683fc1376d392"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator*</strong> (T s) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a6a07daba9e15396320dc135a327c7228"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator/</strong> (T s) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8cbcda360ec60b382872fe6d1a085fd4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator+</strong> (const RectT&lt; T &gt; &amp;rhs) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aadbeb692007db1a364f00e5b7e96528b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator-</strong> (const RectT&lt; T &gt; &amp;rhs) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae2c16585478a66bd2427b65bafa44843"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator+=</strong> (const Vec2T &amp;o)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad970253b2503b8a6d7bb08b2ed18200a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator-=</strong> (const Vec2T &amp;o)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abcc6dc39040a32ebf9c675ca22f2f631"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator*=</strong> (T s)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a87cb7a3f8ac576a343c872f4b7b7c92d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator/=</strong> (T s)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2ca08c56e46ea6e65cf7b3931839855a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_rect_t.html">RectT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>zero</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Constructs a rectangle with all values initialized to zero.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+
+            <!-- protected attributes -->
+
+            <!-- friends -->
+            <a name="friends"></a>
+            <section>
+                <h2>Friends</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a39764fa1c3692da9868ceee9b36853c6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">friend std::ostream &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator&lt;&lt;</strong> (std::ostream &amp;o, const RectT &amp;rect)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

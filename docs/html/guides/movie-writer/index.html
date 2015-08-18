@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>Quicktime MovieWriter Guide</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="../../_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="../../_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+<link href="../../_assets/css/foundation.css" rel="stylesheet"/><link href="../../_assets/css/cinder_docs.css" rel="stylesheet"/><link href="../../_assets/css/prism.css" rel="stylesheet"/></head>
+<body class="guide language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="../../index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="../../search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="../../reference/geometry.html">Reference</a></li>
+                              <li class="active" id="nav_guides">
+                                <a href="../index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="../../namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="../../classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="../../reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="../index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="../../namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="../../classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content content-row" id="container">
+    <div class="columns large-3">
+
+    </div>
+
+    <div class="columns large-9 content" data-equalizer-watch="content">
+
+
+    <ci dox="ci::qtime::MovieWriter" seealso=""></ci>
+   
+   
+   
+
+      <h1>Quicktime MovieWriter Guide</h1>
+      
+         <h2>Introduction</h2>
+         <p>Cinder makes writing QuickTime movies a straightforward task via the <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> class. Creating a basic QuickTime movie is easy, and <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> also exposes more advanced options which allow you to take full advantage of the features of modern codecs like <a href="http://en.wikipedia.org/wiki/H.264/MPEG-4_AVC">H.264</a>. <br/>
+         </p>
+         <h2>Creating a Simple Movie</h2>
+         <p>To setup an instance of <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a>, we'll need to know two things: the path where we'd like to create the movie, and its dimensions in pixels. As an example, we'll imagine we'd like to create a movie called <em>myMovie.mov</em> and we'd like it saved into our user documents directory. We'll also assume the movie is 640x480 pixels.</p>
+         <pre><code class="language-cpp">
+#include "cinder/qtime/MovieWriter.h"
+#include "cinder/Utilities.h"
+using namespace ci;
+
+qtime::MovieWriter movie( getDocumentsDirectory() + "myMovie.mov", 640, 480 );
+         </code></pre>
+         <!--  fragment -->
+
+         <p> <br/>
+            Because we have not specified any additional parameters, the <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> defaults to using a PNG codec, and will run at 30 frames per second. Now let's imagine we have a rendering loop which will create an animation 100 frames long. We'll assume we have a routine called <code>renderFrame()</code> which has a parameter for providing which frame we need, and it returns a <a href="../../classcinder_1_1_surface_t.html">Surface</a>. Continuing where we left off, here's how we might put the <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> to use: 
+         </p>
+         <pre><code class="language-cpp">
+ Surface renderFrame( int frame ); // defined elsewhere
+
+for( int frame = 0; frame &lt; 100; ++frame ) {
+   movie.addFrame( renderFrame( frame ) );
+}</code></pre>
+         <!--  fragment -->
+         <p> <br/>
+            For the basic use case, that's all there is to it - we simply call addFrame() with our Surface inside the loop. When the <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> goes out of scope, it will save all its frames to disk. Alternatively, to explicitly force the <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> to save, call finish(): 
+         </p>
+         <pre><code class="language-cpp">movie.finish();</code></pre>
+         <!--  fragment -->
+         <p> <br/>
+         </p>
+         <h2>Specifying Formats</h2>
+         <p>The <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> class offers extensive options for customizing the format of its output, and this can be done using the <a href="../../classcinder_1_1qtime_1_1_movie_writer_1_1_format.html">qtime::MovieWriter::Format</a> class. Here's an example of how to modify the codec to be <code>JPEG</code> and the quality to 50%: </p>
+         <pre><code class="language-cpp">
+qtime::MovieWriter::Format format;
+format.setCodec( qtime::MovieWriter::CODEC_JPEG );
+format.setQuality( 0.5f );
+qtime::MovieWriter movie( getDocumentsDirectory() + "myMovie.mov", 640, 480, format );</code></pre>
+         <!--  fragment -->
+         <p> <br/>
+            The first call, setCodec(), allows users to provide a constant from among several defined for popular codecs or the four character identifier as specified by QuickTime in its header file <code>ImageCompression.h</code>. The second call, setQuality() allows the specification of a level of quality ranging from the lowest, <code>0.0</code> to the highest, <code>1.0</code> (which for some codecs is lossless). The <a href="../../classcinder_1_1qtime_1_1_movie_writer_1_1_format.html">qtime::MovieWriter::Format</a> class also allows the chaining of several calls as a convenience, which looks like this: 
+         </p>
+         <pre><code class="language-cpp">
+qtime::MovieWriter movie( getDocumentsDirectory() + "myMovie.mov",
+         640, 480, qtime::MovieWriter::Format().setCodec( 'png ' ).setQuality( 0.95f ) );</code></pre>
+         <!--  fragment -->
+         <p> <br/>
+         </p>
+         <h2>MultiPass Encoding</h2>
+         <p>The documentation for <a href="../../classcinder_1_1qtime_1_1_movie_writer_1_1_format.html">qtime::MovieWriter::Format</a> provides a more thorough list of its options, but a key principle is that the default settings will achieve the best possible quality with one exception: multiPass encoding is not enabled by default. This is a technique which allows QuickTime to make several passes over the frames' data, and can result in much higher quality output. At the time of this writing, only the H.264 codec can make use of the technique. However this is not enabled by default because it can result in a lengthy postprocessing phase, and it requires the creation of two temporary files. The first of these files QuickTime creates for its own purposes, and the second <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> makes to store temporary copies of all frames supplied by calls to addFrame(). However all of this is handled automatically when multiPass encoding is enabled via qtime::MovieWriter::Format::enableMultiPass(). <br/>
+         </p>
+         <h2>User Compression Options</h2>
+         <p>QuickTime provides a standard user interface for specifying encoding options, and Cinder makes this available via the qtime::MovieWriter::getUserCompressionSettings function. This function can be used to populate a <a href="../../classcinder_1_1qtime_1_1_movie_writer_1_1_format.html">qtime::MovieWriter::Format</a> instance. Also note that the resulting instance may contain additional settings that <a href="../../classcinder_1_1qtime_1_1_movie_writer_1_1_format.html">qtime::MovieWriter::Format</a> does not provide direct functions for manipulating. An optional parameter allows the specification of a preview image for the dialog. </p>
+         <pre><code class="language-cpp">
+Surface previewImage( loadImage( loadResource( RES_PREVIEW_IMAGE ) ) );
+qtime::MovieWriter::Format format;
+if( qtime::MovieWriter::getUserCompressionSettings( &amp;format, previewImage ) ) {
+   mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), format );
+}</code></pre>
+         <!--  fragment -->
+         <p> <br/>
+         </p>
+         <div class="image">
+            <img alt="qtime_settings.png" src="images/qtime_settings.png"/>
+         </div>
+         <p> <br/>
+         </p>
+         <h2>Issues</h2>
+         <p>There are a couple of known issues we're still looking into in the <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> class. The first is that there is a visible gamma shift (things get brighter and desaturated) with certain codecs, including H.264. This seems to be a pervasive problem with QuickTime, and one which video encoding even with Apple's own QuickTime Player suffers from. There are numerous discussions of the issue on the internet, and we have yet to find a solution, unfortunately. <br/>
+            <br/>
+            Also currently <a href="../../classcinder_1_1qtime_1_1_movie_writer.html">qtime::MovieWriter</a> does not support audio exporting, and this will be introduced in future revisions. 
+         </p>
+         
+
+         <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+   
+
+
+  
+  </div>
+
+</div> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="../../_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="../../_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../search_index.js" type="text/javascript"></script>
+    <script src="../../_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+<script src="../../_assets/js/prism.js" type="text/javascript"></script></body></html>

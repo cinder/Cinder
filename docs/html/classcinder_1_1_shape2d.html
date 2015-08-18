@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>Shape2d</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>Shape2d</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+
+
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/Shape2d.h">Shape2d.h</a>
+                    </div>
+                </div>
+
+
+
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Related Links:</label>
+                        <li><a href="guides/path2d/part1.html">Path2d Guide</a></li>
+                      </ul>
+                    </div>
+                </div>
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="aece200f315719fc06be790d8024bd546"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>moveTo</strong> (const vec2 &amp;p)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a895294b0286036b8cd8ef5869c6b2acc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>moveTo</strong> (float x, float y)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5d17ce0a0bcd0307e73be4649005e443"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>lineTo</strong> (const vec2 &amp;p)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a132fbe7a7e68c29c1f48b4c39afec2bd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>lineTo</strong> (float x, float y)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a1d1b043c529628516c969b7bd52a0339"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>quadTo</strong> (const vec2 &amp;p1, const vec2 &amp;p2)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae11e4560f4e3792c836a3af591025954"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>quadTo</strong> (float x1, float y1, float x2, float y2)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8bbf68af26faa5650cd55d87ad193889"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>curveTo</strong> (const vec2 &amp;p1, const vec2 &amp;p2, const vec2 &amp;p3)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="accfe6dd45eb4e7fe66981c31153e7770"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>curveTo</strong> (float x1, float y1, float x2, float y2, float x3, float y3)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab3d8c31e49a3a7bad349900bb5fa4040"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>arc</strong> (const vec2 &amp;center, float radius, float startRadians, float endRadians, bool forward=true)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a59bc68193d7c1731ef42f0227d8525b6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>arc</strong> (float centerX, float centerY, float radius, float startRadians, float endRadians, bool forward=true)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab805c3ac746d72aa376371fbb7afb21e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>arcTo</strong> (const vec2 &amp;p, const vec2 &amp;t, float radius)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a173ef068d2eed70bec95db512b47876e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>arcTo</strong> (float x, float y, float tanX, float tanY, float radius)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a81f8951a3f13802ae0385d79964f1f64"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>close</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a6e8aa4f3bc1a097a3df9271f7e96d249"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>empty</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3e0bc1f6bb2e8d68a2f3062bcd8fd131"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>clear</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aed5bfbb1ef818b84dfd37119ab74906f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">size_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getNumContours</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae36d6748478b88c975f1f6b844f42ad8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_path2d.html">Path2d</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getContour</strong> (size_t i) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae49ed9e895f143de95db8364508486af"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_path2d.html">Path2d</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getContour</strong> (size_t i)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a898816a5696841bfca22ec51b98ea597"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::vector&lt; <a href="classcinder_1_1_path2d.html">Path2d</a> &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getContours</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a39976e8bebf0c419c95f5d44d6a0fe24"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::vector&lt; <a href="classcinder_1_1_path2d.html">Path2d</a> &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getContours</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a60abfd45288666a6e0fafa2cc61c757a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const vec2 &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getCurrentPoint</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af7d30c36aadc536a638b2c6d1e59298b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>append</strong> (const Shape2d &amp;shape)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Appends the contours of
+   <em>
+    shape
+   </em>
+   to this shape.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a422c85288a38dfe36967110f0f553ba6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>appendContour</strong> (const Path2d &amp;contour)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a524d98a260cb8bc44d599184226422ff"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>removeContour</strong> (size_t i)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae8e9d25c428ebab60be41814940a7e43"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scale</strong> (const vec2 &amp;amount, vec2 scaleCenter=vec2())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Scales the
+   <a href="classcinder_1_1_shape2d.html">
+    Shape2d
+   </a>
+   by
+   <em>
+    amount.x
+   </em>
+   on X and
+   <em>
+    amount.y
+   </em>
+   on Y around the center
+   <em>
+    scaleCenter
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae5a3dda77adf04666fad95c10bdb5e85"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>transform</strong> (const mat3 &amp;matrix)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Transforms the
+   <a href="classcinder_1_1_shape2d.html">
+    Shape2d
+   </a>
+   by
+   <em>
+    matrix
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a20f75c991f46a09cf5d2832937f99cb9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_shape2d.html">Shape2d</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>transformed</strong> (const mat3 &amp;matrix) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a copy transformed by
+   <em>
+    matrix
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a095cfddfae6abd4d8418a5894f9315e1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calcBoundingBox</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the bounding box of the Shape's control points. Note that this is not necessarily the bounding box of the path's shape.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3cdee7103e5162dfa3cb7770ef0113c3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calcPreciseBoundingBox</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the precise bounding box of the Shape's curves. Slower to calculate than
+   <a href="classcinder_1_1_shape2d.html#a095cfddfae6abd4d8418a5894f9315e1">
+    calcBoundingBox()
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a30adebcbad59f2496a9bab71e23384dc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>contains</strong> (const vec2 &amp;pt) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the point
+   <em>
+    pt
+   </em>
+   is contained within the boundaries of the shape.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a19e5fdadc2da10d879bb2299bbd56609"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>iterate</strong> (IT &amp;it)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Iterates all of the contours and points of a
+   <a href="classcinder_1_1_shape2d.html">
+    Shape2d
+   </a>
+   .
+  </p>
+  <p>
+   Expects a template parameter that implements
+  </p>
+  <div class="programlisting">
+   <pre><code class="language-cpp">bool operator()( Path2d::SegmentType type, vec2 *points, vec2 *previousPoint ) 
+</code></pre>
+  </div>
+  . Functor should return false to cease iteration. A
+  <em>
+   SegmentType
+  </em>
+  of type
+  <code>
+   CLOSE
+  </code>
+  receives &amp;mPoints[0] for its
+  <em>
+   points
+  </em>
+  parameters.
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+
+            <!-- protected member functions -->
+
+            <!-- protected attributes -->
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

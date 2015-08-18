@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>SurfaceT</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>SurfaceT &lt;typename&gt; </strong> 
+            Class Template Reference
+
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+ <p>
+  An in-memory representation of an image. Implicitly shared object.
+ </p>
+</div>
+</body></html>
+            
+		<p>A Surface always contains red, green and blue data, along with an optional alpha channel.</p>
+		
+		<p>Surfaces come in two primary configurations, the traditional 8-bits per channel represented by <a href="classcinder_1_1_surface_t.html">Surface8u</a>, and a float per channel, suitable for high dynamic range images, represented by <a href="classcinder_1_1_surface_t.html">Surface32f</a>. <em>Surface</em> is a short-hand synonym for <em>Surface8u</em>.</p>
+
+		<p>Surfaces are a CPU-based image representation, and must be converted appropriately to be drawn using the GPU. For example,to be used with OpenGL, the <a href="classcinder_1_1gl_1_1_texture2d.html">gl::Texture</a> is a natural choice, and it can be constructed directly from a Surface.</p>
+		
+		<p>To manipulate individual pixels of a Surface, the <a href="classcinder_1_1_surface_t_1_1_iter.html">Surface::Iter</a> class can be used.</p>
+
+		<p>To allocate a Surface that is 640x480 and has an alpha channel, use:
+			</p><pre><code class="language-cpp">Surface mySurface( 640, 480, true );</code></pre>
+		<p></p>
+
+		<p>A Surface can be created from an image file using the result of loadImage():<br/>
+			</p><pre><code class="language-cpp">Surface bitmap( loadImage( "image.jpg" ) );</code></pre>
+		<p></p>
+
+		<p>The pixels of each row of a Surface are stored in contiguous memory, and the start of each row is offset from the previous by the stride (measured in bytes) returned by <a href="classcinder_1_1_surface_t.html#a81a5f9c0c1768c751f3096d1fe83ab11">getRowBytes()</a>. Pixels can be ordered in memory in a number of configurations, specified using the SurfaceChannelOrder class.</p>
+	
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/Surface.h">Surface.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder.html#a7f62055e4cb811edb9868b32595a1d64">Surface</a></li>
+                        <li><a href="namespacecinder.html#ad8b046fa928d58861b60465ceda392c5">Surface8u</a></li>
+                        <li><a href="namespacecinder.html#af86150f608e2e28b76ed1f12e9883405">Surface8uRef</a></li>
+                        <li><a href="namespacecinder.html#a1336f205a969a3aa0e66006b6f596086">SurfaceRef</a></li>
+                        <li><a href="namespacecinder.html#a8d12457845cf49dfabd567551dabf2d9">Surface16u</a></li>
+                        <li><a href="namespacecinder.html#a110968046359a39401293da9c7a12f70">Surface16uRef</a></li>
+                        <li><a href="namespacecinder.html#a69465422e6011583c33994f0280dcd29">Surface32f</a></li>
+                        <li><a href="namespacecinder.html#a1078acc609f17e768e27c4c642536e76">Surface32fRef</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Classes:</label>
+                        <li><a href="classcinder_1_1_surface_t_1_1_const_iter.html">ConstIter</a></li>
+                        <li><a href="classcinder_1_1_surface_t_1_1_iter.html">Iter</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Related Links:</label>
+                        <li><a href="guides/cinder-images/index.html">Images in Cinder</a></li>
+                      </ul>
+                    </div>
+                </div>
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a785e8c6fabbdbaeb65712e4858833479"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SurfaceT</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   A null Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a34bcd91acdf1111d5da624a21e67f99a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SurfaceT</strong> (int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder=SurfaceChannelOrder::UNSPECIFIED)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Allocates a Surface of size
+   <em>
+    width
+   </em>
+   X
+   <em>
+    height
+   </em>
+   , with an optional
+   <em>
+    alpha
+   </em>
+   channel. The default value for
+   <em>
+    channelOrder
+   </em>
+   selects a platform default.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7f8eb913b83effb58ee15badd198dcd0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SurfaceT</strong> (int32_t width, int32_t height, bool alpha, const SurfaceConstraints &amp;constraints)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Allocates a Surface of size
+   <em>
+    width
+   </em>
+   X
+   <em>
+    height
+   </em>
+   , with an optional
+   <em>
+    alpha
+   </em>
+   channel.
+   <em>
+    constraints
+   </em>
+   allows specification of channel order and rowBytes constraints as a function of width.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac9004fd8b1e0c500e02fcdfbdbe571ed"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SurfaceT</strong> (T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Constructs a surface from the memory pointed to by
+   <em>
+    data
+   </em>
+   . Does not assume ownership of the memory in
+   <em>
+    data
+   </em>
+   , which consequently should not be freed while the Surface is still in use.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a55e994d9c8a799dd4a4540d6650f7ecb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SurfaceT</strong> (ImageSourceRef imageSource, const SurfaceConstraints &amp;constraints=SurfaceConstraintsDefault(), boost::tribool alpha=boost::logic::indeterminate)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Constructs a Surface from an
+   <em>
+    imageSource
+   </em>
+   and optional
+   <em>
+    constraints
+   </em>
+   . Default value for
+   <em>
+    alpha
+   </em>
+   chooses one based on the contents of the
+   <a href="classcinder_1_1_image_source.html">
+    ImageSource
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a14648cfcf360b8d70a97723baa3e4fbd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SurfaceT</strong> (const SurfaceT &amp;rhs)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates a clone of
+   <em>
+    rhs
+   </em>
+   . Matches rowBytes and channel order of
+   <em>
+    rhs
+   </em>
+   , but creates its own dataStore.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2c99529bb5a334ed4c71989d5bff4dc4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SurfaceT</strong> (SurfaceT &amp;&amp;rhs)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Surface move constructor.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3a1e965bc3abc43bf226305dcff4fec0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_surface_t.html">SurfaceT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator=</strong> (const SurfaceT&lt; T &gt; &amp;rhs)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac204a3128794fa51e2dbe3b0e4d2a924"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_surface_t.html">SurfaceT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator=</strong> (SurfaceT&lt; T &gt; &amp;&amp;rhs)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a79defcf8e73b0526f26af3be914f78be"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator ImageSourceRef</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a32a1e5d14987a74b858969eb5ee81c42"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator ImageTargetRef</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1b8928d870737daf9f59fdfb83fa51e4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWidth</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the width of the Surface in pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abbb727cb106dc1b4b537991ccd1a218d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getHeight</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the height of the Surface in pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aac620f9149ccfca93d069e4b35048ac9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSize</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the size of the Surface in pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a24266e8d1474dc9f817183745c844791"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAspectRatio</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the Surface aspect ratio, which is its width / height.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab5c7c63efe35fc8c4c97531b4d20884e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getBounds</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the bounding
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   of the Surface in pixels: [0,0]-(width,height)
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a82124f1cf056043b85248eacf472e225"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hasAlpha</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the Surface contains an alpha channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a73e75b813f8af6255e3de692086abdd7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isPremultiplied</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the Surface color data is premultiplied by its alpha channel or not.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a550bdf36f3fd4b476435be24a1be3fd9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setPremultiplied</strong> (bool premult=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets whether the Surface color data should be interpreted as being premultiplied by its alpha channel or not.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a81a5f9c0c1768c751f3096d1fe83ab11"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getRowBytes</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the width of a row of the Surface measured in bytes, which is not necessarily
+   <a href="classcinder_1_1_surface_t.html#a1b8928d870737daf9f59fdfb83fa51e4">
+    getWidth()
+   </a>
+   *
+   <a href="classcinder_1_1_surface_t.html#a550c975403a6f65c15348a6c87ac338b">
+    getPixelInc()
+   </a>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a550c975403a6f65c15348a6c87ac338b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint8_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getPixelInc</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the amount to increment a T* to increment by a pixel. Analogous to the number of channels, which is either 3 or 4.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a228481666795e8d53c7c97346acd77db"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint8_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getPixelBytes</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number of bytes to increment by a pixel. Analogous to the number of channels, (which is either 3 or 4) * sizeof(T)
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a29d86f9b1875c30ac38dfb6447245049"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_surface_t.html">SurfaceT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>clone</strong> (bool copyPixels=true) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a new Surface which is a duplicate. If
+   <em>
+    copyPixels
+   </em>
+   the pixel values are copied, otherwise the clone's pixels remain uninitialized.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1c2e20f388b53fb6868c5ba393f0ecfe"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_surface_t.html">SurfaceT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>clone</strong> (const Area &amp;area, bool copyPixels=true) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a new Surface which is a duplicate of an
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    area
+   </em>
+   . If
+   <em>
+    copyPixels
+   </em>
+   the pixel values are copied, otherwise the clone's pixels remain uninitialized.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a87dd5a31c22eab567c6d6be938518cd6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Retuns the raw data of an image as a pointer to either uin8t_t values in the case of a Surface8u or floats in the case of a Surface32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab91cd98ff60c2a42f80c6e35fdbf9840"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae72f89b8746cbd9509dc87d9bc1e3913"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> (const ivec2 &amp;offset)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a649f0f98b99786eed07b7fea480aac79"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> (const ivec2 &amp;offset) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2679a419914e4fb901952c8272f209ac"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataRed</strong> (const ivec2 &amp;offset)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a pointer to the red channel data of the pixel located at
+   <em>
+    offset
+   </em>
+   . Result is a uint8_t* for Surface8u and a float* for Surface32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a06c6eef6603854a11d17d37c28a7bda0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataRed</strong> (const ivec2 &amp;offset) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6a19404d29d926c70698b7e72a872b58"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataGreen</strong> (const ivec2 &amp;offset)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a pointer to the green channel data of the pixel located at
+   <em>
+    offset
+   </em>
+   . Result is a uint8_t* for Surface8u and a float* for Surface32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af789b522fcd4ea376a399553d68db4a7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataGreen</strong> (const ivec2 &amp;offset) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a18c4f6e6bc3888d73ebe3e3e1413c54f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataBlue</strong> (const ivec2 &amp;offset)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a pointer to the blue channel data of the pixel located at
+   <em>
+    offset
+   </em>
+   . Result is a uint8_t* for Surface8u and a float* for Surface32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a88fff88a7bf832ea941fa71627c915aa"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataBlue</strong> (const ivec2 &amp;offset) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a47faa8e04706336a7cd19c571d3448e9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataAlpha</strong> (const ivec2 &amp;offset)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a pointer to the alpha channel data of the pixel located at
+   <em>
+    offset
+   </em>
+   . Result is a uint8_t* for Surface8u and a float* for Surface32f. Undefined for Surfaces without an alpha channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a1015f5a6de202d6f44a69b567749ba0a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataAlpha</strong> (const ivec2 &amp;offset) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a288b5eaf4f5cb211d014bac922343bcf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataStore</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the shared_ptr to the underlying pixel data. Maybe be nullptr if the Surface does not own its data.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af12c7558fadb5a922d1d086c884bd10c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_surface_channel_order.html">SurfaceChannelOrder</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannelOrder</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the channel order of the Surface, the in-memory ordering of the channels of each pixel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a93e1f09b8d4d98fad12977d4fffb0cf7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint8_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getRedOffset</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 0.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2c390c3d39809c34fcbc653788d0b1e8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint8_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getGreenOffset</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 1.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a95ef6f9eaf2d5ea76a850497842a21a3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint8_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getBlueOffset</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 2.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a072f2b80c7aca558f6cdb0997c1797a8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint8_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAlphaOffset</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 3. Returns
+   <a href="classcinder_1_1_surface_channel_order.html#a19b5a1a6150ee64554cf044effd679edae72ecc43e9d7c20bfeb89665268eaa3c">
+    SurfaceChannelOrder::INVALID
+   </a>
+   in the absence of an alpha channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aaf07eae37706817ca0885d306b5cd0e1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setChannelOrder</strong> (const SurfaceChannelOrder &amp;aChannelOrder)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the channel order of the Surface, the in-memory ordering of the channels of each pixel. Call does not modify any pixel data, but does modify its interpretation.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae9e3a626f08cc734005b91ad63eed1f0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannel</strong> (uint8_t channelIndex)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to a Channel
+   <em>
+    channelIndex
+   </em>
+   indexed according to how the channels are arranged per the
+   <a href="classcinder_1_1_surface_channel_order.html">
+    SurfaceChannelOrder
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa7e5e6da1ae553cae5d1485c2e66237a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannel</strong> (uint8_t channelIndex) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a const reference to a Channel
+   <em>
+    channelIndex
+   </em>
+   indexed according to how the channels are arranged per the
+   <a href="classcinder_1_1_surface_channel_order.html">
+    SurfaceChannelOrder
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad18dfcdd556a475d3141cdba45602eec"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannelRed</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the red Channel of the Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a958b48daeefd05e0ff2c7c33e9c21aca"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannelGreen</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the green Channel of the Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae36bbf0e559edbca50c03e4d44790ae0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannelBlue</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the blue Channel of the Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a822adcec9d90e990d7a4d8d6b79d8485"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannelAlpha</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the alpha Channel of the Surface.
+  </p>
+  <p>
+   Undefined in the absence of an alpha channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af91d2903ff37e2b85ccd8786c6483d15"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannelRed</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a const reference to the red Channel of the Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a64a64d6c6418df75127d5f585a9b9e2f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannelGreen</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a const reference to the green Channel of the Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a498f923a3235754d916b07ac3b9ca938"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannelBlue</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a const reference to the blue Channel of the Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab432240ffbc3c0c5906e25d4ea96f674"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChannelAlpha</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a const reference to the alpha Channel of the Surface.
+  </p>
+  <p>
+   Undefined in the absence of an alpha channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6e7c74da195542233d7fe7fb0ef6bc64"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_color_a_t.html">ColorAT</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getPixel</strong> (ivec2 pos) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Convenience method for getting a single pixel. For performance-sensitive code consider
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Surface::Iter
+   </a>
+   instead.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a73fd994193f97a388c01c4fdf2261e37"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setPixel</strong> (ivec2 pos, const ColorT&lt; T &gt; &amp;c)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Convenience method for setting a single pixel. For performance-sensitive code consider
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Surface::Iter
+   </a>
+   instead.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9c5c9bde1698c00b22b7fb703762ec64"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setPixel</strong> (ivec2 pos, const ColorAT&lt; T &gt; &amp;c)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Convenience method for setting a single pixel. For performance-sensitive code consider
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Surface::Iter
+   </a>
+   instead.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa449d90620b105e4edb34cc853bf0310"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>copyFrom</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, const Area &amp;srcArea, const ivec2 &amp;relativeOffset=ivec2())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Copies the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    srcArea
+   </em>
+   of the Surface
+   <em>
+    srcSurface
+   </em>
+   to
+   <em>
+    this
+   </em>
+   Surface. The destination
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   is
+   <em>
+    srcArea
+   </em>
+   offset by
+   <em>
+    relativeOffset
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a11c5d89e1bcdf1c0e70d36adc6bb6bc6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_color_t.html">ColorT</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>areaAverage</strong> (const Area &amp;area) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an averaged color for the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   defined by
+   <em>
+    area
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2d33a9fdbb5242e13e27c0dfc7fe7c33"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_surface_t_1_1_iter.html">Iter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getIter</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   which iterates the entire Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8ed96afb9b9a7deb59e48e694dc2d3b1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_surface_t_1_1_iter.html">Iter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getIter</strong> (const Area &amp;area)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   which iterates the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    area
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9e3c36d49617eb6c833177e1dc940cce"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_surface_t_1_1_const_iter.html">ConstIter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getIter</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a
+   <a href="classcinder_1_1_surface_t_1_1_const_iter.html">
+    ConstIter
+   </a>
+   which iterates the entire Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adf005ed5921c23587fcdc470a9fe063b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_surface_t_1_1_const_iter.html">ConstIter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getIter</strong> (const Area &amp;area) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a
+   <a href="classcinder_1_1_surface_t_1_1_const_iter.html">
+    ConstIter
+   </a>
+   which iterates the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    area
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a14f15e05fb5f846a32bf304b408df690"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_surface_t.html">SurfaceT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder=SurfaceChannelOrder::UNSPECIFIED)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates a SurfaceRef of size
+   <em>
+    width
+   </em>
+   X
+   <em>
+    height
+   </em>
+   , with an optional
+   <em>
+    alpha
+   </em>
+   channel. The default value for
+   <em>
+    channelOrder
+   </em>
+   selects a platform default.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aae62720ddeef0a2cf7027aff910769cd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_surface_t.html">SurfaceT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (int32_t width, int32_t height, bool alpha, const SurfaceConstraints &amp;constraints)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates a SurfaceRef of size
+   <em>
+    width
+   </em>
+   X
+   <em>
+    height
+   </em>
+   , with an optional
+   <em>
+    alpha
+   </em>
+   channel.
+   <em>
+    constraints
+   </em>
+   allows specification of channel order and rowBytes constraints as a function of width.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adc56dc28d347cbff44cf723b1326e18d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_surface_t.html">SurfaceT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates a SurfaceRef from the memory pointed to by
+   <em>
+    data
+   </em>
+   . Does not assume ownership of the memory in
+   <em>
+    data
+   </em>
+   , which consequently should not be freed while the Surface is still in use.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a83e09bc04debe3a10cb427030f6131aa"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_surface_t.html">SurfaceT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (ImageSourceRef imageSource, const SurfaceConstraints &amp;constraints=SurfaceConstraintsDefault(), boost::tribool alpha=boost::logic::indeterminate)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates a SurfaceRef from an
+   <em>
+    imageSource
+   </em>
+   and optional
+   <em>
+    constraints
+   </em>
+   . Default value for
+   <em>
+    alpha
+   </em>
+   chooses one based on the contents of the
+   <a href="classcinder_1_1_image_source.html">
+    ImageSource
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9ee0f50d45be92e0ce017c2589c3e8de"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_surface_t.html">SurfaceT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (const SurfaceT&lt; T &gt; &amp;surface)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates s SurfaceRef which is a clone of the Surface
+   <em>
+    surface
+   </em>
+   , and with its own dataStore.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+
+            <!-- protected attributes -->
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

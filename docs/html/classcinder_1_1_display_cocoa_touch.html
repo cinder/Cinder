@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>DisplayCocoaTouch</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>DisplayCocoaTouch</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+
+          		<li><a href="#protected-attrs">Protected Attributes</a></li>
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+ <p>
+  Represents a monitor/display on iOS.
+ </p>
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/app/cocoa/PlatformCocoa.h">PlatformCocoa.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="_platform_cocoa_8h.html#a107fed106acf5902b2b9bcc9f14ef5c5">CGDisplayChangeSummaryFlags</a></li>
+                        <li><a href="_platform_cocoa_8h.html#a68108ec63c0f14d3f07ba43d377d28e3">CGDirectDisplayID</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <label>Class Hierarchy:</label>
+                    <ul class="inheritence"><li class="depth1"><a href="classcinder_1_1_display.html">cinder::Display</a></li><li class="depth2">cinder::DisplayCocoaTouch</li></ul>
+                </div>
+
+
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a7f09f4dd28f1e66db35e84c94c7e4a8c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>DisplayCocoaTouch</strong> (UIScreen *screen)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a305a9c173363a14aa439637fb92eb04d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>~DisplayCocoaTouch</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a94d21697cbafea0323f4baa406dc3756"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">UIScreen *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getUiScreen</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a758bc2fa91993692abf9e4cea57f2127"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::vector&lt; ivec2 &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSupportedResolutions</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a vector of resolutions the
+   <a href="classcinder_1_1_display.html">
+    Display
+   </a>
+   supports.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a31b75225b7511b02e11464a3143510b7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setResolution</strong> (const ivec2 &amp;resolution)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the resolution of the
+   <a href="classcinder_1_1_display.html">
+    Display
+   </a>
+   . Rounds to the nearest supported resolution.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a72b021646a225c68bb9a39eb84847a0c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWidth</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the width of the screen measured in points.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aec9a159d447387445991dc39e0788f5a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getHeight</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the height of the screen measured in points.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4d5b2c44fdc4da47baa59f0aadda2d19"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSize</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the size of the
+   <a href="classcinder_1_1_display.html">
+    Display
+   </a>
+   measured in points.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3b37026784d3e9e2c0dc57947ffa312e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAspectRatio</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the
+   <a href="classcinder_1_1_display.html">
+    Display
+   </a>
+   aspect ratio, which is its width / height.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a644bdbe0f26956f0c162c8ee1e1cc921"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getBounds</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the bounding
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   of the
+   <a href="classcinder_1_1_display.html">
+    Display
+   </a>
+   in points, measured relative to primary display's upper-left corner.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a57350ba2e81b06981121a4a8f2cfbdd1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSystemCoordinate</strong> (const ivec2 &amp;displayRelativeCoordinate) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the system position (relative to the system's primary display's upper-left corner) of a Display-relative
+   <em>
+    displayRelativeCoordinate
+   </em>
+   . The results are suitable for use with
+   <a href="classcinder_1_1app_1_1_window.html">
+    app::Window
+   </a>
+   's position functions.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5553ce97d239e2c009b10104fba90e5b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getBitsPerPixel</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the bits per pixel for the display. Typically 24 bits.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a667ec56f68a4b74e0262ce3d0ef1c6d0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getContentScale</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the factor which multiplies points to pixels. 2.0f for high-density (Retina) displays; 1.0f for others.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac166370c42a86e14cfed84e0db8562f9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>contains</strong> (const ivec2 &amp;pt) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the
+   <a href="classcinder_1_1_display.html">
+    Display
+   </a>
+   's coordinates contain
+   <em>
+    pt
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a22fa1b0ed0243c9f3882f0a87de9a593"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a5381a0626b1663e31dc89897220c85a0">DisplayRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getMainDisplay</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the system's primary display.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a14ca6dba12e4dcae0cc469d861100688"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::vector&lt; <a href="namespacecinder.html#a5381a0626b1663e31dc89897220c85a0">DisplayRef</a> &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDisplays</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a vector of all displays connected to the system.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a07d418682e65e324d5043a3c09660e39"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a5381a0626b1663e31dc89897220c85a0">DisplayRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDisplayForPoint</strong> (const ivec2 &amp;pt)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the
+   <a href="classcinder_1_1_display.html">
+    Display
+   </a>
+   which contains a given point, measured relative to the upper-left corner of the primary display. Returns a NULL DisplayRef on failure.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8bd91212e5d2d8d1bbf8db7f3904ce5f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSpanningArea</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   which spans all Displays.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+
+            <!-- protected attributes -->
+            <a name="protected-attrs"></a>
+            <section>
+                <h2>Protected Attributes</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="abaad93e8f8fef8d19fbe61104d7ebdbb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">UIScreen *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mUiScreen</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3f797bc502a0aec20f1ee7d7c16a43b0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::vector&lt; ivec2 &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mSupportedResolutions</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa5b2a03e29c43504d7f7ffe106bb8a8b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mArea</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a84fe6f149cbb94e2c16e27a49963eb1c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mBitsPerPixel</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a87c357dd31c277ececb1ba7ac0e6b39d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mContentScale</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

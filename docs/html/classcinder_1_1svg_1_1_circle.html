@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>svg::Circle</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>Circle</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+
+          		<li><a href="#protected-functions">Protected Member Functions</a></li>
+
+          		<li><a href="#protected-attrs">Protected Attributes</a></li>
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+ <p>
+  SVG
+  <a href="classcinder_1_1svg_1_1_circle.html">
+   Circle
+  </a>
+  element:
+ </p>
+ <div class="ulink">
+  http://www.w3.org/TR/SVG/shapes.html#CircleElement
+ </div>
+ .
+ <p>
+ </p>
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/svg/Svg.h">Svg.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder_1_1svg.html#afe12e333736854f15e38036db034cedf">RenderVisitor</a></li>
+                        <li><a href="namespacecinder_1_1svg.html#a382056ff45060d1b6b42b5605120c4b8">TextSpanRef</a></li>
+                        <li><a href="namespacecinder_1_1svg.html#af002e73e44dd222738515e38a7f9cbaf">DocRef</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <label>Class Hierarchy:</label>
+                    <ul class="inheritence"><li class="depth1"><a href="classcinder_1_1svg_1_1_node.html">cinder::svg::Node</a></li><li class="depth2">cinder::svg::Circle</li></ul>
+                </div>
+
+
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a7016562080ea7a7722cc93510aaa4dce"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Circle</strong> (const Node *parent)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab4ea2773f86b27feba0d39666fb82f01"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Circle</strong> (const Node *parent, const XmlTree &amp;xml)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a01528daf7dda6c75b5d7c3ba0c2c3558"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">vec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getCenter</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8723e28106750df8f95d285adc5af970"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getRadius</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3cc5b50632d5f7cb51bdcc5fea5f8e0b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>containsPoint</strong> (const vec2 &amp;pt) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the point
+   <em>
+    pt
+   </em>
+   is inside of the
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   's shape.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac49d30ed87b5dfc20eafd62b82769988"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_shape2d.html">Shape2d</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getShape</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a
+   <a href="classcinder_1_1_shape2d.html">
+    Shape2d
+   </a>
+   representing the node in local coordinates. Not supported for
+   <a href="classcinder_1_1svg_1_1_text.html">
+    Text
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8ce9e8fd093411b25dd9e619f562c2b7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">class <a href="classcinder_1_1svg_1_1_doc.html">Doc</a> *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDoc</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the
+   <a href="classcinder_1_1svg_1_1_doc.html">
+    svg::Doc
+   </a>
+   this
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   is an element of.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af4abcd99381394ebe6f2e6f5f317eb1b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1svg_1_1_node.html">Node</a> *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getParent</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the immediate parent of this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afda6335ee7ab5202bf89c4697b5a62c7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::string &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getId</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the ID of this
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   when present.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a523741fa2e7066dedb179e8a1e3c6c86"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDomPath</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a DOM-style path to this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad4f833968b675788dca6ef9b4fd75f98"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1svg_1_1_style.html">Style</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getStyle</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the style elements defined on this
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   but not inherited from ancestors.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af09a430c007cdc1c28753a68d5b25bba"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setStyle</strong> (const Style &amp;style)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the style defined on this
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   but not inherited from ancestors.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac4c29d03f8e5bad1178963641a96d194"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1svg_1_1_style.html">Style</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calcInheritedStyle</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the node's
+   <a href="classcinder_1_1svg_1_1_style.html">
+    Style
+   </a>
+   , including attributes inherited from its ancestors for attributes it does not specify.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a052d522dd796aca6d3c90efb0f55d8c8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>render</strong> (Renderer &amp;renderer) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Renders the node and its descendants.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa3ea2ddaba841fbd38c2849e313c9d9f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1svg_1_1_node.html">Node</a> *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>findInAncestors</strong> (const std::string &amp;elementId) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Finds the node with ID
+   <em>
+    elementId
+   </em>
+   amongst this
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   's ancestors. Returns NULL on failure.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1246ca749e1bd44ebcf23c650764b921"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1svg_1_1_paint.html">Paint</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>findPaintInAncestors</strong> (const std::string &amp;paintName) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Finds the
+   <a href="classcinder_1_1svg_1_1_paint.html">
+    svg::Paint
+   </a>
+   node with ID
+   <em>
+    elementId
+   </em>
+   amongst this
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   's ancestors. Returns a default
+   <a href="classcinder_1_1svg_1_1_paint.html">
+    svg::Paint
+   </a>
+   instance on failure.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a88ed15f468a74b1647ec3bd9af0b31ac"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>specifiesTransform</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether this
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   specifies a transformation.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aaa1e13fe8895bdd023b3110401329891"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">mat3</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getTransform</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the local transformation of this node. Returns identity if the
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   's transform isn't specified.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a831d807976cace8d9ffa286aea2e46ff"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setTransform</strong> (const mat3 &amp;transform)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the local transformation of this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2d4706c3e304b2b0e6a9cfd3bcb6ab51"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>unspecifyTransform</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Removes the local transformation of this node, effectively making it the identity matrix.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a731d1a530bf2964450b8affb673571bd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">mat3</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getTransformInverse</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the inverse of the local transformation of this node. Returns identity if the
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   's transform isn't specified.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa30fdf7d1050791bd95e095a8591a4c2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">mat3</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getTransformAbsolute</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the absolute transformation of this node, which includes inherited transformations.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aca40711d17ffa3d024ac8d910e0848ec"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">mat3</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getTransformAbsoluteInverse</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the inverse of the absolute transformation of this node, which includes inherited transformations.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abbf1b613f99deb70af552ba74b062f32"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getBoundingBox</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the local bounding box of the
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   . Calculated and cached the first time it is requested.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1657f22b5fd4d7743fc16a4062cb7d68"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getBoundingBoxAbsolute</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the absolute bounding box of the
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   . Calculated and cached the first time it is requested.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad44ffe396dd8892c49b0fa726f8aa3e1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_shape2d.html">Shape2d</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getShapeAbsolute</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a
+   <a href="classcinder_1_1_shape2d.html">
+    Shape2d
+   </a>
+   representing the node in absolute coordinates. Not supported for
+   <a href="classcinder_1_1svg_1_1_text.html">
+    Text
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a68849c9fcb34918ab7e248bd73715606"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1svg_1_1_paint.html">Paint</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getFill</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's fill, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5c08eb7d7ad7dc5957c5cabf7950bb4c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1svg_1_1_paint.html">Paint</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getStroke</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's stroke, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afa112e0c94feaa1960e8a3c8b86e32e2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getOpacity</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's opacity, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad73d4d318298eaa8d6882b4442fcb3be"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getFillOpacity</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's fill opacity, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2088607fc6fb779dd9e117dc6bbeaba2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getStrokeOpacity</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's stroke opacity, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa9e5c0cb651769b873e1a3b1ec9c1950"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1svg.html#aac326690dec1e2bf20e8dbf0072197f3">FillRule</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getFillRule</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's fill rule, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae6df33951f8c8e5e44d86629f4cc88b2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1svg.html#a3584e121924b34f82dade5b191620eb5">LineCap</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getLineCap</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's line cap, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a16bdf9f6f4bb3537502a9befc917af37"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1svg.html#afb945f112425694fe967574754a9e867">LineJoin</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getLineJoin</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's line join, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a90ad050a6db67f3c4837d53130601a28"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getStrokeWidth</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's stroke width, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aacbe5424c2f3582d49fe8a1e3396fd80"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::vector&lt; std::string &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getFontFamilies</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's font families, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a20e8c1d7b1a8ac0790bc16166d029325"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1svg_1_1_value.html">Value</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getFontSize</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns node's font size, or the first among its ancestors when it has none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac205f3484f47ba59e544bd3ced4f3180"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isVisible</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether this
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   is visible, or the first among its ancestors when unspecified.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aec90ff76022c33bedc6614158267e2ef"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isDisplayNone</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the
+   <a href="classcinder_1_1_display.html">
+    Display
+   </a>
+   property of this
+   <a href="classcinder_1_1svg_1_1_node.html">
+    Node
+   </a>
+   is set to 'None', preventing rendering of the node and its children.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+
+            <!-- protected member functions -->
+            <a name="protected-functions"></a>
+            <section>
+                <h2>Protected Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a96b2f4f477be8aa4799c25d608b02ea4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>renderSelf</strong> (Renderer &amp;renderer) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aeb0bdd68fa20447e89643e844debf95e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calcBoundingBox</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a18e7d77b545f93edc634bf88422e3085"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isDrawable</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad0ef2ae56d9f47189d2616fa3a52b6b5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>startRender</strong> (Renderer &amp;renderer, const Style &amp;style) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac2363a4c0410b723b6f1811dcfeec1c0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>finishRender</strong> (Renderer &amp;renderer, const Style &amp;style) const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac1e44d34ff40e1b51dca9a47ba6dd7d9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>parseStyle</strong> (const std::string &amp;value)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0bef0bd66ecf56c29181d952a18cf468"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1svg_1_1_paint.html">Paint</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>parsePaint</strong> (const char *value, bool *specified, const Node *parentNode)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0c94199d0877605730b4c62ca029b1ed"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">mat3</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>parseTransform</strong> (const std::string &amp;value)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0d93fa92201730fad11ff1ae286089d0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>parseTransformComponent</strong> (const char **c, mat3 *result)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5dbdf4575265aa0f0149c83a1999525c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>findStyleValue</strong> (const std::string &amp;styleString, const std::string &amp;key)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected attributes -->
+            <a name="protected-attrs"></a>
+            <section>
+                <h2>Protected Attributes</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="af5a30ca82c00193e57f276e507f77b7d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">vec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mCenter</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a32287b8b2d665c7db758985eaa561063"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mRadius</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5ca29737a2c6424210f2b4f9bd8273cf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1svg_1_1_node.html">Node</a> *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mParent</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a16265d18c95a0a9f312d029f718662a4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mId</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8dd4ceb2295474dcb12ebc1bfc86a3a5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1svg_1_1_style.html">Style</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mStyle</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a37fd05fda3bb7c25645ac87dbe54a480"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mSpecifiesTransform</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a6e6b112fbe1dbd977d31ed7c8d356421"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">mat3</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mTransform</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab019ac5b0a33095e1b5cc719972a5e78"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mBoundingBoxCached</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a346efd899af34e90d0284c0f5538b0bc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mBoundingBox</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>app::Platform</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>Platform</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+          		<li><a href="#protected-functions">Protected Member Functions</a></li>
+
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/app/Platform.h">Platform.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder.html#a5381a0626b1663e31dc89897220c85a0">DisplayRef</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+
+
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="ab62afa3cde15511973e3818f79ea837e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>~Platform</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a12d1f44e50d98228899306f9710cc8db"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>prepareLaunch</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Called at the beginning of a launch, can be overridden for platform-specifc preparation.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2872c35fc8e9e0476c2995e0afe11ce0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>cleanupLaunch</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Called at the end of a launch, can be overridden for platform-specifc cleanup.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3bd3bd9a25899d4a70bf3728ca58956e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#aac2835d5c35983a70212a77c278feeba">DataSourceRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>loadAsset</strong> (const fs::path &amp;relativePath)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a DataSourceRef to an application asset. Throws a
+   <a href="classcinder_1_1app_1_1_asset_load_exc.html">
+    AssetLoadExc
+   </a>
+   on failure.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae88d0377a479dd70db9d135da6d1c1b1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAssetPath</strong> (const fs::path &amp;relativePath)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a fs::path to an application asset. Returns an empty path on failure.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae8a5ab9b2e9b714013009923f7545bd2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addAssetDirectory</strong> (const fs::path &amp;directory)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5160f7011d1a9bfa376ec48b19c79fbe"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::vector&lt; fs::path &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAssetDirectories</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a vector of directories that are searched when looking up an asset path.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2b501a69fd00c215895e98951ae4739f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#aac2835d5c35983a70212a77c278feeba">DataSourceRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>loadResource</strong> (const fs::path &amp;resourcePath)=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a
+   <a href="classcinder_1_1_data_source.html">
+    DataSource
+   </a>
+   to an application resource.
+   <em>
+    resourcePath
+   </em>
+   is defined on a per-platform basis.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    CinderResources
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa408a6677940476b895265d4bc9a5e1c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getResourceDirectory</strong> () const  =0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the absolute file path to the resources folder. Returns an empty fs::path on windows.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    CinderResources
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afb2d5e09ad63849e7e8165839e011665"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getResourcePath</strong> (const fs::path &amp;rsrcRelativePath) const  =0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the absolute file path to a resource located at
+   <em>
+    rsrcRelativePath
+   </em>
+   inside the bundle's resources folder. Throws
+   <a href="classcinder_1_1app_1_1_resource_load_exc.html">
+    ResourceLoadExc
+   </a>
+   on failure.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    CinderResources
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a4a360365fdb1f34682eaac454f798eae"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setExecutablePath</strong> (const fs::path &amp;execPath)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a882771946e60362b81cbc2c8d09d186b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getExecutablePath</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a156d0e608dcd6921d83a3dc0113278b3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getOpenFilePath</strong> (const fs::path &amp;initialPath=fs::path(), const std::vector&lt; std::string &gt; &amp;extensions=std::vector&lt; std::string &gt;())=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Presents the user with an open-file dialog and returns the selected file path. The dialog optionally begins at the path
+   <em>
+    initialPath
+   </em>
+   and can be limited to allow selection of files ending in the extensions enumerated in
+   <em>
+    extensions
+   </em>
+   .
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    the selected file path, or an empty fs::path if the user cancelled or this operation isn't supported on the current platform.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa661b9b468f71fd87d8e20a751e3fe87"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getFolderPath</strong> (const fs::path &amp;initialPath=fs::path())=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Presents the user with an open-folder dialog.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    the selected file path, or an empty fs::path if the user cancelled or this operation isn't supported on the current platform.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3417d561e23cea22e94ebea8c74fd518"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSaveFilePath</strong> (const fs::path &amp;initialPath=fs::path(), const std::vector&lt; std::string &gt; &amp;extensions=std::vector&lt; std::string &gt;())=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Presents the user with a save-file dialog and returns the selected file path. The dialog optionally begins at the path
+   <em>
+    initialPath
+   </em>
+   and can be limited to allow selection of files ending in the extensions enumerated in
+   <em>
+    extensions
+   </em>
+   .
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    the selected file path, or an empty fs::path if the user cancelled or this operation isn't supported on the current platform.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a607b760438e222b0ed858befc62e1264"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::ostream &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>console</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5c654926496e749ba5ba6035b4213b82"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::map&lt; std::string, std::string &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getEnvironmentVariables</strong> ()=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a std::map of the system's environment variables. Empty on WinRT.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2ba3c7871ca56c432a742d840d79b852"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>expandPath</strong> (const fs::path &amp;path)=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a canonical version of
+   <em>
+    path
+   </em>
+   . Collapses '.', ".." and "//". Converts '~' on Cocoa. Expands environment variables on MSW.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5a944fba8c4b4ef9d6d114fada3c9c9e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getHomeDirectory</strong> ()=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the path to the user's home directory.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aacb6d8adda548b9ee555ebc25505caaa"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDocumentsDirectory</strong> ()=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the path to the user's documents directory.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa3099650d58b55e2270c15e0f4821629"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sleep</strong> (float milliseconds)=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Suspends the execution of the current thread until
+   <em>
+    milliseconds
+   </em>
+   have passed. Supports sub-millisecond precision only on OS X.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae229427acb685e12a1e793bfc4683f7c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>launchWebBrowser</strong> (const Url &amp;url)=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Launches a path in the system's default web browser.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acc3b699cee9ce1d3b59ef72aa1585a82"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::vector&lt; std::string &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackTrace</strong> ()=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a stack trace (aka backtrace) where
+   <code>
+    &lt;a href="classcinder_1_1app_1_1_platform.html#acc3b699cee9ce1d3b59ef72aa1585a82"&gt;
+     stackTrace()
+    &lt;/a&gt;
+   </code>
+   [0] == caller,
+   <code>
+    &lt;a href="classcinder_1_1app_1_1_platform.html#acc3b699cee9ce1d3b59ef72aa1585a82"&gt;
+     stackTrace()
+    &lt;/a&gt;
+   </code>
+   [1] == caller's parent, etc.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a48330ad14ff828b350065d5b8396e9db"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::vector&lt; <a href="namespacecinder.html#a5381a0626b1663e31dc89897220c85a0">DisplayRef</a> &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDisplays</strong> ()=0</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a std::vector of Displays connected to the system.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a44dbb0e844e3a1af9c6b1388e7a0c972"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1app_1_1_platform.html">Platform</a> *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>get</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the current
+   <a href="classcinder_1_1app_1_1_platform.html">
+    Platform
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4b922387139c1aa4310e005d3091d9db"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>set</strong> (Platform *platform)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the current
+   <a href="classcinder_1_1app_1_1_platform.html">
+    Platform
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+            <a name="protected-functions"></a>
+            <section>
+                <h2>Protected Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="ad1ee5e60c9bad4a45ecc357d96b206f2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Platform</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1acee9b373d0b9fd771f84d01a81d59c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>prepareAssetLoading</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Called when asset directories are first prepared, subclasses can override to add platform specific directories.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected attributes -->
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

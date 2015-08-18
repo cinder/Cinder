@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>SurfaceT::Iter</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>Iter</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+
+
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+ <p>
+  Convenience class for iterating the pixels of a Surface.
+ </p>
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/Surface.h">Surface.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder.html#a7f62055e4cb811edb9868b32595a1d64">Surface</a></li>
+                        <li><a href="namespacecinder.html#ad8b046fa928d58861b60465ceda392c5">Surface8u</a></li>
+                        <li><a href="namespacecinder.html#af86150f608e2e28b76ed1f12e9883405">Surface8uRef</a></li>
+                        <li><a href="namespacecinder.html#a1336f205a969a3aa0e66006b6f596086">SurfaceRef</a></li>
+                        <li><a href="namespacecinder.html#a8d12457845cf49dfabd567551dabf2d9">Surface16u</a></li>
+                        <li><a href="namespacecinder.html#a110968046359a39401293da9c7a12f70">Surface16uRef</a></li>
+                        <li><a href="namespacecinder.html#a69465422e6011583c33994f0280dcd29">Surface32f</a></li>
+                        <li><a href="namespacecinder.html#a1078acc609f17e768e27c4c642536e76">Surface32fRef</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+
+
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="af3942113db45f5d8a3d3df370d7212a8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Iter</strong> (SurfaceT&lt; T &gt; &amp;SurfaceT, const Area &amp;area)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa78c1edb138d18eb0920c300c85f9b41"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>r</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the red value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a08226b88c883505472a2bcd63fc68b1b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>g</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the green value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa3c488554ddb7ce58452dc6490e8b4c8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>b</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the blue value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa52cce049be78f2f0153ee0be2a661c2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>a</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the alpha value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to.
+  </p>
+  <p>
+   Undefined in the absence of an alpha channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ade5534d0787283c8d4a8467e08746b93"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>r</strong> (int32_t xOff, int32_t yOff) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the red value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to, offset by (
+   <em>
+    xOff
+   </em>
+   ,
+   <em>
+    yOff
+   </em>
+   ) pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4a4ba916bfbc0cfb26950ad2fcef99e1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>g</strong> (int32_t xOff, int32_t yOff) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the green value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to, offset by (
+   <em>
+    xOff
+   </em>
+   ,
+   <em>
+    yOff
+   </em>
+   ) pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a247fd8b8175da8e5d818d809014e4aa4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>b</strong> (int32_t xOff, int32_t yOff) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the blue value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to, offset by (
+   <em>
+    xOff
+   </em>
+   ,
+   <em>
+    yOff
+   </em>
+   ) pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5bbfaa815b9b9bea384923211b184eda"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>a</strong> (int32_t xOff, int32_t yOff) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the alpha value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to, offset by (
+   <em>
+    xOff
+   </em>
+   ,
+   <em>
+    yOff
+   </em>
+   ) pixels. Undefined in the absence of an alpha channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a603b0b02f8681a62927ea6577d0a0a99"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>rClamped</strong> (int32_t xOff, int32_t yOff) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the red value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to, offset by (
+   <em>
+    xOff
+   </em>
+   ,
+   <em>
+    yOff
+   </em>
+   ) pixels. Clamps offset to the bounds of the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aba9e3917ff840323554e3e0a0ed6dcc4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>gClamped</strong> (int32_t xOff, int32_t yOff) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the green value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to, offset by (
+   <em>
+    xOff
+   </em>
+   ,
+   <em>
+    yOff
+   </em>
+   ) pixels. Clamps offset to the bounds of the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa6a29d197c74f7b6e28afec587ea817d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>bClamped</strong> (int32_t xOff, int32_t yOff) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the blue value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to, offset by (
+   <em>
+    xOff
+   </em>
+   ,
+   <em>
+    yOff
+   </em>
+   ) pixels. Clamps offset to the bounds of the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acc408c1bc942cf78054a725221bffb2a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>aClamped</strong> (int32_t xOff, int32_t yOff) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the alpha value of the pixel that the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to, offset by (
+   <em>
+    xOff
+   </em>
+   ,
+   <em>
+    yOff
+   </em>
+   ) pixels. Clamps offset to the bounds of the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   . Undefined in the absence of an alpha channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4142a1f8abb3e812ba5444957815022b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>x</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the x coordinate of the pixel the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae1a58e8d98ef63c4f5131844494d37f2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>y</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the y coordinate of the pixel the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a37e9dba6cd242333e687ed3edca06a09"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getPos</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the coordinate of the pixel the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   currently points to.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab33eb94a8faf12609993486bb4b32f58"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>pixel</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Increments which pixel of the current row the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   points to, and returns
+   <code>
+    false
+   </code>
+   when no pixels remain in the current row.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3bd56277eb0c8c7c099ee94e6bf24fb2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>line</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Increments which row the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   points to, and returns
+   <code>
+    false
+   </code>
+   when no rows remain in the Surface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac3ee2871d02a40ef4d69a57d459a9fa9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWidth</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the width of the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   iterates.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a41531ff71c5644f8165115b09f9f10db"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getHeight</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the height of the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   the
+   <a href="classcinder_1_1_surface_t_1_1_iter.html">
+    Iter
+   </a>
+   iterates.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+
+            <!-- protected member functions -->
+
+            <!-- protected attributes -->
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>gl::FboCubeMap::Format</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>Format</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+
+          		<li><a href="#protected-attrs">Protected Attributes</a></li>
+
+          		<li><a href="#friends">Friends</a></li>
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/gl/Fbo.h">Fbo.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder_1_1gl.html#afb2feb086bdcdcd0263196cba1f3c153">RenderbufferRef</a></li>
+                        <li><a href="namespacecinder_1_1gl.html#a6c8219ff832d09e5e583aff09eb04900">FboCubeMapRef</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <label>Class Hierarchy:</label>
+                    <ul class="inheritence"><li class="depth1"><a href="structcinder_1_1gl_1_1_fbo_1_1_format.html">cinder::gl::Fbo::Format</a></li><li class="depth2">cinder::gl::FboCubeMap::Format</li></ul>
+                </div>
+
+
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="aa27394bb62027c277c306ab8feb6ae79"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Format</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a67010fb031dbc70e354cd5063b70380e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>textureCubeMapFormat</strong> (const TextureCubeMap::Format &amp;format)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the
+   <a href="classcinder_1_1gl_1_1_texture_cube_map.html">
+    TextureCubeMap
+   </a>
+   format for the default CubeMap.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aae5a9329d1beed8016e2473e9df57915"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="structcinder_1_1gl_1_1_texture_cube_map_1_1_format.html">TextureCubeMap::Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getTextureCubeMapFormat</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the
+   <a href="classcinder_1_1gl_1_1_texture_cube_map.html">
+    TextureCubeMap
+   </a>
+   format for the default CubeMap.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abec4dc8a2d9979b6a5a49ff7305a7ad2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>disableDepth</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Disables a depth
+   <a href="classcinder_1_1_buffer.html">
+    Buffer
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aad66515aee1f13e8cb5aac6983bc17a5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>label</strong> (const std::string &amp;label)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the debugging label associated with the
+   <a href="classcinder_1_1gl_1_1_fbo.html">
+    Fbo
+   </a>
+   . Calls glObjectLabel() when available.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4a9ea7981c0b5665756bca208fc99f9a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>colorTexture</strong> (const Texture::Format &amp;textureFormat=getDefaultColorTextureFormat(true))</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables a color texture at
+   <code>
+    GL_COLOR_ATTACHMENT0
+   </code>
+   with a Texture::Format of
+   <em>
+    textureFormat
+   </em>
+   , which defaults to 8-bit RGBA with no mipmapping. Disables a color renderbuffer.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4e62eed9518094366060de17dd0e4a08"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>disableColor</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Disables both a color Texture and a color
+   <a href="classcinder_1_1_buffer.html">
+    Buffer
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6a30cad4b4a5eb37197800ab3c9f8815"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>depthBuffer</strong> (GLenum internalFormat=getDefaultDepthInternalFormat())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables a depth renderbuffer with an internal format of
+   <em>
+    internalFormat
+   </em>
+   , which defaults to
+   <code>
+    GL_DEPTH_COMPONENT24
+   </code>
+   . Disables a depth texture.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1f68bf5df8e20e1f1ce5d325b234f23f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>depthTexture</strong> (const Texture::Format &amp;textureFormat=getDefaultDepthTextureFormat())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables a depth texture with a format of
+   <em>
+    textureFormat
+   </em>
+   , which defaults to
+   <code>
+    GL_DEPTH_COMPONENT24
+   </code>
+   . Disables a depth renderbuffer.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7adbdaaaab810368b6c1f83c400b796e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>samples</strong> (int samples)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the number of MSAA samples. Defaults to none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1b3e88a42a7a8a27a5048676b40339f2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>coverageSamples</strong> (int coverageSamples)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the number of CSAA samples. Defaults to none.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a34b9f7083608a96db81e875edec8368a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stencilBuffer</strong> (bool stencilBuffer=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables a stencil buffer. Defaults to false.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acf0979bca71dfa50a604974624d39c2f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>attachment</strong> (GLenum attachmentPoint, const RenderbufferRef &amp;buffer, RenderbufferRef multisampleBuffer=RenderbufferRef())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds a
+   <a href="classcinder_1_1gl_1_1_renderbuffer.html">
+    Renderbuffer
+   </a>
+   attachment
+   <em>
+    buffer
+   </em>
+   at
+   <em>
+    attachmentPoint
+   </em>
+   (such as
+   <code>
+    GL_COLOR_ATTACHMENT0
+   </code>
+   ). Replaces any existing attachment at the same attachment point.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a92327be225cdc9d20da0bd3efec416f7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_fbo_cube_map_1_1_format.html">Format</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>attachment</strong> (GLenum attachmentPoint, const TextureBaseRef &amp;texture, RenderbufferRef multisampleBuffer=RenderbufferRef())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds a Texture attachment
+   <em>
+    texture
+   </em>
+   at
+   <em>
+    attachmentPoint
+   </em>
+   (such as
+   <code>
+    GL_COLOR_ATTACHMENT0
+   </code>
+   ). Replaces any existing attachment at the same attachment point.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2b890b1b7d7b47140a1d1bd08f67da70"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setDepthBufferInternalFormat</strong> (GLint depthInternalFormat)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the internal format for the depth buffer. Defaults to
+   <code>
+    GL_DEPTH_COMPONENT24
+   </code>
+   . Common options also include
+   <code>
+    GL_DEPTH_COMPONENT16
+   </code>
+   and
+   <code>
+    GL_DEPTH_COMPONENT32
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a89bf5b2a951a1b02ca33d8f045510484"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setSamples</strong> (int samples)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling. Note that not all implementations support multisampling.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9bbb6899f14aeba95c0b256dab5a778e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setCoverageSamples</strong> (int coverageSamples)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the number of coverage samples used in CSAA-style antialiasing. Defaults to none. Note that not all implementations support CSAA, and is currenlty Windows-only Nvidia. Ignored on OpenGL ES.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab72aa570ed041f7b6f61d22696760fb1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setColorTextureFormat</strong> (const Texture::Format &amp;format)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the Color Texture::Format for use in the creation of the color texture.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a34456e9d8c4b1f02f4cc019744947251"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>enableDepthBuffer</strong> (bool depthBuffer=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables or disables the creation of a depth buffer for the FBO.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a782fc61c7aa9a69aa203b33b5589fcd5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>enableStencilBuffer</strong> (bool stencilBuffer=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables or disables the creation of a stencil buffer.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab0eb12fe3ed82897aa96d3cffcd65e91"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>removeAttachment</strong> (GLenum attachmentPoint)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Removes a buffer or texture attached at
+   <em>
+    attachmentPoint
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a36ee549cc7ca18071e65a42df1493612"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDepthBufferInternalFormat</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the GL internal format for the depth buffer. Defaults to
+   <code>
+    GL_DEPTH_COMPONENT24
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a52f2404cc125914a509ba40b65908f99"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const Texture::Format &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getColorTextureFormat</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the Texture::Format for the default color texture at GL_COLOR_ATTACHMENT0.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a572dd2dc0a78cf14c6b3e1d7db0f5985"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const Texture::Format &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDepthTextureFormat</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the Texture::Format for the depth texture.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab563c043b89e0e9e347b252bef9f9ef6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSamples</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3627b807a3e034f8f67f50d82efc9da2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getCoverageSamples</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number of coverage samples used in CSAA-style antialiasing. Defaults to none. MSW only.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a87683ef49ed8de76ec970a4c05304ca9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hasColorTexture</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the FBO contains a Texture at GL_COLOR_ATTACHMENT0.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aadd4ac7e9423b25ad3afadfc693bb1e0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hasDepthBuffer</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the FBO has a
+   <a href="classcinder_1_1gl_1_1_renderbuffer.html">
+    Renderbuffer
+   </a>
+   as a depth attachment.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a95d5bc2cce68f132f0dc21bc8821b74f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hasStencilBuffer</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the FBO has a
+   <a href="classcinder_1_1gl_1_1_renderbuffer.html">
+    Renderbuffer
+   </a>
+   as a stencil attachment.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab6d3a6ccdd7a88460e13ad02a10539a2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::string &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getLabel</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the debugging label associated with the
+   <a href="classcinder_1_1gl_1_1_fbo.html">
+    Fbo
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad2cdcc9f3ea30a1220b408818eb72f75"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setLabel</strong> (const std::string &amp;label)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the debugging label associated with the
+   <a href="classcinder_1_1gl_1_1_fbo.html">
+    Fbo
+   </a>
+   . Calls glObjectLabel() when available.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8adbdbc6e48427127ab01027639da958"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">Texture::Format</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDefaultColorTextureFormat</strong> (bool alpha=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the default color Texture::Format for this platform.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae9a42d77fd75e4b20352b18633e86659"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">Texture::Format</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDefaultDepthTextureFormat</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the default depth Texture::Format for this platform.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a36aec58ab09eb23ea36c06cbfd7938fb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDefaultColorInternalFormat</strong> (bool alpha=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the default internalFormat for a color
+   <a href="classcinder_1_1gl_1_1_renderbuffer.html">
+    Renderbuffer
+   </a>
+   for this platform.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a17232c7b620186a50bc8f5f74d1c2eec"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDefaultDepthInternalFormat</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the default internalFormat for a depth
+   <a href="classcinder_1_1gl_1_1_renderbuffer.html">
+    Renderbuffer
+   </a>
+   for this platform.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a2ad1a7965090c1c008205c744562eb61"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDepthStencilFormats</strong> (GLint depthInternalFormat, GLint *resultInternalFormat, GLenum *resultPixelDataType)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+
+            <!-- protected attributes -->
+            <a name="protected-attrs"></a>
+            <section>
+                <h2>Protected Attributes</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="aabc4aeb3acd0166de62ffc239a721ee1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1gl_1_1_texture_cube_map_1_1_format.html">gl::TextureCubeMap::Format</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mTextureCubeMapFormat</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aef8fae87d4e51b7578e0601d72406517"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLenum</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mDepthBufferInternalFormat</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac8955f7960d17c6a45b9072c21d10da6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mSamples</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3b123acd7321b0a96648be4757f81268"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mCoverageSamples</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a4c81bbcadc5244dd8befe834bd945131"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mColorTexture</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa6c69f6fb199f04eba4658845c82c7a8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mDepthTexture</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a87250b821c104288897ed9e5dff9e6be"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mDepthBuffer</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5d2a059ea45feaeb5125c7747e3d02d2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mStencilBuffer</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a79128f77ec6a0b90befe112562997c94"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">Texture::Format</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mColorTextureFormat</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa61edd688974eed720bf84637c0cac0d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">Texture::Format</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mDepthTextureFormat</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5e1b6425c1d59e433ddeabb44a3d7be8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mLabel</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a41e37c218ed31d16b0a8a7b593a7739b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::map&lt; GLenum, <a href="namespacecinder_1_1gl.html#afb2feb086bdcdcd0263196cba1f3c153">RenderbufferRef</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mAttachmentsBuffer</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0b03e7928f0ba11e78ca487392355307"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::map&lt; GLenum, <a href="namespacecinder_1_1gl.html#afb2feb086bdcdcd0263196cba1f3c153">RenderbufferRef</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mAttachmentsMultisampleBuffer</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae75e0f9aed4858664ee4293312a8d2f8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::map&lt; GLenum, <a href="namespacecinder_1_1gl.html#a1ce74b64a1aab1610d899808b6a1cbce">TextureBaseRef</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mAttachmentsTexture</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- friends -->
+            <a name="friends"></a>
+            <section>
+                <h2>Friends</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a1d6fdfd149c79928d2f968d0d04674a3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">friend class</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong><a href="_templates/_templates/classcinder_1_1gl_1_1_fbo_cube_map.html">cinder::gl::FboCubeMap</a></strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

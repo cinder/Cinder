@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>XmlTree</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>XmlTree</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+          		<li><a href="#enumerations">Public Types</a></li>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+
+
+          		<li><a href="#friends">Friends</a></li>
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+</div>
+</body></html>
+            
+		<p>The XmlTree class is designed to parse and XML documents and represent them hierarchically. An XmlTree node is composed of an optional value, attributes and a collection of children nodes, which are in turn XmlTree's.</p>
+	
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/Xml.h">Xml.h</a>
+                    </div>
+                </div>
+
+
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Classes:</label>
+                        <li><a href="classcinder_1_1_xml_tree_1_1_attr.html">Attr</a></li>
+                        <li><a href="classcinder_1_1_xml_tree_1_1_const_iter.html">ConstIter</a></li>
+                        <li><a href="classcinder_1_1_xml_tree_1_1_exc_attr_not_found.html">ExcAttrNotFound</a></li>
+                        <li><a href="classcinder_1_1_xml_tree_1_1_exc_child_not_found.html">ExcChildNotFound</a></li>
+                        <li><a href="classcinder_1_1_xml_tree_1_1_exception.html">Exception</a></li>
+                        <li><a href="classcinder_1_1_xml_tree_1_1_exc_unknown_node_type.html">ExcUnknownNodeType</a></li>
+                        <li><a href="classcinder_1_1_xml_tree_1_1_iter.html">Iter</a></li>
+                        <li><a href="classcinder_1_1_xml_tree_1_1_parse_options.html">ParseOptions</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Related Links:</label>
+                        <li><a href="guides/xml-tree/index.html">index.html</a></li>
+                      </ul>
+                    </div>
+                </div>
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+            <a name="enumerations"></a>
+            <section>
+                <h2>Enumerations</h2>
+                <ul class="rows">
+                    <li class="row expandable enumDef">
+                        <a class="anchor" name="a6135324728befd55633fa464dd388cf3"></a>
+                        <div class="definitionCol columns large-3"></div>
+                        <div class="definitionCol columns large-9">
+                            <div class="definition"><strong>NodeType</strong></div>
+                            <html><head></head><body><div class="description content">
+ <p>
+ </p>
+ <div class="description content">
+  <p>
+   Enum listing all types of XML nodes understood by the parser.
+  </p>
+ </div>
+ <p>
+ </p>
+ {
+ <ul>
+  <li>
+   NODE_UNKNOWN
+  </li>
+  <li>
+   NODE_DOCUMENT
+  </li>
+  <li>
+   NODE_ELEMENT
+  </li>
+  <li>
+   NODE_CDATA
+  </li>
+  <li>
+   NODE_COMMENT
+  </li>
+  <li>
+   NODE_DATA
+  </li>
+ </ul>
+ }
+</div>
+</body></html>
+                        </div>
+                    </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a01f95ee0830d2654814a95949fe1d1e9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>XmlTree</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Default constructor, creating an empty node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9b42cb008fa1191cd0ef23c96da04483"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>XmlTree</strong> (const XmlTree &amp;rhs)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Copy constuctor.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="afd83aaf9ee01beb2a72f84e96aa50fb0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree.html">XmlTree</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator=</strong> (const XmlTree &amp;rhs)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a90e6e916f4e6abdeb13ab410b51f741c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>XmlTree</strong> (DataSourceRef dataSource, ParseOptions parseOptions=ParseOptions())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Parses XML contained in
+   <em>
+    dataSource
+   </em>
+   using the options
+   <em>
+    parseOptions
+   </em>
+   . Commonly used with the results of
+   <a href="namespacecinder.html#ac585fce4c1e96b04a400b5858b607909">
+    loadUrl()
+   </a>
+   ,
+   <a href="namespacecinder.html#a5914d1dcf8a37d479ed1186326a8eae7">
+    loadFile()
+   </a>
+   or
+   <a href="namespacecinder_1_1app.html#a46a32d7c136a4946b464f6e65701ec46">
+    loadResource()
+   </a>
+   .
+   <br/>
+   <code>
+    &lt;a href="classcinder_1_1_xml_tree.html"&gt;
+     XmlTree
+    &lt;/a&gt;
+    myDoc( loadUrl( "http://rss.cnn.com/rss/cnn_topstories.rss" ) );
+    &lt;br/&gt;
+   </code>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3cab4602ab2ec2322ee8fc9764ad1f72"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>XmlTree</strong> (const std::string &amp;xmlString, ParseOptions parseOptions=ParseOptions())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Parses the XML contained in the string
+   <em>
+    xmlString
+   </em>
+   using the options
+   <em>
+    parseOptions
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a837e1f7848d7990a8c1cb1f1b9840765"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>XmlTree</strong> (const std::string &amp;tag, const std::string &amp;value, XmlTree *parent=0, NodeType type=NODE_ELEMENT)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Constructs an XML node with the tag
+   <em>
+    tag
+   </em>
+   , the value
+   <em>
+    value
+   </em>
+   . Optionally sets the pointer to the node's parent and sets the node type.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a96eb0930ac8e13466ff645c753eb9105"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree.html#a6135324728befd55633fa464dd388cf3">NodeType</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getNodeType</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the type of this node as a NodeType.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a47e6dbaa4a27f14bf5be4c2681922026"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setNodeType</strong> (NodeType type)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the type of this node to NodeType
+   <em>
+    type
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0424ce87c797ad3984429605f0ab91fa"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isDocument</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether this node is a document node, meaning it is a root node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a063712d000ef66f3a56be37b4b9dde39"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isElement</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether this node is an element node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9b13245525475aff69577c35710aaf25"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isCData</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether this node represents CDATA. Only possible when a document's
+   <a href="classcinder_1_1_xml_tree_1_1_parse_options.html">
+    ParseOptions
+   </a>
+   disabled collapsing CDATA.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad429f6fcad3cbf84411f223963afb0b7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isComment</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether this node represents a comment. Only possible when a document's
+   <a href="classcinder_1_1_xml_tree_1_1_parse_options.html">
+    ParseOptions
+   </a>
+   enabled parsing commments.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a045c5762e7c1d007b99994435975f11a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::string &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getTag</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the tag or name of the node as a string.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afdb3bf6fa7cf6d66b700ac82c6a6be5d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setTag</strong> (const std::string &amp;tag)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the tag or name of the node to the string
+   <em>
+    tag
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acc7f1501311af5db881eaada1512bb17"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getValue</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the value of the node as a string.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5ec7740a5357a3e3d2b988b7e4688e26"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getValue</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the value of the node parsed as a T. Requires T to support the istream&gt;&gt; operator.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adc8883b135cd540135fdf2bc64015098"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getValue</strong> (const T &amp;defaultValue) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the value of the node parsed as a T. If the value is empty or fails to parse
+   <em>
+    defaultValue
+   </em>
+   is returned. Requires T to support the istream&gt;&gt; operator.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8ecacf6938bc26056445689eebff10c5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setValue</strong> (const std::string &amp;value)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the value of the node to the string
+   <em>
+    value
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7b08aad8b917bfb227bfab429bf851aa"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setValue</strong> (const T &amp;value)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the value of the node to
+   <em>
+    value
+   </em>
+   which is converted to a string first. Requires T to support the ostream&lt;&lt; operator.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a82329654b35fb0cc821d39317378656d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hasParent</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether this node has a parent node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abed9f24668e197147951b22ddf1e91a3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree.html">XmlTree</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getParent</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the node which is the parent of this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4a8fcb3fc5e3d74d42afe225978f71fd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_xml_tree.html">XmlTree</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getParent</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the node which is the parent of this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2bacc49d3fe4a9c8a00c31eece9551ac"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree_1_1_iter.html">Iter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>find</strong> (const std::string &amp;relativePath, bool caseSensitive=false, char separator= '/')</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the first child that matches
+   <em>
+    relativePath
+   </em>
+   or
+   <a href="classcinder_1_1_xml_tree.html#a54fb430a869b3fd52454be0299687844">
+    end()
+   </a>
+   if none matches.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae228cdcd69e5200a0a1431e45d24fb14"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree_1_1_const_iter.html">ConstIter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>find</strong> (const std::string &amp;relativePath, bool caseSensitive=false, char separator= '/') const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the first child that matches
+   <em>
+    relativePath
+   </em>
+   or
+   <a href="classcinder_1_1_xml_tree.html#a54fb430a869b3fd52454be0299687844">
+    end()
+   </a>
+   if none matches.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af2e92b166037a51b1513810537cf6331"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hasChild</strong> (const std::string &amp;relativePath, bool caseSensitive=false, char separator= '/') const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether at least one child matches
+   <em>
+    relativePath
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0330c31f8c01d342779c0d2f6da26ab5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree.html">XmlTree</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChild</strong> (const std::string &amp;relativePath, bool caseSensitive=false, char separator= '/')</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the first child that matches
+   <em>
+    relativePath
+   </em>
+   . Throws
+   <a href="classcinder_1_1_xml_tree_1_1_exc_child_not_found.html">
+    ExcChildNotFound
+   </a>
+   if none matches.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac9a39ee4e844271e6fa3e2e99b461ddf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_xml_tree.html">XmlTree</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChild</strong> (const std::string &amp;relativePath, bool caseSensitive=false, char separator= '/') const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the first child that matches
+   <em>
+    relativePath
+   </em>
+   . Throws
+   <a href="classcinder_1_1_xml_tree_1_1_exc_child_not_found.html">
+    ExcChildNotFound
+   </a>
+   if none matches.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3dec2bb17a23b776b3476a7f9ebcf06c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">Container &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChildren</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the node's list of children nodes.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adea98b6686a4731c79fb3d9d8d1f2a43"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const Container &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getChildren</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the node's list of children nodes.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5c1ba7c42a42fc449c923ecd8e46ad0c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::list&lt; <a href="classcinder_1_1_xml_tree_1_1_attr.html">Attr</a> &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAttributes</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the node's list of attributes.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab1b3c1c4e2e2ca68d4061762394a84d4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::list&lt; <a href="classcinder_1_1_xml_tree_1_1_attr.html">Attr</a> &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAttributes</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the node's list of attributes.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abf98dd773a4e571a9114cd97b89ab866"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_xml_tree_1_1_attr.html">Attr</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAttribute</strong> (const std::string &amp;attrName) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the node attribute named
+   <em>
+    attrName
+   </em>
+   . Throws AttrNotFoundExc if no attribute exists with that name.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a080283243a5c83a3aeccbac7b4e4f5ae"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_xml_tree_1_1_attr.html">Attr</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator[]</strong> (const std::string &amp;attrName) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_xml_tree_1_1_attr.html">
+    Attr
+   </a>
+   accessor. If the attribute does not exists its
+   <a href="classcinder_1_1_xml_tree_1_1_attr.html">
+    Attr
+   </a>
+   's value will be an empty string.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae9ff1eb0563b3841599633902f4cc175"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree_1_1_attr.html">Attr</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator[]</strong> (const std::string &amp;attrName)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_xml_tree_1_1_attr.html">
+    Attr
+   </a>
+   accessor. If the attribute does not exists its
+   <a href="classcinder_1_1_xml_tree_1_1_attr.html">
+    Attr
+   </a>
+   's value will be an empty string. Assigning the
+   <a href="classcinder_1_1_xml_tree_1_1_attr.html">
+    Attr
+   </a>
+   is the equivalent of calling setAttribute( attrName ).
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad23ae9f5746fa84bb424e1b642fc8406"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="classcinder_1_1_xml_tree.html">XmlTree</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator/</strong> (const std::string &amp;childName) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the first child that matches
+   <em>
+    childName
+   </em>
+   . Throws
+   <a href="classcinder_1_1_xml_tree_1_1_exc_child_not_found.html">
+    ExcChildNotFound
+   </a>
+   if none matches.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acfa3547141c5348f692a13420a9b6f06"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree.html">XmlTree</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator/</strong> (const std::string &amp;childName)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the first child that matches
+   <em>
+    childName
+   </em>
+   . Throws
+   <a href="classcinder_1_1_xml_tree_1_1_exc_child_not_found.html">
+    ExcChildNotFound
+   </a>
+   if none matches.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2a35e96659494390cc83dda18a280da7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAttributeValue</strong> (const std::string &amp;attrName) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the value of the attribute
+   <em>
+    attrName
+   </em>
+   parsed as a T. Throws AttrNotFoundExc if no attribute exists with that name. Requires T to support the istream&gt;&gt; operator.
+   <br/>
+   <code>
+    float size = myNode.getAttributeValue&lt;float&gt;( "size" );
+   </code>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abf1a582f7f3d2d95484af91148594e7f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAttributeValue</strong> (const std::string &amp;attrName, const T &amp;defaultValue) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the value of the attribute
+   <em>
+    attrName
+   </em>
+   parsed as a T. Returns
+   <em>
+    defaultValue
+   </em>
+   if no attribute exists with that name or the attribute fails to cast to T. Requires T to support the istream&gt;&gt; operator.
+   <br/>
+   <code>
+    float size = myNode.getAttributeValue&lt;float&gt;( "size", 1.0f );
+   </code>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a83360683794db21d32e54ff36c18ca8b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree.html">XmlTree</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setAttribute</strong> (const std::string &amp;attrName, const std::string &amp;value)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the value of the attribute
+   <em>
+    attrName
+   </em>
+   to
+   <em>
+    value
+   </em>
+   . If the attribute does not exist it is appended.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad91f3e102894c5eb2092c3518380a016"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree.html">XmlTree</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setAttribute</strong> (const std::string &amp;attrName, const T &amp;value)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the value of the attribute
+   <em>
+    attrName
+   </em>
+   to
+   <em>
+    value
+   </em>
+   , which is cast to a string first. Requires T to support the ostream&lt;&lt; operator. If the attribute does not exist it is appended.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a513316a31348c6abe62ea68afe24cd96"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hasAttribute</strong> (const std::string &amp;attrName) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the node has an attribute named
+   <em>
+    attrName
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a30b692af881ada011cf94668774ec7a9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getPath</strong> (char separator= '/') const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a path to this node, separated by the character
+   <em>
+    separator
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a932a9559ce3cacb3ddaa58f65e268741"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree_1_1_iter.html">Iter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>begin</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_xml_tree_1_1_iter.html">
+    Iter
+   </a>
+   to the first child node of this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab653d685ae80e5b2dc07bd9fea8ea8be"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree_1_1_iter.html">Iter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>begin</strong> (const std::string &amp;filterPath, bool caseSensitive=false, char separator= '/')</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_xml_tree_1_1_iter.html">
+    Iter
+   </a>
+   to the children node of this node which match the path
+   <em>
+    filterPath
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5d4c86660311df7521a072cf1a0ca819"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree_1_1_const_iter.html">ConstIter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>begin</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_xml_tree_1_1_iter.html">
+    Iter
+   </a>
+   to the first child node of this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac307060ca81356a4c933cd044f8781b0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree_1_1_const_iter.html">ConstIter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>begin</strong> (const std::string &amp;filterPath, bool caseSensitive=false, char separator= '/') const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_xml_tree_1_1_iter.html">
+    Iter
+   </a>
+   to the children node of this node which match the path
+   <em>
+    filterPath
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a54fb430a869b3fd52454be0299687844"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree_1_1_iter.html">Iter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>end</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_xml_tree_1_1_iter.html">
+    Iter
+   </a>
+   which marks the end of the children of this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a816215cf3b78571dbae42f4a615cfc19"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree_1_1_const_iter.html">ConstIter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>end</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_xml_tree_1_1_iter.html">
+    Iter
+   </a>
+   which marks the end of the children of this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a28acc1795c319d4942971831e2bf8909"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>push_back</strong> (const XmlTree &amp;newChild)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Appends a copy of the node
+   <em>
+    newChild
+   </em>
+   to the children of this node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3d19c06be47e41ddc45320d82e8d82b8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDocType</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the DOCTYPE string for this node. Only meaningful on a document's root node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aedb4679688440778e82230b06888c60c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setDocType</strong> (const std::string &amp;docType)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the DOCTYPE string for this node. Only meaningful on a document's root node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a33392d8f768b5bfc9fa23890ca4deea0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>write</strong> (DataTargetRef target, bool createDocument=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Writes this
+   <a href="classcinder_1_1_xml_tree.html">
+    XmlTree
+   </a>
+   to
+   <em>
+    target
+   </em>
+   with standard formatting. If
+   <em>
+    createDocument
+   </em>
+   is true then an implicit parent NODE_DOCUMENT is created when necessary and
+   <em>
+    this
+   </em>
+   is treated as the root element.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acb6cfbb1df884505021b32f9b9c66ba1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; rapidxml::xml_document&lt; char &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>createRapidXmlDoc</strong> (bool createDocument=false) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a shared_ptr to a RapidXML xml_document. If
+   <em>
+    createDocument
+   </em>
+   is true then an implicit parent NODE_DOCUMENT is created when necessary and
+   <em>
+    this
+   </em>
+   is treated as the root element.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a572922d4a13bf6ef8391f2e5f11a9c55"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_xml_tree.html">XmlTree</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>createDoc</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an XML document node.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+
+            <!-- protected attributes -->
+
+            <!-- friends -->
+            <a name="friends"></a>
+            <section>
+                <h2>Friends</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0f002c0af29c06e9c69689346afac943"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">friend std::ostream &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator&lt;&lt;</strong> (std::ostream &amp;out, const XmlTree &amp;xml)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Streams the
+   <a href="classcinder_1_1_xml_tree.html">
+    XmlTree
+   </a>
+   <em>
+    xml
+   </em>
+   to std::ostream
+   <em>
+    out
+   </em>
+   with standard formatting.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

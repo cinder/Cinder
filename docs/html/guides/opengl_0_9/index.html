@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>OpenGL in Cinder 0.9</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="../../_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="../../_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+<link href="../../_assets/css/foundation.css" rel="stylesheet"/><link href="../../_assets/css/cinder_docs.css" rel="stylesheet"/><link href="../../_assets/css/prism.css" rel="stylesheet"/></head>
+<body class="guide language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="../../index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="../../search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="../../reference/geometry.html">Reference</a></li>
+                              <li class="active" id="nav_guides">
+                                <a href="../index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="../../namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="../../classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="../../reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="../index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="../../namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="../../classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content content-row" id="container">
+    <div class="columns large-3">
+
+    </div>
+
+    <div class="columns large-9 content" data-equalizer-watch="content">
+
+
+    
+<h1>OpenGL in Cinder 0.9</h1>
+<p>
+This guide is written with users of previous versions of Cinder in mind, and is meant to aid in the transition to Cinder&rsquo;s new OpenGL API in version 0.9.0.
+</p>
+
+<p>
+OpenGL has evolved considerably in recent versions. And with the introduction of Core Profile  in OpenGL 3.2 (and parallel changes in OpenGL ES 2), much of the functionality of previous versions has been removed entirely. Most prominent was the removal of the fixed function pipeline,  which gave way to the fully programmable pipeline . This change allows OpenGL to more closely map to the underlying hardware, and is a significant improvement with respect to power and performance. However some of the simpler techniques for interacting with GL in previous versions are no longer available.
+</p>
+
+<p>
+With version 0.9.0, Cinder attempts to expose this new power, while still maintaining a relatively easy-to-use API.  While this document is not an exhaustive tutorial on the new API, it does cover the core concepts, and should be supplemented with a look at the sample code found in <a href="https://github.com/cinder/Cinder/tree/master/samples/_opengl">samples/_opengl</a>.
+</p>
+
+<h4>What&rsquo;s Changed in OpenGL Itself?</h4>
+<p>
+Quite a bit of functionality was removed with OpenGL Core Profile. One of the most significant changes is that OpenGL no longer provides a way to draw without a GLSL program (informally called a shader ). Furthermore, immediate mode - functions like <code>glBegin()</code>, <code>glVertex()</code> and <code>glEnd()</code> - are no longer available. OpenGL also no longer has the notion of a vertex normal, a color, or similar. Instead, all such data is generic per-vertex data which the user supplies in the form of GLSL attributes. This vertex data is also only made available to GLSL programs via generic buffers of vertex data called Vertex Buffer Objects  (VBOs). Additionally, OpenGL no longer has the concept of the <code>GL_MODELVIEW</code> or <code>GL_PROJECTION</code> matrices. Similar to generic attributes, such data are the responsibility of the programmer to maintain and to pass to her shaders via generic GLSL uniform variables. Much of the global state in previous versions of GL is gone entirely as well. For example, texturing is no longer enabled via <code>glEnable( GL_TEXTURE_2D )</code>. Such state is no longer state at all, but is simply implemented or not implemented in the currently bound GLSL program.
+</p>
+
+<h4>What&rsquo;s Changed in Cinder?</h4>
+
+<p>
+As you might imagine, Cinder has changed quite a bit too in order to embrace this new philosophy in OpenGL. We&rsquo;ve attempted to create an API that captures the power of this new way of working, but have also tried to maintain abstractions that are much simpler to use than pure GL. While some things have necessarily become more complex, we believe the benefits easily outweigh the costs, and that you&rsquo;ll find this new approach to be not only more capable but even more enjoyable to use.
+</p>
+
+<h3>Getting Started</h3>
+
+<p>
+In previous versions of Cinder, the easiest way to draw was to use the GL convenience methods, like <a href="../../namespacecinder_1_1gl.html#a71fe7f397f96d8efd318437200658e50">gl::drawSolidCircle()</a>. This is still true in 0.9.0, but with a minor caveat. As mentioned previously, OpenGL now requires a shader to be bound, so we&rsquo;ll need to provide it one. Cinder offers a class called <a href="../../classcinder_1_1gl_1_1_shader_def.html">gl::ShaderDef</a> for easily generating common shaders. To draw a solid white circle, this is the code:
+</p>
+
+<pre class="lang-cpp"><code>
+gl::bindStockShader( gl::ShaderDef().color() );
+gl::drawSolidCircle( vec2( 100, 100 ), 50 );
+</code></pre>
+
+<p>
+As in previous versions, <a href="../../namespacecinder_1_1gl.html#a71fe7f397f96d8efd318437200658e50">gl::drawSolidCircle()</a> takes a center point and a radius. However the preceding line is new. <a href="../../namespacecinder_1_1gl.html#ab022bee0bf55e73ff982934867ccaba7">gl::bindStockShader()</a> accepts a <ci>gl::ShaderDef()</ci> and either generates a shader (a <a href="../../classcinder_1_1gl_1_1_glsl_prog.html">gl::GlslProg</a>) as is necessary. It also caches these <a href="../../classcinder_1_1gl_1_1_glsl_prog.html">gl::GlslProg</a>&rsquo;s to avoid unnecessary compilation. In this example, we&rsquo;re using <a href="../../classcinder_1_1gl_1_1_shader_def.html#a26e3959d5f4d38e3d9546d5a941323af">.color()</a> on the <a href="../../classcinder_1_1gl_1_1_shader_def.html">ShaderDef</a> in order to request that the current color be used, which defaults to white.
+</p>
+
+<p>
+To make our circle red we use the same function we&rsquo;d use in previous versions, <a href="../../namespacecinder_1_1gl.html#a8a78cf5a47edfa85ca17a42b166ccaaf">gl::color()</a>:
+</p>
+
+<pre class="lang-cpp"><code>
+gl::bindStockShader( gl::ShaderDef().color() );
+gl::color( 1, 0, 0 );
+gl::drawSolidCircle( vec2( 100, 100 ), 50 );
+</code></pre>
+
+<p>
+Essentially all GL convenience methods (<a href="../../namespacecinder_1_1gl.html#ab3ddf85e1e7638d978e155f57cb51fd9">gl::drawCube()</a>, <a href="../../namespacecinder_1_1gl.html#a0db9f9b82f306fb7869352b6409095bd">gl::drawSphere()</a>, <a href="../../namespacecinder_1_1gl.html#a4ccdc8f51d2c459d4d40fc38965028d3">gl::drawSolidRect()</a>, etc) still function in 0.9.0, and there are new convenience methods as well. However, using a GL convenience method should always be considered the slow path . They&rsquo;re fine for initial development or code that is not performance-sensitive, but the techniques we&rsquo;ll discuss next should always be preferred when speed counts.
+</p>
+
+<h4>Batches</h4>
+<p>
+<a href="../../classcinder_1_1gl_1_1_batch.html">gl::Batch</a> is the fast path in Cinder 0.9.0 for typical cases. An instance of gl::Batch represents the combination of geometry and an associated shader. To get started, let&rsquo;s optimize our previous use of the convenience method <a href="../../namespacecinder_1_1gl.html#a71fe7f397f96d8efd318437200658e50">gl::drawSolidCircle()</a>.
+</p>
+
+<pre class="lang-cpp"><code>
+class MyApp : public App {
+    &hellip;
+    gl::BatchRef    mCircleBatch;
+};
+
+void MyApp::setup()
+{
+    gl::GlslProgRef solidShader = gl::getStockShader( gl::ShaderDef().color() );
+    mCircleBatch = gl::Batch::create( geom::Circle().center( vec2( 100, 100 ) ).radius( 50 ), solidShader );
+}
+
+void MyApp::draw()
+{
+    gl::clear();
+    gl::color( 1, 0, 0 );
+    mCircleBatch-&gt;draw();
+}
+</code></pre>
+
+<p>
+This code touches on several different new concepts. First, we&rsquo;re using our <a href="../../classcinder_1_1gl_1_1_shader_def.html">ShaderDef</a> slightly differently. Rather than binding it using <a href="../../namespacecinder_1_1gl.html#ab022bee0bf55e73ff982934867ccaba7">gl::bindStockShader()</a>, we&rsquo;re using <a href="../../namespacecinder_1_1gl.html#ad9e9d89b50c6aa4732963c7b86c4e17b">gl::getStockShader()</a>, which returns a proper <a href="../../classcinder_1_1gl_1_1_glsl_prog.html">GlslProgRef</a> based on a <a href="../../classcinder_1_1gl_1_1_shader_def.html">gl::ShaderDef</a>. Next, we construct a <a href="../../classcinder_1_1gl_1_1_batch.html">gl::Batch</a>. The constructor (called via <a href="../../classcinder_1_1gl_1_1_glsl_prog.html#af53b07f64249aa9b1c2b001820f4300f">create()</a>) accepts geometry as the first parameter and a <a href="../../classcinder_1_1gl_1_1_glsl_prog.html">gl::GlslProgRef</a> as the second parameter - in our case the one we just generated with <a href="../../namespacecinder_1_1gl.html#ad9e9d89b50c6aa4732963c7b86c4e17b">gl::getStockShader()</a>.
+</p>
+
+<p>
+Let&rsquo;s look at the first parameter to our Batch construction, the geometry portion: <code>geom::Circle().center( 100, 100 ).radius( 50 )</code>. This uses <a href="../../classcinder_1_1geom_1_1_circle.html">geom::Circle</a>, which is one of many classes provided with Cinder that can be used to create geometry. Other examples include <a href="../../classcinder_1_1geom_1_1_sphere.html">geom::Sphere</a>, <ci>geom::Teapot()</ci>, <a href="../../classcinder_1_1geom_1_1_wire_cone.html">geom::WireCone</a>, and many others. The pairing of one of these <a href="../../classcinder_1_1geom_1_1_source.html">geom::Source</a>s (or another source of geometry, such as a <a href="../../classcinder_1_1_tri_mesh.html">TriMesh</a> or a <a href="../../classcinder_1_1gl_1_1_vbo_mesh.html">VboMesh</a>) with a shader (<a href="../../classcinder_1_1gl_1_1_glsl_prog.html">GlslProg</a>) is expressed with a <a href="../../classcinder_1_1gl_1_1_batch.html">gl::Batch</a>.
+</p>
+
+<p>
+To draw a <a href="../../classcinder_1_1gl_1_1_batch.html">gl::Batch</a> we simply use its <a href="../../classcinder_1_1gl_1_1_batch.html#a3b9ad32993d422e96e50939db6d49f15">draw()</a> member method. Notice that we still set the color with <a href="../../namespacecinder_1_1gl.html#a8a78cf5a47edfa85ca17a42b166ccaaf">gl::color()</a>. Cinder &ldquo;knows&rdquo; that the <ci dox="">gl::Batch</ci>&rsquo;s shader requires the current color, and it passes it along in a uniform automatically. We&rsquo;ll look at how that machinery works later.
+</p>
+
+<h3>Transformations</h3>
+
+<p>
+In previous versions of OpenGL (and Cinder), there was a global stack of two matrices, one for the ModelView matrix, and one for the Projection matrix. Users manipulated these stacks with functions like <code>glTranslatef()</code> or in Cinder, <a href="../../namespacecinder_1_1gl.html#ac296d60c8e1d2ba78741be90bade5591">gl::translate()</a>. In modern GL these stacks are removed entirely. However Cinder still provides this useful functionality through the same methods - <a href="../../namespacecinder_1_1gl.html#ac296d60c8e1d2ba78741be90bade5591">gl::translate()</a>, <a href="../../namespacecinder_1_1gl.html#afb75829ec9dd122f67c4f57992e2743f">gl::scale()</a>, <a href="../../namespacecinder_1_1gl.html#a27cdea3d7108eee9dc80f7aceccb7f94">gl::rotate()</a>, etc.
+</p>
+
+<p>
+One key difference is that Cinder now separates the Model and View matrices. Calls to <a href="../../namespacecinder_1_1gl.html#ac296d60c8e1d2ba78741be90bade5591">gl::translate()</a> et al manipulate the active Model matrix; there is no longer the concept of the matrix mode (formerly manipulated with the now defunct <code>glMatrixMode()</code>). Here&rsquo;s an example; we can adapt the code above to draw a number of circles in a circular arrangement, all using the same <a href="../../classcinder_1_1gl_1_1_batch.html">gl::Batch</a>.
+</p>
+
+<p>
+First a modification to our setup() routine to create our <a href="../../classcinder_1_1geom_1_1_circle.html">geom::Circle</a> at the default origin, rather than at <code>vec2( 100, 100 )</code> as previously. We&rsquo;ll also shrink the radius a bit:
+</p>
+
+<pre class="lang-cpp"><code>
+mCircleBatch = gl::Batch::create( geom::Circle().radius( 30 ), solidShader );
+</code></pre>
+
+<p>
+And now in draw(), we&rsquo;ll do the following:
+</p>
+
+<pre class="lang-cpp"><code>
+void MyApp::draw()
+{
+  gl::clear();
+
+  for( float angle = 0; angle &lt; 2 * M_PI; angle += 0.2f ) {
+    gl::pushModelMatrix();
+    gl::translate( getWindowCenter() + 200.0f * vec2( sin( angle ), cos( angle ) ) );
+    gl::color( Color( CM_HSV, angle / (2 * M_PI), 1, 1 ) );
+    mCircleBatch-&gt;draw();
+    gl::popModelMatrix();
+}
+</code></pre>
+
+<p>
+Let&rsquo;s look at this routine. A for-loop iterates from 0 to 2 pi radians. Within the loop we preserve the current Model matrix using <a href="../../namespacecinder_1_1gl.html#a4831909e5a7063946649e14759ed22ec">gl::pushModelMatrix()</a>. We then translate the current Model transformation to the window center plus a bit of trigonometry to arrange the circles&rsquo; centers in a larger circle of radius 200. Next we set the current color using HSV color, and then draw our <a href="../../classcinder_1_1gl_1_1_batch.html">gl::Batch</a>. Note that this draw command is &ldquo;aware&rdquo; of the current Model matrix (not to mention View and Projection) as well as the current color automatically. Finally, we restore the Model matrix to what it was previous to this iteration of the loop, using <a href="../../namespacecinder_1_1gl.html#a3201c887339b2f5155225866f50a0789">gl::popModelMatrix()</a>.
+</p>
+
+<img src="circle_circle.png"/>
+<br/>
+
+<h3>Scoped Utilities and State</h3>
+<p>
+In Cinder 0.9.0 you&rsquo;ll see a number of classes which begin with gl::Scoped in the name. Examples include <a href="../../structcinder_1_1gl_1_1_scoped_model_matrix.html">gl::ScopedModelMatrix</a>, <a href="../../structcinder_1_1gl_1_1_scoped_color.html">gl::ScopedColor</a>, and <a href="../../structcinder_1_1gl_1_1_scoped_texture_bind.html">gl::ScopedTextureBind</a>. While there are other ways to achieve the same thing, these classes are efficient and easy to use. They are designed in accordance with <a href="https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization">RAII</a>, preserving a given piece of state on instantiation and restoring it on destruction. As an example, let&rsquo;s rework the previous for-loop to use a <a href="../../structcinder_1_1gl_1_1_scoped_model_matrix.html">gl::ScopedModelMatrix</a>:
+</p>
+
+<pre class="lang-cpp"><code>
+ for( float angle = 0; angle &lt; 2 * M_PI; angle += 0.2f ) {
+    gl::ScopedModelMatrix scpModelMtx;
+    gl::translate( getWindowCenter() + 200.0f * vec2( sin( angle ), cos( angle ) ) );
+    gl::color( Color( CM_HSV, angle / (2 * M_PI), 1, 1 ) );
+    mCircleBatch-&gt;draw();
+  }
+</code></pre>
+
+<p>
+In this example, creating our variable <code>scpModelMtx</code> preserves the Model matrix at its point of instantiation. We then manipulate the Model matrix using <a href="../../namespacecinder_1_1gl.html#ac296d60c8e1d2ba78741be90bade5591">gl::translate()</a>. And when the destructor for scpModelMtx  fires at the end of the loop iteration, it will restore the Model matrix to its value when <code>scpModelMtx</code> was instantiated.
+</p>
+
+<p>
+Additionally, it&rsquo;s worth noting that Cinder now caches virtually all state in a class called <a href="../../classcinder_1_1gl_1_1_context.html">gl::Context</a>. This allows Cinder to save and restore state quickly without querying GL for the active values. As a result, it&rsquo;s safe and fast to use these <em><code>gl::Scoped</code></em> family of classes for preserving state.
+</p>
+
+<h3>Writing Custom Shaders</h3>
+<p>
+While <a href="../../classcinder_1_1gl_1_1_shader_def.html">gl::ShaderDef</a> is helpful for basic shaders (in addition to <a href="../../classcinder_1_1gl_1_1_shader_def.html#a26e3959d5f4d38e3d9546d5a941323af">color()</a>, it supports <a href="../../classcinder_1_1gl_1_1_shader_def.html#a0fc34d3935a2dbf5e0b46b4e0a62cb3e">texture()</a> and <a href="../../classcinder_1_1gl_1_1_shader_def.html#a6cb5e97affdd6eee61aacb9f7dd11367">lambert()</a>) it&rsquo;s common to write your own GLSL. Let&rsquo;s look at an example of how to do that.
+</p>
+
+<p>
+We&rsquo;ll keep the same circle example, and write a shader that takes the place of our <a href="../../classcinder_1_1gl_1_1_shader_def.html">gl::ShaderDef</a>-created version. For the purposes of this example, we&rsquo;ll make use of the <code>CI_GLSL()</code> macro, which allows writing GLSL code inline. Our setup routine looks like this now:
+</p>
+
+<pre class="lang-cpp"><code>
+void MyApp::setup()
+{
+  gl::GlslProgRef solidShader = gl::GlslProg::create(
+  // vertex code
+  CI_GLSL( 150,
+       uniform mat4        ciModelViewProjection;
+       in vec4                ciPosition;
+       in vec4                ciColor;
+       out lowp vec4        Color;
+
+       void main( void )
+       {
+         gl_Position        = ciModelViewProjection * ciPosition;
+         Color              = ciColor;
+       }
+     ),
+     // fragment code
+     CI_GLSL( 150,
+       in vec4          Color;
+       out vec4         oColor;
+
+       void main( void )
+       {
+         oColor = Color;
+       }
+     ) );
+
+     mCircleBatch = gl::Batch::create( geom::Circle().radius( 30 ), solidShader );
+}
+</code></pre>
+
+<p>
+And just to reiterate, if we had written files named say, <em>solidColor.vert</em> and <em>solidColor.frag</em> and stored them as files in our assets  directory - a more common workflow - we&rsquo;d see a line like this instead of the <code>CI_GLSL</code> macros:
+</p>
+
+<pre class="lang-cpp"><code>
+GlslProgRef solidShader = gl::GlslProg::create( loadAsset( &ldquo;solidColor.vert&rdquo; ), loadAsset( &ldquo;solidColor.frag&rdquo; ) );
+</code></pre>
+
+<p>
+Looking at our GLSL code above, you&rsquo;ll see a few distinctive things. First, we have both uniforms and attributes with the prefix <code>ci</code> - <code>ciModelViewProjection</code>, as well as attributes <code>ciPosition</code> and <code>ciColor</code>. These names are special, and serve as signals to Cinder to automatically fill in their values appropriately. As you might imagine, <code>ciModelViewProjection</code> is equivalent to the current Model, View and Projection matrices concatenated into a single <a href="../../group__core__types.html#ga7dcd2365c2e368e6af5b7adeb6a9c8df">mat4</a>. If you have been writing GLSL shaders in prior OpenGL versions, you likely used the now defunct <code>gl_ModelViewProjectionMatrix</code> variable for this.
+</p>
+
+<p>
+Similarly, there are automatically recognized vertex attributes; in the example above they are <code>ciPosition</code> and <code>ciColor</code>. In the case of <code>ciPosition</code>, this attribute is automatically supplied by our <a href="../../classcinder_1_1geom_1_1_circle.html">geom::Circle</a>. <code>ciColor</code> is similar but has a unique caveat. If our <a href="../../classcinder_1_1geom_1_1_source.html">geom::Source</a> had supplied a color, the shader would have used it. However Cinder automatically supplies the global current color (set via <a href="../../namespacecinder_1_1gl.html#a8a78cf5a47edfa85ca17a42b166ccaaf">gl::color()</a>) in the absence of a per-vertex color. As an experiment, let&rsquo;s try slightly different geometry that does supply per-vertex color. If we change the <a href="../../classcinder_1_1gl_1_1_batch.html">gl::Batch</a> assignment in <code>setup()</code> out like this:
+</p>
+
+<pre class="lang-cpp"><code>
+ColorAf green( 0, 1, 0 ), blue( 0, 0, 1 );
+mBatch = gl::Batch::create( geom::Rect().colors( green, green, blue, blue ).
+                        rect( Rectf( -15, -10, 15, 10 ) ), solidShader );
+</code></pre>
+
+<p>
+We see this:
+</p>
+<img src="rect_circle.png"/>
+<br/>
+
+<p>
+Here we see the global color is ignored as <a href="../../classcinder_1_1geom_1_1_rect.html">geom::Rect</a> has generated per-vertex colors upon our request. For the curious, this automatic variable uploading occurs in the <a href="../../classcinder_1_1gl_1_1_batch.html#a3b9ad32993d422e96e50939db6d49f15">gl::Batch::draw()</a> call, and it can be invoked manually in advanced usage scenarios. Furthermore, there are mechanisms for manually configuring the mapping to attributes and uniforms in <a href="../../structcinder_1_1gl_1_1_glsl_prog_1_1_format.html">GlslProg::Format</a> for users that have some reason to use a non - default configuration.
+</p>
+
+<h3>Conclusion</h3>
+
+<p>
+The OpenGL API in Cinder 0.9.0 is quite deep - much more so than can be captured in this post. However hopefully this serves as enough background to dig into the samples, which are the best place to learn until we have more thorough documentation.
+</p>
+
+<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+
+
+  
+  </div>
+
+</div> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="../../_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="../../_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../search_index.js" type="text/javascript"></script>
+    <script src="../../_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+<script src="../../_assets/js/prism.js" type="text/javascript"></script></body></html>

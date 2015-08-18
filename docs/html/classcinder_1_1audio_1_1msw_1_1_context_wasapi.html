@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>audio::msw::ContextWasapi</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>ContextWasapi</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/audio/msw/ContextWasapi.h">ContextWasapi.h</a>
+                    </div>
+                </div>
+
+
+                <div class="row side expandable">
+                    <label>Class Hierarchy:</label>
+                    <ul class="inheritence"><li class="depth1"><a href="classcinder_1_1audio_1_1_context.html">cinder::audio::Context</a></li><li class="depth2">cinder::audio::msw::ContextWasapi</li></ul>
+                </div>
+
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Related Links:</label>
+                        <li><a href="guides/audio/index.html">Audio in Cinder</a></li>
+                      </ul>
+                    </div>
+                </div>
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4876d96fb85e371050a8bdeb1393eca4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#ac730cc4775cdfafd50e9552f4dd3f36b">OutputDeviceNodeRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>createOutputDeviceNode</strong> (const DeviceRef &amp;device, const Node::Format &amp;format=Node::Format()) override</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates and returns a platform-specific
+   <a href="classcinder_1_1audio_1_1_output_device_node.html">
+    OutputDeviceNode
+   </a>
+   , which delivers audio to the hardware output device specified by
+   <em>
+    device
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4522501f09ecf5f0d0de73e4975ec3a7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#a6c77fa5265c8d4d34321aecdd80c6a75">InputDeviceNodeRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>createInputDeviceNode</strong> (const DeviceRef &amp;device, const Node::Format &amp;format=Node::Format()) override</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates and returns a platform-specific
+   <a href="classcinder_1_1audio_1_1_input_device_node.html">
+    InputDeviceNode
+   </a>
+   , which captures audio from the hardware input device specified by
+   <em>
+    device
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7245de21c70704255c999f93506bbaa5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; NodeT &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>makeNode</strong> (NodeT *node)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Interface for creating new
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   's of type
+   <em>
+    NodeT
+   </em>
+   , which is owned by this
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   . All
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   's must be created using the
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a37be37dd19739adf33e4cb78886733de"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; NodeT &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>makeNode</strong> (Args &amp;&amp;...args)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Interface for creating a new
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   of type
+   <em>
+    NodeT
+   </em>
+   , which is owned by this
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   . All
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   's must be created using the
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1a5c40c8ae071c05b1952a079f915f7c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setOutput</strong> (const OutputNodeRef &amp;output)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the new output of this
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   to
+   <em>
+    output
+   </em>
+   . You should do this before making any connections because when
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   's are initialized they use the format of the
+   <a href="classcinder_1_1audio_1_1_output_node.html">
+    OutputNode
+   </a>
+   to configure their buffers.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aec1cd8f70f3df8a53beeb036db9ad0ba"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="namespacecinder_1_1audio.html#a79f7e4bfee0c9c5024b6fcce466e888c">OutputNodeRef</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getOutput</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the
+   <a href="classcinder_1_1audio_1_1_output_node.html">
+    OutputNode
+   </a>
+   for the
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   (currently always an
+   <a href="classcinder_1_1audio_1_1_output_device_node.html">
+    OutputDeviceNode
+   </a>
+   that sends audio to your speakers). This can be thought of as the 'heartbeat', it is the one who initiates the pulling and processing of all other
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   's in the audio graph.
+   <em>
+    note
+   </em>
+   If the output has not already been set, it is the default
+   <a href="classcinder_1_1audio_1_1_output_device_node.html">
+    OutputDeviceNode
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae095194182c12614d6a45826ee90f58a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>enable</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables audio processing. Effectively the same as calling
+   <a href="classcinder_1_1audio_1_1_context.html#aec1cd8f70f3df8a53beeb036db9ad0ba">
+    getOutput()
+   </a>
+   -&gt;
+   <a href="classcinder_1_1audio_1_1_context.html#ae095194182c12614d6a45826ee90f58a">
+    enable()
+   </a>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a94133174952a177795633349397daa72"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>disable</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enables audio processing. Effectively the same as calling
+   <a href="classcinder_1_1audio_1_1_context.html#aec1cd8f70f3df8a53beeb036db9ad0ba">
+    getOutput()
+   </a>
+   -&gt;
+   <a href="classcinder_1_1audio_1_1_context.html#a94133174952a177795633349397daa72">
+    disable()
+   </a>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a956c64a9e6fa119a0fdb57d357bb60ad"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setEnabled</strong> (bool enable)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   start / stop audio processing via boolean
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5d9f4ea6f4b934440f045d07a25a4ba9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isEnabled</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether or not this
+   <em>
+    <a href="classcinder_1_1audio_1_1_context.html">
+     Context
+    </a>
+   </em>
+   is current enabled and processing audio.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a61cf47d9eb8bd41a63ec4fc7dc826e31"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>connectionsDidChange</strong> (const NodeRef &amp;node)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Called by
+   <em>
+    node
+   </em>
+   when it's connections have changed, default implementation is empty.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac7f86af9cb32712286a617a61b9120fc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">size_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSampleRate</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the samplerate of this
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   , which is governed by the current
+   <a href="classcinder_1_1audio_1_1_output_node.html">
+    OutputNode
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a60b6e6d784f4cfd8ea4bbc731a95c80c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">size_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getFramesPerBlock</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number of frames processed in one block by this
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   , which is governed by the current
+   <a href="classcinder_1_1audio_1_1_output_node.html">
+    OutputNode
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa6abb66a1cd8d06d181372acb4925591"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint64_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getNumProcessedFrames</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the total number of frames that have been processed in the dsp loop.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aec329aa303e6ac1d85f4a32caaf00d47"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">double</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getNumProcessedSeconds</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the total number of seconds that have been processed in the dsp loop.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a428eccafd65cefcd9c2d560cc87ccf78"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>initializeNode</strong> (const NodeRef &amp;node)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Initializes
+   <em>
+    node
+   </em>
+   , ensuring that Node::initialze() gets called and that its internal buffers are ready for processing. Useful for initializing a heavy
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   at an opportune time so as to not cause audio drop-outs or UI snags.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aaf6aed526aff560e51ed01fe86ff95d0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>uninitializeNode</strong> (const NodeRef &amp;node)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Un-initializes
+   <em>
+    node
+   </em>
+   , ensuring that Node::uninitialze() gets called.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af94479dd6c10dc226ff8635d23b99be6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>initializeAllNodes</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Initialize all
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   's related by this
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4b6641dbd52d572ec6d568d9068fa895"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>uninitializeAllNodes</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Uninitialize all
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   's related by this
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa6a562552ba2ea7072bb38ea88ad5474"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>disconnectAllNodes</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Disconnect all
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   's related by this
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa04bdc8f22ba92460184adbe600c80ce"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addAutoPulledNode</strong> (const NodeRef &amp;node)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Add
+   <em>
+    node
+   </em>
+   to the list of auto-pulled nodes, who will have their
+   <a href="classcinder_1_1audio_1_1_node.html#a0e3e999100d9c117c67cacb5809237f5">
+    Node::pullInputs()
+   </a>
+   method called after a
+   <a href="classcinder_1_1audio_1_1_output_device_node.html">
+    OutputDeviceNode
+   </a>
+   implementation finishes pulling its inputs.
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Callers on the non-audio thread must synchronize with
+    <a href="classcinder_1_1audio_1_1_context.html#aea6057bafca9017994b6a21b18eea0ec">
+     getMutex()
+    </a>
+    .
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9e8e78c5fc75425555dffa097ff9185a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>removeAutoPulledNode</strong> (const NodeRef &amp;node)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Remove
+   <em>
+    node
+   </em>
+   from the list of auto-pulled nodes.
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Callers on the non-audio thread must synchronize with
+    <a href="classcinder_1_1audio_1_1_context.html#aea6057bafca9017994b6a21b18eea0ec">
+     getMutex()
+    </a>
+    .
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a21c97c4d55cd85781e47a3d03e946f65"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>schedule</strong> (double when, const NodeRef &amp;node, bool enable, const std::function&lt; void()&gt; &amp;func)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Schedule
+   <em>
+    node
+   </em>
+   to be enabled or disabled with with
+   <em>
+    func
+   </em>
+   on the audio thread, to be called at
+   <em>
+    when
+   </em>
+   seconds measured against
+   <a href="classcinder_1_1audio_1_1_context.html#aec329aa303e6ac1d85f4a32caaf00d47">
+    getNumProcessedSeconds()
+   </a>
+   .
+   <em>
+    node
+   </em>
+   is owned until the scheduled event completes.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aea6057bafca9017994b6a21b18eea0ec"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::mutex &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getMutex</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the mutex used to synchronize the audio thread. This is also used internally by the
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   class when making connections.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0c51003bc2437f00937a534ac1e5a4c5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isAudioThread</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns true if the current thread is the thread used for audio processing, false otherwise.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af02d76545bf57eacae79f06434287f16"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>preProcess</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   <a href="classcinder_1_1audio_1_1_output_node.html">
+    OutputNode
+   </a>
+   implementations should call this before each rendering block.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a600935a4685d9edb03bafa62dbd58d50"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>postProcess</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   <a href="classcinder_1_1audio_1_1_output_node.html">
+    OutputNode
+   </a>
+   implementations should call this after each rendering block.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adc8c8137439aca0bc048927eec55aa07"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>printGraphToString</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a string representation of the
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   graph for debugging purposes.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2cf4a0a6d93249de0ea021556d1c9813"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_context.html">Context</a> *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>master</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the master
+   <em>
+    <a href="classcinder_1_1audio_1_1_context.html">
+     Context
+    </a>
+   </em>
+   that manages hardware I/O and real-time processing, which is platform specific. If none is available, returns
+   <em>
+    null
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a74e9bac540e4152315fe32c52435068c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_device_manager.html">DeviceManager</a> *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>deviceManager</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the platform-specific
+   <em>
+    <a href="classcinder_1_1audio_1_1_device_manager.html">
+     DeviceManager
+    </a>
+   </em>
+   singleton instance, which is platform specific. If none is available, returns
+   <em>
+    null
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afb9b4b79c53750f4afd6dc7eba1eebe6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setMaster</strong> (Context *masterContext, DeviceManager *deviceManager)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Allows the user to set the master
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   and
+   <a href="classcinder_1_1audio_1_1_device_manager.html">
+    DeviceManager
+   </a>
+   , overriding the defaults.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+
+            <!-- protected attributes -->
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

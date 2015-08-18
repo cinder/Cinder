@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>gl::Texture3d</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>Texture3d</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+          		<li><a href="#protected-functions">Protected Member Functions</a></li>
+
+          		<li><a href="#protected-attrs">Protected Attributes</a></li>
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/gl/Texture.h">Texture.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">Texture</a></li>
+                        <li><a href="namespacecinder_1_1gl.html#a1ce74b64a1aab1610d899808b6a1cbce">TextureBaseRef</a></li>
+                        <li><a href="namespacecinder_1_1gl.html#aa376c5202824e67b09bb19f7a17ed598">Texture1dRef</a></li>
+                        <li><a href="namespacecinder_1_1gl.html#a16bef38aaf1d8faf30f86b34ba93e93f">Texture3dRef</a></li>
+                        <li><a href="namespacecinder_1_1gl.html#a16c67155712310719232f655a7eca6b7">TextureCubeMapRef</a></li>
+                        <li><a href="namespacecinder_1_1gl.html#aa619ab8fe9e506c7fd764103d89d5f4d">Texture2dCacheRef</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <label>Class Hierarchy:</label>
+                    <ul class="inheritence"><li class="depth1"><a href="classcinder_1_1gl_1_1_texture_base.html">cinder::gl::TextureBase</a></li><li class="depth2">cinder::gl::Texture3d</li></ul>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Classes:</label>
+                        <li><a href="structcinder_1_1gl_1_1_texture3d_1_1_format.html">Format</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="ac9468e2171525b5c4b9a28038cf3806b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>update</strong> (const Surface &amp;surface, int depth, int mipLevel=0)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abddeab36a2071677c19d74800267ab20"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>update</strong> (const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, int depth, int xOffset=0, int yOffset=0, int zOffset=0)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af423e11d2fce133845790d23d05e8122"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWidth</strong> () const  override</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the width of the texture in pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8e1f3a5d6c475fc8d182649de4256599"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getHeight</strong> () const  override</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the height of the texture in pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0d90214955cfb1d2ea1c00b3909607c1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDepth</strong> () const  override</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the depth of the texture, which is the number of images in a texture array, or the depth of a 3D texture measured in pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3bdc896f651d60012a8f1e7883960a9c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setDoNotDispose</strong> (bool aDoNotDispose=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Determines whether the Texture will call glDeleteTextures() to free the associated texture objects on destruction.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3da633e8e8bebc953284020d3c4e1351"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getInternalFormat</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   the Texture's internal format, which is the format that OpenGL stores the texture data in memory. Common values include
+   <code>
+    GL_RGB
+   </code>
+   ,
+   <code>
+    GL_RGBA
+   </code>
+   and
+   <code>
+    GL_LUMINANCE
+   </code>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3422e02e30d4463aa43e01a594bf502a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="dummy_8cpp.html#aa311c7f0d6ec4f1a33f9235c3651b86b">GLuint</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getId</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   the ID number for the texture, appropriate to pass to calls like
+   <code>
+    glBindTexture()
+   </code>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab8cb1c42605fd29b995d868f55ba636d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLenum</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getTarget</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   the target associated with texture. Typical values are
+   <code>
+    GL_TEXTURE_2D
+   </code>
+   and
+   <code>
+    GL_TEXTURE_RECTANGLE_ARB
+   </code>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2f9e4e1816e0b4ede4e25f0efd938004"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>bind</strong> (uint8_t textureUnit=0) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Binds the Texture's texture to its target in the multitexturing unit
+   <code>
+    GL_TEXTURE0
+   </code>
+   +
+   <em>
+    textureUnit
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a36d1d950e0c57bf437631c6fe3916ab8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>unbind</strong> (uint8_t textureUnit=0) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Unbinds the Texture currently bound in the Texture's target.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab837f426fedb412dba10286e3fc73ef3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAspectRatio</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the 2D aspect ratio of the texture (width / height), ignoring clean bounds.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3d1e06dab2fa5e8515c7cf7a4e006ac1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getBounds</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   defining the Texture's bounds in pixels, ignoring clean bounds.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a03c716e9dd3b27e5817d3e00706a1b8a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hasAlpha</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the Texture has an alpha channel based on its internal format.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a76a4375db5939ff1819abe0bf27d0abb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setWrap</strong> (GLenum wrapS, GLenum wrapT)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are
+   <code>
+    GL_REPEAT
+   </code>
+   ,
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   , etc. Default is
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a99ea5e07e6b708641065dad4d2adec65"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setWrap</strong> (GLenum wrapS, GLenum wrapT, GLenum wrapR)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are
+   <code>
+    GL_REPEAT
+   </code>
+   ,
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   , etc. Default is
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adaac8da7e277c565c62410ce534834e9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setWrapS</strong> (GLenum wrapS)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the horizontal wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are
+   <code>
+    GL_REPEAT
+   </code>
+   and
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   , etc. Default is
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3d53316a02db5c9cc04a4feed464cd91"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setWrapT</strong> (GLenum wrapT)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the vertical wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are
+   <code>
+    GL_REPEAT
+   </code>
+   ,
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   , etc. Default is
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac7359a5a797ff8bbf577203993b8c0c3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setWrapR</strong> (GLenum wrapR)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the depth wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are
+   <code>
+    GL_REPEAT
+   </code>
+   ,
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   , etc. Default is
+   <code>
+    GL_CLAMP_TO_EDGE
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a37e6f51598e7cf7086a4eef299d3f651"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setMinFilter</strong> (GLenum minFilter)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the filtering behavior when a texture is displayed at a lower resolution than its native resolution. Possible values are.
+  </p>
+  <p>
+  </p>
+  <div class="itemizedlist">
+   <div class="listitem">
+    <p>
+     <code>
+      GL_NEAREST
+     </code>
+    </p>
+   </div>
+   <div class="listitem">
+    <p>
+     <code>
+      GL_LINEAR
+     </code>
+    </p>
+   </div>
+   <div class="listitem">
+    <p>
+     <code>
+      GL_NEAREST_MIPMAP_NEAREST
+     </code>
+    </p>
+   </div>
+   <div class="listitem">
+    <p>
+     <code>
+      GL_LINEAR_MIPMAP_NEAREST
+     </code>
+    </p>
+   </div>
+   <div class="listitem">
+    <p>
+     <code>
+      GL_NEAREST_MIPMAP_LINEAR
+     </code>
+    </p>
+   </div>
+   <div class="listitem">
+    <p>
+     <code>
+      GL_LINEAR_MIPMAP_LINEAR
+     </code>
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a69df74ca03ba9152028880b5b62300c2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setMagFilter</strong> (GLenum magFilter)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the filtering behavior when a texture is displayed at a higher resolution than its native resolution. Possible values are
+  </p>
+  <div class="itemizedlist">
+   <div class="listitem">
+    <p>
+     <code>
+      GL_NEAREST
+     </code>
+    </p>
+   </div>
+   <div class="listitem">
+    <p>
+     <code>
+      GL_LINEAR
+     </code>
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4bd22eafb3db29add9a79fd1cd9310d2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setMaxAnisotropy</strong> (GLfloat maxAnisotropy)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the anisotropic filtering amount. A value greater than 1.0 "enables" anisotropic filtering. Maximum of
+   <a href="classcinder_1_1gl_1_1_texture_base.html#a7808d5b664b07687dfb1a23f3f9cabb6">
+    getMaxAnisotropyMax()
+   </a>
+   ;.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aea409148cc88883756328e93c67c01e1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hasMipmapping</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the Texture has Mipmapping enabled.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a18d68f6740c2d4fb644094bcd3b4c457"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setCompareMode</strong> (GLenum compareMode)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab9e0bdfcb196e935444ed108ab47d756"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setCompareFunc</strong> (GLenum compareFunc)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aea34f14cda41bb77967a5afc607fe398"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::array&lt; GLint, 4 &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSwizzleMask</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the Texture's swizzle mask (corresponding to
+   <code>
+    GL_TEXTURE_SWIZZLE_RGBA
+   </code>
+   )
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a97253d73f4f45f41eb24de6643cc0b46"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::string &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getLabel</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the debugging label associated with the Texture.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5a50fc784ad376854f262b9e080651d5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setLabel</strong> (const std::string &amp;label)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8dd154fc02665f268454a0abdf9252cd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1gl.html#a16bef38aaf1d8faf30f86b34ba93e93f">Texture3dRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (GLint width, GLint height, GLint depth, const Format &amp;format=Format())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Constructs a texture of size(
+   <em>
+    width
+   </em>
+   ,
+   <em>
+    height
+   </em>
+   ,
+   <em>
+    depth
+   </em>
+   ).
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a84f1d76e7ddb8dc66c1f08ab9f0c6fd5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1gl.html#a16bef38aaf1d8faf30f86b34ba93e93f">Texture3dRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (const void *data, GLenum dataFormat, int width, int height, int depth, const Format &amp;format=Format())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Constructs a texture of size(
+   <em>
+    width
+   </em>
+   ,
+   <em>
+    height
+   </em>
+   ,
+   <em>
+    depth
+   </em>
+   ). Pixel data is provided by
+   <em>
+    data
+   </em>
+   in format
+   <em>
+    dataFormat
+   </em>
+   (Ex:
+   <code>
+    GL_RGB
+   </code>
+   ,
+   <code>
+    GL_RGBA
+   </code>
+   ). Use
+   <em>
+    format.setDataType()
+   </em>
+   to specify a dataType other than
+   <code>
+    GL_UNSIGNED_CHAR
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1619628c91f58495d2aecc8fbcde020f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLenum</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getBindingConstantForTarget</strong> (GLenum target)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the appropriate parameter to glGetIntegerv() for a specific target; ie GL_TEXTURE_2D -&gt; GL_TEXTURE_BINDING_2D. Returns 0 on failure.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7d2bbfd2e67662a56f6fdbd48bd86601"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getInternalFormatInfo</strong> (GLint internalFormat, GLenum *outDataFormat, GLenum *outDataType, bool *outAlpha=nullptr, bool *outCompressed=nullptr, bool *outSrgb=nullptr)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the corresponding legal values for glTexImage*D() calls for dataFormat and dataType based on
+   <em>
+    internalFormat
+   </em>
+   , as well as whether the internal format contains an alpha channel, is compressed, and is in the sRGB color space.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae2c5ce1b39b58fbbd6ec12a3d30f458f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>requiredMipLevels</strong> (GLint width, GLint height, GLint depth)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number of mip levels necessary to represent a texture of
+   <em>
+    width
+   </em>
+   ,
+   <em>
+    height
+   </em>
+   and
+   <em>
+    depth
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa0439a4e3c81fc6772728e6bdb610b31"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>surfaceRequiresIntermediate</strong> (int32_t width, uint8_t pixelBytes, int32_t rowBytes, SurfaceChannelOrder surfaceChannelOrder)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether a Surface of
+   <em>
+    width
+   </em>
+   ,
+   <em>
+    rowBytes
+   </em>
+   and
+   <em>
+    surfaceChannelOrder
+   </em>
+   would require an intermediate Surface in order to be copied into a GL Texture.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af98c5245e6309728ca87e9930d1d5aaf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SurfaceChannelOrderToDataFormatAndType</strong> (const SurfaceChannelOrder &amp;sco, GLint *dataFormat, GLenum *type)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts a
+   <a href="classcinder_1_1_surface_channel_order.html">
+    SurfaceChannelOrder
+   </a>
+   into an appropriate OpenGL dataFormat and type.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a601c375a038bd0968878364a243c281e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calcMipLevelSize</strong> (int level, GLint width, GLint height)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   calculate the size of mipMap for the corresponding level
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7808d5b664b07687dfb1a23f3f9cabb6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLfloat</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getMaxAnisotropyMax</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the maximum anisotropic filtering maximum allowed by the hardware.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa67c095d61948650175618d0cde1c4f7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>supportsHardwareSwizzle</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether this hardware supports texture swizzling (via
+   <code>
+    GL_TEXTURE_SWIZZLE_RGBA
+   </code>
+   )
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+            <a name="protected-functions"></a>
+            <section>
+                <h2>Protected Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="acbf2598691a27ad55144e687dc6f1ff9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Texture3d</strong> (GLint width, GLint height, GLint depth, Format format)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af05bde2c8072826c8d4a5451141c566a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Texture3d</strong> (const void *data, GLenum dataFormat, int width, int height, int depth, Format format)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab092559ecc9a533c42f138fc2842d839"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>printDims</strong> (std::ostream &amp;os) const  override</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad8304e6270b29bafae29fa74feae52c7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>initParams</strong> (Format &amp;format, GLint defaultInternalFormat, GLint defaultDataType)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected attributes -->
+            <a name="protected-attrs"></a>
+            <section>
+                <h2>Protected Attributes</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a0e33c241246444e4d4f133fa1d54aa59"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mWidth</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af108f8ed7cdbd8866d3bc7049cd82241"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mHeight</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a6ac56f1c8477c9dbf65bd85938d31b37"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mDepth</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a705ebac7b4d253c4aa092b4da4698d48"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLenum</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mTarget</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3d3e9682069365ac34def2db47b4eb9e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="dummy_8cpp.html#aa311c7f0d6ec4f1a33f9235c3651b86b">GLuint</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mTextureId</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a20dd768796477c2a3f0f4c3214ead10e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mInternalFormat</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac08aba4597baf20db33d5ae90b8df3ca"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mMipmapping</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aba98b4308afe3d819cbbf5b820bb6651"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mBaseMipmapLevel</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a756aa83438e2c11433bccb938bea4db5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">GLint</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mMaxMipmapLevel</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5f5cda0d88fe7a9c5f65fc50bc9c2a68"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mDoNotDispose</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac4dd648f8a9133cbeef1064ecd9dee9e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::array&lt; GLint, 4 &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mSwizzleMask</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8d18e2fd266572cf5104308c8a1a380a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mLabel</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

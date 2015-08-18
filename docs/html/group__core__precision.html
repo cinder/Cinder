@@ -1,0 +1,2683 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>core_precision</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="reference language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="active" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+    <div id="top-primary">
+        <!-- main nav -->
+
+        <!-- subnav -->
+        <div id="sub-nav">
+          	<ul>
+
+
+
+
+
+          	</ul>
+        </div>    </div>
+
+    
+    <div class="row content-row" data-equalizer="content">
+
+      <!-- side nav -->
+      <div class="columns large-2" data-equalizer-watch="content" id="side-nav">
+        
+      </div>
+
+
+      <!-- main content area -->
+      <div class="columns large-10" data-equalizer-watch="content">
+
+        <div id="container">
+
+          <div class="content">
+
+            <!-- content -->
+            <h1 id="page-title">
+                <em>core_precision</em> 
+                Module Reference
+            </h1>
+                        
+            <!-- description and side bar -->
+            <div class="row" id="description">
+              <div class="prose columns large-9" id="description-prose">
+                <html><head></head><body><div class="description content">
+ <p>
+  Non-GLSL types that are used to define precision-based types.
+ </p>
+ <p>
+  The GLSL language allows the user to define the precision of a particular variable. In OpenGL's GLSL, these precision qualifiers have no effect; they are there for compatibility with OpenGL ES's precision qualifiers, where they
+  <em>
+   do
+  </em>
+  have an effect.
+ </p>
+</div>
+</body></html>
+                
+              </div>
+            </div>
+
+            <hr/>
+
+            <!-- show/hide buttons -->
+            <div id="show-hide">
+              <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+            </div>
+            
+            <!-- contents -->
+            <div class="contents">
+
+                <!-- subgroups -->
+
+                <!-- typedefs -->
+                <a name="typedefs"></a>
+                <section>
+                    <h1>Typedefs</h1>
+                    <ul>
+                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2887fbc729ac5c1c5caeb7cd57a7145c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">lowp_float_t</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_float</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gac785826c039fe6c97c03b37c81c1a68e"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">mediump_float_t</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_float</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga3d443a093adc053638ed7f81c5bfe300"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">highp_float_t</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_float</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   High precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef ">
+                                <a class="anchor" name="gae01b87f81bd15327230bf1b47c482b24"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">mediump_float</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>float_t</strong> </div>
+
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga4681244bf4a184734f03aa9df4e3d288"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">detail::lowp_int_t</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_int</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Low precision signed integer. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2a3dcbcd7f4e17663d393a12061ac6ac"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">detail::mediump_int_t</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_int</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Medium precision signed integer. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaafed5240eb0a43328cb75faf5fb0a8c2"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">detail::highp_int_t</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_int</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   High precision signed integer. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga8077c90f2c87e419ea6c273157dcc1fc"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">detail::lowp_uint_t</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_uint</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Low precision unsigned integer. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga08ae38ad78ade3539fdd1d25052b8c51"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">detail::mediump_uint_t</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_uint</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Medium precision unsigned integer. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gabfd1cf11193324a5f77d3831b6ac3205"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">detail::highp_uint_t</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_uint</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   High precision unsigned integer. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef ">
+                                <a class="anchor" name="gacd01d170508f812968875b0f2e730e8c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">mediump_int</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>int_t</strong> </div>
+
+                                </div>
+                            </li>                            <li class="row functionDef ">
+                                <a class="anchor" name="ga5f2ae871c284c9d39ae8fdbb1305b566"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">mediump_uint</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>uint_t</strong> </div>
+
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga4fd29415871152bfb5abd588334147c8"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">unsigned int</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>uint</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Unsigned integer type.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2eb6d28afe554e1a2ebc79e3201e8651"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga3b83486a767447bf1b36bbf32e589bac"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga8539ada9351e0a74964fa23c040246cf"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga764ca10ac431c7306adaf9e134795919"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat2x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga7f27d5d720010e94d8a98eaaaf7f1f32"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat2x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga20b66861ebdfa14586f4028c5ef16d2e"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat2x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga9fb4a4c96e13e4954bff1af2f99408cb"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x3&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat2x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 3 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga39eba94b5dc46f46481c9c4428609731"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x3&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat2x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 3 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga96ec9c154598fcc1c113d9ebd3680097"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x3&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat2x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 3 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gafb9e8f974dd69b38b5acc16989882aa0"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x4&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat2x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 4 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga61617ba8393bbebc94ee813403aa54a9"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x4&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat2x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 4 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga74ae75c71c8c2b775714fb24454d6096"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x4&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat2x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 4 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga8db0631a52908b3b4805b6abeda26176"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x2&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat3x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 2 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2237b9bb71ea5b0d2ae07f9315ccdc28"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x2&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat3x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 2 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga5df0f5c4120d0fd47825506c86b7814c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x2&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat3x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 2 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga35fabe40e121bf764419b1d355cbbcd2"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga59f8b29bbf809530ab4c0ee97d03a4f9"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga5822a3dc6f6d421ee0b6a3c7f41a3ff1"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga8d591be4ef2bf3bbcd7473c3eadeaf55"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat3x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gae75115c4c4608fccf6827f7a25d95885"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat3x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gac4db2c4ff089b960ddd5682abaa9e5d4"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat3x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga06b2903b2f784e0e74e58f25e9b79b15"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x4&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat3x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 4 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga0ea90a4a20efa6c104c7ad21144ccefe"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x4&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat3x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 4 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gab51b3b8377cf9462a39a1560333a4215"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x4&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat3x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 4 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaae545974fa5b7fcb9574ea67f8922c50"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x2&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat4x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 2 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaa8a2840660d106dca70acf525e8bfa6c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x2&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat4x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 2 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga289d5d6b112dc6e3f545e7f98d3d0b5c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x2&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat4x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 2 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga4649624907ac00347237476ead4178e1"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x3&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat4x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 3 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga98bbda89d371b41b3d56bcbc7a4d868d"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x3&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat4x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 3 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga549b3b126dfbf5f9fef6b76deb15cb4e"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x3&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat4x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 3 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga070380d2efa0c37d16f8677412518e02"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2bd55bee1eaded7673421b1ae24175d5"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga26f802a535816c7357df06361e695172"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga83e14edb4422871bdc644f4209b5f9ff"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_mat4x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of low precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaad45864262bb2cf923667fde779a0058"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_mat4x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of medium precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaccec2a0346f946bcbd656386a9ab87d7"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_mat4x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of high precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga42a83e53bbcc740b6ae501fec19dda69"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga15d28c9d2c24b698597e9ad9e083520d"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga08cc902dad76205cd28a80bf695814a7"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga62d3af99b9e0659d693c80b75df9a35c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat2x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga949bee59342f1c3258522bacd07ffe95"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat2x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaf0445ee32625d26bf79bb84e3d5a5502"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x2&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat2x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 2 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gada78eb998a9c716aedee01501456b94d"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x3&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat2x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 3 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga0b187380697f66a25000b307db9cb41a"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x3&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat2x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 3 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga29884defff6f7109b1e99ef8a6ce7e0a"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x3&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat2x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 3 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2aee5f52e32f0adcfdeb3142b50cb660"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x4&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat2x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 4 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga837b8ead9807e10740dddfc99dabe8d7"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x4&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat2x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 4 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2b1bf87a8f8fbc895127c6bfde7a271e"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat2x4&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat2x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 columns of 4 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gac90dba962673ae315e5504a362d39b1c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x2&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat3x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 2 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga5ad217fad4f08abe72401409595076f2"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x2&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat3x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 2 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gafe7ef85b0bc26e754cbf83fed54bf106"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x2&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat3x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 2 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2a63ac35bb66e49374db9f699bef9597"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga1a9a878d256cbb899a9c10bc7332995a"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gafa89ae412491446e508782ddd9bc55c7"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga8cc302ca16a2ae1708143c85d50de0e7"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat3x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga7c4e98b7bf5674658ba5e0892e9bf531"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat3x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga604f966e7bf042f298beb3b262287970"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x3&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat3x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 3 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gadbca772b626928af301ea079903ee5d9"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x4&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat3x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 4 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga38bf4080b5b7d9ecc1fdbe2932511e4b"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x4&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat3x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 4 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2f3cf8e3bd4ea0beeefe56b45b14118b"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat3x4&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat3x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 columns of 4 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaeee03c38861981ecb29f3f71644bf3ac"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x2&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat4x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 2 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaee918464c0be014e744ff38f37c18585"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x2&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat4x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 2 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaa0a2369be2e3d5a4db98cae345413dc1"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x2&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat4x2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 2 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gac445c564f0c68d3520eca97ea755e618"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x3&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat4x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 3 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga9870d3f13ee4601a8abf75f6b54440b9"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x3&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat4x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 3 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaec00d802f271a807485a0069cdb5ea05"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x3&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat4x3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 3 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gafb95042ba1765add225ae138437f860e"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga434a0c62564f19f260ed0520995e90f3"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga457246aa7c671b1ed3dce700b3c1d4c0"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gad9168c20a21d1bfeb0f5d2ddfb98f519"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dmat4x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of low precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga6dc4057e30931ebd0b5d7e44ef27763a"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dmat4x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of medium precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga46855bd8fdcb8dbc7db5d2aaeb91be69"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tmat4x4&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dmat4x4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 columns of 4 components matrix of high precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga84532f0e0c7e2af99edd65dc182aba51"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_vec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of high single-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga949639029259b8bf5c4bc96bd2cc5a59"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_vec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of medium single-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga1b46182364e2054858f9e7a70f8c52bc"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_vec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of low single-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga74ad90a083be6c50f6c285d6ab15a198"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dvec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of high double-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gafc1ed63d5e5d1ddcf67752143f4f5871"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dvec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of medium double-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga26ff2843d850f4f6ad591540e1ff1818"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dvec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of low double-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga01acd79fbbe3d93a532276586b5c39ee"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; int, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_ivec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of high precision signed integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga38b24c06ac0dfe4dcfbe7abf9a93dbb4"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; int, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_ivec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of medium precision signed integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gafae8c6e9da91f4c6c1b85af5b8513097"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; int, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_ivec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of low precision signed integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga386eaa1579a0f5ad51cd7d8fcd52ec16"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; uint, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_uvec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of high precision unsigned integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga7ec96113b08a8435fd80dd623ffe3e05"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; uint, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_uvec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of medium precision unsigned integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga0eec567054355374c84c7971a07d274c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; uint, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_uvec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of low precision unsigned integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaf76ced5823e8aace6bd257fac6c250cb"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; bool, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_bvec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of high precision bool numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaf46a55555e71730f77b5c885d20ae8e2"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; bool, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_bvec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of medium precision bool numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaf17553233b30d9ed413e822847c4ea8f"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec2&lt; bool, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_bvec2</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   2 components vector of low precision bool numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga1ef07d2502ea09b1e63998813a3d4330"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_vec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of high single-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gac76bf24aca62ca13269d262121d04ceb"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_vec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of medium single-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga0229a1c4abd7c51f15eeb7a0fec3846b"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_vec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of low single-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga54e097f7cd1f1cd46cc47eec67218bd3"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dvec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of high double-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga4f6942e5a5c9f5dc5a0e1eed980d2ecd"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dvec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of medium double-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga88d318815a9af448bddcb16fceb155c5"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dvec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of low double-precision floating-point numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaef51de6bc442bfce2602dc301708720a"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; int, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_ivec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of high precision signed integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga16a38c6077c2e83375ee258cd95e224b"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; int, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_ivec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of medium precision signed integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gad03cd497aea76c671fda2ce1d697e905"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; int, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_ivec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of low precision signed integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga90ab9c4694f5af23c7dcd4eb9e47e255"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; uint, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_uvec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of high precision unsigned integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga628d87a2d3b8e287d569c6eb12d8e051"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; uint, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_uvec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of medium precision unsigned integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gab6f49c51783c774550f5217aecabd1d9"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; uint, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_uvec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of low precision unsigned integer numbers. There is no guarantee on the actual precision.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gac35c0ff5b9eead09e905b4aa09d1e954"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; bool, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_bvec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of high precision bool numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga39d35dfb49fff9cf4a6458d8027d2a8b"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; bool, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_bvec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of medium precision bool numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga9ebdb78c611619993b9d5b182010529d"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec3&lt; bool, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_bvec3</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   3 components vector of low precision bool numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga5f573b0132805b54cb9205eea1c86483"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_vec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of high single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga3e0bdf70b43f0c2863ad9f0fe7da9476"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_vec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of medium single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gabb82786cbefa101e9eb0cff63cecb1f2"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_vec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of low single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2bb20b4bd180746b93577bc57f4b2b9d"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dvec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of high double-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaf685121e70f851b16581c154d8b27679"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dvec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of medium double-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaed0097453a4f8b1f3dcf7476aee881cd"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dvec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of low double-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga9303c2a9e1f1e761961eeecbcda2d34f"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; int, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_ivec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of high precision signed integer numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga687eefa63b2c9d0969227eaf23b1ad41"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; int, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_ivec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of medium precision signed integer numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga863ce958bb6c85ab934feeb4a0da5821"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; int, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_ivec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of low precision signed integer numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaced82ea2e726f079d4d72cf180a75b8b"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; uint, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_uvec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of high precision unsigned integer numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga825e1e6ef3513c5de283d1b2fa1d4879"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; uint, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_uvec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of medium precision unsigned integer numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga5bb34ee8aba0f936bc521850819fc762"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; uint, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_uvec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of low precision unsigned integer numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga12155cf93fb8fea5d9c4c7e2d72aed4e"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; bool, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_bvec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of high precision bool numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga92b3f3ba6ecceaea364906ad7ee985a5"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; bool, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_bvec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of medium precision bool numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga512926597aea7a1afe60ee7b983db86d"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tvec4&lt; bool, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_bvec4</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   4 components vector of low precision bool numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                    </ul>
+                </section>
+                <hr/>
+
+                <!-- public types -->
+
+                <!-- enumerations -->
+
+                <!-- public member functions -->
+
+                <!-- public member functions -->
+
+                <!-- protected member functions -->
+
+                <!-- protected attributes -->
+
+                <!-- friends -->
+
+            </div>
+
+            <!-- end content -->
+
+          </div>
+        </div>
+
+      </div>
+    </div> <!--  row -->
+
+
+
+
+ <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>
