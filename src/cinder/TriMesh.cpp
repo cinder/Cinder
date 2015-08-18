@@ -38,9 +38,9 @@ class TriMeshGeomTarget : public geom::Target {
 		: mMesh( mesh )
 	{}
 	
-	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	virtual void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	virtual void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	uint8_t	getAttribDims( geom::Attrib attr ) const override;
+	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
 	
   protected:
 	TriMesh		*mMesh;
@@ -70,7 +70,7 @@ void TriMeshGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *
 	}
 			
 	mMesh->mIndices.resize( targetNumIndices );
-	copyIndexDataForceTriangles( primitive, source, numIndices, mMesh->mIndices.data() );
+	copyIndexDataForceTriangles( primitive, source, numIndices, 0, mMesh->mIndices.data() );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////

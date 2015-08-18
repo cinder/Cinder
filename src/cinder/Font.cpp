@@ -347,9 +347,9 @@ CTFontRef Font::getCtFontRef() const
 
 #elif defined( CINDER_MSW )
 
-const ::LOGFONT& Font::getLogfont() const
+const void* Font::getLogfont() const
 {
-	return mObj->mLogFont;
+	return (const void*)&mObj->mLogFont;
 }
 
 ::HFONT Font::getHfont() const

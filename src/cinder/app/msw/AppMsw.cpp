@@ -47,7 +47,6 @@ AppMsw::AppMsw()
 	mConsoleWindowEnabled = settings->isConsoleWindowEnabled();
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 
-	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl.reset( new AppImplMswBasic( this, *settings ) );
 }
 
@@ -121,11 +120,6 @@ void AppMsw::disableFrameRate()
 bool AppMsw::isFrameRateEnabled() const
 {
 	return mImpl->isFrameRateEnabled();
-}
-
-fs::path AppMsw::getAppPath() const
-{
-	return AppImplMsw::getAppPath();
 }
 
 WindowRef AppMsw::getWindow() const

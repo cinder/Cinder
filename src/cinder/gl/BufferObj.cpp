@@ -125,19 +125,29 @@ void* BufferObj::map( GLenum access ) const
 #endif
 
 #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
-void* BufferObj::mapWriteOnly( bool invalidatePrevious )
+void* BufferObj::mapWriteOnly()
 {
 	ScopedBuffer bufferBind( mTarget, mId );
 	// iOS ES 2 only has glMapBufferOES()
 #if defined( CINDER_GL_ES_2 )
-	if( invalidatePrevious )
-		glBufferData( mTarget, mSize, nullptr, mUsage );
 	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
 #else	
 	// ES 3 has only glMapBufferRange
 	GLbitfield access = GL_MAP_WRITE_BIT;
-	if( invalidatePrevious )
-		access |= GL_MAP_INVALIDATE_BUFFER_BIT;
+	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+#endif
+}
+
+void* BufferObj::mapReplace()
+{
+	ScopedBuffer bufferBind( mTarget, mId );
+	// iOS ES 2 only has glMapBufferOES()
+#if defined( CINDER_GL_ES_2 )
+	glBufferData( mTarget, mSize, nullptr, mUsage );
+	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
+#else	
+	// ES 3 has only glMapBufferRange
+	GLbitfield access = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT;
 	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
 #endif
 }
@@ -218,10 +228,8 @@ GLuint BufferObj::getBindingConstantForTarget( GLenum target )
 void BufferObj::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_GL_ES )
-  #if ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_COCOA_TOUCH )
 	env()->objectLabel( GL_BUFFER_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
-  #endif
 #else
 	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );	
 #endif

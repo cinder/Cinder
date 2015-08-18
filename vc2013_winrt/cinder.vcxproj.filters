@@ -119,6 +119,12 @@
     <Filter Include="Header Files\audio\msw">
       <UniqueIdentifier>{2ebcbe86-aa5b-4034-b8ea-5043d6fe31d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\tinyexr">
+      <UniqueIdentifier>{92784ed6-e18b-4df6-baa3-937d244bedab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tinyexr">
+      <UniqueIdentifier>{69606da1-4ffa-4738-a733-3773f5e6b0d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\app\Renderer.h">
@@ -736,6 +742,9 @@
     <ClInclude Include="..\include\cinder\gl\ConstantConversions.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\tinyexr\tinyexr.h">
+      <Filter>Header Files\tinyexr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
@@ -1209,12 +1218,6 @@
     <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplHardware.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplSoftware.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Ubo.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -1406,6 +1409,12 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\ip\Blur.cpp">
       <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tinyexr\tinyexr.cc">
+      <Filter>Source Files\tinyexr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageFileTinyExr.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

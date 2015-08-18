@@ -30,6 +30,7 @@
 #include "cinder/ImageSourceFileWic.h"
 #include "cinder/ImageTargetFileWic.h"
 #include "cinder/ImageSourceFileRadiance.h"
+#include "cinder/ImageFileTinyExr.h"
 
 #include <wrl/client.h>
 #include <agile.h>
@@ -58,6 +59,8 @@ PlatformWinRt::PlatformWinRt()
 	ImageSourceFileWic::registerSelf();
 	ImageTargetFileWic::registerSelf();
 	ImageSourceFileRadiance::registerSelf();
+	ImageSourceFileTinyExr::registerSelf();
+	ImageTargetFileTinyExr::registerSelf();
 }
 
 DataSourceRef PlatformWinRt::loadResource( const fs::path &resourcePath  )
@@ -223,7 +226,7 @@ fs::path PlatformWinRt::expandPath( const fs::path &path )
 #endif
 }
 
-fs::path PlatformWinRt::getHomeDirectory()
+fs::path PlatformWinRt::getHomeDirectory() const
 {
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
@@ -231,11 +234,20 @@ fs::path PlatformWinRt::getHomeDirectory()
 	return fs::path( result );
 }
 
-fs::path PlatformWinRt::getDocumentsDirectory()
+fs::path PlatformWinRt::getDocumentsDirectory() const
 {
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	return PlatformStringToString(folder->Path);
+}
+
+fs::path PlatformWinRt::getDefaultExecutablePath() const
+{
+	Windows::ApplicationModel::Package^ package = Windows::ApplicationModel::Package::Current;
+	Windows::Storage::StorageFolder^ installedLocation = package->InstalledLocation;
+	::Platform::String^ output = installedLocation->Path;
+	std::wstring t = std::wstring( output->Data() );
+	return fs::path( winrt::PlatformStringToString( output ) );
 }
 
 void PlatformWinRt::launchWebBrowser( const Url &url )

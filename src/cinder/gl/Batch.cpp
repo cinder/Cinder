@@ -108,7 +108,8 @@ void Batch::draw( GLint first, GLsizei count )
 	mVboMesh->drawImpl( first, count );
 }
 
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
+
 void Batch::drawInstanced( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
@@ -118,7 +119,8 @@ void Batch::drawInstanced( GLsizei instanceCount )
 	ctx->setDefaultShaderVars();
 	mVboMesh->drawInstancedImpl( instanceCount );
 }
-#endif
+
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 void Batch::bind()
 {
@@ -171,9 +173,14 @@ void VertBatch::color( const ColorAf &color )
 	mColors.push_back( color );
 }
 
-void VertBatch::texCoord( const vec4 &t )
+void VertBatch::texCoord0( const vec4 &t )
 {
-	mTexCoords.push_back( t );
+	mTexCoords0.push_back( t );
+}
+
+void VertBatch::texCoord1( const vec4 &t )
+{
+	mTexCoords1.push_back( t );
 }
 
 void VertBatch::vertex( const vec4 &v )
@@ -201,9 +208,14 @@ void VertBatch::addVertex( const vec4 &v )
 			mColors.push_back( mColors.back() );	
 	}
 
-	if( ! mTexCoords.empty() ) {
-		while( mTexCoords.size() < mVertices.size() )
-			mTexCoords.push_back( mTexCoords.back() );	
+	if( ! mTexCoords0.empty() ) {
+		while( mTexCoords0.size() < mVertices.size() )
+			mTexCoords0.push_back( mTexCoords0.back() );
+	}
+
+	if( ! mTexCoords1.empty() ) {
+		while( mTexCoords1.size() < mVertices.size() )
+			mTexCoords1.push_back( mTexCoords1.back() );
 	}
 }
 
@@ -213,16 +225,13 @@ void VertBatch::begin( GLenum primType )
 	mPrimType = primType;
 }
 
-void VertBatch::end()
-{
-}
-
 void VertBatch::clear()
 {
 	mVertices.clear();
 	mNormals.clear();
 	mColors.clear();
-	mTexCoords.clear();
+	mTexCoords0.clear();
+	mTexCoords1.clear();
 	mVbo.reset();
 	mVao = nullptr;
 }
@@ -250,8 +259,9 @@ void VertBatch::setupBuffers()
 	const size_t verticesSizeBytes = mVertices.size() * sizeof(vec4);
 	const size_t normalsSizeBytes = mNormals.size() * sizeof(vec3);
 	const size_t colorsSizeBytes = mColors.size() * sizeof(ColorAf);
-	const size_t texCoordsSizeBytes = mTexCoords.size() * sizeof(vec4);
-	size_t totalSizeBytes = verticesSizeBytes + normalsSizeBytes + colorsSizeBytes + texCoordsSizeBytes;
+	const size_t texCoords0SizeBytes = mTexCoords0.size() * sizeof(vec4);
+	const size_t texCoords1SizeBytes = mTexCoords1.size() * sizeof(vec4);
+	size_t totalSizeBytes = verticesSizeBytes + normalsSizeBytes + colorsSizeBytes + texCoords0SizeBytes + texCoords1SizeBytes;
 
 	// allocate the VBO if we don't have one yet (which implies we're not using the context defaults)
 	bool forceUpload = false;
@@ -283,10 +293,16 @@ void VertBatch::setupBuffers()
 			offset += colorsSizeBytes;
 		}
 
-		// upload texCoords
-		if( ! mTexCoords.empty() ) {
-			mVbo->bufferSubData( offset, texCoordsSizeBytes, &mTexCoords[0] );
-			offset += texCoordsSizeBytes;
+		// upload texCoords0
+		if( ! mTexCoords0.empty() ) {
+			mVbo->bufferSubData( offset, texCoords0SizeBytes, &mTexCoords0[0] );
+			offset += texCoords0SizeBytes;
+		}
+
+		// upload texCoords1
+		if( ! mTexCoords1.empty() ) {
+			mVbo->bufferSubData( offset, texCoords1SizeBytes, &mTexCoords1[0] );
+			offset += texCoords1SizeBytes;
 		}
 	}
 
@@ -323,8 +339,15 @@ void VertBatch::setupBuffers()
 		offset += colorsSizeBytes;
 	}
 
-	if( glslProg->hasAttribSemantic( geom::Attrib::TEX_COORD_0 ) && ( ! mTexCoords.empty() ) ) {
+	if( glslProg->hasAttribSemantic( geom::Attrib::TEX_COORD_0 ) && ( ! mTexCoords0.empty() ) ) {
 		int loc = glslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+		ctx->enableVertexAttribArray( loc );
+		ctx->vertexAttribPointer( loc, 4, GL_FLOAT, false, 0, (const GLvoid*)offset );
+		offset += texCoords0SizeBytes;
+	}
+
+	if( glslProg->hasAttribSemantic( geom::Attrib::TEX_COORD_1 ) && ( ! mTexCoords1.empty() ) ) {
+		int loc = glslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_1 );
 		ctx->enableVertexAttribArray( loc );
 		ctx->vertexAttribPointer( loc, 4, GL_FLOAT, false, 0, (const GLvoid*)offset );
 	}
@@ -333,5 +356,70 @@ void VertBatch::setupBuffers()
 		mVao->replacementBindEnd();
 	ctx->popVao();
 }
+
+size_t VertBatch::getNumVertices() const
+{
+	return mVertices.size();
+}
+
+size_t VertBatch::getNumIndices() const
+{
+	return 0;
+}
+
+geom::Primitive	VertBatch::getPrimitive() const
+{
+	return gl::toGeomPrimitive( mPrimType );
+}
+
+uint8_t	VertBatch::getAttribDims( geom::Attrib attr ) const
+{
+	switch( attr ) {
+		case geom::Attrib::POSITION:
+			return mVertices.empty() ? 0 :4;
+		case geom::Attrib::NORMAL:
+			return mNormals.empty() ? 0 : 3;
+		case geom::Attrib::COLOR:
+			return mColors.empty() ? 0 : 4;
+		case geom::Attrib::TEX_COORD_0:
+			return mTexCoords0.empty() ? 0 : 4;
+		case geom::Attrib::TEX_COORD_1:
+			return mTexCoords1.empty() ? 0 : 4;
+		default:
+			return 0;
+	}
+}
+
+void VertBatch::loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const
+{
+	if( ! mVertices.empty() )
+		target->copyAttrib( geom::Attrib::POSITION, 4, 0, value_ptr( *mVertices.data() ), mVertices.size() );
+	if( ! mNormals.empty() )
+		target->copyAttrib( geom::Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
+	if( ! mColors.empty() )
+		target->copyAttrib( geom::Attrib::COLOR, 4, 0, (const float*)mColors.data(), mColors.size() );
+	if( ! mTexCoords0.empty() )
+		target->copyAttrib( geom::Attrib::TEX_COORD_0, 4, 0, value_ptr( *mTexCoords0.data() ), mTexCoords0.size() );
+	if( ! mTexCoords1.empty() )
+		target->copyAttrib( geom::Attrib::TEX_COORD_1, 4, 0, value_ptr( *mTexCoords1.data() ), mTexCoords1.size() );
+}
+
+geom::AttribSet	VertBatch::getAvailableAttribs() const
+{
+	geom::AttribSet attribs;
+	attribs.insert( geom::Attrib::POSITION );
+	
+	if( ! mNormals.empty() )
+		attribs.insert( geom::Attrib::NORMAL );
+	if( ! mColors.empty() )
+		attribs.insert( geom::Attrib::COLOR );
+	if( ! mTexCoords0.empty() )
+		attribs.insert( geom::Attrib::TEX_COORD_0 );
+	if( ! mTexCoords1.empty() )
+		attribs.insert( geom::Attrib::TEX_COORD_1 );
+	
+	return attribs;
+}
+
 
 } } // namespace cinder::gl

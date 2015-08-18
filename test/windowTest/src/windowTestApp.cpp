@@ -68,8 +68,8 @@ void WindowTestApp::prepareSettings( Settings *settings )
 
 void WindowTestApp::setup()
 {
-	for( auto displayIt = Display::getDisplays().begin(); displayIt != Display::getDisplays().end(); ++displayIt )
-		CI_LOG_V( "Resolution: " << (*displayIt)->getBounds() );
+	for( auto display : Display::getDisplays() )
+		CI_LOG_V( "display name: '" << display->getName() << "', bounds: " << display->getBounds() );
 
 	getWindow()->setUserData( new WindowData );
 
@@ -162,7 +162,9 @@ void WindowTestApp::keyDown( KeyEvent event )
 	}
 	if( event.getChar() == 'f' ) {
 		CI_LOG_V( "Toggling from fullscreen: " << getWindow()->isFullScreen() );
-		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
+		// This line forces fullscreen on the secondary display
+		//getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
+		getWindow()->setFullScreen( ! getWindow()->isFullScreen() );
 	}
 	else if( event.getChar() == 'o' ) {
 		CI_LOG_V( "(kiosk) Toggling from fullscreen: " << getWindow()->isFullScreen() );

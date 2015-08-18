@@ -69,6 +69,14 @@ void Platform::set( Platform *platform )
 	sInstance = platform;
 }
 
+fs::path Platform::getExecutablePath() const
+{
+	if( mExecutablePath.empty() )
+		mExecutablePath = getDefaultExecutablePath();
+
+	return mExecutablePath;
+}
+
 DataSourceRef Platform::loadAsset( const fs::path &relativePath )
 {
 	fs::path assetPath = findAssetPath( relativePath );

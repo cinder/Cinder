@@ -49,9 +49,7 @@
 	#endif
 #elif defined( CINDER_MSW )
 	#include "cinder/msw/CinderWindowsFwd.h"
-	struct tagLOGFONTW;
-	typedef tagLOGFONTW LOGFONTW;
-	typedef LOGFONTW LOGFONT;
+
 	namespace Gdiplus {
 		class Font;
 	}
@@ -103,7 +101,8 @@ class Font {
 	CGFontRef				getCgFontRef() const;
 	CTFontRef				getCtFontRef() const;
 #elif defined( CINDER_MSW )
-	const LOGFONT&			getLogfont() const;
+	//! Returns the underlying LOGFONTW on MSW
+	const void*				getLogfont() const;
 	::HFONT					getHfont() const;
 	const Gdiplus::Font*	getGdiplusFont() const;
 	static HDC				getGlobalDc();

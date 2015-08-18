@@ -105,7 +105,7 @@ class AppCocoaTouch : public AppBase {
 	WindowRef 		createWindow( const Window::Format &format = Window::Format() ) override;
 
 	WindowRef		getWindow() const override;
-	WindowRef		getForegroundWindow() const	{ return getWindow(); }
+	WindowRef		getForegroundWindow() const override { return getWindow(); }
 	size_t			getNumWindows() const override;
 	app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
 
@@ -202,9 +202,6 @@ class AppCocoaTouch : public AppBase {
 	//! Overidden to disable, mobile is always full screen.
 	void	setFullScreen( bool fullScreen, const FullScreenOptions &options = FullScreenOptions() ) override;
 
-	//! Returns the path to the application on disk
-	fs::path	getAppPath() const override;
-
 	//! Returns an invalid position since the device doesn't have a mouse.
 	ivec2 getMousePos() const override	{ return ivec2( -1 ); }
 
@@ -225,7 +222,7 @@ class AppCocoaTouch : public AppBase {
 	//! \endcond
 
   protected:
-	virtual void	launch() override;
+	void	launch() override;
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );

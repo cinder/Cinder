@@ -648,8 +648,8 @@ void DeferredShadingAdvancedApp::draw()
 			
 			const gl::ScopedBlendAlpha scopedBlendAlpha;
 			const gl::ScopedModelMatrix scopedModelMatrix;
-			gl::translate( mFboPingPong->getSize() / 2 );
-			gl::scale( mFboPingPong->getSize() );
+			gl::translate( getWindowSize() / 2 );
+			gl::scale( getWindowSize() );
 			mBatchLBufferShadowRect->draw();
 		}
 		
@@ -1559,7 +1559,7 @@ void DeferredShadingAdvancedApp::update()
 		mLights.back().setPosition( p );
 		
 		// Update light positions in UBO
-		Light* lights = (Light*)mUboLight->mapWriteOnly( false );
+		Light* lights = (Light*)mUboLight->mapWriteOnly();
 		for ( const Light& light : mLights ) {
 			lights->setPosition( light.getPosition() );
 			++lights;

@@ -44,7 +44,6 @@ AppCocoaTouch::AppCocoaTouch()
 	auto settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
 
-	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = [[AppImplCocoaTouch alloc] init:this settings:*settings];
 
 	enablePowerManagement( settings->isPowerManagementEnabled() );
@@ -226,11 +225,6 @@ bool AppCocoaTouch::isFullScreen() const
 void AppCocoaTouch::setFullScreen( bool fullScreen, const FullScreenOptions &options )
 {
 	// NO-OP
-}
-
-fs::path AppCocoaTouch::getAppPath() const
-{ 
-	return fs::path( [[[NSBundle mainBundle] bundlePath] UTF8String] );
 }
 
 void AppCocoaTouch::quit()

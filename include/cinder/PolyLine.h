@@ -56,6 +56,9 @@ class PolyLineT {
 
 	void		scale( const T &scaleFactor, T scaleCenter = T() );
 	void		offset( const T &offsetBy );
+	void		reverse();
+	
+	PolyLineT<T>	reversed() const;
 
 	//! Returns whether the point \a pt is contained within the boundaries of the PolyLine
 	bool	contains( const vec2 &pt ) const;
@@ -73,7 +76,15 @@ class PolyLineT {
 	static std::vector<PolyLineT> 	calcXor( const std::vector<PolyLineT> &a, std::vector<PolyLineT> &b );
 	//! Calculates the boolean difference of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
 	static std::vector<PolyLineT> 	calcDifference( const std::vector<PolyLineT> &a, std::vector<PolyLineT> &b );
-	
+
+	friend std::ostream& operator<<( std::ostream& lhs, const PolyLineT& rhs )
+	{
+		lhs << "(";
+		for( const auto &it : rhs.mPoints )
+			lhs << it << " ";
+		return lhs << ")";
+	}
+
   private:
 	std::vector<T>			mPoints;
 	bool					mClosed;

@@ -125,8 +125,8 @@ class VoiceSamplePlayerNode : public Voice {
 	//! Returns a shared_ptr of the owned SamplePlayerNode.
 	SamplePlayerNodeRef getSamplePlayerNode() const			{ return mNode; }
 
-	virtual void start() override;
-	virtual void stop() override;
+	void start() override;
+	void stop() override;
 
   protected:
 	VoiceSamplePlayerNode( const SourceFileRef &sourceFile, const Options &options );

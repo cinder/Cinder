@@ -2,14 +2,16 @@
 Origin and arrangement of Ogg Vobis source code: http://www.xiph.org/downloads/
 
 ogg (version: libogg-1.3.1)
-- copied .c's in src folder to oggvorbis/ogg/
+- first be sure to run ./configure to generate the include/ogg/config_types.h file
+- copied .c's in src folder to src/oggvorbis/ogg/
+- copied .h's in include/ogg folder to include/oggvorbis/ogg/
 - initialized  "ogg_int16_t temp = 0;" on os.h line 97 to silence warning.
 
-
 vorbis (version: libvorbis-1.3.4)
-- copied .[ch]'s from lib folder into oggvorbis/vorbis/
+- copied .[ch]'s from lib folder to src/oggvorbis/vorbis/
+- copied .h's from include/vorbis folder to include/oggvorbis/vorbis/
 - removed barkmel.c, and tone.c, psytune.c (utility programs)
-- added '#pragma warning( disable: 4244 )' to many c files to disable warnings ignored by authors
+- added '#pragma warning( disable: 4244 )' to many c files to silence conversion warnings
 ===============================================================================
 
 Xiph.org license:

@@ -682,7 +682,9 @@ void bindBufferBase( GLenum target, int index, BufferObjRef buffer )
 	auto ctx = gl::context();
 	ctx->bindBufferBase( target, index, buffer );
 }
+#endif // ! defined( CINDER_GL_ES_2 )
 
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 void beginTransformFeedback( GLenum primitiveMode )
 {
 	auto ctx = gl::context();
@@ -706,9 +708,9 @@ void endTransformFeedback()
 	auto ctx = gl::context();
 	ctx->endTransformFeedback();
 }
-#endif // ! defined( CINDER_GL_ES_2 )
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
-#if ! defined( CINDER_GL_ES )
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 void patchParameteri( GLenum pname, GLint value )
 {
 	glPatchParameteri( pname, value );
@@ -718,7 +720,7 @@ void patchParameterfv( GLenum pname, GLfloat *value )
 {
 	glPatchParameterfv( pname, value );
 }
-#endif // ! defined( CINDER_GL_ES )
+#endif // defined( CINDER_GL_HAS_TESS_SHADER )
 
 void color( float r, float g, float b )
 {
@@ -913,6 +915,11 @@ void bindBuffer( const BufferObjRef &buffer )
 	context()->bindBuffer( buffer->getTarget(), buffer->getId() );
 }
 
+void bindBuffer( GLenum target, GLuint buffer )
+{
+	context()->bindBuffer( target, buffer );
+}
+
 #if ! defined( CINDER_GL_ES_2 )
 void readBuffer( GLenum src )
 {
@@ -939,6 +946,28 @@ void readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
 {
 	glReadPixels( x, y, width, height, format, type, data );
 }
+
+// Compute
+#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+ivec3 getMaxComputeWorkGroupCount()
+{
+	ivec3 count;
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &count.x );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &count.y );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &count.z );
+	return count;
+}
+
+ivec3 getMaxComputeWorkGroupSize()
+{
+	ivec3 size;
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &size.x );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &size.y );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &size.z );
+	return size;
+}
+#endif // defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // toGL conversion functions

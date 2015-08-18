@@ -92,8 +92,8 @@ class ConverterImplCoreAudio : public dsp::Converter {
 	ConverterImplCoreAudio( size_t sourceSampleRate, size_t destSampleRate, size_t sourceNumChannels, size_t destNumChannels, size_t sourceMaxFramesPerBlock );
 	virtual ~ConverterImplCoreAudio();
 
-	virtual std::pair<size_t,size_t>	convert( const Buffer *sourceBuffer, Buffer *destBuffer )	override;
-	virtual void						clear()														override;
+	std::pair<size_t,size_t>	convert( const Buffer *sourceBuffer, Buffer *destBuffer )	override;
+	void						clear()														override;
 
   private:
 	std::pair<size_t,size_t> convertComplexImpl( const Buffer *sourceBuffer, Buffer *destBuffer );

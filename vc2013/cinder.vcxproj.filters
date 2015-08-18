@@ -148,6 +148,12 @@
     <Filter Include="Header Files\jsoncpp">
       <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\tinyexr">
+      <UniqueIdentifier>{9fb9c4db-7e15-4606-a469-e540c1a38f74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\tinyexr">
+      <UniqueIdentifier>{7db91fc3-293a-46f9-a07c-f55c2de26b5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -639,12 +645,6 @@
     <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplHardware.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplSoftware.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Vao.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -785,6 +785,12 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\ConstantConversions.cpp">
       <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tinyexr\tinyexr.cc">
+      <Filter>Source Files\tinyexr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageFileTinyExr.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1648,6 +1654,12 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\ConstantConversions.h">
       <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Ssbo.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\tinyexr\tinyexr.h">
+      <Filter>Header Files\tinyexr</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

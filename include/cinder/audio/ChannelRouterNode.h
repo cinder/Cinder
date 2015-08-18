@@ -83,13 +83,13 @@ class ChannelRouterNode : public Node {
 	//! Adds \a input to the route list, routing \a numChannels starting at \a inputChannelIndex of \a input to \a outputChannelIndex.
 	void addInputRoute( const NodeRef &input, size_t inputChannelIndex, size_t outputChannelIndex, size_t numChannels );
 
-	virtual void disconnectAllInputs()									override;
+	void disconnectAllInputs()									override;
 	
   protected:
-	virtual bool supportsInputNumChannels( size_t numChannels ) const	override;
-	virtual bool supportsProcessInPlace() const							override;
-	virtual void sumInputs()											override;
-	virtual void disconnectInput( const NodeRef &input )				override;
+	bool supportsInputNumChannels( size_t numChannels ) const	override;
+	bool supportsProcessInPlace() const							override;
+	void sumInputs()											override;
+	void disconnectInput( const NodeRef &input )				override;
 
 	struct Route {
 		NodeRef	mInput;
