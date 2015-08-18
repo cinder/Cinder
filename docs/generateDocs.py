@@ -32,7 +32,6 @@ import os
 import shutil
 import stat
 import urlparse
-import traceback
 from difflib import SequenceMatcher as SM
 
 # Third party in libs folder
@@ -1773,6 +1772,13 @@ def process_xml_file_definition(in_path, out_path, file_type):
     # add to search index
     link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, HTML_DEST_PATH)["href"]
     add_to_search_index(bs4, link_path, file_data.kind_explicit, file_data.search_tags)
+
+    # deactivate invalid relative links
+    for link in bs4.find_all("a"):
+        if link.has_attr("href") and link["href"].startswith("_"):
+            # replace <a> with <span>
+            dead_tag = gen_tag(bs4, "span", None, link.string)
+            link.replace_with(dead_tag)
 
     # write the file
     write_html(bs4, out_path)
