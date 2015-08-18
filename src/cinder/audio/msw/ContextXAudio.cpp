@@ -50,7 +50,7 @@ const size_t DEFAULT_XAUDIO2_FRAMES_PER_BLOCK = 512;
 } // anonymous namespace
 
 struct VoiceCallbackImpl : public ::IXAudio2VoiceCallback {
-	VoiceCallbackImpl( OutputDeviceNodeXAudio *lineOut  ) : mOutputDeviceNode( lineOut ) {}
+	VoiceCallbackImpl( OutputDeviceNodeXAudio *outputDeviceNode  ) : mOutputDeviceNode( outputDeviceNode ) {}
 
 	void renderIfNecessary()
 	{
