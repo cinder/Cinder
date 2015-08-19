@@ -23,11 +23,15 @@ using namespace std;
  When compiling cinder in DEBUG, it defaults to a minimum logging level of LEVEL_VERBOSE
  When compiling cinder in RELEASE, it defaults to a minimum logging level of LEVEL_INFO
  
+ The minimum logging level is set at compile time and we optimize out all logging calls
+ below the min level which will prevent burning CPU on non necessary log calls.
+ 
  The CI_MIN_LOG_LEVEL define can be used to override this.  So, if you wanted
  VERBOSE logging in RELEASE, you would include the following define BEFORE you include
  the logging header.
  	
  #define CI_MIN_LOG_LEVEL 0
+ 
 */
 
 // as noted above, this sets the logging to LEVEL_VERBOSE independent of compilation mode
@@ -42,19 +46,19 @@ class LoggingApp : public App {
 	void update() override;
 	void draw() override;
 	
-	// this routine will enable logging to a given file.  This file will not rotate.
+	// This routine will enable logging to a given file.  This file will not rotate.
 	void enableFileLogging();
-	// this routine will enable logging to a given file, and rotate that file daily
+	// This routine will enable logging to a given file, and rotate that file daily
 	// at the first logging event past midnight
 	void enableRotatingFileLogging();
-	// this routine will enable system logging via syslog (OS X) and EventLog (Windows).
+	// This routine will enable system logging via syslog (OS X) and EventLog (Windows).
 	// WinRT is still being worked on.
 	void enableSysLogging();
 };
 
 void LoggingApp::setup()
 {
-	// note: cinder will only log to one file at a time, so if you enableFileLogging and
+	// Note: cinder will only log to one file at a time, so if you enableFileLogging and
 	// enableRotatingFileLogging, it will just use whichever was called last.
 	
 	enableFileLogging();
@@ -65,35 +69,42 @@ void LoggingApp::setup()
 
 void LoggingApp::enableFileLogging()
 {
-	// cinder will create the folder structure for you, and defaults to appending to
+	// Cinder will create the folder structure for you, and defaults to appending to
 	// the logging file.
 	log::manager()->enableFileLogging( "/tmp/logging/cinder.log" );
     
-    // if you wanted to overwrite the file rather than append, you'd call this
-    log::manager()->enableFileLogging( "/tmp/logging/cinder.log", false );
+    // If you wanted to overwrite the file rather than append, you'd call this.
+    //log::manager()->enableFileLogging( "/tmp/logging/cinder.log", false );
 }
 
 void LoggingApp::enableRotatingFileLogging()
 {
-	// cinder will create the folder structure for you, and when it creates the log
+	// Cinder will create the folder structure for you, and when it creates the log
 	// file it will use strtime to turn your formatted string into an actual string.
-	// you can format it any way you like, but note that currently it will only roll
+	// You can format it any way you like, but note that currently it will only roll
 	// over the first time you log after midnight, independent of your string format.
-	// this is obviously very useful for permanent installs
+	// This is obviously very useful for permanent installs.
 	log::manager()->enableFileLogging( "/tmp/logging", "cinder.%Y.%m.%d.log" );
     
-    // if for some reason you wanted to overwrite the file rather than append,
-    // you'd call this
-    log::manager()->enableFileLogging( "/tmp/logging", "cinder.%Y.%m.%d.log", false );
+    // If for some reason you wanted to overwrite the file rather than append,
+    // you'd call this.
+    //log::manager()->enableFileLogging( "/tmp/logging", "cinder.%Y.%m.%d.log", false );
 }
 
 void LoggingApp::enableSysLogging()
 {
-	// this will enable system logging (currently syslog or eventlog), and will let
-	// you set the minimum logging level independent of the console/file output
+	// This will enable system logging (currently syslog or eventlog), and will let
+	// you set the minimum logging level independent of the global (console/file output)
 	// logging levels.  if you do not explicitly set the system logging level, it
-	// defaults to the same as the global minimum logging level
+	// defaults to the same as the global minimum logging level.
 	log::manager()->enableSystemLogging();
+    
+    // The system logging level is independent of the minimum logging level,
+    // and you can set it via the call below.  Keep in mind that setting the system
+    // logging level to something lower than the CI_MIN_LOG_LEVEL would not work
+    // as expected, as the system logging level can never be lower than the
+    // minimum logging level.  This is because we optimize out logging calls
+    // below CI_MIN_LOG_LEVEL.
 	log::manager()->setSystemLoggingLevel(log::LEVEL_WARNING);
 }
 
