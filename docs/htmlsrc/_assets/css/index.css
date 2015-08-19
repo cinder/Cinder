@@ -128,24 +128,24 @@ body.section_home ul.library-features .img-holder img.over {
   -ms-transition: all 250ms;
   transition: all 250ms;
 }
-#intro {
+body.section_home #intro {
   padding: 40px 0 75px 0;
   border-top: 2px solid #fff;
 }
-#intro .content p {
+body.section_home #intro .content p {
   font-size: 1.3em;
 }
-#intro #downloads {
+body.section_home #intro #downloads {
   padding-top: 20px;
 }
-#intro #downloads li {
+body.section_home #intro #downloads li {
   padding: 0 2em 0 0;
 }
-#intro #downloads li a {
+body.section_home #intro #downloads li a {
   padding: 0em 0 0 0.9375em;
   margin-left: -0.9375em;
 }
-#intro #downloads li a:hover {
+body.section_home #intro #downloads li a:hover {
   background: #d74f02;
   color: #fff;
   text-decoration: none;
