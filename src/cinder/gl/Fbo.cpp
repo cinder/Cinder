@@ -754,7 +754,7 @@ Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
 }
 
 #if ! defined( CINDER_GL_ES )
-void Fbo::blitTo( FboRef dst, const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
+void Fbo::blitTo( const FboRef &dst, const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
 {
 	ScopedFramebuffer readScp( GL_READ_FRAMEBUFFER, mId );
 	ScopedFramebuffer drawScp( GL_DRAW_FRAMEBUFFER, dst->getId() );
