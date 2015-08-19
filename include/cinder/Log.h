@@ -98,9 +98,12 @@ class LoggerConsole : public Logger {
 
 class LoggerFile : public Logger {
   public:
-	//! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
+	// Standard loggerFile, will write to a single log file.  File appending is configurable.
+	// ! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	// daily rotating logger, if folder or format are empty, ignores request
+	// daily rotating logger, will write to a formatted log file, updated at the first log request
+	// after midnight.
+	// ! If \a folder or \a formatStr are empty, ignores request
 	LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	virtual ~LoggerFile();
 

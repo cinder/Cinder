@@ -42,7 +42,7 @@ class LoggingApp : public App {
 	void update() override;
 	void draw() override;
 	
-	// this routine will enable logging to a given file
+	// this routine will enable logging to a given file.  This file will not rotate.
 	void enableFileLogging();
 	// this routine will enable logging to a given file, and rotate that file daily
 	// at the first logging event past midnight
@@ -66,8 +66,11 @@ void LoggingApp::setup()
 void LoggingApp::enableFileLogging()
 {
 	// cinder will create the folder structure for you, and defaults to appending to
-	// the logging file
+	// the logging file.
 	log::manager()->enableFileLogging( "/tmp/logging/cinder.log" );
+    
+    // if you wanted to overwrite the file rather than append, you'd call this
+    log::manager()->enableFileLogging( "/tmp/logging/cinder.log", false );
 }
 
 void LoggingApp::enableRotatingFileLogging()
@@ -77,7 +80,11 @@ void LoggingApp::enableRotatingFileLogging()
 	// you can format it any way you like, but note that currently it will only roll
 	// over the first time you log after midnight, independent of your string format.
 	// this is obviously very useful for permanent installs
-	log::manager()->enableFileLogging( "/tmp/logging", "cinder.%Y.%m.%d.log", false );
+	log::manager()->enableFileLogging( "/tmp/logging", "cinder.%Y.%m.%d.log" );
+    
+    // if for some reason you wanted to overwrite the file rather than append,
+    // you'd call this
+    log::manager()->enableFileLogging( "/tmp/logging", "cinder.%Y.%m.%d.log", false );
 }
 
 void LoggingApp::enableSysLogging()
