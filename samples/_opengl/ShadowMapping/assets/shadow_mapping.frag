@@ -149,5 +149,6 @@ void main()
 		shadow = sampleRandom( sc, offset );
 	}
 	
-	fragColor = mix( vec4( ( ( D + S ) * shadow + A ) * vColor.rgb, 1.0 ), vec4(shadow), float(uOnlyShadowmap) );
+	fragColor.rgb = mix( ( ( D + S ) * shadow + A ) * vColor.rgb, vec3(shadow), float(uOnlyShadowmap) );
+	fragColor.a = 1.0;
 }
