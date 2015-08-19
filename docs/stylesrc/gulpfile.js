@@ -6,18 +6,18 @@ var Filter 			= require( 'gulp-filter');
 
 gulp.task( 'styles', function() {
     
-    var filter = Filter('**/*.styl');
+    var filter = Filter(['**/*.styl'], {restore: true});
 
     return gulp.src( [ 
     	'./stylus/*.styl'
     	] )
 
-    	.pipe(filter)
+    	.pipe( filter )
         .pipe( stylus({
             import: [ 'nib' ],
             use: [ nib() ]
         }))
-        .pipe(filter.restore())
+        .pipe( filter.restore )
         .pipe( gulp.dest( './../html/_assets/css' ) )
         .pipe( gulp.dest( './../htmlsrc/_assets/css' ) );
 });
