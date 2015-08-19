@@ -407,26 +407,29 @@ body#guide-contents .contents .definitionCol {
 body#guide-contents .contents p:last {
   margin-bottom: 0;
 }
-#container .contents .description,
-body#guide-contents .contents .description {
+#container .contents .row .description,
+body#guide-contents .contents .row .description {
   color: #7c827f;
 }
-#container .contents p:first-child,
-body#guide-contents .contents p:first-child {
+#container .contents .row p:first-child,
+body#guide-contents .contents .row p:first-child {
   margin-top: 5px;
 }
-#container .contents button.expand,
-body#guide-contents .contents button.expand {
+#container .contents .row button.expand,
+body#guide-contents .contents .row button.expand {
   top: 14px;
   left: 9px;
 }
-#show-hide {
+#container #show-hide,
+body#guide-contents #show-hide {
   text-align: right;
 }
-.returnCol {
+#container .returnCol,
+body#guide-contents .returnCol {
   text-align: right;
 }
-ul.master-class-list {
+#container ul.master-class-list,
+body#guide-contents ul.master-class-list {
   -webkit-column-count: 4;
   -moz-column-count: 4;
   column-count: 4;

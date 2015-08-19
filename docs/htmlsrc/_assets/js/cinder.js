@@ -98,7 +98,8 @@ $(document).ready(function() {
 			var result = results[i];
 			var data = search_index_data.data[result.ref];
 			var link = rootDir + data.link;
-			var a = $("<a href=" + link + "> " +  data.title +"</a>");
+			var type = data.type;
+			var a = $("<a href=" + link + "> " + data.title + " | " + type + "</a>" );
 			li.append(a);
 			// li.append(" score: " +  result.score + "</b> ->" );
 			// li.append(data.link);

@@ -19,6 +19,9 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
+
+ VERSION: 0.1
+ AUTHOR: Greg Kepler | gkepler@gmail.com
 """
 
 #! /usr/bin/python
@@ -32,6 +35,7 @@ import os
 import shutil
 import stat
 import urlparse
+from datetime import datetime, timedelta
 from difflib import SequenceMatcher as SM
 
 # Third party in libs folder
@@ -48,6 +52,14 @@ TEMPLATE_PATH = BASE_PATH + 'htmlsrc' + os.sep + "_templates" + os.sep
 PARENT_DIR = BASE_PATH.split('/docs')[0]
 TAG_FILE_PATH = "doxygen/cinder.tag"
 
+# TODO: These should be dynamic via doxygen generated data. perhaps from _cinder_8h.xml
+file_meta = {
+    "cinder_version": "",
+    "doxy_version": "",
+    "creation_date": str(datetime.today().date())
+}
+
+
 # various config settings
 class Config(object):
     def __init__(self):
@@ -63,6 +75,8 @@ class Config(object):
         self.CLASS_LIST_BLACKLIST = ["glm", "@"]
         # cinder github repo path
         self.GITHUB_PATH = "http://github.com/cinder/Cinder/tree/master"
+        # file that contains cinder meta data
+        self.PROJECT_META_FILE = os.path.join(XML_SOURCE_PATH, "_cinder_8h.xml")
 
         # directory for the class template mustache file
         # self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-class-template.mustache")
@@ -638,7 +652,7 @@ class FileData(object):
         content = {
             "name": self.name,
             "title": self.title,
-            "page_header": self.page_header
+            "page_header": self.page_header,
         }
         return content
 
@@ -1144,6 +1158,7 @@ def replace_element(bs4, element, replacement_tag):
     replacement = gen_tag(bs4, replacement_tag, None, text_content)
     element.replace_with(replacement)
 
+
 def get_body_content(bs4):
     return_str = ""
     for content in bs4.body.contents:
@@ -1154,6 +1169,7 @@ def get_body_content(bs4):
         else:
             return_str += content_str
     return return_str
+
 
 def extract_anchor(element):
     if element.attrib["id"]:
@@ -1748,6 +1764,8 @@ def process_xml_file_definition(in_path, out_path, file_type):
     file_content = file_data.get_content()
     bs4 = render_template(html_template, file_content)
     content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class, str("section_" + section): "true"}
+    # append file meta
+    content_dict.update(file_meta.copy())
 
     # render within main template
     bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
@@ -2226,6 +2244,8 @@ def process_html_file(in_path, out_path):
     bs4 = render_template(template, file_content)
     update_links_abs(bs4, in_path)
     content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class, str("section_" + section): "true"}
+    # append file meta
+    content_dict.update(file_meta.copy())
 
     # plug everything into the master template
     bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
@@ -2765,6 +2785,7 @@ def get_symbol_to_file_map():
     print "generating symbol map from tag file"
     symbol_map = SymbolMap()
 
+
     # find classes
     class_tags = g_tag_xml.findall(r'compound/[@kind="class"]')
     for c in class_tags:
@@ -3296,6 +3317,24 @@ def copytree(src, dst, symlinks=False, ignore=None):
         else:
             shutil.copy2(s, d)
 
+
+def load_meta():
+    global file_meta
+
+    # load meta file
+    meta_file = parse_xml(config.PROJECT_META_FILE)
+
+    # get doxygen version
+    file_meta["doxy_version"] = meta_file.attrib.get("version")
+
+    # get cinder version
+    for member in meta_file.findall(r'compounddef/sectiondef/memberdef[@kind="define"]'):
+        if member.find(r"name").text == "CINDER_VERSION_STR":
+            ver = str(member.find(r"initializer").text)
+            ver = ver.replace('"', "")
+            file_meta["cinder_version"] = ver
+
+
 def log(message, level=0):
     if level == 0 or not level:
         message_prefix = "INFO"
@@ -3305,6 +3344,7 @@ def log(message, level=0):
         message_prefix = "ERROR"
 
     print("\t*** " + message_prefix + ": [ " + message + " ] ***")
+
 
 if __name__ == "__main__":
     """ Main Function for generating html documentation from doxygen generated xml files
@@ -3335,6 +3375,9 @@ if __name__ == "__main__":
         log("I got nothin for you. The tag file [" + TAG_FILE_PATH + "] doesn't exist yet. "
             "Run doxygen first and try me again later.", 2)
         quit()
+
+    # load meta data
+    load_meta()
 
     # Load tag file
     log("parsing tag file")
