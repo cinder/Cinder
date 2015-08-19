@@ -992,7 +992,7 @@ Texture2d::Texture2d( const Surface32f &surface, Format format )
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB, GL_FLOAT );
 #else
 	initParams( format, surface.hasAlpha() ? GL_RGBA32F : GL_RGB32F, GL_FLOAT );
@@ -1009,7 +1009,7 @@ Texture2d::Texture2d( const Channel32f &channel, Format format )
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	initParams( format, GL_LUMINANCE, GL_FLOAT );
 #else
 	if( ! format.mSwizzleSpecified ) {
@@ -1033,18 +1033,47 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 #if defined( CINDER_GL_ES_2 )
 			defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : GL_RGB;
 #else
-			defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA8 : GL_RGB8;
+			switch( imageSource->getDataType() ) {
+#if ! defined( CINDER_GL_ES )
+				case ImageIo::UINT16:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA16 : GL_RGB16;
+				break;
+#endif
+				case ImageIo::FLOAT16:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA16F : GL_RGB16F;
+				break;
+				case ImageIo::FLOAT32:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA32F : GL_RGB32F;
+				break;
+				default:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA8 : GL_RGB8;
+				break;
+			}
 #endif
 		break;
 		case ImageIo::CM_GRAY: {
 #if defined( CINDER_GL_ES )
 			defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
 #else
-			defaultInternalFormat = ( imageSource->hasAlpha() ) ?  GL_RG : GL_RED;
+			switch( imageSource->getDataType() ) {
+				case ImageIo::UINT16:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RG16 : GL_R16;
+				break;
+				case ImageIo::FLOAT16:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RG16F : GL_R16F;
+				break;
+				case ImageIo::FLOAT32:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RG32F : GL_R32F;
+				break;
+				default:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RG8 : GL_R8;
+				break;
+			}
+
 			if( ! format.mSwizzleSpecified ) {
-				std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_GREEN };
-				if( defaultInternalFormat == GL_RED )
-					swizzleMask[3] = GL_ONE;
+				std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
+				if( imageSource->hasAlpha() )
+					swizzleMask[3] = GL_GREEN;
 				format.setSwizzleMask( swizzleMask );
 			}
 #endif
@@ -1193,7 +1222,12 @@ void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSourc
 		imageSource->load( target );
 		pbo->unmap();
 		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_UNSIGNED_SHORT, nullptr );
-		
+	}
+	else if( imageSource->getDataType() == ImageIo::FLOAT16 ) {
+		auto target = ImageTargetGlTexture<half_float>::create( this, channelOrder, isGray, imageSource->hasAlpha(), pboData );
+		imageSource->load( target );
+		pbo->unmap();
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT, nullptr );
 	}
 	else {
 		auto target = ImageTargetGlTexture<float>::create( this, channelOrder, isGray, imageSource->hasAlpha(), pboData );
@@ -1218,6 +1252,16 @@ void Texture2d::initDataImageSourceImpl( const ImageSourceRef &imageSource, cons
 		auto target = ImageTargetGlTexture<uint16_t>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
 		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_UNSIGNED_SHORT, target->getData() );
+		
+	}
+	else if( imageSource->getDataType() == ImageIo::FLOAT16 ) {
+		auto target = ImageTargetGlTexture<half_float>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
+		imageSource->load( target );
+#if defined( CINDER_GL_ES_2 )
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT_OES, target->getData() );
+#else
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT, target->getData() );
+#endif
 		
 	}
 	else {
@@ -1494,6 +1538,10 @@ class ImageSourceTexture : public ImageSource {
 			case GL_RGB32F_ARB: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGB; break;
 			case GL_R32F: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_RED; break;
 			case GL_RG32F: setChannelOrder( ImageIo::YA ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_RG; break;
+			case GL_RGBA16F_ARB: setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGBA; break;
+			case GL_RGB16F_ARB: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGB; break;
+			case GL_R16F: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 ); format = GL_RED; break;
+			case GL_RG16F: setChannelOrder( ImageIo::YA ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 ); format = GL_RG; break;
 			default:
 				setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); format = GL_RGBA; break;
 		}
@@ -1509,6 +1557,14 @@ class ImageSourceTexture : public ImageSource {
 		int dataSize = 1;
 		if( mDataType == ImageIo::UINT16 ) {
 			dataType = GL_UNSIGNED_SHORT;
+			dataSize = 2;
+		}
+		else if( mDataType == ImageIo::FLOAT16 ) {
+#if defined( CINDER_GL_ES_2 )
+			dataType = GL_HALF_FLOAT_OES;
+#else
+			dataType = GL_HALF_FLOAT;
+#endif
 			dataSize = 2;
 		}
 		else if( mDataType == ImageIo::FLOAT32 ) {
@@ -1631,9 +1687,15 @@ void Texture3d::printDims( std::ostream &os ) const
 /////////////////////////////////////////////////////////////////////////////////
 // TextureCubeMap
 namespace {
-std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapHorizontalCrossRegions( const ImageSourceRef &imageSource )
+struct CubeMapFaceRegion {
+	Area		mArea;
+	ivec2		mOffset;
+	bool		mFlip; // horizontal + vertical
+};
+
+std::vector<CubeMapFaceRegion> calcCubeMapHorizontalCrossRegions( const ImageSourceRef &imageSource )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+	std::vector<CubeMapFaceRegion> result;
 
 	ivec2 faceSize( imageSource->getWidth() / 4, imageSource->getHeight() / 3 );
 	Area faceArea( 0, 0, faceSize.x, faceSize.y );
@@ -1644,34 +1706,34 @@ std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapHorizontalCrossRegions( c
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_X
 	area = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_X
 	area = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_Y
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_Z
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	area = faceArea + ivec2( faceSize.x * 3, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 3, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 		
 	return result;
 };
 	
-std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapVerticalCrossRegions( const ImageSourceRef &imageSource )
+std::vector<CubeMapFaceRegion> calcCubeMapVerticalCrossRegions( const ImageSourceRef &imageSource )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+	std::vector<CubeMapFaceRegion> result;
 	
 	ivec2 faceSize( imageSource->getWidth() / 3, imageSource->getHeight() / 4 );
 	Area faceArea( 0, 0, faceSize.x, faceSize.y );
@@ -1682,54 +1744,54 @@ std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapVerticalCrossRegions( con
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_X
 	area = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_X
 	area = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
-	//  GL_TEXTURE_CUBE_MAP_POSITIVE_Y
+	result.push_back( { area, offset, false } );
+	// GL_TEXTURE_CUBE_MAP_POSITIVE_Y
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_Z
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 3 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 3 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, true } );
 	
 	return result;
 };
 	
-std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapHorizontalRegions( const ImageSourceRef &imageSource )
+std::vector<CubeMapFaceRegion> calcCubeMapHorizontalRegions( const ImageSourceRef &imageSource )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+	std::vector<CubeMapFaceRegion> result;
 	ivec2 faceSize( imageSource->getHeight(), imageSource->getHeight() );
 
 	for( uint8_t index = 0; index < 6; ++index ) {
 		Area area( index * faceSize.x, 0.0f, (index + 1) * faceSize.x, faceSize.y );
 		ivec2 offset( -index * faceSize.x, 0.0f );
-		result.push_back( make_pair( area, offset ) );
+		result.push_back( { area, offset, false } );
 	}
 
 	return result;
 };
 	
-std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapVerticalRegions( const ImageSourceRef &imageSource )
+std::vector<CubeMapFaceRegion> calcCubeMapVerticalRegions( const ImageSourceRef &imageSource )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+	std::vector<CubeMapFaceRegion> result;
 	ivec2 faceSize( imageSource->getWidth(), imageSource->getWidth() );
 	
 	for( uint8_t index = 0; index < 6; ++index ) {
-		Area area( 0.0f, index * faceSize.x, faceSize.x, (index + 1) * faceSize.y );;
+		Area area( 0.0f, index * faceSize.x, faceSize.x, (index + 1) * faceSize.y );
 		ivec2 offset( 0.0f, -index * faceSize.y );
-		result.push_back( make_pair( area, offset ) );
+		result.push_back( { area, offset, false } );
 	}
 
 	return result;
@@ -1759,11 +1821,19 @@ TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef &imageSource, con
 	else
 		return createTextureCubeMapImpl<float>( imageSource, format );
 }
+
+TextureCubeMapRef TextureCubeMap::create( const TextureData &data, const Format &format )
+{
+	if( format.mDeleter )
+		return TextureCubeMapRef( new TextureCubeMap( data, format ), format.mDeleter );
+	else
+		return TextureCubeMapRef( new TextureCubeMap( data, format ) );
+}
 	
 template<typename T>
 TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef &imageSource, const Format &format )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> faceRegions;
+	std::vector<CubeMapFaceRegion> faceRegions;
 
 	// Infer the layout based on image aspect ratio
 	ivec2 imageSize( imageSource->getWidth(), imageSource->getHeight() );
@@ -1777,7 +1847,7 @@ TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef
 		faceRegions = ( imageSize.x > imageSize.y ) ? calcCubeMapHorizontalCrossRegions( imageSource ) : calcCubeMapVerticalCrossRegions( imageSource );
 	}
 
-	Area faceArea = faceRegions.front().first;
+	Area faceArea = faceRegions.front().mArea;
 	ivec2 faceSize = faceArea.getSize();
 	
 	SurfaceT<T> masterSurface( imageSource, SurfaceConstraintsDefault() );
@@ -1785,7 +1855,11 @@ TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef
 	
 	for( uint8_t f = 0; f < 6; ++f ) {
 		images[f] = SurfaceT<T>( faceSize.x, faceSize.y, masterSurface.hasAlpha(), SurfaceConstraints() );
-		images[f].copyFrom( masterSurface, faceRegions[f].first, faceRegions[f].second );
+		images[f].copyFrom( masterSurface, faceRegions[f].mArea, faceRegions[f].mOffset );
+		if( faceRegions[f].mFlip ) {
+			ip::flipVertical( &images[f] );
+			ip::flipHorizontal( &images[f] );
+		}
 	}
 	
 	if( format.mDeleter )
@@ -1817,6 +1891,32 @@ TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef images[6], const 
 			return TextureCubeMapRef( new TextureCubeMap( surfaces, format ) );
 	}
 }
+
+TextureCubeMapRef TextureCubeMap::createFromKtx( const DataSourceRef &dataSource, const Format &format )
+{
+#if ! defined( CINDER_GL_ES )
+	TextureData textureData( format.getIntermediatePbo() );
+#else
+	TextureData textureData;
+#endif
+
+	parseKtx( dataSource, &textureData );
+	return TextureCubeMap::create( textureData, format );
+}
+
+#if ! defined( CINDER_GL_ES )
+TextureCubeMapRef TextureCubeMap::createFromDds( const DataSourceRef &dataSource, const Format &format )
+{
+#if ! defined( CINDER_GL_ES )
+	TextureData textureData( format.getIntermediatePbo() );
+#else
+	TextureData textureData;
+#endif
+
+	parseDds( dataSource, &textureData );
+	return TextureCubeMap::create( textureData, format );
+}
+#endif
 
 TextureCubeMap::TextureCubeMap( int32_t width, int32_t height, Format format )
 	: mWidth( width ), mHeight( height )
@@ -1857,6 +1957,57 @@ TextureCubeMap::TextureCubeMap( const SurfaceT<T> images[6], Format format )
 #endif
 		glGenerateMipmap( mTarget );
 	}
+}
+
+TextureCubeMap::TextureCubeMap( const TextureData &data, Format format )
+{
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+	initParams( format, 0 /* unused */, 0 /* unused */ );
+	
+	replace( data );
+
+	if( mMipmapping && data.getNumLevels() <= 1 ) {
+		glGenerateMipmap( mTarget );
+	}
+}
+
+//! Replaces the pixels (and data store) of a Texture with contents of \a textureData.
+void TextureCubeMap::replace( const TextureData &textureData )
+{
+	mInternalFormat = textureData.getInternalFormat();
+
+	mWidth = textureData.getWidth();
+	mHeight = textureData.getHeight();
+
+	ScopedTextureBind bindScope( mTarget, mTextureId );
+	if( textureData.getUnpackAlignment() != 0 )
+		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
+
+	if( textureData.getNumFaces() != 6 ) {
+		throw TextureDataExc( "TextureCubeMap requires 6 faces" );
+	}
+
+	int curLevel = 0, curFaceIdx;
+	for( const auto &textureDataLevel : textureData.getLevels() ) {
+		curFaceIdx = 0;
+		for( const auto &textureDataFace : textureDataLevel.getFaces() ) {
+			if( ! textureData.isCompressed() )
+				glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + curFaceIdx, curLevel, mInternalFormat, textureDataLevel.width, textureDataLevel.height, 0, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataFace.offset ) );
+			else
+				glCompressedTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + curFaceIdx, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureDataFace.dataSize, textureData.getDataStorePtr( textureDataFace.offset ) );
+			++curFaceIdx;
+		}
+		++curLevel;
+	}
+	if( textureData.getUnpackAlignment() != 0 )
+		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
+
+#if ! defined( CINDER_GL_ES_2 )
+	mMaxMipmapLevel = (int32_t)textureData.getNumLevels() - 1;
+	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );		
+#endif
 }
 
 void TextureCubeMap::printDims( std::ostream &os ) const
@@ -1907,6 +2058,9 @@ ImageTargetGlTexture<T>::ImageTargetGlTexture( const Texture *texture, ImageIo::
 	else if( std::is_same<T,uint16_t>::value ) {
 		setDataType( ImageIo::UINT16 );
 	}
+	else if( std::is_same<T,half_float>::value ) {
+		setDataType( ImageIo::FLOAT16 );
+	}
 	else if( std::is_same<T,float>::value ) {
 		setDataType( ImageIo::FLOAT32 );
 	}
@@ -1945,7 +2099,7 @@ TextureData::TextureData( const PboRef &pbo )
 
 void TextureData::init()
 {
-	mWidth = mHeight = mDepth = 0;
+	mWidth = mHeight = mDepth = mNumFaces = 0;
 	mInternalFormat = 0;
 	mDataFormat = mDataType = 0;
 	mUnpackAlignment = 0;
@@ -2051,11 +2205,12 @@ void Texture2d::update( const TextureData &textureData )
 			glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
 
 		int curLevel = 0;
-		for( const auto &textureDataLevel : textureData.getLevels() ) {		
-			if( textureData.getDataType() != 0 )
-				glTexSubImage2D( mTarget, curLevel, 0, 0, textureDataLevel.width, textureDataLevel.height, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataLevel.offset ) );
+		for( const auto &textureDataLevel : textureData.getLevels() ) {
+			const TextureData::Face& textureDataFace = textureDataLevel.getFaces()[0];
+			if( ! textureData.isCompressed() )
+				glTexSubImage2D( mTarget, curLevel, 0, 0, textureDataLevel.width, textureDataLevel.height, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataFace.offset ) );
 			else
-				glCompressedTexSubImage2D( mTarget, curLevel, 0, 0, textureDataLevel.width, textureDataLevel.height, textureData.getInternalFormat(), textureDataLevel.dataSize, textureData.getDataStorePtr( textureDataLevel.offset ) );
+				glCompressedTexSubImage2D( mTarget, curLevel, 0, 0, textureDataLevel.width, textureDataLevel.height, textureData.getInternalFormat(), textureDataFace.dataSize, textureData.getDataStorePtr( textureDataFace.offset ) );
 			++curLevel;
 		}
 		if( textureData.getUnpackAlignment() != 0 )
@@ -2074,11 +2229,12 @@ void Texture2d::replace( const TextureData &textureData )
 		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
 
 	int curLevel = 0;
-	for( const auto &textureDataLevel : textureData.getLevels() ) {		
-		if( textureData.getDataType() != 0 )
-			glTexImage2D( mTarget, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataLevel.offset ) );
+	for( const auto &textureDataLevel : textureData.getLevels() ) {
+		const TextureData::Face& textureDataFace = textureDataLevel.getFaces()[0];
+		if( ! textureData.isCompressed() )
+			glTexImage2D( mTarget, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataFace.offset ) );
 		else
-			glCompressedTexImage2D( mTarget, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureDataLevel.dataSize, textureData.getDataStorePtr( textureDataLevel.offset ) );
+			glCompressedTexImage2D( mTarget, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureDataFace.dataSize, textureData.getDataStorePtr( textureDataFace.offset ) );
 		++curLevel;
 	}
 	if( textureData.getUnpackAlignment() != 0 )

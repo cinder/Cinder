@@ -83,8 +83,8 @@ class BufferRecorderNode : public SampleRecorderNode {
 	uint64_t getLastOverrun();
 
   protected:
-	virtual void initialize()				override;
-	virtual void process( Buffer *buffer )	override;
+	void initialize()				override;
+	void process( Buffer *buffer )	override;
 
 	void initBuffers( size_t numFrames );
 

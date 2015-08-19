@@ -8,7 +8,7 @@ using namespace std;
 namespace box2d {
 
 //! the radius in physics dims is sometimes less than 1, so the number of circle segments needs to be chosen manually.
-const size_t NUM_CIRCLE_SEGMENTS = 20;
+const int NUM_CIRCLE_SEGMENTS = 20;
 //! scalar for drawing a body's transform axis.
 const float TRANSFORM_AXIS_SCALE = 0.4f;
 

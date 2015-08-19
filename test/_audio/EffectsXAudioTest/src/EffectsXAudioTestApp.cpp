@@ -3,7 +3,7 @@
 
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/NodeEffects.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 #include "cinder/audio/msw/ContextXAudio.h"
 #include "cinder/audio/msw/MswUtil.h"

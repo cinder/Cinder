@@ -71,6 +71,20 @@ void PolyLineT<T>::offset( const T &offsetBy )
 }
 
 template<typename T>
+void PolyLineT<T>::reverse()
+{
+	std::reverse( mPoints.begin(), mPoints.end() );
+}
+
+template<typename T>
+PolyLineT<T> PolyLineT<T>::reversed() const
+{
+	PolyLineT result( *this );
+	std::reverse( result.mPoints.begin(), result.mPoints.end() );
+	return result;
+}
+
+template<typename T>
 T linearYatX( const glm::tvec2<T, glm::defaultp> p[2], T x )
 {
 	if( p[0].x == p[1].x ) 	return p[0].y;

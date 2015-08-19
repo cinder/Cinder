@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
+#include "cinder/gl/gl.h"
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
@@ -118,4 +119,4 @@ void NodeAdvancedApp::draw()
 	gl::drawSolidCircle( vec2( circleX, getWindowCenter().y ), 50 );
 }
 
-CINDER_APP( NodeAdvancedApp, RendererGl )
+CINDER_APP( NodeAdvancedApp, RendererGl( RendererGl::Options().msaa( 8 ) ) )

@@ -86,8 +86,9 @@ class PlatformCocoa : public Platform {
 	std::map<std::string,std::string>	getEnvironmentVariables() override;
 
 	fs::path	expandPath( const fs::path &path ) override;
-	fs::path	getHomeDirectory() override;
-	fs::path	getDocumentsDirectory()	override;
+	fs::path	getHomeDirectory() const override;
+	fs::path	getDocumentsDirectory() const override;
+	fs::path	getDefaultExecutablePath() const override;
 
 	void sleep( float milliseconds ) override;
 
@@ -147,6 +148,8 @@ class DisplayMac : public Display {
   public:
 	NSScreen*			getNsScreen() const;
 	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayId; }
+
+	std::string			getName() const override;
 
   protected:	
 	static void	displayReconfiguredCallback( CGDirectDisplayID displayId, CGDisplayChangeSummaryFlags flags, void *userInfo );

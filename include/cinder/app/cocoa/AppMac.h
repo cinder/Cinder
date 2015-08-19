@@ -50,7 +50,6 @@ class AppMac : public AppBase {
 	void		setFrameRate( float frameRate ) override;
 	void		disableFrameRate() override;
 	bool		isFrameRateEnabled() const override;
-	fs::path	getAppPath() const override;
 
 	WindowRef	getWindow() const override;
 	WindowRef	getWindowIndex( size_t index ) const override;

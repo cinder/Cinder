@@ -44,20 +44,6 @@
 
 using namespace std;
 
-#if (! defined( CINDER_GL_ES )) || defined( CINDER_COCOA_TOUCH ) || defined( CINDER_GL_ANGLE )
-	#define SUPPORTS_MULTISAMPLE
-	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
-		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleAPPLE
-		#define glResolveMultisampleFramebuffer		glResolveMultisampleFramebufferAPPLE
-		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
-		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
-	#elif defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
-		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleANGLE
-		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
-		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
-	#endif
-#endif
-
 #if ! defined( CINDER_GL_ES_2 )
 	#define MAX_COLOR_ATTACHMENT	GL_COLOR_ATTACHMENT15
 #else
@@ -100,7 +86,7 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 
 	gl::ScopedRenderbuffer rbb( GL_RENDERBUFFER, mId );
 
-#if defined( SUPPORTS_MULTISAMPLE )
+#if defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
   #if defined( CINDER_MSW )  && ( ! defined( CINDER_GL_ES ) )
 	if( mCoverageSamples ) // create a CSAA buffer
 		glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER, mCoverageSamples, mSamples, mInternalFormat, mWidth, mHeight );
@@ -516,8 +502,14 @@ Texture2dRef Fbo::getTexture2d( GLenum attachment )
 
 TextureBaseRef Fbo::getTextureBase( GLenum attachment )
 {
-	if( (attachment < GL_COLOR_ATTACHMENT0) || (attachment > MAX_COLOR_ATTACHMENT) ) {
-		CI_LOG_W( "Illegal contant for texture attachment: " << attachment );
+	if( ( (attachment < GL_COLOR_ATTACHMENT0) || (attachment > MAX_COLOR_ATTACHMENT) ) && (attachment != GL_DEPTH_ATTACHMENT)
+#if ! defined( CINDER_GL_ES_2 )
+		&& (attachment != GL_DEPTH_STENCIL_ATTACHMENT) )
+#else
+	)
+#endif
+	{
+		CI_LOG_W( "Illegal constant for texture attachment: " << gl::constantToString( attachment ) );
 	}
 	
 	auto attachedTextureIt = mAttachmentsTexture.find( attachment );
@@ -556,7 +548,7 @@ void Fbo::resolveTextures() const
 		
 		glBlitFramebufferANGLE( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
 	}
-#elif defined( SUPPORTS_MULTISAMPLE ) && defined( CINDER_GL_ES_2 )
+#elif defined( CINDER_GL_HAS_FBO_MULTISAMPLING ) && defined( CINDER_GL_ES_2 )
 	// iOS-specific multisample resolution code
 	if( mMultisampleFramebufferId ) {
 		ScopedFramebuffer drawFbScp( GL_DRAW_FRAMEBUFFER_APPLE, mId );
@@ -564,7 +556,7 @@ void Fbo::resolveTextures() const
 		
 		glResolveMultisampleFramebuffer();
 	}
-#elif defined( SUPPORTS_MULTISAMPLE )
+#elif defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	// if this FBO is multisampled, resolve it, so it can be displayed
 	if( mMultisampleFramebufferId ) {
 		auto ctx = context();
@@ -837,6 +829,11 @@ void FboCubeMap::bindFramebufferFace( GLenum faceTarget, GLint level, GLenum tar
 {
 	bindFramebuffer( target );
 	glFramebufferTexture2D( target, attachment, faceTarget, mTextureCubeMap->getId(), level );
+}
+
+TextureCubeMapRef FboCubeMap::getTextureCubeMap( GLenum attachment )
+{
+	return std::dynamic_pointer_cast<gl::TextureCubeMap>( getTextureBase( attachment ) );
 }
 
 mat4 FboCubeMap::calcViewMatrix( GLenum face, const vec3 &eyePos )

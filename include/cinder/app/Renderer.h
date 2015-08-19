@@ -78,13 +78,13 @@ class Renderer {
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
 		virtual void	setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) = 0;
-		virtual CGContextRef			getCgContext() { throw; } // the default behavior is failure
 		virtual CGLContextObj			getCglContext() { throw; } // the default behavior is failure
 		virtual CGLPixelFormatObj		getCglPixelFormat() { throw; } // the default behavior is failure
 	#elif defined( CINDER_COCOA_TOUCH )
 		virtual void		setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) = 0;
 		virtual bool		isEaglLayer() const { return false; }
 	#endif
+	virtual CGContextRef	getCgContext() { throw; } // the default behavior is failure
 
 	virtual void	setFrameSize( int width, int height ) {}		
 
@@ -120,17 +120,17 @@ class Renderer2d : public Renderer {
   public:
   	Renderer2d();
 	
-	static Renderer2dRef	create() { return Renderer2dRef( new Renderer2d() ); }
-	virtual RendererRef		clone() const { return Renderer2dRef( new Renderer2d( *this ) ); }
+	static Renderer2dRef	create()				{ return Renderer2dRef( new Renderer2d() ); }
+	RendererRef				clone() const override	{ return Renderer2dRef( new Renderer2d( *this ) ); }
 
 	#if defined( CINDER_COCOA_TOUCH )
-		virtual void setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer );
+	void setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) override;
 	#else
-		~Renderer2d();
-		virtual void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
+	~Renderer2d();
+	void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) override;
 	#endif
 
-	virtual CGContextRef			getCgContext();
+	CGContextRef	getCgContext() override;
 
 	void			startDraw() override;
 	void			finishDraw() override;

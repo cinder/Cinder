@@ -37,7 +37,8 @@ class VboMeshSource : public geom::Source {
   public:
 	static std::shared_ptr<VboMeshSource>	create( const gl::VboMesh *vboMesh );
 	
-	void	loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	VboMeshSource*	clone() const override { return new VboMeshSource( *this ); }
 	
 	size_t			getNumVertices() const override;
 	size_t			getNumIndices() const override;
@@ -82,9 +83,9 @@ class VboMeshGeomTarget : public geom::Target {
 	}
 	
 	virtual geom::Primitive	getPrimitive() const;
-	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	virtual void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	virtual void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	uint8_t	getAttribDims( geom::Attrib attr ) const override;
+	void	copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void	copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
 	
 	//! Must be called in order to upload temporary 'mBufferData' to VBOs
 	void	copyBuffers();
@@ -491,7 +492,7 @@ void VboMesh::drawImpl( GLint first, GLsizei count )
 		glDrawArrays( mGlPrimitive, first, ( count < 0 ) ? ( mNumVertices - first ) : count );
 }
 
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
@@ -500,7 +501,7 @@ void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 	else
 		ctx->drawArraysInstanced( mGlPrimitive, 0, mNumVertices, instanceCount );
 }
-#endif
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 std::pair<geom::BufferLayout,VboRef>* VboMesh::findAttrib( geom::Attrib attr )
 {
@@ -525,7 +526,7 @@ void VboMesh::bufferAttrib( geom::Attrib attrib, size_t dataSizeBytes, const voi
 	}
 	else { // interleaved data
 #if ! defined( CINDER_GL_ANGLE ) || defined( CINDER_GL_ES_3 )
-		uint8_t *ptr = reinterpret_cast<uint8_t*>( layoutVbo->second->mapWriteOnly( false ) );
+		uint8_t *ptr = reinterpret_cast<uint8_t*>( layoutVbo->second->mapWriteOnly() );
 		if( ! ptr ) {
 			CI_LOG_E( "Failed to map VBO" );
 			return;
@@ -557,7 +558,7 @@ void VboMesh::bufferIndices( size_t dataSizeBytes, const void *data )
 	mIndices->bufferSubData( 0, dataSizeBytes, data );
 }
 
-#if defined(CINDER_GL_ES_3) || (! defined( CINDER_GL_ANGLE ))
+#if defined( CINDER_GL_ES_3 ) || (! defined( CINDER_GL_ANGLE ))
 template<typename T>
 VboMesh::MappedAttrib<T> VboMesh::mapAttribImpl( geom::Attrib attr, int dims, bool orphanExisting )
 {
@@ -576,7 +577,10 @@ VboMesh::MappedAttrib<T> VboMesh::mapAttribImpl( geom::Attrib attr, int dims, bo
 	else {
 		MappedVboInfo mappedVboInfo;
 		mappedVboInfo.mRefCount = 1;
-		mappedVboInfo.mPtr = layoutVbo->second->mapWriteOnly( orphanExisting );
+		if( orphanExisting )
+			mappedVboInfo.mPtr = layoutVbo->second->mapReplace();
+		else
+			mappedVboInfo.mPtr = layoutVbo->second->mapWriteOnly();
 		mMappedVbos[layoutVbo->second] = mappedVboInfo;
 		dataPtr = mappedVboInfo.mPtr;
 	}

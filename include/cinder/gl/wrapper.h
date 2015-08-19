@@ -308,6 +308,8 @@ inline void	vertexAttrib( GLuint index, float v0, float v1, float v2, float v3 )
 
 // Buffers
 void	bindBuffer( const BufferObjRef &buffer );
+//! Binds a named buffer object \a buffer to \a target. Analogous to glBindBuffer().
+void	bindBuffer( GLenum target, GLuint buffer );
 #if ! defined( CINDER_GL_ES_2 )
 //! Specifies a color buffer as the source for subsequent glReadPixels(), glCopyTexImage2D(), glCopyTexSubImage2D(), and glCopyTexSubImage3D() commands. Analogous to glReadBuffer().
 void	readBuffer( GLenum src );
@@ -319,6 +321,19 @@ void	drawBuffer( GLenum dst );
 
 //! Reads a block of pixels from the framebuffer. Analogous to glReadPixels().
 void	readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data );
+
+// Compute
+#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+//! Launches one or more compute work groups. Analogous to glDispatchCompute(). 
+inline void	dispatchCompute( GLuint numGroupsX, GLuint numGroupsY, GLuint numGroupsZ ) { glDispatchCompute( numGroupsX, numGroupsY, numGroupsZ ); }
+//! Defines a barrier ordering memory transactions. Analogous to glMemoryBarrier().
+inline void	memoryBarrier( GLbitfield barriers ) { glMemoryBarrier( barriers ); }
+
+//! Returns ivec3( GL_MAX_COMPUTE_WORK_GROUP_COUNT )
+ivec3	getMaxComputeWorkGroupCount();
+//! Returns ivec3( GL_MAX_COMPUTE_WORK_GROUP_SIZE )
+ivec3	getMaxComputeWorkGroupSize();
+#endif
 
 class Exception : public cinder::Exception {
   public:

@@ -147,7 +147,7 @@ void ClothSimulationApp::setupBuffers()
 	// create the indices to draw links between the cloth points
 	mLineIndices = gl::Vbo::create( GL_ELEMENT_ARRAY_BUFFER, lines * 2 * sizeof(int), nullptr, GL_STATIC_DRAW );
 	
-	auto e = (int *) mLineIndices->mapWriteOnly( true );
+	auto e = (int *) mLineIndices->mapReplace();
 	for (j = 0; j < POINTS_Y; j++) {
 		for (i = 0; i < POINTS_X - 1; i++) {
 			*e++ = i + j * POINTS_X;

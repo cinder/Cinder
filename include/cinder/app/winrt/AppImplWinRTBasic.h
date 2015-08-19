@@ -72,12 +72,12 @@ public:
 private:
 	void		sleep( double seconds );
 
-	virtual void	closeWindow( class WindowImplWinRT *windowImpl ) override;
-	virtual void	setForegroundWindow( WindowRef window ) override;
+	void		closeWindow( class WindowImplWinRT *windowImpl ) override;
+	void		setForegroundWindow( WindowRef window ) override;
 	
-	bool			mShouldQuit;
 	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
 
+	bool		mShouldQuit;
 	HINSTANCE	mInstance;
 	double		mNextFrameTime;
 	bool		mFrameRateEnabled;

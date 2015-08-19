@@ -28,6 +28,7 @@
 #include <vector>
 #include <memory>
 #include <cstdlib>
+#include <cstring>
 #include <algorithm>
 
 // TODO: It'd be nice to have a 'BufferView' or similar functionality

@@ -51,7 +51,7 @@ void ImageFileBasicApp::keyDown( KeyEvent event )
 void ImageFileBasicApp::fileDrop( FileDropEvent event )
 {
 	try {
-		mTexture = gl::Texture::create( loadImage( event.getFile( 0 ) ) );
+		mTexture = gl::Texture::create( loadImage( loadFile( event.getFile( 0 ) ) ) );
 	}
 	catch( Exception &exc ) {
 		CI_LOG_EXCEPTION( "failed to load image: " << event.getFile( 0 ), exc );
@@ -63,8 +63,10 @@ void ImageFileBasicApp::draw()
 	gl::clear( Color( 0.5f, 0.5f, 0.5f ) );
 	gl::enableAlphaBlending();
 	
-	if( mTexture )
-		gl::draw( mTexture, vec2( 0, 0 ) );
+	if( mTexture ) {
+		Rectf destRect = Rectf( mTexture->getBounds() ).getCenteredFit( getWindowBounds(), true ).scaledCentered( 0.85f );
+		gl::draw( mTexture, destRect );
+	}
 }
 
 CINDER_APP( ImageFileBasicApp, RendererGl )

@@ -61,6 +61,13 @@ void draw( const TriMesh &mesh );
 //! Draws a geom::Source \a source at the origin.
 void draw( const geom::Source &source );
 
+//! Draws a CubeMapTex \a texture inside \a rect with an equirectangular projection. If \a lod is non-default then a specific mip-level is drawn. Typical aspect ratio should be 2:1.
+void drawEquirectangular( const gl::TextureCubeMapRef &texture, const Rectf &r, float lod = -1 );
+//! Draws a CubeMapTex \a texture as a horizontal cross, fit inside \a rect. If \a lod is non-default then a specific mip-level is drawn. Typical aspect ratio should be 4:3.
+void drawHorizontalCross( const gl::TextureCubeMapRef &texture, const Rectf &rect, float lod = -1 );
+//! Draws a CubeMapTex \a texture as a vertical cross, fit inside \a rect. If \a lod is non-default then a specific mip-level is drawn. Typical aspect ratio should be 3:4.
+void drawVerticalCross( const gl::TextureCubeMapRef &texture, const Rectf &rect, float lod = -1 );
+
 //! Draws a solid (filled) Path2d \a path using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const Path2d &path2d, float approximationScale = 1.0f );
 //! Draws a solid (filled) Shape2d \a shape using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
@@ -93,9 +100,9 @@ void drawLine( const vec2 &a, const vec2 &b );
 void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord = vec2( 0, 1 ), const vec2 &lowerRightTexCoord = vec2( 1, 0 ) );
 //! Draws a solid rounded rectangle centered around \a rect, with a corner radius of \a cornerRadius
 void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner = 0,  const vec2 &upperLeftTexCoord = vec2( 0, 1 ), const vec2 &lowerRightTexCoord = vec2( 1, 0 ) );
-//! Draws a filled circle centered around \a center with a radius of \a radius
+//! Draws a filled circle centered around \a center with a radius of \a radius. Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawSolidCircle( const vec2 &center, float radius, int numSegments = -1 );
-//! Draws a filled ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY
+//! Draws a filled ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY. Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawSolidEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments = -1 );
 
 //! Draws a stroked rectangle with dimensions \a rect.
@@ -104,11 +111,11 @@ void drawStrokedRect( const Rectf &rect );
 void drawStrokedRect( const Rectf &rect, float lineWidth );
 //! Draws a stroked rounded rectangle centered around \a rect, with a corner radius of \a cornerRadius
 void drawStrokedRoundedRect( const Rectf &rect, float cornerRadius, int numSegmentsPerCorner = 0 );
-//! Draws a stroked circle centered around \a center with a radius of \a radius
+//! Draws a stroked circle centered around \a center with a radius of \a radius. Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments = -1 );
-//! Draws a stroked circle centered around \a center with a radius of \a radius and a line width of \a lineWidth.
+//! Draws a stroked circle centered around \a center with a radius of \a radius and a line width of \a lineWidth. Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawStrokedCircle( const vec2 &center, float radius, float lineWidth, int numSegments = -1 );
-//! Draws a stroked ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY
+//! Draws a stroked ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY.  Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawStrokedEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments = -1 );
 
 //! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
@@ -128,7 +135,10 @@ void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] = nullptr );
 	
 void	drawArrays( GLenum mode, GLint first, GLsizei count );
 void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
+
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 void	drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount );
 void	drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei instanceCount );
+#endif
 
 } } // namespace cinder::gl

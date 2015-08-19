@@ -232,7 +232,8 @@ class Context {
 	void bindBufferBase( GLenum target, GLuint index, GLuint id );
 	//! Analogous to glBindBufferRange()
 	void bindBufferRange( GLenum target, GLuint index, const BufferObjRef &buffer, GLintptr offset, GLsizeiptr size );
-
+#endif // ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	//! Binds \a feedbackObj as the current Transform Feedback Object. Also, unbinds currently bound Transform Feedback Obj if one exists.
 	void bindTransformFeedbackObj( const TransformFeedbackObjRef &feedbackObj );
 	//! Calls the currently bound Transform Feedback Object's begin method. Alternatively, if mCachedTransformFeedbackObj is null, this method calls glBeginTransformFeedback.
@@ -245,7 +246,7 @@ class Context {
 	void endTransformFeedback();
 	//! Returns mCachedTransformFeedbackObj.
 	TransformFeedbackObjRef transformFeedbackObjGet();
-#endif
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
 	//! Analogous to glBindTexture( \a target, \a textureId ) for the active texture unit
 	void		bindTexture( GLenum target, GLuint textureId );
@@ -413,12 +414,12 @@ class Context {
 	void		drawArrays( GLenum mode, GLint first, GLsizei count );
 	//! Analogous to glDrawElements()
 	void		drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 	//! Analogous to glDrawArraysInstanced()
 	void		drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount );
 	//! Analogous to glDrawElementsInstanced()
 	void		drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei primcount );
-#endif // (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 	//! Returns the current active color, used in immediate-mode emulation and as UNIFORM_COLOR
 	const ColorAf&		getCurrentColor() const { return mColor; }
@@ -440,7 +441,7 @@ class Context {
 	//! Returns a reference to the immediate mode emulation structure. Generally use gl::begin() and friends instead.
 	VertBatch&		immediate() { return *mImmediateMode; }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 	static void	 __stdcall debugMessageCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, void *userParam );
 #endif
 
@@ -467,9 +468,9 @@ class Context {
 	std::vector<const GlslProg*>		mGlslProgStack;
 	std::vector<Vao*>					mVaoStack;
 	
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	TransformFeedbackObjRef				mCachedTransformFeedbackObj;
-#endif
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	
 	// Blend state stacks
 	std::vector<GLint>					mBlendSrcRgbStack, mBlendDstRgbStack;

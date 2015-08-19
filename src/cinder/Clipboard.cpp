@@ -152,7 +152,7 @@ ImageSourceRef Clipboard::getImage()
 {
 #if defined( CINDER_MAC )
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
-    NSBitmapImageRep *rep = [NSBitmapImageRep imageRepWithPasteboard:pasteboard];
+    NSBitmapImageRep *rep = (NSBitmapImageRep*)[NSBitmapImageRep imageRepWithPasteboard:pasteboard];
 	if( rep )
 		return cocoa::ImageSourceCgImage::createRef( [rep CGImage] );
 	else

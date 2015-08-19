@@ -42,17 +42,17 @@ class VaoImplEs : public Vao {
 	VaoImplEs();
 
 	// Does the actual "work" of binding the VAO; called by Context
-	virtual void	bindImpl( class Context *context ) override;
-	virtual void	unbindImpl( class Context *context ) override;
-	virtual void	enableVertexAttribArrayImpl( GLuint index ) override;
-	virtual void	disableVertexAttribArrayImpl( GLuint index );
-	virtual void	vertexAttribPointerImpl( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer ) override;
-	virtual void	vertexAttribIPointerImpl( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer ) override;
-	virtual void	vertexAttribDivisorImpl( GLuint index, GLuint divisor ) override;
-	virtual void	reflectBindBufferImpl( GLenum target, GLuint buffer ) override;
-	
-	virtual void	reassignContext( Context *newContext ) override;
-	void			reassignImpl( Context *newContext );
+	void	bindImpl( class Context *context ) override;
+	void	unbindImpl( class Context *context ) override;
+	void	enableVertexAttribArrayImpl( GLuint index ) override;
+	void	disableVertexAttribArrayImpl( GLuint index ) override;
+	void	vertexAttribPointerImpl( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer ) override;
+	void	vertexAttribIPointerImpl( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer ) override;
+	void	vertexAttribDivisorImpl( GLuint index, GLuint divisor ) override;
+	void	reflectBindBufferImpl( GLenum target, GLuint buffer ) override;
+	void	reassignContext( Context *newContext ) override;
+
+	void	reassignImpl( Context *newContext );
 	
 	friend class Context;
 };

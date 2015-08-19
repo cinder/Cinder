@@ -127,15 +127,13 @@ class AppScreenSaver : public AppBase {
 	}
 #endif
 
-	fs::path		getAppPath() const override;
-
 #if defined( CINDER_COCOA )
 	NSBundle*		getBundle() const;
 #endif
 
-	virtual size_t		getNumWindows() const override;
-	virtual WindowRef	getWindow() const override;
-	virtual WindowRef	getWindowIndex( size_t index ) const override;
+	size_t			getNumWindows() const override;
+	WindowRef		getWindow() const override;
+	WindowRef		getWindowIndex( size_t index ) const override;
 
 #if defined( CINDER_MAC )
 	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplMacScreenSaver*>( impl ); }
@@ -162,7 +160,7 @@ class AppScreenSaver : public AppBase {
 	}
 
 #elif defined( CINDER_MSW )
-	void							launch( const char *title, int argc, char * const argv[] );
+	void							launch() override;
 	virtual bool					getsWindowsPaintEvents() { return false; }
 	LRESULT							eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 
@@ -180,7 +178,7 @@ class AppScreenSaver : public AppBase {
 		AppScreenSaver::sMainHwnd = mainHwnd;
 		AppScreenSaver *app = new AppT;
 
-		AppBase::executeLaunch( title, 0, nullptr );
+		app->executeLaunch();
 
 		return app;
 	}

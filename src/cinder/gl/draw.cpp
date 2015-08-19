@@ -26,6 +26,7 @@
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/VboMesh.h"
 #include "cinder/gl/scoped.h"
+#include "cinder/gl/Environment.h"
 #include "cinder/Log.h"
 #include "cinder/Text.h"
 #include "cinder/Triangulate.h"
@@ -61,7 +62,8 @@ void drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indice
 {
 	context()->drawElements( mode, count, type, indices );
 }
-	
+
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 void drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount )
 {
 	context()->drawArraysInstanced( mode, first, count, instanceCount );
@@ -71,6 +73,7 @@ void drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoi
 {
 	context()->drawElementsInstanced( mode, count, type, indices, instanceCount );
 }
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 namespace {
 
@@ -605,6 +608,267 @@ void draw( const geom::Source &source )
 	ctx->popVao();
 }
 
+namespace {
+string equirectangularVertexShader()
+{
+	string s =
+		"	uniform mat4 ciModelViewProjection;\n"
+#if defined( CINDER_GL_ES_2 )
+		"	attribute vec4 ciPosition; attribute vec2 ciTexCoord0;\n"
+		"	varying highp vec2 TexCoord0;\n"
+#else
+		"	in vec4 ciPosition; in vec2 ciTexCoord0;\n"
+		"	out vec2 TexCoord0;\n"
+#endif
+		"	void main() {\n"
+		"		gl_Position = ciModelViewProjection * ciPosition;\n"
+		"		TexCoord0 = ( ciTexCoord0 - vec2( 0.5 ) ) * vec2( 6.2831853, 3.1415926 );\n"
+		"	}\n";
+	return s;
+}
+
+string equirectangularFragmentShader( bool withLod )
+{
+	string s;
+#if defined( CINDER_GL_ES_2 )
+	if( withLod )
+		s+="#extension GL_EXT_shader_texture_lod : require\n";
+#endif
+	if( withLod )
+		s+="uniform highp float uLod;\n";
+	s +="	uniform samplerCube uCubeMapTex;\n"
+#if defined( CINDER_GL_ES_2 )
+		"	varying highp vec2 TexCoord0;\n"
+#else
+		"	in highp vec2 TexCoord0;\n"
+		"	out highp vec4 oColor;\n"
+#endif
+		"	void main() {\n"
+		"		highp vec3 coords = vec3( cos( TexCoord0.x ) * cos( TexCoord0.y ), sin( TexCoord0.y ), sin( TexCoord0.x ) * cos( TexCoord0.y ) );\n";
+#if defined( CINDER_GL_ES_2 )
+		if( withLod )
+			s+="gl_FragColor = textureCubeLodEXT( uCubeMapTex, coords, uLod );\n";
+		else
+			s+="gl_FragColor = textureCube( uCubeMapTex, coords );\n";
+#else
+		if( withLod )
+			s+="oColor = textureLod( uCubeMapTex, coords, uLod );\n";
+		else
+			s+="oColor = texture( uCubeMapTex, coords );\n";
+#endif
+		s+="}\n";
+	return s;
+}
+
+} // anonymous namespace
+
+void drawEquirectangular( const gl::TextureCubeMapRef &texture, const Rectf &rect, float lod )
+{
+	static GlslProgRef glslNoLod = gl::GlslProg::create(
+		GlslProg::Format().vertex( equirectangularVertexShader() )
+			.fragment( equirectangularFragmentShader( false ) )
+#if defined( CINDER_GL_ES_3 )
+			.version( 300 )
+#elif ! defined( CINDER_GL_ES )
+			.version( 150 )
+#endif
+	);
+	static GlslProgRef glslWithLod = env()->supportsTextureLod() ? gl::GlslProg::create(
+		GlslProg::Format().vertex( equirectangularVertexShader() )
+			.fragment( equirectangularFragmentShader( true ) )
+#if defined( CINDER_GL_ES_3 )
+			.version( 300 )
+#elif ! defined( CINDER_GL_ES )
+			.version( 150 )
+#endif
+	) : glslNoLod;
+
+	bool useLod = (lod >= 0) && env()->supportsTextureLod();
+
+	const auto& glsl = ( useLod ) ? glslWithLod : glslNoLod;
+	gl::ScopedGlslProg scGlsl( glsl );
+	glsl->uniform( "uCubeMapTex", 0 );
+	if( useLod )
+		glsl->uniform( "uLod", lod );
+	drawSolidRect( rect, vec2( 0, 1 ), vec2( 1, 0 ) );
+}
+
+namespace { // drawCross helpers
+string crossVertexShader()
+{
+	string s =
+		"	uniform mat4 ciModelViewProjection;\n"
+#if defined( CINDER_GL_ES_2 )
+		"	attribute vec4 ciPosition; attribute vec3 ciTexCoord0;\n"
+		"	varying highp vec3 TexCoord0;\n"
+#else
+		"	in vec4 ciPosition; in vec3 ciTexCoord0;\n"
+		"	out vec3 TexCoord0;\n"
+#endif
+		"	void main() {\n"
+		"		gl_Position = ciModelViewProjection * ciPosition;\n"
+		"		TexCoord0 = ciTexCoord0;\n"
+		"	}\n";
+	return s;
+}
+
+string crossFragmentShader( bool withLod )
+{
+	string s;
+#if defined( CINDER_GL_ES_2 )
+	if( withLod )
+		s+="#extension GL_EXT_shader_texture_lod : require\n";
+#endif
+	if( withLod )
+		s+="uniform highp float uLod;\n";
+	s +="	uniform samplerCube uCubeMapTex;\n"
+#if defined( CINDER_GL_ES_2 )
+		"	varying highp vec3 TexCoord0;\n"
+#else
+		"	in highp vec3 TexCoord0;\n"
+		"	out highp vec4 oColor;\n"
+#endif
+		"	void main() {\n";
+#if defined( CINDER_GL_ES_2 )
+		if( withLod )
+			s+="gl_FragColor = textureCubeLodEXT( uCubeMapTex, TexCoord0, uLod );\n";
+		else
+			s+="gl_FragColor = textureCube( uCubeMapTex, TexCoord0 );\n";
+#else
+		if( withLod )
+			s+="oColor = textureLod( uCubeMapTex, TexCoord0, uLod );\n";
+		else
+			s+="oColor = texture( uCubeMapTex, TexCoord0 );\n";
+#endif
+		s+="}\n";
+	return s;
+}
+
+
+// creates 6 vertices, representing a single face of the flattened cube
+void genCrossFace( vec2 ul, vec2 lr, vec3 u, vec3 v, vec3 w, vector<vec2> *pos, vector<vec3> *texCoords )
+{
+	pos->emplace_back( lr.x, ul.y ); // upper-right
+	texCoords->emplace_back( normalize( w + u + v ) );
+	pos->emplace_back( ul.x, ul.y ); // upper-left
+	texCoords->emplace_back( normalize( w + v ) );
+	pos->emplace_back( lr.x, lr.y ); // lower-right
+	texCoords->emplace_back( normalize( w + u ) );
+
+	pos->emplace_back( ul.x, lr.y ); // lower-left
+	texCoords->emplace_back( normalize(w) );
+	pos->emplace_back( lr.x, lr.y ); // lower-right
+	texCoords->emplace_back( normalize( w + u ) );
+	pos->emplace_back( ul.x, ul.y ); // upper-left
+	texCoords->emplace_back( normalize( w + v ) );
+}
+
+void drawCrossImpl( const gl::TextureCubeMapRef &texture, const vector<vec2> &positions, const vector<vec3> &texCoords, float lod )
+{
+	static GlslProgRef glslNoLod = gl::GlslProg::create(
+		GlslProg::Format().vertex( crossVertexShader() )
+			.fragment( crossFragmentShader( false ) )
+#if defined( CINDER_GL_ES_3 )
+			.version( 300 )
+#elif ! defined( CINDER_GL_ES )
+			.version( 150 )
+#endif
+	);
+	static GlslProgRef glslWithLod = env()->supportsTextureLod() ? gl::GlslProg::create(
+		GlslProg::Format().vertex( crossVertexShader() )
+			.fragment( crossFragmentShader( true ) )
+#if defined( CINDER_GL_ES_3 )
+			.version( 300 )
+#elif ! defined( CINDER_GL_ES )
+			.version( 150 )
+#endif
+	) : glslNoLod;
+
+	bool useLod = (lod >= 0) && env()->supportsTextureLod();
+
+	const auto& glsl = ( useLod ) ? glslWithLod : glslNoLod;
+	gl::ScopedGlslProg scGlsl( glsl );
+	glsl->uniform( "uCubeMapTex", 0 );
+	if( useLod )
+		glsl->uniform( "uLod", lod );
+	
+	auto ctx = gl::context();
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	gl::VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(float)*(positions.size()*2+texCoords.size()*3) );
+	gl::ScopedBuffer bufferBindScp( defaultVbo );
+	gl::ScopedTextureBind texScp( texture );
+	defaultVbo->bufferSubData( 0, sizeof(float)*positions.size()*2, positions.data() );
+	defaultVbo->bufferSubData( sizeof(float)*positions.size()*2, sizeof(float)*texCoords.size()*3, texCoords.data() );
+
+	int posLoc = glsl->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		gl::enableVertexAttribArray( posLoc );
+		gl::vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	}
+	int texLoc = glsl->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+	if( texLoc >= 0 ) {
+		gl::enableVertexAttribArray( texLoc );
+		gl::vertexAttribPointer( texLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float)*positions.size()*2) );
+	}
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_TRIANGLES, 0, (GLsizei)positions.size() );
+	ctx->popVao();
+}
+} // anonymous namespace
+
+void drawHorizontalCross( const gl::TextureCubeMapRef &texture, const Rectf &rect, float lod )
+{
+	Rectf fullRect( 0, 0, texture->getWidth() * 4, texture->getHeight() * 3 );
+	Rectf framedRect = fullRect.getCenteredFit( rect, true );
+	vec2 faceSize( framedRect.getWidth() / 4, framedRect.getHeight() / 3 );
+
+	vector<vec2> positions;
+	vector<vec3> texCoords;
+	const vec2 ul = rect.getUpperLeft();
+	// -X
+	genCrossFace( ul + vec2( 0, faceSize.y ), ul + vec2( faceSize.x, faceSize.y * 2 ), vec3( 0, 0, 2 ), vec3( 0, 2, 0 ), vec3( -1, -1, -1 ), &positions, &texCoords );
+	// +Z
+	genCrossFace( ul + faceSize, ul + faceSize * 2.0f, vec3( 2, 0, 0 ), vec3( 0, 2, 0 ), vec3( -1, -1, 1 ), &positions, &texCoords );
+	// +X
+	genCrossFace( ul + vec2( faceSize.x * 2, faceSize.y ), ul + vec2( faceSize.x * 3, faceSize.y * 2 ), vec3( 0, 0, -2 ), vec3( 0, 2, 0 ), vec3( 1, -1, 1 ), &positions, &texCoords );
+	// -Z
+	genCrossFace( ul + vec2( faceSize.x * 3, faceSize.y ), ul + vec2( faceSize.x * 4, faceSize.y * 2 ), vec3( -2, 0, 0 ), vec3( 0, 2, 0 ), vec3( 1, -1, -1 ), &positions, &texCoords );
+	// +Y
+	genCrossFace( ul + vec2( faceSize.x, 0 ), ul + vec2( faceSize.x * 2, faceSize.y ), vec3( 2, 0, 0 ), vec3( 0, 0, -2 ), vec3( -1, 1, 1 ), &positions, &texCoords );
+	// -Y
+	genCrossFace( ul + vec2( faceSize.x, faceSize.y * 2 ), ul + vec2( faceSize.x * 2, faceSize.y * 3 ), vec3( 2, 0, 0 ), vec3( 0, 0, 2 ), vec3( -1, -1, -1 ), &positions, &texCoords );
+
+	drawCrossImpl( texture, positions, texCoords, lod );
+}
+
+void drawVerticalCross( const gl::TextureCubeMapRef &texture, const Rectf &rect, float lod )
+{
+	Rectf fullRect( 0, 0, texture->getWidth() * 3, texture->getHeight() * 4 );
+	Rectf framedRect = fullRect.getCenteredFit( rect, true );
+	vec2 faceSize( framedRect.getWidth() / 3, framedRect.getHeight() / 4 );
+
+	vector<vec2> positions;
+	vector<vec3> texCoords;
+	const vec2 ul = rect.getUpperLeft();
+
+	// -X
+	genCrossFace( ul + vec2( 0, faceSize.y ), ul + vec2( faceSize.x, faceSize.y * 2 ), vec3( 0, 0, 2 ), vec3( 0, 2, 0 ), vec3( -1, -1, -1 ), &positions, &texCoords );
+	// +Z
+	genCrossFace( ul + faceSize, ul + faceSize * 2.0f, vec3( 2, 0, 0 ), vec3( 0, 2, 0 ), vec3( -1, -1, 1 ), &positions, &texCoords );
+	// +X
+	genCrossFace( ul + vec2( faceSize.x * 2, faceSize.y ), ul + vec2( faceSize.x * 3, faceSize.y * 2 ), vec3( 0, 0, -2 ), vec3( 0, 2, 0 ), vec3( 1, -1, 1 ), &positions, &texCoords );
+	// +Y
+	genCrossFace( ul + vec2( faceSize.x, 0 ), ul + vec2( faceSize.x * 2, faceSize.y ), vec3( 2, 0, 0 ), vec3( 0, 0, -2 ), vec3( -1, 1, 1 ), &positions, &texCoords );
+	// -Y
+	genCrossFace( ul + vec2( faceSize.x, faceSize.y * 2 ), ul + vec2( faceSize.x * 2, faceSize.y * 3 ), vec3( 2, 0, 0 ), vec3( 0, 0, 2 ), vec3( -1, -1, -1 ), &positions, &texCoords );
+	// -Z
+	genCrossFace( ul + vec2( faceSize.x * 1, faceSize.y * 3 ), ul + vec2( faceSize.x * 2, faceSize.y * 4 ), vec3( 2, 0, 0 ), vec3( 0, -2, 0 ), vec3( -1, 1, -1 ), &positions, &texCoords );
+
+	drawCrossImpl( texture, positions, texCoords, lod );
+}
+
 void drawSolid( const Path2d &path, float approximationScale )
 {
 	draw( Triangulator( path ).calcMesh() );
@@ -756,11 +1020,17 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
 {
+	if( numSegments <= 0 )
+		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
+
 	gl::draw( geom::WireCircle().center( center ).radius( radius ).subdivisions( numSegments ) );
 }
 
 void drawStrokedCircle( const vec2 &center, float radius, float lineWidth, int numSegments )
 {
+	if( numSegments <= 0 )
+		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
+
 	gl::draw( geom::Ring().center( center ).radius( radius ).width( lineWidth ).subdivisions( numSegments ) );
 }
 
@@ -821,9 +1091,8 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
 
-	if( numSegments <= 0 ) {
+	if( numSegments <= 0 )
 		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
-	}
 	if( numSegments < 3 ) numSegments = 3;
 	size_t numVertices = numSegments + 2;
 

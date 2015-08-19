@@ -117,9 +117,7 @@ void TransformFeedbackSmokeParticlesApp::loadShaders()
 		mRenderParticleGlslFormat.vertex( loadAsset( "renderSmoke.vert" ) )
 			.fragment( loadAsset( "renderSmoke.frag" ) )
 			.attribLocation("VertexPosition",			PositionIndex )
-			.attribLocation( "VertexVelocity",			VelocityIndex )
-			.attribLocation( "VertexStartTime",			StartTimeIndex )
-			.attribLocation( "VertexInitialVelocity",	InitialVelocityIndex );
+			.attribLocation( "VertexStartTime",			StartTimeIndex );
 		
 		mPRenderGlsl = ci::gl::GlslProg::create( mRenderParticleGlslFormat );
 	}

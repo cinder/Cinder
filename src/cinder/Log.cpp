@@ -60,7 +60,7 @@ public:
 
 	const vector<unique_ptr<Logger> >& getLoggers() const	{ return mLoggers; }
 
-	virtual void write( const Metadata &meta, const std::string &text ) override;
+	void write( const Metadata &meta, const std::string &text ) override;
 
 private:
 	vector<unique_ptr<Logger> >	mLoggers; // TODO: make set? don't want duplicates
@@ -162,12 +162,13 @@ void LogManager::restoreToDefault()
 	mSystemLoggingEnabled = false;
 	mBreakOnLogEnabled = false;
 
-	switch( CI_MAX_LOG_LEVEL ) {
-		case 5: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
-		case 4: mSystemLoggingLevel = LEVEL_INFO;		break;
+	switch( CI_MIN_LOG_LEVEL ) {
+		case 5: mSystemLoggingLevel = LEVEL_FATAL;      break;
+		case 4: mSystemLoggingLevel = LEVEL_ERROR;      break;
 		case 3: mSystemLoggingLevel = LEVEL_WARNING;	break;
-		case 2: mSystemLoggingLevel = LEVEL_ERROR;		break;
-		case 1: mSystemLoggingLevel = LEVEL_FATAL;		break;
+		case 2: mSystemLoggingLevel = LEVEL_INFO;       break;
+		case 1: mSystemLoggingLevel = LEVEL_DEBUG;		break;
+		case 0: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
 		default: CI_ASSERT_NOT_REACHABLE();
 	}
 }
@@ -432,7 +433,11 @@ fs::path LoggerFile::getDefaultLogFilePath() const
 void LoggerFile::ensureDirectoryExists()
 {
 	fs::path dir = mFilePath.parent_path();
-	if( ! fs::is_directory( dir ) ) {
+	if( dir.empty() ) {
+		// make single file path names explicitly next to executable
+		mFilePath = app::Platform::get()->getExecutablePath() / mFilePath;
+	}
+	else if( ! fs::is_directory( dir ) ) {
 		bool success = fs::create_directories( dir );
 		if( ! success ) {
 			// not using CI_LOG_E since it could lead to recursion
@@ -492,6 +497,7 @@ protected:
 				// We never return lower than LOG_NOTICE for OS X SysLog to ensure the message arrives
 				// http://apple.stackexchange.com/questions/13484/messages-issued-by-syslog-not-showing-up-in-system-logs
 			case LEVEL_INFO:	return LOG_NOTICE;
+			case LEVEL_DEBUG:	return LOG_NOTICE;
 			case LEVEL_VERBOSE:	return LOG_NOTICE;
 			default: CI_ASSERT_NOT_REACHABLE();
 		}
@@ -561,6 +567,7 @@ protected:
 			case LEVEL_ERROR:	return EVENTLOG_ERROR_TYPE;
 			case LEVEL_WARNING:	return EVENTLOG_WARNING_TYPE;
 			case LEVEL_INFO:	return EVENTLOG_INFORMATION_TYPE;
+			case LEVEL_DEBUG:	return EVENTLOG_INFORMATION_TYPE;
 			case LEVEL_VERBOSE:	return EVENTLOG_INFORMATION_TYPE;
 			default: CI_ASSERT_NOT_REACHABLE();
 		}
@@ -593,9 +600,11 @@ LoggerSystem::~LoggerSystem()
 
 void LoggerSystem::write( const Metadata &meta, const std::string &text )
 {
+#if ! defined( CINDER_WINRT ) // Currently no system logging support on WinRT
 	if( meta.mLevel >= mMinLevel ) {
 		mImpl->write( meta, text );
 	}
+#endif
 }
 	
 // ----------------------------------------------------------------------------------------------------
@@ -619,6 +628,7 @@ ostream& operator<<( ostream &lhs, const Level &rhs )
 {
 	switch( rhs ) {
 		case LEVEL_VERBOSE:		lhs << "|verbose|";	break;
+		case LEVEL_DEBUG:		lhs << "|debug  |";	break;
 		case LEVEL_INFO:		lhs << "|info   |";	break;
 		case LEVEL_WARNING:		lhs << "|warning|";	break;
 		case LEVEL_ERROR:		lhs << "|error  |";	break;

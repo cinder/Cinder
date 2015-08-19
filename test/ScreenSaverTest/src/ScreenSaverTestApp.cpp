@@ -24,15 +24,15 @@ class ScreenSaverTestApp : public AppScreenSaver {
   public:
 	ScreenSaverTestApp();
 
-	virtual void setup() override;
-	virtual void resize() override;
-	virtual void update() override;
-	virtual void draw() override;
+	void setup() override;
+	void resize() override;
+	void update() override;
+	void draw() override;
 
 	void loadLogo();
 
 #if defined( CINDER_MAC )
-	virtual NSWindow* createMacConfigDialog() override
+	NSWindow* createMacConfigDialog() override
 	{
 		return getConfigDialogMac( this, &mConfig ); // defined in MacConfigDialog.cpp
 	}

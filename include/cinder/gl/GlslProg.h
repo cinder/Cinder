@@ -107,7 +107,8 @@ class GlslProg {
 		friend class GlslProg;
 	};
 	
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+
 	struct UniformBlock {
 		
 		//! Returns a const reference of the name as defined inside the Glsl.
@@ -142,7 +143,11 @@ class GlslProg {
 		
 		friend class GlslProg;
 	};
-	
+
+#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 	struct TransformFeedbackVaryings {
 		
 		//! Returns a const reference of the name as defined inside the Glsl.
@@ -160,7 +165,8 @@ class GlslProg {
 		
 		friend class GlslProg;
 	};
-#endif
+
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
 	struct Format {
 		//! Defaults to specifying location 0 for the \c geom::Attrib::POSITION semantic
@@ -174,11 +180,21 @@ class GlslProg {
 		Format&		fragment( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the fragment shader
 		Format&		fragment( const std::string &vertexShader );
-#if ! defined( CINDER_GL_ES )
+		//! Returns the GLSL source for the vertex shader. Returns an empty string if it isn't present.
+		const std::string&	getVertex() const { return mVertexShader; }
+		//! Returns the GLSL source for the fragment shader. Returns an empty string if it isn't present.
+		const std::string&	getFragment() const { return mFragmentShader; }
+#if defined( CINDER_GL_HAS_GEOM_SHADER )
 		//! Supplies the GLSL source for the geometry shader
 		Format&		geometry( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the geometry shader
 		Format&		geometry( const std::string &geometryShader );
+		//! Returns the GLSL source for the geometry shader
+		const std::string&	getGeometry() const { return mGeometryShader; }
+		//! Returns the fs::path for the geometry shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getGeometryPath() const { return mGeometryShaderPath; }
+#endif // defined( CINDER_GL_HAS_GEOM_SHADER )
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 		//! Supplies the GLSL source for the tessellation control shader
 		Format&		tessellationCtrl( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the tessellation control shader
@@ -187,14 +203,44 @@ class GlslProg {
 		Format&		tessellationEval( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the tessellation control shader
 		Format&		tessellationEval( const std::string &tessellationEvalShader );
-#endif
-#if ! defined( CINDER_GL_ES_2 )		
-		//! Sets the TransformFeedback varyings
+		//! Returns the GLSL source for the tessellation control shader
+		const std::string&	getTessellationCtrl() const { return mTessellationCtrlShader; }
+		//! Returns the GLSL source for the tessellation evaluation shader
+		const std::string&	getTessellationEval() const { return mTessellationEvalShader; }
+#endif // defined( CINDER_GL_HAS_TESS_SHADER )
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+		//! Supplies the GLSL source for the compute shader
+		Format&		compute( const DataSourceRef &dataSource );
+		//! Supplies the GLSL source for the compute shader
+		Format&		compute( const std::string &computeShader );
+		//! Returns the GLSL source for the compute shader. Returns an empty string if it isn't present.
+		const std::string&	getCompute() const { return mComputeShader; }
+		//! Returns the fs::path for the compute shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getComputePath() const { return mComputeShaderPath; }
+#endif // defined( CINDER_GL_HAS_COMPUTE_SHADER )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+		//! Sets the Transform Feedback varyings
 		Format&		feedbackVaryings( const std::vector<std::string>& varyings ) { mTransformVaryings = varyings; return *this; }
-		//! Sets the TransformFeedback format
+		//! Sets the Transform Feedback format
 		Format&		feedbackFormat( GLenum format ) { mTransformFormat = format; return *this; }
+		//! Returns the Transform Feedback varyings
+		const std::vector<std::string>&  getVaryings() const { return mTransformVaryings; }
+		//! Returns the TransForm Feedback format
+		GLenum		getTransformFormat() const { return mTransformFormat; }
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+#if defined( CINDER_GL_HAS_TESS_SHADER )
+		//! Returns the fs::path for the tessellation control shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getTessellationCtrlPath() const { return mTessellationCtrlShaderPath; }
+		//! Returns the fs::path for the tessellation eval shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getTessellationEvalPath() const { return mTessellationEvalShaderPath; }
+#endif // defined( CINDER_GL_HAS_TESS_SHADER )
+#if ! defined( CINDER_GL_ES )
+		//! Specifies a binding for a user-defined varying out variable to a fragment shader color number. Analogous to glBindFragDataLocation.
+		Format&		fragDataLocation( GLuint colorNumber, const std::string &name );
+		//! Returns the map between output variable names and their bound color numbers
+		const std::map<std::string,GLuint>&	getFragDataLocations() const { return mFragDataLocations; }
 #endif
-		
+
 		//! Specifies an attribute name to map to a specific semantic
 		Format&		attrib( geom::Attrib semantic, const std::string &attribName );
 		//! Specifies a uniform name to map to a specific semantic
@@ -204,29 +250,6 @@ class GlslProg {
 		//! Specifies a location for a semantic
 		Format&		attribLocation( geom::Attrib attr, GLint location );
 
-#if ! defined( CINDER_GL_ES )
-		//! Specifies a binding for a user-defined varying out variable to a fragment shader color number. Analogous to glBindFragDataLocation.
-		Format&		fragDataLocation( GLuint colorNumber, const std::string &name );
-#endif
-
-		//! Returns the GLSL source for the vertex shader. Returns an empty string if it isn't present.
-		const std::string&	getVertex() const { return mVertexShader; }
-		//! Returns the GLSL source for the fragment shader. Returns an empty string if it isn't present.
-		const std::string&	getFragment() const { return mFragmentShader; }
-#if ! defined( CINDER_GL_ES )
-		//! Returns the GLSL source for the geometry shader
-		const std::string&	getGeometry() const { return mGeometryShader; }
-		const std::string&	getTessellationCtrl() const { return mTessellationCtrlShader; }
-		const std::string&	getTessellationEval() const { return mTessellationEvalShader; }
-#endif
-#if ! defined( CINDER_GL_ES_2 )
-		const std::vector<std::string>&  getVaryings() const { return mTransformVaryings; }
-		//! Returns the TransFormFeedback format
-		GLenum			getTransformFormat() const { return mTransformFormat; }
-		//! Returns the map between output variable names and their bound color numbers
-		const std::map<std::string,GLuint>&	getFragDataLocations() const { return mFragDataLocations; }
-#endif
-		
 		//! Returns whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
 		bool		isPreprocessingEnabled() const				{ return mPreprocessingEnabled; }
 		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
@@ -259,14 +282,7 @@ class GlslProg {
 		const fs::path&	getVertexPath() const { return mVertexShaderPath; }
 		//! Returns the fs::path for the fragment shader. Returns an empty fs::path if it isn't present.
 		const fs::path&	getFragmentPath() const { return mFragmentShaderPath; }
-#if ! defined( CINDER_GL_ES )
-		//! Returns the fs::path for the geometry shader. Returns an empty fs::path if it isn't present.
-		const fs::path&	getGeometryPath() const { return mGeometryShaderPath; }
-		//! Returns the fs::path for the tessellation control shader. Returns an empty fs::path if it isn't present.
-		const fs::path&	getTessellationCtrlPath() const { return mTessellationCtrlShaderPath; }
-		//! Returns the fs::path for the tessellation eval shader. Returns an empty fs::path if it isn't present.
-		const fs::path&	getTessellationEvalPath() const { return mTessellationEvalShaderPath; }
-#endif
+
 		const std::vector<Uniform>&		getUniforms() const { return mUniforms; }
 		const std::vector<Attribute>&	getAttributes() const { return mAttributes; }
 		std::vector<Uniform>&			getUniforms() { return mUniforms; }
@@ -282,28 +298,35 @@ class GlslProg {
 		fs::path		mVertexShaderPath;
 		fs::path		mFragmentShaderPath;
 
-#if ! defined( CINDER_GL_ES )
+#if defined( CINDER_GL_HAS_GEOM_SHADER )
 		std::string		mGeometryShader;
+		fs::path		mGeometryShaderPath;
+#endif
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 		std::string		mTessellationCtrlShader;
 		std::string		mTessellationEvalShader;
-		fs::path		mGeometryShaderPath;
 		fs::path		mTessellationCtrlShaderPath;
 		fs::path		mTessellationEvalShaderPath;
 #endif
-#if ! defined( CINDER_GL_ES_2 )
-		GLenum									mTransformFormat;
-		std::vector<std::string>				mTransformVaryings;
-		std::map<std::string,GLuint>			mFragDataLocations;
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+		std::string		mComputeShader;
+		fs::path		mComputeShaderPath;
 #endif
-		std::vector<Attribute>					mAttributes;
-		std::vector<Uniform>					mUniforms;
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+		GLenum							mTransformFormat;
+		std::vector<std::string>		mTransformVaryings;
+		std::map<std::string,GLuint>	mFragDataLocations;
+#endif
+
+		std::vector<Attribute>			mAttributes;
+		std::vector<Uniform>			mUniforms;
+
+		std::vector<std::string>		mDefineDirectives;
+		int								mVersion;
 		
-		std::vector<std::string>				mDefineDirectives;
-		int										mVersion;
-		
-		bool									mPreprocessingEnabled;
-		std::string								mLabel;
-		std::vector<fs::path>					mPreprocessorSearchDirectories;
+		bool							mPreprocessingEnabled;
+		std::string						mLabel;
+		std::vector<fs::path>			mPreprocessorSearchDirectories;
 
 		friend class		GlslProg;
 	};
@@ -418,8 +441,7 @@ class GlslProg {
 	//! Returns a const pointer to the Uniform that matches \a name. Returns nullptr if the uniform doesn't exist. The uniform location (accounting for indices, like "example[2]") is stored in \a resultLocation if it's non-null.
 	const Uniform*					findUniform( const std::string &name, int *resultLocation ) const;
 
-#if ! defined( CINDER_GL_ES_2 )
-	// Uniform blocks
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	//! Analogous to glUniformBlockBinding()
 	void	uniformBlock( const std::string &name, GLint binding );
 	//! Analogous to glUniformBlockBinding()
@@ -432,12 +454,13 @@ class GlslProg {
 	const UniformBlock* findUniformBlock( const std::string &name ) const;
 	//! Returns a const reference to the UniformBlock cache.
 	const std::vector<UniformBlock>& getActiveUniformBlocks() const { return mUniformBlocks; }
+#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	//! Returns a const pointer to the TransformFeedbackVarying that matches \a name. Returns nullptr if the transform feedback varying doesn't exist.
 	const TransformFeedbackVaryings* findTransformFeedbackVaryings( const std::string &name ) const;
 	//! Returns a const reference to the TransformFeedbackVaryings cache.
 	const std::vector<TransformFeedbackVaryings>& getActiveTransformFeedbackVaryings() const { return mTransformFeedbackVaryings; }
-#endif
-	
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )	
 	std::string		getShaderLog( GLuint handle ) const;
 
 	//! Returns a list of included files (via the `#include` directive) detected and parsed by the ShaderPreprocessor.
@@ -510,11 +533,13 @@ class GlslProg {
 	bool			checkUniformType( GLenum uniformType ) const;
 	template<typename T>
 	bool			checkUniformType( GLenum uniformType, std::string &typeName ) const;
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	//! Caches all active Uniform Blocks after linking.
 	void			cacheActiveUniformBlocks();
 	//! Returns a pointer to the Uniform Block that matches \a name. Returns nullptr if the attrib doesn't exist.
 	UniformBlock*	findUniformBlock( const std::string &name );
+#endif
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	//! Caches all active Transform Feedback Varyings after linking.
 	void			cacheActiveTransformFeedbackVaryings();
 	//! Returns a pointer to the Transform Feedback Varyings that matches \a name. Returns nullptr if the attrib doesn't exist.
@@ -529,8 +554,10 @@ class GlslProg {
 	std::vector<Attribute>						mAttributes;
 	std::vector<Uniform>						mUniforms;
 	mutable std::unique_ptr<UniformValueCache>	mUniformValueCache;
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	std::vector<UniformBlock>				mUniformBlocks;
+#endif
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	std::vector<TransformFeedbackVaryings>  mTransformFeedbackVaryings;
 	GLenum									mTransformFeedbackFormat;
 #endif

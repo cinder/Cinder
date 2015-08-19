@@ -183,10 +183,44 @@ void flipVertical( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel )
 	}
 }
 
+template<typename T>
+void flipHorizontal( SurfaceT<T> *surface )
+{
+	const int32_t height = surface->getHeight();
+	const int32_t width = surface->getWidth();
+	const int32_t halfWidth = width / 2;
+	
+	if( surface->hasAlpha() ) {
+		for( int32_t y = 0; y < height; ++y ) {
+			T *rowPtr = surface->getData( ivec2( 0, y ) );
+			for( int32_t x = 0; x < halfWidth; ++x ) {
+				for( int c = 0; c < 4; ++c ) {
+					T temp = rowPtr[x*4+c];
+					rowPtr[x*4+c] = rowPtr[(width-x-1)*4+c];
+					rowPtr[(width-x-1)*4+c] = temp;
+				}
+			}
+		}
+	}
+	else {
+		for( int32_t y = 0; y < height; ++y ) {
+			T *rowPtr = surface->getData( ivec2( 0, y ) );
+			for( int32_t x = 0; x < halfWidth; ++x ) {
+				for( int c = 0; c < 3; ++c ) {
+					T temp = rowPtr[x*3+c];
+					rowPtr[x*3+c] = rowPtr[(width-x-1)*3+c];
+					rowPtr[(width-x-1)*3+c] = temp;
+				}
+			}
+		}
+	}
+}
+
 #define flip_PROTOTYPES(r,data,T)\
 	template void flipVertical<T>( SurfaceT<T> *surface );\
 	template void flipVertical<T>( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );\
-	template void flipVertical<T>( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );
+	template void flipVertical<T>( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );\
+	template void flipHorizontal<T>( SurfaceT<T> *surface );
 	
 BOOST_PP_SEQ_FOR_EACH( flip_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
 

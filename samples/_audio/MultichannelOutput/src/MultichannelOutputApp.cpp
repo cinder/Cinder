@@ -119,4 +119,4 @@ void MultichannelOutputApp::draw()
 	}
 }
 
-CINDER_APP( MultichannelOutputApp, RendererGl )
+CINDER_APP( MultichannelOutputApp, RendererGl( RendererGl::Options().msaa( 8 ) ) )

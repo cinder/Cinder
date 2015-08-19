@@ -18,7 +18,9 @@ $(document).ready(function() {
 	 		linkParent.removeClass("hidden");
  		}
 	};
-	
+	var rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf('html/')+5);
+
+
 	// look for all dom items with class
 
  	// find all expandable sections
@@ -75,7 +77,6 @@ $(document).ready(function() {
 
  	// get anchor tag if there is one
  	var hash = window.location.hash.substring(1);
- 	
 
  	// --- Search stuff --- // 
  	window.search = function (term) {
@@ -83,9 +84,12 @@ $(document).ready(function() {
 	    var results = search_index.search(term); 
 		var resultsDiv = $('#search-results');
 		var resultsUl = $( "<ul>" );
+		var viewAllResults = '<div id="search-results-view-all"><a href="#">View All Results &raquo;</a></div>';
 
 		resultsDiv.empty();
-		resultsDiv.append( resultsUl );
+		if( results.length > 0 ){
+			resultsDiv.append( resultsUl, viewAllResults );
+		}
 
 		// resultsDiv.append( resultsUl );
 		for( var i in results ){
@@ -93,12 +97,18 @@ $(document).ready(function() {
 			var li = $("<li>");
 			var result = results[i];
 			var data = search_index_data.data[result.ref];
-			var a = $("<a href=" + data.link + "> " +  data.title +"</a>");
+			var link = rootDir + data.link;
+			var a = $("<a href=" + link + "> " +  data.title +"</a>");
 			li.append(a);
-			li.append(" score: " +  result.score + "</b> ->" );
-			
-			li.append(data.link);
+			// li.append(" score: " +  result.score + "</b> ->" );
+			// li.append(data.link);
 			resultsUl.append( li );
+		}
+
+		// hide view all results append when search is empty or no results
+		console.log($('#search-results ul'));
+		if(!$('#search-input').val() || $('#search-results ul').children().length <= 0) {
+			$('#search-results-view-all').hide();
 		}
 	};
 
@@ -169,7 +179,6 @@ $(document).ready(function() {
  	if( search_index_data )
 	 	initSearch();
  	return cinderJs;
-
  } );
 
 window.setSection = function( sectionName ){	

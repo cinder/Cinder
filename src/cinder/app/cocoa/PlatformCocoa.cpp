@@ -29,9 +29,11 @@
 #include "cinder/ImageSourceFileQuartz.h"
 #include "cinder/ImageTargetFileQuartz.h"
 #include "cinder/ImageSourceFileRadiance.h"
+#include "cinder/ImageFileTinyExr.h"
 
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
+	#import <IOKit/graphics/IOGraphicsLib.h>
 #else
 	#import <Foundation/Foundation.h>
 	#import <UIKit/UIKit.h>
@@ -60,6 +62,8 @@ PlatformCocoa::PlatformCocoa()
 	ImageSourceFileQuartz::registerSelf();
 	ImageTargetFileQuartz::registerSelf();	
 	ImageSourceFileRadiance::registerSelf();
+	ImageSourceFileTinyExr::registerSelf();
+	ImageTargetFileTinyExr::registerSelf();
 }
 
 void PlatformCocoa::prepareLaunch()
@@ -159,19 +163,24 @@ fs::path PlatformCocoa::expandPath( const fs::path &path )
 	return fs::path( result );
 }
 
-fs::path PlatformCocoa::getDocumentsDirectory()
+fs::path PlatformCocoa::getDocumentsDirectory() const
 {
 	NSArray *arrayPaths = ::NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
 	NSString *docDir = [arrayPaths firstObject];
 	return fs::path( cocoa::convertNsString( docDir ) + "/" );
 }
 
-fs::path PlatformCocoa::getHomeDirectory()
+fs::path PlatformCocoa::getHomeDirectory() const
 {
 	NSString *home = ::NSHomeDirectory();
 	string result = string( [home cStringUsingEncoding:NSUTF8StringEncoding] );
 	result += "/";
 	return fs::path( result );	
+}
+
+fs::path PlatformCocoa::getDefaultExecutablePath() const
+{
+	return fs::path( [[[::NSBundle mainBundle] bundlePath] UTF8String] ).parent_path();
 }
 
 void PlatformCocoa::launchWebBrowser( const Url &url )
@@ -214,6 +223,10 @@ fs::path PlatformCocoa::getOpenFilePath( const fs::path &initialPath, const vect
 	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderOpen runModal];
 	setInsideModalLoop( false );
+	// Due to bug #960: https://github.com/cinder/Cinder/issues/960 We need to force the background window
+	// to be actually in the background when we're fullscreen. Was true of 10.9 and 10.10
+	if( app::AppBase::get() && app::getWindow() && app::getWindow()->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -243,6 +256,10 @@ fs::path PlatformCocoa::getFolderPath( const fs::path &initialPath )
 	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderOpen runModal];
 	setInsideModalLoop( false );
+	// Due to bug #960: https://github.com/cinder/Cinder/issues/960 We need to force the background window
+	// to be actually in the background when we're fullscreen. Was true of 10.9 and 10.10
+	if( app::AppBase::get() && app::getWindow() && app::getWindow()->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -295,6 +312,10 @@ fs::path PlatformCocoa::getSaveFilePath( const fs::path &initialPath, const vect
 	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderSave runModal];
 	setInsideModalLoop( false );
+	// Due to bug #960: https://github.com/cinder/Cinder/issues/960 We need to force the background window
+	// to be actually in the background when we're fullscreen. Was true of 10.9 and 10.10
+	if( app::AppBase::get() && app::getWindow() && app::getWindow()->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
 	
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		return fs::path( [[[cinderSave URL] path] UTF8String] );
@@ -378,6 +399,20 @@ NSScreen* findNsScreenForCgDirectDisplayId( CGDirectDisplayID displayId )
 	
 	return nil;
 }
+std::string getDisplayName( CGDirectDisplayID displayId )
+{
+	string name = "";
+
+	NSDictionary *deviceInfo = (NSDictionary*)IODisplayCreateInfoDictionary( CGDisplayIOServicePort( displayId ), kIODisplayOnlyPreferredName );
+	NSDictionary *localizedNames = [deviceInfo objectForKey:@kDisplayProductName];
+	if( [localizedNames count] > 0 ) {
+		NSString *displayName = [localizedNames objectForKey:[localizedNames allKeys].firstObject];
+		name = ci::cocoa::convertNsString( displayName );
+	}
+	[deviceInfo release];
+
+	return name;
+}
 } // anonymous namespace
 
 NSScreen* DisplayMac::getNsScreen() const
@@ -395,6 +430,15 @@ DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID disp
 
 	// couldn't find it, so return nullptr
 	return nullptr;
+}
+
+std::string DisplayMac::getName() const
+{
+	if( mNameDirty ) {
+		mName = getDisplayName( mDirectDisplayId );
+		mNameDirty = false;
+	}
+	return mName;
 }
 
 DisplayRef app::PlatformCocoa::findFromNsScreen( NSScreen *nsScreen )
@@ -428,7 +472,7 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 			newDisplay->mContentScale = 1.0f;
 #endif
 			newDisplay->mBitsPerPixel = 24; // hard-coded absent any examples of anything else
-			
+
 			app::PlatformCocoa::get()->addDisplay( DisplayRef( newDisplay ) ); // this will signal
 		}
 		else

@@ -24,6 +24,7 @@
 		00ED0B7C15B07FEE0034FE7C /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00ED0B7915B07FBC0034FE7C /* CoreLocation.framework */; };
 		115FAF431A8169A2009DDD59 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 115FAF421A8169A2009DDD59 /* AVFoundation.framework */; };
 		115FAF451A8169A8009DDD59 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 115FAF441A8169A8009DDD59 /* CoreMedia.framework */; };
+		11B571B61B25593900BF76CE /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B571B51B25593900BF76CE /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		00ED0B7915B07FBC0034FE7C /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		115FAF421A8169A2009DDD59 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		115FAF441A8169A8009DDD59 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		11B571B51B25593900BF76CE /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11B571B61B25593900BF76CE /* IOKit.framework in Frameworks */,
 				115FAF451A8169A8009DDD59 /* CoreMedia.framework in Frameworks */,
 				115FAF431A8169A2009DDD59 /* AVFoundation.framework in Frameworks */,
 				00ED0B7C15B07FEE0034FE7C /* CoreLocation.framework in Frameworks */,
@@ -98,6 +101,7 @@
 		003C0CA415A1F07200FF29F5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				11B571B51B25593900BF76CE /* IOKit.framework */,
 				115FAF441A8169A8009DDD59 /* CoreMedia.framework */,
 				115FAF421A8169A2009DDD59 /* AVFoundation.framework */,
 				00ED0B7915B07FBC0034FE7C /* CoreLocation.framework */,
@@ -268,7 +272,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
+				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -292,7 +296,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
+				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../TestApp $(CINDER_PATH)/include";

@@ -57,10 +57,10 @@ class SourceFileMediaFoundation : public SourceFile {
 	void		initReader();
 	size_t		processNextReadSample();
 
-	std::unique_ptr<::IMFSourceReader, ci::msw::ComDeleter>		mSourceReader;
-	std::unique_ptr<ci::msw::ComIStream, ci::msw::ComDeleter>	mComIStream;
-	std::unique_ptr<::IMFByteStream, ci::msw::ComDeleter>		mByteStream;
-	DataSourceRef												mDataSource; // stored so that clone() can tell if original data source is a file or windows resource
+	ci::msw::ManagedComPtr<::IMFSourceReader>		mSourceReader;
+	ci::msw::ManagedComPtr<ci::msw::ComIStream>		mComIStream;
+	ci::msw::ManagedComPtr<::IMFByteStream>			mByteStream;
+	DataSourceRef									mDataSource; // stored so that clone() can tell if original data source is a file or windows resource
 	
 	size_t				mSampleRate;
 	size_t				mNumChannels;
@@ -83,7 +83,7 @@ class TargetFileMediaFoundation : public TargetFile {
 	TargetFileMediaFoundation( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension );
 	virtual ~TargetFileMediaFoundation();
 
-	virtual void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) override;
+	void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) override;
 
   private:
 	  std::unique_ptr<::IMFSinkWriter, ci::msw::ComDeleter>		mSinkWriter;

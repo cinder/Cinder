@@ -216,6 +216,9 @@ bool testPixelFormat( HDC dc, int colorSamples, int depthDepth, int msaaSamples,
 	iAttributes.push_back( WGL_RED_BITS_ARB ); iAttributes.push_back( colorSamples );
 	iAttributes.push_back( WGL_GREEN_BITS_ARB ); iAttributes.push_back( colorSamples );
 	iAttributes.push_back( WGL_BLUE_BITS_ARB ); iAttributes.push_back( colorSamples );
+	if( colorSamples == 8 ) {
+		iAttributes.push_back( WGL_ALPHA_BITS_ARB ); iAttributes.push_back( colorSamples );
+	}
 	iAttributes.push_back( WGL_DEPTH_BITS_ARB ); iAttributes.push_back( depthDepth );
 	iAttributes.push_back( WGL_STENCIL_BITS_ARB ); iAttributes.push_back( stencilDepth );
 	iAttributes.push_back( WGL_DOUBLE_BUFFER_ARB ); iAttributes.push_back( GL_TRUE );

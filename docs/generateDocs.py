@@ -1,3 +1,26 @@
+"""
+ Copyright (c) 2015, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+"""
+
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 import sys
@@ -9,7 +32,6 @@ import os
 import shutil
 import stat
 import urlparse
-import traceback
 from difflib import SequenceMatcher as SM
 
 # Third party in libs folder
@@ -364,13 +386,11 @@ class SymbolMap(object):
         namespaces = []
         for nsKey in self.namespaces:
             ns = self.namespaces[nsKey]
-            print "NAMESPACE: " + ns.name
 
             # get whitelisted namespaces
             whitelisted = False
             if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_WHITELIST]):
                 whitelisted = True
-                print ns.name
 
             blacklisted = False
             if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_BLACKLIST]):
@@ -1753,6 +1773,13 @@ def process_xml_file_definition(in_path, out_path, file_type):
     link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, HTML_DEST_PATH)["href"]
     add_to_search_index(bs4, link_path, file_data.kind_explicit, file_data.search_tags)
 
+    # deactivate invalid relative links
+    for link in bs4.find_all("a"):
+        if link.has_attr("href") and link["href"].startswith("_"):
+            # replace <a> with <span>
+            dead_tag = gen_tag(bs4, "span", None, link.string)
+            link.replace_with(dead_tag)
+
     # write the file
     write_html(bs4, out_path)
 
@@ -2002,7 +2029,6 @@ def fill_namespace_content(tree):
     # free functions ------------------------------------ #
     free_fns = []
     for member in tree.findall(r"compounddef/sectiondef/[@kind='user-defined']/memberdef/[@kind='function']"):
-        print member
         function_obj = parse_member_definition(bs4, member)
         free_fns.append(function_obj)
     file_data.free_functions = free_fns
@@ -2157,10 +2183,20 @@ def process_html_file(in_path, out_path):
     # get source file body content
     orig_html = generate_bs4(in_path)
 
+    # extract original scripts to append later
+    orig_scripts = []
+    for x in orig_html.findAll("script"):
+        orig_scripts.append(x.extract())
+
+    orig_links = []
+
     # get title
     if orig_html.head:
         if orig_html.head.title:
             file_data.title = orig_html.head.title.text
+
+        for x in orig_html.findAll('link', rel="stylesheet"):
+            orig_links.append(x.extract())
 
     # if there is a specific page that needs some special dynamic content, this is where we do it
     insert_div_id = ""
@@ -2172,10 +2208,8 @@ def process_html_file(in_path, out_path):
             for content in markup.body.contents:
                 dynamic_div.append(content)
             insert_div_id = data["element_id"]
-            
+
             if "section" in data:
-                print in_path
-                print "SECTION: " + data["section"]
                 section = data["section"]
 
     # inject dynamic content into orig_html
@@ -2188,12 +2222,12 @@ def process_html_file(in_path, out_path):
     file_data.html_content = body_content
     file_content = file_data.get_content()
 
-    # render file tempalte
+    # render file template
     bs4 = render_template(template, file_content)
     update_links_abs(bs4, in_path)
     content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class, str("section_" + section): "true"}
 
-    # plug everything into the master tempalte
+    # plug everything into the master template
     bs4 = render_template(os.path.join(TEMPLATE_PATH, "master-template.mustache"), content_dict)
     # make sure all links are absolute
     update_links_abs(bs4, TEMPLATE_PATH)
@@ -2204,12 +2238,24 @@ def process_html_file(in_path, out_path):
         print log("Error generating file, so skipping: " + in_path, 2)
         return
 
-    # copy all js and css paths that may be in the original html and paste into new file
-    for link in orig_html.find_all("link"):
+    # get list of all the css and js links in the new bs4
+    link_list = bs4.head.find_all("link")
+    script_list = bs4.body.find_all("script")
+
+    # copy any css paths that may be in the original html and paste into new file
+    for link in orig_links:
+        # do not add duplicates
+        if any(link_item["href"] == link["href"] for link_item in link_list):
+            continue
+
         if bs4.head:
             bs4.head.append(link)
 
-    for script in orig_html.find_all("script"):
+    # append original scripts to the end
+    for script in orig_scripts:
+        # do not add duplicates
+        if script.has_attr("src") and any(script_item.has_attr("src") and script_item["src"] == script["src"] for script_item in script_list):
+            continue
         if bs4.body:
             bs4.body.append(script)
 
@@ -2246,7 +2292,8 @@ def process_html_file(in_path, out_path):
 
     if in_path.find("_docs/") < 0:
         if is_searchable:
-            add_to_search_index(bs4, out_path, file_data.kind_explicit, search_tags)
+            link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, HTML_DEST_PATH)["href"]
+            add_to_search_index(bs4, link_path, file_data.kind_explicit, search_tags)
 
         state.add_html_file(file_data)
         file_data.path = out_path

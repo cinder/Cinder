@@ -171,7 +171,7 @@ code[class*="language-"]
 		.cinder-version
 			display: inline-block
 			position: absolute
-			top: 26px
+			top: 13px
 			left: 160px
 			font-weight: bold
 			font-size: 14px
@@ -181,7 +181,7 @@ code[class*="language-"]
 		position: relative
 		list-style: none
 		font-weight: bold
-		height: 100%
+		height: 100% !important
 		
 		li
 			position: relative
@@ -189,6 +189,7 @@ code[class*="language-"]
 			height: 100%
 			margin-right: 20px
 			margin-left: 0
+			background: none
 			
 			&.active
 				border-bottom: solid 3px $cinder-red
@@ -199,7 +200,8 @@ code[class*="language-"]
 				display: inline-block
 				color: white
 				text-decoration: none
-				padding-top: 50px
+				padding: 50px 0 0 0
+				background: none
 				
 				&:hover
 					color: $cinder-red
@@ -547,10 +549,6 @@ button.expand
 	#side-nav li
 		list-style: none
 
-	
-	// #container > .content
-		// padding-top: 50px;
-
 body.reference
 	#main-content
 		li
@@ -567,7 +565,121 @@ footer
 	height: 60px
 
 
-// @media all and (min-width: 640px)
-		
-	// .content-column
-		// padding: 0
+
+/* NAVBAR STYLING */
+nav.top-bar {
+	height: 100px;
+	background: transparent;
+}
+nav.top-bar .cinder-logo-container {
+	padding-left: 0;
+}
+nav.top-bar .top-bar-section {
+	height: 100%;
+}
+nav.top-bar .top-bar-section ul li,
+nav.top-bar .top-bar-section li:not(.has-form) a:not(.button) {
+	background: transparent;
+	line-height: initial;
+	margin-left: 0;
+}
+nav.top-bar .title-area .name img {
+	width: 220px;
+}
+nav.top-bar .top-bar-section .left > li {
+	margin-top: 50px;
+}
+nav.top-bar .top-bar-section .right > li {
+	margin-top: 40px;
+}
+nav.top-bar .top-bar-section ul li > a {
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	padding: inherit;
+	text-decoration: none;
+}
+nav.top-bar .top-bar-section ul li > a:hover {
+	color: #c64b24;
+}
+nav.top-bar .top-bar-section ul li:first-of-type a {
+	padding-left: 0;
+}
+
+/* SEARCH RESULTS STYLING */
+#nav_search > #search {
+	position: relative;
+}
+
+#nav_search > #search > input {
+	display: inline-block;
+	margin-bottom: 0;
+	width: 290px;
+	font-size: 12px;
+	top: 0;
+	height: 30px;
+	border-radius: 10px;
+}
+#nav_search > #search > button {
+	padding-top: 0;
+	padding-bottom: 0;
+	margin-bottom: 0;
+	height: 30px;
+	text-transform: uppercase;
+	outline: 0;
+}
+#nav_search > #search > #search-results {
+	background-color: white;
+	position: absolute;
+	right: 0;
+	z-index: 99999;
+	display: block;
+	max-height: 80vh;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	top: 30px;
+    border-radius: 10px;
+    width: 400px;
+    // border: 1px $light-gray solid
+}
+#nav_search > #search > #search-results ul {
+	margin-left: 0;
+}
+#nav_search > #search > #search-results li {
+	height: auto;
+	padding: 10px 0 10px 10px;
+	margin-right: 0;
+	font-size: 12px;
+	background: transparent;
+	width: 100%;
+}
+#nav_search > #search > #search-results li:hover,
+#nav_search > #search > #search-results li:hover a {
+	background: #c64b24;
+	color: white;
+}
+#nav_search > #search > #search-results a {
+	padding: 0;
+	color: #c64b24;
+	background: transparent;
+	font-size: 12px;
+}
+#nav_search > #search > #search-results li a:before {
+	content: "\00bb";
+}
+#nav_search #search-results-view-all {
+	display: inline-block;
+	width: 100%;
+	background: #949494;
+	padding: 10px 0;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+#nav_search > #search > #search-results > #search-results-view-all a {
+	color: white;
+}
+#nav_search > #search > #search-results > #search-results-view-all a:hover {
+	color: #c64b24;
+}

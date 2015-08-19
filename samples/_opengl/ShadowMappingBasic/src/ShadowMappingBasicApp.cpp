@@ -60,13 +60,16 @@ void ShadowMappingBasic::setup()
 	
 #if defined( CINDER_GL_ES )
 	depthFormat.setInternalFormat( GL_DEPTH_COMPONENT16 );
+	depthFormat.setDataType( GL_UNSIGNED_INT );
+	depthFormat.setMagFilter( GL_NEAREST );
+	depthFormat.setMinFilter( GL_NEAREST );
 #else
 	depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
 	depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
-#endif
 	depthFormat.setMagFilter( GL_LINEAR );
 	depthFormat.setMinFilter( GL_LINEAR );
-	depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+	depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );	
+#endif
 	depthFormat.setCompareFunc( GL_LEQUAL );
 	
 	mShadowMapTex = gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT, depthFormat );

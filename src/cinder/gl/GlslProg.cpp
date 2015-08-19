@@ -170,7 +170,7 @@ void GlslProg::Attribute::getShaderAttribLayout( GLenum type, uint32_t *numDimsP
 // GlslProg::Format
 GlslProg::Format::Format()
 	: mPreprocessingEnabled( true ), mVersion( 0 )
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	, mTransformFormat( -1 )
 #endif
 {
@@ -200,7 +200,8 @@ GlslProg::Format& GlslProg::Format::fragment( const string &fragmentShader )
 	return *this;
 }
 
-#if ! defined( CINDER_GL_ES )
+#if defined( CINDER_GL_HAS_GEOM_SHADER )
+
 GlslProg::Format& GlslProg::Format::geometry( const DataSourceRef &dataSource )
 {
 	setShaderSource( dataSource, &mGeometryShader, &mGeometryShaderPath );
@@ -213,6 +214,9 @@ GlslProg::Format& GlslProg::Format::geometry( const string &geometryShader )
 	return *this;
 }
 
+#endif // defined( CINDER_GL_HAS_GEOM_SHADER )
+
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const DataSourceRef &dataSource )
 {
 	setShaderSource( dataSource, &mTessellationCtrlShader, &mTessellationCtrlShaderPath );
@@ -237,7 +241,23 @@ GlslProg::Format& GlslProg::Format::tessellationEval( const string &tessellation
 	return *this;
 }
 
-#endif // ! defined( CINDER_GL_ES )
+#endif // defined( CINDER_GL_HAS_TESS_SHADER )
+
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+
+GlslProg::Format& GlslProg::Format::compute( const DataSourceRef &dataSource )
+{
+	setShaderSource( dataSource, &mComputeShader, &mComputeShaderPath );
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::compute( const string &computeShader )
+{
+	setShaderSource( computeShader, &mComputeShader, &mComputeShaderPath );
+	return *this;
+}
+
+#endif // defined( CINDER_GL_HAS_COMPUTE_SHADER )
 
 void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string *shaderSourceDest, fs::path *shaderPathDest )
 {
@@ -430,7 +450,7 @@ GlslProg::~GlslProg()
 
 GlslProg::GlslProg( const Format &format )
 	: mUniformValueCache( nullptr )
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 		, mTransformFeedbackFormat( -1 )
 #endif
 {
@@ -455,15 +475,20 @@ GlslProg::GlslProg( const Format &format )
 		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER );
 	if( ! format.getFragment().empty() )
 		loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER );
-#if ! defined( CINDER_GL_ES )
+#if defined( CINDER_GL_HAS_GEOM_SHADER )
 	if( ! format.getGeometry().empty() )
 		loadShader( format.getGeometry(), format.mGeometryShaderPath, GL_GEOMETRY_SHADER );
+#endif
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 	if( ! format.getTessellationCtrl().empty() )
 		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER );
 	if( ! format.getTessellationEval().empty() )
 		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER );
 #endif
-    
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+	if( ! format.getCompute().empty() )
+		loadShader( format.getCompute(), format.mComputeShaderPath, GL_COMPUTE_SHADER );
+#endif    
     auto & userDefinedAttribs = format.getAttributes();
 	
 	bool foundPositionSemantic = false;
@@ -500,7 +525,7 @@ GlslProg::GlslProg( const Format &format )
 	if( ! foundPositionSemantic )
 		glBindAttribLocation( mHandle, 0, "ciPosition" );
 	
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	if( ! format.getVaryings().empty() && format.getTransformFormat() > 0 ) {
 		auto & userVaryings = format.getVaryings();
 		mTransformFeedbackVaryings.resize( format.getVaryings().size() );
@@ -526,14 +551,16 @@ GlslProg::GlslProg( const Format &format )
 	link();
 	
 	cacheActiveAttribs();
-#if ! defined( CINDER_GL_ES_2 )
+	cacheActiveUniforms();
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	if( ! format.getVaryings().empty() ) {
 		cacheActiveTransformFeedbackVaryings();
 	}
+#endif
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	cacheActiveUniformBlocks();
 #endif
-	cacheActiveUniforms();
-	
+
 	auto & userDefinedUniforms = format.getUniforms();
 	// check if the user thinks there's a uniform that isn't active
 	for( auto &userUniform : userDefinedUniforms ) {
@@ -757,7 +784,7 @@ void GlslProg::cacheActiveUniforms()
 #endif
 }
 
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 void GlslProg::cacheActiveUniformBlocks()
 {
 	GLint numActiveUniformBlocks = 0;
@@ -844,6 +871,9 @@ void GlslProg::cacheActiveUniformBlocks()
 	}
 }
 
+#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 void GlslProg::cacheActiveTransformFeedbackVaryings()
 {
 	GLint numActiveTransformFeedbackVaryings;
@@ -869,7 +899,7 @@ void GlslProg::cacheActiveTransformFeedbackVaryings()
 		}
 	}
 }
-#endif // ! defined( CINDER_GL_ES_2 )
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
 void GlslProg::bind() const
 {
@@ -984,45 +1014,79 @@ const GlslProg::Attribute* GlslProg::findAttrib( geom::Attrib semantic ) const
 	}
 	return ret;
 }
-	
+
 const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *resultLocation ) const
 {
-	const Uniform* ret = nullptr;
+	// first check if there is an exact name match with mUniforms and simply return it if we find one
 	for( const auto & uniform : mUniforms ) {
 		if( uniform.mName == name ) {
-			ret = &uniform;
-			break;
+			*resultLocation = uniform.mLoc;
+			return &uniform;
 		}
 	}
 
-	// support array brackets
-	size_t nameLeftSquareBracket = string::npos;
-	if( ret == nullptr ) { 
-		nameLeftSquareBracket = name.find( '[' );
-		for( const auto & uniform : mUniforms ) {
-			if( uniform.mName.substr( 0, uniform.mName.find( '[' ) ) == name.substr( 0, nameLeftSquareBracket ) ) {
-				ret = &uniform;
+	// search for array brackets, they need to be handled as a special case
+	size_t requestedNameLeftSquareBracket = name.find( '[' );
+	size_t requestedNameRightSquareBracket = ( requestedNameLeftSquareBracket != string::npos ? name.find( ']' ) : string::npos );
+
+	// if we didn't find an exact match, look for the array version in the active uniforms list
+	bool needsLocationOffset = false;
+	const Uniform* resultUniform = nullptr;	
+	for( const auto &uniform : mUniforms ) {
+		size_t activeUniformLeftSquareBracket = uniform.mName.find( '[' );
+		// skip match detection if this active uniform isn't an array
+		if( activeUniformLeftSquareBracket == string::npos )
+			continue;
+
+		string uniformBaseName = uniform.mName.substr( 0, activeUniformLeftSquareBracket );
+		if( requestedNameLeftSquareBracket == string::npos ) {
+			// name is non-indexed, try to match the uniform base name with the entire requested uniform name
+			if( uniformBaseName == name ) {
+				resultUniform = &uniform;
 				break;
 			}
 		}
+		else {
+			// try to find a match between the active uniform base name and the requested uniform's base name
+			if( uniformBaseName == name.substr( 0, requestedNameLeftSquareBracket ) ) {
+				// If the requested name is an array of structs and a struct member is part of it, make sure it matches the active uniform too
+				if( name.size() - 1 > requestedNameRightSquareBracket ) {
+					// try to match the struct member portion of each name
+					if( name.substr( requestedNameRightSquareBracket, name.size() ) == uniform.mName.substr( uniform.mName.find( ']' ), name.size() ) ) {
+						resultUniform = &uniform;
+						needsLocationOffset = true;
+						break;
+					}
+				}
+				else {
+					// the bases of the requested and active uniform match
+					resultUniform = &uniform;
+					needsLocationOffset = true;
+					break;
+				}
+			}
+		}
 	}
 
-	// if this is indexed uniform (example[2]) we need to parse out the '2' and add it to ret->mLoc
-	if( resultLocation ) {
-		if( nameLeftSquareBracket != string::npos ) {
+	if( resultUniform ) {
+		if( needsLocationOffset ) {
+			CI_ASSERT( requestedNameLeftSquareBracket != string::npos && requestedNameRightSquareBracket != string::npos );
+
+			// pull out the index and use it as an offset location for the resulting uniform
+			// the try / catch handles cases where the index is a non-number, in which case we don't have a match
 			try {
-				string indexStr = name.substr( nameLeftSquareBracket + 1, name.find( ']' ) - nameLeftSquareBracket - 1 );
-				*resultLocation = ret->mLoc + stoi( indexStr );
+				string indexStr = name.substr( requestedNameLeftSquareBracket + 1, requestedNameRightSquareBracket - requestedNameLeftSquareBracket - 1 );
+				*resultLocation = resultUniform->mLoc + stoi( indexStr );
 			}
-			catch( std::exception &exc ) {
-				CI_LOG_EXCEPTION( "Failed to parse index for uniform named: " << name, exc );
+			catch( std::logic_error &exc ) {
 				return nullptr;
 			}
 		}
-		else if( ret )
-			*resultLocation = ret->mLoc;
+		else
+			*resultLocation = resultUniform->mLoc;
 	}
-	return ret;
+	
+	return resultUniform;
 }
 
 const GlslProg::Uniform* GlslProg::findUniform( int location, int *resultLocation ) const
@@ -1073,7 +1137,7 @@ GLint GlslProg::getAttribLocation( const std::string &name ) const
         return -1;
 }
     
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 
 GlslProg::UniformBlock* GlslProg::findUniformBlock( const std::string &name )
 {
@@ -1152,7 +1216,10 @@ GLint GlslProg::getUniformBlockSize( GLint blockBinding ) const
 	else
 		return -1;
 }
-	
+
+#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 const GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( const std::string &name ) const
 {
 	const TransformFeedbackVaryings *ret = nullptr;
@@ -1174,8 +1241,9 @@ GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( co
 	}
 	return ret;
 }
-#endif // ! defined( CINDER_GL_ES_2 )
-	
+
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 bool GlslProg::checkUniformValueCache( const Uniform &uniform, int location, const void *val, int count ) const
 {
 	if( mUniformValueCache )
@@ -1187,7 +1255,7 @@ bool GlslProg::checkUniformValueCache( const Uniform &uniform, int location, con
 template<typename LookUp, typename T>
 inline void GlslProg::uniformImpl( const LookUp &lookUp, const T &data ) const
 {
-	int uniformLocation;
+	int uniformLocation = -1;
 	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
@@ -1200,7 +1268,7 @@ inline void GlslProg::uniformImpl( const LookUp &lookUp, const T &data ) const
 template<typename LookUp, typename T>
 inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T &data, bool transpose ) const
 {
-	int uniformLocation;
+	int uniformLocation = -1;
 	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
@@ -1213,7 +1281,7 @@ inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T &data, bool 
 template<typename LookUp, typename T>
 inline void	GlslProg::uniformImpl( const LookUp &lookUp, const T *data, int count ) const
 {
-	int uniformLocation;
+	int uniformLocation = -1;
 	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
@@ -1226,7 +1294,7 @@ inline void	GlslProg::uniformImpl( const LookUp &lookUp, const T *data, int coun
 template<typename LookUp, typename T>
 inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T *data, int count, bool transpose ) const
 {
-	int uniformLocation;
+	int uniformLocation = -1;
 	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
@@ -1845,7 +1913,7 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 		os << "\t\t Semantic: <" << gl::uniformSemanticToString( uniform.getUniformSemantic() ) << ">" << std::endl;
 	}
 	
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	os << "\tUniform Blocks: " << std::endl;
 	auto & uniformBlocks = rhs.getActiveUniformBlocks();
 	for( auto & uniformBlock : uniformBlocks ) {
@@ -1861,7 +1929,8 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 			os << "\t\t\t Semantic: <" << gl::uniformSemanticToString( uniform.getUniformSemantic() ) << ">" << std::endl;
 		}
 	}
-	
+#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	os << "\tTransform Feedback Varyings: " << std::endl;
 	auto & feedbackVaryings = rhs.getActiveTransformFeedbackVaryings();
 	for( auto & varying : feedbackVaryings ) {
@@ -1869,7 +1938,7 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 		os << "\t\t Type: " << gl::constantToString( varying.getType() ) << std::endl;
 		os << "\t\t Count: " << varying.getCount() << std::endl;
 	}
-#endif
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	return os;
 }
 
@@ -1882,10 +1951,15 @@ GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint shaderType
 	switch( shaderType ) {
 		case GL_VERTEX_SHADER:			typeString = "VERTEX: "; break;
 		case GL_FRAGMENT_SHADER:		typeString = "FRAGMENT: "; break;
-#if ! defined( CINDER_GL_ES )
+#if defined( CINDER_GL_HAS_GEOM_SHADER )
 		case GL_GEOMETRY_SHADER:		typeString = "GEOMETRY: "; break;
+#endif
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 		case GL_TESS_CONTROL_SHADER:	typeString = "TESSELLATION CONTROL: "; break;
 		case GL_TESS_EVALUATION_SHADER:	typeString = "TESSELLATION EVALUATION: "; break;
+#endif
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+		case GL_COMPUTE_SHADER:			typeString = "COMPUTE: "; break;
 #endif
 		default:						typeString = "UNKNOWN: ";
 	}
