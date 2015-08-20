@@ -922,12 +922,25 @@ class GuideConfig(object):
         self.order = None
         if config_data["subnav"]:
             for index, subnav in enumerate(config_data["subnav"]):
+                subnav_obj = {}
                 link_data = LinkData(os.path.join(path, subnav["link"]), subnav["label"])
+                local_subnav = None
 
                 # find order of file in group
                 if re.match(file_name, subnav["link"]):
                     self.order = index
-                subnav_list.append(link_data)
+
+                    # find subnav for the matched/current page if it has it
+                    if subnav.get("subnav"):
+                        local_subnav = self.parse_subnav(path, subnav["subnav"])
+
+                subnav_obj["link_data"] = link_data
+                subnav_obj["length"] = 0
+                if local_subnav:
+                    subnav_obj["length"] = len(local_subnav)
+                    subnav_obj["subnav"] = local_subnav
+
+                subnav_list.append(subnav_obj)
 
         self.subnav = subnav_list
 
@@ -948,6 +961,26 @@ class GuideConfig(object):
             self.see_also_label = config_data["seealso"]["label"]
             for ci in config_data["seealso"]["dox"]:
                 self.see_also_tags.append(ci)
+
+
+    # recursively parse subnav
+    def parse_subnav(self, path, subnav):
+        nav = []
+        for menu in subnav:
+            subnav_obj = {}
+            link_data = LinkData(os.path.join(path, menu["link"]), menu["label"])
+            local_subnav = None
+            if menu.get("subnav"):
+                local_subnav = self.parse_subnav(path, menu["subnav"])
+
+            subnav_obj["link_data"] = link_data
+            subnav_obj["length"] = 0
+            if local_subnav:
+                subnav_obj["length"] = len(local_subnav)
+                subnav_obj["subnav"] = local_subnav
+
+            nav.append(subnav_obj);
+        return nav
 
 
 class LinkData(object):
@@ -2326,8 +2359,12 @@ def parse_config(path, file_name):
     if os.path.exists(config_path):
         # load and turn into GuideConfig object
         with open(config_path) as data_file:
-            config_data = json.load(data_file)
-            guide_config = GuideConfig(config_data, path, file_name)
+            try:
+                config_data = json.load(data_file)
+                guide_config = GuideConfig(config_data, path, file_name)
+            except Exception as e:
+                log(str(e), 2)
+                raise
         return guide_config
     else:
         return None
@@ -3112,21 +3149,15 @@ def render_template(path, content):
     content_renderer.search_dirs.append(TEMPLATE_PATH)
     output = content_renderer.render_path(path, content)
 
-    # print "RENDERED:"
-    # print rendered_content
-
     # step 2: place rendered content into main template
     # - should have the following custom partials:
     #   - page title (define in object for page templates)
     #   - page content (rendered page content)
     #   - any other common partials that may lie outside the basic content area
 
-
-
     # loader = Loader()
     # template = loader.read("title")
     # title_partial = loader.load_name(os.path.join(CLASS_TEMPLATE_DIR, "title"))
-
 
     # except Exception as exc:
     #     print "\t**--------------------------------"

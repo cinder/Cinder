@@ -156,6 +156,13 @@ An &lt;a href=&quot;../../classcinder_1_1gl_1_1_fbo.html&quot;&gt;Fbo&lt;/a&gt; 
 	...
 &lt;/head&gt;
 </code></pre>
+
+			<p>If you want your guide to link from all classes in a namespace, you can simply specify the just the namespace. This is useful for broad guides pertaining to bigger topics, like audio.</p>
+&lt;head&gt;
+	...
+	&lt;ci seealso dox=&quot;cinder::audio&quot; label=&quot;Audio in Cinder&quot;&gt;&lt;/ci&gt;
+	...
+&lt;/head&gt;
 			
 			<p>Once those specific class reference pages are generated, a link to the guide will appear in the class detail side bar under "Related Links".
 			 <img class="shadow center" src="images/related_links.png" />
@@ -246,7 +253,10 @@ An &lt;a href=&quot;../../classcinder_1_1gl_1_1_fbo.html&quot;&gt;Fbo&lt;/a&gt; 
 			<p>Note: Due to file system security measures, WebGL samples that rely on asset loading will not show up when viewing your guide via the file system. You will have to spin up a local server to view it, which should be pretty common if you are writing WebGL in the first place.</p>
 		</section>
 
-		
+		<section>
+			<h3>Running the Generation Script</h3>
+			<p>Generating all of the docs takes a few minutes, which can be a hassle when testing out a specific guide. Here are a few tips for running generateDocs.py</p>
+		</section>
 		
 		<!-- //////////////////// END CONTENT //////////////////// -->
 
