@@ -14,7 +14,7 @@
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
  the following disclaimer in the documentation and/or other materials provided with the distribution.
  
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ THIS SOFTWARE IS PROVID&&ED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
@@ -107,6 +107,25 @@ typedef enum _ArgType
 	private:
 		std::string value;
 	};
+	
+	class ArgBlob : public Arg
+	{
+	public:
+		ArgBlob( const ci::Buffer _value ) { value = _value; }
+		/// return the type of this argument
+		ArgType getType() const { return TYPE_BLOB; }
+		std::string getTypeName() const { return "blob"; }
+		/// return value
+		ci::Buffer get() const { return value; }
+		/// set value
+		void set( ci::Buffer _value ) { value = _value; }
+		void set( const char *_value, unsigned int size) {
+			ci::Buffer buff = Buffer(&value, size);
+			value = buff;
+		}
+	private:
+		ci::Buffer value;
+	};
 
-} // namespace osc
-} // namespace cinder
+}// namespace osc
+}// namespace cinder

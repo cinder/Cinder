@@ -77,26 +77,34 @@ float Message::getArgAsFloat(int index, bool typeConvert) const{
 		else
 			throw OscExcInvalidArgumentType();
 	}else
-        return ((ArgFloat*)args[index])->get();
+		return ((ArgFloat*)args[index])->get();
 }
 
 std::string Message::getArgAsString( int index, bool typeConvert ) const{
-    if (getArgType(index) != TYPE_STRING ){
-	    if (typeConvert && (getArgType(index) == TYPE_FLOAT) ){
-            char buf[1024];
-            sprintf(buf,"%f",((ArgFloat*)args[index])->get() );
-            return std::string( buf );
-        }
-	    else if (typeConvert && (getArgType(index) == TYPE_INT32)){
-            char buf[1024];
-            sprintf(buf,"%i",((ArgInt32*)args[index])->get() );
-            return std::string( buf );
-        }
-        else
-            throw OscExcInvalidArgumentType();
+	if (getArgType(index) != TYPE_STRING ){
+		if (typeConvert && (getArgType(index) == TYPE_FLOAT) ){
+			char buf[1024];
+			sprintf(buf,"%f",((ArgFloat*)args[index])->get() );
+			return std::string( buf );
+		}
+		else if (typeConvert && (getArgType(index) == TYPE_INT32)){
+			char buf[1024];
+			sprintf(buf,"%i",((ArgInt32*)args[index])->get() );
+			return std::string( buf );
+		}
+		else
+			throw OscExcInvalidArgumentType();
 	}
 	else
-        return ((ArgString*)args[index])->get();
+		return ((ArgString*)args[index])->get();
+}
+
+ci::Buffer Message::getArgAsBlob(int index, bool typeConvert) const{
+	if (getArgType(index) != TYPE_BLOB){
+		//TODO: handle typeConvert
+		throw OscExcInvalidArgumentType();
+	}else
+		return ((ArgBlob*)args[index])->get();
 }
 
 void Message::addIntArg( int32_t argument ){
@@ -109,6 +117,10 @@ void Message::addFloatArg( float argument ){
 
 void Message::addStringArg( std::string argument ){
 	args.push_back( new ArgString( argument ) );
+}
+
+void Message::addBlobArg( const ci::Buffer &argument ){
+	args.push_back( new ArgBlob( argument ) );
 }
 	
 Message& Message::copy( const Message& other ){
@@ -128,6 +140,8 @@ Message& Message::copy( const Message& other ){
 			args.push_back( new ArgFloat( other.getArgAsFloat( i ) ) );
 		else if ( argType == TYPE_STRING )
 			args.push_back( new ArgString( other.getArgAsString( i ) ) );
+		else if( argType == TYPE_BLOB)
+			args.push_back(new ArgBlob( other.getArgAsBlob(i)));
 		else
 		{
 			throw OscExcInvalidArgumentType();

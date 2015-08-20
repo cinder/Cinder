@@ -47,7 +47,7 @@ typedef std::int64_t	int64;
 typedef std::uint64_t	uint64;
 typedef std::int32_t	int32;
 typedef std::uint32_t	uint32;
-
+typedef std::uint8_t    uint8;
 /*
 #if defined(__BORLANDC__) || defined(_MSC_VER)
 
@@ -226,7 +226,7 @@ struct Symbol{
 struct Blob{
     Blob() {}
     explicit Blob( const void* data_, osc_bundle_element_size_t size_ )
-            : data( data_ ), size( size_ ) {}
+    : data( data_ ), size( size_ ) {}
     const void* data;
     osc_bundle_element_size_t size;
 };
