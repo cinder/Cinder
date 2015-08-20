@@ -7,8 +7,9 @@
    <ci seealso dox="cinder::audio" label="Audio in Cinder"></ci>
 </head>
 <body>
+   <h1>Audio in Cinder</h1>
    <div class="contents">
-   <div class="toc">
+   <!-- <div class="toc">
       <h3>Table of Contents</h3>
       <ul>
          <li class="level1"><a href="#design">Design</a></li>
@@ -49,12 +50,12 @@
             </ul>
          </li>
       </ul>
-   </div>
+   </div> -->
    <div class="textblock">
       <p>This document provides an overview of the audio capabilities in cinder. You can use this, along with the samples in the <em>samples/_audio</em> folder, as an entry point into the <ci kind="namespace" dox="ci::audio">ci::audio</ci> namespace.</p>
-      <h1><a class="anchor" id="design"></a>
+      <h2><a class="anchor" id="design"></a>
          Design
-      </h1>
+      </h2>
       <p>The <code>ci::audio</code> namespace consists of a few different components and layers of abstraction:</p>
       <div class="image">
          <img src="images/audio_layers.png" alt="audio_layers.png"/>
@@ -65,9 +66,9 @@
       <p>For those looking for raw dsp functionality, the <ci>ci::audio::dsp</ci> namespace contains a range of high performance tools for most audio processing tasks. They are used by the available <ci dox="audio::Node">Node</ci>s and provide building blocks for custom <ci dox="audio::Node">Node</ci> classes or any other audio processing purposes.</p>
       <h3>Note on code snippets</h3>
       <p>For the sake of trying to keep the code snippets short, it is assumed that the code is in a .cpp file and there is a <code>using namespace ci;</code> within scope, so the <code>ci::</code> qualifier has been dropped.</p>
-      <h1><a class="anchor" id="voice"></a>
+      <h2><a class="anchor" id="voice"></a>
          Voice - simple audio file or callback player
-      </h1>
+      </h2>
       <p>For those who need only to play back a sound file or want a simple processing function, you may not need to look further than what is provided in the <ci dox="ci::audio::Voice">Voice</ci> API. <code>Voice</code>s are high level objects that sit above the modular system, managing a small chain of <ci>audio::Node</ci>s that perform the necessary processing. They are meant to require little work on the user's part, so you don't need to worry about things like what the playback samplerate is or to what hardware device audio is sent, at the cost of less flexibility.</p>
       <p>The following is an example of how to play a sound file with an <code>audio::Voice</code> (Details about how to load sound files will be explained in the section on <a class="el" href="#read_audio">SourceFile and SamplePlayerNode</a>):</p>
 <pre><code class="language-cpp">
@@ -121,9 +122,9 @@ void MyApp::mouseDown( app::MouseEvent event )
          <li><a href="https://github.com/cinder/Cinder/blob/master/samples/_audio/VoiceBasic/src/VoiceBasicApp.cpp">VoiceBasic</a></li>
          <li><a href="https://github.com/cinder/Cinder/blob/master/samples/_audio/VoiceBasicProcessing/src/VoiceBasicProcessingApp.cpp">VoiceBasicProcessing</a></li>
       </ul>
-      <h1><a class="anchor" id="audio_buffers"></a>
+      <h2><a class="anchor" id="audio_buffers"></a>
          Audio Buffers
-      </h1>
+      </h2>
       <p>Before jumping into the meat and potatoes, its a good idea to be introduced to <ci>audio::Buffer</ci>, the class used for passing audio samples around in <code>ci::audio</code>. Audio data is most commonly handled in two different manners:</p>
       <ol type="1">
          <li>a contiguous stream of 'blocks' of equal length, which is how real-time processing is achieved.</li>
@@ -137,9 +138,9 @@ void MyApp::mouseDown( app::MouseEvent event )
       <p>In all <code>Buffer</code> variants, you can get at the actual data store with the <code>Buffer::getData()</code> method, which returns a pointer to an array and can be used however the user wishes, provided they understand the buffer layout.</p>
       <h3>Resizing</h3>
       <p>The standard <code>Buffer</code> class is not resizable once constructed. However, sometimes it is necessary or more efficient to resize a buffer after construction, which is facilitated by the <code>BufferDynamic*</code> variants. <code>BufferDynamic</code> has the methods, <code>setNumFrames()</code>, <code>setNumChannels()</code>, and <code>setSize()</code> (for both frames and channels at the same time), which will realloc the internal data store if required. If the new size (frames * channels) is smaller or equal to the previous size, no reallocation will occur - by default <code>BufferDynamic</code> will only grow in order to prevent runtime reallocations where possible. If you would like to free up extra space, you can use the provided <code>shrinkToFit()</code> method.</p>
-      <h1><a class="anchor" id="modular"></a>
+      <h2><a class="anchor" id="modular"></a>
          Modular API
-      </h1>
+      </h2>
       <p>At the core of the <code>ci::audio</code> architecture is a modular, Node-based system that allows you to interconnect audio building blocks, such as sample players, waveform generators or effects, in a flexible manner appropriate to a specific application. A large influence of cinder's design comes from the <a href="http://webaudio.github.io/web-audio-api/">Web Audio spec</a> and for those interested, it has a fantastic introduction to <a href="http://webaudio.github.io/web-audio-api/#modular-routing">modular routing</a> and the motivations behind it.</p>
 
       <h2><a class="anchor" id="context"></a>
@@ -445,9 +446,9 @@ mSamplePlayer >> mChannelRouter->route( 0, 5 );
          <li><a href="https://github.com/cinder/Cinder/blob/master/samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp">NodeAdvanced</a></li>
          <li><a href="https://github.com/cinder/Cinder/blob/master/samples/_audio/DelayFeedback/src/DelayFeedbackApp.cpp">DelayFeedback</a></li>
       </ul>
-      <h1><a class="anchor" id="param"></a>
+      <h2><a class="anchor" id="param"></a>
          Param - sample accurate audio parameters
-      </h1>
+      </h2>
       <p>Many of the <code>Node</code>s contain parameters that are controllable over time, or in other words they are animatable. In some situations this is necessary to avoid pops in the audio signal, while it always allows for much creative freedom. This is achieved with the <ci>audio::Param</ci> class, allowing you to apply or append 'Event's (the audio equivilant to a <code>ci::Tween</code>) that are then interpreted at a sample-accurate rate.</p>
       <p>For example, the following connects up a simple audio graph containing a <code>GenSineNode</code> and <code>GainNode</code>, and then ramps the parameters on each:</p>
 <pre><code class="language-cpp">
@@ -469,9 +470,9 @@ mGain->getParam()->applyRamp( 0, 1.5f, options );
 </code></pre>
       <!-- fragment -->
 
-      <h1><a class="anchor" id="nodes_voices"></a>
+      <h2><a class="anchor" id="nodes_voices"></a>
          Accessing the Nodes within a Voice
-      </h1>
+      </h2>
       <p>Now that we've covered how <code>Voice</code>s work as a high level audio object controller and <code>Node</code>s work within a modular system, here is some information on how <code>Voice</code>s use a composition of <code>Node</code>s to do their work and the interface available for custom routing of a <code>Voice</code>'s output.</p>
       <h2><a class="anchor" id="voice_nodes"></a>
          How a Voice manages its Nodes
@@ -498,19 +499,19 @@ mVoice->getOutputNode() >> mMonitor >> audio::master()->getOutput();
 </code></pre>
       <!-- fragment -->
 
-      <h1><a class="anchor" id="platform_specific"></a>
+      <h2><a class="anchor" id="platform_specific"></a>
          Platform Specific Notes
-      </h1>
-      <h2><a class="anchor" id="ios_specific"></a>
+      </h2>
+      <h3><a class="anchor" id="ios_specific"></a>
          iOS
-      </h2>
+      </h3>
       <p>The iOS simulator has many problems related to hardware, rendering it quite useless for developing or testing projects with audio. Instead, build for mac desktop when dev'ing and iOS for testing, the two platforms are nearly identical with respect to audio.</p>
-      <h1><a class="anchor" id="other"></a>
+      <h2><a class="anchor" id="other"></a>
          Other
-      </h1>
-      <h2><a class="anchor" id="Tests"></a>
-         Tests
       </h2>
+      <h3><a class="anchor" id="Tests"></a>
+         Tests
+      </h3>
       <p>While the samples demonstrate many of the techniques and tools available in a straightfoward manner, there are more exhaustive test applications for each of the various components. They are currently organized into platform-specifc workspaces:</p>
       <ul>
          <li>mac: test/_audio/Audio2Test.xcworkspace</li>
