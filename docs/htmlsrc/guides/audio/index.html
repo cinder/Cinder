@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
    <head>
       <title>Audio Api Guide</title>
@@ -44,7 +45,7 @@
          
          <p>A modular API is advantagous because it is proven to be very flexible and allows for reusability without a significant loss in performance. Still, higher level constructs exist and more will be added as time permits. The Cinder philosophy remains, "easy things easy and hard things possible."</p>
 
-         <p>For those looking for raw dsp functionality, the <ci>ci::audio::dsp</ci> namespace contains a range of high performance tools for most audio processing tasks. They are used by the available <ci dox="audio::Node">Node</ci>s and provide building blocks for custom <ci dox="audio::Node">Node</ci> classes or any other audio processing purposes. </p>
+         <p>For those looking for raw dsp functionality, the <ci>ci::audio::dsp</ci> namespace contains a range of high performance tools for most audio processing tasks. They are used by the available <ci dox="audio::Node">Node</ci>s and provide building blocks for custom <ci dox="audio::Node">Node</ci> classes or any other audio processing purposes.</p>
 
          <h3>Note on code snippets</h3>
          <p>For the sake of trying to keep the code snippets short, it is assumed that the code is in a .cpp file and there is a <code>using namespace ci;</code> within scope, so the <code>ci::</code> qualifier has been dropped.</p>
@@ -130,7 +131,7 @@ void MyApp::mouseDown( app::MouseEvent event )
          <h3>Layout</h3>
          <p>The standard <code>Buffer</code> class used when passing audio between different components stores its channels contiguously (non-interleaved). This means that right after channel 0 (ex. left speaker) ends, the next sample in the internal array is the first sample of channel 1 (ex. right speaker). For convenience, the <code>Buffer::getChannel( size_t )</code> method with return a float* offset to the provided channel index, and also does some debug assertions that the index is in bounds. In the rare cases that interleaved audio is required (ex. interfacing with third-party or system level API's), there is a <code>BufferInterleaved</code> variant.</p>
 
-         <p>Currently all processing is handled in single floating point precision. However, the Buffer class is actually a typedef'ed <code>BufferT&lt;float&gt;</code>, so if a different sample format is required, one can use the BufferT class directly and provide the sample type. While this is not directly interchangeable with public interfaces in the <code>ci::audio</code> namespace, there are conversion utilities provided in <a href ="https://github.com/cinder/Cinder/blob/master/include/cinder/audio/dsp/Converter.h" >cinder/audio/dsp/Converter.h</a href = >.<n all <code>Buffer</code> variants, you can get at the actual data store with the <code>Buffer::getData()</code> method, which returns a pointer to an array and can be used however the user wishes, provided they understand the buffer layout.</p>
+         <p>Currently all processing is handled in single floating point precision. However, the Buffer class is actually a typedef'ed <code>BufferT&lt;float&gt;</code>, so if a different sample format is required, one can use the BufferT class directly and provide the sample type. While this is not directly interchangeable with public interfaces in the <code>ci::audio</code> namespace, there are conversion utilities provided in <a href ="https://github.com/cinder/Cinder/blob/master/include/cinder/audio/dsp/Converter.h" >cinder/audio/dsp/Converter.h</a>. In all <code>Buffer</code> variants, you can get at the actual data store with the <code>Buffer::getData()</code> method, which returns a pointer to an array and can be used however the user wishes, provided they understand the buffer layout.</p>
 
          <h3>Resizing</h3>
          <p>The standard <code>Buffer</code> class is not resizable once constructed. However, sometimes it is necessary or more efficient to resize a buffer after construction, which is facilitated by the <code>BufferDynamic*</code> variants. <code>BufferDynamic</code> has the methods, <code>setNumFrames()</code>, <code>setNumChannels()</code>, and <code>setSize()</code> (for both frames and channels at the same time), which will realloc the internal data store if required. If the new size (frames * channels) is smaller or equal to the previous size, no reallocation will occur - by default <code>BufferDynamic</code> will only grow in order to prevent runtime reallocations where possible. If you would like to free up extra space, you can use the provided <code>shrinkToFit()</code> method.</p>
@@ -599,7 +600,7 @@ mVoice->getOutputNode() >> mMonitor >> audio::master()->getOutput();
          </ul>
          <p>These are meant to be more for feature and regression testing than anything else, but they may also be a useful way to see the entire breadth of the available functionality. </p>
          
-<pre class="lang-cpp"><code>
+<pre><code class="lang-cpp">
 gl::clear( Color( 0, 0, 0 ) );
 gl::setMatricesWindowPersp( getWindowSize() );
 gl::enableDepthRead();
