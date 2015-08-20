@@ -112,6 +112,7 @@ pre > code
 	
 pre[class*="language-"]
 	margin: 1em 0
+	padding: 0.25em .5em
 
 code[class*="language-"]
 	padding: 0
@@ -273,7 +274,6 @@ code[class*="language-"]
 		margin-bottom: 50px
 
 	img.shadow
-		img-base()
 		box-shadow: rgba(0,0,0,0.5) 0 10px 20px
 		
 	
@@ -342,6 +342,46 @@ code[class*="language-"]
 	ul.master-class-list
 		column-count: 4
 		column-gap: 50px
+		
+
+	.cols-2
+		width: 100%
+		margin: 25px 0
+		clearfix()
+		
+		.col
+			position: relative;
+			width: 50%
+			float: left;
+			padding-left: 0.9375rem;
+			padding-right: 0.9375rem;
+    
+		
+			&:first-child
+				padding-left: 0
+			
+			&:last-child
+				padding-right: 0
+				
+			> *
+				margin-top: 0
+	
+
+	@media (max-width: 960px)
+	
+		.cols-2
+			.col
+				width: 100%
+				
+				&:first-child
+					padding-left: 0.9375rem
+				
+				&:last-child
+					padding-right: 0.9375rem
+				
+				> *
+					margin-top: inherit
+		
 
 
 
