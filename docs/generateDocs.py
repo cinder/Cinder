@@ -924,14 +924,15 @@ class GuideConfig(object):
             for index, subnav in enumerate(config_data["subnav"]):
                 subnav_obj = {}
                 link_data = LinkData(os.path.join(path, subnav["link"]), subnav["label"])
+                local_subnav = None
 
                 # find order of file in group
                 if re.match(file_name, subnav["link"]):
                     self.order = index
 
-                local_subnav = None
-                if subnav.get("subnav"):
-                    local_subnav = self.parse_subnav(path, subnav["subnav"])
+                    # find subnav for the matched/current page if it has it
+                    if subnav.get("subnav"):
+                        local_subnav = self.parse_subnav(path, subnav["subnav"])
 
                 subnav_obj["link_data"] = link_data
                 subnav_obj["length"] = 0
