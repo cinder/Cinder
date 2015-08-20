@@ -365,6 +365,8 @@ body#guide-contents img.shadow {
   -webkit-box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
   box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
 }
+#container figure.center,
+body#guide-contents figure.center,
 #container img.center,
 body#guide-contents img.center {
   display: block;
@@ -382,6 +384,10 @@ body#guide-contents img.rounded {
   margin-bottom: 50px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
+}
+#container figure > img,
+body#guide-contents figure > img {
+  margin-bottom: 1em;
 }
 #container .contents section > ul > li,
 body#guide-contents .contents section > ul > li {
