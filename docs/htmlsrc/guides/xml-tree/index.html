@@ -58,7 +58,7 @@
             To parse XML contained in a string: 
          </p>
          <pre><code class="language-cpp">
-std::string myXmlStr( &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n&lt;library&gt;\n&lt;owne...&quot;
+std::string myXmlStr( &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n&lt;library&gt;\n&lt;owne&hellip;&quot;
 XmlTree doc( myXmlStr );</code></pre>
          <!-- fragment -->
          <p> <br />
@@ -74,7 +74,7 @@ XmlTree musicLibrary = doc.getChild( &quot;library&quot; );</code></pre>
          </p>
          
          <pre><code class="language-cpp">
-std::string myXmlStr( '&lt;?xml version=&quot;1.0&quot;?&gt; &lt;library&gt;&lt;owne...' );
+std::string myXmlStr( '&lt;?xml version=&quot;1.0&quot;?&gt; &lt;library&gt;&lt;owne&hellip;' );
 XmlTree doc( myXmlStr );</code></pre>
 
          <!-- fragment -->
@@ -82,7 +82,7 @@ XmlTree doc( myXmlStr );</code></pre>
             XmlTree also supports finding children by path, where each component of the path is separated by the <code>/</code> character. For example: 
          </p>
          <pre><code class="language-cpp">
-   console() &lt;&lt; musicLibrary.getChild( &quot;owner/city&quot; ) &lt;&lt; std::endl;</code></pre>
+console() &lt;&lt; musicLibrary.getChild( &quot;owner/city&quot; ) &lt;&lt; std::endl;</code></pre>
 
          <!-- fragment -->
          <p><em>Output:</em></p>
@@ -93,8 +93,7 @@ XmlTree doc( myXmlStr );</code></pre>
          </p>
          <pre><code class="language-cpp">
 XmlTree ownerCity = doc.getChild( &quot;library/owner/city&quot; );
-console() &lt;&lt; &quot;Path: &quot; &lt;&lt; ownerCity.getPath() &lt;&lt; &quot;  Value: &quot; &lt;&lt; ownerCity.getValue() &lt;&lt; std::endl;
-         </code></pre>
+console() &lt;&lt; &quot;Path: &quot; &lt;&lt; ownerCity.getPath() &lt;&lt; &quot;  Value: &quot; &lt;&lt; ownerCity.getValue() &lt;&lt; std::endl;</code></pre>
 
          <!-- fragment -->
          <p> <em>Output:</em> </p>
@@ -117,8 +116,7 @@ Tag: title  Value: Ole Coltrane
 Tag: track  Value: Ole
 Tag: track  Value: Dahomey Dance
 Tag: track  Value: Aisha
-Tag: track  Value: To Her Ladyship\endcode
-         </code></pre>
+Tag: track  Value: To Her Ladyship\endcode</code></pre>
 
          <!-- fragment -->
          <p> <br />
@@ -147,9 +145,9 @@ Wolf</code></pre>
          <h3>Values &amp; Attributes</h3>
          <p>As we've already seen, you can get the tag (or name) of a node by calling <ci dox="XmlTree::getTag">getTag()</ci>. To get the value of a node as a string use <ci dox="XmlTree::getValue">getValue()</ci>. As an additional convenience, you can have XmlTree parse a string for you for any type which supports the istream&gt;&gt; operator. For example, if you know the nodes' values are floats, you might do this: </p>
          <pre><code class="language-cpp">
-vector<float> myFloats;
+vector&lt;float&gt; myFloats;
 for( XmlTree::Iter item = xml.begin(); item != xml.end(); ++item )
-    myFloats.push_back( item->getValue<float>() );</code></pre>
+    myFloats.push_back( item-&gt;getValue&lt;float&gt;() );</code></pre>
 
          <!-- fragment -->
          <p> <br />
@@ -165,15 +163,15 @@ console() << "the musician is: " << firstAlbum.getAttributeValue( "musician" ) <
          </p>
          <pre><code class="language-cpp">
 XmlTree firstTrack = doc.getChild( "library/album/track" );
-int firstTrackId = myNode.getAttributeValue<int>( "id" );
-         </code></pre>
+int firstTrackId = myNode.getAttributeValue&lt;int&gt;( "id" );
+</code></pre>
 
          <!-- fragment -->
          <p> <br />
             As an additional convenience, you can supply a default value in the case that a node does not have a particular attribute. If we wanted our default size to be 1 for nodes which do not posses a size attribute, we would do this: 
          </p>
          <pre><code class="language-cpp">
-float mySize = myNode.getAttributeValue<float>( "size", 1.0f );</code></pre>
+float mySize = myNode.getAttributeValue&lt;float&gt;( "size", 1.0f );</code></pre>
 
          <!-- fragment -->
          <p> <br /></p>
@@ -200,7 +198,7 @@ console() << library << std::endl;</code></pre>
       <title>Seven Swans</title>
       <track>All the Trees of the Field Will Clap Their Hands</track>
       <track>The Dress Looks Nice on You</track>
-      <track>In the Devil&apos;s Territory</track>
+      <track>In the Devil's Territory</track>
       <track>To Be Alone With You</track>
    </album>
 </library></code></pre>
@@ -219,7 +217,7 @@ library.write( writeFile( "~/musicOutput.xml" ) );</code></pre>
          <pre><code class="language-cpp">
 XmlTree doc = XmlTree::createDoc();
 XmlTree library( "library", "" );
-...
+&hellip;
 doc.push_back( library );
 console() << doc << std::endl;</code></pre>
 
@@ -241,7 +239,7 @@ const XmlTree& findTrackNamed( const XmlTree &library, const std::string &search
    throw XmlTree::ExcChildNotFound( library, searchTrack );
 }
 
-...
+&hellip;
 XmlTree doc( loadFile( "/Users/andrewfb/library.xml" ) );
 console() << findTrackNamed( doc.getChild( "library" ), "Wolf" ) << std::endl;</code></pre>
 
