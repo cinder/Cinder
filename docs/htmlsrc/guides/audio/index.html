@@ -204,7 +204,7 @@ mSine->enable();
 ctx->enable();
 </code></pre>
          
-         <p> It is important to note that enabling or disabling the Context controls the processing of the entire audio graph - no audio will be processed at all if it is off and 'audio time' will not progress, whether or not an individual <code>Node</code> is enabled. Not only can you use this to save on cpu / power when you need to, it is also a useful catch-all way to shut off the audio processing thread. On the flip side, <ci dox="ci::audio::Node::disable()" title="Disables the OpenGL State state. Equivalent to calling to glDisable( state );. "> disable()</a>ing an individual <code>Node</code> has no effect on any other <code>Node</code> - it effectly becomes a 'pass through' (though channel management, such as upmixing or downmixing, still must occur).</p>
+         <p> It is important to note that enabling or disabling the Context controls the processing of the entire audio graph - no audio will be processed at all if it is off and 'audio time' will not progress, whether or not an individual <code>Node</code> is enabled. Not only can you use this to save on cpu / power when you need to, it is also a useful catch-all way to shut off the audio processing thread. On the flip side, <ci dox="ci::audio::Node::disable()" title="Disables the OpenGL State state. Equivalent to calling to glDisable( state );. "> disable()</ci>ing an individual <code>Node</code> has no effect on any other <code>Node</code> - it effectly becomes a 'pass through' (though channel management, such as upmixing or downmixing, still must occur).</p>
 
          <p>The reason why the above is true is that, although <code>Node</code>s are (by convention) connected source &gt;&gt; destination, the actual processing follows the 'pull model', i.e. destination (recursively) pulls the source. The bulk of the work is done by <code>Node::pullInputs()</code>, which ultimately ends up calling the virtual <code>Node::process()</code> method with the <code>Buffer</code> that should be filled with processed audio.</p>
 
@@ -363,7 +363,7 @@ void MyApp::setup()
 <pre><code class="language-cpp">
 void MyApp::draw()
 {
-    const vector<float> &amp;magSpectrum = mMonitorSpectralNode->getMagSpectrum();
+    const vector&lt;float&gt; &amp;magSpectrum = mMonitorSpectralNode->getMagSpectrum();
 
     // draw the vector here...    
 }

@@ -401,6 +401,31 @@ body#guide-contents .contents section > ul > li {
 body#guide-contents .contents section > ul > li:nth-child(odd) {
   background: #f8f8f8;
 }
+#container .contents section > ul > li:nth-child(odd).expandable:hover,
+body#guide-contents .contents section > ul > li:nth-child(odd).expandable:hover {
+  -webkit-animation: fade-odd 1.5s;
+  -moz-animation: fade-odd 1.5s;
+  -o-animation: fade-odd 1.5s;
+  -ms-animation: fade-odd 1.5s;
+  animation: fade-odd 1.5s;
+}
+#container .contents section > ul > li.expandable,
+body#guide-contents .contents section > ul > li.expandable {
+  -webkit-transition: background 200ms;
+  -moz-transition: background 200ms;
+  -o-transition: background 200ms;
+  -ms-transition: background 200ms;
+  transition: background 200ms;
+  cursor: pointer;
+}
+#container .contents section > ul > li.expandable:hover,
+body#guide-contents .contents section > ul > li.expandable:hover {
+  -webkit-animation: fade-even 1.5s;
+  -moz-animation: fade-even 1.5s;
+  -o-animation: fade-even 1.5s;
+  -ms-animation: fade-even 1.5s;
+  animation: fade-even 1.5s;
+}
 #container .contents .definitionCol,
 body#guide-contents .contents .definitionCol {
   padding-right: 0;
@@ -476,6 +501,7 @@ body#guide-contents .cols-2 .col:last-child {
 #container .cols-2 .col > *,
 body#guide-contents .cols-2 .col > * {
   margin-top: 0;
+  max-width: 100%;
 }
 @media (max-width: 960px) {
   #container .cols-2 .col,
@@ -876,4 +902,68 @@ nav.top-bar .top-bar-section ul li:first-of-type a {
 }
 #nav_search > #search > #search-results > #search-results-view-all a:hover {
   color: #c64b24;
+}
+@-moz-keyframes fade-odd {
+  from {
+    background-color: #fff2de;
+  }
+  to {
+    background-color: #f8f8f8;
+  }
+}
+@-webkit-keyframes fade-odd {
+  from {
+    background-color: #fff2de;
+  }
+  to {
+    background-color: #f8f8f8;
+  }
+}
+@-o-keyframes fade-odd {
+  from {
+    background-color: #fff2de;
+  }
+  to {
+    background-color: #f8f8f8;
+  }
+}
+@keyframes fade-odd {
+  from {
+    background-color: #fff2de;
+  }
+  to {
+    background-color: #f8f8f8;
+  }
+}
+@-moz-keyframes fade-even {
+  from {
+    background-color: #fff2de;
+  }
+  to {
+    background-color: #fff;
+  }
+}
+@-webkit-keyframes fade-even {
+  from {
+    background-color: #fff2de;
+  }
+  to {
+    background-color: #fff;
+  }
+}
+@-o-keyframes fade-even {
+  from {
+    background-color: #fff2de;
+  }
+  to {
+    background-color: #fff;
+  }
+}
+@keyframes fade-even {
+  from {
+    background-color: #fff2de;
+  }
+  to {
+    background-color: #fff;
+  }
 }
