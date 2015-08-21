@@ -5,6 +5,7 @@
 	<link rel="stylesheet" href="../../_assets/css/foundation.css">
 	<link rel="stylesheet" href="../../_assets/css/cinder_docs.css">
 	<link rel="stylesheet" href="../../_assets/css/prism.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 <body id="guide-contents" >
 <h1>OpenGL in Cinder 0.9</h1>
@@ -219,17 +220,18 @@ Looking at our GLSL code above, you&rsquo;ll see a few distinctive things. First
 Similarly, there are automatically recognized vertex attributes; in the example above they are <code>ciPosition</code> and <code>ciColor</code>. In the case of <code>ciPosition</code>, this attribute is automatically supplied by our <ci>geom::Circle</ci>. <code>ciColor</code> is similar but has a unique caveat. If our <ci>geom::Source</ci> had supplied a color, the shader would have used it. However Cinder automatically supplies the global current color (set via <ci>gl::color()</ci>) in the absence of a per-vertex color. As an experiment, let&rsquo;s try slightly different geometry that does supply per-vertex color. If we change the <ci>gl::Batch</ci> assignment in <code>setup()</code> out like this:
 </p>
 
-<pre class="lang-cpp"><code>
-ColorAf green( 0, 1, 0 ), blue( 0, 0, 1 );
-mBatch = gl::Batch::create( geom::Rect().colors( green, green, blue, blue ).
-                        rect( Rectf( -15, -10, 15, 10 ) ), solidShader );
+<div class="cols-2">
+  <div class="col">
+<pre><code class="lang-cpp">
+Magic and wonder goes here
 </code></pre>
+  </div>
 
-<p>
-We see this:
-</p>
-<img src="rect_circle.png" />
-<br />
+  <div class="col">
+    <img class="shadow center" src="rect_circle.png" />
+  </div>
+</div>
+
 
 <p>
 Here we see the global color is ignored as <ci>geom::Rect</ci> has generated per-vertex colors upon our request. For the curious, this automatic variable uploading occurs in the <ci>gl::Batch::draw()</ci> call, and it can be invoked manually in advanced usage scenarios. Furthermore, there are mechanisms for manually configuring the mapping to attributes and uniforms in <ci dox="gl::GlslProg::Format">GlslProg::Format</ci> for users that have some reason to use a non - default configuration.

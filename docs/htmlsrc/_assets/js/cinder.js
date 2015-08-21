@@ -38,7 +38,8 @@ $(document).ready(function() {
  		var button = $('<button class="expand"></button>');
  		$this.prepend( button );
 
- 		button.on('click', function(){
+ 		// button.on('click', function(){
+ 		$this.on('click', function(){
  			$this.toggleClass('hidden');
  		}); 		
  		

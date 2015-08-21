@@ -3392,6 +3392,7 @@ if __name__ == "__main__":
 
     # Make sure we're compiling using pythong 2.7.6+
     version_info = sys.version_info
+
     #if version_info.major >= 2 and version_info.minor >= 7 and version_info.micro < 6:
     #    sys.exit("ERROR: Sorry buddy, you must use python 2.7.6+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
     # if sys.version
