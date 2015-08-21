@@ -1,88 +1,67 @@
-/*
-body
-	font-size: 16px
-	font-family: 'Merriweather', serif;
-
-p, ul, a
-	font-size: .9em
-	line-height: 1.8em
-
-a
-	color: cinder-orange
-
-	&#copy-button
-		color: #cccccc
-		text-decoration: none
-		font-size: 0.8em
-		
-		&.hover
-			text-decoration: underline
-
-*/
-.guide-content {
-  max-width: 680px;
+.path2d {
+  max-width: 960px;
   margin: 0 auto;
 }
-.guide-content ul#sketchLinks {
+.path2d ul#sketchLinks {
   list-style: none;
   padding: 0;
   background: #232323;
-  height: 100%;
+  height: auto;
   margin: 0;
 }
-.guide-content ul#sketchLinks li {
+.path2d ul#sketchLinks li {
   display: inline-block;
   padding: 0 12px;
 }
-.guide-content ul#sketchLinks a {
+.path2d ul#sketchLinks a {
   color: #e7e7e7;
   font-family: 'Open Sans', sans-serif;
   text-decoration: none;
   padding: 10px 0;
 }
-.guide-content ul#sketchLinks a:hover {
+.path2d ul#sketchLinks a:hover {
   color: #fff;
 }
-.guide-content ul#sketchLinks a.active {
-  border-bottom: 0.4em solid #c64b24;
+.path2d ul#sketchLinks a.active {
+  border-bottom: 0.4em solid #a41c12;
 }
-.guide-content .canvases {
+.path2d .canvases {
   position: relative;
 }
-.guide-content .canvases .left {
+.path2d .canvases .left {
   position: absolute;
   left: 10px;
   bottom: 10px;
 }
-.guide-content .canvases .right {
+.path2d .canvases .right {
   position: absolute;
   right: 10px;
   bottom: 10px;
 }
-.guide-content pre[class*="language-"] {
+.path2d pre[class*="language-"] {
   margin: 0;
 }
-.guide-content canvas {
+.path2d canvas {
   width: 100%;
   height: 340px;
   outline: #f5f2f0 solid 1px;
 }
-.guide-content .active {
+.path2d .active {
   display: block;
 }
-.guide-content .invisible,
-.guide-content .inactive {
+.path2d .invisible,
+.path2d .inactive {
   display: none;
 }
-.guide-content button {
+.path2d button {
   padding: 1em;
 }
-.guide-content #tutorial {
+.path2d #tutorial {
   margin-top: 3em;
 }
-.guide-content #tutorial button {
+.path2d #tutorial button {
   background: none;
-  border: 1px solid #c64b24;
+  border: 1px solid #a41c12;
   color: #c64b24;
   text-transform: uppercase;
   font-family: 'Open Sans', sans-serif;
@@ -90,175 +69,31 @@ a
   padding: 0.75em 1.5em;
   margin: 0;
 }
-.guide-content #tutorial button:hover {
-  background: #c64b24;
+.path2d #tutorial button:hover {
+  background: #a41c12;
   color: #fff;
 }
-.guide-content #tutorial button:focus {
+.path2d #tutorial button:focus {
   outline: none;
 }
-.guide-content #tutorial .dg.main {
+.path2d #tutorial .dg.main {
   position: absolute;
   top: 0;
   right: 10px;
 }
-.guide-content .codeModule {
+.path2d .codeModule {
   position: relative;
-  font-size: 0.75em;
   line-height: 1.5em;
 }
-.guide-content .codeModule a#copy-button {
+.path2d .codeModule a#copy-button {
   position: absolute;
   top: 5px;
   right: 10px;
 }
-.guide-content pre.language-cpp {
-  background: #f4f4f2;
-}
-.guide-content pre.language-cpp .function {
-  color: #c64b24;
-}
-.guide-content pre.language-cpp .number {
-  color: #c62469;
-}
-.guide-content #bottomNav {
+.path2d #bottomNav {
   margin: 20px 0;
   text-align: center;
 }
-.guide-content .sketch {
+.path2d .sketch {
   line-height: 0;
 }
-
-/* http://prismjs.com/download.html?themes=prism&languages=clike+c+cpp */
-/**
- * prism.js default theme for JavaScript, CSS and HTML
- * Based on dabblet (http://dabblet.com)
- * @author Lea Verou
- */
-
-code[class*="language-"],
-pre[class*="language-"] {
-	color: black;
-	text-shadow: 0 1px white;
-	font-family: Consolas, Monaco, 'Andale Mono', monospace;
-	direction: ltr;
-	text-align: left;
-	white-space: pre;
-	word-spacing: normal;
-	word-break: normal;
-	line-height: 1.75;
-
-	-moz-tab-size: 4;
-	-o-tab-size: 4;
-	tab-size: 4;
-
-	-webkit-hyphens: none;
-	-moz-hyphens: none;
-	-ms-hyphens: none;
-	hyphens: none;
-}
-
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-	text-shadow: none;
-	background: #b3d4fc;
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-	text-shadow: none;
-	background: #b3d4fc;
-}
-
-@media print {
-	code[class*="language-"],
-	pre[class*="language-"] {
-		text-shadow: none;
-	}
-}
-
-/* Code blocks */
-pre[class*="language-"] {
-	padding: 1em;
-	margin: .5em 0;
-	overflow: auto;
-}
-
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-	background: #f5f2f0;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-	padding: .1em;
-	border-radius: .3em;
-}
-
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
-	color: slategray;
-}
-
-.token.punctuation {
-	color: #999;
-}
-
-.namespace {
-	opacity: .7;
-}
-
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
-	color: #905;
-}
-
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
-	color: #690;
-}
-
-.token.operator,
-.token.entity,
-.token.url,
-.language-css .token.string,
-.style .token.string {
-	color: #a67f59;
-	background: hsla(0, 0%, 100%, .5);
-}
-
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-	color: #07a;
-}
-
-.token.function {
-	color: #DD4A68;
-}
-
-.token.regex,
-.token.important,
-.token.variable {
-	color: #e90;
-}
-
-.token.important {
-	font-weight: bold;
-}
-
-.token.entity {
-	cursor: help;
-}
-

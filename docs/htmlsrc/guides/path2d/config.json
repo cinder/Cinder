@@ -4,7 +4,7 @@
 		{
 			"keywords": ["path2d", "shape2d", "bezier", "curves", "path", "lines"]
 		},
-		"subnav":[
+		"nav":[
 			{
 				"label": "Part 1",
 				"link": "part1.html"

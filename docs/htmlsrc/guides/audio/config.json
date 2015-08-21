@@ -4,11 +4,11 @@
 		{
 			"keywords": ["guide, audio, music, voice, device, channel, gain, sound"]
 		},
-		"subnav":[
+		"nav":[
 			{
 				"label": "Audio In Cinder",
 				"link": "index.html",
-				"subnav":[
+				"pagenav":[
 					{
 						"label": "Design",
 						"link": "#design"

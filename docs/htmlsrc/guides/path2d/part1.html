@@ -1,35 +1,40 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html>
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>Path2d guide part 1</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width">
+        <!-- Update title -->
+        <title>Guide Title</title>
 
-        <!-- <ci seealso dox="ci::Path2d" label="Path2d Tutorial"></ci> -->
-        <!-- <ci seealso dox="ci::Shape2d" label="Path2d Tutorial"></ci> -->
-       
+        <!-- keywords used for searching -->
+        <meta name="keywords" content="guide">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- reference to Cinder classes -->
+        <!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+        <!-- master stylesheet - these links will be replaced when compiled -->
+        <link rel="stylesheet" href="../../_assets/css/foundation.css">
+        <link rel="stylesheet" href="../../_assets/css/prism.css">
+        <link rel="stylesheet" href="../../_assets/css/cinder_docs.css">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+        <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
         <link rel="stylesheet" href="path2d.css">
-
-        <!-- <link rel="stylesheet" href="css/prism.css"> -->
-        <!-- <link rel="stylesheet" href="../../_assets/css/cinder_docs.css"> -->
-
-        <!--[if lt IE 9]>
-            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-            <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
-        <![endif]-->
     </head>
-    <body>
-        <!--[if lt IE 7]>
-            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
-        <![endif]-->
-        <div class="guide-content">
 
-                <h1>Part 1: Path2d Basics</h1>
-                <p>A <ci dox="ci::Path2d">Path2D</ci> instance is constructed of points and <ci dox="cinder::Path2d::SegmentType" kind="enum">segments</ci> <ci dox="cinder::Path2d::SegmentType">segments</ci>.</p>
-                <p>A point refers to points where a line segment connects starts and ends as well as handles that define the curve of the path.</p>
-                <p>A segment refers to the line segment as defined by the points and handles. The types of segments are: 
+    <body id="guide-contents" >    
+
+        <!-- CONTENT STARTS HERE -->
+        <div class="path2d">
+            <h1>Part 1: Path2D Basics</h1>
+            
+                <h2>Introduction</h2>
+                <p>Cinder's Path2D API is one of Cinder's most powerful yet most underused utilities. This guide will walk through what a Path2D is from the nuts and bolts and work through some of the more advanced functions. Each part has an interactive portion with code snippets that you should be able to cut and paste into Cinder's draw function. You can use the templates and samples in<a href="#">this repo</a> to get started.
+                </p>
+
+                <h2>Points and Segments</h2>
+                <p>A <ci dox="ci::Path2d">Path2D</ci> instance is constructed of points and <ci dox="cinder::Path2d::SegmentType">segments</ci>. 
+                <p>A <strong>point</strong> refers to a 2D coordinate of where a line segment starts or ends as well as a coordinate of a handle that defines the curve of the path.</p>
+                <p>A <strong>segment</strong> refers to the line segment as defined as a result of the positions of the end points and handles. The <ci dox="ci::Path2d::SegmentType">types of segments</ci> are: 
                     <ul>
                         <li><strong>MOVETO</strong>: Consists of a single point to start or continue your drawing from. Every path must start with a MOVETO segment.</li>
                         <li><strong>LINETO</strong>: Consists of a single point which contructs a line from the previous point</li>
@@ -69,12 +74,15 @@
                     <a href="part2.html">Part 2: Drawing Functions</a> &raquo;
                 </div>
 
-
-                <script src="path2dpart1.js"></script>
-                                              
             </div>
-    </body>
-</html>
-
+                
         
-                    
+        <!-- END CONTENT -->
+
+        <!-- Scripts -->
+        <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+        <!-- Place additional scripts here (optional) -->
+        <script src="path2dpart1.js"></script>
+
+    </body>
+</html> 

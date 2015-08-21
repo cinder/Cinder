@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 """
  Copyright (c) 2015, The Cinder Project, All rights reserved.
 
@@ -10,7 +12,7 @@
 	the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
-
+z
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -20,11 +22,9 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 
- VERSION: 0.1
  AUTHOR: Greg Kepler | gkepler@gmail.com
 """
 
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 import sys
 import codecs
@@ -39,7 +39,7 @@ from datetime import datetime, timedelta
 from difflib import SequenceMatcher as SM
 
 # Third party in libs folder
-sys.path.append("libs")
+sys.path.append("libs/")
 from bs4 import BeautifulSoup, Tag, NavigableString, Comment
 from pystache.renderer import Renderer, Loader
 
@@ -885,7 +885,7 @@ class HtmlFileData(FileData):
 
         self.html_content = ""
         self.group = None
-        self.subnav = []
+        self.pagenav = []
 
         self.kind = "html"
         self.kind_explicit = self.kind
@@ -899,9 +899,9 @@ class HtmlFileData(FileData):
         content = dict(orig_content)
         template_content = {
             "html_content": self.html_content,
-            "subnav": {
-                "list": self.subnav,
-                "length": len(self.subnav)
+            "pagenav": {
+                "list": self.pagenav,
+                "length": len(self.pagenav)
             }
         }
         content.update(template_content)
@@ -920,29 +920,28 @@ class GuideConfig(object):
         # parse subnav
         subnav_list = []
         self.order = None
-        if config_data["subnav"]:
-            for index, subnav in enumerate(config_data["subnav"]):
+        if config_data["nav"]:
+            for index, nav in enumerate(config_data["nav"]):
                 subnav_obj = {}
-                link_data = LinkData(os.path.join(path, subnav["link"]), subnav["label"])
-                local_subnav = None
+                link_data = LinkData(os.path.join(path, nav["link"]), nav["label"])
+                subnav = None
 
                 # find order of file in group
-                if re.match(file_name, subnav["link"]):
+                if re.match(file_name, nav["link"]):
                     self.order = index
 
                     # find subnav for the matched/current page if it has it
-                    if subnav.get("subnav"):
-                        local_subnav = self.parse_subnav(path, subnav["subnav"])
+                    if nav.get("pagenav"):
+                        subnav = self.parse_subnav(path, nav["pagenav"])
 
                 subnav_obj["link_data"] = link_data
                 subnav_obj["length"] = 0
-                if local_subnav:
-                    subnav_obj["length"] = len(local_subnav)
-                    subnav_obj["subnav"] = local_subnav
+                if subnav:
+                    subnav_obj["length"] = len(subnav)
+                    subnav_obj["subnav"] = subnav
 
                 subnav_list.append(subnav_obj)
-
-        self.subnav = subnav_list
+        self.pagenav = subnav_list
 
         # add keywords
         keywords = []
@@ -961,7 +960,6 @@ class GuideConfig(object):
             self.see_also_label = config_data["seealso"]["label"]
             for ci in config_data["seealso"]["dox"]:
                 self.see_also_tags.append(ci)
-
 
     # recursively parse subnav
     def parse_subnav(self, path, subnav):
@@ -2210,7 +2208,7 @@ def process_html_file(in_path, out_path):
             search_tags.append(k)
 
         # plug in subnav data
-        file_data.subnav = config_data.subnav
+        file_data.pagenav = config_data.pagenav
 
     # get correct template for the type of file
     template = config.HTML_TEMPLATE
