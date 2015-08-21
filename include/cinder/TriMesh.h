@@ -79,7 +79,7 @@ class TriMesh : public geom::Source {
 	static Format		formatFromSource( const geom::Source &source );
 	
 	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
-	geom::Source*	clone() const { return new TriMesh( *this ); }
+	geom::Source*	clone() const override { return new TriMesh( *this ); }
 	
 	void		clear();
 	
