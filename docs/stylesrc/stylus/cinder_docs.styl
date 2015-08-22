@@ -5,7 +5,6 @@ global-reset()
 // vars
 left-col-width = 300px
 
-
 // animations 
 @keyframes fade-odd {
   from {
@@ -95,11 +94,26 @@ h5
 
 
 // list styles
-ul 
+plain-ul()
+	padding: 0
+	text-indent: 0
 	list-style: none
 	
+	li
+		margin: 0
+		&:before
+			content: none
+			
+ul 
+	plain-ul()
+
+ol
+	list-style: decimal
+	margin-left: 1.4rem;
+	
 li
-	margin: 0 0 0.25em 1.0em;
+	margin: 0 0 0.25rem 1.0rem;
+
 
 
 
@@ -239,6 +253,7 @@ code[class*="language-"]
 	height: 50px
 	
 	ul
+		plain-ul()
 		
 		li
 			display: inline-block
@@ -272,9 +287,10 @@ code[class*="language-"]
 		padding-bottom: 40px
 		min-height: 400px
 
-#container, body#guide-contents
-	
-	background: white
+
+// prose for reference and guide pages
+.content, body#guide-contents
+	// background: white
 	height: auto
 		
 	// padding-top: 40px
@@ -284,29 +300,6 @@ code[class*="language-"]
 		
 	section
 		margin-bottom: 3em
-		
-	// list styles
-	ul, ol
-		// margin-bottom: 20px
-		padding: 0 0 0 0.8em
-		text-indent: -0.8em
-
-	ul 
-		list-style: none
-
-	ul li:before
-		content: "\00BB \00A0"	// double arrows + &nbsp; (unicode)
-
-	ol
-		list-style: decimal
-		
-	ul.fancy>li
-		font-family: 'Libre Baskerville', serif;
-		font-style: italic
-		
-	li
-		margin: 0 0 0.25em 1.0em;
-
 	
 	img-base()
 		display: block
@@ -324,14 +317,82 @@ code[class*="language-"]
 		margin-right: auto
 		
 	img.rounded
-		img-base()
 		border-radius: 5px
 		
 	figure > img
 		margin-bottom: 1em
 
+	// list styles
+	ul
+		padding: 0 0 0 0.8em
+		text-indent: -0.8em
+		list-style: none
+ 	
+ 	ol
+ 		margin-left: 0.8em
+
+	ul, ol
+		margin-bottom: 1.25em
+		li
+			&:last-child
+				margin-bottom: 0
+	 
+	ul li
+		margin: 0 0 0.25em 1.0em
+
+	ul li:before
+		content: "\00BB \00A0"	// double arrows + &nbsp; (unicode)
+		
+	ul.fancy>li
+		font-family: 'Libre Baskerville', serif;
+		font-style: italic
+		
+	.cols-2
+		width: 100%
+		margin: 25px 0
+		clearfix()
+		
+		.col
+			position: relative;
+			width: 50%
+			float: left;
+			padding-left: 0.9375rem;
+			padding-right: 0.9375rem;
+    
+		
+			&:first-child
+				padding-left: 0
+			
+			&:last-child
+				padding-right: 0
+				
+			> *
+				margin-top: 0
+				max-width: 100%;
 	
-	.contents
+
+	@media (max-width: 960px)
+	
+		.cols-2
+			.col
+				width: 100%
+				
+				&:first-child
+					padding-left: 0.9375rem
+				
+				&:last-child
+					padding-right: 0.9375rem
+				
+				> *
+					margin-top: inherit
+	
+
+#container
+	
+	// reference lists within namespace, class, and group template pages
+	.reference-lists
+		
+		word-wrap: break-word;
 		
 		section 
 			
@@ -353,8 +414,7 @@ code[class*="language-"]
 					cursor: pointer
 					
 					&:hover
-						animation: fade-even 1.5s
-					
+						animation: fade-even 1.5s				
 						
 					
 		.definitionCol
@@ -396,48 +456,6 @@ code[class*="language-"]
 		column-count: 4
 		column-gap: 50px
 		
-
-	.cols-2
-		width: 100%
-		margin: 25px 0
-		clearfix()
-		
-		.col
-			position: relative;
-			width: 50%
-			float: left;
-			padding-left: 0.9375rem;
-			padding-right: 0.9375rem;
-    
-		
-			&:first-child
-				padding-left: 0
-			
-			&:last-child
-				padding-right: 0
-				
-			> *
-				margin-top: 0
-				max-width: 100%;
-	
-
-	@media (max-width: 960px)
-	
-		.cols-2
-			.col
-				width: 100%
-				
-				&:first-child
-					padding-left: 0.9375rem
-				
-				&:last-child
-					padding-right: 0.9375rem
-				
-				> *
-					margin-top: inherit
-		
-
-
 
 #container .reference-content
 		
@@ -564,6 +582,8 @@ button.interactive-guide
 	
 	ul
 		margin-bottom: 0
+		padding: 0
+		text-indent: 0
 		
 		&.inheritence
 			
@@ -659,9 +679,16 @@ button.interactive-guide
 	position: relative;
 	z-index: 0
 	
+	ul.rows 
+		padding: 0
+		text-indent: 0
+		
 	li.row, .side li
 		list-style: none
-		margin-left: 0
+		margin: 0
+		
+		&:before
+			content: none
 	
 	#side-nav li
 		list-style: none

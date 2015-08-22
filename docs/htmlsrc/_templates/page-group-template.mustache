@@ -1,41 +1,39 @@
-    <div class="row content-row" data-equalizer="content">
+<div class="row content-row" data-equalizer="content">
 
-      <!-- side nav -->
-      <div id="side-nav" class="columns large-2" data-equalizer-watch="content">
-        
-      </div>
+    <!-- side nav -->
+    <div id="side-nav" class="columns large-2" data-equalizer-watch="content">
+
+    </div>
 
 
-      <!-- main content area -->
-      <div class="columns large-10" data-equalizer-watch="content">
+    <!-- main content area -->
+    <div class="columns large-10" data-equalizer-watch="content">
 
         <div id="container">
 
-          <div class="content">
+            <div class="content">
+                <!-- content -->
+                <h1 id="page-title">
+                    <em>{{name}}</em> 
+                    Module Reference
+                </h1>
 
-            <!-- content -->
-            <h1 id="page-title">
-                <em>{{name}}</em> 
-                Module Reference
-            </h1>
-                        
-            <!-- description and side bar -->
-            <div id="description" class="row">
-              <div id="description-prose" class="prose columns large-9">
-                {{{description}}}
-                {{{prefix}}}
-              </div>
+                <!-- description and side bar -->
+                <div id="description" class="row">
+                    <div id="description-prose" class="prose columns large-9">
+                        {{{description}}}
+                        {{{prefix}}}
+                    </div>
+                </div>
+                <hr/>
             </div>
 
-            <hr/>
-
-            <!-- show/hide buttons -->
-            <div id="show-hide">
-              <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
-            </div>
-            
-            <!-- contents -->
-            <div class="contents">
+       
+            <div class="reference-lists">
+                <!-- show/hide buttons -->
+                <div id="show-hide">
+                    <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+                </div>
 
                 <!-- subgroups -->
                 {{#subgroups.length}}
@@ -45,7 +43,7 @@
                     <h1>Modules</h1>
                     <ul>
                         {{#list}}
-                            <li><a href="{{link}}">{{label}}</a></li>
+                        <li><a href="{{link}}">{{label}}</a></li>
                         {{/list}}
                     </ul>
                 </section>
@@ -60,14 +58,14 @@
                 <section>
                     <h1>Typedefs</h1>
                     <ul>
-                         {{#list}}
-                            {{> function-markup }}
-                        {{/list}}
-                    </ul>
-                </section>
-                <hr/>
-                {{/typedefs}}
-                {{/typedefs.length}}
+                       {{#list}}
+                       {{> function-markup }}
+                       {{/list}}
+                   </ul>
+               </section>
+               <hr/>
+               {{/typedefs}}
+               {{/typedefs.length}}
 
                 <!-- public types -->
                 {{#public_types.length}}
@@ -77,7 +75,7 @@
                     <h1>Public Types</h1>
                     <ul>
                         {{#list}}
-                            {{> function-markup }}
+                        {{> function-markup }}
                         {{/list}}
                     </ul>
                 </section>
@@ -110,7 +108,7 @@
                     {{! interface -> "interface": "Instance Methods" }}
                     <ul>
                         {{#public_functions.list}}
-                            {{> function-markup }}
+                        {{> function-markup }}
                         {{/public_functions.list}}
                     </ul>
                 </section>
@@ -124,7 +122,7 @@
                     <h1>Static Public Member Functions</h1>
                     <ul>
                         {{#public_static_functions.list}}
-                            {{> function-markup }}
+                        {{> function-markup }}
                         {{/public_static_functions.list}}
                     </ul>
                 </section>
@@ -139,7 +137,7 @@
                     <h1>Protected Member Functions</h1>
                     <ul>
                         {{#list}}
-                            {{> function-markup }}
+                        {{> function-markup }}
                         {{/list}}
                     </ul>
                 </section>
@@ -155,7 +153,7 @@
                     <h1>Protected Attributes</h1>
                     <ul>
                         {{#list}}
-                            {{> function-markup }}
+                        {{> function-markup }}
                         {{/list}}
                     </ul>
                 </section>
@@ -171,7 +169,7 @@
                     <h1>Friends</h1>
                     <ul>
                         {{#list}}
-                            {{> function-markup }}
+                        {{> function-markup }}
                         {{/list}}
                     </ul>
                 </section>
@@ -181,10 +179,6 @@
 
             </div>
 
-            <!-- end content -->
-
-          </div>
-        </div>
-
-      </div>
-    </div> <!-- row -->
+        </div>  <!-- end #container -->
+    </div> <!-- end column -->
+</div> <!-- row -->

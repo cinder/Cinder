@@ -1,4 +1,4 @@
-<div class="row content-row content">
+<div class="row content-row">
 
   <!-- side nav -->
   <div id="side-nav" class="columns large-3" data-equalizer-watch="content">
@@ -12,22 +12,23 @@
 
     <div id="container">
 
-      <div class="content">
+        <div class="content">
 
-        <!-- content -->
-        <h1 id="page-title">
-            <strong>{{name}}</strong> Namespace Reference
-        </h1>
-        {{> namespace-subnav }}
-        <hr/>
+            <!-- content -->
+            <h1 id="page-title">
+                <strong>{{name}}</strong> Namespace Reference
+            </h1>
+            {{> namespace-subnav }}
+            <hr/>
 
-        <!-- show/hide buttons -->
-        <div id="show-hide">
-          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+            <!-- show/hide buttons -->
+            <div id="show-hide">
+              <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+            </div>
         </div>
         
         <!-- contents -->
-        <div class="contents">
+        <div class="reference-lists">
 
             <!-- namespaces -->
             {{#namespaces.length}}
@@ -153,11 +154,8 @@
             {{/variables.length}}
 
         </div>
-
-        <!-- end content -->
-
-      </div>
-    </div>
+      
+    </div><!-- end #container -->
 
   </div>
 </div> <!-- row -->
