@@ -344,4 +344,4 @@ void InstascopeApp::drawMirrors( vector<TrianglePiece> *vec )
 	}
 }
 
-CINDER_APP( InstascopeApp, RendererGl )
+CINDER_APP( InstascopeApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )
