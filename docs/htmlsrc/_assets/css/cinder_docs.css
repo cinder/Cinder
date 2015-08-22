@@ -162,22 +162,11 @@ h4 {
 h5 {
   font-size: 1em;
 }
-ul,
-ol {
-  margin-bottom: 20px;
-}
 ul {
-  list-style: disc;
-}
-ol {
-  list-style: decimal;
-}
-ul.fancy>li {
-  font-family: 'Libre Baskerville', serif;
-  font-style: italic;
+  list-style: none;
 }
 li {
-  margin-left: 20px;
+  margin: 0 0 0.25em 1em;
 }
 .row {
   max-width: 80rem;
@@ -357,6 +346,35 @@ body#guide-contents {
 #container section,
 body#guide-contents section {
   margin-bottom: 3em;
+}
+#container ul,
+body#guide-contents ul,
+#container ol,
+body#guide-contents ol {
+  margin-bottom: 20px;
+  padding: 0 0 0 0.8em;
+  text-indent: -0.8em;
+}
+#container ul,
+body#guide-contents ul {
+  list-style: none;
+}
+#container ul li:before,
+body#guide-contents ul li:before {
+  content: "\00BB \00A0";
+}
+#container ol,
+body#guide-contents ol {
+  list-style: decimal;
+}
+#container ul.fancy>li,
+body#guide-contents ul.fancy>li {
+  font-family: 'Libre Baskerville', serif;
+  font-style: italic;
+}
+#container li,
+body#guide-contents li {
+  margin: 0 0 0.25em 1em;
 }
 #container img.shadow,
 body#guide-contents img.shadow {

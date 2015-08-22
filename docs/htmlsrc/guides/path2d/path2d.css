@@ -8,10 +8,15 @@
   background: #232323;
   height: auto;
   margin: 0;
+  text-indent: 0;
 }
 .path2d ul#sketchLinks li {
   display: inline-block;
   padding: 0 12px;
+  margin: 0;
+}
+.path2d ul#sketchLinks li:before {
+  content: none;
 }
 .path2d ul#sketchLinks a {
   color: #e7e7e7;

@@ -2,8 +2,11 @@
 global-reset()
 @import global
 
+// vars
 left-col-width = 300px
 
+
+// animations 
 @keyframes fade-odd {
   from {
     background-color: #FFF2DE
@@ -22,6 +25,8 @@ left-col-width = 300px
   }
 }
 
+
+// base html styles
 body
 	font-size: 14px
 	font-family: 'Open Sans', Helvetica, Arial, sans-serif
@@ -88,23 +93,16 @@ h4
 h5
 	font-size: 1.0em
 
-ul, ol
-	margin-bottom: 20px
 
+// list styles
 ul 
-	list-style: disc
-
-ol
-	list-style: decimal
-	
-	
-ul.fancy>li
-	font-family: 'Libre Baskerville', serif;
-	font-style: italic
+	list-style: none
 	
 li
-	margin-left: 20px
-	
+	margin: 0 0 0.25em 1.0em;
+
+
+
 .row
 	max-width: 80rem
 
@@ -278,6 +276,7 @@ code[class*="language-"]
 	
 	background: white
 	height: auto
+		
 	// padding-top: 40px
 	// font-size: 0.8em
 	// line-height: 1em
@@ -285,6 +284,29 @@ code[class*="language-"]
 		
 	section
 		margin-bottom: 3em
+		
+	// list styles
+	ul, ol
+		margin-bottom: 20px
+		padding: 0 0 0 0.8em
+		text-indent: -0.8em
+
+	ul 
+		list-style: none
+
+	ul li:before
+		content: "\00BB \00A0"	// double arrows + &nbsp; (unicode)
+
+	ol
+		list-style: decimal
+		
+	ul.fancy>li
+		font-family: 'Libre Baskerville', serif;
+		font-style: italic
+		
+	li
+		margin: 0 0 0.25em 1.0em;
+
 	
 	img-base()
 		display: block
