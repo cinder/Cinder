@@ -81,9 +81,10 @@ void TrianglePiece::draw()
 	if( ! mReadyToDraw ) return;
 	if( mAlpha == 0.0f ) return;
 	
-	gl::pushModelMatrix();
-	gl::translate( mStartPt );				// move to the start point
-	gl::scale( mScale );					// scale the triangle
+	gl::ScopedModelMatrix scopedMat;
+	gl::ScopedColor scopedCol;
+	gl::translate( mStartPt );	// move to the start point
+	gl::scale( mScale );		// scale the triangle
 	gl::rotate( mRotation );	// rotate on the Z axis
 	
 	gl::color( 1.0f, 1.0f, 1.0f, mAlpha );
@@ -92,8 +93,6 @@ void TrianglePiece::draw()
 	gl::ScopedGlslProg glslScp( gl::getStockShader( gl::ShaderDef().color().texture() ) );
 	gl::ScopedTextureBind texScp( mDrawTex );
 	gl::drawSolidTriangle( mVertices, mTexVertices );
-	gl::color( 1.0f, 1.0f, 1.0f, 1.0f );			// reset the color/alpha
-	gl::popModelMatrix();
 }
 
 bool TrianglePiece::isOut() const

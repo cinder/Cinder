@@ -106,7 +106,8 @@ void TextRibbon::drawTextShape()
 
 void TextRibbon::draw()
 {
-	gl::pushModelMatrix();
+	gl::ScopedModelMatrix scopedMat;
+	gl::ScopedColor scopedColor;
 	gl::translate(mTextPos);
   
 	drawTextShape();
@@ -123,6 +124,4 @@ void TextRibbon::draw()
 	
 	if( mUserTex )
 		gl::draw( mUserTex, vec2(mCurPos.value().x + TEXT_PADDING_X + mTagBox.measure().x + spacing, (mRibbonSize.y - mUserBox.measure().y)/2) );
-	gl::color( 1, 1, 1 );
-	gl::popModelMatrix();
 }
