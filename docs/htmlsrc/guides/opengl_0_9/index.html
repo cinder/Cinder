@@ -44,7 +44,7 @@ gl::drawSolidCircle( vec2( 100, 100 ), 50 );
 </code></pre>
 
 <p>
-As in previous versions, <ci>gl::drawSolidCircle()</ci> takes a center point and a radius. However the preceding line is new. <ci>gl::bindStockShader()</ci> accepts a <ci>gl::ShaderDef()</ci> and either generates a shader (a <ci>gl::GlslProg</ci>) as is necessary. It also caches these <ci>gl::GlslProg</ci>&rsquo;s to avoid unnecessary compilation. In this example, we&rsquo;re using <ci dox="gl::ShaderDef::color">.color()</ci> on the <ci dox="gl::ShaderDef">ShaderDef</ci> in order to request that the current color be used, which defaults to white.
+As in previous versions, <ci>gl::drawSolidCircle()</ci> takes a center point and a radius. However the preceding line is new. <ci>gl::bindStockShader()</ci> accepts a <ci>gl::ShaderDef</ci> and either generates a shader (a <ci>gl::GlslProg</ci>) as is necessary. It also caches these <ci>gl::GlslProg</ci>&rsquo;s to avoid unnecessary compilation. In this example, we&rsquo;re using <ci dox="gl::ShaderDef::color">.color()</ci> on the <ci dox="gl::ShaderDef">ShaderDef</ci> in order to request that the current color be used, which defaults to white.
 </p>
 
 <p>
@@ -91,11 +91,11 @@ This code touches on several different new concepts. First, we&rsquo;re using ou
 </p>
 
 <p>
-Let&rsquo;s look at the first parameter to our Batch construction, the geometry portion: <code>geom::Circle().center( 100, 100 ).radius( 50 )</code>. This uses <ci>geom::Circle</ci>, which is one of many classes provided with Cinder that can be used to create geometry. Other examples include <ci>geom::Sphere</ci>, <ci>geom::Teapot()</ci>, <ci>geom::WireCone</ci>, and many others. The pairing of one of these <ci>geom::Source</ci>s (or another source of geometry, such as a <ci>TriMesh</ci> or a <ci dox="gl::VboMesh">VboMesh</ci>) with a shader (<ci dox="gl::GlslProg">GlslProg</ci>) is expressed with a <ci>gl::Batch</ci>.
+Let&rsquo;s look at the first parameter to our Batch construction, the geometry portion: <code>geom::Circle().center( 100, 100 ).radius( 50 )</code>. This uses <ci>geom::Circle</ci>, which is one of many classes provided with Cinder that can be used to create geometry. Other examples include <ci>geom::Sphere</ci>, <ci>geom::Teapot</ci>, <ci>geom::WireCone</ci>, and many others. The pairing of one of these <ci>geom::Source</ci>s (or another source of geometry, such as a <ci>TriMesh</ci> or a <ci dox="gl::VboMesh">VboMesh</ci>) with a shader (<ci dox="gl::GlslProg">GlslProg</ci>) is expressed with a <ci>gl::Batch</ci>.
 </p>
 
 <p>
-To draw a <ci>gl::Batch</ci> we simply use its <ci dox="gl::Batch::draw">draw()</ci> member method. Notice that we still set the color with <ci>gl::color()</ci>. Cinder &ldquo;knows&rdquo; that the <ci dox>gl::Batch</ci>&rsquo;s shader requires the current color, and it passes it along in a uniform automatically. We&rsquo;ll look at how that machinery works later.
+To draw a <ci>gl::Batch</ci> we simply use its <ci dox="gl::Batch::draw">draw()</ci> member method. Notice that we still set the color with <ci>gl::color()</ci>. Cinder &ldquo;knows&rdquo; that the <ci>gl::Batch</ci>&rsquo;s shader requires the current color, and it passes it along in a uniform automatically. We&rsquo;ll look at how that machinery works later.
 </p>
 
 <h3>Transformations</h3>
@@ -147,12 +147,12 @@ In Cinder 0.9.0 you&rsquo;ll see a number of classes which begin with gl::Scoped
 </p>
 
 <pre class="lang-cpp"><code>
- for( float angle = 0; angle &lt; 2 * M_PI; angle += 0.2f ) {
+for( float angle = 0; angle &lt; 2 * M_PI; angle += 0.2f ) {
     gl::ScopedModelMatrix scpModelMtx;
     gl::translate( getWindowCenter() + 200.0f * vec2( sin( angle ), cos( angle ) ) );
     gl::color( Color( CM_HSV, angle / (2 * M_PI), 1, 1 ) );
     mCircleBatch-&gt;draw();
-  }
+}
 </code></pre>
 
 <p>
@@ -234,7 +234,7 @@ Magic and wonder goes here
 
 
 <p>
-Here we see the global color is ignored as <ci>geom::Rect</ci> has generated per-vertex colors upon our request. For the curious, this automatic variable uploading occurs in the <ci>gl::Batch::draw()</ci> call, and it can be invoked manually in advanced usage scenarios. Furthermore, there are mechanisms for manually configuring the mapping to attributes and uniforms in <ci dox="gl::GlslProg::Format">GlslProg::Format</ci> for users that have some reason to use a non - default configuration.
+Here we see the global color is ignored as <ci>geom::Rect</ci> has generated per-vertex colors upon our request. For the curious, this automatic variable uploading occurs in the <ci>gl::Batch::draw()</ci> call, and it can be invoked manually in advanced usage scenarios. Furthermore, there are mechanisms for manually configuring the mapping to attributes and uniforms in <ci dox="gl::GlslProg::Format">GlslProg::Format</ci> for users that have some reason to use a custom configuration.
 </p>
 
 <h3>Conclusion</h3>
