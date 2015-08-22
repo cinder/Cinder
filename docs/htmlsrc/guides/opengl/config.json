@@ -4,11 +4,11 @@
 		{
 			"keywords": ["guide, opengl, graphics"]
 		},
-		"subnav":[
+		"nav":[
 			{
 				"label": "OpenGL in Cinder",
 				"link": "index.html",
-				"subnav":[
+				"pagenav":[
 					{
 						"label": "Introduction",
 						"link": "#intro"
@@ -18,7 +18,7 @@
 			{
 				"label": "Getting Started",
 				"link": "part1.html",
-				"subnav":[
+				"pagenav":[
 					{
 						"label": "Convenience Functions",
 						"link": "#convenience_functions"
@@ -32,7 +32,7 @@
 			{
 				"label": "The Third Dimension",
 				"link": "part2.html",
-				"subnav":[
+				"pagenav":[
 					{
 						"label": "3D Cameras",
 						"link": "#camera_3d"
