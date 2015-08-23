@@ -65,7 +65,7 @@ android {
     }
 
     cinder {
-        ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
+        ndkDir = "${projectDir}/../../../../../../../android-ndk"
         cinderDir = "${projectDir}/../../../../../.."
         verbose = false 
         moduleName = "DynamicCubeMappingApp"

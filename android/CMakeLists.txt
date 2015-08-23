@@ -110,6 +110,7 @@ message( "${BoldGreen}CMake Build Type: ${CMAKE_BUILD_TYPE} ${ColorReset}" )
 if( NOT NDK_ROOT )
     # Most recent first
     set( _supported_ndks 
+        "android-ndk"
         "android-ndk-r10e"
         "android-ndk-r10d"
         "android-ndk-r9d"
@@ -166,7 +167,9 @@ endif()
 
 # Bail if we haven't set NDK_ROOT
 if( NOT NDK_ROOT )
-    message( FATAL_ERROR "${BoldRed}NDK_ROOT not set! Set using env var or -DNDK_ROOT=<path to NDK>${ColorReset}" )
+    set( _suggestedDir ${CMAKE_CURRENT_SOURCE_DIR}/../../android-ndk )
+    get_filename_component( _suggestedDir "${_suggestedDir}" ABSOLUTE )
+    message( FATAL_ERROR "${BoldRed}NDK_ROOT not set! Set using env var or -DNDK_ROOT=<path to NDK> or install (r10d or later) to ${_suggestedDir} ${ColorReset}" )
 endif()
 # ------------------------------------------------------------------------
 
