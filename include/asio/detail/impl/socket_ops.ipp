@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -524,13 +524,33 @@ void sync_connect(socket_type s, const socket_addr_type* addr,
 
 void complete_iocp_connect(socket_type s, asio::error_code& ec)
 {
+  // Map non-portable errors to their portable counterparts.
+  switch (ec.value())
+  {
+  case ERROR_CONNECTION_REFUSED:
+    ec = asio::error::connection_refused;
+    break;
+  case ERROR_NETWORK_UNREACHABLE:
+    ec = asio::error::network_unreachable;
+    break;
+  case ERROR_HOST_UNREACHABLE:
+    ec = asio::error::host_unreachable;
+    break;
+  case ERROR_SEM_TIMEOUT:
+    ec = asio::error::timed_out;
+    break;
+  default:
+    break;
+  }
+
   if (!ec)
   {
     // Need to set the SO_UPDATE_CONNECT_CONTEXT option so that getsockname
     // and getpeername will work on the connected socket.
     socket_ops::state_type state = 0;
+    const int so_update_connect_context = 0x7010;
     socket_ops::setsockopt(s, state, SOL_SOCKET,
-        SO_UPDATE_CONNECT_CONTEXT, 0, 0, ec);
+        so_update_connect_context, 0, 0, ec);
   }
 }
 
@@ -1357,7 +1377,7 @@ socket_type socket(int af, int type, int protocol,
 {
   clear_last_error();
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-  socket_type s = error_wrapper(::WSASocket(af, type, protocol, 0, 0,
+  socket_type s = error_wrapper(::WSASocketW(af, type, protocol, 0, 0,
         WSA_FLAG_OVERLAPPED), ec);
   if (s == invalid_socket)
     return s;
@@ -1959,11 +1979,12 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
   }
 
   DWORD string_length = static_cast<DWORD>(length);
-#if defined(BOOST_NO_ANSI_APIS)
+#if defined(BOOST_NO_ANSI_APIS) || (defined(_MSC_VER) && (_MSC_VER >= 1800))
   LPWSTR string_buffer = (LPWSTR)_alloca(length * sizeof(WCHAR));
   int result = error_wrapper(::WSAAddressToStringW(&address.base,
         address_length, 0, string_buffer, &string_length), ec);
-  ::WideCharToMultiByte(CP_ACP, 0, string_buffer, -1, dest, length, 0, 0);
+  ::WideCharToMultiByte(CP_ACP, 0, string_buffer, -1,
+      dest, static_cast<int>(length), 0, 0);
 #else
   int result = error_wrapper(::WSAAddressToStringA(
         &address.base, address_length, 0, dest, &string_length), ec);
@@ -2166,8 +2187,8 @@ int inet_pton(int af, const char* src, void* dest,
     sockaddr_in6_type v6;
   } address;
   int address_length = sizeof(sockaddr_storage_type);
-#if defined(BOOST_NO_ANSI_APIS)
-  int num_wide_chars = strlen(src) + 1;
+#if defined(BOOST_NO_ANSI_APIS) || (defined(_MSC_VER) && (_MSC_VER >= 1800))
+  int num_wide_chars = static_cast<int>(strlen(src)) + 1;
   LPWSTR wide_buffer = (LPWSTR)_alloca(num_wide_chars * sizeof(WCHAR));
   ::MultiByteToWideChar(CP_ACP, 0, src, -1, wide_buffer, num_wide_chars);
   int result = error_wrapper(::WSAStringToAddressW(
@@ -2210,14 +2231,34 @@ int inet_pton(int af, const char* src, void* dest,
 
   return result == socket_error_retval ? -1 : 1;
 #else // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-  int result = error_wrapper(::inet_pton(af, src, dest), ec);
+  using namespace std; // For strchr, memcpy and atoi.
+
+  // On some platforms, inet_pton fails if an address string contains a scope
+  // id. Detect and remove the scope id before passing the string to inet_pton.
+  const bool is_v6 = (af == ASIO_OS_DEF(AF_INET6));
+  const char* if_name = is_v6 ? strchr(src, '%') : 0;
+  char src_buf[max_addr_v6_str_len + 1];
+  const char* src_ptr = src;
+  if (if_name != 0)
+  {
+    if (if_name - src > max_addr_v6_str_len)
+    {
+      ec = asio::error::invalid_argument;
+      return 0;
+    }
+    memcpy(src_buf, src, if_name - src);
+    src_buf[if_name - src] = 0;
+    src_ptr = src_buf;
+  }
+
+  int result = error_wrapper(::inet_pton(af, src_ptr, dest), ec);
   if (result <= 0 && !ec)
     ec = asio::error::invalid_argument;
-  if (result > 0 && af == ASIO_OS_DEF(AF_INET6) && scope_id)
+  if (result > 0 && is_v6 && scope_id)
   {
     using namespace std; // For strchr and atoi.
     *scope_id = 0;
-    if (const char* if_name = strchr(src, '%'))
+    if (if_name != 0)
     {
       in6_addr_type* ipv6_address = static_cast<in6_addr_type*>(dest);
       bool is_link_local = ((ipv6_address->s6_addr[0] == 0xfe)
@@ -2278,8 +2319,7 @@ int gethostname(char* name, int namelen, asio::error_code& ec)
 
 #if !defined(ASIO_WINDOWS_RUNTIME)
 
-#if defined(ASIO_WINDOWS) || defined(__CYGWIN__) \
-  || defined(__MACH__) && defined(__APPLE__)
+#if !defined(ASIO_HAS_GETADDRINFO)
 
 // The following functions are only needed for emulation of getaddrinfo and
 // getnameinfo.
@@ -3120,8 +3160,7 @@ inline asio::error_code getnameinfo_emulation(
   return ec;
 }
 
-#endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-       //   || defined(__MACH__) && defined(__APPLE__)
+#endif // !defined(ASIO_HAS_GETADDRINFO)
 
 inline asio::error_code translate_addrinfo_error(int error)
 {
@@ -3170,7 +3209,7 @@ asio::error_code getaddrinfo(const char* host,
   service = (service && *service) ? service : 0;
   clear_last_error();
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-# if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501) || defined(UNDER_CE)
+# if defined(ASIO_HAS_GETADDRINFO)
   // Building for Windows XP, Windows Server 2003, or later.
   int error = ::getaddrinfo(host, service, &hints, result);
   return ec = translate_addrinfo_error(error);
@@ -3189,7 +3228,7 @@ asio::error_code getaddrinfo(const char* host,
   int error = getaddrinfo_emulation(host, service, &hints, result);
   return ec = translate_addrinfo_error(error);
 # endif
-#elif defined(__MACH__) && defined(__APPLE__)
+#elif !defined(ASIO_HAS_GETADDRINFO)
   int error = getaddrinfo_emulation(host, service, &hints, result);
   return ec = translate_addrinfo_error(error);
 #else
@@ -3213,7 +3252,7 @@ asio::error_code background_getaddrinfo(
 void freeaddrinfo(addrinfo_type* ai)
 {
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-# if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501) || defined(UNDER_CE)
+# if defined(ASIO_HAS_GETADDRINFO)
   // Building for Windows XP, Windows Server 2003, or later.
   ::freeaddrinfo(ai);
 # else
@@ -3229,7 +3268,7 @@ void freeaddrinfo(addrinfo_type* ai)
   }
   freeaddrinfo_emulation(ai);
 # endif
-#elif defined(__MACH__) && defined(__APPLE__)
+#elif !defined(ASIO_HAS_GETADDRINFO)
   freeaddrinfo_emulation(ai);
 #else
   ::freeaddrinfo(ai);
@@ -3241,7 +3280,7 @@ asio::error_code getnameinfo(const socket_addr_type* addr,
     char* serv, std::size_t servlen, int flags, asio::error_code& ec)
 {
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-# if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501) || defined(UNDER_CE)
+# if defined(ASIO_HAS_GETADDRINFO)
   // Building for Windows XP, Windows Server 2003, or later.
   clear_last_error();
   int error = ::getnameinfo(addr, static_cast<socklen_t>(addrlen),
@@ -3267,7 +3306,7 @@ asio::error_code getnameinfo(const socket_addr_type* addr,
   return getnameinfo_emulation(addr, addrlen,
       host, hostlen, serv, servlen, flags, ec);
 # endif
-#elif defined(__MACH__) && defined(__APPLE__)
+#elif !defined(ASIO_HAS_GETADDRINFO)
   using namespace std; // For memcpy.
   sockaddr_storage_type tmp_addr;
   memcpy(&tmp_addr, addr, addrlen);
@@ -3364,8 +3403,8 @@ u_short_type network_to_host_short(u_short_type value)
 {
 #if defined(ASIO_WINDOWS_RUNTIME)
   unsigned char* value_p = reinterpret_cast<unsigned char*>(&value);
-  u_short_type result = (static_cast<u_long_type>(value_p[0]) << 8)
-    | static_cast<u_long_type>(value_p[1]);
+  u_short_type result = (static_cast<u_short_type>(value_p[0]) << 8)
+    | static_cast<u_short_type>(value_p[1]);
   return result;
 #else // defined(ASIO_WINDOWS_RUNTIME)
   return ntohs(value);
@@ -3375,7 +3414,7 @@ u_short_type network_to_host_short(u_short_type value)
 u_short_type host_to_network_short(u_short_type value)
 {
 #if defined(ASIO_WINDOWS_RUNTIME)
-  u_long_type result;
+  u_short_type result;
   unsigned char* result_p = reinterpret_cast<unsigned char*>(&result);
   result_p[0] = static_cast<unsigned char>((value >> 8) & 0xFF);
   result_p[1] = static_cast<unsigned char>(value & 0xFF);

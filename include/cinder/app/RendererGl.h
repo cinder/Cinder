@@ -221,9 +221,14 @@ protected:
 	friend class				RendererImplGlAngle;
 	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
 #elif defined( CINDER_ANDROID )
-    class RendererGlAndroid  	*mImpl;
+	class RendererGlAndroid  	*mImpl;
 	friend class 				WindowImplAndroid;
 	RendererGlAndroid * getImpl() { return mImpl; }
+#elif defined( CINDER_LINUX )
+	class RendererGlLinux  	*mImpl;
+	friend class 				WindowImplLinux;
+	RendererGlLinux * 	getImpl() { return mImpl; }
+
 #endif
 
 	std::function<void( Renderer* )> mStartDrawFn;

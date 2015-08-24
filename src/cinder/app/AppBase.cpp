@@ -61,6 +61,9 @@
 		#undef __GNUC_MINOR__
  	#endif
 #else
+  #if defined( linux ) || defined( __linux ) || defined( __linux__ )
+    #define CINDER_ASIO_CLANG_BUILTIN_OFFSETOF
+  #endif
 	#include "asio/asio.hpp"
 #endif
 
