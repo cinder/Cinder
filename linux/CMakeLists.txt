@@ -70,16 +70,34 @@ message( "" )
 
 include_directories( 
     ${CINDER_INC_DIR} 
+    ${CINDER_INC_DIR}/glfw
     ${CINDER_INC_DIR}/jsoncpp 
     ${CINDER_SRC_DIR}/linebreak 
     ${CINDER_SRC_DIR}/libtess2 
-    ${BOOST_INC_DIR} 
+    ${BOOST_INC_DIR}  
 )
 
 set( CINDER_LINUX_CXX_FLAGS "-stdlib=libc++ -std=c++11" )
 set( CXX_FLAGS "" )
 set( CMAKE_CXX_FLAGS_DEBUG    "${CINDER_LINUX_CXX_FLAGS} ${CXX_FLAGS} -g -fexceptions -frtti" )
 set( CMAKE_CXX_FLAGS_RELEASE  "${CINDER_LINUX_CXX_FLAGS} ${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
+
+set( CINDER_C_SRC_FILES
+    ${CINDER_SRC_DIR}/glfw/src/context.c
+    ${CINDER_SRC_DIR}/glfw/src/init.c
+    ${CINDER_SRC_DIR}/glfw/src/input.c
+    ${CINDER_SRC_DIR}/glfw/src/monitor.c
+    ${CINDER_SRC_DIR}/glfw/src/window.c
+
+    ${CINDER_SRC_DIR}/glfw/src/window.c
+    ${CINDER_SRC_DIR}/glfw/src/x11_init.c
+    ${CINDER_SRC_DIR}/glfw/src/x11_monitor.c
+    ${CINDER_SRC_DIR}/glfw/src/x11_window.c
+    ${CINDER_SRC_DIR}/glfw/src/xkb_unicode.c
+    ${CINDER_SRC_DIR}/glfw/src/linux_joystick.c
+    ${CINDER_SRC_DIR}/glfw/src/posix_time.c
+    ${CINDER_SRC_DIR}/glfw/src/posix_tls.c
+)
 
 set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/linux/CinderLinux.cpp
