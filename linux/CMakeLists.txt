@@ -77,10 +77,13 @@ include_directories(
     ${BOOST_INC_DIR}  
 )
 
-set( CINDER_LINUX_CXX_FLAGS "-stdlib=libc++ -std=c++11" )
-set( CXX_FLAGS "" )
-set( CMAKE_CXX_FLAGS_DEBUG    "${CINDER_LINUX_CXX_FLAGS} ${CXX_FLAGS} -g -fexceptions -frtti" )
-set( CMAKE_CXX_FLAGS_RELEASE  "${CINDER_LINUX_CXX_FLAGS} ${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
+set( C_FLAGS "-fvisibility=default -DFT2_BUILD_LIBRARY" )
+set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
+set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
+
+set( CXX_FLAGS "-stdlib=libc++ -std=c++11 -fvisibility=default -DFT2_BUILD_LIBRARY" )
+set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g -fexceptions -frtti" )
+set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
 
 set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/glfw/src/context.c
@@ -97,6 +100,52 @@ set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/glfw/src/linux_joystick.c
     ${CINDER_SRC_DIR}/glfw/src/posix_time.c
     ${CINDER_SRC_DIR}/glfw/src/posix_tls.c
+
+    ${CINDER_SRC_DIR}/freetype/bdf/bdf.c
+    ${CINDER_SRC_DIR}/freetype/cff/cff.c
+    ${CINDER_SRC_DIR}/freetype/pcf/pcf.c
+    ${CINDER_SRC_DIR}/freetype/pfr/pfr.c
+    ${CINDER_SRC_DIR}/freetype/sfnt/sfnt.c
+    ${CINDER_SRC_DIR}/freetype/truetype/truetype.c
+    ${CINDER_SRC_DIR}/freetype/type1/type1.c
+    ${CINDER_SRC_DIR}/freetype/type42/type42.c
+    ${CINDER_SRC_DIR}/freetype/winfonts/winfnt.c
+    ${CINDER_SRC_DIR}/freetype/base/ftbase.c
+    ${CINDER_SRC_DIR}/freetype/base/ftbbox.c
+    ${CINDER_SRC_DIR}/freetype/base/ftbdf.c
+    ${CINDER_SRC_DIR}/freetype/base/ftbitmap.c
+    ${CINDER_SRC_DIR}/freetype/base/ftcid.c
+    ${CINDER_SRC_DIR}/freetype/base/ftdebug.c
+    ${CINDER_SRC_DIR}/freetype/base/ftfstype.c
+    ${CINDER_SRC_DIR}/freetype/base/ftgasp.c
+    ${CINDER_SRC_DIR}/freetype/base/ftglyph.c
+    ${CINDER_SRC_DIR}/freetype/base/ftgxval.c
+    ${CINDER_SRC_DIR}/freetype/base/ftinit.c
+    ${CINDER_SRC_DIR}/freetype/base/ftlcdfil.c
+    ${CINDER_SRC_DIR}/freetype/base/ftmm.c
+    ${CINDER_SRC_DIR}/freetype/base/ftotval.c
+    ${CINDER_SRC_DIR}/freetype/base/ftpatent.c
+    ${CINDER_SRC_DIR}/freetype/base/ftpfr.c
+    ${CINDER_SRC_DIR}/freetype/base/ftstroke.c
+    ${CINDER_SRC_DIR}/freetype/base/ftsynth.c
+    ${CINDER_SRC_DIR}/freetype/base/ftsystem.c
+    ${CINDER_SRC_DIR}/freetype/base/fttype1.c
+    ${CINDER_SRC_DIR}/freetype/base/ftwinfnt.c
+    ${CINDER_SRC_DIR}/freetype/base/ftxf86.c
+    ${CINDER_SRC_DIR}/freetype/raster/raster.c
+    ${CINDER_SRC_DIR}/freetype/smooth/smooth.c
+    ${CINDER_SRC_DIR}/freetype/autofit/autofit.c
+    ${CINDER_SRC_DIR}/freetype/bzip2/ftbzip2.c
+    ${CINDER_SRC_DIR}/freetype/cache/ftcache.c
+    ${CINDER_SRC_DIR}/freetype/gzip/ftgzip.c
+    ${CINDER_SRC_DIR}/freetype/lzw/ftlzw.c
+    ${CINDER_SRC_DIR}/freetype/gxvalid/gxvalid.c
+    ${CINDER_SRC_DIR}/freetype/otvalid/otvalid.c
+    ${CINDER_SRC_DIR}/freetype/psaux/psaux.c
+    ${CINDER_SRC_DIR}/freetype/pshinter/pshinter.c
+    ${CINDER_SRC_DIR}/freetype/psnames/psnames.c
+    ${CINDER_SRC_DIR}/freetype/cid/type1cid.c
+    ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c
 )
 
 set( CINDER_CXX_SRC_FILES
