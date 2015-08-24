@@ -899,6 +899,7 @@ class HtmlFileData(FileData):
         content = dict(orig_content)
         template_content = {
             "html_content": self.html_content,
+            "namespace_nav": str(g_namespaceNav),
             "pagenav": {
                 "list": self.pagenav,
                 "length": len(self.pagenav)
