@@ -624,6 +624,14 @@ button.interactive-guide
 		color: $cinder-red
 		font-weight: 700
 		text-transform: uppercase
+		
+	section
+		margin-bottom: 20px;
+		
+		&:not(:last-child)
+			padding-bottom: 20px
+			border-bottom: 1px $gray solid
+			
 	
 	input[type="checkbox"] + label
 		margin-left: -18px
@@ -693,11 +701,11 @@ button.interactive-guide
 	#side-nav li
 		list-style: none
 
-body.reference
-	#main-content
-		li
-			margin-left: 0
-			list-style: none
+// body.reference
+// 	#main-content
+// 		li
+// 			margin-left: 0
+// 			list-style: none
 
 footer
 	color: #fff

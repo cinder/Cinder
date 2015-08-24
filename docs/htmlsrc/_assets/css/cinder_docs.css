@@ -761,6 +761,13 @@ button.interactive-guide:focus {
   font-weight: 700;
   text-transform: uppercase;
 }
+#side-nav section {
+  margin-bottom: 20px;
+}
+#side-nav section:not(:last-child) {
+  padding-bottom: 20px;
+  border-bottom: 1px #999 solid;
+}
 #side-nav input[type="checkbox"] + label {
   margin-left: -18px;
 }
@@ -832,10 +839,6 @@ button.interactive-guide:focus {
   content: none;
 }
 #main-content #side-nav li {
-  list-style: none;
-}
-body.reference #main-content li {
-  margin-left: 0;
   list-style: none;
 }
 footer {
