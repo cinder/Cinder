@@ -23,14 +23,14 @@
 
 #include "cinder/android/CinderAndroid.h"
 #include "cinder/android/JniHelper.h"
-#include "cinder/Surface.h" 
-#include "cinder/Url.h" 
+#include "cinder/Surface.h"
+#include "cinder/Url.h"
 
-namespace cinder { namespace app { 
+namespace cinder { namespace app {
 
 class EventManagerAndroid;
 
-}} // namespace cinder::app 
+}} // namespace cinder::app
 
 namespace cinder { namespace android { namespace app {
 
@@ -48,6 +48,7 @@ public:
 	static jobject 					getJavaObject();
 
 	static cinder::fs::path 		getCacheDirectory();
+	static cinder::fs::path			getPicturesDirectory();
 	static void 					setWallpaper( const Surface8u& surf );
 	static int 						getDisplayRotation();
 	static void 					setKeepScreenOn( bool keepScreenOn );
@@ -63,6 +64,7 @@ private:
 		static jclassID		ClassName;
 		static jclass 		ClassObject;
 		static jmethodID 	getCacheDirectory;
+		static jmethodID	getPicturesDirectory;
 		static jmethodID 	setWallpaper;
 		static jmethodID 	getDisplayRotation;
 		static jmethodID 	setKeepScreenOn;
@@ -77,7 +79,7 @@ private:
 
 private:
 	static void registerComponents();
-	static void unregisterComponents();	
+	static void unregisterComponents();
 	friend class cinder::app::EventManagerAndroid;
 };
 

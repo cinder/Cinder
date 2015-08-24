@@ -165,6 +165,11 @@ public class CinderNativeActivity extends NativeActivity {
         return result;
     }
 
+    public String getPicturesDirectory() {
+        String result = this.getExternalStorageDirectory(DIRECTORY_PICTURES).toString();
+        return result;
+    }
+
     public void setWallpaper(String path) {
         File file = new File(path);
         if(file.exists()) {
