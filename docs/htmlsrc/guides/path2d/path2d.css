@@ -1,5 +1,21 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+a {
+  color: #a41c12;
+  font-family: 'Open Sans', sans-serif;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+iframe {
+  margin: 20px 0;
+}
 .path2d {
-  max-width: 960px;
+  width: 800px;
   margin: 0 auto;
 }
 .path2d ul#sketchLinks {
@@ -61,18 +77,16 @@
 .path2d button {
   padding: 1em;
 }
-.path2d #tutorial {
-  margin-top: 3em;
-}
 .path2d #tutorial button {
   background: none;
   border: 1px solid #a41c12;
-  color: #c64b24;
+  color: #a41c12;
   text-transform: uppercase;
   font-family: 'Open Sans', sans-serif;
   font-size: 0.75em;
   padding: 0.75em 1.5em;
   margin: 0;
+  cursor: pointer;
 }
 .path2d #tutorial button:hover {
   background: #a41c12;
@@ -95,10 +109,30 @@
   top: 5px;
   right: 10px;
 }
-.path2d #bottomNav {
+.path2d .sketch {
+  line-height: 0;
+}
+#bottomNav {
   margin: 20px 0;
   text-align: center;
 }
-.path2d .sketch {
-  line-height: 0;
+/* Fixes for dat-gui */
+.dg input[type=text] {
+  font-size: inherit !important;
+  height: 100% !important;
+  -webkit-box-sizing: content-box !important;
+  -moz-box-sizing: content-box !important;
+  box-sizing: content-box !important;
+}
+.dg ul {
+  margin: 0 !important;
+  text-indent: 0 !important;
+}
+.dg ul > li:before {
+  content: none !important;
+}
+.dg button {
+  background: none;
+  display: block;
+  padding: 0;
 }

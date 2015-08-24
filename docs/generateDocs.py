@@ -1603,7 +1603,7 @@ def inject_html(src_content, dest_el, src_path, dest_path):
     if not dest_el:
         log("destination element does not exist", 1)
 
-    update_links(src_content, src_path, dest_path)
+    update_links(src_content, src_path, src_path, dest_path)
 
     try:
         # copy source content into to bs4 instance so that we can copy over without messing up the source
@@ -1809,7 +1809,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
 
     # print output
     # update links in the template
-    update_links(bs4, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
+    update_links(bs4, TEMPLATE_PATH + "htmlContentTemplate.html", TEMPLATE_PATH, out_path)
 
     # replace any code chunks with <pre> tags, which is not possible on initial creation
     replace_code_chunks(bs4)
@@ -2183,6 +2183,17 @@ def process_html_file(in_path, out_path):
     """
     print "processHtmlFile: " + in_path
 
+    # relative path in relation to the in_path (htmlsrc/)
+    local_rel_path = os.path.relpath(in_path, HTML_SOURCE_PATH)
+    # directory name of the path
+    in_dir = os.path.dirname(in_path)
+    # file name
+    in_file_name = os.path.basename(in_path)
+
+    # skip if it starts with "_", which means that it's not a first class citizen file and is supplemental
+    if in_file_name.startswith("_"):
+        return
+
     # get common data for the file
     file_data = HtmlFileData(in_path)
 
@@ -2190,12 +2201,7 @@ def process_html_file(in_path, out_path):
     is_searchable = True
     # tags for search engine
     search_tags = []
-    # relative path in relation to the in_path (htmlsrc/)
-    local_rel_path = os.path.relpath(in_path, HTML_SOURCE_PATH)
-    # directory name of the path
-    in_dir = os.path.dirname(in_path)
-    # file name
-    in_file_name = os.path.basename(in_path)
+
     # selected section of the website
     section = ""
 
@@ -2283,7 +2289,7 @@ def process_html_file(in_path, out_path):
     # make sure all links are absolute
     update_links_abs(bs4, TEMPLATE_PATH)
     # now all links shoul be relative to out path
-    update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
+    update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", in_path, out_path)
 
     if bs4 is None:
         print log("Error generating file, so skipping: " + in_path, 2)
@@ -2540,7 +2546,7 @@ def process_ci_prefix_tag(bs4, tag, in_path):
         # generate bs4 from content and update links as reltive from the template path
         # could alternatively set the absolute paths of content, which would then be turned into rel paths later
         new_bs4 = generate_bs4_from_string(prefix_content)
-        update_links(new_bs4, in_path, TEMPLATE_PATH)
+        update_links(new_bs4, in_path, in_path, TEMPLATE_PATH)
 
         # get updated body content and assign as prefix_content
         prefix_content = ""
@@ -2683,11 +2689,11 @@ def update_link_abs(link, in_path):
     return abs_link_path
 
 
-def update_links(html, src_path, dest_path):
+def update_links(html, template_path, src_path, save_path):
     """
     Replace all of the relative a links, js links and image links and make them relative to the outpath
     :param html:
-    :param src_path:
+    :param template_path:
     :param dest_path:
     :return:
     """
@@ -2695,7 +2701,7 @@ def update_links(html, src_path, dest_path):
     # css links
     for link in html.find_all("link"):
         if link.has_attr("href"):
-            link["href"] = update_link(link["href"], src_path, dest_path)
+            link["href"] = update_link(link["href"], template_path, save_path)
 
     # a links
     for a in html.find_all("a"):
@@ -2706,33 +2712,38 @@ def update_links(html, src_path, dest_path):
             if link_href.find(config.GLM_MODULE_CONFIG["source_file_ext"]) > -1:
                 a["href"] = config.GLM_MODULE_CONFIG["url_prefix"] + a.text
             else:
-                a["href"] = update_link(a["href"], src_path, dest_path)
+                a["href"] = update_link(a["href"], template_path, save_path)
 
     # script links
     for script in html.find_all("script"):
         if script.has_attr("src"):
-            script["src"] = update_link(script["src"], src_path, dest_path)
+            script["src"] = update_link(script["src"], template_path, save_path)
 
     # images
     for img in html.find_all("img"):
         if img.has_attr("src"):
-            img["src"] = update_link(img["src"], src_path, dest_path)
+            img["src"] = update_link(img["src"], template_path, save_path)
 
     # iframes
     for iframe in html.find_all("iframe"):
         if iframe.has_attr("src"):
+
             link_src = iframe["src"]
             if link_src.startswith('javascript') or link_src.startswith('http'):
                 return
 
+            log(src_path)
+            # base dir
             src_base = src_path.split(BASE_PATH)[1].split("/")[0]
-            dest_base = dest_path.split(BASE_PATH)[1].split("/")[0]
+            dest_base = save_path.split(BASE_PATH)[1].split("/")[0]
 
-            new_link = update_link(link_src, src_path, dest_path)
+            # get link of iframe source and replace in iframe
+            new_link = update_link(link_src, template_path, save_path)
             iframe["src"] = new_link
 
-            src_file = urlparse.urljoin(src_path, link_src)
-            dest_file = urlparse.urljoin(src_path.replace(src_base, dest_base), link_src)
+            # define the paths of file to copy and where to copy to
+            src_file = link_src
+            dest_file = link_src.replace(src_base, dest_base)
 
             try:
                 # copy file as long as the source and destination is not the same
