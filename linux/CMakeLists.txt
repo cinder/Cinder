@@ -250,7 +250,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/System.cpp
     ${CINDER_SRC_DIR}/cinder/Timeline.cpp
     ${CINDER_SRC_DIR}/cinder/TimelineItem.cpp
-    #${CINDER_SRC_DIR}/cinder/Timer.cpp
+    ${CINDER_SRC_DIR}/cinder/Timer.cpp
     ${CINDER_SRC_DIR}/cinder/Triangulate.cpp
     ${CINDER_SRC_DIR}/cinder/TriMesh.cpp
     ${CINDER_SRC_DIR}/cinder/Tween.cpp
