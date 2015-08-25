@@ -214,6 +214,12 @@ code[class*="language-"] {
 .plain {
   font-family: Helvetica, Arial, sans-serif;
 }
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
 #top-primary {
   -webkit-box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
   box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
@@ -379,11 +385,12 @@ body#guide-contents figure.center,
 .content img.center,
 body#guide-contents img.center {
   display: block;
-  max-width: 550px;
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  display: block;
   margin-left: auto;
   margin-right: auto;
+  text-align: center;
 }
 .content img.rounded,
 body#guide-contents img.rounded {

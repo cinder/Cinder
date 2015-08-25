@@ -24,6 +24,12 @@ left-col-width = 300px
   }
 }
 
+// mixins
+center()
+	display: block
+	margin-left: auto
+	margin-right: auto
+	text-align: center
 
 // base html styles
 body
@@ -114,9 +120,6 @@ ol
 li
 	margin: 0 0 0.25rem 1.0rem;
 
-
-
-
 .row
 	max-width: 80rem
 
@@ -150,6 +153,9 @@ code[class*="language-"]
 
 .plain
 	font-family: Helvetica, Arial, sans-serif
+
+.center
+	center()
 
 // code
 // 	margin: 1em 0
@@ -303,9 +309,8 @@ code[class*="language-"]
 	
 	img-base()
 		display: block
-		max-width: 550px
-		margin-top: 50px
-		margin-bottom: 50px
+		margin-top: 30px
+		margin-bottom: 30px
 
 	img.shadow
 		box-shadow: rgba(0,0,0,0.5) 0 10px 20px
@@ -313,8 +318,7 @@ code[class*="language-"]
 	
 	figure.center, img.center
 		img-base()
-		margin-left: auto
-		margin-right: auto
+		center()
 		
 	img.rounded
 		border-radius: 5px
