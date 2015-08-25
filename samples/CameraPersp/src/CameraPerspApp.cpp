@@ -37,7 +37,7 @@ class CameraPerspApp : public App {
 	gl::TextureCubeMapRef		mCubeMap;
 	
 	std::vector<gl::BatchRef>	mObjects;
-	uint						mCurrObject;
+	size_t						mCurrObject;
 	
 	// params for the main camera
 	params::InterfaceGlRef		mParams;
@@ -97,7 +97,7 @@ void CameraPerspApp::setup()
 	mParams->addParam( "Object", mObjectNames, &mObjectSelection )
 		.keyDecr( "[" )
 		.keyIncr( "]" )
-		.updateFn( [this] { mCurrObject = mObjectSelection; } );
+		.updateFn( [this] { mCurrObject = (size_t)mObjectSelection; } );
 	mParams->addSeparator();
 	mParams->addParam( "Eye Point X", &mEyePoint.x ).step( 0.01f );
 	mParams->addParam( "Eye Point Y", &mEyePoint.y ).step( 0.01f );
