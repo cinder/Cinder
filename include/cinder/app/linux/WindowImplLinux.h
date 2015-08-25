@@ -23,7 +23,9 @@
 
 #include "cinder/Display.h"
 
-struct GLFWwindow;
+#include "glfw/glfw_config.h"
+#include "glfw/glfw3.h"
+#include "glfw/glfw3native.h"
 
 namespace cinder { namespace app {
 

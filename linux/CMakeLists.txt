@@ -163,12 +163,101 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/Renderer.cpp
     ${CINDER_SRC_DIR}/cinder/app/RendererGl.cpp
     ${CINDER_SRC_DIR}/cinder/app/Window.cpp
+
+    ${CINDER_SRC_DIR}/cinder/gl/draw.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/scoped.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/wrapper.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Batch.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/BufferObj.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/BufferTexture.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/ConstantConversions.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Context.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Environment.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/EnvironmentCore.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/EnvironmentEs.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Fbo.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/GlslProg.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Pbo.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Query.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Shader.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/ShaderPreprocessor.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Sync.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Texture.cpp
+    #${CINDER_SRC_DIR}/cinder/gl/TextureFont.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TextureFormatParsers.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObj.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Ubo.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Vao.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/VaoImplCore.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/VaoImplEs.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/VaoImplSoftware.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
+
+    ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Fill.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Flip.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Grayscale.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Hdr.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Premultiply.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Resize.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Threshold.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Trim.cpp
+
+    ${CINDER_SRC_DIR}/cinder/svg/Svg.cpp
+
+    ${CINDER_SRC_DIR}/cinder/Area.cpp
+    #${CINDER_SRC_DIR}/cinder/BSpline.cpp
+    #${CINDER_SRC_DIR}/cinder/BSplineFit.cpp
+    ${CINDER_SRC_DIR}/cinder/Buffer.cpp
+    ${CINDER_SRC_DIR}/cinder/Camera.cpp
+    ${CINDER_SRC_DIR}/cinder/CameraUi.cpp
+    #${CINDER_SRC_DIR}/cinder/Capture.cpp
+    ${CINDER_SRC_DIR}/cinder/Channel.cpp
+    ${CINDER_SRC_DIR}/cinder/CinderAssert.cpp
+    ${CINDER_SRC_DIR}/cinder/CinderMath.cpp
+    ${CINDER_SRC_DIR}/cinder/Color.cpp
+    ${CINDER_SRC_DIR}/cinder/ConvexHull.cpp
+    ${CINDER_SRC_DIR}/cinder/DataSource.cpp
+    ${CINDER_SRC_DIR}/cinder/DataTarget.cpp
+    ${CINDER_SRC_DIR}/cinder/Display.cpp
+    ${CINDER_SRC_DIR}/cinder/Exception.cpp
+    ${CINDER_SRC_DIR}/cinder/Frustum.cpp
+    ${CINDER_SRC_DIR}/cinder/GeomIo.cpp
+    ${CINDER_SRC_DIR}/cinder/ImageIo.cpp
+    ${CINDER_SRC_DIR}/cinder/ImageSourceFileRadiance.cpp
+    ${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
+    ${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
+    #${CINDER_SRC_DIR}/cinder/Json.cpp
+    #${CINDER_SRC_DIR}/cinder/Log.cpp
+    ${CINDER_SRC_DIR}/cinder/Matrix.cpp
+    ${CINDER_SRC_DIR}/cinder/ObjLoader.cpp
+    ${CINDER_SRC_DIR}/cinder/Path2d.cpp
+    ${CINDER_SRC_DIR}/cinder/Perlin.cpp
+    ${CINDER_SRC_DIR}/cinder/Plane.cpp
+    ${CINDER_SRC_DIR}/cinder/PolyLine.cpp
+    #${CINDER_SRC_DIR}/cinder/Rand.cpp
+    ${CINDER_SRC_DIR}/cinder/Ray.cpp
+    ${CINDER_SRC_DIR}/cinder/Rect.cpp
+    ${CINDER_SRC_DIR}/cinder/Shape2d.cpp
+    ${CINDER_SRC_DIR}/cinder/Signals.cpp
+    ${CINDER_SRC_DIR}/cinder/Sphere.cpp
+    ${CINDER_SRC_DIR}/cinder/Stream.cpp
+    ${CINDER_SRC_DIR}/cinder/Surface.cpp
+    ${CINDER_SRC_DIR}/cinder/System.cpp
+    ${CINDER_SRC_DIR}/cinder/Timeline.cpp
+    ${CINDER_SRC_DIR}/cinder/TimelineItem.cpp
+    #${CINDER_SRC_DIR}/cinder/Timer.cpp
+    ${CINDER_SRC_DIR}/cinder/Triangulate.cpp
+    ${CINDER_SRC_DIR}/cinder/TriMesh.cpp
+    ${CINDER_SRC_DIR}/cinder/Tween.cpp
+    ${CINDER_SRC_DIR}/cinder/Unicode.cpp
+    ${CINDER_SRC_DIR}/cinder/Url.cpp
+    ${CINDER_SRC_DIR}/cinder/Utilities.cpp
+    ${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
 
 
 set( CMAKE_DEBUG_POSTFIX "_d" )
-if( LINUX_GLES2 )
-    add_library( cinder-es2 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
-else()
-    add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
-endif()
+add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )

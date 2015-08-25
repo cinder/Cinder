@@ -144,6 +144,9 @@ struct PlatformDataAndroid : public Context::PlatformData {
 	EGLSurface		mSurface;
 	EGLConfig		mConfig;
 };
+#elif defined( CINDER_LINUX )
+struct PlatformDataLinux : public Context::PlatformData {
+};
 #endif
 
 } } // namespace cinder::gl

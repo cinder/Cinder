@@ -391,7 +391,7 @@ License:
   #define ci_stbi_fopen     fopen
   #define ci_stbi_fclose    fclose
   #define ci_stbi_fseek     fseek
-  #define ci_stib_ftell     ftell
+  #define ci_stbi_ftell     ftell
   #define ci_stbi_fread     fread
   #define ci_stbi_feof      feof
 #endif

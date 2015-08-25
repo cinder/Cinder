@@ -92,6 +92,8 @@ void destroyPlatformData( Context::PlatformData *data )
 	auto platformData = dynamic_cast<PlatformDataMsw*>( data );
 	::wglMakeCurrent( NULL, NULL );
 	::wglDeleteContext( platformData->mGlrc );
+#elif defined( CINDER_LINUX )
+  auto platformData = dynamic_cast<PlatformDataLinux*>( data );
 #endif
 
 	delete data;
@@ -154,6 +156,8 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 	EGLContext eglContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
 
 	shared_ptr<Context::PlatformData> platformData( new PlatformDataAndroid( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );
+#elif defined( CINDER_LINUX )
+  shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux() );
 #endif
 
 	ContextRef result( new Context( platformData ) );
