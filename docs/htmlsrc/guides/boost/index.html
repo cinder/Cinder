@@ -1,42 +1,61 @@
 <!DOCTYPE html>
 <html>
-<head>
-   <title></title>
-</head>
-<body>
-   <div class="contents">
-      <div class="textblock">
-         <h1><a class="anchor" id="Introduction"></a>
-            Introduction
-         </h1>
-         <p>The <a href="http://boost.org">Boost libraries</a> are a collection of peer-reviewed open source C++ libraries. These libraries are some of the highest quality on the planet. In fact they are so good, several have gone on to become part of the C++ standard itself. Many of the developers who work on Boost are members of the C++ committee.<br />
-            <br />
-         </p>
-         <h1><a class="anchor" id="setup"></a>
-            Setting up Boost
-         </h1>
-         <p>If you have downloaded one of the pre-built packages from the Cinder website, Boost is already included - you're all set. However if you are building Cinder yourself from <a href="http://github.com/cinder">github</a>, or you would like to upgrade your copy of Boost from the included version, these instructions will guide you through the process.<br />
-            <br />
-            If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.55. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a><br />
-            <br />
-            Now you'll need to put Boost inside your Cinder folder, and <b>rename it <em>boost</b></em>. Your cinder directory should be laid out similarly to the screenshot below. At this point you should be all done if you are using Boost version 1.53, which is the version Cinder is currently built against. If you are moving to a different version of Boost, follow the build instructions below.<br />
-         </p>
-         <div class="image">
-            <img src="images/cinder_finder.png" alt="cinder_finder.png"/>
-         </div>
-         <p> <br />
-         </p>
-         <h1><a class="anchor" id="build"></a>
-            Building Boost (Advanced Users)
-         </h1>
-         <p>Here's how to compile Boost yourself. <br />
-            <br />
-            <b>Mac OS X &amp; iOS</b>:<br />
-            You'll need to replace <em>tools/build/v2/user-config.jam</em> with the following (and possibly correct the paths to the iOS SDKs):
-         </p>
+   <head>
+      <title>Cinder + Boost</title>
 
-         <pre><code class="language-bash">
-using clang : osx
+      <!-- keywords used for searching -->
+      <meta name="keywords" content="guide, boost">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <!-- reference to Cinder classes -->
+         <!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+         <!-- master stylesheet - these links will be replaced when compiled -->
+      <link rel="stylesheet" href="../../_assets/css/foundation.css">
+      <link rel="stylesheet" href="../../_assets/css/prism.css">
+      <link rel="stylesheet" href="../../_assets/css/cinder_docs.css">
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+      <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+      
+   </head>
+
+   <body id="guide-contents" >
+
+      <!-- CONTENT STARTS HERE -->
+      <a class="anchor" id="Introduction"></a>
+      <h1>Cinder + Boost</h1>
+
+      <section>
+         <h2>Introduction</h2>
+      
+         <p>The <a href="http://boost.org">Boost libraries</a> are a collection of peer-reviewed open source C++ libraries. These libraries are some of the highest quality on the planet. In fact they are so good, several have gone on to become part of the C++ standard itself. Many of the developers who work on Boost are members of the C++ committee.</p>
+      </section>
+
+      <section>
+         <a class="anchor" id="setup"></a>
+         <h2>Setting up Boost</h2>
+         
+         <p>If you have downloaded one of the pre-built packages from the Cinder website, Boost is already included - you're all set. However if you are building Cinder yourself from <a href="http://github.com/cinder">github</a>, or you would like to upgrade your copy of Boost from the included version, these instructions will guide you through the process.</p>
+
+         <p>If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.55. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a></p>
+         
+         <p>Now you'll need to put Boost inside your Cinder folder, and <strong>rename it <em>boost</em></strong>. Your cinder directory should be laid out similarly to the screenshot below. At this point you should be all done if you are using Boost version 1.53, which is the version Cinder is currently built against. If you are moving to a different version of Boost, follow the build instructions below.</p>
+               
+         <div class="image">
+            <img class="center" src="images/cinder_finder.png" alt="cinder_finder.png"/>
+         </div>
+      </section>
+         
+      <section>
+         <a class="anchor" id="build"></a>
+         <h2>Building Boost (Advanced Users)</h2>
+         <p>Here's how to compile Boost yourself:</p>
+
+         <h3>Mac OS X &amp; iOS:</h3>
+         <p>You'll need to replace <em>tools/build/v2/user-config.jam</em> with the following (and possibly correct the paths to the iOS SDKs):</p>
+
+<pre><code class="language-bash">using clang : osx
 : xcrun clang -arch i386 -arch x86_64 -stdlib=libc++ -std=c++11 -mmacosx-version-min=10.8 -fvisibility-inlines-hidden
 ;
 
@@ -49,45 +68,59 @@ using clang : ios_sim
 ;</code></pre>
          
          
-         <p><b>MacOS X</b><br />
-            <code> cd cinder/boost<br />
-            ./bootstrap.sh -with-libraries=filesystem,system,date_time ./b2 -a -j4 toolset=clang-osx link=static stage cp stage/lib/*.a ../lib/macosx<br />
-            </code> <b>iOS</b><br />
-            <code> rm -rf stage ./b2 -a -j4 toolset=clang-ios link=static stage<br />
-            cp stage/lib/*.a ../lib/ios<br />
-            </code> <b>iOS Simulator</b><br />
-            <code> rm -rf stage ./b2 -a -j4 toolset=clang-ios_sim link=static stage<br />
-            cp stage/lib/*.a ../lib/ios-sim<br />
-            </code> <br />
-            <b>Visual C++ 2012</b>:<br />
-            From the Visual Studio 2012 Command Prompt:<br />
-            <code> cd cinder\boost<br />
-            bootstrap<br />
-            b2 runtime-link=static debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread<br />
-            copy stage\lib\*.lib ..\lib\msw\x86<br />
-            </code> <br />
-            <b>Visual C++ 2012 x64</b>:<br />
-            From the Visual Studio 2012 Command Prompt:<br />
-            <code> cd cinder\boost<br />
-            bootstrap<br />
-            b2 runtime-link=static address-model=64 debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread<br />
-            </code> <br />
-            <b>Visual C++ 2013</b>:<br />
-            From the Command Prompt, start by running <code>C: Files (x86) Visual Studio 12.0.bat</code>:<br />
-            <code> cd cinder\boost<br />
-            bootstrap<br />
-            b2 runtime-link=static debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread<br />
-            </code> <br />
-            <b>Visual C++ 2013 x64</b>:<br />
-            From the Command Prompt, start by running <code>C: Files (x86) Visual Studio 12.0.bat x86_amd64</code>:<br />
-            <code> cd cinder\boost<br />
-            bootstrap<br />
-            b2 runtime-link=static address-model=64 debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread<br />
-            </code> <br />
-            <br />
-         </p>
-      </div>
-</div>
+         <h3>MacOSX:</h3>
+<pre><code class="language-bash">cd cinder/boost
+./bootstrap.sh -with-libraries=filesystem,system,date_time ./b2 -a -j4 toolset=clang-osx link=static stage cp stage/lib/*.a ../lib/macosx</code></pre>
 
-</body>
-</html>
+         <h3>iOS:</h3>
+<pre><code class="language-bash">rm -rf stage ./b2 -a -j4 toolset=clang-ios link=static stage
+cp stage/lib/*.a ../lib/ios
+</code></pre>
+
+         <h3>iOS Simulator:</h3>
+<pre><code class="language-bash">rm -rf stage ./b2 -a -j4 toolset=clang-ios_sim link=static stage
+cp stage/lib/*.a ../lib/ios-sim
+</code></pre>
+
+         <h3>Visual C++ 2012:</h3>
+         <p>From the Visual Studio 2012 Command Prompt:</p>
+<pre><code class="language-bash">cd cinder\boost
+bootstrap
+b2 runtime-link=static debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread
+copy stage\lib\*.lib ..\lib\msw\x86
+</code></pre>
+
+         <h3>Visual C++ 2012 x64:</h3>
+         <p>From the Visual Studio 2012 Command Prompt:</p>
+<pre><code class="language-bash">cd cinder\boost
+bootstrap
+b2 runtime-link=static address-model=64 debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread
+</code></pre>
+
+         <h3>Visual C++ 2013:</h3>
+         <p>From the Command Prompt, start by running 
+<pre><code class="language-bash">C: Files (x86) Visual Studio 12.0.bat:
+cd cinder\boost
+bootstrap
+b2 runtime-link=static debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread
+</code></pre>
+            
+         <h3>Visual C++ 2013 x64:</h3>
+         <p>From the Command Prompt, start by running:
+<pre><code class="language-bash">C: Files (x86) Visual Studio 12.0.bat x86_amd64:
+cd cinder\boost
+bootstrap
+b2 runtime-link=static address-model=64 debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread
+</code></pre>
+         
+         
+      </section>
+      <!-- END CONTENT -->
+
+      <!-- Scripts -->
+      <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+      <!-- Place additional scripts here (optional) -->
+      <!-- <script type="text/javascript"></script> -->
+
+   </body>
+</html> 
