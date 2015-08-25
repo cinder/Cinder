@@ -32,8 +32,10 @@ set( CINDER_TOOLCHAIN_CLANG true )
 
 if( CINDER_TOOLCHAIN_CLANG )
     set(CMAKE_TOOLCHAIN_PREFIX "llvm-" ) 
-    SET(CMAKE_C_COMPILER                      "/usr/bin/clang-3.5")
-    SET(CMAKE_CXX_COMPILER                    "/usr/bin/clang++-3.5")
+    SET(CMAKE_C_COMPILER                      "/usr/local/google/home/haing/DevTools/clang-3.6.2/bin/clang")
+    SET(CMAKE_CXX_COMPILER                    "/usr/local/google/home/haing/DevTools/clang-3.6.2/bin/clang++")
+    #SET(CMAKE_C_COMPILER                      "/usr/bin/clang-3.5")
+    #SET(CMAKE_CXX_COMPILER                    "/usr/bin/clang++-3.5")
 
     SET (CMAKE_C_FLAGS_INIT                   "-Wall -std=c99")
     SET (CMAKE_C_FLAGS_DEBUG_INIT             "-g")
@@ -208,8 +210,8 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/svg/Svg.cpp
 
     ${CINDER_SRC_DIR}/cinder/Area.cpp
-    #${CINDER_SRC_DIR}/cinder/BSpline.cpp
-    #${CINDER_SRC_DIR}/cinder/BSplineFit.cpp
+    ${CINDER_SRC_DIR}/cinder/BSpline.cpp
+    ${CINDER_SRC_DIR}/cinder/BSplineFit.cpp
     ${CINDER_SRC_DIR}/cinder/Buffer.cpp
     ${CINDER_SRC_DIR}/cinder/Camera.cpp
     ${CINDER_SRC_DIR}/cinder/CameraUi.cpp
@@ -229,7 +231,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/ImageSourceFileRadiance.cpp
     ${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
     ${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
-    #${CINDER_SRC_DIR}/cinder/Json.cpp
+    ${CINDER_SRC_DIR}/cinder/Json.cpp
     #${CINDER_SRC_DIR}/cinder/Log.cpp
     ${CINDER_SRC_DIR}/cinder/Matrix.cpp
     ${CINDER_SRC_DIR}/cinder/ObjLoader.cpp
@@ -237,7 +239,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Perlin.cpp
     ${CINDER_SRC_DIR}/cinder/Plane.cpp
     ${CINDER_SRC_DIR}/cinder/PolyLine.cpp
-    #${CINDER_SRC_DIR}/cinder/Rand.cpp
+    ${CINDER_SRC_DIR}/cinder/Rand.cpp
     ${CINDER_SRC_DIR}/cinder/Ray.cpp
     ${CINDER_SRC_DIR}/cinder/Rect.cpp
     ${CINDER_SRC_DIR}/cinder/Shape2d.cpp
@@ -257,7 +259,6 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Utilities.cpp
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
-
 
 set( CMAKE_DEBUG_POSTFIX "_d" )
 add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
