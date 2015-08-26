@@ -49,6 +49,8 @@
 	typedef void*		EGLDisplay;
 	typedef void*		EGLSurface;
 	typedef void*		EGLConfig;
+#elif defined( CINDER_LINUX )
+	typedef struct GLFWwindow 	GLFWwindow;
 #endif
 
 namespace cinder { namespace gl {
@@ -146,6 +148,11 @@ struct PlatformDataAndroid : public Context::PlatformData {
 };
 #elif defined( CINDER_LINUX )
 struct PlatformDataLinux : public Context::PlatformData {
+	PlatformDataLinux( GLFWwindow *context )
+		: mContext( context )
+	{}
+
+	GLFWwindow 		*mContext = nullptr;
 };
 #endif
 

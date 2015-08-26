@@ -32,8 +32,8 @@ set( CINDER_TOOLCHAIN_CLANG true )
 
 if( CINDER_TOOLCHAIN_CLANG )
     set(CMAKE_TOOLCHAIN_PREFIX "llvm-" ) 
-    SET(CMAKE_C_COMPILER                      "/usr/local/google/home/haing/DevTools/clang-3.6.2/bin/clang")
-    SET(CMAKE_CXX_COMPILER                    "/usr/local/google/home/haing/DevTools/clang-3.6.2/bin/clang++")
+    SET(CMAKE_C_COMPILER                      "clang")
+    SET(CMAKE_CXX_COMPILER                    "clang++")
     #SET(CMAKE_C_COMPILER                      "/usr/bin/clang-3.5")
     #SET(CMAKE_CXX_COMPILER                    "/usr/bin/clang++-3.5")
 

@@ -21,6 +21,9 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
+
+#include "cinder/app/linux/AppLinux.h"
 #include "cinder/Display.h"
 
 #include "glfw/glfw_config.h"

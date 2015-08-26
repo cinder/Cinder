@@ -53,6 +53,8 @@
 		#include "GLES3/gl3ext.h"
 		#define CINDER_GL_ES_3    
  	#endif 
+#elif defined( CINDER_LINUX )
+ 	#include "glload/gl_core.h"
 #elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push

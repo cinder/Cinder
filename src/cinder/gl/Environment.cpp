@@ -39,6 +39,8 @@
 	#include <windows.h>
 #elif defined( CINDER_ANDROID )
 	#include "EGL/egl.h"
+#elif defined( CINDER_LINUX )
+	#include "glfw/glfw3.h"
 #endif
 
 #include "cinder/Log.h"
@@ -157,7 +159,8 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 
 	shared_ptr<Context::PlatformData> platformData( new PlatformDataAndroid( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );
 #elif defined( CINDER_LINUX )
-  shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux() );
+	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
+  	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedContextPlatformData->mContext ) );
 #endif
 
 	ContextRef result( new Context( platformData ) );
@@ -223,6 +226,14 @@ void Environment::makeContextCurrent( const Context *context )
 	// 	EGLBoolean status = ::eglMakeCurrent( platformData->mDisplay, platformData->mSurface, platformData->mSurface, platformData->mContext );
 	// 	assert( status );
 	// }
+#elif defined( CINDER_LINUX )
+  if( context ) {
+    auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
+    glfwMakeContextCurrent( platformData->mContext );
+  }
+  else {
+    glfwMakeContextCurrent( nullptr );
+  }
 #endif
 }
 
