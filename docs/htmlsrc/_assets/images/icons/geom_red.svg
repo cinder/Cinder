@@ -2,36 +2,35 @@
 <!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="30px" height="30px" viewBox="0 0 30 30" enable-background="new 0 0 30 30" xml:space="preserve">
-<g id="geom_red">
-	<g>
-		<g>
-			<circle fill="#D65237" cx="14.8" cy="14.9" r="13.4"/>
-		</g>
-		<g>
-			<g opacity="0.5">
-				<path fill="#010101" d="M1.9,15.5c0,6.9,5.8,12.4,12.9,12.4c6.6,0,12.1-4.9,12.8-11.1c-1.1,1.7-6.3,3-12.6,3
-					c-7.1,0-12.8-1.6-12.8-3.7"/>
-			</g>
-		</g>
-		<g>
-			<ellipse fill="#A63C2D" cx="14.9" cy="16" rx="13" ry="3.9"/>
-		</g>
-		<g>
-			<g>
-				<path fill="#FFFFFF" d="M28.5,15.8H27v-0.5h0.3L27,14.9l0.4-0.3L28.5,15.8z M25.1,15.8h-2v-0.5h2V15.8z M21.1,15.8h-2v-0.5h2
-					V15.8z M17.1,15.8h-2v-0.5h2V15.8z M14.7,15.5h-0.5v-2h0.5V15.5z M25.6,13.5L24.2,12l0.4-0.3l1.4,1.4L25.6,13.5z M14.7,11.5
-					h-0.5v-2h0.5V11.5z M22.8,10.6l-1.4-1.4l0.4-0.3l1.4,1.4L22.8,10.6z M20,7.7l-1.4-1.4L19,5.9l1.4,1.4L20,7.7z M14.7,7.5h-0.5v-2
-					h0.5V7.5z M17.2,4.8l-1.4-1.4l0.4-0.3l1.4,1.4L17.2,4.8z M14.7,3.5h-0.5V1l0.5,0.6l-0.1,0.1l0,0L14.7,3.5z"/>
-			</g>
-			<g>
-				<path fill="#FFFFFF" d="M17.2,15.8h-3V13h3V15.8z M14.7,15.3h2v-1.8h-2C14.7,13.5,14.7,15.3,14.7,15.3z"/>
-			</g>
-		</g>
-		<g>
-			<path fill="#FFFFFF" d="M14.8,28.8c-7.6,0-13.9-6.2-13.9-13.9S7.2,1,14.8,1s13.9,6.2,13.9,13.9S22.5,28.8,14.8,28.8z M14.8,2
-				C7.7,2,1.9,7.8,1.9,14.9s5.8,12.9,12.9,12.9S27.7,22,27.7,14.9C27.7,7.8,21.9,2,14.8,2z"/>
-		</g>
-	</g>
+	 viewBox="0 0 61.5 61.5" enable-background="new 0 0 61.5 61.5" xml:space="preserve">
+<circle fill-rule="evenodd" clip-rule="evenodd" fill="#2D3333" cx="30.7" cy="30.8" r="30.7"/>
+<circle fill="#A31E22" cx="30.7" cy="30.8" r="25.1"/>
+<ellipse transform="matrix(0.9999 1.491686e-02 -1.491686e-02 0.9999 0.4747 -0.45)" fill="#D55136" cx="30.4" cy="31.6" rx="16.6" ry="16.6"/>
+<path fill="#A31E22" d="M30.3,37.7c-9.2-0.1-16.6-2.3-16.5-4.9c0-2.6,7.5-4.5,16.7-4.4c9.2,0.1,16.6,2.3,16.5,4.9
+	C46.9,35.8,39.5,37.8,30.3,37.7z"/>
+<g>
+	<path fill="#481817" d="M30.3,37.7c-8.5-0.1-15.4-2-16.4-4.3c0.9,8.2,7.8,14.7,16.2,14.8c8.5,0.1,15.6-6.1,16.7-14.3
+		C45.8,36.1,38.8,37.8,30.3,37.7z"/>
+	<path fill="#4D4E4E" d="M13.9,33.4"/>
+	<path fill="#4D4E4E" d="M46.8,33.9"/>
+</g>
+<g>
+	<polygon fill="none" stroke="#FFFFFF" stroke-width="0.7893" stroke-miterlimit="10" points="28.8,32.1 29,16.4 45.7,32.4 	"/>
+	
+		<rect x="28.8" y="28.8" transform="matrix(0.9999 1.491686e-02 -1.491686e-02 0.9999 0.458 -0.4559)" fill="none" stroke="#FFFFFF" stroke-width="0.7893" stroke-miterlimit="10" width="4" height="3.4"/>
+</g>
+<g>
+	<defs>
+		<circle id="SVGID_1_" cx="30.8" cy="30.7" r="30.7"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  overflow="visible"/>
+	</clipPath>
+	
+		<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="292.5583" y1="-18.1604" x2="346.0865" y2="-18.1604" gradientTransform="matrix(-0.4255 -0.4255 0.7071 -0.7071 168.3727 143.5177)">
+		<stop  offset="0" style="stop-color:#FFFFFF;stop-opacity:5.000000e-02"/>
+		<stop  offset="1" style="stop-color:#FBFBFB;stop-opacity:0"/>
+	</linearGradient>
+	<polygon clip-path="url(#SVGID_2_)" fill="url(#SVGID_3_)" points="31.6,-14.3 54.4,8.5 7.7,55.2 -15.1,32.5 	"/>
 </g>
 </svg>

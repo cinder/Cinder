@@ -173,6 +173,13 @@ ul li {
 ul li:before {
   content: none;
 }
+ul.fancy>li {
+  font-family: 'Libre Baskerville', serif;
+  font-style: italic;
+}
+ul.fancy>li a:hover {
+  text-decoration: none;
+}
 ol {
   list-style: decimal;
   margin-left: 1.4rem;
@@ -187,6 +194,16 @@ ci {
   color: #800080;
   font-weight: 700;
 }
+a.ci {
+  font-family: Consolas, Monaco, 'Andale Mono', monospace;
+  font-size: 0.8em;
+  font-size: 0.9em;
+}
+a.ci.plain,
+a.ci .plain {
+  font-family: inherit !important;
+  font-size: inherit;
+}
 body#guide-contents {
   max-width: 960px;
   margin: 20px auto 0 auto;
@@ -195,18 +212,18 @@ body#guide-contents {
 code,
 .code {
   font-family: Consolas, Monaco, 'Andale Mono', monospace;
-  font-size: 0.85em;
+  font-size: 0.8em;
   padding: 2px 4px;
   background: #fafafa;
   color: #666;
 }
 pre > code {
-  font-size: 1em;
   background: none;
 }
 pre[class*="language-"] {
   margin: 1em 0;
   padding: 0.5em 0.7em;
+  line-height: 1.3em;
 }
 code[class*="language-"] {
   padding: 0;
@@ -434,11 +451,6 @@ body#guide-contents ul li {
 .content ul li:before,
 body#guide-contents ul li:before {
   content: "\00BB \00A0";
-}
-.content ul.fancy>li,
-body#guide-contents ul.fancy>li {
-  font-family: 'Libre Baskerville', serif;
-  font-style: italic;
 }
 .content .cols-2,
 body#guide-contents .cols-2 {

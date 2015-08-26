@@ -31,6 +31,12 @@ center()
 	margin-right: auto
 	text-align: center
 
+
+codeStyle()
+	font-family: Consolas, Monaco, 'Andale Mono', monospace;
+	font-size: .8em
+
+
 // base html styles
 body
 	font-size: 14px
@@ -113,6 +119,14 @@ plain-ul()
 ul 
 	plain-ul()
 
+
+ul.fancy>li
+	font-family: 'Libre Baskerville', serif;
+	font-style: italic
+	
+	a:hover
+		text-decoration: none
+
 ol
 	list-style: decimal
 	margin-left: 1.4rem;
@@ -127,6 +141,14 @@ ci
 	color: purple;
 	font-weight: 700;
 
+a.ci
+	codeStyle()
+	font-size: 0.9em
+	
+	&.plain, .plain
+		font-family: inherit !important
+		font-size: inherit
+
 // for guide template
 body#guide-contents
 	max-width: 960px
@@ -134,19 +156,18 @@ body#guide-contents
 	width: 100%
 
 code, .code
-	font-family: Consolas, Monaco, 'Andale Mono', monospace;
-	font-size: .85em
+	codeStyle()
 	padding: 2px 4px
 	background: #fafafa
 	color: #666
 
 pre > code
-	font-size: 1em
 	background: none
 	
 pre[class*="language-"]
 	margin: 1em 0
 	padding: 0.5em 0.7em
+	line-height: 1.3em
 
 code[class*="language-"]
 	padding: 0
@@ -350,10 +371,6 @@ code[class*="language-"]
 
 	ul li:before
 		content: "\00BB \00A0"	// double arrows + &nbsp; (unicode)
-		
-	ul.fancy>li
-		font-family: 'Libre Baskerville', serif;
-		font-style: italic
 		
 	.cols-2
 		width: 100%

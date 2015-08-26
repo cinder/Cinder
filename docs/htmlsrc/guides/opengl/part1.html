@@ -47,7 +47,7 @@ CINDER_APP( BasicApp, RendererGl )</code></pre>
 
 <br />
 
-<p>In order to use OpenGL, a Cinder app instantiates <ci>app::RendererGl</ci> using the <code>CINDER_APP</code> macro. The most straightforward way to start to use Cinder's OpenGL API is to <code>#include "cinder/gl/gl.h"</code>. While this does not include all of Cinder's OpenGL headers, it does include some of the commonly used ones.</p>
+<p>In order to use OpenGL, a Cinder app instantiates <ci dox="app::RendererGl">app::RendererGl <span class="plain">UNSTYLE</span></ci> using the <code>CINDER_APP</code> macro. The most straightforward way to start to use Cinder's OpenGL API is to <code>#include "cinder/gl/gl.h"</code>. While this does not include all of Cinder's OpenGL headers, it does include some of the commonly used ones.</p>
 
 <a id="convenience_functions"><h3>Convenience Functions</h3></a>
 <p>Often you're more interested in ease of implementation than performance. Cinder's <ci>ci::gl</ci> convenience functions are for this purpose. Let's look at how to use them to draw a filled circle. A modified version of the previous example's <code>draw()</code> method follows:<p>
@@ -84,8 +84,7 @@ void BasicApp::draw()
 	gl::color( Color( 0, 1, 0 ) ); // green
 	gl::drawSolidCircle( center + vec2( r, r ), r );
 	gl::color( Color( 0, 0, 1 ) ); // blue
-	gl::drawSolidCircle( center
-						 + vec2( 0, -0.73 * r ), r );
+	gl::drawSolidCircle( center + vec2( 0, -0.73 * r ), r );
 }
 </code></pre>
 </div>
