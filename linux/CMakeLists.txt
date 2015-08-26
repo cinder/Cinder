@@ -26,30 +26,33 @@ set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
 
+# Output path
+set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/linux )
+
 project( cinder_android )
 
 set( CINDER_TOOLCHAIN_CLANG true )
 
 if( CINDER_TOOLCHAIN_CLANG )
     set(CMAKE_TOOLCHAIN_PREFIX "llvm-" ) 
-    SET(CMAKE_C_COMPILER                      "clang")
-    SET(CMAKE_CXX_COMPILER                    "clang++")
-    #SET(CMAKE_C_COMPILER                      "/usr/bin/clang-3.5")
-    #SET(CMAKE_CXX_COMPILER                    "/usr/bin/clang++-3.5")
+    set(CMAKE_C_COMPILER                      "clang")
+    set(CMAKE_CXX_COMPILER                    "clang++")
+    #set(CMAKE_C_COMPILER                      "/usr/bin/clang-3.5")
+    #set(CMAKE_CXX_COMPILER                    "/usr/bin/clang++-3.5")
 
-    SET (CMAKE_C_FLAGS_INIT                   "-Wall -std=c99")
-    SET (CMAKE_C_FLAGS_DEBUG_INIT             "-g")
-    SET (CMAKE_C_FLAGS_MINSIZEREL_INIT        "-Os -DNDEBUG")
-    SET (CMAKE_C_FLAGS_RELEASE_INIT           "-O4 -DNDEBUG")
-    SET (CMAKE_C_FLAGS_RELWITHDEBINFO_INIT    "-O2 -g")
-    SET(CMAKE_C_FLAGS                         "${CMAKE_C_FLAGS} -fmessage-length=0 ")
+    set(CMAKE_C_FLAGS_INIT                    "-Wall -std=c99")
+    set(CMAKE_C_FLAGS_DEBUG_INIT              "-g")
+    set(CMAKE_C_FLAGS_MINSIZEREL_INIT         "-Os -DNDEBUG")
+    set(CMAKE_C_FLAGS_RELEASE_INIT            "-O4 -DNDEBUG")
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT     "-O2 -g")
+    set(CMAKE_C_FLAGS                          "${CMAKE_C_FLAGS} -fmessage-length=0 ")
 
-    SET (CMAKE_CXX_FLAGS_INIT                 "-Wall")
-    SET (CMAKE_CXX_FLAGS_DEBUG_INIT           "-g")
-    SET (CMAKE_CXX_FLAGS_MINSIZEREL_INIT      "-Os -DNDEBUG")
-    SET (CMAKE_CXX_FLAGS_RELEASE_INIT         "-O4 -DNDEBUG")
-    SET (CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT  "-O2 -g")
-    SET (CMAKE_CCC_FLAGS                      "${CMAKE_C_FLAGS} -fmessage-length=0 ")
+    set(CMAKE_CXX_FLAGS_INIT                  "-Wall")
+    set(CMAKE_CXX_FLAGS_DEBUG_INIT            "-g")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT       "-Os -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE_INIT          "-O4 -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT   "-O2 -g")
+    set(CMAKE_CCC_FLAGS                       "${CMAKE_C_FLAGS} -fmessage-length=0 ")
 endif()
 
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
@@ -95,6 +98,7 @@ set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/glfw/src/window.c
 
     ${CINDER_SRC_DIR}/glfw/src/window.c
+    ${CINDER_SRC_DIR}/glfw/src/glx_context.c
     ${CINDER_SRC_DIR}/glfw/src/x11_init.c
     ${CINDER_SRC_DIR}/glfw/src/x11_monitor.c
     ${CINDER_SRC_DIR}/glfw/src/x11_window.c
@@ -102,6 +106,20 @@ set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/glfw/src/linux_joystick.c
     ${CINDER_SRC_DIR}/glfw/src/posix_time.c
     ${CINDER_SRC_DIR}/glfw/src/posix_tls.c
+
+    ${CINDER_SRC_DIR}/glload/gl_load.c
+
+    ${CINDER_SRC_DIR}/linebreak/linebreak.c
+    ${CINDER_SRC_DIR}/linebreak/linebreakdata.c
+    ${CINDER_SRC_DIR}/linebreak/linebreakdef.c
+
+    ${CINDER_SRC_DIR}/libtess2/bucketalloc.c
+    ${CINDER_SRC_DIR}/libtess2/dict.c
+    ${CINDER_SRC_DIR}/libtess2/geom.c
+    ${CINDER_SRC_DIR}/libtess2/mesh.c
+    ${CINDER_SRC_DIR}/libtess2/priorityq.c
+    ${CINDER_SRC_DIR}/libtess2/sweep.c
+    ${CINDER_SRC_DIR}/libtess2/tess.c
 
     ${CINDER_SRC_DIR}/freetype/bdf/bdf.c
     ${CINDER_SRC_DIR}/freetype/cff/cff.c
@@ -148,6 +166,7 @@ set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/freetype/psnames/psnames.c
     ${CINDER_SRC_DIR}/freetype/cid/type1cid.c
     ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c
+
 )
 
 set( CINDER_CXX_SRC_FILES
@@ -195,6 +214,8 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/VaoImplSoftware.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
+
+    ${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
 
     ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
     ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp

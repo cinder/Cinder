@@ -22,8 +22,16 @@
 */
 
 #include "cinder/app/linux/AppImplLinux.h"
+#include "cinder/app/linux/AppLinux.h"
 
 namespace cinder { namespace app {
 
+
+void AppImplLinux::run()
+{
+	mApp->privateSetup__();
+	mSetupHasBeenCalled = true;
+
+}
 
 }} // namespace cinder::app

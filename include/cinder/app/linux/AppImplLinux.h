@@ -25,7 +25,9 @@
 
 #include "cinder/app/linux/AppLinux.h"
 
-namespace cinder { namespace app { 
+namespace cinder { namespace app {
+
+class AppLinux;
 
 class AppImplLinux {
  public:
@@ -55,8 +57,11 @@ class AppImplLinux {
 	void						showCursor();
 	ivec2						getMousePos() const;
 
- private:
-	void 						setup();
+private:
+	AppLinux					*mApp = nullptr;
+	bool						mSetupHasBeenCalled = false;
+
+	void 						run();
 
 	friend class AppLinux;
 };

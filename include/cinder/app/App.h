@@ -55,4 +55,10 @@
         typedef AppAndroid App;
     } } // namespace cinder::app
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_ANDROID( APP, RENDERER, ##__VA_ARGS__ )
+#elif defined( CINDER_LINUX )
+    #include "cinder/app/linux/AppLinux.h"
+    namespace cinder { namespace app {
+        typedef AppLinux App;
+    } } // namespace cinder::app
+	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_LINUX( APP, RENDERER, ##__VA_ARGS__ )
 #endif

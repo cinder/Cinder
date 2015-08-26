@@ -45,7 +45,7 @@ AppLinux::~AppLinux()
 
 void AppLinux::launch()
 {
-	mImpl->setup();
+	mImpl->run();
 }
 
 WindowRef AppLinux::createWindow( const Window::Format &format )

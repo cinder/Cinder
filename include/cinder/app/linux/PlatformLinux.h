@@ -44,7 +44,7 @@ class PlatformLinux : public Platform {
 	virtual fs::path 				getFolderPath( const fs::path &initialPath ) override;
 	virtual fs::path 				getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 
-	virtual std::map<std::string,std::string>	getEnvironmentVariables() override;
+	virtual std::map<std::string, std::string>	getEnvironmentVariables() override;
 
 	virtual fs::path				expandPath( const fs::path &path ) override;
 	virtual fs::path				getHomeDirectory() const override;

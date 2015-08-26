@@ -55,68 +55,79 @@ DataSourceRef PlatformLinux::loadResource( const fs::path &resourcePath )
 
 fs::path PlatformLinux::getResourceDirectory() const 
 {
-	
+	// @TODO: Implement
+	return fs::path();	
 }
 
 fs::path PlatformLinux::getResourcePath( const fs::path &rsrcRelativePath ) const 
 {
-	
+	// @TODO: Implement
+	return fs::path();	
 }
 
 
 fs::path PlatformLinux::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) 
 {
-	
+	// @TODO: Implement
+	return fs::path();
 }
 
 fs::path PlatformLinux::getFolderPath( const fs::path &initialPath ) 
 {
-	
+	// @TODO: Implement
+	return fs::path();
 }
 
 fs::path PlatformLinux::getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) 
 {
-	
+	// @TODO: Implement
+	return fs::path();
 }
 
-std::map<std::string,std::string> PlatformLinux::getEnvironmentVariables() 
+std::map<std::string, std::string> PlatformLinux::getEnvironmentVariables() 
 {
-	
+	// @TODO: Implement
+	return std::map<std::string, std::string>();
 }
 
 fs::path PlatformLinux::expandPath( const fs::path &path ) 
 {
-	
+	// @TODO: Implement
+	return fs::path();	
 }
 
 fs::path PlatformLinux::getHomeDirectory() const 
 {
-	
+	// @TODO: Implement
+	return fs::path();	
 }
 
 fs::path PlatformLinux::getDocumentsDirectory() const 
 {
-	
+	// @TODO: Implement
+	return fs::path();	
 }
 
 fs::path PlatformLinux::getDefaultExecutablePath() const 
 {
-	
+	// @TODO: Implement
+	return fs::path();	
 }
 
 void PlatformLinux::sleep( float milliseconds ) 
 {
-	
+	// @TODO: Implement
 }
 
 void PlatformLinux::launchWebBrowser( const Url &url ) 
 {
-	
+	// @TODO: Implement
 }
 
 std::vector<std::string> PlatformLinux::stackTrace() 
 {
-	
+	// @TODO: Implement
+	return std::vector<std::string>();	
 }
 
 }} // namespace cinder::app
