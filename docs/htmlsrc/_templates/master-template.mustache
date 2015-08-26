@@ -36,7 +36,7 @@
                     <!-- main nav -->
                     
                     <nav id="main-nav" class="show-for-medium-up row top-bar" data-topbar role="navigation">
-                      <div class="branding columns medium-4 large-3">
+                      <div class="branding columns medium-4 large-3 collapse">
                         <div class="navbar-header">
                           <a class="navbar-brand" href="../index.html"></a><div class="cinder-version">0.9.0</div>
                         </div>
@@ -60,15 +60,14 @@
                             <!-- Left Nav Section -->
                             
                             <ul class="tablist nav">
-                              <li id="nav_reference"  class="{{#section_reference}}active{{/section_reference}}">
-                                <a href="../reference/geometry.html">Reference</a></li>
-                              <li id="nav_guides"     class="{{#section_guides}}active{{/section_guides}}">
-                                <a href="../guides/index.html">Guides</a></li>
-                              <li id="nav_namespaces" class="{{#section_namespaces}}active{{/section_namespaces}}">
-                                <a href="../namespaces.html">Namespaces</a></li>
-                              <li id="nav_classes"    class="{{#section_classes}}active{{/section_classes}}">
-                                <a href="../classes.html">
-                                  Classes</a></li>
+                                <li id="nav_home" class="{{#section_home}}active{{/section_home}}">
+                                    <a href="../index.html">Main Page</a></li>
+                                <li id="nav_reference" class="{{#section_reference}}active{{/section_reference}}">
+                                    <a href="../reference/geometry.html">Reference</a></li>
+                                <li id="nav_guides"    class="{{#section_guides}}active{{/section_guides}}">
+                                    <a href="../guides/index.html">Guides</a></li>
+                                <li id="nav_guides"    class="{{#section_samples}}active{{/section_samples}}">
+                                    <a href="#">Samples</a></li>
                             </ul>
                         </section>
                       </div>
@@ -93,11 +92,11 @@
                 <aside class="left-off-canvas-menu">
                   <ul class="off-canvas-list">
                     <li><label>Cinder Documentation</label></li>
+                    <li id="nav_home"><a href="../index.html">Main Page</a></li>
                     <li id="nav_reference"><a href="../reference/index.html">Reference</a></li>
                     <li id="nav_guides"><a href="../guides/index.html">Guides</a></li>
                     <li id="nav_namespaces"><a href="../namespaces.html">Namespaces</a></li>
-                    <li id="nav_classes"><a href="../classes.html">Classes</a></li>
-                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                    <li id="nav_samples"><a href="#">Samples</a></li>
                   </ul>
                 </aside>
                 

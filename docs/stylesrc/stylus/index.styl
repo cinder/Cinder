@@ -1,10 +1,14 @@
 @import global
 
 body.section_home
-	background: white
+	background: $background-gray
 	
 	label
-		text-transform: uppercase		
+		text-transform: uppercase
+		color: #fff
+		margin-bottom: 0.5em
+		font-size: 1.2em
+		font-weight: 700
 	
 	#main-content
 		li	
@@ -36,21 +40,23 @@ body.section_home
 			display: none
 	
 	#mid-content
-		// background: $background-gray
+		background: $background-gray
 		
 		&>.row
 			padding: 40px 0
 		
-		label
-			color: $cinder-red
-			margin-bottom: 0.5em
-			font-size: 1.2em
-			
 		ul
 			margin-bottom: 10px
 		
 		ul.fancy>li a:hover
 			color: $cinder-orange
+			
+	#bottom-content
+		background: $background-gray-light
+		color: $light-gray-text
+		
+		&>.row
+			padding: 40px 0
 			
 	ul.library-features
 	
@@ -125,7 +131,7 @@ body.section_home
 		
 	#intro
 		padding: 40px 0 75px 0	
-		border-top: 2px solid white
+		border-top: 2px solid #434747
 		
 		.content
 			// padding: 0 200px 0 0

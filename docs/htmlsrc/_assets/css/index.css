@@ -1,8 +1,12 @@
 body.section_home {
-  background: #fff;
+  background: #242727;
 }
 body.section_home label {
   text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 0.5em;
+  font-size: 1.2em;
+  font-weight: 700;
 }
 body.section_home #main-content li {
   list-style: none;
@@ -25,11 +29,11 @@ body.section_home #top-primary {
   box-shadow: none;
 }
 body.section_home #top-content {
-  background: -webkit-linear-gradient(top, #252726 0%, #313836 100%);
-  background: -moz-linear-gradient(top, #252726 0%, #313836 100%);
-  background: -o-linear-gradient(top, #252726 0%, #313836 100%);
-  background: -ms-linear-gradient(top, #252726 0%, #313836 100%);
-  background: linear-gradient(to bottom, #252726 0%, #313836 100%);
+  background: -webkit-linear-gradient(top, #242727 0%, #262a29 100%);
+  background: -moz-linear-gradient(top, #242727 0%, #262a29 100%);
+  background: -o-linear-gradient(top, #242727 0%, #262a29 100%);
+  background: -ms-linear-gradient(top, #242727 0%, #262a29 100%);
+  background: linear-gradient(to bottom, #242727 0%, #262a29 100%);
   color: #949494;
 }
 body.section_home #top-content h1 {
@@ -39,19 +43,24 @@ body.section_home #top-content h1 {
 body.section_home #top-content #sub-nav {
   display: none;
 }
+body.section_home #mid-content {
+  background: #242727;
+}
 body.section_home #mid-content>.row {
   padding: 40px 0;
-}
-body.section_home #mid-content label {
-  color: #a41c12;
-  margin-bottom: 0.5em;
-  font-size: 1.2em;
 }
 body.section_home #mid-content ul {
   margin-bottom: 10px;
 }
 body.section_home #mid-content ul.fancy>li a:hover {
   color: #d74f02;
+}
+body.section_home #bottom-content {
+  background: #292d2c;
+  color: #949494;
+}
+body.section_home #bottom-content>.row {
+  padding: 40px 0;
 }
 body.section_home ul.library-features li {
   display: block;
@@ -130,7 +139,7 @@ body.section_home ul.library-features .img-holder img.over {
 }
 body.section_home #intro {
   padding: 40px 0 75px 0;
-  border-top: 2px solid #fff;
+  border-top: 2px solid #434747;
 }
 body.section_home #intro .content p {
   font-size: 1.3em;

@@ -92,11 +92,11 @@ a img {
 body {
   font-size: 14px;
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-  background: $$background-gray-light -webkit-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
-  background: $$background-gray-light -moz-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
-  background: $$background-gray-light -o-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
-  background: $$background-gray-light -ms-linear-gradient(top, #252726 0%, #313836 100%) no-repeat;
-  background: $$background-gray-light linear-gradient(to bottom, #252726 0%, #313836 100%) no-repeat;
+  background: $$background-gray-light -webkit-linear-gradient(top, #242727 0%, #262a29 100%) no-repeat;
+  background: $$background-gray-light -moz-linear-gradient(top, #242727 0%, #262a29 100%) no-repeat;
+  background: $$background-gray-light -o-linear-gradient(top, #242727 0%, #262a29 100%) no-repeat;
+  background: $$background-gray-light -ms-linear-gradient(top, #242727 0%, #262a29 100%) no-repeat;
+  background: $$background-gray-light linear-gradient(to bottom, #242727 0%, #262a29 100%) no-repeat;
   line-height: 1.6em;
 }
 a {
@@ -220,6 +220,10 @@ code[class*="language-"] {
   margin-right: auto;
   text-align: center;
 }
+.columns.collapse {
+  padding-left: 0;
+  padding-right: 0;
+}
 #top-primary {
   -webkit-box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
   box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
@@ -230,7 +234,7 @@ code[class*="language-"] {
 }
 #top-primary,
 #top-content {
-  background: #252726;
+  background: #242727;
   position: relative;
   padding: 0 0 0 0;
   margin: 0;
@@ -264,7 +268,7 @@ code[class*="language-"] {
 #top-primary .navbar-header a.navbar-brand,
 #top-content .navbar-header a.navbar-brand {
   display: inline-block;
-  background: url("../images/cinder_logo_bw.svg") no-repeat;
+  background: url("../images/cinder_logo.svg") no-repeat;
   -webkit-background-size: 100%;
   -moz-background-size: 100%;
   background-size: 100%;
@@ -849,13 +853,15 @@ button.interactive-guide:focus {
   list-style: none;
 }
 footer {
-  color: #fff;
+  color: #949494;
+  text-align: center;
   padding: 20px;
-  background-color: #252726;
+  background-color: #242727;
   position: absolute;
   bottom: 0;
   width: 100%;
   height: 60px;
+  text-transform: uppercase;
 }
 /* NAVBAR STYLING */
 nav.top-bar {
