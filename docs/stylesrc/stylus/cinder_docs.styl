@@ -35,12 +35,15 @@ center()
 codeStyle()
 	font-family: Consolas, Monaco, 'Andale Mono', monospace;
 	font-size: .8em
+	
+baseFontStyle()
+	font-family: 'Open Sans', Helvetica, Arial, sans-serif
 
 
 // base html styles
 body
+	baseFontStyle()
 	font-size: 14px
-	font-family: 'Open Sans', Helvetica, Arial, sans-serif
 	background: $$background-gray-light $gray-gradient-1 no-repeat
 	line-height: 1.6em
 	
@@ -145,8 +148,8 @@ a.ci
 	codeStyle()
 	font-size: 0.9em
 	
-	&.plain, .plain
-		font-family: inherit !important
+	&.plain
+		baseFontStyle()
 		font-size: inherit
 
 // for guide template
@@ -173,7 +176,7 @@ code[class*="language-"]
 	padding: 0
 
 .plain
-	font-family: Helvetica, Arial, sans-serif
+	baseFontStyle()
 
 .center
 	center()

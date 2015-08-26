@@ -35,7 +35,7 @@ import os
 import shutil
 import stat
 import urlparse
-from datetime import datetime, timedelta
+from datetime import datetime
 from difflib import SequenceMatcher as SM
 
 # Third party in libs folder
@@ -1144,7 +1144,11 @@ def gen_tag(bs4, tag_type, classes=None, contents=None):
             add_class_to_tag(new_tag, c)
 
     if contents:
-        new_tag.append(contents)
+        if type(contents) is list:
+            for c in contents:
+                new_tag.append(clone(c))
+        else:
+            new_tag.append(contents)
 
     return new_tag
 
@@ -2491,9 +2495,16 @@ def replace_ci_tag(bs4, link, in_path, out_path):
 
     if ref_obj:
         ref_location = HTML_DEST_PATH + ref_obj.path
-        new_link = gen_rel_link_tag(bs4, link.contents[0], ref_location, in_path, out_path)
+        new_link = gen_rel_link_tag(bs4, link.contents, ref_location, in_path, out_path)
+
+        # transfer tag classes to new tag
+        tag_classes = link["class"] if link.has_attr("class") else None
+        if tag_classes:
+            for c in tag_classes:
+                add_class_to_tag(new_link, c)
+
+        add_class_to_tag(new_link, "ci")
         link.replace_with(new_link)
-        # print "\tSuccess: " + str(new_link)
     else:
         print "\t** Warning: Could not find replacement tag for ci tag: " + str(link)
 

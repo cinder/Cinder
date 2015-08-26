@@ -90,8 +90,8 @@ a img {
   border: none;
 }
 body {
-  font-size: 14px;
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+  font-size: 14px;
   background: $$background-gray-light -webkit-linear-gradient(top, #242727 0%, #262a29 100%) no-repeat;
   background: $$background-gray-light -moz-linear-gradient(top, #242727 0%, #262a29 100%) no-repeat;
   background: $$background-gray-light -o-linear-gradient(top, #242727 0%, #262a29 100%) no-repeat;
@@ -199,9 +199,8 @@ a.ci {
   font-size: 0.8em;
   font-size: 0.9em;
 }
-a.ci.plain,
-a.ci .plain {
-  font-family: inherit !important;
+a.ci.plain {
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   font-size: inherit;
 }
 body#guide-contents {
@@ -229,7 +228,7 @@ code[class*="language-"] {
   padding: 0;
 }
 .plain {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
 }
 .center {
   display: block;
