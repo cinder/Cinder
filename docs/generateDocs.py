@@ -486,11 +486,11 @@ class SymbolMap(object):
                 ns_search = "cinder::app"
             ref_obj = g_symbolMap.find_namespace(ns_search)
 
-        # iterate through class/namespace functions
-        if ref_obj:
-            for fn in ref_obj.functionList:
-                if fn.name == fn_name:
-                    fn_list.append(fn)
+            # iterate through class/namespace functions
+            if ref_obj:
+                for fn in ref_obj.functionList:
+                    if fn.name == fn_name:
+                        fn_list.append(fn)
 
         # iterate through glm groups
         if len(fn_list) == 0:
@@ -524,22 +524,24 @@ class SymbolMap(object):
                 # fn_arg_len = len(fn.args)
                 score = 0
 
-                # amount of required arguments
+                # find amount of required arguments
                 fn_arg_len = 0
                 for arg in fn.args:
                     if arg.find("=") < 0:
                         fn_arg_len += 1
 
-                # if number of args is greater than required, score goes up for less difference
+                # if number of passed in args is the same as this function's arg length, add to the score
                 if arg_len == fn_arg_len:
-                   score += 1.0
+                    score += 0.5
 
+                # loop through the amount of args in this function
                 fn_args = fn.args[0:fn_arg_len]
                 if len(fn_args) > 0:
                     for i, arg in enumerate(fn_args):
-                        if i + 1 > len(args):
+                        if i + 1 > arg_len:
                             continue
-                        score += (SM(None, arg, args[i]).ratio()) * 2.0
+                        ratio = (SM(None, arg, args[i]).ratio())
+                        score += (ratio * 2.0)
 
                 if score > best_score:
                     fn_index = idx
@@ -1098,8 +1100,8 @@ def parse_arg_list(arg_string):
         is_optional = arg.find("=") > -1
 
         # if there is more than one word, take the last one off
-        if len(arg.split(" ")) > 1:
-            arg = " ".join(arg.split(" ")[:-1])
+        # if len(arg.split(" ")) > 1:
+        #     arg = " ".join(arg.split(" ")[:-1])
 
         # we only want the new list to include required args
         if not is_optional:
