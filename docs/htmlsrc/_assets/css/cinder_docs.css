@@ -246,7 +246,7 @@ code[class*="language-"] {
   z-index: 100;
 }
 #top-primary .nav {
-  font-size: 1.25em;
+  font-size: 1.25rem;
 }
 #top-primary,
 #top-content {
@@ -312,7 +312,7 @@ code[class*="language-"] {
   position: relative;
   display: inline-block;
   height: 100%;
-  margin-right: 20px;
+  margin-right: 25px;
   margin-left: 0;
   background: none;
 }

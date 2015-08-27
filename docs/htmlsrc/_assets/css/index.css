@@ -1,5 +1,6 @@
 body.section_home {
   background: #242727;
+  font-size: 16px;
 }
 body.section_home label {
   text-transform: uppercase;
@@ -8,11 +9,14 @@ body.section_home label {
   font-size: 1.2em;
   font-weight: 700;
 }
-body.section_home #main-content li {
+body.section_home ul.fancy>li a:hover {
+  color: #cb791c;
+}
+body.section_home li {
   list-style: none;
   margin-left: 0;
 }
-body.section_home #main-content li a {
+body.section_home li a {
   -webkit-transition: all 250ms;
   -moz-transition: all 250ms;
   -o-transition: all 250ms;
@@ -23,6 +27,9 @@ body.section_home #main-content li a {
   font-weight: 400;
   width: 100%;
   line-height: 1.8em;
+}
+body.section_home .content p {
+  font-size: 1.3em;
 }
 body.section_home #top-primary {
   -webkit-box-shadow: none;
@@ -52,14 +59,9 @@ body.section_home #mid-content>.row {
 body.section_home #mid-content ul {
   margin-bottom: 10px;
 }
-body.section_home #mid-content ul.fancy>li a:hover {
-  color: #cb791c;
-}
 body.section_home #bottom-content {
   background: #292d2c;
   color: #949494;
-}
-body.section_home #bottom-content>.row {
   padding: 40px 0;
 }
 body.section_home ul.library-features {
@@ -94,7 +96,6 @@ body.section_home ul.library-features li a .title {
   -ms-transition: all 250ms;
   transition: all 250ms;
   font-weight: 800;
-  font-size: 1.25em;
 }
 body.section_home ul.library-features li a:hover {
   text-decoration: none;
@@ -105,7 +106,7 @@ body.section_home ul.library-features li a:hover img.over {
   filter: none;
 }
 body.section_home ul.library-features li a:hover .title {
-  color: #a41c12;
+  color: #cb791c;
 }
 body.section_home ul.library-features .img-holder {
   display: block;
@@ -144,9 +145,6 @@ body.section_home #intro {
   padding: 40px 0 75px 0;
   border-top: 2px solid #434747;
 }
-body.section_home #intro .content p {
-  font-size: 1.3em;
-}
 body.section_home #intro #downloads {
   padding-top: 20px;
 }
@@ -161,6 +159,22 @@ body.section_home #intro #downloads li a:hover {
   background: #cb791c;
   color: #fff;
   text-decoration: none;
+}
+body.section_home .samples {
+  text-align: center;
+  padding-top: 40px;
+}
+body.section_home .samples .img-wrap {
+  width: 100%;
+  height: 200px;
+  background: #000;
+  border: 5px #242727 solid;
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+body.section_home .samples .img-wrap img {
+  width: 100%;
+  height: auto;
 }
 @media all and (min-width: 640px) {
   #top-content h1 {

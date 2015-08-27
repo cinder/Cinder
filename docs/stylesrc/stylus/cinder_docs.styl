@@ -32,14 +32,6 @@ center()
 	text-align: center
 
 
-codeStyle()
-	font-family: Consolas, Monaco, 'Andale Mono', monospace;
-	font-size: .8em
-	
-baseFontStyle()
-	font-family: 'Open Sans', Helvetica, Arial, sans-serif
-
-
 // base html styles
 body
 	baseFontStyle()
@@ -124,8 +116,7 @@ ul
 
 
 ul.fancy>li
-	font-family: 'Libre Baskerville', serif;
-	font-style: italic
+	fancyFontStyle()
 	
 	a:hover
 		text-decoration: none
@@ -197,7 +188,7 @@ code[class*="language-"]
 	z-index: 100
 	
 	.nav
-		font-size: 1.25em
+		font-size: 1.25rem
 	
 #top-primary,
 #top-content
@@ -253,7 +244,7 @@ code[class*="language-"]
 			position: relative
 			display: inline-block
 			height: 100%
-			margin-right: 20px
+			margin-right: 25px
 			margin-left: 0
 			background: none
 			
