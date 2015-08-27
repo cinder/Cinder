@@ -38,8 +38,17 @@
 						"link": "#camera_3d"
 					}
 				]
+			},
+			{
+				"label": "Batches",
+				"link": "part3.html",
+				"pagenav":[
+					{
+						"label": "Introducing Batches",
+						"link": "#introducing"
+					}
+				]
 			}
-
 		],
 		"seealso":
 		{
