@@ -81,8 +81,12 @@ private:
 	void 						sleepUntilNextFrame();
 	void 						run();
 
+	void 						registerInput( WindowImplLinux* window );
+	void 						unregisterInput( WindowImplLinux* window );
+
 	friend class AppLinux;
 	friend class WindowImplLinux;
+	friend class GlfwCallbacks;
 };
 
 }} // namespace cinder::app

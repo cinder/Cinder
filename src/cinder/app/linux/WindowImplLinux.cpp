@@ -40,10 +40,13 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
+
+	mAppImpl->registerInput( this );
 }
 
 WindowImplLinux::~WindowImplLinux()
 {
+	mAppImpl->unregisterInput( this );
 }
 
 void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
@@ -77,7 +80,6 @@ void WindowImplLinux::setPos( const ivec2 &pos )
 
 void WindowImplLinux::close()
 {
-	// TODO: Implement
 }
 
 void WindowImplLinux::setTitle( const std::string &title )
