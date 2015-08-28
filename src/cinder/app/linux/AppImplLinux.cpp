@@ -66,6 +66,11 @@ AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 			this->createWindow( format );
 		}
 	}
+
+	// Set the active window
+	if( ! mWindows.empty() ) {
+		setWindow( mWindows.back()->getWindow() );
+	}
 }
 
 AppImplLinux::~AppImplLinux()

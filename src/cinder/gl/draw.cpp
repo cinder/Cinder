@@ -1436,7 +1436,7 @@ void drawVector( const vec3& start, const vec3& end, float headLength, float hea
 namespace {
 void drawStringHelper( const std::string &str, const vec2 &pos, const ColorA &color, Font font, int justification )
 {
-#if ! defined( CINDER_ANDROID )	
+#if ! defined( CINDER_ANDROID ) && ! defined( CINDER_LINUX )	
 	
 	if( str.empty() )
 		return;

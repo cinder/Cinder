@@ -115,8 +115,10 @@ class ShadowMappingApp : public App {
 	void keyDown( KeyEvent event ) override;
   private:
 	void drawScene( float spinAngle, const gl::GlslProgRef& glsl = nullptr );
+#if ! defined( CINDER_LINUX )
 	params::InterfaceGlRef		mParams;
-	
+#endif	
+
 	float						mFrameRate;
 	CameraPersp					mCamera;
 	CameraUi					mCamUi;
@@ -174,6 +176,7 @@ void ShadowMappingApp::setup()
 	mShadowMap		= ShadowMap::create( mShadowMapSize );
 	mLight.camera.setPerspective( mLight.fov, mShadowMap->getAspectRatio(), 0.5, 500.0 );
 	
+#if ! defined( CINDER_LINUX )
 	mParams = params::InterfaceGl::create( "Settings", toPixels( ivec2( 300, 325 ) ) );
 	mParams->addParam( "Framerate", &mFrameRate, "", true );
 	mParams->addSeparator();
@@ -197,6 +200,7 @@ void ShadowMappingApp::setup()
 	mParams->addParam( "Auto normal slope offset", &mEnableNormSlopeOffset );
 	mParams->addParam( "Num samples", &mNumRandomSamples ).min( 1 );
 //	mParams->minimize();
+#endif
 	
 	auto positionGlsl = gl::getStockShader( gl::ShaderDef() );
 	
@@ -316,8 +320,10 @@ void ShadowMappingApp::draw()
 	
 	// Render light direction vector
 	gl::drawVector( mLight.viewpoint, 4.5f * normalize( mLight.viewpoint ) );
-	
+
+#if ! defined( CINDER_LINUX )	
 	mParams->draw();
+#endif
 }
 
 void ShadowMappingApp::keyDown( KeyEvent event )
@@ -326,7 +332,9 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 		app::setFullScreen( !app::isFullScreen() );
 	}
 	else if( event.getChar() == KeyEvent::KEY_SPACE ) {
+#if ! defined( CINDER_LINUX )
 		mParams->maximize( ! mParams->isMaximized() );
+#endif
 	}
 }
 

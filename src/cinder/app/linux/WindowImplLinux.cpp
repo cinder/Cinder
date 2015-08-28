@@ -54,7 +54,7 @@ void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptio
 ivec2 WindowImplLinux::getSize() const
 {
 	int xsize, ysize;
-	::glfwGetWindowPos( mGlfwWindow, &xsize, &ysize );
+	::glfwGetWindowSize( mGlfwWindow, &xsize, &ysize );
 	return ivec2( xsize, ysize );	
 }
 

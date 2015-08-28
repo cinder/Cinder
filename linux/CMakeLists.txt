@@ -281,6 +281,8 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Url.cpp
     ${CINDER_SRC_DIR}/cinder/Utilities.cpp
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
+
+    #${CINDER_SRC_DIR}/cinder/params/Params.cpp
 )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )
