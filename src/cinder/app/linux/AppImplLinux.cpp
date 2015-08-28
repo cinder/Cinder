@@ -101,6 +101,13 @@ public:
 			}
 		}
 	}
+
+	static void onKeyboard( GLFWwindow *glfwWindow, int key, int scancode, int action, int mods ) {
+		auto iter = sWindowMapping.find( glfwWindow );
+		if( sWindowMapping.end() != iter ) {
+			auto& cinderWindow = iter->second;
+		}
+	}
 };
 
 std::map<GLFWwindow*, WindowRef> GlfwCallbacks::sWindowMapping;
