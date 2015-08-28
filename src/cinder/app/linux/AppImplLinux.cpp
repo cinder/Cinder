@@ -95,8 +95,8 @@ public:
 				if( GLFW_PRESS == action ) {
 					cinderWindow->emitMouseDown( &event );	
 				}
-				else if( GLFW_PRESS == action ) {
-					cinderWindow->emitMouseDown( &event );	
+				else if( GLFW_RELEASE == action ) {
+					cinderWindow->emitMouseUp( &event );	
 				}
 			}
 		}

@@ -79,14 +79,15 @@ include_directories(
     ${CINDER_INC_DIR}/jsoncpp 
     ${CINDER_SRC_DIR}/linebreak 
     ${CINDER_SRC_DIR}/libtess2 
+    ${CINDER_SRC_DIR}/AntTweakBar
     ${BOOST_INC_DIR}  
 )
 
-set( C_FLAGS "-fvisibility=default -DFT2_BUILD_LIBRARY" )
+set( C_FLAGS "-fvisibility=default -DFT2_BUILD_LIBRARY -D_UNIX" )
 set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
 set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
-set( CXX_FLAGS "-stdlib=libc++ -std=c++11 -fvisibility=default -DFT2_BUILD_LIBRARY" )
+set( CXX_FLAGS "-stdlib=libc++ -std=c++11 -fvisibility=default -DFT2_BUILD_LIBRARY -D_UNIX" )
 set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g -fexceptions -frtti" )
 set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
 
@@ -282,7 +283,17 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Utilities.cpp
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 
-    #${CINDER_SRC_DIR}/cinder/params/Params.cpp
+    ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
+
+    ${CINDER_SRC_DIR}/cinder/params/Params.cpp
+    ${CINDER_SRC_DIR}/AntTweakBar/LoadOGL.cpp
+    ${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
+    ${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
+    ${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
+    ${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
+    ${CINDER_SRC_DIR}/AntTweakBar/TwOpenGL.cpp
+    ${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
+    ${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
 )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )

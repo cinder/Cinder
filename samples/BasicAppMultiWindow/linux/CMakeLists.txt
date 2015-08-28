@@ -4,7 +4,7 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../.." ABSOLUTE )
 include( ${CINDER_DIR}/tools/linux/Cinder.cmake )
 
-project( Basic )
+project( BasicAppMultiWindow )
 
 get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src" ABSOLUTE )
 
@@ -21,7 +21,7 @@ include_directories(
 )
 
 set( SRC_FILES
-  ${SRC_DIR}/BasicApp.cpp
+  ${SRC_DIR}/BasicAppMultiWindowApp.cpp
 )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )

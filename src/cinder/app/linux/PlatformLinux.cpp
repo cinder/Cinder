@@ -26,7 +26,16 @@
 #include "cinder/ImageSourceFileStbImage.h"
 #include "cinder/ImageTargetFileStbImage.h"
 
+#include <unistd.h>
+#include <limits.h>
+
 namespace cinder { namespace app {
+
+namespace {
+
+const size_t RESOURCE_SEARCH_DEPTH = 10;
+
+} // anonymous namespace
 
 PlatformLinux::PlatformLinux()
 {
@@ -61,8 +70,34 @@ fs::path PlatformLinux::getResourceDirectory() const
 
 fs::path PlatformLinux::getResourcePath( const fs::path &rsrcRelativePath ) const 
 {
-	// @TODO: Implement
-	return fs::path();	
+	if( ! mResourceDirsInitialized ) {
+		mResourceDirsInitialized = true;
+		// first search the local directory, then its parent, up to ASSET_SEARCH_DEPTH levels up
+		// check at least the app path, even if it has no parent directory
+		auto execPath = getExecutablePath();
+		size_t parentCt = 0;
+		for( fs::path curPath = execPath; curPath.has_parent_path() || ( curPath == execPath ); curPath = curPath.parent_path(), ++parentCt ) {
+			if( parentCt >= RESOURCE_SEARCH_DEPTH ) {
+				break;
+			}
+			const fs::path curResourceDir = curPath / fs::path( "resources" );
+			if( fs::exists( curResourceDir ) && fs::is_directory( curResourceDir ) ) {
+				auto it = std::find( mResourceDirectories.begin(), mResourceDirectories.end(), curResourceDir );
+				if( it == mResourceDirectories.end() ) {
+					mResourceDirectories.push_back( curResourceDir );
+				}
+				break;
+			}
+		}
+	}
+
+	for( const auto &directory : mResourceDirectories ) {
+		auto fullPath = directory / rsrcRelativePath;
+		if( fs::exists( fullPath ) )
+			return fullPath;
+	}
+
+	return fs::path(); // empty implies failure	
 }
 
 
@@ -110,8 +145,13 @@ fs::path PlatformLinux::getDocumentsDirectory() const
 
 fs::path PlatformLinux::getDefaultExecutablePath() const 
 {
-	// @TODO: Implement
-	return fs::path();	
+	std::vector<char> buf( PATH_MAX );
+	std::memset( &(buf[0]), 0, buf.size()  );
+    ssize_t len = ::readlink("/proc/self/exe", &(buf[0]), buf.size() - 1 );
+    if( ( -1 != len ) && ( len < buf.size() ) ) {
+      buf[len] = '\0';
+    }
+ 	return fs::path( std::string( &(buf[0]), len ) );
 }
 
 void PlatformLinux::sleep( float milliseconds ) 

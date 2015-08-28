@@ -7,6 +7,7 @@ include( ${CINDER_DIR}/tools/linux/Cinder.cmake )
 project( Basic )
 
 get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src" ABSOLUTE )
+get_filename_component( INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include" ABSOLUTE )
 
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
@@ -18,10 +19,14 @@ include_directories(
     ${CINDER_INC_DIR} 
     ${CINDER_INC_DIR}/glfw
     ${BOOST_INC_DIR}  
+    ${INC_DIR}
 )
 
 set( SRC_FILES
-  ${SRC_DIR}/BasicApp.cpp
+  ${SRC_DIR}/Earth.cpp
+  ${SRC_DIR}/EarthquakeApp.cpp
+  ${SRC_DIR}/POV.cpp
+  ${SRC_DIR}/Quake.cpp
 )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )

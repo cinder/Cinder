@@ -61,6 +61,9 @@ class PlatformLinux : public Platform {
  private:
 	bool							mDisplaysInitialized = false;
 	std::vector<DisplayRef>			mDisplays;
+
+	mutable std::vector<fs::path>	mResourceDirectories;
+	mutable bool					mResourceDirsInitialized = false;
 };
 
 }} // namespace cinder::app

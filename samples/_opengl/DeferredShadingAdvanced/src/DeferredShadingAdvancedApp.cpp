@@ -140,9 +140,7 @@ private:
 	
 	float						mFrameRate;
 	bool						mFullScreen;
-#if ! defined( CINDER_LINUX )
 	ci::params::InterfaceGlRef	mParams;
-#endif
 	void						screenShot();
 };
 
@@ -173,9 +171,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mEnabledRayPrev		= mEnabledRay;
 	mEnabledShadow		= true;
 	mFrameRate			= 0.0f;
-#if ! defined( CINDER_LINUX )
 	mFullScreen			= isFullScreen();
-#endif
 	mHighQuality		= false;
 	mHighQualityPrev	= mHighQuality;
 	mMipmapLevels		= 5;
@@ -237,7 +233,6 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	// Call resize to create FBOs
 	resize();
 
-#if ! defined( CINDER_LINUX )	
 	// Set up parameters
 	const vector<string> ao = { "None", "HBAO", "SAO" };
 
@@ -263,7 +258,6 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mParams->addParam( "FXAA",				&mEnabledFxaa ).key( "6" ).group( "Pass" );
 	mParams->addParam( "Rays",				&mEnabledRay ).key( "7" ).group( "Pass" );
 	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "8" ).group( "Pass" );
-#endif
 	
 	gl::enableVerticalSync();
 	gl::color( ColorAf::white() );
@@ -1176,9 +1170,7 @@ void DeferredShadingAdvancedApp::draw()
 		mBatchStockTextureRect->draw();
 	}
 
-#if ! defined( CINDER_LINUX )	
 	mParams->draw();
-#endif
 }
 
 void DeferredShadingAdvancedApp::resize()
@@ -1462,11 +1454,9 @@ void DeferredShadingAdvancedApp::update()
 	float e		= (float)getElapsedSeconds();
 	mFrameRate	= getAverageFps();
 
-#if ! defined( CINDER_LINUX )	
 	if ( mFullScreen != isFullScreen() ) {
 		setFullScreen( mFullScreen );
 	}
-#endif
 	
 	// Call resize to rebuild buffers when render quality
 	// or AO method changes

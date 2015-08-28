@@ -50,11 +50,6 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-// Cheat
-#if defined( CINDER_LINUX )
-  #define CINDER_GL_ES
-#endif
-
 struct LightSource
 {
 	vec4 position;
