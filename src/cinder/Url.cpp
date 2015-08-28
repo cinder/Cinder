@@ -45,8 +45,11 @@
 #elif defined( CINDER_ANDROID ) 
 	#include "cinder/UrlImplJni.h"
 	typedef cinder::IStreamUrlImplJni		IStreamUrlPlatformImpl;
+#elif defined( CINDER_LINUX ) 
+	#include "cinder/UrlImplNull.h"
+	typedef cinder::IStreamUrlImplNull	IStreamUrlPlatformImpl;
 #else
-	#include "cinder/UrlImplCurl.h"
+	#include "cinder/UrlImpl.h"
 	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;
 #endif
 

@@ -59,6 +59,8 @@ class PlatformLinux : public Platform {
 	virtual const std::vector<DisplayRef>&	getDisplays() override;
 
  private:
+	bool							mDisplaysInitialized = false;
+	std::vector<DisplayRef>			mDisplays;
 };
 
 }} // namespace cinder::app

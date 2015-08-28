@@ -46,6 +46,8 @@
 		class RendererImplGlCocoaTouch;
 		class EAGLContext;
 	#endif
+#elif defined( CINDER_LINUX )
+	typedef struct GLFWwindow 	GLFWwindow;
 #endif
 
 namespace cinder { namespace gl {
@@ -182,7 +184,9 @@ class RendererGl : public Renderer {
 	void			prepareToggleFullScreen();
 	void			finishToggleFullScreen();	
 #elif defined( CINDER_ANDROID )
-	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer );
+	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) override;
+#elif defined( CINDER_LINUX )
+	virtual void	setup( GLFWwindow* glfwWindow, RendererRef sharedRenderer ) override;
 #endif
 
 	const Options&	getOptions() const { return mOptions; }
@@ -222,13 +226,12 @@ protected:
 	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
 #elif defined( CINDER_ANDROID )
 	class RendererGlAndroid  	*mImpl;
-	friend class 				WindowImplAndroid;
-	RendererGlAndroid * getImpl() { return mImpl; }
+	RendererGlAndroid         *getImpl() { return mImpl; }
+	friend class WindowImplAndroid;
 #elif defined( CINDER_LINUX )
 	class RendererGlLinux  	*mImpl;
-	friend class 				WindowImplLinux;
-	RendererGlLinux * 	getImpl() { return mImpl; }
-
+	RendererGlLinux         *getImpl() { return mImpl; }
+	friend class WindowImplLinux;
 #endif
 
 	std::function<void( Renderer* )> mStartDrawFn;

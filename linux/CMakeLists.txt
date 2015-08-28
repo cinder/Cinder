@@ -108,6 +108,7 @@ set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/glfw/src/posix_tls.c
 
     ${CINDER_SRC_DIR}/glload/gl_load.c
+    ${CINDER_SRC_DIR}/glload/glx_load.c
 
     ${CINDER_SRC_DIR}/linebreak/linebreak.c
     ${CINDER_SRC_DIR}/linebreak/linebreakdata.c
@@ -216,6 +217,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 
     ${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
+    ${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
 
     ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
     ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp
@@ -253,7 +255,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
     ${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
     ${CINDER_SRC_DIR}/cinder/Json.cpp
-    #${CINDER_SRC_DIR}/cinder/Log.cpp
+    ${CINDER_SRC_DIR}/cinder/Log.cpp
     ${CINDER_SRC_DIR}/cinder/Matrix.cpp
     ${CINDER_SRC_DIR}/cinder/ObjLoader.cpp
     ${CINDER_SRC_DIR}/cinder/Path2d.cpp

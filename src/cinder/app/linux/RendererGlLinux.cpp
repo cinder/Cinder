@@ -43,7 +43,7 @@ bool RendererGlLinux::initialize( GLFWwindow *window, RendererRef sharedRenderer
 {
 	mContext = window;
 
-	glfwMakeContextCurrent( nullptr );
+	::glfwMakeContextCurrent( mContext );
 
 	gl::Environment::setCore();
 	gl::env()->initializeFunctionPointers();
@@ -52,8 +52,9 @@ bool RendererGlLinux::initialize( GLFWwindow *window, RendererRef sharedRenderer
 	platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
 
 	mCinderContext = gl::Context::createFromExisting( platformData );
+	mCinderContext->makeCurrent();
 
-	glfwMakeContextCurrent( mContext );
+	::glfwSwapInterval( 1 );
 
 	return true;
 }
@@ -75,7 +76,7 @@ void RendererGlLinux::defaultResize() const
 
 void RendererGlLinux::swapBuffers() const
 {
-	glfwSwapBuffers( mContext );
+	::glfwSwapBuffers( mContext );
 }
 
 void RendererGlLinux::makeCurrentContext( bool force )

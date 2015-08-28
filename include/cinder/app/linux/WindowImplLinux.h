@@ -24,6 +24,7 @@
 #pragma once
 
 #include "cinder/app/linux/AppLinux.h"
+#include "cinder/app/Window.h"
 #include "cinder/Display.h"
 
 #include "glfw/glfw_config.h"
@@ -32,8 +33,13 @@
 
 namespace cinder { namespace app {
 
+class AppImplLinux;
+
 class WindowImplLinux {
 public:
+
+  WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl );
+  virtual ~WindowImplLinux();
 
 	virtual bool		isFullScreen() { return true; }
 	virtual void		setFullScreen( bool fullScreen, const app::FullScreenOptions &options );
@@ -50,24 +56,42 @@ public:
 	virtual DisplayRef	getDisplay() const { return mDisplay; }
 	virtual RendererRef	getRenderer() const { return mRenderer; }
 	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
-	virtual void*		getNative() { return mNativeWindow; }
+	virtual GLFWwindow  *getNative() { return mGlfwWindow; }
+	virtual GLFWwindow  *getNative() const { return mGlfwWindow; }
 
 	bool			    isBorderless() const { return mBorderless; }
 	void			    setBorderless( bool borderless );
 	bool			    isAlwaysOnTop() const { return mAlwayOnTop; }
 	void			    setAlwaysOnTop( bool alwaysOnTop );
 
+	AppImplLinux*		getAppImpl() { return mAppImpl; }
+	WindowRef			getWindow() { return mWindowRef; }
+
+	virtual void		keyDown( const KeyEvent &event );
+	virtual void		draw();
+	virtual void		resize();
+
+
+	void 				hideCursor();
+	void 				showCursor();
+	ivec2				getMousePos() const;
 
 protected:
+ 	AppImplLinux    	*mAppImpl = nullptr;
+	WindowRef       	mWindowRef;
+	GLFWwindow      	*mGlfwWindow = nullptr;
 
-  std::string     mTitle;
-  GLFWwindow      *mNativeWindow;
-
-  bool            mBorderless = false;
-  bool            mAlwayOnTop = false;
+	std::string     	mTitle;
+	bool            	mBorderless = false;
+	bool            	mAlwayOnTop = false;
 
 	DisplayRef			mDisplay;
 	RendererRef			mRenderer;
+
+	// Always empty for now
+	std::vector<TouchEvent::Touch>	mActiveTouches;
+	
+	friend class AppImplLinux;
 };
 
 }} // namespace cinder::app

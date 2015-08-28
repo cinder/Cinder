@@ -641,6 +641,27 @@ public:
 	};	
 };
 	
+#elif defined( CINDER_LINUX )
+
+// ----------------------------------------------------------------------------------------------------
+// MARK: - ImplConsoleCat
+// ----------------------------------------------------------------------------------------------------
+
+class LoggerSystem::ImplConsole : public Logger {
+public:
+	ImplConsole()
+	{
+	}
+	
+	virtual ~ImplConsole()
+	{
+	}
+	
+	void write( const Metadata &meta, const std::string &text ) override
+	{
+		writeDefault( std::cout, meta, text );
+	}	
+};
 
 #endif
 

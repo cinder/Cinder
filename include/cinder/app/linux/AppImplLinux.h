@@ -24,10 +24,12 @@
 #pragma once
 
 #include "cinder/app/linux/AppLinux.h"
+#include "glfw/glfw3.h"
 
 namespace cinder { namespace app {
 
 class AppLinux;
+class WindowImplLinux;
 
 class AppImplLinux {
  public:
@@ -38,6 +40,8 @@ class AppImplLinux {
 	AppLinux					*getApp();
 	
  protected:
+	RendererRef					findSharedRenderer( const RendererRef &searchRenderer );
+
 	WindowRef					createWindow( Window::Format format );
 	void						quit();
 
@@ -45,6 +49,7 @@ class AppImplLinux {
 	void						setFrameRate( float aFrameRate );
 	void 						disableFrameRate();
 	bool 						isFrameRateEnabled() const;
+
 
 	WindowRef					getWindow() const;
 	void						setWindow( WindowRef window );
@@ -59,11 +64,25 @@ class AppImplLinux {
 
 private:
 	AppLinux					*mApp = nullptr;
-	bool						mSetupHasBeenCalled = false;
+	WindowRef					mMainWindow;
 
+	std::list<WindowImplLinux*>	mWindows;
+	WindowRef					mActiveWindow;
+	WindowRef 					mForegroundWindow;
+
+	float 						mFrameRate;
+	bool						mFrameRateEnabled;
+	bool 						mShouldQuit = false;
+
+	bool						mSetupHasBeenCalled = false;
+	
+	double						mNextFrameTime;
+
+	void 						sleepUntilNextFrame();
 	void 						run();
 
 	friend class AppLinux;
+	friend class WindowImplLinux;
 };
 
 }} // namespace cinder::app

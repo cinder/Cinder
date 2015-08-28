@@ -505,10 +505,13 @@ class Window : public std::enable_shared_from_this<Window> {
 	WindowImplLinux		*mImpl;
 #endif
  
-#if defined( CINDER_ANDROID )
 private:
+#if defined( CINDER_ANDROID )
 	friend class AppImplAndroid;
-	WindowImplAndroid * getImpl() { return mImpl; }
+	WindowImplAndroid   *getImpl() { return mImpl; }
+#elif defined( CINDER_LINUX )
+  friend class AppImplLinux;
+  WindowImplLinux     *getImpl() { return mImpl; }
 #endif    
 };
 

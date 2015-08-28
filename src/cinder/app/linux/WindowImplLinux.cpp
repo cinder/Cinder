@@ -21,9 +21,130 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/app/RendererGl.h"
 #include "cinder/app/linux/WindowImplLinux.h"
+#include "cinder/app/linux/AppImplLinux.h"
 
 namespace cinder { namespace app {
 
+WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl )
+	: mAppImpl( appImpl )
+{
+	mDisplay = format.getDisplay();
+	mRenderer = format.getRenderer();
+
+	auto windowSize = format.getSize();
+	mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
+
+	mRenderer->setup( mGlfwWindow, sharedRenderer );
+
+	// set WindowRef and its impl pointer to this
+	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
+}
+
+WindowImplLinux::~WindowImplLinux()
+{
+}
+
+void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
+{
+	// TODO: Find a way to do this w/o recreating 
+}
+
+ivec2 WindowImplLinux::getSize() const
+{
+	int xsize, ysize;
+	::glfwGetWindowPos( mGlfwWindow, &xsize, &ysize );
+	return ivec2( xsize, ysize );	
+}
+
+void WindowImplLinux::setSize( const ivec2 &size )
+{
+	::glfwSetWindowSize( mGlfwWindow, size.x, size.y );
+}
+
+ivec2 WindowImplLinux::getPos() const
+{
+	int xpos, ypos;
+	::glfwGetWindowPos( mGlfwWindow, &xpos, &ypos );
+	return ivec2( xpos, ypos );
+}
+
+void WindowImplLinux::setPos( const ivec2 &pos )
+{	
+	::glfwSetWindowPos( mGlfwWindow, pos.x, pos.y );
+}
+
+void WindowImplLinux::close()
+{
+	// TODO: Implement
+}
+
+void WindowImplLinux::setTitle( const std::string &title )
+{
+}
+
+void WindowImplLinux::hide()
+{
+	::glfwHideWindow( mGlfwWindow );
+}
+
+void WindowImplLinux::show()
+{
+	::glfwShowWindow( mGlfwWindow );
+}
+
+const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
+{
+	return mActiveTouches;
+}
+
+void WindowImplLinux::setBorderless( bool borderless )
+{
+	// TODO: Find a way to do this w/o recreating 
+}
+
+void WindowImplLinux::setAlwaysOnTop( bool alwaysOnTop )
+{
+	// TODO: Find a way to do this w/o recreating 
+}
+
+void WindowImplLinux::keyDown( const KeyEvent &event )
+{
+	KeyEvent localEvent( event );
+	mAppImpl->setWindow( mWindowRef );
+	mWindowRef->emitKeyDown( &localEvent );
+}
+
+void WindowImplLinux::draw()
+{
+	mAppImpl->setWindow( mWindowRef );
+	mRenderer->startDraw();
+	mWindowRef->emitDraw();
+	mRenderer->finishDraw();
+}
+
+void WindowImplLinux::resize()
+{
+	mAppImpl->setWindow( mWindowRef );
+	mWindowRef->emitResize();
+}
+
+void WindowImplLinux::hideCursor()
+{
+	::glfwSetInputMode( mGlfwWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN );
+}
+
+void WindowImplLinux::showCursor()
+{
+	::glfwSetInputMode( mGlfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
+}
+
+ivec2 WindowImplLinux::getMousePos() const
+{
+	double xpos, ypos;
+	::glfwGetCursorPos( mGlfwWindow, &xpos, &ypos );
+	return ivec2( static_cast<int>( xpos ), static_cast<int>( ypos ) );
+}
 
 }} // namespace cinder::app

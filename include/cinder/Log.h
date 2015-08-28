@@ -227,6 +227,9 @@ protected:
 #elif defined( CINDER_ANDROID )	
 	class ImplLogCat;
 	std::unique_ptr<ImplLogCat> mImpl;
+#elif defined( CINDER_LINUX )
+	class ImplConsole;
+	std::unique_ptr<ImplConsole> mImpl;
 #endif
 };
 	

@@ -130,4 +130,15 @@ std::vector<std::string> PlatformLinux::stackTrace()
 	return std::vector<std::string>();	
 }
 
+const std::vector<DisplayRef>& PlatformLinux::getDisplays()
+{
+	if( ! mDisplaysInitialized ) {
+		// @TODO: Implement fuller
+
+		mDisplaysInitialized = true;
+	}
+
+	return mDisplays;
+}
+
 }} // namespace cinder::app

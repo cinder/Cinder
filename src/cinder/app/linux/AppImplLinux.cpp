@@ -23,15 +23,222 @@
 
 #include "cinder/app/linux/AppImplLinux.h"
 #include "cinder/app/linux/AppLinux.h"
+#include "cinder/app/linux/WindowImplLinux.h"
+
+#include <iostream>
+
+namespace {
+
+void glfwErrorCallback( int error, const char* description )
+{
+	std::cout << "(glfw:error): error=" << error << ", desc=" << description << std::endl;
+}
+
+}
 
 namespace cinder { namespace app {
 
+AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
+	: mApp( aApp )
+{
+	::glfwSetErrorCallback( ::glfwErrorCallback );
+
+	// Must be called before we can do anything with GLFW
+    if( ! ::glfwInit() ) {
+    	throw std::string( "::glfwInit failed!" );
+	}
+
+	mFrameRate = settings.getFrameRate();
+	mFrameRateEnabled = settings.isFrameRateEnabled();
+	
+	auto formats = settings.getWindowFormats();
+	if( formats.empty() ) {
+		formats.push_back( settings.getDefaultWindowFormat() );
+	}
+
+	for( auto& format : formats ) {
+		// We need to keep tabs on the main window since it's how
+		// we will communicate with GLFW.
+		if( ! mMainWindow ) {
+			mMainWindow = this->createWindow( format );
+		}
+		else {
+			this->createWindow( format );
+		}
+	}
+}
+
+AppImplLinux::~AppImplLinux()
+{
+}
+
+AppLinux *AppImplLinux::getApp()
+{
+	return mApp;
+}
+
+void AppImplLinux::sleepUntilNextFrame()
+{
+	// get current time in seconds
+	double currentSeconds = getElapsedSeconds();
+
+	// calculate time per frame in seconds
+	double secondsPerFrame = 1.0 / mFrameRate;
+
+	// determine if application was frozen for a while and adjust next frame time
+	double elapsedSeconds = currentSeconds - mNextFrameTime;
+	if( elapsedSeconds > 1.0 ) {
+		int numSkipFrames = (int)(elapsedSeconds / secondsPerFrame);
+		mNextFrameTime += (numSkipFrames * secondsPerFrame);
+	}
+
+	// determine when next frame should be drawn
+	mNextFrameTime += secondsPerFrame;
+
+	// sleep and process messages until next frame
+	if( ( mFrameRateEnabled ) && ( mNextFrameTime > currentSeconds ) ) {
+		double sleepTime = std::max( mNextFrameTime - currentSeconds, 0.0 );
+		unsigned long sleepMicroSecs = sleepTime*1000000L;
+		usleep(sleepMicroSecs);
+	}
+}
 
 void AppImplLinux::run()
 {
 	mApp->privateSetup__();
 	mSetupHasBeenCalled = true;
 
+	while( ! mShouldQuit ) {
+		// update and draw
+		mApp->privateUpdate__();
+		for( auto &window : mWindows ) {
+			window->draw();
+		}
+
+		// Sleep until the next frame
+		sleepUntilNextFrame();	
+
+		// Check to see if we need to exit
+		if( ::glfwWindowShouldClose( mMainWindow->getImpl()->getNative() ) ) {
+			mShouldQuit = true;
+		}
+	}
+
+	// Destroy the main window - this should resolve to
+	// a call for ::glfwDestroyWindow( ... );
+	mMainWindow.reset();
+
+	::glfwTerminate();
+}
+
+RendererRef AppImplLinux::findSharedRenderer( const RendererRef &searchRenderer )
+{
+	if( ! searchRenderer ) {
+		return RendererRef();
+	}
+
+	for( const auto &win : mWindows ) {
+		RendererRef renderer = win->getRenderer();
+		if( renderer && ( typeid(*renderer) == typeid(*searchRenderer) ) ) {
+			return renderer;
+		}
+	}
+
+	return RendererRef();	
+}
+
+WindowRef AppImplLinux::createWindow( Window::Format format )
+{
+	if( ! format.getRenderer() ) {
+		format.setRenderer( mApp->getDefaultRenderer()->clone() );
+	}
+
+	mWindows.push_back( new WindowImplLinux( format, findSharedRenderer( format.getRenderer() ), this ) );
+
+	// emit initial resize if we have fired setup
+	if( mSetupHasBeenCalled ) {
+		mWindows.back()->getWindow()->emitResize();
+	}
+
+	return mWindows.back()->getWindow();
+}
+
+void AppImplLinux::quit()
+{
+	::glfwTerminate();
+}
+
+float AppImplLinux::getFrameRate() const 
+{ 
+	return mFrameRate; 
+}
+
+void AppImplLinux::setFrameRate( float frameRate )
+{
+	mFrameRate = frameRate;
+	mFrameRateEnabled = true;
+	mNextFrameTime = mApp->getElapsedSeconds();
+}
+
+void AppImplLinux::disableFrameRate()
+{
+	mFrameRateEnabled = false;
+}
+
+bool AppImplLinux::isFrameRateEnabled() const
+{
+	return mFrameRateEnabled;
+}
+
+WindowRef AppImplLinux::getWindow() const 
+{ 
+	return mActiveWindow; 
+}
+
+void AppImplLinux::setWindow( WindowRef window ) 
+{ 
+	mActiveWindow = window; 
+}
+
+size_t AppImplLinux::getNumWindows() const
+{
+	return mWindows.size();
+}
+
+WindowRef AppImplLinux::getWindowIndex( size_t index ) const
+{
+	if( index >= mWindows.size() ) {
+		return cinder::app::WindowRef();
+	}
+	
+	auto winIt = mWindows.begin();
+	std::advance( winIt, index );
+	return (*winIt)->mWindowRef;
+}
+
+WindowRef AppImplLinux::getForegroundWindow() const
+{
+	return mForegroundWindow;
+}
+
+void AppImplLinux::setForegroundWindow( WindowRef window )
+{
+	mForegroundWindow = window;
+}
+
+void AppImplLinux::hideCursor()
+{
+	mActiveWindow->getImpl()->hideCursor();
+}
+
+void AppImplLinux::showCursor()
+{
+	mActiveWindow->getImpl()->showCursor();
+}
+
+ivec2 AppImplLinux::getMousePos() const
+{
+	return mActiveWindow->getImpl()->getMousePos();	
 }
 
 }} // namespace cinder::app

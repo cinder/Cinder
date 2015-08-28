@@ -28,15 +28,15 @@
 	#include <windows.h>
 #elif defined( CINDER_COCOA )
 	#include <CoreFoundation/CoreFoundation.h>
-#elif defined( CINDER_ANDROID )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
  	#include <sys/time.h>
  	#include <time.h>
 #endif
 
 namespace cinder {
 
-#if defined( CINDER_ANDROID )
-static double AndroidGetElapsedSeconds() 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+static double LinuxGetElapsedSeconds() 
 {
 	struct timespec now;
 	::clock_gettime(CLOCK_MONOTONIC, &now);
@@ -55,7 +55,7 @@ Timer::Timer()
 	::QueryPerformanceFrequency( &nativeFreq );
 	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
-#elif defined( CINDER_ANDROID )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	mEndTime = mStartTime = -1;
 #endif
 }
@@ -70,7 +70,7 @@ Timer::Timer( bool startOnConstruction )
 	::QueryPerformanceFrequency( &nativeFreq );
 	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
-#elif defined( CINDER_ANDROID )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	mEndTime = mStartTime = -1;	
 #endif
 	if( startOnConstruction ) {
@@ -86,8 +86,8 @@ void Timer::start( double offsetSeconds )
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
 	mStartTime = rawTime.QuadPart * mInvNativeFreq - offsetSeconds;
-#elif defined( CINDER_ANDROID )
-	mStartTime = AndroidGetElapsedSeconds();
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mStartTime = LinuxGetElapsedSeconds();
 #endif
 
 	mIsStopped = false;
@@ -104,8 +104,8 @@ double Timer::getSeconds() const
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
 	return (rawTime.QuadPart * mInvNativeFreq) - mStartTime;
-#elif defined( CINDER_ANDROID )
-	return AndroidGetElapsedSeconds() - mStartTime;
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	return LinuxGetElapsedSeconds() - mStartTime;
 #endif
 	}
 }
@@ -119,8 +119,8 @@ void Timer::stop()
 		::LARGE_INTEGER rawTime;
 		::QueryPerformanceCounter( &rawTime );
 		mEndTime = rawTime.QuadPart * mInvNativeFreq;
-#elif defined( CINDER_ANDROID )
-		mEndTime = AndroidGetElapsedSeconds();
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+		mEndTime = LinuxGetElapsedSeconds();
 #endif
 		mIsStopped = true;
 	}
