@@ -158,6 +158,28 @@ void AppTestApp::keyDown( KeyEvent event )
 		auto filePath = getSaveFilePath();
 		CI_LOG_I( "result of getSaveFilePath(): " << filePath );
 	}
+	else if( event.getChar() == 'r' ) {
+		// iterate through some framerate settings
+		int targetFrameRate = (int)lround( getFrameRate() );
+		if( ! isFrameRateEnabled() ) {
+			CI_LOG_I( "setting framerate to 60" );
+			setFrameRate( 60 );
+		}
+		else if( targetFrameRate == 60 ) {
+			CI_LOG_I( "setting framerate to 30" );
+			setFrameRate( 30 );
+		}
+		else if( targetFrameRate == 30 ) {
+			CI_LOG_I( "disabling framerate" );
+			disableFrameRate();
+		}
+		else {
+			CI_ASSERT_NOT_REACHABLE();
+		}
+	}
+	else if( event.getChar() == 'v' ) {
+		gl::enableVerticalSync( ! gl::isVerticalSyncEnabled() );
+	}
 }
 
 void AppTestApp::mouseDown( MouseEvent event )
