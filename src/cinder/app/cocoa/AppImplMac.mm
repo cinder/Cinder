@@ -103,7 +103,7 @@ using namespace cinder::app;
 	// lastly, ensure the first window is the currently active context
 	[((WindowImplBasicCocoa *)[mWindows firstObject])->mCinderView makeCurrentContext];
 
-    return self;
+	return self;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
@@ -391,9 +391,9 @@ using namespace cinder::app;
 
 - (void)setFrameRate:(float)frameRate
 {
-    mFrameRate = frameRate;
+	mFrameRate = frameRate;
 	mFrameRateEnabled = YES;
-    [self startAnimationTimer];
+	[self startAnimationTimer];
 }
 
 - (void)disableFrameRate
