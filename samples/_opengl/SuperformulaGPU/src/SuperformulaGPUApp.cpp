@@ -9,6 +9,10 @@
 using namespace ci;
 using namespace ci::app;
 
+#if defined( CINDER_LINUX )
+	#define CINDER_GL_ES
+#endif
+
 class SuperformulaGpuApp : public App {
   public:
 	void	setup() override;
