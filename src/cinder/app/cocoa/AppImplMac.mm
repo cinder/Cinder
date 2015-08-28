@@ -135,6 +135,7 @@ using namespace cinder::app;
 											  selector:@selector(timerFired:)
 											  userInfo:nil
 											   repeats:YES];
+	
 	[[NSRunLoop currentRunLoop] addTimer:mAnimationTimer forMode:NSDefaultRunLoopMode];
 	[[NSRunLoop currentRunLoop] addTimer:mAnimationTimer forMode:NSEventTrackingRunLoopMode];
 }
@@ -392,14 +393,12 @@ using namespace cinder::app;
 {
     mFrameRate = frameRate;
 	mFrameRateEnabled = YES;
-    [mAnimationTimer invalidate];
     [self startAnimationTimer];
 }
 
 - (void)disableFrameRate
 {
 	mFrameRateEnabled = NO;
-    [mAnimationTimer invalidate];
 	[self startAnimationTimer];
 }
 
