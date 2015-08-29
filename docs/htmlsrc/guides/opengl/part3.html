@@ -140,12 +140,10 @@ void BasicApp::draw()
 			float x = ( -0.5f + i / 2.0f ) * gridSize;
 			float z = ( -0.5f + j / 2.0f ) * gridSize;
 			
-			gl::pushModelMatrix();
+			gl::ScopedModelMatrix scpModelMatrix;
 			gl::translate( x, 1, z );
 			gl::color( i / 2.0f, 1 - i * j, j / 2.0f );
-			if( mShapes[i][j] )
-				mShapes[i][j]->draw();
-			gl::popModelMatrix();
+			mShapes[i][j]->draw();
 		}
 	}
 }
@@ -158,15 +156,22 @@ void BasicApp::draw()
 
 <p>This example explores a number of the built-in <ci>geom::Source</ci>s. Note several examples of Cinder's usage of the <a href="https://isocpp.org/wiki/faq/ctors#named-parameter-idiom">named-parameter idiom</a> to supply parameters to the <ci>geom::Source</ci>s. For example, the calls to <ci dox="geom::Capsule::subdivisionsAxis">subdivisionsAxis()</ci> and <ci dox="geom::Capsule::subdivisionsHeight">subdivisionsHeight()</ci> allow us to easily adjust how smooth the <ci>geom::Capsule</ci> is. Another key concept is demonstrated in the <code>geom::Teapot() >> geom::Scale( 1.5f )</code> line. This example uses a <ci>geom::Modifier</ci> to modify the <ci>geom::Teapot</ci>, specifically the <ci>geom::Scale</ci> modifier, which in this case grows the Teapot by 50%. There are a number of <ci>geom::Modifier</ci>s built-in to Cinder, and they can be chained together using the <code>>></code> operator.</p>
 
+<p>The instance of <ci>gl::ScopedModelMatrix</ci> is significant as well. This class is a member of a large family of <code>gl::Scoped*</code> classes, such as <ci>gl::ScopedColor</ci> and <ci>gl::ScopedDepth</ci>. These classes are associated with a given piece of OpenGL state, which they preserve on construction, and restore on destruction. In our example, <em>scpModelMatrix</em> will save the current value of the <code>Model</code> matrix initially, and then will restore this value when it goes out of scope at the end of the inner for-loop. This is equivalent to separate calls to <ci>gl::pushModelMatrix()</ci> and <ci>gl::popModelMatrix()</ci>. However the <code>gl::Scoped*</code> classes more convenient and generally less error-prone.</p>
+
+<p>Let's continue looking at another example of combining <ci>geom::Source</ci>s with <ci>gl::Batch</ci>es.</p>
+
 <div class="cols-2">
 <div class="col">
 <pre><code class="lang-cpp">
+#include "cinder/Easing.h"
+&hellip;
+
 class BasicApp : public App {
   public:
 	void setup() override;
 	void draw() override;
 	
-	static const int NUM_SLICES = 22;
+	static const int NUM_SLICES = 12;
 	
 	CameraPersp		mCam;
 	gl::BatchRef	mSlices[NUM_SLICES];
@@ -179,7 +184,8 @@ void BasicApp::setup()
 
 	for( int i = 0; i < NUM_SLICES; ++i ) {
 		float rel = i / (float)NUM_SLICES;
-		auto slice = geom::Cube().size( 1, 1.0f / NUM_SLICES, 1 );
+		float sliceHeight = 1.0f / NUM_SLICES;
+		auto slice = geom::Cube().size( 1, sliceHeight, 1 );
 		auto trans = geom::Translate( 0, rel, 0 );
 		auto color = geom::Constant( geom::COLOR,
 								Color( CM_HSV, rel, 1, 1 ) );
@@ -199,29 +205,33 @@ void BasicApp::draw()
 	gl::setMatrices( mCam );
 
 	const float delay = 0.25f;
-	const float rotationTime = 1.5f; // seconds
+	// time in seconds for one slice to rotate
+	const float rotationTime = 1.5f;
+	// time in seconds to delay each slice's rotation
 	const float rotationOffset = 0.1f; // seconds
+	// total time for entire animation
 	const float totalTime = delay + rotationTime +
 									NUM_SLICES * rotationOffset;
+
+	// loop every 'totalTime' seconds
 	float time = fmod( getElapsedFrames() / 30.0f, totalTime );
 
-
 	for( int i = 0; i < NUM_SLICES; ++i ) {
-		// animates from 0-1
+		// animates from 0->1
 		float rotation = 0;
 		// when does the slice begin rotating
 		float startTime = i * rotationOffset;
 		// when does it complete
 		float endTime = startTime + rotationTime;
+		// are we in the middle of our time section?
 		if( time > startTime && time < endTime )
 			rotation = ( time - startTime ) / rotationTime;
 		// ease fn on rotation, then convert to radians
 		float angle = easeInOutQuint( rotation ) * M_PI / 2.0f;
 
-		gl::pushModelMatrix();
+		gl::ScopedModelMatrix scpModelMtx;
 		gl::rotate( angleAxis( angle, vec3( 0, 1, 0 ) ) );
 		mSlices[i]->draw();
-		gl::popModelMatrix();
 	}
 }
 </code></pre>
@@ -234,6 +244,20 @@ void BasicApp::draw()
 </div>
 </div>
 
+<p>In this example we're creating a cube out of 12 slices stacked on top of each other vertically. Each slice rotates around the Y-axis in 1.5 seconds, and each rotation is delayed 0.1 seconds to create a cascading animation.</p>
+
+<p>One thing to notice in this example is how we're constructing our <ci>gl::Batch</ci>es. Specifically, we're passing <code>slice >> trans >> color</code> as the geometry portion of the constructor. Another way to read this is that we're piping the result of a <ci>geom::Cube</ci> construction into a <ci>geom::Translate</ci> modifier, and then piping that into a <ci>geom::Constant</ci> modifier. The <ci>geom::Translate</ci> instance <em>trans</em> is used to offset each slice vertically. The <ci>geom::Constant</ci> modifier can be used to supply a constant value for an attribute. Here we're using it to provide a <code>geom::Attrib::COLOR</code>. The color value itself is determined using some simple HSV color math. Note that one implication of "baking" this value into the <ci>gl::Batch</ci> is that we no longer call <ci>gl::color()</ci> when we draw. It's worth noting that this property is distinctive to color values; when the geometry in a <ci>gl::Batch</ci> supplies a value for <code>geom::Attrib::COLOR</code> the shader uses that, otherwise the global color is used.</p>
+
+<p>This example also represents our first usage of quaternions, though they're not mentioned by name. To rotate the slices we're using the <ci>angleAxis()</ci> function, which returns a <ci>ci::quat</ci>. <ci>angleAxis()</ci> takes an angle in radians and an axis (expressed as a <ci>vec3</ci>) to rotate around. In our case we're animating an angle from 0 to &pi; / 2 radians, and we're rotating around the Y-axis, <code>vec3( 0, 1, 0 )</code>. The result of <ci>angleAxis()</ci> is passed to <ci>gl::rotate()</ci>, which modifies the <code>Model</code> matrix just as <ci>gl::translate()</ci> and <ci>gl::scale()</ci> do.</p>
+
+<div class="cols-2">
+<div class="col">
+<p>Finally, we're using our first easing function. You may be familiar with this concept from other tools, classically Flash in particular. Ease functions are useful for adding character and interest to animation. They generally remap the domain 0-1 into the range 0-1 nonlinearly. If you watch the our animation carefully, you'll see that each slice first accelerates and then decelerates into place, rather than simply rotating linearly. This is because we call <ci>easeInOutQuint()</ci> on our <em>rotation</em> variable before converting it into radians. This function is one of many that Cinder ships with for this purpose, and they're defined in the header <code>"cinder/Easing.h"</code>. A graph of this specific example looks like the image to the right, which is taken from the <a href="https://github.com/cinder/Cinder/blob/master/samples/EaseGallery/src/EaseGalleryApp.cpp">EaseGallery sample</a>.</p>
+</div>
+<div class="col">
+<img src="images/ease.png" class="shadow" />
+</div>
+</div>
 
 <script src="../../_assets/js/prism.js" type="text/javascript"></script>
 </body>
