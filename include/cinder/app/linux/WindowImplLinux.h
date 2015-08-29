@@ -27,7 +27,6 @@
 #include "cinder/app/Window.h"
 #include "cinder/Display.h"
 
-#include "glfw/glfw_config.h"
 #include "glfw/glfw3.h"
 #include "glfw/glfw3native.h"
 

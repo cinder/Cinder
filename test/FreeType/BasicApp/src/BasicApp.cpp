@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Font.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -18,6 +19,8 @@ class BasicApp : public App {
   private:
 	Channel8uRef	mBitmap;
 	gl::TextureRef	mTex;
+
+	ci::Font 		mFont;
 };
 
 
@@ -43,7 +46,15 @@ void draw_bitmap( FT_Int x, FT_Int y, FT_Bitmap* bitmap, Channel8uRef& target )
 
 
 void BasicApp::setup()
-{	
+{
+	try {
+		mFont = ci::Font( "Arial", 32.0f );
+	}
+	catch( const std::exception& e ) {
+		console() << "Font Error: " << e.what() << std::endl;
+	}	
+
+
 	mBitmap = Channel8u::create( getWindowWidth(), getWindowHeight() );
 	std::memset( mBitmap->getData(), 0, mBitmap->getWidth()*mBitmap->getHeight() );
 

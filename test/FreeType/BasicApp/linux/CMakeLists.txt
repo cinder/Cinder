@@ -31,5 +31,5 @@ target_link_libraries( "${CMAKE_PROJECT_NAME}" debug     ${CINDER_DIR}/lib/linux
 target_link_libraries( "${CMAKE_PROJECT_NAME}" optimized ${CINDER_DIR}/lib/linux/libcinder.a )
 target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/libboost_filesystem.a )
 target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/libboost_system.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" c++ dl pthread z GL X11 Xcursor Xinerama Xrandr Xi )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" c++ dl pthread z GL X11 Xcursor Xinerama Xrandr Xi fontconfig )
 

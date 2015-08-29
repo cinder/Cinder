@@ -29,6 +29,9 @@
 #ifndef _glfw3_h_
 #define _glfw3_h_
 
+// Cinder - force a config
+#include "glfw_config.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -249,6 +249,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/DataTarget.cpp
     ${CINDER_SRC_DIR}/cinder/Display.cpp
     ${CINDER_SRC_DIR}/cinder/Exception.cpp
+    ${CINDER_SRC_DIR}/cinder/Font.cpp
     ${CINDER_SRC_DIR}/cinder/Frustum.cpp
     ${CINDER_SRC_DIR}/cinder/GeomIo.cpp
     ${CINDER_SRC_DIR}/cinder/ImageIo.cpp

@@ -37,6 +37,10 @@
 	#undef generic
 
 	#include FT_GLYPH_H
+#elif defined( CINDER_LINUX )
+	#include "ft2build.h"
+	#include FT_FREETYPE_H 
+	#include FT_OUTLINE_H
 #endif
 
 #include <string>
@@ -90,7 +94,7 @@ class Font {
 	//! Returns the bounding box of a Glyph, relative to the baseline as the origin
 	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	FT_Face					getFreetypeFace() const;
 #endif
 	
