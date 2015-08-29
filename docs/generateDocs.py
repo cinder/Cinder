@@ -258,6 +258,9 @@ class SymbolMap(object):
             self.path = path
             self.typedefs = typedefs
             self.githubPath = None
+            self.relPath = "".join(self.path.split(PARENT_DIR))
+            # path to show when displaying include path. We don't want to show the word "include" since it's implied
+            self.includePath = "".join(self.relPath.split("/include"))[1:]
 
             rel_path_arr = self.path.split(PARENT_DIR)
             if len(rel_path_arr) > 1:
@@ -696,12 +699,14 @@ class ClassFileData(FileData):
         # kind of file that we are parsing (class, namespace, etc)
         self.kind = find_file_kind(tree)
         self.kind_explicit = find_file_kind_explicit(tree)
+        self.namespace = "::".join(self.compoundName.split("::")[0:-1])
 
     def get_content(self):
         orig_content = super(ClassFileData, self).get_content()
         content = orig_content.copy()
         class_content = {
             "name": self.stripped_name,
+            "namespace": self.namespace,
             "description": self.description,
             "is_template": self.is_template,
             "template_def_name": self.template_def_name,
@@ -1892,7 +1897,8 @@ def fill_class_content(tree):
     if include_file:
         file_obj = g_symbolMap.find_file(include_file)
         if file_obj:
-            include_link = LinkData(file_obj.githubPath, include_file)
+            include_link = LinkData(file_obj.githubPath, file_obj.includePath)
+
     file_data.includes = include_link
 
     # typedefs ------------------------------------------ #

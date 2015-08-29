@@ -1,14 +1,5 @@
-{{#include}}
-<div class="row side">
-    <label>#include</label>
-    <div class="content">
-      <a href="{{ include.link }}">{{ include.label }}</a>
-    </div>
-</div>
-{{/include}}
-
  {{#typedefs.length}}
-<div class="row side expandable">
+<div class="columns side large-3">
     <div class="content">
       <ul>
         <label>Typedefs:</label>
@@ -21,14 +12,14 @@
  {{/typedefs.length}}
 
 {{#class_hierarchy}}
-<div class="row side expandable">
+<div class="columns side large-3">
     <label>Class Hierarchy:</label>
     {{{class_hierarchy}}}
 </div>
 {{/class_hierarchy}}
 
 {{#classes.length}}
-<div class="row side expandable">
+<div class="columns side large-3">
     <div class="content">
       <ul>
         <label>Classes:</label>
@@ -41,7 +32,7 @@
 {{/classes.length}}
 
 {{#related.length}}
-<div class="row side expandable">
+<div class="columns side large-3">
     <div class="content">
       <ul>
         <label>Related Links:</label>

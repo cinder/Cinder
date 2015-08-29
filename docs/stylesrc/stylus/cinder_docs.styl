@@ -275,7 +275,7 @@ code[class*="language-"]
 	
 
 #sub-nav
-	height: 50px
+	color: $middle-gray-text
 	
 	ul
 		plain-ul()
@@ -404,7 +404,141 @@ code[class*="language-"]
 				
 				> *
 					margin-top: inherit
+
+body.classes
 	
+	h1 
+		display: inline-block
+		margin-bottom: 0
+		font-weight: 700
+		line-height: 1em
+	
+	span.slash
+		color: #ddd
+		
+	.row .row
+		margin: 0
+	
+	
+	.info-links
+		display: flex
+		.columns + .columns:last-child
+		    float: left
+	
+	.top
+		// padding: 0.9375rem
+		background-color: $light-gray
+		margin-bottom: 40px
+		
+		.include
+			display: inline-block
+			color: $middle-gray-text
+			
+			a
+				color: $middle-gray-text
+				font-weight: normal
+		
+		.row
+			padding: 0.0 0.9375rem
+			
+			&:not(:last-child)
+				border-bottom: #fff 1px solid
+
+		.row:nth-child(1)
+			background-color: $gray-depth-1
+		
+		.row:nth-child(2)
+			background-color: $gray-depth-2
+		
+		.row:nth-child(3)
+			background-color: $gray-depth-3
+			
+		.columns
+			padding: 0.7rem 1.25rem
+			
+			&:not(:last-child)
+				border-right: #fff 1px solid
+			
+			&.naming
+				padding-top: 2.0em
+				padding-bottom: 2.0em
+			
+			&.subnav
+				padding-top: 0.25em
+				padding-bottom: 0.25em
+				
+		label
+			color: $middle-gray-text
+			font-weight: 700
+			font-size: 1.0em
+			margin-bottom: 0.5em
+			
+		.ns
+			display: block
+			color: $cinder-red
+			line-height: 1em
+
+		.side
+
+			a
+				font-weight: normal
+	
+			h4
+				font-weight: 700
+				margin-bottom: 6px
+
+			.row
+				border: 1px solid #f0f0f0
+				padding: 10px 25px
+				margin-bottom: 2px
+				margin-right: 0
+				position: relative
+
+
+				&:nth-child(even)
+					background: #ebebeb
+				
+				&:nth-child(odd)
+					
+					&:first-child
+						background: #fff
+					
+					background: #f5f5f5
+					border-color: #f5f5f5
+				
+			
+			ul
+				margin-bottom: 0
+				padding: 0
+				text-indent: 0
+				
+				&.inheritence
+					
+					li
+						background-image: url("../images/class_node_parent_and_child_2x.png")
+						background-position: -15px -3px
+						background-repeat: 	no-repeat
+						background-size: 48px 29px
+						word-wrap: break-word;
+						
+						&:last-of-type
+							background-image: url("../images/class_node_subclass_last_child_2x.png")
+
+						&.depth1
+							padding-left: 12px
+						&.depth2
+							padding-left: 26px
+							background-position: -1px -3px;
+						&.depth3
+							padding-left: 40px
+							background-position: 13px -3px;
+						&.depth4
+							padding-left: 54px
+							background-position: 27px -3px;
+						&.depth5
+							padding-left: 68px
+							background-position: 41px -3px;
+							
 
 #container
 	
@@ -569,70 +703,6 @@ button.interactive-guide
 	&:focus
 		outline: none
 	
-
-.side
-
-	a
-		font-weight: normal
-	
-	h4
-		font-weight: 700
-		margin-bottom: 6px
-
-	.row
-		border: 1px solid #f0f0f0
-		padding: 10px 25px
-		margin-bottom: 2px
-		margin-right: 0
-		position: relative
-
-
-		&:nth-child(even)
-			background: #ebebeb
-		
-		&:nth-child(odd)
-			
-			&:first-child
-				background: #fff
-			
-			background: #f5f5f5
-			border-color: #f5f5f5
-		
-	
-	ul
-		margin-bottom: 0
-		padding: 0
-		text-indent: 0
-		
-		&.inheritence
-			
-			li
-				background-image: url("../images/class_node_parent_and_child_2x.png")
-				background-position: -15px -3px
-				background-repeat: 	no-repeat
-				background-size: 48px 29px
-				
-				&:last-of-type
-					background-image: url("../images/class_node_subclass_last_child_2x.png")
-
-				&.depth1
-					padding-left: 12px
-				&.depth2
-					padding-left: 26px
-					background-position: -1px -3px;
-				&.depth3
-					padding-left: 40px
-					background-position: 13px -3px;
-				&.depth4
-					padding-left: 54px
-					background-position: 27px -3px;
-				&.depth5
-					padding-left: 68px
-					background-position: 41px -3px;
-					
-	label
-		font-size: 1.25em
-		margin-bottom: 0.5em
 	
 
 #side-nav
