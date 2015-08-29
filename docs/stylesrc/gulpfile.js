@@ -2,6 +2,7 @@ var gulp 			= require( 'gulp' );
 var stylus 			= require( 'gulp-stylus' );
 var nib 			= require( 'nib' );
 var Filter 			= require( 'gulp-filter');
+var concat          = require('gulp-concat');
 
 
 gulp.task( 'styles', function() {
@@ -18,6 +19,7 @@ gulp.task( 'styles', function() {
             use: [ nib() ]
         }))
         .pipe( filter.restore )
+        .pipe( concat('style.css') )
         .pipe( gulp.dest( './../html/_assets/css' ) )
         .pipe( gulp.dest( './../htmlsrc/_assets/css' ) );
 });
