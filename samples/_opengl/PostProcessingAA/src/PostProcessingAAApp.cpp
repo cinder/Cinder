@@ -119,6 +119,9 @@ void PostProcessingAAApp::setup()
 
 	mFrameTime = getElapsedSeconds();
 	mFrameRate = 0.0;
+
+	// Disable alpha blending (which is now enabled by default) for SMAA to work correctly.
+	gl::disableAlphaBlending();
 }
 
 void PostProcessingAAApp::update()
