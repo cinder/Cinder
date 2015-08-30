@@ -77,7 +77,7 @@ void MotionBlurFboApp::draw()
 		double startTime = getElapsedSeconds();
 		for( int i = 0; i < SUBFRAMES; ++i ) {
 			// draw the Cube's sub-frame into mFbo
-			gl::enableDepthRead();
+			gl::enableDepthTest();
 			gl::enableDepthWrite();
 			gl::enableAlphaBlending();
 			mFbo->bindFramebuffer();
@@ -92,12 +92,12 @@ void MotionBlurFboApp::draw()
 			gl::setMatricesWindow( mAccumFbo->getSize() );
 			gl::enableAdditiveBlending();
 			gl::disableDepthWrite();
-			gl::disableDepthRead();		
+			gl::disableDepthTest();		
 			gl::draw( mFbo->getColorTexture() );
 		}
 	}
 	
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 	gl::enableAlphaBlending();
 	// set the color to be 1/SUBFRAMES, which divides the HDR image by the number of sub-frames we rendered
 	gl::color( 1.0f / SUBFRAMES, 1.0f / SUBFRAMES, 1.0f / SUBFRAMES, 1 );

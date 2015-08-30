@@ -46,7 +46,7 @@ void MotionBasicApp::update()
 void MotionBasicApp::draw()
 {
 	gl::clear( mBackgroundColor() );
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 
 	gl::setMatrices( mCam );
 	gl::multModelMatrix( mModelMatrix );

@@ -81,7 +81,7 @@ void TestApp::draw()
 {
 	gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
 	gl::enableAlphaBlending();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	/*mTex.bind();
 	gl::setMatrices( mCam );
 	glPushMatrix();

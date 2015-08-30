@@ -91,7 +91,7 @@ vec2 SphereProjectionApp::clipToScreenCoords( const vec2 &v ) const
 
 void SphereProjectionApp::draw()
 {
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 	gl::enableAlphaBlending();
 	
@@ -119,7 +119,7 @@ void SphereProjectionApp::draw()
 
 		// draw ellipse projection
 		gl::color( 1, 1, 0 );
-		gl::disableDepthRead();
+		gl::disableDepthTest();
 		gl::drawSolidCircle( clipToScreenCoords( center ), 4.0f );
 		gl::drawLine( clipToScreenCoords( center - axisA ), clipToScreenCoords( center + axisA ) );
 		gl::drawLine( clipToScreenCoords( center - axisB ), clipToScreenCoords( center + axisB ) );

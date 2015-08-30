@@ -27,7 +27,7 @@ class ArcballDemoApp : public App {
 
 void ArcballDemoApp::setup()
 {
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	mCamera.setPerspective( 45.0f, getWindowAspectRatio(), 0.1f, 1000.0f );

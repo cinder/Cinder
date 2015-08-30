@@ -170,7 +170,7 @@ void ParticleSphereCSApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatricesWindowPersp( getWindowSize() );
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	gl::ScopedGlslProg render( mRenderProg );

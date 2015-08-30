@@ -114,7 +114,7 @@ void SuperformulaGpuApp::setup()
 	setupGeometry();
 
 	gl::enableDepthWrite();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 }
 
 void SuperformulaGpuApp::resize()

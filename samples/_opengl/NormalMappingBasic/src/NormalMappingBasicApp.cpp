@@ -43,7 +43,7 @@ void NormalMappingBasicApp::setup()
 	mGlsl->uniform( "uLightLocViewSpace", vec3( 0, 0, 1 ) );
 
 	gl::enableDepthWrite();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 }
 
 void NormalMappingBasicApp::resize()

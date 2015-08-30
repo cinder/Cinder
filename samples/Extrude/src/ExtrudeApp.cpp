@@ -40,7 +40,7 @@ class ExtrudeApp : public App {
 
 void ExtrudeApp::setup()
 {
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 	gl::enableFaceCulling();
 
@@ -148,9 +148,9 @@ void ExtrudeApp::draw()
 		if( mDrawNormals && mNormalsBatch )
 			mNormalsBatch->draw();
 		if( mUseSpline && mSplineBatch ) {
-			gl::disableDepthRead();
+			gl::disableDepthTest();
 			mSplineBatch->draw();
-			gl::enableDepthRead();
+			gl::enableDepthTest();
 		}
 	gl::popMatrices();
 	

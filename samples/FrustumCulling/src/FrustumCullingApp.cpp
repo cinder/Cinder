@@ -214,7 +214,7 @@ void FrustumCullingReduxApp::draw()
 		gl::setMatrices( mRenderCam );
 
 		gl::ScopedState scopeState( GL_CULL_FACE, true );
-		gl::enableDepthRead();
+		gl::enableDepthTest();
 		gl::enableDepthWrite();
 
 		// Draw all objects.
@@ -288,7 +288,7 @@ void FrustumCullingReduxApp::draw()
 		mGridBatch->draw();
 
 		// Disable depth testing.
-		gl::disableDepthRead();
+		gl::disableDepthTest();
 
 		drawCullableFov();
 	}

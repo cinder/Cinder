@@ -41,7 +41,7 @@ void TriMeshReadWriteTestApp::setup()
 	testObjFileWriteRead();
 
 	gl::enableDepthWrite();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 }
 
 void TriMeshReadWriteTestApp::testObjFileWriteRead()

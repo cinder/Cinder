@@ -194,7 +194,7 @@ void DeferredShadingApp::draw()
 		}
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboGBuffer->getSize() );
 		const gl::ScopedMatrices scopedMatrices;
-		gl::enableDepthRead();
+		gl::enableDepthTest();
 		gl::enableDepthWrite();
 		gl::clear();
 		gl::setMatrices( mCamera );
@@ -231,7 +231,7 @@ void DeferredShadingApp::draw()
 		const gl::ScopedFramebuffer scopedFrameBuffer( mFboShadowMap );
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
 		const gl::ScopedMatrices scopedMatrices;
-		gl::enableDepthRead( true );
+		gl::enableDepthTest( true );
 		gl::enableDepthWrite( true );
 		gl::clear();
 		gl::setMatrices( mShadowCamera );
@@ -253,7 +253,7 @@ void DeferredShadingApp::draw()
 		const gl::ScopedBlendAdditive scopedAdditiveBlend;
 		const gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 		gl::setMatrices( mCamera );
-		gl::enableDepthRead();
+		gl::enableDepthTest();
 		gl::disableDepthWrite();
 		
 		// Bind G-buffer textures and shadow map
@@ -291,7 +291,7 @@ void DeferredShadingApp::draw()
 	// Set up window for screen render
 	const gl::ScopedViewport scopedViewport( ivec2( 0 ), toPixels( getWindowSize() ) );
 	const gl::ScopedMatrices scopedMatrices;
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 	gl::disableDepthWrite();
 	gl::clear();
 	

@@ -67,7 +67,7 @@ void InstancedTeapotsApp::setup()
 	mBatch = gl::Batch::create( mesh, mGlsl, { { geom::Attrib::CUSTOM_0, "vInstancePosition" } } );
 
 	gl::enableDepthWrite();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	
 	mTexture->bind();	
 }

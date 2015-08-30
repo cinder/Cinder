@@ -40,7 +40,7 @@ void FboMultipleRenderTargetsApp::setup()
 	mGlslMultipleOuts = gl::GlslProg::create( loadAsset( "multipleOut.vert" ), loadAsset( "multipleOut.frag" ) );
 #endif
 
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();	
 
 	mRotation = mat4( 1 );

@@ -62,7 +62,7 @@ void GlslProgAttribTestApp::setup()
 	mCam.lookAt( vec3( 0, 0, 10 ), vec3( 0 ) );
 	mCamUi.setCamera( &mCam );
 	
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	mRgbNotCmy = true;

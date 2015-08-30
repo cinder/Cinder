@@ -194,7 +194,7 @@ void GeomSourceModsApp::setup()
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 	gl::enableDepthWrite();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 
 	// triangles visual tests
 	mVisualTestSetups.push_back( visualTest10 );

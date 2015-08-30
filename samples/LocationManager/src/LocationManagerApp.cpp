@@ -77,7 +77,7 @@ void LocationApp::draw()
 {
 	// Clear the screen
 	gl::clear( Color::gray( 0.3f ) );
-	gl::enableDepthRead( true );
+	gl::enableDepthTest( true );
 	gl::enableDepthWrite( true );
 
 	gl::setMatrices( mCamera );
@@ -103,7 +103,7 @@ void LocationApp::draw()
 	////////////////////////////////////////////////////
 #if defined( CINDER_COCOA_TOUCH )
 	gl::setMatricesWindow( getWindowSize() );
-	gl::enableDepthRead( false );
+	gl::enableDepthTest( false );
 	gl::enableDepthWrite( false );
 	
 	// Plot arrow position

@@ -71,7 +71,7 @@ void CameraLensShiftTestApp::draw()
 {
 	gl::clear(); 
 
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	// draw the overview of the scene in the left half of the window
@@ -105,7 +105,7 @@ void CameraLensShiftTestApp::draw()
 	
 	//
 	gl::disableDepthWrite();
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 
 	// draw separator
 	gl::color( Color(0.25f, 0.25f, 0.25f) );
