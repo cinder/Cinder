@@ -66,9 +66,12 @@ void SourceFileCoreAudio::initImpl()
 	::CFURLRef fileUrl = ci::cocoa::createCfUrl( Url( mDataSource->getFilePath().string() ) );
 	::ExtAudioFileRef audioFile;
 	OSStatus status = ::ExtAudioFileOpenURL( fileUrl, &audioFile );
+	if( fileUrl ) {
+		CFRelease(fileUrl);
+		fileUrl = NULL;
+	}
 	if( status != noErr ) {
-		string urlString = ci::cocoa::convertCfString( CFURLGetString( fileUrl ) );
-		throw AudioFileExc( string( "could not open audio source file: " ) + urlString, (int32_t)status );
+		throw AudioFileExc( string( "could not open audio source file: " ) + mDataSource->getFilePath().string(), (int32_t)status );
 	}
 
 	mExtAudioFile = ExtAudioFilePtr( audioFile );
