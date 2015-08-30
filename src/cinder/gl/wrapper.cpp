@@ -338,12 +338,12 @@ void logicOp( GLenum mode )
 }
 #endif
 
-void disableDepthRead()
+void disableDepthTest()
 {
 	gl::disable( GL_DEPTH_TEST );
 }
 
-void enableDepthRead( bool enable )
+void enableDepthTest( bool enable )
 {
 	gl::enable( GL_DEPTH_TEST, enable );
 }

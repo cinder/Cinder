@@ -133,13 +133,13 @@ void enableLogicOp( bool enable = true );
 void logicOp( GLenum mode );
 #endif
 
-void disableDepthRead();
+void disableDepthTest();
 void disableDepthWrite();
-void enableDepthRead( bool enable = true );
+void enableDepthTest( bool enable = true );
 void enableDepthWrite( bool enable = true );
 
-void enableStencilRead( bool enable = true );
-void disableStencilRead();
+void enableStencilTest( bool enable = true );
+void disableStencilTest();
 void enableStencilWrite( bool enable = true );
 void disableStencilWrite();
 
