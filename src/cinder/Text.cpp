@@ -225,7 +225,7 @@ void Line::calcExtents()
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
 		mHeight = std::max( mHeight, sizeRect.Height );
 	}
-#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_WINRT )
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		FT_Face face = runIt->mFont.getFreetypeFace();
@@ -241,6 +241,23 @@ void Line::calcExtents()
 		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
 		mHeight = std::max( mHeight, face->bbox.yMax / 64.0f );
+	}
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
+	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
+		FT_Face face = runIt->mFont.getFreetypeFace();
+		
+		int width = 0;
+		for(string::iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
+		{
+			FT_Load_Char(face, *strIt, FT_LOAD_DEFAULT);
+			width += face->glyph->advance.x;
+		}
+		mWidth   += width / 64.0f;
+		mAscent  = std::max( runIt->mFont.getAscent(), mAscent );
+		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
+		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
+		mHeight  = std::max( mHeight, face->bbox.yMax / 64.0f );
 	}
 #endif
 
@@ -366,7 +383,9 @@ void Line::render( Surface &surface, float currentY, float xBorder, float maxWid
 			ivec2 offset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
 
 			draw_bitmap( offset.x, offset.y, &(slot->bitmap), color, surfaceData, surfacePixelInc, surfaceRowBytes, surfaceSize );
-		
+
+std::cout << *strIt << " : " << offset << std::endl;		
+
 			pen.x += slot->advance.x;
 			pen.y += slot->advance.y;
 		}
@@ -477,6 +496,8 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 		totalHeight = currentY - (mLines.back()->mAscent - mLines.back()->mDescent - mLines.back()->mLeadingOffset - mLines.back()->mLeading );
 		totalHeight += mLines.back()->mHeight;
 	}*/
+
+std::cout << "totalHeight: " << totalHeight << std::endl;
 
 	// round up from the floating point sizes to get the number of pixels we'll need
 	int pixelWidth = (int)math<float>::ceil( maxWidth ) + mHorizontalBorder * 2;
