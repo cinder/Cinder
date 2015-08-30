@@ -102,7 +102,7 @@ void PostProcessingAAApp::setup()
 		mInfoOriginal = gl::Texture::create( loadImage( loadAsset( "original.png" ) ) );
 	}
 	catch( const std::exception& e ) {
-		CI_LOG_E( "Failed to load textures: " << e.what() );
+		CI_LOG_EXCEPTION( "Failed to load textures.", e );
 		quit();
 	}
 
@@ -120,7 +120,7 @@ void PostProcessingAAApp::setup()
 	mFrameTime = getElapsedSeconds();
 	mFrameRate = 0.0;
 
-	// Disable alpha blending (which is now enabled by default) for SMAA to work correctly.
+	// Disable alpha blending (which is enabled by default) for SMAA to work correctly.
 	gl::disableAlphaBlending();
 }
 
@@ -373,4 +373,4 @@ void prepareSettings( App::Settings *settings )
 	settings->setWindowSize( 1280, 720 );
 }
 
-CINDER_APP( PostProcessingAAApp, RendererGl( RendererGl::Options().msaa( 0 ) ), prepareSettings )
+CINDER_APP( PostProcessingAAApp, RendererGl, prepareSettings )
