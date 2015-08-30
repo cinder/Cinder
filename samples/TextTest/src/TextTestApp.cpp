@@ -38,6 +38,10 @@ void TextTestApp::setup()
 	std::string normalFont( "Arial" );
 	std::string boldFont( "Arial-BoldMT" );
 	std::string differentFont( "AmericanTypewriter" );
+#elif defined( CINDER_LINUX )
+	std::string normalFont( "Arial" );
+	std::string boldFont( "Arial Bold" );
+	std::string differentFont( "Courier" );
 #else
 	std::string normalFont( "Arial" );
 	std::string boldFont( "Arial Bold" );
@@ -72,7 +76,8 @@ void TextTestApp::setup()
 	layout.addLine( " • Back to regular leading but translucent" );
 	Surface8u rendered = layout.render( true, PREMULT );
 	mTexture = gl::Texture2d::create( rendered );
-	
+
+  try {
 	// Create a custom font by loading it from a resource
 	Font customFont( Font( loadResource( RES_CUSTOM_FONT ), 72 ) );
 	console() << "This font is called " << customFont.getFullName() << std::endl;
@@ -83,6 +88,12 @@ void TextTestApp::setup()
 	simple.addLine( "Cinder" );
 	simple.addLine( "Font From Resource" );
 	mSimpleTexture = gl::Texture2d::create( simple.render( true, PREMULT ) );
+
+  console() << "Rendered simple!" << std::endl;
+  } 
+  catch( const std::exception& e ) {
+    console() << "ERROR: " << e.what () << std::endl;
+  }
 }
 
 void TextTestApp::draw()

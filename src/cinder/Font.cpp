@@ -194,7 +194,6 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 			::FcObjectSet *os  = ::FcObjectSetBuild( FC_FILE, FC_FAMILY, FC_STYLE, (char *)0 );
 			::FcFontSet   *fs  = ::FcFontList (0, pat, os);
 		
-			std::cout << "num fonts: " << fs->nfont << std::endl;
 			for( size_t i = 0; i < fs->nfont; ++i ) {
 				::FcPattern *font = fs->fonts[i];
 
@@ -205,7 +204,9 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 					string fontName = std::string( (const char*)str );
 					mFontNames.push_back( fontName );
 				}
-				::free( str );
+				if( nullptr != str ) {
+					::free( str );
+				}
 			}
 
 			::FcObjectSetDestroy( os );
@@ -244,9 +245,13 @@ class FontObj {
 	std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
 	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
 	void *mFileData;
-#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_WINRT )
 	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
 	void *mFileData;
+	FT_Face mFace;
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
+	void *mFileData = nullptr;
 	FT_Face mFace;
 #endif 		
 	size_t					mNumGlyphs;
@@ -898,7 +903,7 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 		throw FontInvalidNameExc();
 
 	finishSetup();
-#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_WINRT )
 	FT_New_Memory_Face(
 		FontManager::instance()->mLibrary, 
 		(FT_Byte*)dataSource->getBuffer()->getData(), 
@@ -908,6 +913,17 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	);
 
 	FT_Set_Pixel_Sizes(mFace, 0, (int)size);
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	FT_New_Memory_Face(
+		FontManager::instance()->mLibrary, 
+		(FT_Byte*)dataSource->getBuffer()->getData(), 
+		dataSource->getBuffer()->getSize(), 
+		0, 
+		&mFace
+	);
+
+	FT_Set_Char_Size( mFace, 0, (int)size * 64, 0, 72 );
+	//FT_Set_Pixel_Sizes(mFace, 0, (int)size);
 #endif
 }
 
@@ -919,9 +935,14 @@ FontObj::~FontObj()
 #elif defined( CINDER_MSW )
 	if( mHfont ) // this should be replaced with something exception-safe
 		::DeleteObject( mHfont ); 
-#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_WINRT )
 	FT_Done_Face(mFace);
 	free(mFileData);
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	FT_Done_Face( mFace );
+	if( nullptr != mFileData ) {
+		free( mFileData );
+	}
 #endif
 }
 

@@ -273,6 +273,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Stream.cpp
     ${CINDER_SRC_DIR}/cinder/Surface.cpp
     ${CINDER_SRC_DIR}/cinder/System.cpp
+    ${CINDER_SRC_DIR}/cinder/Text.cpp
     ${CINDER_SRC_DIR}/cinder/Timeline.cpp
     ${CINDER_SRC_DIR}/cinder/TimelineItem.cpp
     ${CINDER_SRC_DIR}/cinder/Timer.cpp
