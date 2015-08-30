@@ -197,16 +197,16 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 			for( size_t i = 0; i < fs->nfont; ++i ) {
 				::FcPattern *font = fs->fonts[i];
 
-				::FcChar8 *str = ::FcNameUnparse( font );
-				::FcChar8 *file = nullptr;
-				if( ::FcPatternGetString( font, FC_FILE, 0, &file ) == FcResultMatch ) 
+				//::FcChar8 *str = ::FcNameUnparse( font );
+				::FcChar8 *family = nullptr;
+				if( ::FcPatternGetString( font, FC_FAMILY, 0, &family ) == FcResultMatch ) 
 				{					
-					string fontName = std::string( (const char*)str );
+					string fontName = std::string( (const char*)family );
 					mFontNames.push_back( fontName );
 				}
-				if( nullptr != str ) {
-					::free( str );
-				}
+				//if( nullptr != str ) {
+				//	::free( str );
+				//}
 			}
 
 			::FcObjectSetDestroy( os );
