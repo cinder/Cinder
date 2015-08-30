@@ -37,7 +37,7 @@ body
 	baseFontStyle()
 	font-size: 14px
 	background: $$background-gray-light $gray-gradient-1 no-repeat
-	line-height: 1.6em
+	line-height: 1.8em
 	
 	
 a
@@ -59,6 +59,7 @@ p a
 	
 p
 	margin-bottom: 1.25em
+	line-height: inherit
 	
 	&:last-child
 		margin-bottom: 0
@@ -127,6 +128,9 @@ ol
 	
 li
 	margin: 0 0 0.25rem 1.0rem;
+	
+ul, ol, dl 
+	line-height: inherit
 
 .row
 	max-width: 80rem
@@ -149,22 +153,6 @@ body#guide-contents
 	margin: 20px auto 0 auto
 	width: 100%
 
-code, .code
-	codeStyle()
-	padding: 2px 4px
-	background: #fafafa
-	color: #666
-
-pre > code
-	background: none
-	
-pre[class*="language-"]
-	margin: 1em 0
-	padding: 0.5em 0.7em
-	line-height: 1.3em
-
-code[class*="language-"]
-	padding: 0
 
 .plain
 	baseFontStyle()
@@ -411,7 +399,7 @@ body.classes
 		display: inline-block
 		margin-bottom: 0
 		font-weight: 700
-		line-height: 1em
+		line-height: 1.25em
 	
 	span.slash
 		color: #ddd
@@ -455,6 +443,7 @@ body.classes
 			
 		.columns
 			padding: 0.7rem 1.25rem
+			overflow-x: scroll;
 			
 			&:not(:last-child)
 				border-right: #fff 1px solid
@@ -471,12 +460,15 @@ body.classes
 			color: $middle-gray-text
 			font-weight: 700
 			font-size: 1.0em
-			margin-bottom: 0.5em
+			// margin-bottom: 0.5em
 			
 		.ns
 			display: block
 			color: $cinder-red
 			line-height: 1em
+			
+			.link:not(:last-child):after
+				content: "::"
 
 		.side
 
@@ -519,7 +511,7 @@ body.classes
 						background-position: -15px -3px
 						background-repeat: 	no-repeat
 						background-size: 48px 29px
-						word-wrap: break-word;
+						// word-wrap: break-word;
 						
 						&:last-of-type
 							background-image: url("../images/class_node_subclass_last_child_2x.png")

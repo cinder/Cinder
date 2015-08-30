@@ -701,12 +701,26 @@ class ClassFileData(FileData):
         self.kind_explicit = find_file_kind_explicit(tree)
         self.namespace = "::".join(self.compoundName.split("::")[0:-1])
 
+        ns_list = self.compoundName.split("::")
+        ns_links = []
+        # make list of namespace links
+        for index, ns in enumerate(ns_list[:-1]):
+            ns_object = g_symbolMap.find_namespace("::".join(ns_list[0:index + 1]))
+            if ns_object:
+                ns_link = LinkData(os.path.join(HTML_DEST_PATH, ns_object.path), ns)
+            else:
+                # add inactive link data
+                ns_link = LinkData("", ns, False)
+            ns_links.append(ns_link)
+        self.ns_links = ns_links
+
     def get_content(self):
         orig_content = super(ClassFileData, self).get_content()
         content = orig_content.copy()
         class_content = {
             "name": self.stripped_name,
             "namespace": self.namespace,
+            "namespace_links": self.ns_links,
             "description": self.description,
             "is_template": self.is_template,
             "template_def_name": self.template_def_name,
@@ -991,9 +1005,10 @@ class GuideConfig(object):
 
 class LinkData(object):
 
-    def __init__(self, link=None, label=None):
+    def __init__(self, link=None, label=None, active=True):
         self.link = link
         self.label = label
+        self.active = active
 
 
 # ==================================================================================================== Utility functions

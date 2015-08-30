@@ -29,8 +29,10 @@
                         Class
                         {{/is_template}}
                     </h1>-->
+                     <span class="ns">
+                        {{#namespace_links}}{{#active}}<span class="link"><a href="{{link}}">{{label}}</a></span>{{/active}}{{^active}}<span class="link">{{label}}</span>{{/active}}{{/namespace_links}}
+                    </span>
 
-                    <span class="ns">{{namespace}}</span>
                     <h1>{{name}}<span class="slash"> /</span></h1>
 
                     {{#side_nav_content.include}}
