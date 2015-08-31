@@ -50,8 +50,8 @@
 static const float MAX_SIZE = 1000000.0f;
 
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	#include "cinder/linux/FreeTypeUtil.h"
 
-	#include "cinder/Unicode.h"
 static const float MAX_SIZE = 1000000.0f;
 
 #endif
