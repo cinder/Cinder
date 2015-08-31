@@ -206,7 +206,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/ShaderPreprocessor.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Sync.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Texture.cpp
-    #${CINDER_SRC_DIR}/cinder/gl/TextureFont.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TextureFont.cpp
     ${CINDER_SRC_DIR}/cinder/gl/TextureFormatParsers.cpp
     ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObj.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Ubo.cpp

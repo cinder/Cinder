@@ -323,6 +323,14 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 
 	delete [] pBuff;
 }
+
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+
+TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Format &format )
+	: mFont( font ), mFormat( format )
+{
+}
+
 #endif
 
 void TextureFont::drawGlyphs( const vector<pair<uint16_t,vec2> > &glyphMeasures, const vec2 &baselineIn, const DrawOptions &options, const std::vector<ColorA8u> &colors )

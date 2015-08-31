@@ -49,6 +49,11 @@
 
 static const float MAX_SIZE = 1000000.0f;
 
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+
+	#include "cinder/Unicode.h"
+static const float MAX_SIZE = 1000000.0f;
+
 #endif
 
 #include <limits.h>
@@ -371,20 +376,23 @@ void Line::render( Surface &surface, float currentY, float xBorder, float maxWid
 	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		ColorA8u color = runIt->mColor;
 
+		std::u32string strU32 = ci::toUtf32( runIt->mText );
+
 		FT_Face face = runIt->mFont.getFreetypeFace();
 		FT_Vector pen = { (int)currentX * 64, (int)(surfaceSize.y - currentY) * 64 };
-		for(string::const_iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt) {
+		//for(string::const_iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt) {
+		for( const auto& ch : strU32 ) {
 			FT_Set_Transform( face, nullptr, &pen );
 
-			FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
+			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+			FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+			//FT_Load_Char(face, chU32, FT_LOAD_RENDER);
 			FT_Glyph_Metrics &metrics = face->glyph->metrics;
 
 			FT_GlyphSlot slot = face->glyph;
 			ivec2 offset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
 
 			draw_bitmap( offset.x, offset.y, &(slot->bitmap), color, surfaceData, surfacePixelInc, surfaceRowBytes, surfaceSize );
-
-std::cout << *strIt << " : " << offset << std::endl;		
 
 			pen.x += slot->advance.x;
 			pen.y += slot->advance.y;
@@ -819,6 +827,7 @@ Surface	TextBox::render( vec2 offset )
 
 	return result;
 }
+
 #elif defined( CINDER_MSW )
 
 void TextBox::calculate() const
@@ -1004,6 +1013,127 @@ Surface	TextBox::render( vec2 offset )
 
 	return result;
 }
+
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+
+vector<string> TextBox::calculateLineBreaks() const
+{
+	vector<string> result;
+
+	vector<string> strings;
+	struct LineProcessor {
+		LineProcessor( vector<string> *strings ) : mStrings( strings ) {}
+		void operator()( const char *line, size_t len ) const { mStrings->push_back( string( line, len ) ); }
+		mutable vector<string> *mStrings;
+	};
+	struct LineMeasure {
+		LineMeasure( int maxWidth, const Font &font ) : mMaxWidth( maxWidth ), mFont( font.getFreetypeFace() ) {}
+		bool operator()( const char *line, size_t len ) const {
+			if( mMaxWidth >= MAX_SIZE ) {
+				// too big anyway so just return true
+				return true;
+			}
+
+			int measuredWidth = 0;
+			int currentX = 0;
+			int currentY = 0;
+			FT_Vector pen = { currentX*64, ((mFont->height >> 6) - currentY)*64 };
+			for( size_t i = 0; i < len; ++i ) {
+				FT_Set_Transform( mFont, nullptr, &pen );
+				FT_Load_Char( mFont, line[i], FT_LOAD_RENDER );
+
+				FT_Glyph_Metrics& metrics = mFont->glyph->metrics;
+				FT_GlyphSlot slot = mFont->glyph;
+
+				pen.x += slot->advance.x;
+				pen.y += slot->advance.y;
+
+				measuredWidth = (pen.x >> 6);
+			}
+
+			bool result = (measuredWidth <= mMaxWidth);
+			if( result ) {
+				//std::cout << measuredWidth << " : " << mMaxWidth << std::endl;
+			}
+
+			return result;
+		}
+
+		int			mMaxWidth;
+		FT_Face		mFont;
+	};
+	std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );		
+	lineBreakUtf8( mText.c_str(), LineMeasure( ( mSize.x > 0 ) ? mSize.x : MAX_SIZE, mFont ), lineFn );
+
+	return result;
+}
+
+vector<pair<uint16_t,vec2>> TextBox::measureGlyphs() const
+{
+	vector<pair<uint16_t,vec2> > result;
+
+	if( mText.empty() ) {
+		return result;
+	}
+
+	vector<string> mLines = calculateLineBreaks();
+
+	/*
+	float curY = 0;
+	for( vector<string>::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+
+		std::u16string wideText = toUtf16( *lineIt );
+		gcpResults.lStructSize = sizeof (gcpResults);
+		gcpResults.lpOutString = NULL;
+		gcpResults.lpOrder = NULL;
+		gcpResults.lpCaretPos = NULL;
+		gcpResults.lpClass = NULL;
+
+		uint32_t bufferSize = std::max<uint32_t>( wideText.length() * 1.2, 16);		
+		while( true ) {
+			if( glyphIndices ) {
+				free( glyphIndices );
+				glyphIndices = NULL;
+			}
+			if( dx ) {
+				free( dx );
+				dx = NULL;
+			}
+
+			glyphIndices = (WCHAR*)malloc( bufferSize * sizeof(WCHAR) );
+			dx = (int*)malloc( bufferSize * sizeof(int) );
+			gcpResults.nGlyphs = bufferSize;
+			gcpResults.lpDx = dx;
+			gcpResults.lpGlyphs = glyphIndices;
+
+			if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), (wchar_t*)&wideText[0], wideText.length(), 0,
+							&gcpResults, GCP_DIACRITIC | GCP_LIGATE | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
+				return vector<pair<uint16_t,vec2> >(); // failure
+			}
+
+			if( gcpResults.lpDx && gcpResults.lpGlyphs )
+				break;
+
+			// Too small a buffer, try again
+			bufferSize += bufferSize / 2;
+			if( bufferSize > INT_MAX) {
+				return vector<pair<uint16_t,vec2> >(); // failure
+			}
+		}
+		
+		int xPos = 0;
+		for( unsigned int i = 0; i < gcpResults.nGlyphs; i++ ) {
+			result.push_back( std::make_pair( glyphIndices[i], vec2( xPos, curY ) ) );
+			xPos += dx[i];
+		}
+
+		curY += mFont.getAscent() + mFont.getDescent();
+	}
+	*/
+
+	return result;
+}
+
 #endif
 
 } // namespace cinder
