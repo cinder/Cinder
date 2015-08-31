@@ -35,6 +35,7 @@ import os
 import shutil
 import stat
 import urlparse
+import argparse
 from datetime import datetime
 from difflib import SequenceMatcher as SM
 
@@ -58,6 +59,11 @@ file_meta = {
     "doxy_version": "",
     "creation_date": str(datetime.today().date())
 }
+
+parser = argparse.ArgumentParser(description='CiDocs')
+parser.add_argument('--debug',
+    action='store_true',
+    help='debug flag' )
 
 
 # various config settings
@@ -2209,7 +2215,7 @@ def process_html_file(in_path, out_path):
     - Copy original css and js links into new hmtl
     - Save html in destination dir
     """
-    print "processHtmlFile: " + in_path
+    log("processHtmlFile: " + in_path)
 
     # relative path in relation to the in_path (htmlsrc/)
     local_rel_path = os.path.relpath(in_path, HTML_SOURCE_PATH)
@@ -3281,6 +3287,7 @@ def process_file(in_path, out_path=None):
     file_path = in_path
     file_prefix = get_file_prefix(file_path)
     is_html_file = True if get_file_extension(file_path).lower() == ".html" else False
+    is_xml_file = True if get_file_extension(file_path).lower() == ".xml" else False
 
     if is_html_file:
         file_path = "/".join(in_path.split('htmlsrc/')[1:])
@@ -3292,7 +3299,7 @@ def process_file(in_path, out_path=None):
         # print "process: " + HTML_SOURCE_PATH + file_path
         process_html_file(HTML_SOURCE_PATH + file_path, save_path)
 
-    else:
+    elif is_xml_file:
         file_type = get_file_type(file_prefix)
         # process html directory always, since they may generate content for class or namespace reference pages
         if not state.processed_html_files and not config.SKIP_HTML_PARSING:
@@ -3311,8 +3318,14 @@ def process_dir(in_path, out_path):
     """
 
     for file_path in os.listdir(in_path):
-        if file_path.endswith(".xml"):
-            process_file(os.path.join(in_path, file_path))
+        full_path = os.path.join(in_path, file_path)
+        # if file_path.endswith(".xml"):
+
+        if os.path.isfile(full_path):
+            process_file(full_path)
+
+        elif os.path.isdir(full_path):
+            process_html_dir(full_path)
 
     # save search index to json file
     # print g_search_index
@@ -3321,7 +3334,6 @@ def process_dir(in_path, out_path):
 
 def process_html_dir(in_path):
     global state
-    print "PROCESS HTML DIR"
 
     for path, subdirs, files in os.walk(in_path):
         path_dir = path.split("/")[-1]
@@ -3477,11 +3489,13 @@ if __name__ == "__main__":
         # process a specific file
         if os.path.isfile(inPath):
             process_file(inPath, sys.argv[2] if len(sys.argv) > 2 else None)
+            log("SUCCESSFULLY GENERATED YOUR FILE!")
         elif os.path.isdir(inPath):
             # print inPath
             if inPath == "htmlsrc/":
                 process_html_dir(HTML_SOURCE_PATH)
             else:
                 process_dir(inPath, "html/")
+            log("SUCCESSFULLY GENERATED YOUR FILES!")
     else:
         print "Unknown usage"
