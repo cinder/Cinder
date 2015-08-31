@@ -242,7 +242,7 @@ ScopedTextureBind::ScopedTextureBind( const Texture2dRef &texture, uint8_t textu
 
 #if ! defined( CINDER_GL_ES_2 )
 
-ScopedTextureBind::ScopedTextureBind( const Texture1dRef & texture, uint8_t textureUnit )
+ScopedTextureBind::ScopedTextureBind( const Texture1dRef &texture, uint8_t textureUnit )
 	: mCtx( gl::context() ), mTarget( texture->getTarget() ), mTextureUnit( textureUnit )
 {
 	mCtx->pushTextureBinding( mTarget, texture->getId(), mTextureUnit );
