@@ -34,12 +34,50 @@ namespace cinder { namespace linux { namespace ftutil {
 struct Box { 
 	int x1, y1, x2, y2;
 	Box( int ax1, int ay1, int ax2, int ay2 ) : x1(ax1), y1(ay1), x2(ax2), y2(ay2) {}
+	int getWidth() const { return (x2 - x1); }
+	int getHeight() const { return (y2 - y1); }
 	ci::Rectf toRect() const { return ci::Rectf( x1, y1, x2, y2 ); }
 	friend std::ostream& operator<<( std::ostream& os, const Box& obj ) {
 		os << "[" << obj.x1 << ", " << obj.y1 << "]-(" << obj.x2 << ", " << obj.y2 << ")";
 		return os;
 	}
 };
+
+/*
+int CalcWidth( const std::string& text, FT_Face face )
+{
+	int result = 0;
+
+	int baseLineX = 0;
+	int baseLineY = 0;
+
+	const int kMaxPixHeight = 65535;
+	FT_Vector pen = { baseLineX*64, (kMaxPixHeight - baseLineY)*64 };
+
+	for( const auto ch : text ) {
+		FT_Set_Transform( face, nullptr, &pen );
+
+		FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+		FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+		if( error ) {
+		  continue;  
+		} 
+
+		FT_GlyphSlot slot = face->glyph;
+		int glyphPixWidth  = slot->metrics.width >> 6;
+		int glyphPixHeight = slot->metrics.height >> 6;
+		int x1 = slot->bitmap_left;
+		int x2 = x1 + glyphPixWidth;
+
+		result = x2;
+
+		pen.x += slot->advance.x;
+		pen.y += slot->advance.y;
+	}
+
+	return result;
+}
+*/
 
 Box CalcBounds( const std::string& text, FT_Face face, int baseLineX = 0, int baseLineY = 0 )
 {
@@ -67,11 +105,13 @@ Box CalcBounds( const std::string& text, FT_Face face, int baseLineX = 0, int ba
 		int x2 = x1 + glyphPixWidth;
 		int y2 = y1 + glyphPixHeight;
 
+//std::cout << ch << " | " << x1 << ", " << y1 << ", " << x2 << ", " << y2 << " : " << glyphPixWidth << ", " << glyphPixHeight << std::endl;
+
 		if( ! hasInitial ) {
 			result.x1 = x1;
-			result.y1 = y1;
+			result.y1 = baseLineY;
 			result.x2 = x2;
-			result.y2 = y2;
+			result.y2 = baseLineY;
 			hasInitial = true;
 		}
 

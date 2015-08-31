@@ -251,21 +251,19 @@ void Line::calcExtents()
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		FT_Face face = runIt->mFont.getFreetypeFace();
-		
-		int width = 0;
-		for(string::iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
-		{
-			FT_Load_Char(face, *strIt, FT_LOAD_DEFAULT);
-			width += face->glyph->advance.x;
-		}
-		mWidth   += width / 64.0f;
+
+		auto bounds = ci::linux::ftutil::CalcBounds( runIt->mText, face );
+
+		mWidth   += bounds.getWidth();
 		mAscent  = std::max( runIt->mFont.getAscent(), mAscent );
 		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
-		mHeight  = std::max( mHeight, face->bbox.yMax / 64.0f );
+		mHeight  = std::max( mHeight, (float)bounds.getHeight() );
+		//mHeight  = std::max( mHeight, (face->bbox.yMax - face->bbox.yMin) / 64.0f );
 	}
 #endif
 
+std::cout << mHeight << ", " << mAscent << ", " << mDescent << ", " << mLeading << std::endl;
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
 }
 
@@ -496,6 +494,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		(*lineIt)->calcExtents();
 		totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight + (*lineIt)->mLeadingOffset );
+std::cout << totalHeight << " : " << (*lineIt)->mHeight << " : " << (*lineIt)->mLeadingOffset << std::endl;
 		if( (*lineIt)->mWidth > maxWidth )
 			maxWidth = (*lineIt)->mWidth;
 	}
@@ -505,7 +504,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 		totalHeight += mLines.back()->mHeight;
 	}*/
 
-std::cout << "totalHeight: " << totalHeight << std::endl;
+//std::cout << "totalHeight: " << totalHeight << std::endl;
 
 	// round up from the floating point sizes to get the number of pixels we'll need
 	int pixelWidth = (int)math<float>::ceil( maxWidth ) + mHorizontalBorder * 2;

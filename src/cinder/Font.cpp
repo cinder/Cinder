@@ -567,6 +567,7 @@ std::string Font::getFullName() const
 
 float Font::getLeading() const
 {
+	//return (float)((mObj->mFace->height - mObj->mFace->ascender + mObj->mFace->descender) >> 6);
 	return (float)(mObj->mFace->height >> 6);
 }
 
