@@ -22,7 +22,7 @@
  */
 
 #include "cinder/android/CinderAndroid.h"
-#include "cinder/android/app/CinderNativeActivity.h" 
+#include "cinder/android/app/CinderNativeActivity.h"
 #include "cinder/app/android/AssetFileSystem.h"
 #include "cinder/app/android/EventManagerAndroid.h"
 
@@ -79,6 +79,11 @@ bool exists( const ci::fs::path& path )
 cinder::fs::path getCacheDirectory()
 {
 	return cinder::android::app::CinderNativeActivity::getCacheDirectory();
+}
+
+cinder::fs::path getPicturesDirectory()
+{
+	return cinder::android::app::CinderNativeActivity::getPicturesDirectory();
 }
 
 void setWallpaper( const ci::Surface8u& surf )

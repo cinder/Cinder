@@ -14,6 +14,7 @@ import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ConditionVariable;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -162,6 +163,11 @@ public class CinderNativeActivity extends NativeActivity {
 
     public String getCacheDirectory() {
         String result = this.getExternalCacheDir().toString();
+        return result;
+    }
+
+    public String getPicturesDirectory() {
+        String result = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
         return result;
     }
 

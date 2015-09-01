@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/Filesystem.h"
-#include "cinder/Surface.h" 
+#include "cinder/Surface.h"
 
 int stoi( const std::string& str );
 
@@ -59,6 +59,7 @@ bool exists( const ci::fs::path& path );
 } // namespace fs
 
 cinder::fs::path getCacheDirectory();
+cinder::fs::path getPicturesDirectory();
 void setWallpaper( const ci::Surface8u& surf );
 void launchTwitter( const std::string& text = "", const ci::Surface8u* surf = nullptr );
 
