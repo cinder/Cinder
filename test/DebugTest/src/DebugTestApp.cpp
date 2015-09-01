@@ -107,13 +107,13 @@ void DebugTestApp::testEnableFileLogger()
 
 void DebugTestApp::testRotatingFile()
 {
-	log::manager()->enableRotatingFileLogging( "/tmp", "loggingTests.%Y.%m.%d.log" );
+    log::manager()->enableFileLoggingRotating( "/tmp", "loggingTests.%Y.%m.%d.log" );
 
 	// empty formatStr causes an assertion failure:
-//	log::manager()->enableFileLogging( "", "", false );
+    //log::manager()->enableFileLoggingRotating( "", "", false );
 
 	// test nested folder path:
-//	log::manager()->enableFileLogging( "/tmp/cinder", "loggingTests.%Y.%m.%d.log", false );
+    //log::manager()->enableFileLoggingRotating( "/tmp/cinder", "loggingTests.%Y.%m.%d.log", false );
 	
 	CI_LOG_D( "enable rotating file logging" );
 }

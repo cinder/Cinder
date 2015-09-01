@@ -30,10 +30,10 @@ class LoggingApp : public App {
 	 */
 	void enableFileLogging();
 	
-	/** @breif enableRotatingFileLogging will enable logging to a daily rotating file.
+	/** @breif enableFileLoggingRotating will enable logging to a daily rotating file.
 	 * The file will rotate daily at the first logging event past midnight.
 	 */
-	void enableRotatingFileLogging();
+	void enableFileLoggingRotating();
 	
 	/** @breif enableSysLogging will enable platform specific system logging.
  	 * Currently this means syslog (OS X) and EventLog (Windows).
@@ -50,7 +50,7 @@ void LoggingApp::setup()
 	 */
 	
 	//enableFileLogging();
-	enableRotatingFileLogging();
+	enableFileLoggingRotating();
 	enableSysLogging();
 }
 
@@ -65,14 +65,14 @@ void LoggingApp::enableFileLogging()
 	log::manager()->enableFileLogging( "/tmp/logging/cinder.log", true );
 }
 
-void LoggingApp::enableRotatingFileLogging()
+void LoggingApp::enableFileLoggingRotating()
 {
 	/**
 	 * This call will append log messages to a rotating file in the folder `/tmp/logging`.
 	 * The filename `cinder.%Y.%m.%d.log` will be evaluated by strftime.  For example
 	 * the filename could evaluate to `cinder.2015.08.28.log`.
 	 */
-	log::manager()->enableRotatingFileLogging( "/tmp/logging", "cinder.%Y.%m.%d.log" );
+	log::manager()->enableFileLoggingRotating( "/tmp/logging", "cinder.%Y.%m.%d.log" );
 }
 
 void LoggingApp::enableSysLogging()

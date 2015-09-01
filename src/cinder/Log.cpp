@@ -219,7 +219,7 @@ void LogManager::enableFileLogging( const fs::path &path, bool appendToExisting 
 	mFileLoggingEnabled = true;
 }
 
-void LogManager::enableRotatingFileLogging( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
+void LogManager::enableFileLoggingRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
 {
 	if( ! initFileLogging() ) {
 		return;
@@ -238,10 +238,10 @@ void LogManager::setFileLoggingEnabled( bool enable, const fs::path &filePath, b
 }
 
 
-void LogManager::setRotatingFileLoggingEnabled( bool enable, const fs::path &folder, const string &formatStr, bool appendToExisting )
+void LogManager::setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const string &formatStr, bool appendToExisting )
 {
 	if( enable )
-		enableRotatingFileLogging( folder, formatStr, appendToExisting );
+		enableFileLoggingRotating( folder, formatStr, appendToExisting );
 	else
 		disableFileLogging();
 }

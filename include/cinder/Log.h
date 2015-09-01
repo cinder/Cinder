@@ -189,10 +189,10 @@ public:
 	bool isConsoleLoggingEnabled() const				{ return mConsoleLoggingEnabled; }
 
 	void enableFileLogging( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void enableRotatingFileLogging( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
+	void enableFileLoggingRotating( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
 	void disableFileLogging();
 	void setFileLoggingEnabled( bool enable, const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void setRotatingFileLoggingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+	void setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	bool isFileLoggingEnabled() const					{ return mFileLoggingEnabled; }
 
 	void enableSystemLogging();
