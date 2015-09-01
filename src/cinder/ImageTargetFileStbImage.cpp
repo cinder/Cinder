@@ -85,7 +85,7 @@ ImageTargetFileStbImage::ImageTargetFileStbImage( DataTargetRef dataTarget, Imag
 		mRowBytes = mNumComponents * imageSource->getWidth() * sizeof(float);
 	}
 	
-	mData = std::unique_ptr<uint8_t[]>( new uint8_t[mWidth * mRowBytes] );
+	mData = std::unique_ptr<uint8_t[]>( new uint8_t[mHeight * mRowBytes] );
 }
 
 void* ImageTargetFileStbImage::getRowPointer( int32_t row )
