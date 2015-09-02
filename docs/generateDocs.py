@@ -194,7 +194,10 @@ class SymbolMap(object):
     class Class(object):
         def __init__(self, class_tree):
 
-            self.name = class_tree.find('name').text
+            # name with namespace
+            self.qualifiedName = class_tree.find('name').text
+            # name without namespace
+            self.name = strip_compound_name(self.qualifiedName)
             self.path = class_tree.find('filename').text
             self.base = class_tree.find('base').text if class_tree.find('base') is not None else ""
             self.is_template = True if class_tree.find('templarg') else False
@@ -208,7 +211,7 @@ class SymbolMap(object):
 
             # list of tags to be added to the search index
             self.tags = []
-            self.tags.append(strip_compound_name(self.name))
+            self.tags.append(self.name)
 
         def add_related_link(self, link_data):
             self.relatedLinks.append(link_data)
@@ -235,6 +238,7 @@ class SymbolMap(object):
             self.functionList = []
             self.tags = []
             self.tags.append(self.name)
+            self.typedefs = []
 
         def add_function(self, fn_name, fn_obj):
             self.functionList.append(fn_obj)
@@ -324,6 +328,7 @@ class SymbolMap(object):
         self.functions[ns + "::" + fn_name] = fn_obj
 
     # searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
+    # returns a class
     def find_class(self, name):
 
         # replace leading ci:: with cinder:: instead
@@ -354,6 +359,7 @@ class SymbolMap(object):
                     return typedef.sharedFrom
                 else:
                     return typedef
+                    # log("typedef " + typedef.name + " was not shared from an existing class", 1)
 
             # check to see if parent is a typedef
             searchname_parts = searchname.split("::")
@@ -427,7 +433,6 @@ class SymbolMap(object):
         return namespaces
 
     def find_typedef(self, name):
-
         searchname = str(name)
         if searchname.find("ci::") == 0:
             searchname = searchname.replace("ci::", "cinder::")
@@ -1428,12 +1433,12 @@ def gen_class_hierarchy(bs4, class_def):
 
         # link out only if a base class, not the original class
         if index < len(hierarchy) - 1:
-            a = gen_tag(bs4, "a", [], base.name)
+            a = gen_tag(bs4, "a", [], base.qualifiedName)
             define_link_tag(a, {'href': base.path})
-            a = gen_link_tag(bs4, base.name, os.path.join(HTML_DEST_PATH, a["href"]))
+            a = gen_link_tag(bs4, base.qualifiedName, os.path.join(HTML_DEST_PATH, a["href"]))
             li.append(a)
         else:
-            li.append(base.name)
+            li.append(base.qualifiedName)
         ul.append(li)
 
     return ul
@@ -1771,6 +1776,21 @@ def generate_namespace_nav():
     return tree
 
 
+def find_typedefs_of(class_name, typedef_list):
+    """
+    Finds typedef objects that are shared from the given class within a given namespace
+    :return: list if SymbolMap.Typedef objects
+    """
+    typedefs = []
+    class_name = strip_compound_name(class_name)
+    
+    for typedef in typedef_list:
+        if typedef.sharedFrom:
+            if typedef.sharedFrom.name == class_name:
+                typedefs.append(typedef)
+    return typedefs
+
+
 # ============================================================================================ File Processing Functions
 
 
@@ -1924,14 +1944,18 @@ def fill_class_content(tree):
 
     # typedefs ------------------------------------------ #
     typedefs = []
-    if file_def is not None:
-        for t in file_def.typedefs:
-            link_data = LinkData()
-            link_data.label = t.name
-            link_path = HTML_DEST_PATH + t.path
-            link_data.link = link_path
-            typedefs.append(link_data)
+    ns_obj = g_symbolMap.find_namespace(file_data.namespace)
+    if ns_obj and ns_obj.typedefs:
+        class_typedefs = find_typedefs_of(class_name, ns_obj.typedefs)
+        if file_def is not None:
+            for t in class_typedefs:
+                link_data = LinkData()
+                link_data.label = t.name
+                link_path = HTML_DEST_PATH + t.path
+                link_data.link = link_path
+                typedefs.append(link_data)
     file_data.typedefs = typedefs
+
 
     # class hierarchy ----------------------------------- #
     if class_def:
@@ -2558,7 +2582,8 @@ def process_ci_seealso_tag(bs4, tag, out_path):
     # link_tag = gen_link_tag(bs4, label, out_path)
     link_data = LinkData(out_path, label)
 
-    if type(ref_obj) is SymbolMap.Class or type(ref_obj) is SymbolMap.Typedef:
+    # if type(ref_obj) is SymbolMap.Class or type(ref_obj) is SymbolMap.Typedef:
+    if type(ref_obj) is SymbolMap.Class:
         ref_obj.add_related_link(link_data)
 
     elif type(ref_obj) is SymbolMap.Namespace:
@@ -2877,7 +2902,7 @@ def get_symbol_to_file_map():
     class_tags = g_tag_xml.findall(r'compound/[@kind="class"]')
     for c in class_tags:
         class_obj = SymbolMap.Class(c)
-        name = class_obj.name
+        name = class_obj.qualifiedName
 
         # skip over blacklisted classes that belong to a blacklisted namespace
         if any(name.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
@@ -2915,7 +2940,7 @@ def get_symbol_to_file_map():
     struct_tags = g_tag_xml.findall(r'compound/[@kind="struct"]')
     for s in struct_tags:
         struct_obj = SymbolMap.Class(s)
-        name = struct_obj.name
+        name = struct_obj.qualifiedName
         base_class = struct_obj.base
 
         # skip over blacklisted classes that belong to a blacklisted namespace
@@ -2957,7 +2982,9 @@ def get_symbol_to_file_map():
         ns_obj = SymbolMap.Namespace(namespace_name, file_name)
         symbol_map.namespaces[namespace_name] = ns_obj
 
-        add_typedefs(ns.findall(r"member/[@kind='typedef']"), namespace_name, symbol_map)
+        # process all typedefs in namespace
+        typedef_list = add_typedefs(ns.findall(r"member/[@kind='typedef']"), namespace_name, symbol_map)
+        ns_obj.typedefs = typedef_list
 
         # find enums
         for member in ns.findall(r"member/[@kind='enumeration']"):
@@ -3042,17 +3069,23 @@ def get_symbol_to_file_map():
 
 
 def add_typedefs(typedefs, ns_name, symbol_map):
+    typedef_list = []
+    # if ns_name == "cinder::gl"
     for typdef in typedefs:
         name = typdef.find("name").text
         type_name = typdef.find("type").text
-        name = ns_name + "::" + name
+        full_name = ns_name + "::" + name
         shared_from_class = None
 
         if type_name.startswith("class") > 0:
             shared_from_class = symbol_map.find_class(type_name.split("class ")[1])
 
         elif type_name.find("shared") > 0:
-            shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type_name)
+            if type_name.find("class"):
+                shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type_name)
+            else:
+                shareds = re.findall(r"std::shared_ptr< *([\w]*) >", type_name)
+
             if len(shareds) > 0:
                 base = ns_name + "::" + shareds[0]
                 shared_from_class = symbol_map.find_class(base)
@@ -3060,18 +3093,21 @@ def add_typedefs(typedefs, ns_name, symbol_map):
         if not shared_from_class:
             # find based on the string in type that's not explicitly a shared_ptr
             # such as <type>SurfaceT&lt; uint8_t &gt;</type>
-            shareds = re.findall(r"([A-Za-z]*)", type_name)
+            shareds = re.findall(r"([A-Za-z0-9]*)", type_name)
             shared_from_class = symbol_map.find_class(shareds[0])
 
         file_path = typdef.find('anchorfile').text + "#" + typdef.find("anchor").text
         type_def_obj = SymbolMap.Typedef(name, type_name, file_path)
 
-        if shared_from_class is not None:
+        if shared_from_class is not None and type(shared_from_class) == SymbolMap.Class:
+        # if shared_from_class is not None:
             type_def_obj.sharedFrom = shared_from_class
             # let the class know that it has some typedefs associated with it
             shared_from_class.add_type_def(type_def_obj)
 
-        symbol_map.typedefs[name] = type_def_obj
+        symbol_map.typedefs[full_name] = type_def_obj
+        typedef_list.append(type_def_obj)
+    return typedef_list
 
 def get_file_prefix(file_path):
     return os.path.splitext(os.path.basename(file_path))[0]
