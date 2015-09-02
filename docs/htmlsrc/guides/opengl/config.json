@@ -48,7 +48,17 @@
 						"link": "#introducing"
 					}
 				]
-			}
+			},
+			{
+				"label": "Textures",
+				"link": "part4.html",
+				"pagenav":[
+					{
+						"label": "Textures",
+						"link": "#textures"
+					}
+				]
+			}			
 		],
 		"seealso":
 		{
