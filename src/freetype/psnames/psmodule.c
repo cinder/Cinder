@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    PSNames module implementation (body).                                */
 /*                                                                         */
-/*  Copyright 1996-2003, 2005-2008, 2012 by                                */
+/*  Copyright 1996-2015 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -17,6 +17,7 @@
 
 
 #include <ft2build.h>
+#include FT_INTERNAL_DEBUG_H
 #include FT_INTERNAL_OBJECTS_H
 #include FT_SERVICE_POSTSCRIPT_CMAPS_H
 
@@ -311,7 +312,7 @@
 
     /* we first allocate the table */
     table->num_maps = 0;
-    table->maps     = 0;
+    table->maps     = NULL;
 
     if ( !FT_NEW_ARRAY( table->maps, num_glyphs + EXTRA_GLYPH_LIST_SIZE ) )
     {
@@ -369,7 +370,7 @@
         /* No unicode chars here! */
         FT_FREE( table->maps );
         if ( !error )
-          error = PSnames_Err_No_Unicode_Glyph_Name;
+          error = FT_THROW( No_Unicode_Glyph_Name );
       }
       else
       {
@@ -377,7 +378,7 @@
         if ( count < num_glyphs / 2 )
         {
           (void)FT_RENEW_ARRAY( table->maps, num_glyphs, count );
-          error = PSnames_Err_Ok;
+          error = FT_Err_Ok;
         }
 
         /* Sort the table in increasing order of unicode values, */
@@ -562,7 +563,7 @@
   psnames_get_service( FT_Module    module,
                        const char*  service_id )
   {
-    /* PSCMAPS_SERVICES_GET derefers `library' in PIC mode */
+    /* PSCMAPS_SERVICES_GET dereferences `library' in PIC mode */
 #ifdef FT_CONFIG_OPTION_PIC
     FT_Library  library;
 

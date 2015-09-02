@@ -3,9 +3,11 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Font.h"
 #include "cinder/Unicode.h"
+#include "cinder/Utilities.h"
 using namespace ci;
 using namespace ci::app;
 
+#define FT_DEBUG_LEVEL_TRACE
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
@@ -164,7 +166,8 @@ void BasicApp::setup()
 	std::memset( mBitmap->getData(), 0, mBitmap->getWidth()*mBitmap->getHeight() );
 
 	//fs::path fontPath = getAssetPath ( "fonts/Saint-Andrews Queen.ttf" );
-	fs::path fontPath = getAssetPath ( "fonts/NotoSans-Regular.ttf" );
+	//fs::path fontPath = getAssetPath ( "fonts/NotoSansCJKjp-Bold.otf" );
+	fs::path fontPath = "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf"; //getAssetPath ( "fonts/NotoSansCJKjp-Bold.otf" );
 
 	FT_Library library;
 	FT_Error error;
@@ -183,8 +186,12 @@ void BasicApp::setup()
 		return;
 	}
 	console() << "Loaded " << fontPath << std::endl;
-	
+	console() << "platfomr: " << face->charmap->platform_id << std::endl;
+	console() << "ascender  : " << face->ascender << std::endl;
+	console() << "descender : " << face->descender << std::endl;
+	console() << "height    : " << face->height << std::endl;
 
+	FT_Select_Charmap( face, FT_ENCODING_UNICODE );
 
 	int fontSize = 48;
  	error = FT_Set_Char_Size( face, fontSize*64, 0, 100, 0 );
@@ -193,12 +200,20 @@ void BasicApp::setup()
 		return;
 	}	
 
+	console() << "ascender  : " << face->ascender << std::endl;
+	console() << "descender : " << face->descender << std::endl;
+	console() << "height    : " << face->height << std::endl;
 
-	console() << "face->charmap: " << (uint64_t)face->charmap << std::endl;
+	console() << "face->charmap: " << ((char *)&(face->charmap->encoding))[0] << std::endl;
+	console() << "face->charmap: " << ((char *)&(face->charmap->encoding))[1] << std::endl;
+	console() << "face->charmap: " << ((char *)&(face->charmap->encoding))[2] << std::endl;
+	console() << "face->charmap: " << ((char *)&(face->charmap->encoding))[3] << std::endl;
 
-	//error = FT_Select_Charmap( face, FT_ENCODING_UNICODE );
+	//FT_Select_Charmap( face, FT_ENCODING_UNICODE );
+	//error = FT_Select_Charmap( face, face->charmap->encoding );
 	//console() << "FT_Select_Charmap: " << error << std::endl;
-		
+	//FT_Set_Charmap( face, face->charmaps[0] );	
+	
 
 	FT_GlyphSlot slot;
 	slot = face->glyph;
@@ -214,18 +229,24 @@ void BasicApp::setup()
 	mFullBounds.y1 = pen.y >> 6;
 
 	uint8_t text[] = {
-		0xE6, 0x88, 0x91, 0xE5, 0x96, 0x9C, 0xE6, 0xAC, 0xA2, 0xE9, 0xA5, 0xBC, 0xE5, 0xB9, 0xB2, 0
+		0xE7, 0xA7, 0x81, 0xE3, 0x81, 0xAF, 0xE5, 0xB0, 0x8F, 0xE3, 0x81, 0x95, 0xE3, 0x81, 0xAA, 0xE7, 0x8C, 0xAB, 0xE3, 0x81, 0x8C, 0xE5, 0xA5, 0xBD, 0xE3, 0x81, 0x8D, 0xE3, 0x81, 0xA7, 0xE3, 0x81, 0x99, 0xE3, 0x80, 0x82, 0
 	};
 
 	std::string s = (const char *)text; //"Cinder FreeType on Linux";
 
 	std::u32string u32 = ci::toUtf32( s );
 	for( const auto& ch : u32 ) {
+	//for( uint32_t ch = 1000; ch < 100000; ++ch ) {
 		FT_Set_Transform( face, nullptr, &pen );
 
-		FT_UInt glyphIndex = FT_Get_Char_Index( face, (FT_ULong)ch );
-		console() << ch << " | " << "glyphIndex: " << glyphIndex << std::endl;
+		FT_UInt raw = ch;
+		FT_UInt glyphIndex = FT_Get_Char_Index( face, raw );
+		//if( glyphIndex > 0 ) 
+{
+			console() << ch << " | " << "glyphIndex: " << glyphIndex << std::endl;
+		}
 		FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+		//FT_Render_Glyph( face->glyph, FT_RENDER_MODE_LCD );
 		//error = FT_Load_Char( face, s.at(n), FT_LOAD_RENDER );
 		if( error ) {
 		  continue;  

@@ -258,13 +258,19 @@ void Line::calcExtents()
 		mAscent  = std::max( runIt->mFont.getAscent(), mAscent );
 		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
-		mHeight  = std::max( mHeight, (float)bounds.getHeight() );
 		//mHeight  = std::max( mHeight, (face->bbox.yMax - face->bbox.yMin) / 64.0f );
+		mHeight  = std::max( mHeight, (float)(bounds.getHeight()) );
 	}
 #endif
 
-std::cout << mHeight << ", " << mAscent << ", " << mDescent << ", " << mLeading << std::endl;
+std::cout << "mAscent   : " << mAscent << std::endl;
+std::cout << "mDescent  : " << mDescent << std::endl;
+std::cout << "mLeading  : " << mLeading << std::endl;
+std::cout << "mHeight   : " << mHeight << std::endl;
+//std::cout << mHeight << ", " << mAscent << ", " << mDescent << ", " << mLeading << std::endl;
+#if ! ( defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) )
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
+#endif
 }
 
 #if defined( CINDER_COCOA )
@@ -490,14 +496,31 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	Surface result;
 	
 	// determine the extents for all the lines and the result surface
+#if defined( CINDER_ANDDROID ) || defined( CINDER_LINUX )
+	float totalHeight = 0, maxWidth = 0;
+	bool hasFirstLineOffset = false;
+	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		(*lineIt)->calcExtents();
+
+		if( ! hasFirstLineOffset ) {
+			totalHeight += (*lineIt)->mAscent;
+			hasFirstLineOffset = true;
+		}
+
+		totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight + (*lineIt)->mLeadingOffset );
+		if( (*lineIt)->mWidth > maxWidth ) {
+			maxWidth = (*lineIt)->mWidth;
+		}
+	}
+#else
 	float totalHeight = 0, maxWidth = 0;
 	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		(*lineIt)->calcExtents();
 		totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight + (*lineIt)->mLeadingOffset );
-std::cout << totalHeight << " : " << (*lineIt)->mHeight << " : " << (*lineIt)->mLeadingOffset << std::endl;
 		if( (*lineIt)->mWidth > maxWidth )
 			maxWidth = (*lineIt)->mWidth;
 	}
+#endif
 	// for the last line, instead of using the font info, we'll use the true height
 /*	if( ! mLines.empty() ) {
 		totalHeight = currentY - (mLines.back()->mAscent - mLines.back()->mDescent - mLines.back()->mLeadingOffset - mLines.back()->mLeading );
@@ -509,6 +532,8 @@ std::cout << totalHeight << " : " << (*lineIt)->mHeight << " : " << (*lineIt)->m
 	// round up from the floating point sizes to get the number of pixels we'll need
 	int pixelWidth = (int)math<float>::ceil( maxWidth ) + mHorizontalBorder * 2;
 	int pixelHeight = (int)math<float>::ceil( totalHeight ) + mVerticalBorder * 2;
+
+std::cout << "TextLayout::render: " << pixelWidth << "x" << pixelHeight << std::endl;
 
 	// Odd failure - return a NULL Surface
 	if( ( pixelWidth < 0 ) || ( pixelHeight < 0 ) )
@@ -584,10 +609,19 @@ std::cout << totalHeight << " : " << (*lineIt)->mHeight << " : " << (*lineIt)->m
 	ip::fill( &result, mBackgroundColor );
 
 	float currentY = (float)mVerticalBorder;
-	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
-		currentY += (*lineIt)->mLeadingOffset + (*lineIt)->mLeading;
-		(*lineIt)->render( result, currentY, (float)mHorizontalBorder, (float)pixelWidth );
-		//currentY += (*lineIt)->mLeading;
+	hasFirstLineOffset = false;
+	for( deque<shared_ptr<Line>>::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		if( ! hasFirstLineOffset ) {
+			currentY += (*lineIt)->mAscent;
+			hasFirstLineOffset = true;
+		}
+
+		(*lineIt)->render( result, currentY, (float)mHorizontalBorder, (float)pixelWidth );	
+		currentY += (*lineIt)->mHeight;
+
+		//currentY += (*lineIt)->mLeadingOffset + (*lineIt)->mLeading;
+		//(*lineIt)->render( result, currentY, (float)mHorizontalBorder, (float)pixelWidth );	
+		//currentY += (*lineIt)->mAscent + (*lineIt)->mDescent;		
 	}
 	//result = Surface(channel, SurfaceConstraintsDefault(), true);
 	//result.getChannelAlpha().copyFrom( channel, channel.getBounds() );

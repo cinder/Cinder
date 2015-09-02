@@ -75,6 +75,7 @@ message( "" )
 
 include_directories( 
     ${CINDER_INC_DIR} 
+    ${CINDER_INC_DIR}/freetype
     ${CINDER_INC_DIR}/glfw
     ${CINDER_INC_DIR}/jsoncpp 
     ${CINDER_SRC_DIR}/linebreak 
@@ -83,11 +84,11 @@ include_directories(
     ${BOOST_INC_DIR}  
 )
 
-set( C_FLAGS "-fvisibility=default -DFT2_BUILD_LIBRARY -D_UNIX" )
+set( C_FLAGS "-fvisibility=default -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX" )
 set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
 set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
-set( CXX_FLAGS "-stdlib=libc++ -std=c++11 -fvisibility=default -DFT2_BUILD_LIBRARY -D_UNIX" )
+set( CXX_FLAGS "-stdlib=libc++ -std=c++11 -fvisibility=default -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX" )
 set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g -fexceptions -frtti" )
 set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
 
@@ -153,7 +154,6 @@ set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/freetype/base/ftsystem.c
     ${CINDER_SRC_DIR}/freetype/base/fttype1.c
     ${CINDER_SRC_DIR}/freetype/base/ftwinfnt.c
-    ${CINDER_SRC_DIR}/freetype/base/ftxf86.c
     ${CINDER_SRC_DIR}/freetype/raster/raster.c
     ${CINDER_SRC_DIR}/freetype/smooth/smooth.c
     ${CINDER_SRC_DIR}/freetype/autofit/autofit.c

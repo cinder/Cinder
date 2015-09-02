@@ -567,8 +567,8 @@ std::string Font::getFullName() const
 
 float Font::getLeading() const
 {
-	//return (float)((mObj->mFace->height - mObj->mFace->ascender + mObj->mFace->descender) >> 6);
-	return (float)(mObj->mFace->height >> 6);
+	return (float)((mObj->mFace->height - (abs( mObj->mFace->ascender ) + abs( mObj->mFace->descender))) >> 6);
+	//return (float)(mObj->mFace->height >> 6);
 }
 
 float Font::getAscent() const
@@ -578,7 +578,7 @@ float Font::getAscent() const
 
 float Font::getDescent() const
 {
-	return (float)(mObj->mFace->descender >> 6);
+	return (float)(abs( mObj->mFace->descender ) >> 6);
 }
 
 size_t Font::getNumGlyphs() const
@@ -816,6 +816,7 @@ FontObj::FontObj( const string &aName, float aSize )
 			throw FontInvalidNameExc( "Failed to create a face for " + aName );
 		}
 
+		FT_Select_Charmap( mFace, FT_ENCODING_UNICODE );
 		FT_Set_Char_Size( mFace, 0, (int)aSize * 64, 0, 72 );
 	}
 	else {
@@ -923,6 +924,7 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 		&mFace
 	);
 
+	FT_Select_Charmap( mFace, FT_ENCODING_UNICODE );
 	FT_Set_Char_Size( mFace, 0, (int)size * 64, 0, 72 );
 	//FT_Set_Pixel_Sizes(mFace, 0, (int)size);
 #endif

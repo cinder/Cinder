@@ -26,8 +26,15 @@ class TextTestApp : public App {
 
 void printFontNames()
 {
+/*
 	for( vector<string>::const_iterator fontName = Font::getNames().begin(); fontName != Font::getNames().end(); ++fontName )
 		console() << *fontName << endl;
+*/
+	for( vector<string>::const_iterator fontName = Font::getNames().begin(); fontName != Font::getNames().end(); ++fontName ) {
+		ci::Font font = ci::Font( *fontName, 32 );
+
+		console() << *fontName << " : ascent=" << font.getAscent() << ", descent=" << font.getDescent() << endl;		
+	}
 }
 
 void TextTestApp::setup()
