@@ -214,7 +214,9 @@ class SymbolMap(object):
             self.tags.append(self.name)
 
         def add_related_link(self, link_data):
-            self.relatedLinks.append(link_data)
+            # check for dupes
+            if not any(link.link == link_data.link for link in self.relatedLinks):
+                self.relatedLinks.append(link_data)
 
         def define_prefix(self, content):
             self.prefix_content = content
@@ -227,7 +229,7 @@ class SymbolMap(object):
         def add_function(self, fn_name, fn_obj):
             self.functionList.append(fn_obj)
 
-            # add as a tag if not a duplicate name
+            # add as a tag if not a duplicated name
             if not any(tag == fn_name for tag in self.tags):
                 self.tags.append(fn_name)
 
