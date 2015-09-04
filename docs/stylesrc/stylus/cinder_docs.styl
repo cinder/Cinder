@@ -665,6 +665,10 @@ button.interactive-guide
 #side-nav
 	
 	background: $light-gray
+	width: 320px
+	left: auto
+	// margin-top: 40px
+	padding-top: 40px
 	
 	h3
 		color: $cinder-red
@@ -901,3 +905,8 @@ $border-height = 3px
 #nav_search > #search > #search-results > #search-results-view-all a:hover {
 	color: #c64b24;
 }
+
+
+// Magellan override
+[data-magellan-expedition], [data-magellan-expedition-clone]
+	min-width: inherit

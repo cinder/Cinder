@@ -4,9 +4,11 @@
 <div id="container" class="row content-row">
     
 
-    <div id="side-nav" class="columns large-3">
-        {{! <div data-magellan-expedition="fixed"> }}
-        <dl class="sub-nav">
+    <div id="side-nav" class="columns large-3" data-magellan-expedition="fixed">
+        {{! <div data-magellan-expedition="fixed">
+            TEST!
+        </div> }}
+        {{! <dl class="sub-nav"> }}
 
             {{#pagenav.length}}
             {{#pagenav}}
@@ -43,8 +45,8 @@
                 </div>
             {{/pagenav}}
             {{/pagenav.length}}
-        </dl>
-        {{! </div> }}
+        {{! </dl> }}
+        
     </div>
 
     <div class="columns large-9 content">
