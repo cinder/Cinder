@@ -2,45 +2,52 @@
 
 {{!-- main content area --}}
 <div id="container" class="row content-row">
+    
+
     <div id="side-nav" class="columns large-3">
-        {{#pagenav.length}}
-        {{#pagenav}}
+        {{! <div data-magellan-expedition="fixed"> }}
+        <dl class="sub-nav">
 
-            {{!-- Table of contents --}}
-            <div>
-                <ul>
-                    {{#list}}
-                    <li>
-                        {{#link_data}}
-                        <a href="{{link}}">{{label}}</a>
-                        {{/link_data}}
+            {{#pagenav.length}}
+            {{#pagenav}}
 
-                        {{!-- Subnav --}}
-                        {{#length}}
-                        <ul>
-                            {{#subnav }}
-                            <li>
-                                {{#link_data}}
-                                <a href="{{link}}">{{label}}</a>
-                                {{/link_data}}
+                {{!-- Table of contents --}}
+                <div>
+                    <ul>
+                        {{#list}}
+                        <li>
+                            {{#link_data}}
+                            <a href="{{link}}">{{label}}</a>
+                            {{/link_data}}
 
-                                {{!-- Recursive subnav starts here --}}
-                                {{>page-guide-navlist-template}}
-                            </li>
-                            {{/subnav }}
-                        </ul>
-                        {{/length}}
-                        {{!-- End Subnav --}}
+                            {{!-- Subnav --}}
+                            {{#length}}
+                            <ul>
+                                {{#subnav }}
+                                <li>
+                                    {{#link_data}}
+                                    <a href="{{link}}">{{label}}</a>
+                                    {{/link_data}}
 
-                    </li>
-                    {{/list}}
-                </ul>
-            </div>
-        {{/pagenav}}
-        {{/pagenav.length}}
+                                    {{!-- Recursive subnav starts here --}}
+                                    {{>page-guide-navlist-template}}
+                                </li>
+                                {{/subnav }}
+                            </ul>
+                            {{/length}}
+                            {{!-- End Subnav --}}
+
+                        </li>
+                        {{/list}}
+                    </ul>
+                </div>
+            {{/pagenav}}
+            {{/pagenav.length}}
+        </dl>
+        {{! </div> }}
     </div>
 
-    <div class="columns large-9 content" data-equalizer-watch="content">
+    <div class="columns large-9 content">
 
         {{{ html_content }}}
   
