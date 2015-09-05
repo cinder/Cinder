@@ -811,19 +811,61 @@ button.interactive-guide:focus {
 #side-nav section > label {
   background: #333;
   color: #fff;
-  padding: 10px;
+  padding: 10px 15px;
   font-size: 1em;
   text-transform: uppercase;
   font-weight: 700;
 }
 #side-nav section > ul {
-  padding: 10px;
+  padding: 10px 0 0 0;
   max-height: 500px;
   overflow-y: scroll;
 }
-#side-nav section:not(:last-child) {
-  padding-bottom: 20px;
-  border-bottom: 1px #999 solid;
+#side-nav section > ul ul {
+  margin: 5px -15px;
+  padding: 0;
+}
+#side-nav section > ul li {
+  line-height: 1.3em;
+  padding: 4px 15px 4px 34px;
+}
+#side-nav ul.depth-0 {
+  background: #f8f8f8;
+}
+#side-nav ul.depth-1 {
+  background: #f3f3f3;
+}
+#side-nav ul.depth-2 {
+  background: #ebebeb;
+}
+#side-nav ul.depth-3 {
+  background: #fff;
+}
+#side-nav li.list-parent {
+  padding-left: 15px;
+}
+#side-nav li.list-parent:before {
+  content: '';
+  display: inline-block;
+  background-image: url("../images/expand_arrow.png");
+  background-repeat: no-repeat;
+  -webkit-background-size: 13px 13px;
+  -moz-background-size: 13px 13px;
+  background-size: 13px 13px;
+  background-position: 0 0;
+  width: 13px;
+  height: 13px;
+  margin: 1px 5px 0 0;
+  -webkit-transform: rotate(90deg) translateZ(0);
+  -moz-transform: rotate(90deg) translateZ(0);
+  -o-transform: rotate(90deg) translateZ(0);
+  -ms-transform: rotate(90deg) translateZ(0);
+  transform: rotate(90deg) translateZ(0);
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -o-transform-origin: 50% 50%;
+  -ms-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
 }
 #side-nav input[type="checkbox"] + label {
   margin-left: -18px;

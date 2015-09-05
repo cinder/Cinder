@@ -2,24 +2,106 @@ var section;
 $(document).ready(function() {
 
 	var _this = this;
+	var rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf('html/')+5);
+
 	var cinderJs = {
-		/**
- 	 	* Unhides a piece of content if it contains a anchor tag with a specific hash
- 	 	* @param {[type]} hash Hash name of the link
+		/*
+		* ----------------------------------------------------------------------
+ 	 	*  Unhides a piece of content if it contains a anchor tag with a 
+ 	 	*  specific hash
+ 	 	*  @param {[type]} hash Hash name of the link
+ 	 	* ----------------------------------------------------------------------
  	 	*/
 		showContent: function( hash ){
 	 		if( !hash )
 	 			return;
 	 		// find section with this hash
-	 		var linkTag = $('a[name='+hash+']')[0];
+	 		var linkTag = $('a[name='+hash+']')[0] || $('a[id='+hash+']')[0];
 	 		// find parent
 	 		var linkParent = $(linkTag.parentNode);
 	 		// toggle show for this section
 	 		linkParent.removeClass("hidden");
- 		}
-	};
-	var rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf('html/')+5);
+ 		},
 
+ 		/*
+		* ----------------------------------------------------------------------
+		*  Scroll to anchor on link anchor click
+		* ----------------------------------------------------------------------
+		*/
+ 		scrollToAnchor: function(){
+ 			// from https://css-tricks.com/snippets/jquery/smooth-scrolling/
+ 			if( location.pathname.replace(/^\//,'') == this.pathname.replace( /^\//,'' ) && location.hostname == this.hostname ) {
+	    		var hash = this.hash;
+	    		var target = $( hash );
+	      		target = target.length ? target : ($( '[name=' + this.hash.slice(1) +']' ) || $( '[id=' + this.hash.slice(1) +']' ) );
+	      		console.log( hash )
+
+	      		if( target.length ) {
+	      			var limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight ) - window.innerHeight; 
+	      			var top = Math.min( target.offset().top, limit );
+	      			var diff = top - $( this ).scrollTop();
+	      			var time = Math.max( Math.min( diff * 0.5, 1200 ), 500 );
+	        
+			        // animate to anchor
+			        $( 'html,body' ).animate( {
+			          scrollTop: top,
+			          easing: "easeInOutCubic"
+			        }, time );
+
+			        // open content at anchor
+			        setTimeout(function() {
+			        	cinderJs.showContent( hash.split('#')[1] );
+			        }, time);
+			        return false;
+		     	}
+			}
+	  	} 		
+	};
+
+
+	// Side Nav functions
+	var sideNav = {
+		main: null,
+		sections: [],
+		init: function(){
+			// find all sideNav sections
+			main = $( '#side-nav' );
+			sections = main.find( 'section' );
+			console.log(main);
+			console.log(sections);
+
+			// list depth of side nav
+			var baseDepth = main.parent('ul').length;
+
+			// Find the depth of each nested list and apply a class based on
+			// the depth value. This is used to style the lists.
+			_.each( sections, function( section ){
+				var lists = $(section).find( 'ul' );
+				_.each(lists, function( list ) {
+					// depth of list
+					var $list = $( list );
+					var listDepth = $list.parents('ul').length - baseDepth;
+					$list.addClass( 'depth-' + listDepth );
+
+					// For each list item, add a class if they have nested lists
+					var listItems = $list.find( 'li' );
+					_.each( listItems, function( li ) {
+						$li = $( li );
+						// console.log( $li.find( 'ul' ).length );
+						if( $li.find( 'ul' ).length > 0 ) {
+							$li.addClass( 'list-parent' );
+						}
+					} );
+					
+				});
+
+
+				
+			});
+
+
+		}
+	}
 
 	// look for all dom items with class
 
@@ -131,7 +213,6 @@ $(document).ready(function() {
 	});
 
 	function initSearch(){
-		
 		for(var item in search_index_data.data){
 			var searchItem = search_index_data.data[item];
 			// console.log(searchItem.tags);
@@ -144,40 +225,22 @@ $(document).ready(function() {
 		}
 	}
 
-	// scroll to anchor
-	// https://css-tricks.com/snippets/jquery/smooth-scrolling/
-	$( function() {
-	  $( 'a[href*=#]:not([href=#])' ).click( function() {
-	    if( location.pathname.replace(/^\//,'') == this.pathname.replace( /^\//,'' ) && location.hostname == this.hostname ) {
-	    	var hash = this.hash;
-	    	console.log( hash )
-	      	var target = $( hash );
-	      target = target.length ? target : $( '[name=' + this.hash.slice(1) +']' );
-	      if( target.length ) {
-	      	var limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight ) - window.innerHeight; 
-	      	var top = Math.min( target.offset().top, limit );
-	      	var diff = top - $( this ).scrollTop();
-	      	var time = Math.max( Math.min( diff * 0.5, 1200 ), 500 );
-	        
-	        // animate to anchor
-	        $( 'html,body' ).animate( {
-	          scrollTop: top,
-	          easing: "easeInOutCubic"
-	        }, time );
 
-	        // open content at anchor
-	        setTimeout(function() {
-	        	cinderJs.showContent( hash.split('#')[1] );
-	        }, time);
-	        return false;
-	      }
-	    }
-	  } );
+	/* 
+	* -----------------------------------------------------
+	*	Scroll to anchor on link anchor click
+	* -----------------------------------------------------
+	*/
+	$( function() {
+	 	$( 'a[href*=#]:not([href=#])' ).click( function() {
+	 		cinderJs.scrollToAnchor.apply(this);
+	 	});
 	} );
 	
 
  	setSection( section );
  	cinderJs.showContent( hash );
+ 	sideNav.init();
  	if( search_index_data )
 	 	initSearch();
  	return cinderJs;

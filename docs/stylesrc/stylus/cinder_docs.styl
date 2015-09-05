@@ -681,20 +681,57 @@ button.interactive-guide
 		> label
 			background: $dark-gray-text
 			color: white
-			padding: 10px
+			padding: 10px 15px
 			font-size: 1em
 			text-transform: uppercase
 			font-weight: 700
 		
 		> ul
-			padding: 10px
+			padding: 10px 0 0 0
 			max-height: 500px
 			overflow-y: scroll
-		
-		&:not(:last-child)
-			padding-bottom: 20px
-			border-bottom: 1px $gray solid
 			
+			ul
+				margin: 5px -15px
+				padding: 0
+		
+			li
+				// padding: 0 15px
+				line-height: 1.3em
+				padding: 4px 15px 4px 15px + 19px
+				// margin: 7px 0
+				
+				
+	ul.depth-0
+		background: $gray-depth-3
+	
+	ul.depth-1
+		background: $gray-depth-2
+	
+	ul.depth-2
+		background: $gray-depth-1
+		
+	ul.depth-3
+		background: white
+
+
+	li.list-parent
+		padding-left: 15px
+			
+		&:before
+			content: ''
+			display: inline-block
+			background-image: url("../images/expand_arrow.png");
+			background-repeat: no-repeat
+			background-size: 13px 13px
+			background-position: 0 0
+			width: 13px
+			height: 13px
+			margin: 1px 5px 0 0
+			transform: rotate(90deg) translateZ(0)
+			transform-origin: 50% 50%;
+		
+	
 	
 	input[type="checkbox"] + label
 		margin-left: -18px
