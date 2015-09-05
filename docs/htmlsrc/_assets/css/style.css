@@ -795,10 +795,9 @@ button.interactive-guide:focus {
   outline: none;
 }
 #side-nav {
-  background: #f2f2f2;
-  width: 320px;
+  width: 300px;
   left: auto;
-  padding-top: 40px;
+  padding: 40px 0 0 0;
 }
 #side-nav h3 {
   color: #a41c12;
@@ -806,7 +805,21 @@ button.interactive-guide:focus {
   text-transform: uppercase;
 }
 #side-nav section {
+  background: #f2f2f2;
   margin-bottom: 20px;
+}
+#side-nav section > label {
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  font-size: 1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+#side-nav section > ul {
+  padding: 10px;
+  max-height: 500px;
+  overflow-y: scroll;
 }
 #side-nav section:not(:last-child) {
   padding-bottom: 20px;

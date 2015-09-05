@@ -664,11 +664,10 @@ button.interactive-guide
 
 #side-nav
 	
-	background: $light-gray
-	width: 320px
+	width: 300px
 	left: auto
-	// margin-top: 40px
-	padding-top: 40px
+	padding: 40px 0 0 0
+	// padding: 0
 	
 	h3
 		color: $cinder-red
@@ -676,7 +675,21 @@ button.interactive-guide
 		text-transform: uppercase
 		
 	section
-		margin-bottom: 20px;
+		background: $light-gray
+		margin-bottom: 20px
+		
+		> label
+			background: $dark-gray-text
+			color: white
+			padding: 10px
+			font-size: 1em
+			text-transform: uppercase
+			font-weight: 700
+		
+		> ul
+			padding: 10px
+			max-height: 500px
+			overflow-y: scroll
 		
 		&:not(:last-child)
 			padding-bottom: 20px
