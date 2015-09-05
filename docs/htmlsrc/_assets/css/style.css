@@ -829,6 +829,9 @@ button.interactive-guide:focus {
   line-height: 1.3em;
   padding: 4px 15px 4px 34px;
 }
+#side-nav span.active a {
+  color: #333;
+}
 #side-nav ul.depth-0 {
   background: #f8f8f8;
 }

@@ -13,6 +13,7 @@
 <body id="guide-contents" >
 
 <h1>OpenGL in Cinder</h1>
+<a id="getting_started"></a>
 <h2>Getting Started</h2>
 <p></p>
 
@@ -49,7 +50,8 @@ CINDER_APP( BasicApp, RendererGl )</code></pre>
 
 <p>In order to use OpenGL, a Cinder app instantiates <ci dox="app::RendererGl">app::RendererGl <span class="plain">UNSTYLE</span></ci> using the <code>CINDER_APP</code> macro. The most straightforward way to start to use Cinder's OpenGL API is to <code>#include "cinder/gl/gl.h"</code>. While this does not include all of Cinder's OpenGL headers, it does include some of the commonly used ones.</p>
 
-<a id="convenience_functions"><h3>Convenience Functions</h3></a>
+<a id="convenience_functions"></a>
+<h3>Convenience Functions</h3>
 <p>Often you're more interested in ease of implementation than performance. Cinder's <ci>ci::gl</ci> convenience functions are for this purpose. Let's look at how to use them to draw a filled circle. A modified version of the previous example's <code>draw()</code> method follows:<p>
 
 <div class="cols-2">
@@ -97,7 +99,8 @@ void BasicApp::draw()
 
 <!-- TRANSFORMATIONS
 -->
-<a id="transformations"><h2>Transformations</h2></a>
+<a id="transformations"></a>
+<h2>Transformations</h2>
 
 <p>Traditionally in computer graphics, transformations (operations like translation, scale and rotation) are implemented using 4x4 matrices. Cinder's <code>Model</code> matrix is a global transformation which is applied to any draw call. Routines like <ci>gl::translate()</ci>, <ci>gl::scale()</ci> and <ci>gl::rotate()</ci> manipulate the active <code>Model</code> matrix.</p>
 

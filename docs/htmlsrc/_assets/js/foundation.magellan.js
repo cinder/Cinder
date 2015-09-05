@@ -61,7 +61,7 @@
               if (history.pushState) {
                 history.pushState(null, null, anchor.pathname + anchor.search + '#' + hash);
               } else {
-                location.hash = anchor.pathname + anchor.search + '#' + hash;
+                location.hash = hash;
               }
             });
           }
