@@ -4,6 +4,7 @@ global-reset()
 
 // vars
 left-col-width = 300px
+$nav-bottom-padding = 35px
 
 // animations 
 @keyframes fade-odd {
@@ -200,66 +201,30 @@ body#guide-contents
 		height: 100%
 	
 	.navbar-header
-		float:left
-		position: relative
+		position: absolute
+		bottom: $nav-bottom-padding
 		width: 200px
 		color: light-gray
-		margin-top: 25px
+		vertical-align: bottom
+		display: inline-block
 
 		a.navbar-brand
 			display: inline-block
 			background: url('../images/cinder_logo.svg') no-repeat;
 			background-size: 100%
 			width: 151px
-			height:50px
+			height: 50px
+			position: relative
+			vertical-align: bottom
 			
 		.cinder-version
 			display: inline-block
-			position: absolute
-			top: 13px
-			left: 160px
+			position: relative
+			margin-left: 13px
 			font-weight: bold
 			font-size: 14px
-			
-	
-	ul.nav
-		position: relative
-		list-style: none
-		font-weight: bold
-		height: 100% !important
-		
-		li
-			position: relative
-			display: inline-block
-			height: 100%
-			margin-right: 25px
-			margin-left: 0
-			background: none
-			
-			&.active
-				border-bottom: solid 3px $cinder-red
-				a
-					color: $cinder-red
-
-			a
-				display: inline-block
-				color: white
-				text-decoration: none
-				padding: 50px 0 0 0
-				background: none
-				
-				&:hover
-					color: $cinder-red
-	
-	#MSearchBox
-		margin-top: 50px
-
-
-#main-nav
-	height: 105px
-	
-	.columns
-		height: 105px
+			line-height: 18px
+			vertical-align: bottom
 	
 
 #sub-nav
@@ -699,7 +664,10 @@ button.interactive-guide
 
 #side-nav
 	
-	background: $light-gray
+	width: 300px
+	left: auto
+	padding: 40px 0 0 0
+	// padding: 0
 	
 	h3
 		color: $cinder-red
@@ -707,12 +675,66 @@ button.interactive-guide
 		text-transform: uppercase
 		
 	section
-		margin-bottom: 20px;
+		background: $light-gray
+		margin-bottom: 20px
 		
-		&:not(:last-child)
-			padding-bottom: 20px
-			border-bottom: 1px $gray solid
+		> label
+			background: $dark-gray-text
+			color: white
+			padding: 10px 15px
+			font-size: 1em
+			text-transform: uppercase
+			font-weight: 700
+		
+		> ul
+			padding: 10px 0 0 0
+			max-height: 500px
+			overflow-y: scroll
 			
+			ul
+				margin: 5px -15px
+				padding: 0
+		
+			li
+				// padding: 0 15px
+				line-height: 1.3em
+				padding: 4px 15px 4px 15px + 19px
+				// margin: 7px 0
+				
+	span.active a
+		color: $dark-gray-text
+				
+				
+	ul.depth-0
+		background: $gray-depth-3
+	
+	ul.depth-1
+		background: $gray-depth-2
+	
+	ul.depth-2
+		background: $gray-depth-1
+		
+	ul.depth-3
+		background: white
+
+
+	li.list-parent
+		padding-left: 15px
+			
+		&:before
+			content: ''
+			display: inline-block
+			background-image: url("../images/expand_arrow.png");
+			background-repeat: no-repeat
+			background-size: 13px 13px
+			background-position: 0 0
+			width: 13px
+			height: 13px
+			margin: 1px 5px 0 0
+			transform: rotate(90deg) translateZ(0)
+			transform-origin: 50% 50%;
+		
+	
 	
 	input[type="checkbox"] + label
 		margin-left: -18px
@@ -796,49 +818,73 @@ footer
 
 
 /* NAVBAR STYLING */
-nav.top-bar {
-	height: 100px;
-	background: transparent;
-}
-nav.top-bar .cinder-logo-container {
-	padding-left: 0;
-}
-nav.top-bar .top-bar-section {
-	height: 100%;
-}
-nav.top-bar .top-bar-section ul li,
-nav.top-bar .top-bar-section li:not(.has-form) a:not(.button) {
-	background: transparent;
-	line-height: initial;
-	margin-left: 0;
-}
-nav.top-bar .title-area .name img {
-	width: 220px;
-}
-nav.top-bar .top-bar-section .left > li {
-	margin-top: 50px;
-}
-nav.top-bar .top-bar-section .right > li {
-	margin-top: 40px;
-}
-nav.top-bar .top-bar-section ul li > a {
-	font-family: inherit;
-	font-size: inherit;
-	font-weight: inherit;
-	padding: inherit;
-	text-decoration: none;
-}
-nav.top-bar .top-bar-section ul li > a:hover {
-	color: #c64b24;
-}
-nav.top-bar .top-bar-section ul li:first-of-type a {
-	padding-left: 0;
-}
+$navbar-height = 100px
+$border-height = 3px
+
+#main-nav
+	background: transparent
+	height: $navbar-height
+	
+	.columns
+		height: 100%
+
+	.cinder-logo-container
+		padding-left: 0
+
+	.nav-section
+		height: 100%
+		
+		> ul
+			position: relative
+			list-style: none
+			font-weight: bold
+			display: inline-block
+			
+			> li
+				height: 100%
+				position: relative
+				display: inline-block
+				
+				margin-right: 25px
+				margin-left: 0
+				background: none
+				border-bottom: solid 3px transparent
+				
+				&.active
+					border-bottom: solid 3px $cinder-red
+					a
+						color: $cinder-red
+
+				a
+					display: table-cell
+					color: white
+					text-decoration: none
+					background: none
+					padding: 0 0 $nav-bottom-padding - $border-height 0
+					vertical-align: bottom 
+					box-sizing: border-box
+					height: $navbar-height - $border-height
+					line-height: 1em
+
+					&:hover
+						color: $cinder-red
+					
+				&:first-of-type a
+					padding-left: 0;
+
+	.title-area .name img
+		width: 220px
+
 
 /* SEARCH RESULTS STYLING */
-#nav_search > #search {
-	position: relative;
-}
+#nav_search
+	position: relative
+	height: 100%
+	
+#nav_search > #search
+	position: absolute
+	right: 0
+	bottom: $nav-bottom-padding
 
 #nav_search > #search > input {
 	display: inline-block;
@@ -912,3 +958,8 @@ nav.top-bar .top-bar-section ul li:first-of-type a {
 #nav_search > #search > #search-results > #search-results-view-all a:hover {
 	color: #c64b24;
 }
+
+
+// Magellan override
+[data-magellan-expedition], [data-magellan-expedition-clone]
+	min-width: inherit

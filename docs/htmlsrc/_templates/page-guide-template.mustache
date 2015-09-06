@@ -2,12 +2,15 @@
 
 {{!-- main content area --}}
 <div id="container" class="row content-row">
-    <div id="side-nav" class="columns large-3">
+    
+
+    <div id="side-nav" class="columns large-3" data-magellan-expedition="fixed">
+        
         {{#pagenav.length}}
         {{#pagenav}}
-
             {{!-- Table of contents --}}
-            <div>
+            <section>
+                <label>Table of Contents</label>
                 <ul>
                     {{#list}}
                     <li>
@@ -35,12 +38,12 @@
                     </li>
                     {{/list}}
                 </ul>
-            </div>
+            </section>
         {{/pagenav}}
         {{/pagenav.length}}
     </div>
 
-    <div class="columns large-9 content" data-equalizer-watch="content">
+    <div class="columns large-9 content">
 
         {{{ html_content }}}
   

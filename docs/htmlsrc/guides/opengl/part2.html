@@ -151,7 +151,8 @@ void BasicApp::draw()
 
 <p>Much better. First, our black triangle artifact is gone, because we've enabled the Z-Buffer (also known as the depth buffer). If you're not familiar, Z-Buffering is the standard technique for preventing fragments from drawing on top of each other incorrectly. It uses a per-pixel depth value to ensure that no pixel draws on top of a pixel it is "behind." Various effects can be achieved by variously enabling and disabling depth buffer read and write, as well as its testing function, which we won't be exploring here. Just keep in mind that in the general 3D case, we want to call <ci>gl::enableDepthRead()</ci> and <ci>gl::enableDepthWrite()</ci>. In addition this example provides the optional third parameter to <ci>gl::drawSphere()</ci> which increases the subdivisions to 40, resulting in a much smoother appearance.</p>
 
-<a href="#3d_transforms#"><h2>3D Transforms</h2></a>
+<a id="3d_transforms#"></a>
+<h2>3D Transforms</h2>
 
 <p>Let's extend the use of transformations into 3D:</p>
 
