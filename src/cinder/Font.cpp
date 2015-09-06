@@ -558,8 +558,7 @@ Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
 			metrics.gmptGlyphOrigin.x + metrics.gmBlackBoxX, metrics.gmptGlyphOrigin.y + (int)metrics.gmBlackBoxY );
 }
 
-#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-
+#elif defined( CINDER_WINRT )  || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 std::string Font::getFullName() const
 {
 	return mObj->mName;
@@ -568,7 +567,6 @@ std::string Font::getFullName() const
 float Font::getLeading() const
 {
 	return (float)((mObj->mFace->height - (abs( mObj->mFace->ascender ) + abs( mObj->mFace->descender))) >> 6);
-	//return (float)(mObj->mFace->height >> 6);
 }
 
 float Font::getAscent() const

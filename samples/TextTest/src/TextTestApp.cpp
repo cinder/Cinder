@@ -48,7 +48,7 @@ void TextTestApp::setup()
 #elif defined( CINDER_LINUX )
 	std::string normalFont( "Arial" );
 	std::string boldFont( "Arial Bold" );
-	std::string differentFont( "Courier" );
+	std::string differentFont( "Purisa" );
 #else
 	std::string normalFont( "Arial" );
 	std::string boldFont( "Arial Bold" );

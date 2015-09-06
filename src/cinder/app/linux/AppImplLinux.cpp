@@ -135,6 +135,10 @@ AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 	}
 
 	for( auto& format : formats ) {
+		if( ! format.isTitleSpecified() ) {
+			format.setTitle( settings.getTitle() );
+		}
+
 		// We need to keep tabs on the main window since it's how
 		// we will communicate with GLFW.
 		if( ! mMainWindow ) {

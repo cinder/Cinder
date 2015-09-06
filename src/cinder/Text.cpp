@@ -353,7 +353,7 @@ void draw_bitmap( FT_Int x, FT_Int y, FT_Bitmap* bitmap, const ColorA8u& color, 
 			int r = (color.r*alpha + dr*invAlpha) >> 8;
 			int g = (color.g*alpha + dg*invAlpha) >> 8;
 			int b = (color.b*alpha + db*invAlpha) >> 8;
-			int a = (color.a*alpha + db*invAlpha) >> 8;
+			int a = (color.a*alpha + da*invAlpha) >> 8;
 			*(data + 0) = r;
 			*(data + 1) = g;
 			*(data + 2) = b;
@@ -380,18 +380,15 @@ void Line::render( Surface &surface, float currentY, float xBorder, float maxWid
 	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		ColorA8u color = runIt->mColor;
 
-		std::u32string strU32 = ci::toUtf32( runIt->mText );
-
 		FT_Face face = runIt->mFont.getFreetypeFace();
 		FT_Vector pen = { (int)currentX * 64, (int)(surfaceSize.y - currentY) * 64 };
-		//for(string::const_iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt) {
+
+		std::u32string strU32 = ci::toUtf32( runIt->mText );
 		for( const auto& ch : strU32 ) {
 			FT_Set_Transform( face, nullptr, &pen );
 
 			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
 			FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
-			//FT_Load_Char(face, chU32, FT_LOAD_RENDER);
-			FT_Glyph_Metrics &metrics = face->glyph->metrics;
 
 			FT_GlyphSlot slot = face->glyph;
 			ivec2 offset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
@@ -401,6 +398,8 @@ void Line::render( Surface &surface, float currentY, float xBorder, float maxWid
 			pen.x += slot->advance.x;
 			pen.y += slot->advance.y;
 		}
+
+		currentX = (pen.x / 64.0f) + 0.5f;
 	}
 }
 
@@ -602,10 +601,7 @@ std::cout << "TextLayout::render: " << pixelWidth << "x" << pixelHeight << std::
 	result = Surface(channel, SurfaceConstraintsDefault(), true);
 	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	//Channel channel( pixelWidth, pixelHeight );
-	//ip::fill<uint8_t>( &channel, 0 );
 	result = Surface( pixelWidth, pixelHeight, true, SurfaceConstraintsDefault() );
-	//ip::fill( &result, premultiplied ? mBackgroundColor.premultiplied() : mBackgroundColor );
 	ip::fill( &result, mBackgroundColor );
 
 	float currentY = (float)mVerticalBorder;
@@ -618,13 +614,7 @@ std::cout << "TextLayout::render: " << pixelWidth << "x" << pixelHeight << std::
 
 		(*lineIt)->render( result, currentY, (float)mHorizontalBorder, (float)pixelWidth );	
 		currentY += (*lineIt)->mHeight;
-
-		//currentY += (*lineIt)->mLeadingOffset + (*lineIt)->mLeading;
-		//(*lineIt)->render( result, currentY, (float)mHorizontalBorder, (float)pixelWidth );	
-		//currentY += (*lineIt)->mAscent + (*lineIt)->mDescent;		
 	}
-	//result = Surface(channel, SurfaceConstraintsDefault(), true);
-	//result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
 
 	if( ! premultiplied ) {
 		ip::unpremultiply( &result );
