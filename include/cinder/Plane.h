@@ -32,6 +32,7 @@
 
 namespace cinder {
 
+//! Represents a Plane, as a geometric primitive, useful in conducting tests in 3D space.
 template<typename T>
 class PlaneT {
   public:
@@ -77,6 +78,7 @@ std::ostream& operator<<( std::ostream &o, const PlaneT<T> &p )
 	return o << "(" << p.mNormal << ", " << p.mDistance << ")";
 }
 
+//! Exception type thrown when bad values are encountered.
 class PlaneExc : public Exception {
   public:
 	PlaneExc()
