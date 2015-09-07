@@ -1787,13 +1787,13 @@ def generate_namespace_nav():
     bs4 = BeautifulSoup()
     namespaces = g_symbolMap.get_whitelisted_namespaces()
 
-    tree = gen_tag(bs4, "div")
+    # tree = gen_tag(bs4, "div")
     ul = gen_tag(bs4, "ul")
-    tree.append(ul)
-    add_class_to_tag(tree, "css-treeview")
+    # tree.append(ul)
+    add_class_to_tag(ul, "css-treeview")
 
     iterate_namespace(bs4, namespaces, ul, 0, "")
-    return tree
+    return ul
 
 
 def find_typedefs_of(class_name, typedef_list):
