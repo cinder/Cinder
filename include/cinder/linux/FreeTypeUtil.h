@@ -24,12 +24,179 @@
 #pragma once
 
 #include "cinder/Rect.h"
+#include "cinder/Surface.h"
 #include "cinder/Unicode.h"
 
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
 namespace cinder { namespace linux { namespace ftutil {
+
+class Measure {
+public:
+
+	Measure( const ivec2& size, const ivec2& baseline )
+		: mSize( size ), mBaseline( baseline ) {}
+	virtual ~Measure() {}
+
+	int 			getWidth() const { return mSize.x; }
+	int 			getHeight() const { return mSize.y; }
+	const ivec2&	getSize() const { return mSize; }
+	const ivec2&	getBaseline() const { return mBaseline; }
+
+	friend std::ostream& operator<<( std::ostream& os, const Measure& obj ) {
+		os << "size=" << obj.mSize << ", baseline=" << obj.mBaseline;
+		return os;
+	}
+
+private:
+	ivec2	mSize;
+	ivec2	mBaseline;
+};
+
+Measure MeasureString( const std::string& utf8, FT_Face face, bool tightFit = false )
+{
+	const int kBaselineX = 0;
+	const int kBaselineY = 0;
+	FT_Vector pen = { kBaselineX*64, kBaselineY*64 };
+
+	int xMin = 0;
+	int yMin = 0;
+	int xMax = 0;
+	int yMax = 0;
+	bool hasInitial = false;
+
+	std::u32string utf32 = ci::toUtf32( utf8 );
+	for( const auto ch : utf32 ) {
+		FT_Set_Transform( face, nullptr, &pen );
+
+		FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+		FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+		if( error ) {
+		  continue;  
+		} 
+
+		FT_GlyphSlot slot = face->glyph;
+		int glyphPixWidth  = (int)((slot->metrics.width / 64.0f) + 0.5f);
+		int glyphPixHeight = (int)((slot->metrics.height / 64.0f) + 0.5f);
+		int glyphLeft   =  slot->bitmap_left;
+		int glyphTop    = -slot->bitmap_top;
+		int glyphRight  = glyphLeft + glyphPixWidth;
+		int glyphBottom = glyphTop + glyphPixHeight;
+
+		if( ! hasInitial ) {
+			xMin = glyphLeft;
+			yMin = glyphTop;
+			xMax = glyphRight;
+			yMax = glyphBottom;
+			hasInitial = true;
+		}
+
+		yMin = std::min( yMin, glyphTop );
+		xMax = glyphRight;
+		yMax = std::max( yMax, glyphBottom );
+
+		pen.x += slot->advance.x;
+		pen.y += slot->advance.y;
+	}
+
+	int width  = (xMax - xMin) + 1;
+	int height = (int)((face->size->metrics.height / 64.0f) + 0.5f);
+	int baselineX = xMin;
+	int baselineY = (int)((std::fabs( face->size->metrics.ascender ) / 64.0f) + 0.5f);
+
+	if( tightFit ) {
+		height = std::abs( yMax - yMin );
+		baselineY = std::abs( yMin );
+	}
+
+	ivec2 size = ivec2( width, height );
+	ivec2 baseline = ivec2( baselineX, baselineY );
+
+	return Measure( size, baseline );
+} 
+
+
+void DrawBitmap( 
+	const ivec2&		offset,
+	FT_Bitmap*			bitmap, 
+	const ci::ColorA8u&	color, 
+	uint8_t*			dstData, 
+	size_t 				dstPixelInc, 
+	size_t 				dstRowBytes, 
+	const ivec2& 		dstSize 
+)
+{
+	FT_Int i, j, p, q;
+	FT_Int x_max = offset.x + bitmap->width;
+	FT_Int y_max = offset.y + bitmap->rows;
+
+	for( j = offset.y, q = 0; j < y_max; ++j, ++q ) {
+		for( i = offset.x, p = 0; i < x_max; ++i, ++p ) {
+		 	if( i < 0 || j < 0 || i >= dstSize.x || j >= dstSize.y ) {
+				continue;
+			}
+			
+			size_t index = j*dstRowBytes + i*dstPixelInc;
+			uint8_t *data = dstData + index;
+			int dr = *(data + 0);
+			int dg = *(data + 1);
+			int db = *(data + 2);
+			int da = *(data + 3);
+
+			int val = (bitmap->buffer[q * bitmap->width + p]);
+	  		int alpha = val + 1;
+			int invAlpha = 256 - val;
+			int r = (color.r*alpha + dr*invAlpha) >> 8;
+			int g = (color.g*alpha + dg*invAlpha) >> 8;
+			int b = (color.b*alpha + db*invAlpha) >> 8;
+			int a = (color.a*alpha + da*invAlpha) >> 8;
+			*(data + 0) = r;
+			*(data + 1) = g;
+			*(data + 2) = b;
+			*(data + 3) = a;
+		}
+	}
+}
+
+ci::SurfaceRef RenderString( const std::string& utf8, FT_Face face )
+{
+	ci::SurfaceRef result;
+
+	Measure measure = MeasureString( utf8, face );
+	if( measure.getSize().x > 0 && measure.getSize().y > 0 ) {
+		result = ci::Surface::create( measure.getSize().x, measure.getSize().y, true );
+std::cout << "Created surface: " << result->getWidth() << "x" << result->getHeight() << std::endl;
+
+		ci::ColorA8u color		= ci::ColorA8u( 255, 255, 255, 255 );
+		ivec2 surfaceSize		= result->getSize();
+		uint8_t* surfaceData   	= result->getData();
+		size_t surfacePixelInc 	= result->getPixelInc();
+		size_t surfaceRowBytes 	= result->getRowBytes();
+
+		int baselineX = measure.getBaseline().x;
+		int baselineY = measure.getBaseline().y;
+		FT_Vector pen = { baselineX*64, (surfaceSize.y - baselineY)*64 };
+
+		std::u32string utf32 = ci::toUtf32( utf8 );
+		for( const auto& ch : utf32 ) {
+			FT_Set_Transform( face, nullptr, &pen );
+
+			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+			FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+
+			FT_GlyphSlot slot = face->glyph;
+			ivec2 offset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
+
+			DrawBitmap( offset, &(slot->bitmap), color, surfaceData, surfacePixelInc, surfaceRowBytes, surfaceSize );
+
+			pen.x += slot->advance.x;
+			pen.y += slot->advance.y;
+		}
+	}
+
+	return result;
+}
 
 struct Box { 
 	int x1, y1, x2, y2;
@@ -42,42 +209,6 @@ struct Box {
 		return os;
 	}
 };
-
-/*
-int CalcWidth( const std::string& text, FT_Face face )
-{
-	int result = 0;
-
-	int baseLineX = 0;
-	int baseLineY = 0;
-
-	const int kMaxPixHeight = 65535;
-	FT_Vector pen = { baseLineX*64, (kMaxPixHeight - baseLineY)*64 };
-
-	for( const auto ch : text ) {
-		FT_Set_Transform( face, nullptr, &pen );
-
-		FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
-		FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
-		if( error ) {
-		  continue;  
-		} 
-
-		FT_GlyphSlot slot = face->glyph;
-		int glyphPixWidth  = slot->metrics.width >> 6;
-		int glyphPixHeight = slot->metrics.height >> 6;
-		int x1 = slot->bitmap_left;
-		int x2 = x1 + glyphPixWidth;
-
-		result = x2;
-
-		pen.x += slot->advance.x;
-		pen.y += slot->advance.y;
-	}
-
-	return result;
-}
-*/
 
 Box CalcBounds( const std::string& text, FT_Face face, int baseLineX = 0, int baseLineY = 0 )
 {
@@ -92,20 +223,17 @@ Box CalcBounds( const std::string& text, FT_Face face, int baseLineX = 0, int ba
 
 		FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
 		FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
-		//FT_Error error = FT_Load_Char( face, ch, FT_LOAD_RENDER );
 		if( error ) {
 		  continue;  
 		} 
 
 		FT_GlyphSlot slot = face->glyph;
-		int glyphPixWidth  = slot->metrics.width >> 6;
-		int glyphPixHeight = slot->metrics.height >> 6;
+		int glyphPixWidth  = (int)((slot->metrics.width / 64.0f) + 0.5f);
+		int glyphPixHeight = (int)((slot->metrics.height / 64.0f) + 0.5f);
 		int x1 = slot->bitmap_left;
 		int y1 = (kMaxPixHeight - slot->bitmap_top);
 		int x2 = x1 + glyphPixWidth;
 		int y2 = y1 + glyphPixHeight;
-
-//std::cout << ch << " | " << x1 << ", " << y1 << ", " << x2 << ", " << y2 << " : " << glyphPixWidth << ", " << glyphPixHeight << std::endl;
 
 		if( ! hasInitial ) {
 			result.x1 = x1;
@@ -139,13 +267,11 @@ std::vector<Box> CalcGlyphBounds( const std::string& strU8, FT_Face face, int ba
 
 	std::u32string strU32 = ci::toUtf32( strU8 );
 
-	bool hasInitial = false;
 	for( const auto& ch : strU32 ) {
 		FT_Set_Transform( face, nullptr, &pen );
 
 		FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
 		FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
-		//FT_Error error = FT_Load_Char( face, ch, FT_LOAD_RENDER );
 		if( error ) {
 		  continue;  
 		} 

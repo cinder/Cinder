@@ -258,15 +258,21 @@ void Line::calcExtents()
 		mAscent  = std::max( runIt->mFont.getAscent(), mAscent );
 		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
-		//mHeight  = std::max( mHeight, (face->bbox.yMax - face->bbox.yMin) / 64.0f );
 		mHeight  = std::max( mHeight, (float)(bounds.getHeight()) );
-	}
-#endif
 
+std::cout << "RUN       : " << runIt->mText << std::endl;
 std::cout << "mAscent   : " << mAscent << std::endl;
 std::cout << "mDescent  : " << mDescent << std::endl;
 std::cout << "mLeading  : " << mLeading << std::endl;
 std::cout << "mHeight   : " << mHeight << std::endl;
+std::cout << std::endl;
+	}
+#endif
+
+// std::cout << "mAscent   : " << mAscent << std::endl;
+// std::cout << "mDescent  : " << mDescent << std::endl;
+// std::cout << "mLeading  : " << mLeading << std::endl;
+// std::cout << "mHeight   : " << mHeight << std::endl;
 //std::cout << mHeight << ", " << mAscent << ", " << mDescent << ", " << mLeading << std::endl;
 #if ! ( defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) )
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
