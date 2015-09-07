@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2011, The Cinder Project, All rights reserved.
+ Copyright (c) 2011-15, The Cinder Project, All rights reserved.
  This code is intended for use with the Cinder C++ library: http://libcinder.org
  
  Portions of this code (C) Paul Houx
@@ -77,10 +77,11 @@ std::ostream& operator<<( std::ostream &o, const PlaneT<T> &p )
 	return o << "(" << p.mNormal << ", " << p.mDistance << ")";
 }
 
-
 class PlaneExc : public Exception {
- public:
-	virtual const char* what() const throw() { return "Invalid parameters specified"; }
+  public:
+	PlaneExc()
+		: Exception( "Invalid parameters specified" )
+	{}
 };
 
 } // namespace cinder
