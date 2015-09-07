@@ -173,7 +173,10 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	
 	//! Returns a copy of the pixels in \a attachment within \a area (cropped to the bounding rectangle of the attachment) as an 8-bit per channel Surface. \a attachment ignored on ES 2.
 	Surface8u		readPixels8u( const Area &area, GLenum attachment = GL_COLOR_ATTACHMENT0 ) const;
-	
+
+	//! \brief Defines the Format of the Fbo, which is passed in via create().
+	//!
+	//! The default provides an 8-bit RGBA color texture attachment and a 24-bit depth renderbuffer attachment, multi-sampling and stencil disabled.
 	struct Format {
 	  public:
 		//! Default constructor, sets the target to \c GL_TEXTURE_2D with an 8-bit color+alpha, a 24-bit depth texture, and no multisampling or mipmapping
