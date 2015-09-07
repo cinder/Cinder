@@ -58,6 +58,16 @@
 						"link": "#textures"
 					}
 				]
+			},		
+			{
+				"label": "Shaders",
+				"link": "part5.html",
+				"pagenav":[
+					{
+						"label": "Basic Shaders",
+						"link": "#basic_shaders"
+					}
+				]
 			}			
 		],
 		"seealso":
