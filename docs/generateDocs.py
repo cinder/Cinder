@@ -1514,7 +1514,8 @@ def replace_tag(bs4, tree, parent_tag, content):
         content_tag = code_tag
 
     if tag == "computeroutput":
-        content = content.strip()
+        if content:
+            content = content.strip()
 
     if content is not None:
         content_tag.append(content)
