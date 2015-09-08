@@ -61,16 +61,19 @@ file_meta = {
 }
 
 parser = argparse.ArgumentParser(description='CiDocs')
-parser.add_argument('--debug',
+parser.add_argument('path', nargs='?')
+parser.add_argument('outpath', nargs='?')
+parser.add_argument('-d', '--debug',
     action='store_true',
-    help='debug flag' )
+    help='show debug arguments' )
+parser.add_argument('-s', '--skiphtml',
+    action='store_true',
+    help='skip html generation' )
 
 
 # various config settings
 class Config(object):
     def __init__(self):
-        # skip html directory parsing - speeds up debugging
-        self.SKIP_HTML_PARSING = False
         # break on errors that would prevent the file from being generated
         self.BREAK_ON_STOP_ERRORS = True
         # whitelisted namespaces to generate pages for
@@ -3358,7 +3361,7 @@ def process_file(in_path, out_path=None):
     elif is_xml_file:
         file_type = get_file_type(file_prefix)
         # process html directory always, since they may generate content for class or namespace reference pages
-        if not state.processed_html_files and not config.SKIP_HTML_PARSING:
+        if not state.processed_html_files and not args.skiphtml:
             process_html_dir(HTML_SOURCE_PATH)
 
         process_xml_file_definition(in_path, os.path.join(HTML_DEST_PATH, save_path), file_type)
@@ -3502,6 +3505,8 @@ if __name__ == "__main__":
             Ex: python xmlToHtml.py xml/ html/
     """
 
+    args = parser.parse_args()
+
     # Make sure we're compiling using pythong 2.7.6+
     version_info = sys.version_info
 
@@ -3509,8 +3514,8 @@ if __name__ == "__main__":
     #    sys.exit("ERROR: Sorry buddy, you must use python 2.7.6+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
     # if sys.version
 
-    if len(sys.argv) == 2:
-        inPath = sys.argv[1]
+    if args.path:
+        inPath = args.path
         if not os.path.isfile(inPath) and not os.path.isdir(inPath):
             log("Nice try! Directory or file '" + inPath + "' doesn't even exist, so we're going to stop right... now!")
             quit()
@@ -3536,18 +3541,18 @@ if __name__ == "__main__":
     # generate namespace navigation
     g_namespaceNav = generate_namespace_nav()
 
-    if len(sys.argv) == 1: # no args; run all docs
+    if not args.path: # no args; run all docs
         # process_html_dir(HTML_SOURCE_PATH, "html/")
         process_dir("xml/", "html/")
         log("SUCCESSFULLY GENERATED CINDER DOCS!")
-    elif len(sys.argv) == 2:
-        inPath = sys.argv[1]
+    elif args.path:
+        inPath = args.path
         # process a specific file
         if os.path.isfile(inPath):
-            process_file(inPath, sys.argv[2] if len(sys.argv) > 2 else None)
+            process_file(inPath, args.outpath if len(sys.argv) > 2 else None)
             log("SUCCESSFULLY GENERATED YOUR FILE!")
         elif os.path.isdir(inPath):
-            # print inPath
+            # print isdir
             if inPath == "htmlsrc/":
                 process_html_dir(HTML_SOURCE_PATH)
             else:
