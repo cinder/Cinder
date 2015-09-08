@@ -5817,7 +5817,7 @@ $(document).ready(function(){
 				'	MatrixAffine2<float> mtrx;\n' +
 				'	mtrx.scale( <%- scale %>f );\n' +
 				'	mtrx.rotate( ( ( M_PI * 2) / <%- amt %> ) * i );\n' +
-				'	auto pathCopy = mPath.transformCopy( mtrx );\n' +
+				'	auto pathCopy = mPath.transformed( mtrx );\n' +
 				'	gl::draw( pathCopy );\n' +
 				'}\n' +
 				'gl::popMatrices();\n'
@@ -5992,7 +5992,7 @@ $(document).ready(function(){
 			var calcBoundsSketch	= new cidocs.CalcBoundsSketch( { canvas:'#calcbounds', name:'calcbounds', output:this.codeModule } );
 			var calcPreciseSketch	= new cidocs.CalcPreciseSketch( { canvas:'#calcprecise', name:'calcprecise', output:this.codeModule } );
 			var containsSketch		= new cidocs.ContainsSketch( { canvas:'#contains', name:'contains', output:this.codeModule } );
-			var transformCopySketch	= new cidocs.TransformCopySketch( { canvas:'#transformcopy', name:'transformcopy', output:this.codeModule } );
+			var transformCopySketch	= new cidocs.TransformCopySketch( { canvas:'#transformed', name:'transformed', output:this.codeModule } );
 			var subdivideSketch		= new cidocs.SubdivideSketch( { canvas:'#subdivide', name:'subdivide', output:this.codeModule } );
 			this.sketches.push( calcBoundsSketch, calcPreciseSketch, containsSketch, transformCopySketch, subdivideSketch );
 			

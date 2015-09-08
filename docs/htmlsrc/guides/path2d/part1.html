@@ -28,13 +28,11 @@
             <h1>Part 1: Path2D Basics</h1>
             
                 <h2>Introduction</h2>
-                <p>Cinder's Path2D API is one of Cinder's most powerful yet most underused utilities. This guide will walk through what a Path2D is from the nuts and bolts and work through some of the more advanced functions. Each part has an interactive portion with code snippets that you should be able to cut and paste into Cinder's draw function. You can use the templates and samples in<a href="#">this repo</a> to get started.
+                <p>Cinder's Path2D API is one of Cinder's most powerful yet most underused utilities. This guide will walk through what a Path2D object is from the nuts and bolts and work through some of the more advanced functions. Each part has an interactive portion with code snippets that you can cut and paste into Cinder's draw function. You can use the templates and samples in <a href="#">this repo</a> to get started.
                 </p>
 
                 <h2>Points and Segments</h2>
-                <p>A <ci dox="ci::Path2d">Path2D</ci> instance is constructed of points and <ci dox="cinder::Path2d::SegmentType">segments</ci>. 
-                <p>A <strong>point</strong> refers to a 2D coordinate of where a line segment starts or ends as well as a coordinate of a handle that defines the curve of the path.</p>
-                <p>A <strong>segment</strong> refers to the line segment as defined as a result of the positions of the end points and handles. The <ci dox="ci::Path2d::SegmentType">types of segments</ci> are: 
+                <p>A <ci dox="ci::Path2d">Path2D</ci> instance is constructed of points and <ci dox="cinder::Path2d::SegmentType">segments</ci>. A <strong>point</strong> refers to a 2D coordinate of where a line segment starts or ends as well as a coordinate of a handle that defines the curve of the path. A <strong>segment</strong> refers to the line segment as defined by the positions of the start/end points and handles. The <ci dox="ci::Path2d::SegmentType">types of segments</ci> are:</p>
                     <ul>
                         <li><strong>MOVETO</strong>: Consists of a single point to start or continue your drawing from. Every path must start with a MOVETO segment.</li>
                         <li><strong>LINETO</strong>: Consists of a single point which contructs a line from the previous point</li>

@@ -26,12 +26,22 @@ code[class*="language-"]
 
 :not(pre) > code 
 	background: transparent !important 
-	font-size: 0.9em
+	font-size: 1.15em
 	
 	*
 		color: inherit !important
 	
+ci
+	color: purple;
+	font-weight: 700;
 
+a.ci
+	codeStyle()
+	font-size: 1.15em
+	
+	&.plain
+		baseFontStyle()
+		font-size: inherit
 
 
 
