@@ -412,7 +412,6 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				Font::GlyphMetrics glyphMetrics;
 				glyphMetrics.advance = slot->advance;
 				glyphMetrics.metrics = slot->metrics;
-				//std::cout << glyphIndex  << " : " <<glyphMetrics.advance.x << std::endl;
 				mCachedGlyphMetrics[glyphIndex] = glyphMetrics;
 			}
 
