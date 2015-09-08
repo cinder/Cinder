@@ -692,14 +692,20 @@ button.interactive-guide
 			overflow-y: scroll
 			
 			ul
-				margin: 5px -15px
+				margin: 5px -15px 0
 				padding: 0
+				
+				li:last-child
+					padding-bottom: 8px
+
 		
 			li
 				// padding: 0 15px
 				line-height: 1.3em
 				padding: 4px 15px 4px 15px + 19px
 				// margin: 7px 0
+				
+				
 				
 	span.active a
 		color: $dark-gray-text
@@ -720,6 +726,7 @@ button.interactive-guide
 
 	li.list-parent
 		padding-left: 15px
+		padding-bottom: 0;
 			
 		&:before
 			content: ''
@@ -736,8 +743,12 @@ button.interactive-guide
 		
 	
 	
-	input[type="checkbox"] + label
-		margin-left: -18px
+	/*input[type="checkbox"] + label
+		margin-left: -18px*/
+		
+	input[type="checkbox"] + label, input[type="radio"] + label
+		margin-left: 0
+		
 	
 	.css-treeview
 		
@@ -748,9 +759,12 @@ button.interactive-guide
 			font-size: inherit
 		
 		li
-			margin-left: 18px
-			margin-top: 5px;
-			margin-bottom: 5px;
+			// margin-left: 18px
+			// margin-top: 5px;
+			// margin-bottom: 5px;
+			
+			&.list-parent::before
+				content: none
 			
 			a
 				color: $cinder-red
@@ -774,9 +788,9 @@ button.interactive-guide
 		background-image: none
 		height: 20px
 		line-height: 20px
-		
-	.css-treeview input + label + ul
-		margin: 0
+	
+	/*.css-treeview input + label + ul
+		margin: 0*/
 
 
 .wrapper

@@ -798,6 +798,10 @@ button.interactive-guide:focus {
   width: 300px;
   left: auto;
   padding: 40px 0 0 0;
+/*input[type="checkbox"] + label
+		margin-left: -18px*/
+/*.css-treeview input + label + ul
+		margin: 0*/
 }
 #side-nav h3 {
   color: #a41c12;
@@ -822,8 +826,11 @@ button.interactive-guide:focus {
   overflow-y: scroll;
 }
 #side-nav section > ul ul {
-  margin: 5px -15px;
+  margin: 5px -15px 0;
   padding: 0;
+}
+#side-nav section > ul ul li:last-child {
+  padding-bottom: 8px;
 }
 #side-nav section > ul li {
   line-height: 1.3em;
@@ -846,6 +853,7 @@ button.interactive-guide:focus {
 }
 #side-nav li.list-parent {
   padding-left: 15px;
+  padding-bottom: 0;
 }
 #side-nav li.list-parent:before {
   content: '';
@@ -870,17 +878,16 @@ button.interactive-guide:focus {
   -ms-transform-origin: 50% 50%;
   transform-origin: 50% 50%;
 }
-#side-nav input[type="checkbox"] + label {
-  margin-left: -18px;
+#side-nav input[type="checkbox"] + label,
+#side-nav input[type="radio"] + label {
+  margin-left: 0;
 }
 #side-nav .css-treeview label {
   color: #fff;
   font-size: inherit;
 }
-#side-nav .css-treeview li {
-  margin-left: 18px;
-  margin-top: 5px;
-  margin-bottom: 5px;
+#side-nav .css-treeview li.list-parent::before {
+  content: none;
 }
 #side-nav .css-treeview li a {
   color: #a41c12;
@@ -912,9 +919,6 @@ button.interactive-guide:focus {
   background-image: none;
   height: 20px;
   line-height: 20px;
-}
-#side-nav .css-treeview input + label + ul {
-  margin: 0;
 }
 .wrapper {
   min-height: 100%;

@@ -163,6 +163,7 @@ tagDictionary = {
     "linebreak": "br",
     "emphasis": "em",
     "ref": "a",
+    "ulink": "ulink",
     "computeroutput": "code",
     "includes": "span",
     "simplesect": "dl",
@@ -1188,9 +1189,10 @@ def gen_tag(bs4, tag_type, classes=None, contents=None):
     return new_tag
 
 
-def gen_link_tag(bs4, text, link):
+def gen_link_tag(bs4, text, link, target = "_self"):
     link_tag = gen_tag(bs4, "a", [], text)
     define_link_tag(link_tag, {"href": link})
+    link_tag["target"] = target
     return link_tag
 
 
@@ -1360,7 +1362,15 @@ def parse_enum(bs4, member):
 
 
 def define_tag(bs4, tag_name, tree):
+    """ Creates a new html element with the specified tag_name. "a" tags and "ulink" 
+        tags are different since it generates a tags with links defined in the tree.
 
+    Args:
+        bs4: BeautifulSoup instance
+        tag_name: What the new tag should be
+        tree: original element tree which contains extra optional information
+    """
+    
     if tag_name == "a":
         new_tag = bs4.new_tag(tag_name)
         define_link_tag(new_tag, tree.attrib)
@@ -1368,6 +1378,10 @@ def define_tag(bs4, tag_name, tree):
         # TODO: refactor define_tag and ren_link_tags. Should be able to create relative link on its own
         # new_tag = gen_rel_link_tag(bs4, "", new_tag["href"], TEMPLATE_PATH, DOXYGEN_HTML_PATH)
         new_tag = gen_link_tag(bs4, "", "../" + new_tag["href"])
+    elif tag_name == "ulink":
+        # ulinks are for external links
+        new_tag = bs4.new_tag("a")
+        new_tag = gen_link_tag(bs4, "", tree.attrib['url'], "_blank")
     else:
         new_tag = bs4.new_tag(tag_name)
     return new_tag
@@ -1477,7 +1491,7 @@ def replace_tag(bs4, tree, parent_tag, content):
         new_tag = define_tag(bs4, tag_name, tree)
     else:
         # TODO: replace with nothing - no new tag
-        tag_name = "div"
+        tag_name = "span"
         new_tag = define_tag(bs4, tag_name, tree)
         add_class_to_tag(new_tag, tag)
 
@@ -1498,6 +1512,10 @@ def replace_tag(bs4, tree, parent_tag, content):
         add_class_to_tag(code_tag, "language-cpp")
         new_tag.append(code_tag)
         content_tag = code_tag
+
+    if tag == "computeroutput":
+        if content:
+            content = content.strip()
 
     if content is not None:
         content_tag.append(content)
@@ -1769,13 +1787,13 @@ def generate_namespace_nav():
     bs4 = BeautifulSoup()
     namespaces = g_symbolMap.get_whitelisted_namespaces()
 
-    tree = gen_tag(bs4, "div")
+    # tree = gen_tag(bs4, "div")
     ul = gen_tag(bs4, "ul")
-    tree.append(ul)
-    add_class_to_tag(tree, "css-treeview")
+    # tree.append(ul)
+    add_class_to_tag(ul, "css-treeview")
 
     iterate_namespace(bs4, namespaces, ul, 0, "")
-    return tree
+    return ul
 
 
 def find_typedefs_of(class_name, typedef_list):
