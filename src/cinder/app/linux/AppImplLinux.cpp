@@ -195,6 +195,9 @@ void AppImplLinux::run()
 	mApp->privateSetup__();
 	mSetupHasBeenCalled = true;
 
+	// initialize our next frame time
+	mNextFrameTime = getElapsedSeconds();	
+
 	while( ! mShouldQuit ) {
 		// update and draw
 		mApp->privateUpdate__();
