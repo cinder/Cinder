@@ -27,12 +27,12 @@
 
         <div class="">
                 <h1>Part 3: Advanced Functions</h1>
-                <p>Advanced functions blah blah blah</p>
+                <p>In addition to the basic drawing functions, Cinder includes a slew of advanced functions to help you do some more interesting things with your code.</p>
                 <ul>
-                    <li><strong><ci dox="cinder::Path2d::calcBoundingBox">calcBoundingBox()</ci></strong>: Calculates the bounding box of the path.</li>
-                    <li><strong><ci dox="cinder::Path2d::calcPreciseBoundingBox">calcPreciseBoundingBox()</ci></strong>: Calculates the bounding box of the path.</li>
+                    <li><strong><ci dox="cinder::Path2d::calcBoundingBox">calcBoundingBox()</ci></strong>: Calculates the bounding box of the path, including all handle point positions.</li>
+                    <li><strong><ci dox="cinder::Path2d::calcPreciseBoundingBox">calcPreciseBoundingBox()</ci></strong>: Calculates the bounding box of the the resulting path, minus handle point positions.</li>
                     <li><strong><ci dox="cinder::Path2d::contains">contains()</ci></strong>: Determines if a given point is within the area of the path.</li>
-                    <li><strong><ci dox="cinder::Path2d::transformed">transformed()</ci></strong>: Returns a copy of the path with the specified matrix applied.</li>
+                    <li><strong><ci dox="cinder::Path2d::transformed">transformed()</ci></strong>: Returns a copy of the path with the specified transform matrix applied.</li>
                     <li><strong><ci dox="cinder::Path2d::subdivide">subdivide()</ci></strong>: Returns an array of points subdividing the path's curves based on the given tolerance.</li>
                 </ul>
                 
@@ -46,7 +46,7 @@
                 <script src="iframeResizer.min.js" type="text/javascript"></script>
         
                 <script type="text/javascript">
-                    iFrameResize({log:false});
+                    iFrameResize({log:true});
                 </script> 
                                               
             </div>
