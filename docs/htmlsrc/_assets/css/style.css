@@ -201,8 +201,8 @@ ci {
   font-weight: 700;
 }
 a.ci {
-  font-family: Hack, monospace !important;
-  font-size: 0.9em;
+  font-family: Inconsolata, monospace !important;
+  font-size: 1em;
   font-size: 0.9em;
 }
 a.ci.plain {
@@ -1168,8 +1168,8 @@ footer {
 
 code,
 .code {
-  font-family: Hack, monospace !important;
-  font-size: 0.9em;
+  font-family: Inconsolata, monospace !important;
+  font-size: 1em;
   padding: 2px 4px;
   background: #fafafa;
   color: #666;
@@ -1181,18 +1181,31 @@ pre[class*="language-"] {
   margin: 1em 0;
   padding: 0.5em 0.7em;
   line-height: 1.3em;
-  font-family: Hack, monospace !important;
-  font-size: 0.9em;
+  font-family: Inconsolata, monospace !important;
+  font-size: 1em;
 }
 code[class*="language-"] {
   padding: 0;
 }
 :not(pre) > code {
   background: transparent !important;
-  font-size: 0.9em;
+  font-size: 1.15em;
 }
 :not(pre) > code * {
   color: inherit !important;
+}
+ci {
+  color: #800080;
+  font-weight: 700;
+}
+a.ci {
+  font-family: Inconsolata, monospace !important;
+  font-size: 1em;
+  font-size: 1.15em;
+}
+a.ci.plain {
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+  font-size: inherit;
 }
 :not(pre) > code[class*="language-"],
 pre[class*="language-"] {
