@@ -171,6 +171,12 @@ class TextureFont {
 	std::vector<gl::TextureRef>						mTextures;
 	Font											mFont;
 	Format											mFormat;
+
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	std::map<Font::Glyph, Font::GlyphMetrics>  mCachedGlyphMetrics;
+	const std::map<Font::Glyph, Font::GlyphMetrics>* getCachedGlyphMetrics() const
+	{ return mCachedGlyphMetrics.empty() ? nullptr : &mCachedGlyphMetrics; }
+#endif	
 };
 
 } } // namespace cinder::gl

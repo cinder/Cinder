@@ -334,6 +334,10 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 {
 	FT_Face face = font.getFreetypeFace();
 	std::u32string utf32Chars = ci::toUtf32( utf8Chars );
+	// Add a space if needed
+	if( std::string::npos == utf8Chars.find( ' ' ) ) {
+		utf32Chars += ci::toUtf32( " " );
+	}
 
 	// get the glyph indices we'll need
 	set<Font::Glyph> glyphs;
@@ -402,6 +406,14 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				FT_GlyphSlot slot = face->glyph;
 				ivec2 drawOffset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
 				ci::linux::ftutil::DrawBitmap( drawOffset, &(slot->bitmap), white, surfaceData, surfacePixelInc, surfaceRowBytes, surfaceSize );
+
+				
+				FT_Load_Glyph( face, glyphIndex, FT_LOAD_DEFAULT );
+				Font::GlyphMetrics glyphMetrics;
+				glyphMetrics.advance = slot->advance;
+				glyphMetrics.metrics = slot->metrics;
+				//std::cout << glyphIndex  << " : " <<glyphMetrics.advance.x << std::endl;
+				mCachedGlyphMetrics[glyphIndex] = glyphMetrics;
 			}
 
 			// pass premultiply and mipmapping preferences to Texture::Format
@@ -710,31 +722,49 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<Font::Glyph,vec2> > &g
 void TextureFont::drawString( const std::string &str, const vec2 &baseline, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
-	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();	
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
+#else
+	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
+#endif	
 	drawGlyphs( glyphMeasures, baseline, options );
 }
 
 void TextureFont::drawString( const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, fitRect.getHeight() ).ligate( options.getLigate() );
-	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();	
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
+#else
+	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
+#endif	
 	drawGlyphs( glyphMeasures, fitRect, fitRect.getUpperLeft() + offset, options );	
 }
 
 void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
-	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();	
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
+#else
+	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
+#endif	
 	drawGlyphs( glyphMeasures, fitRect.getUpperLeft() + offset, options );
 }
 
 vec2 TextureFont::measureString( const std::string &str, const DrawOptions &options ) const
 {
+
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
 #if defined( CINDER_COCOA )
 	return tbox.measure();
 #else
+
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs( getCachedGlyphMetrics() );
+#else
 	vector<pair<Font::Glyph,vec2> > glyphMeasures = tbox.measureGlyphs();
+#endif	
 	if( ! glyphMeasures.empty() ) {
 		vec2 result = glyphMeasures.back().second;
 		unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphMeasures.back().first );

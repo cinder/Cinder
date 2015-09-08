@@ -68,8 +68,13 @@ class Font {
  public:
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
 	typedef uint32_t		Glyph;
+	struct GlyphMetrics {
+		FT_Vector			advance;
+		FT_Glyph_Metrics	metrics;
+	};
 #else
 	typedef uint16_t		Glyph;	
+	struct GlyphMetrics {};
 #endif
 
 	/** \brief constructs a null Font **/
