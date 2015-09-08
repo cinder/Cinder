@@ -18,8 +18,8 @@ message( "" )
 
 include_directories( 
     ${CINDER_INC_DIR} 
-    ${CINDER_INC_DIR}/glfw
     ${CINDER_INC_DIR}/freetype
+    ${CINDER_INC_DIR}/glfw
     ${BOOST_INC_DIR}
     ${INC_DIR}
 )
@@ -34,5 +34,5 @@ target_link_libraries( "${CMAKE_PROJECT_NAME}" debug     ${CINDER_DIR}/lib/linux
 target_link_libraries( "${CMAKE_PROJECT_NAME}" optimized ${CINDER_DIR}/lib/linux/libcinder.a )
 target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/libboost_filesystem.a )
 target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/libboost_system.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" c++ dl pthread z GL X11 Xcursor Xinerama Xrandr Xi fontconfig )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" c++ c++abi dl pthread z GL X11 Xcursor Xinerama Xrandr Xi fontconfig )
 

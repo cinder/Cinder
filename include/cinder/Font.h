@@ -66,7 +66,11 @@ class FontObj;
 //! Represents an instance of a font at a point size. \ImplShared
 class Font {
  public:
-	typedef uint16_t		Glyph;		
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
+	typedef uint32_t		Glyph;
+#else
+	typedef uint16_t		Glyph;	
+#endif
 
 	/** \brief constructs a null Font **/
 	Font() {}
@@ -81,6 +85,9 @@ class Font {
 	std::string				getFullName() const;
 	float					getSize() const;
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	float 					getLinespace() const;
+#endif
 	float					getLeading() const;
 	float					getAscent() const;
 	float					getDescent() const;

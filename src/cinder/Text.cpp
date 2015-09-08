@@ -252,29 +252,19 @@ void Line::calcExtents()
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		FT_Face face = runIt->mFont.getFreetypeFace();
 
-		auto bounds = ci::linux::ftutil::CalcBounds( runIt->mText, face );
+		auto measure = ci::linux::ftutil::MeasureString( runIt->mText, face );
 
-		mWidth   += bounds.getWidth();
-		mAscent  = std::max( runIt->mFont.getAscent(), mAscent );
-		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
-		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
-		mHeight  = std::max( mHeight, (float)(bounds.getHeight()) );
-
-std::cout << "RUN       : " << runIt->mText << std::endl;
-std::cout << "mAscent   : " << mAscent << std::endl;
-std::cout << "mDescent  : " << mDescent << std::endl;
-std::cout << "mLeading  : " << mLeading << std::endl;
-std::cout << "mHeight   : " << mHeight << std::endl;
-std::cout << std::endl;
+		mWidth   += measure.getWidth();
+		mAscent  = std::max( runIt->mFont.getAscent(),     mAscent  );
+		mDescent = std::max( runIt->mFont.getDescent(),    mDescent );
+		mLeading = std::max( runIt->mFont.getLeading(),    mLeading );
+		mHeight  = std::max( (float)(measure.getHeight()), mHeight  );
 	}
 #endif
 
-// std::cout << "mAscent   : " << mAscent << std::endl;
-// std::cout << "mDescent  : " << mDescent << std::endl;
-// std::cout << "mLeading  : " << mLeading << std::endl;
-// std::cout << "mHeight   : " << mHeight << std::endl;
-//std::cout << mHeight << ", " << mAscent << ", " << mDescent << ", " << mLeading << std::endl;
-#if ! ( defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mWidth += 0.5f;
+#else
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
 #endif
 }
@@ -502,21 +492,18 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	
 	// determine the extents for all the lines and the result surface
 #if defined( CINDER_ANDDROID ) || defined( CINDER_LINUX )
-	float totalHeight = 0, maxWidth = 0;
-	bool hasFirstLineOffset = false;
+	float totalHeight = (float)mVerticalBorder;
+	float maxWidth = 0;
 	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		(*lineIt)->calcExtents();
-
-		if( ! hasFirstLineOffset ) {
-			totalHeight += (*lineIt)->mAscent;
-			hasFirstLineOffset = true;
-		}
-
-		totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight + (*lineIt)->mLeadingOffset );
+		//totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight + (*lineIt)->mLeadingOffset );
+		totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight );
 		if( (*lineIt)->mWidth > maxWidth ) {
 			maxWidth = (*lineIt)->mWidth;
 		}
 	}
+
+	maxWidth += 0.5;
 #else
 	float totalHeight = 0, maxWidth = 0;
 	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
@@ -537,8 +524,6 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	// round up from the floating point sizes to get the number of pixels we'll need
 	int pixelWidth = (int)math<float>::ceil( maxWidth ) + mHorizontalBorder * 2;
 	int pixelHeight = (int)math<float>::ceil( totalHeight ) + mVerticalBorder * 2;
-
-std::cout << "TextLayout::render: " << pixelWidth << "x" << pixelHeight << std::endl;
 
 	// Odd failure - return a NULL Surface
 	if( ( pixelWidth < 0 ) || ( pixelHeight < 0 ) )
@@ -611,14 +596,9 @@ std::cout << "TextLayout::render: " << pixelWidth << "x" << pixelHeight << std::
 	ip::fill( &result, mBackgroundColor );
 
 	float currentY = (float)mVerticalBorder;
-	hasFirstLineOffset = false;
 	for( deque<shared_ptr<Line>>::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
-		if( ! hasFirstLineOffset ) {
-			currentY += (*lineIt)->mAscent;
-			hasFirstLineOffset = true;
-		}
-
-		(*lineIt)->render( result, currentY, (float)mHorizontalBorder, (float)pixelWidth );	
+		float adjCurrentY = currentY + (*lineIt)->mAscent + (*lineIt)->mLeadingOffset;
+		(*lineIt)->render( result, adjCurrentY, (float)mHorizontalBorder, (float)pixelWidth );	
 		currentY += (*lineIt)->mHeight;
 	}
 
@@ -1063,13 +1043,16 @@ vector<string> TextBox::calculateLineBreaks() const
 				return true;
 			}
 
+			std::u32string utf32Chars = ci::toUtf32( std::string( line, len ) );
 			int measuredWidth = 0;
 			int currentX = 0;
 			int currentY = 0;
 			FT_Vector pen = { currentX*64, ((mFont->height >> 6) - currentY)*64 };
-			for( size_t i = 0; i < len; ++i ) {
+			for( const auto& ch : utf32Chars ) {
 				FT_Set_Transform( mFont, nullptr, &pen );
-				FT_Load_Char( mFont, line[i], FT_LOAD_RENDER );
+
+				FT_UInt glyphIndex = FT_Get_Char_Index( mFont, ch );
+				FT_Load_Glyph( mFont, glyphIndex, FT_LOAD_DEFAULT );
 
 				FT_Glyph_Metrics& metrics = mFont->glyph->metrics;
 				FT_GlyphSlot slot = mFont->glyph;
@@ -1081,10 +1064,6 @@ vector<string> TextBox::calculateLineBreaks() const
 			}
 
 			bool result = (measuredWidth <= mMaxWidth);
-			if( result ) {
-				//std::cout << measuredWidth << " : " << mMaxWidth << std::endl;
-			}
-
 			return result;
 		}
 
@@ -1097,20 +1076,42 @@ vector<string> TextBox::calculateLineBreaks() const
 	return result;
 }
 
-vector<pair<uint16_t,vec2>> TextBox::measureGlyphs() const
+vector<pair<uint32_t,vec2>> TextBox::measureGlyphs() const
 {
-	vector<pair<uint16_t,vec2> > result;
+	vector<pair<uint32_t,vec2> > result;
 
 	if( mText.empty() ) {
 		return result;
 	}
 
+	FT_Face face = mFont.getFreetypeFace();
 	vector<string> mLines = calculateLineBreaks();
 
-	/*
 	float curY = 0;
 	for( vector<string>::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 
+		//std::cout << "line: " << *lineIt << std::endl;
+
+		std::u32string utf32Chars = ci::toUtf32( *lineIt );
+
+		FT_Vector pen = { 0, 0 };
+		for( const auto& ch : utf32Chars ) {
+			FT_Set_Transform( face, nullptr, &pen );	
+
+			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+			FT_Load_Glyph( face, glyphIndex, FT_LOAD_DEFAULT );
+
+			FT_Glyph_Metrics& metrics = face->glyph->metrics;
+			FT_GlyphSlot slot = face->glyph;
+
+			float xPos = (pen.x / 64.0f) + 0.5f;
+			result.push_back( std::make_pair( (uint32_t)glyphIndex, vec2( xPos, curY ) ) );
+
+			pen.x += slot->advance.x;
+			pen.y += slot->advance.y;	
+		}
+
+		/*
 		std::u16string wideText = toUtf16( *lineIt );
 		gcpResults.lStructSize = sizeof (gcpResults);
 		gcpResults.lpOutString = NULL;
@@ -1150,15 +1151,16 @@ vector<pair<uint16_t,vec2>> TextBox::measureGlyphs() const
 			}
 		}
 		
+		
 		int xPos = 0;
 		for( unsigned int i = 0; i < gcpResults.nGlyphs; i++ ) {
 			result.push_back( std::make_pair( glyphIndices[i], vec2( xPos, curY ) ) );
 			xPos += dx[i];
 		}
+		*/
 
 		curY += mFont.getAscent() + mFont.getDescent();
 	}
-	*/
 
 	return result;
 }

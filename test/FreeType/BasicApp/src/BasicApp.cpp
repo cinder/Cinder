@@ -59,8 +59,10 @@ void BasicApp::setup()
 
 		std::string utf8 = "PpGgQqJjYy ILKM O891";
 
+		bool tightFit = true;
+
 		FT_Face face = mFont.getFreetypeFace();
-		Measure bounds = MeasureString( utf8, face );
+		Measure bounds = MeasureString( utf8, face, tightFit );
 		std::cout << "bounds     : " << bounds << std::endl;
 		std::cout << "   .width  : " << bounds.getSize().x << std::endl;
 		std::cout << "   .height : " << bounds.getSize().y << std::endl;
@@ -68,7 +70,7 @@ void BasicApp::setup()
 		std::cout << "face asc   : " << (face->ascender / 64.0f) << std::endl;
 		std::cout << "face desc  : " << (face->descender / 64.0f) << std::endl;
 
-		mBitmap = RenderString( utf8, face );
+		mBitmap = RenderString( utf8, face, tightFit );
 
 		mFullBounds = Rectf( 0, -1, bounds.getWidth() + 1, bounds.getHeight() );
 		mBaseline = bounds.getBaseline();
@@ -117,6 +119,7 @@ void BasicApp::draw()
 	gl::color( 1.0f, 0.0f, 0.0f );
 	gl::drawLine( mBaseline + offset, mBaseline + ivec2( mFullBounds.getWidth(), 0 ) + offset );
 
+/*
 	gl::lineWidth( 3.0f );
 	gl::color( 1.0f, 0.0f, 1.0f );
 	gl::drawLine( 
@@ -131,7 +134,7 @@ void BasicApp::draw()
 		mBaseline + mDescender + offset + ivec2( 0.25f*mFullBounds.getWidth() + 20, 0 ),
 		mBaseline + mDescender + mLinegap + offset + ivec2( 0.25f*mFullBounds.getWidth() + 20, 0 )
 	);
-
+*/
 
 	for( const auto& r : mBounds ) {
 		gl::drawStrokedRect( r );

@@ -54,7 +54,7 @@ private:
 	ivec2	mBaseline;
 };
 
-Measure MeasureString( const std::string& utf8, FT_Face face, bool tightFit = false )
+inline Measure MeasureString( const std::string& utf8, FT_Face face, bool tightFit = false )
 {
 	const int kBaselineX = 0;
 	const int kBaselineY = 0;
@@ -117,7 +117,7 @@ Measure MeasureString( const std::string& utf8, FT_Face face, bool tightFit = fa
 } 
 
 
-void DrawBitmap( 
+inline void DrawBitmap( 
 	const ivec2&		offset,
 	FT_Bitmap*			bitmap, 
 	const ci::ColorA8u&	color, 
@@ -159,14 +159,14 @@ void DrawBitmap(
 	}
 }
 
-ci::SurfaceRef RenderString( const std::string& utf8, FT_Face face )
+// For debug
+inline ci::SurfaceRef RenderString( const std::string& utf8, FT_Face face, bool tightFit = false )
 {
 	ci::SurfaceRef result;
 
-	Measure measure = MeasureString( utf8, face );
+	Measure measure = MeasureString( utf8, face, tightFit );
 	if( measure.getSize().x > 0 && measure.getSize().y > 0 ) {
 		result = ci::Surface::create( measure.getSize().x, measure.getSize().y, true );
-std::cout << "Created surface: " << result->getWidth() << "x" << result->getHeight() << std::endl;
 
 		ci::ColorA8u color		= ci::ColorA8u( 255, 255, 255, 255 );
 		ivec2 surfaceSize		= result->getSize();
@@ -193,101 +193,6 @@ std::cout << "Created surface: " << result->getWidth() << "x" << result->getHeig
 			pen.x += slot->advance.x;
 			pen.y += slot->advance.y;
 		}
-	}
-
-	return result;
-}
-
-struct Box { 
-	int x1, y1, x2, y2;
-	Box( int ax1, int ay1, int ax2, int ay2 ) : x1(ax1), y1(ay1), x2(ax2), y2(ay2) {}
-	int getWidth() const { return (x2 - x1); }
-	int getHeight() const { return (y2 - y1); }
-	ci::Rectf toRect() const { return ci::Rectf( x1, y1, x2, y2 ); }
-	friend std::ostream& operator<<( std::ostream& os, const Box& obj ) {
-		os << "[" << obj.x1 << ", " << obj.y1 << "]-(" << obj.x2 << ", " << obj.y2 << ")";
-		return os;
-	}
-};
-
-Box CalcBounds( const std::string& text, FT_Face face, int baseLineX = 0, int baseLineY = 0 )
-{
-	Box result = { 0, 0, 0, 0 };
-
-	const int kMaxPixHeight = 65535;
-	FT_Vector pen = { baseLineX*64, (kMaxPixHeight - baseLineY)*64 };
-
-	bool hasInitial = false;
-	for( const auto ch : text ) {
-		FT_Set_Transform( face, nullptr, &pen );
-
-		FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
-		FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
-		if( error ) {
-		  continue;  
-		} 
-
-		FT_GlyphSlot slot = face->glyph;
-		int glyphPixWidth  = (int)((slot->metrics.width / 64.0f) + 0.5f);
-		int glyphPixHeight = (int)((slot->metrics.height / 64.0f) + 0.5f);
-		int x1 = slot->bitmap_left;
-		int y1 = (kMaxPixHeight - slot->bitmap_top);
-		int x2 = x1 + glyphPixWidth;
-		int y2 = y1 + glyphPixHeight;
-
-		if( ! hasInitial ) {
-			result.x1 = x1;
-			result.y1 = baseLineY;
-			result.x2 = x2;
-			result.y2 = baseLineY;
-			hasInitial = true;
-		}
-
-		result.x2 = x2;
-		// Only readjust if the glyph has a size greater than zero.
-		// Certain characters like spaces will be zero.
-		if( ( glyphPixWidth > 0 ) && ( glyphPixHeight > 0 ) ) {
-			result.y1 = std::min( result.y1, y1 );
-			result.y2 = std::max( result.y2, y2 );
-		}
-
-		pen.x += slot->advance.x;
-		pen.y += slot->advance.y;
-	}
-
-	return result;
-}
-
-std::vector<Box> CalcGlyphBounds( const std::string& strU8, FT_Face face, int baseLineX = 0, int baseLineY = 0 )
-{
-	std::vector<Box> result;
-
-	const int kMaxPixHeight = 65535;
-	FT_Vector pen = { baseLineX*64, (kMaxPixHeight - baseLineY)*64 };
-
-	std::u32string strU32 = ci::toUtf32( strU8 );
-
-	for( const auto& ch : strU32 ) {
-		FT_Set_Transform( face, nullptr, &pen );
-
-		FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
-		FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
-		if( error ) {
-		  continue;  
-		} 
-
-		FT_GlyphSlot slot = face->glyph;
-		int glyphPixWidth  = slot->metrics.width >> 6;
-		int glyphPixHeight = slot->metrics.height >> 6;
-		int x1 = slot->bitmap_left;
-		int y1 = (kMaxPixHeight - slot->bitmap_top);
-		int x2 = x1 + glyphPixWidth;
-		int y2 = y1 + glyphPixHeight;
-
-		result.push_back( Box( x1, y1, x2, y2 ) ); 
-		
-		pen.x += slot->advance.x;
-		pen.y += slot->advance.y;
 	}
 
 	return result;

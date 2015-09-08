@@ -564,19 +564,33 @@ std::string Font::getFullName() const
 	return mObj->mName;
 }
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+float Font::getLinespace() const
+{
+	const FT_Size_Metrics& metrics  = mObj->mFace->size->metrics;
+	return (float)(metrics.height / 64.0f);		
+}
+#endif
+
 float Font::getLeading() const
 {
-	return (float)((mObj->mFace->height - (abs( mObj->mFace->ascender ) + abs( mObj->mFace->descender))) >> 6);
+	const FT_Size_Metrics& metrics  = mObj->mFace->size->metrics;
+	return (float)((metrics.height  - (std::abs(metrics.ascender) + std::abs(metrics.descender))) / 64.0f);
+	//return (float)((mObj->mFace->height - (abs( mObj->mFace->ascender ) + abs( mObj->mFace->descender))) >> 6);
 }
 
 float Font::getAscent() const
 {
-	return (float)(mObj->mFace->ascender >> 6);
+	const FT_Size_Metrics& metrics  = mObj->mFace->size->metrics;
+	return std::fabs( metrics.ascender / 64.0f );
+	//return (float)(mObj->mFace->ascender >> 6);
 }
 
 float Font::getDescent() const
 {
-	return (float)(abs( mObj->mFace->descender ) >> 6);
+	const FT_Size_Metrics& metrics  = mObj->mFace->size->metrics;
+	return std::fabs( metrics.descender / 64.0f );
+	//return (float)(abs( mObj->mFace->descender ) >> 6);
 }
 
 size_t Font::getNumGlyphs() const
@@ -669,15 +683,24 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 
 Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
 {
-	FT_Load_Glyph(mObj->mFace, glyphIndex, FT_LOAD_DEFAULT);
-	FT_GlyphSlot glyph = mObj->mFace->glyph;
-	FT_Glyph_Metrics &metrics = glyph->metrics;
+	FT_Load_Glyph( mObj->mFace, glyphIndex, FT_LOAD_DEFAULT );
+	const FT_GlyphSlot& glyph = mObj->mFace->glyph;
+	const FT_Glyph_Metrics& metrics = glyph->metrics;
+	return Rectf(
+		((metrics.horiBearingX / 64.0f) + 0.5f),
+		(((metrics.horiBearingY - metrics.height) / 64.0f) + 0.5f),
+		(((metrics.horiBearingX + metrics.width) / 64.0f) + 0.5f),
+		((metrics.horiBearingY / 64.0f) + 0.5f)
+	);
+
+	/*
 	return Rectf(
 		(float)(metrics.horiBearingX >> 6),
 		(float)((metrics.horiBearingY - metrics.height) >> 6),
 		(float)((metrics.horiBearingX + metrics.width) >> 6),
 		(float)(metrics.horiBearingY >> 6)
 	);
+	*/
 }
 
 #endif

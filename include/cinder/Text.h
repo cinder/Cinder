@@ -131,7 +131,11 @@ class TextBox {
 	vec2									measure() const;
 	/** Returns a vector of pairs of glyph indices and the position of their left baselines
 		\warning Does not support word wrapping on Windows. **/
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	std::vector<std::pair<uint32_t,vec2>>	measureGlyphs() const;
+#else	
 	std::vector<std::pair<uint16_t,vec2> >	measureGlyphs() const;
+#endif
 
 	Surface				render( vec2 offset = vec2() );
 
