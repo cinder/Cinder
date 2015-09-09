@@ -154,7 +154,7 @@ struct ScopedTextureBind : private Noncopyable {
 	ScopedTextureBind( const Texture2dRef &texture, uint8_t textureUnit );
 #if ! defined( CINDER_GL_ES )
 	ScopedTextureBind( const Texture1dRef &texture, uint8_t textureUnit );
-#endif
+#endif // ! defined( CINDER_GL_ES )
 #if ! defined( CINDER_GL_ES_2 )
 	ScopedTextureBind( const Texture3dRef &texture, uint8_t textureUnit );
 #endif // ! defined( CINDER_GL_ES_2 )
