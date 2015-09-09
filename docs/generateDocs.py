@@ -204,7 +204,7 @@ class SymbolMap(object):
             self.name = strip_compound_name(self.qualifiedName)
             self.path = class_tree.find('filename').text
             self.base = class_tree.find('base').text if class_tree.find('base') is not None else ""
-            self.is_template = True if class_tree.find('templarg') else False
+            self.is_template = True if class_tree.find('templarg') is not None else False
 
             self.functionList = []
             self.relatedLinks = []
@@ -282,7 +282,7 @@ class SymbolMap(object):
             if len(rel_path_arr) > 1:
                 self.githubPath = config.GITHUB_PATH + self.path.split(PARENT_DIR)[-1]
             else:
-                print "NO PATH FOR " + name
+                log("NO PATH FOR " + name, 1 )
 
     class Enum(object):
         def __init__(self, name, path):
@@ -1282,7 +1282,7 @@ def define_link_tag(tag, attrib):
         href = file_name + "#" + anchor
 
     if href is None:
-        print "\t *** WARNING DEFINING LINK TAG: " + str(tag)
+        log("DEFINING LINK TAG: " + str(tag), 1)
     else:
         tag["href"] = href
 
@@ -1674,7 +1674,7 @@ def inject_html(src_content, dest_el, src_path, dest_path):
             if type(content) is Tag:
                 dest_el.append(content)
     except AttributeError as e:
-        print "\t*** Error appending html content to element *** [ " + e.message + " ]"
+        log("appending html content to element [ " + e.message + " ]", 2)
 
 
 
@@ -1865,7 +1865,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
         log("Skipping " + in_path, 1)
         return
 
-    print "Processing file: " + in_path + " > " + out_path
+    log_progress('Processing file: ' + str(in_path))
 
     # Generate the html file from the template and inject content
     file_content = file_data.get_content()
@@ -1880,7 +1880,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
     update_links_abs(bs4, TEMPLATE_PATH)
 
     if not bs4:
-        print log("Skipping class due to something nasty. Bother Greg and try again some other time. Error rendering: " + in_path, 2)
+        log("Skipping class due to something nasty. Bother Greg and try again some other time. Error rendering: " + in_path, 2)
         return
 
     # print output
@@ -2262,7 +2262,7 @@ def process_html_file(in_path, out_path):
     - Copy original css and js links into new hmtl
     - Save html in destination dir
     """
-    log("processHtmlFile: " + in_path)
+    log_progress('Processing file: ' + str(in_path))
 
     # relative path in relation to the in_path (htmlsrc/)
     local_rel_path = os.path.relpath(in_path, HTML_SOURCE_PATH)
@@ -2373,7 +2373,7 @@ def process_html_file(in_path, out_path):
     update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", in_path, out_path)
 
     if bs4 is None:
-        print log("Error generating file, so skipping: " + in_path, 2)
+        log("Error generating file, so skipping: " + in_path, 2)
         return
 
     # get list of all the css and js links in the new bs4
@@ -2471,7 +2471,7 @@ def generate_dynamic_markup(ref_data):
         return_markup = generate_class_list_data()
     else:
         return_markup = "NOTHING FOUND"
-        print "\t*** No rules for generating dynamic content for id'" + ref_id + "' was found"
+        log("No rules for generating dynamic content for id'" + ref_id + "' was found", 1)
 
     # plug data into template (if it exists)
     template_path = os.path.join(TEMPLATE_PATH, ref_data["template"])
@@ -2582,7 +2582,7 @@ def replace_ci_tag(bs4, link, in_path, out_path):
         add_class_to_tag(new_link, "ci")
         link.replace_with(new_link)
     else:
-        print "\t** Warning: Could not find replacement tag for ci tag: " + str(link)
+        log("Could not find replacement tag for ci tag: " + str(link), 1)
 
 
 def process_ci_seealso_tag(bs4, tag, out_path):
@@ -2614,7 +2614,7 @@ def process_ci_seealso_tag(bs4, tag, out_path):
         for class_obj in g_symbolMap.find_classes_in_namespace(ref_obj.name):
             class_obj.add_related_link(link_data)
     else:
-        print "\t** WARNING: Could not find seealso reference for " + str(tag)
+        log("Could not find seealso reference for " + str(tag), 1)
 
 
 def process_ci_prefix_tag(bs4, tag, in_path):
@@ -2704,8 +2704,8 @@ def find_ci_tag_ref(link):
                     count += 1
 
     except Exception as e:
-        print "\t** WARNING: problem finding ci tag"
-        print "\t" + e.message
+        log("problem finding ci tag", 1)
+        log(e.message, 1)
         return None
 
     return ref_obj
@@ -2839,12 +2839,12 @@ def update_links(html, template_path, src_path, save_path):
                 if SM(None, src_file, dest_file).ratio() < 1.0:
                     shutil.copy2(src_file, dest_file)
             except IOError as e:
-                print "\t ** ERROR: Cannot copy src_file because it doesn't exist"
-                print e.strerror
+                log("Cannot copy src_file because it doesn't exist", 2)
+                log(e.strerror, 2)
                 return
             except Exception as e:
-                print "\t ** ERROR: Cannot copy iframe over because of some other error"
-                print e.strerror
+                log("Cannot copy iframe over because of some other error", 2)
+                log(e.strerror)
                 return
 
 
@@ -2917,7 +2917,7 @@ def get_symbol_to_file_map():
     """
     Returns a dictionary from Cinder class name to file path
     """
-    print "generating symbol map from tag file"
+    log("generating symbol map from tag file", 0, True)
     symbol_map = SymbolMap()
 
 
@@ -2968,7 +2968,7 @@ def get_symbol_to_file_map():
 
         # skip over blacklisted classes that belong to a blacklisted namespace
         if any(name.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
-            print "SKIPPING " + name
+            log("SKIPPING " + name, 1)
             continue
 
         symbol_map.classes[name] = struct_obj
@@ -2999,7 +2999,7 @@ def get_symbol_to_file_map():
 
         # skip over blacklisted classes that belong to a blacklisted namespace
         if any(namespace_name.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
-            print "SKIPPING " + namespace_name
+            log("SKIPPING NAMESPACE: " + namespace_name, 1)
             continue
 
         ns_obj = SymbolMap.Namespace(namespace_name, file_name)
@@ -3086,7 +3086,7 @@ def get_symbol_to_file_map():
                 group_obj.subgroups.append(subgroup)
 
     if len(file_tags) == 0:
-        print "\t** Warning: no compound of type 'file' found in tag file. Check doxygen SHOW_FILES setting."
+        log("no compound of type 'file' found in tag file. Check doxygen SHOW_FILES setting.", 1)
 
     return symbol_map
 
@@ -3162,10 +3162,8 @@ def parse_xml(in_path):
 
     except:
         exc = sys.exc_info()[0]
-        print "\n--- PARSE ERROR ---"
-        print "COULD NOT PARSE FILE: " + in_path
-        print exc
-        print "-------------------\n"
+        log("COULD NOT PARSE FILE: " + in_path, 2)
+        log(exc, 2)
     return tree
 
 
@@ -3425,7 +3423,7 @@ def copy_files():
     try:
         copytree(src, dest, ignore=shutil.ignore_patterns("_templates*", "*.html"))
     except OSError as e:
-        print('Directory not copied. Error: %s' % e)
+        log('Directory not copied. Error:' + str(e))
 
 
 # from http://stackoverflow.com/a/22331852/680667
@@ -3481,7 +3479,7 @@ def load_meta():
             file_meta["cinder_version"] = ver
 
 
-def log(message, level=0):
+def log(message, level=0, force=False):
     if level == 0 or not level:
         message_prefix = "INFO"
     elif level == 1:
@@ -3489,7 +3487,14 @@ def log(message, level=0):
     elif level == 2:
         message_prefix = "ERROR"
 
-    print("\t*** " + message_prefix + ": [ " + message + " ] ***")
+    if args.debug or force:
+        print("\r    *** " + message_prefix + ": [ " + message + " ] ***")
+
+
+def log_progress(message):
+    sys.stdout.write('\r' + str(message))
+    sys.stdout.write("\033[K")
+    sys.stdout.flush()
 
 
 if __name__ == "__main__":
@@ -3529,34 +3534,35 @@ if __name__ == "__main__":
     load_meta()
 
     # Load tag file
-    log("parsing tag file")
+    log("parsing tag file", 0, True)
     g_tag_xml = ET.ElementTree(ET.parse(TAG_FILE_PATH).getroot())
     # generate symbol map from tag file
     g_symbolMap = get_symbol_to_file_map()
 
     # copy files from htmlsrc/ to html/
-    log("copying files")
+    log("copying files", 0, True)
     copy_files()
 
     # generate namespace navigation
     g_namespaceNav = generate_namespace_nav()
 
+    log("processing files", 0, True)
     if not args.path: # no args; run all docs
         # process_html_dir(HTML_SOURCE_PATH, "html/")
         process_dir("xml/", "html/")
-        log("SUCCESSFULLY GENERATED CINDER DOCS!")
+        log("SUCCESSFULLY GENERATED CINDER DOCS!", 0, True)
     elif args.path:
         inPath = args.path
         # process a specific file
         if os.path.isfile(inPath):
             process_file(inPath, args.outpath if len(sys.argv) > 2 else None)
-            log("SUCCESSFULLY GENERATED YOUR FILE!")
+            log("SUCCESSFULLY GENERATED YOUR FILE!", 0, True)
         elif os.path.isdir(inPath):
             # print isdir
             if inPath == "htmlsrc/":
                 process_html_dir(HTML_SOURCE_PATH)
             else:
                 process_dir(inPath, "html/")
-            log("SUCCESSFULLY GENERATED YOUR FILES!")
+            log("SUCCESSFULLY GENERATED YOUR FILES!", 0, True)
     else:
-        print "Unknown usage"
+        log("Unknown usage", 1, True)
