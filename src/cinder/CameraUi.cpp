@@ -213,8 +213,7 @@ void CameraUi::mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown,
 		rotatedVec = glm::angleAxis( deltaX, mInitialCam.getWorldUp() ) * rotatedVec;
 
 		mCamera->setEyePoint( mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialPivotDistance + rotatedVec );
-		mCamera->setOrientation( glm::angleAxis( deltaX, mInitialCam.getWorldUp() ) * glm::angleAxis(deltaY, mU) * mInitialCam.getOrientation());
-
+		mCamera->setOrientation( glm::angleAxis( deltaX, mInitialCam.getWorldUp() ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
 	}
 	
 	mSignalCameraChange.emit();
