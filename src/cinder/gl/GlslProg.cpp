@@ -599,7 +599,7 @@ GlslProg::GlslProg( const Format &format )
 			}
 		}
 		if( ! active ) {
-			CI_LOG_E( "Unknown attribute: \"" << userAttrib.mName << "\"" );
+			CI_LOG_W( "Unknown attribute: \"" << userAttrib.mName << "\"" );
 		}
 	}
     
@@ -1177,7 +1177,7 @@ void GlslProg::uniformBlock( int loc, int binding )
 		}
 	}
 	else {
-		CI_LOG_E( "Uniform block at " << loc << " location not found" );
+		CI_LOG_W( "Uniform block at " << loc << " location not found" );
 	}
 }
 
@@ -1191,7 +1191,7 @@ void GlslProg::uniformBlock( const std::string &name, GLint binding )
 		}
 	}
 	else {
-		CI_LOG_E( "Uniform block \"" << name << "\" not found" );
+		CI_LOG_W( "Uniform block \"" << name << "\" not found" );
 	}
 }
 
