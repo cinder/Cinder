@@ -88,10 +88,10 @@ class FrustumT {
 	bool intersects( const AxisAlignedBox &box ) const;
 
 	//! Returns a const reference to the Plane associated with /a section of the Frustum.
-	const Plane<T>& getPlane( FrustumSection section ) const { return mFrustumPlanes[section]; }
+	const PlaneT<T>& getPlane( FrustumSection section ) const { return mFrustumPlanes[section]; }
 	
   protected:
-	Plane<T>	mFrustumPlanes[6];
+	PlaneT<T>	mFrustumPlanes[6];
 };
 
 typedef FrustumT<float>		Frustum;
