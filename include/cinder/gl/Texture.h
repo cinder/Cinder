@@ -623,9 +623,9 @@ class Texture2d : public TextureBase {
 	void	initData( const void *data, GLenum dataFormat, const Format &format );
 	void	initData( const ImageSourceRef &imageSource, const Format &format );
 #if ! defined( CINDER_GL_ES )
-	void	initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo );
+	void	initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, GLint dataType, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo );
 #endif
-	void	initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray );
+	void	initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, GLint dataType, ImageIo::ChannelOrder channelOrder, bool isGray );
 
 	ivec2		mActualSize; // true texture size in pixels, as opposed to clean bounds
 	Area		mCleanBounds; // relative to upper-left origin regardless of top-down
