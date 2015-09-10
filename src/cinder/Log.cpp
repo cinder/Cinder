@@ -47,25 +47,6 @@ using namespace std;
 
 namespace cinder { namespace log {
 
-class LoggerImplMulti : public Logger {
-public:
-
-	void add( Logger *logger )							{ mLoggers.push_back( std::unique_ptr<Logger>( logger ) ); }
-	void add( std::unique_ptr<Logger> &&logger )		{ mLoggers.emplace_back( move( logger ) ); }
-
-	template <typename LoggerT>
-	LoggerT* findType();
-
-	void remove( Logger *logger );
-
-	const vector<unique_ptr<Logger> >& getLoggers() const	{ return mLoggers; }
-
-	void write( const Metadata &meta, const std::string &text ) override;
-
-private:
-	vector<unique_ptr<Logger> >	mLoggers; // TODO: make set? don't want duplicates
-};
-
 namespace  {
 
 // output format is YYYY-MM-DD.HH:mm:ss
@@ -123,7 +104,7 @@ void LogManager::resetLogger( Logger *logger )
 
 	mLogger.reset( logger );
 
-	LoggerImplMulti *multi = dynamic_cast<LoggerImplMulti *>( logger );
+	LoggerMulti *multi = dynamic_cast<LoggerMulti *>( logger );
 	mLoggerMulti = multi ? multi : nullptr;
 
 	mConsoleLoggingEnabled = mFileLoggingEnabled = mSystemLoggingEnabled = false;
@@ -134,7 +115,7 @@ void LogManager::addLogger( Logger *logger )
 	lock_guard<mutex> lock( mMutex );
 
 	if( ! mLoggerMulti ) {
-		auto loggerMulti = unique_ptr<LoggerImplMulti>( new LoggerImplMulti );
+		auto loggerMulti = unique_ptr<LoggerMulti>( new LoggerMulti );
 		loggerMulti->add( move( mLogger ) );
 		mLoggerMulti = loggerMulti.get();
 		mLogger = move( loggerMulti );
@@ -344,22 +325,10 @@ void LoggerConsole::write( const Metadata &meta, const string &text )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerImplMulti
+// MARK: - LoggerMulti
 // ----------------------------------------------------------------------------------------------------
 
-template <typename LoggerT>
-LoggerT* LoggerImplMulti::findType()
-{
-	for( const auto &logger : mLoggers ) {
-		auto result = dynamic_cast<LoggerT *>( logger.get() );
-		if( result )
-			return result;
-	}
-
-	return nullptr;
-}
-
-void LoggerImplMulti::remove( Logger *logger )
+void LoggerMulti::remove( Logger *logger )
 {
 	mLoggers.erase( remove_if( mLoggers.begin(), mLoggers.end(),
 							  [logger]( const std::unique_ptr<Logger> &o ) {
@@ -368,7 +337,7 @@ void LoggerImplMulti::remove( Logger *logger )
 				   mLoggers.end() );
 }
 
-void LoggerImplMulti::write( const Metadata &meta, const string &text )
+void LoggerMulti::write( const Metadata &meta, const string &text )
 {
 	for( auto &logger : mLoggers )
 		logger->write( meta, text );
