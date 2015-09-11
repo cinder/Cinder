@@ -133,7 +133,7 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 	else
 		mInternalFormat = format.mInternalFormat;
 
-	if( format.mDataType == -1 )
+	if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) )
 		format.mDataType = defaultDataType;
 
 	// Swizzle mask
@@ -1026,7 +1026,7 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 	: mActualSize( -1, -1 ), mCleanBounds( 0, 0, -1, -1 ),
 	mTopDown( false )
 {
-	GLint defaultInternalFormat;	
+	GLint defaultInternalFormat;
 	// Set the internal format based on the image's color space
 	switch( imageSource->getColorModel() ) {
 		case ImageIo::CM_RGB:
