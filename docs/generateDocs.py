@@ -77,9 +77,9 @@ class Config(object):
         # break on errors that would prevent the file from being generated
         self.BREAK_ON_STOP_ERRORS = True
         # whitelisted namespaces to generate pages for
-        self.NAMESPACE_WHITELIST = ["ci"]
+        self.NAMESPACE_WHITELIST = ["ci", "glm"]
         # blacklisted namespaces to generate pages for
-        self.NAMESPACE_BLACKLIST = ["cinder::signals::detail", "cinder::audio::dsp::ooura", "cinder::detail"]
+        self.NAMESPACE_BLACKLIST = ["cinder::signals::detail", "cinder::audio::dsp::ooura", "cinder::detail", "glm::detail", "glm::gtc", "glm::gtx", "glm::io"]
         # blacklisted class strings - any class containing these strings will be skipped
         self.CLASS_LIST_BLACKLIST = ["glm", "@"]
         # cinder github repo path
@@ -1307,7 +1307,8 @@ def parse_member_definition(bs4, member, member_name=None):
 
     # if id has a glm group key, replace link with <em>. The links are irrelevent atm
     if any(member.attrib["id"].find(group_key) > -1 for group_key in config.GLM_MODULE_CONFIG["group_keys"]):
-        replace_element(bs4, return_markup.a, "em")
+        if return_markup:
+            replace_element(bs4, return_markup.a, "em")
 
     return_str = str(return_markup)
 
@@ -1847,12 +1848,13 @@ def process_xml_file_definition(in_path, out_path, file_type):
         body_class = "classes"
 
     elif file_type == "namespace":
-        if any(in_path.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
+        if any(in_path.find(blacklisted) > -1 for blacklisted in config.NAMESPACE_BLACKLIST):
             log("Skipping file | Namespace " + in_path + " blacklisted", 0)
             return
 
         html_template = config.NAMESPACE_TEMPLATE
         file_data = fill_namespace_content(tree)
+
         section = "namespaces"
         body_class = "namespaces"
 
@@ -2104,6 +2106,10 @@ def fill_namespace_content(tree):
     file_data = NamespaceFileData(tree)
     ns_def = g_symbolMap.find_namespace(file_data.name)
 
+    # return result of special glm namespace content filling
+    if ns_def.name == "glm":
+        return fill_glm_namespace_content(tree)
+
     # page title ---------------------------------------- #
     file_data.title = file_data.name
 
@@ -2183,6 +2189,52 @@ def fill_namespace_content(tree):
     return file_data
 
 
+def fill_glm_namespace_content(tree):
+    '''
+    Special function for filling out the glm namespace page which has specialized filtered content
+    :param tree:
+    :return:
+    '''
+    bs4 = BeautifulSoup()
+
+    if tree is None:
+        return
+
+    # get common data for the file
+    file_data = NamespaceFileData(tree)
+    ns_def = g_symbolMap.find_namespace(file_data.name)
+
+    # page title ---------------------------------------- #
+    file_data.title = file_data.name
+
+    # add namespace nav --------------------------------- #
+    file_data.namespace_nav = str(g_namespaceNav)
+
+    # add typedefs -------------------------------------- #
+    typedefs = []
+    ignore_list = ["lowp", "mediump", "highp"]
+    for member in tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']"):
+        member_name = member.find(r"name").text
+        print any(member_name.startswith(blacklisted) > 0 for blacklisted in ignore_list)
+        if any(member_name.startswith(blacklisted) > 0 for blacklisted in ignore_list):
+            # skip this blacklisted typedef
+            continue
+
+        typedef_obj = parse_member_definition(bs4, member)
+        typedefs.append(typedef_obj)
+    file_data.typedefs = typedefs
+
+    # define search tags
+    if ns_def:
+        file_data.search_tags = ns_def.tags
+    else:
+        file_data.search_tags = []
+
+    file_data.search_tags.extend(["namespace"])
+
+    return file_data
+
+
 def fill_group_content(tree, module_config):
     bs4 = BeautifulSoup()
     file_data = GroupFileData(tree, module_config)
@@ -2233,7 +2285,7 @@ def fill_group_content(tree, module_config):
     #     member_obj = parse_enum(bs4, e)
     #     enumerations.append(member_obj)
     # file_data.enumerations = enumerations
-    #
+
     # public member Functions --------------------------- #
     public_fns = []
     public_static_fns = []
@@ -2998,7 +3050,7 @@ def get_symbol_to_file_map():
             continue
 
         # skip over blacklisted classes that belong to a blacklisted namespace
-        if any(namespace_name.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
+        if any(namespace_name.find(blacklisted) > -1 for blacklisted in config.NAMESPACE_BLACKLIST):
             log("SKIPPING NAMESPACE: " + namespace_name, 1)
             continue
 
