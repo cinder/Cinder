@@ -372,7 +372,11 @@ void Line::render( Surface &surface, float currentY, float xBorder, float maxWid
 		currentX = ( maxWidth - mWidth ) / 2.0f;
 	}
 	else if( mJustification == RIGHT ) {
+  #if defined( CINDER_ANDROID )
+		currentX = maxWidth - (mWidth + 1.0f) - xBorder;
+  #else
 		currentX = maxWidth - mWidth - xBorder;
+  #endif		
 	}
 
 	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
@@ -508,7 +512,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	maxWidth += 0.5f;
 
   #if defined( CINDER_ANDROID )
-	totalHeight += 2.0f;
+	totalHeight += 1.0f;
   #endif
 #else
 	float totalHeight = 0, maxWidth = 0;

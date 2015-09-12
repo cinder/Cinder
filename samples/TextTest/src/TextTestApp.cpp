@@ -41,7 +41,7 @@ void TextTestApp::setup()
 	std::string boldFont( "Arial-BoldMT" );
 	std::string differentFont( "AmericanTypewriter" );
 #elif defined( CINDER_ANDROID )
-	std::string normalFont( " MotoyaLMaru W3 mono" );
+	std::string normalFont( "MotoyaLMaru W3 mono" );
 	std::string boldFont( "Roboto Bold" );
 	std::string differentFont( "Dancing Script" );
 #elif defined( CINDER_LINUX )
@@ -83,7 +83,6 @@ void TextTestApp::setup()
 		layout.addLine( " • Back to regular leading but translucent" );
 		Surface8u rendered = layout.render( true, PREMULT );
 		mTexture = gl::Texture2d::create( rendered );
-		console() << "mTexture: " << mTexture->getSize() << std::endl;
 	}
 	catch( const std::exception& e ) {
 		console() << "ERROR: " << e.what () << std::endl;
