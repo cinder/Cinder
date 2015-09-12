@@ -54,54 +54,6 @@ void TextTestApp::setup()
 	std::string differentFont( "Papyrus" );
 #endif
 
-/*
-#if defined( CINDER_ANDROID )
-
-	Font font = Font( "Roboto Regular", 24.0f );
-
-	std::string normalFont = "/system/fonts/Roboto-Regular.ttf";
-	std::string boldFont = "/system/fonts/Roboto-Regular.ttf";
-	std::string differentFont = "/system/fonts/Roboto-Regular.ttf";
-
-	try {
-		// Japanese
-		unsigned char japanese[] = { 0xE6, 0x97, 0xA5, 0xE6, 0x9C, 0xAC, 0xE8, 0xAA, 0x9E, 0 };
-		// this does a complicated layout
-		TextLayout layout;
-		layout.clear( ColorA( 0.2f, 0.2f, 0.2f, 0.2f ) );
-		layout.setFont( Font( loadFile( normalFont ), 24 ) );
-		layout.setColor( Color( 1, 1, 1 ) );
-		layout.addLine( std::string( "Unicode: " ) + (const char*)japanese );
-		layout.setColor( Color( 0.5f, 0.25f, 0.8f ) );
-		layout.setFont( Font( loadFile( boldFont ), 12 ) );
-		layout.addRightLine( "Now is the time" );
-		layout.setFont( Font( loadFile( normalFont ), 22 ) );
-		layout.setColor( Color( 0.75f, 0.25f, 0.6f ) );
-		layout.append( " for all good men" );
-		layout.addCenteredLine( "center justified" );
-		layout.addRightLine( "right justified" );
-		layout.setFont( Font( loadFile( differentFont ), 24 ) );
-		layout.addCenteredLine( "A different font" );
-		layout.setFont( Font( loadFile( normalFont ), 22 ) );
-		layout.setColor( Color( 1.0f, 0.5f, 0.25f ) );
-		layout.addLine( " • Point 1 " );
-		layout.setLeadingOffset( -10 );
-		layout.addLine( " • Other point with -10 leading offset " );
-		layout.setLeadingOffset( 0 );
-		layout.setColor( ColorA( 0.25f, 0.5f, 1, 0.5f ) );
-		layout.addLine( " • Back to regular leading but translucent" );
-
-		Surface8u rendered = layout.render( true, PREMULT );
-		mTexture = gl::Texture2d::create( rendered );
-
-		console() << "Rendered texture!: " << mTexture->getSize() << std::endl;
-	}
-	catch( const std::exception& e ) {
-		console() << "ERROR: " << e.what () << std::endl;
-	}
-#else
-*/
-
 	try {
 		// Japanese
 		unsigned char japanese[] = { 0xE6, 0x97, 0xA5, 0xE6, 0x9C, 0xAC, 0xE8, 0xAA, 0x9E, 0 };
@@ -131,18 +83,14 @@ void TextTestApp::setup()
 		layout.addLine( " • Back to regular leading but translucent" );
 		Surface8u rendered = layout.render( true, PREMULT );
 		mTexture = gl::Texture2d::create( rendered );
-
-		console() << "Rendered texture!: " << mTexture->getSize() << std::endl;
 	}
 	catch( const std::exception& e ) {
 		console() << "ERROR: " << e.what () << std::endl;
 	}
 
-//#endif
-
 	try {
 		// Create a custom font by loading it from a resource
-		Font customFont( loadAsset( "Saint-Andrews Queen.ttf" ), 72 );
+		Font customFont( loadResource( "Saint-Andrews Queen.ttf" ), 72 );
 		console() << "This font is called " << customFont.getFullName() << std::endl;
 
 		TextLayout simple;
@@ -151,7 +99,6 @@ void TextTestApp::setup()
 		simple.addLine( "Cinder" );
 		simple.addLine( "Font From Resource" );
 		mSimpleTexture = gl::Texture2d::create( simple.render( true, PREMULT ) );
-		console() << "Rendered simple!: " << mSimpleTexture->getSize() << std::endl;
 	}
 	catch( const std::exception& e ) {
 		console() << "ERROR: " << e.what () << std::endl;
@@ -167,7 +114,11 @@ void TextTestApp::draw()
 
 	gl::enableAlphaBlending( PREMULT );
 
+#if defined( CINDER_ANDROID )
 	vec2 offset = vec2( 0, 60 );
+#else
+	vec2 offset = vec2( 0 );
+#endif
 
 	gl::color( Color::white() );
 	if( mTexture ) {

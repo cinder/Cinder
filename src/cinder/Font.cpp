@@ -943,13 +943,16 @@ FontObj::FontObj( const string &aName, float aSize )
 	}
 
 	mFileData = dataSource->getBuffer();
-	FT_New_Memory_Face(
+	FT_Error error = FT_New_Memory_Face(
 		FontManager::instance()->mLibrary, 
 		(FT_Byte*)mFileData->getData(), 
 		mFileData->getSize(), 
 		0, 
 		&mFace
 	);
+	if( error ) {
+		throw FontInvalidNameExc( "Failed to create a face for " + aName );
+	}
 
 	FT_Select_Charmap( mFace, FT_ENCODING_UNICODE );
 	FT_Set_Char_Size( mFace, 0, (int)aSize*64, 0, 72 );
@@ -974,7 +977,21 @@ FontObj::FontObj( const string &aName, float aSize )
 
 	::FcChar8* fileName = nullptr;
 	if( ::FcResultMatch == ::FcPatternGetString( font, FC_FILE, 0, &fileName ) ) {
-		FT_Error error = FT_New_Face( FontManager::instance()->mLibrary, (const char*)fileName, 0, &mFace );
+		fs::path fontFilePath = std::string( (const char*)fileName );
+
+		DataSourceRef dataSource = ci::loadFile( fontFilePath );
+		if( ! dataSource ) {
+			throw FontLoadFailedExc( "Couldn't find file for " + aName );
+		}
+
+		mFileData = dataSource->getBuffer();
+		FT_Error error = FT_New_Memory_Face(
+			FontManager::instance()->mLibrary, 
+			(FT_Byte*)mFileData->getData(), 
+			mFileData->getSize(), 
+			0, 
+			&mFace
+		);
 		if( error ) {
 			throw FontInvalidNameExc( "Failed to create a face for " + aName );
 		}
