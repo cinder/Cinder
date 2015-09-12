@@ -1,64 +1,3 @@
-#
-# -- Building Cinder for Android --
-#
-# Supported versions of the NDK:
-#     Android NDK, Revision 10d (December 2014)
-#
-# Supported API Levels (aka Platform):
-#     19 - API Level 19 (KitKat)
-#     21 - API Level 21 (Lollipop) [DEFAULT]
-#
-# Supported architectures:
-#     arm    - ARMv7 [DEFAULT]
-#     arm64-v8a  - ARMv8 (minimum platform: API Level 21)
-#     x86    - Intel x86
-#     x86_64 - Intel x86_64 (minimum platform: API Level 21)
-# 
-# Supported toolchains:
-#     gcc48  - GCC 4.8
-#     gcc49  - GCC 4.9 [DEFAULT]
-#     ** Clang doesn't work yet - don't use it **
-#
-# The build process depends on 3 variables: NDK_ROOT, NDK_PLATFORM, NDK_ARCH. 
-# You can set all these using environment variables to pass them into CMake
-# as parameters. NDK_ROOT must be specified. NDK_PLATFORM and NDK_ARCH will
-# use their default values if they're not set. Default values are below.
-#
-# Variable description:
-#     NDK_ROOT     - Root of the installed NDK directory
-#     NDK_PLATFORM - API Level (DEFAULT: 21)
-#     NDK_ARCH     - One the following: arm, arm64-v8a, x86_64 (DEFAULT: arm)
-#
-# Building Debug (assumes that NDK_ROOT is set in envionrment variable): 
-#   Starting from the $CINDER_DIR/android 
-#   >$ mkdir build
-#   >$ cd build
-#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug
-#   >$ make -j 4
-#   
-# Building Release (assumes that NDK_ROOT is set in envionrment variable): 
-#   Starting from the $CINDER_DIR/android
-#   >$ mkdir build
-#   >$ cd build
-#   >$ cmake .. -DCMAKE_BUILD_TYPE=Release
-#   >$ make -j 4
-#
-# NDK_ROOT as a CMake parameter:
-#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DNDK_ROOT=/Users/hai/code/android/android-ndk-r10d
-#
-# NDK_PLATFORM as a CMake parameter:
-#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DNDK_PLATFORM=21
-#
-# NDK_ARCH as a CMake parameter:
-#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DNDK_ARCH=arm64-v8a
-#
-# Android code names, tags, versions, and API, and NDK information:
-#    https://source.android.com/source/build-numbers.html
-#
-# Android NDK releases:
-#    https://developer.android.com/tools/sdk/ndk/index.html  
-#
-
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
@@ -493,6 +432,7 @@ project( cinder_android )
 
 include_directories( 
     ${CINDER_INC_DIR} 
+    ${CINDER_INC_DIR}/freetype
     ${CINDER_INC_DIR}/jsoncpp 
     ${CINDER_SRC_DIR}/linebreak 
     ${CINDER_SRC_DIR}/libtess2 
@@ -602,7 +542,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/ShaderPreprocessor.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Sync.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Texture.cpp
-    #${CINDER_SRC_DIR}/cinder/gl/TextureFont.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TextureFont.cpp
     ${CINDER_SRC_DIR}/cinder/gl/TextureFormatParsers.cpp
     ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObj.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Ubo.cpp
@@ -643,6 +583,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/DataTarget.cpp
     ${CINDER_SRC_DIR}/cinder/Display.cpp
     ${CINDER_SRC_DIR}/cinder/Exception.cpp
+    ${CINDER_SRC_DIR}/cinder/Font.cpp
     ${CINDER_SRC_DIR}/cinder/Frustum.cpp
     ${CINDER_SRC_DIR}/cinder/GeomIo.cpp
     ${CINDER_SRC_DIR}/cinder/ImageIo.cpp
@@ -666,6 +607,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Stream.cpp
     ${CINDER_SRC_DIR}/cinder/Surface.cpp
     ${CINDER_SRC_DIR}/cinder/System.cpp
+    ${CINDER_SRC_DIR}/cinder/Text.cpp
     ${CINDER_SRC_DIR}/cinder/Timeline.cpp
     ${CINDER_SRC_DIR}/cinder/TimelineItem.cpp
     ${CINDER_SRC_DIR}/cinder/Timer.cpp
@@ -710,7 +652,6 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/freetype/base/ftsystem.c
     ${CINDER_SRC_DIR}/freetype/base/fttype1.c
     ${CINDER_SRC_DIR}/freetype/base/ftwinfnt.c
-    ${CINDER_SRC_DIR}/freetype/base/ftxf86.c
     ${CINDER_SRC_DIR}/freetype/raster/raster.c
     ${CINDER_SRC_DIR}/freetype/smooth/smooth.c
     ${CINDER_SRC_DIR}/freetype/autofit/autofit.c
@@ -724,7 +665,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/freetype/pshinter/pshinter.c
     ${CINDER_SRC_DIR}/freetype/psnames/psnames.c
     ${CINDER_SRC_DIR}/freetype/cid/type1cid.c
-    ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c    
+    ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c 
 
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionManager.cpp
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionImplAndroid.cpp

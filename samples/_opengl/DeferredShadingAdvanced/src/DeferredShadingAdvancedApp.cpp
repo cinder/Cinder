@@ -232,7 +232,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	
 	// Call resize to create FBOs
 	resize();
-	
+
 	// Set up parameters
 	const vector<string> ao = { "None", "HBAO", "SAO" };
 
@@ -1169,7 +1169,7 @@ void DeferredShadingAdvancedApp::draw()
 		// Draw to screen without FXAA
 		mBatchStockTextureRect->draw();
 	}
-	
+
 	mParams->draw();
 }
 
@@ -1453,7 +1453,7 @@ void DeferredShadingAdvancedApp::update()
 {
 	float e		= (float)getElapsedSeconds();
 	mFrameRate	= getAverageFps();
-	
+
 	if ( mFullScreen != isFullScreen() ) {
 		setFullScreen( mFullScreen );
 	}

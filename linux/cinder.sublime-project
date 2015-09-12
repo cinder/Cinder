@@ -1,0 +1,17 @@
+{
+	"folders":
+	[
+		{
+			"name": "linux",
+			"path": ".",
+		},
+		{
+			"name": "include",
+			"path": "../include",
+		},
+		{
+			"name": "src",
+			"path": "../src",
+		}
+	]
+}

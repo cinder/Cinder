@@ -375,6 +375,12 @@ IStreamAndroidAssetRef	loadAndroidAssetStream( const fs::path &path );
 
 // Stream exception
 class StreamExc : public Exception {
+  public:
+	StreamExc() throw() {}
+	StreamExc( const std::string &fontName ) throw();
+	virtual const char* what() const throw() { return mMessage; }	
+  private:
+	char mMessage[2048];		
 };
 
 class StreamExcOutOfMemory : public StreamExc {

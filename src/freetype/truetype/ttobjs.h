@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Objects manager (specification).                                     */
 /*                                                                         */
-/*  Copyright 1996-2009, 2011-2012 by                                      */
+/*  Copyright 1996-2015 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -95,8 +95,8 @@ FT_BEGIN_HEADER
     FT_F26Dot6     control_value_cutin;
     FT_F26Dot6     single_width_cutin;
     FT_F26Dot6     single_width_value;
-    FT_Short       delta_base;
-    FT_Short       delta_shift;
+    FT_UShort      delta_base;
+    FT_UShort      delta_shift;
 
     FT_Byte        instruct_control;
     /* According to Greg Hitchcock from Microsoft, the `scan_control'     */
@@ -160,7 +160,7 @@ FT_BEGIN_HEADER
   typedef struct  TT_CodeRange_
   {
     FT_Byte*  base;
-    FT_ULong  size;
+    FT_Long   size;
 
   } TT_CodeRange;
 
@@ -173,12 +173,13 @@ FT_BEGIN_HEADER
   /*                                                                       */
   typedef struct  TT_DefRecord_
   {
-    FT_Int   range;        /* in which code range is it located?     */
-    FT_Long  start;        /* where does it start?                   */
-    FT_Long  end;          /* where does it end?                     */
-    FT_UInt  opc;          /* function #, or instruction code        */
-    FT_Bool  active;       /* is it active?                          */
-    FT_Bool  inline_delta; /* is function that defines inline delta? */
+    FT_Int    range;          /* in which code range is it located?     */
+    FT_Long   start;          /* where does it start?                   */
+    FT_Long   end;            /* where does it end?                     */
+    FT_UInt   opc;            /* function #, or instruction code        */
+    FT_Bool   active;         /* is it active?                          */
+    FT_Bool   inline_delta;   /* is function that defines inline delta? */
+    FT_ULong  sph_fdef_flags; /* flags to identify special functions    */
 
   } TT_DefRecord, *TT_DefArray;
 
@@ -323,18 +324,12 @@ FT_BEGIN_HEADER
 
     TT_GlyphZoneRec    twilight;     /* The instance's twilight zone    */
 
-    /* debugging variables */
-
-    /* When using the debugger, we must keep the */
-    /* execution context tied to the instance    */
-    /* object rather than asking it on demand.   */
-
-    FT_Bool            debug;
     TT_ExecContext     context;
 
-    FT_Bool            bytecode_ready;
-    FT_Bool            cvt_ready;
-    FT_Bool            ttfautohinted;
+    /* if negative, `fpgm' (resp. `prep'), wasn't executed yet; */
+    /* otherwise it is the returned error code                  */
+    FT_Error           bytecode_ready;
+    FT_Error           cvt_ready;
 
 #endif /* TT_USE_BYTECODE_INTERPRETER */
 
@@ -347,11 +342,11 @@ FT_BEGIN_HEADER
   /*                                                                       */
   typedef struct  TT_DriverRec_
   {
-    FT_DriverRec     root;
-    TT_ExecContext   context;  /* execution context        */
+    FT_DriverRec  root;
+
     TT_GlyphZoneRec  zone;     /* glyph loader points zone */
 
-    void*            extension_component;
+    FT_UInt  interpreter_version;
 
   } TT_DriverRec;
 

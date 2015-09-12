@@ -47,11 +47,18 @@
 	#pragma comment(lib, "gdiplus")
 	#include "cinder/Unicode.h"
 
-static const float MAX_SIZE = 1000000.0f;
+	static const float MAX_SIZE = 1000000.0f;
+
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	#include "cinder/linux/FreeTypeUtil.h"
+
+	static const float MAX_SIZE = 1000000.0f;
 
 #endif
 
 #include <limits.h>
+
+#include "cinder/app/App.h"
 
 using namespace std;
 
@@ -147,6 +154,8 @@ class Line {
 	void render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth );
 #elif defined( CINDER_WINRT )
 	void render(Channel &channel, float currentY, float xBorder, float maxWidth);
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	void render( Surface &surface, float currentY, float xBorder, float maxWidth );
 #endif
 
 	enum { LEFT, RIGHT, CENTERED };
@@ -240,9 +249,27 @@ void Line::calcExtents()
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
 		mHeight = std::max( mHeight, face->bbox.yMax / 64.0f );
 	}
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
+	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
+		FT_Face face = runIt->mFont.getFreetypeFace();
+
+		auto measure = ci::linux::ftutil::MeasureString( runIt->mText, face );
+//ci::app::console() << runIt->mText << " : " << measure << std::endl;
+
+		mWidth   += measure.getWidth();
+		mAscent  = std::max( runIt->mFont.getAscent(),     mAscent  );
+		mDescent = std::max( runIt->mFont.getDescent(),    mDescent );
+		mLeading = std::max( runIt->mFont.getLeading(),    mLeading );
+		mHeight  = std::max( (float)(measure.getHeight()), mHeight  );
+	}
 #endif
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mWidth += 0.5f;
+#else
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
+#endif
 }
 
 #if defined( CINDER_COCOA )
@@ -295,6 +322,83 @@ void Line::render(Channel &channel, float currentY, float xBorder, float maxWidt
 			Channel glyphChannel( metrics.width >> 6, metrics.height >> 6, alignedRowBytes, 1, pBuff );
 			channel.copyFrom( glyphChannel, glyphChannel.getBounds(), ivec2((int)currentX + (metrics.horiBearingX >> 6), (int)currentY + ((face->height - metrics.horiBearingY) >> 6)) );
 		}
+	}
+}
+
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+
+void draw_bitmap( FT_Int x, FT_Int y, FT_Bitmap* bitmap, const ColorA8u& color, uint8_t *dstData, size_t dstPixelInc, size_t dstRowBytes, const ivec2& dstSize )
+{
+	FT_Int i, j, p, q;
+	FT_Int x_max = x + bitmap->width;
+	FT_Int y_max = y + bitmap->rows;
+
+	for( j = y, q = 0; j < y_max; ++j, ++q ) {
+		for( i = x, p = 0; i < x_max; ++i, ++p ) {
+		 	if( i < 0 || j < 0 || i >= dstSize.x || j >= dstSize.y ) {
+				continue;
+			}
+			
+			size_t index = j*dstRowBytes + i*dstPixelInc;
+			uint8_t *data = dstData + index;
+			int dr = *(data + 0);
+			int dg = *(data + 1);
+			int db = *(data + 2);
+			int da = *(data + 3);
+
+			int val = (bitmap->buffer[q * bitmap->width + p]);
+	  		int alpha = val + 1;
+			int invAlpha = 256 - val;
+			int r = (color.r*alpha + dr*invAlpha) >> 8;
+			int g = (color.g*alpha + dg*invAlpha) >> 8;
+			int b = (color.b*alpha + db*invAlpha) >> 8;
+			int a = (color.a*alpha + da*invAlpha) >> 8;
+			*(data + 0) = r;
+			*(data + 1) = g;
+			*(data + 2) = b;
+			*(data + 3) = a;
+		}
+	}
+}
+
+void Line::render( Surface &surface, float currentY, float xBorder, float maxWidth )
+{
+	uint8_t* surfaceData   = surface.getData();
+	size_t surfacePixelInc = surface.getPixelInc();
+	size_t surfaceRowBytes = surface.getRowBytes();
+	ivec2 surfaceSize      = surface.getSize();
+
+	float currentX = xBorder;
+	if( mJustification == CENTERED ) {
+		currentX = ( maxWidth - mWidth ) / 2.0f;
+	}
+	else if( mJustification == RIGHT ) {
+		currentX = maxWidth - mWidth - xBorder;
+	}
+
+	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
+		ColorA8u color = runIt->mColor;
+
+		FT_Face face = runIt->mFont.getFreetypeFace();
+		FT_Vector pen = { (int)currentX * 64, (int)(surfaceSize.y - currentY) * 64 };
+
+		std::u32string strU32 = ci::toUtf32( runIt->mText );
+		for( const auto& ch : strU32 ) {
+			FT_Set_Transform( face, nullptr, &pen );
+
+			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+			FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+
+			FT_GlyphSlot slot = face->glyph;
+			ivec2 offset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
+
+			draw_bitmap( offset.x, offset.y, &(slot->bitmap), color, surfaceData, surfacePixelInc, surfaceRowBytes, surfaceSize );
+
+			pen.x += slot->advance.x;
+			pen.y += slot->advance.y;
+		}
+
+		currentX = (pen.x / 64.0f) + 0.5f;
 	}
 }
 
@@ -390,6 +494,21 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	Surface result;
 	
 	// determine the extents for all the lines and the result surface
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	float totalHeight = (float)mVerticalBorder;
+	float maxWidth = 0;
+	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		(*lineIt)->calcExtents();
+		//totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight + (*lineIt)->mLeadingOffset );
+		totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight );
+//ci::app::console() << totalHeight << " : " << (*lineIt)->mHeight << std::endl;
+		if( (*lineIt)->mWidth > maxWidth ) {
+			maxWidth = (*lineIt)->mWidth;
+		}
+	}
+
+	maxWidth += 0.5;
+#else
 	float totalHeight = 0, maxWidth = 0;
 	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		(*lineIt)->calcExtents();
@@ -397,11 +516,14 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 		if( (*lineIt)->mWidth > maxWidth )
 			maxWidth = (*lineIt)->mWidth;
 	}
+#endif
 	// for the last line, instead of using the font info, we'll use the true height
 /*	if( ! mLines.empty() ) {
 		totalHeight = currentY - (mLines.back()->mAscent - mLines.back()->mDescent - mLines.back()->mLeadingOffset - mLines.back()->mLeading );
 		totalHeight += mLines.back()->mHeight;
 	}*/
+
+//std::cout << "totalHeight: " << totalHeight << std::endl;
 
 	// round up from the floating point sizes to get the number of pixels we'll need
 	int pixelWidth = (int)math<float>::ceil( maxWidth ) + mHorizontalBorder * 2;
@@ -473,6 +595,20 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	}
 	result = Surface(channel, SurfaceConstraintsDefault(), true);
 	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	result = Surface( pixelWidth, pixelHeight, true, SurfaceConstraintsDefault() );
+	ip::fill( &result, mBackgroundColor );
+
+	float currentY = (float)mVerticalBorder;
+	for( deque<shared_ptr<Line>>::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		float adjCurrentY = currentY + (*lineIt)->mAscent + (*lineIt)->mLeadingOffset;
+		(*lineIt)->render( result, adjCurrentY, (float)mHorizontalBorder, (float)pixelWidth );	
+		currentY += (*lineIt)->mHeight;
+	}
+
+	if( ! premultiplied ) {
+		ip::unpremultiply( &result );
+	}
 #endif
 
 	return result;
@@ -515,7 +651,7 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 	::CGContextRelease( cgContext );
 	return result;
 }
-#elif defined( CINDER_MAC) || defined( CINDER_MSW ) || defined( CINDER_WINRT )
+#elif defined( CINDER_MAC) || defined( CINDER_MSW ) || defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 Surface renderString( const string &str, const Font &font, const ColorA &color, float *baselineOffset )
 {
 	Line line;
@@ -571,7 +707,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 
 	delete offscreenBitmap;
 	delete offscreenGraphics;
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	Channel channel( pixelWidth, pixelHeight );
 	ip::fill<uint8_t>( &channel, 0 );
 	FT_Face face = font.getFreetypeFace();
@@ -704,6 +840,7 @@ Surface	TextBox::render( vec2 offset )
 
 	return result;
 }
+
 #elif defined( CINDER_MSW )
 
 void TextBox::calculate() const
@@ -889,6 +1026,106 @@ Surface	TextBox::render( vec2 offset )
 
 	return result;
 }
+
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+
+vector<string> TextBox::calculateLineBreaks( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics ) const
+{
+	vector<string> result;
+
+	vector<string> strings;
+	struct LineProcessor {
+		LineProcessor( vector<string> *strings ) : mStrings( strings ) {}
+		void operator()( const char *line, size_t len ) const { mStrings->push_back( string( line, len ) ); }
+		mutable vector<string> *mStrings;
+	};
+	struct LineMeasure {
+		LineMeasure( int maxWidth, const Font &font, const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) 
+			: mMaxWidth( maxWidth ), mFont( font.getFreetypeFace() ), mCachedGlyphMerics( cachedGlyphMetrics ) {}
+		bool operator()( const char *line, size_t len ) const {
+			if( mMaxWidth >= MAX_SIZE ) {
+				// too big anyway so just return true
+				return true;
+			}
+
+			std::u32string utf32Chars = ci::toUtf32( std::string( line, len ) );
+			int measuredWidth = 0;
+			FT_Vector pen = { 0, 0 };
+			for( const auto& ch : utf32Chars ) {
+				FT_Vector advance = { 0, 0 };
+				FT_UInt glyphIndex = FT_Get_Char_Index( mFont, ch );
+				if( nullptr != mCachedGlyphMerics ) {
+					auto iter = mCachedGlyphMerics->find( glyphIndex );
+					advance = iter->second.advance;					
+				}
+				else  {
+					FT_Load_Glyph( mFont, glyphIndex, FT_LOAD_DEFAULT );
+					const FT_GlyphSlot& slot = mFont->glyph;
+					advance = slot->advance;
+				}
+
+				pen.x += advance.x;
+				pen.y += advance.y;
+
+				measuredWidth = (pen.x >> 6);
+			}
+
+			bool result = (measuredWidth <= mMaxWidth);
+			return result;
+		}
+
+		int													mMaxWidth;
+		FT_Face												mFont;
+		const std::map<Font::Glyph, Font::GlyphMetrics>* 	mCachedGlyphMerics;
+	};
+	std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );		
+	lineBreakUtf8( mText.c_str(), LineMeasure( ( mSize.x > 0 ) ? mSize.x : MAX_SIZE, mFont, cachedGlyphMetrics ), lineFn );
+
+	return result;
+}
+
+vector<pair<uint32_t,vec2>> TextBox::measureGlyphs( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics ) const
+{
+	vector<pair<uint32_t,vec2> > result;
+
+	if( mText.empty() ) {
+		return result;
+	}
+
+	FT_Face face = mFont.getFreetypeFace();
+	vector<string> mLines = calculateLineBreaks( cachedGlyphMetrics );
+
+	float curY = 0;
+	for( vector<string>::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		std::u32string utf32Chars = ci::toUtf32( *lineIt );
+
+		FT_Vector pen = { 0, 0 };
+		for( const auto& ch : utf32Chars ) {
+			FT_Vector advance = { 0, 0 };
+			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+			if( nullptr != cachedGlyphMetrics ) {
+				auto iter = cachedGlyphMetrics->find( glyphIndex );
+				advance = iter->second.advance;
+			}
+			else {
+				FT_Load_Glyph( face, glyphIndex, FT_LOAD_DEFAULT );
+				const FT_GlyphSlot& slot = face->glyph;
+				advance = slot->advance;
+			}
+
+			float xPos = (pen.x / 64.0f) + 0.5f;
+			result.push_back( std::make_pair( (uint32_t)glyphIndex, vec2( xPos, curY ) ) );
+
+			pen.x += advance.x;
+			pen.y += advance.y;	
+		}
+
+		curY += mFont.getAscent() + mFont.getDescent();
+	}
+
+	return result;
+}
+
 #endif
 
 } // namespace cinder

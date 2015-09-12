@@ -35,6 +35,12 @@
 #include "cinder/android/AndroidDevLog.h"
 using namespace cinder::android;
 
+namespace cinder {
+
+extern void FontManager_destroyStaticInstance();
+
+} // namespace cinder
+
 namespace cinder { namespace app {
 
 PlatformAndroid::PlatformAndroid()
@@ -45,6 +51,8 @@ PlatformAndroid::PlatformAndroid()
 	ImageTargetFileStbImage::registerSelf();
 
 	dbg_app_log( "PlatformAndroid::PlatformAndroid" );
+
+	cinder::FontManager_destroyStaticInstance();
 }
 
 PlatformAndroid::~PlatformAndroid()
@@ -56,6 +64,7 @@ void PlatformAndroid::destroyStaticInstances()
 {
 dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 	cinder::android::hardware::Camera::destroyInstance();
+	cinder::FontManager_destroyStaticInstance();
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
@@ -180,10 +189,10 @@ const std::vector<DisplayRef>& PlatformAndroid::getDisplays()
 
 bool PlatformAndroid::isAssetPath( const fs::path &path )
 {
-	char c0 = (path.string().size() > 0 ) ? 0 : path.string().at( 0 );
-	char c1 = (path.string().size() > 1 ) ? 0 : path.string().at( 1 );
-	bool startsWithSlash  = ( (0 != c0 ) && ( '/' != c0 ) );
-	bool startsWithDotDot = ( (0 != c0 ) && ( 0 != c1 ) && ( '.' != c0 ) && ( '.' != c1 ) );
+	char c0 = (path.string().size() > 0 ) ? path.string().at( 0 ) : 0;
+	char c1 = (path.string().size() > 1 ) ? path.string().at( 1 ) : 0;
+	bool startsWithSlash  = ( '/' == c0 );
+	bool startsWithDotDot = ( '.' == c0 ) && ( '.' == c1 );
 	return ( ! ( startsWithSlash || startsWithDotDot ) );
 }
 

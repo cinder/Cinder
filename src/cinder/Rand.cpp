@@ -44,7 +44,7 @@ void Rand::randomize()
 	sBase = std::mt19937( (uint32_t)( mach_absolute_time() & 0xFFFFFFFF ) );
 #elif defined( CINDER_WINRT)
 	sBase = std::mt19937( static_cast<unsigned long>(::GetTickCount64()) );
-#elif defined( CINDER_ANDROID )	
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	struct timespec now;
 	::clock_gettime(CLOCK_MONOTONIC, &now);
 	long long tickCount = (now.tv_sec * 1000000000LL) + now.tv_nsec;

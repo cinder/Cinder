@@ -257,8 +257,13 @@ bool IStreamFile::isEof() const
 void IStreamFile::IORead( void *t, size_t size )
 {
 	size_t bytesRead = readDataImpl( t, size );
-	if( bytesRead != size )
+	if( bytesRead != size ) {
+#if defined( CINDER_ANDROID )
+		throw StreamExc( "(IStreamFile::IORead num bytes read different from requested size" );
+#else		
 		throw StreamExc();
+#endif	
+	}
 }
 
 
@@ -657,6 +662,13 @@ IStreamFileRef loadFileStream( const fs::path &path )
 #else
 	FILE *f = fopen( path.string().c_str(), "rb" );
 #endif
+
+#if defined( CINDER_ANDROID )
+	if( nullptr == f ) {
+		throw StreamExc( "(loadFileStream) couldn't open: " + path.string() );
+	}
+#endif	
+
 	if( f ) {
 		IStreamFileRef s = IStreamFile::create( f, true );
 		s->setFileName( path );
@@ -753,7 +765,6 @@ BufferRef loadStreamBuffer( IStreamRef is )
 	}
 }
 
-
 #if defined( CINDER_ANDROID )
 IStreamAndroidAssetRef loadAndroidAssetStream( const fs::path &path )
 {
@@ -769,6 +780,14 @@ IStreamAndroidAssetRef loadAndroidAssetStream( const fs::path &path )
 }
 #endif // defined( CINDER_ANDROID )
 
+StreamExc::StreamExc( const std::string &fontName ) throw()
+{
+#if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
+	sprintf_s( mMessage, "%s", fontName.c_str() );
+#else
+	sprintf( mMessage, "%s", fontName.c_str() );
+#endif
+}
 
 /////////////////////////////////////////////////////////////////////
 

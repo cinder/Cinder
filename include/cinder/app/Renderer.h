@@ -59,7 +59,9 @@
 		class UIView;
 	#endif
 #elif defined( CINDER_ANDROID )
-	struct ANativeWindow;		
+	struct ANativeWindow;
+#elif defined( CINDER_LINUX )
+	typedef struct GLFWwindow 	GLFWwindow;	
 #endif
 
 
@@ -103,6 +105,8 @@ class Renderer {
 	virtual void setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDER_ANDROID )
 	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;	
+#elif defined( CINDER_LINUX )
+	virtual void	setup( GLFWwindow* glfwWindow, RendererRef sharedRenderer ) = 0;
 #endif
 
 	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;

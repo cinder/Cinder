@@ -43,6 +43,7 @@ http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-go
 #endif
 
 
+
 #include "DebugMesh.h"
 
 using namespace ci;
@@ -199,8 +200,10 @@ void NormalMappingApp::setup()
 		quit();
 	}
 
+#if defined( CINDER_ANDROID )
 ci::app::android::AssetFileSystem_FILE* asset = ci::app::android::AssetFileSystem_fopen( "leprechaun.msh", 0 );
 console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset ) << std::endl;
+#endif
 
 	// load mesh file and create missing data (normals, tangents) if necessary
 	try {

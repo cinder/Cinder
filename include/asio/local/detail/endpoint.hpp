@@ -2,7 +2,7 @@
 // local/detail/endpoint.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Derived from a public domain implementation written by Daniel Casimiro.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -74,7 +74,11 @@ public:
   std::size_t size() const
   {
     return path_length_
+#if defined( CINDER_ASIO_CLANG_BUILTIN_OFFSETOF )
+      + __builtin_offsetof(asio::detail::sockaddr_un_type, sun_path);
+#else
       + offsetof(asio::detail::sockaddr_un_type, sun_path);
+#endif
   }
 
   // Set the underlying size of the endpoint in the native type.

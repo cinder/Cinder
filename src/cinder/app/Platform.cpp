@@ -32,6 +32,8 @@
 	#include "cinder/app/winrt/PlatformWinRt.h"
 #elif defined( CINDER_ANDROID )
 	#include "cinder/app/android/PlatformAndroid.h"
+#elif defined( CINDER_LINUX )
+	#include "cinder/app/linux/PlatformLinux.h"
 #endif
 
 using namespace std;
@@ -58,6 +60,8 @@ Platform* Platform::get()
 		sInstance = new PlatformWinRt;
 #elif defined( CINDER_ANDROID )
 		sInstance = new PlatformAndroid;
+#elif defined( CINDER_LINUX )
+		sInstance = new PlatformLinux;
 #endif
 	}
 

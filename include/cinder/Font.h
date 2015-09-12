@@ -37,6 +37,10 @@
 	#undef generic
 
 	#include FT_GLYPH_H
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	#include "ft2build.h"
+	#include FT_FREETYPE_H 
+	#include FT_OUTLINE_H
 #endif
 
 #include <string>
@@ -62,7 +66,16 @@ class FontObj;
 //! Represents an instance of a font at a point size. \ImplShared
 class Font {
  public:
-	typedef uint16_t		Glyph;		
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
+	typedef uint32_t		Glyph;
+	struct GlyphMetrics {
+		FT_Vector			advance;
+		FT_Glyph_Metrics	metrics;
+	};
+#else
+	typedef uint16_t		Glyph;	
+	struct GlyphMetrics {};
+#endif
 
 	/** \brief constructs a null Font **/
 	Font() {}
@@ -77,6 +90,9 @@ class Font {
 	std::string				getFullName() const;
 	float					getSize() const;
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	float 					getLinespace() const;
+#endif
 	float					getLeading() const;
 	float					getAscent() const;
 	float					getDescent() const;
@@ -90,7 +106,7 @@ class Font {
 	//! Returns the bounding box of a Glyph, relative to the baseline as the origin
 	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	FT_Face					getFreetypeFace() const;
 #endif
 	
@@ -118,6 +134,15 @@ class Font {
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Font::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
+};
+
+class FontLoadFailedExc : public cinder::Exception {
+  public:
+	FontLoadFailedExc() throw() {}
+	FontLoadFailedExc( const std::string &fontName ) throw();
+	virtual const char* what() const throw() { return mMessage; }	
+  private:
+	char mMessage[2048];	
 };
 
 class FontInvalidNameExc : public cinder::Exception {

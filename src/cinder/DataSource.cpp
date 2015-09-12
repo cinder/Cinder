@@ -107,8 +107,9 @@ void DataSourceAndroidAsset::createBuffer()
 {
 	// no-op - we already supplied the buffer in the constructor
 	IStreamAndroidAssetRef stream = loadAndroidAssetStream( mFilePath );
-	if( ! stream )
-		throw StreamExc();
+ 	if( ! stream ) {
+		throw StreamExc( "loadAndroidAssetStream failed for " + mFilePath.string() );
+ 	}
 	mBuffer = loadStreamBuffer( stream );
 }
 

@@ -2,7 +2,7 @@
 // impl/serial_port_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -113,11 +113,7 @@ asio::error_code serial_port_base::baud_rate::store(
     ec = asio::error::invalid_argument;
     return ec;
   }
-
-// On x86 (32-bit) Android - _BSD_SOURCE is defined
-// for some reason. All the other build variants
-// _BSD_SOURCE is not defined.
-# if defined(_BSD_SOURCE) && ! defined(__ANDROID__)
+# if defined(_BSD_SOURCE)
   ::cfsetspeed(&storage, baud);
 # else
   ::cfsetispeed(&storage, baud);

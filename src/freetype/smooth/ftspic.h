@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    The FreeType position independent code services for smooth module.   */
 /*                                                                         */
-/*  Copyright 2009 by                                                      */
+/*  Copyright 2009-2015 by                                                 */
 /*  Oran Agra and Mickey Gabel.                                            */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -25,18 +25,23 @@ FT_BEGIN_HEADER
 #include FT_INTERNAL_PIC_H
 
 #ifndef FT_CONFIG_OPTION_PIC
-#define FT_GRAYS_RASTER_GET        ft_grays_raster
+
+#define FT_GRAYS_RASTER_GET  ft_grays_raster
 
 #else /* FT_CONFIG_OPTION_PIC */
 
-  typedef struct SmoothPIC_
+  typedef struct  SmoothPIC_
   {
-    int ref_count;
-    FT_Raster_Funcs ft_grays_raster;
+    int              ref_count;
+    FT_Raster_Funcs  ft_grays_raster;
+
   } SmoothPIC;
 
-#define GET_PIC(lib)               ((SmoothPIC*)((lib)->pic_container.smooth))
-#define FT_GRAYS_RASTER_GET        (GET_PIC(library)->ft_grays_raster)
+
+#define GET_PIC( lib ) \
+          ( (SmoothPIC*)( (lib)->pic_container.smooth ) )
+#define FT_GRAYS_RASTER_GET  ( GET_PIC( library )->ft_grays_raster )
+
 
   /* see ftspic.c for the implementation */
   void
