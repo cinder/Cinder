@@ -19,9 +19,13 @@ if(NOT WIN32)
   set(BoldWhite     "${Esc}[1;37m" )
 endif()
 
+execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
+
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR  ${CINDER_DIR}/boost )
+
+set( CINDER_LIB_DIR ${CINDER_DIR}/lib/linux/${CINDER_ARCH} )
 
 set( CINDER_TOOLCHAIN_CLANG true )
 
