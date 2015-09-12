@@ -83,6 +83,7 @@ void TextTestApp::setup()
 		layout.addLine( " • Back to regular leading but translucent" );
 		Surface8u rendered = layout.render( true, PREMULT );
 		mTexture = gl::Texture2d::create( rendered );
+		console() << "mTexture: " << mTexture->getSize() << std::endl;
 	}
 	catch( const std::exception& e ) {
 		console() << "ERROR: " << e.what () << std::endl;

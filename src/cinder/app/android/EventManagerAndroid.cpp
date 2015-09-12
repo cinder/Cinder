@@ -48,6 +48,9 @@ enum {
 
 namespace cinder { namespace app { 
 
+// From cinder/app/Platform.cpp
+extern void Platform_destroyStaticInstance();		
+
 EventManagerAndroid* EventManagerAndroid::sInstance = nullptr;
 
 //EventManagerAndroid::EventManagerAndroid( android_app *nativeApp, DeferredMainFn deferredMainFn )

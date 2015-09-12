@@ -29,6 +29,12 @@
 #include <unistd.h>
 #include <limits.h>
 
+namespace cinder {
+
+extern void FontManager_destroyStaticInstance();
+
+} // namespace cinder
+
 namespace cinder { namespace app {
 
 namespace {
@@ -51,6 +57,11 @@ PlatformLinux::~PlatformLinux()
 PlatformLinux* PlatformLinux::get() 
 { 
 	return reinterpret_cast<PlatformLinux*>( Platform::get() ); 
+}
+
+void PlatformLinux::cleanupLaunch()
+{
+	cinder::FontManager_destroyStaticInstance();
 }
 
 DataSourceRef PlatformLinux::loadResource( const fs::path &resourcePath ) 

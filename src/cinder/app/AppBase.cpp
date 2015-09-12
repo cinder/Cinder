@@ -195,7 +195,7 @@ void AppBase::cleanupLaunch()
 {
 	Platform::get()->cleanupLaunch();
 
-#if defined( CINDER_ANDROID )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	// This will delete Platform::sInstance if it's not null. 
 	// Afterwards Platform::sInstance will be set to null.
 	Platform::set( nullptr );

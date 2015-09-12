@@ -30,8 +30,10 @@ void TextureFontApp::setup()
 	mFont = Font( "Cochin-Italic", 24 );
 #elif defined( CINDER_COCOA )
 	mFont = Font( "BigCaslon-Medium", 24 );
-#else
+#elif defined( CINDER_ANDROID )
 	mFont = Font( "Times New Roman", 48 );
+#elif defined( CINDER_LINUX )
+	mFont = Font( "Times New Roman", 24 );
 #endif
 	mTextureFont = gl::TextureFont::create( mFont );
 }

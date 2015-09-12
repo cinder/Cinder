@@ -52,6 +52,8 @@ PlatformAndroid::PlatformAndroid()
 
 	dbg_app_log( "PlatformAndroid::PlatformAndroid" );
 
+	// Make sure the static instance is null in case 
+	// this is an activity restart.
 	cinder::FontManager_destroyStaticInstance();
 }
 
@@ -71,6 +73,12 @@ dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 PlatformAndroid* PlatformAndroid::get() 
 { 
 	return reinterpret_cast<PlatformAndroid*>( Platform::get() ); 
+}
+
+void PlatformAndroid::cleanupLaunch()
+{
+	// Clean up
+	cinder::FontManager_destroyStaticInstance();
 }
 
 DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
