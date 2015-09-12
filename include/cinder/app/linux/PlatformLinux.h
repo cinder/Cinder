@@ -40,7 +40,7 @@ class PlatformLinux : public Platform {
 	virtual DataSourceRef			loadResource( const fs::path &resourcePath ) override;
 
 	virtual fs::path				getResourceDirectory() const override;
-	virtual fs::path				getResourcePath( const fs::path &rsrcRelativePath ) const override;
+	virtual fs::path				getResourcePath( const fs::path &rsrcRelativePath ) override;
 
 	virtual fs::path 				getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 	virtual fs::path 				getFolderPath( const fs::path &initialPath ) override;

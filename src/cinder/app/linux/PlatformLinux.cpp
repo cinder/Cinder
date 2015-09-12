@@ -79,7 +79,7 @@ fs::path PlatformLinux::getResourceDirectory() const
 	return fs::path();	
 }
 
-fs::path PlatformLinux::getResourcePath( const fs::path &rsrcRelativePath ) const 
+fs::path PlatformLinux::getResourcePath( const fs::path &rsrcRelativePath ) 
 {
 	if( ! mResourceDirsInitialized ) {
 		mResourceDirsInitialized = true;
