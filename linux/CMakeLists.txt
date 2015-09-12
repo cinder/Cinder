@@ -1,6 +1,8 @@
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
+execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
+
 if(NOT WIN32)
   string(ASCII 27 Esc)
   set(ColorReset    "${Esc}[m"     )
@@ -27,9 +29,9 @@ set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
 
 # Output path
-set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/linux )
+set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/linux/${CINDER_ARCH} )
 
-project( cinder_android )
+project( cinder_linux )
 
 set( CINDER_TOOLCHAIN_CLANG true )
 
@@ -55,6 +57,8 @@ if( CINDER_TOOLCHAIN_CLANG )
     set(CMAKE_CCC_FLAGS                       "${CMAKE_C_FLAGS} -fmessage-length=0 ")
 endif()
 
+message( "${BoldGreen}CINDER_ARCH: ${CINDER_ARCH}${ColorReset}" )
+message( "" )
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
 message( "" )

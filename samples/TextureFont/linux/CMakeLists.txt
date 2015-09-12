@@ -30,9 +30,9 @@ set( SRC_FILES
 
 set( CMAKE_DEBUG_POSTFIX "_d" )
 add_executable( "${CMAKE_PROJECT_NAME}" ${SRC_FILES} )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" debug     ${CINDER_DIR}/lib/linux/libcinder_d.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" optimized ${CINDER_DIR}/lib/linux/libcinder.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/libboost_filesystem.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/libboost_system.a )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" debug     ${CINDER_LIB_DIR}/libcinder_d.a )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" optimized ${CINDER_LIB_DIR}/libcinder.a )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_LIB_DIR}/libboost_filesystem.a )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_LIB_DIR}/libboost_system.a )
 target_link_libraries( "${CMAKE_PROJECT_NAME}" c++ c++abi dl pthread z GL X11 Xcursor Xinerama Xrandr Xi fontconfig )
 

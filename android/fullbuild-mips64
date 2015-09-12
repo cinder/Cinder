@@ -1,0 +1,3 @@
+#!/bin/bash
+ARCH=mips64
+bash cbuilder "$@" -a ${ARCH}

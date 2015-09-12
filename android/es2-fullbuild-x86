@@ -1,0 +1,3 @@
+#!/bin/bash
+ARCH=x86
+bash cbuilder "$@" -a ${ARCH} -es2
