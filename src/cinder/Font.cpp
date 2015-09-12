@@ -53,6 +53,7 @@
 #elif defined( CINDER_LINUX )
 	#include <fontconfig/fontconfig.h>
  	#include "cinder/linux/FreeTypeUtil.h"
+ 	#include <set>
 #endif
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"
@@ -65,6 +66,41 @@ using std::pair;
 #include "cinder/app/App.h"
 
 namespace cinder {
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FontObj
+class FontObj : public std::enable_shared_from_this<FontObj> {
+	public:
+	FontObj( const std::string &aName, float aSize );
+	FontObj( DataSourceRef dataSource, float size );
+	~FontObj();
+		
+	void		finishSetup();
+		
+		
+	std::string				mName;
+	float					mSize;
+#if defined( CINDER_COCOA )
+	CGFontRef				mCGFont;
+	const struct __CTFont*	mCTFont;
+#elif defined( CINDER_MSW )
+	::TEXTMETRIC					mTextMetric;
+	::LOGFONTW						mLogFont;
+	::HFONT							mHfont;
+	std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
+	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
+	void *mFileData;
+#elif defined( CINDER_WINRT )
+	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
+	void *mFileData;
+	FT_Face mFace;
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	BufferRef				mFileData;
+	FT_Face 				mFace = nullptr;
+	void 					releaseFreeTypeFace();
+#endif 		
+	size_t					mNumGlyphs;
+};	
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FontManager
@@ -97,7 +133,7 @@ class FontManager
  private:
 	FontManager();
 
-	static std::unique_ptr<FontManager>	sInstance;
+	static FontManager*	sInstance;
 
 	bool				mFontsEnumerated;
 	vector<string>		mFontNames;
@@ -131,19 +167,36 @@ class FontManager
 	FT_Library			mLibrary;
 #endif
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	std::set<std::shared_ptr<ci::FontObj>>	mTrackedFonts;
+	void fontCreated( const std::shared_ptr<ci::FontObj>& fontObj ) {
+		mTrackedFonts.insert( fontObj );
+	}
+	void fontDestroyed( const std::shared_ptr<ci::FontObj>& fontObj ) {
+		if( fontObj ) {
+			fontObj->releaseFreeTypeFace();
+		}
+		mTrackedFonts.erase( fontObj );
+	}
+#endif	
+
 	friend class Font;
 	friend class FontObj;
 
-#if defined( CINDER_ANDROID )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	friend void FontManager_destroyStaticInstance();
 #endif	
 };
 
-std::unique_ptr<FontManager> FontManager::sInstance;
+FontManager* FontManager::sInstance = nullptr;
 
-#if defined( CINDER_ANDROID )
-void FontManager_destroyStaticInstance() {
-	FontManager::sInstance.reset();
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+void FontManager_destroyStaticInstance() 
+{
+	if( nullptr != FontManager::sInstance ) {
+		delete FontManager::sInstance;
+		FontManager::sInstance = nullptr;
+	}
 }
 #endif
 
@@ -206,7 +259,15 @@ FontManager::~FontManager()
 {
 #if defined( CINDER_MAC )
 	[nsFontManager release];
-#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_WINRT )
+	FT_Done_FreeType(mLibrary);
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	for( auto& fontObj : mTrackedFonts ) {
+		if( fontObj ) {
+			fontObj->releaseFreeTypeFace();
+		}
+	}
+	mTrackedFonts.clear();
 	FT_Done_FreeType(mLibrary);
 #endif
 }
@@ -214,10 +275,10 @@ FontManager::~FontManager()
 FontManager* FontManager::instance()
 {
 	if( ! FontManager::sInstance ) {
-		FontManager::sInstance.reset( new FontManager() );
+		FontManager::sInstance =  new FontManager();
 	}
 	
-	return sInstance.get();
+	return sInstance;
 }
 
 #if defined( CINDER_MSW )
@@ -341,41 +402,20 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// FontObj
-class FontObj {
-	public:
-	FontObj( const std::string &aName, float aSize );
-	FontObj( DataSourceRef dataSource, float size );
-	~FontObj();
-		
-	void		finishSetup();
-		
-		
-	std::string				mName;
-	float					mSize;
-#if defined( CINDER_COCOA )
-	CGFontRef				mCGFont;
-	const struct __CTFont*	mCTFont;
-#elif defined( CINDER_MSW )
-	::TEXTMETRIC					mTextMetric;
-	::LOGFONTW						mLogFont;
-	::HFONT							mHfont;
-	std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
-	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
-	void *mFileData;
-#elif defined( CINDER_WINRT )
-	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
-	void *mFileData;
-	FT_Face mFace;
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	BufferRef				mFileData;
-	FT_Face 				mFace = nullptr;
-#endif 		
-	size_t					mNumGlyphs;
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Font
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+Font::Font( const string &name, float size )
+	: mObj( new FontObj( name, size ) )
+{
+	FontManager::instance()->fontCreated( mObj );
+}
+
+Font::Font( DataSourceRef dataSource, float size )
+	: mObj( new FontObj( dataSource, size ) )
+{
+	FontManager::instance()->fontCreated( mObj );
+}
+#else
 Font::Font( const string &name, float size )
 	: mObj( new FontObj( name, size ) )
 {
@@ -385,6 +425,7 @@ Font::Font( DataSourceRef dataSource, float size )
 	: mObj( new FontObj( dataSource, size ) )
 {
 }
+#endif
 
 const vector<string>& Font::getNames( bool forceRefresh )
 {
@@ -1124,10 +1165,20 @@ FontObj::~FontObj()
 	FT_Done_Face(mFace);
 	free( mFileData );
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	FT_Done_Face( mFace );
+	releaseFreeTypeFace();
 	mFileData.reset();
 #endif
 }
+
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+void FontObj::releaseFreeTypeFace()
+{
+	if( nullptr != mFace ) {
+		FT_Done_Face( mFace );
+		mFace = nullptr;
+	}
+}
+#endif
 
 void FontObj::finishSetup()
 {

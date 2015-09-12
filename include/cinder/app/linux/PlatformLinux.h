@@ -35,6 +35,8 @@ class PlatformLinux : public Platform {
 
 	static PlatformLinux*			get();
 
+	virtual void 					cleanupLaunch() override;
+
 	virtual DataSourceRef			loadResource( const fs::path &resourcePath ) override;
 
 	virtual fs::path				getResourceDirectory() const override;

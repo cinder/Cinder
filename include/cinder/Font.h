@@ -126,7 +126,7 @@ class Font {
 
  private:
 	std::shared_ptr<FontObj>			mObj;
-	
+
   public:
  	//@{
 	//! Emulates shared_ptr-like behavior
