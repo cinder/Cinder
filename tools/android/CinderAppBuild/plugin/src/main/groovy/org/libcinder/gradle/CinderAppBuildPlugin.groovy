@@ -432,6 +432,27 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         }
     }
 
+    boolean isValidSourceFileExt( String fileName ) {
+        String lower = fileName.toLowerCase();
+        return lower.endsWith( ".cpp" ) ||
+               lower.endsWith( ".cxx" ) ||    
+               lower.endsWith( ".cc" )  ||    
+               lower.endsWith( ".c" );    
+    }
+
+    void addSourceFile( String path, cppBuildDir ) {
+        if( isValidSourceFileExt( path ) ) {
+            if( ! path.startsWith( "." ) ) {
+                String relPath = this.relativePath( cppBuildDir, path )
+                this.mSourceFiles.add("\t" + relPath + " \\")
+                this.mSourceFilesFullPath.add( path );              
+            }
+        }
+        else {
+            println( "IGNORING (unknown source file ext): ${path}" );
+        }
+    }
+
     void parseSourceFiles(Project project, cppBuildDir) {
         this.mSourceFiles = [];
         this.mSourceFilesFullPath = [];
@@ -440,12 +461,21 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             this.mSourceFiles.add("\\")
             project.cinder.srcFiles.each {
                 def file = new File("${project.projectDir}/" + it)
-                String path = file.canonicalPath.toString()                    
-                if( ! path.startsWith( "." ) ) {
-                    String relPath = this.relativePath( cppBuildDir, path )
-                    this.mSourceFiles.add("\t" + relPath + " \\")
-                    this.mSourceFilesFullPath.add( path );
+                String path = file.canonicalPath.toString();
+                addSourceFile( path, cppBuildDir );
+                
+/*                    
+                if( isValidSourceFileExt( path ) ) {
+                    if( ! path.startsWith( "." ) ) {
+                        String relPath = this.relativePath( cppBuildDir, path )
+                        this.mSourceFiles.add("\t" + relPath + " \\")
+                        this.mSourceFilesFullPath.add( path );              
+                    }
                 }
+                else {
+                    println( "IGNORING (unknown source file ext): ${path}" );
+                }
+*/                
             }
         }
         
@@ -457,14 +487,22 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             project.cinder.srcDirs.each {
                 def dir = new File("${project.projectDir}/" + it)                                       
                 dir.eachFile() {
-                    String path = it.canonicalPath.toString()                    
-                    if( ! path.startsWith( "." ) ) {
-                        String relPath = this.relativePath( cppBuildDir, path )
-                        this.mSourceFiles.add("\t" + relPath + " \\")
-                        this.mSourceFilesFullPath.add( path );
+                    String path = it.canonicalPath.toString();
+                    addSourceFile( path, cppBuildDir );
+                    
+/*
+                    if( isValidSourceFileExt( path ) ) {
+                        if( ! path.startsWith( "." ) ) {
+                            String relPath = this.relativePath( cppBuildDir, path )
+                            this.mSourceFiles.add("\t" + relPath + " \\")
+                            this.mSourceFilesFullPath.add( path );
+                        }
                     }
+                    else {
+                        println( "IGNORING (unknown source file ext): ${path}" );
+                    }
+*/                    
                 }
-
             }
         }
     }
