@@ -91,8 +91,6 @@ void TextureFontApp::draw()
 	gl::color( Color::white() );
 	mTextureFont->drawString( toString( floor(getAverageFps()) ) + " FPS", vec2( 10, getWindowHeight() - mTextureFont->getDescent() ) + offset );
 
-//std::cout << floor(getAverageFps()) << " fps" << std::endl;
-    
     // Draw Font Name
 	float fontNameWidth = mTextureFont->measureString( mTextureFont->getName() ).x;
 	mTextureFont->drawString( mTextureFont->getName(), vec2( getWindowWidth() - fontNameWidth - 10, getWindowHeight() - mTextureFont->getDescent() ) + offset );

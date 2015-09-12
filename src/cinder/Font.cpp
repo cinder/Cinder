@@ -127,7 +127,16 @@ class FontManager
 	}
 
 #if defined( CINDER_ANDROID )
-	fs::path 			getFontFile( const std::string& fontName ) const;
+	struct FontInfo {
+		std::string 	key;
+		std::string 	name;
+		fs::path 		path;
+		FontInfo() {}
+		FontInfo( const std::string& aKey, const std::string& aName, const fs::path& aPath ) 
+			: key( aKey ), name( aName ), path( aPath ) {}
+	};
+
+	FontInfo 			getFontInfo( const std::string& fontName ) const;
 #endif
 
  private:
@@ -153,16 +162,8 @@ class FontManager
 #elif defined( CINDER_WINRT )
 	FT_Library			mLibrary = nullptr;
 #elif defined( CINDER_ANDROID )
-	FT_Library			mLibrary;
-
-	struct FontInfo {
-		std::string 				name;
-		fs::path 					path;
-		FontInfo() {}
-		FontInfo( const std::string& aName, const fs::path& aPath ) 
-			: name( aName ), path( aPath ) {}
-	};
-	std::map<string, FontInfo> mFontInfos;
+	FT_Library				mLibrary;
+	std::vector<FontInfo>	mFontInfos;
 #elif defined( CINDER_LINUX )	
 	FT_Library			mLibrary;
 #endif
@@ -231,13 +232,13 @@ FontManager::FontManager()
 					std::string fontName = ci::linux::ftutil::GetFontName( tmpFace, fontPath.stem().string() );
 					std::string keyName = fontName;
 					std::transform( keyName.begin(), keyName.end(), keyName.begin(), [](char c) -> char { return (c >= 'A' && c <='Z') ? (c + 32) : c; } );
-					mFontInfos[keyName] = FontInfo( fontName, fontPath );
+					mFontInfos.push_back( FontInfo( keyName, fontName, fontPath ) );
 
 					const std::string regular = "regular";
 					size_t startPos = keyName.find( regular );
 					if( std::string::npos != startPos ) {
 						keyName.replace( startPos, regular.length(), "" );
-						mFontInfos[keyName] = FontInfo( fontName, fontPath );
+						mFontInfos.push_back( FontInfo( keyName, fontName, fontPath ) );
 					} 	
 
 					FT_Done_Face( tmpFace );
@@ -290,28 +291,31 @@ int CALLBACK EnumFontFamiliesExProc( ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpn
 #endif
 
 #if defined( CINDER_ANDROID )
-fs::path FontManager::getFontFile( const std::string& fontName ) const
+FontManager::FontInfo FontManager::getFontInfo( const std::string& fontName ) const
 {
-	fs::path result = "/system/fonts/Roboto-Regular.ttf";
+	FontManager::FontInfo result;
+	result.key  = "roboto regular";
+	result.name = "Roboto Regular";
+	result.path = "/system/fonts/Roboto-Regular.ttf";
 
 	std::string lcfn = fontName;
 	std::transform( lcfn.begin(), lcfn.end(), lcfn.begin(), [](char c) -> char { return (c >= 'A' && c <='Z') ? (c + 32) : c; } );
 
 	std::vector<std::string> tokens = ci::split( lcfn, ' ' );
 	float highScore = 0.0f;
-	for( const auto& it : mFontInfos ) {
+	for( const auto& fontInfos : mFontInfos ) {
 		int hits = 0;
 		for( const auto& tok : tokens ) {
-			if( std::string::npos != it.first.find( tok ) ) {
+			if( std::string::npos != fontInfos.key.find( tok ) ) {
 				hits += tok.size();	
 			}
 		}
 
 		if( hits > 0 ) {
-			float score = (float)hits/(float)(it.first.size());
+			float score = (float)hits/(float)(fontInfos.key.length());
 			if( score > highScore ) {
 				highScore = score;
-				result = it.second.path;
+				result = fontInfos;
 			}
 		}
 	}
@@ -360,8 +364,8 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 		}
 #elif defined( CINDER_ANDROID )
 		std::set<std::string> uniqueNames;
-		for( const auto& it : mFontInfos ) {
-			uniqueNames.insert( it.second.name );
+		for( const auto& fontInfos : mFontInfos ) {
+			uniqueNames.insert( fontInfos.name );
 		}
 
 		for( const auto& name : uniqueNames ) {
@@ -976,9 +980,9 @@ FontObj::FontObj( const string &aName, float aSize )
 	fontCollection->Release();
 	writeFactory->Release();
 #elif defined( CINDER_ANDROID )
-	fs::path fontFilePath = FontManager::instance()->getFontFile( aName );
+	FontManager::FontInfo fontInfo = FontManager::instance()->getFontInfo( aName );
 
-	DataSourceRef dataSource = ci::loadFile( fontFilePath );
+	DataSourceRef dataSource = ci::loadFile( fontInfo.path );
 	if( ! dataSource ) {
 		throw FontLoadFailedExc( "Couldn't find file for " + aName );
 	}
@@ -998,7 +1002,7 @@ FontObj::FontObj( const string &aName, float aSize )
 	FT_Select_Charmap( mFace, FT_ENCODING_UNICODE );
 	FT_Set_Char_Size( mFace, 0, (int)aSize*64, 0, 72 );
 
-	mName = ci::linux::ftutil::GetFontName( mFace );
+	mName = fontInfo.name;
 #elif defined( CINDER_LINUX )
 	::FcPattern *pat = ::FcNameParse( (const FcChar8*)aName.c_str() );
 
