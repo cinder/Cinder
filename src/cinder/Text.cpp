@@ -255,7 +255,6 @@ void Line::calcExtents()
 		FT_Face face = runIt->mFont.getFreetypeFace();
 
 		auto measure = ci::linux::ftutil::MeasureString( runIt->mText, face );
-//ci::app::console() << runIt->mText << " : " << measure << std::endl;
 
 		mWidth   += measure.getWidth();
 		mAscent  = std::max( runIt->mFont.getAscent(),     mAscent  );
@@ -266,7 +265,7 @@ void Line::calcExtents()
 #endif
 
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	mWidth += 0.5f;
+	//mWidth += 0.5f;
 #else
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
 #endif
@@ -501,13 +500,16 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 		(*lineIt)->calcExtents();
 		//totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight + (*lineIt)->mLeadingOffset );
 		totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight );
-//ci::app::console() << totalHeight << " : " << (*lineIt)->mHeight << std::endl;
 		if( (*lineIt)->mWidth > maxWidth ) {
-			maxWidth = (*lineIt)->mWidth;
+			maxWidth = (*lineIt)->mWidth;;
 		}
 	}
 
-	maxWidth += 0.5;
+	maxWidth += 0.5f;
+
+  #if defined( CINDER_ANDROID )
+	totalHeight += 2.0f;
+  #endif
 #else
 	float totalHeight = 0, maxWidth = 0;
 	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
@@ -522,8 +524,6 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 		totalHeight = currentY - (mLines.back()->mAscent - mLines.back()->mDescent - mLines.back()->mLeadingOffset - mLines.back()->mLeading );
 		totalHeight += mLines.back()->mHeight;
 	}*/
-
-//std::cout << "totalHeight: " << totalHeight << std::endl;
 
 	// round up from the floating point sizes to get the number of pixels we'll need
 	int pixelWidth = (int)math<float>::ceil( maxWidth ) + mHorizontalBorder * 2;

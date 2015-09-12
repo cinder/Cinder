@@ -91,11 +91,7 @@ DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
 
 DataSourceRef PlatformAndroid::loadResource( const fs::path &resourcePath )
 {
-	fs::path fullPath = getResourcePath( resourcePath );
-	if( fullPath.empty() )
-		throw ResourceLoadExc( resourcePath );
-	else
-		return DataSourcePath::create( fullPath );
+	return loadAsset( resourcePath );
 }
 
 fs::path PlatformAndroid::getResourceDirectory() const 
@@ -103,9 +99,9 @@ fs::path PlatformAndroid::getResourceDirectory() const
 	return fs::path(); 
 }
 
-fs::path PlatformAndroid::getResourcePath( const fs::path &rsrcRelativePath ) const
+fs::path PlatformAndroid::getResourcePath( const fs::path &rsrcRelativePath )
 { 
-	return fs::path(); 
+	return getAssetPath( rsrcRelativePath );
 }
 
 fs::path PlatformAndroid::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )

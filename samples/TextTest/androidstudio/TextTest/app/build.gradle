@@ -27,7 +27,7 @@ android {
         main {
             jni.srcDirs = ['src/main/jni', '../../../src', '../../../include']
             jniLibs.srcDirs = ['src/main/jniLibs', '../../../../../lib']
-            assets.srcDirs = ['src/main/assets', '../../../assets']
+            assets.srcDirs = ['src/main/assets', '../../../assets', '../../../resources']
         }
     }
 
