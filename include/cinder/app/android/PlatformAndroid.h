@@ -37,6 +37,8 @@ class PlatformAndroid : public Platform {
 
 	static PlatformAndroid*			get();
 
+	virtual void 					cleanupLaunch() override;
+
 	virtual DataSourceRef			loadAsset( const fs::path &relativePath );
 
 	virtual DataSourceRef			loadResource( const fs::path &resourcePath ) override;
