@@ -16,11 +16,10 @@ $(document).ready(function() {
 	 		if( !hash )
 	 			return;
 	 		// find section with this hash
-	 		var linkTag = $('a[name='+hash+']')[0] || $('a[id='+hash+']');
+	 		var linkTag = $('a[name='+hash+']') || $('a[id='+hash+']');
 	 		if( linkTag ) {
-	 			linkTag = linkTag[0];
 		 		// find parent
-		 		var linkParent = $(linkTag.parentNode);
+		 		var linkParent = $(linkTag[0].parentNode);
 		 		// toggle show for this section
 		 		linkParent.removeClass("hidden");
 	 		};
@@ -123,7 +122,7 @@ $(document).ready(function() {
 				$aTag.wrap( magDestination );
 			} );
 		}
-	}
+	};
 
 	// look for all dom items with class
 
