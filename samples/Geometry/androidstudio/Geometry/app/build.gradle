@@ -65,9 +65,9 @@ android {
     }
 
     cinder {
-        ndkDir = "${projectDir}/../../../../../../android-ndk"
+        ndkDir = plugins.getPlugin('com.android.application').sdkHandler.getNdkFolder().toString()
         cinderDir = "${projectDir}/../../../../.."
-        verbose = false 
+        verbose = false
         moduleName = "Geometry"
         srcDirs = ["../../../src"]
         cFlags {
@@ -82,7 +82,7 @@ android {
                 release = "-Os -std=c++11"
             }
         }
-        includeDirs = ["${cinderDir}/include", "${cinderDir}/boost"]
+        includeDirs = ["${cinderDir}/include", "${cinderDir}/include/freetype", "${cinderDir}/boost"]
         ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
         libCinder = [
             "debug" : "${cinderDir}/lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libcinder_d.a",
@@ -103,10 +103,10 @@ android {
 
     tasks.withType(JavaCompile) {
         compileTask ->
-            if("compileDebugJava" == compileTask.name) {
+            if("compileDebugJavaWithJavac" == compileTask.name) {
                 compileTask.dependsOn ndkBuildDebug
             }
-            else if("compileReleaseJava" == compileTask.name) {
+            else if("compileReleaseJavaWithJavac" == compileTask.name) {
                 compileTask.dependsOn ndkBuildRelease
             }
     }

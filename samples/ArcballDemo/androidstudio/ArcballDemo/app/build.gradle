@@ -47,7 +47,7 @@ android {
     }
 
     cinder {
-        ndkDir = "${projectDir}/../../../../../../android-ndk-r10d"
+        ndkDir = plugins.getPlugin('com.android.application').sdkHandler.getNdkFolder().toString()
         cinderDir = "${projectDir}/../../../../.."
         verbose = true
         moduleName = "ArcballDemoApp"
@@ -85,10 +85,10 @@ android {
 
     tasks.withType(JavaCompile) {
         compileTask ->
-            if("compileDebugJava" == compileTask.name) {
+            if("compileDebugJavaWithJavac" == compileTask.name) {
                 compileTask.dependsOn ndkBuildDebug
             }
-            else if("compileReleaseJava" == compileTask.name) {
+            else if("compileReleaseJavaWithJavac" == compileTask.name) {
                 compileTask.dependsOn ndkBuildRelease
             }
     }
