@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if (( $# == 0 )); then
-    echo -e  "cbuilder.sh - Cinder for Android wrapper script"
+    echo -e  "cbuilder - Cinder for Android wrapper script"
     echo -e "usage:"
-    echo -e "\tcbuilder.sh -j 4 -p 19,21 -a armeabi,armeabi-v7a,x86,mips,arm64-v8a,x86_64,mips64 -b Debug -v"
+    echo -e "\tcbuilder -j 4 -p 19,21 -a armeabi,armeabi-v7a,x86,mips,arm64-v8a,x86_64,mips64 -b Debug -v"
     echo -e ""
     echo -e "options:"
     echo -e "\t-p [str] Android platform, ex: -p 19"
@@ -14,7 +14,6 @@ if (( $# == 0 )); then
     echo -e "flags:"
     echo -e "\t-es2    Build for OpenGL ES 2 instead of OpenGL ES 3"
     echo -e "\t-r      Rebuild instead of full build"
-    echo -e "\t-v      Turns on verbose mode"
     echo -e "\t-v      Turns on verbose mode"
     echo -e "\t-clang  Uses clang3.5 toolchain (experimental)"
     echo -e ""
