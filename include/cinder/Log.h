@@ -73,13 +73,18 @@ struct Metadata {
 extern std::ostream& operator<<( std::ostream &os, const Location &rhs );
 extern std::ostream& operator<<( std::ostream &lhs, const Level &rhs );
 
+//! Logger is the base class all logging objects are derived from.
+//!
+//! \see LoggerConsole, LoggerFile, LoggerFileRotating
 class Logger {
   public:
 	virtual ~Logger()	{}
 
 	virtual void write( const Metadata &meta, const std::string &text ) = 0;
-
+	
+	//! Setter for enabling or disabling timestamps inside this loggers messages.
 	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
+	//! Getter for checking if timestamps are enabled in this loggers messages.
 	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
 
   protected:
@@ -91,24 +96,31 @@ class Logger {
 	bool mTimeStampEnabled;
 };
 
+//! LoggerConsole will print log messages in the application console window.
 class LoggerConsole : public Logger {
   public:
 	void write( const Metadata &meta, const std::string &text ) override;
 };
 
+//! \brief LoggerFile will write log messages to a specified file.
+//!
+//! LoggerFile will write to a specified file, either appending to or overwriting that
+//! file at application startup.
 class LoggerFile : public Logger {
   public:
-	// Standard loggerFile, will write to a single log file.  File appending is configurable.
-	// ! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
+	//! \brief Creates or opens a log file and writes to it.
+	//!
+	//! File appending is configurable via \p appendToExisting.  If \p filePath is empty,
+	//! uses the default \a %cinder.log filename placed next to the application binary.
+	//! If \p filePath does not exist, the file will be created.  If the folder structure
+	//! containing \p filePath does not exist, the folder structure will be created as well.
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	// daily rotating logger, will write to a formatted log file, updated at the first log request
-	// after midnight.
-	// ! If \a folder or \a formatStr are empty, ignores request
-	LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+	
 	virtual ~LoggerFile();
-
+	
 	void write( const Metadata &meta, const std::string &text ) override;
-
+	
+	//! Returns the file path targeted by this logger.
 	const fs::path&		getFilePath() const		{ return mFilePath; }
 
   protected:
@@ -116,36 +128,70 @@ class LoggerFile : public Logger {
 	void		ensureDirectoryExists();
 
 	fs::path		mFilePath;
-	fs::path		mFolderPath;
-	std::string		mDailyFormatStr;
-	int				mYearDay;
 	bool			mAppend;
-	bool			mRotating;
 	std::ofstream	mStream;
 };
 
-//! Logger that doesn't actually print anything, but triggers a breakpoint if a log event happens past a specified threshold
+//! \brief LoggerFileRotating will write log messages to a file that is rotated at midnight.
+//!
+//! LoggerFileRotating will write to a specified file, either appending to or overwriting that
+//! file.  The filename will be re-evaluated during the first logging event occuring past midnight.
+class LoggerFileRotating : public LoggerFile {
+  public:
+	//! \brief Creates a rotating log file that will rotate when the first logging event occurs
+	//! after midnight.
+	//!
+	//! File appending is configurable via \p appendToExisting.  \p formatStr will be passed to
+	//! [strtime](http://www.cplusplus.com/reference/ctime/strftime/) to determine the file name.
+	//! The log file will then be created in the folder defined in the \p folder parameter.
+	//! If \p folder is empty, uses the folder where the binary is located.  If the folder structure
+	//! defined in \p folder does not exist, it will be created.
+	//! If \p formatStr is empty, an assertion will be thrown.
+	LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+
+	virtual ~LoggerFileRotating() { }
+	
+	void write( const Metadata &meta, const std::string &text ) override;
+	
+protected:
+	fs::path		mFolderPath;
+	std::string		mDailyFormatStr;
+	int				mYearDay;
+};
+
+//! LoggerBreakpoint doesn't actually log anything, but triggers a breakpoint if a
+//! log event occurs at or above the specified \p triggerLevel.
 class LoggerBreakpoint : public Logger {
   public:
+	//! Creates a LoggerBreakpoint with a specified \p triggerLevel.
 	LoggerBreakpoint( Level triggerLevel = LEVEL_ERROR )
 		: mTriggerLevel( triggerLevel )
 	{}
 
 	void write( const Metadata &meta, const std::string &text ) override;
-
+	
+	//! Sets the minimum logging level that will cause a breakpoint to trigger.
 	void	setTriggerLevel( Level triggerLevel )	{ mTriggerLevel = triggerLevel; }
+	//! Gets the minimum logging level that will cause a breakpoint to trigger.
 	Level	getTriggerLevel() const					{ return mTriggerLevel; }
+	
   private:
 	Level	mTriggerLevel;
 };
 
-//! Provides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windows Event Logging. \note Does nothing on WinRT.
+//! \brief Provides 'system' logging support.
+//!
+//! Uses syslog on Unix based platforms, Event Logging on MSW platforms.
+//! \note Does nothing on WinRT.
 class LoggerSystem : public Logger {
 public:
 	LoggerSystem();
 	virtual ~LoggerSystem();
 	
 	void write( const Metadata &meta, const std::string &text ) override;
+	
+	//! Sets the minimum logging level that will trigger a system log.
+	//! \note This level can't be lower than \a CI_MIN_LOG_LEVEL.
 	void setLoggingLevel( Level minLevel ) { mMinLevel = minLevel; }
 	
 protected:
@@ -161,7 +207,8 @@ protected:
 
 //! \brief Logger that can log to multiple other Loggers.
 //!
-//! This is primarily used by LogManager as it's base Logger, when multiple log outputs are enabled (ex. console and file)
+//! This is primarily used by LogManager as it's base Logger, when multiple log outputs
+//! are enabled (ex. console and file)
 class LoggerMulti : public Logger {
   public:
 	void add( Logger *logger )							{ mLoggers.push_back( std::unique_ptr<Logger>( logger ) ); }
@@ -180,24 +227,30 @@ class LoggerMulti : public Logger {
 	std::vector<std::unique_ptr<Logger> >	mLoggers;
 };
 
+//! \brief LogManager manages a stack of all active Loggers.
+//!
+//! LogManager can be used in one of two styles.  \a addLogger and \a removeLogger can be used
+//! to manually manage loggers, or helper functions such as \a enableConsoleLogging and
+//! \a enableFileLogging can be used to easily enable or disable a single instance of each
+//! logger type.
 class LogManager {
 public:
-	// Returns a pointer to the shared instance. To enable logging during shutdown, this instance is leaked at shutdown.
+	//! Returns a pointer to the shared instance. To enable logging during shutdown, this instance is leaked at shutdown.
 	static LogManager* instance()	{ return sInstance; }
 	//! Destroys the shared instance. Useful to remove false positives with leak detectors like valgrind.
 	static void destroyInstance()	{ delete sInstance; }
 	//! Restores LogManager to its default state.
 	void restoreToDefault();
 
-	//! Resets the current Logger stack so only \a logger exists.
+	//! Resets the current Logger stack so only \p logger exists.
 	void resetLogger( Logger *logger );
-	//! Adds \a logger to the current stack of loggers.
+	//! Adds \p logger to the current stack of loggers.
 	void addLogger( Logger *logger );
-	//! Remove \a logger to the current stack of loggers.
+	//! Remove \p logger to the current stack of loggers.
 	void removeLogger( Logger *logger );
 	//! Returns a pointer to the current base Logger instance.
 	Logger* getLogger()	{ return mLogger.get(); }
-	//! Returns a logger of a specifc type, or nullptr is that type of Logger is currently not in use.
+	//! Returns a logger of a specifc type, or nullptr if that type of Logger is currently not in use.
 	template<typename LoggerT>
 	LoggerT* getLogger();
 	//! Returns a vector of all current loggers
@@ -205,28 +258,52 @@ public:
 	//! Returns the mutex used for thread safe loggers. Also used when adding or resetting new loggers.
 	std::mutex& getMutex() const			{ return mMutex; }
 
+	//! Enables LoggerConsole
 	void enableConsoleLogging();
+	//! Disables LoggerConsole
 	void disableConsoleLogging();
+	//! Enalbes or disables LoggerConsole
 	void setConsoleLoggingEnabled( bool enable )		{ enable ? enableConsoleLogging() : disableConsoleLogging(); }
+	//! Checks if a LogerConsole is active
 	bool isConsoleLoggingEnabled() const				{ return mConsoleLoggingEnabled; }
 
+	//! Enables an instance of LoggerFile.
+	//! \note Removes the existing LoggerFile, if one exists. 
 	void enableFileLogging( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void enableFileLoggingRotating( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
+	//! Removes the current LoggerFile.
 	void disableFileLogging();
+	//! Enables or disables LoggerFile.
 	void setFileLoggingEnabled( bool enable, const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+	//! Checks if a LoggerFile is currently active.
 	bool isFileLoggingEnabled() const					{ return mFileLoggingEnabled; }
 
+	//! Enables an instance of LoggerFileRotating that rotates the target file.
+	//! \note Removes the existing FileLoggerRotating, if one exists.
+	void enableFileLoggingRotating( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
+	//! Removes the current LoggerFileRotating.
+	void disableFileLoggingRotating();
+	//! Enables or disables LoggerFileRotating.
+	void setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+	//! Checks if a LoggerFileRotating is currently active.
+	bool isFileLoggingRotatingEnabled() const			{ return mFileLoggingRotatingEnabled; }
+	
+	//! Enables a platform specific instance of LoggerSystem.
 	void enableSystemLogging();
+	//! Removes the current instance of LoggerSystem.
 	void disableSystemLogging();
+	//! Enables or disables LoggerSystem.
 	void setSystemLoggingEnabled( bool enable = true )		{ enable ? enableSystemLogging() : disableSystemLogging(); }
+	//! Checks if LoggerSystem is enabled.
 	bool isSystemLoggingEnabled() const					{ return mSystemLoggingEnabled; }
+	//! Sets the mimimum logging level that will write to the system log.
+	//! \note This level can't be lower than \a CI_MIN_LOG_LEVEL.
 	void setSystemLoggingLevel( Level level );
+	//! Gets the current minimum logging level that will write to the system log.
 	Level getSystemLoggingLevel() const					{ return mSystemLoggingLevel; }
 
-	//! Enables a breakpoint to be triggered when a log message happens at `LEVEL_ERROR` or higher
+	//! Enables a breakpoint to be triggered when a log message happens at \a LEVEL_ERROR or higher
 	void enableBreakOnError()							{ enableBreakOnLevel( LEVEL_ERROR ); }
-	//! Enables a breakpoint to be triggered when a log message happens at \a trigerLevel or higher.
+	//! Enables a breakpoint to be triggered when a log message happens at \p trigerLevel or higher.
 	void enableBreakOnLevel( Level trigerLevel );
 	//! Disables any breakpoints set for logging.
 	void disableBreakOnLog();
@@ -235,11 +312,13 @@ protected:
 	LogManager();
 
 	bool initFileLogging();
+	bool initFileLoggingRotating();
 
 	std::unique_ptr<Logger>	mLogger;
 	LoggerMulti*			mLoggerMulti;
 	mutable std::mutex		mMutex;
-	bool					mConsoleLoggingEnabled, mFileLoggingEnabled, mSystemLoggingEnabled, mBreakOnLogEnabled;
+	bool					mConsoleLoggingEnabled, mFileLoggingEnabled, mFileLoggingRotatingEnabled;
+	bool					mSystemLoggingEnabled, mBreakOnLogEnabled;
 	Level					mSystemLoggingLevel;
 
 	static LogManager *sInstance;
@@ -302,6 +381,7 @@ class ThreadSafeT : public LoggerT {
 
 typedef ThreadSafeT<LoggerConsole>		LoggerConsoleThreadSafe;
 typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
+typedef ThreadSafeT<LoggerFileRotating> LoggerFileRotatingThreadSafe;
 
 // ----------------------------------------------------------------------------------
 // Template method implementations
