@@ -2,21 +2,21 @@
 
 if (( $# == 0 )); then
     echo -e  "cbuilder.sh - Cinder for Linux wrapper script"
-    echo -e "usage:"
+    echo -e "usage examples:"
     echo -e "\tcbuilder.sh -j 4 -b Debug"
+    echo -e "\tcbuilder.sh clean -b Debug"
     echo -e ""
     echo -e "options:"
 	echo -e "\tclean    Cleans the build for specified build type"
-    #echo -e "\t-p [str] Android platform, ex: -p 19"
-    #echo -e "\t-a [str] Architecture, ex: -a armeabi,arm64-v8a"
     echo -e "\t-b [str] Build type, ex: -b Debug,Release "
     echo -e "\t-j [n]   Number of compile processes, ex: -j 4"
     echo -e ""
     echo -e "flags:"
-    echo -e "\t-rpi2    Builds for Raspberry Pi 2"
-    echo -e "\t-tk1     Builds for NVidia Jetson TK1"
+    echo -e "\t-rpi2    Build for Raspberry Pi 2 (must be on platform)"
+    echo -e "\t-tk1     Build for NVidia Jetson TK1 (must be on platform)"
+    echo -e "\t-xu4     Build for Odroid XU4 (must be on platform)"
+    #echo -e "\t-r      Rebuild instead of full build"
     #echo -e "\t-v      Turns on verbose mode"
-    #echo -e "\t-clang  Uses clang3.5 toolchain (experimental)"
     #echo -e ""
     exit 0
 fi
@@ -96,6 +96,11 @@ for build in ${BUILDTYPES[@]}; do
 			echo "...deleted dir: ${build_dir}"
 		fi
 	else
+		if [ ! -f "${SCRIPT_DIR}/CMakeLists.txt" ]; then
+			echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}"
+			exit
+		fi
+
 		echo "---------------------------------------------------------------------------------"
 		echo "Building Cinder in ${build_type} mode"
 

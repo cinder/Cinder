@@ -28,35 +28,40 @@ set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
 
-# Output path
-set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/linux/${CINDER_ARCH} )
-
-project( cinder_linux )
 
 set( CINDER_TOOLCHAIN_CLANG true )
 
 if( CINDER_TOOLCHAIN_CLANG )
-    set(CMAKE_TOOLCHAIN_PREFIX "llvm-" ) 
-    set(CMAKE_C_COMPILER                      "clang")
-    set(CMAKE_CXX_COMPILER                    "clang++")
-    #set(CMAKE_C_COMPILER                      "/usr/bin/clang-3.5")
-    #set(CMAKE_CXX_COMPILER                    "/usr/bin/clang++-3.5")
+    set( CMAKE_C_COMPILER	"clang" 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER	"clang++" 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_AR           "llvm-ar"		CACHE FILEPATH "" FORCE )
+    set( CMAKE_LINKER       "llvm-link" 	CACHE FILEPATH "" FORCE )
+    set( CMAKE_NM           "llvm-nm " 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_RANLIB       "llvm-ranlib"	CACHE FILEPATH "" FORCE )
+    #set( CMAKE_STRIP        ""				CACHE FILEPATH "" FORCE )
 
-    set(CMAKE_C_FLAGS_INIT                    "-Wall -std=c99")
-    set(CMAKE_C_FLAGS_DEBUG_INIT              "-g")
-    set(CMAKE_C_FLAGS_MINSIZEREL_INIT         "-Os -DNDEBUG")
-    set(CMAKE_C_FLAGS_RELEASE_INIT            "-O4 -DNDEBUG")
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT     "-O2 -g")
-    set(CMAKE_C_FLAGS                          "${CMAKE_C_FLAGS} -fmessage-length=0 ")
+    set(CMAKE_C_FLAGS_INIT					"-Wall -std=c99" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS_DEBUG_INIT			"-g" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS_MINSIZEREL_INIT		"-Os -DNDEBUG" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS_RELEASE_INIT			"-O4 -DNDEBUG" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT	"-O2 -g" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS						"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
 
-    set(CMAKE_CXX_FLAGS_INIT                  "-Wall")
-    set(CMAKE_CXX_FLAGS_DEBUG_INIT            "-g")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT       "-Os -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE_INIT          "-O4 -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT   "-O2 -g")
-    set(CMAKE_CCC_FLAGS                       "${CMAKE_C_FLAGS} -fmessage-length=0 ")
+    set(CMAKE_CXX_FLAGS_INIT				"-Wall" CACHE STRING "" FORCE )
+    set(CMAKE_CXX_FLAGS_DEBUG_INIT			"-g" CACHE STRING "" FORCE )
+    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT		"-Os -DNDEBUG" CACHE STRING "" FORCE ) 
+    set(CMAKE_CXX_FLAGS_RELEASE_INIT		"-O4 -DNDEBUG" CACHE STRING "" FORCE )
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT	"-O2 -g" CACHE STRING "" FORCE )
+    set(CMAKE_CCC_FLAGS						"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
 endif()
 
+# Needs to come ater compilers are set
+project( cinder_linux )
+
+# Output path
+set( LIBRARY_OUTPUT_PATH "${CINDER_DIR}/lib/linux/${CINDER_ARCH}" )
+
+message( "" )
 message( "${BoldGreen}CINDER_ARCH: ${CINDER_ARCH}${ColorReset}" )
 message( "" )
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
@@ -70,12 +75,10 @@ message( "${BoldGreen}CMAKE_AR          : ${CMAKE_AR}${ColorReset}" )
 message( "${BoldGreen}CMAKE_LINKER      : ${CMAKE_LINKER}${ColorReset}" ) 
 message( "${BoldGreen}CMAKE_NM          : ${CMAKE_NM}${ColorReset}" ) 
 message( "${BoldGreen}CMAKE_RANLIB      : ${CMAKE_RANLIB}${ColorReset}" ) 
-message( "${BoldGreen}CMAKE_STRIP       : ${CMAKE_STRIP}${ColorReset}" ) 
+#message( "${BoldGreen}CMAKE_STRIP       : ${CMAKE_STRIP}${ColorReset}" ) 
+#message( "" )
+#message( "${BoldGreen}CMAKE_SYSROOT     : ${CMAKE_SYSROOT}${ColorReset}" ) 
 message( "" )
-message( "${BoldGreen}CMAKE_SYSROOT     : ${CMAKE_SYSROOT}${ColorReset}" ) 
-message( "" )
-
-
 
 include_directories( 
     ${CINDER_INC_DIR} 
