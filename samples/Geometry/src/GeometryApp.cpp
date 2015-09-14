@@ -108,7 +108,7 @@ void GeometryApp::setup()
 	mShowTangents = false;
 	mShowGrid = true;
 	mShowSolidPrimitive = true;
-	mShowWirePrimitive = true;
+	mShowWirePrimitive = false;
 	mEnableFaceFulling = false;
 
 	mSubdivision = 1;
@@ -305,12 +305,14 @@ void GeometryApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_q:
 		mQualitySelected = Quality( (int) ( mQualitySelected + 1 ) % 3 );
 		break;
+#if ! defined( CINDER_GL_ES )
 	case KeyEvent::KEY_v:
 		if( mViewMode == WIREFRAME )
 			mViewMode = SHADED;
 		else
 			mViewMode = WIREFRAME;
 		break;
+#endif 
 	case KeyEvent::KEY_w:
 		mShowWirePrimitive = !mShowWirePrimitive;
 		break;
