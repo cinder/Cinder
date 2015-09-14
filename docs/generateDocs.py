@@ -77,7 +77,21 @@ class Config(object):
         # break on errors that would prevent the file from being generated
         self.BREAK_ON_STOP_ERRORS = True
         # whitelisted namespaces to generate pages for
-        self.NAMESPACE_WHITELIST = ["ci", "glm"]
+        self.NAMESPACE_WHITELIST = [
+            {
+                "name": "cinder"
+            },
+            {
+                "name": "glm",
+                "structure_whitelist":
+                [
+                    {
+                        "name": "typedefs",
+                        "prefix_blacklist": ["lowp", "mediump", "highp"]
+                    }
+                ]
+            }
+        ]
         # blacklisted namespaces to generate pages for
         self.NAMESPACE_BLACKLIST = ["cinder::signals::detail", "cinder::audio::dsp::ooura", "cinder::detail", "glm::detail", "glm::gtc", "glm::gtx", "glm::io"]
         # blacklisted class strings - any class containing these strings will be skipped
@@ -88,7 +102,6 @@ class Config(object):
         self.PROJECT_META_FILE = os.path.join(XML_SOURCE_PATH, "_cinder_8h.xml")
 
         # directory for the class template mustache file
-        # self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-class-template.mustache")
         self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-class-template.mustache")
         # directory for the namespace template mustache file
         self.NAMESPACE_TEMPLATE = os.path.join(TEMPLATE_PATH, "page-namespace-template.mustache")
@@ -150,6 +163,46 @@ class Config(object):
             "source_file_ext": "hpp"
         }
 
+    def is_namespace_whitelisted(self, ns_str):
+        if any([ns_str.startswith(prefix["name"]) for prefix in self.NAMESPACE_WHITELIST]):
+            return True
+        return None
+
+    def is_namespace_blacklisted(self, ns_str):
+        if any([ns_str.startswith(prefix) for prefix in self.NAMESPACE_BLACKLIST]):
+            return True
+        return False
+
+    def get_ns_config(self, ns_str):
+        for ns in self.NAMESPACE_WHITELIST:
+            if ns["name"] == ns_str:
+                return ns
+        return None
+
+    def get_section_config(self, sections, section_name):
+        if sections:
+            for sections in sections:
+                if sections["name"] == section_name:
+                    return sections
+                return None
+        return None
+
+    def is_section_whitelisted(self, sections, section_name):
+        '''
+        Is the section of the page whitelisted
+        :param sections: list page section configs
+        :param section_name: name to check agains
+        :return:
+        '''
+        if sections:
+            for section in sections:
+                if section["name"] == section_name:
+                    whitelisted = True
+                    break
+                whitelisted = False
+        else:
+            whitelisted = True
+        return whitelisted
 
 # various state vars
 class State(object):
@@ -424,11 +477,11 @@ class SymbolMap(object):
 
             # get whitelisted namespaces
             whitelisted = False
-            if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_WHITELIST]):
+            if config.is_namespace_whitelisted(ns.name):
                 whitelisted = True
 
             blacklisted = False
-            if any([ns.name.startswith(prefix) for prefix in config.NAMESPACE_BLACKLIST]):
+            if config.is_namespace_blacklisted(ns.name):
                 blacklisted = True
 
             if whitelisted and not blacklisted:
@@ -463,6 +516,7 @@ class SymbolMap(object):
                     if testname == searchname:
                         return self.typedefs[typedef]
         return None
+
 
     def find_function(self, name, argstring=""):
 
@@ -1848,12 +1902,11 @@ def process_xml_file_definition(in_path, out_path, file_type):
         body_class = "classes"
 
     elif file_type == "namespace":
-        if any(in_path.find(blacklisted) > -1 for blacklisted in config.NAMESPACE_BLACKLIST):
-            log("Skipping file | Namespace " + in_path + " blacklisted", 0)
-            return
-
         html_template = config.NAMESPACE_TEMPLATE
         file_data = fill_namespace_content(tree)
+
+        if not file_data:
+            return
 
         section = "namespaces"
         body_class = "namespaces"
@@ -1909,6 +1962,93 @@ def process_xml_file_definition(in_path, out_path, file_type):
 
     # write the file
     write_html(bs4, out_path)
+
+
+def parse_namespaces(tree, sections):
+    namespaces = []
+    if config.is_section_whitelisted(sections, "namespaces"):
+        for member in tree.findall(r"compounddef/innernamespace"):
+            # link = convert_rel_path(member.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+            link = HTML_DEST_PATH + member.attrib["refid"] + ".html"
+            link_data = LinkData(link, member.text)
+            namespaces.append(link_data)
+    return namespaces
+
+
+def parse_classes(tree, sections):
+    classes = []
+    if config.is_section_whitelisted(sections, "classes"):
+        for member in tree.findall(r"compounddef/innerclass[@prot='public']"):
+            link = member.attrib["refid"] + ".html"
+            rel_link = HTML_DEST_PATH + link
+            link_data = LinkData(rel_link, member.text)
+
+            kind = "struct" if link.startswith("struct") else "class"
+            class_obj = {
+                "link_data": link_data,
+                "kind": kind
+            }
+            classes.append(class_obj)
+    return classes
+
+
+def parse_typedefs(bs4, tree, sections):
+    typedefs = []
+
+    if config.is_section_whitelisted(sections, "typedefs"):
+        section_config = config.get_section_config(sections, "typedefs")
+        if section_config:
+            prefix_blacklist = section_config["prefix_blacklist"] if section_config.has_key("prefix_blacklist") else None
+        else:
+            prefix_blacklist = None
+
+        for member in tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']"):
+            member_name = member.find(r"name").text
+            if prefix_blacklist and any(member_name.startswith(blacklisted) > 0 for blacklisted in prefix_blacklist):
+                # skip this blacklisted typedef
+                continue
+
+            typedef_obj = parse_member_definition(bs4, member)
+            typedefs.append(typedef_obj)
+    return typedefs
+
+
+def parse_enums(bs4, tree, sections):
+    enums = []
+    if config.is_section_whitelisted(sections, "enums"):
+        for member in tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']"):
+            member_obj = parse_enum(bs4, member)
+            enums.append(member_obj)
+    return enums
+
+
+def parse_functions(bs4, tree, sections):
+    fns = []
+    if config.is_section_whitelisted(sections, "functions"):
+        for member in tree.findall(r"compounddef/sectiondef/[@kind='func']/memberdef/[@kind='function']"):
+            function_obj = parse_member_definition(bs4, member)
+            fns.append(function_obj)
+    return fns
+
+
+def parse_free_functions(bs4, tree, sections):
+    free_fns = []
+    if config.is_section_whitelisted(sections, "free_functions"):
+        for member in tree.findall(r"compounddef/sectiondef/[@kind='user-defined']/memberdef/[@kind='function']"):
+            function_obj = parse_member_definition(bs4, member)
+            free_fns.append(function_obj)
+    return free_fns
+
+
+def parse_vars(bs4, tree, sections):
+    variables = []
+    if config.is_section_whitelisted(sections, "variables"):
+        for member in tree.findall(r"compounddef/sectiondef/[@kind='var']/memberdef/[@kind='variable']"):
+            var_obj = parse_member_definition(bs4, member)
+            initializer = member.find('initializer').text if member.find('initializer') is not None else None
+            var_obj["definition"]["args"] = initializer
+            variables.append(var_obj)
+    return variables
 
 
 def fill_class_content(tree):
@@ -1980,7 +2120,6 @@ def fill_class_content(tree):
                 link_data.link = link_path
                 typedefs.append(link_data)
     file_data.typedefs = typedefs
-
 
     # class hierarchy ----------------------------------- #
     if class_def:
@@ -2106,9 +2245,25 @@ def fill_namespace_content(tree):
     file_data = NamespaceFileData(tree)
     ns_def = g_symbolMap.find_namespace(file_data.name)
 
+    print ns_def
+    if ns_def:
+        if config.is_namespace_blacklisted(ns_def.name):
+            log("Skipping file | Namespace " + ns_def.name + " blacklisted", 1)
+            return
+    else:
+        log("Skipping: tree is not defined", 1)
+        return
+
     # return result of special glm namespace content filling
-    if ns_def.name == "glm":
-        return fill_glm_namespace_content(tree)
+    # TODO: If we get here, that means the namespace is NOT blacklisted, so this is where we check if each piece is whitelisted, if that array is empty, we assume that it's all whitelisted
+    ns_config = config.get_ns_config(ns_def.name)
+    if ns_config and ns_config.has_key("structure_whitelist"):
+        sections = ns_config["structure_whitelist"]
+    else:
+        sections = None
+
+    # if ns_def.name == "glm":
+    #     return fill_glm_namespace_content(tree)
 
     # page title ---------------------------------------- #
     file_data.title = file_data.name
@@ -2117,112 +2272,25 @@ def fill_namespace_content(tree):
     file_data.namespace_nav = str(g_namespaceNav)
 
     # add namespaces ------------------------------------ #
-    namespaces = []
-    for member in tree.findall(r"compounddef/innernamespace"):
-        # link = convert_rel_path(member.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
-        link = HTML_DEST_PATH + member.attrib["refid"] + ".html"
-        link_data = LinkData(link, member.text)
-        namespaces.append(link_data)
-    file_data.namespaces = namespaces
+    file_data.namespaces = parse_namespaces(tree, sections)
 
-    # add classes ------------------------------------ #
-    classes = []
-    for member in tree.findall(r"compounddef/innerclass[@prot='public']"):
-        link = member.attrib["refid"] + ".html"
-        # rel_link = convert_rel_path(link, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
-        rel_link = HTML_DEST_PATH + link
-        link_data = LinkData(rel_link, member.text)
-
-        kind = "struct" if link.startswith("struct") else "class"
-        class_obj = {
-            "link_data": link_data,
-            "kind": kind
-        }
-        classes.append(class_obj)
-    file_data.classes = classes
+    # add classes --------------------------------------- #
+    file_data.classes = parse_classes(tree, sections)
 
     # add typedefs -------------------------------------- #
-    typedefs = []
-    for member in tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']"):
-        typedef_obj = parse_member_definition(bs4, member)
-        typedefs.append(typedef_obj)
-    file_data.typedefs = typedefs
+    file_data.typedefs = parse_typedefs(bs4, tree, sections)
 
     # add enumerations ---------------------------------- #
-    enumerations = []
-    for member in tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']"):
-        member_obj = parse_enum(bs4, member)
-        enumerations.append(member_obj)
-    file_data.enumerations = enumerations
+    file_data.enumerations = parse_enums(bs4, tree, sections)
 
     # functions ----------------------------------------- #
-    fns = []
-    for member in tree.findall(r"compounddef/sectiondef/[@kind='func']/memberdef/[@kind='function']"):
-        function_obj = parse_member_definition(bs4, member)
-        fns.append(function_obj)
-    file_data.functions = fns
+    file_data.functions = parse_functions(bs4, tree, sections)
 
     # free functions ------------------------------------ #
-    free_fns = []
-    for member in tree.findall(r"compounddef/sectiondef/[@kind='user-defined']/memberdef/[@kind='function']"):
-        function_obj = parse_member_definition(bs4, member)
-        free_fns.append(function_obj)
-    file_data.free_functions = free_fns
+    file_data.free_functions = parse_free_functions(bs4, tree, sections)
 
     # variables ----------------------------------------- #
-    variables = []
-    for member in tree.findall(r"compounddef/sectiondef/[@kind='var']/memberdef/[@kind='variable']"):
-        var_obj = parse_member_definition(bs4, member)
-        initializer = member.find('initializer').text if member.find('initializer') is not None else None
-        var_obj["definition"]["args"] = initializer
-        variables.append(var_obj)
-    file_data.variables = variables
-
-    # define search tags
-    if ns_def:
-        file_data.search_tags = ns_def.tags
-    else:
-        file_data.search_tags = []
-
-    file_data.search_tags.extend(["namespace"])
-
-    return file_data
-
-
-def fill_glm_namespace_content(tree):
-    '''
-    Special function for filling out the glm namespace page which has specialized filtered content
-    :param tree:
-    :return:
-    '''
-    bs4 = BeautifulSoup()
-
-    if tree is None:
-        return
-
-    # get common data for the file
-    file_data = NamespaceFileData(tree)
-    ns_def = g_symbolMap.find_namespace(file_data.name)
-
-    # page title ---------------------------------------- #
-    file_data.title = file_data.name
-
-    # add namespace nav --------------------------------- #
-    file_data.namespace_nav = str(g_namespaceNav)
-
-    # add typedefs -------------------------------------- #
-    typedefs = []
-    ignore_list = ["lowp", "mediump", "highp"]
-    for member in tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']"):
-        member_name = member.find(r"name").text
-        print any(member_name.startswith(blacklisted) > 0 for blacklisted in ignore_list)
-        if any(member_name.startswith(blacklisted) > 0 for blacklisted in ignore_list):
-            # skip this blacklisted typedef
-            continue
-
-        typedef_obj = parse_member_definition(bs4, member)
-        typedefs.append(typedef_obj)
-    file_data.typedefs = typedefs
+    file_data.variables = parse_vars(bs4, tree, sections)
 
     # define search tags
     if ns_def:
@@ -3050,7 +3118,7 @@ def get_symbol_to_file_map():
             continue
 
         # skip over blacklisted classes that belong to a blacklisted namespace
-        if any(namespace_name.find(blacklisted) > -1 for blacklisted in config.NAMESPACE_BLACKLIST):
+        if config.is_namespace_blacklisted(namespace_name):
             log("SKIPPING NAMESPACE: " + namespace_name, 1)
             continue
 
