@@ -1309,7 +1309,7 @@ void Texture2d::initData( const ImageSourceRef &imageSource, const Format &forma
 		initDataImageSourceImpl( imageSource, format, dataFormat, dataType, channelOrder, isGray );
 	}	
 #else
-	initDataImageSourceImpl( imageSource, format, dataFormat, channelOrder, isGray );
+	initDataImageSourceImpl( imageSource, format, dataFormat, dataType, channelOrder, isGray );
 #endif	
 
 	if( mMipmapping ) {
