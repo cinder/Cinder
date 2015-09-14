@@ -108,7 +108,7 @@ void GeometryApp::setup()
 	mShowTangents = false;
 	mShowGrid = true;
 	mShowSolidPrimitive = true;
-	mShowWirePrimitive = true;
+	mShowWirePrimitive = false;
 	mEnableFaceFulling = false;
 
 	mSubdivision = 1;
