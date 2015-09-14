@@ -7,11 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		004A00431100D1AF00C1BE07 /* passThru_vert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 004A00401100D1AF00C1BE07 /* passThru_vert.glsl */; };
-		004A00441100D1AF00C1BE07 /* brot_frag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 004A00411100D1AF00C1BE07 /* brot_frag.glsl */; };
+		001899161BA787A7007F3CD0 /* mandelbrot.frag in Resources */ = {isa = PBXBuildFile; fileRef = 001899141BA787A7007F3CD0 /* mandelbrot.frag */; };
+		001899171BA787A7007F3CD0 /* mandelbrot.vert in Resources */ = {isa = PBXBuildFile; fileRef = 001899151BA787A7007F3CD0 /* mandelbrot.vert */; };
 		004A00451100D1AF00C1BE07 /* colors.png in Resources */ = {isa = PBXBuildFile; fileRef = 004A00421100D1AF00C1BE07 /* colors.png */; };
-		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
-		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		006D72EE19953304008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72EC19953304008149E2 /* AVFoundation.framework */; };
 		006D72EF19953304008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72ED19953304008149E2 /* CoreMedia.framework */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
@@ -20,6 +18,8 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
+		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		00BAE65A0E7ED9C10018A608 /* MandelbrotGLSLApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* MandelbrotGLSLApp.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -28,11 +28,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		004A00401100D1AF00C1BE07 /* passThru_vert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = passThru_vert.glsl; path = ../resources/passThru_vert.glsl; sourceTree = SOURCE_ROOT; };
-		004A00411100D1AF00C1BE07 /* brot_frag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = brot_frag.glsl; path = ../resources/brot_frag.glsl; sourceTree = SOURCE_ROOT; };
+		001899141BA787A7007F3CD0 /* mandelbrot.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = mandelbrot.frag; path = ../resources/mandelbrot.frag; sourceTree = "<group>"; };
+		001899151BA787A7007F3CD0 /* mandelbrot.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = mandelbrot.vert; path = ../resources/mandelbrot.vert; sourceTree = "<group>"; };
 		004A00421100D1AF00C1BE07 /* colors.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = colors.png; path = ../resources/colors.png; sourceTree = SOURCE_ROOT; };
-		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
-		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		006D72EC19953304008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		006D72ED19953304008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -41,6 +39,8 @@
 		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		00BAE6590E7ED9C10018A608 /* MandelbrotGLSLApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MandelbrotGLSLApp.cpp; path = ../src/MandelbrotGLSLApp.cpp; sourceTree = SOURCE_ROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
@@ -145,8 +145,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				004A00401100D1AF00C1BE07 /* passThru_vert.glsl */,
-				004A00411100D1AF00C1BE07 /* brot_frag.glsl */,
+				001899141BA787A7007F3CD0 /* mandelbrot.frag */,
+				001899151BA787A7007F3CD0 /* mandelbrot.vert */,
 				004A00421100D1AF00C1BE07 /* colors.png */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 			);
@@ -216,9 +216,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				004A00431100D1AF00C1BE07 /* passThru_vert.glsl in Resources */,
-				004A00441100D1AF00C1BE07 /* brot_frag.glsl in Resources */,
 				004A00451100D1AF00C1BE07 /* colors.png in Resources */,
+				001899171BA787A7007F3CD0 /* mandelbrot.vert in Resources */,
+				001899161BA787A7007F3CD0 /* mandelbrot.frag in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
