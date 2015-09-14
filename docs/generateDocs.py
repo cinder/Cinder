@@ -1951,7 +1951,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
 
     # add to search index
     link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, HTML_DEST_PATH)["href"]
-    add_to_search_index(bs4, link_path, file_data.kind_explicit, file_data.search_tags)
+    add_to_search_index(bs4, link_path, file_data.kind, file_data.search_tags)
 
     # deactivate invalid relative links
     for link in bs4.find_all("a"):
@@ -2245,7 +2245,6 @@ def fill_namespace_content(tree):
     file_data = NamespaceFileData(tree)
     ns_def = g_symbolMap.find_namespace(file_data.name)
 
-    print ns_def
     if ns_def:
         if config.is_namespace_blacklisted(ns_def.name):
             log("Skipping file | Namespace " + ns_def.name + " blacklisted", 1)
@@ -3340,7 +3339,6 @@ def add_to_search_index(html, save_path, search_type, tags=[]):
     :return:
     """
     global g_search_index
-
     if not g_search_index:
         g_search_index = {"data": []}
 
