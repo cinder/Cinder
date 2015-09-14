@@ -19,14 +19,13 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
     sourceSets {
         main {
             jni.srcDirs = ['src/main/jni', '../../../src', '../../../include']
-            jniLibs.srcDirs = ['src/main/jniLibs', '../../../../../lib']
+            jniLibs.srcDirs = ['src/main/jniLibs', '../../../../../../lib']
             assets.srcDirs = ['src/main/assets', '../../../assets']
         }
     }
@@ -67,9 +66,10 @@ android {
     cinder {
         ndkDir = plugins.getPlugin('com.android.application').sdkHandler.getNdkFolder().toString()
         cinderDir = "${projectDir}/../../../../../.."
+        println cinderDir
         verbose = false 
-        moduleName = "FBOBasicApp"
-        srcDirs = ["../../../src"]
+        moduleName = "FboBasicApp"
+        srcFiles = ["../../../src/FboBasicApp.cpp"]
         cFlags {
             "all_archs" {
                 debug = "-g"
@@ -112,6 +112,15 @@ android {
     }
 }
 
+repositories {
+    jcenter()
+    flatDir {
+        dirs "${projectDir}/../../../../../../lib/android"
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    debugCompile 'org.libcinder:libcinder-debug:1.0@aar'
+    releaseCompile 'org.libcinder:libcinder-release:1.0@aar'
 }

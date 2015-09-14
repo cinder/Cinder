@@ -1,7 +1,7 @@
 package org.libcinder.samples.fbobasic;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class FBOBasicActivity extends NativeActivity {
+public class FBOBasicActivity extends CinderNativeActivity {
     static final String TAG = "FBOBasicActivity";
 }
