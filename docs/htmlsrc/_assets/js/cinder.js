@@ -210,7 +210,6 @@ $(document).ready(function() {
 		}
 
 		// hide view all results append when search is empty or no results
-		console.log($('#search-results ul'));
 		if(!$('#search-input').val() || $('#search-results ul').children().length <= 0) {
 			$('#search-results-view-all').hide();
 		}
