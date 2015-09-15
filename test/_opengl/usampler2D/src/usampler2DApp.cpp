@@ -1,4 +1,4 @@
-// Should appear as altnerating black & white horizontal lines
+// Should appear as alternating black & white horizontal lines
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
