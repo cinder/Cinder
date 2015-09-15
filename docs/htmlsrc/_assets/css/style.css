@@ -196,19 +196,6 @@ dl {
 .row {
   max-width: 80rem;
 }
-ci {
-  color: #800080;
-  font-weight: 700;
-}
-a.ci {
-  font-family: Inconsolata, monospace !important;
-  font-size: 1em;
-  font-size: 0.9em;
-}
-a.ci.plain {
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-  font-size: inherit;
-}
 body#guide-contents {
   max-width: 960px;
   margin: 20px auto 0 auto;
@@ -371,8 +358,8 @@ body#guide-contents ul {
   text-indent: -0.8em;
   list-style: none;
 }
-.content ol,
-body#guide-contents ol {
+.content ul ol,
+body#guide-contents ul ol {
   margin-left: 0.8em;
 }
 .content ul,
@@ -799,8 +786,6 @@ button.interactive-guide:focus {
   padding: 40px 0 0 0;
 /*input[type="checkbox"] + label
 		margin-left: -18px*/
-/*.css-treeview input + label + ul
-		margin: 0*/
 }
 #side-nav h3 {
   color: #a41c12;
@@ -884,12 +869,20 @@ button.interactive-guide:focus {
 #side-nav .css-treeview label {
   color: #fff;
   font-size: inherit;
+  width: 100%;
 }
 #side-nav .css-treeview li.list-parent::before {
   content: none;
 }
 #side-nav .css-treeview li a {
   color: #a41c12;
+}
+#side-nav .css-treeview li.active {
+  background-color: #a41c12;
+}
+#side-nav .css-treeview li.active >label a,
+#side-nav .css-treeview li.active a {
+  color: #fff;
 }
 #side-nav .css-treeview label::before {
   background-image: url("../images/expand_arrow.png");
@@ -1021,54 +1014,28 @@ footer {
 }
 #nav_search > #search {
   position: absolute;
-  top: 0;
-  bottom: 0;
   right: 0;
-  margin: auto;
-  height: 30px;
-  width: 400px;
+  bottom: 35px;
 }
 #nav_search > #search > input {
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   display: inline-block;
-  position: absolute;
   margin-bottom: 0;
-  width: 100%;
+  width: 290px;
   font-size: 12px;
+  top: 0;
   height: 30px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
 }
 #nav_search > #search > button {
-  position: absolute;
-  right: 0;
   padding-top: 0;
   padding-bottom: 0;
   margin-bottom: 0;
   height: 30px;
-  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-  font-size: 10px;
   text-transform: uppercase;
   outline: 0;
-  background: #cb791c;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
 }
-#nav_search > #search > button:before {
-  content: "\2666";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  font-size: 30px;
-  -webkit-transform: rotate(90deg);
-  -moz-transform: rotate(90deg);
-  -o-transform: rotate(90deg);
-  -ms-transform: rotate(90deg);
-  transform: rotate(90deg);
-  color: #cb791c;
-}
-#nav_search > #search #search-results {
+#nav_search > #search > #search-results {
   background-color: #fff;
   position: absolute;
   right: 0;
@@ -1082,10 +1049,10 @@ footer {
   border-radius: 10px;
   width: 400px;
 }
-#nav_search > #search #search-results ul {
+#nav_search > #search > #search-results ul {
   margin-left: 0;
 }
-#nav_search > #search #search-results ul li {
+#nav_search > #search > #search-results li {
   height: auto;
   padding: 10px 0 10px 10px;
   margin-right: 0;
@@ -1093,21 +1060,21 @@ footer {
   background: transparent;
   width: 100%;
 }
-#nav_search > #search #search-results ul li:hover,
-#nav_search > #search #search-results ul li:hover a {
+#nav_search > #search > #search-results li:hover,
+#nav_search > #search > #search-results li:hover a {
   background: #c64b24;
   color: #fff;
 }
-#nav_search > #search #search-results ul li a {
+#nav_search > #search > #search-results a {
   padding: 0;
   color: #c64b24;
   background: transparent;
   font-size: 12px;
 }
-#nav_search > #search #search-results ul li a:before {
+#nav_search > #search > #search-results li a:before {
   content: "\00bb";
 }
-#nav_search > #search #search-results #search-results-view-all {
+#nav_search #search-results-view-all {
   display: inline-block;
   width: 100%;
   background: #949494;
@@ -1117,10 +1084,10 @@ footer {
   font-size: 12px;
   font-weight: 700;
 }
-#nav_search > #search #search-results #search-results-view-all a {
+#nav_search > #search > #search-results > #search-results-view-all a {
   color: #fff;
 }
-#nav_search > #search #search-results #search-results-view-all a:hover {
+#nav_search > #search > #search-results > #search-results-view-all a:hover {
   color: #c64b24;
 }
 [data-magellan-expedition],

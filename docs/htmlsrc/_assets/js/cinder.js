@@ -7,6 +7,30 @@ $(document).ready(function() {
 	var cinderJs = {
 		/*
 		* ----------------------------------------------------------------------
+		*  Selects the correct main nav item
+		* ----------------------------------------------------------------------
+		*/
+		setSection: function( sectionName ){
+	 		// find the nav item that correlates to the section name
+	 		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
+	 	},
+
+	 	/*
+		* ----------------------------------------------------------------------
+		*  Selects the correct namepsace nav iten
+		* ----------------------------------------------------------------------
+		*/
+		selectNamspace: function( namespace ){
+	 		var selectedNs = $('#namespace-nav').find('[data-namespace="' + namespace + '"]');
+	 		if( selectedNs ){
+	 			selectedNs.addClass('active');
+	 		}
+	 		// console.log($('#namespace-nav'));
+	 		// console.log("SELECT NAMESPACE", selectedNs);
+	 	},
+
+		/*
+		* ----------------------------------------------------------------------
  	 	*  Unhides a piece of content if it contains a anchor tag with a 
  	 	*  specific hash
  	 	*  @param {[type]} hash Hash name of the link
@@ -152,10 +176,6 @@ $(document).ready(function() {
  		}
  	});
 
- 	var setSection = function( sectionName ){
- 		// find the nav item that correlates to the section name
- 		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
- 	};
 
  	// --- Open all and Close all ---
  	var showAll = function(){
@@ -256,7 +276,8 @@ $(document).ready(function() {
 	} );
 	
 
- 	setSection( section );
+ 	cinderJs.setSection( section );
+ 	cinderJs.selectNamspace( window.selectedNamespace );
  	cinderJs.showContent( hash );
  	sideNav.init();
  	if( search_index_data )

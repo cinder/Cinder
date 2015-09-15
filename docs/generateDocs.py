@@ -1757,6 +1757,7 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
 
         # create a list item for the namespace
         ns_li = gen_tag(bs4, "li")
+        ns_li["data-namespace"] = namespace
 
         # create link for each item
         a_tag = gen_link_tag(bs4, name, HTML_SOURCE_PATH + ns.path)
@@ -1849,6 +1850,7 @@ def generate_namespace_nav():
     ul = gen_tag(bs4, "ul")
     # tree.append(ul)
     add_class_to_tag(ul, "css-treeview")
+    ul["id"] = "namespace-nav"
 
     iterate_namespace(bs4, namespaces, ul, 0, "")
     return ul
@@ -1925,7 +1927,12 @@ def process_xml_file_definition(in_path, out_path, file_type):
     # Generate the html file from the template and inject content
     file_content = file_data.get_content()
     bs4 = render_template(html_template, file_content)
-    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class, str("section_" + section): "true"}
+    content_dict = {
+        "page_title": file_content["title"],
+        "main_content": get_body_content(bs4),
+        "section_class": body_class,
+        "section_namespace": "cinder",
+        str("section_" + section): "true"}
     # append file meta
     content_dict.update(file_meta.copy())
 
@@ -2099,7 +2106,6 @@ def fill_class_content(tree):
 
     # includes ------------------------------------------ #
     include_link = None
-
     if include_file:
         file_obj = g_symbolMap.find_file(include_file)
         if file_obj:
