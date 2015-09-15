@@ -650,7 +650,7 @@ body.classes .top .side ul.inheritence li.depth5 {
 #container .reference-content .header h1 {
   font-weight: 700;
   text-transform: uppercase;
-  margin: 8px 0 0 0;
+  margin: 0 0 0 0;
   display: inline-block;
   vertical-align: middle;
 }
@@ -658,60 +658,43 @@ body.classes .top .side ul.inheritence li.depth5 {
   margin: 10px 0;
 }
 #container .reference-content .header-icon {
-  width: 100px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   display: inline-block;
   vertical-align: middle;
-}
-#container .reference-content .header-icon {
   overflow: hidden;
   background-repeat: no-repeat;
-  background-image: url("../images/header_icons.png");
+  margin-right: 10px;
 }
-#container .reference-content .header_2dgraphics {
-  width: 200px;
-  height: 80px;
-  background-position: -2px -2px;
+#container .reference-content .header-icon.header_2dgraphics {
+  background-image: url("../images/icons/2d_red.svg");
 }
-#container .reference-content .header_application {
-  width: 200px;
-  height: 80px;
-  background-position: -204px -2px;
+#container .reference-content .header-icon.header_geometry {
+  background-image: url("../images/icons/geom_red.svg");
 }
-#container .reference-content .header_audio {
-  width: 200px;
-  height: 80px;
-  background-position: -406px -2px;
+#container .reference-content .header-icon.header_math {
+  background-image: url("../images/icons/math_red.svg");
 }
-#container .reference-content .header_geometry {
-  width: 200px;
-  height: 80px;
-  background-position: -608px -2px;
+#container .reference-content .header-icon.header_system {
+  background-image: url("../images/icons/system_red.svg");
 }
-#container .reference-content .header_images {
-  width: 200px;
-  height: 80px;
-  background-position: -810px -2px;
+#container .reference-content .header-icon.header_platform {
+  background-image: url("../images/icons/platform_red.svg");
 }
-#container .reference-content .header_math {
-  width: 200px;
-  height: 80px;
-  background-position: -1012px -2px;
+#container .reference-content .header-icon.header_opengl {
+  background-image: url("../images/icons/opengl_red.svg");
 }
-#container .reference-content .header_platform {
-  width: 200px;
-  height: 80px;
-  background-position: -1214px -2px;
+#container .reference-content .header-icon.header_audio {
+  background-image: url("../images/icons/audio_red.svg");
 }
-#container .reference-content .header_system {
-  width: 200px;
-  height: 80px;
-  background-position: -1416px -2px;
+#container .reference-content .header-icon.header_video {
+  background-image: url("../images/icons/video_red.svg");
 }
-#container .reference-content .header_video {
-  width: 200px;
-  height: 80px;
-  background-position: -1618px -2px;
+#container .reference-content .header-icon.header_images {
+  background-image: url("../images/icons/images_red.svg");
+}
+#container .reference-content .header-icon.header_application {
+  background-image: url("../images/icons/app_red.svg");
 }
 .expandable {
   position: relative;
@@ -1376,7 +1359,7 @@ body.section_home #main-content ul.library-features {
 body.section_home #main-content ul.library-features li {
   display: block;
   text-align: center;
-  height: 120px;
+  height: 110px;
   margin-bottom: 20px;
 }
 body.section_home #main-content ul.library-features li a {
@@ -1401,7 +1384,7 @@ body.section_home #main-content ul.library-features li a .title {
   -o-transition: all 250ms;
   -ms-transition: all 250ms;
   transition: all 250ms;
-  font-weight: 800;
+  font-weight: 700;
 }
 body.section_home #main-content ul.library-features li a:hover {
   text-decoration: none;
@@ -1416,7 +1399,7 @@ body.section_home #main-content ul.library-features li a:hover .title {
 }
 body.section_home #main-content ul.library-features .img-holder {
   display: block;
-  height: 90px;
+  height: 80px;
   width: auto;
   position: relative;
 }

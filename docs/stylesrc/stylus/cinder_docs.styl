@@ -560,11 +560,9 @@ body.classes
 		margin: 0 0 20px 0
 
 		h1
-			// color: $cinder-orange
-			// text-align: center
 			font-weight: 700
 			text-transform: uppercase
-			margin: 8px 0 0 0
+			margin: 0 0 0 0
 			display: inline-block
 			vertical-align: middle
 		
@@ -572,25 +570,43 @@ body.classes
 			margin: 10px 0
 		
 	.header-icon
-		// margin: 0 auto
-		width: 100px
-		height: 80px
-		// text-align: center
+		width: 50px
+		height: 50px
 		display: inline-block
 		vertical-align: middle
-
-	// reference header icons
-	.header-icon {overflow:hidden; background-repeat: no-repeat;background-image:url('../images/header_icons.png');}
-
-	.header_2dgraphics {width:200px; height:80px; background-position: -2px -2px}
-	.header_application {width:200px; height:80px; background-position: -204px -2px}
-	.header_audio {width:200px; height:80px; background-position: -406px -2px}
-	.header_geometry {width:200px; height:80px; background-position: -608px -2px}
-	.header_images {width:200px; height:80px; background-position: -810px -2px}
-	.header_math {width:200px; height:80px; background-position: -1012px -2px}
-	.header_platform {width:200px; height:80px; background-position: -1214px -2px}
-	.header_system {width:200px; height:80px; background-position: -1416px -2px}
-	.header_video {width:200px; height:80px; background-position: -1618px -2px}
+		overflow:hidden
+		background-repeat: no-repeat
+		margin-right: 10px
+		
+		&.header_2dgraphics
+			background-image: url('../images/icons/2d_red.svg')
+		
+		&.header_geometry
+			background-image: url('../images/icons/geom_red.svg')
+		
+		&.header_math
+			background-image: url('../images/icons/math_red.svg')
+		
+		&.header_system
+			background-image: url('../images/icons/system_red.svg')
+			
+		&.header_platform
+			background-image: url('../images/icons/platform_red.svg')
+		
+		&.header_opengl
+			background-image: url('../images/icons/opengl_red.svg')	
+		
+		&.header_audio
+			background-image: url('../images/icons/audio_red.svg')
+			
+		&.header_video
+			background-image: url('../images/icons/video_red.svg')
+		
+		&.header_images
+			background-image: url('../images/icons/images_red.svg')
+		
+		&.header_application
+			background-image: url('../images/icons/app_red.svg')
 
 
 .expandable
