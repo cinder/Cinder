@@ -1056,16 +1056,16 @@ vector<string> TextBox::calculateLineBreaks( const std::map<Font::Glyph, Font::G
 			int measuredWidth = 0;
 			FT_Vector pen = { 0, 0 };
 			for( const auto& ch : utf32Chars ) {
-				FT_Vector advance = { 0, 0 };
+				ivec2 advance = { 0, 0 };
 				FT_UInt glyphIndex = FT_Get_Char_Index( mFont, ch );
 				if( nullptr != mCachedGlyphMerics ) {
 					auto iter = mCachedGlyphMerics->find( glyphIndex );
-					advance = iter->second.advance;					
+					advance = iter->second.advance;		
 				}
 				else  {
 					FT_Load_Glyph( mFont, glyphIndex, FT_LOAD_DEFAULT );
 					const FT_GlyphSlot& slot = mFont->glyph;
-					advance = slot->advance;
+					advance = ivec2( slot->advance.x, slot->advance.y );
 				}
 
 				pen.x += advance.x;
@@ -1105,7 +1105,7 @@ vector<pair<uint32_t,vec2>> TextBox::measureGlyphs( const std::map<Font::Glyph, 
 
 		FT_Vector pen = { 0, 0 };
 		for( const auto& ch : utf32Chars ) {
-			FT_Vector advance = { 0, 0 };
+			ivec2 advance = { 0, 0 };
 			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
 			if( nullptr != cachedGlyphMetrics ) {
 				auto iter = cachedGlyphMetrics->find( glyphIndex );
@@ -1114,7 +1114,7 @@ vector<pair<uint32_t,vec2>> TextBox::measureGlyphs( const std::map<Font::Glyph, 
 			else {
 				FT_Load_Glyph( face, glyphIndex, FT_LOAD_DEFAULT );
 				const FT_GlyphSlot& slot = face->glyph;
-				advance = slot->advance;
+				advance = ivec2( slot->advance.x, slot->advance.y );
 			}
 
 			float xPos = (pen.x / 64.0f) + 0.5f;

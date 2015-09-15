@@ -17,7 +17,6 @@ message( "" )
 
 include_directories( 
     ${CINDER_INC_DIR} 
-    ${CINDER_INC_DIR}/freetype 
     ${CINDER_INC_DIR}/glfw
     ${BOOST_INC_DIR}  
     ${INC_DIR} 

@@ -95,7 +95,9 @@ set( C_FLAGS "-fvisibility=default -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D
 set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
 set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
-set( CXX_FLAGS "-stdlib=libc++ -std=c++11 -fvisibility=default -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX" )
+# Disable these warnings, many of which are coming from Boost
+set( CXX_DISABLE_WARNINGS "-Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef" )
+set( CXX_FLAGS "-stdlib=libc++ -std=c++11 -fvisibility=default -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX ${CXX_DISABLE_WARNINGS}" )
 set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g -fexceptions -frtti" )
 set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
 

@@ -31,16 +31,12 @@
 
 	// Note: generic is a reserved word in winrt c++/cx
 	// need to redefine it for freetype.h
-	#define generic GenericFromFreeTypeLibrary
+	#define generic GenericFromFreeTypeLibrary/
 	#include FT_FREETYPE_H
 	#include FT_OUTLINE_H
 	#undef generic
 
 	#include FT_GLYPH_H
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	#include "ft2build.h"
-	#include FT_FREETYPE_H 
-	#include FT_OUTLINE_H
 #endif
 
 #include <string>
@@ -57,6 +53,8 @@
 	namespace Gdiplus {
 		class Font;
 	}
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	typedef struct FT_FaceRec_* FT_Face;
 #endif
 
 namespace cinder {
@@ -69,8 +67,7 @@ class Font {
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
 	typedef uint32_t		Glyph;
 	struct GlyphMetrics {
-		FT_Vector			advance;
-		FT_Glyph_Metrics	metrics;
+		ivec2				advance;
 	};
 #else
 	typedef uint16_t		Glyph;	

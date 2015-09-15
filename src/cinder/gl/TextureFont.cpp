@@ -43,7 +43,6 @@
 	#include <Windows.h>
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	#include "cinder/linux/FreeTypeUtil.h" 
- 	#include "cinder/ImageIo.h"
 #endif
 #include "cinder/Unicode.h"
 
@@ -410,8 +409,8 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				
 				FT_Load_Glyph( face, glyphIndex, FT_LOAD_DEFAULT );
 				Font::GlyphMetrics glyphMetrics;
-				glyphMetrics.advance = slot->advance;
-				glyphMetrics.metrics = slot->metrics;
+				glyphMetrics.advance = ivec2( slot->advance.x, slot->advance.y );
+				//glyphMetrics.metrics = slot->metrics;
 				mCachedGlyphMetrics[glyphIndex] = glyphMetrics;
 			}
 
