@@ -183,11 +183,11 @@ set( CINDER_C_SRC_FILES
 set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/linux/CinderLinux.cpp
 
-    ${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinux.cpp
+    ${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGeneric.cpp
     ${CINDER_SRC_DIR}/cinder/app/linux/AppLinux.cpp
     ${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
-    ${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinux.cpp
-    ${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinux.cpp
+    ${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGeneric.cpp
+    ${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGeneric.cpp
 
     ${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
     ${CINDER_SRC_DIR}/cinder/app/KeyEvent.cpp
