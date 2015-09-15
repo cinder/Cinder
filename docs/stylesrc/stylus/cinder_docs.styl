@@ -885,84 +885,104 @@ $border-height = 3px
 	position: relative
 	height: 100%
 	
-#nav_search > #search
-	position: absolute
-	right: 0
-	bottom: $nav-bottom-padding
+	& > #search
+		position: absolute
+		top: 0;
+		bottom: 0;
+		right: 0;
+		margin: auto;
+		height: 30px;
+		width: 400px;
 
-#nav_search > #search > input {
-	display: inline-block;
-	margin-bottom: 0;
-	width: 290px;
-	font-size: 12px;
-	top: 0;
-	height: 30px;
-	border-radius: 10px;
-}
-#nav_search > #search > button {
-	padding-top: 0;
-	padding-bottom: 0;
-	margin-bottom: 0;
-	height: 30px;
-	text-transform: uppercase;
-	outline: 0;
-}
-#nav_search > #search > #search-results {
-	background-color: white;
-	position: absolute;
-	right: 0;
-	z-index: 99999;
-	display: block;
-	max-height: 80vh;
-	overflow-y: scroll;
-	overflow-x: hidden;
-	top: 30px;
-    border-radius: 10px;
-    width: 400px;
-    // border: 1px $light-gray solid
-}
-#nav_search > #search > #search-results ul {
-	margin-left: 0;
-}
-#nav_search > #search > #search-results li {
-	height: auto;
-	padding: 10px 0 10px 10px;
-	margin-right: 0;
-	font-size: 12px;
-	background: transparent;
-	width: 100%;
-}
-#nav_search > #search > #search-results li:hover,
-#nav_search > #search > #search-results li:hover a {
-	background: #c64b24;
-	color: white;
-}
-#nav_search > #search > #search-results a {
-	padding: 0;
-	color: #c64b24;
-	background: transparent;
-	font-size: 12px;
-}
-#nav_search > #search > #search-results li a:before {
-	content: "\00bb";
-}
-#nav_search #search-results-view-all {
-	display: inline-block;
-	width: 100%;
-	background: #949494;
-	padding: 10px 0;
-    margin: 0 auto;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 700;
-}
-#nav_search > #search > #search-results > #search-results-view-all a {
-	color: white;
-}
-#nav_search > #search > #search-results > #search-results-view-all a:hover {
-	color: #c64b24;
-}
+		& > input
+			baseFontStyle()
+			display: inline-block;
+			position: absolute;
+			margin-bottom: 0;
+			width: 100%;
+			font-size: 12px;
+			height: 30px;
+			border-radius: 5px;
 
+		& > button
+			position: absolute;
+			right: 0;
+			padding-top: 0;
+			padding-bottom: 0;
+			margin-bottom: 0;
+			height: 30px;
+			baseFontStyle()
+			font-size: 10px
+			text-transform: uppercase;
+			outline: 0;
+			background: $cinder-orange
+			border-top-right-radius: 5px
+			border-bottom-right-radius: 5px
+	
+			&:before
+				content: "\2666";
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				font-size: 30px;
+				transform: rotate(90deg);
+				color: $cinder-orange
+
+		#search-results
+			background-color: white;
+			position: absolute;
+			right: 0;
+			z-index: 99999;
+			display: block;
+			max-height: 80vh;
+			overflow-y: scroll;
+			overflow-x: hidden;
+			top: 30px;
+			border-radius: 10px;
+			width: 400px;
+			// border: 1px $light-gray solid
+
+			ul
+				margin-left: 0;
+
+				li
+					height: auto;
+					padding: 10px 0 10px 10px;
+					margin-right: 0;
+					font-size: 12px;
+					background: transparent;
+					width: 100%;
+
+					&:hover,
+					&:hover a
+						background: #c64b24;
+						color: white;
+
+					a
+						padding: 0;
+						color: #c64b24;
+						background: transparent;
+						font-size: 12px;
+
+						&:before
+							content: "\00bb";
+
+			#search-results-view-all
+				display: inline-block;
+				width: 100%;
+				background: #949494;
+				padding: 10px 0;
+				margin: 0 auto;
+				text-align: center;
+				font-size: 12px;
+				font-weight: 700;
+
+				a
+					color: white;
+
+					&:hover
+						color: #c64b24;
 
 // Magellan override
 [data-magellan-expedition], [data-magellan-expedition-clone]
