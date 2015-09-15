@@ -201,6 +201,9 @@ body#guide-contents {
   margin: 20px auto 0 auto;
   width: 100%;
 }
+body.reference .content ul li {
+  margin-left: 0;
+}
 .plain {
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
 }
@@ -218,9 +221,6 @@ body#guide-contents {
   -webkit-box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
   box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
   z-index: 100;
-}
-#top-primary .nav {
-  font-size: 1.25rem;
 }
 #top-primary,
 #top-content {
@@ -881,7 +881,7 @@ button.interactive-guide:focus {
   background-color: #a41c12;
 }
 #side-nav .css-treeview li.active >label a,
-#side-nav .css-treeview li.active a {
+#side-nav .css-treeview li.active >a {
   color: #fff;
 }
 #side-nav .css-treeview label::before {
@@ -954,6 +954,7 @@ footer {
 #main-nav {
   background: transparent;
   height: 100px;
+  font-size: 1.1rem;
 }
 #main-nav .columns {
   height: 100%;
@@ -974,7 +975,7 @@ footer {
   height: 100%;
   position: relative;
   display: inline-block;
-  margin-right: 25px;
+  margin-right: 20px;
   margin-left: 0;
   background: none;
   border-bottom: solid 3px transparent;
@@ -997,6 +998,7 @@ footer {
   box-sizing: border-box;
   height: 97px;
   line-height: 1em;
+  font-weight: 400;
 }
 #main-nav .nav-section > ul > li a:hover {
   color: #a41c12;

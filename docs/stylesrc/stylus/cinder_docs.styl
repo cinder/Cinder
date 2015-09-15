@@ -142,6 +142,9 @@ body#guide-contents
 	margin: 20px auto 0 auto
 	width: 100%
 
+body.reference
+	.content ul li
+		margin-left: 0
 
 .plain
 	baseFontStyle()
@@ -163,9 +166,6 @@ body#guide-contents
 #top-primary
 	box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3)
 	z-index: 100
-	
-	.nav
-		font-size: 1.25rem
 	
 #top-primary,
 #top-content
@@ -759,7 +759,7 @@ button.interactive-guide
 				
 			&.active			
 				background-color: $cinder-red
-				>label a, a
+				>label a, >a
 					color: white
 			
 
@@ -828,7 +828,8 @@ $border-height = 3px
 #main-nav
 	background: transparent
 	height: $navbar-height
-	
+	font-size: 1.1rem			
+
 	.columns
 		height: 100%
 
@@ -849,7 +850,7 @@ $border-height = 3px
 				position: relative
 				display: inline-block
 				
-				margin-right: 25px
+				margin-right: 20px
 				margin-left: 0
 				background: none
 				border-bottom: solid 3px transparent
@@ -869,6 +870,7 @@ $border-height = 3px
 					box-sizing: border-box
 					height: $navbar-height - $border-height
 					line-height: 1em
+					font-weight: 400
 
 					&:hover
 						color: $cinder-red
