@@ -102,16 +102,13 @@ class LoggerConsole : public Logger {
 	void write( const Metadata &meta, const std::string &text ) override;
 };
 
-//! \brief LoggerFile will write log messages to a specified file.
-//!
 //! LoggerFile will write to a specified file, either appending to or overwriting that
 //! file at application startup.
 class LoggerFile : public Logger {
   public:
-	//! \brief Creates or opens a log file and writes to it.
-	//!
-	//! File appending is configurable via \p appendToExisting.  If \p filePath is empty,
-	//! uses the default \a %cinder.log filename placed next to the application binary.
+	//! LoggerFile constructor that creates or open a log file.  File appending is
+	//! configurable via \p appendToExisting.  If \p filePath is empty, uses the
+	//! default \a %cinder.log filename placed next to the application binary.
 	//! If \p filePath does not exist, the file will be created.  If the folder structure
 	//! containing \p filePath does not exist, the folder structure will be created as well.
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
@@ -132,15 +129,12 @@ class LoggerFile : public Logger {
 	std::ofstream	mStream;
 };
 
-//! \brief LoggerFileRotating will write log messages to a file that is rotated at midnight.
-//!
 //! LoggerFileRotating will write to a specified file, either appending to or overwriting that
 //! file.  The filename will be re-evaluated during the first logging event occuring past midnight.
 class LoggerFileRotating : public LoggerFile {
   public:
-	//! \brief Creates a rotating log file that will rotate when the first logging event occurs
-	//! after midnight.
-	//!
+	//! LoggerFileRotating constructor that creates a rotating log file.  The filename will be
+	//! re-evaluated when the first logging event occurs after midnight.
 	//! File appending is configurable via \p appendToExisting.  \p formatStr will be passed to
 	//! [strtime](http://www.cplusplus.com/reference/ctime/strftime/) to determine the file name.
 	//! The log file will then be created in the folder defined in the \p folder parameter.
@@ -179,9 +173,8 @@ class LoggerBreakpoint : public Logger {
 	Level	mTriggerLevel;
 };
 
-//! \brief Provides 'system' logging support.
-//!
-//! Uses syslog on Unix based platforms, Event Logging on MSW platforms.
+//! LoggerSystem provides 'system' logging support.  Uses syslog on Unix
+//! based platforms, Event Logging on MSW platforms.
 //! \note Does nothing on WinRT.
 class LoggerSystem : public Logger {
 public:
@@ -205,9 +198,8 @@ protected:
 #endif
 };
 
-//! \brief Logger that can log to multiple other Loggers.
-//!
-//! This is primarily used by LogManager as it's base Logger, when multiple log outputs
+//! LoggerMulti is a logger that can log to multiple other Loggers.  This is
+//! primarily used by LogManager as it's base Logger, when multiple log outputs
 //! are enabled (ex. console and file)
 class LoggerMulti : public Logger {
   public:
@@ -227,12 +219,10 @@ class LoggerMulti : public Logger {
 	std::vector<std::unique_ptr<Logger> >	mLoggers;
 };
 
-//! \brief LogManager manages a stack of all active Loggers.
-//!
-//! LogManager can be used in one of two styles.  \a addLogger and \a removeLogger can be used
-//! to manually manage loggers, or helper functions such as \a enableConsoleLogging and
-//! \a enableFileLogging can be used to easily enable or disable a single instance of each
-//! logger type.
+//! LogManager manages a stack of all active Loggers.  It can be used in one of two styles.
+//! \a addLogger and \a removeLogger can be used to manually manage loggers, or helper
+//! functions such as \a enableConsoleLogging and \a enableFileLogging can be used to
+//! easily enable or disable an instance of a Logger internally managed by LogManager.
 class LogManager {
 public:
 	//! Returns a pointer to the shared instance. To enable logging during shutdown, this instance is leaked at shutdown.
