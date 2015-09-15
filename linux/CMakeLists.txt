@@ -23,11 +23,18 @@ if(NOT WIN32)
   set(BoldWhite     "${Esc}[1;37m" )
 endif()
 
+if( "rpi2" STREQUAL "${CINDER_LINUX_TARGET}" )
+	if( NOT "arm7vl" STREQUAL "${CINDER_ARCH}" )
+		message( FATAL_ERROR "${BoldRed}Wrong architecture for Raspberry Pi 2: ${CINDER_ARCH}${ColorReset}" ) 
+	endif()
+
+	set( CINDER_LINUX_TARGET_RPI2 true )
+endif()
+
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
-
 
 set( CINDER_TOOLCHAIN_CLANG true )
 
@@ -62,7 +69,12 @@ project( cinder_linux )
 set( LIBRARY_OUTPUT_PATH "${CINDER_DIR}/lib/linux/${CINDER_ARCH}" )
 
 message( "" )
-message( "${BoldGreen}CINDER_ARCH: ${CINDER_ARCH}${ColorReset}" )
+if( CINDER_LINUX_TARGET_RPI2 )
+	message( "${BoldGreen}CINDER_ARCH        : ${CINDER_ARCH}${ColorReset}" )
+	message( "${BoldGreen}CINDER_LINUX_TARGET: ${CINDER_LINUX_TARGET}${ColorReset}" )
+else()
+	message( "${BoldGreen}CINDER_ARCH: ${CINDER_ARCH}${ColorReset}" )
+endif()
 message( "" )
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
@@ -180,14 +192,25 @@ set( CINDER_C_SRC_FILES
 
 )
 
-set( CINDER_CXX_SRC_FILES
+if( CINDER_LINUX_TARGET_RPI2 )
+	list( APPEND CINDER_CXX_SRC_FILES
+   		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxRaspPi2.cpp
+    	${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxRaspPi2.cpp
+    	${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxRaspPi2.cpp
+	)
+else()
+	list( APPEND CINDER_CXX_SRC_FILES
+   		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGeneric.cpp
+    	${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGeneric.cpp
+    	${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGeneric.cpp
+	)
+endif()
+
+list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/linux/CinderLinux.cpp
 
-    ${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGeneric.cpp
     ${CINDER_SRC_DIR}/cinder/app/linux/AppLinux.cpp
     ${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
-    ${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGeneric.cpp
-    ${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGeneric.cpp
 
     ${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
     ${CINDER_SRC_DIR}/cinder/app/KeyEvent.cpp
