@@ -11,11 +11,11 @@
 		        <!-- cinder download links -->
 		        <div id="downloads" class="columns medium-4 large-3 hide-for-small">
 		            <ul>
-		                <li><a href="http://libcinder.org/download/">Latest Release (0.9.0)</a></li>
-		                <li><a href="https://github.com/cinder/Cinder">Edge Cinder</a></li>
-		                <li><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.6">Version (0.8.6)</a></li>
-		                <li><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.5">Version (0.8.5)</a></li>
-		                <li><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.4">Version (0.8.4)</a></li>
+		                <li data-ci-version="0.9.0"><a href="http://libcinder.org/download/">Latest Release (0.9.0)</a></li>
+		                <li data-ci-version="0.9.0.dev"><a href="https://github.com/cinder/Cinder">Edge Cinder (0.9.0.dev)</a></li>
+		                <li data-ci-version="0.8,6"><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.6">Version (0.8.6)</a></li>
+		                <li data-ci-version="0.8.5"><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.5">Version (0.8.5)</a></li>
+		                <li data-ci-version="0.8.4"><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.4">Version (0.8.4)</a></li>
 		            </ul>
 		        </div>
 
@@ -145,5 +145,11 @@
 			</ul>
 		</div>
 
+		<script type="text/javascript">
+			// select the current version of the cinder docs
+			var versionNav = $('#top-content').find('[data-ci-version="' + window.cinderVersion + '"]');
+			if(versionNav)
+				versionNav.addClass('active');
+		</script>
 	</body>
 </html>

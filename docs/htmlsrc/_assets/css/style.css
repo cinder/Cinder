@@ -1449,6 +1449,12 @@ body.section_home #main-content #intro #downloads li a:hover {
   color: #fff;
   text-decoration: none;
 }
+body.section_home #main-content #intro #downloads li.active a {
+  background: #a41c12;
+  color: #fff;
+  text-decoration: none;
+  pointer-events: none;
+}
 body.section_home #main-content .samples {
   text-align: center;
   padding-top: 40px;
