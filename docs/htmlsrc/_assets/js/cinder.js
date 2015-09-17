@@ -243,7 +243,7 @@ $(document).ready(function() {
 	}
 	
     
-	var search_index = lunr(function () {
+	window.search_index = lunr(function () {
 		this.field('title', {boost: 10});
 		this.field('tags', {boost: 1});
 		this.field('body');
@@ -289,10 +289,7 @@ $(document).ready(function() {
 	if( location.protocol == "file:" ) {
 		history.pushState = false;
 	}
-	// 
-
-	// console.log(location);
-	// console.log("PUSH STATE", history.pushState);
+	
 	// set up magellan stuff
 	$(document).foundation({
         "magellan-expedition": {
