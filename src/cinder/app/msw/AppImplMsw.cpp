@@ -302,11 +302,12 @@ WindowImplMsw::WindowImplMsw( const Window::Format &format, RendererRef sharedRe
 	mWindowedSize = format.getSize();
 	mWindowWidth = mWindowedSize.x;
 	mWindowHeight = mWindowedSize.y;
-	if( format.isPosSpecified() )
+	if( format.isPosSpecified() ) {
 		mWindowOffset = mWindowedPos = format.getPos();
+	}
 	else {
 		ivec2 displaySize = mDisplay->getSize();
-		mWindowOffset = mWindowedPos = ( displaySize - mWindowedSize ) / 2;
+		mWindowOffset = mWindowedPos = mDisplay->getBounds().getUL() + ( displaySize - mWindowedSize ) / 2;
 	}
 
 	createWindow( ivec2( mWindowWidth, mWindowHeight ), format.getTitle(), mDisplay, sharedRenderer );
