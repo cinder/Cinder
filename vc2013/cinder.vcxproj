@@ -668,7 +668,6 @@
     <ClInclude Include="..\include\cinder\audio\Buffer.h" />
     <ClInclude Include="..\include\cinder\audio\ChannelRouterNode.h" />
     <ClInclude Include="..\include\cinder\audio\Context.h" />
-    <ClInclude Include="..\include\cinder\audio\Debug.h" />
     <ClInclude Include="..\include\cinder\audio\DelayNode.h" />
     <ClInclude Include="..\include\cinder\audio\Device.h" />
     <ClInclude Include="..\include\cinder\audio\dsp\Biquad.h" />

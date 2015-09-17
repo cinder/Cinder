@@ -381,9 +381,13 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 	}
 	
 	// TODO: Can we create the buffer from the pool????? Seems like no at first attempt --maybe a pixel buffer attributes mismatch?
-	CFMutableDictionaryRef attributes = CFDictionaryCreateMutable( kCFAllocatorDefault, 6, nil, nil );
-	dictionarySetPixelBufferOpenGLCompatibility( attributes );
+//	CFMutableDictionaryRef attributes = CFDictionaryCreateMutable( kCFAllocatorDefault, 6, nil, nil );
+//	dictionarySetPixelBufferOpenGLCompatibility( attributes );
 //	CVReturn status = CVPixelBufferPoolCreatePixelBufferWithAuxAttributes(kCFAllocatorDefault, pbPool, attributes, &mPixelBufferRef);
+//	if( attributes ) {
+//		CFRelease( attributes );
+//		attributes = NULL;
+//	}
 	CVReturn status = CVPixelBufferPoolCreatePixelBuffer( kCFAllocatorDefault, pbPool, &mPixelBufferRef );
 	if( kCVReturnSuccess != status )
 		throw ImageIoException();

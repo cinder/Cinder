@@ -20,6 +20,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "cinder/qtime/MovieWriter.h"
+
 // This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for <=Mac OS 10.7
 #if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
 
@@ -29,7 +31,6 @@
 
 #include "cinder/app/AppBase.h"
 #include "cinder/Utilities.h"
-#include "cinder/qtime/MovieWriter.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 
 #if defined( CINDER_MAC )
@@ -395,7 +396,7 @@ void MovieWriter::Obj::createCompressionSession()
 		
 		if( mDoingMultiPass ) {
 			auto tempDir = fs::temp_directory_path();
-			mMultiPassFrameCache = readWriteFileStream( fs::unique_path( tempDir / ( "multipass_%%%%-%%%%-%%%%-%%%%" ) );
+			mMultiPassFrameCache = readWriteFileStream( fs::unique_path( tempDir / ( "multipass_%%%%-%%%%-%%%%-%%%%" ) ) );
 			if( ! mMultiPassFrameCache )
 				throw MovieWriterExc();
 			mMultiPassFrameCache->setDeleteOnDestroy();

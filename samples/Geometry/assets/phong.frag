@@ -48,16 +48,15 @@ void main()
 	const float kNormalization = ( kMaterialShininess + 8.0 ) / ( 3.14159265 * 8.0 );
 	float blinn = pow( max( dot( N, H ), 0.0 ), kMaterialShininess ) * kNormalization;
 
-	// Make sure we never exceed the max energy level.
-	//phong -= max( 0.0, ( blinn + phong ) - 1.0 );
-
 	// diffuse coefficient
-	vec3 diffuse = phong * cDiffuse;
+	vec3 diffuse = vec3( phong );
 
-	if( uTexturingMode == 1 )
+	if( uTexturingMode == 1 ) {
+		diffuse *= vec3( 0.7, 0.5, 0.3 );
 		diffuse *= 0.5 + 0.5 * checkered( vVertexIn.texCoord, 20 );
+	}
 	else if ( uTexturingMode == 2 )
-		diffuse *= 0.5 + 0.5 * texture( uTex0, vVertexIn.texCoord.st ).rgb;
+		diffuse *= texture( uTex0, vVertexIn.texCoord.st ).rgb;
 
 	// specular coefficient 
 	vec3 specular = blinn * cSpecular;
