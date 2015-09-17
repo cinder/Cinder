@@ -222,7 +222,7 @@ tagDictionary = {
     "ulink": "ulink",
     "computeroutput": "code",
     "includes": "span",
-    "simplesect": "dl",
+    "simplesect": "span",
     "para": "p"
 }
 
@@ -1554,6 +1554,7 @@ def replace_tag(bs4, tree, parent_tag, content):
         add_class_to_tag(new_tag, tag)
 
     content_tag = new_tag
+
     # if simplesect, construct with some content
     if tag == "simplesect":
         see_tag = bs4.new_tag("dt")
@@ -1586,7 +1587,6 @@ def iterate_markup(bs4, tree, parent):
     if tree is None:
         return
 
-    # origTag = tree.tag
     current_tag = parent
     content = None
 
@@ -1619,11 +1619,12 @@ def markup_brief_description(bs4, tree, description_el=None):
     if description_el is None:
         description_el = gen_tag(bs4, "div", ["description", "content"])
 
-    brief_desc = tree.find(r'briefdescription/')
+    brief_desc = tree.findall(r'briefdescription/')
     if brief_desc is None:
         return
     else:
-        iterate_markup(bs4, tree.find(r'briefdescription/'), description_el)
+        for desc in brief_desc:
+            iterate_markup(bs4, desc, description_el)
 
     return description_el
 
@@ -1635,9 +1636,11 @@ def markup_description(bs4, tree):
     markup_brief_description(bs4, tree, description_el)
 
     # mark up detailed description next
-    detailed_desc = tree.find(r'detaileddescription/')
+    detailed_desc = tree.findall(r'detaileddescription/')
+
     if detailed_desc is not None:
-        iterate_markup(bs4, tree.find(r'detaileddescription/'), description_el)
+        for desc in detailed_desc:
+            iterate_markup(bs4, desc, description_el)
 
     return description_el
 
@@ -2317,7 +2320,6 @@ def fill_group_content(tree, module_config):
 
     if not group_def:
         log("NO CLASS OBJECT DEFINED FOR: " + group_name, 1)
-        # raise
         # return
 
     # page title ---------------------------------------- #
