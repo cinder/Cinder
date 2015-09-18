@@ -33,7 +33,7 @@
 	</clipPath>
 	
 		<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="277.7577" y1="-13.2877" x2="331.2859" y2="-13.2877" gradientTransform="matrix(-0.4255 -0.4255 0.7071 -0.7071 158.8168 140.6653)">
-		<stop  offset="0" style="stop-color:#FFFFFF;stop-opacity:5.000000e-02"/>
+		<stop  offset="0" style="stop-color:#FFFFFF;stop-opacity:0.05"/>
 		<stop  offset="1" style="stop-color:#FBFBFB;stop-opacity:0"/>
 	</linearGradient>
 	<polygon clip-path="url(#SVGID_2_)" fill="url(#SVGID_3_)" points="31.8,-14.3 54.6,8.5 7.9,55.2 -14.9,32.5 	"/>
