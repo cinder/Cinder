@@ -303,7 +303,7 @@ WindowImplMsw::WindowImplMsw( const Window::Format &format, RendererRef sharedRe
 	mWindowWidth = mWindowedSize.x;
 	mWindowHeight = mWindowedSize.y;
 	if( format.isPosSpecified() ) {
-		mWindowOffset = mWindowedPos = format.getPos();
+		mWindowOffset = mWindowedPos = mDisplay->getBounds().getUL() + format.getPos();
 	}
 	else {
 		ivec2 displaySize = mDisplay->getSize();
