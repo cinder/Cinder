@@ -179,22 +179,27 @@ $(document).ready(function() {
 
  	// --- Open all and Close all ---
  	var showAll = function(){
- 		$( '.contents .expandable' ).each( function(){
+ 		$( '.reference-lists .expandable' ).each( function(){
  			var $this = $(this);
  			$this.removeClass("hidden");
  		});
  	};
 
  	var hideAll = function(){
- 		$( '.contents .expandable' ).each( function(){
+ 		$( '.reference-lists .expandable' ).each( function(){
  			var $this = $(this);
  			$this.addClass("hidden");
  		});
  	};
 
  	// attach show/hide all functionality
- 	$( '#show-hide a.show-all' ).on( 'click', showAll );
- 	$( '#show-hide a.hide-all' ).on( 'click', hideAll );
+ 	var show = $( '#show-hide a.show-all' );
+ 	var hide = $( '#show-hide a.hide-all' );
+ 	if( $( '.reference-lists .expandable' ).length > 1 ) {
+ 		$( '#show-hide' ).removeClass( 'hide' );
+ 		$( '#show-hide a.show-all' ).on( 'click', showAll );
+ 		$( '#show-hide a.hide-all' ).on( 'click', hideAll );
+ 	}
  	
 
  	// get anchor tag if there is one
