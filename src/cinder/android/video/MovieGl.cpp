@@ -21,19 +21,56 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/android/MovieGl.h"
+#include "cinder/android/video/MovieGl.h"
 
-namespace cinder { namespace android {
+namespace cinder { namespace android { namespace video {
 
 /** \class MovieGl
  *
  */
-MovieGl::MovieGl()
+MovieGl::MovieGl( const ci::fs::path &path )
 {
+	mVideoPlayer = VideoPlayer::create( path );
 }
 
 MovieGl::~MovieGl()
 {
 }
 
-}} // namespace cinder::android
+MovieGlRef MovieGl::create( const ci::fs::path &path )
+{
+	MovieGlRef result = MovieGlRef( new MovieGl( path ) );
+	return result;
+}
+
+void MovieGl::seekToTime( float seconds )
+{
+	mVideoPlayer->seekToTime( seconds );
+}
+
+void MovieGl::seekToStart()
+{
+	mVideoPlayer->seekToStart();
+}
+
+void MovieGl::seekToEnd()
+{
+	mVideoPlayer->seekToEnd();
+}
+
+void MovieGl::setLoop( bool loop, bool palindrome )
+{
+	mVideoPlayer->setLoop( loop );
+}
+
+void MovieGl::play()
+{
+	mVideoPlayer->play();
+}
+
+void MovieGl::stop()
+{
+	mVideoPlayer->stop();
+}
+
+}}} // namespace cinder::android::video
