@@ -49,12 +49,23 @@
 		#include "GLES2/gl2.h"
 		#include "GLES2/gl2ext.h"
  	#else
-	    #include "GLES3/gl3.h"
+		#include "GLES3/gl3.h"
 		#include "GLES3/gl3ext.h"
 		#define CINDER_GL_ES_3    
  	#endif 
 #elif defined( CINDER_LINUX )
- 	#include "glload/gl_core.h"
+ 	#if defined( CINDER_GL_ES_2 )
+ 		#define CINDER_GL_ES
+ 		#define GL_GLEXT_PROTOTYPES
+		#include "GLES2/gl2.h"
+		#include "GLES2/gl2ext.h"
+ 	#elif defined( CINDER_GL_ES_3 )
+ 		#define CINDER_GL_ES
+		#include "GLES3/gl3.h"
+		#include "GLES3/gl3ext.h"
+ 	#else
+ 		#include "glload/gl_core.h"
+ 	#endif
 #elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push
@@ -125,4 +136,10 @@
  	#define CINDER_GL_PLATFORM
 	#include "cinder/gl/platform_android.h"
  	#undef CINDER_GL_PLATFORM
-#endif 
+#endif
+
+#if defined( CINDER_LINUX )
+ 	#define CINDER_GL_PLATFORM
+	#include "cinder/gl/platform_linux.h"
+ 	#undef CINDER_GL_PLATFORM
+#endif
