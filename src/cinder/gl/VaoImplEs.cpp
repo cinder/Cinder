@@ -173,11 +173,10 @@ void VaoImplEs::vertexAttribIPointerImpl( GLuint index, GLint size, GLenum type,
 
 void VaoImplEs::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 {
-// no-op for ES 2 on Android
-#if ! defined( CINDER_ANDROID )	
+#if defined( CINDER_GL_HAS_INSTANCED_ARRAYS )
 	mLayout.vertexAttribDivisor( index, divisor );
 	glVertexAttribDivisorEXT( index, divisor );
-#endif	
+#endif
 }
 
 void VaoImplEs::reflectBindBufferImpl( GLenum target, GLuint buffer )

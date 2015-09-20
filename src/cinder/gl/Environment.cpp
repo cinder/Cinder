@@ -40,7 +40,11 @@
 #elif defined( CINDER_ANDROID )
 	#include "EGL/egl.h"
 #elif defined( CINDER_LINUX )
+  #if defined( CINDER_LINUX_EGL_ONLY )
+ 	#include "EGL/egl.h"
+  #else
 	#include "glfw/glfw3.h"
+  #endif
 #endif
 
 #include "cinder/Log.h"
@@ -94,8 +98,10 @@ void destroyPlatformData( Context::PlatformData *data )
 	auto platformData = dynamic_cast<PlatformDataMsw*>( data );
 	::wglMakeCurrent( NULL, NULL );
 	::wglDeleteContext( platformData->mGlrc );
+#elif defined( CINDER_ANDROID )
+	auto platformData = dynamic_cast<PlatformDataAndroid*>( data );
 #elif defined( CINDER_LINUX )
-  auto platformData = dynamic_cast<PlatformDataLinux*>( data );
+	auto platformData = dynamic_cast<PlatformDataLinux*>( data );
 #endif
 
 	delete data;
@@ -227,13 +233,16 @@ void Environment::makeContextCurrent( const Context *context )
 	// 	assert( status );
 	// }
 #elif defined( CINDER_LINUX )
-  if( context ) {
-    auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
-    glfwMakeContextCurrent( platformData->mContext );
-  }
-  else {
-    glfwMakeContextCurrent( nullptr );
-  }
+  #if defined( CINDER_LINUX_EGL_ONLY )
+  #else
+	if( context ) {
+		auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
+		glfwMakeContextCurrent( platformData->mContext );
+  	}
+	else {
+		glfwMakeContextCurrent( nullptr );
+	}
+  #endif
 #endif
 }
 

@@ -34,7 +34,6 @@ ipch/
 docs/html
 docs/doxygen/cinder.tag
 
-<<<<<<< HEAD
 # Android cruft
 *.swp
 .idea
@@ -55,9 +54,7 @@ local.properties
 proguard-rules.pro
 .gradle/
 jniLibs/
-=======
+
 # CinderBlocks
 blocks/
 !blocks/[__AppTemplates,Box2D,Cairo,FMOD,LocationManager,MotionManager,OSC,QuickTime,TUIO]
-
->>>>>>> upstream/master

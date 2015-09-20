@@ -96,6 +96,36 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
 		else
 			glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
+#else
+  #if defined( CINDER_GL_ES_2 )
+	// This is gross, but GL_RGBA & GL_RGB are not suitable internal formats for Renderbuffers. We know what you meant though.
+	if( mInternalFormat == GL_RGBA ) {
+		mInternalFormat = GL_RGBA8_OES;
+	}
+	else if( mInternalFormat == GL_RGB ) {
+		mInternalFormat = GL_RGB8_OES;
+	}
+	else if( mInternalFormat == GL_DEPTH_COMPONENT ) {
+		mInternalFormat = GL_DEPTH_COMPONENT24_OES;	
+	}
+
+	glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
+  #else
+	#error "Unsupportd Renderbuffer configuration"
+  #endif	
+#endif
+
+/*
+#if defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
+  #if defined( CINDER_MSW )  && ( ! defined( CINDER_GL_ES ) )
+	if( mCoverageSamples ) // create a CSAA buffer
+		glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER, mCoverageSamples, mSamples, mInternalFormat, mWidth, mHeight );
+	else
+  #endif
+		if( mSamples )
+			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
+		else
+			glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
 #elif defined( CINDER_GL_ES )
   #if defined( CINDER_ANDROID ) && ! defined( CINDER_GL_ES_2 )
 	if( mInternalFormat == GL_RGBA )
@@ -122,7 +152,8 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
   #endif	
 	else
 		glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
-#endif	
+#endif
+*/
 }
 
 Renderbuffer::~Renderbuffer()

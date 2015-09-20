@@ -39,14 +39,31 @@
 	#include <OpenGLES/ES2/glext.h>
 #endif
 
+#if defined( CINDER_LINUX_EGL_ONLY )
+ 	#include "EGL/egl.h"
+#endif
+
+#if defined( CINDER_LINUX )
+  #if defined( CINDER_GL_HAS_MAP_BUFFER )
+	PFNGLMAPBUFFEROESPROC				fnptr_ci_glMapBufferOES = nullptr;
+	PFNGLUNMAPBUFFEROESPROC				fnptr_ci_glUnmapBufferOES = nullptr;
+	PFNGLGETBUFFERPOINTERVOESPROC		fnptr_ci_glGetBufferPointervOES = nullptr;
+  #endif
+
+  #if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
+	PFNGLMAPBUFFERRANGEEXTPROC 			fnptr_ci_glMapBufferRangeEXT = nullptr;
+	PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC	fnptr_ci_glFlushMappedBufferRangeEXT = nullptr;
+  #endif
+#endif
+
 namespace cinder { namespace gl {
 
 class EnvironmentEs : public Environment {
   public:
 	void	initializeFunctionPointers() override;
 
-	bool	isExtensionAvailable( const std::string &extName ) override;
-	bool	supportsHardwareVao() override;
+	bool	isExtensionAvailable( const std::string &extName ) const override;
+	bool	supportsHardwareVao() const override;
 	bool	supportsTextureLod() const override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
 	
@@ -67,9 +84,25 @@ Environment* allocateEnvironmentEs()
 
 void EnvironmentEs::initializeFunctionPointers()
 {
+#if defined( CINDER_LINUX )
+  #if defined( CINDER_GL_HAS_MAP_BUFFER )
+	if( isExtensionAvailable( "GL_OES_mapbuffer" ) ) {
+		fnptr_ci_glMapBufferOES  = (PFNGLMAPBUFFEROESPROC)eglGetProcAddress( "glMapBufferOES" );
+		fnptr_ci_glUnmapBufferOES  = (PFNGLUNMAPBUFFEROESPROC)eglGetProcAddress( "glUnmapBufferOES" );
+		fnptr_ci_glGetBufferPointervOES	= (PFNGLGETBUFFERPOINTERVOESPROC)eglGetProcAddress( "glGetBufferPointervOES" );
+	}
+  #endif
+
+  #if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
+	if( isExtensionAvailable( "GL_EXT_map_buffer_range" ) ) {
+	 	fnptr_ci_glMapBufferRangeEXT = (PFNGLMAPBUFFERRANGEEXTPROC)eglGetProcAddress( "glMapBufferRangeEXT" );
+		fnptr_ci_glFlushMappedBufferRangeEXT = (PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC)eglGetProcAddress( "glFlushMappedBufferRangeEXT" );			
+	}
+  #endif
+#endif
 }
 
-bool EnvironmentEs::isExtensionAvailable( const std::string &extName )
+bool EnvironmentEs::isExtensionAvailable( const std::string &extName ) const
 {
 	static const char *sExtStr = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
 	static std::map<std::string, bool> sExtMap;
@@ -96,16 +129,14 @@ bool EnvironmentEs::isExtensionAvailable( const std::string &extName )
 	}
 }
 
-bool EnvironmentEs::supportsHardwareVao()
+bool EnvironmentEs::supportsHardwareVao() const
 {
 #if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_GL_ES_3 )
 	return true;
-#elif defined( CINDER_ANDROID )
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
   #if defined( CINDER_GL_ES_2 )
-ci::app::console() << "EnvironmentEs::supportsHardwareVao|ES2: " << isExtensionAvailable( "OES_vertex_array_object" ) << std::endl;
 	return isExtensionAvailable( "OES_vertex_array_object" );
   #else
-ci::app::console() << "EnvironmentEs::supportsHardwareVao|ES3: " << true << std::endl;
 	// Assumes OpenGL ES 3 or greater
 	return true;
   #endif	
@@ -141,7 +172,7 @@ void EnvironmentEs::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum 
 #if defined( CINDER_GL_ES_2 )
 	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
 	// both ANGLE and iOS support EXT_texture_storage
-  #if defined( CINDER_ANDROID )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	static auto texStorage2DFn = (void (*)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height))nullptr;
   #else	
 	static auto texStorage2DFn = glTexStorage2DEXT;
@@ -193,7 +224,7 @@ void EnvironmentEs::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFo
 #if defined( CINDER_GL_ES_2 )
 	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
 	// both ANGLE and iOS support EXT_texture_storage
-  #if defined( CINDER_ANDROID )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	static auto texStorage2DFn = (void (*)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height))nullptr;
   #else	
 	static auto texStorage2DFn = glTexStorage2DEXT;

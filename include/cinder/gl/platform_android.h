@@ -34,6 +34,12 @@
  		// GLES/gl2ext.h collides with GLES3/gl3.h so certain constants
  		// have to be defined manually.
 
+		#ifdef __cplusplus		
+			#ifndef GL_APIENTRYP
+			# 	define GL_APIENTRYP GL_APIENTRY*
+			#endif
+		#endif
+
  		// GL_APPLE_texture_format_BGRA8888
 		#ifndef GL_APPLE_texture_format_BGRA8888
 			#define GL_APPLE_texture_format_BGRA8888 			1
@@ -47,6 +53,17 @@
 			#define GL_TEXTURE_MAX_ANISOTROPY_EXT     			0x84FE
 			#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 			0x84FF
 		#endif
+
+		#ifndef GL_OES_mapbuffer
+			#define GL_OES_mapbuffer 							1
+			#ifdef __cplusplus		
+ 			extern "C" {
+				typedef void* (GL_APIENTRYP PFNGLMAPBUFFEROESPROC) (GLenum target, GLenum access);
+				typedef GLboolean (GL_APIENTRYP PFNGLUNMAPBUFFEROESPROC) (GLenum target);
+				typedef void (GL_APIENTRYP PFNGLGETBUFFERPOINTERVOESPROC) (GLenum target, GLenum pname, GLvoid** params);
+			}
+			#endif
+		#endif 
 
  		// GL_EXT_debug_label
  		#ifndef GL_EXT_debug_label
@@ -73,8 +90,16 @@
 			#define GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG 		0x8C02
 			#define GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG 		0x8C03
 		#endif
-	#endif
 
+ 		// GL_EXT_shadow_samplers
+		#ifndef GL_EXT_shadow_samplers
+			#define GL_EXT_shadow_samplers						1
+			#define GL_TEXTURE_COMPARE_MODE_EXT					0x884C
+			#define GL_TEXTURE_COMPARE_FUNC_EXT					0x884D
+			#define GL_COMPARE_REF_TO_TEXTURE_EXT				0x884E
+			#define GL_SAMPLER_2D_SHADOW_EXT					0x8B62
+		#endif 
+	#endif
 
  	#define CINDER_GL_HAS_DRAW_INSTANCED
 #endif
@@ -85,15 +110,27 @@
     	#define PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG
   	#endif
 
-	extern PFNGLGENVERTEXARRAYSOESPROC    				glGenVertexArraysOESEXT;
-	extern PFNGLBINDVERTEXARRAYOESPROC    				glBindVertexArrayOESEXT;
-	extern PFNGLDELETEVERTEXARRAYSOESPROC 				glDeleteVertexArraysOESEXT;
-	extern PFNGLISVERTEXARRAYOESPROC					glIsVertexArrayOESEXT;
-	extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC	glRenderbufferStorageMultisampleIMGEXT;
+	extern PFNGLGENVERTEXARRAYSOESPROC    				fnptr_ci_glGenVertexArraysOES;
+	extern PFNGLBINDVERTEXARRAYOESPROC    				fnptr_ci_glBindVertexArrayOES;
+	extern PFNGLDELETEVERTEXARRAYSOESPROC 				fnptr_ci_glDeleteVertexArraysOES;
+	extern PFNGLISVERTEXARRAYOESPROC					fnptr_ci_glIsVertexArrayOES;
 
-	#define glGenVertexArraysOES 						glGenVertexArraysOESEXT
-	#define glBindVertexArrayOES 						glBindVertexArrayOESEXT
-	#define glDeleteVertexArraysOES 					glDeleteVertexArraysOESEXT
-	#define glIsVertexArrayOES							glIsVertexArrayOESEXT
-	#define glRenderbufferStorageMultisampleIMG			glRenderbufferStorageMultisampleIMGEXT
+	extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC	fnptr_ci_glRenderbufferStorageMultisample;
+
+	#define glGenVertexArraysOES 						fnptr_ci_glGenVertexArraysOES
+	#define glBindVertexArrayOES 						fnptr_ci_glBindVertexArrayOES
+	#define glDeleteVertexArraysOES 					fnptr_ci_glDeleteVertexArraysOES
+	#define glIsVertexArrayOES							fnptr_ci_glIsVertexArrayOES
+
+	#define glRenderbufferStorageMultisampleIMG			fnptr_ci_glRenderbufferStorageMultisample
+#endif
+
+#if defined( GL_OES_mapbuffer )
+	extern PFNGLMAPBUFFEROESPROC 						fnptr_ci_glMapBufferOES;
+	extern PFNGLUNMAPBUFFEROESPROC						fnptr_ci_glUnmapBufferOES;
+	extern PFNGLGETBUFFERPOINTERVOESPROC 				fnptr_ci_glGetBufferPointervOES;
+
+	#define glMapBuffer									fnptr_ci_glMapBufferOES
+	#define glUnmapBuffer								fnptr_ci_glUnmapBufferOES
+	#define glGetBufferPointerv 						fnptr_ci_glGetBufferPointervOES 
 #endif

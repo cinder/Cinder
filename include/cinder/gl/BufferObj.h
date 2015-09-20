@@ -54,17 +54,18 @@ class BufferObj {
 	//! Reallocates the buffer if its size is smaller than \a minimumSize. This destroys the contents of the buffer if it must be reallocated.
 	void		ensureMinimumSize( GLsizeiptr minimumSize );
 	
-#if (! defined( CINDER_GL_ANGLE )) && (! defined( CINDER_GL_ES_3 ))
+#if defined( CINDER_GL_HAS_MAP_BUFFER )
 	//! Analogous to glMapBuffer(). \a access must be \c GL_READ_ONLY, \c GL_WRITE_ONLY, or \c GL_READ_WRITE. On iOS ES 2 only \c GL_WRITE_ONLY_OES is valid.
 	void*				map( GLenum access ) const;
 #endif
-#if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
+
+#if defined( CINDER_GL_HAS_MAP_BUFFER )
 	//! Abstracts glMapBuffer() vs. glMapBufferRange() with appropriate write-only parameters for the platform. Passing \c true for \a invalidPrevious allows the GL to flush the contents of the buffer as an optimization.
 	void*				mapWriteOnly( bool invalidatePrevious );
-#if ! defined( CINDER_ANDROID )	
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 	//! Analogous to glMapBufferRange(). On iOS ES 2 only \c GL_WRITE_ONLY_OES is valid.
-#endif	
 	void*				mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const;
+#endif
 	void				unmap() const;
 #endif
 	

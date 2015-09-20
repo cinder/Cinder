@@ -112,61 +112,49 @@ void BufferObj::ensureMinimumSize( GLsizeiptr minimumSize )
 	}
 }
 
-#if ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
+#if defined( CINDER_GL_HAS_MAP_BUFFER )
 void* BufferObj::map( GLenum access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES_2 )
-	return reinterpret_cast<void*>( glMapBufferOES( mTarget, access ) );
-#else
 	return reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
-#endif
 }
 #endif
 
-#if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
+#if defined( CINDER_GL_HAS_MAP_BUFFER )
 void* BufferObj::mapWriteOnly( bool invalidatePrevious )
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-	// iOS ES 2 only has glMapBufferOES()
-#if defined( CINDER_GL_ES_2 )
-	if( invalidatePrevious )
-		glBufferData( mTarget, mSize, nullptr, mUsage );
-	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
-#else	
-	// ES 3 has only glMapBufferRange
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 	GLbitfield access = GL_MAP_WRITE_BIT;
-	if( invalidatePrevious )
+	if( invalidatePrevious ) {
 		access |= GL_MAP_INVALIDATE_BUFFER_BIT;
+	}
 	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+#else	
+	if( invalidatePrevious ) {
+		glBufferData( mTarget, mSize, nullptr, mUsage );
+	}
+	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
 #endif
 }
 
-#if ! defined( CINDER_ANDROID )
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES_2 )
-	return reinterpret_cast<void*>( glMapBufferRangeEXT( mTarget, offset, length, access ) );
-#else
 	return reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
-#endif
 }
 #endif
 
 void BufferObj::unmap() const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES_2 )	
-	GLboolean result = glUnmapBufferOES( mTarget );
-#else
 	GLboolean result = glUnmapBuffer( mTarget );
-#endif
-	if ( result != GL_TRUE ) {
+	if ( GL_TRUE != result ) {
 		//throw BufferFailedUnmapExc();
 	}
 }
-#endif // #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
+#endif
 
 size_t BufferObj::getSize() const
 {
@@ -220,10 +208,10 @@ GLuint BufferObj::getBindingConstantForTarget( GLenum target )
 void BufferObj::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+#if defined( CINDER_GL_HAS_DEBUG_LABEL )
 	env()->objectLabel( GL_BUFFER_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
-#else
-	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );	
+#elif defined( CINDER_HAS_KHR_DEBUG )
+	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );
 #endif
 }
 

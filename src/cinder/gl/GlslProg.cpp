@@ -965,12 +965,18 @@ void GlslProg::logUniformWrongType( const std::string &name, GLenum uniformType,
 void GlslProg::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_GL_ES )
-#if ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+  #if defined( CINDER_GL_HAS_DEBUG_LABEL )
 	env()->objectLabel( GL_PROGRAM_OBJECT_EXT, mHandle, (GLsizei)label.size(), label.c_str() );
-#endif
-#else
+  #endif
+#else 
+  #if defined( CINDER_GL_ES )
+    #if ! defined( CINDER_GL_ANGLE )
+	env()->objectLabel( GL_PROGRAM_OBJECT_EXT, mHandle, (GLsizei)label.size(), label.c_str() );
+ 	 #endif
+  #else
 	env()->objectLabel( GL_PROGRAM, mHandle, (GLsizei)label.size(), label.c_str() );
+  #endif
 #endif
 }
 
@@ -1408,7 +1414,13 @@ bool GlslProg::checkUniformType( GLenum uniformType ) const
 		case GL_UNSIGNED_INT_SAMPLER_CUBE:		return std::is_same<T,int32_t>::value;		
 		case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:	return std::is_same<T,int32_t>::value;
 #else
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	  #if defined( CINDER_GL_HAS_SHADOW_SAMPLERS )
 		case GL_SAMPLER_2D_SHADOW_EXT: return std::is_same<T,int32_t>::value;
+	  #endif
+	#else
+		case GL_SAMPLER_2D_SHADOW_EXT: return std::is_same<T,int32_t>::value;
+	#endif
 #endif
 		case GL_SAMPLER_CUBE: return std::is_same<T,int32_t>::value;
 		// float

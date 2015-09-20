@@ -88,18 +88,40 @@
 	#endif
 #endif
 
+ #if defined( CINDER_ANDROID )
+ 	#define CINDER_GL_PLATFORM
+	#include "cinder/gl/platform_android.h"
+ 	#undef CINDER_GL_PLATFORM
+#endif
+
+#if defined( CINDER_LINUX )
+ 	#define CINDER_GL_PLATFORM
+	#include "cinder/gl/platform_linux.h"
+ 	#undef CINDER_GL_PLATFORM
+#endif
+
 // ----------------------------------------------
 // define features available
-#if ! defined( CINDER_GL_ES_2 ) // ES 3 + Desktop Only
+#if defined( CINDER_GL_ES_2 )
+	#define CINDER_GL_PLATFORM
+	#include "cinder/gl/platform_es2_features.h"
+	#undef CINDER_GL_PLATFORM
+#else // ES 3 + Desktop Only
 	#define CINDER_GL_HAS_UNIFORM_BLOCKS
 	#define CINDER_GL_HAS_DRAW_INSTANCED
 	#define CINDER_GL_HAS_FBO_MULTISAMPLING
 	#define CINDER_GL_HAS_TRANSFORM_FEEDBACK
+	#define CINDER_GL_HAS_WRAP_R
+	#define CINDER_GL_HAS_SHADOW_SAMPLERS
+ 	#define CINDER_GL_HAS_MAP_BUFFER
+ 	#define CINDER_GL_HAS_MAP_BUFFER_RANGE
+ 	#define CINDER_GL_HAS_INSTANCED_ARRAYS
 	#if ! defined( CINDER_GL_ES_3 ) // Desktop Only
 		#define CINDER_GL_HAS_GEOM_SHADER
 		#define CINDER_GL_HAS_TESS_SHADER
 	#endif // ! defined( CINDER_GL_ES_3 )
 #endif // ! defined( CINDER_GL_ES_2 )
+
 
 #if defined( CINDER_MSW )
 	#if ! defined( CINDER_GL_ANGLE ) // MSW Desktop Only
@@ -132,14 +154,17 @@
 	#endif
 #endif // defined( CINDER_COCOA )
 
-#if defined( CINDER_ANDROID )
- 	#define CINDER_GL_PLATFORM
-	#include "cinder/gl/platform_android.h"
- 	#undef CINDER_GL_PLATFORM
+#if defined( GL_EXT_debug_label )
+	#define CINDER_GL_HAS_DEBUG_LABEL 
 #endif
 
-#if defined( CINDER_LINUX )
- 	#define CINDER_GL_PLATFORM
-	#include "cinder/gl/platform_linux.h"
- 	#undef CINDER_GL_PLATFORM
+#if defined( CINDER_GL_ES )
+	#if defined( GL_KHR_debug )
+		#define CINDER_GL_HAS_KHR_DEBUG
+		#define GL_BUFFER 		GL_BUFFER_KHR
+		#define GL_SHADER 		GL_SHADER_KHR
+		#define GL_PROGRAM 		GL_PROGRAM_KHR
+	#endif
+#else
+	#define CINDER_GL_HAS_KHR_DEBUG
 #endif

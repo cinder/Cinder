@@ -24,7 +24,11 @@
 #pragma once
 
 #include "cinder/app/linux/AppLinux.h"
-#include "glfw/glfw3.h"
+#if defined( CINDER_LINUX_EGL_ONLY )
+	#include "EGL/egl.h"
+#else
+	#include "glfw/glfw3.h"
+#endif
 
 namespace cinder { namespace app {
 
@@ -62,6 +66,10 @@ class AppImplLinux {
 	void						showCursor();
 	ivec2						getMousePos() const;
 
+#if defined( CINDER_LINUX_EGL_ONLY )
+	ivec2 						getDefaultDisplaySize() const;
+#endif
+
 private:
 	AppLinux					*mApp = nullptr;
 	WindowRef					mMainWindow;
@@ -69,6 +77,10 @@ private:
 	std::list<WindowImplLinux*>	mWindows;
 	WindowRef					mActiveWindow;
 	WindowRef 					mForegroundWindow;
+
+#if defined( CINDER_LINUX_EGL_ONLY )
+	ivec2 						mDefaultDisplaySize = ivec2( 0, 0 );
+#endif	
 
 	float 						mFrameRate;
 	bool						mFrameRateEnabled;
@@ -86,7 +98,9 @@ private:
 
 	friend class AppLinux;
 	friend class WindowImplLinux;
+#if ! defined( CINDER_LINUX_EGL_ONLY )
 	friend class GlfwCallbacks;
+#endif
 };
 
 }} // namespace cinder::app

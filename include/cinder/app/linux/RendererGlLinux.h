@@ -24,7 +24,11 @@
 #pragma once
 
 #include "cinder/app/AppBase.h"
-#include "glfw/glfw3.h"
+#if defined( CINDER_LINUX_EGL_ONLY )
+	#include "EGL/egl.h"
+#else
+	#include "glfw/glfw3.h"
+#endif
 
 namespace cinder { namespace gl {
 
@@ -41,7 +45,7 @@ class RendererGlLinux {
 	RendererGlLinux( class RendererGl *aRenderer );
 	virtual ~RendererGlLinux();
 
-	virtual bool		initialize( GLFWwindow *window, RendererRef sharedRenderer );
+	virtual bool		initialize( void *window, RendererRef sharedRenderer );
 	virtual void		kill();
 	virtual void		defaultResize() const;
 	virtual void		swapBuffers() const;
@@ -51,7 +55,14 @@ class RendererGlLinux {
 	class RendererGl	*mRenderer = nullptr;
 	gl::ContextRef 		mCinderContext;
 
+#if defined( CINDER_LINUX_EGL_ONLY )
+	EGLContext			mContext;
+	EGLDisplay			mDisplay;
+	EGLSurface			mSurface;
+	EGLConfig 			mConfig;
+#else
 	GLFWwindow			*mContext = nullptr;
+#endif
 };
 
 }} // namespace cinder::app

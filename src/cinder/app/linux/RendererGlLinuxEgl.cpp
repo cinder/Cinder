@@ -39,11 +39,12 @@ RendererGlLinux::~RendererGlLinux()
 }
 
 
-bool RendererGlLinux::initialize( GLFWwindow *window, RendererRef sharedRenderer )
+bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 {
+	/*
 	mContext = window;
 
-	::glfwMakeContextCurrent( mContext );
+	//::glfwMakeContextCurrent( mContext );
 
 	gl::Environment::setCore();
 	gl::env()->initializeFunctionPointers();
@@ -54,8 +55,8 @@ bool RendererGlLinux::initialize( GLFWwindow *window, RendererRef sharedRenderer
 	mCinderContext = gl::Context::createFromExisting( platformData );
 	mCinderContext->makeCurrent();
 
-	::glfwSwapInterval( 1 );
-
+	//::glfwSwapInterval( 1 );
+	*/
 	return true;
 }
 
@@ -65,18 +66,19 @@ void RendererGlLinux::kill()
 
 void RendererGlLinux::defaultResize() const
 {
-
+	/*
 	int width = 0;
 	int height = 0;
 	glfwGetFramebufferSize( mContext, &width, &height );
 
 	gl::viewport( 0, 0, width, height );
 	gl::setMatricesWindow( width, height );	
+	*/
 }
 
 void RendererGlLinux::swapBuffers() const
 {
-	::glfwSwapBuffers( mContext );
+	//::glfwSwapBuffers( mContext );
 }
 
 void RendererGlLinux::makeCurrentContext( bool force )

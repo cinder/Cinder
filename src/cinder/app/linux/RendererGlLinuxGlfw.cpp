@@ -39,9 +39,9 @@ RendererGlLinux::~RendererGlLinux()
 }
 
 
-bool RendererGlLinux::initialize( GLFWwindow *window, RendererRef sharedRenderer )
+bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 {
-	mContext = window;
+	mContext = reinterpret_cast<GLFWwindow*>( window );
 
 	::glfwMakeContextCurrent( mContext );
 

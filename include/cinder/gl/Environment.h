@@ -69,8 +69,8 @@ class Environment {
 	//! NULL for \a context deactivates the current context
 	void					makeContextCurrent( const Context *context );
 
-	virtual bool			isExtensionAvailable( const std::string &extName ) = 0;
-	virtual bool			supportsHardwareVao() = 0;
+	virtual bool			isExtensionAvailable( const std::string &extName ) const = 0;
+	virtual bool			supportsHardwareVao() const = 0;
 	//! Returns whether this platform supports Texture Level-of-Detail. \c true everywhere but ES 2, which requires \c GL_EXT_shader_texture_lod
 	virtual bool			supportsTextureLod() const = 0;
 

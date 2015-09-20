@@ -319,12 +319,18 @@ uint8_t typeToBytes( GLenum type )
 		case GL_UNSIGNED_INT_SAMPLER_CUBE:		return sizeof(int); break;		
 		case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:	return sizeof(int); break;
 #else
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	  #if defined( CINDER_GL_HAS_SHADOW_SAMPLERS )
 		case GL_SAMPLER_2D_SHADOW_EXT: return sizeof(int); break;
+	  #endif
+	#else
+		case GL_SAMPLER_2D_SHADOW_EXT: return sizeof(int); break;
+	#endif
 #endif
 
 #if defined( CINDER_ANDROID )
 		case GL_SAMPLER_EXTERNAL_OES: return sizeof(int); break;
-#endif // defined( CINDER_ANDROID )		
+#endif		
 
 		case GL_SAMPLER_CUBE:		return sizeof(int); break;
 		case GL_FLOAT:				return sizeof(float); break;

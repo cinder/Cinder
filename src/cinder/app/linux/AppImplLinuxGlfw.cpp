@@ -123,7 +123,8 @@ AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 
 	// Must be called before we can do anything with GLFW
     if( ! ::glfwInit() ) {
-    	throw std::string( "::glfwInit failed!" );
+    	std::cerr << std::string( "::glfwInit failed!" ) << std::endl;
+    	std::exit( 1 );
 	}
 
 	mFrameRate = settings.getFrameRate();

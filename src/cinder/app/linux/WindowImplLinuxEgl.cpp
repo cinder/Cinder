@@ -27,16 +27,27 @@
 
 namespace cinder { namespace app {
 
+struct WindowImplLinux::NativeWindow {
+#if defined( CINDER_LINUX_EGL_ONLY )
+	EGL_DISPMANX_WINDOW_T window;
+	NativeWindow( const ivec2& size, uint32_t element = 0 ) {
+		window.width   = size.x;
+		window.height  = size.y;
+		window.element = element;
+	}
+#endif
+};
+
 WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl )
 	: mAppImpl( appImpl )
 {
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
 
-	auto windowSize = format.getSize();
-	mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
+	auto displaySize = mAppImpl->getDefaultDisplaySize();
+	mNativeWindow = std::unique_ptr<NativeWindow>( new NativeWindow( displaySize ) );
 
-	mRenderer->setup( mGlfwWindow, sharedRenderer );
+	mRenderer->setup( reinterpret_cast<void*>( &(mNativeWindow->window) ), sharedRenderer );
 
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
@@ -56,26 +67,20 @@ void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptio
 
 ivec2 WindowImplLinux::getSize() const
 {
-	int xsize, ysize;
-	::glfwGetWindowSize( mGlfwWindow, &xsize, &ysize );
-	return ivec2( xsize, ysize );	
+	return mAppImpl->getDefaultDisplaySize();
 }
 
 void WindowImplLinux::setSize( const ivec2 &size )
 {
-	::glfwSetWindowSize( mGlfwWindow, size.x, size.y );
 }
 
 ivec2 WindowImplLinux::getPos() const
 {
-	int xpos, ypos;
-	::glfwGetWindowPos( mGlfwWindow, &xpos, &ypos );
-	return ivec2( xpos, ypos );
+	return ivec2( 0, 0 );
 }
 
 void WindowImplLinux::setPos( const ivec2 &pos )
 {	
-	::glfwSetWindowPos( mGlfwWindow, pos.x, pos.y );
 }
 
 void WindowImplLinux::close()
@@ -88,17 +93,25 @@ void WindowImplLinux::setTitle( const std::string &title )
 
 void WindowImplLinux::hide()
 {
-	::glfwHideWindow( mGlfwWindow );
 }
 
 void WindowImplLinux::show()
 {
-	::glfwShowWindow( mGlfwWindow );
 }
 
 const std::vector<TouchEvent::Touch>& WindowImplLinux::getActiveTouches() const
 {
 	return mActiveTouches;
+}
+
+EGLNativeWindowType	WindowImplLinux::getNative() 
+{ 
+	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
+}
+
+EGLNativeWindowType WindowImplLinux::getNative() const 
+{ 
+	return reinterpret_cast<EGLNativeWindowType>( mNativeWindow.get() );
 }
 
 void WindowImplLinux::setBorderless( bool borderless )
@@ -134,19 +147,15 @@ void WindowImplLinux::resize()
 
 void WindowImplLinux::hideCursor()
 {
-	::glfwSetInputMode( mGlfwWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN );
 }
 
 void WindowImplLinux::showCursor()
 {
-	::glfwSetInputMode( mGlfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 }
 
 ivec2 WindowImplLinux::getMousePos() const
 {
-	double xpos, ypos;
-	::glfwGetCursorPos( mGlfwWindow, &xpos, &ypos );
-	return ivec2( static_cast<int>( xpos ), static_cast<int>( ypos ) );
+	return ivec2( 0, 0 );
 }
 
 }} // namespace cinder::app

@@ -23,10 +23,11 @@
 
 #pragma once
 
- #if ! defined( CINDER_GL_PLATFORM )
+#if ! defined( CINDER_GL_PLATFORM )
  	#error "cinder/gl/platform_android.h cannot be included directly, please include cinder/gl/platform.h instead."
 #endif
 
+/*
 #if defined( CINDER_GL_ES_2)
  	#if defined( GL_OES_mapbuffer )
 		extern PFNGLMAPBUFFEROESPROC			fnptr_ci_glMapBufferOES;
@@ -44,4 +45,4 @@
 		#define glFlushMappedBufferRangeEXT 		fnptr_ci_glFlushMappedBufferRangeEXT
 	#endif
 #endif // CINDER_GL_ES_2
-
+*/

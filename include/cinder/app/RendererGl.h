@@ -186,7 +186,7 @@ class RendererGl : public Renderer {
 #elif defined( CINDER_ANDROID )
 	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) override;
 #elif defined( CINDER_LINUX )
-	virtual void	setup( GLFWwindow* glfwWindow, RendererRef sharedRenderer ) override;
+	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) override;
 #endif
 
 	const Options&	getOptions() const { return mOptions; }

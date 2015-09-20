@@ -154,11 +154,19 @@ void Vao::replacementBindEnd()
 void Vao::setLabel( const std::string &label )
 {
 	mLabel = label;
+#if defined( CINDER_GL_HAS_DEBUG_LABEL )
+	env()->objectLabel( GL_VERTEX_ARRAY_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
+#elif defined( CINDER_HAS_KHR_DEBUG )
+	env()->objectLabel( GL_VERTEX_ARRAY, mId, (GLsizei)label.size(), label.c_str() );
+#endif
+	
+/*	
 #if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 	env()->objectLabel( GL_VERTEX_ARRAY_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
 #elif ! defined( CINDER_GL_ANGLE )
 	env()->objectLabel( GL_VERTEX_ARRAY, mId, (GLsizei)label.size(), label.c_str() );
 #endif
+*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

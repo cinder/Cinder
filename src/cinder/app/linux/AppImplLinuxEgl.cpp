@@ -25,92 +25,9 @@
 #include "cinder/app/linux/AppLinux.h"
 #include "cinder/app/linux/WindowImplLinux.h"
 
-#include <iostream>
+#include "bcm_host.h"
 
 namespace cinder { namespace app {
-
-class GlfwCallbacks {
-public:
-	
-	static std::map<GLFWwindow*, WindowRef> sWindowMapping;
-
-	static void registerInput( GLFWwindow *glfwWindow, const WindowRef& cinderWindow ) {
-		sWindowMapping[glfwWindow] = cinderWindow;
-
-		::glfwSetCursorPosCallback( glfwWindow, GlfwCallbacks::onMousePos );
-		::glfwSetMouseButtonCallback( glfwWindow, GlfwCallbacks::onMouseButton );
-	}
-
-	static void unregisterInput( GLFWwindow *glfwWindow ) {
-		sWindowMapping.erase( glfwWindow );
-	}
-
-	static void onError( int error, const char* description ) {
-		std::cout << "(glfw:error): error=" << error << ", desc=" << description << std::endl;
-	}
-
-	static void onMousePos( GLFWwindow* glfwWindow, double mouseX, double mouseY ) {
-		auto iter = sWindowMapping.find( glfwWindow );
-		if( sWindowMapping.end() != iter ) {
-			auto& cinderWindow = iter->second;
-
-			int initiator = 0;
-			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_LEFT ) ) {
-				initiator |= MouseEvent::LEFT_DOWN;
-			}
-			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE ) ) {
-				initiator |= MouseEvent::MIDDLE_DOWN;
-			}
-			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_LEFT ) ) {
-				initiator |= MouseEvent::RIGHT_DOWN;
-			}
-
-			MouseEvent event( getWindow(), initiator, (int)mouseX, (int)mouseY, 0, 0.0f, 0 );
-			if( 0 != initiator ) {
-				cinderWindow->emitMouseDrag( &event );
-			}
-			else {
-				cinderWindow->emitMouseMove( &event );
-			}
-		}
-	}
-
-	static void onMouseButton(GLFWwindow* glfwWindow, int button, int action, int mod ) {
-		auto iter = sWindowMapping.find( glfwWindow );
-		if( sWindowMapping.end() != iter ) {
-			auto& cinderWindow = iter->second;
-
-			double mouseX, mouseY;
-			::glfwGetCursorPos( glfwWindow, &mouseX, &mouseY );
-
-			int initiator = 0;
-			switch( button ) {
-				case GLFW_MOUSE_BUTTON_LEFT   : initiator = MouseEvent::LEFT_DOWN;   break;
-				case GLFW_MOUSE_BUTTON_MIDDLE : initiator = MouseEvent::MIDDLE_DOWN; break;
-				case GLFW_MOUSE_BUTTON_RIGHT  : initiator = MouseEvent::RIGHT_DOWN;  break;
-			}
-
-			if( 0 != initiator ) {
-				MouseEvent event( getWindow(), initiator, (int)mouseX, (int)mouseY, 0, 0.0f, 0 );
-				if( GLFW_PRESS == action ) {
-					cinderWindow->emitMouseDown( &event );	
-				}
-				else if( GLFW_RELEASE == action ) {
-					cinderWindow->emitMouseUp( &event );	
-				}
-			}
-		}
-	}
-
-	static void onKeyboard( GLFWwindow *glfwWindow, int key, int scancode, int action, int mods ) {
-		auto iter = sWindowMapping.find( glfwWindow );
-		if( sWindowMapping.end() != iter ) {
-			auto& cinderWindow = iter->second;
-		}
-	}
-};
-
-std::map<GLFWwindow*, WindowRef> GlfwCallbacks::sWindowMapping;
 
 ////////////////////////////////////////////////////////////////////////////////
 // AppImplLinux
@@ -118,13 +35,17 @@ std::map<GLFWwindow*, WindowRef> GlfwCallbacks::sWindowMapping;
 AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 	: mApp( aApp )
 {
-	// Set error callback
-	::glfwSetErrorCallback( GlfwCallbacks::onError );
+	::bcm_host_init();
 
-	// Must be called before we can do anything with GLFW
-    if( ! ::glfwInit() ) {
-    	throw std::string( "::glfwInit failed!" );
+	uint32_t displaySizeX = 0;
+	uint32_t displaySizeY = 0;
+	int32_t success = ::graphics_get_display_size( 0, &displaySizeX, &displaySizeY );
+	if( success < 0 ) {
+		std::cerr << "graphics_get_display_size failed, returned: " << success << std::endl;
+		std::exit( 1 );
 	}
+	mDefaultDisplaySize = ivec2( displaySizeX, displaySizeY );
+std::cout << "Default Display Size:" << mDefaultDisplaySize << std::endl;
 
 	mFrameRate = settings.getFrameRate();
 	mFrameRateEnabled = settings.isFrameRateEnabled();
@@ -157,6 +78,7 @@ AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 
 AppImplLinux::~AppImplLinux()
 {
+	::bcm_host_deinit();
 }
 
 AppLinux *AppImplLinux::getApp()
@@ -205,22 +127,11 @@ void AppImplLinux::run()
 			window->draw();
 		}
 
-		glfwPollEvents();
+		// @TODO: Add event handling
 
 		// Sleep until the next frame
 		sleepUntilNextFrame();	
-
-		// Check to see if we need to exit
-		if( ::glfwWindowShouldClose( mMainWindow->getImpl()->getNative() ) ) {
-			mShouldQuit = true;
-		}
 	}
-
-	// Destroy the main window - this should resolve to
-	// a call for ::glfwDestroyWindow( ... );
-	mMainWindow.reset();
-
-	::glfwTerminate();
 }
 
 RendererRef AppImplLinux::findSharedRenderer( const RendererRef &searchRenderer )
@@ -257,7 +168,7 @@ WindowRef AppImplLinux::createWindow( Window::Format format )
 
 void AppImplLinux::quit()
 {
-	::glfwTerminate();
+	mShouldQuit = true;
 }
 
 float AppImplLinux::getFrameRate() const 
@@ -335,12 +246,10 @@ ivec2 AppImplLinux::getMousePos() const
 
 void AppImplLinux::registerInput( WindowImplLinux* window )
 {
-	GlfwCallbacks::registerInput( window->getNative(), window->getWindow() );
 }
 
 void AppImplLinux::unregisterInput( WindowImplLinux* window )
 {
-	GlfwCallbacks::unregisterInput( window->getNative() );
 }
 
 }} // namespace cinder::app

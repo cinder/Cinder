@@ -38,8 +38,8 @@ class EnvironmentCore : public Environment {
   public:
 	void	initializeFunctionPointers() override;
 
-	bool	isExtensionAvailable( const std::string &extName ) override;
-	bool	supportsHardwareVao() override;
+	bool	isExtensionAvailable( const std::string &extName ) const override;
+	bool	supportsHardwareVao() const override;
 	bool	supportsTextureLod() const override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
 
@@ -67,7 +67,7 @@ void EnvironmentCore::initializeFunctionPointers()
 	}
 }
 
-bool EnvironmentCore::isExtensionAvailable( const std::string &extName )
+bool EnvironmentCore::isExtensionAvailable( const std::string &extName ) const
 {	
 	static bool sInitialized = false;
 	static std::set<std::string> sExtensions;
@@ -91,7 +91,7 @@ bool EnvironmentCore::isExtensionAvailable( const std::string &extName )
 	return sExtensions.count( extension ) > 0;
 }
 
-bool EnvironmentCore::supportsHardwareVao()
+bool EnvironmentCore::supportsHardwareVao() const
 {
 	return true;
 }
