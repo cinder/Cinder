@@ -69,15 +69,15 @@ $(document).ready(function() {
 		init: function(){
 
 			// find all sideNav sections
-			main = $( '#side-nav' );
-			sections = main.find( 'section' );
+			this.main = $( '#side-nav' );
+			this.sections = this.main.find( 'section' );
 
 			// list depth of side nav
-			var baseDepth = main.parent('ul').length;
+			var baseDepth = this.main.parent('ul').length;
 
 			// Find the depth of each nested list and apply a class based on
 			// the depth value. This is used to style the lists.
-			_.each( sections, function( section ){
+			_.each( this.sections, function( section ){
 				var lists = $(section).find( 'ul' );
 
 				_.each(lists, function( list ) {
@@ -122,6 +122,15 @@ $(document).ready(function() {
 				var magDestination = $('<span data-magellan-destination="' + hash + '"></span>');
 				$aTag.wrap( magDestination );
 			} );
+
+			this.resize();
+		},
+
+		resize: function(){
+			// change the max side nav height in relation to the window inner height
+			if( this.sections.length === 1 ) {
+				$( $( this.sections[0] ).find( 'ul' )[0] ).css( "max-height", window.innerHeight - 100 );
+			}
 		}
 	}
 
@@ -257,7 +266,7 @@ $(document).ready(function() {
 	 	});
 	} );
 	
-
+	// initialization
  	setSection( section );
  	cinderJs.showContent( hash );
  	sideNav.init();
@@ -286,6 +295,12 @@ $(document).ready(function() {
         }
     });
 	$(document).foundation('magellan', 'offcanvas', 'reflow');
+
+
+	// listen for resize
+	$( window ).on( 'resize', function(){
+		sideNav.resize();
+	} );
  	return cinderJs;
  } );
 
