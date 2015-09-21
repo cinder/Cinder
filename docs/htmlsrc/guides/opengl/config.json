@@ -68,6 +68,20 @@
 						"link": "#basic_shaders"
 					}
 				]
+			},
+			{
+				"label": "Further Reading",
+				"link": "further_reading.html",
+				"pagenav":[
+					{
+						"label": "Books",
+						"link": "#further_reading_books"
+					},
+					{
+						"label": "Websites",
+						"link": "#further_reading_websites"
+					}					
+				]
 			}			
 		],
 		"seealso":
