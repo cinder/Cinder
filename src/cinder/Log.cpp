@@ -107,7 +107,7 @@ void LogManager::resetLogger( Logger *logger )
 	LoggerMulti *multi = dynamic_cast<LoggerMulti *>( logger );
 	mLoggerMulti = multi ? multi : nullptr;
 
-	mConsoleLoggingEnabled = mFileLoggingEnabled = mSystemLoggingEnabled = false;
+	mConsoleLoggingEnabled = mFileLoggingEnabled = mFileLoggingRotatingEnabled = mSystemLoggingEnabled = false;
 }
 
 void LogManager::addLogger( Logger *logger )
@@ -140,6 +140,7 @@ void LogManager::restoreToDefault()
 	mLoggerMulti = nullptr;
 	mConsoleLoggingEnabled = true;
 	mFileLoggingEnabled = false;
+	mFileLoggingRotatingEnabled = false;
 	mSystemLoggingEnabled = false;
 	mBreakOnLogEnabled = false;
 
@@ -167,6 +168,10 @@ vector<Logger *> LogManager::getAllLoggers()
 
 	return result;
 }
+	
+// ----------------------------------------------------------------------------------------------------
+// MARK: - LoggerManager
+// ----------------------------------------------------------------------------------------------------
 
 void LogManager::enableConsoleLogging()
 {
@@ -175,6 +180,17 @@ void LogManager::enableConsoleLogging()
 
 	addLogger( new LoggerConsoleThreadSafe );
 	mConsoleLoggingEnabled = true;
+}
+	
+void LogManager::disableConsoleLogging()
+{
+	if( ! mConsoleLoggingEnabled || ! mLoggerMulti )
+		return;
+	
+	auto logger = mLoggerMulti->findType<LoggerConsole>();
+	mLoggerMulti->remove( logger );
+	
+	mConsoleLoggingEnabled = false;
 }
 
 bool LogManager::initFileLogging()
@@ -200,16 +216,6 @@ void LogManager::enableFileLogging( const fs::path &path, bool appendToExisting 
 	mFileLoggingEnabled = true;
 }
 
-void LogManager::enableFileLoggingRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
-{
-	if( ! initFileLogging() ) {
-		return;
-	}
-
-	addLogger( new LoggerFileThreadSafe( folder, formatStr, appendToExisting ) );
-	mFileLoggingEnabled = true;
-}
-
 void LogManager::setFileLoggingEnabled( bool enable, const fs::path &filePath, bool appendToExisting )
 {
 	if( enable )
@@ -217,14 +223,58 @@ void LogManager::setFileLoggingEnabled( bool enable, const fs::path &filePath, b
 	else
 		disableFileLogging();
 }
+	
+void LogManager::disableFileLogging()
+{
+	if( ! mFileLoggingEnabled || ! mLoggerMulti )
+		return;
+	
+	auto logger = mLoggerMulti->findType<LoggerFile>();
+	mLoggerMulti->remove( logger );
+	
+	mFileLoggingEnabled = false;
+}
+	
+bool LogManager::initFileLoggingRotating()
+{
+	if( mFileLoggingEnabled ) {
+		// destroys previous file logger to prepare for changes
+		auto logger = mLoggerMulti->findType<LoggerFileRotating>();
+		if( logger )
+			disableFileLoggingRotating();
+		else
+			return false;
+	}
+	return true;
+}
+	
+void LogManager::enableFileLoggingRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
+{
+	if( ! initFileLoggingRotating() ) {
+		return;
+	}
 
+	addLogger( new LoggerFileRotatingThreadSafe( folder, formatStr, appendToExisting ) );
+	mFileLoggingRotatingEnabled = true;
+}
 
 void LogManager::setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const string &formatStr, bool appendToExisting )
 {
 	if( enable )
 		enableFileLoggingRotating( folder, formatStr, appendToExisting );
 	else
-		disableFileLogging();
+		disableFileLoggingRotating();
+}
+
+void LogManager::disableFileLoggingRotating()
+{
+	if( ! mFileLoggingRotatingEnabled || ! mLoggerMulti )
+		return;
+	
+	auto logger = mLoggerMulti->findType<LoggerFileRotating>();
+	mLoggerMulti->remove( logger );
+	
+	mFileLoggingRotatingEnabled = false;
 }
 
 void LogManager::enableSystemLogging()
@@ -243,28 +293,6 @@ void LogManager::setSystemLoggingLevel( Level level )
 	
 	auto logger = mLoggerMulti->findType<LoggerSystem>();
 	logger->setLoggingLevel( level );
-}
-
-void LogManager::disableConsoleLogging()
-{
-	if( ! mConsoleLoggingEnabled || ! mLoggerMulti )
-		return;
-
-	auto logger = mLoggerMulti->findType<LoggerConsole>();
-	mLoggerMulti->remove( logger );
-
-	mConsoleLoggingEnabled = false;
-}
-
-void LogManager::disableFileLogging()
-{
-	if( ! mFileLoggingEnabled || ! mLoggerMulti )
-		return;
-
-	auto logger = mLoggerMulti->findType<LoggerFile>();
-	mLoggerMulti->remove( logger );
-
-	mFileLoggingEnabled = false;
 }
 
 void LogManager::disableSystemLogging()
@@ -348,24 +376,10 @@ void LoggerMulti::write( const Metadata &meta, const string &text )
 // ----------------------------------------------------------------------------------------------------
 
 LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
-	: mFilePath( filePath ), mAppend( appendToExisting ), mRotating( false )
+	: mFilePath( filePath ), mAppend( appendToExisting )
 {
 	if( mFilePath.empty() )
 		mFilePath = getDefaultLogFilePath();
-
-	setTimestampEnabled();
-}
-
-LoggerFile::LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
-	: mFolderPath( folder ), mDailyFormatStr( formatStr ), mAppend( appendToExisting ), mRotating( true )
-{
-	CI_ASSERT_MSG( ! formatStr.empty(), "cannot provide empty formatStr" );
-	
-	if( mFolderPath.empty() )
-		mFolderPath = getDefaultLogFilePath().parent_path();
-
-	mYearDay = getCurrentYearDay();
-	mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
 
 	setTimestampEnabled();
 }
@@ -375,17 +389,9 @@ LoggerFile::~LoggerFile()
 	if( mStream.is_open() )
 		mStream.close();
 }
-
+	
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
-	if( mRotating && mYearDay != getCurrentYearDay() ) {
-		mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
-		mYearDay = getCurrentYearDay();
-
-		if( mStream.is_open() )
-			mStream.close();
-	}
-
 	if( ! mStream.is_open() ) {
 		ensureDirectoryExists();
 		mAppend ? mStream.open( mFilePath.string(), std::ofstream::app ) : mStream.open( mFilePath.string() );
@@ -393,7 +399,7 @@ void LoggerFile::write( const Metadata &meta, const string &text )
 	
 	writeDefault( mStream, meta, text );
 }
-
+	
 fs::path LoggerFile::getDefaultLogFilePath() const
 {
 	return app::Platform::get()->getExecutablePath() / fs::path( "cinder.log" );
@@ -413,6 +419,42 @@ void LoggerFile::ensureDirectoryExists()
 			cerr << "ci::log::LoggerFile error: Unable to create folder \"" << dir.string() << "\"" << endl;
 		}
 	}
+}
+	
+// ----------------------------------------------------------------------------------------------------
+// MARK: - LoggerFileRotating
+// ----------------------------------------------------------------------------------------------------
+
+LoggerFileRotating::LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
+: mFolderPath( folder ), mDailyFormatStr( formatStr )
+{
+	CI_ASSERT_MSG( ! formatStr.empty(), "cannot provide empty formatStr" );
+	if( formatStr.empty() ) {
+		return;
+	}
+	
+	if( mFolderPath.empty() ) {
+		mFolderPath = getDefaultLogFilePath().parent_path();
+	}
+	
+	mAppend = appendToExisting;
+	mYearDay = getCurrentYearDay();
+	mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
+	
+	setTimestampEnabled();
+}
+	
+void LoggerFileRotating::write( const Metadata &meta, const string &text )
+{
+	if( mYearDay != getCurrentYearDay() ) {
+		mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
+		mYearDay = getCurrentYearDay();
+		
+		if( mStream.is_open() )
+			mStream.close();
+	}
+	
+	LoggerFile::write( meta, text );
 }
 
 // ----------------------------------------------------------------------------------------------------
