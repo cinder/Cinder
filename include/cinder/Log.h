@@ -74,8 +74,6 @@ extern std::ostream& operator<<( std::ostream &os, const Location &rhs );
 extern std::ostream& operator<<( std::ostream &lhs, const Level &rhs );
 
 //! Logger is the base class all logging objects are derived from.
-//!
-//! \see LoggerConsole, LoggerFile, LoggerFileRotating
 class Logger {
   public:
 	virtual ~Logger()	{}
@@ -102,15 +100,10 @@ class LoggerConsole : public Logger {
 	void write( const Metadata &meta, const std::string &text ) override;
 };
 
-//! LoggerFile will write to a specified file, either appending to or overwriting that
-//! file at application startup.
+//! LoggerFile will write to a specified file, either appending to or overwriting that file at application startup.
 class LoggerFile : public Logger {
   public:
-	//! LoggerFile constructor that creates or open a log file.  File appending is
-	//! configurable via \p appendToExisting.  If \p filePath is empty, uses the
-	//! default \a %cinder.log filename placed next to the application binary.
-	//! If \p filePath does not exist, the file will be created.  If the folder structure
-	//! containing \p filePath does not exist, the folder structure will be created as well.
+	//! LoggerFile constructor that creates or open a log file.
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
 	
 	virtual ~LoggerFile();
@@ -133,14 +126,7 @@ class LoggerFile : public Logger {
 //! file.  The filename will be re-evaluated during the first logging event occuring past midnight.
 class LoggerFileRotating : public LoggerFile {
   public:
-	//! LoggerFileRotating constructor that creates a rotating log file.  The filename will be
-	//! re-evaluated when the first logging event occurs after midnight.
-	//! File appending is configurable via \p appendToExisting.  \p formatStr will be passed to
-	//! [strtime](http://www.cplusplus.com/reference/ctime/strftime/) to determine the file name.
-	//! The log file will then be created in the folder defined in the \p folder parameter.
-	//! If \p folder is empty, uses the folder where the binary is located.  If the folder structure
-	//! defined in \p folder does not exist, it will be created.
-	//! If \p formatStr is empty, an assertion will be thrown.
+	//! LoggerFileRotating constructor that creates a rotating log file.
 	LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 
 	virtual ~LoggerFileRotating() { }
@@ -153,8 +139,7 @@ protected:
 	int				mYearDay;
 };
 
-//! LoggerBreakpoint doesn't actually log anything, but triggers a breakpoint if a
-//! log event occurs at or above the specified \p triggerLevel.
+//! LoggerBreakpoint doesn't actually log anything, but triggers a breakpoint if a log event occurs at or above a specified level.
 class LoggerBreakpoint : public Logger {
   public:
 	//! Creates a LoggerBreakpoint with a specified \p triggerLevel.
@@ -173,8 +158,7 @@ class LoggerBreakpoint : public Logger {
 	Level	mTriggerLevel;
 };
 
-//! LoggerSystem provides 'system' logging support.  Uses syslog on Unix
-//! based platforms, Event Logging on MSW platforms.
+//! LoggerSystem provides 'system' logging support.  Uses syslog on Unix based platforms, Event Logging on MSW platforms.
 //! \note Does nothing on WinRT.
 class LoggerSystem : public Logger {
 public:
@@ -198,9 +182,7 @@ protected:
 #endif
 };
 
-//! LoggerMulti is a logger that can log to multiple other Loggers.  This is
-//! primarily used by LogManager as it's base Logger, when multiple log outputs
-//! are enabled (ex. console and file)
+//! LoggerMulti is a logger that can log to multiple other Loggers.
 class LoggerMulti : public Logger {
   public:
 	void add( Logger *logger )							{ mLoggers.push_back( std::unique_ptr<Logger>( logger ) ); }
@@ -219,10 +201,7 @@ class LoggerMulti : public Logger {
 	std::vector<std::unique_ptr<Logger> >	mLoggers;
 };
 
-//! LogManager manages a stack of all active Loggers.  It can be used in one of two styles.
-//! \a addLogger and \a removeLogger can be used to manually manage loggers, or helper
-//! functions such as \a enableConsoleLogging and \a enableFileLogging can be used to
-//! easily enable or disable an instance of a Logger internally managed by LogManager.
+//! LogManager manages a stack of all active Loggers.
 class LogManager {
 public:
 	//! Returns a pointer to the shared instance. To enable logging during shutdown, this instance is leaked at shutdown.
