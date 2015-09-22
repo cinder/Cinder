@@ -24,9 +24,9 @@ fi
 PLATFORMS=(19 21)
 ARCHS=(armeabi armeabi-v7a x86 mips arm64-v8a x86_64 mips64)
 BUILDTYPES=(Debug Release)
+NUMPROCS=4
 ES2=
 ES2_INFO=
-NUMPROCS=4
 FULLBUILD=true
 VERBOSE=
 TOOLCHAIN=gcc49

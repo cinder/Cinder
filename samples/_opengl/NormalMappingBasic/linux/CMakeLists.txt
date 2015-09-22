@@ -4,7 +4,7 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE )
 include( ${CINDER_DIR}/tools/linux/Cinder.cmake )
 
-project( CubeMapping )
+project( NormalMappingBasic )
 
 get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src" ABSOLUTE )
 
@@ -21,7 +21,7 @@ include_directories(
 )
 
 set( SRC_FILES
-  ${SRC_DIR}/CubeMappingApp.cpp
+  ${SRC_DIR}/NormalMappingBasicApp.cpp
 )
 
 set( EXE_NAME "${CMAKE_PROJECT_NAME}" )
@@ -35,5 +35,4 @@ target_link_libraries( "${EXE_NAME}" optimized ${CINDER_LIB_DIR}/libcinder${CIND
 target_link_libraries( "${EXE_NAME}" general   ${CINDER_LIB_DIR}/libboost_filesystem.a )
 target_link_libraries( "${EXE_NAME}" general   ${CINDER_LIB_DIR}/libboost_system.a )
 target_link_libraries( "${EXE_NAME}" c++ c++abi dl pthread z ${CINDER_GL_LIBS} X11 Xcursor Xinerama Xrandr Xi fontconfig )
-
 

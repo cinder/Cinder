@@ -27,11 +27,11 @@
 
 #if defined( CINDER_GL_ES_2 )
 	#define GLFW_EXPOSE_NATIVE_EGL
+	#define GLFW_INCLUDE_NONE
 #else
 	#define GLFW_EXPOSE_NATIVE_GLX
 #endif
 
-#define GLFW_INCLUDE_NONE
 
 /*
 #define _GLFW_X11

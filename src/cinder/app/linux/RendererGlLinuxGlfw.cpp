@@ -21,11 +21,12 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "glfw/glfw3.h"
 #include "cinder/app/linux/RendererGlLinux.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
+
+#include "glfw/glfw3.h"
 
 namespace cinder { namespace app {
 

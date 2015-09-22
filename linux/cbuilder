@@ -12,21 +12,26 @@ if (( $# == 0 )); then
     echo -e "\t-j [n]   Number of compile processes, ex: -j 4"
     echo -e ""
     echo -e "flags:"
+	echo -e "\t-es2     Build for OpenGL ES 2 instead of Desktop OpenGL"
     echo -e "\t-rpi2    Build for Raspberry Pi 2 (must be on platform)"
     echo -e "\t-tk1     Build for NVidia Jetson TK1 (must be on platform)"
     echo -e "\t-xu4     Build for Odroid XU4 (must be on platform)"
-    #echo -e "\t-r      Rebuild instead of full build"
+    #echo -e "\t-r       Rebuild instead of full build"
     #echo -e "\t-v      Turns on verbose mode"
     #echo -e ""
     exit 0
 fi
 
 
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+#SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+SCRIPT_DIR=$( pwd )
 
-CLEAN=
+CLEAN=false
 BUILDTYPES=(Debug)
 NUMPROCS=4
+ES2=
+ES2_INFO=
+FULLBUILD=true
 
 # Process arguments
 while (( $# >= 1 ))
@@ -36,7 +41,7 @@ do
 	case $arg in
 		# Clean
 		clean)
-			CLEAN=1
+			CLEAN=true
 		;;
 
         # Build types
@@ -75,6 +80,17 @@ do
                 exit 1
             fi
         ;;
+
+        # OpenGL ES2
+        -es2)
+            ES2="-DCINDER_GL_ES_2=1"
+            ES2_INFO="GLES2: true"
+        ;;
+
+        # Rebuild
+        #-r)
+		#	FULLBUILD=false
+        #;;
 	esac
 
     # Shift
@@ -89,46 +105,37 @@ for build in ${BUILDTYPES[@]}; do
 	build_type=${build}
 	build_dir=$(pwd)/${build}
 
-	if [ -n "${CLEAN}" ]; then
+	# Clean
+	if [ ${CLEAN} == true ] || [ ${FULLBUILD} == true ]; then
 		echo "Cleaning ${build_type} ..."
 		if [ -d "${build_dir}" ]; then
 			rm -rf "${build_dir}"
 			echo "...deleted dir: ${build_dir}"
 		fi
-	else
-		if [ ! -f "${SCRIPT_DIR}/CMakeLists.txt" ]; then
-			echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}"
+
+		if [ ${CLEAN} == true ]; then
 			exit
 		fi
-
-		echo "---------------------------------------------------------------------------------"
-		echo "Building Cinder in ${build_type} mode"
-
-		if [ ! -d "${build_dir}" ]; then
-			mkdir ${build_dir}
-			echo "...created dir: ${build_dir}"
-		fi
-
-		cd ${build_dir}
-		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type}
-		make -j ${NUMPROCS} VERBOSE=1
-
-		echo -e ""
 	fi
-done
 
-#if [ ! -f "./CMakeLists.txt" ]; then
-#	echo "ERROR: Couldn't find CMakeLists.txt in current directory!"
-#	exit
-#fi
-#
-#BUILD_TYPE=Debug
-#BUILD_DIR=Debug
-#if [ ! -d "./${BUILD_DIR}" ]; then
-#	mkdir ./${BUILD_DIR}
-#	echo "Created ${BUILD_DIR} directory"
-#fi
-#
-#cd ${BUILD_DIR}
-#cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-#make VERBOSE=1
+	# Check for CMakeLists.txt
+	if [ ! -f "${SCRIPT_DIR}/CMakeLists.txt" ]; then
+		echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}"
+		exit
+	fi
+
+	# Build
+	echo "---------------------------------------------------------------------------------"
+	echo "Building Cinder in ${build_type} mode"
+
+	if [ ! -d "${build_dir}" ]; then
+		mkdir -p ${build_dir}
+		echo "...created dir: ${build_dir}"
+	fi
+
+	cd ${build_dir}
+	cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${ES2}
+	make -j ${NUMPROCS} VERBOSE=1
+
+	echo -e ""
+done

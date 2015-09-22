@@ -678,5 +678,3 @@ if( NDK_GLES2 )
 else()
     add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
 endif()
-
-
