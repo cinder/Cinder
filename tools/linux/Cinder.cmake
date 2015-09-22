@@ -49,6 +49,6 @@ if( CINDER_TOOLCHAIN_CLANG )
     set(CMAKE_CCC_FLAGS                       	"${CMAKE_C_FLAGS} -fmessage-length=0"	CACHE STRING "" FORCE )
 endif()
 
-set( CXX_FLAGS "-stdlib=libc++ -std=c++11 -Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef" CACHE STRING "" FORCE )
+set( CXX_FLAGS "-stdlib=libstdc++ -std=c++11 -Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g -fexceptions -frtti" 				CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" 	CACHE STRING "" FORCE )

@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/gl/platform.h"
+#include "glfw/glfw3.h"
 #include "cinder/app/linux/RendererGlLinux.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
@@ -45,7 +45,11 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 
 	::glfwMakeContextCurrent( mContext );
 
+#if defined( CINDER_GL_ES )
+	gl::Environment::setEs();
+#else
 	gl::Environment::setCore();
+#endif
 	gl::env()->initializeFunctionPointers();
 
 	std::shared_ptr<gl::PlatformDataLinux> platformData( new gl::PlatformDataLinux( mContext ) );

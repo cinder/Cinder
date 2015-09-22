@@ -37,7 +37,9 @@
 #if defined( CINDER_GL_ES )
 	#define GL_BLUE		0x1905
 	#define GL_GREEN	0x1904
+  #if ! defined( GL_RED )
 	#define GL_RED		0x1903
+  #endif
 #endif
 
 namespace cinder { namespace gl {

@@ -39,21 +39,34 @@
 	#include <OpenGLES/ES2/glext.h>
 #endif
 
-#if defined( CINDER_LINUX_EGL_ONLY )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
  	#include "EGL/egl.h"
 #endif
 
-#if defined( CINDER_LINUX )
-  #if defined( CINDER_GL_HAS_MAP_BUFFER )
+#if ( defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) ) && defined( CINDER_GL_ES_2 )
+  #if ! defined( CINDER_GL_HAS_INSTANCED_ARRAYS )
+ 	using PFNGLVERTEXATTRIBDIVISOREXTPROC = void*;
+  #endif
+
+  #if ! defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
+ 	using PFNGLMAPBUFFERRANGEEXTPROC = void*;
+ 	using PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC = void*;
+  #endif
+
+
+	PFNGLBINDVERTEXARRAYOESPROC			fnptr_ci_glBindVertexArrayOES = nullptr;
+	PFNGLDELETEVERTEXARRAYSOESPROC		fnptr_ci_glDeleteVertexArraysOES = nullptr;
+	PFNGLGENVERTEXARRAYSOESPROC			fnptr_ci_glGenVertexArraysOES = nullptr;
+	PFNGLISVERTEXARRAYOESPROC			fnptr_ci_glIsVertexArrayOES = nullptr;
+ 
+	PFNGLVERTEXATTRIBDIVISOREXTPROC		fnptr_ci_glVertexAttribDivisorEXT= nullptr;
+ 
 	PFNGLMAPBUFFEROESPROC				fnptr_ci_glMapBufferOES = nullptr;
 	PFNGLUNMAPBUFFEROESPROC				fnptr_ci_glUnmapBufferOES = nullptr;
 	PFNGLGETBUFFERPOINTERVOESPROC		fnptr_ci_glGetBufferPointervOES = nullptr;
-  #endif
 
-  #if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
-	PFNGLMAPBUFFERRANGEEXTPROC 			fnptr_ci_glMapBufferRangeEXT = nullptr;
+ 	PFNGLMAPBUFFERRANGEEXTPROC 			fnptr_ci_glMapBufferRangeEXT = nullptr;
 	PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC	fnptr_ci_glFlushMappedBufferRangeEXT = nullptr;
-  #endif
 #endif
 
 namespace cinder { namespace gl {
@@ -65,6 +78,8 @@ class EnvironmentEs : public Environment {
 	bool	isExtensionAvailable( const std::string &extName ) const override;
 	bool	supportsHardwareVao() const override;
 	bool	supportsTextureLod() const override;
+	bool 	supportsMapBuffer() const;
+	bool 	supportsMapBufferRange() const;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
 	
 	void	allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) override;
@@ -84,65 +99,72 @@ Environment* allocateEnvironmentEs()
 
 void EnvironmentEs::initializeFunctionPointers()
 {
+
 #if defined( CINDER_LINUX )
-  #if defined( CINDER_GL_HAS_MAP_BUFFER )
-	if( isExtensionAvailable( "GL_OES_mapbuffer" ) ) {
+	if( supportsHardwareVao() ) {
+		fnptr_ci_glBindVertexArrayOES = (PFNGLBINDVERTEXARRAYOESPROC)eglGetProcAddress( "glBindVertexArrayOES" );
+		fnptr_ci_glDeleteVertexArraysOES = (PFNGLDELETEVERTEXARRAYSOESPROC)eglGetProcAddress( "glDeleteVertexArraysOES" );
+		fnptr_ci_glGenVertexArraysOES = (PFNGLGENVERTEXARRAYSOESPROC)eglGetProcAddress( "glGenVertexArraysOES" );
+		fnptr_ci_glIsVertexArrayOES = (PFNGLISVERTEXARRAYOESPROC)eglGetProcAddress( "glIsVertexArrayOES" );		
+	}
+ 
+ 	if( isExtensionAvailable( "GL_OES_mapbuffer" ) ) {
 		fnptr_ci_glMapBufferOES  = (PFNGLMAPBUFFEROESPROC)eglGetProcAddress( "glMapBufferOES" );
 		fnptr_ci_glUnmapBufferOES  = (PFNGLUNMAPBUFFEROESPROC)eglGetProcAddress( "glUnmapBufferOES" );
 		fnptr_ci_glGetBufferPointervOES	= (PFNGLGETBUFFERPOINTERVOESPROC)eglGetProcAddress( "glGetBufferPointervOES" );
 	}
-  #endif
-
-  #if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
-	if( isExtensionAvailable( "GL_EXT_map_buffer_range" ) ) {
+ 
+	if( supportsMapBufferRange() ) {
 	 	fnptr_ci_glMapBufferRangeEXT = (PFNGLMAPBUFFERRANGEEXTPROC)eglGetProcAddress( "glMapBufferRangeEXT" );
-		fnptr_ci_glFlushMappedBufferRangeEXT = (PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC)eglGetProcAddress( "glFlushMappedBufferRangeEXT" );			
+		fnptr_ci_glFlushMappedBufferRangeEXT = (PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC)eglGetProcAddress( "glFlushMappedBufferRangeEXT" );
 	}
-  #endif
 #endif
+
 }
 
 bool EnvironmentEs::isExtensionAvailable( const std::string &extName ) const
 {
-	static const char *sExtStr = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
-	static std::map<std::string, bool> sExtMap;
-	
-	std::map<std::string,bool>::const_iterator extIt = sExtMap.find( extName );
-	if ( extIt == sExtMap.end() ) {
-		bool found		= false;
-		size_t extNameLen	= extName.size();
-		const char *p	= sExtStr;
-		const char *end = sExtStr + strlen( sExtStr );
-		while( p < end ) {
-			size_t n = strcspn( p, " " );
-			if ( (extNameLen == n) && ( strncmp( extName.c_str(), p, n) == 0 ) ) {
-				found = true;
-				break;
+	static bool sInitialized = false;
+	static std::set<std::string> sExtensions;
+	if( ! sInitialized ) {
+		const char *buf = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
+		if( 0 != buf ) {
+			std::string extsStr = std::string( buf );
+			size_t startPos = 0;
+			size_t endPos = extsStr.find( ' ' );
+			bool done = ( std::string::npos == endPos );
+			while( ! done ) {
+				size_t len = endPos - startPos;
+				std::string s = extsStr.substr( startPos, len );
+				std::transform( s.begin(), s.end(), s.begin(), static_cast<int(*)(int)>( tolower ) );
+				sExtensions.insert( s );
+
+				startPos = endPos + 1;
+				endPos = extsStr.find( ' ', startPos );
+				if( std::string::npos == endPos ) {
+					endPos = extsStr.length();
+				}
+
+				done = ( startPos >= endPos );
 			}
-			p += (n + 1);
 		}
-		sExtMap[extName] = found;
-		return found;
+		sInitialized = true;
 	}
-	else {
-		return extIt->second;
-	}
+
+	// convert to lower case
+	std::string extension = extName;
+	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>( tolower ) );	
+	return sExtensions.count( extension ) > 0;
 }
 
 bool EnvironmentEs::supportsHardwareVao() const
 {
-#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_GL_ES_3 )
-	return true;
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-  #if defined( CINDER_GL_ES_2 )
-	return isExtensionAvailable( "OES_vertex_array_object" );
-  #else
+#if defined( CINDER_GL_ES_2 )
+	return isExtensionAvailable( "GL_OES_vertex_array_object" ) || isExtensionAvailable( "GL_ARB_vertex_array_object" );
+#else
 	// Assumes OpenGL ES 3 or greater
 	return true;
-  #endif	
-#else
-	return false;
-#endif
+#endif	
 }
 
 bool EnvironmentEs::supportsTextureLod() const
@@ -153,6 +175,21 @@ bool EnvironmentEs::supportsTextureLod() const
 	static bool result = isExtensionAvailable( "GL_EXT_shader_texture_lod" );
 	return result;
 #endif
+}
+
+bool EnvironmentEs::supportsMapBuffer() const
+{
+	return isExtensionAvailable( "GL_OES_mapbuffer" );
+}
+
+bool EnvironmentEs::supportsMapBufferRange() const
+{
+#if defined( CINDER_GL_ES_2 )
+	return isExtensionAvailable( "GL_EXT_map_buffer_range" ) || isExtensionAvailable( "GL_ARB_map_buffer_range" );
+#else
+	// Assumes OpenGL ES 3 or greater
+	return true;
+#endif	
 }
 
 void EnvironmentEs::objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label )
@@ -264,17 +301,17 @@ std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 
 	if( shader.mTextureMapping ) {
 		s +=	"attribute vec2		ciTexCoord0;\n"
-				"varying highp vec2	TexCoord;\n"
+				"varying  vec2	TexCoord;\n"
 				;
 	}
 	if( shader.mColor ) {
 		s +=	"attribute vec4		ciColor;\n"
-				"varying vec4		Color;\n"
+				"varying  vec4  Color;\n"
 				;
 	}
 	if( shader.mLambert ) {
 		s += "attribute vec3		ciNormal;\n"
-			"varying highp vec3		Normal;\n"
+			"varying  vec3		Normal;\n"
 			;
 	}
 
@@ -319,31 +356,31 @@ std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 	}
 #endif		
 
-	s +=		"precision highp float;\n";
+	//s +=		"precision highp float;\n";
 
 #if defined( CINDER_ANDROID )
 	if( shader.mTextureMapping ) {	
 		if( shader.mTextureMappingExternalOes ) {
 			s +=	"uniform samplerExternalOES	uTex0;\n"
-					"varying highp vec2			TexCoord;\n"
+					"varying  vec2			TexCoord;\n"
 					;
 		}
 		else {
 			s +=	"uniform sampler2D	uTex0;\n"
-					"varying highp vec2	TexCoord;\n"
+					"varying  vec2	TexCoord;\n"
 					;
 		}
 	}
 #else	
 	if( shader.mTextureMapping ) {
 		s +=	"uniform sampler2D	uTex0;\n"
-				"varying highp vec2	TexCoord;\n"
+				"varying  vec2	TexCoord;\n"
 				;
 	}
 #endif
 
 	if( shader.mColor ) {
-		s +=	"varying lowp vec4	Color;\n";
+		s +=	"varying  vec4	Color;\n";
 	}
 
 	if( shader.mLambert ) { 

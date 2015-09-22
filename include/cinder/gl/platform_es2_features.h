@@ -29,6 +29,25 @@
 
 #if defined( CINDER_GL_ES_2 )
 
+#if defined( GL_OES_vertex_array_object )
+	extern PFNGLBINDVERTEXARRAYOESPROC			fnptr_ci_glBindVertexArrayOES;
+	extern PFNGLDELETEVERTEXARRAYSOESPROC		fnptr_ci_glDeleteVertexArraysOES;
+	extern PFNGLGENVERTEXARRAYSOESPROC			fnptr_ci_glGenVertexArraysOES;
+	extern PFNGLISVERTEXARRAYOESPROC			fnptr_ci_glIsVertexArrayOES;
+	#define glBindVertexArrayOES				fnptr_ci_glBindVertexArrayOES
+	#define glDeleteVertexArraysOES 			fnptr_ci_glDeleteVertexArraysOES
+	#define glGenVertexArraysOES 				fnptr_ci_glGenVertexArraysOES
+	#define glIsVertexArrayOES 					fnptr_ci_glIsVertexArrayOES
+#endif
+
+#if defined( GL_EXT_texture_rg )
+	#define CINDER_HAS_TEXTURE_RG
+	#define GL_RED 								GL_RED_EXT
+	#define GL_RG 								GL_RG_EXT
+	#define GL_R8 								GL_R8_EXT
+	#define GL_RG8 								GL_RG8_EXT
+#endif
+
 #if defined( GL_EXT_texture_storage )
 	#define CINDER_GL_HAS_TEXTURE_STORAGE
 #endif
@@ -39,34 +58,43 @@
 
 #if defined( GL_EXT_shadow_samplers )
 	#define CINDER_GL_HAS_SHADOW_SAMPLERS
-	#define GL_TEXTURE_COMPARE_MODE			GL_TEXTURE_COMPARE_MODE_EXT
-	#define GL_TEXTURE_COMPARE_FUNC			GL_TEXTURE_COMPARE_FUNC_EXT
-	#define GL_COMPARE_REF_TO_TEXTURE		GL_COMPARE_REF_TO_TEXTURE_EXT
-	#define GL_SAMPLER_2D_SHADOW			GL_SAMPLER_2D_SHADOW_EXT
+	#define GL_TEXTURE_COMPARE_MODE				GL_TEXTURE_COMPARE_MODE_EXT
+	#define GL_TEXTURE_COMPARE_FUNC				GL_TEXTURE_COMPARE_FUNC_EXT
+	#define GL_COMPARE_REF_TO_TEXTURE			GL_COMPARE_REF_TO_TEXTURE_EXT
+	#define GL_SAMPLER_2D_SHADOW				GL_SAMPLER_2D_SHADOW_EXT
 #endif
 
 #if defined( GL_OES_mapbuffer )
 	#define CINDER_GL_HAS_MAP_BUFFER
- 	#define glMapBuffer 					glMapBufferOES
- 	#define glUnmapBuffer 					glUnmapBufferOES
- 	#define glGetBufferPointerv 			glGetBufferPointervOES
+	extern PFNGLMAPBUFFEROESPROC 				fnptr_ci_glMapBufferOES;
+	extern PFNGLUNMAPBUFFEROESPROC 				fnptr_ci_glUnmapBufferOES;
+	extern PFNGLGETBUFFERPOINTERVOESPROC 		fnptr_ci_glGetBufferPointervOES;
+ 	#define glMapBuffer 						fnptr_ci_glMapBufferOES
+ 	#define glUnmapBuffer 						fnptr_ci_glUnmapBufferOES
+ 	#define glGetBufferPointerv 				fnptr_ci_glGetBufferPointervOES
 #endif
 
 #if defined( GL_EXT_map_buffer_range )
 	#define CINDER_GL_HAS_MAP_BUFFER_RANGE
-	#define GL_MAP_READ_BIT					GL_MAP_READ_BIT_EXT
-	#define GL_MAP_WRITE_BIT				GL_MAP_WRITE_BIT_EXT
-	#define GL_MAP_INVALIDATE_RANGE_BIT		GL_MAP_INVALIDATE_RANGE_BIT_EXT
-	#define GL_MAP_INVALIDATE_BUFFER_BIT	GL_MAP_INVALIDATE_BUFFER_BIT_EXT
-	#define GL_MAP_FLUSH_EXPLICIT_BIT		GL_MAP_FLUSH_EXPLICIT_BIT_EXT
-	#define GL_MAP_UNSYNCHRONIZED_BIT 		GL_MAP_UNSYNCHRONIZED_BIT_EXT
- 	#define glMapBufferRange 				glMapBufferRangeEXT
- 	#define glFlushMappedBufferRange 		glFlushMappedBufferRangeEXT
+	#define GL_MAP_READ_BIT						GL_MAP_READ_BIT_EXT
+	#define GL_MAP_WRITE_BIT					GL_MAP_WRITE_BIT_EXT
+	#define GL_MAP_INVALIDATE_RANGE_BIT			GL_MAP_INVALIDATE_RANGE_BIT_EXT
+	#define GL_MAP_INVALIDATE_BUFFER_BIT		GL_MAP_INVALIDATE_BUFFER_BIT_EXT
+	#define GL_MAP_FLUSH_EXPLICIT_BIT			GL_MAP_FLUSH_EXPLICIT_BIT_EXT
+	#define GL_MAP_UNSYNCHRONIZED_BIT 			GL_MAP_UNSYNCHRONIZED_BIT_EXT
+
+	extern PFNGLMAPBUFFERRANGEEXTPROC			fnptr_ci_glMapBufferRangeEXT;
+	extern PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC	fnptr_ci_glFlushMappedBufferRangeEXT;
+ 	#define glMapBufferRange 					fnptr_ci_glMapBufferRangeEXT
+ 	#define glFlushMappedBufferRange 			fnptr_ci_glFlushMappedBufferRangeEXT
 #endif
 
 #if defined( GL_EXT_instanced_arrays )
  	#define CINDER_GL_HAS_INSTANCED_ARRAYS
- 	#define GL_VERTEX_ATTRIB_ARRAY_DIVISOR	GL_VERTEX_ATTRIB_ARRAY_DIVISOR_EXT
+ 	#define GL_VERTEX_ATTRIB_ARRAY_DIVISOR		GL_VERTEX_ATTRIB_ARRAY_DIVISOR_EXT
+
+ 	extern PFNGLVERTEXATTRIBDIVISOREXTPROC		fnptr_ci_glVertexAttribDivisorEXT;
+ 	#define glVertexAttribDivisorEXT 			fnptr_ci_glVertexAttribDivisorEXT
 #endif
 
 #endif // defined( CINDER_GL_ES_2 )

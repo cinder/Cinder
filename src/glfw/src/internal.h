@@ -29,7 +29,7 @@
 #define _glfw3_internal_h_
 
 
-#define _GLFW_USE_CONFIG_H
+//#define _GLFW_USE_CONFIG_H
 #if defined(_GLFW_USE_CONFIG_H)
  #include "glfw_config.h"
 #endif

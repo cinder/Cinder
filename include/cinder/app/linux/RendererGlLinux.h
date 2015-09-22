@@ -25,9 +25,12 @@
 
 #include "cinder/app/AppBase.h"
 #if defined( CINDER_LINUX_EGL_ONLY )
-	#include "EGL/egl.h"
+	typedef void *EGLConfig;
+	typedef void *EGLContext;
+	typedef void *EGLDisplay;
+	typedef void *EGLSurface; 
 #else
-	#include "glfw/glfw3.h"
+	typedef struct GLFWwindow GLFWwindow;
 #endif
 
 namespace cinder { namespace gl {

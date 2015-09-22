@@ -20,15 +20,17 @@ include_directories(
     ${BOOST_INC_DIR}  
 )
 
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCINDER_GL_ES_2" )
+
 set( SRC_FILES
   ${SRC_DIR}/CubeMappingApp.cpp
 )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )
 add_executable( "${CMAKE_PROJECT_NAME}" ${SRC_FILES} )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" debug     ${CINDER_DIR}/lib/linux/libcinder_d.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" optimized ${CINDER_DIR}/lib/linux/libcinder.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/libboost_filesystem.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/libboost_system.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" c++ c++abi dl pthread z GL X11 Xcursor Xinerama Xrandr Xi )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" debug     ${CINDER_DIR}/lib/linux/${CINDER_ARCH}/libcinder_d.a )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" optimized ${CINDER_DIR}/lib/linux/${CINDER_ARCH}/libcinder.a )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/${CINDER_ARCH}/libboost_filesystem.a )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_DIR}/lib/linux/${CINDER_ARCH}/libboost_system.a )
+target_link_libraries( "${CMAKE_PROJECT_NAME}" c++ c++abi dl pthread z EGL GLESv2 X11 Xcursor Xinerama Xrandr Xi fontconfig )
 

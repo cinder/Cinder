@@ -34,6 +34,11 @@ endif()
 
 if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 )
 	set( CINDER_GL_ES true )
+	if( CINDER_GL_ES_2 )
+		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_2" )
+	elseif( CINDER_GL_ES_3 )
+		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3" )
+	endif()
 endif()
 
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
@@ -123,13 +128,21 @@ else()
 	)
 endif()
 
-set( C_FLAGS "-fvisibility=default -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX" )
+if( NOT CINDER_LINUX_EGL_RPI2 )
+	if( CINDER_GL_ES )
+		set( GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_EGL -D_GLFW_USE_GLESV2" )
+	else()
+		set( GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_GLX -D_GLFW_USE_OPENGL" )
+	endif()
+endif()
+
+set( C_FLAGS "-fvisibility=default ${GLFW_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX" )
 set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
 set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
 # Disable these warnings, many of which are coming from Boost
 set( CXX_DISABLE_WARNINGS "-Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef -Wno-tautological-compare -Wno-missing-braces" )
-set( CXX_FLAGS "-stdlib=libstdc++ -std=c++11 -fvisibility=default -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX ${CXX_DISABLE_WARNINGS}" )
+set( CXX_FLAGS "-stdlib=libstdc++ -std=c++11 -fvisibility=default ${CINDER_GL_ES_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX ${CXX_DISABLE_WARNINGS}" )
 
 if( CINDER_LINUX_EGL_RPI2 )
 	set( CXX_FLAGS "${CXX_FLAGS} -DCINDER_LINUX_EGL_ONLY -DCINDER_LINUX_EGL_RPI2 -DCINDER_GL_ES_2" )
@@ -147,7 +160,6 @@ if( NOT CINDER_LINUX_EGL_RPI2 )
 		${CINDER_SRC_DIR}/glfw/src/window.c
 
 		${CINDER_SRC_DIR}/glfw/src/window.c
-		${CINDER_SRC_DIR}/glfw/src/glx_context.c
 		${CINDER_SRC_DIR}/glfw/src/x11_init.c
 		${CINDER_SRC_DIR}/glfw/src/x11_monitor.c
 		${CINDER_SRC_DIR}/glfw/src/x11_window.c
@@ -155,10 +167,19 @@ if( NOT CINDER_LINUX_EGL_RPI2 )
 		${CINDER_SRC_DIR}/glfw/src/linux_joystick.c
 		${CINDER_SRC_DIR}/glfw/src/posix_time.c
 		${CINDER_SRC_DIR}/glfw/src/posix_tls.c
-
-		${CINDER_SRC_DIR}/glload/gl_load.c
-		${CINDER_SRC_DIR}/glload/glx_load.c
 	)
+	
+	if( CINDER_GL_ES )
+		list( APPEND CINDER_C_SRC_FILES
+			${CINDER_SRC_DIR}/glfw/src/egl_context.c
+		)
+	else()
+		list( APPEND CINDER_C_SRC_FILES
+			${CINDER_SRC_DIR}/glfw/src/glx_context.c
+			${CINDER_SRC_DIR}/glload/gl_load.c
+			${CINDER_SRC_DIR}/glload/glx_load.c
+		)
+	endif()
 endif()
 
 list( APPEND CINDER_C_SRC_FILES
