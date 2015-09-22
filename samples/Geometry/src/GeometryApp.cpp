@@ -35,6 +35,8 @@ public:
 	void mouseDrag( MouseEvent event ) override;
 	void keyDown( KeyEvent event ) override;
 
+	void fileDrop( FileDropEvent event ) override;
+
 private:
 	void createGrid();
 	void createPhongShader();
@@ -106,7 +108,7 @@ void GeometryApp::setup()
 	mShowTangents = false;
 	mShowGrid = true;
 	mShowSolidPrimitive = true;
-	mShowWirePrimitive = true;
+	mShowWirePrimitive = false;
 	mEnableFaceFulling = false;
 
 	mSubdivision = 1;
@@ -119,7 +121,7 @@ void GeometryApp::setup()
 	// Load the textures.
 	gl::Texture::Format fmt;
 	fmt.setAutoInternalFormat();
-	fmt.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+	fmt.setWrap( GL_REPEAT, GL_REPEAT );
 	mTexture = gl::Texture::create( loadImage( loadAsset( "stripes.jpg" ) ), fmt );
 
 	// Setup the camera.
@@ -197,7 +199,7 @@ void GeometryApp::draw()
 
 		// Draw the primitive.
 		if( mShowSolidPrimitive ) {
-			gl::ScopedColor colorScope( Color( 0.7f, 0.5f, 0.3f ) );
+			gl::ScopedColor colorScope( Color( 1, 1, 1 ) );
 
 			if( mViewMode == WIREFRAME ) {
 				// We're using alpha blending, so render the back side first.
@@ -303,12 +305,14 @@ void GeometryApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_q:
 		mQualitySelected = Quality( (int) ( mQualitySelected + 1 ) % 3 );
 		break;
+#if ! defined( CINDER_GL_ES )
 	case KeyEvent::KEY_v:
 		if( mViewMode == WIREFRAME )
 			mViewMode = SHADED;
 		else
 			mViewMode = WIREFRAME;
 		break;
+#endif 
 	case KeyEvent::KEY_w:
 		mShowWirePrimitive = !mShowWirePrimitive;
 		break;
@@ -317,6 +321,19 @@ void GeometryApp::keyDown( KeyEvent event )
 		createPhongShader();
 		createGeometry();
 		break;
+	}
+}
+
+void GeometryApp::fileDrop( FileDropEvent event )
+{
+	try {
+		gl::Texture::Format fmt;
+		fmt.setAutoInternalFormat();
+		fmt.setWrap( GL_REPEAT, GL_REPEAT );
+
+		mTexture = gl::Texture2d::create( loadImage( event.getFile( 0 ) ), fmt );
+	}
+	catch( const std::exception &exc ) {
 	}
 }
 

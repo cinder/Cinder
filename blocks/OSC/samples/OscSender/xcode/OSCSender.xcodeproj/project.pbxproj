@@ -26,6 +26,8 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		9CE176CB59FE4ABCB77A660C /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 501E352834A544B0AFE6E558 /* OscTypes.cpp */; };
 		9F330C21C51C4699B11C45B6 /* OscPrintReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84030BFDD64D485C86D285D3 /* OscPrintReceivedElements.cpp */; };
+		B3D716191B8E068A005F70E9 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3D716181B8E068A005F70E9 /* IOSurface.framework */; };
+		B3D7161B1B8E0690005F70E9 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3D7161A1B8E0690005F70E9 /* IOKit.framework */; };
 		BB3D26BFE76047C19031E4C2 /* OscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03FB7E0EB80C4CA294FCEA26 /* OscMessage.cpp */; };
 		BD15A4D3C60A473BBA189460 /* IpEndpointName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F15E910BA6A4950887576F1 /* IpEndpointName.cpp */; };
 		D1B52F5BF0CD48E59B771E26 /* OscOutboundPacketStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 581792F6B78D4171A2266B5B /* OscOutboundPacketStream.cpp */; };
@@ -73,6 +75,8 @@
 		A33A79C74FCB41BFA539B0CE /* OscSender_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = OscSender_Prefix.pch; sourceTree = "<group>"; };
 		AB1432D52B1F4F9092C8D2C0 /* OscPrintReceivedElements.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OscPrintReceivedElements.h; path = ../../../src/osc/OscPrintReceivedElements.h; sourceTree = "<group>"; };
 		AD9972F0156440618D5FF5A0 /* OscListener.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = OscListener.cpp; path = ../../../src/OscListener.cpp; sourceTree = "<group>"; };
+		B3D716181B8E068A005F70E9 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		B3D7161A1B8E0690005F70E9 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		C46FB1D8A40A49809C2C85D6 /* OscException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OscException.h; path = ../../../src/osc/OscException.h; sourceTree = "<group>"; };
 		C68EA9DBF9B24B2485E58130 /* OscSenderApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = OscSenderApp.cpp; path = ../src/OscSenderApp.cpp; sourceTree = "<group>"; };
 		CC4BAE5EF63E4DFCB8408CB6 /* UdpSocket.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = UdpSocket.cpp; path = ../../../src/ip/posix/UdpSocket.cpp; sourceTree = "<group>"; };
@@ -88,6 +92,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3D7161B1B8E0690005F70E9 /* IOKit.framework in Frameworks */,
+				B3D716191B8E068A005F70E9 /* IOSurface.framework in Frameworks */,
 				00FFAEA619D4E3820002CA8E /* AVFoundation.framework in Frameworks */,
 				00FFAEA719D4E3820002CA8E /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -238,6 +244,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B3D7161A1B8E0690005F70E9 /* IOKit.framework */,
+				B3D716181B8E068A005F70E9 /* IOSurface.framework */,
 				00FFAEA419D4E3820002CA8E /* AVFoundation.framework */,
 				00FFAEA519D4E3820002CA8E /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,

@@ -136,24 +136,15 @@ ul, ol, dl
 .row
 	max-width: 80rem
 
-ci
-	color: purple;
-	font-weight: 700;
-
-a.ci
-	codeStyle()
-	font-size: 0.9em
-	
-	&.plain
-		baseFontStyle()
-		font-size: inherit
-
 // for guide template
 body#guide-contents
 	max-width: 960px
 	margin: 20px auto 0 auto
 	width: 100%
 
+body.reference, body.guide .guide-list
+	ul li
+		margin-left: 0
 
 .plain
 	baseFontStyle()
@@ -175,9 +166,6 @@ body#guide-contents
 #top-primary
 	box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3)
 	z-index: 100
-	
-	.nav
-		font-size: 1.25rem
 	
 #top-primary,
 #top-content
@@ -572,11 +560,9 @@ body.classes
 		margin: 0 0 20px 0
 
 		h1
-			// color: $cinder-orange
-			// text-align: center
 			font-weight: 700
 			text-transform: uppercase
-			margin: 8px 0 0 0
+			margin: 0 0 0 0
 			display: inline-block
 			vertical-align: middle
 		
@@ -584,25 +570,43 @@ body.classes
 			margin: 10px 0
 		
 	.header-icon
-		// margin: 0 auto
-		width: 100px
-		height: 80px
-		// text-align: center
+		width: 50px
+		height: 50px
 		display: inline-block
 		vertical-align: middle
-
-	// reference header icons
-	.header-icon {overflow:hidden; background-repeat: no-repeat;background-image:url('../images/header_icons.png');}
-
-	.header_2dgraphics {width:200px; height:80px; background-position: -2px -2px}
-	.header_application {width:200px; height:80px; background-position: -204px -2px}
-	.header_audio {width:200px; height:80px; background-position: -406px -2px}
-	.header_geometry {width:200px; height:80px; background-position: -608px -2px}
-	.header_images {width:200px; height:80px; background-position: -810px -2px}
-	.header_math {width:200px; height:80px; background-position: -1012px -2px}
-	.header_platform {width:200px; height:80px; background-position: -1214px -2px}
-	.header_system {width:200px; height:80px; background-position: -1416px -2px}
-	.header_video {width:200px; height:80px; background-position: -1618px -2px}
+		overflow:hidden
+		background-repeat: no-repeat
+		margin-right: 10px
+		
+		&.header_2dgraphics
+			background-image: url('../images/icons/2d_red.svg')
+		
+		&.header_geometry
+			background-image: url('../images/icons/geom_red.svg')
+		
+		&.header_math
+			background-image: url('../images/icons/math_red.svg')
+		
+		&.header_system
+			background-image: url('../images/icons/system_red.svg')
+			
+		&.header_platform
+			background-image: url('../images/icons/platform_red.svg')
+		
+		&.header_opengl
+			background-image: url('../images/icons/opengl_red.svg')	
+		
+		&.header_audio
+			background-image: url('../images/icons/audio_red.svg')
+			
+		&.header_video
+			background-image: url('../images/icons/video_red.svg')
+		
+		&.header_images
+			background-image: url('../images/icons/images_red.svg')
+		
+		&.header_application
+			background-image: url('../images/icons/app_red.svg')
 
 
 .expandable
@@ -756,6 +760,7 @@ button.interactive-guide
 		label
 			color: #fff
 			font-size: inherit
+			width: 100%
 		
 		li
 			// margin-left: 18px
@@ -767,6 +772,11 @@ button.interactive-guide
 			
 			a
 				color: $cinder-red
+				
+			&.active			
+				background-color: $cinder-red
+				>label a, >a
+					color: white
 			
 
 	.css-treeview label::before
@@ -786,10 +796,7 @@ button.interactive-guide
 	.css-treeview label
 		background-image: none
 		height: 20px
-		line-height: 20px
-	
-	/*.css-treeview input + label + ul
-		margin: 0*/
+		line-height: 20px	
 
 
 .wrapper
@@ -837,7 +844,8 @@ $border-height = 3px
 #main-nav
 	background: transparent
 	height: $navbar-height
-	
+	font-size: 1.1rem			
+
 	.columns
 		height: 100%
 
@@ -858,7 +866,7 @@ $border-height = 3px
 				position: relative
 				display: inline-block
 				
-				margin-right: 25px
+				margin-right: 20px
 				margin-left: 0
 				background: none
 				border-bottom: solid 3px transparent
@@ -878,6 +886,7 @@ $border-height = 3px
 					box-sizing: border-box
 					height: $navbar-height - $border-height
 					line-height: 1em
+					font-weight: 400
 
 					&:hover
 						color: $cinder-red
@@ -894,84 +903,104 @@ $border-height = 3px
 	position: relative
 	height: 100%
 	
-#nav_search > #search
-	position: absolute
-	right: 0
-	bottom: $nav-bottom-padding
+	& > #search
+		position: absolute
+		top: 0;
+		bottom: 0;
+		right: 0;
+		margin: auto;
+		height: 30px;
+		width: 400px;
 
-#nav_search > #search > input {
-	display: inline-block;
-	margin-bottom: 0;
-	width: 290px;
-	font-size: 12px;
-	top: 0;
-	height: 30px;
-	border-radius: 10px;
-}
-#nav_search > #search > button {
-	padding-top: 0;
-	padding-bottom: 0;
-	margin-bottom: 0;
-	height: 30px;
-	text-transform: uppercase;
-	outline: 0;
-}
-#nav_search > #search > #search-results {
-	background-color: white;
-	position: absolute;
-	right: 0;
-	z-index: 99999;
-	display: block;
-	max-height: 80vh;
-	overflow-y: scroll;
-	overflow-x: hidden;
-	top: 30px;
-    border-radius: 10px;
-    width: 400px;
-    // border: 1px $light-gray solid
-}
-#nav_search > #search > #search-results ul {
-	margin-left: 0;
-}
-#nav_search > #search > #search-results li {
-	height: auto;
-	padding: 10px 0 10px 10px;
-	margin-right: 0;
-	font-size: 12px;
-	background: transparent;
-	width: 100%;
-}
-#nav_search > #search > #search-results li:hover,
-#nav_search > #search > #search-results li:hover a {
-	background: #c64b24;
-	color: white;
-}
-#nav_search > #search > #search-results a {
-	padding: 0;
-	color: #c64b24;
-	background: transparent;
-	font-size: 12px;
-}
-#nav_search > #search > #search-results li a:before {
-	content: "\00bb";
-}
-#nav_search #search-results-view-all {
-	display: inline-block;
-	width: 100%;
-	background: #949494;
-	padding: 10px 0;
-    margin: 0 auto;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 700;
-}
-#nav_search > #search > #search-results > #search-results-view-all a {
-	color: white;
-}
-#nav_search > #search > #search-results > #search-results-view-all a:hover {
-	color: #c64b24;
-}
+		& > input
+			baseFontStyle()
+			display: inline-block;
+			position: absolute;
+			margin-bottom: 0;
+			width: 100%;
+			font-size: 12px;
+			height: 30px;
+			border-radius: 5px;
 
+		& > button
+			position: absolute;
+			right: 0;
+			padding-top: 0;
+			padding-bottom: 0;
+			margin-bottom: 0;
+			height: 30px;
+			baseFontStyle()
+			font-size: 10px
+			text-transform: uppercase;
+			outline: 0;
+			background: $cinder-orange
+			border-top-right-radius: 5px
+			border-bottom-right-radius: 5px
+	
+			&:before
+				content: "\2666";
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				font-size: 30px;
+				transform: rotate(90deg);
+				color: $cinder-orange
+
+		#search-results
+			background-color: white;
+			position: absolute;
+			right: 0;
+			z-index: 99999;
+			display: block;
+			max-height: 80vh;
+			overflow-y: scroll;
+			overflow-x: hidden;
+			top: 30px;
+			border-radius: 10px;
+			width: 400px;
+			// border: 1px $light-gray solid
+
+			ul
+				margin-left: 0;
+
+				li
+					height: auto;
+					padding: 10px 0 10px 10px;
+					margin-right: 0;
+					font-size: 12px;
+					background: transparent;
+					width: 100%;
+
+					&:hover,
+					&:hover a
+						background: #c64b24;
+						color: white;
+
+					a
+						padding: 0;
+						color: #c64b24;
+						background: transparent;
+						font-size: 12px;
+
+						&:before
+							content: "\00bb";
+
+			#search-results-view-all
+				display: inline-block;
+				width: 100%;
+				background: #949494;
+				padding: 10px 0;
+				margin: 0 auto;
+				text-align: center;
+				font-size: 12px;
+				font-weight: 700;
+
+				a
+					color: white;
+
+					&:hover
+						color: #c64b24;
 
 // Magellan override
 [data-magellan-expedition], [data-magellan-expedition-clone]

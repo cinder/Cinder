@@ -18,7 +18,7 @@ using namespace std;
 class NodeAdvancedApp : public App {
   public:
 	void setup() override;
-	void mouseMove( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
 
@@ -73,7 +73,7 @@ void NodeAdvancedApp::setup()
 	mFreqRampTime = 0.015f;
 }
 
-void NodeAdvancedApp::mouseMove( MouseEvent event )
+void NodeAdvancedApp::mouseDrag( MouseEvent event )
 {
 	if( ! getWindowBounds().contains( event.getPos() ) )
 		return;
@@ -119,4 +119,6 @@ void NodeAdvancedApp::draw()
 	gl::drawSolidCircle( vec2( circleX, getWindowCenter().y ), 50 );
 }
 
-CINDER_APP( NodeAdvancedApp, RendererGl( RendererGl::Options().msaa( 8 ) ) )
+CINDER_APP( NodeAdvancedApp, RendererGl( RendererGl::Options().msaa( 4 ) ), []( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+} )

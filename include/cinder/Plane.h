@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2011, The Cinder Project, All rights reserved.
+ Copyright (c) 2011-15, The Cinder Project, All rights reserved.
  This code is intended for use with the Cinder C++ library: http://libcinder.org
  
  Portions of this code (C) Paul Houx
@@ -32,15 +32,16 @@
 
 namespace cinder {
 
+//! Represents a Plane, as a geometric primitive, useful in conducting tests in 3D space.
 template<typename T>
-class Plane {
+class PlaneT {
   public:
 	typedef glm::tvec3<T, glm::defaultp> Vec3T;
 
-	Plane() {}
-	Plane( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 );
-	Plane( const Vec3T &point, const Vec3T &normal );
-	Plane( T a, T b, T c, T d );
+	PlaneT() {}
+	PlaneT( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 );
+	PlaneT( const Vec3T &point, const Vec3T &normal );
+	PlaneT( T a, T b, T c, T d );
 
 	//! Defines a plane using 3 points. 
 	void	set( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 );
@@ -67,19 +68,22 @@ class Plane {
 	void	set( const Vec3Y &v1, const Vec3Y &v2, const Vec3Y &v3 )	{ set( Vec3T( v1 ), Vec3T( v2 ), Vec3T( v3 ) ); }
 };
 
-typedef Plane<float>	Planef;
-typedef Plane<double>	Planed;
+typedef PlaneT<float>	Plane;
+typedef PlaneT<float>	Planef;
+typedef PlaneT<double>	Planed;
 
 template<typename T>
-std::ostream& operator<<( std::ostream &o, const Plane<T> &p )
+std::ostream& operator<<( std::ostream &o, const PlaneT<T> &p )
 {
 	return o << "(" << p.mNormal << ", " << p.mDistance << ")";
 }
 
-
+//! Exception type thrown when bad values are encountered.
 class PlaneExc : public Exception {
- public:
-	virtual const char* what() const throw() { return "Invalid parameters specified"; }
+  public:
+	PlaneExc()
+		: Exception( "Invalid parameters specified" )
+	{}
 };
 
 } // namespace cinder

@@ -98,9 +98,12 @@ class LoggerConsole : public Logger {
 
 class LoggerFile : public Logger {
   public:
-	//! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
+	// Standard loggerFile, will write to a single log file.  File appending is configurable.
+	// ! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	// daily rotating logger, if folder or format are empty, ignores request
+	// daily rotating logger, will write to a formatted log file, updated at the first log request
+	// after midnight.
+	// ! If \a folder or \a formatStr are empty, ignores request
 	LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	virtual ~LoggerFile();
 
@@ -155,8 +158,27 @@ protected:
 	std::unique_ptr<ImplEventLog> mImpl;
 #endif
 };
-	
-class LoggerImplMulti;
+
+//! \brief Logger that can log to multiple other Loggers.
+//!
+//! This is primarily used by LogManager as it's base Logger, when multiple log outputs are enabled (ex. console and file)
+class LoggerMulti : public Logger {
+  public:
+	void add( Logger *logger )							{ mLoggers.push_back( std::unique_ptr<Logger>( logger ) ); }
+	void add( std::unique_ptr<Logger> &&logger )		{ mLoggers.emplace_back( move( logger ) ); }
+
+	template <typename LoggerT>
+	LoggerT* findType();
+
+	void remove( Logger *logger );
+
+	const std::vector<std::unique_ptr<Logger> >& getLoggers() const	{ return mLoggers; }
+
+	void write( const Metadata &meta, const std::string &text ) override;
+
+  private:
+	std::vector<std::unique_ptr<Logger> >	mLoggers;
+};
 
 class LogManager {
 public:
@@ -175,6 +197,9 @@ public:
 	void removeLogger( Logger *logger );
 	//! Returns a pointer to the current base Logger instance.
 	Logger* getLogger()	{ return mLogger.get(); }
+	//! Returns a logger of a specifc type, or nullptr is that type of Logger is currently not in use.
+	template<typename LoggerT>
+	LoggerT* getLogger();
 	//! Returns a vector of all current loggers
 	std::vector<Logger *> getAllLoggers();
 	//! Returns the mutex used for thread safe loggers. Also used when adding or resetting new loggers.
@@ -186,10 +211,10 @@ public:
 	bool isConsoleLoggingEnabled() const				{ return mConsoleLoggingEnabled; }
 
 	void enableFileLogging( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void enableFileLogging( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
+	void enableFileLoggingRotating( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
 	void disableFileLogging();
 	void setFileLoggingEnabled( bool enable, const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void setFileLoggingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+	void setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	bool isFileLoggingEnabled() const					{ return mFileLoggingEnabled; }
 
 	void enableSystemLogging();
@@ -212,7 +237,7 @@ protected:
 	bool initFileLogging();
 
 	std::unique_ptr<Logger>	mLogger;
-	LoggerImplMulti			*mLoggerMulti;
+	LoggerMulti*			mLoggerMulti;
 	mutable std::mutex		mMutex;
 	bool					mConsoleLoggingEnabled, mFileLoggingEnabled, mSystemLoggingEnabled, mBreakOnLogEnabled;
 	Level					mSystemLoggingLevel;
@@ -277,6 +302,33 @@ class ThreadSafeT : public LoggerT {
 
 typedef ThreadSafeT<LoggerConsole>		LoggerConsoleThreadSafe;
 typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
+
+// ----------------------------------------------------------------------------------
+// Template method implementations
+
+template <typename LoggerT>
+LoggerT* LoggerMulti::findType()
+{
+	for( const auto &logger : mLoggers ) {
+		auto result = dynamic_cast<LoggerT *>( logger.get() );
+		if( result )
+			return result;
+	}
+
+	return nullptr;
+}
+
+template<typename LoggerT>
+LoggerT* LogManager::getLogger()
+{
+	auto loggerMulti = dynamic_cast<LoggerMulti *>( mLogger.get() );
+	if( loggerMulti ) {
+		return loggerMulti->findType<LoggerT>();
+	}
+	else {
+		return dynamic_cast<LoggerT *>( mLogger.get() );
+	}
+}
 
 } } // namespace cinder::log
 

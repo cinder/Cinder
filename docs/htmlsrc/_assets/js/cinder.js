@@ -7,6 +7,30 @@ $(document).ready(function() {
 	var cinderJs = {
 		/*
 		* ----------------------------------------------------------------------
+		*  Selects the correct main nav item
+		* ----------------------------------------------------------------------
+		*/
+		setSection: function( sectionName ){
+	 		// find the nav item that correlates to the section name
+	 		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
+	 	},
+
+	 	/*
+		* ----------------------------------------------------------------------
+		*  Selects the correct namepsace nav iten
+		* ----------------------------------------------------------------------
+		*/
+		selectNamspace: function( namespace ){
+	 		var selectedNs = $('#namespace-nav').find('[data-namespace="' + namespace + '"]');
+	 		if( selectedNs ){
+	 			selectedNs.addClass('active');
+	 		}
+	 		// console.log($('#namespace-nav'));
+	 		// console.log("SELECT NAMESPACE", selectedNs);
+	 	},
+
+		/*
+		* ----------------------------------------------------------------------
  	 	*  Unhides a piece of content if it contains a anchor tag with a 
  	 	*  specific hash
  	 	*  @param {[type]} hash Hash name of the link
@@ -16,11 +40,10 @@ $(document).ready(function() {
 	 		if( !hash )
 	 			return;
 	 		// find section with this hash
-	 		var linkTag = $('a[name='+hash+']')[0] || $('a[id='+hash+']');
+	 		var linkTag = $('a[name='+hash+']') || $('a[id='+hash+']');
 	 		if( linkTag ) {
-	 			linkTag = linkTag[0];
 		 		// find parent
-		 		var linkParent = $(linkTag.parentNode);
+		 		var linkParent = $(linkTag[0].parentNode);
 		 		// toggle show for this section
 		 		linkParent.removeClass("hidden");
 	 		};
@@ -132,7 +155,7 @@ $(document).ready(function() {
 				$( $( this.sections[0] ).find( 'ul' )[0] ).css( "max-height", window.innerHeight - 100 );
 			}
 		}
-	}
+	};
 
 	// look for all dom items with class
 
@@ -162,29 +185,30 @@ $(document).ready(function() {
  		}
  	});
 
- 	var setSection = function( sectionName ){
- 		// find the nav item that correlates to the section name
- 		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
- 	};
 
  	// --- Open all and Close all ---
  	var showAll = function(){
- 		$( '.contents .expandable' ).each( function(){
+ 		$( '.reference-lists .expandable' ).each( function(){
  			var $this = $(this);
  			$this.removeClass("hidden");
  		});
  	};
 
  	var hideAll = function(){
- 		$( '.contents .expandable' ).each( function(){
+ 		$( '.reference-lists .expandable' ).each( function(){
  			var $this = $(this);
  			$this.addClass("hidden");
  		});
  	};
 
  	// attach show/hide all functionality
- 	$( '#show-hide a.show-all' ).on( 'click', showAll );
- 	$( '#show-hide a.hide-all' ).on( 'click', hideAll );
+ 	var show = $( '#show-hide a.show-all' );
+ 	var hide = $( '#show-hide a.hide-all' );
+ 	if( $( '.reference-lists .expandable' ).length > 1 ) {
+ 		$( '#show-hide' ).removeClass( 'hide' );
+ 		$( '#show-hide a.show-all' ).on( 'click', showAll );
+ 		$( '#show-hide a.hide-all' ).on( 'click', hideAll );
+ 	}
  	
 
  	// get anchor tag if there is one
@@ -219,7 +243,6 @@ $(document).ready(function() {
 		}
 
 		// hide view all results append when search is empty or no results
-		console.log($('#search-results ul'));
 		if(!$('#search-input').val() || $('#search-results ul').children().length <= 0) {
 			$('#search-results-view-all').hide();
 		}
@@ -234,7 +257,7 @@ $(document).ready(function() {
 	}
 	
     
-	var search_index = lunr(function () {
+	window.search_index = lunr(function () {
 		this.field('title', {boost: 10});
 		this.field('tags', {boost: 1});
 		this.field('body');
@@ -266,8 +289,10 @@ $(document).ready(function() {
 	 	});
 	} );
 	
+
 	// initialization
- 	setSection( section );
+ 	cinderJs.setSection( section );
+ 	cinderJs.selectNamspace( window.selectedNamespace );
  	cinderJs.showContent( hash );
  	sideNav.init();
  	if( search_index_data )
@@ -279,10 +304,7 @@ $(document).ready(function() {
 	if( location.protocol == "file:" ) {
 		history.pushState = false;
 	}
-	// 
-
-	// console.log(location);
-	// console.log("PUSH STATE", history.pushState);
+	
 	// set up magellan stuff
 	$(document).foundation({
         "magellan-expedition": {

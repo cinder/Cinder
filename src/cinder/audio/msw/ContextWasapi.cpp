@@ -72,7 +72,7 @@ struct WasapiAudioClientImpl {
 };
 
 struct WasapiRenderClientImpl : public WasapiAudioClientImpl {
-	WasapiRenderClientImpl( OutputDeviceNodeWasapi *outputDeviceNode );
+	WasapiRenderClientImpl( OutputDeviceNodeWasapi *outputDeviceNode );
 	~WasapiRenderClientImpl();
 
 	void init();
@@ -97,7 +97,7 @@ private:
 };
 
 struct WasapiCaptureClientImpl : public WasapiAudioClientImpl {
-	WasapiCaptureClientImpl( InputDeviceNodeWasapi *outputDeviceNode );
+	WasapiCaptureClientImpl( InputDeviceNodeWasapi *inputDeviceNode );
 
 	void init();
 	void uninit();
@@ -195,7 +195,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 // MARK: - WasapiRenderClientImpl
 // ----------------------------------------------------------------------------------------------------
 
-WasapiRenderClientImpl::WasapiRenderClientImpl( OutputDeviceNodeWasapi *outputDeviceNode )
+WasapiRenderClientImpl::WasapiRenderClientImpl( OutputDeviceNodeWasapi *outputDeviceNode )
 	: WasapiAudioClientImpl(), mOutputDeviceNode( outputDeviceNode )
 {
 	// create render events
@@ -334,7 +334,7 @@ void WasapiRenderClientImpl::increaseThreadPriority()
 // MARK: - WasapiCaptureClientImpl
 // ----------------------------------------------------------------------------------------------------
 
-WasapiCaptureClientImpl::WasapiCaptureClientImpl( InputDeviceNodeWasapi *inputDeviceNode )
+WasapiCaptureClientImpl::WasapiCaptureClientImpl( InputDeviceNodeWasapi *inputDeviceNode )
 	: WasapiAudioClientImpl(), mInputDeviceNode( inputDeviceNode ), mMaxReadFrames( 0 )
 {
 }
