@@ -201,9 +201,18 @@ body#guide-contents {
   margin: 20px auto 0 auto;
   width: 100%;
 }
-body.reference ul li,
-body.guide .guide-list ul li {
+body.reference .content ul li,
+body.guide .guide-list .content ul li {
   margin-left: 0;
+}
+body.reference .content ul li:before,
+body.guide .guide-list .content ul li:before {
+  content: none;
+  margin-left: 0;
+}
+body.reference .content .columns,
+body.guide .guide-list .content .columns {
+  padding-left: 0;
 }
 .plain {
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
@@ -217,6 +226,9 @@ body.guide .guide-list ul li {
 .columns.collapse {
   padding-left: 0;
   padding-right: 0;
+}
+span.slash {
+  color: #ddd;
 }
 #top-primary {
   -webkit-box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3);
@@ -445,9 +457,6 @@ body.classes h1 {
   font-weight: 700;
   line-height: 1.25em;
 }
-body.classes span.slash {
-  color: #ddd;
-}
 body.classes .row .row {
   margin: 0;
 }
@@ -659,8 +668,8 @@ body.classes .top .side ul.inheritence li.depth5 {
   margin: 10px 0;
 }
 #container .reference-content .header-icon {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   display: inline-block;
   vertical-align: middle;
   overflow: hidden;
@@ -668,34 +677,34 @@ body.classes .top .side ul.inheritence li.depth5 {
   margin-right: 10px;
 }
 #container .reference-content .header-icon.header_2dgraphics {
-  background-image: url("../images/icons/2d_red.svg");
+  background-image: url("../images/icons/2d_gray.svg");
 }
 #container .reference-content .header-icon.header_geometry {
-  background-image: url("../images/icons/geom_red.svg");
+  background-image: url("../images/icons/geom_gray.svg");
 }
 #container .reference-content .header-icon.header_math {
-  background-image: url("../images/icons/math_red.svg");
+  background-image: url("../images/icons/math_gray.svg");
 }
 #container .reference-content .header-icon.header_system {
-  background-image: url("../images/icons/system_red.svg");
+  background-image: url("../images/icons/system_gray.svg");
 }
 #container .reference-content .header-icon.header_platform {
-  background-image: url("../images/icons/platform_red.svg");
+  background-image: url("../images/icons/platform_gray.svg");
 }
 #container .reference-content .header-icon.header_opengl {
-  background-image: url("../images/icons/opengl_red.svg");
+  background-image: url("../images/icons/opengl_gray.svg");
 }
 #container .reference-content .header-icon.header_audio {
-  background-image: url("../images/icons/audio_red.svg");
+  background-image: url("../images/icons/audio_gray.svg");
 }
 #container .reference-content .header-icon.header_video {
-  background-image: url("../images/icons/video_red.svg");
+  background-image: url("../images/icons/video_gray.svg");
 }
 #container .reference-content .header-icon.header_images {
-  background-image: url("../images/icons/images_red.svg");
+  background-image: url("../images/icons/images_gray.svg");
 }
 #container .reference-content .header-icon.header_application {
-  background-image: url("../images/icons/app_red.svg");
+  background-image: url("../images/icons/app_gray.svg");
 }
 .expandable {
   position: relative;
