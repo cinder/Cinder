@@ -54,6 +54,8 @@
 		#include <QuickTimeComponents.h>
 	#pragma pop_macro( "_STDINT_H" )
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
+	#include <Windows.h>
+	#include "cinder/msw/CinderMsw.h"
 #endif
 
 namespace cinder { namespace qtime {
@@ -395,8 +397,21 @@ void MovieWriter::Obj::createCompressionSession()
 		mDoingMultiPass = ::ICMCompressionSessionSupportsMultiPassEncoding( mCompressionSession, 0, &mMultiPassModeFlags ) != 0;
 		
 		if( mDoingMultiPass ) {
-			auto tempDir = fs::temp_directory_path();
-			mMultiPassFrameCache = readWriteFileStream( fs::unique_path( tempDir / ( "multipass_%%%%-%%%%-%%%%-%%%%" ) ) );
+			fs::path tempPath;
+#if defined( CINDER_MSW )
+			TCHAR tempFileName[MAX_PATH];
+			TCHAR tempPathBuffer[MAX_PATH];
+			DWORD retVal = ::GetTempPath( MAX_PATH, tempPathBuffer );
+			if( retVal > MAX_PATH || (retVal == 0) )
+				goto bail;
+
+			if( ::GetTempFileName( tempPathBuffer, TEXT("multipass"), 0, tempFileName ) == 0 )
+				goto bail;
+			tempPath = fs::path( ci::msw::toUtf8String( tempFileName ) );
+#else
+			tempPath = fs::unique_path( fs::temp_directory_path() / "multipass_%%%%-%%%%-%%%%-%%%%" );
+#endif
+			mMultiPassFrameCache = readWriteFileStream( tempPath );
 			if( ! mMultiPassFrameCache )
 				throw MovieWriterExc();
 			mMultiPassFrameCache->setDeleteOnDestroy();
