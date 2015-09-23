@@ -50,8 +50,8 @@ XML_SOURCE_PATH = BASE_PATH + 'xml' + os.sep
 HTML_DEST_PATH = BASE_PATH + 'html' + os.sep
 HTML_SOURCE_PATH = BASE_PATH + 'htmlsrc' + os.sep
 TEMPLATE_PATH = BASE_PATH + 'htmlsrc' + os.sep + "_templates" + os.sep
-PARENT_DIR = BASE_PATH.split('/docs')[0]
-TAG_FILE_PATH = "doxygen/cinder.tag"
+PARENT_DIR = BASE_PATH.split(os.sep + 'docs')[0]
+TAG_FILE_PATH = "doxygen" + os.sep + "cinder.tag"
 
 # TODO: These should be dynamic via doxygen generated data. perhaps from _cinder_8h.xml
 file_meta = {
@@ -329,7 +329,7 @@ class SymbolMap(object):
             self.githubPath = None
             self.relPath = "".join(self.path.split(PARENT_DIR))
             # path to show when displaying include path. We don't want to show the word "include" since it's implied
-            self.includePath = "".join(self.relPath.split("/include"))[1:]
+            self.includePath = "".join(self.relPath.split(os.sep + "include"))[1:]
 
             rel_path_arr = self.path.split(PARENT_DIR)
             if len(rel_path_arr) > 1:
@@ -981,9 +981,9 @@ class HtmlFileData(FileData):
 
         self.kind = "html"
         self.kind_explicit = self.kind
-        if in_path.find("guides/") > -1:
+        if in_path.find("guides"+os.sep) > -1:
             self.kind_explicit = "guide"
-        if in_path.find("reference/") > -1:
+        if in_path.find("reference"+os.sep) > -1:
             self.kind_explicit = "reference"
 
     def get_content(self):
@@ -2389,8 +2389,8 @@ def process_html_file(in_path, out_path):
     - Copy original css and js links into new hmtl
     - Save html in destination dir
     """
-    log_progress('Processing file: ' + str(in_path))
-
+#    log_progress('Processing file: ' + str(in_path))
+    print 'Processing file: ' + str(in_path)
     # relative path in relation to the in_path (htmlsrc/)
     local_rel_path = os.path.relpath(in_path, HTML_SOURCE_PATH)
     # directory name of the path
@@ -2427,16 +2427,16 @@ def process_html_file(in_path, out_path):
     # get correct template for the type of file
     template = config.HTML_TEMPLATE
     body_class = "default"
-    if in_path.find("htmlsrc/index.html") > -1:
+    if in_path.find("htmlsrc" + os.sep + "index.html") > -1:
         template = config.HOME_TEMPLATE
         is_searchable = False
         body_class = "section_home"
         section = "home"
-    elif in_path.find("reference/") > -1:
+    elif in_path.find("reference"+os.sep) > -1:
         template = config.REFERENCE_TEMPLATE
         body_class = "reference"
         section = "reference"
-    elif in_path.find("guides/") > -1:
+    elif in_path.find("guides"+os.sep) > -1:
         template = config.GUIDE_TEMPLATE
         body_class = "guide"
         section = "guides"
@@ -3473,7 +3473,7 @@ def process_file(in_path, out_path=None):
     is_xml_file = True if get_file_extension(file_path).lower() == ".xml" else False
 
     if is_html_file:
-        file_path = "/".join(in_path.split('htmlsrc/')[1:])
+        file_path = os.sep.join(in_path.split('htmlsrc'+os.sep)[1:])
         save_path = out_path if out_path is not None else HTML_DEST_PATH + file_path
     else:
         save_path = out_path if out_path is not None else HTML_DEST_PATH + get_file_prefix(in_path) + ".html"
@@ -3519,7 +3519,7 @@ def process_html_dir(in_path):
     global state
 
     for path, subdirs, files in os.walk(in_path):
-        path_dir = path.split("/")[-1]
+        path_dir = path.split(os.sep)[-1]
         if path_dir == "_templates" or path_dir == "assets":
             continue
         for name in files:
@@ -3527,12 +3527,12 @@ def process_html_dir(in_path):
             file_ext = get_file_extension(name).lower()
             if file_ext == ".html":
 
-                if path.endswith('/'):
+                if path.endswith(os.sep):
                     src_path = path[:-1]
                 else:
                     src_path = path
 
-                src_path = src_path + "/" + name
+                src_path = src_path + os.sep + name
                 process_file(src_path)
 
     # add subnav for all guides that need them
@@ -3675,7 +3675,7 @@ if __name__ == "__main__":
     log("processing files", 0, True)
     if not args.path: # no args; run all docs
         # process_html_dir(HTML_SOURCE_PATH, "html/")
-        process_dir("xml/", "html/")
+        process_dir("xml" + os.sep, "html" + os.sep)
         log("SUCCESSFULLY GENERATED CINDER DOCS!", 0, True)
     elif args.path:
         inPath = args.path
@@ -3685,10 +3685,10 @@ if __name__ == "__main__":
             log("SUCCESSFULLY GENERATED YOUR FILE!", 0, True)
         elif os.path.isdir(inPath):
             # print isdir
-            if inPath == "htmlsrc/":
+            if inPath == "htmlsrc" + os.sep:
                 process_html_dir(HTML_SOURCE_PATH)
             else:
-                process_dir(inPath, "html/")
+                process_dir(inPath, "html" + os.sep)
             log("SUCCESSFULLY GENERATED YOUR FILES!", 0, True)
     else:
         log("Unknown usage", 1, True)
