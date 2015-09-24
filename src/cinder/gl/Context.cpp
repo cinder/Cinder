@@ -604,7 +604,7 @@ void Context::bufferDeleted( const BufferObj *buffer )
 
 	// if 'id' was bound to 'target', mark 'target's binding as 0
 	auto existingIt = mBufferBindingStack.find( target );
-	if( existingIt != mBufferBindingStack.end() ) {
+	if( existingIt != mBufferBindingStack.end() && ! existingIt->second.empty() ) {
 		if( mBufferBindingStack[target].back() == buffer->getId() ) {
 			mBufferBindingStack[target].back() = 0;
 			// alert the currently bound VAO
