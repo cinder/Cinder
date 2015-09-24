@@ -193,6 +193,10 @@ ol,
 dl {
   line-height: inherit;
 }
+hr {
+  margin: 30px 0;
+  border-color: #ebebeb;
+}
 .row {
   max-width: 80rem;
 }
@@ -451,6 +455,13 @@ body#guide-contents .cols-2 .col > * {
     margin-top: inherit;
   }
 }
+body.classes img.class-icon {
+  display: inline-block;
+  height: 50px;
+  vertical-align: text-top;
+  margin-right: 10px;
+  float: left;
+}
 body.classes h1 {
   display: inline-block;
   margin-bottom: 0;
@@ -461,6 +472,7 @@ body.classes .row .row {
   margin: 0;
 }
 body.classes .info-links {
+  margin-top: 30px;
   display: -webkit-box;
   display: -moz-box;
   display: -webkit-flex;
@@ -472,8 +484,7 @@ body.classes .info-links .columns + .columns:last-child {
   float: left;
 }
 body.classes .top {
-  background-color: #f2f2f2;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 body.classes .top .include {
   display: inline-block;
@@ -484,13 +495,10 @@ body.classes .top .include a {
   font-weight: normal;
 }
 body.classes .top .row {
-  padding: 0 0.9375rem;
+  padding: 0 2px;
 }
 body.classes .top .row:not(:last-child) {
   border-bottom: #fff 1px solid;
-}
-body.classes .top .row:nth-child(1) {
-  background-color: #ebebeb;
 }
 body.classes .top .row:nth-child(2) {
   background-color: #f3f3f3;
@@ -499,24 +507,31 @@ body.classes .top .row:nth-child(3) {
   background-color: #f8f8f8;
 }
 body.classes .top .columns {
-  padding: 0.7rem 1.25rem;
+  padding: 0.7rem 1rem;
   overflow-x: scroll;
 }
 body.classes .top .columns:not(:last-child) {
   border-right: #fff 1px solid;
 }
 body.classes .top .columns.naming {
-  padding-top: 2em;
-  padding-bottom: 2em;
+  padding-left: 0;
+  padding-top: 0em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ebebeb;
 }
 body.classes .top .columns.subnav {
+  padding-left: 0;
   padding-top: 0.25em;
   padding-bottom: 0.25em;
+  margin-bottom: 30px;
 }
 body.classes .top label {
   color: #585858;
   font-weight: 700;
   font-size: 1em;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  border-bottom: 3px solid #ebebeb;
 }
 body.classes .top .ns {
   display: block;

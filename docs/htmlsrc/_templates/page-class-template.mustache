@@ -18,47 +18,48 @@
 
             <!-- top content -->
             <div class="top">
-                <div class="row">
-                    <div class="columns large-12 naming">
-                        <!--<h1 id="page-title">
-                            {{#is_template}}
-                            <strong>{{name}} &lt;{{template_def_name}}&gt; </strong> 
-                            Class Template
-                            {{/is_template}}
+                
+                <div class="columns naming">
+                    <!--<h1 id="page-title">
+                        {{#is_template}}
+                        <strong>{{name}} &lt;{{template_def_name}}&gt; </strong> 
+                        Class Template
+                        {{/is_template}}
 
-                            {{^is_template}}
-                            <strong>{{name}}</strong> 
-                            Class
-                            {{/is_template}}
-                        </h1>-->
-                         <span class="ns">
-                            {{#namespace_links}}{{#active}}<span class="link"><a href="{{link}}">{{label}}</a></span>{{/active}}{{^active}}<span class="link">{{label}}</span>{{/active}}{{/namespace_links}}
-                        </span>
+                        {{^is_template}}
+                        <strong>{{name}}</strong> 
+                        Class
+                        {{/is_template}}
+                    </h1>-->
+                    
+                    <img class="class-icon" src="../_assets/images/icons/class_icon.svg">
+                    <div class="ns">
+                        {{#namespace_links}}{{#active}}<span class="link"><a href="{{link}}">{{label}}</a></span>{{/active}}{{^active}}<span class="link">{{label}}</span>{{/active}}{{/namespace_links}}
+                    </div>
 
-                        <h1>{{name}}<span class="slash"> /</span></h1>
+                    <h1>{{name}}<span class="slash"> /</span></h1>
 
-                        {{#side_nav_content.include}}
-                        <div class="include">
-                            <strong>#include</strong> &ldquo;<a href="{{ link }}">{{ label }}</a>&rdquo;
-                        </div>
-                        {{/side_nav_content.include}}   
-                    </div> 
-                </div>
+                    {{#side_nav_content.include}}
+                    <div class="include">
+                        <strong>#include</strong> &ldquo;<a href="{{ link }}">{{ label }}</a>&rdquo;
+                    </div>
+                    {{/side_nav_content.include}}
+                </div> 
                 
                 <!-- subnav -->
-                <div class="row">
-                    <div class="columns large-12 subnav">
-                        {{> subnav }}
-                    </div>
+                
+                <div class="columns subnav">
+                    {{> subnav }}
                 </div>
+                
 
                 <!-- info links -->
                 <div class="row info-links">
                     
-                        {{#side_nav_content}}
-                            {{> side-nav }}
-                        {{/side_nav_content}}
-                    
+                    {{#side_nav_content}}
+                        {{> side-nav }}
+                    {{/side_nav_content}}
+                
                 </div>
             </div>
 
