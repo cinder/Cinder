@@ -55,6 +55,8 @@ Platform* Platform::get()
 #elif defined( CINDER_WINRT )
 		sInstance = new PlatformWinRt;
 #endif
+
+		sInstance->initialize();
 	}
 
 	return sInstance;
@@ -69,6 +71,11 @@ void Platform::set( Platform *platform )
 	sInstance = platform;
 }
 
+void Platform::initialize()
+{
+	initAssetDirectories();
+}
+
 fs::path Platform::getExecutablePath() const
 {
 	if( mExecutablePath.empty() )
@@ -77,40 +84,23 @@ fs::path Platform::getExecutablePath() const
 	return mExecutablePath;
 }
 
+void Platform::initAssetDirectories()
+{
+	prepareAssetLoading();
+	findAndAddDefaultAssetPath();
+}
+
 DataSourceRef Platform::loadAsset( const fs::path &relativePath )
 {
-	fs::path assetPath = findAssetPath( relativePath );
+	fs::path assetPath = getAssetPath( relativePath );
 	if( ! assetPath.empty() )
 		return DataSourcePath::create( assetPath.string() );
 	else
 		throw AssetLoadExc( relativePath );
 }
 
-fs::path Platform::getAssetPath( const fs::path &relativePath )
+fs::path Platform::getAssetPath( const fs::path &relativePath ) const
 {
-	return findAssetPath( relativePath );
-}
-
-void Platform::addAssetDirectory( const fs::path &directory )
-{
-	CI_ASSERT( fs::is_directory( directory ) );
-	ensureAssetDirsPrepared();
-
-	auto it = find( mAssetDirectories.begin(), mAssetDirectories.end(), directory );
-	if( it == mAssetDirectories.end() )
-		mAssetDirectories.push_back( directory );
-}
-
-const vector<fs::path>& Platform::getAssetDirectories()
-{
-	ensureAssetDirsPrepared();
-	return mAssetDirectories;
-}
-
-fs::path Platform::findAssetPath( const fs::path &relativePath )
-{
-	ensureAssetDirsPrepared();
-
 	for( const auto &directory : mAssetDirectories ) {
 		auto fullPath = directory / relativePath;
 		if( fs::exists( fullPath ) )
@@ -120,16 +110,21 @@ fs::path Platform::findAssetPath( const fs::path &relativePath )
 	return fs::path(); // empty implies failure
 }
 
-void Platform::ensureAssetDirsPrepared()
+void Platform::addAssetDirectory( const fs::path &directory )
 {
-	if( ! mAssetDirsInitialized ) {
-		mAssetDirsInitialized = true;
-		prepareAssetLoading();
-		findAndAddAssetBasePath();
-	}
+	CI_ASSERT( fs::is_directory( directory ) );
+
+	auto it = find( mAssetDirectories.begin(), mAssetDirectories.end(), directory );
+	if( it == mAssetDirectories.end() )
+		mAssetDirectories.push_back( directory );
 }
 
-void Platform::findAndAddAssetBasePath()
+const vector<fs::path>& Platform::getAssetDirectories() const
+{
+	return mAssetDirectories;
+}
+
+void Platform::findAndAddDefaultAssetPath()
 {
 	// first search the local directory, then its parent, up to ASSET_SEARCH_DEPTH levels up
 	// check at least the app path, even if it has no parent directory
