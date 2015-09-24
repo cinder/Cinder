@@ -356,14 +356,58 @@ span.slash
 				> *
 					margin-top: inherit
 
-body.classes
+.top
+	margin-bottom: 30px
+	display: inline-block
+	width: 100%
 	
-	img.class-icon
+	img.header-icon
 		display: inline-block
-		height: 50px
+		height: 55px
 		vertical-align: text-top
 		margin-right: 10px
 		float: left
+	
+	.include
+		display: inline-block
+		color: $middle-gray-text
+		
+		a
+			color: $middle-gray-text
+			font-weight: normal
+	
+	.row
+		padding: 0.0 2px
+		
+		&:not(:last-child)
+			border-bottom: #fff 1px solid
+	
+	.row:nth-child(2)
+		background-color: $gray-depth-2
+	
+	.row:nth-child(3)
+		background-color: $gray-depth-3
+		
+	.columns
+		padding: 0.7rem 1.0rem
+		overflow-x: scroll;
+		
+		&:not(:last-child)
+			border-right: #fff 1px solid
+		
+		&.naming
+			padding-left: 0
+			padding-top: 0em
+			padding-bottom: 1em
+			border-bottom: 1px solid $gray-depth-1
+		
+		&.subnav
+			padding-left: 0
+			padding-top: 0.25em
+			padding-bottom: 0.25em
+			margin-bottom: 30px
+				
+body.classes
 		
 	h1 
 		display: inline-block
@@ -380,48 +424,6 @@ body.classes
 		display: flex
 		.columns + .columns:last-child
 		    float: left
-	
-	.top
-		margin-bottom: 30px
-		
-		.include
-			display: inline-block
-			color: $middle-gray-text
-			
-			a
-				color: $middle-gray-text
-				font-weight: normal
-		
-		.row
-			padding: 0.0 2px
-			
-			&:not(:last-child)
-				border-bottom: #fff 1px solid
-		
-		.row:nth-child(2)
-			background-color: $gray-depth-2
-		
-		.row:nth-child(3)
-			background-color: $gray-depth-3
-			
-		.columns
-			padding: 0.7rem 1.0rem
-			overflow-x: scroll;
-			
-			&:not(:last-child)
-				border-right: #fff 1px solid
-			
-			&.naming
-				padding-left: 0
-				padding-top: 0em
-				padding-bottom: 1em
-				border-bottom: 1px solid $gray-depth-1
-			
-			&.subnav
-				padding-left: 0
-				padding-top: 0.25em
-				padding-bottom: 0.25em
-				margin-bottom: 30px
 				
 		label
 			color: $middle-gray-text

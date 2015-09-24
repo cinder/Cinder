@@ -32,7 +32,7 @@
                         {{/is_template}}
                     </h1>-->
                     
-                    <img class="class-icon" src="../_assets/images/icons/class_icon.svg">
+                    <img class="header-icon" src="../_assets/images/icons/class_icon.svg">
                     <div class="ns">
                         {{#namespace_links}}{{#active}}<span class="link"><a href="{{link}}">{{label}}</a></span>{{/active}}{{^active}}<span class="link">{{label}}</span>{{/active}}{{/namespace_links}}
                     </div>
@@ -102,7 +102,7 @@
                 {{#enumerations}}
                 <a name="{{anchor}}"></a>
                 <section>
-                    <h2>Enumerations</h2>
+                    <h2>Enums</h2>
                     <ul class="rows">
                         {{#list}}
                         {{> enum-markup}}

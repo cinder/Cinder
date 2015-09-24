@@ -1,7 +1,11 @@
 <div id="sub-nav">
   	<ul>
+      {{#public_types.length }}
+      <li><a href="#{{public_types.anchor}}">Public Types</a></li>
+      {{/public_types.length }}
+
   		{{#enumerations.length }}
-  		<li><a href="#{{enumerations.anchor}}">Public Types</a></li>
+  		<li><a href="#{{enumerations.anchor}}">Enums</a></li>
   		{{/enumerations.length }}
 
   		{{#public_functions.length }}

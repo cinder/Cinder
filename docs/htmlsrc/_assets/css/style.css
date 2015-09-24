@@ -455,12 +455,56 @@ body#guide-contents .cols-2 .col > * {
     margin-top: inherit;
   }
 }
-body.classes img.class-icon {
+.top {
+  margin-bottom: 30px;
   display: inline-block;
-  height: 50px;
+  width: 100%;
+}
+.top img.header-icon {
+  display: inline-block;
+  height: 55px;
   vertical-align: text-top;
   margin-right: 10px;
   float: left;
+}
+.top .include {
+  display: inline-block;
+  color: #585858;
+}
+.top .include a {
+  color: #585858;
+  font-weight: normal;
+}
+.top .row {
+  padding: 0 2px;
+}
+.top .row:not(:last-child) {
+  border-bottom: #fff 1px solid;
+}
+.top .row:nth-child(2) {
+  background-color: #f3f3f3;
+}
+.top .row:nth-child(3) {
+  background-color: #f8f8f8;
+}
+.top .columns {
+  padding: 0.7rem 1rem;
+  overflow-x: scroll;
+}
+.top .columns:not(:last-child) {
+  border-right: #fff 1px solid;
+}
+.top .columns.naming {
+  padding-left: 0;
+  padding-top: 0em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #ebebeb;
+}
+.top .columns.subnav {
+  padding-left: 0;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  margin-bottom: 30px;
 }
 body.classes h1 {
   display: inline-block;
@@ -483,49 +527,7 @@ body.classes .info-links {
 body.classes .info-links .columns + .columns:last-child {
   float: left;
 }
-body.classes .top {
-  margin-bottom: 30px;
-}
-body.classes .top .include {
-  display: inline-block;
-  color: #585858;
-}
-body.classes .top .include a {
-  color: #585858;
-  font-weight: normal;
-}
-body.classes .top .row {
-  padding: 0 2px;
-}
-body.classes .top .row:not(:last-child) {
-  border-bottom: #fff 1px solid;
-}
-body.classes .top .row:nth-child(2) {
-  background-color: #f3f3f3;
-}
-body.classes .top .row:nth-child(3) {
-  background-color: #f8f8f8;
-}
-body.classes .top .columns {
-  padding: 0.7rem 1rem;
-  overflow-x: scroll;
-}
-body.classes .top .columns:not(:last-child) {
-  border-right: #fff 1px solid;
-}
-body.classes .top .columns.naming {
-  padding-left: 0;
-  padding-top: 0em;
-  padding-bottom: 1em;
-  border-bottom: 1px solid #ebebeb;
-}
-body.classes .top .columns.subnav {
-  padding-left: 0;
-  padding-top: 0.25em;
-  padding-bottom: 0.25em;
-  margin-bottom: 30px;
-}
-body.classes .top label {
+body.classes .info-links label {
   color: #585858;
   font-weight: 700;
   font-size: 1em;
@@ -533,44 +535,44 @@ body.classes .top label {
   margin-bottom: 5px;
   border-bottom: 3px solid #ebebeb;
 }
-body.classes .top .ns {
+body.classes .info-links .ns {
   display: block;
   color: #a41c12;
   line-height: 1em;
 }
-body.classes .top .ns .link:not(:last-child):after {
+body.classes .info-links .ns .link:not(:last-child):after {
   content: "::";
 }
-body.classes .top .side a {
+body.classes .info-links .side a {
   font-weight: normal;
 }
-body.classes .top .side h4 {
+body.classes .info-links .side h4 {
   font-weight: 700;
   margin-bottom: 6px;
 }
-body.classes .top .side .row {
+body.classes .info-links .side .row {
   border: 1px solid #f0f0f0;
   padding: 10px 25px;
   margin-bottom: 2px;
   margin-right: 0;
   position: relative;
 }
-body.classes .top .side .row:nth-child(even) {
+body.classes .info-links .side .row:nth-child(even) {
   background: #ebebeb;
 }
-body.classes .top .side .row:nth-child(odd) {
+body.classes .info-links .side .row:nth-child(odd) {
   background: #f5f5f5;
   border-color: #f5f5f5;
 }
-body.classes .top .side .row:nth-child(odd):first-child {
+body.classes .info-links .side .row:nth-child(odd):first-child {
   background: #fff;
 }
-body.classes .top .side ul {
+body.classes .info-links .side ul {
   margin-bottom: 0;
   padding: 0;
   text-indent: 0;
 }
-body.classes .top .side ul.inheritence li {
+body.classes .info-links .side ul.inheritence li {
   background-image: url("../images/class_node_parent_and_child_2x.png");
   background-position: -15px -3px;
   background-repeat: no-repeat;
@@ -578,25 +580,25 @@ body.classes .top .side ul.inheritence li {
   -moz-background-size: 48px 29px;
   background-size: 48px 29px;
 }
-body.classes .top .side ul.inheritence li:last-of-type {
+body.classes .info-links .side ul.inheritence li:last-of-type {
   background-image: url("../images/class_node_subclass_last_child_2x.png");
 }
-body.classes .top .side ul.inheritence li.depth1 {
+body.classes .info-links .side ul.inheritence li.depth1 {
   padding-left: 12px;
 }
-body.classes .top .side ul.inheritence li.depth2 {
+body.classes .info-links .side ul.inheritence li.depth2 {
   padding-left: 26px;
   background-position: -1px -3px;
 }
-body.classes .top .side ul.inheritence li.depth3 {
+body.classes .info-links .side ul.inheritence li.depth3 {
   padding-left: 40px;
   background-position: 13px -3px;
 }
-body.classes .top .side ul.inheritence li.depth4 {
+body.classes .info-links .side ul.inheritence li.depth4 {
   padding-left: 54px;
   background-position: 27px -3px;
 }
-body.classes .top .side ul.inheritence li.depth5 {
+body.classes .info-links .side ul.inheritence li.depth5 {
   padding-left: 68px;
   background-position: 41px -3px;
 }
