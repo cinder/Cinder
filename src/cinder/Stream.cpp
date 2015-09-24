@@ -125,14 +125,41 @@ std::string IStreamCinder::readLine()
 {
 	string result;
 	int8_t ch;
-	while( ! isEof() ) {
-		read( &ch );
+
+	auto check_newline = [this, &ch] () {
 		if( ch == 0x0A )
-			break;
+			return true;
 		else if( ch == 0x0D ) {
 			read( &ch );
 			if( ch != 0x0A )
 				seekRelative( -1 );
+			return true;
+		}
+		return false;
+	};
+
+	auto check_continuation = [this, &ch, &check_newline] () {
+		if( ch == '\\') {
+			read( &ch );
+			if( check_newline() ) {
+				return true;
+			}
+			else {
+				seekRelative( -1 );
+			}
+		}
+		return false;
+	};
+
+	while( ! isEof() ) {
+		read( &ch );
+
+		if (check_continuation()) {
+			// skip the newline check
+			continue;
+		}
+
+		if( check_newline() ) {
 			break;
 		}
 		else
