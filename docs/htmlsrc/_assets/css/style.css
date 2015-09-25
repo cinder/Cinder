@@ -851,7 +851,18 @@ button.interactive-guide:focus {
 }
 #side-nav section > ul li {
   line-height: 1.3em;
-  padding: 4px 15px 4px 34px;
+}
+#side-nav section > ul li > a {
+  display: inline-block;
+  padding-left: 36px;
+  margin: 5px 0;
+}
+#side-nav section li.active {
+  background-color: #a41c12;
+}
+#side-nav section li.active >label a,
+#side-nav section li.active >a {
+  color: #fff;
 }
 #side-nav span.active a {
   color: #333;
@@ -929,13 +940,6 @@ button.interactive-guide:focus {
 }
 #side-nav ul.css-treeview li a {
   color: #a41c12;
-}
-#side-nav ul.css-treeview li.active {
-  background-color: #a41c12;
-}
-#side-nav ul.css-treeview li.active >label a,
-#side-nav ul.css-treeview li.active >a {
-  color: #fff;
 }
 #side-nav .css-treeview label::before {
   background-image: url("../images/expand_arrow.png");

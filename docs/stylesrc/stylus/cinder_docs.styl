@@ -725,8 +725,18 @@ button.interactive-guide
 			li
 				// padding: 0 15px
 				line-height: 1.3em
-				padding: 4px 15px 4px 15px + 19px
+				// padding: 4px 15px 4px 15px + 19px
 				// margin: 7px 0
+				
+				> a
+					display: inline-block
+					padding-left: 36px
+					margin: 5px 0
+					
+		li.active			
+			background-color: $cinder-red
+			>label a, >a
+				color: white
 				
 				
 				
@@ -794,28 +804,14 @@ button.interactive-guide
 		ul
 			margin: 0
 		
-		
 		li
-			// margin-left: 18px
-			// margin-top: 5px;
-			// margin-bottom: 5px;
-			padding: 0
-			// padding: 0 15px 0 34px
-			
-			// &:not(.list-parent)
-				// padding: 0 0 0 18px
-				
+			padding: 0		
 
 			&.list-parent::before
 				content: none
 			
 			a
 				color: $cinder-red
-				
-			&.active			
-				background-color: $cinder-red
-				>label a, >a
-					color: white
 			
 
 	.css-treeview label::before

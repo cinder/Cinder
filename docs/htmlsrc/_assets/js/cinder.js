@@ -25,8 +25,6 @@ $(document).ready(function() {
 	 		if( selectedNs ){
 	 			selectedNs.addClass('active');
 	 		}
-	 		// console.log($('#namespace-nav'));
-	 		// console.log("SELECT NAMESPACE", selectedNs);
 	 	},
 
 		/*
@@ -116,7 +114,7 @@ $(document).ready(function() {
 						if( $li.find( 'ul' ).length > 0 ) {
 							$li.addClass( 'list-parent' );
 						}
-					} );
+					} );					
 				});
 
 				// For each anchor, add magellan arival data
@@ -127,6 +125,11 @@ $(document).ready(function() {
 					if( hash ){
 						var magArrival = $('<span data-magellan-arrival="' + hash + '"></span>');
 						$aLink.wrap( magArrival );
+					}
+
+					// if the link is the same as the current page, make it active
+					if( aLink.href == window.location.href ) {
+						$aLink.parent('li').addClass('active');
 					}
 				} );
 			});
