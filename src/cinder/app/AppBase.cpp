@@ -64,7 +64,9 @@
   #if defined( linux ) || defined( __linux ) || defined( __linux__ )
     #define CINDER_ASIO_CLANG_BUILTIN_OFFSETOF
   #endif
- 	#include "cinder/android/libc_helper.h"
+ 	#if defined( __ANDROID__ )
+ 		#include "cinder/android/libc_helper.h"
+ 	#endif
 	#include "asio/asio.hpp"
 #endif
 
