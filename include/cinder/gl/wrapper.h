@@ -133,10 +133,16 @@ void enableLogicOp( bool enable = true );
 void logicOp( GLenum mode );
 #endif
 
+//! Disables reading / testing from the depth buffer. Disables \c GL_DEPTH_TEST
 void disableDepthRead();
+//! Disables writing to depth buffer; analogous to calling glDepthMask( GL_FALSE );
 void disableDepthWrite();
+//! Enables or disables reading / testing from depth buffer; analogous to setting \c GL_DEPTH_TEST to \p enable
 void enableDepthRead( bool enable = true );
+//! Enables or disables writing to depth buffer; analogous to calling glDepthMask( \p enable ); Note that reading must also be enabled for writing to have any effect.
 void enableDepthWrite( bool enable = true );
+//! Enables or disables writing to and reading / testing from depth buffer
+inline void enableDepth( bool enable = true ) { enableDepthRead( enable ); enableDepthWrite( enable ); }
 
 void enableStencilRead( bool enable = true );
 void disableStencilRead();
