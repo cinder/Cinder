@@ -125,6 +125,27 @@ std::string IStreamCinder::readLine()
 {
 	string result;
 	int8_t ch;
+	while( ! isEof() ) {
+		read( &ch );
+		if( ch == 0x0A )
+			break;
+		else if( ch == 0x0D ) {
+			read( &ch );
+			if( ch != 0x0A )
+				seekRelative( -1 );
+			break;
+		}
+		else
+			result += ch;
+	}
+
+	return result;
+}
+
+std::string IStreamCinder::readLineWithContinuation( char lineContinuationChar )
+{
+	string result;
+	int8_t ch;
 
 	auto check_newline = [this, &ch] () {
 		if( ch == 0x0A )
@@ -138,8 +159,8 @@ std::string IStreamCinder::readLine()
 		return false;
 	};
 
-	auto check_continuation = [this, &ch, &check_newline] () {
-		if( ch == '\\') {
+	auto check_continuation = [this, &ch, &check_newline, lineContinuationChar] () {
+		if( ch == lineContinuationChar ) {
 			read( &ch );
 			if( check_newline() ) {
 				return true;

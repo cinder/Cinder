@@ -188,7 +188,7 @@ void ObjLoader::parse( bool includeNormals, bool includeTexCoords )
 	size_t lineNumber = 0;
 	while( ! mStream->isEof() ) {
 		lineNumber++;
-		string line = mStream->readLine(), tag;
+		string line = mStream->readLineWithContinuation(), tag;
         if( line.empty() || line[0] == '#' )
             continue;
         
