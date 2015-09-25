@@ -938,9 +938,6 @@ button.interactive-guide:focus {
 #side-nav ul.css-treeview li.list-parent::before {
   content: none;
 }
-#side-nav ul.css-treeview li a {
-  color: #a41c12;
-}
 #side-nav .css-treeview label::before {
   background-image: url("../images/expand_arrow.png");
   background-repeat: no-repeat;
@@ -1273,8 +1270,10 @@ code[class*="language-"] {
   color: inherit !important;
 }
 ci {
+  font-family: Inconsolata, monospace !important;
+  font-size: 1em;
+  font-size: 1.15em;
   color: #800080;
-  font-weight: 700;
 }
 a.ci {
   font-family: Inconsolata, monospace !important;
