@@ -347,18 +347,11 @@ ScopedDepth::ScopedDepth( bool enableReadAndWrite )
 	mCtx->pushDepthMask( enableReadAndWrite );
 }
 	
-ScopedDepth::ScopedDepth( bool enableRead, bool enableWrite )
-	: mCtx( gl::context() ), mSaveMask( true ), mSaveFunc( false )
-{
-	mCtx->pushBoolState( GL_DEPTH_TEST, enableRead );
-	mCtx->pushDepthMask( enableWrite );
-}
-	
-ScopedDepth::ScopedDepth( bool enableRead, bool enableWrite, GLenum depthFunc )
+ScopedDepth::ScopedDepth( bool enableReadAndWrite, GLenum depthFunc )
 	: mCtx( gl::context() ), mSaveMask( true ), mSaveFunc( true )
 {
-	mCtx->pushBoolState( GL_DEPTH_TEST, enableRead );
-	mCtx->pushDepthMask( enableWrite );
+	mCtx->pushBoolState( GL_DEPTH_TEST, enableReadAndWrite );
+	mCtx->pushDepthMask( enableReadAndWrite );
 	mCtx->pushDepthFunc( depthFunc );
 }
 
@@ -369,6 +362,37 @@ ScopedDepth::~ScopedDepth()
 		mCtx->popDepthMask();
 	if( mSaveFunc )
 		mCtx->popDepthFunc();
+}
+
+ScopedDepthTest::ScopedDepthTest( bool enableTest )
+	: mCtx( gl::context() ), mSaveFunc( false )
+{
+	mCtx->pushBoolState( GL_DEPTH_TEST, enableTest );
+}
+
+ScopedDepthTest::ScopedDepthTest( bool enableTest, GLenum depthFunc )
+	: mCtx( gl::context() ), mSaveFunc( true )
+{
+	mCtx->pushBoolState( GL_DEPTH_TEST, enableTest );
+	mCtx->pushDepthFunc( depthFunc );
+}
+
+ScopedDepthTest::~ScopedDepthTest()
+{
+	mCtx->popBoolState( GL_DEPTH_TEST );
+	if( mSaveFunc )
+		mCtx->popDepthFunc();
+}
+
+ScopedDepthWrite::ScopedDepthWrite( bool enableWrite )
+	: mCtx( gl::context() )
+{
+	mCtx->pushDepthMask( enableWrite );
+}
+
+ScopedDepthWrite::~ScopedDepthWrite()
+{
+	mCtx->popDepthMask();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
