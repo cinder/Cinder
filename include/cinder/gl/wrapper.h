@@ -117,8 +117,17 @@ inline void scissor( const ivec2 &position, const ivec2 &size ) { scissor( std::
 void enable( GLenum state, bool enable = true );
 inline void disable( GLenum state ) { enable( state, false ); }
 
-void enableAlphaBlending( bool premultiplied = false );
-void disableAlphaBlending();
+//! Enables or disables blending state as governed by \c GL_BLEND but does not modify blend function.
+void enableBlending( bool enable = false );
+//! Disables blending state via \c GL_BLEND, but does not modify blend function
+inline void disableBlending() { enableBlending( false ); }
+//! Enables blending via \c GL_BLEND and sets the blend function to unpremultiplied alpha blending when \p enable is \c true; otherwise disables blending without modifying the blend function.
+void enableAlphaBlending( bool enable = false );
+//! Enables blending via \c GL_BLEND and sets the blend function to premultiplied alpha blending
+void enableAlphaBlendingPremult();
+//! Disables blending state as governed by \c GL_BLEND but does not modify blend function.. Deprecated; prefer disableBlending()
+inline void disableAlphaBlending() { disableBlending(); }
+//! Enables \c GL_BLEND and sets the blend function to additive blending
 void enableAdditiveBlending();
 
 //! Specifies whether polygons are culled. Equivalent to calling enable( \c GL_CULL_FACE, \a enable ). Specify front or back faces with gl::cullFace().
