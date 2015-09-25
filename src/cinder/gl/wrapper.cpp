@@ -186,9 +186,10 @@ void clear( const ColorA& color, bool clearDepthBuffer )
 {
 	clearColor( color );
 	if ( clearDepthBuffer ) {
-		depthMask( GL_TRUE );
+		ScopedDepthWrite depthWriteScp( GL_TRUE );
 		clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	} else {
+	}
+	else {
 		clear( GL_COLOR_BUFFER_BIT );
 	}
 }
