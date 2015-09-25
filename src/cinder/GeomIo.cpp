@@ -1232,8 +1232,8 @@ void Icosphere::calculateImplUV() const
 	mTexCoords.resize( mNormals.size(), vec2() );
 	for( size_t i = 0; i < mNormals.size(); ++i ) {
 		const vec3 &normal = mNormals[i];
-		mTexCoords[i].x = (math<float>::atan2( normal.z, -normal.x ) / float(M_PI)) * 0.5f + 0.5f;
-		mTexCoords[i].y = -normal.y * 0.5f + 0.5f;
+		mTexCoords[i].x = 0.5f - 0.5f * glm::atan( normal.x, -normal.z ) / float( M_PI );
+		mTexCoords[i].y = 1.0f - glm::acos( normal.y ) / float( M_PI );
 	}
 
 	// lambda closure to easily add a vertex with unique texture coordinate to our mesh

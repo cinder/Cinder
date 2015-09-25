@@ -9,19 +9,19 @@ $nav-bottom-padding = 35px
 // animations 
 @keyframes fade-odd {
   from {
-	background-color: #FFF2DE
+    background-color: #FFF2DE
   }
   to {
-	background-color: #f8f8f8
+    background-color: #f8f8f8
   }
 }
 
 @keyframes fade-even {
   from {
-	background-color: #FFF2DE
+    background-color: #FFF2DE
   }
   to {
-	background-color: white
+    background-color: white
   }
 }
 
@@ -133,20 +133,12 @@ li
 ul, ol, dl 
 	line-height: inherit
 
+hr
+	margin: 30px 0
+	border-color: $gray-depth-1
+
 .row
 	max-width: 80rem
-
-ci
-	color: purple;
-	font-weight: 700;
-
-a.ci
-	codeStyle()
-	font-size: 0.9em
-	
-	&.plain
-		baseFontStyle()
-		font-size: inherit
 
 // for guide template
 body#guide-contents
@@ -154,6 +146,18 @@ body#guide-contents
 	margin: 20px auto 0 auto
 	width: 100%
 
+body.reference, body.guide .guide-list
+	.content 
+		ul
+			li
+				margin-left: 0
+
+			li:before
+				content: none
+				margin-left: 0
+	
+		.columns
+			padding-left: 0;
 
 .plain
 	baseFontStyle()
@@ -165,19 +169,14 @@ body#guide-contents
 	padding-left: 0
 	padding-right: 0
 
-// code
-// 	margin: 1em 0
-// 	display: inline-block
-// 	padding: 0 1em
-// 	line-height: 2em
+
+span.slash
+		color: #ddd
 
 
 #top-primary
 	box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3)
 	z-index: 100
-	
-	.nav
-		font-size: 1.25rem
 	
 #top-primary,
 #top-content
@@ -302,9 +301,9 @@ body#guide-contents
 		padding: 0 0 0 0.8em
 		text-indent: -0.8em
 		list-style: none
-	
-	ol
-		margin-left: 0.8em
+ 	
+ 	ol
+ 		margin-left: 0.8em
 
 	ul, ol
 		margin-bottom: 1.25em
@@ -329,7 +328,7 @@ body#guide-contents
 			float: left;
 			padding-left: 0.9375rem;
 			padding-right: 0.9375rem;
-	
+    
 		
 			&:first-child
 				padding-left: 0
@@ -357,74 +356,82 @@ body#guide-contents
 				> *
 					margin-top: inherit
 
-body.classes
+.top
+	margin-bottom: 30px
+	display: inline-block
+	width: 100%
 	
+	img.header-icon
+		display: inline-block
+		height: 35px
+		vertical-align: text-top
+		margin-right: 10px
+		float: left
+	
+	.include
+		display: inline-block
+		color: $middle-gray-text
+		
+		a
+			color: $middle-gray-text
+			font-weight: normal
+	
+	.row
+		padding: 0.0 2px
+		
+		&:not(:last-child)
+			border-bottom: #fff 1px solid
+	
+	.row:nth-child(2)
+		background-color: $gray-depth-2
+	
+	.row:nth-child(3)
+		background-color: $gray-depth-3
+		
+	.columns
+		padding: 0.7rem 1.0rem
+		overflow-x: auto;
+		
+		&:not(:last-child)
+			border-right: #fff 1px solid
+		
+		&.naming
+			padding-left: 0
+			padding-top: 0em
+			padding-bottom: 1em
+			border-bottom: 1px solid $gray-depth-1
+		
+		&.subnav
+			padding-left: 0
+			padding-top: 0.25em
+			padding-bottom: 0.25em
+			margin-bottom: 30px
+				
+body.classes, body.namespaces
+		
 	h1 
 		display: inline-block
 		margin-bottom: 0
 		font-weight: 700
-		line-height: 1.25em
-	
-	span.slash
-		color: #ddd
+		line-height: 1.0em
 		
 	.row .row
 		margin: 0
 	
 	
 	.info-links
+		margin-top: 30px
 		display: flex
 		.columns + .columns:last-child
-			float: left
-	
-	.top
-		// padding: 0.9375rem
-		background-color: $light-gray
-		margin-bottom: 40px
-		
-		.include
-			display: inline-block
-			color: $middle-gray-text
-			
-			a
-				color: $middle-gray-text
-				font-weight: normal
-		
-		.row
-			padding: 0.0 0.9375rem
-			
-			&:not(:last-child)
-				border-bottom: #fff 1px solid
-
-		.row:nth-child(1)
-			background-color: $gray-depth-1
-		
-		.row:nth-child(2)
-			background-color: $gray-depth-2
-		
-		.row:nth-child(3)
-			background-color: $gray-depth-3
-			
-		.columns
-			padding: 0.7rem 1.25rem
-			overflow-x: scroll;
-			
-			&:not(:last-child)
-				border-right: #fff 1px solid
-			
-			&.naming
-				padding-top: 2.0em
-				padding-bottom: 2.0em
-			
-			&.subnav
-				padding-top: 0.25em
-				padding-bottom: 0.25em
+		    float: left
 				
 		label
 			color: $middle-gray-text
 			font-weight: 700
 			font-size: 1.0em
-			// margin-bottom: 0.5em
+			padding-bottom: 5px
+			margin-bottom: 5px
+			border-bottom: 3px solid $gray-depth-1
 			
 		.ns
 			display: block
@@ -495,6 +502,10 @@ body.classes
 							padding-left: 68px
 							background-position: 41px -3px;
 							
+body.classes
+	img.header-icon
+		height: 45px
+		margin-top: 8px
 
 #container
 	
@@ -572,11 +583,9 @@ body.classes
 		margin: 0 0 20px 0
 
 		h1
-			// color: $cinder-orange
-			// text-align: center
 			font-weight: 700
 			text-transform: uppercase
-			margin: 8px 0 0 0
+			margin: 0 0 0 0
 			display: inline-block
 			vertical-align: middle
 		
@@ -584,25 +593,43 @@ body.classes
 			margin: 10px 0
 		
 	.header-icon
-		// margin: 0 auto
-		width: 100px
-		height: 80px
-		// text-align: center
+		width: 60px
+		height: 60px
 		display: inline-block
 		vertical-align: middle
-
-	// reference header icons
-	.header-icon {overflow:hidden; background-repeat: no-repeat;background-image:url('../images/header_icons.png');}
-
-	.header_2dgraphics {width:200px; height:80px; background-position: -2px -2px}
-	.header_application {width:200px; height:80px; background-position: -204px -2px}
-	.header_audio {width:200px; height:80px; background-position: -406px -2px}
-	.header_geometry {width:200px; height:80px; background-position: -608px -2px}
-	.header_images {width:200px; height:80px; background-position: -810px -2px}
-	.header_math {width:200px; height:80px; background-position: -1012px -2px}
-	.header_platform {width:200px; height:80px; background-position: -1214px -2px}
-	.header_system {width:200px; height:80px; background-position: -1416px -2px}
-	.header_video {width:200px; height:80px; background-position: -1618px -2px}
+		overflow:hidden
+		background-repeat: no-repeat
+		margin-right: 10px
+		
+		&.header_2dgraphics
+			background-image: url('../images/icons/2d_gray.svg')
+		
+		&.header_geometry
+			background-image: url('../images/icons/geom_gray.svg')
+		
+		&.header_math
+			background-image: url('../images/icons/math_gray.svg')
+		
+		&.header_system
+			background-image: url('../images/icons/system_gray.svg')
+			
+		&.header_platform
+			background-image: url('../images/icons/platform_gray.svg')
+		
+		&.header_opengl
+			background-image: url('../images/icons/opengl_gray.svg')	
+		
+		&.header_audio
+			background-image: url('../images/icons/audio_gray.svg')
+			
+		&.header_video
+			background-image: url('../images/icons/video_gray.svg')
+		
+		&.header_images
+			background-image: url('../images/icons/images_gray.svg')
+		
+		&.header_application
+			background-image: url('../images/icons/app_gray.svg')
 
 
 .expandable
@@ -674,8 +701,9 @@ button.interactive-guide
 		text-transform: uppercase
 		
 	section
-		background: $light-gray
+		background: $gray-depth-3
 		margin-bottom: 20px
+		padding-bottom: 15px
 		
 		> label
 			background: $dark-gray-text
@@ -688,21 +716,27 @@ button.interactive-guide
 		> ul
 			padding: 10px 0 0 0
 			max-height: 500px
-			overflow-y: scroll
+			overflow-y: auto
 			
 			ul
 				margin: 5px -15px 0
 				padding: 0
-				
-				li:last-child
-					padding-bottom: 8px
-
 		
 			li
 				// padding: 0 15px
 				line-height: 1.3em
-				padding: 4px 15px 4px 15px + 19px
+				// padding: 4px 15px 4px 15px + 19px
 				// margin: 7px 0
+				
+				> a
+					display: inline-block
+					padding-left: 36px
+					margin: 5px 0
+					
+		li.active			
+			background-color: $cinder-red
+			>label a, >a
+				color: white
 				
 				
 				
@@ -725,7 +759,7 @@ button.interactive-guide
 
 	li.list-parent
 		padding-left: 15px
-		padding-bottom: 0;
+		// padding-bottom: 0;
 			
 		&:before
 			content: ''
@@ -739,8 +773,6 @@ button.interactive-guide
 			margin: 1px 5px 0 0
 			transform: rotate(90deg) translateZ(0)
 			transform-origin: 50% 50%;
-		
-	
 	
 	/*input[type="checkbox"] + label
 		margin-left: -18px*/
@@ -749,24 +781,36 @@ button.interactive-guide
 		margin-left: 0
 		
 	
-	.css-treeview
+	ul.css-treeview
 		
-		// font-size: 0.8em
-		
+		padding: 20px 0
+		margin-top: 15px
+
 		label
 			color: #fff
 			font-size: inherit
+			width: 100%
+			padding-left: 18px
+		
+		input
+			left: 18px
+			
+		label, li > a
+			margin: 5px 0
+			
+		li > a
+			padding-left: 36px
+			
+		ul
+			margin: 0
 		
 		li
-			// margin-left: 18px
-			// margin-top: 5px;
-			// margin-bottom: 5px;
-			
+			padding: 0		
+
 			&.list-parent::before
 				content: none
 			
-			a
-				color: $cinder-red
+			
 			
 
 	.css-treeview label::before
@@ -782,15 +826,13 @@ button.interactive-guide
 		
 		transform: rotate(90deg) translateZ(0)
 		transform-origin: 50% 50%;
+	
 		
 	.css-treeview label
 		background-image: none
 		height: 20px
 		line-height: 20px
 	
-	/*.css-treeview input + label + ul
-		margin: 0*/
-
 
 .wrapper
 	min-height: 100%
@@ -837,7 +879,8 @@ $border-height = 3px
 #main-nav
 	background: transparent
 	height: $navbar-height
-	
+	font-size: 1.1rem			
+
 	.columns
 		height: 100%
 
@@ -858,7 +901,7 @@ $border-height = 3px
 				position: relative
 				display: inline-block
 				
-				margin-right: 25px
+				margin-right: 20px
 				margin-left: 0
 				background: none
 				border-bottom: solid 3px transparent
@@ -878,6 +921,7 @@ $border-height = 3px
 					box-sizing: border-box
 					height: $navbar-height - $border-height
 					line-height: 1em
+					font-weight: 400
 
 					&:hover
 						color: $cinder-red
@@ -1016,7 +1060,6 @@ $border-height = 3px
 
 					&:hover
 						color: white
-
 
 // Magellan override
 [data-magellan-expedition], [data-magellan-expedition-clone]

@@ -195,7 +195,7 @@ JAVADOC_AUTOBRIEF      = NO
 # requiring an explicit \brief command for a brief description.)
 # The default value is: NO.
 
-QT_AUTOBRIEF           = YES
+QT_AUTOBRIEF           = NO
 
 # The MULTILINE_CPP_IS_BRIEF tag can be set to YES to make doxygen treat a
 # multi-line C++ special comment block (i.e. a block of //! or /// comments) as
@@ -2062,7 +2062,9 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             = 
+PREDEFINED             = "CINDER_COCOA" \
+                         "CINDER_MSW" \
+                         CINDER_DOXYGEN
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

@@ -4,6 +4,9 @@
 
 precision highp float;
 
+uniform sampler2D	uTex0;
+uniform int			uTexturingMode;
+
 varying vec4 Position;
 varying vec3 Normal;
 varying vec4 Color;
@@ -33,35 +36,34 @@ void main()
 	vec3 vLightPosition = vec3( 0.0 );
 
 	// lighting calculations
-	vec3 vVertex = Position.xyz;
-	vec3 vNormal = normalize( Normal );
-	vec3 vToLight = normalize( vLightPosition - vVertex );
-	vec3 vToEye = normalize( - vVertex );
-	vec3 vReflect = normalize( - reflect( vToLight, vNormal ) );
+	vec3 N = normalize( Normal );
+	vec3 L = normalize( vLightPosition - Position.xyz );
+	vec3 E = normalize( -Position.xyz );
+	vec3 H = normalize( L + E );
+
+	// Calculate coefficients.
+	float phong = max( dot( N, L ), 0.0 );
+
+	const float kMaterialShininess = 20.0;
+	const float kNormalization = ( kMaterialShininess + 8.0 ) / ( 3.14159265 * 8.0 );
+	float blinn = pow( max( dot( N, H ), 0.0 ), kMaterialShininess ) * kNormalization;
 
 	// diffuse coefficient
-	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;
+	vec3 diffuse = vec3( phong );
 
-	// texCoord checkerboard
-	diffuse *= 0.5 + 0.5 * checkered( TexCoord, 20 );
+	if( uTexturingMode == 1 ) {
+		diffuse *= vec3( 0.7, 0.5, 0.3 );
+		diffuse *= 0.5 + 0.5 * checkered( TexCoord, 20 );
+	}
+	else if ( uTexturingMode == 2 )
+		diffuse *= texture2D( uTex0, TexCoord.st ).rgb;
 
-	// texCoord checkerboard with protection against edge case\n"
-	const float kEpsilon = 0.0001;
-	vec2 p = TexCoord * 10.0;
-	float x = 0.5 - 0.5 * step( min( fract( p.x - kEpsilon ), fract( p.x + kEpsilon ) ), 0.5 );
-	float y = 0.5 + 0.5 * step( min( fract( p.y - kEpsilon ), fract( p.y + kEpsilon ) ), 0.5 );
-	diffuse *= 0.5 + fract( x + y );
+	// specular coefficient 
+	vec3 specular = blinn * cSpecular;
 
-	// specular coefficient with energy conservation
-	const float shininess = 20.0;
-	const float coeff = (2.0 + shininess) / (2.0 * 3.14159265);
-	vec3 specular = pow( max( dot( vReflect, vToEye ), 0.0 ), shininess ) * coeff * cSpecular;
-
-	// to conserve energy, diffuse and specular colors should not exceed one
-	float maxDiffuse = max( diffuse.r, max( diffuse.g, diffuse.b ) );
-	float maxSpecular = max( specular.r, max( specular.g, specular.b ) );
-	float fConserve = 1.0 / max( 1.0, maxDiffuse + maxSpecular );
+	// alpha 
+	float alpha = ( uTexturingMode == 3 ) ? 0.75 : 1.0;
 
 	// final color
-	gl_FragColor = vec4( (diffuse + specular) * fConserve, 1.0 );
+	gl_FragColor = vec4( diffuse + specular, alpha );
 }

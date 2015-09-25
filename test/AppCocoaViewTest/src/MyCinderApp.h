@@ -8,8 +8,8 @@ struct TestCallbackOrder {
 	TestCallbackOrder() : mState( TestCallbackOrder::VIRGIN ), mDoneDraw( false ) {}
 	~TestCallbackOrder()
 	{
-		if( mState != SHUTDOWN )
-			cinder::app::console() << "Failed to call shutdown()" << std::endl;
+		if( mState != CLEANUP )
+			cinder::app::console() << "Failed to call cleanup()" << std::endl;
 	}
 	
 	void	setState( int state )
@@ -24,7 +24,7 @@ struct TestCallbackOrder {
 			mDoneDraw = true;
 	}
 	
-	enum { VIRGIN, SETUP, RESIZE, UPDATE, DRAW, SHUTDOWN };
+	enum { VIRGIN, SETUP, RESIZE, UPDATE, DRAW, CLEANUP };
 	
 	bool	mDoneDraw;
 	int		mState;
@@ -36,22 +36,22 @@ class MyCinderApp : public cinder::app::AppCocoaView {
 	MyCinderApp();
 	~MyCinderApp();
 
-	void				setup();
-	void				resize();
-	void				update();
-	void				draw();
-	void				shutdown();
+	void				setup() override;
+	void				resize() override;
+	void				update() override;
+	void				draw() override;
+	void				cleanup() override;
 	
-	void				mouseUp( ci::app::MouseEvent event );
-	void				mouseDown( ci::app::MouseEvent event );
-	void				mouseDrag( ci::app::MouseEvent event );
-	void				mouseMove( ci::app::MouseEvent event );
+	void				mouseUp( ci::app::MouseEvent event ) override;
+	void				mouseDown( ci::app::MouseEvent event ) override;
+	void				mouseDrag( ci::app::MouseEvent event ) override;
+	void				mouseMove( ci::app::MouseEvent event ) override;
 
-	void		touchesMoved( ci::app::TouchEvent event ) override;
+	void				touchesMoved( ci::app::TouchEvent event ) override;
 
-	void				keyDown( ci::app::KeyEvent event );
+	void				keyDown( ci::app::KeyEvent event ) override;
 	
-	void				fileDrop( ci::app::FileDropEvent event );
+	void				fileDrop( ci::app::FileDropEvent event ) override;
 	
 	float				mRadius, mAnimatedRadius;
 	cinder::Colorf		mColor;

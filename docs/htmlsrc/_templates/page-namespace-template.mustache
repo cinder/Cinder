@@ -1,10 +1,12 @@
 <div class="row content-row">
 
   <!-- side nav -->
-  <div id="side-nav" class="columns large-3" data-equalizer-watch="content">
-    <h4>Namespaces:</h4>
-    {{{ namespace_nav }}}
-  </div>
+  <div id="side-nav" class="columns large-3" >
+        <section>
+            <label>Namespaces</label>
+            {{{ namespace_nav }}}
+        </section>
+    </div>
 
 
   <!-- main content area -->
@@ -12,17 +14,25 @@
 
     <div id="container">
 
+        <div class="top">
+            
+            <div class="columns naming">
+                <img class="header-icon" src="../_assets/images/icons/namespace_icon.svg">
+
+                <h1 id="page-title">
+                    <strong>{{name}}</strong> Namespace
+                </h1>
+            </div> 
+            
+            <!-- subnav -->
+            <div class="columns subnav">
+                {{> namespace-subnav }}
+            </div>
+        </div>
+        
         <div class="content">
-
-            <!-- content -->
-            <h1 id="page-title">
-                <strong>{{name}}</strong> Namespace
-            </h1>
-            {{> namespace-subnav }}
-            <hr/>
-
             <!-- show/hide buttons -->
-            <div id="show-hide">
+            <div id="show-hide" class="hide">
               <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
             </div>
         </div>
@@ -159,3 +169,8 @@
 
   </div>
 </div> <!-- row -->
+
+<script type="text/javascript">
+    window.selectedNamespace = "{{name}}"
+    console.log(window.selectedNamespace + "!!!");
+</script>

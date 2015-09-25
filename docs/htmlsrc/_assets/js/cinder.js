@@ -7,6 +7,28 @@ $(document).ready(function() {
 	var cinderJs = {
 		/*
 		* ----------------------------------------------------------------------
+		*  Selects the correct main nav item
+		* ----------------------------------------------------------------------
+		*/
+		setSection: function( sectionName ){
+	 		// find the nav item that correlates to the section name
+	 		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
+	 	},
+
+	 	/*
+		* ----------------------------------------------------------------------
+		*  Selects the correct namepsace nav iten
+		* ----------------------------------------------------------------------
+		*/
+		selectNamspace: function( namespace ){
+	 		var selectedNs = $('#namespace-nav').find('[data-namespace="' + namespace + '"]');
+	 		if( selectedNs ){
+	 			selectedNs.addClass('active');
+	 		}
+	 	},
+
+		/*
+		* ----------------------------------------------------------------------
  	 	*  Unhides a piece of content if it contains a anchor tag with a 
  	 	*  specific hash
  	 	*  @param {[type]} hash Hash name of the link
@@ -69,15 +91,15 @@ $(document).ready(function() {
 		init: function(){
 
 			// find all sideNav sections
-			main = $( '#side-nav' );
-			sections = main.find( 'section' );
+			this.main = $( '#side-nav' );
+			this.sections = this.main.find( 'section' );
 
 			// list depth of side nav
-			var baseDepth = main.parent('ul').length;
+			var baseDepth = this.main.parent('ul').length;
 
 			// Find the depth of each nested list and apply a class based on
 			// the depth value. This is used to style the lists.
-			_.each( sections, function( section ){
+			_.each( this.sections, function( section ){
 				var lists = $(section).find( 'ul' );
 
 				_.each(lists, function( list ) {
@@ -93,7 +115,7 @@ $(document).ready(function() {
 						if( $li.find( 'ul' ).length > 0 ) {
 							$li.addClass( 'list-parent' );
 						}
-					} );
+					} );					
 				});
 
 				// For each anchor, add magellan arival data
@@ -104,6 +126,11 @@ $(document).ready(function() {
 					if( hash ){
 						var magArrival = $('<span data-magellan-arrival="' + hash + '"></span>');
 						$aLink.wrap( magArrival );
+					}
+
+					// if the link is the same as the current page, make it active
+					if( aLink.href == window.location.href ) {
+						$aLink.parent('li').addClass('active');
 					}
 				} );
 			});
@@ -122,6 +149,15 @@ $(document).ready(function() {
 				var magDestination = $('<span data-magellan-destination="' + hash + '"></span>');
 				$aTag.wrap( magDestination );
 			} );
+
+			this.resize();
+		},
+
+		resize: function(){
+			// change the max side nav height in relation to the window inner height
+			if( this.sections.length === 1 ) {
+				$( $( this.sections[0] ).find( 'ul' )[0] ).css( "max-height", window.innerHeight - 100 );
+			}
 		}
 	}
 
@@ -153,29 +189,30 @@ $(document).ready(function() {
  		}
  	});
 
- 	var setSection = function( sectionName ){
- 		// find the nav item that correlates to the section name
- 		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
- 	};
 
  	// --- Open all and Close all ---
  	var showAll = function(){
- 		$( '.contents .expandable' ).each( function(){
+ 		$( '.reference-lists .expandable' ).each( function(){
  			var $this = $(this);
  			$this.removeClass("hidden");
  		});
  	};
 
  	var hideAll = function(){
- 		$( '.contents .expandable' ).each( function(){
+ 		$( '.reference-lists .expandable' ).each( function(){
  			var $this = $(this);
  			$this.addClass("hidden");
  		});
  	};
 
  	// attach show/hide all functionality
- 	$( '#show-hide a.show-all' ).on( 'click', showAll );
- 	$( '#show-hide a.hide-all' ).on( 'click', hideAll );
+ 	var show = $( '#show-hide a.show-all' );
+ 	var hide = $( '#show-hide a.hide-all' );
+ 	if( $( '.reference-lists .expandable' ).length > 1 ) {
+ 		$( '#show-hide' ).removeClass( 'hide' );
+ 		$( '#show-hide a.show-all' ).on( 'click', showAll );
+ 		$( '#show-hide a.hide-all' ).on( 'click', hideAll );
+ 	}
  	
 
  	// get anchor tag if there is one
@@ -243,7 +280,7 @@ $(document).ready(function() {
 	}
 	
     
-	var search_index = lunr(function () {
+	window.search_index = lunr(function () {
 		this.field('title', {boost: 10});
 		this.field('tags', {boost: 1});
 		this.field('body');
@@ -276,7 +313,9 @@ $(document).ready(function() {
 	} );
 	
 
- 	setSection( section );
+	// initialization
+ 	cinderJs.setSection( section );
+ 	cinderJs.selectNamspace( window.selectedNamespace );
  	cinderJs.showContent( hash );
  	sideNav.init();
  	if( search_index_data )
@@ -288,10 +327,7 @@ $(document).ready(function() {
 	if( location.protocol == "file:" ) {
 		history.pushState = false;
 	}
-	// 
-
-	// console.log(location);
-	// console.log("PUSH STATE", history.pushState);
+	
 	// set up magellan stuff
 	$(document).foundation({
         "magellan-expedition": {
@@ -304,6 +340,12 @@ $(document).ready(function() {
         }
     });
 	$(document).foundation('magellan', 'offcanvas', 'reflow');
+
+
+	// listen for resize
+	$( window ).on( 'resize', function(){
+		sideNav.resize();
+	} );
  	return cinderJs;
  } );
 

@@ -171,10 +171,10 @@ void Context::initializeAllNodes()
 void Context::uninitializeAllNodes()
 {
 	set<NodeRef> traversedNodes;
-	uninitRecursisve( mOutput, traversedNodes );
+	uninitRecursive( mOutput, traversedNodes );
 
 	for( const auto& node : mAutoPulledNodes )
-		uninitRecursisve( node, traversedNodes );
+		uninitRecursive( node, traversedNodes );
 }
 
 void Context::disconnectAllNodes()
@@ -234,7 +234,7 @@ void Context::initRecursisve( const NodeRef &node, set<NodeRef> &traversedNodes 
 	node->configureConnections();
 }
 
-void Context::uninitRecursisve( const NodeRef &node, set<NodeRef> &traversedNodes )
+void Context::uninitRecursive( const NodeRef &node, set<NodeRef> &traversedNodes )
 {
 	if( ! node || traversedNodes.count( node ) )
 		return;
@@ -242,7 +242,7 @@ void Context::uninitRecursisve( const NodeRef &node, set<NodeRef> &traversedNode
 	traversedNodes.insert( node );
 
 	for( auto &input : node->getInputs() )
-		uninitRecursisve( input, traversedNodes );
+		uninitRecursive( input, traversedNodes );
 
 	node->uninitializeImpl();
 }

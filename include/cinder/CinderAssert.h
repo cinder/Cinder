@@ -25,7 +25,7 @@
 // - CI_ASSERT( expr ): asserts that \a expr evaluates to true. By default it is equivalent to assert( expr )
 // - CI_ASSERT_MSG( expr, msg ): same as CI_ASSERT but takes an additional, human readable \a const char* message parameter
 // - CI_VERIFY( expr ): same as CI_ASSERT, but still evaluates \a expr in release mode.
-// - CI_VERIFY_MSG( expr ): same as CI_ASSERT_MSG, but still evaluates \a expr in release mode.
+// - CI_VERIFY_MSG( expr, msg ): same as CI_ASSERT_MSG, but still evaluates \a expr in release mode.
 // - CI_ASSERT_NOT_REACHABLE(): utility to place at an unreachable location in code, which will cause a failed assertion.
 //
 // There are some user-definable variables that you can use to customize how failed assertions are handled, though
