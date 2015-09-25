@@ -43,7 +43,7 @@
  	#include "EGL/egl.h"
 #endif
 
-#if ( defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) ) && defined( CINDER_GL_ES_2 )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
   #if ! defined( CINDER_GL_HAS_INSTANCED_ARRAYS )
  	using PFNGLVERTEXATTRIBDIVISOREXTPROC = void*;
   #endif
@@ -53,20 +53,21 @@
  	using PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC = void*;
   #endif
 
-
+ #if defined( CINDER_GL_ES_2 )
 	PFNGLBINDVERTEXARRAYOESPROC			fnptr_ci_glBindVertexArrayOES = nullptr;
 	PFNGLDELETEVERTEXARRAYSOESPROC		fnptr_ci_glDeleteVertexArraysOES = nullptr;
 	PFNGLGENVERTEXARRAYSOESPROC			fnptr_ci_glGenVertexArraysOES = nullptr;
 	PFNGLISVERTEXARRAYOESPROC			fnptr_ci_glIsVertexArrayOES = nullptr;
  
 	PFNGLVERTEXATTRIBDIVISOREXTPROC		fnptr_ci_glVertexAttribDivisorEXT= nullptr;
+
+ 	PFNGLMAPBUFFERRANGEEXTPROC 			fnptr_ci_glMapBufferRangeEXT = nullptr;
+	PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC	fnptr_ci_glFlushMappedBufferRangeEXT = nullptr;
+ #endif	
  
 	PFNGLMAPBUFFEROESPROC				fnptr_ci_glMapBufferOES = nullptr;
 	PFNGLUNMAPBUFFEROESPROC				fnptr_ci_glUnmapBufferOES = nullptr;
 	PFNGLGETBUFFERPOINTERVOESPROC		fnptr_ci_glGetBufferPointervOES = nullptr;
-
- 	PFNGLMAPBUFFERRANGEEXTPROC 			fnptr_ci_glMapBufferRangeEXT = nullptr;
-	PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC	fnptr_ci_glFlushMappedBufferRangeEXT = nullptr;
 #endif
 
 namespace cinder { namespace gl {
@@ -99,27 +100,27 @@ Environment* allocateEnvironmentEs()
 
 void EnvironmentEs::initializeFunctionPointers()
 {
-
-#if defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+  #if defined( CINDER_GL_ES_2 )
 	if( supportsHardwareVao() ) {
 		fnptr_ci_glBindVertexArrayOES = (PFNGLBINDVERTEXARRAYOESPROC)eglGetProcAddress( "glBindVertexArrayOES" );
 		fnptr_ci_glDeleteVertexArraysOES = (PFNGLDELETEVERTEXARRAYSOESPROC)eglGetProcAddress( "glDeleteVertexArraysOES" );
 		fnptr_ci_glGenVertexArraysOES = (PFNGLGENVERTEXARRAYSOESPROC)eglGetProcAddress( "glGenVertexArraysOES" );
 		fnptr_ci_glIsVertexArrayOES = (PFNGLISVERTEXARRAYOESPROC)eglGetProcAddress( "glIsVertexArrayOES" );		
 	}
- 
+
+	if( supportsMapBufferRange() ) {
+	 	fnptr_ci_glMapBufferRangeEXT = (PFNGLMAPBUFFERRANGEEXTPROC)eglGetProcAddress( "glMapBufferRangeEXT" );
+		fnptr_ci_glFlushMappedBufferRangeEXT = (PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC)eglGetProcAddress( "glFlushMappedBufferRangeEXT" );
+	} 
+  #endif
+
  	if( isExtensionAvailable( "GL_OES_mapbuffer" ) ) {
 		fnptr_ci_glMapBufferOES  = (PFNGLMAPBUFFEROESPROC)eglGetProcAddress( "glMapBufferOES" );
 		fnptr_ci_glUnmapBufferOES  = (PFNGLUNMAPBUFFEROESPROC)eglGetProcAddress( "glUnmapBufferOES" );
 		fnptr_ci_glGetBufferPointervOES	= (PFNGLGETBUFFERPOINTERVOESPROC)eglGetProcAddress( "glGetBufferPointervOES" );
 	}
- 
-	if( supportsMapBufferRange() ) {
-	 	fnptr_ci_glMapBufferRangeEXT = (PFNGLMAPBUFFERRANGEEXTPROC)eglGetProcAddress( "glMapBufferRangeEXT" );
-		fnptr_ci_glFlushMappedBufferRangeEXT = (PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC)eglGetProcAddress( "glFlushMappedBufferRangeEXT" );
-	}
 #endif
-
 }
 
 bool EnvironmentEs::isExtensionAvailable( const std::string &extName ) const
@@ -300,18 +301,18 @@ std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 	}
 
 	if( shader.mTextureMapping ) {
-		s +=	"attribute vec2		ciTexCoord0;\n"
-				"varying  vec2	TexCoord;\n"
+		s +=	"attribute vec2     ciTexCoord0;\n"
+				"varying highp vec2	TexCoord;\n"
 				;
 	}
 	if( shader.mColor ) {
-		s +=	"attribute vec4		ciColor;\n"
-				"varying  vec4  Color;\n"
+		s +=	"attribute vec4    ciColor;\n"
+				"varying lowp vec4 Color;\n"
 				;
 	}
 	if( shader.mLambert ) {
-		s += "attribute vec3		ciNormal;\n"
-			"varying  vec3		Normal;\n"
+		s += "attribute vec3    ciNormal;\n"
+			"varying highp vec3 Normal;\n"
 			;
 	}
 
@@ -356,35 +357,35 @@ std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 	}
 #endif		
 
-	//s +=		"precision highp float;\n";
+	s +=		"precision highp float;\n";
 
 #if defined( CINDER_ANDROID )
 	if( shader.mTextureMapping ) {	
 		if( shader.mTextureMappingExternalOes ) {
 			s +=	"uniform samplerExternalOES	uTex0;\n"
-					"varying  vec2			TexCoord;\n"
+					"varying highp vec2         TexCoord;\n"
 					;
 		}
 		else {
-			s +=	"uniform sampler2D	uTex0;\n"
-					"varying  vec2	TexCoord;\n"
+			s +=	"uniform sampler2D  uTex0;\n"
+					"varying highp vec2	TexCoord;\n"
 					;
 		}
 	}
 #else	
 	if( shader.mTextureMapping ) {
-		s +=	"uniform sampler2D	uTex0;\n"
-				"varying  vec2	TexCoord;\n"
+		s +=	"uniform sampler2D  uTex0;\n"
+				"varying highp vec2 TexCoord;\n"
 				;
 	}
 #endif
 
 	if( shader.mColor ) {
-		s +=	"varying  vec4	Color;\n";
+		s +=	"varying lowp vec4 Color;\n";
 	}
 
 	if( shader.mLambert ) { 
-		s +=	"varying highp vec3	Normal;\n";
+		s +=	"varying highp vec3 Normal;\n";
 	}
 
 	s +=		"void main( void )\n"

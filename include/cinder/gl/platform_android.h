@@ -63,6 +63,9 @@
 				typedef void (GL_APIENTRYP PFNGLGETBUFFERPOINTERVOESPROC) (GLenum target, GLenum pname, GLvoid** params);
 			}
 			#endif
+			//extern PFNGLMAPBUFFEROESPROC 						fnptr_ci_glMapBufferOES;
+			//extern PFNGLUNMAPBUFFEROESPROC						fnptr_ci_glUnmapBufferOES;
+			//extern PFNGLGETBUFFERPOINTERVOESPROC				fnptr_ci_glGetBufferPointervOES;
 		#endif 
 
  		// GL_EXT_debug_label
