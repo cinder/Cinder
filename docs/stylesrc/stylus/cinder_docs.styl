@@ -896,33 +896,34 @@ $border-height = 3px
 	
 	& > #search
 		position: absolute
-		top: 0;
-		bottom: 0;
-		right: 0;
-		margin: auto;
-		height: 30px;
-		width: 400px;
+		top: 0
+		bottom: 0
+		right: 0
+		margin: auto
+		height: 30px
+		width: 400px
 
 		& > input
 			baseFontStyle()
-			display: inline-block;
-			position: absolute;
-			margin-bottom: 0;
-			width: 100%;
-			font-size: 12px;
-			height: 30px;
-			border-radius: 5px;
+			display: inline-block
+			position: absolute
+			margin-bottom: 0
+			width: 100%
+			font-size: 12px
+			font-weight bold
+			height: 30px
+			border-radius: 5px
 
 		& > button
-			position: absolute;
-			right: 0;
-			padding-top: 0;
-			padding-bottom: 0;
-			margin-bottom: 0;
-			height: 30px;
+			position: absolute
+			right: 0
+			padding-top: 0
+			padding-bottom: 0
+			margin-bottom: 0
+			height: 30px
 			baseFontStyle()
 			font-size: 10px
-			text-transform: uppercase;
+			text-transform: uppercase
 			outline: 0;
 			background: $cinder-orange
 			border-top-right-radius: 5px
@@ -933,54 +934,77 @@ $border-height = 3px
 				position: absolute;
 				top: 0;
 				bottom: 0;
-				left: 0;
+				left: 2px;
 				font-size: 30px;
 				transform: rotate(90deg);
 				color: $cinder-orange
 
 		#search-results
+			display: none
 			background-color: white;
 			position: absolute;
 			right: 0;
 			z-index: 99999;
-			display: block;
-			max-height: 80vh;
-			overflow-y: scroll;
-			overflow-x: hidden;
+			overflow: hidden;
 			top: 30px;
 			border-radius: 10px;
 			width: 400px;
 			// border: 1px $light-gray solid
+				
+			.relativeContainer
+				position relative
+				margin 0
+				padding 0
+				
+			h5
+				display: inline-block
+				background: $light-gray-text
+				margin: 10px
+				padding: 5px 10px
+				font-size: 12px
+				font-weight: 700
+				color: white
+				border-radius: 5px
 
 			ul
-				margin-left: 0;
+				margin 0
+				padding 0
 
 				li
-					height: auto;
-					padding: 10px 0 10px 10px;
-					margin-right: 0;
-					font-size: 12px;
-					background: transparent;
-					width: 100%;
+					height: auto
+					padding: 0 0 0 10px
+					margin 0
+					font-size: 12px
+					background: transparent
+					width: 100%
 
 					&:hover,
 					&:hover a
-						background: #c64b24;
+						background: $cinder-red
 						color: white;
+						text-decoration: none
+						
+					&:hover a:before
+						color: $cinder-orange
 
 					a
 						padding: 0;
-						color: #c64b24;
+						color: $cinder-red
 						background: transparent;
 						font-size: 12px;
 
 						&:before
-							content: "\00bb";
+							content: "\00bb"
+							color: $middle-gray-text
+							padding-right: 10px
+							
+						&:hover:before
+							color: $cinder-orange
 
 			#search-results-view-all
-				display: inline-block;
+				bottom 0
 				width: 100%;
-				background: #949494;
+				background: $light-gray-text
 				padding: 10px 0;
 				margin: 0 auto;
 				text-align: center;
@@ -991,7 +1015,7 @@ $border-height = 3px
 					color: white;
 
 					&:hover
-						color: #c64b24;
+						color: white
 
 
 // Magellan override
