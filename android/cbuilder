@@ -15,7 +15,7 @@ if (( $# == 0 )); then
     echo -e "\t-es2    Build for OpenGL ES 2 instead of OpenGL ES 3"
     echo -e "\t-r      Rebuild instead of full build"
     echo -e "\t-v      Turns on verbose mode"
-    echo -e "\t-clang  Uses clang3.5 toolchain (experimental)"
+    #echo -e "\t-clang  Uses clang toolchain (experimental)"
     echo -e ""
     exit 0
 fi
@@ -144,7 +144,7 @@ do
 
         # Clang 3.5
         -clang)
-            TOOLCHAIN=clang35
+            TOOLCHAIN=clang
         ;;
 
         # Rebuild
