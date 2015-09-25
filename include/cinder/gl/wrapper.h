@@ -144,11 +144,11 @@ void enableDepthWrite( bool enable = true );
 //! Enables or disables writing to and reading / testing from depth buffer
 inline void enableDepth( bool enable = true ) { enableDepthRead( enable ); enableDepthWrite( enable ); }
 
-void enableStencilRead( bool enable = true );
-void disableStencilRead();
-void enableStencilWrite( bool enable = true );
-void disableStencilWrite();
-
+//! Enables or disables the stencil test operation, which controls reading and writing to the stencil buffer. Analagous to `glEnable( GL_STENCIL_TEST, enable );`
+void enableStencilTest( bool enable = true );
+//! Disables the stencil test operation. Analagous to `glEnable( GL_STENCIL_TEST, false );`
+void disableStencilTest();
+ 
 //! Sets the View and Projection matrices based on a Camera
 void setMatrices( const ci::Camera &cam );
 void setModelMatrix( const ci::mat4 &m );

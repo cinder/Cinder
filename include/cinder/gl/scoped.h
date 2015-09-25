@@ -276,7 +276,7 @@ struct ScopedDepthWrite : private Noncopyable {
 	//! Destructor returns state to how it was before this object was constructed.
 	~ScopedDepthWrite();
 
-private:
+  private:
 	Context		*mCtx;
 };
 
