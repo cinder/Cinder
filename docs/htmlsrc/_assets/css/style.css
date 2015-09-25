@@ -489,7 +489,7 @@ body#guide-contents .cols-2 .col > * {
 }
 .top .columns {
   padding: 0.7rem 1rem;
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 .top .columns:not(:last-child) {
   border-right: #fff 1px solid;
@@ -843,7 +843,7 @@ button.interactive-guide:focus {
 #side-nav section > ul {
   padding: 10px 0 0 0;
   max-height: 500px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 #side-nav section > ul ul {
   margin: 5px -15px 0;
