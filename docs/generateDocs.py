@@ -2854,10 +2854,7 @@ def update_links_abs(html, src_path):
     # css links
     for link in html.find_all("link"):
         if link.has_attr("href"):
-            print " "
-            print "  IN: " + link["href"]
             link["href"] = update_link_abs(link["href"], src_path)
-            print "  OUT: " + link["href"]
 
 
     # a links
@@ -2892,8 +2889,10 @@ def update_links_abs(html, src_path):
             iframe["src"] = new_link
 
 
-def abs_path_join(in_path, link):
-    """ return absolute path between 2 given absolute paths.
+def relative_url(in_path, link):
+    """
+    Generates a relative url from a absolute destination directory 
+    to an absolute file path
     """
 
     index = 0
@@ -2916,28 +2915,6 @@ def abs_path_join(in_path, link):
     path += SEPARATOR.join( s )
     return path
 
-
-def relative_url(in_path, link):
-    index = 0
-    SEPARATOR = "/"
-    d = in_path.split( SEPARATOR )
-    s = link.split( SEPARATOR )
-
-    # FIND largest substring match
-    for i, resource in enumerate( d ):
-        if resource != s[i]:
-            break
-        index += 1
-
-    # remainder of source
-    s = s[index:]
-    
-    backCount = len( d ) - index
-
-    path = "../" * backCount
-    path += SEPARATOR.join( s )
-    return path
-    
 
 def update_link_abs(link, in_path):
     """
@@ -2954,39 +2931,13 @@ def update_link_abs(link, in_path):
     in_path = in_path.replace('\\', SEPARATOR)
     base_path = BASE_PATH.replace('\\', SEPARATOR)
 
-    # base_path = BASE_PATH
-    # link = link.replace('/','\\')
-
-    # print "> BASE PATH: " + base_path
-    # print "> IN PATH:   " + in_path
-    # print "> LINK:      " + link
-
-    # # if a relative path, make it absolute
-    # if in_path.find(base_path) < 0:
-    # 	print "IN PATH IN:  " + in_path
-    #     in_path = urljoin(base_path, in_path)
-    #     print "IN PATH OUT: " + in_path
-
-    # # get absolute in path
-    # abs_link_path = abs_path_join(in_path, link)
-
-    # print "     MAKE ABSOLUTE PATH NOW > " + in_path
-    # print "                            > " + link
-    # print "                            > " + abs_link_path
-    # # raise
-
-    # return abs_link_path
-
-
-
     index = 0
     backs = 0
+    # SPLIT the url into a list of path parts
     r = in_path.split(SEPARATOR)
     r = filter(None, r)
     l = link.split(SEPARATOR)
     l = filter(None, l)
-
-    # find similarities between paths
 
     # FIND largest substring match
     for i, resource in enumerate( r ):
@@ -3010,8 +2961,7 @@ def update_link_abs(link, in_path):
         post = l[index:]
         final = SEPARATOR.join(pre) + SEPARATOR + SEPARATOR.join(post)
 
-    return final
-    
+    return final    
 
 
 def update_links(html, template_path, src_path, save_path):
@@ -3092,7 +3042,6 @@ def update_link(link, in_path, out_path):
     :return:
     """
 
-    # link = link.replace('/','\\')
     if link.startswith("http") or link.startswith("javascript:") or link.startswith("#"):
         return link
 
