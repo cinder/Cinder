@@ -107,7 +107,8 @@ void Earth::drawQuakes()
 
 void Earth::drawQuakeLabelsOnSphere( const vec3 &eyeNormal, const float eyeDist )
 {
-	gl::ScopedDepth depth( true, false );
+	gl::ScopedDepthTest depthTest( true );
+	gl::ScopedDepthWrite depthWrite( false );
 	gl::ScopedGlslProg shader( gl::getStockShader( gl::ShaderDef().color().texture() ) );
 
 	gl::ScopedColor color( 1, 1, 1 );

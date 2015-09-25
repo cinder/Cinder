@@ -92,7 +92,7 @@ void Picking3DApp::draw()
 	gl::setMatrices( mCamera );
 
 	// Enable depth buffer.
-	gl::ScopedDepth depth( true, true );
+	gl::ScopedDepth depth( true );
 
 	// Draw the grid on the floor.
 	{
