@@ -363,7 +363,7 @@ span.slash
 	
 	img.header-icon
 		display: inline-block
-		height: 55px
+		height: 35px
 		vertical-align: text-top
 		margin-right: 10px
 		float: left
@@ -407,13 +407,13 @@ span.slash
 			padding-bottom: 0.25em
 			margin-bottom: 30px
 				
-body.classes
+body.classes, body.namespaces
 		
 	h1 
 		display: inline-block
 		margin-bottom: 0
 		font-weight: 700
-		line-height: 1.25em
+		line-height: 1.0em
 		
 	.row .row
 		margin: 0
@@ -502,6 +502,10 @@ body.classes
 							padding-left: 68px
 							background-position: 41px -3px;
 							
+body.classes
+	img.header-icon
+		height: 45px
+		margin-top: 8px
 
 #container
 	
@@ -697,8 +701,9 @@ button.interactive-guide
 		text-transform: uppercase
 		
 	section
-		background: $light-gray
+		background: $gray-depth-3
 		margin-bottom: 20px
+		padding-bottom: 15px
 		
 		> label
 			background: $dark-gray-text
@@ -716,10 +721,6 @@ button.interactive-guide
 			ul
 				margin: 5px -15px 0
 				padding: 0
-				
-				li:last-child
-					padding-bottom: 8px
-
 		
 			li
 				// padding: 0 15px
@@ -748,7 +749,7 @@ button.interactive-guide
 
 	li.list-parent
 		padding-left: 15px
-		padding-bottom: 0;
+		// padding-bottom: 0;
 			
 		&:before
 			content: ''
@@ -762,8 +763,6 @@ button.interactive-guide
 			margin: 1px 5px 0 0
 			transform: rotate(90deg) translateZ(0)
 			transform-origin: 50% 50%;
-		
-	
 	
 	/*input[type="checkbox"] + label
 		margin-left: -18px*/
@@ -772,20 +771,41 @@ button.interactive-guide
 		margin-left: 0
 		
 	
-	.css-treeview
+	ul.css-treeview
 		
-		// font-size: 0.8em
-		
+		padding: 20px 0
+		margin-top: 15px
+
 		label
 			color: #fff
 			font-size: inherit
 			width: 100%
+			padding-left: 18px
+		
+		input
+			left: 18px
+			
+		label, li > a
+			margin: 5px 0
+			
+		li > a
+			padding-left: 36px
+			
+		ul
+			margin: 0
+		
 		
 		li
 			// margin-left: 18px
 			// margin-top: 5px;
 			// margin-bottom: 5px;
+			padding: 0
+			// padding: 0 15px 0 34px
 			
+			// &:not(.list-parent)
+				// padding: 0 0 0 18px
+				
+
 			&.list-parent::before
 				content: none
 			
@@ -811,12 +831,13 @@ button.interactive-guide
 		
 		transform: rotate(90deg) translateZ(0)
 		transform-origin: 50% 50%;
+	
 		
 	.css-treeview label
 		background-image: none
 		height: 20px
-		line-height: 20px	
-
+		line-height: 20px
+	
 
 .wrapper
 	min-height: 100%

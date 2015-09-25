@@ -462,7 +462,7 @@ body#guide-contents .cols-2 .col > * {
 }
 .top img.header-icon {
   display: inline-block;
-  height: 55px;
+  height: 35px;
   vertical-align: text-top;
   margin-right: 10px;
   float: left;
@@ -506,16 +506,19 @@ body#guide-contents .cols-2 .col > * {
   padding-bottom: 0.25em;
   margin-bottom: 30px;
 }
-body.classes h1 {
+body.classes h1,
+body.namespaces h1 {
   display: inline-block;
   margin-bottom: 0;
   font-weight: 700;
-  line-height: 1.25em;
+  line-height: 1em;
 }
-body.classes .row .row {
+body.classes .row .row,
+body.namespaces .row .row {
   margin: 0;
 }
-body.classes .info-links {
+body.classes .info-links,
+body.namespaces .info-links {
   margin-top: 30px;
   display: -webkit-box;
   display: -moz-box;
@@ -524,10 +527,12 @@ body.classes .info-links {
   display: box;
   display: flex;
 }
-body.classes .info-links .columns + .columns:last-child {
+body.classes .info-links .columns + .columns:last-child,
+body.namespaces .info-links .columns + .columns:last-child {
   float: left;
 }
-body.classes .info-links label {
+body.classes .info-links label,
+body.namespaces .info-links label {
   color: #585858;
   font-weight: 700;
   font-size: 1em;
@@ -535,44 +540,54 @@ body.classes .info-links label {
   margin-bottom: 5px;
   border-bottom: 3px solid #ebebeb;
 }
-body.classes .info-links .ns {
+body.classes .info-links .ns,
+body.namespaces .info-links .ns {
   display: block;
   color: #a41c12;
   line-height: 1em;
 }
-body.classes .info-links .ns .link:not(:last-child):after {
+body.classes .info-links .ns .link:not(:last-child):after,
+body.namespaces .info-links .ns .link:not(:last-child):after {
   content: "::";
 }
-body.classes .info-links .side a {
+body.classes .info-links .side a,
+body.namespaces .info-links .side a {
   font-weight: normal;
 }
-body.classes .info-links .side h4 {
+body.classes .info-links .side h4,
+body.namespaces .info-links .side h4 {
   font-weight: 700;
   margin-bottom: 6px;
 }
-body.classes .info-links .side .row {
+body.classes .info-links .side .row,
+body.namespaces .info-links .side .row {
   border: 1px solid #f0f0f0;
   padding: 10px 25px;
   margin-bottom: 2px;
   margin-right: 0;
   position: relative;
 }
-body.classes .info-links .side .row:nth-child(even) {
+body.classes .info-links .side .row:nth-child(even),
+body.namespaces .info-links .side .row:nth-child(even) {
   background: #ebebeb;
 }
-body.classes .info-links .side .row:nth-child(odd) {
+body.classes .info-links .side .row:nth-child(odd),
+body.namespaces .info-links .side .row:nth-child(odd) {
   background: #f5f5f5;
   border-color: #f5f5f5;
 }
-body.classes .info-links .side .row:nth-child(odd):first-child {
+body.classes .info-links .side .row:nth-child(odd):first-child,
+body.namespaces .info-links .side .row:nth-child(odd):first-child {
   background: #fff;
 }
-body.classes .info-links .side ul {
+body.classes .info-links .side ul,
+body.namespaces .info-links .side ul {
   margin-bottom: 0;
   padding: 0;
   text-indent: 0;
 }
-body.classes .info-links .side ul.inheritence li {
+body.classes .info-links .side ul.inheritence li,
+body.namespaces .info-links .side ul.inheritence li {
   background-image: url("../images/class_node_parent_and_child_2x.png");
   background-position: -15px -3px;
   background-repeat: no-repeat;
@@ -580,27 +595,37 @@ body.classes .info-links .side ul.inheritence li {
   -moz-background-size: 48px 29px;
   background-size: 48px 29px;
 }
-body.classes .info-links .side ul.inheritence li:last-of-type {
+body.classes .info-links .side ul.inheritence li:last-of-type,
+body.namespaces .info-links .side ul.inheritence li:last-of-type {
   background-image: url("../images/class_node_subclass_last_child_2x.png");
 }
-body.classes .info-links .side ul.inheritence li.depth1 {
+body.classes .info-links .side ul.inheritence li.depth1,
+body.namespaces .info-links .side ul.inheritence li.depth1 {
   padding-left: 12px;
 }
-body.classes .info-links .side ul.inheritence li.depth2 {
+body.classes .info-links .side ul.inheritence li.depth2,
+body.namespaces .info-links .side ul.inheritence li.depth2 {
   padding-left: 26px;
   background-position: -1px -3px;
 }
-body.classes .info-links .side ul.inheritence li.depth3 {
+body.classes .info-links .side ul.inheritence li.depth3,
+body.namespaces .info-links .side ul.inheritence li.depth3 {
   padding-left: 40px;
   background-position: 13px -3px;
 }
-body.classes .info-links .side ul.inheritence li.depth4 {
+body.classes .info-links .side ul.inheritence li.depth4,
+body.namespaces .info-links .side ul.inheritence li.depth4 {
   padding-left: 54px;
   background-position: 27px -3px;
 }
-body.classes .info-links .side ul.inheritence li.depth5 {
+body.classes .info-links .side ul.inheritence li.depth5,
+body.namespaces .info-links .side ul.inheritence li.depth5 {
   padding-left: 68px;
   background-position: 41px -3px;
+}
+body.classes img.header-icon {
+  height: 45px;
+  margin-top: 8px;
 }
 #container .reference-lists {
   word-wrap: break-word;
@@ -803,8 +828,9 @@ button.interactive-guide:focus {
   text-transform: uppercase;
 }
 #side-nav section {
-  background: #f2f2f2;
+  background: #f8f8f8;
   margin-bottom: 20px;
+  padding-bottom: 15px;
 }
 #side-nav section > label {
   background: #333;
@@ -822,9 +848,6 @@ button.interactive-guide:focus {
 #side-nav section > ul ul {
   margin: 5px -15px 0;
   padding: 0;
-}
-#side-nav section > ul ul li:last-child {
-  padding-bottom: 8px;
 }
 #side-nav section > ul li {
   line-height: 1.3em;
@@ -847,7 +870,6 @@ button.interactive-guide:focus {
 }
 #side-nav li.list-parent {
   padding-left: 15px;
-  padding-bottom: 0;
 }
 #side-nav li.list-parent:before {
   content: '';
@@ -876,22 +898,43 @@ button.interactive-guide:focus {
 #side-nav input[type="radio"] + label {
   margin-left: 0;
 }
-#side-nav .css-treeview label {
+#side-nav ul.css-treeview {
+  padding: 20px 0;
+  margin-top: 15px;
+}
+#side-nav ul.css-treeview label {
   color: #fff;
   font-size: inherit;
   width: 100%;
+  padding-left: 18px;
 }
-#side-nav .css-treeview li.list-parent::before {
+#side-nav ul.css-treeview input {
+  left: 18px;
+}
+#side-nav ul.css-treeview label,
+#side-nav ul.css-treeview li > a {
+  margin: 5px 0;
+}
+#side-nav ul.css-treeview li > a {
+  padding-left: 36px;
+}
+#side-nav ul.css-treeview ul {
+  margin: 0;
+}
+#side-nav ul.css-treeview li {
+  padding: 0;
+}
+#side-nav ul.css-treeview li.list-parent::before {
   content: none;
 }
-#side-nav .css-treeview li a {
+#side-nav ul.css-treeview li a {
   color: #a41c12;
 }
-#side-nav .css-treeview li.active {
+#side-nav ul.css-treeview li.active {
   background-color: #a41c12;
 }
-#side-nav .css-treeview li.active >label a,
-#side-nav .css-treeview li.active >a {
+#side-nav ul.css-treeview li.active >label a,
+#side-nav ul.css-treeview li.active >a {
   color: #fff;
 }
 #side-nav .css-treeview label::before {
