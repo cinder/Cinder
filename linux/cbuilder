@@ -97,6 +97,13 @@ do
 			shift 1
         ;;
 
+		# Raspberry Pi 2
+		-rpi2)
+			RPI2="-DCINDER_LINUX_EGL_RPI2=1"
+			GLES="-DCINDER_GL_ES_2=1"
+			shift 1
+		;;
+
         # Rebuild
         -r)
 			FULLBUILD=false
@@ -144,7 +151,7 @@ for build in ${BUILDTYPES[@]}; do
 
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ]; then
-		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES}
+		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2}
 	fi
 	make -j ${NUMPROCS} VERBOSE=1
 
