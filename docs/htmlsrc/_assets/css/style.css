@@ -830,7 +830,6 @@ button.interactive-guide:focus {
 #side-nav section {
   background: #f8f8f8;
   margin-bottom: 20px;
-  padding-bottom: 15px;
 }
 #side-nav section > label {
   background: #333;
@@ -841,7 +840,7 @@ button.interactive-guide:focus {
   font-weight: 700;
 }
 #side-nav section > ul {
-  padding: 10px 0 0 0;
+  padding: 0;
   max-height: 500px;
   overflow-y: auto;
 }
@@ -850,12 +849,19 @@ button.interactive-guide:focus {
   padding: 0;
 }
 #side-nav section > ul li {
+  padding: 0;
   line-height: 1.3em;
 }
 #side-nav section > ul li > a {
   display: inline-block;
   padding-left: 36px;
   margin: 5px 0;
+}
+#side-nav section > ul > li:first-child {
+  padding-top: 5px;
+}
+#side-nav section > ul > li:last-child {
+  padding-bottom: 5px;
 }
 #side-nav section li.active {
   background-color: #a41c12;
@@ -911,7 +917,6 @@ button.interactive-guide:focus {
 }
 #side-nav ul.css-treeview {
   padding: 20px 0;
-  margin-top: 15px;
 }
 #side-nav ul.css-treeview label {
   color: #fff;

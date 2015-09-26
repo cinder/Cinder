@@ -685,7 +685,6 @@ button.interactive-guide
 	width: 300px
 	left: auto
 	padding: 40px 0 0 0
-	// padding: 0
 	
 	h3
 		color: $cinder-red
@@ -695,7 +694,6 @@ button.interactive-guide
 	section
 		background: $gray-depth-3
 		margin-bottom: 20px
-		padding-bottom: 15px
 		
 		> label
 			background: $dark-gray-text
@@ -706,7 +704,7 @@ button.interactive-guide
 			font-weight: 700
 		
 		> ul
-			padding: 10px 0 0 0
+			padding: 0
 			max-height: 500px
 			overflow-y: auto
 			
@@ -715,7 +713,7 @@ button.interactive-guide
 				padding: 0
 		
 			li
-				// padding: 0 15px
+				padding: 0
 				line-height: 1.3em
 				// padding: 4px 15px 4px 15px + 19px
 				// margin: 7px 0
@@ -724,6 +722,12 @@ button.interactive-guide
 					display: inline-block
 					padding-left: 36px
 					margin: 5px 0
+			
+			& > li:first-child
+				padding-top: 5px
+				
+			& > li:last-child
+				padding-bottom: 5px
 					
 		li.active			
 			background-color: $cinder-red
@@ -776,7 +780,7 @@ button.interactive-guide
 	ul.css-treeview
 		
 		padding: 20px 0
-		margin-top: 15px
+		// margin-top: 15px
 
 		label
 			color: #fff
@@ -797,8 +801,8 @@ button.interactive-guide
 			margin: 0
 		
 		li
-			padding: 0		
-
+			padding: 0
+			
 			&.list-parent::before
 				content: none
 			
