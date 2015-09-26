@@ -3,6 +3,7 @@ $(document).ready(function() {
 
 	var _this = this;
 	var rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf('html/')+5);
+	var windowHeight = window.innerHeight;
 
 	var cinderJs = {
 		/*
@@ -84,7 +85,11 @@ $(document).ready(function() {
 	};
 
 
-	// Side Nav functions
+	/*
+	* --------------------------------------------------------------------------
+	*  Side Nav
+	* --------------------------------------------------------------------------
+	*/
 	var sideNav = {
 		main: null,
 		sections: [],
@@ -159,7 +164,7 @@ $(document).ready(function() {
 				$( $( this.sections[0] ).find( 'ul' )[0] ).css( "max-height", window.innerHeight - 100 );
 			}
 		}
-	}
+	};
 
 	// look for all dom items with class
 
@@ -220,22 +225,50 @@ $(document).ready(function() {
 
  	// --- Search stuff --- // 
  	window.search = function (term) {
-	       
-	    var results = search_index.search(term); 
+	     
 		var resultsDiv = $('#search-results');
-		var classResults = $('#search-results-class');
-		var guideResults = $('#search-results-guide');
-		var classResultsUl = classResults.find('ul');
-		var guideResultsUl = guideResults.find('ul');
+	    // the search term must be at least 2 characters
+	    if( term.length < 2 ){
+	    	resultsDiv.hide();
+	    	return;
+	    }
 
-		classResultsUl.empty();
-		guideResultsUl.empty();
+	    var maxResults = 15;
+	    var listPopulation = 0;
+
+	    var results = search_index.search(term); 
+
+		var classResults = $('#search-results-class'),
+			guideResults = $('#search-results-guide'),
+			nsResults = $('#search-results-namespace'),
+			refResults = $('#search-results-reference'),
+			moduleResults = $('#search-results-module');
+
+		var classResultsUl = classResults.find('ul'),
+			guideResultsUl = guideResults.find('ul');
+			nsResultsUl = nsResults.find('ul');
+			refResultsUl = refResults.find('ul');
+			moduleResultsUl = moduleResults.find('ul');
+
+		var uls = [classResultsUl, guideResultsUl, nsResultsUl, refResultsUl, moduleResultsUl];
+		var amtList = _.range( uls.length ).map(function () { return 0; });
+
+		var appendResult = function(ul, li){
+			var index = uls.indexOf(ul);
+			amtList[index]++;
+			ul.append(li);
+		};
+
+		// empty out the uls
+		_.each( uls, function(ul) {
+			ul.empty();
+		});
 
 		if( results.length > 0 ){
 			resultsDiv.show();
 		} else {
 			resultsDiv.hide();
-			return false
+			return false;
 		}
 
 		console.log ( 'results', results.length );
@@ -249,28 +282,53 @@ $(document).ready(function() {
 			var type = data.type;
 			var a = $("<a href=" + link + "> " + data.title + " | " + type + "</a>" );
 			li.append(a);
-			// li.append(" score: " +  result.score + "</b> ->" );
-			// li.append(data.link);
-			if ( type == 'class' || type == 'struct') {
-				classResultsUl.append( li );
-			} else if (type == 'guide') {
-				guideResultsUl.append( li );
+			
+
+			switch( type ){
+				case 'class':
+				case 'struct':
+					appendResult( classResultsUl, li );
+					break;
+
+				case 'guide':
+					appendResult( guideResultsUl, li );
+					break;
+
+				case 'namespace':
+					appendResult( nsResultsUl, li );
+					break;
+
+				case 'reference':
+					appendResult( refResultsUl, li );
+					break;
+
+				case 'module':
+					appendResult( moduleResultsUl, li );
+					break;
 			}
 		}
 
-		if (classResultsUl.find('li').length == 0) {
-			classResults.hide();
-		} else {
-			classResults.show();
-		}
+		// remove empty values
+		amtList = _.filter(amtList, function(val){ return val > 0; });
 
-		if (guideResultsUl.find('li').length == 0) {
-			guideResults.hide();
-		} else {
-			guideResults.show();
-		}
+		// find the max amount per category based on the number of results and the amount of populated categories
+		var categoryMax = Math.floor(Math.min(maxResults, results.length) / amtList.length);
+
+		// for each list in the array, only show if they have content
+		_.each( uls, function( ul ) {
+			var liArr = ul.find('li');
+			var listLen = liArr.length;
+			if( listLen == 0) {
+				ul.parent().hide();
+			}else{
+				// remove extras
+				ul.find('li').slice(categoryMax, listLen).remove();
+				ul.parent().show();
+			}
+		});
 	};
 
+	
 	var input = document.querySelector('#search-input');
 	if( input ){
 		input.addEventListener('input', function()
@@ -344,7 +402,9 @@ $(document).ready(function() {
 
 	// listen for resize
 	$( window ).on( 'resize', function(){
+		windowHeight = window.innerHeight;
 		sideNav.resize();
+		$('#search-results').css('max-height', windowHeight - 100);
 	} );
  	return cinderJs;
  } );

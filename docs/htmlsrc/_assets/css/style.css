@@ -1127,7 +1127,8 @@ footer {
   position: absolute;
   right: 0;
   z-index: 99999;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scroll;
   top: 30px;
   -webkit-border-radius: 10px;
   border-radius: 10px;
