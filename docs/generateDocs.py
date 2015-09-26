@@ -2856,7 +2856,6 @@ def update_links_abs(html, src_path):
         if link.has_attr("href"):
             link["href"] = update_link_abs(link["href"], src_path)
 
-
     # a links
     for a in html.find_all("a"):
         if a.has_attr("href"):
@@ -2929,7 +2928,6 @@ def update_link_abs(link, in_path):
 
     SEPARATOR = "/"
     in_path = in_path.replace('\\', SEPARATOR)
-    base_path = BASE_PATH.replace('\\', SEPARATOR)
 
     index = 0
     backs = 0
@@ -2973,6 +2971,8 @@ def update_links(html, template_path, src_path, save_path):
     :return:
     """
 
+    template_path = posixpath.dirname(template_path) + "/"
+
     # css links
     for link in html.find_all("link"):
         if link.has_attr("href"):
@@ -3004,6 +3004,8 @@ def update_links(html, template_path, src_path, save_path):
         if iframe.has_attr("src"):
 
             link_src = iframe["src"]
+            if not posixpath.isabs(link_src):
+                link_src = "/" + link_src
             if link_src.startswith('javascript') or link_src.startswith('http'):
                 return
 
@@ -3025,7 +3027,7 @@ def update_links(html, template_path, src_path, save_path):
                 if SM(None, src_file, dest_file).ratio() < 1.0:
                     shutil.copy2(src_file, dest_file)
             except IOError as e:
-                log("Cannot copy src_file because it doesn't exist", 2)
+                log("Cannot copy src_file because it doesn't exist: " + src_file, 2)
                 log(e.strerror, 2)
                 return
             except Exception as e:
@@ -3064,6 +3066,9 @@ def update_link(link, in_path, out_path):
 
     abs_dest = posixpath.dirname(out_path).replace('\\', SEPARATOR)
     abs_link = abs_link_path.replace(src_base, dest_base)
+    if not posixpath.isabs(abs_link):
+        abs_link = "/" + abs_link
+
     rel_link_path = relative_url(abs_dest, abs_link)
 
     return rel_link_path
