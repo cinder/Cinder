@@ -88,9 +88,9 @@ do
         ;;
 
         # Rebuild
-        #-r)
-		#	FULLBUILD=false
-        #;;
+        -r)
+			FULLBUILD=false
+        ;;
 	esac
 
     # Shift
@@ -134,7 +134,9 @@ for build in ${BUILDTYPES[@]}; do
 	fi
 
 	cd ${build_dir}
-	cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${ES2}
+	if [ ${FULLBUILD} == true ]; then
+		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${ES2}
+	fi
 	make -j ${NUMPROCS} VERBOSE=1
 
 	echo -e ""

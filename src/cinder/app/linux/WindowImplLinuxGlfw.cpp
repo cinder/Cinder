@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-//#include "cinder/app/RendererGl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/app/linux/WindowImplLinux.h"
 #include "cinder/app/linux/AppImplLinux.h"
 
@@ -32,6 +32,11 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 {
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
+
+#if defined( CINDER_GL_ES )
+	::glfwDefaultWindowHints();
+	::glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
+#endif
 
 	auto windowSize = format.getSize();
 	mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );

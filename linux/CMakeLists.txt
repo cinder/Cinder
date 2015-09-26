@@ -299,9 +299,6 @@ list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 
-    ${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
-    ${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
-
     ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
     ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp
     ${CINDER_SRC_DIR}/cinder/ip/Fill.cpp
