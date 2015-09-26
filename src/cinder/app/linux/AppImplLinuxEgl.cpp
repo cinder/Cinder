@@ -244,6 +244,13 @@ ivec2 AppImplLinux::getMousePos() const
 	return mActiveWindow->getImpl()->getMousePos();	
 }
 
+#if defined( CINDER_LINUX_EGL_ONLY )
+ivec2 AppImplLinux::getDefaultDisplaySize() const
+{
+	return mDefaultDisplaySize;
+}
+#endif
+
 void AppImplLinux::registerInput( WindowImplLinux* window )
 {
 }
