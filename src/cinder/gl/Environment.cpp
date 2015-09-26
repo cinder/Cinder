@@ -165,8 +165,20 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 
 	shared_ptr<Context::PlatformData> platformData( new PlatformDataAndroid( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );
 #elif defined( CINDER_LINUX )
+  #if defined( CINDER_LINUX_EGL_ONLY )
+	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataAndroid>( sharedContext->getPlatformData() );
+	EGLContext prevEglContext = ::eglGetCurrentContext();
+	EGLDisplay prevEglDisplay = ::eglGetCurrentDisplay();
+	EGLSurface prevEglSurface = ::eglGetCurrentSurface( EGL_DRAW );
+
+	EGLint surfaceAttribList[] = { EGL_NONE, EGL_NONE };
+	EGLContext eglContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
+
+	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );	
+  #else
 	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
   	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedContextPlatformData->mContext ) );
+  #endif
 #endif
 
 	ContextRef result( new Context( platformData ) );
