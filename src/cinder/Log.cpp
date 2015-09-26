@@ -200,25 +200,11 @@ void LoggerMulti::write( const Metadata &meta, const string &text )
 // ----------------------------------------------------------------------------------------------------
 
 LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
-	: mFilePath( filePath ), mAppend( appendToExisting ), mRotating( false )
+: mFilePath( filePath ), mAppend( appendToExisting )
 {
 	if( mFilePath.empty() )
 		mFilePath = getDefaultLogFilePath();
-
-	setTimestampEnabled();
-}
-
-LoggerFile::LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
-	: mFolderPath( folder ), mDailyFormatStr( formatStr ), mAppend( appendToExisting ), mRotating( true )
-{
-	CI_ASSERT_MSG( ! formatStr.empty(), "cannot provide empty formatStr" );
 	
-	if( mFolderPath.empty() )
-		mFolderPath = getDefaultLogFilePath().parent_path();
-
-	mYearDay = getCurrentYearDay();
-	mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
-
 	setTimestampEnabled();
 }
 
@@ -230,14 +216,6 @@ LoggerFile::~LoggerFile()
 
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
-	if( mRotating && mYearDay != getCurrentYearDay() ) {
-		mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
-		mYearDay = getCurrentYearDay();
-
-		if( mStream.is_open() )
-			mStream.close();
-	}
-
 	if( ! mStream.is_open() ) {
 		ensureDirectoryExists();
 		mAppend ? mStream.open( mFilePath.string(), std::ofstream::app ) : mStream.open( mFilePath.string() );
@@ -265,6 +243,42 @@ void LoggerFile::ensureDirectoryExists()
 			cerr << "ci::log::LoggerFile error: Unable to create folder \"" << dir.string() << "\"" << endl;
 		}
 	}
+}
+
+// ----------------------------------------------------------------------------------------------------
+// MARK: - LoggerFileRotating
+// ----------------------------------------------------------------------------------------------------
+
+LoggerFileRotating::LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
+: mFolderPath( folder ), mDailyFormatStr( formatStr )
+{
+	CI_ASSERT_MSG( ! formatStr.empty(), "cannot provide empty formatStr" );
+	if( formatStr.empty() ) {
+		return;
+	}
+	
+	if( mFolderPath.empty() ) {
+		mFolderPath = getDefaultLogFilePath().parent_path();
+	}
+	
+	mAppend = appendToExisting;
+	mYearDay = getCurrentYearDay();
+	mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
+	
+	setTimestampEnabled();
+}
+
+void LoggerFileRotating::write( const Metadata &meta, const string &text )
+{
+	if( mYearDay != getCurrentYearDay() ) {
+		mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
+		mYearDay = getCurrentYearDay();
+		
+		if( mStream.is_open() )
+			mStream.close();
+	}
+	
+	LoggerFile::write( meta, text );
 }
 
 // ----------------------------------------------------------------------------------------------------

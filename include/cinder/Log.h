@@ -101,10 +101,7 @@ class LoggerFile : public Logger {
 	// Standard loggerFile, will write to a single log file.  File appending is configurable.
 	// ! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	// daily rotating logger, will write to a formatted log file, updated at the first log request
-	// after midnight.
-	// ! If \a folder or \a formatStr are empty, ignores request
-	LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+
 	virtual ~LoggerFile();
 
 	void write( const Metadata &meta, const std::string &text ) override;
@@ -116,14 +113,24 @@ class LoggerFile : public Logger {
 	void		ensureDirectoryExists();
 
 	fs::path		mFilePath;
-	fs::path		mFolderPath;
-	std::string		mDailyFormatStr;
-	int				mYearDay;
 	bool			mAppend;
-	bool			mRotating;
 	std::ofstream	mStream;
 };
 
+class LoggerFileRotating : public LoggerFile {
+public:
+	LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+	
+	virtual ~LoggerFileRotating() { }
+	
+	void write( const Metadata &meta, const std::string &text ) override;
+	
+protected:
+	fs::path		mFolderPath;
+	std::string		mDailyFormatStr;
+	int				mYearDay;
+};
+	
 //! Logger that doesn't actually print anything, but triggers a breakpoint if a log event happens past a specified threshold
 class LoggerBreakpoint : public Logger {
   public:
