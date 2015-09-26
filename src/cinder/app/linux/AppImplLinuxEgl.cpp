@@ -51,7 +51,6 @@ AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 		std::exit( 1 );
 	}
 	mDefaultDisplaySize = ivec2( displaySizeX, displaySizeY );
-std::cout << "Default Display Size:" << mDefaultDisplaySize << std::endl;
 
 	mFrameRate = settings.getFrameRate();
 	mFrameRateEnabled = settings.isFrameRateEnabled();
@@ -136,6 +135,7 @@ void AppImplLinux::run()
 		// @TODO: Add event handling
 		int character = -1;
 		if( keyPressed( &character ) ) {
+			keyboardReset();
 			mShouldQuit = true;
 		}
 

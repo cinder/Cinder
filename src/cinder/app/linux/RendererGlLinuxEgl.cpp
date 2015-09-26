@@ -28,6 +28,7 @@
 #include "cinder/gl/Environment.h"
 
 #include <bcm_host.h>
+#include <EGL/egl.h>
 
 namespace cinder { namespace app {
 
@@ -53,16 +54,11 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 	configAttribs.push_back( EGL_RED_SIZE        ); configAttribs.push_back( 8 );
 	configAttribs.push_back( EGL_GREEN_SIZE      ); configAttribs.push_back( 8 );
 	configAttribs.push_back( EGL_BLUE_SIZE       ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_ALPHA_SIZE      ); configAttribs.push_back( EGL_DONT_CARE );
+	configAttribs.push_back( EGL_ALPHA_SIZE      ); configAttribs.push_back( 8 );
 	configAttribs.push_back( EGL_DEPTH_SIZE      ); configAttribs.push_back( mRenderer->getOptions().getDepthBufferDepth() );
 	configAttribs.push_back( EGL_STENCIL_SIZE    ); configAttribs.push_back( mRenderer->getOptions().getStencil() ? 8 : EGL_DONT_CARE );
 	configAttribs.push_back( EGL_SAMPLE_BUFFERS  ); configAttribs.push_back( 1 );
 	configAttribs.push_back( EGL_NONE            );
-
-	EGLint surfaceAttribList[] =
-	{
-		EGL_NONE, EGL_NONE
-	};
 
 	mDisplay = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 	if( mDisplay == EGL_NO_DISPLAY) {
@@ -84,40 +80,6 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 		return false;
 	}
 
-
-	EGL_DISPMANX_WINDOW_T* natvieWindow = reinterpret_cast<EGL_DISPMANX_WINDOW_T*>( window );
-	
-	DISPMANX_DISPLAY_HANDLE_T 	display = vc_dispmanx_display_open( 0 );
-	DISPMANX_UPDATE_HANDLE_T  	update  = vc_dispmanx_update_start( 0 );
-	int32_t 					layer = 0;
-	VC_RECT_T					dst_rect = { 0, 0, natvieWindow->width, natvieWindow->height };
-	DISPMANX_RESOURCE_HANDLE_T	src = 0;
-	VC_RECT_T					src_rect = { 0, 0, natvieWindow->width << 16, natvieWindow->height << 16 };
-	DISPMANX_PROTECTION_T 		protection = DISPMANX_PROTECTION_NONE;
-	VC_DISPMANX_ALPHA_T*		alpha = 0;
-	DISPMANX_CLAMP_T*			clamp = 0;
-	DISPMANX_TRANSFORM_T 		transform = 0;
-	
-	natvieWindow->element = vc_dispmanx_element_add( 
-		display, 
-		update,
-		layer,
-		&dst_rect, 
-		src,
-		&src_rect, 
-		protection, 
-		alpha, 
-		clamp, 
-		transform 
-	);	
-
-	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, NULL );
-
-	auto err = eglGetError();
-	if( err != EGL_SUCCESS ) {
-		return false;
-	}
-
 	EGLint contextAttibutes[] = {
 #if defined( CINDER_GL_ES_3 )
 		EGL_CONTEXT_CLIENT_VERSION, 3,
@@ -127,11 +89,47 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 		EGL_NONE
 	};
 
-	mContext = eglCreateContext( mDisplay, mConfig, NULL, contextAttibutes );
+	// Create context
+	mContext = eglCreateContext( mDisplay, mConfig, EGL_NO_CONTEXT, contextAttibutes );
 	if( eglGetError() != EGL_SUCCESS ) {
 		return false;
 	}
 	checkGlStatus();
+
+	// Create window surface
+	EGL_DISPMANX_WINDOW_T* nativeWindow = reinterpret_cast<EGL_DISPMANX_WINDOW_T*>( window );
+
+	DISPMANX_UPDATE_HANDLE_T  	update  = vc_dispmanx_update_start( 0 );
+	DISPMANX_DISPLAY_HANDLE_T 	display = vc_dispmanx_display_open( 0 );
+	int32_t 					layer = 0;
+	VC_RECT_T					dst_rect = { 0, 0, nativeWindow->width, nativeWindow->height };
+	DISPMANX_RESOURCE_HANDLE_T	src = 0;
+	VC_RECT_T					src_rect = { 0, 0, nativeWindow->width << 16, nativeWindow->height << 16 };
+	DISPMANX_PROTECTION_T 		protection = DISPMANX_PROTECTION_NONE;
+	VC_DISPMANX_ALPHA_T			alpha = { DISPMANX_FLAGS_ALPHA_FIXED_ALL_PIXELS, 255, 0 };
+	DISPMANX_CLAMP_T*			clamp = 0;
+	DISPMANX_TRANSFORM_T 		transform = (DISPMANX_TRANSFORM_T)0;
+	
+	nativeWindow->element = vc_dispmanx_element_add( 
+		update,
+		display, 
+		layer,
+		&dst_rect, 
+		src,
+		&src_rect, 
+		protection, 
+		&alpha, 
+		clamp, 
+		transform 
+	);	
+
+	vc_dispmanx_update_submit_sync( update );
+
+	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, NULL );
+	auto err = eglGetError();
+	if( err != EGL_SUCCESS ) {
+		return false;
+	}
 
 	eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
 	if( eglGetError() != EGL_SUCCESS ) {
@@ -143,28 +141,17 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 	gl::env()->initializeFunctionPointers();
 	checkGlStatus();
 
-	std::shared_ptr<gl::PlatformDataAndroid> platformData( new gl::PlatformDataAndroid( mContext, mDisplay, mSurface, mConfig ) );
+	std::shared_ptr<gl::PlatformDataLinux> platformData( new gl::PlatformDataLinux( mContext, mDisplay, mSurface, mConfig ) );
 	platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
 
 	mCinderContext = gl::Context::createFromExisting( platformData );
 	checkGlStatus();
 
-	// Get device screen size
-	{
-		EGLint width;
-		EGLint height;
-		eglQuerySurface( mDisplay, mSurface, EGL_WIDTH, &width );
-		eglQuerySurface( mDisplay, mSurface, EGL_HEIGHT, &height );
-		RendererGlAndroid::sSurfaceSize = ivec2( width, height );
-	}
-
 	mCinderContext->makeCurrent();
 	checkGlStatus();
 
-	// NOTE: 'interval' value of 0 causes the Samsung S6 to not render correctly on startup.
-	//
-	eglSwapInterval( mDisplay, 1 );
-	checkGlStatus();
+	//eglSwapInterval( mDisplay, 1 );
+	//checkGlStatus();
 
 	return true;
 }
@@ -200,16 +187,16 @@ void RendererGlLinux::makeCurrentContext( bool force )
 
 void checkGlStatus()
 {
-#if DEBUG_GL
-	EGLint lastEglError = getEglError();
+#if defined( DEBUG_GL )
+	EGLint lastEglError = ci::gl::getEglError();
 	if( lastEglError != EGL_SUCCESS ) {
-		ci::app::console() << "EGL ERROR: " << getEglErrorString( lastEglError ) << std::endl;
-		CI_BREAK();
+		std::cout << "EGL ERROR: " << ci::gl::getEglErrorString( lastEglError ) << std::endl;
+		//CI_BREAK();
 	}
 
 	GLenum lastGlError = ci::gl::getError();
 	if( lastGlError != GL_NO_ERROR ) {
-		ci::app::console() << "GL ERROR: " << ci::gl::getErrorString( lastGlError ) << std::endl;
+		std::cout << "GL ERROR: " << ci::gl::getErrorString( lastGlError ) << std::endl;
 	}
 #endif // DEBUG_GL
 }
