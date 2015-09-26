@@ -38,10 +38,11 @@ $(document).ready(function() {
 	 		if( !hash )
 	 			return;
 	 		// find section with this hash
-	 		var linkTag = $('a[name='+hash+']') || $('a[id='+hash+']');
+	 		var linkTag = $('a[name='+hash+']')[0] || $('a[id='+hash+']');
 	 		if( linkTag ) {
+	 			linkTag = linkTag[0];
 		 		// find parent
-		 		var linkParent = $(linkTag[0].parentNode);
+		 		var linkParent = $(linkTag.parentNode);
 		 		// toggle show for this section
 		 		linkParent.removeClass("hidden");
 	 		};
@@ -158,7 +159,7 @@ $(document).ready(function() {
 				$( $( this.sections[0] ).find( 'ul' )[0] ).css( "max-height", window.innerHeight - 100 );
 			}
 		}
-	};
+	}
 
 	// look for all dom items with class
 
@@ -222,17 +223,25 @@ $(document).ready(function() {
 	       
 	    var results = search_index.search(term); 
 		var resultsDiv = $('#search-results');
-		var resultsUl = $( "<ul>" );
-		var viewAllResults = '<div id="search-results-view-all"><a href="#">View All Results &raquo;</a></div>';
+		var classResults = $('#search-results-class');
+		var guideResults = $('#search-results-guide');
+		var classResultsUl = classResults.find('ul');
+		var guideResultsUl = guideResults.find('ul');
 
-		resultsDiv.empty();
+		classResultsUl.empty();
+		guideResultsUl.empty();
+
 		if( results.length > 0 ){
-			resultsDiv.append( resultsUl, viewAllResults );
+			resultsDiv.show();
+		} else {
+			resultsDiv.hide();
+			return false
 		}
+
+		console.log ( 'results', results.length );
 
 		// resultsDiv.append( resultsUl );
 		for( var i in results ){
-			
 			var li = $("<li>");
 			var result = results[i];
 			var data = search_index_data.data[result.ref];
@@ -242,12 +251,23 @@ $(document).ready(function() {
 			li.append(a);
 			// li.append(" score: " +  result.score + "</b> ->" );
 			// li.append(data.link);
-			resultsUl.append( li );
+			if ( type == 'class' || type == 'struct') {
+				classResultsUl.append( li );
+			} else if (type == 'guide') {
+				guideResultsUl.append( li );
+			}
 		}
 
-		// hide view all results append when search is empty or no results
-		if(!$('#search-input').val() || $('#search-results ul').children().length <= 0) {
-			$('#search-results-view-all').hide();
+		if (classResultsUl.find('li').length == 0) {
+			classResults.hide();
+		} else {
+			classResults.show();
+		}
+
+		if (guideResultsUl.find('li').length == 0) {
+			guideResults.hide();
+		} else {
+			guideResults.show();
 		}
 	};
 

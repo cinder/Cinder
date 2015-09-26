@@ -1087,6 +1087,7 @@ footer {
   margin-bottom: 0;
   width: 100%;
   font-size: 12px;
+  font-weight: bold;
   height: 30px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -1111,7 +1112,7 @@ footer {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 0;
+  left: 2px;
   font-size: 30px;
   -webkit-transform: rotate(90deg);
   -moz-transform: rotate(90deg);
@@ -1121,46 +1122,70 @@ footer {
   color: #cb791c;
 }
 #nav_search > #search #search-results {
+  display: none;
   background-color: #fff;
   position: absolute;
   right: 0;
   z-index: 99999;
-  display: block;
-  max-height: 80vh;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  overflow: hidden;
   top: 30px;
   -webkit-border-radius: 10px;
   border-radius: 10px;
   width: 400px;
 }
+#nav_search > #search #search-results .relativeContainer {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+#nav_search > #search #search-results h5 {
+  display: inline-block;
+  background: #949494;
+  margin: 10px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
 #nav_search > #search #search-results ul {
-  margin-left: 0;
+  margin: 0;
+  padding: 0;
 }
 #nav_search > #search #search-results ul li {
   height: auto;
-  padding: 10px 0 10px 10px;
-  margin-right: 0;
+  padding: 0 0 0 10px;
+  margin: 0;
   font-size: 12px;
   background: transparent;
   width: 100%;
 }
 #nav_search > #search #search-results ul li:hover,
 #nav_search > #search #search-results ul li:hover a {
-  background: #c64b24;
+  background: #a41c12;
   color: #fff;
+  text-decoration: none;
+}
+#nav_search > #search #search-results ul li:hover a:before {
+  color: #cb791c;
 }
 #nav_search > #search #search-results ul li a {
   padding: 0;
-  color: #c64b24;
+  color: #a41c12;
   background: transparent;
   font-size: 12px;
 }
 #nav_search > #search #search-results ul li a:before {
   content: "\00bb";
+  color: #585858;
+  padding-right: 10px;
+}
+#nav_search > #search #search-results ul li a:hover:before {
+  color: #cb791c;
 }
 #nav_search > #search #search-results #search-results-view-all {
-  display: inline-block;
+  bottom: 0;
   width: 100%;
   background: #949494;
   padding: 10px 0;
@@ -1173,7 +1198,7 @@ footer {
   color: #fff;
 }
 #nav_search > #search #search-results #search-results-view-all a:hover {
-  color: #c64b24;
+  color: #fff;
 }
 [data-magellan-expedition],
 [data-magellan-expedition-clone] {
