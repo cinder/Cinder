@@ -81,7 +81,7 @@ class Logger {
 
 	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
 	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
-
+	
   protected:
 	Logger() : mTimeStampEnabled( false ) {}
 
@@ -90,7 +90,9 @@ class Logger {
   private:
 	bool mTimeStampEnabled;
 };
-
+	
+typedef std::shared_ptr<Logger>	LoggerRef;
+	
 class LoggerConsole : public Logger {
   public:
 	void write( const Metadata &meta, const std::string &text ) override;
@@ -171,20 +173,16 @@ protected:
 //! This is primarily used by LogManager as it's base Logger, when multiple log outputs are enabled (ex. console and file)
 class LoggerMulti : public Logger {
   public:
-	void add( Logger *logger )							{ mLoggers.push_back( std::unique_ptr<Logger>( logger ) ); }
-	void add( std::unique_ptr<Logger> &&logger )		{ mLoggers.emplace_back( move( logger ) ); }
+	void add( LoggerRef logger )			{ mLoggers.push_back( logger ); }
 
-	template <typename LoggerT>
-	LoggerT* findType();
+	void remove( LoggerRef logger );
 
-	void remove( Logger *logger );
-
-	const std::vector<std::unique_ptr<Logger> >& getLoggers() const	{ return mLoggers; }
+	const std::vector<LoggerRef>& getLoggers() const	{ return mLoggers; }
 
 	void write( const Metadata &meta, const std::string &text ) override;
 
   private:
-	std::vector<std::unique_ptr<Logger> >	mLoggers;
+	std::vector<LoggerRef>	mLoggers;
 };
 
 class LogManager {
@@ -197,31 +195,41 @@ public:
 	void restoreToDefault();
 
 	//! Resets the current Logger stack so only \a logger exists.
-	void resetLogger( Logger *logger );
+	void resetLogger( LoggerRef logger );
 	//! Adds \a logger to the current stack of loggers.
-	void addLogger( Logger *logger );
+	void addLogger( LoggerRef logger );
 	//! Remove \a logger to the current stack of loggers.
-	void removeLogger( Logger *logger );
+	void removeLogger( LoggerRef logger );
 	//! Returns a pointer to the current base Logger instance.
-	Logger* getLogger()	{ return mLogger.get(); }
-	//! Returns a logger of a specifc type, or nullptr is that type of Logger is currently not in use.
-	template<typename LoggerT>
-	LoggerT* getLogger();
+	LoggerRef getLogger()	{ return mLogger; }
 	//! Returns a vector of all current loggers
-	std::vector<Logger *> getAllLoggers();
+	std::vector<LoggerRef> getAllLoggers();
 	//! Returns the mutex used for thread safe loggers. Also used when adding or resetting new loggers.
 	std::mutex& getMutex() const			{ return mMutex; }
+	
+	template<typename LoggerT, typename... Args>
+	std::shared_ptr<LoggerT> createLogger( Args&&... args );
 
 protected:
 	LogManager();
 
-	std::unique_ptr<Logger>	mLogger;
+	LoggerRef				mLogger;
 	LoggerMulti*			mLoggerMulti;
 	mutable std::mutex		mMutex;
 
-	static LogManager *sInstance;
+	static LogManager 		*sInstance;
 };
-
+	
+template<typename LoggerT, typename... Args>
+std::shared_ptr<LoggerT> LogManager::createLogger( Args&&... args )
+{
+	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
+	
+	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
+	addLogger( result );
+	return result;
+}
+	
 LogManager* manager();
 
 struct Entry {
@@ -261,7 +269,6 @@ private:
 	std::stringstream	mStream;
 };
 
-
 template<class LoggerT>
 class ThreadSafeT : public LoggerT {
   public:
@@ -279,33 +286,6 @@ class ThreadSafeT : public LoggerT {
 
 typedef ThreadSafeT<LoggerConsole>		LoggerConsoleThreadSafe;
 typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
-
-// ----------------------------------------------------------------------------------
-// Template method implementations
-
-template <typename LoggerT>
-LoggerT* LoggerMulti::findType()
-{
-	for( const auto &logger : mLoggers ) {
-		auto result = dynamic_cast<LoggerT *>( logger.get() );
-		if( result )
-			return result;
-	}
-
-	return nullptr;
-}
-
-template<typename LoggerT>
-LoggerT* LogManager::getLogger()
-{
-	auto loggerMulti = dynamic_cast<LoggerMulti *>( mLogger.get() );
-	if( loggerMulti ) {
-		return loggerMulti->findType<LoggerT>();
-	}
-	else {
-		return dynamic_cast<LoggerT *>( mLogger.get() );
-	}
-}
 
 } } // namespace cinder::log
 

@@ -98,32 +98,32 @@ LogManager::LogManager()
 	restoreToDefault();
 }
 
-void LogManager::resetLogger( Logger *logger )
+void LogManager::resetLogger( LoggerRef logger )
 {
 	lock_guard<mutex> lock( mMutex );
 
-	mLogger.reset( logger );
+	mLogger = logger;
 
-	LoggerMulti *multi = dynamic_cast<LoggerMulti *>( logger );
+	LoggerMulti *multi = dynamic_cast<LoggerMulti *>( logger.get() );
 	mLoggerMulti = multi ? multi : nullptr;
 }
 
-void LogManager::addLogger( Logger *logger )
+void LogManager::addLogger( LoggerRef logger )
 {
 	lock_guard<mutex> lock( mMutex );
 
 	if( ! mLoggerMulti ) {
-		auto loggerMulti = unique_ptr<LoggerMulti>( new LoggerMulti );
-		loggerMulti->add( move( mLogger ) );
+		auto loggerMulti = shared_ptr<LoggerMulti>( new LoggerMulti );
+		loggerMulti->add( mLogger );
 		mLoggerMulti = loggerMulti.get();
-		mLogger = move( loggerMulti );
+		mLogger = loggerMulti;
 	}
 
 	mLoggerMulti->add( logger );
 }
 
 
-void LogManager::removeLogger( Logger *logger )
+void LogManager::removeLogger( LoggerRef logger )
 {
 	CI_ASSERT( mLoggerMulti );
 
@@ -138,16 +138,16 @@ void LogManager::restoreToDefault()
 	mLoggerMulti = nullptr;
 }
 
-vector<Logger *> LogManager::getAllLoggers()
+vector<LoggerRef> LogManager::getAllLoggers()
 {
-	vector<Logger *> result;
+	vector<LoggerRef> result;
 
 	if( mLoggerMulti ) {
 		for( const auto &logger : mLoggerMulti->getLoggers() )
-			result.push_back( logger.get() );
+			result.push_back( logger );
 	}
 	else
-		result.push_back( mLogger.get() );
+		result.push_back( mLogger );
 
 	return result;
 }
@@ -180,11 +180,11 @@ void LoggerConsole::write( const Metadata &meta, const string &text )
 // MARK: - LoggerMulti
 // ----------------------------------------------------------------------------------------------------
 
-void LoggerMulti::remove( Logger *logger )
+void LoggerMulti::remove( LoggerRef logger )
 {
 	mLoggers.erase( remove_if( mLoggers.begin(), mLoggers.end(),
-							  [logger]( const std::unique_ptr<Logger> &o ) {
-								  return o.get() == logger;
+							  [logger]( const LoggerRef &o ) {
+								  return o == logger;
 							  } ),
 				   mLoggers.end() );
 }
@@ -421,7 +421,7 @@ protected:
 
 LoggerSystem::LoggerSystem()
 {
-	mMinLevel = LEVEL_VERBOSE;
+	mMinLevel = static_cast<Level>(CI_MIN_LOG_LEVEL);
 #if defined( CINDER_COCOA )
 	LoggerSystem::mImpl = std::unique_ptr<ImplSysLog>( new ImplSysLog() );
 #elif defined( CINDER_MSW )
