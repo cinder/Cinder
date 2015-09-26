@@ -25,17 +25,17 @@
 #include "cinder/app/linux/WindowImplLinux.h"
 #include "cinder/app/linux/AppImplLinux.h"
 
+#include <bcm_host.h>
+
 namespace cinder { namespace app {
 
 struct WindowImplLinux::NativeWindow {
-#if defined( CINDER_LINUX_EGL_ONLY )
 	EGL_DISPMANX_WINDOW_T window;
-	NativeWindow( const ivec2& size, uint32_t element = 0 ) {
+	NativeWindow( const ivec2& size, uint32_t element ) {
 		window.width   = size.x;
 		window.height  = size.y;
 		window.element = element;
 	}
-#endif
 };
 
 WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl )
@@ -44,10 +44,13 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
 
-	auto displaySize = mAppImpl->getDefaultDisplaySize();
-	mNativeWindow = std::unique_ptr<NativeWindow>( new NativeWindow( displaySize ) );
-
+	// NativeWindow->window will get updated by the mRenderer
+	ivec2 displaySize = mAppImpl->getDefaultDisplaySize();	
+	mNativeWindow = std::unique_ptr<NativeWindow>( new NativeWindow( displaySize, 0 ) );
 	mRenderer->setup( reinterpret_cast<void*>( &(mNativeWindow->window) ), sharedRenderer );
+
+	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
+	//rendererGl->makeCurrent( true );
 
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );

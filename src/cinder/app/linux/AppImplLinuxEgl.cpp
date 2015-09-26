@@ -25,7 +25,7 @@
 #include "cinder/app/linux/AppLinux.h"
 #include "cinder/app/linux/WindowImplLinux.h"
 
-#include "bcm_host.h"
+#include <bcm_host.h>
 
 namespace cinder { namespace app {
 
