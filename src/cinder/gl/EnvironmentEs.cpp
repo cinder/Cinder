@@ -81,6 +81,9 @@ class EnvironmentEs : public Environment {
 	bool	supportsTextureLod() const override;
 	bool 	supportsMapBuffer() const;
 	bool 	supportsMapBufferRange() const;
+
+	GLenum	getPreferredIndexType() const override;
+		
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
 	
 	void	allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) override;
@@ -190,6 +193,15 @@ bool EnvironmentEs::supportsMapBufferRange() const
 #else
 	// Assumes OpenGL ES 3 or greater
 	return true;
+#endif	
+}
+
+GLenum EnvironmentEs::getPreferredIndexType() const
+{
+#if defined( CINDER_GL_ES_2 )
+	return isExtensionAvailable( "GL_OES_element_index_uint" ) ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT;
+#else	
+	return GL_UNSIGNED_INT;
 #endif	
 }
 

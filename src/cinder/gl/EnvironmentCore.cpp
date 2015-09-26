@@ -41,6 +41,9 @@ class EnvironmentCore : public Environment {
 	bool	isExtensionAvailable( const std::string &extName ) const override;
 	bool	supportsHardwareVao() const override;
 	bool	supportsTextureLod() const override;
+
+	GLenum	getPreferredIndexType() const override;
+
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
 
 	void	allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) override;
@@ -99,6 +102,11 @@ bool EnvironmentCore::supportsHardwareVao() const
 bool EnvironmentCore::supportsTextureLod() const
 {
 	return true;
+}
+
+GLenum EnvironmentCore::getPreferredIndexType() const
+{
+	return GL_UNSIGNED_INT;
 }
 
 void EnvironmentCore::objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label )

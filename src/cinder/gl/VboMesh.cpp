@@ -24,6 +24,7 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/ConstantConversions.h"
+#include "cinder/gl/Environment.h"
 #include "cinder/Log.h"
 
 using namespace std;
@@ -146,6 +147,14 @@ void VboMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t stri
 
 void VboMeshGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
 {
+// @TODO: Find a better way to handle this
+#if defined( CINDER_GL_ES_2 )
+	if( GL_UNSIGNED_SHORT == gl::env()->getPreferredIndexType() ) {
+		requiredBytesPerIndex = 2;
+		numIndices = std::min<size_t>( numIndices, 65535 );
+	}
+#endif
+
 	mVboMesh->mNumIndices = (uint32_t)numIndices;
 
 	if( requiredBytesPerIndex <= 2 ) {
@@ -335,6 +344,13 @@ VboMesh::VboMesh( const geom::Source &source, std::vector<pair<Layout,VboRef>> v
 VboMesh::VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<pair<geom::BufferLayout,VboRef>> &vertexArrayBuffers, const VboRef &indexVbo )
 	: mNumVertices( numVertices ), mNumIndices( numIndices ), mGlPrimitive( glPrimitive ), mIndexType( indexType ), mVertexArrayVbos( vertexArrayBuffers ), mIndices( indexVbo )
 {
+// @TODO: Find a better way to handle this
+#if defined( CINDER_GL_ES_2 )
+	if( GL_UNSIGNED_SHORT == gl::env()->getPreferredIndexType() ) {
+		mIndexType = GL_UNSIGNED_SHORT;
+	}
+#endif
+
 	if( ! mIndices )
 		allocateIndexVbo();
 }
@@ -342,6 +358,13 @@ VboMesh::VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive,
 VboMesh::VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<Layout> &vertexArrayLayouts, const VboRef &indexVbo )
 	: mNumVertices( numVertices ), mNumIndices( numIndices ), mGlPrimitive( glPrimitive ), mIndexType( indexType ), mIndices( indexVbo )
 {
+// @TODO: Find a better way to handle this
+#if defined( CINDER_GL_ES_2 )
+	if( GL_UNSIGNED_SHORT == gl::env()->getPreferredIndexType() ) {
+		mIndexType = GL_UNSIGNED_SHORT;
+	}
+#endif
+
 	geom::BufferLayout bufferLayout;
 	for( const auto &layout : vertexArrayLayouts ) {
 		VboRef vbo;
