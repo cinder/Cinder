@@ -27,11 +27,15 @@ set( SRC_FILES
   ${SRC_DIR}/TextureFontApp.cpp
 )
 
-set( CMAKE_DEBUG_POSTFIX "_d" )
-add_executable( "${CMAKE_PROJECT_NAME}" ${SRC_FILES} )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" debug     ${CINDER_LIB_DIR}/libcinder_d.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" optimized ${CINDER_LIB_DIR}/libcinder.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_LIB_DIR}/libboost_filesystem.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" general ${CINDER_LIB_DIR}/libboost_system.a )
-target_link_libraries( "${CMAKE_PROJECT_NAME}" c++ c++abi dl pthread z GL X11 Xcursor Xinerama Xrandr Xi fontconfig )
+set( EXE_NAME "${CMAKE_PROJECT_NAME}" )
+if( CINDER_GL_ES_2 )
+	set( EXE_NAME "${CMAKE_PROJECT_NAME}-es2" )
+endif()
+
+add_executable( "${EXE_NAME}" ${SRC_FILES} )
+target_link_libraries( "${EXE_NAME}" debug     ${CINDER_LIB_DIR}/libcinder${CINDER_LIB_SUFFIX}_d.a )
+target_link_libraries( "${EXE_NAME}" optimized ${CINDER_LIB_DIR}/libcinder${CINDER_LIB_SUFFIX}.a )
+target_link_libraries( "${EXE_NAME}" general   ${CINDER_LIB_DIR}/libboost_filesystem.a )
+target_link_libraries( "${EXE_NAME}" general   ${CINDER_LIB_DIR}/libboost_system.a )
+target_link_libraries( "${EXE_NAME}" stdc++ dl pthread z ${CINDER_GL_LIBS} X11 Xcursor Xinerama Xrandr Xi fontconfig )
 
