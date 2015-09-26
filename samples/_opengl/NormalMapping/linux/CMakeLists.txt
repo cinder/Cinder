@@ -37,5 +37,5 @@ target_link_libraries( "${EXE_NAME}" debug     ${CINDER_LIB_DIR}/libcinder${CIND
 target_link_libraries( "${EXE_NAME}" optimized ${CINDER_LIB_DIR}/libcinder${CINDER_LIB_SUFFIX}.a )
 target_link_libraries( "${EXE_NAME}" general   ${CINDER_LIB_DIR}/libboost_filesystem.a )
 target_link_libraries( "${EXE_NAME}" general   ${CINDER_LIB_DIR}/libboost_system.a )
-target_link_libraries( "${EXE_NAME}" c++ c++abi dl pthread z ${CINDER_GL_LIBS} X11 Xcursor Xinerama Xrandr Xi fontconfig )
+target_link_libraries( "${EXE_NAME}" stdc++ dl pthread z ${CINDER_GL_LIBS} X11 Xcursor Xinerama Xrandr Xi fontconfig )
 
