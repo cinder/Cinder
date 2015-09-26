@@ -27,7 +27,13 @@
 
 #include <bcm_host.h>
 
+#include <termio.h>
+#include <unistd.h>
+
 namespace cinder { namespace app {
+
+bool keyPressed( int *character );	
+void keyboardReset();
 
 ////////////////////////////////////////////////////////////////////////////////
 // AppImplLinux
@@ -128,9 +134,15 @@ void AppImplLinux::run()
 		}
 
 		// @TODO: Add event handling
+		int character = -1;
+		if( keyPressed( &character ) ) {
+			mShouldQuit = true;
+		}
 
 		// Sleep until the next frame
-		sleepUntilNextFrame();	
+		if( ! mShouldQuit ) {
+			sleepUntilNextFrame();
+		}
 	}
 }
 
@@ -250,6 +262,92 @@ void AppImplLinux::registerInput( WindowImplLinux* window )
 
 void AppImplLinux::unregisterInput( WindowImplLinux* window )
 {
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Borrowed from:
+//     https://github.com/AndrewFromMelbourne/raspidmx/blob/master/common/key.c
+//
+////////////////////////////////////////////////////////////////////////////////
+static int sStdInFileDesc = -1;
+static struct termios sTermiosAttribs;
+
+bool keyPressed(int *character)
+{
+    // If this is the first time the function is called, change the stdin
+    // stream so that we get each character when the keys are pressed and
+    // and so that character aren't echoed to the screen when the keys are
+    // pressed.
+    if (-1 == sStdInFileDesc)
+    {
+        // Get the file descriptor associated with stdin stream.
+        sStdInFileDesc = fileno(stdin);
+
+        // Get the terminal (termios) attritubets for stdin so we can
+        // modify them and reset them before exiting the program.
+        tcgetattr(sStdInFileDesc, &sTermiosAttribs);
+
+        // Copy the termios attributes so we can modify them.
+        struct termios term;
+        memcpy(&term, &sTermiosAttribs, sizeof(term));
+
+        // Unset ICANON and ECHO for stdin. When ICANON is not set the
+        // input is in noncanonical mode. In noncanonical mode input is
+        // available as each key is pressed. In canonical mode input is
+        // only available after the enter key is pressed. Unset ECHO so that
+        // the characters aren't echoed to the screen when keys are pressed.
+        // See the termios(3) man page for more information.
+        term.c_lflag &= ~(ICANON|ECHO);
+        tcsetattr(sStdInFileDesc, TCSANOW, &term);
+
+        // Turn off buffering for stdin. We want to get the characters
+        // immediately. We don't want the characters to be buffered.
+        setbuf(stdin, NULL);
+    }
+
+    // Get the number of characters that are waiting to be read.
+    int charactersBuffered = 0;
+    ioctl(sStdInFileDesc, FIONREAD, &charactersBuffered);
+
+    // Set the return value to true if there are any characters to be read.
+    bool pressed = (charactersBuffered != 0);
+
+    if (charactersBuffered == 1)
+    {
+        // There is only one character to be read. Read it in.
+        int c = fgetc(stdin);
+
+        // Check if the caller wants the value of character read.
+        if (character != NULL)
+        {
+            *character = c;
+        }
+    }
+    else if (charactersBuffered > 1)
+    {
+        // There is more than one character to be read. This can be key such
+        // as the arrow keys or function keys. This code just reads them in
+        // and ignores them. The caller will be informed that a key was
+        // pressed, but won't get a value for the key.
+        while (charactersBuffered)
+        {
+            fgetc(stdin);
+            --charactersBuffered;
+        }
+    }
+
+    return pressed;
+}
+
+void keyboardReset()
+{
+    if (-1 == sStdInFileDesc) {
+        // If keyPressed() has been called the terminal input has been
+        // changed for the stdin stream. Put the attributes back the way
+        // we found them.
+        tcsetattr(sStdInFileDesc, TCSANOW, &sTermiosAttribs);
+    }
 }
 
 }} // namespace cinder::app
