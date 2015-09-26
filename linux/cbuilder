@@ -32,6 +32,7 @@ BUILDTYPES=(Debug)
 NUMPROCS=4
 GLES=
 FULLBUILD=true
+RPI2=
 
 # Process arguments
 while (( $# >= 1 ))
