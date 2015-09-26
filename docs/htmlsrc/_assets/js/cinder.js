@@ -318,7 +318,7 @@ $(document).ready(function() {
 		_.each( uls, function( ul ) {
 			var liArr = ul.find('li');
 			var listLen = liArr.length;
-			if( listLen == 0) {
+			if( listLen === 0) {
 				ul.parent().hide();
 			}else{
 				// remove extras
@@ -328,7 +328,12 @@ $(document).ready(function() {
 		});
 	};
 
-	
+	$( '#search-results-view-all' ).on( 'click', function(){
+		var searchTerm = escape( document.querySelector('#search-input').value );
+		window.location = 'search.html?' + searchTerm;
+	} );
+
+
 	var input = document.querySelector('#search-input');
 	if( input ){
 		input.addEventListener('input', function()

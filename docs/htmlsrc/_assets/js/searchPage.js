@@ -3,9 +3,9 @@ $(document).ready(function() {
 	var searchTerm = location.search.split("?")[1];
 
 	// --- Search stuff --- // 
- 	var fillSearch = function (term) {
-	       
-	    var results = search_index.search(term); 
+ 	var fillSearch = function( input ) {
+	    var term = unescape( input );
+	    var results = search_index.search(unescape(term)); 
 		var resultsDiv = $('#page-search-results');
 		var resultsUl = $( "<ul>" );
 		$('#search-header').html("Search Results for <strong>" + term + "</strong>");
