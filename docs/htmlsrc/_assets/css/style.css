@@ -679,7 +679,7 @@ body.classes img.header-icon {
   margin-top: 5px;
 }
 #container .reference-lists .row button.expand {
-  top: 14px;
+  top: 16px;
   left: 9px;
 }
 #container #show-hide {
@@ -960,6 +960,9 @@ button.interactive-guide:focus {
   -o-transform-origin: 50% 50%;
   -ms-transform-origin: 50% 50%;
   transform-origin: 50% 50%;
+}
+#side-nav .css-treeview li.active > label::before {
+  background-image: url("../images/expand_arrow_white.png");
 }
 #side-nav .css-treeview label {
   background-image: none;

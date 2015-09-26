@@ -544,16 +544,8 @@ body.classes
 		p:last
 			margin-bottom: 0
 		
-		.row
-			// padding-left: 18px
-			// margin: 5px 0
-			
-			// .definition
-				// margin: 5px 0
-			
+		.row			
 			.description
-				// box-sizing: border-box
-				// padding-top: 5px
 				color: #7c827f
 			
 			p			
@@ -561,7 +553,7 @@ body.classes
 					margin-top: 5px
 				
 			button.expand
-				top: 14px
+				top: 16px
 				left: 9px
 				
 	#show-hide
@@ -827,6 +819,8 @@ button.interactive-guide
 		transform: rotate(90deg) translateZ(0)
 		transform-origin: 50% 50%;
 	
+	.css-treeview li.active > label::before
+		background-image: url("../images/expand_arrow_white.png");
 		
 	.css-treeview label
 		background-image: none
