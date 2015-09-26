@@ -106,8 +106,6 @@ void LogManager::resetLogger( Logger *logger )
 
 	LoggerMulti *multi = dynamic_cast<LoggerMulti *>( logger );
 	mLoggerMulti = multi ? multi : nullptr;
-
-	mConsoleLoggingEnabled = mFileLoggingEnabled = mSystemLoggingEnabled = false;
 }
 
 void LogManager::addLogger( Logger *logger )
@@ -138,20 +136,6 @@ void LogManager::restoreToDefault()
 
 	mLogger.reset( new LoggerConsoleThreadSafe );
 	mLoggerMulti = nullptr;
-	mConsoleLoggingEnabled = true;
-	mFileLoggingEnabled = false;
-	mSystemLoggingEnabled = false;
-	mBreakOnLogEnabled = false;
-
-	switch( CI_MIN_LOG_LEVEL ) {
-		case 5: mSystemLoggingLevel = LEVEL_FATAL;      break;
-		case 4: mSystemLoggingLevel = LEVEL_ERROR;      break;
-		case 3: mSystemLoggingLevel = LEVEL_WARNING;	break;
-		case 2: mSystemLoggingLevel = LEVEL_INFO;       break;
-		case 1: mSystemLoggingLevel = LEVEL_DEBUG;		break;
-		case 0: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
-		default: CI_ASSERT_NOT_REACHABLE();
-	}
 }
 
 vector<Logger *> LogManager::getAllLoggers()
@@ -168,138 +152,6 @@ vector<Logger *> LogManager::getAllLoggers()
 	return result;
 }
 
-void LogManager::enableConsoleLogging()
-{
-	if( mConsoleLoggingEnabled )
-		return;
-
-	addLogger( new LoggerConsoleThreadSafe );
-	mConsoleLoggingEnabled = true;
-}
-
-bool LogManager::initFileLogging()
-{
-	if( mFileLoggingEnabled ) {
-		// destroys previous file logger to prepare for changes
-		auto logger = mLoggerMulti->findType<LoggerFile>();
-		if( logger )
-			disableFileLogging();
-		else
-			return false;
-	}
-	return true;
-}
-
-void LogManager::enableFileLogging( const fs::path &path, bool appendToExisting )
-{
-	if( ! initFileLogging() ) {
-		return;
-	}
-
-	addLogger( new LoggerFileThreadSafe( path, appendToExisting ) );
-	mFileLoggingEnabled = true;
-}
-
-void LogManager::enableFileLoggingRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
-{
-	if( ! initFileLogging() ) {
-		return;
-	}
-
-	addLogger( new LoggerFileThreadSafe( folder, formatStr, appendToExisting ) );
-	mFileLoggingEnabled = true;
-}
-
-void LogManager::setFileLoggingEnabled( bool enable, const fs::path &filePath, bool appendToExisting )
-{
-	if( enable )
-		enableFileLogging( filePath, appendToExisting );
-	else
-		disableFileLogging();
-}
-
-
-void LogManager::setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const string &formatStr, bool appendToExisting )
-{
-	if( enable )
-		enableFileLoggingRotating( folder, formatStr, appendToExisting );
-	else
-		disableFileLogging();
-}
-
-void LogManager::enableSystemLogging()
-{
-	if( mSystemLoggingEnabled )
-		return;
-
-	addLogger( new LoggerSystem );
-	setSystemLoggingLevel( mSystemLoggingLevel );
-	mSystemLoggingEnabled = true;
-}
-
-void LogManager::setSystemLoggingLevel( Level level )
-{
-	mSystemLoggingLevel = level;
-	
-	auto logger = mLoggerMulti->findType<LoggerSystem>();
-	logger->setLoggingLevel( level );
-}
-
-void LogManager::disableConsoleLogging()
-{
-	if( ! mConsoleLoggingEnabled || ! mLoggerMulti )
-		return;
-
-	auto logger = mLoggerMulti->findType<LoggerConsole>();
-	mLoggerMulti->remove( logger );
-
-	mConsoleLoggingEnabled = false;
-}
-
-void LogManager::disableFileLogging()
-{
-	if( ! mFileLoggingEnabled || ! mLoggerMulti )
-		return;
-
-	auto logger = mLoggerMulti->findType<LoggerFile>();
-	mLoggerMulti->remove( logger );
-
-	mFileLoggingEnabled = false;
-}
-
-void LogManager::disableSystemLogging()
-{
-	if( ! mSystemLoggingEnabled || ! mLoggerMulti )
-		return;
-
-	auto logger = mLoggerMulti->findType<LoggerSystem>();
-	mLoggerMulti->remove( logger );
-	mSystemLoggingEnabled = false;
-}
-
-void LogManager::enableBreakOnLevel( Level triggerLevel )
-{
-	if( mBreakOnLogEnabled ) {
-		auto logger = mLoggerMulti->findType<LoggerBreakpoint>();
-		logger->setTriggerLevel( triggerLevel );
-	}
-	else {
-		addLogger( new LoggerBreakpoint( triggerLevel ) );
-		mBreakOnLogEnabled = true;
-	}
-}
-
-void LogManager::disableBreakOnLog()
-{
-	if( ! mBreakOnLogEnabled )
-		return;
-	
-	auto logger = mLoggerMulti->findType<LoggerBreakpoint>();
-	if( logger )
-		mLoggerMulti->remove( logger );
-
-	mBreakOnLogEnabled = false;
-}
 
 // ----------------------------------------------------------------------------------------------------
 // MARK: - Logger

@@ -205,42 +205,12 @@ public:
 	//! Returns the mutex used for thread safe loggers. Also used when adding or resetting new loggers.
 	std::mutex& getMutex() const			{ return mMutex; }
 
-	void enableConsoleLogging();
-	void disableConsoleLogging();
-	void setConsoleLoggingEnabled( bool enable )		{ enable ? enableConsoleLogging() : disableConsoleLogging(); }
-	bool isConsoleLoggingEnabled() const				{ return mConsoleLoggingEnabled; }
-
-	void enableFileLogging( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void enableFileLoggingRotating( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
-	void disableFileLogging();
-	void setFileLoggingEnabled( bool enable, const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
-	bool isFileLoggingEnabled() const					{ return mFileLoggingEnabled; }
-
-	void enableSystemLogging();
-	void disableSystemLogging();
-	void setSystemLoggingEnabled( bool enable = true )		{ enable ? enableSystemLogging() : disableSystemLogging(); }
-	bool isSystemLoggingEnabled() const					{ return mSystemLoggingEnabled; }
-	void setSystemLoggingLevel( Level level );
-	Level getSystemLoggingLevel() const					{ return mSystemLoggingLevel; }
-
-	//! Enables a breakpoint to be triggered when a log message happens at `LEVEL_ERROR` or higher
-	void enableBreakOnError()							{ enableBreakOnLevel( LEVEL_ERROR ); }
-	//! Enables a breakpoint to be triggered when a log message happens at \a trigerLevel or higher.
-	void enableBreakOnLevel( Level trigerLevel );
-	//! Disables any breakpoints set for logging.
-	void disableBreakOnLog();
-
 protected:
 	LogManager();
-
-	bool initFileLogging();
 
 	std::unique_ptr<Logger>	mLogger;
 	LoggerMulti*			mLoggerMulti;
 	mutable std::mutex		mMutex;
-	bool					mConsoleLoggingEnabled, mFileLoggingEnabled, mSystemLoggingEnabled, mBreakOnLogEnabled;
-	Level					mSystemLoggingLevel;
 
 	static LogManager *sInstance;
 };
