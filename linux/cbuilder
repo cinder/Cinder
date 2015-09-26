@@ -13,6 +13,7 @@ if (( $# == 0 )); then
     echo -e ""
     echo -e "flags:"
 	echo -e "\t-es2     Build for OpenGL ES 2 instead of Desktop OpenGL"
+	echo -e "\t-es3     Build for OpenGL ES 3 instead of Desktop OpenGL"
     echo -e "\t-rpi2    Build for Raspberry Pi 2 (must be on platform)"
     echo -e "\t-tk1     Build for NVidia Jetson TK1 (must be on platform)"
     echo -e "\t-xu4     Build for Odroid XU4 (must be on platform)"
@@ -29,8 +30,7 @@ SCRIPT_DIR=$( pwd )
 CLEAN=false
 BUILDTYPES=(Debug)
 NUMPROCS=4
-ES2=
-ES2_INFO=
+GLES=
 FULLBUILD=true
 
 # Process arguments
@@ -42,6 +42,7 @@ do
 		# Clean
 		clean)
 			CLEAN=true
+			shift 1
 		;;
 
         # Build types
@@ -68,6 +69,7 @@ do
                     ;;
                 esac
             done
+			shift 2
         ;;
 
         # Number of build processes
@@ -79,26 +81,31 @@ do
                 echo "-j requires a number"
                 exit 1
             fi
+			shift 2
         ;;
 
         # OpenGL ES2
         -es2)
-            ES2="-DCINDER_GL_ES_2=1"
-            ES2_INFO="GLES2: true"
+            GLES="-DCINDER_GL_ES_2=1"
+			shift 1
+        ;;
+
+        # OpenGL ES3
+        -es3)
+            GLES="-DCINDER_GL_ES_3=1"
+			shift 1
         ;;
 
         # Rebuild
         #-r)
 		#	FULLBUILD=false
         #;;
-	esac
 
-    # Shift
-    if [[ ${2:0:1} == '-' ]] || [ -z "$2" ]; then
-        shift 1
-    else
-        shift 2
-    fi
+		?*)
+			echo "Unknown parameter: ${arg}"
+			exit 1
+		;;
+	esac
 done
 
 for build in ${BUILDTYPES[@]}; do
@@ -114,7 +121,7 @@ for build in ${BUILDTYPES[@]}; do
 		fi
 
 		if [ ${CLEAN} == true ]; then
-			exit
+			exit 0
 		fi
 	fi
 
@@ -134,7 +141,7 @@ for build in ${BUILDTYPES[@]}; do
 	fi
 
 	cd ${build_dir}
-	cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${ES2}
+	cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES}
 	make -j ${NUMPROCS} VERBOSE=1
 
 	echo -e ""

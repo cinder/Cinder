@@ -26,3 +26,17 @@
 #if ! defined( CINDER_GL_PLATFORM )
  	#error "cinder/gl/platform_android.h cannot be included directly, please include cinder/gl/platform.h instead."
 #endif
+
+#if defined( CINDER_GL_ES_3 )
+
+#if defined( GL_OES_mapbuffer )
+	#define CINDER_GL_HAS_MAP_BUFFER
+	extern PFNGLMAPBUFFEROESPROC 				fnptr_ci_glMapBufferOES;
+	extern PFNGLUNMAPBUFFEROESPROC 				fnptr_ci_glUnmapBufferOES;
+	extern PFNGLGETBUFFERPOINTERVOESPROC 		fnptr_ci_glGetBufferPointervOES;
+ 	#define glMapBuffer 						fnptr_ci_glMapBufferOES
+ 	#define glUnmapBuffer 						fnptr_ci_glUnmapBufferOES
+ 	#define glGetBufferPointerv 				fnptr_ci_glGetBufferPointervOES
+#endif
+
+#endif // defined( CINDER_GL_ES_3 )
