@@ -253,6 +253,9 @@ if( CINDER_LINUX_EGL_RPI2 )
 	)
 else()
 	list( APPEND CINDER_CXX_SRC_FILES
+		${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
+		${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
+
    		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
     	${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
     	${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
@@ -301,9 +304,6 @@ list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/VaoImplSoftware.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
-
-    ${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
-    ${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
 
     ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
     ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp

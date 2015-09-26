@@ -97,9 +97,10 @@ do
         ;;
 
         # Rebuild
-        #-r)
-		#	FULLBUILD=false
-        #;;
+        -r)
+			FULLBUILD=false
+			shift 1
+        ;;
 
 		?*)
 			echo "Unknown parameter: ${arg}"
@@ -141,7 +142,9 @@ for build in ${BUILDTYPES[@]}; do
 	fi
 
 	cd ${build_dir}
-	cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES}
+	if [ ${FULLBUILD} == true ]; then
+		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES}
+	fi
 	make -j ${NUMPROCS} VERBOSE=1
 
 	echo -e ""
