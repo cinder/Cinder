@@ -79,6 +79,9 @@ class Logger {
 
 	virtual void write( const Metadata &meta, const std::string &text ) = 0;
 
+	template<typename LoggerT, typename... Args>
+	std::shared_ptr<LoggerT> makeLogger( Args&&... args );
+	
 	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
 	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
 	
@@ -92,6 +95,15 @@ class Logger {
 };
 	
 typedef std::shared_ptr<Logger>	LoggerRef;
+
+template<typename LoggerT, typename... Args>
+std::shared_ptr<LoggerT> Logger::makeLogger( Args&&... args )
+{
+	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
+	
+	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
+	return result;
+}
 	
 class LoggerConsole : public Logger {
   public:
@@ -168,22 +180,6 @@ protected:
 #endif
 };
 
-//! \brief Logger that can log to multiple other Loggers.
-//!
-//! This is primarily used by LogManager as it's base Logger, when multiple log outputs are enabled (ex. console and file)
-class LoggerMulti : public Logger {
-  public:
-	void add( LoggerRef logger )			{ mLoggers.push_back( logger ); }
-
-	void remove( LoggerRef logger );
-
-	const std::vector<LoggerRef>& getLoggers() const	{ return mLoggers; }
-
-	void write( const Metadata &meta, const std::string &text ) override;
-
-  private:
-	std::vector<LoggerRef>	mLoggers;
-};
 
 class LogManager {
 public:
@@ -194,34 +190,34 @@ public:
 	//! Restores LogManager to its default state.
 	void restoreToDefault();
 
-	//! Resets the current Logger stack so only \a logger exists.
-	void resetLogger( LoggerRef logger );
+	//! Removes all loggers from the stack.
+	void clearLoggers();
 	//! Adds \a logger to the current stack of loggers.
-	void addLogger( LoggerRef logger );
+	void addLogger( const LoggerRef& logger );
 	//! Remove \a logger to the current stack of loggers.
-	void removeLogger( LoggerRef logger );
-	//! Returns a pointer to the current base Logger instance.
-	LoggerRef getLogger()	{ return mLogger; }
-	//! Returns a vector of all current loggers
-	std::vector<LoggerRef> getAllLoggers();
+	void removeLogger( const LoggerRef& logger );
 	//! Returns the mutex used for thread safe loggers. Also used when adding or resetting new loggers.
 	std::mutex& getMutex() const			{ return mMutex; }
 	
+	void write( const Metadata &meta, const std::string &text );
+	
 	template<typename LoggerT, typename... Args>
-	std::shared_ptr<LoggerT> createLogger( Args&&... args );
+	std::shared_ptr<LoggerT> makeLogger( Args&&... args );
 
 protected:
 	LogManager();
 
-	LoggerRef				mLogger;
-	LoggerMulti*			mLoggerMulti;
-	mutable std::mutex		mMutex;
-
-	static LogManager 		*sInstance;
+	std::vector<LoggerRef>			mLoggers;
+	// used for optimized logging path
+	std::unique_ptr<LoggerConsole> 	mLoggerConsole;
+	
+	mutable std::mutex				mMutex;
+	
+	static LogManager 				*sInstance;
 };
 	
 template<typename LoggerT, typename... Args>
-std::shared_ptr<LoggerT> LogManager::createLogger( Args&&... args )
+std::shared_ptr<LoggerT> LogManager::makeLogger( Args&&... args )
 {
 	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
 	
@@ -257,7 +253,7 @@ struct Entry {
 
 	void writeToLog()
 	{
-		manager()->getLogger()->write( mMetaData, mStream.str() );
+		manager()->write( mMetaData, mStream.str() );
 	}
 
 	const Metadata&	getMetaData() const	{ return mMetaData; }
@@ -283,9 +279,6 @@ class ThreadSafeT : public LoggerT {
 		LoggerT::write( meta, text );
 	}
 };
-
-typedef ThreadSafeT<LoggerConsole>		LoggerConsoleThreadSafe;
-typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
 
 } } // namespace cinder::log
 

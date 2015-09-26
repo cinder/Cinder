@@ -98,58 +98,48 @@ LogManager::LogManager()
 	restoreToDefault();
 }
 
-void LogManager::resetLogger( LoggerRef logger )
+void LogManager::clearLoggers()
 {
 	lock_guard<mutex> lock( mMutex );
-
-	mLogger = logger;
-
-	LoggerMulti *multi = dynamic_cast<LoggerMulti *>( logger.get() );
-	mLoggerMulti = multi ? multi : nullptr;
+	mLoggers.clear();
+	mLoggerConsole = nullptr;
 }
 
-void LogManager::addLogger( LoggerRef logger )
+void LogManager::addLogger( const LoggerRef& logger )
 {
 	lock_guard<mutex> lock( mMutex );
-
-	if( ! mLoggerMulti ) {
-		auto loggerMulti = shared_ptr<LoggerMulti>( new LoggerMulti );
-		loggerMulti->add( mLogger );
-		mLoggerMulti = loggerMulti.get();
-		mLogger = loggerMulti;
-	}
-
-	mLoggerMulti->add( logger );
+	mLoggers.push_back( logger );
 }
 
 
-void LogManager::removeLogger( LoggerRef logger )
+void LogManager::removeLogger( const LoggerRef& logger )
 {
-	CI_ASSERT( mLoggerMulti );
-
-	mLoggerMulti->remove( logger );
+	lock_guard<mutex> lock( mMutex );
+	mLoggers.erase( remove_if( mLoggers.begin(), mLoggers.end(),
+							  [logger]( const LoggerRef &o ) {
+								  return o == logger;
+							  } ),
+				   mLoggers.end() );
 }
 
 void LogManager::restoreToDefault()
 {
-	lock_guard<mutex> lock( mMutex );
-
-	mLogger.reset( new LoggerConsoleThreadSafe );
-	mLoggerMulti = nullptr;
+	clearLoggers();
+	mLoggerConsole = unique_ptr<LoggerConsole>( new LoggerConsole );
 }
-
-vector<LoggerRef> LogManager::getAllLoggers()
+	
+void LogManager::write( const Metadata &meta, const std::string &text )
 {
-	vector<LoggerRef> result;
-
-	if( mLoggerMulti ) {
-		for( const auto &logger : mLoggerMulti->getLoggers() )
-			result.push_back( logger );
+	// TODO move this to a shared_lock_timed with c++14 support
+	lock_guard<mutex> lock( mMutex );
+	
+	if( mLoggerConsole ) {
+		mLoggerConsole->write( meta, text );
 	}
-	else
-		result.push_back( mLogger );
 
-	return result;
+	for( auto& logger : mLoggers ) {
+		logger->write( meta, text );
+	}
 }
 
 
@@ -174,25 +164,6 @@ void Logger::writeDefault( std::ostream &stream, const Metadata &meta, const std
 void LoggerConsole::write( const Metadata &meta, const string &text )
 {
 	writeDefault( app::Platform::get()->console(), meta, text );
-}
-
-// ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerMulti
-// ----------------------------------------------------------------------------------------------------
-
-void LoggerMulti::remove( LoggerRef logger )
-{
-	mLoggers.erase( remove_if( mLoggers.begin(), mLoggers.end(),
-							  [logger]( const LoggerRef &o ) {
-								  return o == logger;
-							  } ),
-				   mLoggers.end() );
-}
-
-void LoggerMulti::write( const Metadata &meta, const string &text )
-{
-	for( auto &logger : mLoggers )
-		logger->write( meta, text );
 }
 
 // ----------------------------------------------------------------------------------------------------
