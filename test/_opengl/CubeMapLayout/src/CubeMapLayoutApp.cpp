@@ -34,7 +34,7 @@ void CubeMapLayoutApp::prepareSettings( Settings * settings )
 
 void CubeMapLayoutApp::setup()
 {
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 					
 	mParams = params::InterfaceGl::create( "Settings", ivec2(200, 200) );

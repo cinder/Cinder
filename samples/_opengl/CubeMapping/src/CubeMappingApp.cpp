@@ -40,7 +40,7 @@ void CubeMappingApp::setup()
 	mSkyBoxBatch = gl::Batch::create( geom::Cube(), skyBoxGlsl );
 	mSkyBoxBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
 	
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();	
 }
 

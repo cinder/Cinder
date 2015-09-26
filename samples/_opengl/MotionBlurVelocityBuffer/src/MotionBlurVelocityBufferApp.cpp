@@ -211,7 +211,7 @@ void MotionBlurVelocityBufferApp::update()
 
 void MotionBlurVelocityBufferApp::fillGBuffer()
 {
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	gl::ScopedFramebuffer fbo( mGBuffer );
@@ -229,7 +229,7 @@ void MotionBlurVelocityBufferApp::fillGBuffer()
 		gl::draw( mesh->getMesh() );
 	}
 
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 	gl::disableDepthWrite();
 }
 

@@ -81,7 +81,7 @@ void NativeControlsApp::setupVisuals()
 	}
 
 	mTex = gl::Texture::create( surface );
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 }
 

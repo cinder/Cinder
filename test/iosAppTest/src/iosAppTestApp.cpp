@@ -375,7 +375,7 @@ void iosAppTestApp::update()
 void iosAppTestApp::draw()
 {
 	gl::enableAlphaBlending();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	sOrderTester.setState( TestCallbackOrder::DRAW );
 	CameraPersp mCam;
 	mCam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
@@ -431,7 +431,7 @@ void iosAppTestApp::draw()
 		}
 	}
 
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 	gl::color( Color( 0.0f, 1.0f, 0.0f ) );
 	mFont->drawString( orientationString( getWindowOrientation() ) + "@ " + toString( getWindowContentScale() ), vec2( 10.0f, 60.0f ) );
 //	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), vec2( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?

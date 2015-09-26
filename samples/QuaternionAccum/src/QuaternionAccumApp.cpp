@@ -159,8 +159,8 @@ void QuaternionAccumApp::draw()
 	gl::clear();
 	gl::setMatrices( mCam );
 
-	// Enable depth buffer reading and writing.
-	gl::ScopedDepth depth( true, true );
+	// Enable depth buffer testing and writing.
+	gl::ScopedDepth depth( true );
 
 	// Draw our scene.
 	drawPlane();

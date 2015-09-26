@@ -167,7 +167,7 @@ void GeometryApp::draw()
 	gl::setMatrices( mCamera );
 
 	// Enable the depth buffer.
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	if( mPrimitive ) {
@@ -249,7 +249,7 @@ void GeometryApp::draw()
 	}
 
 	// Disable the depth buffer.
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 
 	// Render the parameter window.
 #if ! defined( CINDER_GL_ES )

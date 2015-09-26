@@ -126,7 +126,7 @@ void PBOReadBackApp::draw()
 	mTimer.stop();
 	
 	// Render to new Fbo
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 	
 	{
@@ -143,7 +143,7 @@ void PBOReadBackApp::draw()
 	}
 	
 	// Render to screen
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 	gl::disableDepthWrite();
 	
 	gl::setMatricesWindow( getWindowSize() );

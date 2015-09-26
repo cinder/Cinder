@@ -44,7 +44,7 @@ void StencilReflectionApp::setup()
 								  vec2( toPixels( getWindowWidth() ) / 2, toPixels( getWindowHeight() ) ) );
 	
 	gl::enableDepthWrite();
-    gl::enableDepthRead();
+    gl::enableDepthTest();
 	gl::clearColor( Color( 1, 1, 1 ) );
 }
 

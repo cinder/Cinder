@@ -133,14 +133,22 @@ void enableLogicOp( bool enable = true );
 void logicOp( GLenum mode );
 #endif
 
-void disableDepthRead();
-void disableDepthWrite();
-void enableDepthRead( bool enable = true );
+//! Enables or disables the Depth Test operation, which controls reading and writing to the depth buffer. Analagous to `glEnable( GL_DEPTH_TEST, enable );`
+void enableDepthTest( bool enable = true );
+//! Disables the Depth Test operation. Analagous to `glEnable( GL_DEPTH_TEST, false );`
+void disableDepthTest();
+//! Enables or disables writing into the Depth Buffer. Analagous to `glDepthMask( enable );`. \note `GL_DEPTH_TEST` must be be enabled (with `gl::enableDepthTest()`) for writing to take place.
 void enableDepthWrite( bool enable = true );
+//! Disables writing into the Depth Buffer. Analagous to `glDepthMask( false );`.
+void disableDepthWrite();
 
-void enableStencilRead( bool enable = true );
-void disableStencilRead();
+//! Enables or disables the Stencil Test operation, which controls reading and writing to the stencil buffer. Analagous to `glEnable( GL_STENCIL_TEST, enable );`
+void enableStencilTest( bool enable = true );
+//! Disables the Stencil Test operation. Analagous to `glEnable( GL_STENCIL_TEST, false );`
+void disableStencilTest();
+//! TODO: remove or implement (#792)
 void enableStencilWrite( bool enable = true );
+//! TODO: remove or implement (#792)
 void disableStencilWrite();
 
 //! Sets the View and Projection matrices based on a Camera

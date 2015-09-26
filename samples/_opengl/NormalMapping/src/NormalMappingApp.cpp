@@ -287,7 +287,7 @@ void NormalMappingApp::draw()
 		gl::pushMatrices();
 		gl::setMatrices( mCamera );
 
-		gl::enableDepthRead();
+		gl::enableDepthTest();
 		gl::enableDepthWrite();
 
 		// bind textures
@@ -332,7 +332,7 @@ void NormalMappingApp::draw()
 
 		// get ready to render in 2D again
 		gl::disableDepthWrite();
-		gl::disableDepthRead();
+		gl::disableDepthTest();
 
 		gl::popMatrices();
 

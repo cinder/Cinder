@@ -217,7 +217,7 @@ void ShadowMappingApp::setup()
 		mTransforms.emplace_back( m, randVec3() );
 	}
 	
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	mCamera.setFov( 30.0f );

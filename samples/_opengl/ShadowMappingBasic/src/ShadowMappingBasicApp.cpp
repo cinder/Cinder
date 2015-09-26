@@ -104,7 +104,7 @@ void ShadowMappingBasic::setup()
 	mFloorBatch				= gl::Batch::create( floor, gl::getStockShader( gl::ShaderDef() ) );
 	mFloorShadowedBatch		= gl::Batch::create( floor, mGlsl );
 	
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 }
 

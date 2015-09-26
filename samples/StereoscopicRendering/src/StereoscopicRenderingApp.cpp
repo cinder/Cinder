@@ -519,7 +519,7 @@ void StereoscopicRenderingApp::render()
 	float seconds = (float) getElapsedSeconds();
 
 	// enable 3D rendering
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	// set 3D camera matrices
@@ -565,7 +565,7 @@ void StereoscopicRenderingApp::render()
 	// restore 2D rendering
 	gl::popMatrices();
 	gl::disableDepthWrite();
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 
 	// render UI
 	if( mDrawUI ) renderUI();

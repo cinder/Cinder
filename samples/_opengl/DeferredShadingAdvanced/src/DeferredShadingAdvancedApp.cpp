@@ -535,7 +535,7 @@ void DeferredShadingAdvancedApp::draw()
 		gl::clear();
 		const gl::ScopedMatrices scopedMatrices;
 		gl::setMatrices( mCamera );
-		gl::enableDepthRead();
+		gl::enableDepthTest();
 		gl::enableDepthWrite();
 		
 		////// BEGIN DRAW STUFF ////////////////////////////////////////////////
@@ -577,7 +577,7 @@ void DeferredShadingAdvancedApp::draw()
 		const gl::ScopedFramebuffer scopedFrameBuffer( mFboShadowMap );
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
 		const gl::ScopedMatrices scopedMatrices;
-		gl::enableDepthRead();
+		gl::enableDepthTest();
 		gl::enableDepthWrite();
 		gl::clear();
 		gl::setMatrices( mShadowCamera );
@@ -615,7 +615,7 @@ void DeferredShadingAdvancedApp::draw()
 		}
 		
 		gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
-		gl::enableDepthRead();
+		gl::enableDepthTest();
 		
 		// Draw light volumes into L-buffer, reading G-buffer to perform shading
 		{
@@ -684,7 +684,7 @@ void DeferredShadingAdvancedApp::draw()
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboAccum->getSize() );
 		const gl::ScopedMatrices scopedMatrices;
 		gl::setMatricesWindow( mFboAccum->getSize() );
-		gl::disableDepthRead();
+		gl::disableDepthTest();
 		gl::disableDepthWrite();
 		gl::translate( mFboAccum->getSize() / 2 );
 		gl::scale( mFboAccum->getSize() );
@@ -766,7 +766,7 @@ void DeferredShadingAdvancedApp::draw()
 			const gl::ScopedFramebuffer scopedFrameBuffer( mFboRayDepth );
 			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayDepth->getSize() );
 			gl::clear();
-			gl::enableDepthRead();
+			gl::enableDepthTest();
 			gl::enableDepthWrite();
 			const gl::ScopedMatrices scopedMatrices;
 			gl::setMatrices( mCamera );
@@ -779,7 +779,7 @@ void DeferredShadingAdvancedApp::draw()
 			const gl::ScopedFramebuffer scopedFrameBuffer( mFboRayColor );
 			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayColor->getSize() );
 			gl::clear();
-			gl::enableDepthRead();
+			gl::enableDepthTest();
 			gl::disableDepthWrite();
 
 			// Draw light source into color buffer
@@ -847,13 +847,13 @@ void DeferredShadingAdvancedApp::draw()
 		gl::setMatricesWindow( mFboCsz->getSize() );
 		gl::translate( mFboCsz->getSize() / 2 );
 		gl::scale( mFboCsz->getSize() );
-		gl::enableDepthRead();
+		gl::enableDepthTest();
 		
 		const gl::ScopedTextureBind scopedTextureBind( mFboGBuffer->getDepthTexture(), 0 );
 		mBatchSaoCszRect->getGlslProg()->uniform( "uNear", n );
 		mBatchSaoCszRect->draw();
 		
-		gl::disableDepthRead();
+		gl::disableDepthTest();
 	}
 	
 	{
@@ -867,7 +867,7 @@ void DeferredShadingAdvancedApp::draw()
 			// Draw next pass into AO buffer's first attachment
 			const gl::ScopedMatrices scopedMatrices;
 			gl::setMatricesWindow( mFboAo->getSize() );
-			gl::enableDepthRead();
+			gl::enableDepthTest();
 			gl::disableDepthWrite();
 			gl::translate( mFboAo->getSize() / 2 );
 			gl::scale( mFboAo->getSize() );
@@ -952,7 +952,7 @@ void DeferredShadingAdvancedApp::draw()
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPingPong->getSize() );
 		const gl::ScopedMatrices scopedMatrices;
 		gl::setMatricesWindow( mFboPingPong->getSize() );
-		gl::disableDepthRead();
+		gl::disableDepthTest();
 		gl::disableDepthWrite();
 		
 		const size_t columns = 4;
@@ -1003,7 +1003,7 @@ void DeferredShadingAdvancedApp::draw()
 			gl::setMatricesWindow( mFboPingPong->getSize() );
 			gl::translate( mFboPingPong->getSize() / 2 );
 			gl::scale( mFboPingPong->getSize() );
-			gl::disableDepthRead();
+			gl::disableDepthTest();
 			gl::disableDepthWrite();
 			
 			{
@@ -1097,7 +1097,7 @@ void DeferredShadingAdvancedApp::draw()
 		gl::setMatricesWindow( mFboPingPong->getSize() );
 		gl::translate( mFboPingPong->getSize() / 2 );
 		gl::scale( mFboPingPong->getSize() );
-		gl::disableDepthRead();
+		gl::disableDepthTest();
 		gl::disableDepthWrite();
 		
 		// Fill screen with AO in AO view mode
@@ -1155,7 +1155,7 @@ void DeferredShadingAdvancedApp::draw()
 	gl::setMatricesWindow( toPixels( getWindowSize() ) );
 	gl::translate( toPixels( getWindowSize() / 2 )  );
 	gl::scale( toPixels( getWindowSize() ) );
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 	gl::disableDepthWrite();
 	const gl::ScopedTextureBind scopedTextureBind( mTextureFboPingPong[ pong ], 0 );
 	if ( mEnabledFxaa ) {

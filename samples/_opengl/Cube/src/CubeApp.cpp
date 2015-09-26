@@ -35,7 +35,7 @@ void RotatingCubeApp::setup()
 	mBatch = gl::Batch::create( geom::Cube(), mGlsl );
 
 	gl::enableDepthWrite();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 }
 
 void RotatingCubeApp::resize()

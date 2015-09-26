@@ -112,7 +112,7 @@ void TweakBarApp::update()
 void TweakBarApp::draw()
 {
 	// this pair of lines is the standard way to clear the screen in OpenGL
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 	gl::clear( Color::gray( 0.1f ) );
 

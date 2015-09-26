@@ -147,7 +147,7 @@ void Pistons::update( const ci::Camera& camera )
 
 void Pistons::draw( const ci::Camera& camera, float time )
 {
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	gl::pushMatrices();
@@ -161,5 +161,5 @@ void Pistons::draw( const ci::Camera& camera, float time )
 	gl::popMatrices();
 
 	gl::disableDepthWrite();
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 }

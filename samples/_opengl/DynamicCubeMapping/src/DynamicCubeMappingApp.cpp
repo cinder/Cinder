@@ -69,7 +69,7 @@ void DynamicCubeMappingApp::setup()
 
 	mDrawCubeMap = true;
 
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();	
 }
 

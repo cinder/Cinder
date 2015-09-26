@@ -64,7 +64,7 @@ void CameraPerspApp::setup()
 {
 	setWindowSize( 1280, 480 );
 	
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 	gl::enableAlphaBlending();
 	

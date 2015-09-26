@@ -38,7 +38,7 @@ class ImageHFApp : public App {
 void ImageHFApp::setup()
 {
 	gl::enableAlphaBlending();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();    
 
 	mCamUi = CameraUi( &mCam, getWindow() );

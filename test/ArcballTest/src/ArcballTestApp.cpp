@@ -35,7 +35,7 @@ class ArcballTestApp : public App {
 
 void ArcballTestApp::setup()
 {
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 
 	mZLookAt = 0.5f;
@@ -112,7 +112,7 @@ void ArcballTestApp::draw()
 	gl::setMatrices( cam );
 
 	// draw the earth
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 	gl::translate( mEarthSphere.getCenter() );
 	gl::rotate( mArcball.getQuat() );
@@ -128,7 +128,7 @@ void ArcballTestApp::draw()
 		mConstraintAxis->draw();
 	}
 
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 
 	// draw from vector marker
 	gl::setMatrices( cam );

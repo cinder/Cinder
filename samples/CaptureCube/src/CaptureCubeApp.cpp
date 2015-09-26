@@ -43,7 +43,7 @@ void CaptureCubeApp::setup()
 	}
 	
 	mCam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::enableDepthWrite();
 }
 

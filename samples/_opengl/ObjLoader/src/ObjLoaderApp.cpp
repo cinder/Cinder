@@ -121,7 +121,7 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 void ObjLoaderApp::draw()
 {
 	gl::enableDepthWrite();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	
 	gl::clear( Color( 0.0f, 0.1f, 0.2f ) );
 

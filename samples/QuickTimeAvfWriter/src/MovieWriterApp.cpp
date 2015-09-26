@@ -56,7 +56,7 @@ void MovieWriterApp::update()
 void MovieWriterApp::draw()
 {
 	gl::clear();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 	gl::color( Color( CM_HSV, fmod( getElapsedFrames() / 30.0f, 1.0f ), 1, 1 ) );
 	gl::draw( geom::Circle().center( getWindowCenter() ).radius( getElapsedFrames() ).subdivisions( 100 ) );
 }

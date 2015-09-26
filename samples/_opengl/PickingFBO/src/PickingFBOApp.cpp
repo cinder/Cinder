@@ -94,7 +94,7 @@ void PickingFBOApp::setup()
 	mDebugDisplaySize = 20.0f;
 
 	gl::enableDepthWrite();
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 }
 
 void PickingFBOApp::resize()
@@ -112,7 +112,7 @@ void PickingFBOApp::draw()
 		renderScene();
 
 	gl::clear();
-	gl::disableDepthRead();
+	gl::disableDepthTest();
 	gl::setMatricesWindow( toPixels( getWindowSize() ) );
 	gl::draw( mFbo->getColorTexture(), toPixels( getWindowBounds() ) );
 	if( mDebugTexture ) {
@@ -122,7 +122,7 @@ void PickingFBOApp::draw()
 #if ! defined( CINDER_GL_ES )
 	mParams->draw();
 #endif
-	gl::enableDepthRead();
+	gl::enableDepthTest();
 }
 
 void PickingFBOApp::renderScene()

@@ -197,7 +197,7 @@ void HodginParticlesReduxApp::draw()
 {
 	glClearColor( 0.0025f, 0.0025f, 0.0025f, 1 );
 	gl::enableDepthWrite( true );
-	gl::enableDepthRead( true );
+	gl::enableDepthTest( true );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	gl::enableAlphaBlending();
 	
