@@ -3583,10 +3583,6 @@ def process_dir(in_path, out_path):
         elif os.path.isdir(full_path):
             process_html_dir(full_path)
 
-    # save search index to json file
-    # print g_search_index
-    write_search_index()
-
 
 def process_html_dir(in_path):
     global state
@@ -3749,6 +3745,9 @@ if __name__ == "__main__":
     if not args.path: # no args; run all docs
         # process_html_dir(HTML_SOURCE_PATH, "html/")
         process_dir("xml" + os.sep, "html" + os.sep)
+
+        # save search index to json file
+        write_search_index()
         log("SUCCESSFULLY GENERATED CINDER DOCS!", 0, True)
     elif args.path:
         inPath = args.path
