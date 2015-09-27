@@ -360,18 +360,11 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	int glyphsTall = floor( mFormat.getTextureHeight() / (glyphExtents.y+5) );	
 	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
 	vec2 curOffset;
-	//FT_UInt renderGlyphs[glyphsWide*glyphsTall];
-	//vec2 renderPositions[glyphsWide*glyphsTall];
 	std::vector<FT_UInt> renderGlyphs( glyphsWide*glyphsTall );
 	std::vector<FT_Vector> renderPositions( glyphsWide*glyphsTall );
 	Surface surface( mFormat.getTextureWidth(), mFormat.getTextureHeight(), true );
 	ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );
 	ColorA white( 1, 1, 1, 1 );
-	//::CGContextRef cgContext = cocoa::createCgBitmapContext( surface );
-	//::CGContextSetRGBFillColor( cgContext, 1, 1, 1, 1 );
-	//::CGContextSetFont( cgContext, font.getCgFontRef() );
-	//::CGContextSetFontSize( cgContext, font.getSize() );
-	//::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
 	ivec2 surfaceSize		= surface.getSize();
 	uint8_t* surfaceData   	= surface.getData();
 	size_t surfacePixelInc 	= surface.getPixelInc();
@@ -395,7 +388,6 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 		curOffset += ivec2( glyphExtents.x + 3, 0 );
 		++glyphIt;
 		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
-			//::CGContextShowGlyphsAtPositions( cgContext, renderGlyphs, renderPositions, curGlyphIndex );
 			for( size_t i = 0; i < (size_t)curGlyphIndex; ++i ) {
 				FT_UInt glyphIndex = renderGlyphs[i];
 				FT_Vector glyphPos = renderPositions[i];
@@ -456,8 +448,6 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			curOffset.y += glyphExtents.y + 2;
 		}
 	}
-
-	//::CGContextRelease( cgContext );	
 }
 
 #endif

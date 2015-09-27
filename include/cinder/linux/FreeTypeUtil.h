@@ -128,7 +128,6 @@ inline Measure MeasureString( const std::string& utf8, FT_Face face, bool tightF
 	return Measure( size, baseline );
 } 
 
-
 inline void DrawBitmap( 
 	const ivec2&		offset,
 	FT_Bitmap*			bitmap, 
@@ -225,6 +224,5 @@ inline std::string GetFontName( FT_Face face, const std::string &subName = "" )
 	}
 	return fontName;
 }
-
 
 }}} // namespace cinder::linux::ftutil

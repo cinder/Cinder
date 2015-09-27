@@ -150,7 +150,7 @@ for build in ${BUILDTYPES[@]}; do
 	fi
 
 	cd ${build_dir}
-	if [ ${FULLBUILD} == true ]; then
+	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
 		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2}
 	fi
 	make -j ${NUMPROCS} VERBOSE=1
