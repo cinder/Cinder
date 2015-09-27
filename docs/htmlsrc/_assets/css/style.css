@@ -467,6 +467,14 @@ body#guide-contents .cols-2 .col > * {
   margin-right: 10px;
   float: left;
 }
+.top .ns {
+  display: block;
+  color: #a41c12;
+  line-height: 1em;
+}
+.top .ns .link:not(:last-child):after {
+  content: "::";
+}
 .top .include {
   display: inline-block;
   color: #585858;
@@ -556,16 +564,6 @@ body.namespaces .info-links label {
   padding-bottom: 5px;
   margin-bottom: 5px;
   border-bottom: 3px solid #ebebeb;
-}
-body.classes .info-links .ns,
-body.namespaces .info-links .ns {
-  display: block;
-  color: #a41c12;
-  line-height: 1em;
-}
-body.classes .info-links .ns .link:not(:last-child):after,
-body.namespaces .info-links .ns .link:not(:last-child):after {
-  content: "::";
 }
 body.classes .info-links .side a,
 body.namespaces .info-links .side a {

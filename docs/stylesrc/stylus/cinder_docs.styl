@@ -368,6 +368,14 @@ span.slash
 		margin-right: 10px
 		float: left
 	
+	.ns
+		display: block
+		color: $cinder-red
+		line-height: 1em
+		
+		.link:not(:last-child):after
+			content: "::"
+	
 	.include
 		display: inline-block
 		color: $middle-gray-text
@@ -436,7 +444,7 @@ body.classes, body.namespaces
 	.row .row
 		margin: 0
 	
-	
+			
 	.info-links
 		margin-top: 30px
 		display: flex
@@ -453,13 +461,6 @@ body.classes, body.namespaces
 			margin-bottom: 5px
 			border-bottom: 3px solid $gray-depth-1
 			
-		.ns
-			display: block
-			color: $cinder-red
-			line-height: 1em
-			
-			.link:not(:last-child):after
-				content: "::"
 
 		.side
 
