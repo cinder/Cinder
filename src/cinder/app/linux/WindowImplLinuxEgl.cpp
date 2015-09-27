@@ -45,12 +45,11 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	mRenderer = format.getRenderer();
 
 	// NativeWindow->window will get updated by the mRenderer
-	ivec2 displaySize = mAppImpl->getDefaultDisplaySize();	
-	mNativeWindow = std::unique_ptr<NativeWindow>( new NativeWindow( displaySize, 0 ) );
+	auto windowSize = format.getSize();
+	mNativeWindow = std::unique_ptr<NativeWindow>( new NativeWindow( windowSize, 0 ) );
 	mRenderer->setup( reinterpret_cast<void*>( &(mNativeWindow->window) ), sharedRenderer );
 
 	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
-	//rendererGl->makeCurrent( true );
 
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );

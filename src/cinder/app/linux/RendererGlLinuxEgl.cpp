@@ -150,8 +150,8 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 	mCinderContext->makeCurrent();
 	checkGlStatus();
 
-	//eglSwapInterval( mDisplay, 1 );
-	//checkGlStatus();
+	eglSwapInterval( mDisplay, 1 );
+	checkGlStatus();
 
 	return true;
 }
