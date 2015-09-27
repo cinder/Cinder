@@ -119,6 +119,7 @@ class ObjLoader : public geom::Source {
 	uint8_t			getAttribDims( geom::Attrib attr ) const override;
 	geom::AttribSet	getAvailableAttribs() const override;
 	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	Source*			clone() const override { return new ObjLoader( *this ); }
 
   private:
 	typedef std::tuple<int,int> VertexPair;

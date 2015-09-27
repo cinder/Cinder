@@ -87,7 +87,7 @@ void InstancedTeapotsApp::update()
 	mCam.lookAt( vec3( 0, CAMERA_Y_RANGE.first + abs(sin( getElapsedSeconds() / 4)) * (CAMERA_Y_RANGE.second - CAMERA_Y_RANGE.first), 0 ), vec3( 0 ) );
 	
 	// update our instance positions; map our instance data VBO, write new positions, unmap
-	vec3 *positions = (vec3*)mInstanceDataVbo->mapWriteOnly( true );
+	vec3 *positions = (vec3*)mInstanceDataVbo->mapReplace();
 	for( size_t potX = 0; potX < NUM_INSTANCES_X; ++potX ) {
 		for( size_t potY = 0; potY < NUM_INSTANCES_Y; ++potY ) {
 			float instanceX = potX / (float)NUM_INSTANCES_X - 0.5f;

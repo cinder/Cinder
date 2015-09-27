@@ -157,11 +157,17 @@ quat MotionImplCoreMotion::getRotation( app::InterfaceOrientation orientation )
 	::CMQuaternion cq = mMotionManager.deviceMotion.attitude.quaternion;
 	quat q = kCorrectionRotation * quat( cq.w, cq.x, cq.y, cq.z );
 	switch( orientation ) {
-		case app::PortraitUpsideDown:	q = angleAxis( (float)M_PI, vec3( 0, 0, 1 ) ) * quat( q.w, -q.x, -q.y, q.z );
-		case app::LandscapeLeft:		q = angleAxis( (float)kPiOverTwo, vec3( 0, 0, 1 ) ) * quat( q.w, q.y, -q.x, q.z );
-		case app::LandscapeRight:		q = angleAxis( (float)kPiOverTwo, vec3( 0, 0, -1 ) ) * quat( q.w, -q.y,  q.x, q.z );
+		case app::PortraitUpsideDown:
+			q = angleAxis( (float)M_PI, vec3( 0, 0, 1 ) ) * quat( q.w, -q.x, -q.y, q.z );
+		break;
+		case app::LandscapeLeft:
+			q = angleAxis( kPiOverTwo, vec3( 0, 0, 1 ) ) * quat( q.w, q.y, -q.x, q.z );
+		break;
+		case app::LandscapeRight:
+			q = angleAxis( kPiOverTwo, vec3( 0, 0, -1 ) ) * quat( q.w, -q.y,  q.x, q.z );
+		break;
 		default:
-			break;
+		break;
 	}
 
 	return q;

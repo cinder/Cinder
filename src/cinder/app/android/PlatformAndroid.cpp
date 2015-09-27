@@ -83,7 +83,7 @@ void PlatformAndroid::cleanupLaunch()
 
 DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
 {
-	fs::path assetPath = findAssetPath( relativePath );
+	fs::path assetPath = getAssetPath( relativePath );
 	if( ! assetPath.empty() ) {
 		if( ci::app::PlatformAndroid::isAssetPath( assetPath ) ) {
 			return DataSourceAndroidAsset::create( assetPath );
@@ -95,6 +95,20 @@ DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
 	else {
 		throw AssetLoadExc( relativePath );
 	}
+}
+
+fs::path PlatformAndroid::getAssetPath( const fs::path &relativePath ) const
+{
+	const auto &assetDirs = getAssetDirectories();
+
+	for( const auto &directory : assetDirs ) {
+		auto fullPath = directory / relativePath;
+		if( android::AssetFileSystem_exists( fullPath ) ) {
+			return fullPath;
+		}
+	}
+
+	return fs::path(); // empty implies failure	
 }
 
 DataSourceRef PlatformAndroid::loadResource( const fs::path &resourcePath )
@@ -202,15 +216,17 @@ bool PlatformAndroid::isAssetPath( const fs::path &path )
 
 void PlatformAndroid::prepareAssetLoading()
 {
-	// NOTE: Add an empty string for the asset file system
+	const auto &assetDirs = getAssetDirectories();
 
+	// NOTE: Add an empty string for the asset file system
 	fs::path directory = "";
-	auto it = find( mAssetDirectories.begin(), mAssetDirectories.end(), directory );
-	if( it == mAssetDirectories.end() ) {
-		mAssetDirectories.push_back( directory );	
+	auto it = find( assetDirs.begin(), assetDirs.end(), directory );
+	if( it == assetDirs.end() ) {
+		addAssetDirectory( directory );	
 	}
 }
 
+/*
 fs::path PlatformAndroid::findAssetPath( const fs::path &relativePath )
 {
 	if( ! mAssetDirsInitialized ) {
@@ -233,6 +249,6 @@ void PlatformAndroid::findAndAddAssetBasePath()
 {
 	// Does nothing
 }
-
+*/
 
 } } // namespace cinder::app

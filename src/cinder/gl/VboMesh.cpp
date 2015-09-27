@@ -38,7 +38,8 @@ class VboMeshSource : public geom::Source {
   public:
 	static std::shared_ptr<VboMeshSource>	create( const gl::VboMesh *vboMesh );
 	
-	void	loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	VboMeshSource*	clone() const override { return new VboMeshSource( *this ); }
 	
 	size_t			getNumVertices() const override;
 	size_t			getNumIndices() const override;
@@ -548,7 +549,7 @@ void VboMesh::bufferAttrib( geom::Attrib attrib, size_t dataSizeBytes, const voi
 	}
 	else { // interleaved data
 #if ! defined( CINDER_GL_ANGLE ) || defined( CINDER_GL_ES_3 )
-		uint8_t *ptr = reinterpret_cast<uint8_t*>( layoutVbo->second->mapWriteOnly( false ) );
+		uint8_t *ptr = reinterpret_cast<uint8_t*>( layoutVbo->second->mapWriteOnly() );
 		if( ! ptr ) {
 			CI_LOG_E( "Failed to map VBO" );
 			return;
@@ -580,7 +581,7 @@ void VboMesh::bufferIndices( size_t dataSizeBytes, const void *data )
 	mIndices->bufferSubData( 0, dataSizeBytes, data );
 }
 
-#if defined(CINDER_GL_ES_3) || (! defined( CINDER_GL_ANGLE ))
+#if defined( CINDER_GL_ES_3 ) || (! defined( CINDER_GL_ANGLE ))
 template<typename T>
 VboMesh::MappedAttrib<T> VboMesh::mapAttribImpl( geom::Attrib attr, int dims, bool orphanExisting )
 {
@@ -599,7 +600,10 @@ VboMesh::MappedAttrib<T> VboMesh::mapAttribImpl( geom::Attrib attr, int dims, bo
 	else {
 		MappedVboInfo mappedVboInfo;
 		mappedVboInfo.mRefCount = 1;
-		mappedVboInfo.mPtr = layoutVbo->second->mapWriteOnly( orphanExisting );
+		if( orphanExisting )
+			mappedVboInfo.mPtr = layoutVbo->second->mapReplace();
+		else
+			mappedVboInfo.mPtr = layoutVbo->second->mapWriteOnly();
 		mMappedVbos[layoutVbo->second] = mappedVboInfo;
 		dataPtr = mappedVboInfo.mPtr;
 	}

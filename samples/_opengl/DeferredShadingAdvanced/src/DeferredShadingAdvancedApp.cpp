@@ -1559,7 +1559,7 @@ void DeferredShadingAdvancedApp::update()
 		mLights.back().setPosition( p );
 		
 		// Update light positions in UBO
-		Light* lights = (Light*)mUboLight->mapWriteOnly( false );
+		Light* lights = (Light*)mUboLight->mapWriteOnly();
 		for ( const Light& light : mLights ) {
 			lights->setPosition( light.getPosition() );
 			++lights;

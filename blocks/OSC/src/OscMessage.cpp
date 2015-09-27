@@ -118,6 +118,10 @@ Message& Message::copy( const Message& other ){
 	remote_host = other.remote_host;
 	remote_port = other.remote_port;
 
+	for( auto & arg : args ) {
+		if( arg != nullptr )
+			delete arg;
+	}
 	args.clear();
 	
 	for ( int i=0; i<(int)other.args.size(); ++i ){

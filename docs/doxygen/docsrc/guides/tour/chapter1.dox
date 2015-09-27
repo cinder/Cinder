@@ -1,6 +1,6 @@
 /*! \page helloCinderChapter1 Chapter 1: Getting Started
 \section newProject Building a new project
-Getting a new project up and running in Cinder is simple. Take a peek at the <a href="../welcome/MacNewProject.html">Mac</a> or <a href="../welcome/MSWNewProject.html">Windows</a> guides to creating a new project to see for yourself. However, for this tutorial you can simply follow along from the project source code contained in the \e cinder/tour folder.\n
+Getting a new project up and running in Cinder is simple. Take a peek at the <a href="../welcome/MacSetup.html">Mac</a> or <a href="../welcome/MSWNewProject.html">Windows</a> guides to creating a new project to see for yourself. However, for this tutorial you can simply follow along from the project source code contained in the \e cinder/tour folder.\n
 \n
 When you create a new Cinder project, you will notice there are a few functions declared for you. Every Cinder project is made up of three main functions. You initialize your variables in the \ref cinder::app::App::setup "setup()" method which is called once when your program begins. You make changes to those variables in the \ref cinder::app::App::update "update()" method. And finally, you \ref cinder::app::App::draw "draw()" content in your program window. Update and draw are the heartbeat of any Cinder project. Setup, then update and draw, update and draw, update and draw, on and on until you quit the application.
 \code

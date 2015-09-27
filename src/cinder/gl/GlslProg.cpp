@@ -604,7 +604,7 @@ GlslProg::GlslProg( const Format &format )
 			}
 		}
 		if( ! active ) {
-			CI_LOG_E( "Unknown attribute: \"" << userAttrib.mName << "\"" );
+			CI_LOG_W( "Unknown attribute: \"" << userAttrib.mName << "\"" );
 		}
 	}
     
@@ -1188,7 +1188,7 @@ void GlslProg::uniformBlock( int loc, int binding )
 		}
 	}
 	else {
-		CI_LOG_E( "Uniform block at " << loc << " location not found" );
+		CI_LOG_W( "Uniform block at " << loc << " location not found" );
 	}
 }
 
@@ -1202,7 +1202,7 @@ void GlslProg::uniformBlock( const std::string &name, GLint binding )
 		}
 	}
 	else {
-		CI_LOG_E( "Uniform block \"" << name << "\" not found" );
+		CI_LOG_W( "Uniform block \"" << name << "\" not found" );
 	}
 }
 
@@ -1391,9 +1391,10 @@ bool GlslProg::checkUniformType( GLenum uniformType ) const
 		case GL_UNSIGNED_INT: return std::is_same<T,uint32_t>::value;
 #if ! defined( CINDER_GL_ES )
 		case GL_SAMPLER_1D:						return std::is_same<T,int32_t>::value;
-		case GL_SAMPLER_BUFFER_EXT:		return std::is_same<T,int32_t>::value;
-		case GL_SAMPLER_2D_RECT:		return std::is_same<T,int32_t>::value;
-		case GL_INT_SAMPLER_2D_RECT:	return std::is_same<T,int32_t>::value;
+		case GL_SAMPLER_BUFFER_EXT:				return std::is_same<T,int32_t>::value;
+		case GL_UNSIGNED_INT_SAMPLER_BUFFER:	return std::is_same<T, int32_t>::value;
+		case GL_SAMPLER_2D_RECT:				return std::is_same<T,int32_t>::value;
+		case GL_INT_SAMPLER_2D_RECT:			return std::is_same<T,int32_t>::value;
 		case GL_UNSIGNED_INT_SAMPLER_2D_RECT:	return std::is_same<T,int32_t>::value;		
 #endif
 #if ! defined( CINDER_GL_ES_2 )

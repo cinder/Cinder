@@ -187,7 +187,7 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 	else
 		mInternalFormat = format.mInternalFormat;
 
-	if( format.mDataType == -1 )
+	if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) )
 		format.mDataType = defaultDataType;
 
 	// Swizzle mask
@@ -1065,7 +1065,7 @@ Texture2d::Texture2d( const Surface32f &surface, Format format )
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB, GL_FLOAT );
 #else
 	initParams( format, surface.hasAlpha() ? GL_RGBA32F : GL_RGB32F, GL_FLOAT );
@@ -1082,7 +1082,7 @@ Texture2d::Texture2d( const Channel32f &channel, Format format )
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	initParams( format, GL_LUMINANCE, GL_FLOAT );
 #else
 	if( ! format.mSwizzleSpecified ) {
@@ -1099,7 +1099,7 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 	: mActualSize( -1, -1 ), mCleanBounds( 0, 0, -1, -1 ),
 	mTopDown( false )
 {
-	GLint defaultInternalFormat;	
+	GLint defaultInternalFormat;
 	// Set the internal format based on the image's color space
 	switch( imageSource->getColorModel() ) {
 		case ImageIo::CM_RGB:
@@ -1144,13 +1144,14 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 			}
 
 			if( ! format.mSwizzleSpecified ) {
-				std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_GREEN };
-				if( defaultInternalFormat == GL_RED )
-					swizzleMask[3] = GL_ONE;
+				std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
+				if( imageSource->hasAlpha() )
+					swizzleMask[3] = GL_GREEN;
 				format.setSwizzleMask( swizzleMask );
 			}
 #endif
-		} break;
+		}
+		break;
 		default:
 			throw ImageIoExceptionIllegalColorModel( "Unsupported color model for gl::Texture construction." );
 		break;
@@ -1274,7 +1275,7 @@ void Texture2d::initData( const void *data, GLenum dataFormat, const Format &for
 #if ! defined( CINDER_GL_ES )
 // Called by initData( ImageSourceRef ) when the user has supplied an intermediate PBO via Format
 // We map the PBO after resizing it if necessary, and then use that as a data store for the ImageTargetGlTexture
-void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo )
+void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, GLint dataType, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo )
 {
 	auto ctx = gl::context();
 
@@ -1288,25 +1289,25 @@ void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSourc
 		auto target = ImageTargetGlTexture<uint8_t>::create( this, channelOrder, isGray, imageSource->hasAlpha(), pboData );
 		imageSource->load( target );
 		pbo->unmap();
-		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_UNSIGNED_BYTE, nullptr );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, dataType, nullptr );
 	}
 	else if( imageSource->getDataType() == ImageIo::UINT16 ) {
 		auto target = ImageTargetGlTexture<uint16_t>::create( this, channelOrder, isGray, imageSource->hasAlpha(), pboData );
 		imageSource->load( target );
 		pbo->unmap();
-		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_UNSIGNED_SHORT, nullptr );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, dataType, nullptr );
 	}
 	else if( imageSource->getDataType() == ImageIo::FLOAT16 ) {
 		auto target = ImageTargetGlTexture<half_float>::create( this, channelOrder, isGray, imageSource->hasAlpha(), pboData );
 		imageSource->load( target );
 		pbo->unmap();
-		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT, nullptr );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, dataType, nullptr );
 	}
 	else {
 		auto target = ImageTargetGlTexture<float>::create( this, channelOrder, isGray, imageSource->hasAlpha(), pboData );
 		imageSource->load( target );
 		pbo->unmap();		
-		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_FLOAT, nullptr );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, dataType, nullptr );
 	}
 	
 	ctx->popBufferBinding( GL_PIXEL_UNPACK_BUFFER );
@@ -1314,33 +1315,33 @@ void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSourc
 #endif
 
 // Called by initData( ImageSourceRef ) when the user has NOT supplied an intermediate PBO
-void Texture2d::initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray )
+void Texture2d::initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, GLint dataType, ImageIo::ChannelOrder channelOrder, bool isGray )
 {
 	if( imageSource->getDataType() == ImageIo::UINT8 ) {
 		auto target = ImageTargetGlTexture<uint8_t>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
-		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_UNSIGNED_BYTE, target->getData() );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, dataType, target->getData() );
 	}
 	else if( imageSource->getDataType() == ImageIo::UINT16 ) {
 		auto target = ImageTargetGlTexture<uint16_t>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
-		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_UNSIGNED_SHORT, target->getData() );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, dataType, target->getData() );
 		
 	}
 	else if( imageSource->getDataType() == ImageIo::FLOAT16 ) {
 		auto target = ImageTargetGlTexture<half_float>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
 #if defined( CINDER_GL_ES_2 )
-		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT_OES, target->getData() );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, dataType, target->getData() );
 #else
-		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT, target->getData() );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, dataType, target->getData() );
 #endif
 		
 	}
 	else {
 		auto target = ImageTargetGlTexture<float>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
-		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_FLOAT, target->getData() );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, dataType, target->getData() );
 	}
 }
 
@@ -1350,28 +1351,25 @@ void Texture2d::initData( const ImageSourceRef &imageSource, const Format &forma
 	mCleanBounds = Area( 0, 0, mActualSize.x, mActualSize.y );
 	
 	// setup an appropriate dataFormat/ImageTargetTexture based on the image's color space
-	GLint dataFormat;
 	ImageIo::ChannelOrder channelOrder;
 	bool isGray = false;
 	switch( imageSource->getColorModel() ) {
 		case ImageSource::CM_RGB:
-			dataFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : GL_RGB;
 			channelOrder = ( imageSource->hasAlpha() ) ? ImageIo::RGBA : ImageIo::RGB;
 		break;
 		case ImageSource::CM_GRAY:
-#if defined( CINDER_GL_ES )
-			dataFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
-#else
-			dataFormat = ( imageSource->hasAlpha() ) ? GL_RG : GL_RED;
-#endif
 			channelOrder = ( imageSource->hasAlpha() ) ? ImageIo::YA : ImageIo::Y;
 			isGray = true;
 		break;
 		default: // if this is some other color space, we'll have to punt and go w/ RGB
-			dataFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : GL_RGB;
 			channelOrder = ( imageSource->hasAlpha() ) ? ImageIo::RGBA : ImageIo::RGB;
 		break;
 	}
+
+	GLenum dataFormat, dataType;
+	getInternalFormatInfo( mInternalFormat, &dataFormat, &dataType, nullptr, nullptr, nullptr );
+	if( ! format.isAutoDataType() )
+		dataType = format.getDataType();
 	
 	ScopedTextureBind tbs( mTarget, mTextureId );	
 	
@@ -1379,12 +1377,12 @@ void Texture2d::initData( const ImageSourceRef &imageSource, const Format &forma
 #if ! defined( CINDER_GL_ES )
 	auto pbo = format.getIntermediatePbo();
 	if( pbo )
-		initDataImageSourceWithPboImpl( imageSource, format, dataFormat, channelOrder, isGray, pbo );
+		initDataImageSourceWithPboImpl( imageSource, format, dataFormat, dataType, channelOrder, isGray, pbo );
 	else {
-		initDataImageSourceImpl( imageSource, format, dataFormat, channelOrder, isGray );
+		initDataImageSourceImpl( imageSource, format, dataFormat, dataType, channelOrder, isGray );
 	}	
 #else
-	initDataImageSourceImpl( imageSource, format, dataFormat, channelOrder, isGray );
+	initDataImageSourceImpl( imageSource, format, dataFormat, dataType, channelOrder, isGray );
 #endif	
 
 	if( mMipmapping ) {
@@ -1613,6 +1611,10 @@ class ImageSourceTexture : public ImageSource {
 			case GL_RGB32F_ARB: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGB; break;
 			case GL_R32F: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_RED; break;
 			case GL_RG32F: setChannelOrder( ImageIo::YA ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_RG; break;
+			case GL_RGBA16F_ARB: setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGBA; break;
+			case GL_RGB16F_ARB: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT16 ); format = GL_RGB; break;
+			case GL_R16F: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 ); format = GL_RED; break;
+			case GL_RG16F: setChannelOrder( ImageIo::YA ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT16 ); format = GL_RG; break;
 			default:
 				setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); format = GL_RGBA; break;
 		}
@@ -1628,6 +1630,14 @@ class ImageSourceTexture : public ImageSource {
 		int dataSize = 1;
 		if( mDataType == ImageIo::UINT16 ) {
 			dataType = GL_UNSIGNED_SHORT;
+			dataSize = 2;
+		}
+		else if( mDataType == ImageIo::FLOAT16 ) {
+#if defined( CINDER_GL_ES_2 )
+			dataType = GL_HALF_FLOAT_OES;
+#else
+			dataType = GL_HALF_FLOAT;
+#endif
 			dataSize = 2;
 		}
 		else if( mDataType == ImageIo::FLOAT32 ) {

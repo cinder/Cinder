@@ -120,21 +120,26 @@ void* BufferObj::map( GLenum access ) const
 }
 #endif
 
-#if defined( CINDER_GL_HAS_MAP_BUFFER )
-void* BufferObj::mapWriteOnly( bool invalidatePrevious )
+void* BufferObj::mapWriteOnly()
 {
 	ScopedBuffer bufferBind( mTarget, mId );
 #if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 	GLbitfield access = GL_MAP_WRITE_BIT;
-	if( invalidatePrevious ) {
-		access |= GL_MAP_INVALIDATE_BUFFER_BIT;
-	}
 	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
 #else	
-	if( invalidatePrevious ) {
-		glBufferData( mTarget, mSize, nullptr, mUsage );
-	}
-	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
+	return reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY_OES ) );
+#endif
+}
+
+void* BufferObj::mapReplace()
+{
+	ScopedBuffer bufferBind( mTarget, mId );
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
+	GLbitfield access = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT;
+	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+#else	
+	glBufferData( mTarget, mSize, nullptr, mUsage );
+	return reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY ) );
 #endif
 }
 
@@ -146,6 +151,7 @@ void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield 
 }
 #endif
 
+#if defined( CINDER_GL_HAS_MAP_BUFFER )
 void BufferObj::unmap() const
 {
 	ScopedBuffer bufferBind( mTarget, mId );

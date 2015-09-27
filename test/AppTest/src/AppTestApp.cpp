@@ -18,7 +18,7 @@ using namespace std;
 
 void prepareSettings( App::Settings *settings )
 {
-	CI_LOG_I( "bang" );
+	CI_LOG_I( "entering prepareSettings()" );
 
 	const auto &args = settings->getCommandLineArgs();
 	if( ! args.empty() ) {
@@ -125,7 +125,13 @@ AppTestApp::~AppTestApp()
 
 void AppTestApp::setup()
 {
-	CI_LOG_I( "bang" );
+	CI_LOG_I( "entering setup()" );
+
+	CI_LOG_I( "displays: " );
+	auto displays = Display::getDisplays();
+	for( auto &display : displays ) {
+		CI_LOG_I( "   {" << toString( *display ) << "}" );
+	}
 
 	auto asset = loadAsset( "mustache-green.png" );
 	mTexAsset = gl::Texture::create( loadImage( asset ) );
@@ -157,6 +163,28 @@ void AppTestApp::keyDown( KeyEvent event )
 	else if( event.getChar() == 's' ) {
 		auto filePath = getSaveFilePath();
 		CI_LOG_I( "result of getSaveFilePath(): " << filePath );
+	}
+	else if( event.getChar() == 'r' ) {
+		// iterate through some framerate settings
+		int targetFrameRate = (int)lround( getFrameRate() );
+		if( ! isFrameRateEnabled() ) {
+			CI_LOG_I( "setting framerate to 60" );
+			setFrameRate( 60 );
+		}
+		else if( targetFrameRate == 60 ) {
+			CI_LOG_I( "setting framerate to 30" );
+			setFrameRate( 30 );
+		}
+		else if( targetFrameRate == 30 ) {
+			CI_LOG_I( "disabling framerate" );
+			disableFrameRate();
+		}
+		else {
+			CI_ASSERT_NOT_REACHABLE();
+		}
+	}
+	else if( event.getChar() == 'v' ) {
+		gl::enableVerticalSync( ! gl::isVerticalSyncEnabled() );
 	}
 }
 

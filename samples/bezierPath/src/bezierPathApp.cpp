@@ -95,7 +95,6 @@ void Path2dApp::keyDown( KeyEvent event )
 void Path2dApp::draw()
 {
 	gl::clear( Color( 0.0f, 0.1f, 0.2f ) );
-	gl::enableAlphaBlending();
 	
 	// draw the control points
 	gl::color( Color( 1, 1, 0 ) );

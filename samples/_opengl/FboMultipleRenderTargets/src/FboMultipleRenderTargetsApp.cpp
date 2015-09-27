@@ -34,12 +34,11 @@ void FboMultipleRenderTargetsApp::setup()
 			.attachment( GL_COLOR_ATTACHMENT1, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
 	mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format );
 
-	try {
-		mGlslMultipleOuts = gl::GlslProg::create( loadAsset( "multipleOut.vert" ), loadAsset( "multipleOut.frag" ) );
-	}
-	catch( Exception &exc ) {
-		CI_LOG_EXCEPTION( "failed to load shader", exc );
-	}
+#if defined( CINDER_GL_ES_3 )
+	mGlslMultipleOuts = gl::GlslProg::create( loadAsset( "multipleOut_es3.vert" ), loadAsset( "multipleOut_es3.frag" ) );
+#else
+	mGlslMultipleOuts = gl::GlslProg::create( loadAsset( "multipleOut.vert" ), loadAsset( "multipleOut.frag" ) );
+#endif
 
 	gl::enableDepthRead();
 	gl::enableDepthWrite();	

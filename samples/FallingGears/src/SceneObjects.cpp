@@ -5,6 +5,7 @@
 #include "cinder/Timeline.h"
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Triangulate.h"
 
 const size_t BASS_MAX = 48;
 
@@ -41,11 +42,10 @@ void Gear::draw()
 	vec2 pos = vec2( mBody->GetPosition().x, mBody->GetPosition().y ) * pointsPerMeter;
 	float t = mBody->GetAngle();
 
-	gl::pushModelMatrix();
-		gl::translate( pos );
-		gl::rotate( t );
-		gl::draw( mImageTex, imageDest );
-	gl::popModelMatrix();
+	gl::ScopedModelMatrix modelScope;
+	gl::translate( pos );
+	gl::rotate( t );
+	gl::draw( mImageTex, imageDest );
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -134,11 +134,11 @@ void Island::handleCollision( const Gear *gear, const vec2 &contactPoint )
 
 	float pointsPerMeter = SceneController::getPointsPerMeter();
 
-	for( size_t i = 0; i < mBumpers.size(); i++ ) {
+	for( auto &bumper : mBumpers ) {
 		vec2 centerPos = box2d::toCinder( mBody->GetPosition() ) * pointsPerMeter;
-		Rectf bbox = mBumperBoundingBoxes[i] + centerPos;
+		Rectf bbox = bumper.mBoundingBox + centerPos;
 		if( bbox.contains( contactPoint ) ) {
-			auto &bumperAnim = mBumperVibrationLevels[i];
+			auto &bumperAnim = bumper.mVibrationLevel;
 			bumperAnim.stop();
 			bumperAnim = 1.0f;
 			app::timeline().apply( &bumperAnim, 0.0f, 1.0f );
@@ -150,17 +150,24 @@ void Island::handleCollision( const Gear *gear, const vec2 &contactPoint )
 	app::timeline().apply( &mVibrationLevel, 0.0f, 1.4f, EaseOutQuart() );
 }
 
-void Island::makeBumpers()
+void Island::setupGeometry()
 {
 	CI_ASSERT( mOuterVerts.size() == 6 && mInnerVerts.size() == 5 );
 
+	// create the body of the island
+	{
+		Path2d path;
+		path.moveTo( mOuterVerts[0] );
+		for( int i = 1; i < mOuterVerts.size(); ++i )
+			path.lineTo( mOuterVerts[i] );
+
+		mBatchBody = gl::Batch::create( Triangulator( path ).calcMesh(), gl::getStockShader( gl::ShaderDef().color() ) );
+	}
+
 	mBumpers.clear();
-	mBumperBoundingBoxes.clear();
-	mBumperVibrationLevels.clear();
 
 	const float padding = 4;
 	const float crookedPaddingPercent = 0.036f;
-	const float boundingBoxExpansion = 1.1f;
 
 	// left base
 	{
@@ -170,7 +177,8 @@ void Island::makeBumpers()
 		bumper.lineTo( mInnerVerts[1].x, mInnerVerts[1].y + padding );
 		bumper.lineTo( mInnerVerts[0] );
 		bumper.close();
-		mBumpers.push_back( bumper );
+
+		addBumper( bumper );
 	}
 
 	// left top
@@ -184,7 +192,8 @@ void Island::makeBumpers()
 		bumper.lineTo( mOuterVerts[2].x, mInnerVerts[2].y );
 		bumper.lineTo( mInnerVerts[1] + offsetInner );
 		bumper.close();
-		mBumpers.push_back( bumper );
+
+		addBumper( bumper );
 	}
 
 	// right top
@@ -198,7 +207,8 @@ void Island::makeBumpers()
 		bumper.lineTo( mInnerVerts[3] + offsetInner );
 		bumper.lineTo( mOuterVerts[3].x, mInnerVerts[2].y );
 		bumper.close();
-		mBumpers.push_back( bumper );
+
+		addBumper( bumper );
 	}
 
 	// right base
@@ -209,22 +219,29 @@ void Island::makeBumpers()
 		bumper.lineTo( mInnerVerts[4] );
 		bumper.lineTo( mInnerVerts[3].x, mInnerVerts[3].y + padding );
 		bumper.close();
-		mBumpers.push_back( bumper );
+
+		addBumper( bumper );
 	}
+}
 
-	for( size_t i = 0; i < mBumpers.size(); i++ ) {
-		mBumperVibrationLevels.push_back( 0 );
+void Island::addBumper( const ci::Path2d& path )
+{
+	const float boundingBoxExpansion = 1.1f;
 
-		// calculate an expanded bounding box for each bumper to do hit detection, ensuring that the entire edge is covered.
-		Rectf bbox = mBumpers[i].calcBoundingBox();
+	mBumpers.push_back( Bumper() );
+	auto &bumper = mBumpers.back();
+	bumper.mPath = path;
+	bumper.mBatch = gl::Batch::create( Triangulator( path ).calcMesh(), gl::getStockShader( gl::ShaderDef().color() ) );
+	bumper.mVibrationLevel = 0;
 
-		vec2 center = bbox.getCenter();
-		bbox -= center;
-		bbox *= boundingBoxExpansion;
-		bbox += center;
+	// calculate an expanded bounding box for each bumper to do hit detection, ensuring that the entire edge is covered.
+	Rectf bbox = bumper.mPath.calcBoundingBox();
+	vec2 center = bbox.getCenter();
+	bbox -= center;
+	bbox *= boundingBoxExpansion;
+	bbox += center;
 
-		mBumperBoundingBoxes.push_back( bbox );
-	}
+	bumper.mBoundingBox = bbox;
 }
 
 void Island::draw()
@@ -232,29 +249,21 @@ void Island::draw()
 	float pointsPerMeter = SceneController::getPointsPerMeter();
 
 	auto centerPos = box2d::toCinder( mBody->GetPosition() ) * pointsPerMeter;
-	gl::pushModelMatrix();
+	gl::ScopedModelMatrix modelScope;
 	gl::translate( centerPos );
-
-	Path2d path;
-	path.moveTo( mOuterVerts[0] );
-	for( int i = 1; i < mOuterVerts.size(); ++i )
-		path.lineTo( mOuterVerts[i] );
 
 	Color color = Color::gray( 0.34f );
 	color.r *= 1 - mVibrationLevel * 0.5;
 	color.g *= 1 - mVibrationLevel * 0.2;
 	gl::color( color );
 
-	gl::drawSolid( path );
+	mBatchBody->draw();
 
-	for( size_t i = 0; i < mBumpers.size(); i++ ) {
-
+	for( const auto &bumper : mBumpers ) {
 		Color color = Color::gray( 0.42f );
-		color.r *= 1 + mBumperVibrationLevels[i];
+		color.r *= 1 + bumper.mVibrationLevel;
 
 		gl::color( color );
-		gl::drawSolid( mBumpers[i] );
+		bumper.mBatch->draw();
 	}
-
-	gl::popModelMatrix();
 }

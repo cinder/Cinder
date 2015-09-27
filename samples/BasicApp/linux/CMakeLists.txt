@@ -20,6 +20,11 @@ include_directories(
     ${BOOST_INC_DIR}  
 )
 
+if( CINDER_LINUX_EGL_RPI2 )
+	include_directories( /opt/vc/include )
+	link_directories( /opt/vc/lib )
+endif()
+
 set( SRC_FILES
   ${SRC_DIR}/BasicApp.cpp
 )
@@ -34,5 +39,9 @@ target_link_libraries( "${EXE_NAME}" debug     ${CINDER_LIB_DIR}/libcinder${CIND
 target_link_libraries( "${EXE_NAME}" optimized ${CINDER_LIB_DIR}/libcinder${CINDER_LIB_SUFFIX}.a )
 target_link_libraries( "${EXE_NAME}" general   ${CINDER_LIB_DIR}/libboost_filesystem.a )
 target_link_libraries( "${EXE_NAME}" general   ${CINDER_LIB_DIR}/libboost_system.a )
-target_link_libraries( "${EXE_NAME}" stdc++ dl pthread z ${CINDER_GL_LIBS} X11 Xcursor Xinerama Xrandr Xi fontconfig )
+if( CINDER_LINUX_EGL_RPI2 )
+	target_link_libraries( "${EXE_NAME}" stdc++ dl pthread z ${CINDER_GL_LIBS} fontconfig bcm_host )
+else()
+	target_link_libraries( "${EXE_NAME}" stdc++ dl pthread z ${CINDER_GL_LIBS} X11 Xcursor Xinerama Xrandr Xi fontconfig )
+endif()
 

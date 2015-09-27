@@ -78,7 +78,8 @@ class TriMesh : public geom::Source {
 	//! Creates a suitable TriMesh::Format for representing a geom::Source \a source
 	static Format		formatFromSource( const geom::Source &source );
 	
-	void		loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	geom::Source*	clone() const override { return new TriMesh( *this ); }
 	
 	void		clear();
 	
