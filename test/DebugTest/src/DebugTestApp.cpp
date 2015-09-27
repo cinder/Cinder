@@ -280,11 +280,11 @@ void DebugTestApp::testPerformance()
 	CI_LOG_D( "Single logging took " << ss.str() << " ms / log." );
 
 	ss = stringstream();
-	ss << std::fixed << setprecision(5) << ( run2.duration + run3.duration ) * 1000 / ( run2.hits + run3.hits );
+	ss << std::fixed << setprecision(5) << std::max( run2.duration, run3.duration ) * 1000 / ( run2.hits + run3.hits );
 	CI_LOG_D( "2 threads logging took " << ss.str() << " ms / log." );
 
 	ss = stringstream();
-	ss << std::fixed << setprecision(5) << ( run4.duration + run5.duration + run6.duration ) * 1000 / ( run4.hits + run5.hits + run6.hits );
+	ss << std::fixed << setprecision(5) << std::max( std::max( run4.duration, run5.duration ), run6.duration ) * 1000 / ( run4.hits + run5.hits + run6.hits );
 	CI_LOG_D( "3 threads logging took " << ss.str() << " ms / log." );
 	
 	CI_LOG_I( "\n--- TESTING PERFORMANCE END----\n\n");
