@@ -234,7 +234,6 @@ $(document).ready(function() {
 	    }
 
 	    var maxResults = 15;
-	    var listPopulation = 0;
 
 	    var results = search_index.search(term); 
 
@@ -280,7 +279,7 @@ $(document).ready(function() {
 			var data = search_index_data.data[result.ref];
 			var link = rootDir + data.link;
 			var type = data.type;
-			var a = $("<a href=" + link + "> " + data.title + " | " + type + "</a>" );
+			var a = $("<a href=" + link + "> " + data.title + "</a>" );
 			li.append(a);
 			
 
