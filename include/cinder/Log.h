@@ -192,10 +192,17 @@ public:
 
 	//! Removes all loggers from the stack.
 	void clearLoggers();
+	//! Resets the current Logger stack so only \p logger exists.
+	void resetLogger( const LoggerRef& logger );
 	//! Adds \a logger to the current stack of loggers.
 	void addLogger( const LoggerRef& logger );
 	//! Remove \a logger to the current stack of loggers.
 	void removeLogger( const LoggerRef& logger );
+	//! Returns a vector of loggers of a specifc type.
+	template<typename LoggerT>
+	std::vector<std::shared_ptr<LoggerT>> getLoggers();
+	//! Returns a vector of all current loggers
+	std::vector<LoggerRef> getAllLoggers()  { return mLoggers; }
 	//! Returns the mutex used for thread safe loggers. Also used when adding or resetting new loggers.
 	std::mutex& getMutex() const			{ return mMutex; }
 	
@@ -208,23 +215,11 @@ protected:
 	LogManager();
 
 	std::vector<LoggerRef>			mLoggers;
-	// used for optimized logging path
-	std::unique_ptr<LoggerConsole> 	mLoggerConsole;
 	
 	mutable std::mutex				mMutex;
 	
 	static LogManager 				*sInstance;
 };
-	
-template<typename LoggerT, typename... Args>
-std::shared_ptr<LoggerT> LogManager::makeLogger( Args&&... args )
-{
-	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
-	
-	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
-	addLogger( result );
-	return result;
-}
 	
 LogManager* manager();
 
@@ -280,6 +275,35 @@ class ThreadSafeT : public LoggerT {
 	}
 };
 
+	
+// ----------------------------------------------------------------------------------
+// Template method implementations
+
+template<typename LoggerT, typename... Args>
+std::shared_ptr<LoggerT> LogManager::makeLogger( Args&&... args )
+{
+	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
+	
+	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
+	addLogger( result );
+	return result;
+}
+
+template<typename LoggerT>
+std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
+{
+	std::vector<std::shared_ptr<LoggerT>> result;
+	
+	for( const auto& logger : mLoggers ) {
+		auto ret = dynamic_cast<LoggerT *>( logger.get() );
+		if( ret ) {
+			result.push_back( ret );
+		}
+	}
+
+	return result;
+}
+	
 } } // namespace cinder::log
 
 // ----------------------------------------------------------------------------------

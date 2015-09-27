@@ -102,7 +102,13 @@ void LogManager::clearLoggers()
 {
 	lock_guard<mutex> lock( mMutex );
 	mLoggers.clear();
-	mLoggerConsole = nullptr;
+}
+	
+void LogManager::resetLogger( const LoggerRef& logger )
+{
+	lock_guard<mutex> lock( mMutex );
+	mLoggers.clear();
+	mLoggers.push_back( logger );
 }
 
 void LogManager::addLogger( const LoggerRef& logger )
@@ -110,7 +116,6 @@ void LogManager::addLogger( const LoggerRef& logger )
 	lock_guard<mutex> lock( mMutex );
 	mLoggers.push_back( logger );
 }
-
 
 void LogManager::removeLogger( const LoggerRef& logger )
 {
@@ -125,17 +130,13 @@ void LogManager::removeLogger( const LoggerRef& logger )
 void LogManager::restoreToDefault()
 {
 	clearLoggers();
-	mLoggerConsole = unique_ptr<LoggerConsole>( new LoggerConsole );
+	makeLogger<LoggerConsole>();
 }
 	
 void LogManager::write( const Metadata &meta, const std::string &text )
 {
 	// TODO move this to a shared_lock_timed with c++14 support
 	lock_guard<mutex> lock( mMutex );
-	
-	if( mLoggerConsole ) {
-		mLoggerConsole->write( meta, text );
-	}
 
 	for( auto& logger : mLoggers ) {
 		logger->write( meta, text );
