@@ -73,6 +73,9 @@ struct Metadata {
 extern std::ostream& operator<<( std::ostream &os, const Location &rhs );
 extern std::ostream& operator<<( std::ostream &lhs, const Level &rhs );
 
+//! Logger is the base class all logging objects are derived from.
+//!
+//! \see LoggerConsole, LoggerFile, LoggerFileRotating
 class Logger {
   public:
 	virtual ~Logger()	{}
@@ -104,22 +107,27 @@ std::shared_ptr<LoggerT> Logger::makeLogger( Args&&... args )
 	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
 	return result;
 }
-	
+
+//! LoggerConsole prints log messages in the application console window.
 class LoggerConsole : public Logger {
   public:
 	void write( const Metadata &meta, const std::string &text ) override;
 };
 
+//! \brief LoggerFile will write log messages to a specified file.
+//!
+//! LoggerFile will write to a specified file, either appending to or overwriting that file at application startup.
 class LoggerFile : public Logger {
   public:
-	// Standard loggerFile, will write to a single log file.  File appending is configurable.
-	// ! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
+	//! LoggerFile writes to a single log file.  File appending is configurable.
+	//! If \p filePath is empty, uses the default ('%cinder.log' next to app binary)
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
 
 	virtual ~LoggerFile();
 
 	void write( const Metadata &meta, const std::string &text ) override;
 
+	//! Returns the file path targeted by this logger.
 	const fs::path&		getFilePath() const		{ return mFilePath; }
 
   protected:
@@ -131,8 +139,12 @@ class LoggerFile : public Logger {
 	std::ofstream	mStream;
 };
 
+//! LoggerFileRotating will write log messages to a file that is rotated at midnight.
 class LoggerFileRotating : public LoggerFile {
 public:
+	
+	//! Creates a rotating log file that will rotate when the first logging event occurs after midnight.
+	//! \p formatStr will be passed to strftime to determine the file name.
 	LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	
 	virtual ~LoggerFileRotating() { }
@@ -145,7 +157,7 @@ protected:
 	int				mYearDay;
 };
 	
-//! Logger that doesn't actually print anything, but triggers a breakpoint if a log event happens past a specified threshold
+//! LoggerBreakpoint doesn't actually print anything, but triggers a breakpoint on log events above a specified threshold
 class LoggerBreakpoint : public Logger {
   public:
 	LoggerBreakpoint( Level triggerLevel = LEVEL_ERROR )
@@ -156,11 +168,13 @@ class LoggerBreakpoint : public Logger {
 
 	void	setTriggerLevel( Level triggerLevel )	{ mTriggerLevel = triggerLevel; }
 	Level	getTriggerLevel() const					{ return mTriggerLevel; }
+	
   private:
 	Level	mTriggerLevel;
 };
 
-//! Provides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windows Event Logging. \note Does nothing on WinRT.
+//! LoggerSystem rovides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windows Event Logging.
+//! \note Does nothing on WinRT.
 class LoggerSystem : public Logger {
 public:
 	LoggerSystem();
@@ -180,7 +194,9 @@ protected:
 #endif
 };
 
-
+//! \brief LogManager manages a stack of all active Loggers.
+//!
+//! LogManager's default state contains a single LoggerConsole.  LogManager allows for adding and removing Loggers via their pointer values.
 class LogManager {
 public:
 	// Returns a pointer to the shared instance. To enable logging during shutdown, this instance is leaked at shutdown.
@@ -198,12 +214,12 @@ public:
 	void addLogger( const LoggerRef& logger );
 	//! Remove \a logger to the current stack of loggers.
 	void removeLogger( const LoggerRef& logger );
-	//! Returns a vector of loggers of a specifc type.
+	//! Returns a vector of all active loggers of a specifc type.
 	template<typename LoggerT>
 	std::vector<std::shared_ptr<LoggerT>> getLoggers();
-	//! Returns a vector of all current loggers
+	//! Returns a vector of all active loggers
 	std::vector<LoggerRef> getAllLoggers()  { return mLoggers; }
-	//! Returns the mutex used for thread safe loggers. Also used when adding or resetting new loggers.
+	//! Returns the mutex used for thread safe logging.
 	std::mutex& getMutex() const			{ return mMutex; }
 	
 	void write( const Metadata &meta, const std::string &text );
