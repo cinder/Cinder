@@ -83,7 +83,7 @@ class Logger {
 	virtual void write( const Metadata &meta, const std::string &text ) = 0;
 
 	template<typename LoggerT, typename... Args>
-	std::shared_ptr<LoggerT> makeLogger( Args&&... args );
+	static std::shared_ptr<LoggerT> makeLogger( Args&&... args );
 	
 	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
 	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
@@ -214,11 +214,11 @@ public:
 	void addLogger( const LoggerRef& logger );
 	//! Remove \a logger to the current stack of loggers.
 	void removeLogger( const LoggerRef& logger );
-	//! Returns a vector of all active loggers of a specifc type.
+	//! Returns a vector of raw pointers that contain all active loggers of a specifc type.
 	template<typename LoggerT>
-	std::vector<std::shared_ptr<LoggerT>> getLoggers();
-	//! Returns a vector of all active loggers
-	std::vector<LoggerRef> getAllLoggers()  { return mLoggers; }
+	std::vector<LoggerT*> getLoggers();
+	//! Returns a vector of LoggerRef that contains all active loggers
+	std::vector<LoggerRef> getAllLoggers();
 	//! Returns the mutex used for thread safe logging.
 	std::mutex& getMutex() const			{ return mMutex; }
 	
@@ -306,10 +306,11 @@ std::shared_ptr<LoggerT> LogManager::makeLogger( Args&&... args )
 }
 
 template<typename LoggerT>
-std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
+std::vector<LoggerT*> LogManager::getLoggers()
 {
-	std::vector<std::shared_ptr<LoggerT>> result;
+	std::vector<LoggerT*> result;
 	
+	std::lock_guard<std::mutex> lock( manager()->getMutex() );
 	for( const auto& logger : mLoggers ) {
 		auto ret = dynamic_cast<LoggerT *>( logger.get() );
 		if( ret ) {

@@ -127,6 +127,12 @@ void LogManager::removeLogger( const LoggerRef& logger )
 				   mLoggers.end() );
 }
 
+std::vector<LoggerRef> LogManager::getAllLoggers()
+{
+	lock_guard<mutex> lock( mMutex );
+	return mLoggers;
+}
+	
 void LogManager::restoreToDefault()
 {
 	clearLoggers();
