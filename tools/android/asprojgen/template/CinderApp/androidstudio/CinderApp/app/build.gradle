@@ -65,7 +65,7 @@ android {
     }
 
     cinder {
-        ndkDir = "${projectDir}/$<<CINDER_RELPATH_APP>>/../android-ndk"
+        ndkDir = plugins.getPlugin('com.android.application').sdkHandler.getNdkFolder().toString()
         cinderDir = "${projectDir}/$<<CINDER_RELPATH_APP>>"
         verbose = false 
         moduleName = "$<<CINDER_APPNAME>>"
@@ -103,10 +103,10 @@ android {
 
     tasks.withType(JavaCompile) {
         compileTask ->
-            if("compileDebugJava" == compileTask.name) {
+            if("compileDebugJavaWithJavac" == compileTask.name) {
                 compileTask.dependsOn ndkBuildDebug
             }
-            else if("compileReleaseJava" == compileTask.name) {
+            else if("compileReleaseJavaWithJavac" == compileTask.name) {
                 compileTask.dependsOn ndkBuildRelease
             }
     }
