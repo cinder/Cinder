@@ -157,7 +157,7 @@ protected:
 	int				mYearDay;
 };
 	
-//! LoggerBreakpoint doesn't actually print anything, but triggers a breakpoint on log events above a specified threshold
+//! LoggerBreakpoint doesn't actually print anything, but triggers a breakpoint on log events above a specified threshold.
 class LoggerBreakpoint : public Logger {
   public:
 	LoggerBreakpoint( Level triggerLevel = LEVEL_ERROR )
@@ -181,6 +181,8 @@ public:
 	virtual ~LoggerSystem();
 	
 	void write( const Metadata &meta, const std::string &text ) override;
+	//! Sets the minimum logging level that will trigger a system log.
+	//! \note Setting \p minLevel below CI_MIN_LOG_LEVEL is pointless; minLevel will act like CI_MIN_LOG_LEVEL.
 	void setLoggingLevel( Level minLevel ) { mMinLevel = minLevel; }
 	
 protected:
@@ -203,7 +205,7 @@ public:
 	static LogManager* instance()	{ return sInstance; }
 	//! Destroys the shared instance. Useful to remove false positives with leak detectors like valgrind.
 	static void destroyInstance()	{ delete sInstance; }
-	//! Restores LogManager to its default state.
+	//! Restores LogManager to its default state - a single LoggerConsole.
 	void restoreToDefault();
 
 	//! Removes all loggers from the stack.
