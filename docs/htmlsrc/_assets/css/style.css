@@ -506,6 +506,22 @@ body#guide-contents .cols-2 .col > * {
   padding-bottom: 0.25em;
   margin-bottom: 30px;
 }
+.top .info-links .columns {
+  width: auto;
+  min-width: 25%;
+}
+.top .info-links .columns.max-12 {
+  max-width: 100%;
+}
+.top .info-links .columns.max-6 {
+  max-width: 50%;
+}
+.top .info-links .columns.max-4 {
+  max-width: 33%;
+}
+.top .info-links .columns.max-3 {
+  max-width: 25%;
+}
 body.classes h1,
 body.namespaces h1 {
   display: inline-block;
@@ -526,6 +542,7 @@ body.namespaces .info-links {
   display: -ms-flexbox;
   display: box;
   display: flex;
+  width: 100%;
 }
 body.classes .info-links .columns + .columns:last-child,
 body.namespaces .info-links .columns + .columns:last-child {

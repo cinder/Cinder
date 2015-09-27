@@ -392,6 +392,7 @@ span.slash
 		padding: 0.7rem 1.0rem
 		overflow-x: auto;
 		
+
 		&:not(:last-child)
 			border-right: #fff 1px solid
 		
@@ -406,6 +407,23 @@ span.slash
 			padding-top: 0.25em
 			padding-bottom: 0.25em
 			margin-bottom: 30px
+		
+	.info-links
+		.columns
+			width: auto;
+			min-width: 25%
+			
+			&.max-12
+				max-width: 100%;
+				
+			&.max-6
+				max-width: 50%;
+		
+			&.max-4
+				max-width: 33%;
+		
+			&.max-3
+				max-width: 25%;
 				
 body.classes, body.namespaces
 		
@@ -422,6 +440,8 @@ body.classes, body.namespaces
 	.info-links
 		margin-top: 30px
 		display: flex
+		width: 100%
+		
 		.columns + .columns:last-child
 		    float: left
 				

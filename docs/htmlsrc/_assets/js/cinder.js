@@ -6,16 +6,13 @@ $(document).ready(function() {
 	var windowHeight = window.innerHeight;
 
 	var cinderJs = {
-		/*
-		* ----------------------------------------------------------------------
-		*  Selects the correct main nav item
-		* ----------------------------------------------------------------------
-		*/
-		setSection: function( sectionName ){
-	 		// find the nav item that correlates to the section name
-	 		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
-	 	},
 
+		init: function(){
+			this.selectNamspace( window.selectedNamespace );
+ 			this.showContent( hash );
+ 			this.adjustClassInfoLinks();
+		},
+		
 	 	/*
 		* ----------------------------------------------------------------------
 		*  Selects the correct namepsace nav iten
@@ -39,9 +36,8 @@ $(document).ready(function() {
 	 		if( !hash )
 	 			return;
 	 		// find section with this hash
-	 		var linkTag = $('a[name='+hash+']')[0] || $('a[id='+hash+']');
-	 		if( linkTag ) {
-	 			linkTag = linkTag[0];
+	 		var linkTag = $('a[name='+hash+']')[0] || $('a[id='+hash+']')[0];
+	 		if( linkTag != undefined ) {
 		 		// find parent
 		 		var linkParent = $(linkTag.parentNode);
 		 		// toggle show for this section
@@ -81,7 +77,26 @@ $(document).ready(function() {
 			        return false;
 		     	}
 			}
-	  	} 		
+	  	},
+
+	  	/*
+	  	* ----------------------------------------------------------------------
+		*  Adjust column width for class info links based on the amount of
+		*  columns that exist.
+		* ----------------------------------------------------------------------
+	  	*/
+	  	adjustClassInfoLinks: function(){
+	  		if( window.sectionType == 'classes' ){
+	  			var infoColumns = $( '#container .info-links .columns' );
+	  			var colAmt = infoColumns.length;
+	  			var colClass = 'max-' + ( 12 / colAmt );
+	  			console.log(infoColumns );
+	  			_.each( infoColumns, function( col ){
+	  				$(col).addClass( colClass );
+	  			} );
+	  		}
+
+	  	}
 	};
 
 
@@ -311,7 +326,10 @@ $(document).ready(function() {
 		amtList = _.filter(amtList, function(val){ return val > 0; });
 
 		// find the max amount per category based on the number of results and the amount of populated categories
-		var categoryMax = Math.floor(Math.min(maxResults, results.length) / amtList.length);
+		var categoryMax = maxResults;
+		if( results.length > maxResults ){
+			categoryMax = Math.floor(Math.min(maxResults, results.length) / amtList.length);	
+		}
 
 		// for each list in the array, only show if they have content
 		_.each( uls, function( ul ) {
@@ -343,8 +361,8 @@ $(document).ready(function() {
 	
     
 	window.search_index = lunr(function () {
-		this.field('title', {boost: 10});
-		this.field('tags', {boost: 1});
+		this.field('title', {boost: 5});
+		this.field('tags', {boost: 10});
 		this.field('body');
 		this.ref('id');
 	});
@@ -376,9 +394,7 @@ $(document).ready(function() {
 	
 
 	// initialization
- 	cinderJs.setSection( section );
- 	cinderJs.selectNamspace( window.selectedNamespace );
- 	cinderJs.showContent( hash );
+	cinderJs.init();
  	sideNav.init();
  	if( search_index_data )
 	 	initSearch();
@@ -412,7 +428,3 @@ $(document).ready(function() {
 	} );
  	return cinderJs;
  } );
-
-window.setSection = function( sectionName ){	
-	section = sectionName;
-};
