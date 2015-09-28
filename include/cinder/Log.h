@@ -27,6 +27,7 @@
 #include "cinder/Filesystem.h"
 #include "cinder/CurrentFunction.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/Noncopyable.h"
 #include "cinder/System.h"
 
 #include <sstream>
@@ -76,7 +77,7 @@ extern std::ostream& operator<<( std::ostream &lhs, const Level &rhs );
 //! Logger is the base class all logging objects are derived from.
 //!
 //! \see LoggerConsole, LoggerFile, LoggerFileRotating
-class Logger {
+class Logger : private Noncopyable {
   public:
 	virtual ~Logger()	{}
 
