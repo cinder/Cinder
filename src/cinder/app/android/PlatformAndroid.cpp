@@ -121,7 +121,7 @@ fs::path PlatformAndroid::getResourceDirectory() const
 	return fs::path(); 
 }
 
-fs::path PlatformAndroid::getResourcePath( const fs::path &rsrcRelativePath )
+fs::path PlatformAndroid::getResourcePath( const fs::path &rsrcRelativePath ) const
 { 
 	return getAssetPath( rsrcRelativePath );
 }
