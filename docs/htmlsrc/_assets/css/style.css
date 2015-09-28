@@ -867,16 +867,11 @@ button.interactive-guide:focus {
   padding: 0;
   line-height: 1.3em;
 }
-#side-nav section > ul li > a {
+#side-nav section > ul li > a,
+#side-nav section > ul li > span > a {
   display: inline-block;
   padding-left: 36px;
   margin: 5px 0;
-}
-#side-nav section > ul > li:first-child {
-  padding-top: 5px;
-}
-#side-nav section > ul > li:last-child {
-  padding-bottom: 5px;
 }
 #side-nav section li.active {
   background-color: #a41c12;
@@ -900,10 +895,94 @@ button.interactive-guide:focus {
 #side-nav ul.depth-3 {
   background: #fff;
 }
-#side-nav li.list-parent {
-  padding-left: 15px;
+#side-nav input[type="checkbox"] + label,
+#side-nav input[type="radio"] + label {
+  margin-left: 0;
 }
-#side-nav li.list-parent:before {
+#side-nav ul.css-treeview label,
+#side-nav ul.side-nav-list label {
+  color: #fff;
+  font-size: inherit;
+  width: 100%;
+  padding-left: 18px;
+}
+#side-nav ul.css-treeview input,
+#side-nav ul.side-nav-list input {
+  left: 18px;
+}
+#side-nav ul.css-treeview label,
+#side-nav ul.side-nav-list label,
+#side-nav ul.css-treeview li > a,
+#side-nav ul.side-nav-list li > a,
+#side-nav ul.css-treeview li > span,
+#side-nav ul.side-nav-list li > span {
+  margin: 5px 0;
+}
+#side-nav ul.css-treeview li > a,
+#side-nav ul.side-nav-list li > a,
+#side-nav ul.css-treeview li > span > a,
+#side-nav ul.side-nav-list li > span > a {
+  padding-left: 36px;
+}
+#side-nav ul.css-treeview ul,
+#side-nav ul.side-nav-list ul {
+  margin: 0;
+}
+#side-nav ul.css-treeview li,
+#side-nav ul.side-nav-list li {
+  padding: 0;
+}
+#side-nav ul.css-treeview > li:first-child,
+#side-nav ul.side-nav-list > li:first-child {
+  padding-top: 5px;
+}
+#side-nav ul.css-treeview > li:last-child,
+#side-nav ul.side-nav-list > li:last-child {
+  padding-bottom: 5px;
+}
+#side-nav ul.css-treeview label::before,
+#side-nav ul.side-nav-list label::before {
+  background-image: url("../images/expand_arrow.png");
+  background-repeat: no-repeat;
+  -webkit-background-size: 13px 13px;
+  -moz-background-size: 13px 13px;
+  background-size: 13px 13px;
+  background-position: 0 0;
+  width: 13px;
+  height: 13px;
+  margin: 1px 5px 0 0;
+}
+#side-nav ul.css-treeview input:checked + label::before,
+#side-nav ul.side-nav-list input:checked + label::before {
+  -webkit-transform: rotate(90deg) translateZ(0);
+  -moz-transform: rotate(90deg) translateZ(0);
+  -o-transform: rotate(90deg) translateZ(0);
+  -ms-transform: rotate(90deg) translateZ(0);
+  transform: rotate(90deg) translateZ(0);
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -o-transform-origin: 50% 50%;
+  -ms-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+}
+#side-nav ul.css-treeview li.active > label::before,
+#side-nav ul.side-nav-list li.active > label::before {
+  background-image: url("../images/expand_arrow_white.png");
+}
+#side-nav ul.css-treeview label,
+#side-nav ul.side-nav-list label {
+  background-image: none;
+  height: 20px;
+  line-height: 20px;
+}
+#side-nav ul.css-treeview li.list-parent::before {
+  content: none;
+}
+#side-nav ul.side-nav-list li.list-parent {
+  position: relative;
+}
+#side-nav ul.side-nav-list li.list-parent:before {
+  position: absolute;
   content: '';
   display: inline-block;
   background-image: url("../images/expand_arrow.png");
@@ -915,61 +994,8 @@ button.interactive-guide:focus {
   width: 13px;
   height: 13px;
   margin: 1px 5px 0 0;
-  -webkit-transform: rotate(90deg) translateZ(0);
-  -moz-transform: rotate(90deg) translateZ(0);
-  -o-transform: rotate(90deg) translateZ(0);
-  -ms-transform: rotate(90deg) translateZ(0);
-  transform: rotate(90deg) translateZ(0);
-  -webkit-transform-origin: 50% 50%;
-  -moz-transform-origin: 50% 50%;
-  -o-transform-origin: 50% 50%;
-  -ms-transform-origin: 50% 50%;
-  transform-origin: 50% 50%;
-}
-#side-nav input[type="checkbox"] + label,
-#side-nav input[type="radio"] + label {
-  margin-left: 0;
-}
-#side-nav ul.css-treeview {
-  padding: 20px 0;
-}
-#side-nav ul.css-treeview label {
-  color: #fff;
-  font-size: inherit;
-  width: 100%;
-  padding-left: 18px;
-}
-#side-nav ul.css-treeview input {
   left: 18px;
-}
-#side-nav ul.css-treeview label,
-#side-nav ul.css-treeview li > a {
-  margin: 5px 0;
-}
-#side-nav ul.css-treeview li > a {
-  padding-left: 36px;
-}
-#side-nav ul.css-treeview ul {
-  margin: 0;
-}
-#side-nav ul.css-treeview li {
-  padding: 0;
-}
-#side-nav ul.css-treeview li.list-parent::before {
-  content: none;
-}
-#side-nav .css-treeview label::before {
-  background-image: url("../images/expand_arrow.png");
-  background-repeat: no-repeat;
-  -webkit-background-size: 13px 13px;
-  -moz-background-size: 13px 13px;
-  background-size: 13px 13px;
-  background-position: 0 0;
-  width: 13px;
-  height: 13px;
-  margin: 1px 5px 0 0;
-}
-#side-nav .css-treeview input:checked + label::before {
+  top: 6px;
   -webkit-transform: rotate(90deg) translateZ(0);
   -moz-transform: rotate(90deg) translateZ(0);
   -o-transform: rotate(90deg) translateZ(0);
@@ -981,13 +1007,8 @@ button.interactive-guide:focus {
   -ms-transform-origin: 50% 50%;
   transform-origin: 50% 50%;
 }
-#side-nav .css-treeview li.active > label::before {
+#side-nav ul.side-nav-list li.list-parent.active:before {
   background-image: url("../images/expand_arrow_white.png");
-}
-#side-nav .css-treeview label {
-  background-image: none;
-  height: 20px;
-  line-height: 20px;
 }
 .wrapper {
   min-height: 100%;

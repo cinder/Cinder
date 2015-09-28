@@ -33,6 +33,7 @@
 		<p>As an open source project, the Cinder community welcomes anyone interested in helping to document the library and/or write guides to help other developers progress their understanding of the library. There are many different ways to contribute to this documentation and this guide is meant to walk through those different avenues. You may want to take a look at the <a href='building_docs.html'>Building Docs guide</a> before reading this one.</p>
 
 		<section>
+			<a name="anatomy"></a>
 			<h2>Documentation Anatomy</h2>
 
 			<h3>The Docs Generation Process</h3>
@@ -76,6 +77,7 @@
 		</section>
 
 		<section>
+			<a name="source"></a>
 			<h2>Documenting Source Code</h2>
 			<p>All of the inline comments within the Cinder source code is turned into documentation in the Doxygen export step. For instance, if you open up a header file, you will commonly see block comments above each method that look like this.</p>
 
@@ -95,11 +97,13 @@ If you are creating a Surface from an image that is located outside of the WinRT
 		</section>
 
 		<section>
+			<a name="external"></a>
 			<h2>External Documentation</h2>
 			<p>To write supplemental documentation and guides for the docs, there is a separate process. All external documentation is written in HTML and lives in the <em>htmlsrc/</em> directory. You can refer to the <a href="#file-structure">Docs File Structure</a> for specifics. Unless you are contributing to the overall documentation site markup, you will be mainly concerned with the <em>_docs</em> and <em>guides</em> directories. The <em>_docs</em> directory includes markup and additional assets for class descriptions, while the <em>guides</em> directory includes all of the <a href="../../guides/index.html">Cinder guides'</a> markup. Before we go into the specifics of writing each type of external docs, let's look at the <code>&lt;ci&gt;</code> tag.</p>
 		</section>
 
 		<section>
+			<a name="citag"></a>
 			<h2>The &lt;ci&gt; tag</h2>
 			<p>To assist in bridging the gap between the Cinder source reference pages and the supplemental HTML markup, we've created a special <strong>&lt;ci&gt; tag</strong>. This tag is used to specify any content within the supplemental documentation HTML that needs to be linked into the source reference, as well as to provide a way for reference pages to link back to our guides.</p>
 
@@ -171,6 +175,7 @@ An &lt;a href=&quot;../../classcinder_1_1gl_1_1_fbo.html&quot;&gt;Fbo&lt;/a&gt; 
 		</section>
 
 		<section>
+			<a name="guides"></a>
 			<h2>Writing Guides</h2>
 			<p>To write a guide to be included in the Cinder documentation, follow these steps:</p>
 			<ol>
@@ -222,6 +227,7 @@ An &lt;a href=&quot;../../classcinder_1_1gl_1_1_fbo.html&quot;&gt;Fbo&lt;/a&gt; 
 		</section>
 
 		<section>
+			<a name="tips"></a>
 			<h2>Helpful tips</h2>
 			<h3>Using the <em>pre</em> tag when writing code blocks</h3>
 			<p>For code blocks, we use the <a href="http://prismjs.com/">Prism</a> syntax highlighter. It allows you to style your code blocks based on their language. This is the proper markup for Cinder C++ code blocks:</p>

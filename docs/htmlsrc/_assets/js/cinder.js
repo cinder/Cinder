@@ -149,7 +149,7 @@ $(document).ready(function() {
 					}
 
 					// if the link is the same as the current page, make it active
-					if( aLink.href == window.location.href ) {
+					if( aLink.href == window.location.href.split("#")[0] ) {
 						$aLink.parent('li').addClass('active');
 					}
 				} );

@@ -27,11 +27,11 @@
 
 		<h1>Building Cinder Docs</h1>
 		
-		<p>The bundled Cinder files includes documentation that you can view locally. You can find the <a href="libcinder.org/docs">online version here</a>. If you are cloning the Cinder github repo, the docs will need to be generated in your cloned local repo.</p>
+		<p>The bundled Cinder source files includes documentation that you can view locally. You can find the <a href="libcinder.org/docs">online version here</a>. If you are cloning the Cinder github repo, the docs will need to be generated in your cloned local repo. This is a 2-step process.</p>
 
 		<section>
-			<h2>Part 1: Doxygen Export</h2>
-			<p>Cinder uses <a href="www.doxygen.org">Doxygen</a> to generate documentation from the cinder_docs source files. You can generate the Doxygen output and tag file using Doxywizard. The latest release uses Doxywizard 1.8.10. You can <a href="http://www.stack.nl/~dimitri/doxygen/download.html#srcbin" target="_blank">download Doxywizard here</a>.</p>
+			<h2>Step 1: Doxygen Export</h2>
+			<p>Cinder uses <a href="www.doxygen.org">Doxygen</a> in part to generate documentation from the cinder_docs source files. You can generate the Doxygen output and tag file using Doxywizard. The Cinder latest release uses Doxywizard 1.8.10. You can <a href="http://www.stack.nl/~dimitri/doxygen/download.html#srcbin" target="_blank">download Doxywizard here</a>.</p>
 			
 			<ul>
 			<li>Once you have Doxywizard installed, use it to open <strong>docs/doxygen/Doxyfile</strong>.</li>
@@ -47,7 +47,7 @@
 		</section>
 
 		<section>
-			<h2>Part 2: Docs HTML File Generation</h2>
+			<h2>Step 2: Docs HTML File Generation</h2>
 
 			<p>This next step generates the documentation from newly generated Doxygen output. It requires that you have python 2.7.x to run it.</p>
 			<ul>
@@ -57,9 +57,10 @@
 				
 			<img class="shadow center" src="images/terminal.png">
 
-			<p>This process generates html files in the html directory. If the python file throws an error that results in incomplete docs, you can <a href="https://github.com/cinder/Cinder/issues/" taget="_blank">file a github issue here</a>. If you want to contribute to documenation, <a href="docs_guide.html">follow this guide</a>.</p>
+			<p>This process generates html files in the html directory. If the python file throws an error that results in incomplete docs, you can <a href="https://github.com/cinder/Cinder/issues/" taget="_blank">file a github issue here</a>. Your docs will be available at <strong>docs/index.html</strong></p>
 
-			<p>your docs will be available at <strong>docs/index.html</strong></p>
+			<p>For more detailed information about building docs and to learn how to contribute, <a href="documenting_cinder.html">follow this guide</a>.</p>
+
 		</section>
 
 		
