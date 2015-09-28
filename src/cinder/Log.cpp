@@ -149,6 +149,27 @@ void LogManager::write( const Metadata &meta, const std::string &text )
 	}
 }
 
+// ----------------------------------------------------------------------------------------------------
+// MARK: - Entry
+// ----------------------------------------------------------------------------------------------------
+
+Entry::Entry( Level level, const Location &location )
+: mHasContent( false )
+{
+	mMetaData.mLevel = level;
+	mMetaData.mLocation = location;
+}
+
+Entry::~Entry()
+{
+	if( mHasContent )
+		writeToLog();
+}
+
+void Entry::writeToLog()
+{
+	manager()->write( mMetaData, mStream.str() );
+}
 
 // ----------------------------------------------------------------------------------------------------
 // MARK: - Logger

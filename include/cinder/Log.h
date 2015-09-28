@@ -227,22 +227,10 @@ protected:
 	static LogManager 				*sInstance;
 };
 	
-LogManager* manager();
-
 struct Entry {
 	// TODO: move &&location
-	Entry( Level level, const Location &location )
-		: mHasContent( false )
-	{
-		mMetaData.mLevel = level;
-		mMetaData.mLocation = location;
-	}
-
-	~Entry()
-	{
-		if( mHasContent )
-			writeToLog();
-	}
+	Entry( Level level, const Location &location );
+	~Entry();
 
 	template <typename T>
 	Entry& operator<<( const T &rhs )
@@ -252,11 +240,7 @@ struct Entry {
 		return *this;
 	}
 
-	void writeToLog()
-	{
-		manager()->write( mMetaData, mStream.str() );
-	}
-
+	void writeToLog();
 	const Metadata&	getMetaData() const	{ return mMetaData; }
 
 private:
@@ -265,6 +249,19 @@ private:
 	bool				mHasContent;
 	std::stringstream	mStream;
 };
+
+// ----------------------------------------------------------------------------------
+// Freestanding functions
+
+//! The global manager for logging, used to manipulate the Logger stack. Provides thread safety amongst the Loggers.
+LogManager* manager();
+
+//! Creates and returns a new logger of type LoggerT, adding it to the current Logger stack.
+template<typename LoggerT, typename... Args>
+std::shared_ptr<LoggerT> makeLogger( Args&&... args )
+{
+	return manager()->makeLogger<LoggerT>( std::forward<Args>( args )... );
+}
 
 // ----------------------------------------------------------------------------------
 // Template method implementations
