@@ -216,9 +216,9 @@ public:
 	void addLogger( const LoggerRef& logger );
 	//! Remove \a logger to the current stack of loggers.
 	void removeLogger( const LoggerRef& logger );
-	//! Returns a vector of raw pointers that contain all active loggers of a specifc type.
+	//! Returns a vector of Loggers of a specifc type.
 	template<typename LoggerT>
-	std::vector<LoggerRef> getLoggers();
+	std::vector<std::shared_ptr<LoggerT>> getLoggers();
 	//! Returns a vector of LoggerRef that contains all active loggers
 	std::vector<LoggerRef> getAllLoggers();
 	//! Returns the mutex used for thread safe logging.
@@ -308,15 +308,15 @@ std::shared_ptr<LoggerT> LogManager::makeLogger( Args&&... args )
 }
 
 template<typename LoggerT>
-std::vector<LoggerRef> LogManager::getLoggers()
+std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
 {
-	std::vector<LoggerRef> result;
-	
+	std::vector<std::shared_ptr<LoggerT>> result;
+
 	std::lock_guard<std::mutex> lock( manager()->getMutex() );
-	for( const auto& logger : mLoggers ) {
-		auto ret = dynamic_cast<LoggerT *>( logger.get() );
-		if( ret ) {
-			result.push_back( logger );
+	for( const auto &logger : mLoggers ) {
+		auto loggerCasted = std::dynamic_pointer_cast<LoggerT>( logger );
+		if( loggerCasted ) {
+			result.push_back( loggerCasted );
 		}
 	}
 
