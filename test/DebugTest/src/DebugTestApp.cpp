@@ -31,7 +31,7 @@ class DebugTestApp : public App {
 
 void DebugTestApp::setup()
 {
-	/*
+	
 	testLevels();
 	testFileLogging();
 	testSystemLogging();
@@ -39,11 +39,11 @@ void DebugTestApp::setup()
 	testAsserts();
 	
 	testFindLoggers();
-	testAddRemove();*/
+	testAddRemove();
 	
 	// WARNING: don't run these two unless you have 500 MB free disk space
 	//testThreadSafety();
-	testPerformance();
+    //testPerformance();
 	
 	//testBreakOnLog();
 }
@@ -69,9 +69,9 @@ void DebugTestApp::testFileLogging()
 	CI_LOG_I( "\n--- TESTING FILES START----");
 	
 	
-	log::manager()->makeLogger<log::LoggerFile>( "/tmp/cinder/cinder.log" );
-	log::manager()->makeLogger<log::LoggerFile>( "/tmp/cinder/ggg__Idontexist___/cinder.log" );
-	log::manager()->makeLogger<log::LoggerFileRotating>( "/tmp/cinder", "loggingTests.%Y.%m.%d.log", false );
+	log::makeLogger<log::LoggerFile>( "/tmp/cinder/cinder.log" );
+	log::makeLogger<log::LoggerFile>( "/tmp/cinder/ggg__Idontexist___/cinder.log" );
+	log::makeLogger<log::LoggerFileRotating>( "/tmp/cinder", "loggingTests.%Y.%m.%d.log", false );
 
 	CI_LOG_I( "This output should be in three logs." );
 	CI_LOG_I( "\n--- TESTING FILES END----\n\n");
@@ -82,13 +82,13 @@ void DebugTestApp::testSystemLogging()
 	log::manager()->restoreToDefault();
 	CI_LOG_I( "\n--- TESTING SYSTEM START----");
 	
-	auto sysLog = log::manager()->makeLogger<log::LoggerSystem>();
+	auto sysLog = log::makeLogger<log::LoggerSystem>();
     sysLog->setLoggingLevel( log::LEVEL_ERROR );
     CI_LOG_E( "Error log shows in system logs" );
     CI_LOG_D( "Debug log doesn't show in system logs.");
 	
     log::manager()->restoreToDefault();
-    log::manager()->makeLogger<log::LoggerSystem>();
+    log::makeLogger<log::LoggerSystem>();
     CI_LOG_E( "Error log shows in system logs" );
     CI_LOG_D( "Debug log shows in system logs.");
 	
@@ -100,17 +100,17 @@ void DebugTestApp::testFindLoggers()
 	log::manager()->restoreToDefault();
 	CI_LOG_I( "\n--- TESTING FIND START----");
 	
-	log::manager()->makeLogger<log::LoggerConsole>();
-	log::manager()->makeLogger<log::LoggerConsole>();
+	log::makeLogger<log::LoggerConsole>();
+	log::makeLogger<log::LoggerConsole>();
 	
 	CI_ASSERT( 3 == log::manager()->getLoggers<log::LoggerConsole>().size() );
 	CI_ASSERT( 3 == log::manager()->getAllLoggers().size() );
 	
-	auto logger = log::Logger::makeLogger<log::LoggerFile>( "/tmp/cinder/cinder.log" );
-	log::manager()->addLogger( logger );
-	log::manager()->makeLogger<log::LoggerFile>( "/tmp/cinder/cinder.log" );
+	auto logger = log::makeLogger<log::LoggerFile>( "/tmp/cinder/cinder.log" );
+	log::makeLogger<log::LoggerFile>( "/tmp/cinder/cinder.log" );
 	
 	CI_ASSERT( 3 == log::manager()->getLoggers<log::LoggerConsole>().size() );
+    console() << log::manager()->getLoggers<log::LoggerFile>().size() << " loggers." << endl;
 	CI_ASSERT( 2 == log::manager()->getLoggers<log::LoggerFile>().size() );
 	CI_ASSERT( 0 == log::manager()->getLoggers<log::LoggerBreakpoint>().size() );
 	CI_ASSERT( 5 == log::manager()->getAllLoggers().size() );
@@ -127,14 +127,14 @@ void DebugTestApp::testAddRemove()
 	
 	log::manager()->clearLoggers();
 	
-	auto logger1 = log::manager()->makeLogger<log::LoggerConsole>();
-	auto logger2 = log::manager()->makeLogger<log::LoggerConsole>();
+	auto logger1 = log::makeLogger<log::LoggerConsole>();
+	auto logger2 = log::makeLogger<log::LoggerConsole>();
 
 	CI_LOG_I( "This should  show up in the console twice." );
 	
-	auto logger3 = log::manager()->makeLogger<log::LoggerConsole>();
-	auto logger4 = log::manager()->makeLogger<log::LoggerConsole>();
-	auto logger5 = log::Logger::makeLogger<log::LoggerConsole>();
+	auto logger3 = log::makeLogger<log::LoggerConsole>();
+	auto logger4 = log::makeLogger<log::LoggerConsole>();
+	auto logger5 = log::makeLogger<log::LoggerConsole>();
 	
 	log::manager()->removeLogger( logger1 );
 	log::manager()->removeLogger( logger1 );
@@ -165,7 +165,7 @@ void DebugTestApp::testThreadSafety()
 	log::manager()->clearLoggers();
 	
 	auto looper = [](std::string log) {
-		auto logger = log::manager()->makeLogger<log::LoggerFile>( log, false );
+		auto logger = log::makeLogger<log::LoggerFile>( log, false );
 		for( int i=0; i<500; ++i ) {
 			for( int j=0; j<500; ++j ) {
 				CI_LOG_D( i * j );
@@ -190,7 +190,7 @@ void DebugTestApp::testThreadSafety()
 	t3.join();
 
 	log::manager()->clearLoggers();
-	log::manager()->makeLogger<log::LoggerConsole>();
+	log::makeLogger<log::LoggerConsole>();
 	
 	CI_LOG_I( "Threading didn't crash." );
 	CI_LOG_I( "\n--- TESTING THREADS END----\n\n");
@@ -225,7 +225,7 @@ void DebugTestApp::testPerformance()
 		
 		shared_ptr<log::LoggerFile> logger = nullptr;
 		if( !log.empty() ) {
-			logger = log::manager()->makeLogger<log::LoggerFile>( log, false );
+			logger = log::makeLogger<log::LoggerFile>( log, false );
 		}
 		int logHits = 0;
 		ci::Timer timer;
@@ -271,7 +271,7 @@ void DebugTestApp::testPerformance()
 	t5.join();
 	
 	log::manager()->clearLoggers();
-	log::manager()->makeLogger<log::LoggerConsole>();
+	log::makeLogger<log::LoggerConsole>();
 	
 	
 	stringstream ss;
@@ -295,7 +295,7 @@ void DebugTestApp::testBreakOnLog()
 	log::manager()->restoreToDefault();
 	CI_LOG_I( "\n--- TESTING BREAKPOINTS START----");
 	
-	auto bLog = log::manager()->makeLogger<log::LoggerBreakpoint>();
+	auto bLog = log::makeLogger<log::LoggerBreakpoint>();
     bLog->setTriggerLevel( log::LEVEL_DEBUG );
 
 	CI_LOG_V( "bang" );
