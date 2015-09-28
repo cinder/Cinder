@@ -243,18 +243,41 @@ private:
 
 //! Scopes state of depth testing and writing
 struct ScopedDepth : private Noncopyable {
-	//! Enables or disables both depth comparisons and writing to the depth buffer
+	//! Enables or disables both depth testing and writing to the depth buffer
 	ScopedDepth( bool enableReadAndWrite );
-	//! Enables or disables depth comparisons and/or writing to the depth buffer
-	ScopedDepth( bool enableRead, bool enableWrite );
-	//! Enables or disables depth comparisons, writing to the depth buffer and specifies a depth comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS.
-	ScopedDepth( bool enableRead, bool enableWrite, GLenum depthFunc );
+	//! Enables or disables depth comparisons and writing to the depth buffer, and specifies a depth comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS.
+	ScopedDepth( bool enableReadAndWrite, GLenum depthFunc );
 	~ScopedDepth();
 	
   private:
 	Context		*mCtx;
 	bool		mSaveMask;
 	bool		mSaveFunc;
+};
+
+//! Scopes state to control the depth testing / reading operation. See information on c\ GL_DEPTH_TEST.
+struct ScopedDepthTest : private Noncopyable {
+	//! Enables or disables the depth testing / reading operation for the scope of this object.
+	ScopedDepthTest( bool enableTest );
+	//! Enables or disables the depth test operation, which controls reading and writing to the depth buffer, for the scope of this object. Also specifies a depth comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS (see info on `glDepthFunc`).
+	ScopedDepthTest( bool enableTest, GLenum depthFunc );
+	//! Destructor returns state to how it was before this object was constructed.
+	~ScopedDepthTest();
+
+  private:
+	Context		*mCtx;
+	bool		mSaveFunc;
+};
+
+//! Scopes state to control whether successful depth tests write to the depth buffer. See information on `glDepthMask()`. \note You must enable depth testing / reading (`GL_DEPTH_TEST`) for this to take place.
+struct ScopedDepthWrite : private Noncopyable {
+	//! Enables or disables writing to the depth buffer for the scope of this object.
+	ScopedDepthWrite( bool enableWrite );
+	//! Destructor returns state to how it was before this object was constructed.
+	~ScopedDepthWrite();
+
+  private:
+	Context		*mCtx;
 };
 
 //! Scopes state of Renderbuffer binding
