@@ -1935,7 +1935,7 @@ def process_xml_file_definition(in_path, out_path, file_type):
     content_dict = {
         "page_title": file_content["title"],
         "main_content": get_body_content(bs4),
-        "section_class": body_class,
+        "body_class": body_class,
         "section_namespace": "cinder",
         str("section_" + section): "true"}
     # append file meta
