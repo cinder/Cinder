@@ -31,7 +31,7 @@ class DebugTestApp : public App {
 
 void DebugTestApp::setup()
 {
-	/*
+	
 	testLevels();
 	testFileLogging();
 	testSystemLogging();
@@ -39,11 +39,11 @@ void DebugTestApp::setup()
 	testAsserts();
 	
 	testFindLoggers();
-	testAddRemove();*/
+	testAddRemove();
 	
 	// WARNING: don't run these two unless you have 500 MB free disk space
 	//testThreadSafety();
-	testPerformance();
+    //testPerformance();
 	
 	//testBreakOnLog();
 }
@@ -106,11 +106,11 @@ void DebugTestApp::testFindLoggers()
 	CI_ASSERT( 3 == log::manager()->getLoggers<log::LoggerConsole>().size() );
 	CI_ASSERT( 3 == log::manager()->getAllLoggers().size() );
 	
-	auto logger = log::Logger::makeLogger<log::LoggerFile>( "/tmp/cinder/cinder.log" );
-	log::manager()->addLogger( logger );
+	auto logger = log::makeLogger<log::LoggerFile>( "/tmp/cinder/cinder.log" );
 	log::manager()->makeLogger<log::LoggerFile>( "/tmp/cinder/cinder.log" );
 	
 	CI_ASSERT( 3 == log::manager()->getLoggers<log::LoggerConsole>().size() );
+    console() << log::manager()->getLoggers<log::LoggerFile>().size() << " loggers." << endl;
 	CI_ASSERT( 2 == log::manager()->getLoggers<log::LoggerFile>().size() );
 	CI_ASSERT( 0 == log::manager()->getLoggers<log::LoggerBreakpoint>().size() );
 	CI_ASSERT( 5 == log::manager()->getAllLoggers().size() );
@@ -134,7 +134,7 @@ void DebugTestApp::testAddRemove()
 	
 	auto logger3 = log::manager()->makeLogger<log::LoggerConsole>();
 	auto logger4 = log::manager()->makeLogger<log::LoggerConsole>();
-	auto logger5 = log::Logger::makeLogger<log::LoggerConsole>();
+	auto logger5 = log::makeLogger<log::LoggerConsole>();
 	
 	log::manager()->removeLogger( logger1 );
 	log::manager()->removeLogger( logger1 );
