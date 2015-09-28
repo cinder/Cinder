@@ -27,6 +27,7 @@
 #include "cinder/Filesystem.h"
 #include "cinder/CurrentFunction.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/Noncopyable.h"
 #include "cinder/System.h"
 
 #include <sstream>
@@ -76,15 +77,12 @@ extern std::ostream& operator<<( std::ostream &lhs, const Level &rhs );
 //! Logger is the base class all logging objects are derived from.
 //!
 //! \see LoggerConsole, LoggerFile, LoggerFileRotating
-class Logger {
+class Logger : private Noncopyable {
   public:
 	virtual ~Logger()	{}
 
 	virtual void write( const Metadata &meta, const std::string &text ) = 0;
 
-	template<typename LoggerT, typename... Args>
-	static std::shared_ptr<LoggerT> makeLogger( Args&&... args );
-	
 	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
 	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
 	
@@ -98,15 +96,6 @@ class Logger {
 };
 	
 typedef std::shared_ptr<Logger>	LoggerRef;
-
-template<typename LoggerT, typename... Args>
-std::shared_ptr<LoggerT> Logger::makeLogger( Args&&... args )
-{
-	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
-	
-	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
-	return result;
-}
 
 //! LoggerConsole prints log messages in the application console window.
 class LoggerConsole : public Logger {
@@ -239,22 +228,10 @@ protected:
 	static LogManager 				*sInstance;
 };
 	
-LogManager* manager();
-
 struct Entry {
 	// TODO: move &&location
-	Entry( Level level, const Location &location )
-		: mHasContent( false )
-	{
-		mMetaData.mLevel = level;
-		mMetaData.mLocation = location;
-	}
-
-	~Entry()
-	{
-		if( mHasContent )
-			writeToLog();
-	}
+	Entry( Level level, const Location &location );
+	~Entry();
 
 	template <typename T>
 	Entry& operator<<( const T &rhs )
@@ -264,11 +241,7 @@ struct Entry {
 		return *this;
 	}
 
-	void writeToLog()
-	{
-		manager()->write( mMetaData, mStream.str() );
-	}
-
+	void writeToLog();
 	const Metadata&	getMetaData() const	{ return mMetaData; }
 
 private:
@@ -278,22 +251,19 @@ private:
 	std::stringstream	mStream;
 };
 
-template<class LoggerT>
-class ThreadSafeT : public LoggerT {
-  public:
-	template <typename... Args>
-	ThreadSafeT( Args &&... args )
-	: LoggerT( std::forward<Args>( args )... )
-	{}
+// ----------------------------------------------------------------------------------
+// Freestanding functions
 
-	void write( const Metadata &meta, const std::string &text ) override
-	{
-		std::lock_guard<std::mutex> lock( manager()->getMutex() );
-		LoggerT::write( meta, text );
-	}
-};
+//! The global manager for logging, used to manipulate the Logger stack. Provides thread safety amongst the Loggers.
+LogManager* manager();
 
-	
+//! Creates and returns a new logger of type LoggerT, adding it to the current Logger stack.
+template<typename LoggerT, typename... Args>
+std::shared_ptr<LoggerT> makeLogger( Args&&... args )
+{
+	return manager()->makeLogger<LoggerT>( std::forward<Args>( args )... );
+}
+
 // ----------------------------------------------------------------------------------
 // Template method implementations
 
