@@ -25,7 +25,7 @@
 
 
 </head>
-<body class="{{section_class}}">
+<body class="{{body_class}}">
 
     <!-- start offcanvas content for responsive sliding nav -->
     <div class="off-canvas-wrap wrapper" data-offcanvas>
@@ -157,9 +157,8 @@
         // related to foundation 5.
         // One such thing is making sure the column sizes stay in sync
         window.cinderVersion = "{{cinder_version}}";
-        window.sectionType = "{{section_class}}";
+        window.sectionType = "{{body_class}}";
         $(document).foundation( 'offcanvas', 'reflow' );
-
     </script>
 
 </body>

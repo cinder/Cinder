@@ -2490,7 +2490,7 @@ def process_html_file(in_path, out_path):
     # render file template
     bs4 = render_template(template, file_content)
     update_links_abs(bs4, os.path.dirname(in_path))
-    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'section_class': body_class, str("section_" + section): "true"}
+    content_dict = {'page_title': file_content["title"], 'main_content': get_body_content(bs4), 'body_class': body_class, str("section_" + section): "true"}
     # append file meta
     content_dict.update(file_meta.copy())
 
