@@ -221,12 +221,6 @@ body.guide .guide-list .content .columns {
 .plain {
   font-family: 'Open Sans', Helvetica, Arial, sans-serif;
 }
-.center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-}
 .columns.collapse {
   padding-left: 0;
   padding-right: 0;
@@ -343,32 +337,6 @@ body#guide-contents {
 body#guide-contents section {
   margin-bottom: 3em;
 }
-.content img.shadow,
-body#guide-contents img.shadow {
-  -webkit-box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
-  box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
-}
-.content figure.center,
-body#guide-contents figure.center,
-.content img.center,
-body#guide-contents img.center {
-  display: block;
-  margin-top: 30px;
-  margin-bottom: 30px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-}
-.content img.rounded,
-body#guide-contents img.rounded {
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-}
-.content figure > img,
-body#guide-contents figure > img {
-  margin-bottom: 1em;
-}
 .content ul,
 body#guide-contents ul {
   padding: 0 0 0 0.8em;
@@ -398,62 +366,6 @@ body#guide-contents ul li {
 .content ul li:before,
 body#guide-contents ul li:before {
   content: "\00BB \00A0";
-}
-.content .cols-2,
-body#guide-contents .cols-2 {
-  width: 100%;
-  margin: 25px 0;
-  zoom: 1;
-}
-.content .cols-2:before,
-body#guide-contents .cols-2:before,
-.content .cols-2:after,
-body#guide-contents .cols-2:after {
-  content: "";
-  display: table;
-}
-.content .cols-2:after,
-body#guide-contents .cols-2:after {
-  clear: both;
-}
-.content .cols-2 .col,
-body#guide-contents .cols-2 .col {
-  position: relative;
-  width: 50%;
-  float: left;
-  padding-left: 0.9375rem;
-  padding-right: 0.9375rem;
-}
-.content .cols-2 .col:first-child,
-body#guide-contents .cols-2 .col:first-child {
-  padding-left: 0;
-}
-.content .cols-2 .col:last-child,
-body#guide-contents .cols-2 .col:last-child {
-  padding-right: 0;
-}
-.content .cols-2 .col > *,
-body#guide-contents .cols-2 .col > * {
-  margin-top: 0;
-  max-width: 100%;
-}
-@media (max-width: 960px) {
-  .content .cols-2 .col,
-  body#guide-contents .cols-2 .col {
-    width: 100%;
-  }
-  .content .cols-2 .col:first-child,
-  body#guide-contents .cols-2 .col:first-child {
-    padding-left: 0.9375rem;
-  }
-  .content .cols-2 .col:last-child,
-  body#guide-contents .cols-2 .col:last-child {
-    padding-right: 0.9375rem;
-  }
-  .content .cols-2 .col > *,
-  body#guide-contents .cols-2 .col > * {
-    margin-top: inherit;
-  }
 }
 .top {
   margin-bottom: 30px;
@@ -1429,6 +1341,100 @@ pre[class*="language-"] {
 * Fonts
 * ---------------------------------------------------------
 */
+
+/* 
+/* -----------------------------------------------------------------------------
+/*  Common mixins
+/* -----------------------------------------------------------------------------
+*/
+/* 
+/* -----------------------------------------------------------------------------
+/*  Global helper classes
+/* -----------------------------------------------------------------------------
+*/
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+/* 
+/* -----------------------------------------------------------------------------
+/*  2 column helper
+/* -----------------------------------------------------------------------------
+*/
+.cols-2 {
+  width: 100%;
+  margin: 25px 0;
+  zoom: 1;
+}
+.cols-2:before,
+.cols-2:after {
+  content: "";
+  display: table;
+}
+.cols-2:after {
+  clear: both;
+}
+.cols-2 .col {
+  position: relative;
+  width: 50%;
+  float: left;
+  padding-left: 0.9375rem;
+  padding-right: 0.9375rem;
+}
+.cols-2 .col:first-child {
+  padding-left: 0;
+}
+.cols-2 .col:last-child {
+  padding-right: 0;
+}
+.cols-2 .col > * {
+  margin-top: 0;
+  max-width: 100%;
+}
+@media (max-width: 960px) {
+  .cols-2 .col {
+    width: 100%;
+  }
+  .cols-2 .col:first-child {
+    padding-left: 0.9375rem;
+  }
+  .cols-2 .col:last-child {
+    padding-right: 0.9375rem;
+  }
+  .cols-2 .col > * {
+    margin-top: inherit;
+  }
+}
+/* 
+/* -----------------------------------------------------------------------------
+/*  Image Helpers
+/* -----------------------------------------------------------------------------
+*/
+video.shadow,
+img.shadow {
+  -webkit-box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
+  box-shadow: rgba(0,0,0,0.5) 0 10px 20px;
+}
+figure.center,
+img.center,
+video.center {
+  display: block;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+img.rounded {
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+figure > img {
+  margin-bottom: 1em;
+}
 
 body.section_home {
   background: #242727;

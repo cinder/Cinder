@@ -79,10 +79,10 @@
 		<section>
 			<a name="source"></a>
 			<h2>Documenting Source Code</h2>
-			<p>All of the inline comments within the Cinder source code is turned into documentation in the Doxygen export step. For instance, if you open up a header file, you will commonly see block comments above each method that look like this.</p>
+			<p>All of the inline comments within the Cinder source code are turned into documentation in the Doxygen export step. For instance, if you open up a header file, you will commonly see block comments above each method that look like this.</p>
 
 <pre><code>
-[from from Surface.h]
+[from Surface.h]
 /** \brief Constructs asynchronously a Surface from an images located at \a path. The loaded Surface is returned in \a surface.
 If you are creating a Surface from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
 **/
@@ -93,7 +93,17 @@ If you are creating a Surface from an image that is located outside of the WinRT
 //! Returns the width of the Surface in pixels
 </code></pre>
 
-			<p>If you choose to contribute to the inline source documentation, you can follow this <a href="https://www.stack.nl/~dimitri/doxygen/manual/markdown.html" target="_blank">Doxygen markup guide</a> to incorporate some simple inline styling and functionality, such as referencing constants or adding links. If you want to do anything complex, it's highly recommended that you instead contribute to external documentation, as described below.</p>
+			<p>If you choose to contribute to the inline source documentation, a <a href="https://www.stack.nl/~dimitri/doxygen/manual/markdown.html" target="_blank">subset of doxygen markdown</a> is supported, including but not limited to:
+			<ul>
+				<li><a href="https://www.stack.nl/~dimitri/doxygen/manual/markdown.html#md_inlinelinks">Adding inine links</a>: <code>[The link text](http://example.net/)</code></li>
+				<li><a href="https://www.stack.nl/~dimitri/doxygen/manual/markdown.html#mddox_code_blocks">Code Block Indentation</a></li>
+				<li><a href="https://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmda">\a &lt;word&gt; in italics</a></li>
+				<li><a href="https://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmdp">\p &lt;word&gt; for monospace font</a></li>
+				<li><a href="https://www.stack.nl/~dimitri/doxygen/manual/commands.html#cmdsee">\see { references }</a></li>
+			</ul>
+			</p>
+
+			<p>Note that not If you want to do anything complex, it's highly recommended that you instead contribute to external documentation, as described below.</p>
 		</section>
 
 		<section>
@@ -249,6 +259,15 @@ An &lt;a href=&quot;../../classcinder_1_1gl_1_1_fbo.html&quot;&gt;Fbo&lt;/a&gt; 
 <pre><code class="language-markup">
 &lt;code&gt;gl::ScopedGlslProg&lt;/code&gt; is a scoped glsl shader.
 </code></pre>
+	
+			<h3>Special CSS</h3>
+			<p>In addition to any styles included in the <a href="http://foundation.zurb.com/docs/" target="_blank">Foundation 5 framework</a>, there are a few classes that may be commonly used when writing documentation, which can be found in <em>stylesrc/stylus/helpers.styl</em>:</p>
+			<h4>Image helpers</h4>
+			<ul>
+				<li><code>.center</code> for centering images</li>
+				<li><code>.shadow</code> for adding a consistent drop-shadow throughout the guides</li>
+				<li><code>.rounded</code> for adding rounded corners to images (best for application windows)</li>
+			</ul>
 
 			<h3>Including WebGL</h3>
 			<p>We encourage you to use whatever web technologies that will make your documentation as helpful as possible, including the use of WebGL. To do so, you should be able to write your WebGL sample entirely in a separate file and save in the same guide directory. Then you can embed your sample into an iFrame. All assets within the guide's directory will be copied over.</p>
@@ -260,8 +279,34 @@ An &lt;a href=&quot;../../classcinder_1_1gl_1_1_fbo.html&quot;&gt;Fbo&lt;/a&gt; 
 		</section>
 
 		<section>
-			<h3>Running the Generation Script</h3>
+			<a name="generation"></a>
+			<h2>Running the Generation Script</h2>
 			<p>Generating all of the docs takes a few minutes, which can be a hassle when testing out a specific guide. Here are a few tips for running generateDocs.py</p>
+
+			<p>Running the default script by default generates every page of the documentation. Run it like so:</p>
+<pre><code class="language-bash">
+python generateDocs.py
+</code></pre>
+			
+			<p>You can run the generator on a specific file by passing the source file as the first argument:</p>
+<pre><code class="language-bash">
+python generateDocs.py htmlsrc/index.html
+</code></pre>
+	
+			<p>To regenerate a specific directory of files (such as a suite of guides that live in the same directory), you can specify the directory that you want processed:</p>
+<pre><code class="language-bash">
+python generateDocs.py htmlsrc/guides/opengl/
+</code></pre>
+
+			<p>When generating a source file documentation page, by default, all of the html files will be generated so that the script can link up referenced pages. To skip over that step, you can use the <code>-s</code> flag.</p>
+<pre><code class="language-bash">
+python generateDocs.py xml/namespacecinder.xml -s
+</code></pre>
+			
+			<p>By default, debug log messages are ignored. To view all logging messages, the <code>-d</code> flag can be useful for debgging errors:</p>
+<pre><code class="language-markup">
+python generateDocs.py -d
+</code></pre>
 		</section>
 		
 		<!-- //////////////////// END CONTENT //////////////////// -->
