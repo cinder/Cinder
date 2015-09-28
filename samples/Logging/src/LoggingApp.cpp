@@ -47,7 +47,7 @@ void LoggingApp::enableFileLogging()
 	//! This call will append log messages to the file `cinder.log` in the folder `/tmp/logging`.
 	//! If the folder path `/tmp/logging` does not exist, it will be created for you.
 	
-	log::manager()->makeLogger<log::LoggerFile>( "/tmp/logging/cinder.log", true );
+	log::makeLogger<log::LoggerFile>( "/tmp/logging/cinder.log", true );
 }
 
 void LoggingApp::enableFileLoggingRotating()
@@ -56,7 +56,7 @@ void LoggingApp::enableFileLoggingRotating()
 	//! The filename `cinder.%Y.%m.%d.log` will be evaluated by strftime.  For the example
 	//! below, the filename could evaluate to `cinder.2015.08.28.log`.
 
-	log::manager()->makeLogger<log::LoggerFileRotating>( "/tmp/logging", "cinder.%Y.%m.%d.log" );
+	log::makeLogger<log::LoggerFileRotating>( "/tmp/logging", "cinder.%Y.%m.%d.log" );
 }
 
 void LoggingApp::enableSysLogging()
@@ -64,7 +64,7 @@ void LoggingApp::enableSysLogging()
 	//! This call will enable system logging, which will default to the same logging
 	//! level as console/file logging.
 	
-	auto sysLogger = log::manager()->makeLogger<log::LoggerSystem>();
+	auto sysLogger = log::makeLogger<log::LoggerSystem>();
 	
 	//! This call will set the system logging level independent of the file/console logging level.
 	//! The system logging level can not be lower than the file/console logging.
