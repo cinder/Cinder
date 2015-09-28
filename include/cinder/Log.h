@@ -82,9 +82,6 @@ class Logger {
 
 	virtual void write( const Metadata &meta, const std::string &text ) = 0;
 
-	template<typename LoggerT, typename... Args>
-	static std::shared_ptr<LoggerT> makeLogger( Args&&... args );
-	
 	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
 	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
 	
@@ -98,15 +95,6 @@ class Logger {
 };
 	
 typedef std::shared_ptr<Logger>	LoggerRef;
-
-template<typename LoggerT, typename... Args>
-std::shared_ptr<LoggerT> Logger::makeLogger( Args&&... args )
-{
-	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
-	
-	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
-	return result;
-}
 
 //! LoggerConsole prints log messages in the application console window.
 class LoggerConsole : public Logger {
@@ -278,22 +266,6 @@ private:
 	std::stringstream	mStream;
 };
 
-template<class LoggerT>
-class ThreadSafeT : public LoggerT {
-  public:
-	template <typename... Args>
-	ThreadSafeT( Args &&... args )
-	: LoggerT( std::forward<Args>( args )... )
-	{}
-
-	void write( const Metadata &meta, const std::string &text ) override
-	{
-		std::lock_guard<std::mutex> lock( manager()->getMutex() );
-		LoggerT::write( meta, text );
-	}
-};
-
-	
 // ----------------------------------------------------------------------------------
 // Template method implementations
 
