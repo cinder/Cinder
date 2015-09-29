@@ -327,7 +327,11 @@ span.slash {
 .content-row > .columns {
   padding-top: 40px;
   padding-bottom: 40px;
-  min-height: 400px;
+}
+@media (max-width: 768px) {
+  .content-row > .columns {
+    padding-top: 10px;
+  }
 }
 .content,
 body#guide-contents {
@@ -922,6 +926,57 @@ button.interactive-guide:focus {
 #side-nav ul.side-nav-list li.list-parent.active:before {
   background-image: url("../images/expand_arrow_white.png");
 }
+@media (max-width: 768px) {
+  #side-nav {
+    position: relative;
+    width: 100%;
+    padding-top: 0;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+  #side-nav section:not(.table) {
+    display: none;
+  }
+  #side-nav section.table {
+    margin-bottom: 0;
+  }
+  #side-nav section.table ul {
+    display: none;
+  }
+  #side-nav section.table > label:after {
+    content: " ";
+    background-image: url("../images/expand_arrow_white.png");
+    background-repeat: no-repeat;
+    -webkit-background-size: 13px 13px;
+    -moz-background-size: 13px 13px;
+    background-size: 13px 13px;
+    background-position: 0 0;
+    position: absolute;
+    display: block;
+    width: 13px;
+    height: 13px;
+    right: 18px;
+    top: 14px;
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    -o-transform-origin: 50% 50%;
+    -ms-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+  }
+  #side-nav section.table.active {
+    border-bottom: 1px solid #666;
+  }
+  #side-nav section.table.active ul {
+    display: block;
+  }
+  #side-nav section.table.active > label:after {
+    -webkit-transform: rotate(90deg) translateZ(0);
+    -moz-transform: rotate(90deg) translateZ(0);
+    -o-transform: rotate(90deg) translateZ(0);
+    -ms-transform: rotate(90deg) translateZ(0);
+    transform: rotate(90deg) translateZ(0);
+  }
+}
 .wrapper {
   min-height: 100%;
   position: relative;
@@ -1154,6 +1209,83 @@ footer {
 #nav_search > #search #search-results #search-results-view-all a:hover {
   color: #fff;
 }
+ul.library-features {
+  margin-top: 20px;
+}
+ul.library-features li {
+  display: block;
+  text-align: center;
+  height: 110px;
+  margin-bottom: 20px;
+}
+ul.library-features li a {
+  position: relative;
+  display: block;
+  -webkit-transition: all 250ms;
+  -moz-transition: all 250ms;
+  -o-transition: all 250ms;
+  -ms-transition: all 250ms;
+  transition: all 250ms;
+  width: auto;
+  height: 100%;
+}
+ul.library-features li a .title {
+  color: #949494;
+  width: 100%;
+  text-align: center;
+  margin-top: 5px;
+  text-transform: uppercase;
+  -webkit-transition: all 250ms;
+  -moz-transition: all 250ms;
+  -o-transition: all 250ms;
+  -ms-transition: all 250ms;
+  transition: all 250ms;
+  font-weight: 700;
+}
+ul.library-features li a:hover {
+  text-decoration: none;
+}
+ul.library-features li a:hover img.over {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+ul.library-features li a:hover .title {
+  color: #cb791c;
+}
+ul.library-features .img-holder {
+  display: block;
+  height: 80px;
+  width: auto;
+  position: relative;
+}
+ul.library-features .img-holder img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  display: block;
+  left: 50%;
+  -webkit-transform: translatex(-50%);
+  -moz-transform: translatex(-50%);
+  -o-transform: translatex(-50%);
+  -ms-transform: translatex(-50%);
+  transform: translatex(-50%);
+}
+ul.library-features .img-holder img::after {
+  clear: both;
+}
+ul.library-features .img-holder img.over {
+  z-index: 10;
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+  -webkit-transition: all 250ms;
+  -moz-transition: all 250ms;
+  -o-transition: all 250ms;
+  -ms-transition: all 250ms;
+  transition: all 250ms;
+}
 [data-magellan-expedition],
 [data-magellan-expedition-clone] {
   min-width: inherit;
@@ -1341,6 +1473,11 @@ pre[class*="language-"] {
 * Fonts
 * ---------------------------------------------------------
 */
+/*
+* ---------------------------------------------------------
+* Media Queries
+* ---------------------------------------------------------
+*/
 
 /* 
 /* -----------------------------------------------------------------------------
@@ -1501,83 +1638,6 @@ body.section_home #main-content #bottom-content {
   background: #292d2c;
   color: #949494;
   padding: 40px 0;
-}
-body.section_home #main-content ul.library-features {
-  margin-top: 20px;
-}
-body.section_home #main-content ul.library-features li {
-  display: block;
-  text-align: center;
-  height: 110px;
-  margin-bottom: 20px;
-}
-body.section_home #main-content ul.library-features li a {
-  position: relative;
-  display: block;
-  -webkit-transition: all 250ms;
-  -moz-transition: all 250ms;
-  -o-transition: all 250ms;
-  -ms-transition: all 250ms;
-  transition: all 250ms;
-  width: auto;
-  height: 100%;
-}
-body.section_home #main-content ul.library-features li a .title {
-  color: #949494;
-  width: 100%;
-  text-align: center;
-  margin-top: 5px;
-  text-transform: uppercase;
-  -webkit-transition: all 250ms;
-  -moz-transition: all 250ms;
-  -o-transition: all 250ms;
-  -ms-transition: all 250ms;
-  transition: all 250ms;
-  font-weight: 700;
-}
-body.section_home #main-content ul.library-features li a:hover {
-  text-decoration: none;
-}
-body.section_home #main-content ul.library-features li a:hover img.over {
-  opacity: 1;
-  -ms-filter: none;
-  filter: none;
-}
-body.section_home #main-content ul.library-features li a:hover .title {
-  color: #cb791c;
-}
-body.section_home #main-content ul.library-features .img-holder {
-  display: block;
-  height: 80px;
-  width: auto;
-  position: relative;
-}
-body.section_home #main-content ul.library-features .img-holder img {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  display: block;
-  left: 50%;
-  -webkit-transform: translatex(-50%);
-  -moz-transform: translatex(-50%);
-  -o-transform: translatex(-50%);
-  -ms-transform: translatex(-50%);
-  transform: translatex(-50%);
-}
-body.section_home #main-content ul.library-features .img-holder img::after {
-  clear: both;
-}
-body.section_home #main-content ul.library-features .img-holder img.over {
-  z-index: 10;
-  opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
-  -webkit-transition: all 250ms;
-  -moz-transition: all 250ms;
-  -o-transition: all 250ms;
-  -ms-transition: all 250ms;
-  transition: all 250ms;
 }
 body.section_home #main-content #intro {
   padding: 40px 0 75px 0;

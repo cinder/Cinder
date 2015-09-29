@@ -170,6 +170,13 @@ $(document).ready(function() {
 				$aTag.wrap( magDestination );
 			} );
 
+
+			// table of contents
+			var tableSection = $( 'section.table label' );
+			tableSection.on('click', function(){
+				$(this).parent('section').toggleClass('active');
+			})
+
 			this.resize();
 		},
 

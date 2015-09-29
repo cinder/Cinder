@@ -248,7 +248,10 @@ span.slash
 	> .columns
 		padding-top: 40px
 		padding-bottom: 40px
-		min-height: 400px
+		
+	@media (max-width: $tablet)
+		> .columns
+			padding-top: 10px
 
 
 // prose for reference and guide pages
@@ -705,9 +708,6 @@ button.interactive-guide
 		
 	
 	ul.css-treeview, ul.side-nav-list
-		
-		// padding: 20px 0
-		// margin-top: 15px
 
 		label
 			color: #fff
@@ -783,6 +783,50 @@ button.interactive-guide
 			
 		&.active:before
 			background-image: url("../images/expand_arrow_white.png");
+	
+
+	@media (max-width: $tablet)
+		position: relative
+		width: 100%
+		padding-top: 0
+		max-height: 100%
+		overflow-y: auto
+		
+		section:not(.table)
+			display: none
+		
+		section.table
+			margin-bottom: 0
+
+			ul
+				display: none
+					
+			> label	
+				&:after
+					content: " "
+					background-image: url("../images/expand_arrow_white.png");
+					background-repeat: no-repeat
+					background-size: 13px 13px
+					background-position: 0 0
+					position: absolute
+					display: block
+					
+					width: 13px
+					height: 13px
+					right: 18px
+					top: 14px
+					// transform: rotate(90deg) translateZ(0)
+					transform-origin: 50% 50%;
+		
+			&.active
+				border-bottom: 1px solid $dark-gray
+				
+				ul
+					display: block
+				
+				> label	
+					&:after
+						transform: rotate(90deg) translateZ(0)
 
 .wrapper
 	min-height: 100%
@@ -1011,6 +1055,71 @@ $border-height = 3px
 
 					&:hover
 						color: white
+
+ul.library-features
+			
+	margin-top: 20px;
+
+	li
+		display: block
+		text-align: center
+		height: 110px
+		margin-bottom: 20px
+
+		a
+			position: relative
+			display: block;
+			transition: all 250ms
+			width: auto
+			height: 100%
+
+			.title
+				color: $light-gray-text
+				width: 100%
+				text-align: center
+				margin-top: 5px;
+				text-transform: uppercase
+				transition: all 250ms
+				font-weight: 700
+
+			&:hover
+				// background: $cinder-orange
+				text-decoration: none
+				
+				img.over
+					opacity: 1
+					
+				.title
+					color: $cinder-orange
+					
+	.img-holder
+		display: block
+		height: 80px;
+		width: auto
+		position:relative
+
+		img
+			position: absolute
+			left: 0
+			top: 0
+			height: 100%
+			
+			display: block
+			left: 50%;
+			transform: translatex(-50%)
+			
+			&::after
+				clear: both
+			
+
+		img.over
+			// position: absolute
+			// top: 0
+			// left: 0
+			// transform: translatey(-100%)
+			z-index: 10
+			opacity: 0
+			transition: all 250ms
 
 // Magellan override
 [data-magellan-expedition], [data-magellan-expedition-clone]
