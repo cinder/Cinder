@@ -1024,13 +1024,16 @@ $border-height = 3px
 					width: 100%
 
 					&:hover,
-					&:hover a
+					&:hover a,
+					&.selected,
+					&.selected a
 						background: $cinder-red
 						color: white;
 						text-decoration: none
 						
-					&:hover a:before
-						color: $cinder-orange
+					&:hover a:before,
+					&.selected a:before
+						color: #fff
 
 					a
 						padding: 0;

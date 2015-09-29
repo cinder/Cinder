@@ -4,6 +4,7 @@ $(document).ready(function() {
 	var _this = this;
 	var rootDir = window.docsRoot;				// docsRoot defined in python and passed into master-template.mustache
 	var windowHeight = window.innerHeight;
+	var input = document.querySelector( '#search-input' );
 
 	var cinderJs = {
 
@@ -11,6 +12,11 @@ $(document).ready(function() {
 			this.selectNamspace( window.selectedNamespace );
  			this.showContent( hash );
  			this.adjustClassInfoLinks();
+
+ 			// focus on search input on keydown
+ 			$( window ).keydown( function( ){
+ 				$( input ).focus();
+ 			} );
 		},
 		
 	 	/*
@@ -353,17 +359,103 @@ $(document).ready(function() {
 	};
 
 	$( '#search-results-view-all' ).on( 'click', function(){
-		var searchTerm = escape( document.querySelector('#search-input').value );
-		window.location = 'search.html?' + searchTerm;
+		var searchTerm = escape( input.value );
+		window.location = rootDir + 'search.html?' + searchTerm;
+	} );
+
+	/**
+	 * Search keydown functionality
+	 */
+	$( input ).keydown( function( e ) {
+		var selected = $( $( '#search-results li.selected' )[0] ),	// selected list item
+			parentContainer = selected.parents( 'div' ),			// selected parent container
+			liList = $( '#search-results li' );						// list of all list items in search results
+
+		// press enter
+		if( e.keyCode == 13 ) {
+			if( selected.length ) {
+		        window.location = selected.find('a')[0].href;
+			}
+	    }
+	    // press up
+	    if (e.keyCode == 38) {
+	    	if( selected.length ){
+	        	selected.removeClass("selected");
+
+	        	// if no previous list item
+		        if( selected.prev().length === 0 ){
+
+		        	// find previous container
+		        	var prevContainer = parentContainer.prev().first();
+
+		        	// the container has to exist and have list items
+		        	while( prevContainer.length > 0 && prevContainer.find( 'ul li' ).length === 0 ){
+		        		prevContainer = prevContainer.prev().first();
+		        	}
+
+		        	if( prevContainer.length > 0 ){
+		        		// select the last item in the previous valid list
+		        		prevContainer.find('li').last().addClass('selected');	        		
+		        	} else{
+		        		// last list item
+		            	liList.last().addClass("selected");
+		        	}
+		        } else {
+		            selected.prev( '#search-results li' ).addClass("selected");
+		        }
+	        } else {
+	        	// if nothing is selected, select the last search result
+	        	selected = $( '#search-results li' ).last();
+	        	selected.addClass("selected");
+	        }
+	    }
+
+	    // press down
+	    if (e.keyCode == 40) {
+	        if( selected.length ){
+	        	selected.removeClass("selected");
+
+	        	// if no next list item
+		        if( selected.next().length == 0) {
+		        	// find next container
+		        	var nextContainer = parentContainer.next().first();
+
+		        	// the container has to exist and have list items
+		        	while( nextContainer.length > 0 && nextContainer.find( 'ul li' ).length === 0 ){
+		        		nextContainer = nextContainer.next().first();
+		        	}
+
+		        	if( nextContainer.length > 0 ){
+		        		// select the last item in the next valid list
+		        		$(nextContainer.find('li')[0]).addClass('selected');	        		
+		        	} else{
+		        		// first list item
+		            	liList.first().addClass("selected");
+		        	}
+		        } else {
+		            selected.next().addClass("selected");
+		        }
+	        } else {
+	        	// if nothing is selected, select the first search result
+	        	selected = $( '#search-results li' ).first();
+	        	selected.addClass("selected");
+	        }
+	    }
+
+	    // esc
+	    if (e.keyCode == 27) {
+	    	// clear input and clear search
+	    	input.value = '';
+	    	search('');
+	    }
 	} );
 
 
-	var input = document.querySelector('#search-input');
 	if( input ){
 		input.addEventListener('input', function()
 		{
 		    search(input.value);
-		});	
+		});
 	}
 	
     

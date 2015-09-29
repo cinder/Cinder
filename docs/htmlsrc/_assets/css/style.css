@@ -1179,13 +1179,16 @@ footer {
   width: 100%;
 }
 #nav_search > #search #search-results ul li:hover,
-#nav_search > #search #search-results ul li:hover a {
+#nav_search > #search #search-results ul li:hover a,
+#nav_search > #search #search-results ul li.selected,
+#nav_search > #search #search-results ul li.selected a {
   background: #a41c12;
   color: #fff;
   text-decoration: none;
 }
-#nav_search > #search #search-results ul li:hover a:before {
-  color: #cb791c;
+#nav_search > #search #search-results ul li:hover a:before,
+#nav_search > #search #search-results ul li.selected a:before {
+  color: #fff;
 }
 #nav_search > #search #search-results ul li a {
   padding: 0;
