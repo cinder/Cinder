@@ -1,0 +1,122 @@
+@import global
+
+$dark-blue = #013871
+$light-blue = #0E7DF0
+$dark-red = #570701
+
+
+
+code, .code
+	codeStyle()
+	padding: 2px 4px
+	background: #fafafa
+	color: #666 
+
+pre > code
+	background: none
+	
+pre[class*="language-"]
+	margin: 1em 0
+	padding: 0.5em 0.7em
+	line-height: 1.3em
+	codeStyle()
+
+code[class*="language-"]
+	padding: 0
+
+:not(pre) > code 
+	background: transparent !important 
+	font-size: 1.15em
+	
+	*
+		color: inherit !important
+	
+ci
+	codeStyle()
+	font-size: 1.15em
+	color: purple;
+
+a.ci
+	codeStyle()
+	font-size: 1.15em
+	
+	&.plain
+		baseFontStyle()
+		font-size: inherit
+
+
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: $gray-depth-3
+	// background-image: linear-gradient($gray-depth-2 50%, $gray-depth-3 50%);
+    // background-size: 2.6em 2.6em;
+    // background-origin: content-box;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.namespace {
+	opacity: .7;
+}
+
+.token.property,
+// .token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: $light-blue;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: $cinder-orange;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: $dark-red;
+	background: none;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: $dark-blue;
+	// color: #0E7DF0;
+}
+
+.token.tag,
+.token.function {
+	color: $cinder-red;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}

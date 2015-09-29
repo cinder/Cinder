@@ -1,0 +1,148 @@
+<html>
+<head>
+<meta charset="utf-8" />
+	<title>Transitioning to Cinder 0.9</title>
+	<meta name="keywords" content="guide">
+	<!-- master stylesheet - these links will be replaced when compiled -->
+	<link rel="stylesheet" href="../../_assets/css/foundation.css">
+	<link rel="stylesheet" href="../../_assets/css/prism.css">
+	<link rel="stylesheet" href="../../_assets/css/style.css">
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+</head>
+<body id="guide-contents" >
+<h1>Cinder 0.9 Transition Guide</h1>
+<p>
+<img src="teapot.jpg" style="float: right"/>
+
+This guide is meant to help users of previous versions of Cinder transition to version 0.9+. This release represents a number of changes and improvements, which are summarized below.
+
+<h3>Highlights:</h3>
+<ul list-style-position="inside">
+<li>All of Cinder&rsquo;s OpenGL code has been updated to reflect the modern (OpenGL 3.2+) API.</li>
+<li>Cinder&rsquo;s math libraries have been replaced with <a href="http://glm.g-truc.net/">GLM</a>.</li>
+<li>Cinder&rsquo; app:: internals have been refactored</li>
+</ul>
+</p>
+
+<h3>OpenGL Changes:</h3>
+<p>
+OpenGL itself has evolved substantially in recent versions, and Cinder&rsquo;s OpenGL implementation has been completely redesigned to take advantage of these changes. The baseline version requirement has been moved to OpenGL 3.2 Core Profile on desktop, and OpenGL ES 2 elsewhere.
+</p>
+
+<h4>Fundamental Changes:</h4>
+<p>
+In many ways, the evolution of OpenGL has been as focused on removing features as adding them. Probably the most important change is the removal of the &ldquo;fixed function&rdquo; pipeline. One implication is that a shader is always necessary in order to draw. Furthermore, &ldquo;immediate mode&rdquo; (<code>glBegin()</code>, <code>glVertex()</code>, <code>glEnd()</code>, etc) calls are no longer supported. Instead, any vertex data (positions, normals, etc) must be supplied in blocks of memory called vertex buffers (VBOs). These are just a few of the many changes that Cinder 0.9.0&rsquo;s GL functionality has been designed to respond to. We&rsquo;ve endeavored to keep a relatively straightforward API while still exposing the most recent functionality in OpenGL.
+</p>
+
+<p>
+A separate guide provides more in-depth documentation of Cinder&rsquo;s new GL API. In addition, please consult the <a href="https://github.com/cinder/Cinder/tree/master/samples/_opengl">samples/_opengl</a> directory for useful examples.
+</p>
+
+<h3>Math Changes:</h3>
+<p>
+Cinder no longer uses its own classes for mathematics, and instead has moved to the popular GLM library. This library is designed to closely match the math primitives and functions in GLSL. Most of GLM&rsquo;s functions are promoted into the <code>ci::</code> namespace, but for less common names you may need to qualify using <code>glm::</code>.
+</p>
+
+<h4>Types:</h4>
+<p>
+<ul>
+<li><code>ci::Vec2f</code>, <code>ci::Vec3f</code>, <code>ci::Vec4f</code> <span class="plain">&rarr;</span> <ci>vec2</ci>, <ci>vec3</ci>, <ci>vec4</ci></li>
+<li><code>ci::Vec2d</code>, <code>ci::Vec3d</code>, <code>ci::Vec4d</code> <span class="plain">&rarr;</span> <ci>dvec2</ci>, <ci>dvec3</ci>, <ci>dvec4</ci></li>
+<li><code>ci::Vec2i</code>, <code>ci::Vec3i</code>, <code>ci::Vec4i</code> <span class="plain">&rarr;</span> <ci>ivec2</ci>, <ci>ivec3</ci>, <ci>ivec4</ci></li>
+<li><code>ci::Matrix33f</code>, <code>ci::Matrix44f</code> <span class="plain">&rarr;</span> <ci>mat3</ci>, <ci>mat4</ci></li>
+<li><code>ci::Matrix33d</code>, <code>ci::Matrix44d</code> <span class="plain">&rarr;</span> <ci>dmat3</ci>, <ci>dmat4</ci></li>
+<li><code>ci::Quatf</code>, <code>ci::Quatd</code> <span class="plain">&rarr;</span> <ci>quat</ci>, <ci>dquat</ci></li>
+<li><code>ci::MatrixAffine2f</code> <span class="plain">&rarr;</span> <ci>mat3</ci> (see below)</li>
+</ul>
+</p>
+
+<p>
+One key difference to Cinder's math classes is that these primitives provide default constructors. The vectors default construct to zero, and the matrix and quaternion variants default construct to the identity transformation. Consequently, there's no equivalent to <code>Vec2f::zero()</code>, for example. Simply use the default constructor for <ci>vec2</ci>. Additionally, a few convenience functions like <code>Vec3f::zAxis()</code> do not have equivalents; simply use <code>vec3( 0, 0, 1 )</code> in that case.
+</p>
+
+<h4>Functions:</h4>
+<p>
+GLM, like GLSL, uses free functions in places where Cinder&rsquo;s own math classes formerly used member functions:
+</p>
+<code>myVec2f.length()</code> <span class="plain">&rarr;</span> <code>length( myVec2 )</code><br />
+<code>myVecA.dot( myVecB )</code> <span class="plain">&rarr;</span> <code>dot( myVecA, myVecB )</code>
+<p>
+For basic transformations, use the built-in <ci>scale()</ci>, <ci>translate()</ci> and <ci>rotate()</ci> methods. These methods have 2 variants. The first takes an existing <ci>mat4</ci> and returns a copy of this matrix with the transformation applied. The second one does not take a <ci>mat4</ci>, simply returning the transformation applied to the identity matrix.
+</p>
+
+<pre><code class="lang-cpp">
+mat4 ex = rotate( 0.04f, vec3( 0, 1, 0 )  ); // returns a rotation by 0.04 radians around Y axis
+mat4 ex2 = scale( ex, vec3( 2 ) ); // returns &lsquo;ex&rsquo; uniformly scaled by 2
+</code></pre>
+
+<h4>Quaternions:</h4>
+<p>
+To construct a quaternion that represents the rotation from vec3 <em>vecA</em> to <em>vecB</em>:
+</p>
+<pre><code class="lang-cpp">
+quat myQuat = rotation( vecA, vecB )
+</code></pre>
+<p>
+To construct a quaternion that represents a rotation by <em>angle</em> radians around <em>axis</em>:
+</p>
+<pre><code class="lang-cpp">
+quat myQuat = angleAxis( angle, axis );
+</code></pre>
+<p>
+Additionally, note that in glm quaternion multiplication order is reversed relative to Cinder&rsquo;s former <code>Quatf</code> class. So <code>myQuatA * myQuatB</code> is now <code>myQuatB * myQuatA</code>.
+</p>
+
+<h4>MatrixAffine2f:</h4>
+<p>
+For 2D transformations, Cinder formerly used a custom class <code>MatrixAffine2f</code> that has been replaced by <ci>glm::mat3</ci>. 2D transformations can be constructed using <ci>scale()</ci>, <ci>translate()</ci> and <ci>rotate()</ci>. Note that these functions all require a <ci>mat3</ci> as the first parameter, which represents the matrix to be transformed, and which can be the identity matrix.
+</p>
+
+<p>
+<pre><code class="lang-cpp">
+mat3 ex = scale( mat3(), vec2( 2 ) ); // returns a uniform scale by 2
+mat3 ex2 = rotate( ex, 0.04f ); // returns &lsquo;ex&rsquo; rotated by 0.04 radians around the z-axis
+</code></pre>
+</p>
+
+<h3>App-related Changes:</h3>
+<p>
+A key change is that Cinder applications now derive from <ci>app::App</ci> rather than <code>app::AppBasic</code> (with the exception of things like screensavers). Additionally, Cinder apps are instantiated with the <code>CINDER_APP()</code> macro now instead of <code>CINDER_APP_BASIC()</code>. A parallel change to the headers means <code>"cinder/app/App.h"</code> should now be <code>#include</code>d instead of <code>"cinder/app/AppBasic.h"</code>. Finally, the <code>App::prepareSettings()</code> virtual method has been removed in favor of an optional third parameter to the macro. This change allows the construction of GL objects in app constructors, among other things. This third parameter can be a lambda:
+</p>
+
+<pre><code class="lang-cpp">
+CINDER_APP( ExampleApp, RendererGl(), [&amp;]( App::Settings *settings ) {
+  settings-&gt;setWindowSize( 1280, 720 );
+})
+</code></pre>
+
+<p>
+or it can be a function pointer:
+</p>
+<pre><code class="lang-cpp">
+CINDER_APP( ExampleApp, RendererGl(), ExampleApp::prepareSettings )
+</code></pre>
+
+<p>
+While the <a href="http://http://www.boost.org/">Boost</a> libraries still ship with Cinder, we&rsquo;ve begun the process of deprecating them in this release, as much of the functionality we originally relied on is now part of C++11 and later. Users are obviously welcome to continue using Boost in their own code, but CinderBlock authors are encouraged to remove dependencies where possible. As a first step toward this change, Cinder&rsquo;s Boost directory has moved from <em><code>$(CINDER)</code></em><code>/boost</code> to <em><code>$(CINDER)</code></em><code>/include/boost</code>.
+</p>
+
+<h4>Mac-specific Changes:</h4>
+<p>
+32-bit Mac apps are still supported but are deprecated. By default Cinder apps are 64-bit on OS X.
+Several OS-level frameworks have been added to all Cinder apps:<br />
+IOSurface, IOKit, AVFoundation, CoreMedia
+</p>
+
+<p>
+And these are no longer necessary:<br />
+QuickTime, QTKit
+</p>
+
+<h4>MSW-specific Changes:</h4>
+<p>
+Visual C++ 2015 is supported. Additionally, the <a href="https://code.google.com/p/angleproject/">ANGLE renderer</a> allows Cinder apps to run without GL drivers. 
+</p>
+
+<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+</body>
+</html>

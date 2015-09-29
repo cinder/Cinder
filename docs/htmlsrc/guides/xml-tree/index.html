@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <!-- Update title -->
+      <title>XML Tree Guide</title>
+
+      <!-- keywords used for searching -->
+      <meta name="keywords" content="guide">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <!-- reference to Cinder classes -->
+      <ci seealso dox="cinder::XmlTree"></ci>
+
+        <!-- master stylesheet - these links will be replaced when compiled -->
+      <link rel="stylesheet" href="../../_assets/css/foundation.css">
+      <link rel="stylesheet" href="../../_assets/css/prism.css">
+      <link rel="stylesheet" href="../../_assets/css/style.css">
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+      <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+      
+   </head>
+   <body id="guide-contents" class="language-c++">
+
+      <!-- CONTENT STARTS HERE -->
+      <h1>XML Tree Guide</h1>
+
+      <section>
+         <h2>Introduction</h2>
+         <p>Cinder provides the <ci>XmlTree</ci> class for processing XML. This class is recursive, meaning an XmlTree can contain other XmlTrees as its children. This design is similar to XML itself, which is a hierarchical format where an element can contain children elements.</p>
+         
+         <p>For some of the example code in this document, we'll refer to this very basic XML document:</p>
+
+<pre><code class="language-markup">
+&lt;?xml version=&quot;1.0&quot;?&amp;&gt;
+&lt;library&gt;
+   &lt;owner&gt;
+      &lt;name&gt;Andrew Bell&lt;/name&gt;
+      &lt;city&gt;New York&lt;/city&gt;
+   &lt;/owner&gt;
+   &lt;album musician=&quot;John Coltrane&quot; year=&quot;1989&quot;&gt;
+      &lt;title&gt;Ole Coltrane&lt;/title&gt;
+      &lt;track id=&quot;0&quot;&gt;Ole&lt;/track&gt;
+      &lt;track id=&quot;1&quot;&gt;Dahomey Dance&lt;/track&gt;
+      &lt;track id=&quot;2&quot;&gt;Aisha&lt;/track&gt;
+      &lt;track id=&quot;3&quot;&gt;To Her Ladyship&lt;/track&gt;
+   &lt;/album&gt;
+   &lt;album musician=&quot;Burial + Four Tet&quot; year=&quot;2009&quot;&gt;
+      &lt;title&gt;Moth/Wolf Club&lt;/title&gt;
+      &lt;track id=&quot;0&quot;&gt;Moth&lt;/track&gt;
+      &lt;track id=&quot;1&quot;&gt;Wolf&lt;/track&gt;
+   &lt;/album&gt;
+&lt;/library&gt;
+</code></pre>        
+      </section>
+
+
+      <section>
+         <h2>Parsing</h2>
+         <p>To parse a block of XML, construct an XmlTree using a <ci>DataSource</ci>. For example, to parse an XML file on your disk, use <ci>loadFile()</ci>: </p>
+         
+         <pre><code class="language-cpp">XmlTree doc( loadFile( "/Users/andrewfb/music.xml" ) );</code></pre>
+         
+         <p>To parse XML on an http server, use <ci>loadUrl()</ci>:</p>
+         <pre><code class="language-cpp">XmlTree doc( loadUrl( "http://rss.news.yahoo.com/rss/tech" ) );</code></pre>
+         
+         <p>To parse XML contained in a resource (discussed in <a class="el" href="_cinder_resources.html">more depth here</a>), use <ci>loadResource()</ci>:</p>
+         <pre><code class="language-cpp">XmlTree doc( loadResource( RES_MUSIC_LIBRARY ) );</code></pre>
+
+         <p>To parse XML contained in a string:</p>
+         <pre><code class="language-cpp">
+std::string myXmlStr( &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n&lt;library&gt;\n&lt;owne&hellip;&quot;
+XmlTree doc( myXmlStr );</code></pre>
+      </section>
+      
+
+      <section>
+         <h2>Iterating XmlTrees</h2>
+         <p>To grab a particular child of a node by name, use the <ci>XmlTree::getChild()</ci> method: </p>
+<pre><code class="language-cpp">
+XmlTree doc( loadFile( &quot;/Users/andrewfb/music.xml&quot; ) );
+XmlTree musicLibrary = doc.getChild( &quot;library&quot; );</code></pre>
+         
+         <p>If the child does not exist, a <ci>XmlTree::ExcChildNotFound</ci> exception is thrown. To test for the existence of a child use <ci>XmlTree::hasChild()</ci>:</p>
+         
+<pre><code class="language-cpp">
+std::string myXmlStr( '&lt;?xml version=&quot;1.0&quot;?&gt; &lt;library&gt;&lt;owne&hellip;' );
+XmlTree doc( myXmlStr );</code></pre>
+
+         <p>XmlTree also supports finding children by path, where each component of the path is separated by the <code>/</code> character. For example:</p>
+<pre><code class="language-cpp">
+console() &lt;&lt; musicLibrary.getChild( &quot;owner/city&quot; ) &lt;&lt; std::endl;</code></pre>
+
+         <p><em>Output:</em></p>
+         <pre><code class="language-cpp">&lt;city&gt;New York&lt;/city&gt;</code></pre>
+         
+         <p>The example above shows a convenient way to examine an XML node, which is to pass it to a std::ostream like <ci>console()</ci>. Another convenient function is <ci>XmlTree::getPath()</ci>, which returns the path up to and including a given node:</p>
+
+<pre><code class="language-cpp">
+XmlTree ownerCity = doc.getChild( &quot;library/owner/city&quot; );
+console() &lt;&lt; &quot;Path: &quot; &lt;&lt; ownerCity.getPath() &lt;&lt; &quot;  Value: &quot; &lt;&lt; ownerCity.getValue() &lt;&lt;std::endl;</code></pre>
+
+         <p><em>Output:</em></p>
+         <pre><code class="language-cpp">Path: library/owner/city  Value: New York</code></pre>
+         
+         <p>To iterate the children of an XML node, use the <ci>XmlTree::Iter</ci> class.</p>
+
+<pre><code class="language-cpp">
+XmlTree firstAlbum = doc.getChild( "library/album" );
+for( XmlTree::Iter child = firstAlbum.begin(); child != firstAlbum.end(); ++child )
+console() &lt;&lt; "Tag: " &lt;&lt; child->getTag() &lt;&lt;"  Value: " &lt;&lt; child->getValue() &lt;&lt; endl;</code></pre>
+
+         <p><em>Output:</em></p>
+<pre><code class="language-cpp">
+Path: library/owner/city  Value: New York
+Tag: title  Value: Ole Coltrane
+Tag: track  Value: Ole
+Tag: track  Value: Dahomey Dance
+Tag: track  Value: Aisha
+Tag: track  Value: To Her Ladyship\endcode</code></pre>
+
+         <p>You can also iterate the children of a node with the path syntax. For example, to iterate all the tracks of the music library, we can do something like the code below. Notice that the XmlTree::Iter is smart about finding all the nodes which match the path - there are tracks from both albums, not just the first.</p>
+<pre><code class="language-cpp">
+for( XmlTree::Iter track = doc.begin("library/album/track"); track != doc.end(); ++track )
+console() &lt;&lt; track->getValue() &lt;&lt; endl;</code></pre>
+
+         <p><em>Output:</em> </p>
+<pre><code class="language-cpp">
+Ole
+Dahomey Dance
+Aisha
+To Her Ladyship
+Moth
+Wolf</code></pre>
+
+         <p>By default paths for the XmlTree are case insensitive. An optional boolean following the path allows you to force case sensitivity. Also for the uncommon case in which your node tags contain the '/' character, you can supply an alternate separator - we use the '.' below:</p>
+         <pre><code class="language-cpp">std::string ownerCity = xmlNode.getChild( "library.owner.city", true, '.' );</code></pre>
+      </section>
+      
+
+      <section>
+         <h2>Values &amp; Attributes</h2>
+         <p>As we've already seen, you can get the tag (or name) of a node by calling <ci dox="XmlTree::getTag">getTag()</ci>. To get the value of a node as a string use <ci dox="XmlTree::getValue">getValue()</ci>. As an additional convenience, you can have XmlTree parse a string for you for any type which supports the istream&gt;&gt; operator. For example, if you know the nodes' values are floats, you might do this: </p>
+<pre><code class="language-cpp">
+vector&lt;float&gt; myFloats;
+for( XmlTree::Iter item = xml.begin(); item != xml.end(); ++item )
+myFloats.push_back( item-&gt;getValue&lt;float&gt;() );</code></pre>
+
+         <p>The XmlTree also offers facility for walking a node's attributes. To get the value of an attribute as a string, you can call <ci dox="XmlTree::getAttributeValue()">getAttributeValue()</ci>: </p>
+<pre><code class="language-cpp">
+XmlTree firstAlbum = doc.getChild( "library/album" );
+console() &lt;&lt; "the musician is: " &lt;&lt; firstAlbum.getAttributeValue( "musician" ) &lt;&lt; endl;
+</code></pre>
+
+         <p>There is also a variant which supports automatic type conversion:</p>
+<pre><code class="language-cpp">
+XmlTree firstTrack = doc.getChild( "library/album/track" );
+int firstTrackId = myNode.getAttributeValue&lt;int&gt;( "id" );
+</code></pre>
+
+         <p>As an additional convenience, you can supply a default value in the case that a node does not have a particular attribute. If we wanted our default size to be 1 for nodes which do not posses a size attribute, we would do this:</p>
+<pre><code class="language-cpp">
+float mySize = myNode.getAttributeValue&lt;float&gt;( "size", 1.0f );</code></pre>
+      </section>
+
+
+      <section>
+         <h2>Writing XML</h2>
+         <p>The XmlTree class can be used to build and write XML documents as well. The example below creates a music library with one album and prints it to the <ci>console()</ci>: </p>
+<pre><code class="language-cpp">
+XmlTree library( "library", "" );
+XmlTree album( "album", "" );
+album.setAttribute( "musician", "Sufjan Stevens" );
+album.setAttribute( "year", "2004" );
+album.push_back( XmlTree( "title", "Seven Swans" ) );
+album.push_back( XmlTree( "track", "All the Trees of the Field Will Clap Their Hands" ) );
+album.push_back( XmlTree( "track", "The Dress Looks Nice on You" ) );
+album.push_back( XmlTree( "track", "In the Devil's Territory" ) );
+album.push_back( XmlTree( "track", "To Be Alone With You" ) );
+library.push_back( album );
+console() &lt;&lt; library &lt;&lt; std::endl;</code></pre>
+
+         <p> <em>Output:</em> </p>
+<pre><code class="language-markup">
+&lt;library&gt;
+   &lt;album musician=&quot;Sufjan Stevens&quot; year=&quot;2004&quot;&gt;
+      &lt;title&gt;Seven Swans&lt;/title&gt;
+      &lt;track&gt;All the Trees of the Field Will Clap Their Hands&lt;/track&gt;
+      &lt;track&gt;The Dress Looks Nice on You&lt;/track&gt;
+      &lt;track&gt;In the Devil&#039;s Territory&lt;/track&gt;
+      &lt;track&gt;To Be Alone With You&lt;/track&gt;
+   &lt;/album&gt;
+&lt;/library&gt;
+</code></pre>
+
+         <!-- fragment -->
+         <p>Notice that the node echoed to the console was not treated as an XML document - it lacks the <code>&lt;?xml&gt;</code> declaration of a true XML document. There are a couple of ways of achieving this. The simplest is to use <ci>XmlTree::write()</ci>, which by default assumes you want a full XML document:</p>
+<pre><code class="language-cpp">
+library.write( writeFile( "~/musicOutput.xml" ) );</code></pre>
+
+         <!-- fragment -->
+         <p>This routine has an optional second boolean parameter which will create the <code>&lt;?xml&gt;</code> declaration when true, its default value. Another option would be to create a document node ourselves and append the <code>&lt;library&gt;</code> to that:</p>
+<pre><code class="language-cpp">
+XmlTree doc = XmlTree::createDoc();
+XmlTree library( "library", "" );
+&hellip;
+doc.push_back( library );
+console() &lt;&lt; doc &lt;&lt; std::endl;</code></pre>
+      </section>
+
+
+      <section>
+         <h2>Const-Correctness and References</h2>
+         <p>The XmlTree is designed to be const-correct, and supports a <a class="el" href="classcinder_1_1_xml_tree_1_1_const_iter.html">ConstIter</a> which mimicks the <code>const_iterator</code> of STL containers: </p>
+<pre><code class="language-cpp">
+// Finds the track named \a searchTrack in the music library \a library.
+// Throws XmlTree::ExcChildNotFound() if none is found.
+const XmlTree&amp; findTrackNamed( const XmlTree &amp;library, const std::string &amp;searchTrack )
+{
+   for( XmlTree::ConstIter trackIt = library.begin("album/track"); trackIt != library.end(); ++trackIt ) {
+      if( trackIt->getValue() == searchTrack )
+         return *trackIt;
+   }
+   
+   // failed to find a track named 'searchTrack'
+   throw XmlTree::ExcChildNotFound( library, searchTrack );
+}
+
+&hellip;
+XmlTree doc( loadFile( "/Users/andrewfb/library.xml" ) );
+console() &lt;&lt; findTrackNamed( doc.getChild( "library" ), "Wolf" ) &lt;&lt; std::endl;</code></pre>
+
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-cpp"><track id="1">Wolf</track></code></pre>
+
+         <p>It's also worth noting the value of passing XmlTrees by reference whenever possible. XmlTrees create a full copy of the XML data tree whenever they are copied, so passing by reference can improve performance significantly. Furthermore, assigning by copy will prevent us from modifying the "original" node of an XmlTree should we so desire. For example: 
+         </p>
+<pre><code class="language-cpp">
+// Whoops - assignment by value doesn't modifying the original XmlTree
+XmlTree firstTrackCopy = doc.getChild( "/library/album/track" );
+firstTrackCopy.setValue( "Replacement name" );
+console() &lt;&lt; doc.getChild( "/library/album/track" ) &lt;&lt; std::endl;</code></pre>
+
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-markup"><track id="0">Ole</track></code></pre>
+
+         <p>Instead, use a reference in order to modify the XmlTree:</p>
+<pre><code class="language-cpp">
+XmlTree &amp;firstTrackRef = doc.getChild( "/library/album/track" ); // notice the reference
+firstTrackRef.setValue( "Replacement name" );
+console() &lt;&lt; doc.getChild( "/library/album/track" ) &lt;&lt; std::endl;
+</code></pre>
+
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-markup"><track id="0">Replacement name</track></code></pre>
+
+      </section>
+
+
+      <section>
+         <h2>Implementation Notes</h2>
+         <p>The XmlTree::Iter and XmlTree::ConstIter are designed to be STL-compatible iterators. For example, if you are using a lambdas-aware C++ compiler (currently only VC2010 at the time of this writing) the following code prints the names of the albums in the music library: </p>
+<pre><code class="language-cpp">
+std::for_each( doc.begin( "library/album" ), doc.end(), []( const XmlTree &amp;child ) {
+   app::console() &lt;&lt; child.getChild( "title" ).getValue() &lt;&lt; std::endl;
+} );</code></pre>
+         
+         <p>XmlTree is implemented using the <a href="http://rapidxml.sourceforge.net/">RapidXML</a> library. For unusually performance-conscious use cases, it is worth considering using RapidXML directly, as the XmlTree is designed to be convenient more than it is fast. The necessary header files are in <em>cinder/include/rapidxml</em> and can be <code>#include</code>d like so: 
+         </p>
+
+<pre><code class="language-cpp">
+#include "rapidxml/rapidxml.hpp"
+#include "rapidxml/rapidxml_print.hpp"</code></pre>
+      </section>
+      <!-- END CONTENT -->
+
+      <!-- Scripts -->
+      <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+      <!-- Place additional scripts here (optional) -->
+      <!-- <script type="text/javascript"></script> -->
+
+   </body>
+</html> 

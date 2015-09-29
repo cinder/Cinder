@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Update title -->
+        <title>Path2D Guide: Part 3</title>
+
+        <!-- keywords used for searching -->
+        <meta name="keywords" content="guide">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- reference to Cinder classes -->
+        <!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+        <!-- master stylesheet - these links will be replaced when compiled -->
+        <link rel="stylesheet" href="../../_assets/css/foundation.css">
+        <link rel="stylesheet" href="../../_assets/css/prism.css">
+        <link rel="stylesheet" href="../../_assets/css/style.css">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+        <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+        <link rel="stylesheet" href="path2d.css">
+    </head>
+
+    <body id="guide-contents" >    
+        
+        <!-- CONTENT STARTS HERE -->
+
+        <div class="">
+                <h1>Part 3: Advanced Functions</h1>
+                <p>In addition to the basic drawing functions, Cinder includes a slew of advanced functions to help you do some more interesting things with your code.</p>
+                <ul>
+                    <li><strong><ci dox="cinder::Path2d::calcBoundingBox">calcBoundingBox()</ci></strong>: Calculates the bounding box of the path, including all handle point positions.</li>
+                    <li><strong><ci dox="cinder::Path2d::calcPreciseBoundingBox">calcPreciseBoundingBox()</ci></strong>: Calculates the bounding box of the the resulting path, minus handle point positions.</li>
+                    <li><strong><ci dox="cinder::Path2d::contains">contains()</ci></strong>: Determines if a given point is within the area of the path.</li>
+                    <li><strong><ci dox="cinder::Path2d::transformed">transformed()</ci></strong>: Returns a copy of the path with the specified transform matrix applied.</li>
+                    <li><strong><ci dox="cinder::Path2d::subdivide">subdivide()</ci></strong>: Returns an array of points subdividing the path's curves based on the given tolerance.</li>
+                </ul>
+                
+                <iframe seamless src="_tut_part3.html" id="tutorial"  width="100%" > </iframe>
+
+                <div id="bottomNav">
+                    &laquo; <a href="part2.html">Part 2: Path2d Functions</a>
+                </div>
+                
+                <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+                <script src="iframeResizer.min.js" type="text/javascript"></script>
+        
+                <script type="text/javascript">
+                    iFrameResize({log:true});
+                </script> 
+                                              
+            </div>
+    </body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <!-- Update title -->
+      <title>Hello Cinder: Chapter 4</title>
+
+      <!-- keywords used for searching -->
+      <meta name="keywords" content="guide, intro, tour, hello">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <!-- reference to Cinder classes -->
+         <!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+         <!-- master stylesheet - these links will be replaced when compiled -->
+      <link rel="stylesheet" href="../../_assets/css/foundation.css">
+      <link rel="stylesheet" href="../../_assets/css/prism.css">
+      <link rel="stylesheet" href="../../_assets/css/style.css">
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+      <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+      
+   </head>
+
+   <body id="guide-contents" class="language-c++">
+
+      <!-- CONTENT STARTS HERE -->
+            <h1><a class="anchor" id="breakingFree"></a>
+               Moving the Particles off the grid
+            </h1>
+            <p>I don't know about you, but I am getting tired of this grid format. Particles weren't designed to be stationary. Our particles want to roam. It is time to cut them free from their grid tethers.<br />
+               <br />
+               As I mentioned early on, the <code>Particle</code> is just a holder for data. Not just any data. The <code>Particle</code> class holds the data that describes the particle itself. The location is not just any location. It is that <code>Particle</code>'s location. The radius is that <code>Particle</code>'s radius. Any data that is specific to this particle should exist inside this <code>Particle</code> and nowhere else. <br />
+               <br />
+               When I think of a particle, I think of a dot in space. This dot is created, it follows the rules it was assigned, it is influenced by outside forces, and eventually it dies. Let's start with the act of creating.<br />
+               <br />
+               In the previous section, our <code>ParticleController</code> made a few thousand <code>Particle</code>s right away. All the <code>Particle</code>s existed until the user quit the app. That will be our first change. We remove the second <code>ParticleController</code> constructor (the one that made the grid of <code>Particle</code>s). From now on, the user will have to use the mouse to make new <code>Particle</code>s.<br />
+               <br />
+            </p>
+            <h1><a class="anchor" id="MouseParticles"></a>
+               Creating Particles with Mouse events
+            </h1>
+            <p>We are going to need to beef up our mouse related code. First up, we will add mouseDown() and mouseUp() methods to our project. We will also make a boolean that will keep track of whether a mouse button is pressed. </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> mouseDown( MouseEvent event );</div>
+               <div class="line"><span class="keywordtype">void</span> mouseUp( MouseEvent event );</div>
+               <div class="line"><span class="keywordtype">bool</span> mIsPressed;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               If any mouse button is pressed, mouseDown() will fire. Inside that function, all we do is set <code>mIsPressed</code> to <code>true</code>. If mouseUp() is called, <code>mIsPressed</code> will be set to <code>false</code>. Easy enough. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::mouseDown( MouseEvent event ) {</div>
+               <div class="line">  mIsPressed = <span class="keyword">true</span>;</div>
+               <div class="line">}</div>
+               <div class="line"></div>
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::mouseUp( MouseEvent event ) {</div>
+               <div class="line">  mIsPressed = <span class="keyword">false</span>;</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Finally, in our App class <a class="el" href="classcinder_1_1app_1_1_app.html#af4dd0c8459354a9ced7250ad2a97dc9e">update()</a> method, we add an <code>if</code> statement that checks to see if <code>mIsPressed</code> is true. If it is, then have the <code>ParticleController</code> make some new <code>Particle</code>s. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordflow">if</span>( mIsPressed )</div>
+               <div class="line">  mParticleController.addParticles( 5, mMouseLoc );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               We have gone ahead and changed the <code>addParticles()</code> method in <code>ParticleController</code> to take both the number of <code>Particle</code>s we want as well as the location where we want to initially put them.<br />
+               <br />
+               You might be thinking, "Hey, wait. If we make 5 particles and place all of them at the location of the cursor, we will only see 1 particle." We remedy this situation by adding a random vector to the location when we create the new <code>Particle</code>. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> ParticleController::addParticles( <span class="keywordtype">int</span> amt, <span class="keyword">const</span> Vec2i &amp;mouseLoc ) {</div>
+               <div class="line">  <span class="keywordflow">for</span>( <span class="keywordtype">int</span> i=0; i&lt;amt; i++ ) {</div>
+               <div class="line">    Vec2f randVec = <a class="code" href="namespacecinder.html#aa4d5f2780fe4b455a265cee009ed2b6a">Rand::randVec2f</a>() * 10.0f;</div>
+               <div class="line">    mParticles.push_back( Particle( mouseLoc + randVec ) );</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               So we are making a new <code>Particle</code> at the location of the mouse, but we are also offsetting it in a random direction that has a length of <code>10.0</code>. In other words, our 5 new <code>Particle</code>s will all exist on a circle that has a radius of 10.0 whose center is the cursor position.<br />
+               <br />
+            </p>
+            <h1><a class="anchor" id="death"></a>
+               Particle death
+            </h1>
+            <p>If we allow every <code>Particle</code> to live forever, we will very quickly start dropping frame rate as hundreds of thousands of <code>Particle</code>s begin to accumulate. We need to kill off <code>Particle</code>s every now and then. Or more accurately, we need to allow <code>Particle</code>s to say when they are ready to die. We do this by keeping track of a <code>Particle</code>'s age.<br />
+               <br />
+               Every <code>Particle</code> is born with an age of 0. Every frame it is alive, it adds 1 to its age. If the age is ever greater than the life expectancy, then the <code>Particle</code> dies and we get rid of it. First, lets add the appropriate variables to our <code>Particle</code> class. We need an age, a lifespan, and a boolean that is set to true if the age ever exceeds the lifespan. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">int</span> mAge;</div>
+               <div class="line"><span class="keywordtype">int</span> mLifespan;</div>
+               <div class="line"><span class="keywordtype">bool</span> mIsDead;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Be sure to initialize <code>mAge</code> to <code>0</code> and <code>mLifespan</code> to a number that makes sense for your project. We are going to allow every <code>Particle</code> to live until the age of 200. In our <code>Particle</code>'s <code>update()</code> method, we increment the age and then compare it to the lifespan. 
+            </p>
+            <div class="fragment">
+               <div class="line">mAge++;</div>
+               <div class="line"><span class="keywordflow">if</span>( mAge &gt; mLifespan )</div>
+               <div class="line">  mIsDead = <span class="keyword">true</span>;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Just having a <code>Particle</code> say "Im dead" is not quite enough. We need to also have the <code>ParticleController</code> clean up after the dead and remove them from the <code>list</code> of <code>Particle</code>s. If you look back at the <code>ParticleController</code> <code>update()</code> method, you see we are already iterating through the full list of <code>Particle</code>s. We can put our death-check there. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordflow">for</span>( list&lt;Particle&gt;::iterator p = mParticles.begin(); p != mParticles.end(); ){</div>
+               <div class="line">  <span class="keywordflow">if</span>( p-&gt;mIsDead ) {</div>
+               <div class="line">    p = mParticles.erase( p );</div>
+               <div class="line">  }</div>
+               <div class="line">  <span class="keywordflow">else</span> {</div>
+               <div class="line">    p-&gt;update( channel, mouseLoc );</div>
+               <div class="line">    ++p;</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               For every <code>Particle</code> in the <code>list</code>, we check to see if its <code>mIsDead</code> is <code>true</code>. If so, then <code>erase()</code> it from the <code>list</code>. Otherwise, go ahead and <code>update()</code> the <code>Particle</code>. You might notice this <code>for</code> loop is a little different than you're used to seeing. This is because we don't <em>always</em> want to increment our list iterator <code>p</code>. We only want to increment it if the particle isn't dead. Otherwise we'll set <code>p</code> to be the result of calling erase() (this is standard practice for using the STL's list class).<br />
+               <br />
+               Hurray, you have just made a <code>Particle</code> cursor trail.<br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part4_01.png" alt="tutorial_part4_01.png"/>
+            </div>
+            <p> <br /></p>
+            <h1><a class="anchor" id="velocity"></a>
+               Particle velocity
+            </h1>
+            <p>Up until now, our <code>Particle</code>s have been stationary. We did do some position perturbations in the last section, but the location of the <code>Particle</code> (<code>mLoc</code>) never changed. It is time to remedy this. We are going to finally make use of velocity. <br />
+               <br />
+               Velocity is the speed that something moves multiplied by the direction that something is moving. You can add velocity to position to get the new position. If velocity never changes, then the <code>Particle</code> will move in a straight line. That will be our first test case with Velocity.<br />
+               <br />
+               It is incredibly simple, really. All you need is one additional Vec2f in your <code>Particle</code>. We will call it <code>mVel</code>. When you initialize <code>mVel</code>, you set it equal to a random 2D vector. 
+            </p>
+            <div class="fragment">
+               <div class="line">mVel   = <a class="code" href="namespacecinder.html#aa4d5f2780fe4b455a265cee009ed2b6a">Rand::randVec2f</a>();</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Since we are going to deal with constant velocity, we can just leave it at that. Each <code>Particle</code>, when it is created, is assigned a random velocity. To make the <code>Particle</code> obey that velocity, you add it to the location. 
+            </p>
+            <div class="fragment">
+               <div class="line">mLoc += mVel;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               When you run the project, as you click and drag you will create a trail of <code>Particle</code>s that move away from their point of creation at a constant speed until they die.<br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part4_02.png" alt="tutorial_part4_02.png"/>
+            </div>
+            <p> <br />
+               Perhaps you don't want them to move forever. Maybe you just want them to exhibit a burst of velocity at birth but that velocity will trail off until the <code>Particle</code> isn't moving at all. To accomplish that, you simply multiply the velocity with a number less than 1.0. This is referred to as the rate of decay which we will call <code>mDecay</code>. 
+            </p>
+            <div class="fragment">
+               <div class="line">mLoc += mVel;</div>
+               <div class="line">mVel *= mDecay;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               As you can see, if we set <code>mDecay</code> to <code>1.0</code>, the velocity will show no change over time. If we use a number greater than <code>1.0</code>, the velocity will increase exponentially to infinity. This is why we try to keep the rate of decay less than <code>1.0</code>. It is far more desirable a feature to have something slow to a stop than to have something speed up to infinity. But this is just a personal choice... feel free to go crazy!<br />
+               <br />
+               I am going to interject here for a moment and fix something that has been annoying me. As it stands, all the <code>Particle</code>s created in any given frame disappear at the same time. It feels rigid and obvious so lets use a little randomness to get us something more organic. 
+            </p>
+            <div class="fragment">
+               <div class="line">mLifespan = <a class="code" href="namespacecinder.html#aedf80ba7eace9f6369aa0ba639b11ec6">Rand::randInt</a>( 50, 250 );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               There, all better. Now the <code>Particle</code>s die at different rates. Moving on.<br />
+               <br />
+               Another aesthetic trick that is useful with <code>Particle</code>s is to pay attention to the ratio of <code>mAge/mLifespan</code>. Or in many cases, <code>1.0 - mAge/mLifespan</code>. Say, for example, you want to make the <code>Particle</code>s shrink out of existence instead of just disappearing. If you have a number from 1.0 to 0.0 that represents how old it is in relation to how old it is allowed to get, you can multiply the radius by that age percentage to make the <code>Particle</code> fade away as it dies. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> agePer = 1.0f - ( mAge / (float)mLifespan );</div>
+               <div class="line">mRadius = 3.0f * agePer;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br /></p>
+            <div class="image">
+               <img src="images/tutorial_part4_03.png" alt="tutorial_part4_03.png"/>
+            </div>
+            <p> <br />
+               This is another tiny trick that has a surprisingly effective result. We currently have a scenario where it seems <code>Particle</code>s are coming out of the mouse cursor. We can really push this effect by setting the initial velocity of the <code>Particle</code> to be equal to the velocity of the cursor. This will make it seem like <code>Particle</code>s are being thrown from the cursor instead of just being passively deposited.<br />
+               <br />
+               Every frame, we are going to subtract the previous location of the cursor from the current location of the cursor in order to find the cursor's velocity. Once we have the cursor velocity, we can pass it to each <code>Particle</code> (like we do with the <code>mouseLoc</code>) and initialize the <code>Particle</code>'s <code>mVel</code> with this new mouse-made velocity.<br />
+               <br />
+               If you go ahead and do this, you will probably find the results a little annoying. The <code>Particle</code>s appear and move in awkward clumps. There are two things we can do to fix this.<br />
+               <br />
+               1) We don't actually want the initial velocity to be the same as the mouse. Once tested, the initial movement feels to fast. It looks much better if we multiply it by .25. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> ParticleController::addParticles( <span class="keywordtype">int</span> amt, <span class="keyword">const</span> Vec2i &amp;mouseLoc, <span class="keyword">const</span> Vec2f &amp;mouseVel ) {</div>
+               <div class="line">  <span class="keywordflow">for</span>( <span class="keywordtype">int</span> i=0; i&lt;amt; i++ ) {</div>
+               <div class="line">    Vec2f loc = mouseLoc + <a class="code" href="namespacecinder.html#aa4d5f2780fe4b455a265cee009ed2b6a">Rand::randVec2f</a>() * 10.0f;</div>
+               <div class="line">    Vec2f vel = mouseVel * 0.25f;</div>
+               <div class="line">    mParticles.push_back( Particle( p, v ) );</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               2) We should add a random vector with a random speed to our cursor velocity in order to make the <code>Particle</code>s spread out a little more. Otherwise, every frame our cursor will make a few new <code>Particle</code>s and send them all traveling in the same direction. 
+            </p>
+            <div class="fragment">
+               <div class="line">Vec2f velOffset = <a class="code" href="namespacecinder.html#aa4d5f2780fe4b455a265cee009ed2b6a">Rand::randVec2f</a>() * <a class="code" href="namespacecinder.html#ab7637c0d6db3b9234d15be30c2e7ccb0">Rand::randFloat</a>( 1.0f, 3.0f );</div>
+               <div class="line">Vec2f vel = mouseVel * 0.25f + velOffset;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               What you have just seen is pretty much my entire coding process. Run the code. Find something that doesn't quite feel right. Tweak it. Repeat. An endless cycle of trying to make things slightly better. In keeping with this sentiment, I just noticed that the <code>Particle</code>s shouldn't all decay at the same rate. Time to make that randomized as well. 
+            </p>
+            <div class="fragment">
+               <div class="line">mDecay      = <a class="code" href="namespacecinder.html#ab7637c0d6db3b9234d15be30c2e7ccb0">Rand::randFloat</a>( 0.95f, 0.99f );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br /></p>
+            <h1><a class="anchor" id="perlin"></a>
+               Enter Perlin noise
+            </h1>
+            <p>Oh man, how I LOVE <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> noise. When used sparingly, <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> noise can add some magic to your <code>Particle</code> systems. But be aware, it is very easy to overuse and abuse <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> noise. Subtlety is key.<br />
+               <br />
+               What is <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> noise? Wikipedia can give you a <a href="http://en.wikipedia.org/wiki/Perlin_noise">very thorough answer</a> to that question. In short, <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> noise is a smoothly interpolated, easily controllable random number generator. One of the cool things about it is that <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> noise can be defined in 1D, 2D, 3D or 4D, and it will always give us back a consistent value for a particular location. Cinder has a built-in implementation, and here it is: 
+            </p>
+            <div class="fragment">
+               <div class="line">mPerlin = Perlin();</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Don't forget to <code>#include "cinder/Perlin.h"</code>. Now that we have an instance of <a class="el" href="classcinder_1_1_perlin.html">Perlin</a>, we need to pass it along to our <code>Particle</code>s so they can make use of it. You will do that the same way you passed the <a class="el" href="classcinder_1_1_channel_t.html">Channel</a> to each <code>Particle</code>.<br />
+               <br />
+               Once the <code>Particle</code> has the <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> reference, you can use the <code>Particle</code>'s location as an input and get back a float, or if you choose you can get back a Vec2f or Vec3f but that is a bit more time consuming. We are going to stick with just getting back a single float per <code>Particle</code>. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> noise = perlin.fBm( Vec3f( mLoc * 0.005f, <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">app::getElapsedSeconds</a>() * 0.1f ) );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               First, what the hell is <a class="el" href="classcinder_1_1_perlin.html#a366c306744e4bc10169900a221ba70c4">fBm()</a>, right? That stands for fractional Brownian motion. Google it! But in our case it's just the function we call to get a noise value for a particular location. Second, whats with the weird Vec3f made of only two parameters? Let me break it into a slightly different version to make it easier to see what I am doing. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> nX = mLoc.x * 0.005f;</div>
+               <div class="line"><span class="keywordtype">float</span> nY = mLoc.y * 0.005f;</div>
+               <div class="line"><span class="keywordtype">float</span> nZ = <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">app::getElapsedSeconds</a>() * 0.1f;</div>
+               <div class="line">Vec3f v( nX, nY, nZ );</div>
+               <div class="line"><span class="keywordtype">float</span> noise = perlin.fBm( v );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               The reason I am sending a 3D vector to <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> is that I am interested in getting back the result based on the Particle's position <em>and</em> time. As time passes, even if the <code>Particle</code> is stationary (meaning that the first two parameters in the noise calculation are not changing), the <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> noise will continue to animate.<br />
+               <br />
+               So what do we do with that noise? Since we are dealing with <code>Particle</code>s that are moving in a 2D space, we could treat the noise like an angle and use <code>sin(angle)</code> and <code>cos(angle)</code> to get an x and y offset for our <code>Particle</code>. Since the noise smoothly changes, our resulting angle will also smoothly change which means our <code>Particle</code>s wont end up moving along a jagged path. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> angle = noise * 15.0f;</div>
+               <div class="line">mVel += Vec2f( cos( angle ), sin( angle ) );</div>
+               <div class="line">mLoc += mVel;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> <code>fBm()</code> returns a value between <code>-1.0f</code> and <code>1.0f</code>. We chose to multiply that result by <code>15.0f</code> to keep the <code>Particle</code> from favoring a specific direction. If that multiplier is too small, you will find that the <code>Particle</code>'s will all generally move to the right. We want our <code>Particle</code>s to move all over, hence the <code>15.0f</code>.<br />
+               <br />
+               The math geeks will note that <code>noise * 15.0f</code> will give you a possible range of <code>30.0</code>, and we all know there are only 2 &pi;  or 6.28318 radians in a circle, So why not multiply <code>noise</code> by &pi;  which will give us a range of 2 &pi; ? Even though <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> results will stay within the <code>-1.0f</code> to <code>1.0f</code> range, this doesn't guarantee the results will give you an even distribution in that range. Often, you will find the <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> results stay between <code>-0.25f</code> to <code>0.25f</code>. If we simply multiply the <code>noise</code> by &pi;  (creating a range from - &pi;  to &pi; ), we will get randomized movement that appears to favor a specific direction. The way to avoid this is to spread the result out into a greater range. You should play around with these numbers to get a better idea of what I mean.<br />
+               <br />
+               What does it look like? Well, it looks like <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> noise.<br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part4_04.png" alt="tutorial_part4_04.png"/>
+            </div>
+            <p> <br />
+               In fact, it looks a little too much like <a class="el" href="classcinder_1_1_perlin.html">Perlin</a>. This is what we were alluding to earlier in this section when we mentioned that subtlety is key. This effect, though pretty, looks like everyone else's <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> effect. Don't believe me? Do a Google image search for <a href="http://images.google.com/images?hl=en&amp;q=perlin%20noise%20flow%20field&amp;um=1&amp;ie=UTF-8&amp;sa=N&amp;tab=wi">Perlin noise flow field</a> and you will see plenty of experiments that look just like this. Lets tone it back a bit. 
+            </p>
+            <div class="fragment">
+               <div class="line">mVel += noiseVector * 0.2f * ( 1.0f - agePer );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               We also threw in the <code>( 1.0f - agePer )</code> because we want the <a class="el" href="classcinder_1_1_perlin.html">Perlin</a> influence to be nonexistent at the <code>Particle</code>'s creation and have it grow stronger as the <code>Particle</code> ages. This creates a nice effect in which the <code>Particle</code>s push away from the cursor and as they dwindle in size they dance about more and more until they vanish.<br />
+               <br />
+               Sadly, this is not that exciting as a still image. We need to make a video. You'll notice these lines at the bottom of TutorialApp::draw(). 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordflow">if</span>( mSaveFrames ){</div>
+               <div class="line">  <a class="code" href="namespacecinder.html#ae77edb896e2f8e90bba70000725f3b6e">writeImage</a>( <a class="code" href="namespacecinder.html#a2b598230b99b65cfa51a92eace60abc0">getHomeDirectory</a>() + <span class="stringliteral">&quot;image_&quot;</span> + <a class="code" href="namespacecinder.html#ac77d757b302731879c7ad8525eaa90de">toString</a>( <a class="code" href="namespacecinder_1_1app.html#af76ee9ed608078551bf9e7bc1c1cb950">getElapsedFrames</a>() ) + <span class="stringliteral">&quot;.png&quot;</span>,</div>
+               <div class="line">          <a class="code" href="namespacecinder_1_1app.html#a60fd3454189e7d6f8fc697a77978094b">copyWindowSurface</a>() );</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               This makes use of the Cinder function <a class="el" href="namespacecinder.html#ae77edb896e2f8e90bba70000725f3b6e" title="Writes imageSource to dataTarget. Optional extension parameter allows specification of a file type...">writeImage()</a>, which takes a file path as its first parameter, and an image as its second. In our case we'll want to use the built-in function <a class="el" href="namespacecinder_1_1app.html#a60fd3454189e7d6f8fc697a77978094b" title="Returns a copy of the current window&#39;s contents as a Surface8u. ">copyWindowSurface()</a>, which returns the window as a <a class="el" href="classcinder_1_1_surface_t.html">Surface</a>. You can also pass <a class="el" href="namespacecinder.html#ae77edb896e2f8e90bba70000725f3b6e" title="Writes imageSource to dataTarget. Optional extension parameter allows specification of a file type...">writeImage()</a> things like a <a class="el" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a>. You'll also notice the use of the function <a class="el" href="namespacecinder.html#ac77d757b302731879c7ad8525eaa90de">toString()</a>, which is a handy function in Cinder which can take anything you can pass to <a class="el" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe" title="Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW. ">console()</a>, which includes all the C++ default types as well as many of the Cinder classes, and return it in string form. So this call will send a sequence of images to your home directory, each named <em>image_<b>frame#</b>.png</em>. The resulting sequence of images can be assembled in QuickTime or pretty much any video program.  
+      <!-- END CONTENT -->
+
+      <!-- Scripts -->
+      <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+      <!-- Place additional scripts here (optional) -->
+      <!-- <script type="text/javascript"></script> -->
+
+   </body>
+</html> 

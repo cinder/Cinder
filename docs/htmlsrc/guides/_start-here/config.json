@@ -1,0 +1,36 @@
+{
+	"data":{
+		"metadata":
+		{
+			"keywords": ["guide, start-here"]
+		},
+		"nav":[
+			{
+				"label": "Start Here",
+				"link": "index.html",
+				"pagenav":[
+					{
+						"label": "Sub Section",
+						"link": "#anchor",
+						"subnav":[
+							{
+								"label": "Sub Sub 1",
+								"link": "#subsub1"
+							},
+							{
+								"label": "Sub Sub 2",
+								"link": "#subsub2"
+							}
+						]
+					}					
+				]
+			}
+		],
+		"seealso":
+		{
+			"label": "Sart Here",
+			"dox": [""]
+		}
+	}
+
+}

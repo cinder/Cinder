@@ -1,0 +1,45 @@
+ {{#typedefs.length}}
+<div class="columns side">
+    <div class="content">
+      <ul>
+        <label>Typedefs:</label>
+        {{#typedefs.list}}
+        <li><a href="{{ link }}">{{ label }}</a></li>
+        {{/typedefs.list}}
+      </ul>
+    </div>
+</div>
+ {{/typedefs.length}}
+
+{{#class_hierarchy}}
+<div class="columns side">
+    <label>Class Hierarchy:</label>
+    {{{class_hierarchy}}}
+</div>
+{{/class_hierarchy}}
+
+{{#classes.length}}
+<div class="columns side">
+    <div class="content">
+      <ul>
+        <label>Classes:</label>
+        {{#classes.list}}
+        <li><a href="{{ link }}">{{ label }}</a></li>
+        {{/classes.list}}
+      </ul>
+    </div>
+</div>
+{{/classes.length}}
+
+{{#related.length}}
+<div class="columns side">
+    <div class="content">
+      <ul>
+        <label>Related Links:</label>
+        {{#related.list}}
+        <li><a href="{{ link }}">{{ label }}</a></li>
+        {{/related.list}}
+      </ul>
+    </div>
+</div>
+{{/related.length}}

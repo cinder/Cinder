@@ -1,0 +1,205 @@
+{{!-- START page-class-template.mustache ============= -->}}
+
+<div class="row content-row">
+
+    <!-- side nav -->
+    <div id="side-nav" class="columns large-3" >
+        <section>
+            <label>Namespaces</label>
+            {{{ namespace_nav }}}
+        </section>
+    </div>
+
+
+    <!-- main content area -->
+    <div class="columns large-9">
+
+        <div id="container">
+
+            <!-- top content -->
+            <div class="top">
+                
+                <div class="columns naming">
+                    <!--<h1 id="page-title">
+                        {{#is_template}}
+                        <strong>{{name}} &lt;{{template_def_name}}&gt; </strong> 
+                        Class Template
+                        {{/is_template}}
+
+                        {{^is_template}}
+                        <strong>{{name}}</strong> 
+                        Class
+                        {{/is_template}}
+                    </h1>-->
+                    
+                    <img class="header-icon" src="../_assets/images/icons/class_icon.svg">
+                    <div class="ns">
+                        {{#namespace_links}}{{#active}}<span class="link"><a href="{{link}}">{{label}}</a></span>{{/active}}{{^active}}<span class="link">{{label}}</span>{{/active}}{{/namespace_links}}
+                    </div>
+
+                    <h1>{{name}}<span class="slash"> /</span></h1>
+
+                    {{#side_nav_content.include}}
+                    <div class="include">
+                        <strong>#include</strong> &ldquo;<a href="{{ link }}">{{ label }}</a>&rdquo;
+                    </div>
+                    {{/side_nav_content.include}}
+                </div> 
+                
+                <!-- subnav -->
+                
+                <div class="columns subnav">
+                    {{> subnav }}
+                </div>
+                
+
+                <!-- info links -->
+                <div class="row info-links">
+                    
+                    {{#side_nav_content}}
+                        {{> side-nav }}
+                    {{/side_nav_content}}
+                
+                </div>
+            </div>
+
+            <!-- description and prefix content -->
+            <div class="content">     
+                <div id="description" class="">
+                    {{{description}}}
+                    {{{prefix}}}
+                </div>
+            </div>
+
+            <hr/>
+
+            <!-- show/hide buttons -->
+            <div id="show-hide" class="hide">
+              <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+            </div>
+            
+            <!-- contents -->
+            <div class="reference-lists">
+
+                <!-- public types -->
+                {{#public_types.length}}
+                {{#public_types}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h2>Public Types</h2>
+                    <ul class="rows">
+                        {{#list}}
+                            {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/public_types}}
+                {{/public_types.length}}
+
+                <!-- enumerations -->
+                {{#enumerations.length}}
+                {{#enumerations}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h2>Enums</h2>
+                    <ul class="rows">
+                        {{#list}}
+                        {{> enum-markup}}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/enumerations}}
+                {{/enumerations.length}}
+
+                <!-- public member functions -->
+                {{#public_functions.length}}
+                <a name="{{public_functions.anchor}}"></a>
+                <section>
+                    <h2>Public Member Functions</h2>
+                    {{! function -> "Public Member Functions", }}
+                    {{! interface -> "interface": "Instance Methods" }}
+                    <ul class="rows">
+                        {{#public_functions.list}}
+                            {{> function-markup }}
+                        {{/public_functions.list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/public_functions.length}}
+
+                <!-- public member functions -->
+                {{#public_static_functions.length}}
+                <a name="{{public_static_functions.anchor}}"></a>
+                <section>
+                    <h2>Static Public Member Functions</h2>
+                    <ul class="rows">
+                        {{#public_static_functions.list}}
+                            {{> function-markup }}
+                        {{/public_static_functions.list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/public_static_functions.length}}
+
+                <!-- protected member functions -->
+                {{#protected_functions}}
+                {{#length}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h2>Protected Member Functions</h2>
+                    <ul class="rows">
+                        {{#list}}
+                            {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/length}}
+                {{/protected_functions}}
+
+                <!-- protected attributes -->
+                {{#protected_attrs}}
+                {{#length}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h2>Protected Attributes</h2>
+                    <ul class="rows">
+                        {{#list}}
+                            {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/length}}
+                {{/protected_attrs}}
+
+                <!-- friends -->
+                {{#friends}}
+                {{#length}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h2>Friends</h2>
+                    <ul class="rows">
+                        {{#list}}
+                            {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/length}}
+                {{/friends}}
+
+            </div>
+
+            
+        </div> <!-- end #container -->
+
+    </div>
+</div> <!-- row -->
+
+<script type="text/javascript">
+    window.selectedNamespace = "{{namespace}}"
+</script>
+        

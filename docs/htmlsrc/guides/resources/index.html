@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <!-- Update title -->
+      <title>Resources in Cinder</title>
+
+      <!-- keywords used for searching -->
+      <meta name="keywords" content="guide, texture, app, file, assets, resource">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <!-- reference to Cinder classes -->
+      <ci seealso dox="ci::app::AppBase" label="Assets & Resources"></ci>
+
+      <!-- master stylesheet - these links will be replaced when compiled -->
+      <link rel="stylesheet" href="../../_assets/css/foundation.css">
+      <link rel="stylesheet" href="../../_assets/css/prism.css">
+      <link rel="stylesheet" href="../../_assets/css/style.css">
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+      <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+      
+   </head>
+
+   <body id="guide-contents" class="language-c++">
+
+      <!-- CONTENT STARTS HERE -->
+      <h1>Resources in Cinder</h1>
+      
+      <section>
+         <a class="anchor" id="intro"></a>
+         <h2>Introduction</h2>
+         <p>Most applications need to reference data outside their own code to do anything very interesting. Cinder offers two mechanisms for including data files with your app: <em>assets</em> and <em>resources</em>. These two techniques have a lot in common. The primary difference is that resources are "baked" directly into your application, and assets are separate files living alongside your application. Assets can be easily modified separately from your code, and they take a lot less work to setup, especially on Windows. However, distribution and installation can be simpler with resources since there's no way for the data your application depends on to "go missing", and it reduces the chances that a user might modify your data unexpectedly.</p>
+            
+         <a class="anchor" id="layout"></a>
+         <h3>Project File Structure</h3>
+         <p>TinderBox creates a project layout with separate folders for both assets and resources. Since these files are as much a part of your app as its source code, they'll generally be managed by your version control system (say, git or Subversion) just as your C++ code or anything else in your project is.</p>
+      
+         <img class="center" src="images/resources_file_structure.png" alt="resources_file_structure.png"/>
+      </section>
+
+      <section>
+         <a class="anchor" id="assets"></a>
+         <h2>Assets</h2>
+         <p>Assets are quite simple to use. Simply place any file you'd like to reference from your application into the <em>assets</em> folder that TinderBox has created for you. To access this file from your code, you'll want to call <ci dox="ci::app::AppBase::loadAsset">loadAsset()</ci>. This is a member function of your App, but if you'd like to call it from outside your App, call the <ci>app::loadAsset()</ci> variant. The function takes one parameter, which is simply the name of the file you'd like to use. For example, to load a PNG file as a gl::Texture from your assets folder, you'd do something like this: </p>
+
+         <pre><code class="language-cpp">gl::Texture::create( loadImage( loadAsset( "logo.png" ) ) );</code></pre>
+
+         <p>Additionally, if you need to know where an asset lives in the filesystem, you can call <ci dox="ci::app::AppBase::getAssetPath">getAssetPath()</ci>.</p>
+
+         <pre><code class="language-cpp">
+console() &lt;&lt; "logo.png lives at: " &lt;&lt; getAssetPath( "logo.png" ) &lt;&lt; std::endl;
+// prints: "logo.png lives at /Users/andrewbell/SampleProject/assets/logo.png"</code></pre>
+            
+         <p>You can also provide additional structure to your <em>assets</em> folder. For example, you might create a <em>pictures</em> subfolder that contains a <em>photo1.jpg</em>. You would load that like so:</p>
+
+         <pre><code class="language-cpp">mPhoto1 = loadImage( loadAsset( "pictures/photo1.jpg" ) );</code></pre>
+
+         <a class="anchor" id="shippingAssets"></a>
+         <h3>How Assets Work</h3>
+         <p>It's worth understanding a bit about how assets work under the hood. The first time you attempt to load an asset or get its path, your Cinder application automatically attempts to find its <em>assets</em> directory. It begins by searching in the same folder in which your .app bundle or .exe lives. Next it searches its parent, on up 5 levels. The reason for such a deep search is due to the somewhat remote location where XCode and Visual C++ can output executables, depending on their configuration. When you are ready to ship your application, make sure you include both your application (.app on the Mac or .exe on Windows) and its assets folder. Note that if you are not using any assets, Cinder does not require the existence of an assets folder.</p>
+
+         <a class="anchor" id="assetsIOs"></a>
+         <h3>Assets on iOS</h3>
+         <p>iOS applications of course cannot require a separate folder at runtime. However TinderBox-generated iOS applications automatically include their <em>assets</em> folder in their application's bundle, and the asset-discovery mechanism in Cinder on iOS knows to look here.</p>
+
+         <a class="anchor" id="assetsExternal"></a>
+         <h3>Additional Asset Folders</h3>
+         <p>While Cinder will automatically look for a specific folder as the "official" assets directory, users can use <ci dox="ci::app::AppBase::addAssetDirectory">addAssetDirectory()</ci> in order to offer supplemental paths for searching for assets. <ci dox="ci::app::AppBase::loadAsset">loadAsset()</ci> and <ci dox="ci::app::AppBase::getAssetPath">getAssetPath()</ci> will search the primary assets folder first, followed by any supplemental asset directories the user may have provided. </p>
+
+         <p>That's all there is to know about assets. If you're a beginner with Cinder, this is probably the easiest technique for including data with your application. However it's worth being aware of how to use resources as well. While they're a bit more cumbersome to use, resources allow you to create applications which are entirely self-contained.</p>
+      </section>
+
+
+       <section>
+         <a class="anchor" id="resources"></a>
+         <h2>Resources</h2>
+
+         <a class="anchor" id="mac_resources"></a>
+         <h3>OS X &amp; iOS</h3>
+         <p>Under Mac OS X and iOS, resources are just normal files which are contained inside the application bundle. If you haven't before, try opening up one of these bundles yourself. Context-click (right-click or control-click) an application in your <em>Applications</em> folder and choose <b>Show Package Contents</b>. Here's the results of doing this with iTunes:</p>
+
+         <img class="center" src="images/resources_itunes_mac_show_package.png" alt="resources_itunes_mac_show_package.png"/>
+         <img class="center" src="images/resources_itunes_mac.png" alt="resources_itunes_mac.png"/>
+         
+         <p>Looking around inside of the application bundle, we see a <em>Resources</em> folder inside of <em>Contents</em>. In here we can find all the data files the application depends on. As an example, the first few visible files in the screenshot are audio files iTunes plays as part of its user interface.</p>
+
+         <p>A similar structure is maintained for iPhone and iPad apps, and it's the one Cinder uses for these platforms as well.</p>
+
+         <a class="anchor" id="macAdd"></a>
+         <h3>Adding a Resource</h3>
+         <p>Adding a resource to your Mac or iOS application is straightforward. Let's assume you've got an image you'd like to use in your app. The first step is to add this file as a resource in Xcode. First, pull up your project window in Xcode. Now, context-click the <em>Resources</em> folder and choose <b>Add | Existing Files...</b>.</p>
+
+         <img class="center" src="images/resources_mac_add_resource.png" alt="resources_mac_add_resource.png"/>
+
+         <p>Now select the file you'd like to add to your app from the Open dialog box that follows. After choosing your file, you'll see it listed in the <em>Resources</em> group of your Xcode project. The real magic happens though when Xcode copies these files into your application bundle at build time. To confirm that this will happen, select the <em>Targets</em> tab of your project inspector and reveal your application target under the <em>Targets</em> section. You'll see a build phase called <em>Copy Bundle Resources</em> and inside that will be the resource you've just added.</p>
+         
+         <img class="center" src="images/resources_mac_build_phase.png" alt="resources_mac_build_phase.png"/>
+
+         <a class="anchor" id="macUse"></a>
+         <h3>Using a Resource</h3>
+         <p>Now that we've  a resource in the application, how do we actually make use of it with Cinder code? For a Mac or iOS-only application, we simply call the <ci dox="ci::app::AppBase::loadResource()">app::loadResource()</ci> function and pass it the name of the resource as a string. The result of this function (which is a <ci>DataSourceRef</ci>, a class you won't generally need to use directly) can be passed to most Cinder functions and constructors that know how to do I/O. In the case of our logo image example, we would call <ci>loadResource()</ci> on that file and then pass it to <ci>loadImage()</ci>. Then the result of <ci>loadImage()</ci> can be used to create a <ci>gl::Texture</ci> or a <ci>Surface</ci> like so: </p>
+
+<pre><code>
+myTexture = gl::Texture::create( loadImage( loadResource( "Logo.jpg" ) ) );
+Surface mySurface( loadImage( loadResource( "Logo.jpg" ) ) );
+</code></pre>
+            
+         <p> or perhaps we want to create a QuickTime movie out of a resource called <em>FlyingLogo.mov:</em> </p>
+         <pre><code class="language-cpp">myMovie = qtime::MovieGl::create( loadresource( "FlyingLogo.mov" ) );</code></pre>
+         
+         <p>Pretty easy stuff. On the Cocoa side, that's all there is to it. In general, you can make use of the results of <ci dox="ci::app::AppBase::loadResource">loadResource()</ci> about like you'd expect. However a handy function if you ever need to load a resource using a function which only accepts file paths is <ci dox="ci::app::AppBase::getResourcePath">getResourcePath()</ci>. For example, calling this:</p>
+
+         <pre><code class="language-cpp">console() &lt;&lt; getResourcePath( "Logo.jpg" ) &lt;&lt; endl;</code></pre>
+            
+         <p> Results in something about like this: <code>/Users/andrewfb/Code/cinder/samples/resizeTest/xcode/build/Debug/resizeTest.app/Contents/Resources/Logo.jpg</code></p>
+
+         <a class="anchor" id="msw"></a>
+         <h3>Resources on Windows</h3>
+         <p>Let's take a look now at how resources are handled on Microsoft Windows. The most noticeable difference relative to the Mac is that resources are not stored as individual files, since an EXE does not encapsulate a directory like a Mac OS X application bundle does. Instead, resources are baked into the EXE using a resource compiler, and are stored as binary data. However we can access this binary data in memory using the same <ci dox="ci::app::AppBase::loadResource">loadResource()</ci> routine we do on OS X. Furthermore, Cinder's internal code is able to handle loading from either the flat file or in-memory representations transparently and efficiently, so in general you will not need to change application code between the platforms.</p>
+         
+         <strong>Note: </strong>The text which follows is helpful for understanding how Windows resources work under the hood, but we recommend you read and consider the alternative techniques under the <a class="el" href="index.html#xplatform">Cross-Platform Resources</a> section as well, even if you are writing Windows-only code.</p>
+
+         <a class="anchor" id="mswAdd"></a>
+         <h4>Adding a Resource</h4>
+         <p>A resource under Windows is identified by a pair of an integer ID and a string declaring the type of resource. The integer IDs are generally numbered starting from <code>128</code> though there is some flexibility here. Developers also adopt different idioms for the type string. For example, in the Cinder samples you might see <code>GLSL</code> as the type string for any OpenGL GLSL code stored as resources. In general developers will use a series of preprocessor <code>#define</code>'s to create a list of unique IDs, and these should be defined in a header file which we typically create as <em>include\Resources.h</em>:
+<pre><code class="language-cpp">
+// [in Resources.h]
+#pragma once
+
+#define  RES_LOGO_ID             128
+#define  RES_SPLASHSCREEN_ID     129
+#define  RES_THEME_MUSIC         130
+</code></pre>
+
+            <p>Next, we will create a <em>Resources.rc</em> file, which will tell the compiler which resources we'd like to be included in our app. The structure of this file is a series of lines beginning with the unique resource ID (which we defined in <em>Resources.h</em>), then a string declaring the resource type (again, this can be anything, but it's good to adopt a convention like assigning <code>IMAGE</code> to all of your image files) and last, the file path relative to the .rc file itself. Note that these files are C-style double-quoted strings and consequently, any backslashes must be doubled to distinguish them from escaped characters. The resource compiler walks this file, baking the data of each cited resource into the final EXE. A normal <em>Resources.rc</em> file might look like this:<br />
+               <b>Resources.rc</b> 
+            </p>
+<pre><code class="language-cpp">
+// [in Resources.rc]
+#include "..\include\Resources.h"
+
+RES_LOGO_ID             IMAGE           "..\\resources\\Logo.jpg"
+RES_SPLASHSCREEN_ID     IMAGE           "..\\resources\\Splashscreen.png"
+RES_THEME_MUSIC_ID      MP3             "..\\resources\\Theme.mp3" </code></pre>
+            
+            <p>If it's not already part of your project, you'll need to add <em>Resources.rc</em> to your Visual C++ project. You can do this by right-clicking the <em>Resources</em> filter, choosing <b>Add | Existing Item...</b> and navigating to <em>Resources.rc</em>. Per the screenshot at the top of this document, we generally recommend storing this file in the same directory as your Visual C++ project, though that is not strictly necessary.</p>
+            
+            <img class="center" src="images/resources_msw_add.png" alt="resources_msw_add.png"/>
+            
+            <a class="anchor" id="mswUse"></a>
+            <h3>Using a Resource</h3>
+            <p>So now our app has its resources baked in, but how do we use them? For Windows-only applications, we call the variant of <ci dox="ci::app::AppBase::loadResource">App::loadResource()</ci> which accepts our resource ID/type combination. Just like on the Mac, the result of <ci dox="ci::app::AppBase::loadResource">loadResource()</ci> can be passed directly to a function like <ci>loadImage()</ci>. Then for example, the result of <ci>loadImage()</ci> can be used to create a <ci>gl::Texture</ci> or a <ci>Surface</ci> like so: </p>
+<pre><code class="language-cpp">
+myTexture = gl::Texture::create( loadImage( app::loadResource( RES_LOGO_ID, "IMAGE" ) ) );
+Surface mySurface( loadImage( App::loadResource( RES_SPLASHSCREEN_ID, "IMAGE" ) ) );</code></pre>
+            
+            <h3><a class="anchor" id="xplatform"></a>
+               Cross-Platform Resources
+            </h3>
+            <p>As we've seen, Mac OS X and Windows handle resources slightly differently, but Cinder provides some tools which can simplify these differences. The most straightforward way to use the same code on both platforms is to call the variant of <ci dox="ci::app::AppBase::loadResource">loadResource()</ci> which accepts both a Mac file path and a Windows ID/Type combination. Cinder will automatically pay attention to the relevant parameters for the platform you are compiling on. Calling this version of <ci dox="ci::app::AppBase::loadResource">loadResource()</ci> looks similar to the line below: </p>
+            
+            <pre><code class="language-cpp">app::loadResource( "Logo.jpg", RES_LOGO_ID, "IMAGE" );</code></pre>
+            
+            <p>However, Cinder provides some convenient capabilities which not only simplify your application code, but can consolidate the definition of the resources themselves. Let's continue the <em>Logo.jpg</em> example. We'll start with the most changed portion, which is the structure of <em>Resources.h</em></p>
+<pre><code class="language-cpp">
+// [in Resources.h]
+#pragma once
+#include "cinder/CinderResources.h"
+
+#define RES_LOGO  CINDER_RESOURCE( ../resources/, Logo.jpg, 128, IMAGE )</code></pre>
+      
+            <p>You'll notice a couple of changes. The first is the inclusion of the file <em>"cinder/CinderResources.h"</em>. This file defines the <code>CINDER_RESOURCE</code> macro, which breaks down as follows:<br />
+               <code>CINDER_RESOURCE</code>( <em>relative path to the parent of the resource</em>, <em>file name of the resource</em>, <em>Windows integer ID</em>, <em>Windows type</em> )<br />
+               <br />
+               As you can see, we use this macro to define a resource named <code>RES_LOGO</code>. Its path (relative to the <em>Resources.rc</em> file) is <code>../resources/Logo.jpg</code>, which we split into the parent and the name of the file itself with the macro. And finally, we assign our Windows ID/type combination, <code>128</code> for the ID and <code>IMAGE</code> for the type string. Should you need to define several resources, make sure each one is defined on its own line, and the last ends with a carriage return. <br />
+               <br />
+               Next, we'll look at our redefined <em>Resources.rc</em> file designed to make use of this macro:<br />
+               <b>Resources.rc:</b> 
+            </p>
+<pre><code class="language-cpp">
+#include "..\include\Resources.h"
+
+RES_LOGO</code></pre>
+            
+            <p>This file has been simplified by our new <code>CINDER_RESOURCE</code> macro. We simply write the name of the resource we want included in our .exe. Make sure each resource has its own line when you have multiple resources, and don't forget the carriage return on the last line.</p>
+            
+            <p>On the Mac OS X side of things, you'll still include your resource in the <em>Resources</em> group of your Xcode project, and confirm its presence in the <em>Copy Bundle Resources</em> build phase to be safe.</p>
+            
+            <p>Finally, let's look at how our application code has changed:</p>
+<pre><code class="language-cpp">
+#include "Resources.h"
+...
+myTexture = gl::Texture::create( loadImage( app::loadResource( RES_LOGO ) ) );
+</code></pre>
+            
+            <p>It's about the same, except now we simply pass the resource name to <ci dox="ci::app::AppBase::loadResource">loadResource()</ci> and the right thing will happen on either platform. </p>
+               
+            <p>That's all there is to using cross-platform resources. It can be a bit of a pain to setup initially, but it's easy to maintain once you've got it going. And while you can use either style of resource definition, we prefer the <code>CINDER_RESOURCE</code> technique since it's less error-prone and makes for slightly more legible application code. 
+            </p>
+         </section>
+
+         <!-- END CONTENT -->
+
+      <!-- Scripts -->
+      <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+      <!-- Place additional scripts here (optional) -->
+      <!-- <script type="text/javascript"></script> -->
+
+   </body>
+</html> 

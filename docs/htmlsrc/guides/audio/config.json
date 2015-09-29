@@ -1,0 +1,119 @@
+{
+	"data":{
+		"metadata":
+		{
+			"keywords": ["guide, audio, music, voice, device, channel, gain, sound"]
+		},
+		"nav":[
+			{
+				"label": "Audio In Cinder",
+				"link": "index.html",
+				"pagenav":[
+					{
+						"label": "Design",
+						"link": "#design"
+					},
+					{
+						"label": "Voice",
+						"link": "#voice"
+					},
+					{
+						"label": "Audio Buffers",
+						"link": "#audio_buffers"
+					},
+					{
+						"label": "Modular API",
+						"link": "#modular",
+						"subnav":[
+							{
+								"label": "Context",
+								"link": "#context"
+							},
+							{
+								"label": "Node",
+								"link": "#node"
+							},
+							{
+								"label": "OutputDeviceNode",
+								"link": "#device_output"
+							},
+							{
+								"label": "InputDeviceNode",
+								"link": "#device_input"
+							},
+							{
+								"label": "MonitorNode and MonitorSpectralNode",
+								"link": "#monitor"
+							},
+							{
+								"label": "SourceFile and SamplePlayerNode",
+								"link": "#read_audio"
+							},
+							{
+								"label": "BufferRecorderNode",
+								"link": "#write_audio"
+							},
+							{
+								"label": "ChannelRouterNode",
+								"link": "#ChannelRouterNode"
+							},
+							{
+								"label": "Other Nodes - GenNode's and Effects",
+								"link": "#other_nodes"
+							}
+						]
+					},
+
+					{
+						"label": "Param - sample accurate audio parameters",
+						"link": "#param"
+					},
+
+					{
+						"label": "Accessing the Nodes within a Voice",
+						"link": "#nodes_voices",
+						"subnav":[
+							{
+								"label": "How a Voice manages its Nodes",
+								"link": "#voice_nodes"
+							},
+							{
+								"label": "Manually directing the Voice output",
+								"link": "#voice_direct"
+							}
+						]
+					},
+
+					{
+						"label": "Platform Specific Notes",
+						"link": "#platform_specific",
+						"subnav":[
+							{
+								"label": "iOS",
+								"link": "#ios_specific"
+							}
+						]
+					},
+
+					{
+						"label": "Other",
+						"link": "#other",
+						"subnav":[
+							{
+								"label": "Tests",
+								"link": "#Tests"
+							}
+						]
+					}
+					
+				]
+			}
+		],
+		"seealso":
+		{
+			"label": "Audio in Cinder",
+			"dox": ["cinder::audio"]
+		}
+	}
+
+}

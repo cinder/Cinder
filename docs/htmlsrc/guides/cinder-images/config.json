@@ -1,0 +1,42 @@
+{
+	"data":{
+		"metadata":
+		{
+			"keywords": ["guide, Texture, Texture2d, Surface, Images, image, channel"]
+		},
+		"nav":[
+			{
+				"label": "Images In Cinder",
+				"link": "index.html",
+				"pagenav":[
+					{
+						"label": "Surface",
+						"link": "#surface"
+					},
+					{
+						"label": "Copying Images",
+						"link": "#copying"
+					},
+					{
+						"label": "Manipulating Surfaces",
+						"link": "#manipulating"
+					},
+					{
+						"label": "Channel",
+						"link": "#channel"
+					},
+					{
+						"label": "I/O operations",
+						"link": "#io"
+					}
+				]
+			}
+		],
+		"seealso":
+		{
+			"label": "Images in Cinder",
+			"dox": ["ci::Surface", "ci::ChannelT", "ci::gl::Texture2d"]
+		}
+	}
+
+}

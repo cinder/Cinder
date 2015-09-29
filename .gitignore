@@ -32,7 +32,10 @@ ipch/
 
 # doxygen generated files
 docs/html
+docs/xml
 docs/doxygen/cinder.tag
+docs/*/node_modules
+*.pyc
 
 # CinderBlocks
 blocks/

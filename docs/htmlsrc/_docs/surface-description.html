@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	
+</head>
+
+<body>
+	<ci prefix dox="ci::Surface">
+		<p>A Surface always contains red, green and blue data, along with an optional alpha channel.</p>
+		
+		<p>Surfaces come in two primary configurations, the traditional 8-bits per channel represented by <ci>Surface8u</ci>, and a float per channel, suitable for high dynamic range images, represented by <ci>Surface32f</ci>. <em>Surface</em> is a short-hand synonym for <em>Surface8u</em>.</p>
+
+		<p>Surfaces are a CPU-based image representation, and must be converted appropriately to be drawn using the GPU. For example,to be used with OpenGL, the <ci>gl::Texture</ci> is a natural choice, and it can be constructed directly from a Surface.</p>
+		
+		<p>To manipulate individual pixels of a Surface, the <ci>Surface::Iter</ci> class can be used.</p>
+
+		<p>To allocate a Surface that is 640x480 and has an alpha channel, use:
+			<pre><code class="language-cpp">Surface mySurface( 640, 480, true );</code></pre>
+		</p>
+
+		<p>A Surface can be created from an image file using the result of loadImage():<br>
+			<pre><code class="language-cpp">Surface bitmap( loadImage( "image.jpg" ) );</code></pre>
+		</p>
+
+		<p>The pixels of each row of a Surface are stored in contiguous memory, and the start of each row is offset from the previous by the stride (measured in bytes) returned by <ci dox="cinder::SurfaceT::getRowBytes">getRowBytes()</ci>. Pixels can be ordered in memory in a number of configurations, specified using the SurfaceChannelOrder class.</p>
+	</ci>
+</body>
+</html>

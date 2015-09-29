@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <!-- Update title -->
+      <title>Quicktime MovieWriter Guide</title>
+
+      <!-- keywords used for searching -->
+      <meta name="keywords" content="quicktime">
+
+      <link rel="stylesheet" href="../../_assets/css/foundation.css">
+      <link rel="stylesheet" href="../../_assets/css/style.css">
+      <link rel="stylesheet" href="../../_assets/css/prism.css">
+
+      <ci seealso dox="ci::qtime::MovieWriter"></ci>
+      
+   </head>
+
+   <body id="guide-contents" class="language-c++">
+
+      <!-- CONTENT STARTS HERE -->
+
+      <h1>Quicktime MovieWriter Guide</h1>
+      
+      <h2>Introduction</h2>
+      <p>Cinder makes writing QuickTime movies a straightforward task via the <ci>qtime::MovieWriter</ci> class. Creating a basic QuickTime movie is easy, and <ci>qtime::MovieWriter</ci> also exposes more advanced options which allow you to take full advantage of the features of modern codecs like <a href="http://en.wikipedia.org/wiki/H.264/MPEG-4_AVC">H.264</a>. <br />
+      </p>
+      <h2>Creating a Simple Movie</h2>
+      <p>To setup an instance of <ci>qtime::MovieWriter</ci>, we'll need to know two things: the path where we'd like to create the movie, and its dimensions in pixels. As an example, we'll imagine we'd like to create a movie called <em>myMovie.mov</em> and we'd like it saved into our user documents directory. We'll also assume the movie is 640x480 pixels.</p>
+      <pre><code class="language-cpp">
+#include "cinder/qtime/MovieWriter.h"
+#include "cinder/Utilities.h"
+using namespace ci;
+
+qtime::MovieWriter movie( getDocumentsDirectory() + "myMovie.mov", 640, 480 );
+      </code></pre>
+      <!-- fragment -->
+
+      <p> <br />
+         Because we have not specified any additional parameters, the <ci>qtime::MovieWriter</ci> defaults to using a PNG codec, and will run at 30 frames per second. Now let's imagine we have a rendering loop which will create an animation 100 frames long. We'll assume we have a routine called <code>renderFrame()</code> which has a parameter for providing which frame we need, and it returns a <ci>Surface</ci>. Continuing where we left off, here's how we might put the <ci>qtime::MovieWriter</ci> to use: 
+      </p>
+      <pre><code class="language-cpp">
+Surface renderFrame( int frame ); // defined elsewhere
+
+for( int frame = 0; frame &lt; 100; ++frame ) {
+movie.addFrame( renderFrame( frame ) );
+}</code></pre>
+      <!-- fragment -->
+      <p> <br />
+         For the basic use case, that's all there is to it - we simply call addFrame() with our Surface inside the loop. When the <ci>qtime::MovieWriter</ci> goes out of scope, it will save all its frames to disk. Alternatively, to explicitly force the <ci>qtime::MovieWriter</ci> to save, call finish(): 
+      </p>
+      <pre><code class="language-cpp">movie.finish();</code></pre>
+      <!-- fragment -->
+      <p> <br />
+      </p>
+      <h2>Specifying Formats</h2>
+      <p>The <ci>qtime::MovieWriter</ci> class offers extensive options for customizing the format of its output, and this can be done using the <ci>qtime::MovieWriter::Format</ci> class. Here's an example of how to modify the codec to be <code>JPEG</code> and the quality to 50%: </p>
+      <pre><code class="language-cpp">
+qtime::MovieWriter::Format format;
+format.setCodec( qtime::MovieWriter::CODEC_JPEG );
+format.setQuality( 0.5f );
+qtime::MovieWriter movie( getDocumentsDirectory() + "myMovie.mov", 640, 480, format );</code></pre>
+      <!-- fragment -->
+      <p> <br />
+         The first call, setCodec(), allows users to provide a constant from among several defined for popular codecs or the four character identifier as specified by QuickTime in its header file <code>ImageCompression.h</code>. The second call, setQuality() allows the specification of a level of quality ranging from the lowest, <code>0.0</code> to the highest, <code>1.0</code> (which for some codecs is lossless). The <ci>qtime::MovieWriter::Format</ci> class also allows the chaining of several calls as a convenience, which looks like this: 
+      </p>
+      <pre><code class="language-cpp">
+qtime::MovieWriter movie( getDocumentsDirectory() + "myMovie.mov",
+      640, 480, qtime::MovieWriter::Format().setCodec( 'png ' ).setQuality( 0.95f ) );</code></pre>
+      <!-- fragment -->
+      <p> <br />
+      </p>
+      <h2>MultiPass Encoding</h2>
+      <p>The documentation for <ci>qtime::MovieWriter::Format</ci> provides a more thorough list of its options, but a key principle is that the default settings will achieve the best possible quality with one exception: multiPass encoding is not enabled by default. This is a technique which allows QuickTime to make several passes over the frames' data, and can result in much higher quality output. At the time of this writing, only the H.264 codec can make use of the technique. However this is not enabled by default because it can result in a lengthy postprocessing phase, and it requires the creation of two temporary files. The first of these files QuickTime creates for its own purposes, and the second <ci>qtime::MovieWriter</ci> makes to store temporary copies of all frames supplied by calls to addFrame(). However all of this is handled automatically when multiPass encoding is enabled via qtime::MovieWriter::Format::enableMultiPass(). <br />
+      </p>
+      <h2>User Compression Options</h2>
+      <p>QuickTime provides a standard user interface for specifying encoding options, and Cinder makes this available via the qtime::MovieWriter::getUserCompressionSettings function. This function can be used to populate a <ci>qtime::MovieWriter::Format</ci> instance. Also note that the resulting instance may contain additional settings that <ci>qtime::MovieWriter::Format</ci> does not provide direct functions for manipulating. An optional parameter allows the specification of a preview image for the dialog. </p>
+      <pre><code class="language-cpp">
+Surface previewImage( loadImage( loadResource( RES_PREVIEW_IMAGE ) ) );
+qtime::MovieWriter::Format format;
+if( qtime::MovieWriter::getUserCompressionSettings( &format, previewImage ) ) {
+mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), format );
+}</code></pre>
+      <!-- fragment -->
+      <p> <br />
+      </p>
+      <div class="image">
+         <img src="images/qtime_settings.png" alt="qtime_settings.png"/>
+      </div>
+      <p> <br />
+      </p>
+      <h2>Issues</h2>
+      <p>There are a couple of known issues we're still looking into in the <ci>qtime::MovieWriter</ci> class. The first is that there is a visible gamma shift (things get brighter and desaturated) with certain codecs, including H.264. This seems to be a pervasive problem with QuickTime, and one which video encoding even with Apple's own QuickTime Player suffers from. There are numerous discussions of the issue on the internet, and we have yet to find a solution, unfortunately. <br />
+         <br />
+         Also currently <ci>qtime::MovieWriter</ci> does not support audio exporting, and this will be introduced in future revisions. 
+      </p>
+         
+
+      <!-- END CONTENT -->
+
+      <!-- Scripts -->
+      <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+      <!-- Place additional scripts here (optional) -->
+      <!-- <script type="text/javascript"></script> -->
+
+   </body>
+</html> 

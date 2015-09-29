@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 
+    Copyright (c) 2015, The Cinder Project, All rights reserved.
+    Cinder v{{cinder_version}}
+    Made with DoxyWizard v{{doxy_version}}
+    Created on {{creation_date}}
+     -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>{{ page_title }}</title> <!-- dynamic partial defined in python -->
+    
+
+    {{! styles }}
+    <link href="../_assets/css/foundation.css" rel="stylesheet" >
+    <link href="../_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="../_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="../_assets/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+
+</head>
+<body class="{{body_class}}">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas>
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav id="main-nav" class="show-for-medium-up row" data-topbar role="navigation">
+                        <div class="branding columns medium-4 large-3 collapse">
+                            <div class="navbar-header">
+                              <a class="navbar-brand" href="../index.html"></a><div class="cinder-version">{{cinder_version}}</div>
+                            </div>
+                        </div>
+
+                        <div class="columns medium-8 large-9">
+                            <div class="nav-section">
+                                <!-- Right Nav Section -->
+                                
+                                <div class="right" id="nav_search">
+                                    <div id="search">
+                                        <input type="text" id="search-input" placeholder="Search documentation...">
+                                        <button id="search-button">Search</button>
+                                        <div id="search-results">
+                                        	<div id="search-results-namespace">
+                                                <h5>Namespaces</h5>
+                                                <ul></ul>
+                                            </div>
+                                            <div id="search-results-class">
+                                        		<h5>Classes</h5>
+                                        		<ul></ul>
+                                        	</div>
+                                            <div id="search-results-module">
+                                                <h5>Modules</h5>
+                                                <ul></ul>
+                                            </div>
+                                        	<div id="search-results-guide">
+                                        		<h5>Guides</h5>
+                                        		<ul></ul>
+                                        	</div>
+                                            <div id="search-results-reference">
+                                                <h5>Reference</h5>
+                                                <ul></ul>
+                                            </div>
+                                        	<div id="search-results-view-all"><a href="#">View All Results &raquo;</a></div>
+                                        </div>
+                                    </div>
+                                </div>                                
+
+                                <!-- Left Nav Section -->
+                                
+                                <ul class="tablist nav">
+                                    <li id="nav_home" class="{{#section_home}}active{{/section_home}}">
+                                        <a href="../index.html">Main Page</a></li>
+                                    <li id="nav_reference" class="{{#section_reference}}active{{/section_reference}} {{#section_namespace}}active{{/section_namespace}} {{#section_class}}active{{/section_class}}">
+                                        <a href="../reference/index.html">Reference</a></li>
+                                    <li id="nav_guides"    class="{{#section_guides}}active{{/section_guides}}">
+                                        <a href="../guides/index.html">Guides</a></li>
+                                    <!--<li id="nav_guides"    class="{{#section_samples}}active{{/section_samples}}">
+                                        <a href="#">Samples</a></li>-->
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    {{{ top-content }}}
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_home"><a href="../index.html">Main Page</a></li>
+                    <li id="nav_reference"><a href="../reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="../guides/index.html">Guides</a></li>
+                    {{! <li id="nav_namespaces"><a href="../namespaces.html">Namespaces</a></li> }}
+                    <!--<li id="nav_samples"><a href="#">Samples</a></li>-->
+                  </ul>
+                </aside>
+                
+                
+                {{!-- main content --}}
+                <div id="main-content">
+
+                    {{{ main_content }}} <!-- dynamic partial defined in python -->
+                </div> {{!-- end row --}}
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        {{! start footer part }}
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    {{! scripts }}
+    <script type="text/javascript" src="../_assets/js/jquery.js"></script>
+    <script type="text/javascript" src="../_assets/js/underscore.min.js"></script>
+    <script type="text/javascript" src="../_assets/js/foundation.min.js"></script>
+    <script type="text/javascript" src="../_assets/js/foundation.magellan.js"></script>
+    <script type="text/javascript" src="../_assets/js/prism.js"></script>
+    <script type="text/javascript" src="../_assets/js/lunr.min.js"></script>
+    <script type="text/javascript" src="../search_index.js"></script>
+    <script type="text/javascript" src="../_assets/js/cinder.js"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        window.cinderVersion = "{{cinder_version}}";
+        window.sectionType = "{{body_class}}";
+        window.docsRoot = "{{docs_root}}";
+        $(document).foundation( 'offcanvas', 'reflow' );
+    </script>
+
+</body>
+</html>

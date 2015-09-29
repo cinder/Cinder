@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <!-- Update title -->
+      <title>Hello Cinder: Chapter 1</title>
+
+      <!-- keywords used for searching -->
+      <meta name="keywords" content="guide, intro, tour, hello">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <!-- reference to Cinder classes -->
+         <!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+         <!-- master stylesheet - these links will be replaced when compiled -->
+      <link rel="stylesheet" href="../../_assets/css/foundation.css">
+      <link rel="stylesheet" href="../../_assets/css/prism.css">
+      <link rel="stylesheet" href="../../_assets/css/style.css">
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+      <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+      
+   </head>
+
+   <body id="guide-contents" class="language-c++">
+
+      <!-- CONTENT STARTS HERE -->
+            <h1><a class="anchor" id="newProject"></a>
+               Building a new project
+            </h1>
+            <p>Getting a new project up and running in Cinder is simple. Take a peek at the <a href="../welcome/MacNewProject.html">Mac</a> or <a href="../welcome/MSWNewProject.html">Windows</a> guides to creating a new project to see for yourself. However, for this tutorial you can simply follow along from the project source code contained in the <em>cinder/tour</em> folder.<br />
+               <br />
+               When you create a new Cinder project, you will notice there are a few functions declared for you. Every Cinder project is made up of three main functions. You initialize your variables in the <a class="el" href="classcinder_1_1app_1_1_app.html#a5d00c8290e799445e072b5fd5c24ed67">setup()</a> method which is called once when your program begins. You make changes to those variables in the <a class="el" href="classcinder_1_1app_1_1_app.html#af4dd0c8459354a9ced7250ad2a97dc9e">update()</a> method. And finally, you <a class="el" href="classcinder_1_1app_1_1_app.html#a19648361e5d7d80c738985d909de9a64">draw()</a> content in your program window. Update and draw are the heartbeat of any Cinder project. Setup, then update and draw, update and draw, update and draw, on and on until you quit the application. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> setup();</div>
+               <div class="line"><span class="keywordtype">void</span> update();</div>
+               <div class="line"><span class="keywordtype">void</span> <a class="code" href="_app_cocoa_touch_8mm.html#a56c5cf8a568cff737ff95520cbe6b405">draw</a>();</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Additionally, you can modify some of the settings using the <a class="el" href="classcinder_1_1app_1_1_app_basic.html#acd0a4a8f2d2b4e298fccba635c5c7b99">prepareSettings()</a> method. It is entirely optional and if you choose to leave it out, Cinder will use a default window size of 640x480 with a frame rate of 30. For this tutorial, we want our window to be 800x600 with a frame rate of 60 so we would say: 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::prepareSettings( Settings *settings ){</div>
+               <div class="line">  settings-&gt;setWindowSize( 800, 600 );</div>
+               <div class="line">  settings-&gt;setFrameRate( 60.0f );</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Another thing to notice up front is that Cinder uses C++ namespaces. Depending on what programming languages you've worked with, you may have already encountered namespaces before. They're nothing fancy - just a way of grouping functions and classes together under a common name. Everything in Cinder is inside the <a class="el" href="namespacecinder.html">cinder::</a> namespace. So to reference something inside it, like say, the Timer class, we refer to <a class="el" href="classcinder_1_1_timer.html" title="A high-resolution timer class. ">cinder::Timer</a>. C++ namespaces also support hierarchies, which is a very nice feature that Cinder takes advantage of. So for example, the OpenGL texture class has the full name of <a class="el" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">cinder::gl::Texture</a>. However this can get a little long-winded sometimes, so Cinder provides a couple of shortcuts. The first is that whenever you would refer to <a class="el" href="namespacecinder.html">cinder::</a> you can also refer to its synonym, ci::. These are completely interchangeable, but <code>ci::</code> is a little easier to type, so we recommend it. Secondly, you'll generally see in the samples the following two lines toward the top: 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keyword">using namespace </span><a class="code" href="namespacecinder.html">ci</a>;</div>
+               <div class="line"><span class="keyword">using namespace </span>ci::app;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               These <code>using</code> statements are just a shortcut to tell the C++ compiler, &ldquo;if it's ever unclear, I am talking about namespace <em>whatever</em>, but I am not going to keep typing <code>whatever::</code> everywhere.&rdquo; There is a list of the namespaces inside Cinder <a href="namespaces.html">here</a>.<br />
+               <br />
+               Now that you understand the basic workings for any Cinder application, feel free to hit Run (or build or whatever button makes it go). You should see a 800x600 pixel window filled with black.<br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part1_00.png" alt="tutorial_part1_00.png"/>
+            </div>
+            <p> <br />
+               Congratulations. You have just created your new blank canvas: a black expanse filled with potential. It is a single line of code and a perfect place to start. This is how you clear the screen to black in Cinder. 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a670f1d668c1096f906799a30f386888f">gl::clear</a>();</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               If you are familiar with OpenGL, you will note that this is just a convenience method provided by Cinder. All <a class="el" href="namespacecinder_1_1gl.html#a2fbfcc011e3992ebe4a239464a97d896">gl::clear()</a> is doing is wrapping up a few lines of code into one easy to use function. The actual code executed by <a class="el" href="namespacecinder_1_1gl.html#a2fbfcc011e3992ebe4a239464a97d896">gl::clear()</a> is shown below. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> <a class="code" href="namespacecinder_1_1dx.html#a670f1d668c1096f906799a30f386888f">clear</a>( <span class="keyword">const</span> <a class="code" href="namespacecinder.html#a13f71c63cea5bb08f5d971d72fbf6a09">ColorA</a> &amp;<a class="code" href="namespacecinder_1_1dx.html#af396a1e9182529bfe483e9a6b6125423">color</a>, <span class="keywordtype">bool</span> clearDepthBuffer ) {</div>
+               <div class="line">  glClearColor( color.r, color.g, color.b, color.a );</div>
+               <div class="line">  <span class="keywordflow">if</span>( clearDepthBuffer ) {</div>
+               <div class="line">    glDepthMask( <a class="code" href="gldx_8h.html#a06316bc3c17db78ce93419fb208945ba">GL_TRUE</a> );</div>
+               <div class="line">    glClear( <a class="code" href="gldx_8h.html#a947db9ff944c4b78e652144c3dd1060c">GL_COLOR_BUFFER_BIT</a> | <a class="code" href="gldx_8h.html#aef2a9e9a4b130bc4de57514327847b4f">GL_DEPTH_BUFFER_BIT</a> );</div>
+               <div class="line">  }</div>
+               <div class="line">  <span class="keywordflow">else</span></div>
+               <div class="line">    glClear( <a class="code" href="gldx_8h.html#a947db9ff944c4b78e652144c3dd1060c">GL_COLOR_BUFFER_BIT</a> );</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               For example, if you wanted to clear the background to red and also clear the depth buffer, you would write 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a670f1d668c1096f906799a30f386888f">gl::clear</a>( <a class="code" href="namespacecinder.html#a957e45ea5178e7c7264bfe19ba91992b">Color</a>( 1, 0, 0 ), <span class="keyword">true</span> );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               It is much nicer to just deal with that single line of code instead of needing to write out the full OpenGL syntax to clear the screen. As we continue, we will encounter many other convenience methods. They are entirely optional. If you'd rather write out the whole thing, be our guest.<br />
+               <br />
+               By the way, <a class="el" href="classcinder_1_1_color_t.html">Color()</a> is just a class provided by Cinder to help describe and manipulate color data.<br />
+               <br />
+               Moving along, perhaps you want the background to cycle between white and black. You could make use of <a class="el" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302" title="Returns the number seconds which have elapsed since the active App launched. ">getElapsedSeconds()</a>, which will return a float equal to the number of seconds since the app started. The following <code>gray</code> variable oscillates between 0.0 and 1.0. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> gray = sin( <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">getElapsedSeconds</a>() ) * 0.5f + 0.5f;</div>
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a670f1d668c1096f906799a30f386888f">gl::clear</a>( <a class="code" href="namespacecinder.html#a957e45ea5178e7c7264bfe19ba91992b">Color</a>( gray, gray, gray ), <span class="keyword">true</span> );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Animation! Give yourself a pat on the back. <br />
+            </p>
+            <h1><a class="anchor" id="loadingDisplayingImages"></a>
+               Loading and displaying images
+            </h1>
+            <p>Loading images in C++ can be a chore. Luckily, Cinder does most of the hard work for you. The process for loading and displaying an image can be broken up into only a few lines of code. <br />
+               <br />
+               1) Tell the compiler we're interested in Cinder's image input/output code and gl Texture code. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="preprocessor">#include &quot;<a class="code" href="_image_io_8h.html">cinder/ImageIo.h</a>&quot;</span></div>
+               <div class="line"><span class="preprocessor">#include &quot;<a class="code" href="_texture_8h.html">cinder/gl/Texture.h</a>&quot;</span></div>
+            </div>
+            <!-- fragment -->
+            <p> You put these lines at the top of the project with the other includes. <br />
+               <br />
+               2) Declare a new texture in the App class. 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a> myImage;</div>
+            </div>
+            <!-- fragment -->
+            <p> This is where you say that you want your app class to have a <a class="el" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a> object and it is going to be called <code>myImage</code>. This line of code goes in the App class declarations. <br />
+               <br />
+               3) Load an image into the texture you just declared. 
+            </p>
+            <div class="fragment">
+               <div class="line">myImage = <a class="code" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a>( <a class="code" href="namespacecinder.html#ad49aa427548e365f95336af782c2161a">loadImage</a>( <a class="code" href="namespacecinder_1_1app.html#a93522b1858f745f7d9438d6d124ae11b">loadResource</a>( <span class="stringliteral">&quot;image.jpg&quot;</span> ) ) );</div>
+            </div>
+            <!-- fragment -->
+            <p> Now that you have declared a new <a class="el" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a> object, you need to put some image data into that <a class="el" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a>. There are myriad ways to do this. In this example we are assuming you've got a resource in your application that is a JPEG file called <em>image.jpg</em>. We can load this resource using <a class="el" href="namespacecinder_1_1app.html#a93522b1858f745f7d9438d6d124ae11b" title="Returns a DataSource to an application resource. On Mac OS X, macPath is a path relative to the bundl...">loadResource()</a>, and we pass the result of that to <a class="el" href="namespacecinder.html#ad49aa427548e365f95336af782c2161a" title="Loads an image from the file path path. Optional extension parameter allows specification of a file t...">loadImage()</a>, and in turn construct our <a class="el" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a> with the image that comes back. This line of code would go into your <a class="el" href="classcinder_1_1app_1_1_app.html#a5d00c8290e799445e072b5fd5c24ed67">setup()</a> method. (By the way, this is the Mac OS X way of using resources, and the Windows way is just a bit different, but we won't get into the subtleties here. If you would like to take a break and read about how to use and manage resources, check out <a class="el" href="_cinder_resources.html">Using Resources in Cinder</a>).<br />
+               <br />
+               4) Draw the Texture into the app window. 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="_app_cocoa_touch_8mm.html#a56c5cf8a568cff737ff95520cbe6b405">gl::draw</a>( myImage, <a class="code" href="namespacecinder_1_1app.html#ae1eacebf2877007904c42db342bd477d">getWindowBounds</a>() );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Finally, you place this line in the <a class="el" href="classcinder_1_1app_1_1_app.html#a19648361e5d7d80c738985d909de9a64">draw()</a> function and it will draw the <a class="el" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a> so that it fills the app window. This is another Cinder convenience method. Behind the scenes there are OpenGL calls to create a textured <code>GL_TRIANGLE_STRIP</code>. As we mentioned before, you can write out all the OpenGL yourself if you choose. Either way is fine, but for drawing things like images or circles or other simple forms, it is great to have these one-liner solutions.<br />
+               <br />
+               And what does a loaded and drawn image look like? Well, if you use a picture of Paris the kitty, it would look a bit like this.<br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part1_01.jpg" alt="tutorial_part1_01.jpg"/>
+            </div>
+            <p> <br />
+            </p>
+            <h1><a class="anchor" id="options"></a>
+               Other options for dealing with images
+            </h1>
+            <p>As we mentioned before, including images directly in your app as resources is one option, but Cinder makes it easy to load images from many different sources. I'm going to show you two additional ways you can use images in your application without needing to have them stored locally. The first way is to prompt the user to open a file.<br />
+               <br />
+               The following code will attempt to create an image from a file selected by means of a standard open dialog box. Once you select a file, assuming the file is a valid image, a texture is created. Otherwise, an exception is thrown and we print an error message (we'll discuss <a class="el" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe" title="Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW. ">console()</a> more in a bit). 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordflow">try</span> {</div>
+               <div class="line">  fs::path p = <a class="code" href="namespacecinder_1_1app.html#a2b94464715221084bce6621a114f8121">getOpenFilePath</a>( <span class="stringliteral">&quot;&quot;</span>, ImageIo::getLoadExtensions() );</div>
+               <div class="line">  <span class="keywordflow">if</span>( ! p.empty() ) { <span class="comment">// an empty string means the user canceled</span></div>
+               <div class="line">    myImage = <a class="code" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a>( <a class="code" href="namespacecinder.html#ad49aa427548e365f95336af782c2161a">loadImage</a>( p ) );</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+               <div class="line"><span class="keywordflow">catch</span>( ... ) {</div>
+               <div class="line">  <a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; <span class="stringliteral">&quot;Unable to load the image.&quot;</span> &lt;&lt; std::endl;</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Notice the second parameter to <a class="el" href="namespacecinder_1_1app.html#a2b94464715221084bce6621a114f8121" title="Presents the user with a file-open dialog and returns the selected file path. ">getOpenFilePath()</a>, which is the result of ImageIo::getLoadExtensions(). This is a quick way to tell the open dialog, "only the let user pick files whose extensions correspond with the types of images I know how to load."<br />
+               <br />
+               The second way of getting images into your application is to load them directly from a <a class="el" href="classcinder_1_1_url.html">Url</a>. This is surprisingly easy. 
+            </p>
+            <div class="fragment">
+               <div class="line">Url url( <span class="stringliteral">&quot;http://validurl.com/image.jpg&quot;</span> );</div>
+               <div class="line">myImage = <a class="code" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a>( <a class="code" href="namespacecinder.html#ad49aa427548e365f95336af782c2161a">loadImage</a>( <a class="code" href="namespacecinder.html#ac585fce4c1e96b04a400b5858b607909">loadUrl</a>( url ) ) );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Keep in mind that you should not try to draw the texture until after something has been loaded into it. We should check to make sure <code>myImage</code> is a valid <a class="el" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a> before attempting to use it. We can do this with a simple <code>if</code> statement: 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordflow">if</span>( myImage )</div>
+               <div class="line">  <a class="code" href="_app_cocoa_touch_8mm.html#a56c5cf8a568cff737ff95520cbe6b405">gl::draw</a>( myImage, <a class="code" href="namespacecinder_1_1app.html#ae1eacebf2877007904c42db342bd477d">getWindowBounds</a>() );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+            </p>
+            <h1><a class="anchor" id="drawingShapes"></a>
+               Drawing Shapes
+            </h1>
+            <p>Drawing shapes is just as easy. If you want to draw a circle of a radius of x, you can use <a class="el" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5" title="Renders a solid circle using triangle fans. The default value of zero for numSegments automatically d...">gl::drawSolidCircle()</a>. The following line of code will draw a filled circle centered at (15,25) with a radius of 50. </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5">gl::drawSolidCircle</a>( Vec2f( 15.0f, 25.0f ), 50.0f );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               The circle that is created is actually an OpenGL <code>TRIANGLE_FAN</code>. The number of triangles comprising the fan can be controlled by an optional third parameter. If left blank, the circle will be created with as much detail as is needed based on the circle's radius. For example, the following code will create a filled hexagon. 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5">gl::drawSolidCircle</a>( Vec2f( 15.0f, 25.0f ), 50.0f, 6 );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               There are similar methods for drawing all manner of basic geometry, both 2D and 3D. Check the reference for the full list.<br />
+               <br />
+               Not content with a stationary circle? That is easily fixed. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> x = cos( <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">getElapsedSeconds</a>() );</div>
+               <div class="line"><span class="keywordtype">float</span> y = sin( <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">getElapsedSeconds</a>() );</div>
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5">gl::drawSolidCircle</a>( Vec2f( x, y ), 50.0f );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Now we have a circle that moves in a 1 pixel radius trajectory around the origin (0,0). A 1 pixel radius around the origin? What good is that? Well, we are breaking this process down step by step so you can see how to <em>evolve</em> a sketch. If you were to just skip ahead to the final code you miss out on how it was derived.<br />
+               <br />
+               First, lets put our circle closer to the center of the app window. Right now, the circle is drawn in the upper left corner of the screen (the origin). We can use <a class="el" href="namespacecinder_1_1app.html#ac8c6ecaf9d91c5eedfd6b127a60e939d" title="Returns the width of the active App&#39;s window measured in points, or of the screen when in full-screen...">getWindowWidth()</a> and <a class="el" href="namespacecinder_1_1app.html#a71d6248e05c9a15ad660a5243da38a70" title="Returns the height of the active App&#39;s window measured in points, or the screen when in full-screen m...">getWindowHeight()</a> to retrieve the dimensions of the window and add half their respective values to the <code>x</code> and <code>y</code> variables.<br />
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> x = cos( <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">getElapsedSeconds</a>() ) + <a class="code" href="namespacecinder_1_1app.html#ac8c6ecaf9d91c5eedfd6b127a60e939d">getWindowWidth</a>() / 2;</div>
+               <div class="line"><span class="keywordtype">float</span> y = sin( <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">getElapsedSeconds</a>() ) + <a class="code" href="namespacecinder_1_1app.html#a71d6248e05c9a15ad660a5243da38a70">getWindowHeight</a>() / 2;</div>
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5">gl::drawSolidCircle</a>( Vec2f( x, y ), 50.0f );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               We can simplify this further by using <a class="el" href="namespacecinder_1_1app.html#af1b1a776ad64ef734b2a3faf7b30f9b4" title="Returns the size of the active App&#39;s window or the screen in full-screen mode measured in points...">getWindowSize()</a>, which returns a Vec2i representing the dimensions of the app window. We can add half of the window size to circle and this will also move it to the middle of the screen. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> x = cos( <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">getElapsedSeconds</a>() );</div>
+               <div class="line"><span class="keywordtype">float</span> y = sin( <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">getElapsedSeconds</a>() );</div>
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5">gl::drawSolidCircle</a>( Vec2f( x, y ) + <a class="code" href="namespacecinder_1_1app.html#af1b1a776ad64ef734b2a3faf7b30f9b4">getWindowSize</a>() / 2, 50.0f );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Now that we have moved our circle to the center of the screen, lets fix the radius of the sine and cosine offset. Currently, our circle is moving but the range of its movement is 2 pixels so it isn't very lively. If you want your circle to move in a 100 pixel radius circular orbit, just multiply the x and y variables by 100.0. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> x = cos( <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">getElapsedSeconds</a>() ) * 100.0f;</div>
+               <div class="line"><span class="keywordtype">float</span> y = sin( <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">getElapsedSeconds</a>() ) * 100.0f;</div>
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5">gl::drawSolidCircle</a>( Vec2f( x, y ) + <a class="code" href="namespacecinder_1_1app.html#af1b1a776ad64ef734b2a3faf7b30f9b4">getWindowSize</a>() / 2, 50.0f );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Finally we are going to make the circle's radius change in relation to its x position. Since x spends as much time as a negative number as it does a positive number, we will go ahead and use the absolute value of x. 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5">gl::drawSolidCircle</a>( Vec2f( x, y ) + <a class="code" href="namespacecinder_1_1app.html#af1b1a776ad64ef734b2a3faf7b30f9b4">getWindowSize</a>() / 2, abs( x ) );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+            </p>
+            <h1><a class="anchor" id="particleEngine"></a>
+               Creating a basic Particle engine
+            </h1>
+            <p>These last few steps, though tiny, are a great example why we should go ahead and make a class for this circle. If we ever wanted to draw two or more circles, each with their own position, speed, and size, it becomes necessary to package up this data into its own class to make it easier to access each circle individually. We could say <code>circle1</code> has a position of <code>loc1</code> with a size of <code>radius1</code>, and then do the same with <code>circle2</code> and <code>circle3</code> and so on. However, when you want to start dealing with thousands of circles, it quickly becomes obvious that we should rethink how we are approaching this problem.<br />
+               <br />
+               First, we will create a controller class. This just makes it easy to segregate <code>Particle</code>-related code. This new class is called <code>ParticleController</code> and as the name suggests, it is in charge of controlling the <code>Particle</code>s. It will have its own <code>update()</code> and <code>draw</code>() methods. <code>update()</code> will iterate through all of the <code>Particle</code>s and tell each one to run its own personal <code>update()</code> method. After all the <code>Particle</code>s are updated, the <code>ParticleController</code> then tells each of the <code>Particle</code>s to <code><a class="el" href="_app_cocoa_touch_8mm.html#a56c5cf8a568cff737ff95520cbe6b405">draw()</a></code>.<br />
+               <br />
+               The <code>Particle</code> class is based what we did with the circle above. Each <code>Particle</code> has a position in space, a direction of travel, a speed of travel, a size, and whatever else you want to add to give each <code>Particle</code> its own personality. Later on, we will add a few more variables. Here is a summary of the <code>Particle</code> class code (the full source is contained in <em>cinder/tour/Chapter</em> 1/) 
+            </p>
+            <div class="fragment">
+               <div class="line">Particle::Particle( Vec2f loc ) {</div>
+               <div class="line">  mLoc = loc;</div>
+               <div class="line">  mDir = <a class="code" href="namespacecinder.html#aa4d5f2780fe4b455a265cee009ed2b6a">Rand::randVec2f</a>();</div>
+               <div class="line">  mVel = <a class="code" href="namespacecinder.html#ab7637c0d6db3b9234d15be30c2e7ccb0">Rand::randFloat</a>( 5.0f );</div>
+               <div class="line">  mRadius = 5.0f;</div>
+               <div class="line">}</div>
+               <div class="line"></div>
+               <div class="line"><span class="keywordtype">void</span> Particle::update() {</div>
+               <div class="line">  mLoc += mDir * mVel;</div>
+               <div class="line">}</div>
+               <div class="line"></div>
+               <div class="line"><span class="keywordtype">void</span> <a class="code" href="_app_cocoa_touch_8mm.html#a56c5cf8a568cff737ff95520cbe6b405">Particle::draw</a>() {</div>
+               <div class="line">  <a class="code" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5">gl::drawSolidCircle</a>( mLoc, mRadius );</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               The <code>ParticleController</code>, which we will discuss in a moment, is responsible for creating new <code>Particle</code>s. For now, we will also task the <code>ParticleController</code> with saying where the new <code>Particle</code> should be created and we pass that location in the constructor.<br />
+               <br />
+               The <code>Particle</code> then determines which direction it is traveling, in this case that direction is a random normalized 2D vector, as well as what speed it is traveling. We'll discuss these Rand functions in more detail in the next chapter.<br />
+               <br />
+               Note: The variables in the <code>Particle</code> class all begin with the letter 'm'. This is just a naming convention to let me know at a glance which variables are member variables. It is a good habit to get into and comes in very handy when the class grows to hundreds of lines of code.<br />
+               <br />
+               Let's have a peek at ParticleController.h. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="preprocessor">#pragma once</span></div>
+               <div class="line"><span class="preprocessor">#include &quot;Particle.h&quot;</span></div>
+               <div class="line"><span class="preprocessor">#include &lt;list&gt;</span></div>
+               <div class="line"></div>
+               <div class="line"><span class="keyword">class </span>ParticleController {</div>
+               <div class="line"> <span class="keyword">public</span>:</div>
+               <div class="line">  ParticleController();</div>
+               <div class="line">  <span class="keywordtype">void</span> update();</div>
+               <div class="line">  <span class="keywordtype">void</span> <a class="code" href="_app_cocoa_touch_8mm.html#a56c5cf8a568cff737ff95520cbe6b405">draw</a>();</div>
+               <div class="line">  <span class="keywordtype">void</span> addParticles( <span class="keywordtype">int</span> amt );</div>
+               <div class="line">  <span class="keywordtype">void</span> removeParticles( <span class="keywordtype">int</span> amt );</div>
+               <div class="line">  </div>
+               <div class="line">  std::list&lt;Particle&gt; mParticles;</div>
+               <div class="line">};</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Not much to it. The <code>ParticleController::update()</code> method tells all the <code>Particle</code>s to update. The <code>ParticleController::draw()</code> method tells all the <code>Particle</code>s to draw. And the <code>addParticles()</code> and <code>removeParticles()</code> methods will create or destroy the supplied amount of <code>Particle</code>s.<br />
+               <br />
+               All of the <code>Particle</code>s are kept in a <code>list</code>. This is a class built-in to C++ which maintains a linked list of objects. If you're new to C++, you should definitely familiarize yourself with these built-in classes (called the STL) - they are extremely fast and powerful. A nice list and discussion of them is <a href="http://cplusplus.com/reference/stl/">available here</a>. If you want to add a new <code>Particle</code> to the end of the <code>list</code>, you use <code>push_back:</code> 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> x = <a class="code" href="namespacecinder.html#ab7637c0d6db3b9234d15be30c2e7ccb0">Rand::randFloat</a>( <a class="code" href="namespacecinder_1_1app.html#ac8c6ecaf9d91c5eedfd6b127a60e939d">app::getWindowWidth</a>() );</div>
+               <div class="line"><span class="keywordtype">float</span> y = <a class="code" href="namespacecinder.html#ab7637c0d6db3b9234d15be30c2e7ccb0">Rand::randFloat</a>( <a class="code" href="namespacecinder_1_1app.html#a71d6248e05c9a15ad660a5243da38a70">app::getWindowHeight</a>() );</div>
+               <div class="line">mParticles.push_back( Particle( Vec2f( x, y ) ) );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               And as you might have guessed, to remove a <code>Particle</code> from the end of the <code>list</code>, you use <code>pop_back()</code>. Eventually you are going to want more control over which <code>Particle</code>s to remove. For instance, a <code>Particle</code> moves offscreen and you no longer need it around. You cannot rely on <code>pop_back()</code> because it is highly unlikely that the <code>Particle</code> at the end of the <code>list</code> will also be the one that just moved offscreen. We will solve this problem a little later in the tutorial.<br />
+               <br />
+               In order to tell each of the <code>Particle</code>s in our list to <code>update()</code> or <code>draw</code>(), we use an iterator. The iterator is simply a way to access all the items in a list one by one. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> ParticleController::update() {</div>
+               <div class="line">  <span class="keywordflow">for</span>( list&lt;Particle&gt;::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){</div>
+               <div class="line">    p-&gt;update();</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               That is just about all we need. All that remains is to add the appropriate <code>ParticleController</code> method calls in the App class and we are done.<br />
+               <br />
+               After we declare our <code>ParticleController</code>, called <code>mParticleController</code>, we add the following line to the <a class="el" href="classcinder_1_1app_1_1_app.html#a5d00c8290e799445e072b5fd5c24ed67">setup()</a> method: 
+            </p>
+            <div class="fragment">
+               <div class="line">mParticleController.addParticles( 50 );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               The <a class="el" href="classcinder_1_1app_1_1_app.html#af4dd0c8459354a9ced7250ad2a97dc9e">update()</a> method will look like this: 
+            </p>
+            <div class="fragment">
+               <div class="line">mParticleController.update();</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               And finally, the <a class="el" href="classcinder_1_1app_1_1_app.html#a19648361e5d7d80c738985d909de9a64">draw()</a> method: 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a670f1d668c1096f906799a30f386888f">gl::clear</a>( <a class="code" href="namespacecinder.html#a957e45ea5178e7c7264bfe19ba91992b">Color</a>( 0, 0, 0 ), <span class="keyword">true</span> );</div>
+               <div class="line">mParticleController.draw();</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               When you build and run the project, you should see 50 white circles appear in random locations and move in random directions.<br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part1_02.png" alt="tutorial_part1_02.png"/>
+            </div>
+            <p> <br />
+               50? Boring. How about 50,000? <br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part1_03.png" alt="tutorial_part1_03.png"/>
+            </div>
+            <p> <br />
+               Up next, we are going to add some personality to our <code>Particle</code>s. On to <a class="el" href="hello_cinder_chapter2.html">Chapter 2</a>.<br />
+               <br />
+            </p>
+      <!-- END CONTENT -->
+
+      <!-- Scripts -->
+      <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+      <!-- Place additional scripts here (optional) -->
+      <!-- <script type="text/javascript"></script> -->
+
+   </body>
+</html> 

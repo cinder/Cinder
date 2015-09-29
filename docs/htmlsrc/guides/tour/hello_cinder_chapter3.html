@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <!-- Update title -->
+      <title>Hello Cinder: Chapter 3</title>
+
+      <!-- keywords used for searching -->
+      <meta name="keywords" content="guide, intro, tour, hello">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <!-- reference to Cinder classes -->
+         <!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+         <!-- master stylesheet - these links will be replaced when compiled -->
+      <link rel="stylesheet" href="../../_assets/css/foundation.css">
+      <link rel="stylesheet" href="../../_assets/css/prism.css">
+      <link rel="stylesheet" href="../../_assets/css/style.css">
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+      <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+      
+   </head>
+
+   <body id="guide-contents" class="language-c++">
+
+      <!-- CONTENT STARTS HERE -->
+            <h1><a class="anchor" id="userInteraction"></a>
+               User interaction
+            </h1>
+            <p>It is time for some user interaction. Watching circles move on their own just isn't that satisfying. You want some direct control. There are many ways to accomplish this. You could use webcam input, microphone input, even the serial port. However, for now we are just going to focus on the two simplest ways to allow user interaction: keyboard and mouse.<br />
+               <br />
+            </p>
+            <h1><a class="anchor" id="keyboard"></a>
+               Keyboard input
+            </h1>
+            <p>First up, keyboard input. You might have noticed that a <a class="el" href="classcinder_1_1app_1_1_app.html#ad277fbd24c0744c50d1dc59590a29d13">keyDown()</a> method was added to the source code from the last chapter. Much like <a class="el" href="classcinder_1_1app_1_1_app.html#a5d00c8290e799445e072b5fd5c24ed67">setup()</a>, <a class="el" href="classcinder_1_1app_1_1_app.html#af4dd0c8459354a9ced7250ad2a97dc9e">update()</a> and <a class="el" href="classcinder_1_1app_1_1_app.html#a19648361e5d7d80c738985d909de9a64">draw()</a>, <a class="el" href="classcinder_1_1app_1_1_app.html#ad277fbd24c0744c50d1dc59590a29d13">keyDown()</a> is one of a few special functions (more properly called <em>virtual</em> functions in C++ nomenclature) which we can override to let our app do something based on a particular event. In our case we're not doing anything too crazy, just two boolean toggles to control what should be rendered. If you hit the '1' key, you toggle on or off the rendering of the source image. If you hit the '2' key, you toggle the rendering of the <code>Particle</code>s.<br /></p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::keyDown( KeyEvent event ) {</div>
+               <div class="line">  <span class="keywordflow">if</span>( event.getChar() == <span class="charliteral">&#39;1&#39;</span> ){</div>
+               <div class="line">    mRenderImage = ! mRenderImage;</div>
+               <div class="line">  } <span class="keywordflow">else</span> <span class="keywordflow">if</span>( event.getChar() == <span class="charliteral">&#39;2&#39;</span> ){</div>
+               <div class="line">    mRenderParticles = ! mRenderParticles;</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               To check for special keys, you use <a class="el" href="classcinder_1_1app_1_1_key_event.html#a0fdc639a3c7e085682970f20067a6da3">event.getCode()</a> instead of <a class="el" href="classcinder_1_1app_1_1_key_event.html#aba9cb71d48f2db45d709ebc6e62136b5">event.getChar()</a>. Special keys include the arrow keys, <em>shift</em>, <em>esc</em>, <em>ctrl</em>, etc. For example, to check for the right arrow, you do this: 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordflow">if</span>( event.getCode() == KeyEvent::KEY_RIGHT ) {</div>
+               <div class="line">  <a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; <span class="stringliteral">&quot;Right Arrow pressed&quot;</span> &lt;&lt; std::endl;</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Oh, and notice the call to <a class="el" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe" title="Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW. ">console()</a>. This is a Cinder function which returns a class we can send text to, and it's a handy, cross-platform way to print out notes and debugging information. It behaves just like <code><a href="http://cplusplus.com/reference/iostream/cout/">std::cout</a></code>, and in fact on the Mac it <em>is</em> <code>std::cout</code>. However on the PC it calls some special code which prints each line to the <em>Output</em> window of Visual C++, or to a system-wide log viewable using the tool <a href="http://technet.microsoft.com/en-us/sysinternals/bb896647.aspx">DebugView</a> from Microsoft. You can also send many Cinder types directly to it, using something like: 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder.html#a957e45ea5178e7c7264bfe19ba91992b">Color</a> myColor( 1.0f, 0.5f, 0.25f );</div>
+               <div class="line"><a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; <span class="stringliteral">&quot;myColor = &quot;</span> &lt;&lt; myColor &lt;&lt; std::endl.</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Moving on, let's imagine as an example you are creating a first-person shooter style camera. You will want to respond to key events by storing the state of a specific key. A good way to do this is to make a few boolean variables like <code>isMovingForward</code> and <code>isJumping</code>. If the 'w' key is pressed ('w' is how you move forward in default FPS controls), set <code>isMovingForward</code> to true. When the 'w' key is released, you set <code>isMovingForward</code> to false. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::keyDown( KeyEvent event ) {</div>
+               <div class="line">  <span class="keywordflow">if</span>( event.getChar() == <span class="charliteral">&#39;w&#39;</span> ) {</div>
+               <div class="line">    mIsMovingForward = <span class="keyword">true</span>;</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+               <div class="line"></div>
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::keyUp( KeyEvent event ) {</div>
+               <div class="line">  <span class="keywordflow">if</span>( event.getChar() == <span class="charliteral">&#39;w&#39;</span> ) {</div>
+               <div class="line">    mIsMovingForward = <span class="keyword">false</span>;</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               In your camera code, you would use these key states to determine what direction to move the camera. This will give you much better responsiveness than moving the camera only on <a class="el" href="classcinder_1_1app_1_1_app.html#ad277fbd24c0744c50d1dc59590a29d13">keyDown()</a> events which are periodic instead of constant.<br />
+               <br />
+            </p>
+            <h1><a class="anchor" id="mouse"></a>
+               Mouse input
+            </h1>
+            <p>Cinder offers five different mouse events which it can listen to. You can check for mouse button press and release, much like with the <a class="el" href="classcinder_1_1app_1_1_key_event.html">KeyEvent</a>s. You do this by overriding <a class="el" href="classcinder_1_1app_1_1_app.html#a6c7445ec6e54f470e1fde9b1b05c26ee">mouseDown()</a> and <a class="el" href="classcinder_1_1app_1_1_app.html#a6d58c81611bc66a2f313c012d06b36cf">mouseUp()</a>. Additionally, you can check for left, right, or middle mouse button clicks as well as checking to see if any modifying keys were held down during the click.<br />
+               <br />
+               As an example, here is the code for checking to see if the right mouse button was clicked while the shift key was depressed. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::mouseDown( MouseEvent event ) {</div>
+               <div class="line">  <span class="keywordflow">if</span>( event.isRight() &amp;&amp; <span class="keyword">event</span>.isShiftDown() ) {</div>
+               <div class="line">    <a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; <span class="stringliteral">&quot;Special thing happened!&quot;</span> &lt;&lt; std::endl;</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               In addition to button press state, you can also check for move and drag events. If the mouse is in motion, <a class="el" href="classcinder_1_1app_1_1_app.html#a92bf3a24b35421166f58f31d4cdcf121">mouseMove()</a> will fire every frame. If you happen to also have a mouse button pressed, <a class="el" href="classcinder_1_1app_1_1_app.html#a951b397345f8014100cbfd1fc96896b0">mouseDrag()</a> will fire instead. Finally, while we don't make use of it in this tutorial, Cinder supports mousewheel events via the <a class="el" href="classcinder_1_1app_1_1_app.html#a8ed69e709dc58cffeec563bdb1ddfd16">mouseWheel()</a> function.<br />
+               <br />
+               The next thing we are going to add to our tutorial is the ability to influence the <code>Particle</code>s based on their proximity to the cursor. The first thing we want to do is use <a class="el" href="classcinder_1_1app_1_1_app.html#a92bf3a24b35421166f58f31d4cdcf121">mouseMove()</a> to get and store the cursor position, which we will keep in a new member variable called <code>mMouseLoc</code>. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::mouseMove( MouseEvent event ) {</div>
+               <div class="line">  mMouseLoc = <span class="keyword">event</span>.getPos();</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               You will probably notice that while you are dragging the cursor, <a class="el" href="classcinder_1_1app_1_1_app.html#a92bf3a24b35421166f58f31d4cdcf121">mouseMove()</a> isn't triggered. This is because you have entered the domain of the <a class="el" href="classcinder_1_1app_1_1_app.html#a951b397345f8014100cbfd1fc96896b0">mouseDrag()</a> event. But what if you want to keep track of the mouse position even while dragging? Well, you could duplicate the code you have in the <a class="el" href="classcinder_1_1app_1_1_app.html#a92bf3a24b35421166f58f31d4cdcf121">mouseMove()</a> function, or simply tell <a class="el" href="classcinder_1_1app_1_1_app.html#a951b397345f8014100cbfd1fc96896b0">mouseDrag()</a> that it needs to call <a class="el" href="classcinder_1_1app_1_1_app.html#a92bf3a24b35421166f58f31d4cdcf121">mouseMove()</a>. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::mouseMove( MouseEvent event ) {</div>
+               <div class="line">  mMouseLoc = <span class="keyword">event</span>.getPos();</div>
+               <div class="line">}</div>
+               <div class="line"></div>
+               <div class="line"><span class="keywordtype">void</span> TutorialApp::mouseDrag( MouseEvent event ) {</div>
+               <div class="line">  mouseMove( event );</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Now that we are keeping track of the cursor position, we need to get that data to the <code>Particle</code>s. Well, we can't talk to them without going through <code>ParticleController</code> first, so lets add <code>mMouseLoc</code> as a parameter for <code>ParticleController::update()</code>. Don't forget to make the change in your .h file. If C++ is new to you, this is a common source of compile errors - forgetting to make the required changes to both the .h and .cpp files. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> ParticleController::update( <span class="keyword">const</span> <a class="code" href="namespacecinder.html#a55542066ef5e4df2176ef692419aa2dd">Channel32f</a> &amp;channel, <span class="keyword">const</span> Vec2i &amp;mouseLoc ) {</div>
+               <div class="line">  <span class="keywordflow">for</span>( list&lt;Particle&gt;::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){</div>
+               <div class="line">    p-&gt;update( channel, mouseLoc );</div>
+               <div class="line">  }</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               We want to do the same thing to <code>Particle::update()</code>. And while we are poking around in the <code>Particle</code> class code, go ahead and add an additional Vec2f that we will call <code>mDirToCursor</code>.<br />
+               <br />
+               Think of each <code>Particle</code> as having an arrow which always points towards the mouse. This is what <code>mDirToCursor</code> will represent. To find out the <code>mDirToCursor</code>, you take the cursor location and subtract the <code>Particle</code>'s location. This will give you a vector that points from the <code>Particle</code> all the way to the mouse. If we draw those vectors, it would look like this:<br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part3_01.png" alt="tutorial_part3_01.png"/>
+            </div>
+            <p> <br />
+               That is a bit more than we need. Instead we want a normalized vector, which is a vector that has a length of 1.0. We also need to account for the possibility that the mouse location and <code>Particle</code> location might be equal. If we try to <a class="el" href="namespacecinder_1_1audio_1_1dsp.html#ad4c4429495c3ca4e20875eaad8cb664a">normalize()</a> a vector that has a length of zero, the computer will cry. Cinder has a solution to that problem. If you are unable to guarantee that the length will always be greater than zero, you can use safeNormalize() which will do that check for you. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> Particle::update( <span class="keyword">const</span> <a class="code" href="namespacecinder.html#a55542066ef5e4df2176ef692419aa2dd">Channel32f</a> &amp;channel, <span class="keyword">const</span> Vec2i &amp;mouseLoc ) {</div>
+               <div class="line">  mDirToCursor = mouseLoc - mLoc;</div>
+               <div class="line">  mDirToCursor.safeNormalize();</div>
+               <div class="line">  mRadius = channel.getData( mLoc ) * mScale;</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               If we cinder::Vec2::safeNormalize "safeNormalize()" <code>mDirToCursor</code> and run our project again, it will look like the image below. The length of the arrows is exaggerated to make it easier to see them. Also, you can use <a class="el" href="namespacecinder_1_1dx.html#a24280fb2d2f00e51bcc2e015121130b9" title="Draws a vector starting at start and ending at end. An arrowhead is drawn at the end of radius headRa...">gl::drawVector()</a> which asks for the start and end of your line segment and then draws the line and corresponding arrow head. The following code block shows how you would draw the arrows.<br />
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">void</span> <a class="code" href="_app_cocoa_touch_8mm.html#a56c5cf8a568cff737ff95520cbe6b405">Particle::draw</a>() {</div>
+               <div class="line">  <a class="code" href="namespacecinder_1_1dx.html#af396a1e9182529bfe483e9a6b6125423">gl::color</a>( <a class="code" href="namespacecinder.html#a957e45ea5178e7c7264bfe19ba91992b">Color</a>( 1.0f, 1.0f, 1.0f ) );</div>
+               <div class="line">  <span class="keywordtype">float</span> arrowLength = 15.0f;</div>
+               <div class="line">  Vec3f p1( mLoc, 0.0f );</div>
+               <div class="line">  Vec3f p2( mLoc + mDirToCursor * arrowLength, 0.0f );</div>
+               <div class="line">  <span class="keywordtype">float</span> headLength = 6.0f;</div>
+               <div class="line">  <span class="keywordtype">float</span> headRadius = 3.0f;</div>
+               <div class="line">  <a class="code" href="namespacecinder_1_1dx.html#a24280fb2d2f00e51bcc2e015121130b9">gl::drawVector</a>( p1, p2, headLength, headRadius );</div>
+               <div class="line">}</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               There are a couple points related to the Vector library we would like to mention. First, <code><a class="el" href="namespacecinder_1_1dx.html#a24280fb2d2f00e51bcc2e015121130b9" title="Draws a vector starting at start and ending at end. An arrowhead is drawn at the end of radius headRa...">gl::drawVector()</a></code> takes two Vec3f but we have been dealing with Vec2f all this time. The quick solution is to just turn the 2D vector into a 3D one by adding a z component and setting it to <code>0.0f</code>.<br />
+               <br />
+               The other nice thing about C++ and vector libraries in particular is you have the ability to overload operators. An operator would be something like + or *. In most other programming languages, you can only use these operators with built-in types. However in C++, you can <em>overload</em> these operators to allow you to use them with objects if you choose. The Cinder vector library allows you to add, subtract, multiply, and divide vectors using the corresponding operator. In the <code>Particle::draw()</code> method shown above, we are taking a Vec2f called <code>mDirToCursor</code> and multiplying it by the <code>arrowLength</code>. Then we add that amount to <code>mLoc</code>. <br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part3_02.png" alt="tutorial_part3_02.png"/>
+            </div>
+            <p> <br />
+               It is starting to get really interesting! There are definitely a lot of good tangents to explore here. If you aren't thoroughly excited after reaching this step, then you might be dead inside. This mess of pointy arrows is positively overflowing with potential.<br />
+               <br />
+            </p>
+            <h1><a class="anchor" id="iteration1"></a>
+               Iteration 1: Mouse Distortion
+            </h1>
+            <p>We start by changing the resolution of the <code>Particle</code> grid. We double the number of <code>Particle</code>'s along each axis to end up with 4x the amount we were using prior. This brings us to 19200 <code>Particle</code>s which is perfectly fine for realtime performance. For the accompanying images, we are actually using 480,000 <code>Particle</code>s and not surprisingly, the frame rate will suffer.<br />
+               <br />
+               To help keep the frame rate zippy, we are going to switch to rectangles instead of circles because there are fewer vertices to draw. We'll use Cinder's built-in rectangle class, and we'll use the version that takes <code>float</code>s called <a class="el" href="classcinder_1_1_rect_t.html">Rectf</a>. There are a few different ways to construct a <a class="el" href="classcinder_1_1_rect_t.html">Rectf</a>. We are going to use 2 pairs of variables. The first pair represents the x and y coordinate of the rectangle's upper left corner. The second pair of variables will represent the lower right corner. 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a> rect( mLoc.x, mLoc.y, mLoc.x + mRadius, mLoc.y + mRadius );</div>
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a6d7f25e133290d999fb64aa4438d44ee">gl::drawSolidRect</a>( rect );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               I want to apologize for using the word <em>radius</em> to describe the size of this rectangle. If it helps, you can think of it as a circle but with a triangle fan resolution of 5.<br />
+               <br />
+               Now we introduce a local Vec2f called <code>newLoc</code> which is based on the current location but has an offset added to it. Our offset will be the unit vector representing the direction to the cursor. We multiply it by 100.0 because an offset of 0.0 to 1.0 is not that noticeable. 
+            </p>
+            <div class="fragment">
+               <div class="line">Vec2f newLoc = mLoc + mDirToCursor * 100.0f;</div>
+               <div class="line">newLoc.x = <a class="code" href="namespacecinder.html#a8f2890f3e88827988771e37f9954bd29">constrain</a>( newLoc.x, 0.0f, channel.getWidth() - 1.0f );</div>
+               <div class="line">newLoc.y = <a class="code" href="namespacecinder.html#a8f2890f3e88827988771e37f9954bd29">constrain</a>( newLoc.y, 0.0f, channel.getHeight() - 1.0f );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               We add those <a class="el" href="namespacecinder.html#a8f2890f3e88827988771e37f9954bd29">constrain()</a> calls because we want to make sure the new location isn't outside the bounds of the <a class="el" href="classcinder_1_1_channel_t.html">Channel</a>. Now, instead of using <code>mLoc</code> to get the corresponding <a class="el" href="classcinder_1_1_channel_t.html">Channel</a> value, we use <code>newLoc</code> which will give us an offset value. We are left with a strange bulgey lens effect centered on our cursor. Poor kitty! <br />
+               <br />
+            </p>
+            <div class="image">
+               <img src="images/tutorial_part3_03.jpg" alt="tutorial_part3_03.jpg"/>
+            </div>
+            <p> <br /></p>
+            <h1><a class="anchor" id="iteration2"></a>
+               Iteration 2: Wavey Pixels
+            </h1>
+            <p>Another baby step. We are going to put back some of the sin() and time based code we had used earlier. The <code>time</code> variable is just a scaled version of <a class="el" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302" title="Returns the number seconds which have elapsed since the active App launched. ">getElapsedSeconds()</a>. The <code>dist</code> variable is a scaled version of the length of <code>mDirToCursor</code> vector before we normalize it (because if we wait until after we normalize it, it will have a length of one). Finally, <code>sinOffset</code> takes the sine of <code>time</code> plus <code>dist</code> and scales it up 100x.<br />
+               <br />
+               The <code>time</code> is there to oscillate our wave and the <code>dist</code> is there so we can create concentric oscillations emanating from the cursor position. Below is the <code>Particle</code>'s entire <code>update()</code> method. 
+            </p>
+            <div class="fragment">
+               <div class="line">mDirToCursor  = mouseLoc - mLoc;</div>
+               <div class="line"><span class="keywordtype">float</span> time    = <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">app::getElapsedSeconds</a>() * 4.0f;</div>
+               <div class="line"><span class="keywordtype">float</span> dist    = mDirToCursor.length() * 0.05f;</div>
+               <div class="line"><span class="keywordtype">float</span> sinOffset = sin( dist - time ) * 100.0f;</div>
+               <div class="line">  </div>
+               <div class="line">mDirToCursor.normalize();</div>
+               <div class="line">Vec2f newLoc  = mLoc + mDirToCursor * sinOffset;</div>
+               <div class="line">newLoc.x    = <a class="code" href="namespacecinder.html#a8f2890f3e88827988771e37f9954bd29">constrain</a>( newLoc.x, 0.0f, channel.getWidth() - 1.0f );</div>
+               <div class="line">newLoc.y    = <a class="code" href="namespacecinder.html#a8f2890f3e88827988771e37f9954bd29">constrain</a>( newLoc.y, 0.0f, channel.getHeight() - 1.0f );</div>
+               <div class="line">  </div>
+               <div class="line"><span class="keywordtype">float</span> gray    = channel.getValue( newLoc );</div>
+               <div class="line">mColor      = <a class="code" href="namespacecinder.html#a957e45ea5178e7c7264bfe19ba91992b">Color</a>( gray, gray, gray );</div>
+               <div class="line">mRadius     = mRadiusScale;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br /></p>
+            <div class="image">
+               <img src="images/tutorial_part3_04.jpg" alt="tutorial_part3_04.jpg"/>
+            </div>
+            <p> <br /></p>
+            <h1><a class="anchor" id="iteration3"></a>
+               Iteration 3: Wavey Particles
+            </h1>
+            <p>Time to go back to the <code>Particle</code> circles. We have commented out the color and are now back to drawing the <code>Particle</code>s as white circles of variable radius.<br />
+               <br />
+               Instead of using the <code>newLoc</code> to retrieve the corresponding <a class="el" href="classcinder_1_1_channel_t.html">Channel</a> value, we are going to switch back to using <code>mLoc</code>. The one main change for this iteration is we are going to use the <code>sinOffset</code> to warp our <code>mDirToCursor</code> vector. 
+            </p>
+            <div class="fragment">
+               <div class="line"><span class="keywordtype">float</span> time    = <a class="code" href="namespacecinder_1_1app.html#ac9ac93a362ec7149815a860c0770b302">app::getElapsedSeconds</a>() * 4.0f;</div>
+               <div class="line"><span class="keywordtype">float</span> dist    = distToCursor * 0.05f;</div>
+               <div class="line"><span class="keywordtype">float</span> sinOffset = sin( dist - time );</div>
+               <div class="line">mRadius     = channel.getValue( mLoc ) * mRadiusScale;</div>
+               <div class="line">mDirToCursor  *= sinOffset * 15.0f;</div>
+            </div>
+            <!-- fragment -->
+            <p> <br />
+               Then, in our <code>Particle::draw()</code> method, we draw the circle at the original <code>mLoc</code> but we add the scaled <code>mDirToCursor</code>. 
+            </p>
+            <div class="fragment">
+               <div class="line"><a class="code" href="namespacecinder_1_1dx.html#a4ccd28b75b1c9a0f7bdc1882cc906cd5">gl::drawSolidCircle</a>( mLoc + mDirToCursor, mRadius );</div>
+            </div>
+            <!-- fragment -->
+            <p> <br /></p>
+            <div class="image">
+               <img src="images/tutorial_part3_05.png" alt="tutorial_part3_05.png"/>
+            </div>
+            <p> <br />
+               Congratulations! We have just created an incredibly simple and naive code-based representation of the wave/particle duality of nature and light. Let's continue. Now that we understand how to control our <code>Particle</code>s, we can start to fine tune their behavior in <a class="el" href="hello_cinder_chapter4.html">Chapter 4</a>.<br />
+               <br />
+            </p>
+      <!-- END CONTENT -->
+
+      <!-- Scripts -->
+      <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+      <!-- Place additional scripts here (optional) -->
+      <!-- <script type="text/javascript"></script> -->
+
+   </body>
+</html> 

@@ -1,0 +1,175 @@
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div id="side-nav" class="columns large-3" >
+        <section>
+            <label>Namespaces</label>
+            {{{ namespace_nav }}}
+        </section>
+    </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+        <div class="top">
+            
+            <div class="columns naming">
+                <img class="header-icon" src="../_assets/images/icons/namespace_icon.svg">
+
+                <h1 id="page-title">
+                    <strong>{{name}}</strong> Namespace
+                </h1>
+            </div> 
+            
+            <!-- subnav -->
+            <div class="columns subnav">
+                {{> namespace-subnav }}
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- show/hide buttons -->
+            <div id="show-hide" class="hide">
+              <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+            </div>
+        </div>
+        
+        <!-- contents -->
+        <div class="reference-lists">
+
+            <!-- namespaces -->
+            {{#namespaces.length}}
+            {{#namespaces}}
+            <a name="{{anchor}}"></a>
+            <section>
+                <h2>Namespaces</h2>
+                <ul>
+                    {{#list}}
+                        <li class="row">
+                            <div class="definitionCol columns large-9">
+                                <a href="{{link}}">{{label}}</a>
+                            </div>
+                        </li>
+                    {{/list}}
+                </ul>
+            </section>
+            <hr/>
+            {{/namespaces}}
+            {{/namespaces.length}}
+
+            <!-- classes -->
+            {{#classes.length}}
+            {{#classes}}
+            <a name="{{anchor}}"></a>
+            <section>
+                <h2>Classes</h2>
+                <ul>
+                    {{#list}}
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                {{kind}}
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="{{link_data.link}}">{{link_data.label}}</a>
+                            </div>
+                        </li>
+                    {{/list}}
+                </ul>
+            </section>
+            <hr/>
+            {{/classes}}
+            {{/classes.length}}
+
+            <!-- typedefs -->
+            {{#typedefs.length}}
+            {{#typedefs}}
+            <a name="{{anchor}}"></a>
+            <section>
+                <h2>Typedefs</h2>
+                <ul>
+                     {{#list}}
+                        {{> function-markup }}
+                    {{/list}}
+                </ul>
+            </section>
+            <hr/>
+            {{/typedefs}}
+            {{/typedefs.length}}
+
+            <!-- enumerations -->
+            {{#enumerations.length}}
+            {{#enumerations}}
+            <a name="{{anchor}}"></a>
+            <section>
+                <h2>Enumerations</h2>
+                <ul>
+                    {{#list}}
+                    {{> enum-markup}}
+                    {{/list}}
+                </ul>
+            </section>
+            <hr/>
+            {{/enumerations}}
+            {{/enumerations.length}}
+
+            <!-- free functions -->
+            {{#free_functions.length}}
+            {{#free_functions}}
+            <a name="{{anchor}}"></a>
+            <section>
+                <h2>Free Functions</h2>
+                <ul>
+                    {{#list}}
+                        {{> function-markup }}
+                    {{/list}}
+                </ul>
+            </section>
+            <hr/>
+            {{/free_functions}}
+            {{/free_functions.length}}
+            
+            <!-- functions -->
+            {{#public_functions.length}}
+            {{#public_functions}}
+            <a name="{{anchor}}"></a>
+            <section>
+                <h2>Functions</h2>
+                <ul>
+                    {{#list}}
+                        {{> function-markup }}
+                    {{/list}}
+                </ul>
+            </section>
+            <hr/>
+            {{/public_functions}}
+            {{/public_functions.length}}
+
+            <!-- variables -->
+            {{#variables.length}}
+            {{#variables}}
+            <a name="{{anchor}}"></a>
+            <section>
+                <h2>Variables</h2>
+                <ul>
+                    {{#list}}
+                        {{> function-markup }}
+                    {{/list}}
+                </ul>
+            </section>
+            <hr/>
+            {{/variables}}
+            {{/variables.length}}
+
+        </div>
+      
+    </div><!-- end #container -->
+
+  </div>
+</div> <!-- row -->
+
+<script type="text/javascript">
+    window.selectedNamespace = "{{name}}"
+</script>

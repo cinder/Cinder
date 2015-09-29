@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CinderBlocks</title>
+
+    <meta name="keywords" content="guide">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="../../_assets/css/foundation.css">
+    <link rel="stylesheet" href="../../_assets/css/prism.css">
+    <link rel="stylesheet" href="../../_assets/css/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    	
+  </head>
+<body>
+
+  <h1>CinderBlocks</h1>
+	<img src="images/cinderblock.png" style="float: right;"/>
+
+	<p>
+	A CinderBlock is a prepackaged collection of code and libraries which implement a
+	feature or exposes a library in Cinder. This includes bridges to libraries like
+	OpenCV and FMOD, as well as standalone implementations of features like TUIO support.
+	Cinder ships with several built-in CinderBlocks such as QuickTime and the
+	LocationManager. A CinderBlock can include source, headers, libraries and any other
+	resources it depends on.
+
+	</p>
+
+  <p>
+    <a href="../tinderbox/index.html">TinderBox</a> (Cinder's application-creation tool) is the most straightforward way to use CinderBlocks, though it is not
+    strictly necessary and an experienced C++ user can add a CinderBlock to a project by
+    hand. TinderBox parses the <em>blocks</em> directory of a Cinder installation and
+    presents the user with a graphical interface like this:
+  </p>
+
+  <div>
+    <br />
+  </div>
+
+  <div>
+    <img src="images/2.png" /><br />
+  </div>
+
+  <div>
+    <br />
+  </div>
+
+  <div>
+    To learn more about using CinderBlocks from TinderBox, checkout <a href="cinderblocks.html">its documentation</a>.
+  </div>
+
+ <br />
+ 
+  <div style="text-align: center; font-size: 15px; background-color:#EEEEEE;">
+    <table style="width: 100%; border-spacing: 20px;">
+      <tbody>
+        <tr style="vertical-align: middle;">
+          <td><strong><center>The information which follows is only relevant to CinderBlock creators and maintainers.</center></strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <section>
+    <h2>Specification</h2>
+  
+    <div>
+      <p>Every CinderBlock must have a file named <em>cinderblock.xml</em> in its root.
+      This file enumerates the files and dependencies of the CinderBlock using XML of the following form:
+    </div>
+  
+<pre><code class="language-markup">
+&lt;cinder&gt;
+    &lt;block&gt;
+    ...
+    &lt;block&gt;
+&lt;cinder&gt;
+</code></pre>
+  
+    <div>
+      The <code>&lt;block&gt;</code> tag supports the following attributes:
+    </div>
+  
+    <div>
+      &nbsp; "<strong>name"</strong><strong>&nbsp;(string)</strong><strong>:</strong> The human-readable name of the
+      block. Ex: "FMOD"
+    </div>
+  
+    <div>
+      &nbsp; "<strong>id"</strong><strong>&nbsp;(string)</strong><strong>:</strong> The unique identifier of the block
+      expressed in&nbsp;<a href="http://en.wikipedia.org/wiki/Reverse_domain_name_notation"
+      target="_blank">reverse-dns</a>. Ex:&nbsp;"org.libcinder.fmod"
+    </div>
+  
+    <div>
+      &nbsp; <strong>"git" (string):</strong> The URL of the CinderBlock's repository.
+      Ex:&nbsp;"git://github.com/cinder/Cinder-OpenCV.git"
+    </div>
+  
+    <div>
+      &nbsp; "<strong>author"</strong><strong>&nbsp;(string)</strong>: The author or authors of the
+      CinderBlock. Ex: "Cinder Project"
+    </div>
+  
+    <div>
+      &nbsp; "<strong>summary"</strong><strong>&nbsp;(string)</strong>: &nbsp;A paragraph-long description of
+      the block and its purpose. Ex: "The FMOD API is a library for the creation and
+      playback of interactive audio."
+    </div>
+  
+    <div>
+      &nbsp; "<strong>license"</strong><strong>&nbsp;(string)</strong>: &nbsp;The software license associated
+      with the library. Ex: "GPL, Commercial"
+    </div>
+  
+    <div>
+      &nbsp; "<strong>version"</strong><strong>&nbsp;(string)</strong><strong>:</strong> &nbsp;The version of the
+      underlying library when applicable. Ex: "4.44.06"
+    </div>
+  
+    <div>
+      &nbsp; <strong>"url"&nbsp;(string):</strong>&nbsp;&nbsp;The URL for a CinderBlock-specific
+      webpage
+    </div>
+  
+    <div>
+      &nbsp;&nbsp;<strong>"library"&nbsp;(string):</strong>&nbsp;&nbsp;The URL for the library a
+      CinderBlock may wrap, Ex: "http://www.fmod.org/"<br />
+    </div>
+  
+    <div>
+      <br />
+    </div>
+  
+    <div>
+      A <code>&lt;block&gt;</code> tag can contain a number of different elements. For standard files
+      like headers, source files, assets, etc, the structure is as follows:
+    </div>
+  
+    <div>
+      <code>&lt;tag&gt;</code><em><code>path to the file relative cinderblock.xml</code></em><code>&lt;/tag&gt;</code>
+    </div>
+  
+    <div>
+      <strong>Example:</strong>
+<pre><code class="language-markup">
+&lt;header&gt;include/example.h&lt;/header&gt;
+</code></pre>
+    </div>
+  
+    <div>
+      This path is replicated in the output, so a file that lives at <code>include/example.h</code> will be copied to <code><span style="font-style: italic;">project-path</span>/blocks/<em>blockName</em>/include/example.h.</code>
+    </div>
+  
+    <div>
+      <strong><br /></strong>
+    </div>
+  
+    <div>
+      <strong><code>&lt;source&gt;:</code></strong>&nbsp;A source file, typically a .cpp or .mm file
+    </div>
+  
+    <div>
+      <strong><code>&lt;header&gt;:</code></strong>&nbsp;A header file, typically a .h file
+    </div>
+  
+    <div>
+      <strong><code>&lt;resource&gt;:</code></strong>&nbsp;A resource file. Added to Resources.rc on Windows, and
+      added to the Resources group and build phase in Xcode.
+    </div>
+  
+    <div>
+      &nbsp;&nbsp;<strong>"name" (string):</strong> The name of the resource macro,&nbsp;i.e.
+      RES_MY_LOGO (defined in Resources.h)
+    </div>
+  
+    <div>
+      <strong>&nbsp; "type"</strong><strong>&nbsp;(string)</strong><strong>:</strong> The type of the resource - only
+      applies on MSW. i.e. IMAGE
+    </div>
+  
+    <div>
+      <strong>&nbsp; "id" (int):</strong> The integer ID of the resource - only applies on MSW. If
+      omitted TinderBox automatically creates a unique ID for the type.
+    </div>
+  
+    <div>
+      <strong><code>&lt;asset&gt;:</code></strong> An asset file, added to the project's <em>assets</em>
+      directory. <strong>Note:</strong> Uniquely, assets are copied to the project's <em>assets</em> folder regardless of the install type the user has selected for the CinderBlock.<br />
+    </div>
+  
+    <div>
+      <strong><code>&lt;framework&gt;:</code></strong> A Mac OS/iOS framework (Mac/iOS-only). May also be used
+      with a System or SDK-relative dynamic library such as libiconv.dylib
+    </div>
+  
+    <div>
+      <strong><code>&lt;buildCopy&gt;:</code></strong> A file which is copied to the folder containing the build
+      product as part of the build process - typically a DLL or dylib.<br />
+    </div>
+    <div>
+      &nbsp;&nbsp;<strong>"destination" (executables | frameworks | plugins ):</strong> The Xcode destination type; the default is <em>executables</em>, which corresponds to the Contents/MacOS folder.
+    </div>
+  
+    <div>
+      <br />
+    </div>
+  
+    <div>
+      These attributes are shared among <code>&lt;source&gt;</code>, <code>&lt;header&gt;</code>, <code>&lt;resource&gt;</code>,
+      <code>&lt;asset&gt;</code>, <code>&lt;framework&gt;</code>, and <code>&lt;buildCopy&gt;</code> tags
+    </div>
+  
+    <div>
+      <strong>&nbsp;
+      "replaceContents"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong>&nbsp;When&nbsp;<em>true</em>, the
+      string&nbsp;<span style="white-space: pre;">em>_TBOX_PREFIX_</em> is replaced with the
+      project's name throughout the file's contents</span><br />
+    </div>
+  
+    <div>
+      <strong>&nbsp; "replaceName"</strong><strong>&nbsp;(boolean)</strong><strong>:&nbsp;</strong><strong><span style=
+      "font-weight: normal;">&nbsp;When&nbsp;</span><span style=
+      "font-weight: normal;"><em>true</em></span><span style="font-weight: normal;">, the
+      string&nbsp;</span><span style="font-weight: normal;"><span style=
+      "white-space: pre;"><em>_TBOX_PREFIX_</em> is replaced in the output file's
+      name</span></span><br /></strong>
+    </div>
+  
+    <div>
+      <strong>&nbsp; "absolute"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <em>true</em>, the file
+      path is considered to be absolute and will not be made relative to the output
+    </div>
+  
+    <div>
+      <strong>&nbsp; "sdk"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <em>true</em>, the file path is
+      considered to be considered relative to the Mac/iOS system SDK (Mac/iOS-only)
+    </div>
+  
+    <div>
+      <strong>&nbsp; "cinder"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <em>true,</em> the file path
+      is considered to be relative to the Cinder installation
+    </div>
+  
+    <div>
+      <strong>&nbsp; "buildExclude" (boolean):</strong> When <em>true</em>, the file is included in the
+      project but is not added to a build step<strong><br /></strong>
+    </div>
+  
+    <div>
+      <strong>&nbsp; "virtualPath" (string):</strong> Sets a non-default location for the file as
+      presented in the hierarchy of folders in the IDE
+    </div>
+  
+    <div>
+      <strong><br /></strong>
+    </div>
+  
+    <div style="font-size: 15px;">
+      <strong>More Block Elements</strong>
+    </div>
+  
+    <div>
+      <strong><code>&lt;includePath&gt;:</code></strong> Adds a directory to the output be searched for #include
+      statements
+    </div>
+  
+    <div>
+      &nbsp; <strong>"system" (boolean):</strong> When <em>true</em>&nbsp;specifies a system
+      header,&nbsp;i.e.&nbsp;<code>#include &lt;something.h&gt;</code>
+      rather than <code>#include "something.h"</code>
+    </div>
+  
+    <div>
+      <strong><code>&lt;frameworkPath&gt;:&nbsp;</code></strong>Adds a directory to the output be searched for
+      Mac/iOS frameworks (Mac/iOS-only)
+    </div>
+  
+    <div>
+      <strong><code>&lt;libraryPath&gt;:&nbsp;</code></strong> Adds a directory to the output be searched for
+      static libraries
+    </div>
+  
+    <div>
+      <strong><code>&lt;staticLibrary&gt;:&nbsp;</code></strong> Adds a Mac/iOS .a or Windows .lib static library
+      to the project<br />
+    </div>
+  
+    <div>
+      <strong><code>&lt;dynamicLibrary&gt;:</code></strong> Adds a Mac/iOS .dylib or Windows .dll dynamic library
+      to the project
+    </div>
+  
+    <div>
+      <strong><code>&lt;headerPattern&gt;:</code></strong> Adds as headers all files matching the pattern,
+      including wildcards (*) &lt;headerPattern&gt;include/*.h&lt;/headerPattern&gt;.<br />
+    </div>
+  
+    <div>
+      <strong><code>&lt;sourcePattern&gt;:&nbsp;</code></strong> Adds as source all files&nbsp;matching the
+      pattern, including wildcards (*)
+      &lt;sourcePattern&gt;src/*.cpp&lt;/sourcePattern&gt;.
+    </div>
+  
+    <div>
+      <strong><code>&lt;setting&gt;:</code></strong>&nbsp;Allows modification of an Xcode setting (Mac-only). The
+      value of the element becomes the value of the setting.
+    </div>
+  
+    <div>
+      <strong>&nbsp; "name" (string)</strong>: The name of the setting inside of the .pbxproj file
+    </div>
+  
+    <div>
+      <strong><code>&lt;outputExtension&gt;:</code></strong>&nbsp;Specifies the file extension of the build
+      product, i.e. ".scr" for Windows screensavers
+    </div>
+  
+    <div>
+      <strong><br /></strong>
+    </div>
+  
+    <div style="font-size: 15px;">
+      <strong>High-level Block tags</strong>
+    </div>
+  
+    <div>
+      <strong><code>&lt;platform&gt;:</code></strong> Specifies an OS, compiler, build configuration or iOS SDK.
+      Explained further below.<strong><br /></strong>
+    </div>
+  
+    <div>
+      <strong>&nbsp; "os"&nbsp;</strong><strong>(msw | macosx | ios)</strong><strong>:</strong> Specifies an operating
+      system
+    </div>
+  
+    <div>
+      <strong>&nbsp; "compiler"&nbsp;</strong><strong>(xcode | vc2012 | vc2013)</strong><strong>:</strong> Specifies a
+      compiler
+    </div>
+  
+    <div>
+      <strong>&nbsp; "config" (debug | release):</strong> Specifies a build configuration
+    </div>
+  
+    <div>
+      <strong>&nbsp; "sdk" (device | simulator):</strong> Specifies an iOS SDK (iOS-only)
+    </div>
+  
+    <div>
+      <strong><code>&lt;supports&gt;:</code></strong> When a non-zero number of &lt;supports&gt; tags, specifies
+      which operating systems a block supports; one config per tag
+    </div>
+  
+    <div>
+      <strong>&nbsp; "os" (msw | macosx | ios):</strong> Specifies the supported operating system.
+    </div>
+  
+    <div>
+      &nbsp; <strong>"compiler" (xcode | vc2012 | vc2013):</strong> Specifies the supported
+      compiler.<strong>&nbsp;</strong>
+    </div>
+  
+    <div>
+      <strong><code>&lt;requires&gt;:</code></strong> Specifies a CinderBlock which a project template or
+      CinderBlock requires, identified by its reverse-dns ID
+    </div>
+  
+    <div>
+      <strong><br /></strong>
+    </div>
+  
+    <div style="font-size: 15px;">
+      <strong>&lt;Platform&gt; tags</strong>
+    </div>
+  
+    <div>
+      &lt;platform&gt; tags group files which only should be included only when certain
+      conditions are met. &lt;platform&gt; tags can be nested, and nesting implies
+      boolean-ANDing of the conditions. For example
+    </div>
+  
+<pre><code class="language-markup">
+&lt;platform os="msw"&gt;
+    &lt;header&gt;include/myLib.h&lt;/header&gt;
+    &lt;platform config="debug"&gt;
+      &lt;staticLibrary&gt;myLib_d.lib&lt;/staticLibrary&gt;
+    &lt;/platform&gt;
+    &lt;platform config="release"&gt;
+        &lt;staticLibrary&gt;myLib.lib&lt;/staticLibrary&gt;
+    &lt;/platform&gt;
+&lt;/platform&gt;
+</code></pre>
+  
+    <div>
+      In the example above, both debug and release configurations on MSW would include the
+      header <em>myLib.h</em>, but the MSW project's debug config would have
+      <em>myLib_d.lib</em> added, while its release config would have <em>myLib.lib</em> added.
+      A hypothetical Mac project would receive none of these files.
+    </div>
+  
+  </section>
+
+  <section>
+  <h2>Creating Template Projects</h2>
+  
+    <div>
+      A CinderBlock may optionally supply one or more project templates, which are meant to
+      serve as a starting point for using the CinderBlock. For example, the OpenCV
+      CinderBlock includes a project template which loads an image and performs a basic
+      image processing operation on it.&nbsp;
+    </div>
+  
+    <div>
+      <strong><br /></strong>
+    </div>
+  
+    <div>
+      One or more project templates may be defined inside the <code>&lt;cinder&gt;</code> tag after the
+      <code>&lt;block&gt;</code>
+    </div>
+  
+<pre><code class="language-markup">
+&lt;cinder&gt;
+  &lt;block&gt;
+    ...
+  &lt;block /&gt;
+  &lt;template&gt;path/to/template.xml&lt;\template&gt;
+    ...
+  &lt;template&gt;path/to/another/template.xml&lt;\template&gt;
+&lt;/cinder&gt;
+</code></pre>
+  
+    <div>
+      A <em>template.xml</em> file is structured very similarly to a <em>cinderblock.xml</em>
+      file.&nbsp;Essentially all of the tags are the same.&nbsp;This file is used as the
+      starting point for a new project, and it in turn will usually (but not necessarily)
+      be based on one of the core App templates which ship with Cinder, located in the
+      blocks/__AppTemplates folder. For a CinderBlock's template to be derived from one of
+      these, the parent's unique ID should be cited in a <em>parent</em>&nbsp;attribute:
+    </div>
+  
+<pre><code class="language-markup">
+&lt;cinder&gt;
+    &lt;template name="OpenCV: Basic"
+        parent="org.libcinder.apptemplates.basicopengl"&gt;
+        ...
+    &lt;/template&gt;
+&lt;/cinder&gt;
+</code></pre>
+  </section>
+
+  <section>
+    <h2>Best Practices for Maintainers</h2>
+  
+  <ul style="">
+      <li>
+        <strong>Include an icon:</strong> TinderBox will detect and show a
+          <em>cinderblock.png</em>&nbsp;if present. This should be at least a 72x72 pixel PNG
+          with an alpha channel.
+      </li>
+  
+      <li>
+          <strong>Setup a git repo:</strong> In order to allow users to include your library as a git
+          submodule, it must have its own git repository.
+      </li>
+  
+      <li>
+          <strong>Consider minimalism:</strong> In many cases a minimal CinderBlock-specific API is
+          preferable. An example is the Cinder OpenCV block, which serves more as a shim
+          than as its own interface. Particularly when a library is already
+          object-oriented, it may be the best design decision. It requires less maintenance
+          and allows a user who is already familiar with the library to utilize her
+          knowledge of it, rather than having to learn an "API to an API".
+      </li>
+  
+      <li>
+          <strong>Pursue loose coupling:</strong> For visually-oriented
+          CinderBlocks<em>,</em>&nbsp;this may mean separating the render logic out into
+          other classes or functions, particularly in the sense of not assuming an application is
+          using OpenGL.
+      </li>
+  
+      <li>
+          <strong>Weigh binaries:</strong> In many instances a static library is unnecessary, and
+          simply including a library's source files is adequate. This simplifies
+          maintenance and allows the library to be used on platforms you may not have
+          immediate access to. The CinderBlock for Box2D is an example of this technique.
+          Other libraries, like OpenCV, must be static libraries. A natural decision maker
+          would be whether the library requires a build system like CMake.
+      </li>
+  
+      <li>
+          <strong>Favor static over dynamic libraries:&nbsp;</strong>Cinder apps are designed to be self-contained whenever possible.&nbsp;
+      </li>
+    </ul>
+  
+  
+      <h3>Mac OS X &amp; iOS</h3>
+  
+    <ul style="">
+      <li>
+          Libraries should be universal binaries, supporting the i386 and x86_64
+          architectures on Mac OS and the armv7 and armv7s architectures on iOS
+      </li>
+  
+      <li>
+          Where necessary, the C++ stdlib should be libc++, and the C++ Dialect must be
+          C++11.&nbsp;
+      </li>
+    </ul>
+  
+    
+  
+    <h3>Windows</h3>
+  
+    <ul style="">
+      <li>
+          Make sure the C Runtime is Multithreaded Debug (/Mtd) for debug and Multithreaded
+          (/MT) for Release.&nbsp;
+      </li>
+    </ul>
+  
+  <h2>Advanced: Custom App Templates</h2>
+  <p>Advanced users may want to create new App template types.  An organization may have a style they'd like all applications to conform to, or you may find yourself creating the same sort of application frequently. These templates are located at <em>Cinder/blocks/__AppTemplates</em>. Inside you'll see a directory for each of the default application types, and you can create your own here as well.</p>
+  <br />
+  <p>Very advanced users may find cause to modify lower level parameters of the Xcode and Visual C++ project files TinderBox creates. If you are familiar with the internals of your compiler's project files, you can modify the files located at <em>Cinder/blocks/__AppTemplates/__Foundation</em>. A key attribute of these files is that the string <code>_TBOX_CINDER_PATH_</code> will be replaced with the absolute file path to Cinder, and the string <code>_TBOX_PREFIX_</code> will be replaced with the user-provided project name.</p>
+  </section>
+
+<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<body>
+	<!-- library features -->
+	<div class="row header">
+		<div class="columns large-12">
+			<div class=" header-icon header_platform" ></div>
+			<h1>Platform <span class="slash">/</span></h1>
+		</div>
+	</div>
+	
+	<div class="columns large-4">
+		<ul>
+			<label>Platforms</label>
+			<li><ci>app::Platform</ci></li>
+			<ul>
+				<li><ci>app::PlatformCocoa</ci></li>
+				<li><ci>app::PlatformMsw</ci></li>
+				<li><ci>app::PlatformWinRt</ci></li>
+			</ul>
+		</ul>
+		
+		<ul>
+			<label>MSW Functionality</label>
+			<li><ci>msw::ComInitializer</ci></li>
+			<li><ci>msw::ComDeleter</ci></li>
+			<li><ci>msw::ComIStream</ci></li>
+			<li><ci>msw::ComOStream</ci></li>
+		</ul>
+		
+		<ul>
+			<li><ci dox="msw::makeComShared">makeComShared<>( T *p )</ci></li>
+			<li><ci dox="msw::makeComUnique">makeComUnique<>( T *p )</ci></li>			
+			<li><ci dox="msw::convertHBitmap">convertHBitmap( HBITMAP hbitmap )</ci></li>
+			<li><ci dox="msw::convertGdiplusBitmap">convertGdiplusBitmap( Gdiplus::Bitmap )</ci></li>
+			<li><ci dox="msw::toWideString">toWideString( std::string )</ci></li>
+			<li><ci dox="msw::toUtf8String">toUtf8String( std::wstring )</ci></li>
+		</ul>
+	</div>
+		
+	<div class="columns large-4">
+		<ul>
+			<label>Cocoa Functionality</label>
+			<li><ci>cocoa::ImageSourceCgImage</ci></li>
+			<li><ci>cocoa::ImageTargetCgImage</ci></li>
+		</ul>
+
+		<ul>
+			<li><ci dox="cocoa::createCgBitmapContext">createCgBitmapContext( Surface8u )</ci></li>
+			<li><ci dox="cocoa::getWindowContext">getWindowContext()</ci></li>
+			<li><ci dox="cocoa::convertCfString">convertCfString( CFStringRef )</ci></li>
+			<li><ci dox="cocoa::createCfString">createCfString( std::string )</ci></li>
+			<li><ci dox="cocoa::createCfUrl">createCfUrl( cinder::Url )</ci></li>
+			<li><ci dox="cocoa::createCgColor(const ColorA&)">createCgColor( ColorA )</ci></li>
+			<li><ci dox="cocoa::createCgRect">createCgRect( Area )</ci></li>
+			<li><ci dox="cocoa::CgRectToArea">CgRectToArea( CGRect )</ci></li>
+			<li><ci dox="cocoa::createCgSize( const vec2& )">createCgSize( vec2 )</ci></li>
+			<li><ci dox="cocoa::createCfDataRef">createCfDataRef( cinder::Buffer )</ci></li>
+			<li><ci dox="cocoa::createImageSource">createImageSource( CGImageRef )</ci></li>
+			<li><ci dox="cocoa::createCgImage">createCgImage( ImageSourceRef )</ci></li>
+			<li><ci dox="cocoa::convertCVPixelBufferToSurface">convertCVPixelBufferToSurface( CVPixelBufferRef )</ci></li>
+		</ul>
+	</div>
+
+	<div class="columns large-4">
+		<ul>
+			<label>OS X Functionality</label>
+			<li><ci>cocoa::SafeNsAutoreleasePool</ci></li>
+			<li><ci>cocoa::SafeNsData</ci></li>
+			<li><ci>cocoa::SafeNsString</ci></li>
+		</ul>
+		
+		<ul>
+			<li><ci dox="cocoa::convertNsString">convertNsString( NSString )</ci></li>
+		</ul>
+
+		<ul>
+			<label>iOS Functionality</label>
+			<li><ci>cocoa::SafeUiImage</ci></li>
+		</ul>
+		
+		<ul>
+			<li><ci dox="cocoa::convertUiImage">convertUiImage( UIImage* )</ci></li>
+			<li><ci dox="cocoa::createUiImage">createUiImage( ImageSourceRef )</ci></li>
+			<li><ci dox="cocoa::writeToSavedPhotosAlbum">writeToSavedPhotosAlbum( ImageSourceRef )</ci></li>		
+		<ul>		
+	</div>
+
+
+</body>

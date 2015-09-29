@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Cinder + Boost</title>
+
+      <!-- keywords used for searching -->
+      <meta name="keywords" content="guide, boost">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <!-- reference to Cinder classes -->
+         <!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+         <!-- master stylesheet - these links will be replaced when compiled -->
+      <link rel="stylesheet" href="../../_assets/css/foundation.css">
+      <link rel="stylesheet" href="../../_assets/css/prism.css">
+      <link rel="stylesheet" href="../../_assets/css/style.css">
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+      <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+      
+   </head>
+
+   <body id="guide-contents" >
+
+      <!-- CONTENT STARTS HERE -->
+      <a class="anchor" id="Introduction"></a>
+      <h1>Cinder + Boost</h1>
+
+      <section>
+         <h2>Introduction</h2>
+      
+         <p>The <a href="http://boost.org">Boost libraries</a> are a collection of peer-reviewed open source C++ libraries. These libraries are some of the highest quality on the planet. In fact they are so good, several have gone on to become part of the C++ standard itself. Many of the developers who work on Boost are members of the C++ committee. Cinder relies on Boost.filesystem, and it in turn requires Boost.system (and on VC 2013, Boost.date_time). Also note that VC 2015 does not depend on any Boost binaries.</p>
+      </section>
+
+      <section>
+         <a class="anchor" id="setup"></a>
+         <h2>Setting up Boost</h2>
+         
+         <p>Cinder ships with the required binaries for Boost and in general you should not need to build Boost itself, even if you're working from Github. However if you would like to upgrade your copy of Boost from the included version, these instructions will guide you through the process.</p>
+
+         <p>If you want to download the same version as the one we're using in Cinder, grab version 1.58. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a></p>
+      </section>
+         
+      <section>
+         <a class="anchor" id="build"></a>
+         <h2>Building Boost (Advanced Users)</h2>
+         <p>Here's how to compile Boost yourself:</p>
+
+         <h3>Mac OS X &amp; iOS:</h3>
+         <p>You'll need to create <em>~/user-config.jam</em> with the following (and possibly correct the paths to the iOS SDKs):</p>
+
+<pre><code class="language-bash">using clang : osx
+: xcrun clang -arch i386 -arch x86_64 -stdlib=libc++ -std=c++11 -mmacosx-version-min=10.8 -fvisibility-inlines-hidden
+;
+
+using clang : ios
+: xcrun clang -arch armv7 -arch arm64 -stdlib=libc++ -std=c++11 -miphoneos-version-min=6.0 -fvisibility-inlines-hidden -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/
+;
+
+using clang : ios_sim
+: xcrun clang -arch i386 -arch x86_64 -stdlib=libc++ -std=c++11 -miphoneos-version-min=6.0 -fvisibility-inlines-hidden -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator9.0.sdk/
+;</code></pre>
+         
+         
+         <h3>MacOSX:</h3>
+<pre><code class="language-bash">cd cinder/boost
+./bootstrap.sh -with-libraries=filesystem,system
+./b2 -a -j4 toolset=clang-osx link=static stage
+cp stage/lib/*.a ../lib/macosx</code></pre>
+
+         <h3>iOS:</h3>
+<pre><code class="language-bash">rm -rf stage
+rm -rf bin.v2
+./b2 -a -j4 toolset=clang-ios link=static stage
+cp stage/lib/*.a ../lib/ios
+</code></pre>
+
+         <h3>iOS Simulator:</h3>
+<pre><code class="language-bash">rm -rf stage
+rm -rf bin.v2
+./b2 -a -j4 toolset=clang-ios_sim link=static stage
+cp stage/lib/*.a ../lib/ios-sim
+</code></pre>
+
+         <h3>Visual C++ 2013:</h3>
+         <p>From the Command Prompt, start by running 
+<pre><code class="language-bash">C: Files (x86) Visual Studio 12.0.bat:
+cd cinder\boost
+bootstrap
+b2 runtime-link=static debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread
+</code></pre>
+            
+         <h3>Visual C++ 2013 x64:</h3>
+         <p>From the Command Prompt, start by running:
+<pre><code class="language-bash">C: Files (x86) Visual Studio 12.0.bat x86_amd64:
+cd cinder\boost
+bootstrap
+b2 runtime-link=static address-model=64 debug-symbols=off optimization=space -with-filesystem -with-date_time -with-system -with-thread
+</code></pre>
+         
+         
+      </section>
+      <!-- END CONTENT -->
+
+      <!-- Scripts -->
+      <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+      <!-- Place additional scripts here (optional) -->
+      <!-- <script type="text/javascript"></script> -->
+
+   </body>
+</html> 

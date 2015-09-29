@@ -1,0 +1,1135 @@
+// TODO: import stylus reset
+global-reset()
+@import global
+
+// vars
+left-col-width = 300px
+$nav-bottom-padding = 35px
+
+// animations 
+@keyframes fade-odd {
+  from {
+    background-color: #FFF2DE
+  }
+  to {
+    background-color: #f8f8f8
+  }
+}
+
+@keyframes fade-even {
+  from {
+    background-color: #FFF2DE
+  }
+  to {
+    background-color: white
+  }
+}
+
+// base html styles
+body
+	baseFontStyle()
+	font-size: 14px
+	background: $$background-gray-light $gray-gradient-1 no-repeat
+	line-height: 1.8em
+	
+	
+a
+	color: $cinder-red
+	font-weight: 700
+	
+	&:hover
+	&:focus
+		color: $cinder-red
+		text-decoration: underline
+	
+	&.cta-arrow
+		// padding-right: 25px
+		padding: 5px 25px 5px 0
+		background: url('../images/cta_arrow.png') no-repeat right center
+	
+p a
+	font-weight: inherit
+	
+p
+	margin-bottom: 1.25em
+	line-height: inherit
+	
+	&:last-child
+		margin-bottom: 0
+	
+em
+	font-style: italic
+
+strong
+	font-weight: 700
+
+label
+	font-family: 'Open Sans', sans-serif;
+	font-size: 1.5em
+	font-weight: 300
+
+h1, h2, h3, h4, h5, h6
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300
+	margin-bottom: 0.5em
+
+h1
+	font-size: 2.25em
+	color: $cinder-red
+	font-weight: 400;
+
+h2
+	font-size: 1.9em
+	color: $cinder-red
+
+h3
+	font-size: 1.5em
+	font-weight: 700;
+	color: $dark-gray-text
+
+h4
+	font-size: 1.25em
+
+h5
+	font-size: 1.0em
+
+
+// list styles
+plain-ul()
+	padding: 0
+	text-indent: 0
+	list-style: none
+	
+	li
+		margin: 0
+		&:before
+			content: none
+			
+ul 
+	plain-ul()
+
+
+ul.fancy>li
+	fancyFontStyle()
+	
+	a:hover
+		text-decoration: none
+
+ol
+	list-style: decimal
+	margin-left: 1.4rem;
+	
+li
+	margin: 0 0 0.25rem 1.0rem;
+	
+ul, ol, dl 
+	line-height: inherit
+
+hr
+	margin: 30px 0
+	border-color: $gray-depth-1
+
+.row
+	max-width: 80rem
+
+// for guide template
+body#guide-contents
+	max-width: 960px
+	margin: 20px auto 0 auto
+	width: 100%
+
+body.reference, body.guide .guide-list
+	.content 
+		ul
+			li
+				margin-left: 0
+
+			li:before
+				content: none
+				margin-left: 0
+	
+		.columns
+			padding-left: 0;
+
+.plain
+	baseFontStyle()
+
+.columns.collapse
+	padding-left: 0
+	padding-right: 0
+
+span.slash
+	color: #ddd
+
+#top-primary
+	box-shadow: 0px 0px 5px 4px rgba(0,0,0,0.3)
+	z-index: 100
+	
+#top-primary,
+#top-content
+	background: $background-gray
+	position: relative
+	padding: 0 0 0 0
+	margin: 0
+	color: #fff
+	
+	h1
+		color: #fff
+
+	.content
+		height: 100%
+		
+	.branding
+		height: 100%
+		
+	.col-right
+		width: 100%
+		height: 100%
+	
+	.navbar-header
+		position: absolute
+		bottom: $nav-bottom-padding
+		color: light-gray
+		vertical-align: bottom
+		display: inline-block
+
+		a.navbar-brand
+			display: inline-block
+			background: url('../images/cinder_logo.svg') no-repeat;
+			background-size: 100%
+			width: 151px
+			height: 50px
+			position: relative
+			vertical-align: bottom
+			
+		.cinder-version
+			display: inline-block
+			position: relative
+			margin-left: 13px
+			font-weight: bold
+			font-size: 14px
+			line-height: 18px
+			vertical-align: bottom
+	
+
+#sub-nav
+	color: $middle-gray-text
+	
+	ul
+		plain-ul()
+		
+		li
+			display: inline-block
+			// margin-right: 10px
+			margin-left: 0
+			
+			a
+				color: $cinder-red
+				font-weight: normal
+				
+				&:hover
+					text-decoration: underline
+			
+			&:not(:last-child)
+				
+				&::after
+					content: " | "
+		
+
+#top-secondary
+	background: gray-gradient-2
+	height: 100%
+	min-height: 250px
+
+.content-row
+	
+	background: #fff
+
+	> .columns
+		padding-top: 40px
+		padding-bottom: 40px
+		
+	@media (max-width: $tablet)
+		> .columns
+			padding-top: 10px
+
+
+// prose for reference and guide pages
+.content, body#guide-contents
+	// background: white
+	height: auto
+		
+	// padding-top: 40px
+	// font-size: 0.8em
+	// line-height: 1em
+
+		
+	section
+		margin-bottom: 3em
+
+	// list styles
+	ul
+		padding: 0 0 0 0.8em
+		text-indent: -0.8em
+		list-style: none
+ 	
+ 	ol
+ 		margin-left: 0.8em
+
+	ul, ol
+		margin-bottom: 1.25em
+		li
+			&:last-child
+				margin-bottom: 0
+	 
+	ul li
+		margin: 0 0 0.25em 1.0em
+
+	ul li:before
+		content: "\00BB \00A0"	// double arrows + &nbsp; (unicode)
+	
+.top
+	margin-bottom: 30px
+	display: inline-block
+	width: 100%
+	
+	img.header-icon
+		display: inline-block
+		height: 35px
+		vertical-align: text-top
+		margin-right: 10px
+		float: left
+	
+	.ns
+		display: block
+		color: $cinder-red
+		line-height: 1em
+		
+		.link:not(:last-child):after
+			content: "::"
+	
+	.include
+		display: inline-block
+		color: $middle-gray-text
+		
+		a
+			color: $middle-gray-text
+			font-weight: normal
+	
+	.row
+		padding: 0.0 2px
+		
+		&:not(:last-child)
+			border-bottom: #fff 1px solid
+	
+	.row:nth-child(2)
+		background-color: $gray-depth-2
+	
+	.row:nth-child(3)
+		background-color: $gray-depth-3
+		
+	.columns
+		padding: 0.7rem 1.0rem
+		overflow-x: auto;
+		
+
+		&:not(:last-child)
+			border-right: #fff 1px solid
+		
+		&.naming
+			padding-left: 0
+			padding-top: 0em
+			padding-bottom: 1em
+			border-bottom: 1px solid $gray-depth-1
+		
+		&.subnav
+			padding-left: 0
+			padding-top: 0.25em
+			padding-bottom: 0.25em
+			margin-bottom: 30px
+		
+	.info-links
+		.columns
+			width: auto;
+			min-width: 25%
+			
+			&.max-12
+				max-width: 100%;
+				
+			&.max-6
+				max-width: 50%;
+		
+			&.max-4
+				max-width: 33%;
+		
+			&.max-3
+				max-width: 25%;
+				
+body.classes, body.namespaces
+		
+	h1 
+		display: inline-block
+		margin-bottom: 0
+		font-weight: 700
+		line-height: 1.0em
+		
+	.row .row
+		margin: 0
+	
+			
+	.info-links
+		margin-top: 30px
+		display: flex
+		width: 100%
+		
+		.columns + .columns:last-child
+		    float: left
+				
+		label
+			color: $middle-gray-text
+			font-weight: 700
+			font-size: 1.0em
+			padding-bottom: 5px
+			margin-bottom: 5px
+			border-bottom: 3px solid $gray-depth-1
+			
+
+		.side
+
+			a
+				font-weight: normal
+	
+			h4
+				font-weight: 700
+				margin-bottom: 6px
+
+			.row
+				border: 1px solid #f0f0f0
+				padding: 10px 25px
+				margin-bottom: 2px
+				margin-right: 0
+				position: relative
+
+
+				&:nth-child(even)
+					background: #ebebeb
+				
+				&:nth-child(odd)
+					
+					&:first-child
+						background: #fff
+					
+					background: #f5f5f5
+					border-color: #f5f5f5
+				
+			
+			ul
+				margin-bottom: 0
+				padding: 0
+				text-indent: 0
+				
+				&.inheritence
+					
+					li
+						background-image: url("../images/class_node_parent_and_child_2x.png")
+						background-position: -15px -3px
+						background-repeat: 	no-repeat
+						background-size: 48px 29px
+						// word-wrap: break-word;
+						
+						&:last-of-type
+							background-image: url("../images/class_node_subclass_last_child_2x.png")
+
+						&.depth1
+							padding-left: 12px
+						&.depth2
+							padding-left: 26px
+							background-position: -1px -3px;
+						&.depth3
+							padding-left: 40px
+							background-position: 13px -3px;
+						&.depth4
+							padding-left: 54px
+							background-position: 27px -3px;
+						&.depth5
+							padding-left: 68px
+							background-position: 41px -3px;
+							
+body.classes
+	img.header-icon
+		height: 45px
+		margin-top: 8px
+
+#container
+	
+	// reference lists within namespace, class, and group template pages
+	.reference-lists
+		
+		word-wrap: break-word;
+		
+		section 
+			
+			> ul > li
+				
+				height: 100%
+				width: 100%
+				padding: 10px 10px
+				transform: translateZ(0)
+				
+				&:nth-child(odd)
+					background: #f8f8f8	
+					
+					&.expandable:hover
+						animation: fade-odd 1.5s
+					
+				&.expandable
+					transition: background 200ms;
+					cursor: pointer
+					
+					&:hover
+						animation: fade-even 1.5s				
+						
+					
+		.definitionCol
+			padding-right: 0
+			padding-left: 0
+				
+		p:last
+			margin-bottom: 0
+		
+		.row			
+			.description
+				color: #7c827f
+			
+			p			
+				&:first-child
+					margin-top: 5px
+				
+			button.expand
+				top: 16px
+				left: 9px
+				
+	#show-hide
+		
+		text-align: right
+				
+	.returnCol
+		text-align: right
+		
+	
+	ul.master-class-list
+		column-count: 4
+		column-gap: 50px
+		
+
+#container .reference-content
+		
+	.header
+		margin: 0 0 20px 0
+
+		h1
+			font-weight: 700
+			text-transform: uppercase
+			margin: 0 0 0 0
+			display: inline-block
+			vertical-align: middle
+		
+		hr
+			margin: 10px 0
+		
+	.header-icon
+		width: 60px
+		height: 60px
+		display: inline-block
+		vertical-align: middle
+		overflow:hidden
+		background-repeat: no-repeat
+		margin-right: 10px
+		
+		&.header_2dgraphics
+			background-image: url('../images/icons/2d_gray.svg')
+		
+		&.header_geometry
+			background-image: url('../images/icons/geom_gray.svg')
+		
+		&.header_math
+			background-image: url('../images/icons/math_gray.svg')
+		
+		&.header_system
+			background-image: url('../images/icons/system_gray.svg')
+			
+		&.header_platform
+			background-image: url('../images/icons/platform_gray.svg')
+		
+		&.header_opengl
+			background-image: url('../images/icons/opengl_gray.svg')	
+		
+		&.header_audio
+			background-image: url('../images/icons/audio_gray.svg')
+			
+		&.header_video
+			background-image: url('../images/icons/video_gray.svg')
+		
+		&.header_images
+			background-image: url('../images/icons/images_gray.svg')
+		
+		&.header_application
+			background-image: url('../images/icons/app_gray.svg')
+
+
+.expandable
+	
+	position: relative
+	overflow: hidden
+		
+	.content
+		overflow: hidden
+		transition: all 300ms cubic-bezier(0.165, 0.840, 0.440, 1.000)
+
+	&.hidden	
+		button.expand
+			transform: rotate(0deg) translateZ(0)
+		
+		.content
+			height: 0 !important
+	
+			
+button.expand
+		
+	transform: rotate(90deg) translateZ(0)
+	transition: all 200ms
+	background-image: url("../images/expand_arrow.png");
+	background-repeat: no-repeat
+	background-size: 13px 13px
+	background-color: inherit
+	width: 13px
+	height: 13px
+	margin: 0
+	padding: 0
+	display: block
+	top: 16px
+	left: 7px
+	position: absolute
+	outline: none
+	z-index: 100
+	
+
+button.interactive-guide
+	background: none
+	border: 1px solid #c64b24
+	color: #c64b24
+	text-transform: uppercase
+	font-family: 'Open Sans', sans-serif
+	font-size: .75em
+	padding: .75em 1.5em
+	margin: 0
+
+	&:hover
+		background: #c64b24
+		color: #fff
+	
+	&:focus
+		outline: none
+	
+	
+
+#side-nav
+	
+	width: 300px
+	left: auto
+	padding: 40px 0 0 0
+	
+	h3
+		color: $cinder-red
+		font-weight: 700
+		text-transform: uppercase
+		
+	section
+		background: $gray-depth-3
+		margin-bottom: 20px
+		
+		> label
+			background: $dark-gray-text
+			color: white
+			padding: 10px 15px
+			font-size: 1em
+			text-transform: uppercase
+			font-weight: 700
+		
+		> ul
+			padding: 0
+			max-height: 500px
+			overflow-y: auto
+			
+			ul
+				margin: 5px -15px 0
+				padding: 0
+		
+			li
+				padding: 0
+				line-height: 1.3em
+				// padding: 4px 15px 4px 15px + 19px
+				// margin: 7px 0
+				
+				> a, > span > a
+					display: inline-block
+					padding-left: 36px
+					margin: 5px 0
+					
+		li.active			
+			background-color: $cinder-red
+			>label a, >a
+				color: white
+				
+				
+				
+	span.active a
+		color: $dark-gray-text
+				
+				
+	ul.depth-0
+		background: $gray-depth-3
+	
+	ul.depth-1
+		background: $gray-depth-2
+	
+	ul.depth-2
+		background: $gray-depth-1
+		
+	ul.depth-3
+		background: white
+
+	
+	/*input[type="checkbox"] + label
+		margin-left: -18px*/
+		
+	input[type="checkbox"] + label, input[type="radio"] + label
+		margin-left: 0
+		
+	
+	ul.css-treeview, ul.side-nav-list
+
+		label
+			color: #fff
+			font-size: inherit
+			width: 100%
+			padding-left: 18px
+		
+		input
+			left: 18px
+			
+		label, li > a, li > span
+			margin: 5px 0
+			
+		li > a, li > span > a
+			padding-left: 36px
+			
+		ul
+			margin: 0
+		
+		li
+			padding: 0
+
+		& > li:first-child
+			padding-top: 5px
+			
+		& > li:last-child
+			padding-bottom: 5px
+
+		label::before
+			background-image: url("../images/expand_arrow.png");
+			background-repeat: no-repeat
+			background-size: 13px 13px
+			background-position: 0 0
+			width: 13px
+			height: 13px
+			margin: 1px 5px 0 0
+		
+		input:checked + label::before
+		
+			transform: rotate(90deg) translateZ(0)
+			transform-origin: 50% 50%;
+	
+		li.active > label::before
+			background-image: url("../images/expand_arrow_white.png");
+		
+		label
+			background-image: none
+			height: 20px
+			line-height: 20px
+	
+	ul.css-treeview
+		li.list-parent::before
+				content: none
+				
+	ul.side-nav-list li.list-parent
+		position: relative
+
+		&:before
+			position: absolute
+			content: ''
+			display: inline-block
+			background-image: url("../images/expand_arrow.png");
+			background-repeat: no-repeat
+			background-size: 13px 13px
+			background-position: 0 0
+			width: 13px
+			height: 13px
+			margin: 1px 5px 0 0
+			left: 18px
+			top: 6px
+			transform: rotate(90deg) translateZ(0)
+			transform-origin: 50% 50%;
+			
+		&.active:before
+			background-image: url("../images/expand_arrow_white.png");
+	
+
+	@media (max-width: $tablet)
+		position: relative
+		width: 100%
+		padding-top: 0
+		max-height: 100%
+		overflow-y: auto
+		
+		section:not(.table)
+			display: none
+		
+		section.table
+			margin-bottom: 0
+
+			ul
+				display: none
+					
+			> label	
+				&:after
+					content: " "
+					background-image: url("../images/expand_arrow_white.png");
+					background-repeat: no-repeat
+					background-size: 13px 13px
+					background-position: 0 0
+					position: absolute
+					display: block
+					
+					width: 13px
+					height: 13px
+					right: 18px
+					top: 14px
+					// transform: rotate(90deg) translateZ(0)
+					transform-origin: 50% 50%;
+		
+			&.active
+				border-bottom: 1px solid $dark-gray
+				
+				ul
+					display: block
+				
+				> label	
+					&:after
+						transform: rotate(90deg) translateZ(0)
+
+.wrapper
+	min-height: 100%
+	position: relative
+
+	.inner-wrap
+		padding-bottom: 60px
+
+#main-content
+	position: relative;
+	z-index: 0
+	
+	ul.rows 
+		padding: 0
+		text-indent: 0
+		
+	li.row, .side li
+		list-style: none
+		margin: 0
+		
+		&:before
+			content: none
+	
+	#side-nav li
+		list-style: none
+
+
+footer
+	color: $light-gray-text
+	text-align: center;
+	padding: 20px	
+	background-color: $background-gray
+	position: absolute
+	bottom: 0
+	width: 100%
+	height: 60px
+	text-transform: uppercase
+
+
+/* NAVBAR STYLING */
+$navbar-height = 100px
+$border-height = 3px
+
+#main-nav
+	background: transparent
+	height: $navbar-height
+	font-size: 1.1rem			
+
+	.columns
+		height: 100%
+
+	.cinder-logo-container
+		padding-left: 0
+
+	.nav-section
+		height: 100%
+		
+		> ul
+			position: relative
+			list-style: none
+			font-weight: bold
+			display: inline-block
+			
+			> li
+				height: 100%
+				position: relative
+				display: inline-block
+				
+				margin-right: 20px
+				margin-left: 0
+				background: none
+				border-bottom: solid 3px transparent
+				
+				&.active
+					border-bottom: solid 3px $cinder-red
+					a
+						color: $cinder-red
+
+				a
+					display: table-cell
+					color: white
+					text-decoration: none
+					background: none
+					padding: 0 0 $nav-bottom-padding - $border-height 0
+					vertical-align: bottom 
+					box-sizing: border-box
+					height: $navbar-height - $border-height
+					line-height: 1em
+					font-weight: 400
+
+					&:hover
+						color: $cinder-red
+					
+				&:first-of-type a
+					padding-left: 0;
+
+	.title-area .name img
+		width: 220px
+
+
+/* SEARCH RESULTS STYLING */
+#nav_search
+	position: relative
+	height: 100%		
+	
+	& > #search
+		position: absolute
+		top: 0
+		bottom: 0
+		right: 0
+		margin: auto
+		height: 30px
+		width: 400px
+
+		& > input
+			fancyFontStyle()
+			display: inline-block
+			position: absolute
+			margin-bottom: 0
+			width: 100%
+			font-size: 12px
+			font-weight bold
+			height: 30px
+			border-radius: 5px
+			z-index: 10
+
+		& > button
+			position: absolute
+			right: 0
+			padding-top: 0
+			padding-bottom: 0
+			margin-bottom: 0
+			height: 30px
+			baseFontStyle()
+			font-size: 0.75em
+			text-transform: uppercase
+			outline: 0;
+			background: $cinder-orange
+			border-top-right-radius: 5px
+			border-bottom-right-radius: 5px
+			z-index: 10
+	
+			&:before
+				content: "\2666";
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 2px;
+				font-size: 30px;
+				transform: rotate(90deg);
+				color: $cinder-orange
+
+		#search-results
+			display: none
+			background-color: white;
+			position: absolute;
+			right: 0;
+			z-index: 99999;
+			overflow-x: hidden;
+			overflow-y: scroll;
+			top: 30px;
+			border-radius: 0 0 10px 10px;
+			width: 400px;
+			box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.5);
+			padding-top: 10px;
+			margin-top: -10px;
+			z-index: 0
+			// border: 1px $light-gray solid
+				
+			.relativeContainer
+				position relative
+				margin 0
+				padding 0
+				
+			h5
+				display: inline-block
+				background: $light-gray-text
+				margin: 10px
+				padding: 5px 10px
+				font-size: 12px
+				font-weight: 700
+				color: white
+				border-radius: 5px
+
+			ul
+				margin 0
+				padding 0
+
+				li
+					height: auto
+					padding: 0 0 0 10px
+					margin 0
+					font-size: 12px
+					background: transparent
+					width: 100%
+
+					&:hover,
+					&:hover a,
+					&.selected,
+					&.selected a
+						background: $cinder-red
+						color: white;
+						text-decoration: none
+						
+					&:hover a:before,
+					&.selected a:before
+						color: #fff
+
+					a
+						padding: 0;
+						color: $cinder-red
+						background: transparent;
+						font-size: 12px;
+
+						&:before
+							content: "\00bb"
+							color: $middle-gray-text
+							padding-right: 10px
+							
+						&:hover:before
+							color: $cinder-orange
+
+			#search-results-view-all
+				bottom 0
+				width: 100%;
+				background: $light-gray-text
+				padding: 10px 0;
+				margin: 0 auto;
+				text-align: center;
+				font-size: 12px;
+				font-weight: 700;
+
+				a
+					color: white;
+
+					&:hover
+						color: white
+
+ul.library-features
+			
+	margin-top: 20px;
+
+	li
+		display: block
+		text-align: center
+		height: 110px
+		margin-bottom: 20px
+
+		a
+			position: relative
+			display: block;
+			transition: all 250ms
+			width: auto
+			height: 100%
+
+			.title
+				color: $light-gray-text
+				width: 100%
+				text-align: center
+				margin-top: 5px;
+				text-transform: uppercase
+				transition: all 250ms
+				font-weight: 700
+
+			&:hover
+				// background: $cinder-orange
+				text-decoration: none
+				
+				img.over
+					opacity: 1
+					
+				.title
+					color: $cinder-orange
+					
+	.img-holder
+		display: block
+		height: 80px;
+		width: auto
+		position:relative
+
+		img
+			position: absolute
+			left: 0
+			top: 0
+			height: 100%
+			
+			display: block
+			left: 50%;
+			transform: translatex(-50%)
+			
+			&::after
+				clear: both
+			
+
+		img.over
+			// position: absolute
+			// top: 0
+			// left: 0
+			// transform: translatey(-100%)
+			z-index: 10
+			opacity: 0
+			transition: all 250ms
+
+// Magellan override
+[data-magellan-expedition], [data-magellan-expedition-clone]
+	min-width: inherit

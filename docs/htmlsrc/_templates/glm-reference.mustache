@@ -1,0 +1,18 @@
+<ul class="columns large-12">
+{{#groups}}
+
+    <li class="row">
+        <div class="columns large-4"><a href="{{path}}">{{name}}</a></div>
+        <div class="columns large-8">{{{description}}}</div>
+    </li>
+
+    {{#subgroups}}
+        <li class="row">
+            <div class="columns large-offset-1 large-3"><a href="{{path}}">{{name}}</a></div>
+            <div class="columns large-8">{{{description}}}</div>
+        </li>
+    {{/subgroups}}
+
+{{/groups}}    
+</ul>
+

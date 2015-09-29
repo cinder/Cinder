@@ -1,0 +1,52 @@
+{{!-- START page-guide-template.mustache ============= -->}}
+
+{{!-- main content area --}}
+<div id="container" class="row content-row">
+    
+
+    <div id="side-nav" class="columns large-3" data-magellan-expedition="fixed">
+        
+        {{#pagenav.length}}
+        {{#pagenav}}
+            {{!-- Table of contents --}}
+            <section class="table">
+                <label>Table of Contents</label>
+                <ul class="side-nav-list">
+                    {{#list}}
+                    <li>
+                        {{#link_data}}
+                        <a href="{{link}}">{{label}}</a>
+                        {{/link_data}}
+
+                        {{!-- Subnav --}}
+                        {{#length}}
+                        <ul>
+                            {{#subnav }}
+                            <li>
+                                {{#link_data}}
+                                <a href="{{link}}">{{label}}</a>
+                                {{/link_data}}
+
+                                {{!-- Recursive subnav starts here --}}
+                                {{>page-guide-navlist-template}}
+                            </li>
+                            {{/subnav }}
+                        </ul>
+                        {{/length}}
+                        {{!-- End Subnav --}}
+
+                    </li>
+                    {{/list}}
+                </ul>
+            </section>
+        {{/pagenav}}
+        {{/pagenav.length}}
+    </div>
+
+    <div class="columns large-9 content">
+
+        {{{ html_content }}}
+  
+    </div>
+
+</div>
