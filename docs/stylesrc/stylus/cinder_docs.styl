@@ -930,7 +930,7 @@ $border-height = 3px
 /* SEARCH RESULTS STYLING */
 #nav_search
 	position: relative
-	height: 100%
+	height: 100%		
 	
 	& > #search
 		position: absolute
@@ -942,7 +942,7 @@ $border-height = 3px
 		width: 400px
 
 		& > input
-			baseFontStyle()
+			fancyFontStyle()
 			display: inline-block
 			position: absolute
 			margin-bottom: 0
@@ -951,6 +951,7 @@ $border-height = 3px
 			font-weight bold
 			height: 30px
 			border-radius: 5px
+			z-index: 10
 
 		& > button
 			position: absolute
@@ -960,12 +961,13 @@ $border-height = 3px
 			margin-bottom: 0
 			height: 30px
 			baseFontStyle()
-			font-size: 10px
+			font-size: 0.75em
 			text-transform: uppercase
 			outline: 0;
 			background: $cinder-orange
 			border-top-right-radius: 5px
 			border-bottom-right-radius: 5px
+			z-index: 10
 	
 			&:before
 				content: "\2666";
@@ -986,8 +988,12 @@ $border-height = 3px
 			overflow-x: hidden;
 			overflow-y: scroll;
 			top: 30px;
-			border-radius: 10px;
+			border-radius: 0 0 10px 10px;
 			width: 400px;
+			box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.5);
+			padding-top: 10px;
+			margin-top: -10px;
+			z-index: 0
 			// border: 1px $light-gray solid
 				
 			.relativeContainer
