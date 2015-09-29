@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Mac OS X Setup</title>
+		<title>OS X Setup</title>
 
 		<meta name="keywords" content="guide, mac, osx, setup">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,20 +16,22 @@
 
 		<!-- CONTENT STARTS HERE -->
 
-		<h1>Mac OS X Setup</h1>
-		<p>Let's walk through the process of getting Cinder running on your Mac OS X machine. You'll need XCode 4.4 or later, which you can download from Apple <a href="http://developer.apple.com/technology/xcode.html">right here</a>.</p>
+		<h1>OS X Setup</h1>
+		<p>This short guide will walk you through getting Cinder running on your OS X machine. You'll need XCode 5.1.1 or later. In general this is best installed through the App Store, and is <a href="https://itunes.apple.com/us/app/xcode/id497799835?mt=12">available here</a>.</p>
 
 		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you already have everything you need. If you're working from github you'll want to follow the build instructions in our <a href="../git/index.html">Cinder + Git</a> guide.</p>
 
-		<p>Let's try opening and building one of the samples. From the Finder, navigate to the <em>cinder/samples/QuickTimeBasic</em> folder and open <em>xcode/quickTimeSample.xcodeproj</em> by double-clicking it. From the <b>Run</b> menu select the <b>Run</b> item. Xcode will take a few seconds to build the sample and then it should launch. You'll be greeted by a standard Mac open dialog box. Navigate to a QuickTime movie on your hard drive and open it. You should see your movie begin playing back in the app's window. Hit the 'o' key to open a different movie file, or you can just drag &amp; drop one from the Finder. </p>
+		<p>To test your installation, we'll build one of the samples. From the Finder, navigate to the <em>samples/_opengl/CubeMapping</em> folder and open <em>xcode/CubeMapping.xcodeproj</em> by double-clicking it. From the <strong>Product</strong> menu select the <strong>Run</strong> item. Xcode will take a few seconds to build the sample and then it should launch and look similar to the screenshot below.</p>
 
-		<img class="center" alt="QuickTime Sample" src="images/quicktimesample.png">
+		<center><img class="shadow" alt="CubeMapping Sample" src="images/cubemapping_sample.jpg"></center>
+		
+		<br />
 		
 		<h2>Creating New Projects</h2>
 		<p><a href="../tinderbox/index.html">TinderBox</a> is Cinder's GUI tool for creating new projects quickly and easily. A guide to creating projects using TinderBox is <a href="../tinderbox/index.html">available here</a>.</p>
 
 		<h2>Debug Symbols</h2>
-		<p>While not strictly necessary, if you would like to be able to step into Cinder's own code during your debug process, you'll want to build Cinder with debug symbols. This is straightforward - just open <em>xcode/cinder.xcodeproj</em> in XCode and build the Debug configuration for the Cinder target. If you are doing iOS development you'll want to do the same thing for the <em>cinder_iphone</em> and <em>cinder_iphone_sim</em> targets.</p>
+		<p>While not strictly necessary, if you're working from a prepackaged release and would like to be able to step into Cinder's own code during your debug process, you'll want to build Cinder with debug symbols. This is straightforward - just open <em>xcode/cinder.xcodeproj</em> in XCode and build the Debug configuration for the Cinder target. If you are doing iOS development you'll want to do the same thing for the <em>cinder_iphone</em> and <em>cinder_iphone_sim</em> targets.</p>
 				
 		<h2>Cinder + Git</h2>
 		<p>If you would like to keep up with the latest Cinder development, the project is <a href="http://github.com/cinder">hosted on github</a>. A guide for setting up Cinder using git is <a href="../git/index.html">available here</a>.</p>
