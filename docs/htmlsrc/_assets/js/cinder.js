@@ -2,7 +2,7 @@ var section;
 $(document).ready(function() {
 
 	var _this = this;
-	var rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf('html/')+5);
+	var rootDir = window.docsRoot;				// docsRoot defined in python and passed into master-template.mustache
 	var windowHeight = window.innerHeight;
 
 	var cinderJs = {

@@ -34,7 +34,6 @@ import json
 import os
 import shutil
 import stat
-import urlparse
 import argparse
 import posixpath
 from datetime import datetime
@@ -59,7 +58,8 @@ TAG_FILE_PATH = "doxygen" + os.sep + "cinder.tag"
 file_meta = {
     "cinder_version": "",
     "doxy_version": "",
-    "creation_date": str(datetime.today().date())
+    "creation_date": str(datetime.today().date()),
+    "docs_root": ""
 }
 
 parser = argparse.ArgumentParser(description='CiDocs')
@@ -3672,6 +3672,9 @@ def load_meta():
             ver = str(member.find(r"initializer").text)
             ver = ver.replace('"', "")
             file_meta["cinder_version"] = ver
+
+    # get docs directory
+    file_meta["docs_root"] = HTML_DEST_PATH
 
 
 def log(message, level=0, force=False):
