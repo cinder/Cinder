@@ -2,10 +2,10 @@
 <html>
 	<head>
 		<!-- Update title -->
-		<title>Cinder on OS X</title>
+		<title>Cinder on iOS</title>
 
 		<!-- keywords used for searching -->
-		<meta name="keywords" content="guide, windows, mac, os x">
+		<meta name="keywords" content="guide, ios">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<!-- reference to Cinder classes -->
@@ -25,12 +25,12 @@
 
 		<!-- CONTENT STARTS HERE -->
 
-		<h1>OS X Notes</h1>
-		<p>These are some general notes on Cinder's implementation on OS X.</p>
+		<h1>iOS Notes</h1>
+		<p>These are some general notes on Cinder's implementation on iOS.</p>
 		
 		<section>
 			<h2>Targeting</h2>
-			<p>By default Cinder on OS X targets 10.8 and later. This is governed by the <strong>OS X Deployment Target</strong> build setting in both Cinder itself and the application (which must be matched). Advanced users can use this variable to enable 10.7 support, but this is not officially supported.</p>
+			<p>Cinder targets iOS version 6.0 and later. This is governed by the <strong>iOS Deployment Target</strong> build setting in both Cinder itself and the application (which must be matched).</p>
 		</section>
 
 		<section>
@@ -41,9 +41,7 @@
 		<section>
 			<h2>Additional Notes</h2>
 			<ul>
-				<li>Cinder relies on the libc++ library as governed by the <strong>C++ Standard Library</strong> build setting.</li>
-				<li>OS X prior to 10.8.3 does not support texture swizzling.</li>
-				<li>OS X 10.9 introduced OpenGL 4.1 support for relatively recent hardware. Please refer to <a href="https://developer.apple.com/opengl/capabilities/index.html">Apple's OpenGL Capabilities Table</a> for specifics. This functionality is exposed by Cinder automatically.</li>
+				<li>By default, Cinder on iOS targets OpenGL ES 2. In order to utilize OpenGL ES 3, you must add the <code>CINDER_GL_ES_3</code> preprocessor definition to the <strong>Preprocessor Macros</strong> build setting of both your and Cinder, and you must rebuild Cinder.</li>
 			</ul>
 		</section>
 
