@@ -96,7 +96,6 @@ $(document).ready(function() {
 	  			var infoColumns = $( '#container .info-links .columns' );
 	  			var colAmt = infoColumns.length;
 	  			var colClass = 'max-' + ( 12 / colAmt );
-	  			console.log(infoColumns );
 	  			_.each( infoColumns, function( col ){
 	  				$(col).addClass( colClass );
 	  			} );
@@ -298,7 +297,7 @@ $(document).ready(function() {
 			return false;
 		}
 
-		console.log ( 'results', results.length );
+		// console.log ( 'results', results.length );
 
 		// resultsDiv.append( resultsUl );
 		for( var i in results ){
@@ -497,8 +496,6 @@ $(document).ready(function() {
  	sideNav.init();
  	if( search_index_data )
 	 	initSearch();
-
-	 console.log( location )
 
 	// disable history pushState for local files, otherwise, magellan throws an error
 	if( location.protocol == "file:" ) {

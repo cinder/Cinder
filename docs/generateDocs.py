@@ -301,6 +301,10 @@ class SymbolMap(object):
             self.tags.append(self.name)
             self.typedefs = []
 
+            # add all namespace parts to search tags
+            for part in self.name.split("::"):
+                self.tags.append(part)
+
         def add_function(self, fn_name, fn_obj):
             self.functionList.append(fn_obj)
 
