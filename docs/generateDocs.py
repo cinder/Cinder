@@ -47,8 +47,9 @@ from pystache.renderer import Renderer, Loader
 
 # static path vars
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep
+HTML_ROOT_DIR = 'html'
 XML_SOURCE_PATH = BASE_PATH + 'xml' + os.sep
-HTML_DEST_PATH = BASE_PATH + 'html' + os.sep
+HTML_DEST_PATH = BASE_PATH + HTML_ROOT_DIR + os.sep
 HTML_SOURCE_PATH = BASE_PATH + 'htmlsrc' + os.sep
 TEMPLATE_PATH = BASE_PATH + 'htmlsrc' + os.sep + "_templates" + os.sep
 PARENT_DIR = BASE_PATH.split(os.sep + 'docs')[0]
@@ -65,6 +66,7 @@ file_meta = {
 parser = argparse.ArgumentParser(description='CiDocs')
 parser.add_argument('path', nargs='?')
 parser.add_argument('outpath', nargs='?')
+parser.add_argument('--root', default=HTML_ROOT_DIR)
 parser.add_argument('-d', '--debug',
     action='store_true',
     help='show debug arguments' )
@@ -3678,7 +3680,7 @@ def load_meta():
             file_meta["cinder_version"] = ver
 
     # get docs directory
-    file_meta["docs_root"] = HTML_DEST_PATH
+    file_meta["docs_root"] = args.root
 
 
 def log(message, level=0, force=False):
