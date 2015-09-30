@@ -30,56 +30,25 @@
 		
 		<section>
 			<h2>Targeting</h2>
-			<p>By default Cinder on Windows targets Windows XP SP2 and later. This is dictated by the <code>_WIN32_WINNT</code> variable, which is typically defined in your project's preprocessor definitions. The value <code>0x0502</code> maps to Windows XP SP 2.</p>
+			<p>By default Cinder targets Windows 7 and later. This is dictated by the <code>_WIN32_WINNT</code> macro, which is typically defined in your project's <strong>Preprocessor Definitions</strong> build setting. The value <code>0x0601</code> maps to Windows 7. To target a different version of Windows, you'll need to modify this variable in both your application and Cinder itself, and rebuild Cinder.</p>
 
-			<img class="center" src="msw_notes/vc_target.png" />
+			<center><img class="shadow" width="626" height="449" src="msw_notes/vc_target.png" /></center>
 		</section>
 
 
 		<section>
-			<h2>Visual C++ 2012 Support</h2>
-			<p>The Visual C++ 2012 and 2013 compilers (sometimes abbreviated VC11 and VC12, respectively) are fully supported by Cinder. These versions of Visual C++ have two toolsets (roughly, <em>compilers</em>) associated with them. For VC 2012 they are <em>v110</em> and <em>v110_xp</em>. For VC 2013 they are <em>v120</em> and <em>v120_xp</em>. The non-XP variants come installed automatically, and are able to target Windows Vista, Windows 7 and Windows 8. Cinder's audio requirements complicate the situation a bit (see note below), but if you don't need to target Windows XP the v110 or v120 compilers are typically the best choice. However if you do need XP support, you'll need to get the v110_xp or v120_xp compiler from Microsoft. For VC 2012 this is available with the <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio 2012 Update 2</a>.</p>
-
-			<p>After installing the update you can change the toolset of your project in the <b>General</b> properties in the <b>Platform Toolset</b> field.</p>
-			<img class="center" src="msw_notes/vc_toolset.png" />
+			<h2>Development Requirements</h2>
+			<p>Cinder supports Visual Studio 2013 and 2015, including the free <em>Community</em> editions of both. As of this writing Cinder ships with only VC 2013 projects, but these can be used with 2015 without modification. Furthermore, the v140 toolset is fully supported, meaning you can optionally upgrade to the native 2015 toolset. If you do so, you'll want to make sure you've built Cinder with the same.</p>
 			
-			</p>You'll need to do this for Cinder and rebuild it, as well as modifying your project in the same way. A longer discussion of this topic is available from Microsoft in <a href="http://msdn.microsoft.com/en-us/library/vstudio/jj851139.aspx">this document</a>.</p>
+			<p>Visual C++ 2013 and 2015 have two toolsets (roughly, <em>compilers</em>) associated with them. For VC 2013 they are <em>v120</em> and <em>v120_xp</em>. For VC 2015 they are <em>v140</em> and <em>v140_xp</em>. The non-XP variants are able to target Windows Vista and later. In order to target Windows XP, you'll need to use one of the <em>_xp</em> compilers, in addition to setting <code>_WIN32_WINNT=x0502</code>. Please note that this path is not officially supported, and in particular Cinder's built-in audio will not function. However for advanced users this can be made to work.</p>			
 		</section>
-		
 
 		<section>
-			<h2>Audio Requirements</h2>
-			<p>Cinder's audio support is written around XAudio2 on Windows. Unfortunately there is a schism between the Windows 8 SDK and prior versions. Specifically, the SDK included with Visual C++ 2012 and 2013 use version 2.8 of this API, while previously the API was only available via the DirectX SDK, and it shipped version 2.7.</p>
-
-			<p>Various pieces of Microsoft documentation describe the technical particulars. The document <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ee415802(v=vs.85).aspx">XAudio2 Versions</a> is informative.</p>
-
-			<table style="width: 100%;">
-			<thead style="background-color:#DDDDDD;">
-			  <tr style="font-weight:bold;"><td style="font-weight:bold;">Target</td><td style="font-weight:bold;">Compiler</td><td style="font-weight:bold;">XAudio</td><td style="font-weight:bold;">Notes</td></tr>
-			</thead>
-			<tbody>
-			<tr>
-		      <td>Win XP SP2+</td><td>Visual C++ 2013 (v120_xp)</td><td>2.7</td>
-		  	     <td>Requires DirectX SDK 2010, see note above on v120_xp</td>
-		  	</tr>
-			<tr>
-		      <td>Win XP SP2+</td><td>Visual C++ 2012 (v110_xp)</td><td>2.7</td>
-		  	     <td>Requires DirectX SDK 2010, see note above on v110_xp</td>
-		  	</tr>
-			<tr>
-		      <td>Win 8+</td><td>Visual C++ 2012 (v110)</td><td>2.8</td>
-		  	     <td>Requires setting <code>_WIN32_WINNT >= 0x0602</code>, see note below</td>
-		  	</tr>
-		    </tbody>
-		    </table>	
-		    <br/>
-
-			<h3>Targeting Windows 8 only</h3>
-			<p>In order to target Windows 8 exclusively, you'll need to set the preprocessor variable <code>_WIN32_WINNT</code> to 0x0602 in the Preprocessor Definitions of your project settings. You'll also need to set this variable to the same value in Cinder itself and rebuild it.</p>
-
-			<p>Another alternative is to use the FMOD CinderBlock which is included with the distribution.</p>
-	
+			<h2>ANGLE</h2>
+			<p>In addition to the normal <em>Debug</em> and <em>Release</em> build configurations, Cinder also ships with <em>Debug_ANGLE</em> and <em>Release_ANGLE</em> variants. <a href="https://code.google.com/p/angleproject/">ANGLE</a>, which stands for Almost Native Graphics Library, is an implementation of OpenGL ES in terms of DirectX. This can be useful for supporting machines where OpenGL drivers can't be guaranteed or are of poorer quality than DirectX. TinderBox can setup your project to use ANGLE.</p>
 		</section>
+
+		
 		<!-- END CONTENT -->
 
 		<!-- Scripts -->
