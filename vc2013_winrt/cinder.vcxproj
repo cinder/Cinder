@@ -326,7 +326,6 @@
     <ClInclude Include="..\include\cinder\audio\InputNode.h" />
     <ClInclude Include="..\include\cinder\audio\MonitorNode.h" />
     <ClInclude Include="..\include\cinder\audio\msw\ContextWasapi.h" />
-    <ClInclude Include="..\include\cinder\audio\msw\ContextXAudio.h" />
     <ClInclude Include="..\include\cinder\audio\msw\DeviceManagerWasapi.h" />
     <ClInclude Include="..\include\cinder\audio\msw\FileMediaFoundation.h" />
     <ClInclude Include="..\include\cinder\audio\msw\MswUtil.h" />
@@ -602,26 +601,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\msw\ContextXAudio.cpp">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-      </DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-      </DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </DeploymentContent>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\msw\DeviceManagerWasapi.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
