@@ -1091,37 +1091,6 @@ class LinkData(object):
 # ==================================================================================================== Utility functions
 
 
-def convert_rel_path(link, src_dir, dest_dir):
-    """
-    Converts a relative path from one directory to another
-    :param link: Link to convert
-    :param src_dir: current relative directory
-    :param dest_dir: destination relative directory
-    :return: link with new relative path
-    """
-
-    if link.startswith("http") or link.startswith("javascript:"):
-        return link
-
-    # if a relative path, make it absolute
-    if src_dir.find(BASE_PATH) < 0:
-        src_dir = BASE_PATH + src_dir
-
-    # get absolute in path, converted from htmlsrc to html
-    # abs_link_path =
-    abs_src_path = urljoin(src_dir, link).replace("htmlsrc", "html")
-
-    # destination absolute path
-    # abs_dest_path = os.path.join(os.path.dirname(dest_dir), link)
-    abs_dest_path = dest_dir
-
-    # print "ABS SRC:  " + abs_src_path
-    # print "ABS DEST: " + abs_dest_path
-
-    new_link = os.path.relpath(abs_src_path, abs_dest_path)
-    # print "new link: " + new_link
-    return new_link
-
 def find_compound_name(tree):
     for compound_def in tree.iter("compounddef"):
         for compound_name in compound_def.iter("compoundname"):
@@ -1273,7 +1242,7 @@ def gen_rel_link_tag(bs4, text, link, src_dir, dest_dir):
     # make sure they are dirs
     src_dir = os.path.dirname(src_dir) + os.sep
     dest_dir = os.path.dirname(dest_dir) + os.sep
-    new_link = convert_rel_path(link, src_dir, dest_dir)
+    new_link = relative_url(dest_dir, link)
     link_tag = gen_link_tag(bs4, text, new_link)
     return link_tag
 
@@ -1984,7 +1953,6 @@ def parse_namespaces(tree, sections):
     namespaces = []
     if config.is_section_whitelisted(sections, "namespaces"):
         for member in tree.findall(r"compounddef/innernamespace"):
-            # link = convert_rel_path(member.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
             link = HTML_DEST_PATH + member.attrib["refid"] + ".html"
             link_data = LinkData(link, member.text)
             namespaces.append(link_data)
@@ -2150,7 +2118,6 @@ def fill_class_content(tree):
     for classDef in tree.findall(r"compounddef/innerclass[@prot='public']"):
         link_data = LinkData()
         link_data.label = strip_compound_name(classDef.text)
-        # link_data.link = convert_rel_path(classDef.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
         link_data.link = HTML_DEST_PATH + classDef.attrib["refid"] + ".html"
         classes.append(link_data)
     file_data.classes = classes
@@ -2507,7 +2474,7 @@ def process_html_file(in_path, out_path):
     # make sure all links are absolute
     update_links_abs(bs4, TEMPLATE_PATH)
     # now all links shoul be relative to out path
-    update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", in_path, out_path)
+    update_links(bs4, TEMPLATE_PATH, in_path, out_path)
 
     if bs4 is None:
         log("Error generating file, so skipping: " + in_path, 2)
@@ -2904,8 +2871,8 @@ def relative_url(in_path, link):
 
     index = 0
     SEPARATOR = "/"
-    d = in_path.split( SEPARATOR )
-    s = link.split( SEPARATOR )
+    d = filter(None, in_path.replace('\\', SEPARATOR).split( SEPARATOR ))
+    s = filter(None, link.replace('\\', SEPARATOR).split( SEPARATOR ))
 
     # FIND largest substring match
     for i, resource in enumerate( d ):
@@ -2979,7 +2946,7 @@ def update_links(html, template_path, src_path, save_path):
     :return:
     """
 
-    template_path = posixpath.dirname(template_path) + "/"
+    template_path =  "/".join(template_path.replace('\\', '/').split('/'))
 
     # css links
     for link in html.find_all("link"):
@@ -3012,12 +2979,11 @@ def update_links(html, template_path, src_path, save_path):
         if iframe.has_attr("src"):
 
             link_src = iframe["src"]
-            if not posixpath.isabs(link_src):
-                link_src = "/" + link_src
+            # if not posixpath.isabs(link_src):
+                # link_src = "/" + link_src
             if link_src.startswith('javascript') or link_src.startswith('http'):
                 return
 
-            log(src_path)
             # base dir
             src_base = src_path.split(BASE_PATH)[1].split(os.sep)[0]
             dest_base = save_path.split(BASE_PATH)[1].split(os.sep)[0]
@@ -3064,7 +3030,7 @@ def update_link(link, in_path, out_path):
     # if a relative path, make it absolute
     if in_path.find(base_path) < 0:
         in_path = base_path + in_path
-
+    
     # get absolute in path
     abs_link_path = update_link_abs(link, in_path)
 
@@ -3074,8 +3040,8 @@ def update_link(link, in_path, out_path):
 
     abs_dest = posixpath.dirname(out_path).replace('\\', SEPARATOR)
     abs_link = abs_link_path.replace(src_base, dest_base)
-    if not posixpath.isabs(abs_link):
-        abs_link = "/" + abs_link
+    # if not posixpath.isabs(abs_link):
+        # abs_link = "/" + abs_link
 
     rel_link_path = relative_url(abs_dest, abs_link)
 
