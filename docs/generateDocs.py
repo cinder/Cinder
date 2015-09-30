@@ -2898,7 +2898,7 @@ def update_link_abs(link, in_path):
     :return:
     """
 
-    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#"):
+    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#") or link.startswith("//"):
         return link
 
     SEPARATOR = "/"
@@ -3018,7 +3018,7 @@ def update_link(link, in_path, out_path):
     :return:
     """
 
-    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#"):
+    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#") or link.startswith("//"):
         return link
 
     SEPARATOR = '/'
