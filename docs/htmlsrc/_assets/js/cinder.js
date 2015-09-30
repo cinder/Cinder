@@ -253,17 +253,18 @@ $(document).ready(function() {
 
  	// --- Search stuff --- // 
  	window.search = function (term) {
-	     
-		var resultsDiv = $('#search-results');
+	    
+
+		var resultsDiv = $( '#search-results' );
 	    // the search term must be at least 2 characters
 	    if( term.length < 2 ){
 	    	resultsDiv.hide();
 	    	return;
 	    }
-
+	    
+	    var searchTerm = term.replace(":", " ");
 	    var maxResults = 15;
-
-	    var results = search_index.search(term); 
+	    var results = search_index.search( searchTerm ); 
 
 		var classResults = $('#search-results-class'),
 			guideResults = $('#search-results-guide'),
