@@ -33,14 +33,14 @@
 
                 <h2>Points and Segments</h2>
                 <p>A <ci dox="ci::Path2d">Path2D</ci> instance is constructed of points and <ci dox="cinder::Path2d::SegmentType">segments</ci>. A <strong>point</strong> refers to a 2D coordinate of where a line segment starts or ends as well as a coordinate of a handle that defines the curve of the path. A <strong>segment</strong> refers to the line segment as defined by the positions of the start/end points and handles. The <ci dox="ci::Path2d::SegmentType">types of segments</ci> are:</p>
-                    <ul>
-                        <li><strong>MOVETO</strong>: Consists of a single point to start or continue your drawing from. Every path must start with a MOVETO segment.</li>
-                        <li><strong>LINETO</strong>: Consists of a single point which contructs a line from the previous point</li>
-                        <li><strong>QUADTO</strong>: A quadratic bezier curve consisting of 1 central handle point and 1 end point</li>
-                        <li><strong>CUBICTO</strong>: A cubic bezier curve consisting of one handle point that controls the curve from the previous point and one handle point controlling the curve going into the given end point.</li>
-                        <li><strong>CLOSE</strong>: A line created between the first and last points of a path.</li>
-                    </ul>
-                </p>
+                <ul>
+                    <li><strong>MOVETO</strong>: Consists of a single point to start or continue your drawing from. Every path must start with a MOVETO segment.</li>
+                    <li><strong>LINETO</strong>: Consists of a single point which contructs a line from the previous point</li>
+                    <li><strong>QUADTO</strong>: A quadratic bezier curve consisting of 1 central handle point and 1 end point</li>
+                    <li><strong>CUBICTO</strong>: A cubic bezier curve consisting of one handle point that controls the curve from the previous point and one handle point controlling the curve going into the given end point.</li>
+                    <li><strong>CLOSE</strong>: A line created between the first and last points of a path.</li>
+                </ul>
+            
 
                 <iframe seamless src="_tut_part1.html" id="tutorial"  width="100%" > </iframe>                    
 
