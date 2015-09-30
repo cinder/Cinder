@@ -1139,7 +1139,7 @@ footer {
   right: 0;
   z-index: 99999;
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   top: 30px;
   -webkit-border-radius: 0 0 10px 10px;
   border-radius: 0 0 10px 10px;
@@ -1158,7 +1158,7 @@ footer {
 #nav_search > #search #search-results h5 {
   display: inline-block;
   background: #949494;
-  margin: 10px;
+  margin: 5px;
   padding: 5px 10px;
   font-size: 12px;
   font-weight: 700;
@@ -1208,7 +1208,7 @@ footer {
   bottom: 0;
   width: 100%;
   background: #949494;
-  padding: 10px 0;
+  padding: 5px 0;
   margin: 0 auto;
   text-align: center;
   font-size: 12px;
