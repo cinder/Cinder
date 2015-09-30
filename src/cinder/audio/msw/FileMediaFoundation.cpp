@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if( _WIN32_WINNT >= 0x0602 )
+#if( _WIN32_WINNT >= 0x0600 )
 
 #include "cinder/audio/msw/FileMediaFoundation.h"
 #include "cinder/audio/dsp/Converter.h"
@@ -572,4 +572,4 @@ void MediaFoundationInitializer::shutdownMediaFoundation()
 
 } } } // namespace cinder::audio::msw
 
-#endif // ( _WIN32_WINNT >= 0x0602 )
+#endif // ( _WIN32_WINNT >= 0x0600 )
