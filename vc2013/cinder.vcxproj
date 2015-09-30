@@ -441,7 +441,6 @@
     <ClCompile Include="..\src\cinder\audio\GenNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\InputNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\msw\ContextWasapi.cpp" />
-    <ClCompile Include="..\src\cinder\audio\msw\ContextXAudio.cpp" />
     <ClCompile Include="..\src\cinder\audio\msw\DeviceManagerWasapi.cpp" />
     <ClCompile Include="..\src\cinder\audio\msw\FileMediaFoundation.cpp" />
     <ClCompile Include="..\src\cinder\audio\msw\MswUtil.cpp" />
@@ -684,7 +683,6 @@
     <ClInclude Include="..\include\cinder\audio\GenNode.h" />
     <ClInclude Include="..\include\cinder\audio\InputNode.h" />
     <ClInclude Include="..\include\cinder\audio\msw\ContextWasapi.h" />
-    <ClInclude Include="..\include\cinder\audio\msw\ContextXAudio.h" />
     <ClInclude Include="..\include\cinder\audio\msw\DeviceManagerWasapi.h" />
     <ClInclude Include="..\include\cinder\audio\msw\FileMediaFoundation.h" />
     <ClInclude Include="..\include\cinder\audio\msw\MswUtil.h" />
