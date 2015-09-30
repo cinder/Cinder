@@ -336,8 +336,6 @@ class SymbolMap(object):
             self.typedefs = typedefs
             self.githubPath = None
             self.relPath = "".join(self.path.split(PARENT_DIR))
-            # path to show when displaying include path. We don't want to show the word "include" since it's implied
-            self.includePath = "".join(self.relPath.split(os.sep + "include"))[1:]
 
             rel_path_arr = self.path.split(PARENT_DIR)
             if len(rel_path_arr) > 1:
@@ -2080,7 +2078,11 @@ def fill_class_content(tree):
     file_data = ClassFileData(tree)
 
     include_file = ""
+    include_path = ""
     include_tag = tree.find(r"compounddef/includes")
+    location_tag = tree.find(r"compounddef/location")
+    if location_tag is not None:
+        include_path = "/".join(location_tag.attrib["file"].split("/")[1:])
     if include_tag is not None:
         include_file = include_tag.text
     class_name = file_data.name
@@ -2117,10 +2119,10 @@ def fill_class_content(tree):
 
     # includes ------------------------------------------ #
     include_link = None
-    if include_file:
+    if include_file and include_path:
         file_obj = g_symbolMap.find_file(include_file)
         if file_obj:
-            include_link = LinkData(file_obj.githubPath, file_obj.includePath)
+            include_link = LinkData(file_obj.githubPath, include_path)
 
     file_data.includes = include_link
 
@@ -3765,7 +3767,6 @@ if __name__ == "__main__":
             process_file(inPath, args.outpath if len(sys.argv) > 2 else None)
             log("SUCCESSFULLY GENERATED YOUR FILE!", 0, True)
         elif os.path.isdir(inPath):
-            # print isdir
             if inPath == "htmlsrc" + os.sep:
                 process_html_dir(HTML_SOURCE_PATH)
             else:
