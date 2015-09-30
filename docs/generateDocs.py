@@ -1478,7 +1478,7 @@ def gen_class_hierarchy(bs4, class_def):
         if index < len(hierarchy) - 1:
             a = gen_tag(bs4, "a", [], base.qualifiedName)
             define_link_tag(a, {'href': base.path})
-            a = gen_link_tag(bs4, base.qualifiedName, os.path.join(HTML_DEST_PATH, a["href"]))
+            a = gen_link_tag(bs4, base.qualifiedName, path_join(HTML_DEST_PATH, a["href"]))
             li.append(a)
         else:
             li.append(base.qualifiedName)
@@ -2123,6 +2123,7 @@ def fill_class_content(tree):
     if class_def:
         if class_def.relatedLinks:
             for link_data in class_def.relatedLinks:
+                print "LINK DATA:" + link_data.link
                 related.append(link_data)
 
         # ci prefix / description ----------------------- #
@@ -2702,7 +2703,7 @@ def process_ci_seealso_tag(bs4, tag, out_path):
         label = get_file_name(out_path)
 
     # link_tag = gen_link_tag(bs4, label, out_path)
-    link_data = LinkData(out_path, label)
+    link_data = LinkData(out_path.replace("\\", "/"), label)
 
     # if type(ref_obj) is SymbolMap.Class or type(ref_obj) is SymbolMap.Typedef:
     if type(ref_obj) is SymbolMap.Class:
@@ -2901,7 +2902,7 @@ def update_link_abs(link, in_path):
     :return:
     """
 
-    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#") or link.startswith("//"):
+    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#"):
         return link
 
     SEPARATOR = "/"
@@ -3021,7 +3022,7 @@ def update_link(link, in_path, out_path):
     :return:
     """
 
-    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#") or link.startswith("//"):
+    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#"):
         return link
 
     SEPARATOR = '/'
