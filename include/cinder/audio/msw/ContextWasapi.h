@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0600 )
+#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0600 ) // requires Windows Vista+
 
 #include "cinder/audio/Context.h"
 

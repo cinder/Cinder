@@ -127,7 +127,7 @@ class RendererImplDx : public RendererImplMsw {
 
 	RendererDx	*mRenderer;
 	D3D_FEATURE_LEVEL mFeatureLevel;
-  #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+  #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0600 ) // requires Windows Vista+
 	ID3D11DeviceContext1 *mDeviceContext;
 	IDXGISwapChain1 *mSwapChain;
 	ID3D11Device1 *md3dDevice;
