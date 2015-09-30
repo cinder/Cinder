@@ -334,14 +334,8 @@ class SymbolMap(object):
             self.name = name
             self.path = path
             self.typedefs = typedefs
-            self.githubPath = None
-            self.relPath = "".join(self.path.split(PARENT_DIR))
-
-            rel_path_arr = self.path.split(PARENT_DIR)
-            if len(rel_path_arr) > 1:
-                self.githubPath = config.GITHUB_PATH + self.path.split(PARENT_DIR)[-1]
-            else:
-                log("NO PATH FOR " + name, 1 )
+            rel_path_arr = self.path.split(PARENT_DIR.replace("\\", "/"))
+            self.relPath = "".join(rel_path_arr)           
 
     class Enum(object):
         def __init__(self, name, path):
@@ -784,7 +778,7 @@ class ClassFileData(FileData):
         for index, ns in enumerate(ns_list[:-1]):
             ns_object = g_symbolMap.find_namespace("::".join(ns_list[0:index + 1]))
             if ns_object:
-                ns_link = LinkData(os.path.join(HTML_DEST_PATH, ns_object.path), ns)
+                ns_link = LinkData(path_join(HTML_DEST_PATH, ns_object.path), ns)
             else:
                 # add inactive link data
                 ns_link = LinkData("", ns, False)
@@ -1738,7 +1732,7 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
         ns_li["data-namespace"] = namespace
 
         # create link for each item
-        a_tag = gen_link_tag(bs4, name, HTML_SOURCE_PATH + ns.path)
+        a_tag = gen_link_tag(bs4, name, path_join(HTML_SOURCE_PATH, ns.path))
 
         # is decendent of parent namespace
         if prefix == parent_ns:
@@ -1953,7 +1947,7 @@ def parse_namespaces(tree, sections):
     namespaces = []
     if config.is_section_whitelisted(sections, "namespaces"):
         for member in tree.findall(r"compounddef/innernamespace"):
-            link = HTML_DEST_PATH + member.attrib["refid"] + ".html"
+            link = path_join(HTML_DEST_PATH, member.attrib["refid"] + ".html")
             link_data = LinkData(link, member.text)
             namespaces.append(link_data)
     return namespaces
@@ -1964,7 +1958,7 @@ def parse_classes(tree, sections):
     if config.is_section_whitelisted(sections, "classes"):
         for member in tree.findall(r"compounddef/innerclass[@prot='public']"):
             link = member.attrib["refid"] + ".html"
-            rel_link = HTML_DEST_PATH + link
+            rel_link = path_join(HTML_DEST_PATH, link)
             link_data = LinkData(rel_link, member.text)
 
             kind = "struct" if link.startswith("struct") else "class"
@@ -2089,8 +2083,9 @@ def fill_class_content(tree):
     include_link = None
     if include_file and include_path:
         file_obj = g_symbolMap.find_file(include_file)
+        github_path = config.GITHUB_PATH + '/include/' + include_path
         if file_obj:
-            include_link = LinkData(file_obj.githubPath, include_path)
+            include_link = LinkData(github_path, include_path)
 
     file_data.includes = include_link
 
@@ -2103,7 +2098,7 @@ def fill_class_content(tree):
             for t in class_typedefs:
                 link_data = LinkData()
                 link_data.label = t.name
-                link_path = HTML_DEST_PATH + t.path
+                link_path = path_join(HTML_DEST_PATH, t.path)
                 link_data.link = link_path
                 typedefs.append(link_data)
     file_data.typedefs = typedefs
@@ -2118,7 +2113,7 @@ def fill_class_content(tree):
     for classDef in tree.findall(r"compounddef/innerclass[@prot='public']"):
         link_data = LinkData()
         link_data.label = strip_compound_name(classDef.text)
-        link_data.link = HTML_DEST_PATH + classDef.attrib["refid"] + ".html"
+        link_data.link = path_join(HTML_DEST_PATH, classDef.attrib["refid"] + ".html")
         classes.append(link_data)
     file_data.classes = classes
 
@@ -2674,7 +2669,7 @@ def replace_ci_tag(bs4, link, in_path, out_path):
     ref_obj = find_ci_tag_ref(link)
 
     if ref_obj:
-        ref_location = HTML_DEST_PATH + ref_obj.path
+        ref_location = path_join(HTML_DEST_PATH, ref_obj.path)
         new_link = gen_rel_link_tag(bs4, link.contents, ref_location, in_path, out_path)
 
         # transfer tag classes to new tag
@@ -2816,6 +2811,14 @@ def find_ci_tag_ref(link):
 
 
 # ======================================================================================================== Link Updating
+
+def path_join(path, link):
+    p = path.replace('\\', '/')
+    l = link.replace('\\', '/')
+    sep = '/' if not p.endswith('/') else ''
+    print p, sep, l
+    new_link = p + sep + l
+    return new_link
 
 def update_links_abs(html, src_path):
     """
