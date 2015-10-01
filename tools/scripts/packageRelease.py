@@ -13,7 +13,9 @@ def copyIgnore( path, names ):
     for name in names:
         if name == 'vc2013' and gCompiler != 'vc2013':
             result.append( name )
-        if name == 'vc2015' and gCompiler != 'vc2015':
+        if name == 'vc2013_winrt' and gCompiler != 'vc2013':
+            result.append( name )
+        elif name == 'vc2015' and gCompiler != 'vc2015':
             result.append( name )
         elif name == 'ios' and gCompiler != 'xcode':
             result.append( name )
@@ -26,6 +28,8 @@ def copyIgnore( path, names ):
         elif name == 'xcode_ios' and gCompiler != 'xcode':
             result.append( name )
         elif name == 'msw' and gCompiler == 'xcode':
+            result.append( name )
+        elif name == 'winrt' and gCompiler == 'xcode':
             result.append( name )
         elif gPlatform == 'mac' and name == 'TinderBox-Win':
             result.append( name )
