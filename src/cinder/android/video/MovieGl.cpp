@@ -29,6 +29,7 @@ namespace cinder { namespace android { namespace video {
  *
  */
 MovieGl::MovieGl( const ci::fs::path &path )
+	: mIsPlaying( false )
 {
 	mVideoPlayer = VideoPlayer::create( path );
 }
@@ -66,11 +67,13 @@ void MovieGl::setLoop( bool loop, bool palindrome )
 void MovieGl::play()
 {
 	mVideoPlayer->play();
+	mIsPlaying = true;
 }
 
 void MovieGl::stop()
 {
 	mVideoPlayer->stop();
+	mIsPlaying = false;
 }
 
 }}} // namespace cinder::android::video
