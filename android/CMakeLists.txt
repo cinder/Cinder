@@ -438,9 +438,12 @@ include_directories(
     ${CINDER_INC_DIR} 
     ${CINDER_INC_DIR}/freetype
     ${CINDER_INC_DIR}/jsoncpp
-    ${CINDER_INC_DIR}/tinyexr
+    ${CINDER_INC_DIR}/oggvorbis
     ${CINDER_SRC_DIR}/linebreak
     ${CINDER_SRC_DIR}/libtess2
+    ${CINDER_SRC_DIR}/oggvorbis/vorbis
+    ${CINDER_SRC_DIR}/r8brain
+    ${CINDER_INC_DIR}/tinyexr
     ${BOOST_INC_DIR}
 )
 
@@ -534,6 +537,37 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/Renderer.cpp
     ${CINDER_SRC_DIR}/cinder/app/RendererGl.cpp
     ${CINDER_SRC_DIR}/cinder/app/Window.cpp
+
+    ${CINDER_SRC_DIR}/cinder/audio/Node.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/ChannelRouterNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/FilterNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/NodeMath.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/SampleRecorderNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/WaveTable.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Context.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/GenNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/OutputNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Source.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/DelayNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/InputNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/PanNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Target.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Device.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/MonitorNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Param.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Utilities.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/FileOggVorbis.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Node.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/SamplePlayerNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Voice.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/android/ContextOpenSl.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/android/DeviceManagerOpenSl.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/Biquad.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/Converter.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/ConverterR8brain.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/Dsp.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/Fft.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/ooura/fftsg.cpp
 
     ${CINDER_SRC_DIR}/cinder/gl/draw.cpp
     ${CINDER_SRC_DIR}/cinder/gl/scoped.cpp
@@ -681,6 +715,33 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c
 
     ${CINDER_SRC_DIR}/tinyexr/tinyexr.cc
+
+	${CINDER_SRC_DIR}/r8brain/r8bbase.cpp
+
+	${CINDER_SRC_DIR}/oggvorbis/ogg/bitwise.c
+	${CINDER_SRC_DIR}/oggvorbis/ogg/framing.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/analysis.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/bitrate.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/block.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/codebook.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/envelope.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/floor0.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/floor1.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/info.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/lookup.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/lpc.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/lsp.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/mapping0.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/mdct.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/psy.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/registry.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/res0.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/sharedbook.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/smallft.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/synthesis.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/vorbisenc.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/vorbisfile.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/window.c
 
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionManager.cpp
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionImplAndroid.cpp

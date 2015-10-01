@@ -78,6 +78,8 @@ public:
 	void					play();
 	//! Stops movie playback.
 	void					stop();
+	//! Returns if the movie is playing or not.
+	bool                    isPlaying() const   { return mIsPlaying; }
 
 	const gl::TextureRef	getTexture() { return mVideoPlayer->getTexture(); }
 
@@ -85,6 +87,7 @@ private:
 	MovieGl( const ci::fs::path &path );
 	
 	VideoPlayerRef	mVideoPlayer;
+	bool            mIsPlaying;
 };
 
 }}} // namespace cinder::android::video
