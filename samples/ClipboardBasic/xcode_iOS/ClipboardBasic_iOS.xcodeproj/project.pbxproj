@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		002BA6481BBCF03300E3E904 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002BA6471BBCF03300E3E904 /* Accelerate.framework */; };
 		003FAAD51290E279002D6860 /* ClipboardBasicApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003FAAD41290E279002D6860 /* ClipboardBasicApp.cpp */; };
 		003FAAFB1290E566002D6860 /* cinder_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 003FAAFA1290E566002D6860 /* cinder_logo.png */; };
 		007480C1165D585C0024B57A /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007480BF165D585C0024B57A /* ImageIO.framework */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		002BA6471BBCF03300E3E904 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		003FAAD41290E279002D6860 /* ClipboardBasicApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClipboardBasicApp.cpp; path = ../src/ClipboardBasicApp.cpp; sourceTree = SOURCE_ROOT; };
 		003FAAD91290E2DD002D6860 /* Resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = SOURCE_ROOT; };
 		003FAAFA1290E566002D6860 /* cinder_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cinder_logo.png; path = ../../data/cinder_logo.png; sourceTree = SOURCE_ROOT; };
@@ -51,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				002BA6481BBCF03300E3E904 /* Accelerate.framework in Frameworks */,
 				007480C1165D585C0024B57A /* ImageIO.framework in Frameworks */,
 				007480C2165D585C0024B57A /* MobileCoreServices.framework in Frameworks */,
 				C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */,
@@ -127,6 +130,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				002BA6471BBCF03300E3E904 /* Accelerate.framework */,
 				007480BF165D585C0024B57A /* ImageIO.framework */,
 				007480C0165D585C0024B57A /* MobileCoreServices.framework */,
 				C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */,
@@ -168,6 +172,8 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "ClipboardBasic_iOS" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -226,7 +232,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "ClipboardBasic_iOS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"",
 					"-lz",
@@ -236,6 +242,7 @@
 					"-lz",
 				);
 				PRODUCT_NAME = ClipboardBasic_iOS;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -252,7 +259,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "ClipboardBasic_iOS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone.a\"",
 					"-lz",
@@ -262,13 +269,14 @@
 					"-lz",
 				);
 				PRODUCT_NAME = ClipboardBasic_iOS;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv7;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CINDER_PATH = ../../..;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -286,7 +294,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = armv7;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CINDER_PATH = ../../..;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
