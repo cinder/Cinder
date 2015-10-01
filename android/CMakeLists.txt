@@ -432,14 +432,16 @@ project( cinder_android )
 
 # Output path
 set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/android/${NDK_PLATFORM_OUT}/${NKD_ARCH_OUT} )
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH} )
 
 include_directories( 
     ${CINDER_INC_DIR} 
     ${CINDER_INC_DIR}/freetype
-    ${CINDER_INC_DIR}/jsoncpp 
-    ${CINDER_SRC_DIR}/linebreak 
-    ${CINDER_SRC_DIR}/libtess2 
-    ${BOOST_INC_DIR} 
+    ${CINDER_INC_DIR}/jsoncpp
+    ${CINDER_INC_DIR}/tinyexr
+    ${CINDER_SRC_DIR}/linebreak
+    ${CINDER_SRC_DIR}/libtess2
+    ${BOOST_INC_DIR}
 )
 
 # Arch flags
@@ -600,6 +602,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/ImageSourceFileRadiance.cpp
     ${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
     ${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
+    ${CINDER_SRC_DIR}/cinder/ImageFileTinyExr.cpp
     ${CINDER_SRC_DIR}/cinder/Json.cpp
     ${CINDER_SRC_DIR}/cinder/Log.cpp
     ${CINDER_SRC_DIR}/cinder/Matrix.cpp
@@ -675,7 +678,9 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/freetype/pshinter/pshinter.c
     ${CINDER_SRC_DIR}/freetype/psnames/psnames.c
     ${CINDER_SRC_DIR}/freetype/cid/type1cid.c
-    ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c 
+    ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c
+
+    ${CINDER_SRC_DIR}/tinyexr/tinyexr.cc
 
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionManager.cpp
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionImplAndroid.cpp
