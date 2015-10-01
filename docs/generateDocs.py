@@ -2817,7 +2817,6 @@ def path_join(path, link):
     p = path.replace('\\', '/')
     l = link.replace('\\', '/')
     sep = '/' if not p.endswith('/') else ''
-    print p, sep, l
     new_link = p + sep + l
     return new_link
 
