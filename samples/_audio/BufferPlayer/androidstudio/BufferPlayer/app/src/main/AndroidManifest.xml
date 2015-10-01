@@ -6,7 +6,7 @@
 
         <activity android:name="org.libcinder.sample.bufferplayer.BufferPlayerActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
+            android:screenOrientation="sensorLandscape"
             android:configChanges="orientation|screenSize">
             <!-- Tell NativeActivity the name of or .so -->
             <meta-data android:name="android.app.lib_name"
