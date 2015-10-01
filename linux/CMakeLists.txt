@@ -32,13 +32,18 @@ if( "rpi2" STREQUAL "${CINDER_LINUX_EGL_ONLY}" )
 	set( CINDER_GL_ES true )
 endif()
 
-if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 )
+if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
 	set( CINDER_GL_ES true )
 	if( CINDER_GL_ES_2 )
 		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_2" )
 	elseif( CINDER_GL_ES_3 )
 		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3" )
+	elseif( CINDER_GL_ES_3_1 )
+		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3_1" )
+	elseif( CINDER_GL_ES_3_2 )
+		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3_2" )
 	endif()
+
 endif()
 
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
@@ -266,6 +271,12 @@ else()
 	)
 endif()
 
+if( CINDER_GL_ES )
+	list( APPEND CINDER_CXX_SRC_FILES
+   		${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+	)
+endif()
+
 list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/linux/CinderLinux.cpp
 
@@ -394,7 +405,7 @@ endif()
 set( CMAKE_DEBUG_POSTFIX "_d" )
 if( CINDER_GL_ES_2 )
 	add_library( cinder-es2 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
-elseif( CINDER_GL_ES_3 )
+elseif( CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
 	add_library( cinder-es3 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
 else()
 	add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )

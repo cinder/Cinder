@@ -77,9 +77,14 @@ class Environment {
 	void					makeContextCurrent( const Context *context );
 
 	virtual bool			isExtensionAvailable( const std::string &extName ) const = 0;
+
+	virtual bool 			supportsFboMultiSample() const = 0;
+	virtual bool 			supportsCoverageSample() const = 0;
 	virtual bool			supportsHardwareVao() const = 0;
-	//! Returns whether this platform supports Texture Level-of-Detail. \c true everywhere but ES 2, which requires \c GL_EXT_shader_texture_lod
+	virtual bool 			supportsInstancedArrays() const = 0;
 	virtual bool			supportsTextureLod() const = 0;
+	virtual bool			supportsMapBuffer() const = 0;
+	virtual bool 			supportsMapBufferRange() const = 0;
 
 	virtual GLenum			getPreferredIndexType() const  = 0;
 

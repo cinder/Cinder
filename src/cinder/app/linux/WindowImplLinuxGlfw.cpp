@@ -33,10 +33,22 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
 
-#if defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_ES )
 	::glfwDefaultWindowHints();
 	::glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
+  #if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1
+	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
+	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 1 );	
+	std::cout << "Rendering with OpenGL ES 3.1" << std::endl;	
+  #elif CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3
+	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
+	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0 );
+	std::cout << "Rendering with OpenGL ES 3.0" << std::endl;	
+  #elif CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 2 );
+	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0 );
+	std::cout << "Rendering with OpenGL ES 2.0" << std::endl;	
+  #endif
 #endif
 
 	auto windowSize = format.getSize();

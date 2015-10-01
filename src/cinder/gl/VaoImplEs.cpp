@@ -26,7 +26,7 @@
 
 #include "cinder/gl/platform.h"
 
-#if defined( CINDER_GL_ES_2 ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_ES ) && ! defined( CINDER_GL_ANGLE )
 
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
@@ -67,12 +67,20 @@ VaoImplEs::VaoImplEs()
 {
 	mId	= 0;
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	glGenVertexArrays( 1, &mId );	
+#else
 	glGenVertexArraysOES( 1, &mId );
+#endif
 }
 
 VaoImplEs::~VaoImplEs()
 {
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	glDeleteVertexArrays( 1, &mId );
+#else	
 	glDeleteVertexArraysOES( 1, &mId );
+#endif
 }
 
 void VaoImplEs::bindImpl( Context *context )
@@ -82,7 +90,11 @@ void VaoImplEs::bindImpl( Context *context )
 		reassignImpl( context );
 	}
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	glBindVertexArray( mId );	
+#else
 	glBindVertexArrayOES( mId );
+#endif
 
 	if( context ) {
 		context->reflectBufferBinding( GL_ELEMENT_ARRAY_BUFFER, mLayout.mElementArrayBufferBinding );
@@ -102,11 +114,19 @@ void VaoImplEs::reassignImpl( Context *newContext )
 
 	mCtx = newContext;
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	// generate
+	glGenVertexArrays( 1, &mId );
+
+	// assign
+	glBindVertexArray( mId );
+#else
 	// generate
 	glGenVertexArraysOES( 1, &mId );
-	
+
 	// assign
 	glBindVertexArrayOES( mId );
+#endif	
 	
 	// instantiate the VAO using the layout
 	auto oldBuffer = mCtx->getBufferBinding( GL_ARRAY_BUFFER );
@@ -130,7 +150,11 @@ void VaoImplEs::reassignImpl( Context *newContext )
 
 void VaoImplEs::unbindImpl( Context *context )
 {
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	glBindVertexArray( 0 );	
+#else	
 	glBindVertexArrayOES( 0 );
+#endif
 	
 	mCtx->invalidateBufferBindingCache( GL_ELEMENT_ARRAY_BUFFER );
 }

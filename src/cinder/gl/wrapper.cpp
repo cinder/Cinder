@@ -716,10 +716,12 @@ void patchParameteri( GLenum pname, GLint value )
 	glPatchParameteri( pname, value );
 }
 
+#if ! defined( CINDER_GL_ES )
 void patchParameterfv( GLenum pname, GLfloat *value )
 {
 	glPatchParameterfv( pname, value );
 }
+#endif 
 #endif // defined( CINDER_GL_HAS_TESS_SHADER )
 
 void color( float r, float g, float b )

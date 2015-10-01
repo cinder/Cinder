@@ -25,6 +25,11 @@
 
 #include "cinder/Cinder.h"
 
+#define CINDER_GL_ES_VERSION_2		200
+#define CINDER_GL_ES_VERSION_3		300
+#define CINDER_GL_ES_VERSION_3_1	310
+#define CINDER_GL_ES_VERSION_3_2	320
+
 #if defined( CINDER_GL_ANGLE ) || defined( CINDER_WINRT )
 	#define GL_GLEXT_PROTOTYPES
 	#define CINDER_GL_ES
@@ -41,28 +46,60 @@
 	#pragma comment( lib, "libEGL.lib" )
 	#pragma comment( lib, "libGLESv2.lib" )
 #elif defined( CINDER_ANDROID )
- 	// the default for Android is GL ES 3, but can be overridden with CINDER_GL_ES_2
+ 	// Default is OpenGL ES 3
 	#define CINDER_GL_ES
  	#include "EGL/egl.h" 
  	#if defined( CINDER_GL_ES_2 )
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
  		#define GL_GLEXT_PROTOTYPES
-		#include "GLES2/gl2.h"
-		#include "GLES2/gl2ext.h"
+		#include "cinder/linux/GLES2/gl2.h"
+		#include "cinder/linux/GLES2/gl2ext.h"
+	#elif defined( CINDER_GL_ES_3_1 )
+		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_1
+		#define GL_GLEXT_PROTOTYPES
+		#include "cinder/linux/GLES3/gl31.h"
+		#include "cinder/linux/GLES2/gl2ext.h"
+	#elif defined( CINDER_GL_ES_3_2 )
+		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
+		#define GL_GLEXT_PROTOTYPES
+		#include "cinder/linux/GLES3/gl32.h"
+		#include "cinder/linux/GLES2/gl2ext.h"  
  	#else
-		#include "GLES3/gl3.h"
-		#include "GLES3/gl3ext.h"
-		#define CINDER_GL_ES_3    
+		#define CINDER_GL_ES_3
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
+ 		#define GL_GLEXT_PROTOTYPES
+		#include "cinder/linux/GLES3/gl3.h"
+		#include "cinder/linux/GLES2/gl2ext.h"
  	#endif 
 #elif defined( CINDER_LINUX )
  	#if defined( CINDER_GL_ES_2 )
  		#define CINDER_GL_ES
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
  		#define GL_GLEXT_PROTOTYPES
-		#include "GLES2/gl2.h"
-		#include "GLES2/gl2ext.h"
+ 		#include "EGL/egl.h" 
+		#include "cinder/linux/GLES2/gl2.h"
+		#include "cinder/linux/GLES2/gl2ext.h"
  	#elif defined( CINDER_GL_ES_3 )
  		#define CINDER_GL_ES
-		#include "GLES3/gl3.h"
-		#include "GLES3/gl3ext.h"
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
+ 		#define GL_GLEXT_PROTOTYPES
+ 		#include "EGL/egl.h"
+		#include "cinder/linux/GLES3/gl3.h"
+		#include "cinder/linux/GLES2/gl2ext.h"
+	#elif defined( CINDER_GL_ES_3_1 )
+ 		#define CINDER_GL_ES
+		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_1
+		#define GL_GLEXT_PROTOTYPES
+ 		#include "EGL/egl.h" 
+		#include "cinder/linux/GLES3/gl31.h"
+		#include "cinder/linux/GLES2/gl2ext.h"
+	#elif defined( CINDER_GL_ES_3_2 )
+ 		#define CINDER_GL_ES
+		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
+		#define GL_GLEXT_PROTOTYPES
+ 		#include "EGL/egl.h" 
+		#include "cinder/linux/GLES3/gl32.h"
+		#include "cinder/linux/GLES2/gl2ext.h" 
  	#else
  		#include "glload/gl_core.h"
  	#endif
@@ -88,25 +125,14 @@
 	#endif
 #endif
 
- #if defined( CINDER_ANDROID )
- 	#define CINDER_GL_PLATFORM
-	#include "cinder/gl/platform_android.h"
- 	#undef CINDER_GL_PLATFORM
+#if defined( CINDER_GL_ES )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+ 	#define GL_ES_EXT_VERSION_2_0
+	#include "cinder/linux/gl_es_load.h"
+  #endif
 #endif
 
-#if defined( CINDER_LINUX )
- 	#define CINDER_GL_PLATFORM
-	#include "cinder/gl/platform_linux.h"
- 	#undef CINDER_GL_PLATFORM
-#endif
-
-// ----------------------------------------------
-// define features available
-#if defined( CINDER_GL_ES_2 )
-	#define CINDER_GL_PLATFORM
-	#include "cinder/gl/platform_es2_features.h"
-	#undef CINDER_GL_PLATFORM
-#else // ES 3 + Desktop Only
+#if ! defined( CINDER_GL_ES ) // Desktop Only
 	#define CINDER_GL_HAS_UNIFORM_BLOCKS
 	#define CINDER_GL_HAS_DRAW_INSTANCED
 	#define CINDER_GL_HAS_FBO_MULTISAMPLING
@@ -159,7 +185,7 @@
 #endif
 
 #if defined( CINDER_GL_ES )
-	#if defined( GL_KHR_debug )
+	#if defined( GL_KHR_debug ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_3_1 )
 		#define CINDER_GL_HAS_KHR_DEBUG
 		#define GL_BUFFER 		GL_BUFFER_KHR
 		#define GL_SHADER 		GL_SHADER_KHR

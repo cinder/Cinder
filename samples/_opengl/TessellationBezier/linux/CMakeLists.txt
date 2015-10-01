@@ -4,10 +4,9 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE )
 include( ${CINDER_DIR}/tools/linux/Cinder.cmake )
 
-project( NormalMapping )
+project( TessellationBezier )
 
 get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src" ABSOLUTE )
-get_filename_component( INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include" ABSOLUTE )
 
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
@@ -18,8 +17,7 @@ message( "" )
 include_directories( 
     ${CINDER_INC_DIR} 
     ${CINDER_INC_DIR}/glfw
-    ${BOOST_INC_DIR}
-	${INC_DIR}
+    ${BOOST_INC_DIR}  
 )
 
 if( CINDER_LINUX_EGL_RPI2 )
@@ -28,8 +26,7 @@ if( CINDER_LINUX_EGL_RPI2 )
 endif()
 
 set( SRC_FILES
-  ${SRC_DIR}/NormalMappingApp.cpp
-  ${SRC_DIR}/DebugMesh.cpp
+  ${SRC_DIR}/TessellationBezierApp.cpp
 )
 
 set( EXE_NAME "${CMAKE_PROJECT_NAME}${CINDER_LIB_SUFFIX}" )

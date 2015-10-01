@@ -194,7 +194,7 @@ inline ci::SurfaceRef RenderString( const std::string& utf8, FT_Face face, bool 
 			FT_Set_Transform( face, nullptr, &pen );
 
 			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
-			FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+			FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
 
 			FT_GlyphSlot slot = face->glyph;
 			ivec2 offset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );

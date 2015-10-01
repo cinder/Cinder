@@ -28,6 +28,9 @@
 #if defined( CINDER_GL_ES_2 )
 	#define GLFW_EXPOSE_NATIVE_EGL
 	#define GLFW_INCLUDE_NONE
+#elif defined( CINDER_GL_ES_3 ) || defined( CINDER_GL_ES_3_1 ) || defined( CINDER_GL_ES_3_2 ) 
+	#define GLFW_EXPOSE_NATIVE_EGL
+	#define GLFW_INCLUDE_NONE
 #else
 	#define GLFW_EXPOSE_NATIVE_GLX
 #endif

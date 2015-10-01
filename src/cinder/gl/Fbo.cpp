@@ -70,90 +70,53 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 	mInternalFormat = internalFormat;
 	mSamples = msaaSamples;
 	mCoverageSamples = coverageSamples;
-#if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
-	static bool csaaSupported = ( glext_NV_framebuffer_multisample_coverage != 0 );
-#else
-	static bool csaaSupported = false;
-#endif
+
+	static bool csaaSupported = gl::env()->supportsCoverageSample();
 
 	glGenRenderbuffers( 1, &mId );
 
 	if( mSamples > Fbo::getMaxSamples() )
 		mSamples = Fbo::getMaxSamples();
 
-	if( ! csaaSupported )
+	if( ! csaaSupported ) {
 		mCoverageSamples = 0;
+	}
 
 	gl::ScopedRenderbuffer rbb( GL_RENDERBUFFER, mId );
 
-#if defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
-  #if defined( CINDER_MSW )  && ( ! defined( CINDER_GL_ES ) )
-	if( mCoverageSamples ) // create a CSAA buffer
-		glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER, mCoverageSamples, mSamples, mInternalFormat, mWidth, mHeight );
-	else
-  #endif
-		if( mSamples )
-			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
-		else
-			glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
+	if( gl::env()->supportsFboMultiSample() ) {
+		// create a CSAA buffer
+		if( mCoverageSamples ) {
+#if defined( CINDER_GL_ES )
+			// @TODO: Add coverage sampling support
 #else
-  #if defined( CINDER_GL_ES_2 )
-	// This is gross, but GL_RGBA & GL_RGB are not suitable internal formats for Renderbuffers. We know what you meant though.
-	if( mInternalFormat == GL_RGBA ) {
-		mInternalFormat = GL_RGBA8_OES;
-	}
-	else if( mInternalFormat == GL_RGB ) {
-		mInternalFormat = GL_RGB8_OES;
-	}
-	else if( mInternalFormat == GL_DEPTH_COMPONENT ) {
-		mInternalFormat = GL_DEPTH_COMPONENT24_OES;	
-	}
-
-	glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
-  #else
-	#error "Unsupportd Renderbuffer configuration"
-  #endif	
+			glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER, mCoverageSamples, mSamples, mInternalFormat, mWidth, mHeight );
 #endif
-
-/*
-#if defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
-  #if defined( CINDER_MSW )  && ( ! defined( CINDER_GL_ES ) )
-	if( mCoverageSamples ) // create a CSAA buffer
-		glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER, mCoverageSamples, mSamples, mInternalFormat, mWidth, mHeight );
-	else
-  #endif
-		if( mSamples )
-			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
-		else
-			glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
-#elif defined( CINDER_GL_ES )
-  #if defined( CINDER_ANDROID ) && ! defined( CINDER_GL_ES_2 )
-	if( mInternalFormat == GL_RGBA )
-		mInternalFormat = GL_RGBA8;
-	else if( mInternalFormat == GL_RGB )
-		mInternalFormat = GL_RGB8;
-	else if( mInternalFormat == GL_DEPTH_COMPONENT )
-		mInternalFormat = GL_DEPTH_COMPONENT24;
-  #else
-	// this is gross, but GL_RGBA & GL_RGB are not suitable internal formats for Renderbuffers. We know what you meant though.
-	if( mInternalFormat == GL_RGBA )
-		mInternalFormat = GL_RGBA8_OES;
-	else if( mInternalFormat == GL_RGB )
-		mInternalFormat = GL_RGB8_OES;
-	else if( mInternalFormat == GL_DEPTH_COMPONENT )
-		mInternalFormat = GL_DEPTH_COMPONENT24_OES;
-  #endif	
-	
-	if( mSamples )
-  #if defined( CINDER_ANDROID ) && defined( CINDER_GL_ES_2 )
-		glRenderbufferStorageMultisampleIMG( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
-  #else		
-		glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
-  #endif	
-	else
+		}
+		else {
+			if( mSamples ) {
+				glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
+			}
+			else {
+				glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );		
+			}
+		}
+	}
+	else {
+#if defined( CINDER_GL_ES_2 )
+		// This is gross, but GL_RGBA & GL_RGB are not suitable internal formats for Renderbuffers. We know what you meant though.
+		if( mInternalFormat == GL_RGBA ) {
+			mInternalFormat = GL_RGBA8_OES;
+		}
+		else if( mInternalFormat == GL_RGB ) {
+			mInternalFormat = GL_RGB8_OES;
+		}
+		else if( mInternalFormat == GL_DEPTH_COMPONENT ) {
+			mInternalFormat = GL_DEPTH_COMPONENT24_OES;	
+		}
+#endif
 		glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
-#endif
-*/
+	}
 }
 
 Renderbuffer::~Renderbuffer()

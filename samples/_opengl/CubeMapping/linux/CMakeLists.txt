@@ -29,10 +29,7 @@ set( SRC_FILES
   ${SRC_DIR}/CubeMappingApp.cpp
 )
 
-set( EXE_NAME "${CMAKE_PROJECT_NAME}" )
-if( CINDER_GL_ES_2 )
-	set( EXE_NAME "${CMAKE_PROJECT_NAME}-es2" )
-endif()
+set( EXE_NAME "${CMAKE_PROJECT_NAME}${CINDER_LIB_SUFFIX}" )
 
 add_executable( "${EXE_NAME}" ${SRC_FILES} )
 target_link_libraries( "${EXE_NAME}" debug     ${CINDER_LIB_DIR}/libcinder${CINDER_LIB_SUFFIX}_d.a )

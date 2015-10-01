@@ -127,6 +127,9 @@ else()
     message( FATAL_ERROR "${BoldRed}Unsupported Platform (API Level) ${NDK_PLATFORM}${ColorReset}" )
 endif()
 
+if( NDK_GLES31 AND ( ${NDK_PLATFORM} LESS 21 ) )
+	message( FATAL_ERROR "${BoldRed}OpenGL ES 3.1 requires Platform 21 or later${ColorReset}" )
+endif()
 
 # ------------------------------------------------------------------------
 # NDK_ARCH
@@ -148,9 +151,15 @@ message( "${BoldBlue}NDK_ARCH     : ${NDK_ARCH}${ColorReset}" )
 if( NDK_GLES2 )
     message( "${BoldBlue}NDK_GLES2    : TRUE${ColorReset}" )
     message( "${BoldBlue}NDK_GLES3    : FALSE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES31   : FALSE${ColorReset}" )
+elseif( NDK_GLES31 )
+    message( "${BoldBlue}NDK_GLES2    : FALSE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES3    : FALSE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES31   : TRUE${ColorReset}" )
 else()
     message( "${BoldBlue}NDK_GLES2    : FALSE${ColorReset}" )
     message( "${BoldBlue}NDK_GLES3    : TRUE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES31   : FALSE${ColorReset}" )
 endif()
 message( "" )
 
@@ -456,6 +465,8 @@ else()
 endif()
 if( NDK_GLES2 )
     set( C_FLAGS "-DCINDER_GL_ES_2 ${C_FLAGS}")
+elseif( NDK_GLES31 )
+    set( C_FLAGS "-DCINDER_GL_ES_3_1 ${C_FLAGS}")
 endif()
 set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
 set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
@@ -468,6 +479,8 @@ else()
 endif()
 if( NDK_GLES2 )
     set( CXX_FLAGS "-DCINDER_GL_ES_2 ${CXX_FLAGS}")
+elseif( NDK_GLES31 )
+    set( CXX_FLAGS "-DCINDER_GL_ES_3_1 ${CXX_FLAGS}")
 endif()
 set( CMAKE_CXX_FLAGS_DEBUG   "${CXX_FLAGS} -g -fexceptions -frtti" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
@@ -489,6 +502,8 @@ set( CINDER_C_SRC_FILES
 )
 
 set( CINDER_CXX_SRC_FILES
+    ${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+
     ${CINDER_SRC_DIR}/cinder/android/libc_helper.cpp
     ${CINDER_SRC_DIR}/cinder/android/AndroidDevLog.cpp
     ${CINDER_SRC_DIR}/cinder/android/CinderAndroid.cpp

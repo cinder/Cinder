@@ -30,6 +30,7 @@
 #include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 #include "cinder/Noncopyable.h"
+#include "cinder/Utilities.h"
 
 #include "glm/gtc/type_ptr.hpp"
 
@@ -682,6 +683,16 @@ void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPat
 	glGetShaderiv( (GLuint) handle, GL_COMPILE_STATUS, &status );
 	if( status != GL_TRUE ) {
 		std::string log = getShaderLog( (GLuint)handle );
+#if defined( CINDER_ANDROID ) | defined( CINDER_LINUX )
+		std::vector<std::string> lines = ci::split( shaderSource, "\r\n" );
+		if( ! lines.empty() ) {
+			std::stringstream ss;
+			for( size_t i = 0; i < lines.size(); ++i ) {
+				ss << std::setw( (int)std::log( lines.size() ) ) << (i + 1) << ": " << lines[i] << "\n"; 
+			}
+			log += "\n" + ss.str();
+		}
+#endif		
 		throw GlslProgCompileExc( log, shaderType );
 	}
 	glAttachShader( mHandle, handle );

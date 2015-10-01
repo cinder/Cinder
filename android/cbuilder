@@ -12,7 +12,8 @@ if (( $# == 0 )); then
     echo -e "\t-j [n]   Number of compile processes, ex: -j 4"
     echo -e ""
     echo -e "flags:"
-    echo -e "\t-es2    Build for OpenGL ES 2 instead of OpenGL ES 3"
+    echo -e "\t-es2    Build for OpenGL ES 2.0 instead of OpenGL ES 3"
+    echo -e "\t-es31   Build for OpenGL ES 3.1 instead of OpenGL ES 3"
     echo -e "\t-r      Rebuild instead of full build"
     echo -e "\t-v      Turns on verbose mode"
     #echo -e "\t-clang  Uses clang toolchain (experimental)"
@@ -136,13 +137,19 @@ do
             fi
         ;;
 
-        # OpenGL ES2
+        # OpenGL ES 2.0
         -es2)
             ES2="-DNDK_GLES2=1"
             ES2_INFO="GLES2: true"
         ;;
 
-        # Clang 3.5
+        # OpenGL ES 3.1
+        -es31)
+            ES2="-DNDK_GLES31=1"
+            ES2_INFO="GLES31: true"
+        ;;
+
+        # Clang
         -clang)
             TOOLCHAIN=clang
         ;;
@@ -200,7 +207,7 @@ for plat in ${PLATFORMS[@]}; do
             cmake_build_dir=${SAVED_DIR}/build/$arch_dir/$plat/$build
 
             # Build commands
-            echo "\n(CINDER-ANDROID): Building: android-$plat $arch $build"
+            echo -e "\n(CINDER-ANDROID): Building: android-$plat $arch $build"
         
             cd $SAVED_DIR
             echo "(CINDER-ANDROID): Changed dir: $(pwd)"

@@ -12,13 +12,12 @@ if (( $# == 0 )); then
     echo -e "\t-j [n]   Number of compile processes, ex: -j 4"
     echo -e ""
     echo -e "flags:"
-	echo -e "\t-es2     Build for OpenGL ES 2 instead of Desktop OpenGL"
-	echo -e "\t-es3     Build for OpenGL ES 3 instead of Desktop OpenGL"
+	echo -e "\t-es2     Build for OpenGL ES 2.0 instead of Desktop OpenGL"
+	echo -e "\t-es3     Build for OpenGL ES 3.0 instead of Desktop OpenGL"
+	echo -e "\t-es31    Build for OpenGL ES 3.1 instead of Desktop OpenGL"
     echo -e "\t-rpi2    Build for Raspberry Pi 2 (must be on platform)"
-    echo -e "\t-tk1     Build for NVidia Jetson TK1 (must be on platform)"
-    echo -e "\t-xu4     Build for Odroid XU4 (must be on platform)"
-    #echo -e "\t-r       Rebuild instead of full build"
-    #echo -e "\t-v      Turns on verbose mode"
+    echo -e "\t-r       Rebuild instead of full build"
+    echo -e "\t-v       Turns on verbose mode"
     #echo -e ""
     exit 0
 fi
@@ -33,6 +32,7 @@ NUMPROCS=4
 GLES=
 FULLBUILD=true
 RPI2=
+VERBOSE=
 
 # Process arguments
 while (( $# >= 1 ))
@@ -85,15 +85,27 @@ do
 			shift 2
         ;;
 
-        # OpenGL ES2
+        # OpenGL ES 2.0
         -es2)
             GLES="-DCINDER_GL_ES_2=1"
 			shift 1
         ;;
 
-        # OpenGL ES3
+        # OpenGL ES 3.0
         -es3)
             GLES="-DCINDER_GL_ES_3=1"
+			shift 1
+        ;;
+
+        # OpenGL ES 3.1
+        -es31)
+            GLES="-DCINDER_GL_ES_3_1=1"
+			shift 1
+        ;;
+
+        # OpenGL ES 3.2
+        -es32)
+            GLES="-DCINDER_GL_ES_3_2=1"
 			shift 1
         ;;
 
@@ -109,6 +121,12 @@ do
 			FULLBUILD=false
 			shift 1
         ;;
+
+		# Verbose
+		-v)
+			VERBOSE="VERBOSE=1"
+			shift 1
+		;;
 
 		?*)
 			echo "Unknown parameter: ${arg}"
@@ -153,7 +171,7 @@ for build in ${BUILDTYPES[@]}; do
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
 		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2}
 	fi
-	make -j ${NUMPROCS} VERBOSE=1
+	make -j ${NUMPROCS} ${VERBOSE}
 
 	echo -e ""
 done

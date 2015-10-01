@@ -44,6 +44,7 @@
 #endif
 
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+/* 
   #if ! defined( CINDER_GL_HAS_INSTANCED_ARRAYS )
  	using PFNGLVERTEXATTRIBDIVISOREXTPROC = void*;
   #endif
@@ -52,22 +53,25 @@
  	using PFNGLMAPBUFFERRANGEEXTPROC = void*;
  	using PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC = void*;
   #endif
+*/  
 
- #if defined( CINDER_GL_ES_2 )
+/*
+  #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
 	PFNGLBINDVERTEXARRAYOESPROC			fnptr_ci_glBindVertexArrayOES = nullptr;
 	PFNGLDELETEVERTEXARRAYSOESPROC		fnptr_ci_glDeleteVertexArraysOES = nullptr;
 	PFNGLGENVERTEXARRAYSOESPROC			fnptr_ci_glGenVertexArraysOES = nullptr;
 	PFNGLISVERTEXARRAYOESPROC			fnptr_ci_glIsVertexArrayOES = nullptr;
- 
+
 	PFNGLVERTEXATTRIBDIVISOREXTPROC		fnptr_ci_glVertexAttribDivisorEXT= nullptr;
 
- 	PFNGLMAPBUFFERRANGEEXTPROC 			fnptr_ci_glMapBufferRangeEXT = nullptr;
+		PFNGLMAPBUFFERRANGEEXTPROC 			fnptr_ci_glMapBufferRangeEXT = nullptr;
 	PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC	fnptr_ci_glFlushMappedBufferRangeEXT = nullptr;
- #endif	
+  #endif	
  
 	PFNGLMAPBUFFEROESPROC				fnptr_ci_glMapBufferOES = nullptr;
 	PFNGLUNMAPBUFFEROESPROC				fnptr_ci_glUnmapBufferOES = nullptr;
 	PFNGLGETBUFFERPOINTERVOESPROC		fnptr_ci_glGetBufferPointervOES = nullptr;
+*/	
 #endif
 
 namespace cinder { namespace gl {
@@ -77,10 +81,14 @@ class EnvironmentEs : public Environment {
 	void	initializeFunctionPointers() override;
 
 	bool	isExtensionAvailable( const std::string &extName ) const override;
+
+	bool 	supportsFboMultiSample() const override;
+	bool 	supportsCoverageSample() const override;
 	bool	supportsHardwareVao() const override;
+	bool 	supportsInstancedArrays() const override;
 	bool	supportsTextureLod() const override;
-	bool 	supportsMapBuffer() const;
-	bool 	supportsMapBufferRange() const;
+	bool	supportsMapBuffer() const override;
+	bool 	supportsMapBufferRange() const override;
 
 	GLenum	getPreferredIndexType() const override;
 		
@@ -104,7 +112,10 @@ Environment* allocateEnvironmentEs()
 void EnvironmentEs::initializeFunctionPointers()
 {
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-  #if defined( CINDER_GL_ES_2 )
+	::gl_es_load();
+
+/*
+   #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
 	if( supportsHardwareVao() ) {
 		fnptr_ci_glBindVertexArrayOES = (PFNGLBINDVERTEXARRAYOESPROC)eglGetProcAddress( "glBindVertexArrayOES" );
 		fnptr_ci_glDeleteVertexArraysOES = (PFNGLDELETEVERTEXARRAYSOESPROC)eglGetProcAddress( "glDeleteVertexArraysOES" );
@@ -123,6 +134,7 @@ void EnvironmentEs::initializeFunctionPointers()
 		fnptr_ci_glUnmapBufferOES  = (PFNGLUNMAPBUFFEROESPROC)eglGetProcAddress( "glUnmapBufferOES" );
 		fnptr_ci_glGetBufferPointervOES	= (PFNGLGETBUFFERPOINTERVOESPROC)eglGetProcAddress( "glGetBufferPointervOES" );
 	}
+*/
 #endif
 }
 
@@ -161,6 +173,16 @@ bool EnvironmentEs::isExtensionAvailable( const std::string &extName ) const
 	return sExtensions.count( extension ) > 0;
 }
 
+bool EnvironmentEs::supportsFboMultiSample() const
+{
+	return false;
+}
+
+bool EnvironmentEs::supportsCoverageSample() const
+{
+	return false;
+}
+
 bool EnvironmentEs::supportsHardwareVao() const
 {
 #if defined( CINDER_GL_ES_2 )
@@ -169,6 +191,11 @@ bool EnvironmentEs::supportsHardwareVao() const
 	// Assumes OpenGL ES 3 or greater
 	return true;
 #endif	
+}
+
+bool EnvironmentEs::supportsInstancedArrays() const
+{
+	return false;
 }
 
 bool EnvironmentEs::supportsTextureLod() const
@@ -295,6 +322,10 @@ void EnvironmentEs::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFo
 std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 {
 	std::string s;
+
+#if defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
+	s +=		"#version 100\n";
+#endif
 	
 	s +=		"uniform mat4	ciModelViewProjection;\n";
 
@@ -361,6 +392,10 @@ std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 {
 	std::string s;
+
+#if defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
+	s +=		"#version 100\n";
+#endif	
 
 #if defined( CINDER_ANDROID )
 	if( shader.mTextureMappingExternalOes) {
@@ -439,8 +474,11 @@ GlslProgRef	EnvironmentEs::buildShader( const ShaderDef &shader )
 												.fragment( generateFragmentShader( shader ) )
 												.attribLocation( "ciPosition", 0 )
 												.preprocess( false );
-	if( shader.mTextureMapping )
+
+	if( shader.mTextureMapping ) {
 		fmt.attribLocation( "ciTexCoord0", 1 );
+	}
+
 	return GlslProg::create( fmt );
 }
 

@@ -234,8 +234,10 @@ void pauseTransformFeedback();
 // Tesselation
 //! Specifies the parameters that will be used for patch primitives. Analogous to glPatchParameteri().
 void patchParameteri( GLenum pname, GLint value );
+#if ! defined( CINDER_GL_ES )
 //! Specifies the parameters that will be used for patch primitives. Analogous to glPatchParameterfv().
 void patchParameterfv( GLenum pname, GLfloat *value );
+#endif
 #endif
 	
 void color( float r, float g, float b );

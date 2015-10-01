@@ -61,7 +61,7 @@ public:
 			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE ) ) {
 				initiator |= MouseEvent::MIDDLE_DOWN;
 			}
-			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_LEFT ) ) {
+			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_RIGHT ) ) {
 				initiator |= MouseEvent::RIGHT_DOWN;
 			}
 

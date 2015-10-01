@@ -39,8 +39,14 @@ class EnvironmentCore : public Environment {
 	void	initializeFunctionPointers() override;
 
 	bool	isExtensionAvailable( const std::string &extName ) const override;
+
+	bool 	supportsFboMultiSample() const override;
+	bool 	supportsCoverageSample() const override;
 	bool	supportsHardwareVao() const override;
+	bool 	supportsInstancedArrays() const override;
 	bool	supportsTextureLod() const override;
+	bool	supportsMapBuffer() const override;
+	bool 	supportsMapBufferRange() const override;
 
 	GLenum	getPreferredIndexType() const override;
 
@@ -76,10 +82,10 @@ bool EnvironmentCore::isExtensionAvailable( const std::string &extName ) const
 	static std::set<std::string> sExtensions;
 	if( ! sInitialized ) {
 		GLint loop;
-		GLint numExtensions = 0;
+		GLint numExtensions;
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
 
-		for( loop = 0; loop < numExtensions; loop++) {
+		for( loop = 0 ;loop < numExtensions; loop++ ) {
 			std::string s = (const char *)glGetStringi( GL_EXTENSIONS, loop );
 			std::transform( s.begin(), s.end(), s.begin(), static_cast<int(*)(int)>( tolower ) );
 			sExtensions.insert( s );
@@ -94,12 +100,38 @@ bool EnvironmentCore::isExtensionAvailable( const std::string &extName ) const
 	return sExtensions.count( extension ) > 0;
 }
 
+bool EnvironmentCore::supportsFboMultiSample() const
+{
+	return true;
+}
+
+bool EnvironmentCore::supportsCoverageSample() const
+{
+	return true;
+}
+
 bool EnvironmentCore::supportsHardwareVao() const
 {
 	return true;
 }
 
+bool EnvironmentCore::supportsInstancedArrays() const
+{
+	return true;
+}
+
 bool EnvironmentCore::supportsTextureLod() const
+{
+	return true;
+}
+
+
+bool EnvironmentCore::supportsMapBuffer() const
+{
+	return true;
+}
+
+bool EnvironmentCore::supportsMapBufferRange() const
 {
 	return true;
 }

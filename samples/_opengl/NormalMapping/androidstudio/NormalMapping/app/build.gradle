@@ -84,7 +84,7 @@ android {
         }
         cppFlags {
             "all_archs" {
-                debug = "-g -std=c++11"
+                debug = "-g -std=c++11 -DCINDER_GL_ES_3_1"
                 release = "-Os -std=c++11"
             }
         }
