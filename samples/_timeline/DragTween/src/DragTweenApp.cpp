@@ -68,7 +68,7 @@ void DragTweenApp::mouseDown( MouseEvent event )
 	// see if the mouse is in any of the circles
 	vector<Circle>::iterator circleIt = mCircles.end();
 	for( circleIt = mCircles.begin(); circleIt != mCircles.end(); ++circleIt )
-		if( distance( circleIt->mPos(), (vec2)event.getPos() ) <= circleIt->mRadius )
+		if( glm::distance( circleIt->mPos(), (vec2)event.getPos() ) <= circleIt->mRadius )
 			break;
 
 	// if we hit one, tell it to startDrag()
