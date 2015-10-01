@@ -66,13 +66,18 @@ file_meta = {
 parser = argparse.ArgumentParser(description='CiDocs')
 parser.add_argument('path', nargs='?')
 parser.add_argument('outpath', nargs='?')
-parser.add_argument('--root', default=HTML_ROOT_DIR)
 parser.add_argument('-d', '--debug',
     action='store_true',
-    help='show debug arguments' )
+    help='show debug arguments')
 parser.add_argument('-s', '--skiphtml',
     action='store_true',
-    help='skip html generation' )
+    help='skip html generation')
+parser.add_argument('--root',
+    default=HTML_ROOT_DIR,
+    help='server html root directory name')
+parser.add_argument('--include-analytics',
+    action='store_true',
+    help='bool as to wheather to include analytics in frontend')
 
 
 # various config settings
@@ -2123,7 +2128,6 @@ def fill_class_content(tree):
     if class_def:
         if class_def.relatedLinks:
             for link_data in class_def.relatedLinks:
-                print "LINK DATA:" + link_data.link
                 related.append(link_data)
 
         # ci prefix / description ----------------------- #
@@ -2724,23 +2728,28 @@ def process_ci_prefix_tag(bs4, tag, in_path):
     :param in_path: The path to the refix content
     :return:
     """
+    in_path = in_path.replace('\\', '/')
+    in_dir = get_path_dir(in_path)
+
     obj_ref = find_ci_tag_ref(tag)
     if obj_ref and type(obj_ref) is SymbolMap.Class:
 
         # get tag content
         prefix_content = ""
         for c in tag.contents:
-            prefix_content += str(c)
+            content = c.encode("utf-8", errors="replace")
+            prefix_content += content
 
         # generate bs4 from content and update links as reltive from the template path
         # could alternatively set the absolute paths of content, which would then be turned into rel paths later
         new_bs4 = generate_bs4_from_string(prefix_content)
-        update_links(new_bs4, in_path, in_path, TEMPLATE_PATH)
+        update_links(new_bs4, in_dir, in_path, TEMPLATE_PATH)
 
         # get updated body content and assign as prefix_content
         prefix_content = ""
         for c in new_bs4.body:
-            prefix_content += str(c)
+            content = c.encode("utf-8", errors="replace")
+            prefix_content += content
 
         obj_ref.define_prefix(prefix_content)
 
@@ -2817,9 +2826,17 @@ def path_join(path, link):
     p = path.replace('\\', '/')
     l = link.replace('\\', '/')
     sep = '/' if not p.endswith('/') else ''
-    print p, sep, l
     new_link = p + sep + l
     return new_link
+
+def get_path_dir(path):
+    path_parts = path.replace('\\', '/').split('/')
+    # if it doesn't end with a '/', lop off the last word
+    if not path.endswith('/'):
+        in_dir = '/'.join(path_parts[:-1]) + '/'
+    else:
+        in_dir = path
+    return in_dir
 
 def update_links_abs(html, src_path):
     """
@@ -2950,7 +2967,7 @@ def update_links(html, template_path, src_path, save_path):
     :return:
     """
 
-    template_path =  "/".join(template_path.replace('\\', '/').split('/'))
+    template_path = "/".join(template_path.replace('\\', '/').split('/'))
 
     # css links
     for link in html.find_all("link"):
@@ -3653,6 +3670,9 @@ def load_meta():
 
     # get docs directory
     file_meta["docs_root"] = args.root
+
+    # include google analytics
+    file_meta["include_analytics"] = args.include_analytics
 
 
 def log(message, level=0, force=False):

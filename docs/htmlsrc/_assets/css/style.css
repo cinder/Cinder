@@ -1221,7 +1221,16 @@ footer {
   color: #fff;
 }
 ul.library-features {
+  padding: 0;
+  text-indent: 0;
+  list-style: none;
   margin-top: 20px;
+}
+ul.library-features li {
+  margin: 0;
+}
+ul.library-features li:before {
+  content: none;
 }
 ul.library-features li {
   display: block;
