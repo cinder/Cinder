@@ -3658,7 +3658,6 @@ def load_meta():
     # get docs directory
     file_meta["docs_root"] = args.root
 
-    print args
     # include google analytics
     file_meta["include_analytics"] = args.include_analytics
 
