@@ -66,13 +66,18 @@ file_meta = {
 parser = argparse.ArgumentParser(description='CiDocs')
 parser.add_argument('path', nargs='?')
 parser.add_argument('outpath', nargs='?')
-parser.add_argument('--root', default=HTML_ROOT_DIR)
 parser.add_argument('-d', '--debug',
     action='store_true',
-    help='show debug arguments' )
+    help='show debug arguments')
 parser.add_argument('-s', '--skiphtml',
     action='store_true',
-    help='skip html generation' )
+    help='skip html generation')
+parser.add_argument('--root',
+    default=HTML_ROOT_DIR,
+    help='server html root directory name')
+parser.add_argument('--include-analytics',
+    action='store_true',
+    help='bool as to wheather to include analytics in frontend')
 
 
 # various config settings
@@ -3652,6 +3657,10 @@ def load_meta():
 
     # get docs directory
     file_meta["docs_root"] = args.root
+
+    print args
+    # include google analytics
+    file_meta["include_analytics"] = args.include_analytics
 
 
 def log(message, level=0, force=False):
