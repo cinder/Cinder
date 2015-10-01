@@ -338,16 +338,16 @@ void IStreamAndroidAsset::seekAbsolute( off_t absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
 	absoluteOffset = std::abs( absoluteOffset );
-	if( afs_fseek( mAsset, static_cast<long>( absoluteOffset ), dir ) ) {
-		throw StreamExc();
+	if( afs_fseek( mAsset, static_cast<long>( absoluteOffset ), dir ) < 0 ) {
+		throw StreamExc( "AAsset_seek failed" );
 	}
 	mBufferOffset = absoluteOffset;
 }
 
 void IStreamAndroidAsset::seekRelative( off_t relativeOffset )
 {
-	if( afs_fseek( mAsset, static_cast<long>( mBufferOffset + relativeOffset ), SEEK_SET ) ) {
-		throw StreamExc();
+	if( afs_fseek( mAsset, static_cast<long>( mBufferOffset + relativeOffset ), SEEK_SET ) < 0 ) {
+		throw StreamExc( "AAsset_seek failed" );
 	}
 	mBufferOffset = afs_ftell( mAsset );
 }
