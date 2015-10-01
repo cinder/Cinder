@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	// docsRoot defined in python and passed into master-template.mustache
-	var rootDir = window.docsRoot;
+	var rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf( window.docsRoot + '/' ) + ( window.docsRoot.length + 1 ) );
 	var searchTerm = location.search.split("?")[1];
 
 	// --- Search stuff --- // 

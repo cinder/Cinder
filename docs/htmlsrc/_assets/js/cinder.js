@@ -2,7 +2,6 @@ var section;
 $(document).ready(function() {
 
 	var _this = this;
-	// var rootDir = window.docsRoot;				// docsRoot defined in python and passed into master-template.mustache
 	var rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf( window.docsRoot + '/' ) + ( window.docsRoot.length + 1 ) );
 	var windowHeight = window.innerHeight;
 	var input = document.querySelector( '#search-input' );
@@ -261,7 +260,7 @@ $(document).ready(function() {
 	    	resultsDiv.hide();
 	    	return;
 	    }
-	    
+
 	    var searchTerm = term.replace(":", " ");
 	    var maxResults = 15;
 	    var results = search_index.search( searchTerm ); 
