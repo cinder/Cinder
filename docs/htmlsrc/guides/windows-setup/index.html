@@ -24,52 +24,40 @@
     <body id="guide-contents" class="language-c++">
 
         <!-- CONTENT STARTS HERE -->
-        <h1>Welcome to Cinder on Windows</h1>
-        <p>This guide will help you get started using Cinder on Windows. Start by downloading Cinder itself from the site's <a href="http://libcinder.org/download/">Download Page</a> if you haven't already. Choose the Visual C++ 2013 version if you don't already have Visual C++ installed.</p>
+        <h1>Windows Setup</h1>
+        <p>This guide will help you get started using Cinder on Windows. Start by downloading Cinder itself from the site's <a href="http://libcinder.org/download/">Download Page</a> if you haven't already. Choose the Visual C++ 2015 version if you don't already have Visual C++ installed.</p>
            
 
         <section> 
             <h2>Microsoft Visual C++</h2>
-            <p>
-                Cinder is designed for Visual Studio 2012 and Visual Studio 2013, and works with both the
-                commercial versions and the freely available <em>Express</em> editions. If you don't already have one of those versions installed, we'll walk you through setting up the free 2013 edition.
+            <p>Cinder supports Visual Studio 2013 and Visual Studio 2015, and works with both the commercial versions and the freely available <em>Community</em> editions. If you don't already have one of those versions installed, we'll walk you through setting up the free 2015 edition.
             </p>
             
-            <p>
-                The first step is of course to download Visual C++ itself - you want the succinctly named <em>Visual Studio Express 2013 for Windows Desktop</em>, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=40787">available here</a>. Next, lauch the installer. You can leave the settings at their defaults and simply click the <em>Install</em> button.
+            <p>The first step is to install Visual C++ itself - click the <em>Download Community Free</em> button on the <a href="https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx">Visual Studio download page</a>. Next, launch the installer. Make sure that the Visual C++ option is selected under <em>Programming Languages</em> and press the <em>Install</em> button.
             </p>
-            
-            <img class="center shadow" src="images/msvc/step1.png" />
 
             <p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you should be all set. If you're working from github you'll want to follow the build instructions in our <a href="GitSetup.html">Cinder + Git</a> guide.</p>
             
-            <p>Let's try opening and building one of the samples. From Windows Explorer, navigate to the <em>cinder\samples\QuickTimeBasic\vc2012</em> folder and open <em>quickTimeSample.sln</em>.</p>
+            <p>To verify your installation, try opening and building one of the samples. From Windows Explorer, navigate to the <em>cinder\samples\_opengl\CubeMapping\vc2013</em> folder and open <em>CubeMapping.sln</em>.</p>
             
             <p>Under the <em>Debug</em> menu select <em>Start Debugging</em> and click <em>Yes</em>
-                when prompted to build the project. The QuickTime sample will launch
-                and present you with an Open dialog. Select a QuickTime movie on your
-                hard drive, and you should see something about like this:
+                when prompted to build the project. The CubeMapping sample will launch
+                and should look like this:
             </p>
             
-            <img class="center shadow" alt="QuickTime sample" src="images/quicktimesample.jpg">
+            <img class="center shadow" alt="CubeMapping sample" width="481" height="384" src="images/cubemapping_sample.jpg">
         </section>
 
 
         <section>
-            <h2>Creating New Projects</a></h2>
-            <p><a href="TinderBox.html">TinderBox</a> is Cinder's GUI tool for creating new projects quickly and easily. A guide to creating projects using TinderBox is <a href="TinderBox.html">available here</a>.</p>
+            <h2>Creating New Projects</h2>
+            <p><a href="../tinderbox/index.html">TinderBox</a> is Cinder's GUI tool for creating new projects quickly and easily. A guide to creating projects using TinderBox is <a href="../tinderbox/index.html">available here</a>.</p>
         </section>
 
 
         <section>    
-        <h2>Cinder + Git</a></h2>
+        <h2>Cinder + Git</h2>
             <p>If you would like to keep up with the latest Cinder development, the project is <a href="http://github.com/cinder">hosted on github</a>. A guide for setting up Cinder using git is <a href="GitSetup.html">available here</a>.</p>
-        </section>
-
-
-        <section>
-            <h2>Additional Notes</a></h2>
-            <p>Additional notes specific to the Windows implementation of Cinder are <a href="../windows-notes/index.html">available here</a>.</p>
         </section>
 
         <script type="text/javascript" src="../_common/js/jquery-1.4.2.min.js"></script>

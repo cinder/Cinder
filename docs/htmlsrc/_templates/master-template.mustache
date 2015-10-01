@@ -19,9 +19,26 @@
     <link href="../_assets/css/prism.css" rel="stylesheet" type="text/css"/>
     <link href="../_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
     <link href="../_assets/css/style.css" rel="stylesheet" type="text/css"/>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+    <script type="text/javascript">
+        var fontLinks = ["<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>",
+                        "<link href='http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic' rel='stylesheet' type='text/css'>",
+                        "<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>"]
+        // get fonts for local file docs
+        var headHTML = document.getElementsByTagName('head')[0].innerHTML;
+        var prefix = ""
+        if( window.location.origin == "file://") {
+            prefix = "http:"
+        }else{
+            prefix = ""
+        }
+
+        for(var i=0; i < fontLinks.length; i++){
+            var link = fontLinks[i].replace("http:", prefix);
+            headHTML += link;
+        }
+        document.getElementsByTagName('head')[0].innerHTML = headHTML;
+    </script>
 
 
 </head>
