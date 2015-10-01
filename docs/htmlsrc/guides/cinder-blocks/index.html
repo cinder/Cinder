@@ -190,7 +190,7 @@
     </div>
   
     <div>
-      <strong><code>&lt;framework&gt;:</code></strong> A Mac OS/iOS framework (Mac/iOS-only). May also be used
+      <strong><code>&lt;framework&gt;:</code></strong> An OS X/iOS framework (OS X/iOS-only). May also be used
       with a System or SDK-relative dynamic library such as libiconv.dylib
     </div>
   
@@ -234,7 +234,7 @@
   
     <div>
       <strong>&nbsp; "sdk"</strong><strong>&nbsp;(boolean)</strong><strong>:</strong> When <em>true</em>, the file path is
-      considered to be considered relative to the Mac/iOS system SDK (Mac/iOS-only)
+      considered to be considered relative to the OS X/iOS system SDK (OS X/iOS-only)
     </div>
   
     <div>
@@ -273,7 +273,7 @@
   
     <div>
       <strong><code>&lt;frameworkPath&gt;:&nbsp;</code></strong>Adds a directory to the output be searched for
-      Mac/iOS frameworks (Mac/iOS-only)
+      OS X/iOS frameworks (OS X/iOS-only)
     </div>
   
     <div>
@@ -282,12 +282,12 @@
     </div>
   
     <div>
-      <strong><code>&lt;staticLibrary&gt;:&nbsp;</code></strong> Adds a Mac/iOS .a or Windows .lib static library
+      <strong><code>&lt;staticLibrary&gt;:&nbsp;</code></strong> Adds an OS X/iOS .a or Windows .lib static library
       to the project<br />
     </div>
   
     <div>
-      <strong><code>&lt;dynamicLibrary&gt;:</code></strong> Adds a Mac/iOS .dylib or Windows .dll dynamic library
+      <strong><code>&lt;dynamicLibrary&gt;:</code></strong> Adds an OS X/iOS .dylib or Windows .dll dynamic library
       to the project
     </div>
   
@@ -303,7 +303,7 @@
     </div>
   
     <div>
-      <strong><code>&lt;setting&gt;:</code></strong>&nbsp;Allows modification of an Xcode setting (Mac-only). The
+      <strong><code>&lt;setting&gt;:</code></strong>&nbsp;Allows modification of an Xcode setting (OS X-only). The
       value of the element becomes the value of the setting.
     </div>
   
@@ -396,7 +396,7 @@
       In the example above, both debug and release configurations on MSW would include the
       header <em>myLib.h</em>, but the MSW project's debug config would have
       <em>myLib_d.lib</em> added, while its release config would have <em>myLib.lib</em> added.
-      A hypothetical Mac project would receive none of these files.
+      A hypothetical OS X project would receive none of these files.
     </div>
   
   </section>
@@ -496,12 +496,12 @@
     </ul>
   
   
-      <h3>Mac OS X &amp; iOS</h3>
+      <h3>OS X &amp; iOS</h3>
   
     <ul style="">
       <li>
           Libraries should be universal binaries, supporting the i386 and x86_64
-          architectures on Mac OS and the armv7 and armv7s architectures on iOS
+          architectures on OS X and the armv7 and armv7s architectures on iOS
       </li>
   
       <li>

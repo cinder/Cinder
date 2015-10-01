@@ -46,7 +46,7 @@
          <h2>Building Boost (Advanced Users)</h2>
          <p>Here's how to compile Boost yourself:</p>
 
-         <h3>Mac OS X &amp; iOS:</h3>
+         <h3>OS X &amp; iOS:</h3>
          <p>You'll need to create <em>~/user-config.jam</em> with the following (and possibly correct the paths to the iOS SDKs):</p>
 
 <pre><code class="language-bash">using clang : osx
@@ -60,9 +60,9 @@ using clang : ios
 using clang : ios_sim
 : xcrun clang -arch i386 -arch x86_64 -stdlib=libc++ -std=c++11 -miphoneos-version-min=6.0 -fvisibility-inlines-hidden -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator9.0.sdk/
 ;</code></pre>
-         
-         
-         <h3>MacOSX:</h3>
+
+
+         <h3>OS X:</h3>
 <pre><code class="language-bash">cd cinder/boost
 ./bootstrap.sh -with-libraries=filesystem,system
 ./b2 -a -j4 toolset=clang-osx link=static stage
