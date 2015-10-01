@@ -13,6 +13,35 @@
 			buildPhases = (
 			);
 			dependencies = (
+				004309C81BBCE52200B72510 /* PBXTargetDependency */,
+				004309CA1BBCE52200B72510 /* PBXTargetDependency */,
+				004309CC1BBCE52200B72510 /* PBXTargetDependency */,
+				004309CE1BBCE52200B72510 /* PBXTargetDependency */,
+				004309D01BBCE52200B72510 /* PBXTargetDependency */,
+				004309D21BBCE52200B72510 /* PBXTargetDependency */,
+				004309D41BBCE52200B72510 /* PBXTargetDependency */,
+				004309D61BBCE52200B72510 /* PBXTargetDependency */,
+				004309D81BBCE52200B72510 /* PBXTargetDependency */,
+				004309DA1BBCE52200B72510 /* PBXTargetDependency */,
+				004309DC1BBCE52200B72510 /* PBXTargetDependency */,
+				004309DE1BBCE52200B72510 /* PBXTargetDependency */,
+				004309E01BBCE52200B72510 /* PBXTargetDependency */,
+				004309E21BBCE52200B72510 /* PBXTargetDependency */,
+				004309E41BBCE52200B72510 /* PBXTargetDependency */,
+				004309E61BBCE52200B72510 /* PBXTargetDependency */,
+				004309E81BBCE52200B72510 /* PBXTargetDependency */,
+				004309EA1BBCE52200B72510 /* PBXTargetDependency */,
+				004309EC1BBCE52200B72510 /* PBXTargetDependency */,
+				004309EE1BBCE52200B72510 /* PBXTargetDependency */,
+				004309F01BBCE52200B72510 /* PBXTargetDependency */,
+				004309F21BBCE52200B72510 /* PBXTargetDependency */,
+				004309F41BBCE52200B72510 /* PBXTargetDependency */,
+				004309F61BBCE52200B72510 /* PBXTargetDependency */,
+				004309F81BBCE52200B72510 /* PBXTargetDependency */,
+				004309FA1BBCE52200B72510 /* PBXTargetDependency */,
+				004309FC1BBCE52200B72510 /* PBXTargetDependency */,
+				004309FE1BBCE52200B72510 /* PBXTargetDependency */,
+				00430A001BBCE52200B72510 /* PBXTargetDependency */,
 				00D494F01988A30500A44E4C /* PBXTargetDependency */,
 				00D494F21988A30500A44E4C /* PBXTargetDependency */,
 				00D494F41988A30500A44E4C /* PBXTargetDependency */,
@@ -22,7 +51,6 @@
 				009709F316CC6AC9005DC014 /* PBXTargetDependency */,
 				0095452B1680EA00008ECA02 /* PBXTargetDependency */,
 				009F6EAE14C0FEF30036C292 /* PBXTargetDependency */,
-				0087D32F12CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33112CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33512CD82C2002CD69F /* PBXTargetDependency */,
 			);
@@ -32,12 +60,348 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		0087D1B612CD7E7A002CD69F /* PBXContainerItemProxy */ = {
+		004309531BBCE41700B72510 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */;
+			containerPortal = 0043094F1BBCE41700B72510 /* Cube.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = Cube;
+		};
+		004309591BBCE42100B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309551BBCE42100B72510 /* CubeMapping.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = CubeMapping;
+		};
+		0043095F1BBCE42F00B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043095B1BBCE42F00B72510 /* DeferredShading.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = DeferredShading;
+		};
+		004309651BBCE43B00B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309611BBCE43B00B72510 /* DynamicCubeMapping.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = DynamicCubeMapping;
+		};
+		0043096B1BBCE44600B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309671BBCE44500B72510 /* FboBasic.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
-			remoteInfo = MultiTouch_iPhone;
+			remoteInfo = FboBasic;
+		};
+		004309711BBCE45500B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043096D1BBCE45400B72510 /* HighDynamicRange.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = HighDynamicRange;
+		};
+		004309771BBCE46000B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309731BBCE45F00B72510 /* ImmediateMode.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = ImmediateMode;
+		};
+		0043097D1BBCE46E00B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309791BBCE46E00B72510 /* InstancedTeapots.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = InstancedTeapots;
+		};
+		004309831BBCE47900B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043097F1BBCE47900B72510 /* MipMap.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = MipMap;
+		};
+		004309891BBCE48300B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309851BBCE48200B72510 /* MotionBlurFbo.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = MotionBlurFbo;
+		};
+		0043098F1BBCE48E00B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043098B1BBCE48E00B72510 /* NormalMapping.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = NormalMapping;
+		};
+		004309951BBCE49900B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309911BBCE49800B72510 /* NormalMappingBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = NormalMappingBasic;
+		};
+		0043099B1BBCE4A400B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309971BBCE4A400B72510 /* ObjLoader.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = ObjLoader;
+		};
+		004309A11BBCE4BC00B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043099D1BBCE4BC00B72510 /* ParticleSphereCPU.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = ParticleSphereCPU;
+		};
+		004309A71BBCE4C800B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309A31BBCE4C800B72510 /* ParticleSphereGPU.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = ParticleSphereGPU;
+		};
+		004309AD1BBCE4D500B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309A91BBCE4D500B72510 /* PickingFBO.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = PickingFBO;
+		};
+		004309B31BBCE4E400B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309AF1BBCE4E300B72510 /* ShadowMappingBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = ShadowMappingBasic;
+		};
+		004309B91BBCE4F000B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309B51BBCE4EF00B72510 /* StencilReflection.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = StencilReflection;
+		};
+		004309BF1BBCE4FA00B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309BB1BBCE4F900B72510 /* SuperformulaGPU.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = SuperformulaGPU;
+		};
+		004309C51BBCE50800B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309C11BBCE50800B72510 /* TransformFeedbackSmokeParticles.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = TransformFeedbackSmokeParticles;
+		};
+		004309C71BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309C11BBCE50800B72510 /* TransformFeedbackSmokeParticles.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = TransformFeedbackSmokeParticles;
+		};
+		004309C91BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309BB1BBCE4F900B72510 /* SuperformulaGPU.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = SuperformulaGPU;
+		};
+		004309CB1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309B51BBCE4EF00B72510 /* StencilReflection.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = StencilReflection;
+		};
+		004309CD1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309AF1BBCE4E300B72510 /* ShadowMappingBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = ShadowMappingBasic;
+		};
+		004309CF1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309A91BBCE4D500B72510 /* PickingFBO.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = PickingFBO;
+		};
+		004309D11BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309A31BBCE4C800B72510 /* ParticleSphereGPU.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = ParticleSphereGPU;
+		};
+		004309D31BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043099D1BBCE4BC00B72510 /* ParticleSphereCPU.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = ParticleSphereCPU;
+		};
+		004309D51BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309971BBCE4A400B72510 /* ObjLoader.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = ObjLoader;
+		};
+		004309D71BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309911BBCE49800B72510 /* NormalMappingBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = NormalMappingBasic;
+		};
+		004309D91BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043098B1BBCE48E00B72510 /* NormalMapping.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = NormalMapping;
+		};
+		004309DB1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309851BBCE48200B72510 /* MotionBlurFbo.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = MotionBlurFbo;
+		};
+		004309DD1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043097F1BBCE47900B72510 /* MipMap.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = MipMap;
+		};
+		004309DF1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309791BBCE46E00B72510 /* InstancedTeapots.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = InstancedTeapots;
+		};
+		004309E11BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309731BBCE45F00B72510 /* ImmediateMode.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = ImmediateMode;
+		};
+		004309E31BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043096D1BBCE45400B72510 /* HighDynamicRange.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = HighDynamicRange;
+		};
+		004309E51BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309671BBCE44500B72510 /* FboBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
+			remoteInfo = FboBasic;
+		};
+		004309E71BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309611BBCE43B00B72510 /* DynamicCubeMapping.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = DynamicCubeMapping;
+		};
+		004309E91BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043095B1BBCE42F00B72510 /* DeferredShading.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = DeferredShading;
+		};
+		004309EB1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 004309551BBCE42100B72510 /* CubeMapping.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = CubeMapping;
+		};
+		004309ED1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0043094F1BBCE41700B72510 /* Cube.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = Cube;
+		};
+		004309EF1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494F91988A31F00A44E4C /* BezierPathIteration.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = BezierPathIteration;
+		};
+		004309F11BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494FF1988A35200A44E4C /* Compass.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = Compass;
+		};
+		004309F31BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495051988A37500A44E4C /* iosKeyboard.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = iosKeyboard;
+		};
+		004309F51BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495111988A3A700A44E4C /* Instascope.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
+			remoteInfo = Instascope;
+		};
+		004309F71BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4950B1988A38900A44E4C /* NativeControls.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = NativeControls;
+		};
+		004309F91BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495171988A3D200A44E4C /* Renderer2d.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = Renderer2d;
+		};
+		004309FB1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4951D1988A3EA00A44E4C /* RetinaSample.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = RetinaSample;
+		};
+		004309FD1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495231988A40A00A44E4C /* TextBox_iOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
+			remoteInfo = TextBox_iOS;
+		};
+		004309FF1BBCE52200B72510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495291988A41F00A44E4C /* TextureFont.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
+			remoteInfo = TextureFont;
 		};
 		0087D25A12CD80A7002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,13 +416,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
 			remoteInfo = TextTest_iOS;
-		};
-		0087D32E12CD82C2002CD69F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
-			remoteInfo = MultiTouch_iOS;
 		};
 		0087D33012CD82C2002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -266,7 +623,26 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MultiTouch_iOS.xcodeproj; path = ../../MultiTouchBasic/xcode/MultiTouch_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0043094F1BBCE41700B72510 /* Cube.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Cube.xcodeproj; path = ../../_opengl/Cube/xcode_ios/Cube.xcodeproj; sourceTree = "<group>"; };
+		004309551BBCE42100B72510 /* CubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CubeMapping.xcodeproj; path = ../../_opengl/CubeMapping/xcode_ios/CubeMapping.xcodeproj; sourceTree = "<group>"; };
+		0043095B1BBCE42F00B72510 /* DeferredShading.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DeferredShading.xcodeproj; path = ../../_opengl/DeferredShading/xcode_ios/DeferredShading.xcodeproj; sourceTree = "<group>"; };
+		004309611BBCE43B00B72510 /* DynamicCubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DynamicCubeMapping.xcodeproj; path = ../../_opengl/DynamicCubeMapping/xcode_ios/DynamicCubeMapping.xcodeproj; sourceTree = "<group>"; };
+		004309671BBCE44500B72510 /* FboBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FboBasic.xcodeproj; path = ../../_opengl/FboBasic/xcode_ios/FboBasic.xcodeproj; sourceTree = "<group>"; };
+		0043096D1BBCE45400B72510 /* HighDynamicRange.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HighDynamicRange.xcodeproj; path = ../../_opengl/HighDynamicRange/xcode_ios/HighDynamicRange.xcodeproj; sourceTree = "<group>"; };
+		004309731BBCE45F00B72510 /* ImmediateMode.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImmediateMode.xcodeproj; path = ../../_opengl/ImmediateMode/xcode_ios/ImmediateMode.xcodeproj; sourceTree = "<group>"; };
+		004309791BBCE46E00B72510 /* InstancedTeapots.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = InstancedTeapots.xcodeproj; path = ../../_opengl/InstancedTeapots/xcode_ios/InstancedTeapots.xcodeproj; sourceTree = "<group>"; };
+		0043097F1BBCE47900B72510 /* MipMap.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MipMap.xcodeproj; path = ../../_opengl/MipMap/xcode_ios/MipMap.xcodeproj; sourceTree = "<group>"; };
+		004309851BBCE48200B72510 /* MotionBlurFbo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MotionBlurFbo.xcodeproj; path = ../../_opengl/MotionBlurFbo/xcode_ios/MotionBlurFbo.xcodeproj; sourceTree = "<group>"; };
+		0043098B1BBCE48E00B72510 /* NormalMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NormalMapping.xcodeproj; path = ../../_opengl/NormalMapping/xcode_ios/NormalMapping.xcodeproj; sourceTree = "<group>"; };
+		004309911BBCE49800B72510 /* NormalMappingBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NormalMappingBasic.xcodeproj; path = ../../_opengl/NormalMappingBasic/xcode_ios/NormalMappingBasic.xcodeproj; sourceTree = "<group>"; };
+		004309971BBCE4A400B72510 /* ObjLoader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ObjLoader.xcodeproj; path = ../../_opengl/ObjLoader/xcode_ios/ObjLoader.xcodeproj; sourceTree = "<group>"; };
+		0043099D1BBCE4BC00B72510 /* ParticleSphereCPU.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParticleSphereCPU.xcodeproj; path = ../../_opengl/ParticleSphereCPU/xcode_ios/ParticleSphereCPU.xcodeproj; sourceTree = "<group>"; };
+		004309A31BBCE4C800B72510 /* ParticleSphereGPU.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParticleSphereGPU.xcodeproj; path = ../../_opengl/ParticleSphereGPU/xcode_ios/ParticleSphereGPU.xcodeproj; sourceTree = "<group>"; };
+		004309A91BBCE4D500B72510 /* PickingFBO.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PickingFBO.xcodeproj; path = ../../_opengl/PickingFBO/xcode_ios/PickingFBO.xcodeproj; sourceTree = "<group>"; };
+		004309AF1BBCE4E300B72510 /* ShadowMappingBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ShadowMappingBasic.xcodeproj; path = ../../_opengl/ShadowMappingBasic/xcode_ios/ShadowMappingBasic.xcodeproj; sourceTree = "<group>"; };
+		004309B51BBCE4EF00B72510 /* StencilReflection.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = StencilReflection.xcodeproj; path = ../../_opengl/StencilReflection/xcode_ios/StencilReflection.xcodeproj; sourceTree = "<group>"; };
+		004309BB1BBCE4F900B72510 /* SuperformulaGPU.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SuperformulaGPU.xcodeproj; path = ../../_opengl/SuperformulaGPU/xcode_ios/SuperformulaGPU.xcodeproj; sourceTree = "<group>"; };
+		004309C11BBCE50800B72510 /* TransformFeedbackSmokeParticles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TransformFeedbackSmokeParticles.xcodeproj; path = ../../_opengl/TransformFeedbackSmokeParticles/xcode_ios/TransformFeedbackSmokeParticles.xcodeproj; sourceTree = "<group>"; };
 		0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ClipboardBasic_iOS.xcodeproj; path = ../../ClipboardBasic/xcode_iOS/ClipboardBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest_iOS.xcodeproj; path = ../../TextTest/xcode_iOS/TextTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MotionBasic.xcodeproj; path = ../../MotionBasic/xcode_ios/MotionBasic.xcodeproj; sourceTree = "<group>"; };
@@ -290,9 +666,197 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		0043094E1BBCE40300B72510 /* _opengl */ = {
+			isa = PBXGroup;
+			children = (
+				004309C11BBCE50800B72510 /* TransformFeedbackSmokeParticles.xcodeproj */,
+				004309BB1BBCE4F900B72510 /* SuperformulaGPU.xcodeproj */,
+				004309B51BBCE4EF00B72510 /* StencilReflection.xcodeproj */,
+				004309AF1BBCE4E300B72510 /* ShadowMappingBasic.xcodeproj */,
+				004309A91BBCE4D500B72510 /* PickingFBO.xcodeproj */,
+				004309A31BBCE4C800B72510 /* ParticleSphereGPU.xcodeproj */,
+				0043099D1BBCE4BC00B72510 /* ParticleSphereCPU.xcodeproj */,
+				004309971BBCE4A400B72510 /* ObjLoader.xcodeproj */,
+				004309911BBCE49800B72510 /* NormalMappingBasic.xcodeproj */,
+				0043098B1BBCE48E00B72510 /* NormalMapping.xcodeproj */,
+				004309851BBCE48200B72510 /* MotionBlurFbo.xcodeproj */,
+				0043097F1BBCE47900B72510 /* MipMap.xcodeproj */,
+				004309791BBCE46E00B72510 /* InstancedTeapots.xcodeproj */,
+				004309731BBCE45F00B72510 /* ImmediateMode.xcodeproj */,
+				0043096D1BBCE45400B72510 /* HighDynamicRange.xcodeproj */,
+				004309671BBCE44500B72510 /* FboBasic.xcodeproj */,
+				004309611BBCE43B00B72510 /* DynamicCubeMapping.xcodeproj */,
+				0043095B1BBCE42F00B72510 /* DeferredShading.xcodeproj */,
+				004309551BBCE42100B72510 /* CubeMapping.xcodeproj */,
+				0043094F1BBCE41700B72510 /* Cube.xcodeproj */,
+			);
+			name = _opengl;
+			sourceTree = "<group>";
+		};
+		004309501BBCE41700B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309541BBCE41700B72510 /* Cube.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309561BBCE42100B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0043095A1BBCE42100B72510 /* CubeMapping.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0043095C1BBCE42F00B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309601BBCE42F00B72510 /* DeferredShading.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309621BBCE43B00B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309661BBCE43B00B72510 /* DynamicCubeMapping.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309681BBCE44500B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0043096C1BBCE44600B72510 /* FboBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0043096E1BBCE45400B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309721BBCE45500B72510 /* HighDynamicRange.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309741BBCE45F00B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309781BBCE46000B72510 /* ImmediateMode.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0043097A1BBCE46E00B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0043097E1BBCE46E00B72510 /* InstancedTeapots.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309801BBCE47900B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309841BBCE47900B72510 /* MipMap.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309861BBCE48200B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0043098A1BBCE48300B72510 /* MotionBlurFbo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0043098C1BBCE48E00B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309901BBCE48E00B72510 /* NormalMapping.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309921BBCE49800B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309961BBCE49900B72510 /* NormalMappingBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309981BBCE4A400B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0043099C1BBCE4A400B72510 /* ObjLoader.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0043099E1BBCE4BC00B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309A21BBCE4BC00B72510 /* ParticleSphereCPU.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309A41BBCE4C800B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309A81BBCE4C800B72510 /* ParticleSphereGPU.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309AA1BBCE4D500B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309AE1BBCE4D500B72510 /* PickingFBO.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309B01BBCE4E300B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309B41BBCE4E400B72510 /* ShadowMappingBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309B61BBCE4EF00B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309BA1BBCE4F000B72510 /* StencilReflection.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309BC1BBCE4F900B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309C01BBCE4FA00B72510 /* SuperformulaGPU.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		004309C21BBCE50800B72510 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				004309C61BBCE50800B72510 /* TransformFeedbackSmokeParticles.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		0087D08412CD7DC5002CD69F = {
 			isa = PBXGroup;
 			children = (
+				0043094E1BBCE40300B72510 /* _opengl */,
 				00D494D01988A2B300A44E4C /* _audio */,
 				009F6EA214C0FED70036C292 /* _timeline */,
 				00D494F91988A31F00A44E4C /* BezierPathIteration.xcodeproj */,
@@ -304,21 +868,12 @@
 				00D4950B1988A38900A44E4C /* NativeControls.xcodeproj */,
 				009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */,
 				009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */,
-				0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */,
 				00D495171988A3D200A44E4C /* Renderer2d.xcodeproj */,
 				00D4951D1988A3EA00A44E4C /* RetinaSample.xcodeproj */,
 				00D495231988A40A00A44E4C /* TextBox_iOS.xcodeproj */,
 				00D495291988A41F00A44E4C /* TextureFont.xcodeproj */,
 				0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */,
 			);
-			sourceTree = "<group>";
-		};
-		0087D1AF12CD7E7A002CD69F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0087D1B712CD7E7A002CD69F /* MultiTouch.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		0087D25712CD80A7002CD69F /* Products */ = {
@@ -542,12 +1097,44 @@
 					ProjectRef = 00D494FF1988A35200A44E4C /* Compass.xcodeproj */;
 				},
 				{
+					ProductGroup = 004309501BBCE41700B72510 /* Products */;
+					ProjectRef = 0043094F1BBCE41700B72510 /* Cube.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309561BBCE42100B72510 /* Products */;
+					ProjectRef = 004309551BBCE42100B72510 /* CubeMapping.xcodeproj */;
+				},
+				{
+					ProductGroup = 0043095C1BBCE42F00B72510 /* Products */;
+					ProjectRef = 0043095B1BBCE42F00B72510 /* DeferredShading.xcodeproj */;
+				},
+				{
 					ProductGroup = 009F6EA414C0FEEB0036C292 /* Products */;
 					ProjectRef = 009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */;
 				},
 				{
+					ProductGroup = 004309621BBCE43B00B72510 /* Products */;
+					ProjectRef = 004309611BBCE43B00B72510 /* DynamicCubeMapping.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309681BBCE44500B72510 /* Products */;
+					ProjectRef = 004309671BBCE44500B72510 /* FboBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 0043096E1BBCE45400B72510 /* Products */;
+					ProjectRef = 0043096D1BBCE45400B72510 /* HighDynamicRange.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309741BBCE45F00B72510 /* Products */;
+					ProjectRef = 004309731BBCE45F00B72510 /* ImmediateMode.xcodeproj */;
+				},
+				{
 					ProductGroup = 00D494D81988A2CD00A44E4C /* Products */;
 					ProjectRef = 00D494D71988A2CD00A44E4C /* InputAnalyzer.xcodeproj */;
+				},
+				{
+					ProductGroup = 0043097A1BBCE46E00B72510 /* Products */;
+					ProjectRef = 004309791BBCE46E00B72510 /* InstancedTeapots.xcodeproj */;
 				},
 				{
 					ProductGroup = 00D495121988A3A700A44E4C /* Products */;
@@ -562,12 +1149,16 @@
 					ProjectRef = 009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */;
 				},
 				{
+					ProductGroup = 004309801BBCE47900B72510 /* Products */;
+					ProjectRef = 0043097F1BBCE47900B72510 /* MipMap.xcodeproj */;
+				},
+				{
 					ProductGroup = 009545211680E9E4008ECA02 /* Products */;
 					ProjectRef = 009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */;
 				},
 				{
-					ProductGroup = 0087D1AF12CD7E7A002CD69F /* Products */;
-					ProjectRef = 0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */;
+					ProductGroup = 004309861BBCE48200B72510 /* Products */;
+					ProjectRef = 004309851BBCE48200B72510 /* MotionBlurFbo.xcodeproj */;
 				},
 				{
 					ProductGroup = 00D4950C1988A38900A44E4C /* Products */;
@@ -582,12 +1173,48 @@
 					ProjectRef = 00D494E31988A2E200A44E4C /* NodeBasic.xcodeproj */;
 				},
 				{
+					ProductGroup = 0043098C1BBCE48E00B72510 /* Products */;
+					ProjectRef = 0043098B1BBCE48E00B72510 /* NormalMapping.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309921BBCE49800B72510 /* Products */;
+					ProjectRef = 004309911BBCE49800B72510 /* NormalMappingBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309981BBCE4A400B72510 /* Products */;
+					ProjectRef = 004309971BBCE4A400B72510 /* ObjLoader.xcodeproj */;
+				},
+				{
+					ProductGroup = 0043099E1BBCE4BC00B72510 /* Products */;
+					ProjectRef = 0043099D1BBCE4BC00B72510 /* ParticleSphereCPU.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309A41BBCE4C800B72510 /* Products */;
+					ProjectRef = 004309A31BBCE4C800B72510 /* ParticleSphereGPU.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309AA1BBCE4D500B72510 /* Products */;
+					ProjectRef = 004309A91BBCE4D500B72510 /* PickingFBO.xcodeproj */;
+				},
+				{
 					ProductGroup = 00D495181988A3D200A44E4C /* Products */;
 					ProjectRef = 00D495171988A3D200A44E4C /* Renderer2d.xcodeproj */;
 				},
 				{
 					ProductGroup = 00D4951E1988A3EA00A44E4C /* Products */;
 					ProjectRef = 00D4951D1988A3EA00A44E4C /* RetinaSample.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309B01BBCE4E300B72510 /* Products */;
+					ProjectRef = 004309AF1BBCE4E300B72510 /* ShadowMappingBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309B61BBCE4EF00B72510 /* Products */;
+					ProjectRef = 004309B51BBCE4EF00B72510 /* StencilReflection.xcodeproj */;
+				},
+				{
+					ProductGroup = 004309BC1BBCE4F900B72510 /* Products */;
+					ProjectRef = 004309BB1BBCE4F900B72510 /* SuperformulaGPU.xcodeproj */;
 				},
 				{
 					ProductGroup = 00D495241988A40A00A44E4C /* Products */;
@@ -602,6 +1229,10 @@
 					ProjectRef = 00D495291988A41F00A44E4C /* TextureFont.xcodeproj */;
 				},
 				{
+					ProductGroup = 004309C21BBCE50800B72510 /* Products */;
+					ProjectRef = 004309C11BBCE50800B72510 /* TransformFeedbackSmokeParticles.xcodeproj */;
+				},
+				{
 					ProductGroup = 00D494EA1988A2F300A44E4C /* Products */;
 					ProjectRef = 00D494E91988A2F300A44E4C /* VoiceBasic.xcodeproj */;
 				},
@@ -614,11 +1245,144 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		0087D1B712CD7E7A002CD69F /* MultiTouch.app */ = {
+		004309541BBCE41700B72510 /* Cube.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = MultiTouch.app;
-			remoteRef = 0087D1B612CD7E7A002CD69F /* PBXContainerItemProxy */;
+			path = Cube.app;
+			remoteRef = 004309531BBCE41700B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0043095A1BBCE42100B72510 /* CubeMapping.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CubeMapping.app;
+			remoteRef = 004309591BBCE42100B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309601BBCE42F00B72510 /* DeferredShading.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DeferredShading.app;
+			remoteRef = 0043095F1BBCE42F00B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309661BBCE43B00B72510 /* DynamicCubeMapping.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DynamicCubeMapping.app;
+			remoteRef = 004309651BBCE43B00B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0043096C1BBCE44600B72510 /* FboBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FboBasic.app;
+			remoteRef = 0043096B1BBCE44600B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309721BBCE45500B72510 /* HighDynamicRange.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = HighDynamicRange.app;
+			remoteRef = 004309711BBCE45500B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309781BBCE46000B72510 /* ImmediateMode.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ImmediateMode.app;
+			remoteRef = 004309771BBCE46000B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0043097E1BBCE46E00B72510 /* InstancedTeapots.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = InstancedTeapots.app;
+			remoteRef = 0043097D1BBCE46E00B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309841BBCE47900B72510 /* MipMap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MipMap.app;
+			remoteRef = 004309831BBCE47900B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0043098A1BBCE48300B72510 /* MotionBlurFbo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MotionBlurFbo.app;
+			remoteRef = 004309891BBCE48300B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309901BBCE48E00B72510 /* NormalMapping.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = NormalMapping.app;
+			remoteRef = 0043098F1BBCE48E00B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309961BBCE49900B72510 /* NormalMappingBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = NormalMappingBasic.app;
+			remoteRef = 004309951BBCE49900B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0043099C1BBCE4A400B72510 /* ObjLoader.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ObjLoader.app;
+			remoteRef = 0043099B1BBCE4A400B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309A21BBCE4BC00B72510 /* ParticleSphereCPU.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ParticleSphereCPU.app;
+			remoteRef = 004309A11BBCE4BC00B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309A81BBCE4C800B72510 /* ParticleSphereGPU.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ParticleSphereGPU.app;
+			remoteRef = 004309A71BBCE4C800B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309AE1BBCE4D500B72510 /* PickingFBO.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = PickingFBO.app;
+			remoteRef = 004309AD1BBCE4D500B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309B41BBCE4E400B72510 /* ShadowMappingBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ShadowMappingBasic.app;
+			remoteRef = 004309B31BBCE4E400B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309BA1BBCE4F000B72510 /* StencilReflection.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = StencilReflection.app;
+			remoteRef = 004309B91BBCE4F000B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309C01BBCE4FA00B72510 /* SuperformulaGPU.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = SuperformulaGPU.app;
+			remoteRef = 004309BF1BBCE4FA00B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		004309C61BBCE50800B72510 /* TransformFeedbackSmokeParticles.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = TransformFeedbackSmokeParticles.app;
+			remoteRef = 004309C51BBCE50800B72510 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0087D25B12CD80A7002CD69F /* ClipboardBasic_iOS.app */ = {
@@ -764,10 +1528,150 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXTargetDependency section */
-		0087D32F12CD82C2002CD69F /* PBXTargetDependency */ = {
+		004309C81BBCE52200B72510 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = MultiTouch_iOS;
-			targetProxy = 0087D32E12CD82C2002CD69F /* PBXContainerItemProxy */;
+			name = TransformFeedbackSmokeParticles;
+			targetProxy = 004309C71BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309CA1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SuperformulaGPU;
+			targetProxy = 004309C91BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309CC1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = StencilReflection;
+			targetProxy = 004309CB1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309CE1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ShadowMappingBasic;
+			targetProxy = 004309CD1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309D01BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PickingFBO;
+			targetProxy = 004309CF1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309D21BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ParticleSphereGPU;
+			targetProxy = 004309D11BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309D41BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ParticleSphereCPU;
+			targetProxy = 004309D31BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309D61BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ObjLoader;
+			targetProxy = 004309D51BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309D81BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NormalMappingBasic;
+			targetProxy = 004309D71BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309DA1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NormalMapping;
+			targetProxy = 004309D91BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309DC1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MotionBlurFbo;
+			targetProxy = 004309DB1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309DE1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MipMap;
+			targetProxy = 004309DD1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309E01BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = InstancedTeapots;
+			targetProxy = 004309DF1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309E21BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ImmediateMode;
+			targetProxy = 004309E11BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309E41BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = HighDynamicRange;
+			targetProxy = 004309E31BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309E61BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FboBasic;
+			targetProxy = 004309E51BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309E81BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DynamicCubeMapping;
+			targetProxy = 004309E71BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309EA1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DeferredShading;
+			targetProxy = 004309E91BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309EC1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CubeMapping;
+			targetProxy = 004309EB1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309EE1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Cube;
+			targetProxy = 004309ED1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309F01BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BezierPathIteration;
+			targetProxy = 004309EF1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309F21BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Compass;
+			targetProxy = 004309F11BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309F41BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = iosKeyboard;
+			targetProxy = 004309F31BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309F61BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Instascope;
+			targetProxy = 004309F51BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309F81BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NativeControls;
+			targetProxy = 004309F71BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309FA1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Renderer2d;
+			targetProxy = 004309F91BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309FC1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RetinaSample;
+			targetProxy = 004309FB1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		004309FE1BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TextBox_iOS;
+			targetProxy = 004309FD1BBCE52200B72510 /* PBXContainerItemProxy */;
+		};
+		00430A001BBCE52200B72510 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TextureFont;
+			targetProxy = 004309FF1BBCE52200B72510 /* PBXContainerItemProxy */;
 		};
 		0087D33112CD82C2002CD69F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
