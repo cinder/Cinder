@@ -1,3 +1,5 @@
+#version 100
+
 // inputs passed from the vertex shader
 varying highp vec4			vVertex;
 varying highp vec3			vNormal;
