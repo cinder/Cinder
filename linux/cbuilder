@@ -30,6 +30,7 @@ CLEAN=false
 BUILDTYPES=(Debug)
 NUMPROCS=4
 GLES=
+GLESBUILD=
 FULLBUILD=true
 RPI2=
 VERBOSE=
@@ -88,24 +89,28 @@ do
         # OpenGL ES 2.0
         -es2)
             GLES="-DCINDER_GL_ES_2=1"
+			GLESBUILD="-es20"
 			shift 1
         ;;
 
         # OpenGL ES 3.0
         -es3)
             GLES="-DCINDER_GL_ES_3=1"
+			GLESBUILD="-es30"
 			shift 1
         ;;
 
         # OpenGL ES 3.1
         -es31)
             GLES="-DCINDER_GL_ES_3_1=1"
+			GLESBUILD="-es31"
 			shift 1
         ;;
 
         # OpenGL ES 3.2
         -es32)
             GLES="-DCINDER_GL_ES_3_2=1"
+			GLESBUILD="-es32"
 			shift 1
         ;;
 
@@ -113,6 +118,7 @@ do
 		-rpi2)
 			RPI2="-DCINDER_LINUX_EGL_RPI2=1"
 			GLES="-DCINDER_GL_ES_2=1"
+			GLESBUILD="-es20-rpi2"
 			shift 1
 		;;
 
@@ -137,7 +143,7 @@ done
 
 for build in ${BUILDTYPES[@]}; do
 	build_type=${build}
-	build_dir=$(pwd)/${build}
+	build_dir=$(pwd)/${build}${GLESBUILD}
 
 	# Clean
 	if [ ${CLEAN} == true ] || [ ${FULLBUILD} == true ]; then
