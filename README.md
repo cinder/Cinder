@@ -11,7 +11,7 @@ Please note that Cinder depends on a few submodules. The simplest way to clone i
 git clone --recursive https://github.com/cinder/Cinder.git
 ```
 
-To get started with Cinder from GitHub, please read this [git setup document](https://libcinder.org/docs/guides/git/index.html). You might also prefer one of our [pre-packaged downloads](http://libcinder.org/download/).
+To get started with Cinder from GitHub, please read this [git setup document](https://libcinder.org/docs/guides/git/index.html). You might also prefer one of our [pre-packaged downloads](https://libcinder.org/download).
 
 Cinder supports OS X, Windows and iOS. It requires Xcode 5.1.1 or later for development on the Mac, and Visual C++ 2013 or later on Windows.
 
