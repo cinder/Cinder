@@ -24,59 +24,35 @@
 
 		<h1>Cinder + Git</h1>
 
-		<p>If you're interested in keeping up with the latest Cinder development you'll want to setup a clone of Cinder's git repository. Cinder's home on GitHub is at <a href="http://github.com/cinder">http://github.com/cinder</a>.</p>
+		<p>If you're interested in keeping up with the latest Cinder development you'll want to setup a clone of Cinder's git repository. Cinder's home on GitHub is at <a href="https://github.com/cinder/Cinder">https://github.com/cinder/Cinder</a>.</p>
 		
-		<p>In general Cinder's active development is done in the <em>dev</em> branch, so that's the one we'll setup below. The <em>master</em> branch is designed to reflect minor updates to the latest official release.</p>
+		<p>In general Cinder's active development is done in the <em>dev</em> branch. The <em>master</em> branch is designed to reflect minor updates to the latest official release.</p>
 
 		<section>
 			<h2>Installing Git on OS X</h2>
-			<p>If you don't already have Git installed on your Mac, start by downloading the <a href="http://code.google.com/p/git-osx-installer/downloads/list">Git installer here</a> (at the time of this writing, the file <em>git-1.8.2-intel-universal-snow-leopard.dmg</em> was the latest installer).</p>
+			<p>If you don't already have Git installed on your Mac, start by downloading the <a href="http://git-scm.com/download/mac" target="_blank">Git installer here</a>.</p>
 
 			<p>Run the installer with the default settings and then launch Terminal. Navigate to the directory where you'd like to create the repository and run this command:</p>
 
 <pre><code>
-git clone -b dev --recursive git://github.com/cinder/Cinder.git cinder_master
+git clone --recursive git://github.com/cinder/Cinder.git cinder_master
 </code></pre>
-			<br />
-			<div id="macgit_image" class="center">
-				<a href="images/mac_images/step1.png" title="Download the latest Git installer from its Google code page.">
-					<img src="images/mac_images/step1_thumb.png" /></a>
-				<a href="images/mac_images/step2.png" title="The default installer options are good choices.">
-					<img src="images/mac_images/step2_thumb.png" /></a>
-				<a href="images/mac_images/step3.png" title="Cinder's home on GitHub provides a path for checking out the repository, <code>git://github.com/cinder/Cinder.git</code>">
-					<img src="images/mac_images/step3_thumb.png" /></a>
-				<a href="images/mac_images/step4.png" title="After launching Terminal, execute the command<br /> <code>git clone git://github.com/cinder/Cinder.git cinder_master</code>">
-					<img src="images/mac_images/step4_thumb.png" /></a>
-			</div>
-			<br/>
+			
 
 			<p>If you aren't familiar with git, the only command you need to remember is <code>git pull</code> which, when executed from your new cinder_master directory, will update your copy of Cinder. Doing forget to rebuild Cinder (described below) whenever you do this.</p>
 		</section>
 
 		<section>
 			<h2>Installing Git on Windows</h2>
-			<p>If you don't already have Git installed on your PC, start by downloading the <a href="http://code.google.com/p/msysgit/downloads/list">Git installer here</a> (at the time of this writing, the file <em>Git-1.8.1.2-preview20130201.exe</em> was the latest installer).</p>
+			<p>If you don't already have Git installed on your PC, start by downloading the <a href="https://git-scm.com/download/win" target="_blank">Git installer here</a>.</p>
 		
-			<p>When prompted by the installer, we recommend that you select the <em>Use Git Bash only</em> option for <em>Adjusting your PATH environment</em>. For line-ending configurations, we also recommend the default, <em>Checkut windows-style, commit Unix-style</em>. Once you've got Git installed, launch the <em>Git Bash</em> application. Navigate to the directory where you would like to setup Cinder, and execute the command:</p>
+			<p>When prompted by the installer, we recommend that you select the <em>Use Git from the Windows Command Prompt</em> option for <em>Adjusting your PATH environment</em>. For line-ending configurations, we also recommend the default, <em>Checkout windows-style, commit Unix-style</em>. Once you've got Git installed, launch the <em>Git Bash</em> application. Navigate to the directory where you would like to setup Cinder, and execute the command:</p>
 		
 <pre><code>
-git clone -b dev --recursive git://github.com/cinder/Cinder.git cinder_master
+git clone --recursive git://github.com/cinder/Cinder.git cinder_master
 </code></pre>
 			
-			<br/>
-			<div id="mswgit_image" class="center">
-				<a href="images/msw_images/step1.png" title="Download the latest Git installer from its Google code page.">
-					<img src="images/msw_images/step1_thumb.png" /></a>
-				<a href="images/msw_images/step2.png" title="When prompted about <em>Adjusting your PATH environment</em> we recommend you select <em>Use Git Bash only</em>.">
-					<img src="images/msw_images/step2_thumb.png" /></a>
-				<a href="images/msw_images/step3.png" title="When prompted about <em>Configuring line ending conversions</em> we recommend you select <em>Checkut windows-style, commit Unix-style</em>.">
-					<img src="images/msw_images/step3_thumb.png" /></a>
-				<a href="images/msw_images/step4.png" title="Cinder's home on GitHub provides a path for checking out the repository, <code>git://github.com/cinder/Cinder.git</code>">
-					<img src="images/msw_images/step4_thumb.png" /></a>
-				<a href="images/msw_images/step5.png" title="After launching Git Bash, execute the command<br /> <code>git clone git://github.com/cinder/Cinder.git cinder_master</code>">
-					<img src="images/msw_images/step5_thumb.png" /></a>
-			</div>
-			<br/>
+			<img class="center shadow" width="500" src="images/git-windows-cmd.png" >
 			
 			<p>If you aren't familiar with git, the only command you need to remember is <code>git pull</code> which, when executed from your new cinder_master directory, will update your copy of Cinder. Doing forget to rebuild Cinder (described below) whenever you do this.</p>
 		</section>
@@ -91,16 +67,16 @@ cd xcode
 ./fullbuild.sh
 </code></pre>
 			
-			<img class="center" src="images/mac_images/mac_build.png" />
+			<img class="center rounded shadow" width="500" src="images/mac_images/mac_build.png" />
 			
 		</section>
 		
 
 		<section>
 			<h2>Building on Windows</h2>	
-			<p>To build Cinder on Windows, first make sure you've got the rest of your development environment setup as described in the <a href="MSWSetup.html">Windows Setup</a> document. Next, open up the Visual Studio solution in <em>cinder\vc2013\cinder.sln</em>. You'll build as you would any Visual C++ project, and don't forget to build both Debug and Release.</p>
+			<p>To build Cinder on Windows, first make sure you've got the rest of your development environment setup as described in the <a href="../windows-setup/index.html">Windows Setup</a> document. Next, open up the Visual Studio solution in <em>cinder\vc2013\cinder.sln</em>. You'll build as you would any Visual C++ project, and don't forget to build both Debug and Release.</p>
 		
-			<p>After your build completes, the files <em>cinder.lib</em> (for Release) and <em>cinder_d.lib</em> (for Debug) will be created at the path <em>cinder\libs</em>.</p>
+			<p>After your build completes, the files <em>cinder-v120.lib</em> (for Release) and <em>cinder-v120_d.lib</em> (for Debug) will be created at the path <em>cinder\lib</em>.</p>
 		</section>
 
 		<section>
@@ -124,17 +100,6 @@ git clone git://github.com/cinder/Cinder-OpenCV.git
 
 		<!-- Scripts -->
 		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
-		<script type="text/javascript" src="../_common/js/jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="../_common/js/jquery.lightbox-0.5.pack.js"></script>
 
-		<script type="text/javascript">
-			$(function() {
-				$('#macgit_image a').lightBox({imageBtnPrev:"../_common/images/prev.png", imageBtnNext:"../_common/images/next.png", imageBtnClose:"../_common/images/close.png", containerResizeSpeed: 150});
-				$('#mswgit_image a').lightBox({imageBtnPrev:"../_common/images/prev.png", imageBtnNext:"../_common/images/next.png", imageBtnClose:"../_common/images/close.png", containerResizeSpeed: 150});
-				$('#macbuild_image a').lightBox({imageBtnPrev:"../_common/images/prev.png", imageBtnNext:"../_common/images/next.png", imageBtnClose:"../_common/images/close.png", containerResizeSpeed: 150});		
-				$('#mswbuild_image a').lightBox({imageBtnPrev:"../_common/images/prev.png", imageBtnNext:"../_common/images/next.png", imageBtnClose:"../_common/images/close.png", containerResizeSpeed: 150});		
-				$('#doxygen_image a').lightBox({imageBtnPrev:"../_common/images/prev.png", imageBtnNext:"../_common/images/next.png", imageBtnClose:"../_common/images/close.png", containerResizeSpeed: 150});	
-			});
-		</script>
 	</body>
 </html> 
