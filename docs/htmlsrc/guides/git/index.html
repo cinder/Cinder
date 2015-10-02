@@ -34,7 +34,7 @@
 
 			<p>Run the installer with the default settings and then launch Terminal. Navigate to the directory where you'd like to create the repository and run this command:</p>
 
-<pre><code>
+<pre><code class="language-bash">
 git clone --recursive git://github.com/cinder/Cinder.git cinder_master
 </code></pre>
 			
@@ -48,7 +48,7 @@ git clone --recursive git://github.com/cinder/Cinder.git cinder_master
 		
 			<p>When prompted by the installer, we recommend that you select the <em>Use Git from the Windows Command Prompt</em> option for <em>Adjusting your PATH environment</em>. For line-ending configurations, we also recommend the default, <em>Checkout windows-style, commit Unix-style</em>. Once you've got Git installed, launch the <em>Git Bash</em> application. Navigate to the directory where you would like to setup Cinder, and execute the command:</p>
 		
-<pre><code>
+<pre><code class="language-bash">
 git clone --recursive git://github.com/cinder/Cinder.git cinder_master
 </code></pre>
 			
@@ -62,12 +62,12 @@ git clone --recursive git://github.com/cinder/Cinder.git cinder_master
 			<h2>Building on OS X</h2>
 			<p>The most straightforward way to build both the Debug and Release configurations of the OS X, iOS and iOS Simulator targets is to run the script located at <em>cinder/xcode/fullbuild.sh</em></p>
 		
-<pre><code>
+<pre><code class="language-bash">
 cd xcode
 ./fullbuild.sh
 </code></pre>
 			
-			<img class="center rounded shadow" width="500" src="images/mac_images/mac_build.png" />
+			<img class="center rounded shadow" width="500" src="images/mac_build.png" />
 			
 		</section>
 		
@@ -82,7 +82,7 @@ cd xcode
 		<section>
 			<h2>OpenCV</h2>
 			<p>Cinder's support for OpenCV is maintained separately from the primary distribution due to its size. To setup OpenCV support, cd to your <em>blocks</em> directory and execute the command below:</p>
-<pre><code>
+<pre><code class="language-bash">
 cd blocks
 git clone git://github.com/cinder/Cinder-OpenCV.git
 </code></pre>
