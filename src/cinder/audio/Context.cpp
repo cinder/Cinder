@@ -38,11 +38,15 @@
 	#else // CINDER_COCOA_TOUCH
 		#include "cinder/audio/cocoa/DeviceManagerAudioSession.h"
 	#endif
-#elif defined( CINDER_MSW ) && ( _WIN32_WINNT >= _WIN32_WINNT_VISTA )
+#elif defined( CINDER_MSW ) && ( _WIN32_WINNT >= 0x0600 ) // Windows Vista+
 	#define CINDER_AUDIO_WASAPI
 	#include "cinder/audio/msw/ContextWasapi.h"
 	#include "cinder/audio/msw/DeviceManagerWasapi.h"
+#else
+	#define CINDER_AUDIO_DISABLED
 #endif
+
+#if ! defined( CINDER_AUDIO_DISABLED )
 
 using namespace std;
 
@@ -75,7 +79,7 @@ Context* Context::master()
 #if defined( CINDER_COCOA )
 		sMasterContext.reset( new cocoa::ContextAudioUnit() );
 #elif defined( CINDER_MSW )
-	#if( _WIN32_WINNT >= _WIN32_WINNT_VISTA )
+	#if( _WIN32_WINNT >= 0x0600 ) // requires Windows Vista+
 		sMasterContext.reset( new msw::ContextWasapi() );
 	#else
 		sMasterContext.reset( new msw::ContextXAudio() );
@@ -96,7 +100,7 @@ DeviceManager* Context::deviceManager()
 #elif defined( CINDER_COCOA_TOUCH )
 		sDeviceManager.reset( new cocoa::DeviceManagerAudioSession() );
 #elif defined( CINDER_MSW )
-	#if( _WIN32_WINNT > _WIN32_WINNT_VISTA )
+	#if( _WIN32_WINNT > 0x0600 ) // requires Windows Vista+
 		sDeviceManager.reset( new msw::DeviceManagerWasapi() );
 	//#else
 	//	CI_ASSERT( 0 && "TODO: simple DeviceManagerXp" );
@@ -449,3 +453,5 @@ ScopedEnableContext::~ScopedEnableContext()
 }
 
 } } // namespace cinder::audio
+
+#endif // ! defined( CINDER_AUDIO_DISABLED )

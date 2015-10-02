@@ -126,9 +126,9 @@ CINDER_APP( ExampleApp, RendererGl(), ExampleApp::prepareSettings )
 While the <a href="http://http://www.boost.org/">Boost</a> libraries still ship with Cinder, we&rsquo;ve begun the process of deprecating them in this release, as much of the functionality we originally relied on is now part of C++11 and later. Users are obviously welcome to continue using Boost in their own code, but CinderBlock authors are encouraged to remove dependencies where possible. As a first step toward this change, Cinder&rsquo;s Boost directory has moved from <em><code>$(CINDER)</code></em><code>/boost</code> to <em><code>$(CINDER)</code></em><code>/include/boost</code>.
 </p>
 
-<h4>Mac-specific Changes:</h4>
+<h4>OS X-specific Changes:</h4>
 <p>
-32-bit Mac apps are still supported but are deprecated. By default Cinder apps are 64-bit on OS X.
+32-bit OS X apps are still supported but are deprecated. By default Cinder apps are 64-bit on OS X.
 Several OS-level frameworks have been added to all Cinder apps:<br />
 IOSurface, IOKit, AVFoundation, CoreMedia
 </p>

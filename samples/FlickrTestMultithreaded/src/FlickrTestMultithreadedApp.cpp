@@ -58,7 +58,7 @@ void FlickrTestMTApp::loadImagesThreadFn( gl::ContextRef context )
 	vector<Url>	urls;
 
 	// parse the image URLS from the XML feed and push them into 'urls'
-	const Url sunFlickrGroup = Url( "http://api.flickr.com/services/feeds/groups_pool.gne?id=52242317293@N01&format=rss_200" );
+	const Url sunFlickrGroup = Url( "https://api.flickr.com/services/feeds/groups_pool.gne?id=52242317293@N01&format=rss_200" );
 	const XmlTree xml( loadUrl( sunFlickrGroup ) );
 	for( auto item = xml.begin( "rss/channel/item" ); item != xml.end(); ++item ) {
 		const XmlTree &urlXml = ( ( *item / "media:content" ) );

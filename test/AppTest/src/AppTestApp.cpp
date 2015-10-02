@@ -18,7 +18,7 @@ using namespace std;
 
 void prepareSettings( App::Settings *settings )
 {
-	CI_LOG_I( "bang" );
+	CI_LOG_I( "entering prepareSettings()" );
 
 	const auto &args = settings->getCommandLineArgs();
 	if( ! args.empty() ) {
@@ -125,7 +125,13 @@ AppTestApp::~AppTestApp()
 
 void AppTestApp::setup()
 {
-	CI_LOG_I( "bang" );
+	CI_LOG_I( "entering setup()" );
+
+	CI_LOG_I( "displays: " );
+	auto displays = Display::getDisplays();
+	for( auto &display : displays ) {
+		CI_LOG_I( "   {" << toString( *display ) << "}" );
+	}
 
 	auto asset = loadAsset( "mustache-green.png" );
 	mTexAsset = gl::Texture::create( loadImage( asset ) );

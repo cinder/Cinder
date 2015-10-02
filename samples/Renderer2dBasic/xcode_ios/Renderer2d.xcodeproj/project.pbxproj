@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		001726BF16B1C88700895B66 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 001726BE16B1C88700895B66 /* MobileCoreServices.framework */; };
 		001726C116B1C88F00895B66 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 001726C016B1C88F00895B66 /* ImageIO.framework */; };
+		002BA6441BBCEF8A00E3E904 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002BA6431BBCEF8A00E3E904 /* Accelerate.framework */; };
 		0087D25512CD809F002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D25412CD809F002CD69F /* CoreText.framework */; };
 		00AE211A1639BED6007D532C /* cinder_logo_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 00AE21191639BED6007D532C /* cinder_logo_alpha.png */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
@@ -27,6 +28,7 @@
 /* Begin PBXFileReference section */
 		001726BE16B1C88700895B66 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		001726C016B1C88F00895B66 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		002BA6431BBCEF8A00E3E904 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		00692BCF14FF149000D0A05E /* Renderer2d.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Renderer2d.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0087D25412CD809F002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		00AE21191639BED6007D532C /* cinder_logo_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cinder_logo_alpha.png; path = ../../data/cinder_logo_alpha.png; sourceTree = "<group>"; };
@@ -51,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				002BA6441BBCEF8A00E3E904 /* Accelerate.framework in Frameworks */,
 				001726C116B1C88F00895B66 /* ImageIO.framework in Frameworks */,
 				001726BF16B1C88700895B66 /* MobileCoreServices.framework in Frameworks */,
 				C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */,
@@ -94,6 +97,7 @@
 		00692BD214FF149000D0A05E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				002BA6431BBCEF8A00E3E904 /* Accelerate.framework */,
 				C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */,
 				C727C02B121B400300192073 /* CoreMedia.framework */,
 				C727C02D121B400300192073 /* CoreVideo.framework */,
@@ -288,6 +292,7 @@
 				GCC_PREFIX_HEADER = Renderer2d_Prefix.pch;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 				WRAPPER_EXTENSION = app;
@@ -304,6 +309,7 @@
 				GCC_PREFIX_HEADER = Renderer2d_Prefix.pch;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 				WRAPPER_EXTENSION = app;

@@ -26,7 +26,7 @@ public:
 	void drawPlane();
 	void drawSpline();
 	void drawBall();
-	void draw();
+	void draw() override;
 
 private:
 	CameraPersp		mCam;
@@ -160,7 +160,7 @@ void QuaternionAccumApp::draw()
 	gl::setMatrices( mCam );
 
 	// Enable depth buffer reading and writing.
-	gl::ScopedDepth depth( true, true );
+	gl::ScopedDepth depth( true );
 
 	// Draw our scene.
 	drawPlane();

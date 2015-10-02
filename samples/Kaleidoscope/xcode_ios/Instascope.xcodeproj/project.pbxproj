@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		002BA6461BBCEFFE00E3E904 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002BA6451BBCEFFE00E3E904 /* Accelerate.framework */; };
 		0056F2F71686CE46008B0D98 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0056F2F61686CE46008B0D98 /* ImageIO.framework */; };
 		0056F2F91686CE60008B0D98 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0056F2F81686CE60008B0D98 /* MobileCoreServices.framework */; };
 		00A4DF3215ACD59300D38787 /* InstagramStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A4DF2F15ACD59300D38787 /* InstagramStream.cpp */; };
@@ -29,6 +30,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		002BA6451BBCEFFE00E3E904 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		0056F2F61686CE46008B0D98 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		0056F2F81686CE60008B0D98 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		00A4DF2F15ACD59300D38787 /* InstagramStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstagramStream.cpp; path = ../src/InstagramStream.cpp; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				002BA6461BBCEFFE00E3E904 /* Accelerate.framework in Frameworks */,
 				0056F2F91686CE60008B0D98 /* MobileCoreServices.framework in Frameworks */,
 				0056F2F71686CE46008B0D98 /* ImageIO.framework in Frameworks */,
 				C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */,
@@ -146,6 +149,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				002BA6451BBCEFFE00E3E904 /* Accelerate.framework */,
 				0056F2F61686CE46008B0D98 /* ImageIO.framework */,
 				C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */,
 				C7FB19D5124BC0D70045AFD3 /* CoreText.framework */,
@@ -186,6 +190,8 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Instascope" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -243,7 +249,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "Instascope-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"",
 					"-lz",
@@ -268,7 +274,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "Instascope-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone.a\"",
 					"-lz",

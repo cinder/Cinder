@@ -1,3 +1,5 @@
+#version 100
+
 uniform mat4	ciModelView;
 uniform mat4	ciModelViewProjection;
 uniform mat3	ciNormalMatrix;

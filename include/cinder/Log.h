@@ -27,6 +27,7 @@
 #include "cinder/Filesystem.h"
 #include "cinder/CurrentFunction.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/Noncopyable.h"
 #include "cinder/System.h"
 
 #include <sstream>
@@ -73,7 +74,10 @@ struct Metadata {
 extern std::ostream& operator<<( std::ostream &os, const Location &rhs );
 extern std::ostream& operator<<( std::ostream &lhs, const Level &rhs );
 
-class Logger {
+//! Logger is the base class all logging objects are derived from.
+//!
+//! \see LoggerConsole, LoggerFile, LoggerFileRotating
+class Logger : private Noncopyable {
   public:
 	virtual ~Logger()	{}
 
@@ -81,7 +85,7 @@ class Logger {
 
 	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
 	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
-
+	
   protected:
 	Logger() : mTimeStampEnabled( false ) {}
 
@@ -90,25 +94,29 @@ class Logger {
   private:
 	bool mTimeStampEnabled;
 };
+	
+typedef std::shared_ptr<Logger>	LoggerRef;
 
+//! LoggerConsole prints log messages in the application console window.
 class LoggerConsole : public Logger {
   public:
 	void write( const Metadata &meta, const std::string &text ) override;
 };
 
+//! \brief LoggerFile will write log messages to a specified file.
+//!
+//! LoggerFile will write to a specified file, either appending to or overwriting that file at application startup.
 class LoggerFile : public Logger {
   public:
-	// Standard loggerFile, will write to a single log file.  File appending is configurable.
-	// ! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
+	//! LoggerFile writes to a single log file.  File appending is configurable.
+	//! If \p filePath is empty, uses the default ('%cinder.log' next to app binary)
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	// daily rotating logger, will write to a formatted log file, updated at the first log request
-	// after midnight.
-	// ! If \a folder or \a formatStr are empty, ignores request
-	LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+
 	virtual ~LoggerFile();
 
 	void write( const Metadata &meta, const std::string &text ) override;
 
+	//! Returns the file path targeted by this logger.
 	const fs::path&		getFilePath() const		{ return mFilePath; }
 
   protected:
@@ -116,15 +124,29 @@ class LoggerFile : public Logger {
 	void		ensureDirectoryExists();
 
 	fs::path		mFilePath;
-	fs::path		mFolderPath;
-	std::string		mDailyFormatStr;
-	int				mYearDay;
 	bool			mAppend;
-	bool			mRotating;
 	std::ofstream	mStream;
 };
 
-//! Logger that doesn't actually print anything, but triggers a breakpoint if a log event happens past a specified threshold
+//! LoggerFileRotating will write log messages to a file that is rotated at midnight.
+class LoggerFileRotating : public LoggerFile {
+public:
+	
+	//! Creates a rotating log file that will rotate when the first logging event occurs after midnight.
+	//! \p formatStr will be passed to strftime to determine the file name.
+	LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+	
+	virtual ~LoggerFileRotating() { }
+	
+	void write( const Metadata &meta, const std::string &text ) override;
+	
+protected:
+	fs::path		mFolderPath;
+	std::string		mDailyFormatStr;
+	int				mYearDay;
+};
+	
+//! LoggerBreakpoint doesn't actually print anything, but triggers a breakpoint on log events above a specified threshold.
 class LoggerBreakpoint : public Logger {
   public:
 	LoggerBreakpoint( Level triggerLevel = LEVEL_ERROR )
@@ -135,17 +157,21 @@ class LoggerBreakpoint : public Logger {
 
 	void	setTriggerLevel( Level triggerLevel )	{ mTriggerLevel = triggerLevel; }
 	Level	getTriggerLevel() const					{ return mTriggerLevel; }
+	
   private:
 	Level	mTriggerLevel;
 };
 
-//! Provides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windows Event Logging. \note Does nothing on WinRT.
+//! LoggerSystem rovides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windows Event Logging.
+//! \note Does nothing on WinRT.
 class LoggerSystem : public Logger {
 public:
 	LoggerSystem();
 	virtual ~LoggerSystem();
 	
 	void write( const Metadata &meta, const std::string &text ) override;
+	//! Sets the minimum logging level that will trigger a system log.
+	//! \note Setting \p minLevel below CI_MIN_LOG_LEVEL is pointless; minLevel will act like CI_MIN_LOG_LEVEL.
 	void setLoggingLevel( Level minLevel ) { mMinLevel = minLevel; }
 	
 protected:
@@ -159,108 +185,53 @@ protected:
 #endif
 };
 
-//! \brief Logger that can log to multiple other Loggers.
+//! \brief LogManager manages a stack of all active Loggers.
 //!
-//! This is primarily used by LogManager as it's base Logger, when multiple log outputs are enabled (ex. console and file)
-class LoggerMulti : public Logger {
-  public:
-	void add( Logger *logger )							{ mLoggers.push_back( std::unique_ptr<Logger>( logger ) ); }
-	void add( std::unique_ptr<Logger> &&logger )		{ mLoggers.emplace_back( move( logger ) ); }
-
-	template <typename LoggerT>
-	LoggerT* findType();
-
-	void remove( Logger *logger );
-
-	const std::vector<std::unique_ptr<Logger> >& getLoggers() const	{ return mLoggers; }
-
-	void write( const Metadata &meta, const std::string &text ) override;
-
-  private:
-	std::vector<std::unique_ptr<Logger> >	mLoggers;
-};
-
+//! LogManager's default state contains a single LoggerConsole.  LogManager allows for adding and removing Loggers via their pointer values.
 class LogManager {
 public:
 	// Returns a pointer to the shared instance. To enable logging during shutdown, this instance is leaked at shutdown.
 	static LogManager* instance()	{ return sInstance; }
 	//! Destroys the shared instance. Useful to remove false positives with leak detectors like valgrind.
 	static void destroyInstance()	{ delete sInstance; }
-	//! Restores LogManager to its default state.
+	//! Restores LogManager to its default state - a single LoggerConsole.
 	void restoreToDefault();
 
-	//! Resets the current Logger stack so only \a logger exists.
-	void resetLogger( Logger *logger );
+	//! Removes all loggers from the stack.
+	void clearLoggers();
+	//! Resets the current Logger stack so only \p logger exists.
+	void resetLogger( const LoggerRef& logger );
 	//! Adds \a logger to the current stack of loggers.
-	void addLogger( Logger *logger );
+	void addLogger( const LoggerRef& logger );
 	//! Remove \a logger to the current stack of loggers.
-	void removeLogger( Logger *logger );
-	//! Returns a pointer to the current base Logger instance.
-	Logger* getLogger()	{ return mLogger.get(); }
-	//! Returns a logger of a specifc type, or nullptr is that type of Logger is currently not in use.
+	void removeLogger( const LoggerRef& logger );
+	//! Returns a vector of Loggers of a specifc type.
 	template<typename LoggerT>
-	LoggerT* getLogger();
-	//! Returns a vector of all current loggers
-	std::vector<Logger *> getAllLoggers();
-	//! Returns the mutex used for thread safe loggers. Also used when adding or resetting new loggers.
+	std::vector<std::shared_ptr<LoggerT>> getLoggers();
+	//! Returns a vector of LoggerRef that contains all active loggers
+	std::vector<LoggerRef> getAllLoggers();
+	//! Returns the mutex used for thread safe logging.
 	std::mutex& getMutex() const			{ return mMutex; }
-
-	void enableConsoleLogging();
-	void disableConsoleLogging();
-	void setConsoleLoggingEnabled( bool enable )		{ enable ? enableConsoleLogging() : disableConsoleLogging(); }
-	bool isConsoleLoggingEnabled() const				{ return mConsoleLoggingEnabled; }
-
-	void enableFileLogging( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void enableFileLoggingRotating( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
-	void disableFileLogging();
-	void setFileLoggingEnabled( bool enable, const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
-	bool isFileLoggingEnabled() const					{ return mFileLoggingEnabled; }
-
-	void enableSystemLogging();
-	void disableSystemLogging();
-	void setSystemLoggingEnabled( bool enable = true )		{ enable ? enableSystemLogging() : disableSystemLogging(); }
-	bool isSystemLoggingEnabled() const					{ return mSystemLoggingEnabled; }
-	void setSystemLoggingLevel( Level level );
-	Level getSystemLoggingLevel() const					{ return mSystemLoggingLevel; }
-
-	//! Enables a breakpoint to be triggered when a log message happens at `LEVEL_ERROR` or higher
-	void enableBreakOnError()							{ enableBreakOnLevel( LEVEL_ERROR ); }
-	//! Enables a breakpoint to be triggered when a log message happens at \a trigerLevel or higher.
-	void enableBreakOnLevel( Level trigerLevel );
-	//! Disables any breakpoints set for logging.
-	void disableBreakOnLog();
+	
+	void write( const Metadata &meta, const std::string &text );
+	
+	template<typename LoggerT, typename... Args>
+	std::shared_ptr<LoggerT> makeLogger( Args&&... args );
 
 protected:
 	LogManager();
 
-	bool initFileLogging();
-
-	std::unique_ptr<Logger>	mLogger;
-	LoggerMulti*			mLoggerMulti;
-	mutable std::mutex		mMutex;
-	bool					mConsoleLoggingEnabled, mFileLoggingEnabled, mSystemLoggingEnabled, mBreakOnLogEnabled;
-	Level					mSystemLoggingLevel;
-
-	static LogManager *sInstance;
+	std::vector<LoggerRef>			mLoggers;
+	
+	mutable std::mutex				mMutex;
+	
+	static LogManager 				*sInstance;
 };
-
-LogManager* manager();
-
+	
 struct Entry {
 	// TODO: move &&location
-	Entry( Level level, const Location &location )
-		: mHasContent( false )
-	{
-		mMetaData.mLevel = level;
-		mMetaData.mLocation = location;
-	}
-
-	~Entry()
-	{
-		if( mHasContent )
-			writeToLog();
-	}
+	Entry( Level level, const Location &location );
+	~Entry();
 
 	template <typename T>
 	Entry& operator<<( const T &rhs )
@@ -270,11 +241,7 @@ struct Entry {
 		return *this;
 	}
 
-	void writeToLog()
-	{
-		manager()->getLogger()->write( mMetaData, mStream.str() );
-	}
-
+	void writeToLog();
 	const Metadata&	getMetaData() const	{ return mMetaData; }
 
 private:
@@ -284,52 +251,48 @@ private:
 	std::stringstream	mStream;
 };
 
+// ----------------------------------------------------------------------------------
+// Freestanding functions
 
-template<class LoggerT>
-class ThreadSafeT : public LoggerT {
-  public:
-	template <typename... Args>
-	ThreadSafeT( Args &&... args )
-	: LoggerT( std::forward<Args>( args )... )
-	{}
+//! The global manager for logging, used to manipulate the Logger stack. Provides thread safety amongst the Loggers.
+LogManager* manager();
 
-	void write( const Metadata &meta, const std::string &text ) override
-	{
-		std::lock_guard<std::mutex> lock( manager()->getMutex() );
-		LoggerT::write( meta, text );
-	}
-};
-
-typedef ThreadSafeT<LoggerConsole>		LoggerConsoleThreadSafe;
-typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
+//! Creates and returns a new logger of type LoggerT, adding it to the current Logger stack.
+template<typename LoggerT, typename... Args>
+std::shared_ptr<LoggerT> makeLogger( Args&&... args )
+{
+	return manager()->makeLogger<LoggerT>( std::forward<Args>( args )... );
+}
 
 // ----------------------------------------------------------------------------------
 // Template method implementations
 
-template <typename LoggerT>
-LoggerT* LoggerMulti::findType()
+template<typename LoggerT, typename... Args>
+std::shared_ptr<LoggerT> LogManager::makeLogger( Args&&... args )
 {
-	for( const auto &logger : mLoggers ) {
-		auto result = dynamic_cast<LoggerT *>( logger.get() );
-		if( result )
-			return result;
-	}
-
-	return nullptr;
+	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
+	
+	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
+	addLogger( result );
+	return result;
 }
 
 template<typename LoggerT>
-LoggerT* LogManager::getLogger()
+std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
 {
-	auto loggerMulti = dynamic_cast<LoggerMulti *>( mLogger.get() );
-	if( loggerMulti ) {
-		return loggerMulti->findType<LoggerT>();
-	}
-	else {
-		return dynamic_cast<LoggerT *>( mLogger.get() );
-	}
-}
+	std::vector<std::shared_ptr<LoggerT>> result;
 
+	std::lock_guard<std::mutex> lock( manager()->getMutex() );
+	for( const auto &logger : mLoggers ) {
+		auto loggerCasted = std::dynamic_pointer_cast<LoggerT>( logger );
+		if( loggerCasted ) {
+			result.push_back( loggerCasted );
+		}
+	}
+
+	return result;
+}
+	
 } } // namespace cinder::log
 
 // ----------------------------------------------------------------------------------

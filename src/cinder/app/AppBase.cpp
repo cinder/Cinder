@@ -22,12 +22,9 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define ASIO_STANDALONE 1
-#if defined( _WIN32 ) || defined( __WIN32__ ) || defined( WIN32 )
-	#include <winapifamily.h>
-	#if ! WINAPI_FAMILY_PARTITION( WINAPI_PARTITION_DESKTOP )
-		#define ASIO_WINDOWS_RUNTIME 1
-	#endif
+#include "cinder/Cinder.h"
+#if defined( CINDER_WINRT )
+	#define ASIO_WINDOWS_RUNTIME 1
 #endif
 #include "asio/asio.hpp"
 

@@ -26,7 +26,7 @@ class FlickrTestApp : public App {
 
 void FlickrTestApp::setup()
 {
-	const Url flickrUrl( "http://api.flickr.com/services/feeds/groups_pool.gne?id=1423039@N24&lang=en-us&format=rss_200" );
+	const Url flickrUrl( "https://api.flickr.com/services/feeds/groups_pool.gne?id=1423039@N24&lang=en-us&format=rss_200" );
 	const XmlTree xml( loadUrl( flickrUrl ) );
 	for( auto item = xml.begin( "rss/channel/item" ); item != xml.end(); ++item )
 		mUrls.push_back( Url(((*item) / "media:content")["url"]) );
