@@ -3000,8 +3000,11 @@ def update_links(html, template_path, src_path, save_path):
         if iframe.has_attr("src"):
 
             link_src = iframe["src"]
-            # if not posixpath.isabs(link_src):
-                # link_src = "/" + link_src
+
+            # on osx/unix
+            if os.sep == "/":
+                if not posixpath.isabs(link_src):
+                    link_src = "/" + link_src
             if link_src.startswith('javascript') or link_src.startswith('http'):
                 return
 
