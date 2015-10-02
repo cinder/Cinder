@@ -89,6 +89,8 @@ class EnvironmentEs : public Environment {
 	bool	supportsTextureLod() const override;
 	bool	supportsMapBuffer() const override;
 	bool 	supportsMapBufferRange() const override;
+	bool	supportsGeometryShader() const override;
+	bool	supportsTessellationShader() const override;	
 
 	GLenum	getPreferredIndexType() const override;
 		
@@ -221,6 +223,16 @@ bool EnvironmentEs::supportsMapBufferRange() const
 	// Assumes OpenGL ES 3 or greater
 	return true;
 #endif	
+}
+
+bool EnvironmentEs::supportsGeometryShader() const
+{
+	return isExtensionAvailable( "GL_EXT_geometry_shader" );
+}
+
+bool EnvironmentEs::supportsTessellationShader() const
+{
+	return isExtensionAvailable( "GL_EXT_tessellation_shader" );
 }
 
 GLenum EnvironmentEs::getPreferredIndexType() const

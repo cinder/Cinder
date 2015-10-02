@@ -355,7 +355,7 @@
 	#define glVertexAttribFormat fnptr_ci_glVertexAttribFormat 
 	#define glVertexAttribIFormat fnptr_ci_glVertexAttribIFormat 
 	#define glVertexAttribBinding fnptr_ci_glVertexAttribBinding 
-	#define glVertexBindingDivisor fnptr_ci_glVertexBindingDivisor 
+	#define glVertexBindingDivisor fnptr_ci_glVertexBindingDivisor
 #endif // defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1 )
 
 // ----------------------------------------------------------------------------
@@ -495,7 +495,6 @@
 	extern PFNGLGETBUFFERPOINTERVOESPROC fnptr_ci_glGetBufferPointervOES; 
 	extern PFNGLPRIMITIVEBOUNDINGBOXOESPROC fnptr_ci_glPrimitiveBoundingBoxOES; 
 	extern PFNGLMINSAMPLESHADINGOESPROC fnptr_ci_glMinSampleShadingOES; 
-	extern PFNGLPATCHPARAMETERIOESPROC fnptr_ci_glPatchParameteriOES; 
 	extern PFNGLTEXIMAGE3DOESPROC fnptr_ci_glTexImage3DOES; 
 	extern PFNGLTEXSUBIMAGE3DOESPROC fnptr_ci_glTexSubImage3DOES; 
 	extern PFNGLCOPYTEXSUBIMAGE3DOESPROC fnptr_ci_glCopyTexSubImage3DOES; 
@@ -641,7 +640,6 @@
 	extern PFNGLPROGRAMUNIFORMMATRIX3X4FVEXTPROC fnptr_ci_glProgramUniformMatrix3x4fvEXT; 
 	extern PFNGLPROGRAMUNIFORMMATRIX4X3FVEXTPROC fnptr_ci_glProgramUniformMatrix4x3fvEXT; 
 	extern PFNGLTEXPAGECOMMITMENTEXTPROC fnptr_ci_glTexPageCommitmentEXT; 
-	extern PFNGLPATCHPARAMETERIEXTPROC fnptr_ci_glPatchParameteriEXT; 
 	extern PFNGLTEXPARAMETERIIVEXTPROC fnptr_ci_glTexParameterIivEXT; 
 	extern PFNGLTEXPARAMETERIUIVEXTPROC fnptr_ci_glTexParameterIuivEXT; 
 	extern PFNGLGETTEXPARAMETERIIVEXTPROC fnptr_ci_glGetTexParameterIivEXT; 
@@ -847,8 +845,7 @@
 	#define glProgramBinaryOES fnptr_ci_glProgramBinaryOES 
 	#define glGetBufferPointervOES fnptr_ci_glGetBufferPointervOES 
 	#define glPrimitiveBoundingBoxOES fnptr_ci_glPrimitiveBoundingBoxOES 
-	#define glMinSampleShadingOES fnptr_ci_glMinSampleShadingOES 
-	#define glPatchParameteriOES fnptr_ci_glPatchParameteriOES 
+	#define glMinSampleShadingOES fnptr_ci_glMinSampleShadingOES
 	#define glTexImage3DOES fnptr_ci_glTexImage3DOES 
 	#define glTexSubImage3DOES fnptr_ci_glTexSubImage3DOES 
 	#define glCopyTexSubImage3DOES fnptr_ci_glCopyTexSubImage3DOES 
@@ -995,7 +992,6 @@
 	#define glProgramUniformMatrix3x4fvEXT fnptr_ci_glProgramUniformMatrix3x4fvEXT 
 	#define glProgramUniformMatrix4x3fvEXT fnptr_ci_glProgramUniformMatrix4x3fvEXT 
 	#define glTexPageCommitmentEXT fnptr_ci_glTexPageCommitmentEXT 
-	#define glPatchParameteriEXT fnptr_ci_glPatchParameteriEXT 
 	#define glTexParameterIivEXT fnptr_ci_glTexParameterIivEXT 
 	#define glTexParameterIuivEXT fnptr_ci_glTexParameterIuivEXT 
 	#define glGetTexParameterIivEXT fnptr_ci_glGetTexParameterIivEXT 
@@ -1214,6 +1210,56 @@
 		extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC fnptr_ci_glRenderbufferStorageMultisample; 
 		#define glRenderbufferStorageMultisample fnptr_ci_glRenderbufferStorageMultisample 
 	#endif
+
+	// Android Extension Pack
+	#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+		#define GL_PATCHES GL_PATCHES_EXT                    
+		#define GL_PATCH_VERTICES GL_PATCH_VERTICES_EXT             
+		#define GL_TESS_CONTROL_OUTPUT_VERTICES GL_TESS_CONTROL_OUTPUT_VERTICES_EXT 
+		#define GL_TESS_GEN_MODE GL_TESS_GEN_MODE_EXT              
+		#define GL_TESS_GEN_SPACING GL_TESS_GEN_SPACING_EXT           
+		#define GL_TESS_GEN_VERTEX_ORDER GL_TESS_GEN_VERTEX_ORDER_EXT      
+		#define GL_TESS_GEN_POINT_MODE GL_TESS_GEN_POINT_MODE_EXT        
+		#define GL_ISOLINES GL_ISOLINES_EXT                   
+		#define GL_QUADS GL_QUADS_EXT                      
+		#define GL_FRACTIONAL_ODD GL_FRACTIONAL_ODD_EXT             
+		#define GL_FRACTIONAL_EVEN GL_FRACTIONAL_EVEN_EXT            
+		#define GL_MAX_PATCH_VERTICES GL_MAX_PATCH_VERTICES_EXT         
+		#define GL_MAX_TESS_GEN_LEVEL GL_MAX_TESS_GEN_LEVEL_EXT         
+		#define GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS_EXT 
+		#define GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS_EXT 
+		#define GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS_EXT 
+		#define GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS_EXT 
+		#define GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS_EXT 
+		#define GL_MAX_TESS_PATCH_COMPONENTS GL_MAX_TESS_PATCH_COMPONENTS_EXT  
+		#define GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS_EXT 
+		#define GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS_EXT 
+		#define GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS_EXT 
+		#define GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS_EXT 
+		#define GL_MAX_TESS_CONTROL_INPUT_COMPONENTS GL_MAX_TESS_CONTROL_INPUT_COMPONENTS_EXT 
+		#define GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS_EXT 
+		#define GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS_EXT 
+		#define GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS_EXT 
+		#define GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS_EXT 
+		#define GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS_EXT 
+		#define GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS_EXT 
+		#define GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS_EXT 
+		#define GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS_EXT 
+		#define GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS_EXT 
+		#define GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS_EXT 
+		#define GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS_EXT 
+		#define GL_IS_PER_PATCH GL_IS_PER_PATCH_EXT               
+		#define GL_REFERENCED_BY_TESS_CONTROL_SHADER GL_REFERENCED_BY_TESS_CONTROL_SHADER_EXT 
+		#define GL_REFERENCED_BY_TESS_EVALUATION_SHADER GL_REFERENCED_BY_TESS_EVALUATION_SHADER_EXT 
+		#define GL_TESS_CONTROL_SHADER GL_TESS_CONTROL_SHADER_EXT        
+		#define GL_TESS_EVALUATION_SHADER GL_TESS_EVALUATION_SHADER_EXT     
+		#define GL_TESS_CONTROL_SHADER_BIT GL_TESS_CONTROL_SHADER_BIT_EXT    
+		#define GL_TESS_EVALUATION_SHADER_BIT GL_TESS_EVALUATION_SHADER_BIT_EXT 
+
+		typedef void (GL_APIENTRYP PFNGLPATCHPARAMETERIPROC) (GLenum pname, GLint value);
+		extern PFNGLPATCHPARAMETERIPROC fnptr_ci_glPatchParameteri;
+		#define glPatchParameteri fnptr_ci_glPatchParameteri
+	#endif	
 #endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
 
 // ----------------------------------------------------------------------------

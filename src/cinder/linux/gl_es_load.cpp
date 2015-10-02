@@ -550,8 +550,7 @@ PFNGLGETPROGRAMBINARYOESPROC fnptr_ci_glGetProgramBinaryOES = nullptr;
 PFNGLPROGRAMBINARYOESPROC fnptr_ci_glProgramBinaryOES = nullptr; 
 PFNGLGETBUFFERPOINTERVOESPROC fnptr_ci_glGetBufferPointervOES = nullptr; 
 PFNGLPRIMITIVEBOUNDINGBOXOESPROC fnptr_ci_glPrimitiveBoundingBoxOES = nullptr; 
-PFNGLMINSAMPLESHADINGOESPROC fnptr_ci_glMinSampleShadingOES = nullptr; 
-PFNGLPATCHPARAMETERIOESPROC fnptr_ci_glPatchParameteriOES = nullptr; 
+PFNGLMINSAMPLESHADINGOESPROC fnptr_ci_glMinSampleShadingOES = nullptr;
 PFNGLTEXIMAGE3DOESPROC fnptr_ci_glTexImage3DOES = nullptr; 
 PFNGLTEXSUBIMAGE3DOESPROC fnptr_ci_glTexSubImage3DOES = nullptr; 
 PFNGLCOPYTEXSUBIMAGE3DOESPROC fnptr_ci_glCopyTexSubImage3DOES = nullptr; 
@@ -696,8 +695,7 @@ PFNGLPROGRAMUNIFORMMATRIX2X4FVEXTPROC fnptr_ci_glProgramUniformMatrix2x4fvEXT = 
 PFNGLPROGRAMUNIFORMMATRIX4X2FVEXTPROC fnptr_ci_glProgramUniformMatrix4x2fvEXT = nullptr; 
 PFNGLPROGRAMUNIFORMMATRIX3X4FVEXTPROC fnptr_ci_glProgramUniformMatrix3x4fvEXT = nullptr; 
 PFNGLPROGRAMUNIFORMMATRIX4X3FVEXTPROC fnptr_ci_glProgramUniformMatrix4x3fvEXT = nullptr; 
-PFNGLTEXPAGECOMMITMENTEXTPROC fnptr_ci_glTexPageCommitmentEXT = nullptr; 
-PFNGLPATCHPARAMETERIEXTPROC fnptr_ci_glPatchParameteriEXT = nullptr; 
+PFNGLTEXPAGECOMMITMENTEXTPROC fnptr_ci_glTexPageCommitmentEXT = nullptr;
 PFNGLTEXPARAMETERIIVEXTPROC fnptr_ci_glTexParameterIivEXT = nullptr; 
 PFNGLTEXPARAMETERIUIVEXTPROC fnptr_ci_glTexParameterIuivEXT = nullptr; 
 PFNGLGETTEXPARAMETERIIVEXTPROC fnptr_ci_glGetTexParameterIivEXT = nullptr; 
@@ -885,6 +883,11 @@ PFNGLMAPBUFFEROESPROC fnptr_ci_glMapBufferOES = nullptr;
 	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC fnptr_ci_glRenderbufferStorageMultisample = nullptr; 
 #endif
 
+// Android Extension Pack
+#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+	PFNGLPATCHPARAMETERIPROC fnptr_ci_glPatchParameteri = nullptr;
+#endif
+
 void gl_es_2_0_ext_load() 
 {
 	DEBUG( "gl_es_2_0_ext_load entered..." );
@@ -927,7 +930,6 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glGetBufferPointervOES = (PFNGLGETBUFFERPOINTERVOESPROC)loadEglProc("glGetBufferPointervOES"); 
 	fnptr_ci_glPrimitiveBoundingBoxOES = (PFNGLPRIMITIVEBOUNDINGBOXOESPROC)loadEglProc("glPrimitiveBoundingBoxOES"); 
 	fnptr_ci_glMinSampleShadingOES = (PFNGLMINSAMPLESHADINGOESPROC)loadEglProc("glMinSampleShadingOES"); 
-	fnptr_ci_glPatchParameteriOES = (PFNGLPATCHPARAMETERIOESPROC)loadEglProc("glPatchParameteriOES"); 
 	fnptr_ci_glTexImage3DOES = (PFNGLTEXIMAGE3DOESPROC)loadEglProc("glTexImage3DOES"); 
 	fnptr_ci_glTexSubImage3DOES = (PFNGLTEXSUBIMAGE3DOESPROC)loadEglProc("glTexSubImage3DOES"); 
 	fnptr_ci_glCopyTexSubImage3DOES = (PFNGLCOPYTEXSUBIMAGE3DOESPROC)loadEglProc("glCopyTexSubImage3DOES"); 
@@ -1073,7 +1075,6 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glProgramUniformMatrix3x4fvEXT = (PFNGLPROGRAMUNIFORMMATRIX3X4FVEXTPROC)loadEglProc("glProgramUniformMatrix3x4fvEXT"); 
 	fnptr_ci_glProgramUniformMatrix4x3fvEXT = (PFNGLPROGRAMUNIFORMMATRIX4X3FVEXTPROC)loadEglProc("glProgramUniformMatrix4x3fvEXT"); 
 	fnptr_ci_glTexPageCommitmentEXT = (PFNGLTEXPAGECOMMITMENTEXTPROC)loadEglProc("glTexPageCommitmentEXT"); 
-	fnptr_ci_glPatchParameteriEXT = (PFNGLPATCHPARAMETERIEXTPROC)loadEglProc("glPatchParameteriEXT"); 
 	fnptr_ci_glTexParameterIivEXT = (PFNGLTEXPARAMETERIIVEXTPROC)loadEglProc("glTexParameterIivEXT"); 
 	fnptr_ci_glTexParameterIuivEXT = (PFNGLTEXPARAMETERIUIVEXTPROC)loadEglProc("glTexParameterIuivEXT"); 
 	fnptr_ci_glGetTexParameterIivEXT = (PFNGLGETTEXPARAMETERIIVEXTPROC)loadEglProc("glGetTexParameterIivEXT"); 
@@ -1284,6 +1285,17 @@ void gl_es_2_0_ext_load()
 	}
 #endif
 
+// Android Extension Pack
+#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+	// GL_EXT_tessellation_shader, GL_OES_tessellation_shader
+	if( hasExtension( "GL_EXT_tessellation_shader" ) ) {
+		fnptr_ci_glPatchParameteri = (PFNGLPATCHPARAMETERIOESPROC)loadEglProc("glPatchParameteriEXT");
+	}
+	else if( hasExtension( "GL_OES_tessellation_shader" ) ) {
+		fnptr_ci_glPatchParameteri = (PFNGLPATCHPARAMETERIOESPROC)loadEglProc("glPatchParameteriOES");
+	}	
+#endif	
+
 	DEBUG( "gl_es_2_0_ext_load: SUCCESSFUL" );
 }
 #endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
@@ -1360,7 +1372,7 @@ static void* loadEglProc( const std::string& procName )
 {
 	uint8_t* result = (uint8_t *)eglGetProcAddress( procName.c_str() );
 	if( nullptr != result ) {
-		DEBUG( "   " << "loaded EGL proc: " << procName );
+		//DEBUG( "   " << "loaded EGL proc: " << procName );
 	}
 	return reinterpret_cast<void*>( result );
 }

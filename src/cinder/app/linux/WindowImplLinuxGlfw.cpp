@@ -59,12 +59,12 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 
-	mAppImpl->registerInput( this );
+	mAppImpl->registerWindowEvents( this );
 }
 
 WindowImplLinux::~WindowImplLinux()
 {
-	mAppImpl->unregisterInput( this );
+	mAppImpl->unregisterWindowEvents( this );
 }
 
 void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )

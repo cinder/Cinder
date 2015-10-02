@@ -263,11 +263,11 @@ ivec2 AppImplLinux::getDefaultDisplaySize() const
 }
 #endif
 
-void AppImplLinux::registerInput( WindowImplLinux* window )
+void AppImplLinux::registerWindowEvents( WindowImplLinux* window )
 {
 }
 
-void AppImplLinux::unregisterInput( WindowImplLinux* window )
+void AppImplLinux::registerWindowEvents( WindowImplLinux* window )
 {
 }
 

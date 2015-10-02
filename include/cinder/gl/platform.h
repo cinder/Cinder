@@ -126,10 +126,16 @@
 #endif
 
 #if defined( CINDER_GL_ES )
-  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
- 	#define GL_ES_EXT_VERSION_2_0
-	#include "cinder/linux/gl_es_load.h"
-  #endif
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+		#define GL_ES_EXT_VERSION_2_0
+		#include "cinder/linux/gl_es_load.h"
+	#endif
+
+	// Requires: GL_ANDROID_extension_pack_es31a
+	#if defined( CINDER_ANDROID ) && ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+		//#define CINDER_GL_HAS_GEOM_SHADER
+		#define CINDER_GL_HAS_TESS_SHADER 
+	#endif
 #endif
 
 #if ! defined( CINDER_GL_ES ) // Desktop Only

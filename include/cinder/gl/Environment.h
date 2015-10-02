@@ -85,6 +85,8 @@ class Environment {
 	virtual bool			supportsTextureLod() const = 0;
 	virtual bool			supportsMapBuffer() const = 0;
 	virtual bool 			supportsMapBufferRange() const = 0;
+	virtual bool 			supportsGeometryShader() const = 0;
+	virtual bool 			supportsTessellationShader() const = 0;
 
 	virtual GLenum			getPreferredIndexType() const  = 0;
 

@@ -70,7 +70,6 @@ void RendererGlLinux::kill()
 
 void RendererGlLinux::defaultResize() const
 {
-
 	int width = 0;
 	int height = 0;
 	glfwGetFramebufferSize( mContext, &width, &height );

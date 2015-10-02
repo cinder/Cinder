@@ -34,19 +34,48 @@ public:
 	
 	static std::map<GLFWwindow*, WindowRef> sWindowMapping;
 
-	static void registerInput( GLFWwindow *glfwWindow, const WindowRef& cinderWindow ) {
+	static void registerWindowEvents( GLFWwindow *glfwWindow, const WindowRef& cinderWindow ) {
 		sWindowMapping[glfwWindow] = cinderWindow;
 
+		::glfwSetWindowSizeCallback( glfwWindow, GlfwCallbacks::onWindowSize );
+		::glfwSetKeyCallback( glfwWindow, GlfwCallbacks::onKeyboard );
 		::glfwSetCursorPosCallback( glfwWindow, GlfwCallbacks::onMousePos );
 		::glfwSetMouseButtonCallback( glfwWindow, GlfwCallbacks::onMouseButton );
 	}
 
-	static void unregisterInput( GLFWwindow *glfwWindow ) {
+	static void unregisterWindowEvents( GLFWwindow *glfwWindow ) {
 		sWindowMapping.erase( glfwWindow );
 	}
 
 	static void onError( int error, const char* description ) {
 		std::cout << "(glfw:error): error=" << error << ", desc=" << description << std::endl;
+	}
+
+	static void onWindowSize( GLFWwindow* glfwWindow, int width, int height ) {
+		auto iter = sWindowMapping.find( glfwWindow );
+		if( sWindowMapping.end() != iter ) {
+			auto& cinderWindow = iter->second;
+			cinderWindow->emitResize();
+		}
+	}
+
+	static void onKeyboard( GLFWwindow *glfwWindow, int key, int scancode, int action, int mods ) {
+		auto iter = sWindowMapping.find( glfwWindow );
+		if( sWindowMapping.end() != iter ) {
+			auto& cinderWindow = iter->second;
+
+			int nativeKeyCode = KeyEvent::translateNativeKeyCode( key );
+			uint32_t char32 = 0;
+			char char8 = (char)key;
+			uint32_t modifiers = 0;
+			KeyEvent event( cinderWindow, nativeKeyCode, char32, char8, modifiers, scancode );
+			if( GLFW_PRESS == action ) {
+				cinderWindow->emitKeyDown( &event );
+			}
+			else if( GLFW_RELEASE == action ) {
+				cinderWindow->emitKeyUp( &event );
+			}		
+		}
 	}
 
 	static void onMousePos( GLFWwindow* glfwWindow, double mouseX, double mouseY ) {
@@ -99,13 +128,6 @@ public:
 					cinderWindow->emitMouseUp( &event );	
 				}
 			}
-		}
-	}
-
-	static void onKeyboard( GLFWwindow *glfwWindow, int key, int scancode, int action, int mods ) {
-		auto iter = sWindowMapping.find( glfwWindow );
-		if( sWindowMapping.end() != iter ) {
-			auto& cinderWindow = iter->second;
 		}
 	}
 };
@@ -195,6 +217,14 @@ void AppImplLinux::run()
 {
 	mApp->privateSetup__();
 	mSetupHasBeenCalled = true;
+
+	// issue initial app activation event
+	mApp->emitDidBecomeActive();
+	
+	// isse initial resize revent
+	for( auto &window : mWindows ) {
+		window->resize();
+	}
 
 	// initialize our next frame time
 	mNextFrameTime = getElapsedSeconds();	
@@ -334,14 +364,14 @@ ivec2 AppImplLinux::getMousePos() const
 	return mActiveWindow->getImpl()->getMousePos();	
 }
 
-void AppImplLinux::registerInput( WindowImplLinux* window )
+void AppImplLinux::registerWindowEvents( WindowImplLinux* window )
 {
-	GlfwCallbacks::registerInput( window->getNative(), window->getWindow() );
+	GlfwCallbacks::registerWindowEvents( window->getNative(), window->getWindow() );
 }
 
-void AppImplLinux::unregisterInput( WindowImplLinux* window )
+void AppImplLinux::unregisterWindowEvents( WindowImplLinux* window )
 {
-	GlfwCallbacks::unregisterInput( window->getNative() );
+	GlfwCallbacks::unregisterWindowEvents( window->getNative() );
 }
 
 }} // namespace cinder::app
