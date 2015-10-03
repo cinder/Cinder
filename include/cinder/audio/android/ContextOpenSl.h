@@ -68,6 +68,10 @@ class InputDeviceNodeOpenSl : public InputDeviceNode {
 	void process( Buffer *buffer )	override;
 
   private:
+
+	std::unique_ptr<InputDeviceNodeOpenSlImpl>   mImpl;
+
+	friend class InputDeviceNodeOpenSlImpl;
 };
 
 class ContextOpenSl : public Context {
