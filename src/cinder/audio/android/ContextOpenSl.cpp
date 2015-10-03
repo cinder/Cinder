@@ -162,6 +162,13 @@ struct OutputDeviceNodeOpenSlImpl {
 		enqueueSamples( mPlayerBufferQueue );
 	}
 
+	void stop()
+	{
+		SLresult result = (*mPlayerPlay)->SetPlayState( mPlayerPlay, SL_PLAYSTATE_STOPPED );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+	}
+
+
 //	int mNumCallbackCalls = 0;
 //	string mDebugMessage;
 
@@ -242,7 +249,7 @@ void OutputDeviceNodeOpenSl::enableProcessing()
 
 void OutputDeviceNodeOpenSl::disableProcessing()
 {
-	// TODO
+	mImpl->stop();
 }
 
 void OutputDeviceNodeOpenSl::renderToBufferFromInputs()
