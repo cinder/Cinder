@@ -37,43 +37,21 @@ using namespace std;
 
 namespace cinder { namespace audio { namespace android {
 
+// ----------------------------------------------------------------------------------------------------
+// OutputDeviceNodeOpenSlImpl (private)
+// ----------------------------------------------------------------------------------------------------
+
 struct OutputDeviceNodeOpenSlImpl {
-    OutputDeviceNodeOpenSlImpl( OutputDeviceNodeOpenSl *parent )
-		    : mParent( parent )
+    OutputDeviceNodeOpenSlImpl( OutputDeviceNodeOpenSl *parent, const shared_ptr<ContextOpenSl> &context )
+		    : mParent( parent ), mContextOpenSl( context )
     {
-		initEngine();
     }
-
-	~OutputDeviceNodeOpenSlImpl()
-	{
-		destroyEngine();
-	}
-
-    void initEngine()
-    {
-	    SLresult result = slCreateEngine( &mSLObject, 0, NULL, 0, NULL, NULL );
-	    CI_VERIFY( result == SL_RESULT_SUCCESS );
-
-	    SLboolean realizeAsync = SL_BOOLEAN_FALSE;
-	    result = (*mSLObject)->Realize( mSLObject, realizeAsync );
-	    CI_VERIFY( result == SL_RESULT_SUCCESS );
-
-	    result = (*mSLObject)->GetInterface( mSLObject, SL_IID_ENGINE, &mSLEngine );
-	    CI_VERIFY( result == SL_RESULT_SUCCESS );
-
-	    CI_LOG_I( "complete" );
-    }
-
-	void destroyEngine()
-	{
-		if( mSLObject ) {
-			(*mSLObject)->Destroy( mSLObject );
-			mSLEngine = nullptr;
-		}
-	}
 
 	void initPlayer( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
+		auto context = mContextOpenSl.lock();
+		SLEngineItf engine = context->getSLEngineEngine();
+
 		mNumSamplesBuffered = 0;
 		mSamplesPerProcessingBlock = framesPerBlock * numChannels;
 
@@ -105,7 +83,7 @@ struct OutputDeviceNodeOpenSlImpl {
 		audioSource.pLocator = &simpleBufferQueue;
 		audioSource.pFormat = &sourceFormat;
 
-		SLresult result = (*mSLEngine)->CreateOutputMix( mSLEngine, &mOutputMixObject, 0, nullptr, nullptr );
+		SLresult result = (*engine )->CreateOutputMix( engine, &mOutputMixObject, 0, nullptr, nullptr );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 
 		result = (*mOutputMixObject)->Realize( mOutputMixObject, SL_BOOLEAN_FALSE );
@@ -123,7 +101,7 @@ struct OutputDeviceNodeOpenSlImpl {
 		const SLInterfaceID playIds[] = { SL_IID_ANDROIDSIMPLEBUFFERQUEUE };
 		const SLboolean playRec[] = { SL_BOOLEAN_TRUE };
 
-		result = (*mSLEngine)->CreateAudioPlayer( mSLEngine, &mPlayerObject, &audioSource, &audioSink, 1, playIds, playRec );
+		result = (*engine )->CreateAudioPlayer( engine, &mPlayerObject, &audioSource, &audioSink, 1, playIds, playRec );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 
 		result = (*mPlayerObject)->Realize( mPlayerObject, SL_BOOLEAN_FALSE );
@@ -201,10 +179,10 @@ struct OutputDeviceNodeOpenSlImpl {
 		impl->enqueueSamples( bufferQueue );
 	}
 
-	OutputDeviceNodeOpenSl* mParent = nullptr;
+	OutputDeviceNodeOpenSl*    mParent = nullptr;
+	weak_ptr<ContextOpenSl>    mContextOpenSl;
 
-	SLObjectItf mSLObject = nullptr;
-	SLEngineItf mSLEngine = nullptr;
+
 	SLObjectItf mOutputMixObject = nullptr;
 	SLObjectItf mPlayerObject = nullptr;
 	SLPlayItf   mPlayerPlay = nullptr;
@@ -219,8 +197,8 @@ struct OutputDeviceNodeOpenSlImpl {
 // OutputDeviceNodeOpenSl
 // ----------------------------------------------------------------------------------------------------
 
-OutputDeviceNodeOpenSl::OutputDeviceNodeOpenSl( const DeviceRef &device, const Node::Format &format )
-	: OutputDeviceNode( device, format ), mImpl( new OutputDeviceNodeOpenSlImpl( this ) )
+OutputDeviceNodeOpenSl::OutputDeviceNodeOpenSl( const DeviceRef &device, const Node::Format &format, const shared_ptr<ContextOpenSl> &context )
+	: OutputDeviceNode( device, format ), mImpl( new OutputDeviceNodeOpenSlImpl( this, context ) )
 {
 }
 
@@ -324,17 +302,41 @@ void InputDeviceNodeOpenSl::process( Buffer *buffer )
 // ContextOpenSl
 // ----------------------------------------------------------------------------------------------------
 
+ContextOpenSl::ContextOpenSl()
+{
+	SLresult result = slCreateEngine( &mSLEngineObject, 0, NULL, 0, NULL, NULL );
+	CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+	SLboolean realizeAsync = SL_BOOLEAN_FALSE;
+	result = (*mSLEngineObject)->Realize( mSLEngineObject, realizeAsync );
+	CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+	result = (*mSLEngineObject)->GetInterface( mSLEngineObject, SL_IID_ENGINE, &mSLEngineEngine );
+	CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+	CI_LOG_I( "complete" );
+}
+
+ContextOpenSl::~ContextOpenSl()
+{
+	if( mSLEngineObject ) {
+		(*mSLEngineObject)->Destroy( mSLEngineObject );
+	}
+
+	mSLEngineObject = nullptr;
+	mSLEngineEngine = nullptr;
+}
+
 OutputDeviceNodeRef ContextOpenSl::createOutputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
-	return makeNode( new OutputDeviceNodeOpenSl( device, format ) );
+	auto thisRef = dynamic_pointer_cast<ContextOpenSl>( shared_from_this() );
+	return makeNode( new OutputDeviceNodeOpenSl( device, format, thisRef ) );
 }
 
 InputDeviceNodeRef ContextOpenSl::createInputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
-	CI_ASSERT( 0 && "not yet implemented" );
-
-//	return makeNode( new InputDeviceNodeOpenSl( device, format ) );
-	return nullptr;
+	auto thisRef = dynamic_pointer_cast<ContextOpenSl>( shared_from_this() );
+	return makeNode( new InputDeviceNodeOpenSl( device, format, thisRef ) );
 }
 
 } } } // namespace cinder::audio::android

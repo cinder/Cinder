@@ -25,13 +25,20 @@
 
 #include "cinder/audio/Context.h"
 
+struct SLObjectItf_;
+typedef const struct SLObjectItf_ * const * SLObjectItf;
+struct SLEngineItf_;
+typedef const struct SLEngineItf_ * const * SLEngineItf;
+
 namespace cinder { namespace audio { namespace android {
 
 struct OutputDeviceNodeOpenSlImpl;
+struct InputDeviceNodeOpenSlImpl;
+class ContextOpenSl;
 
 class OutputDeviceNodeOpenSl : public OutputDeviceNode {
   public:
-	OutputDeviceNodeOpenSl( const DeviceRef &device, const Format &format );
+	OutputDeviceNodeOpenSl( const DeviceRef &device, const Format &format, const std::shared_ptr<ContextOpenSl> &context );
 
   protected:
 	void initialize()				override;
@@ -43,14 +50,14 @@ class OutputDeviceNodeOpenSl : public OutputDeviceNode {
   private:
 	void renderToBufferFromInputs();
 
-	std::unique_ptr<OutputDeviceNodeOpenSlImpl>   mImpl;
+	std::unique_ptr<OutputDeviceNodeOpenSlImpl>     mImpl;
 
 	friend class OutputDeviceNodeOpenSlImpl;
 };
 
 class InputDeviceNodeOpenSl : public InputDeviceNode {
   public:
-	InputDeviceNodeOpenSl( const DeviceRef &device, const Format &format = Format() );
+	InputDeviceNodeOpenSl( const DeviceRef &device, const Format &format, const std::shared_ptr<ContextOpenSl> &context );
 	virtual ~InputDeviceNodeOpenSl();
 
   protected:
@@ -65,8 +72,18 @@ class InputDeviceNodeOpenSl : public InputDeviceNode {
 
 class ContextOpenSl : public Context {
   public:
+	ContextOpenSl();
+	~ContextOpenSl();
+
 	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() ) override;
 	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format()  ) override;
+
+	SLObjectItf getSLEngineObject() { return mSLEngineObject; }
+	SLEngineItf getSLEngineEngine() { return mSLEngineEngine; }
+
+  private:
+	SLObjectItf mSLEngineObject = nullptr;
+	SLEngineItf mSLEngineEngine = nullptr;
 };
 
 } } } // namespace cinder::audio::android
