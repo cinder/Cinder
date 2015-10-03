@@ -635,7 +635,6 @@ PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXEXTPROC fnptr_ci_glDrawElementsInstancedBase
 PFNGLMULTIDRAWELEMENTSBASEVERTEXEXTPROC fnptr_ci_glMultiDrawElementsBaseVertexEXT = nullptr; 
 PFNGLDRAWARRAYSINSTANCEDEXTPROC fnptr_ci_glDrawArraysInstancedEXT = nullptr; 
 PFNGLDRAWELEMENTSINSTANCEDEXTPROC fnptr_ci_glDrawElementsInstancedEXT = nullptr; 
-PFNGLFRAMEBUFFERTEXTUREEXTPROC fnptr_ci_glFramebufferTextureEXT = nullptr; 
 PFNGLVERTEXATTRIBDIVISOREXTPROC fnptr_ci_glVertexAttribDivisorEXT = nullptr; 
 PFNGLMULTIDRAWARRAYSEXTPROC fnptr_ci_glMultiDrawArraysEXT = nullptr; 
 PFNGLMULTIDRAWELEMENTSEXTPROC fnptr_ci_glMultiDrawElementsEXT = nullptr; 
@@ -885,6 +884,7 @@ PFNGLMAPBUFFEROESPROC fnptr_ci_glMapBufferOES = nullptr;
 
 // Android Extension Pack
 #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+	PFNGLFRAMEBUFFERTEXTUREPROC fnptr_ci_glFramebufferTexture = nullptr;
 	PFNGLPATCHPARAMETERIPROC fnptr_ci_glPatchParameteri = nullptr;
 #endif
 
@@ -1013,8 +1013,7 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glDrawElementsInstancedBaseVertexEXT = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXEXTPROC)loadEglProc("glDrawElementsInstancedBaseVertexEXT"); 
 	fnptr_ci_glMultiDrawElementsBaseVertexEXT = (PFNGLMULTIDRAWELEMENTSBASEVERTEXEXTPROC)loadEglProc("glMultiDrawElementsBaseVertexEXT"); 
 	fnptr_ci_glDrawArraysInstancedEXT = (PFNGLDRAWARRAYSINSTANCEDEXTPROC)loadEglProc("glDrawArraysInstancedEXT"); 
-	fnptr_ci_glDrawElementsInstancedEXT = (PFNGLDRAWELEMENTSINSTANCEDEXTPROC)loadEglProc("glDrawElementsInstancedEXT"); 
-	fnptr_ci_glFramebufferTextureEXT = (PFNGLFRAMEBUFFERTEXTUREEXTPROC)loadEglProc("glFramebufferTextureEXT"); 
+	fnptr_ci_glDrawElementsInstancedEXT = (PFNGLDRAWELEMENTSINSTANCEDEXTPROC)loadEglProc("glDrawElementsInstancedEXT");
 	fnptr_ci_glVertexAttribDivisorEXT = (PFNGLVERTEXATTRIBDIVISOREXTPROC)loadEglProc("glVertexAttribDivisorEXT"); 
 	fnptr_ci_glMultiDrawArraysEXT = (PFNGLMULTIDRAWARRAYSEXTPROC)loadEglProc("glMultiDrawArraysEXT"); 
 	fnptr_ci_glMultiDrawElementsEXT = (PFNGLMULTIDRAWELEMENTSEXTPROC)loadEglProc("glMultiDrawElementsEXT"); 
@@ -1287,6 +1286,10 @@ void gl_es_2_0_ext_load()
 
 // Android Extension Pack
 #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+	if( hasExtension( "GL_EXT_geometry_shader" ) ) {
+		fnptr_ci_glFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)loadEglProc("glFramebufferTextureEXT");
+	}
+
 	// GL_EXT_tessellation_shader, GL_OES_tessellation_shader
 	if( hasExtension( "GL_EXT_tessellation_shader" ) ) {
 		fnptr_ci_glPatchParameteri = (PFNGLPATCHPARAMETERIOESPROC)loadEglProc("glPatchParameteriEXT");
