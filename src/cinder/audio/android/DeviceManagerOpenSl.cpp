@@ -122,13 +122,13 @@ std::string DeviceManagerOpenSl::getName( const DeviceRef &device )
 
 size_t DeviceManagerOpenSl::getNumInputChannels( const DeviceRef &device )
 {
-	CI_ASSERT( 0 && "not implemented" );
-	return {};
+	return 1;
 }
 
 size_t DeviceManagerOpenSl::getNumOutputChannels( const DeviceRef &device )
 {
 	// TODO: check device properties
+	// - Might be possible in Android M (level 23) via java AudioManager.getDevices()
 	return 2;
 }
 
