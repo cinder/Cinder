@@ -42,6 +42,10 @@
 
 namespace rpi {
 
+// Raspberry Pi input code borrowed from here:
+// https://www.raspberrypi.org/forums/viewtopic.php?f=67&t=89109
+//
+
 enum {
 	INPUT_UNKNOWN			= 0x000,
     INPUT_KEYUP 			= 0x100,
