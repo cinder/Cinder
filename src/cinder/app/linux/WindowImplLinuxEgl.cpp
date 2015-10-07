@@ -25,9 +25,17 @@
 #include "cinder/app/linux/WindowImplLinux.h"
 #include "cinder/app/linux/AppImplLinux.h"
 
+#include "cinder/gl/draw.h"
+#include "cinder/gl/scoped.h"
+#include "cinder/gl/Texture.h"
+
 #include <bcm_host.h>
 
+#include "MousePointer.h"
+
 namespace cinder { namespace app {
+
+static ci::gl::TextureRef sCursorTex;
 
 struct WindowImplLinux::NativeWindow {
 	EGL_DISPMANX_WINDOW_T window;
@@ -51,15 +59,21 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 
 	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
 
+	// Load mouse cursor
+	if( ! sCursorTex ) {
+		sCursorTex = ci::gl::Texture::create( sMousePointer, GL_RGBA, sMousePointerWidth, sMousePointerHeight );
+		sCursorTex->setTopDown();
+	}
+
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 
-	mAppImpl->registerInput( this );
+	mAppImpl->registerWindowEvents( this );
 }
 
 WindowImplLinux::~WindowImplLinux()
 {
-	mAppImpl->unregisterInput( this );
+	mAppImpl->unregisterWindowEvents( this );
 }
 
 void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
@@ -69,7 +83,8 @@ void WindowImplLinux::setFullScreen( bool fullScreen, const app::FullScreenOptio
 
 ivec2 WindowImplLinux::getSize() const
 {
-	return mAppImpl->getDefaultDisplaySize();
+	//return mAppImpl->getDefaultDisplaySize();
+	return ivec2( mNativeWindow->window.width, mNativeWindow->window.height );
 }
 
 void WindowImplLinux::setSize( const ivec2 &size )
@@ -138,6 +153,18 @@ void WindowImplLinux::draw()
 	mAppImpl->setWindow( mWindowRef );
 	mRenderer->startDraw();
 	mWindowRef->emitDraw();
+	if( mShowCursor && sCursorTex ) {
+		ci::gl::ScopedViewport viewport();
+		ci::gl::ScopedMatrices matrices();
+		ci::gl::ScopedBlendAlpha blend();
+		ci::gl::ScopedColor color( 1.0f, 1.0f, 1.0f );
+
+		ci::gl::setMatricesWindow( mNativeWindow->window.width, mNativeWindow->window.height );
+		
+		Rectf r = sCursorTex->getBounds();
+		r += vec2( mAppImpl->getMousePos() );
+		ci::gl::draw( sCursorTex, r ); 
+	}
 	mRenderer->finishDraw();
 }
 
@@ -149,10 +176,12 @@ void WindowImplLinux::resize()
 
 void WindowImplLinux::hideCursor()
 {
+	mShowCursor = false;
 }
 
 void WindowImplLinux::showCursor()
 {
+	mShowCursor = true;
 }
 
 ivec2 WindowImplLinux::getMousePos() const

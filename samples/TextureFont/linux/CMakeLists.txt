@@ -14,25 +14,11 @@ message( "" )
 message( "${BoldGreen}SRC_DIR       : ${SRC_DIR}${ColorReset}" )
 message( "" )
 
-include_directories( 
-    ${CINDER_INC_DIR} 
-    ${CINDER_INC_DIR}/glfw
-    ${BOOST_INC_DIR}  
-)
-
-if( CINDER_LINUX_EGL_RPI2 )
-	include_directories( /opt/vc/include )
-	link_directories( /opt/vc/lib )
-endif()
-
 set( SRC_FILES
   ${SRC_DIR}/TextureFontApp.cpp
 )
 
-set( EXE_NAME "${CMAKE_PROJECT_NAME}" )
-if( CINDER_GL_ES_2 )
-	set( EXE_NAME "${CMAKE_PROJECT_NAME}-es2" )
-endif()
+set( EXE_NAME "${CMAKE_PROJECT_NAME}${CINDER_LIB_SUFFIX}" )
 
 add_executable( "${EXE_NAME}" ${SRC_FILES} )
 target_link_libraries( "${EXE_NAME}" debug     ${CINDER_LIB_DIR}/libcinder${CINDER_LIB_SUFFIX}_d.a )

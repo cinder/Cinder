@@ -14,17 +14,6 @@ message( "" )
 message( "${BoldGreen}SRC_DIR       : ${SRC_DIR}${ColorReset}" )
 message( "" )
 
-include_directories( 
-    ${CINDER_INC_DIR} 
-    ${CINDER_INC_DIR}/glfw
-    ${BOOST_INC_DIR}  
-)
-
-if( CINDER_LINUX_EGL_RPI2 )
-	include_directories( /opt/vc/include )
-	link_directories( /opt/vc/lib )
-endif()
-
 set( SRC_FILES
   ${SRC_DIR}/GeometryApp.cpp
 )

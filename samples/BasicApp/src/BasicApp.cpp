@@ -15,7 +15,6 @@ class BasicApp : public App {
 	// Cinder will call 'keyDown' when the user presses a key on the keyboard.
 	// See also: keyUp.
 	void keyDown( KeyEvent event ) override;
-	void keyUp( KeyEvent event ) override;
 
 	// Cinder will call 'draw' each time the contents of the window need to be redrawn.
 	void draw() override;
@@ -59,11 +58,6 @@ void BasicApp::keyDown( KeyEvent event )
 			quit();
 	}
 */
-}
-
-void BasicApp::keyUp( KeyEvent event )
-{
-	std::cout << event.getCode() << " : " << event.getChar() << std::endl;
 }
 
 void BasicApp::draw()

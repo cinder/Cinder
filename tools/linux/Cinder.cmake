@@ -21,10 +21,26 @@ endif()
 
 execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
 
+# Include Directories
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
-set( CINDER_SRC_DIR ${CINDER_DIR}/src )
-set( BOOST_INC_DIR  ${CINDER_DIR}/boost )
+include_directories( 
+    ${CINDER_INC_DIR} 
+)
 
+if( CINDER_LINUX_EGL_RPI2 )
+	include_directories( 
+		/opt/vc/include
+		/opt/vc/include/interface/vcos/pthreads
+	)
+	link_directories( /opt/vc/lib )
+elseif()
+	include_directories( ${CINDER_INC_DIR}/glfw )
+endif()
+
+# Source Directories
+set( CINDER_SRC_DIR ${CINDER_DIR}/src )
+
+# Library Directories
 set( CINDER_LIB_DIR ${CINDER_DIR}/lib/linux/${CINDER_ARCH} )
 
 set( CINDER_TOOLCHAIN_CLANG true )

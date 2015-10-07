@@ -92,6 +92,7 @@ protected:
 #if defined( CINDER_LINUX_EGL_ONLY )
 	struct NativeWindow;
 	std::unique_ptr<NativeWindow> mNativeWindow;
+	bool 				mShowCursor = true;
 #else
 	GLFWwindow      	*mGlfwWindow = nullptr;
 #endif
