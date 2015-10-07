@@ -488,7 +488,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 #endif
 
 static bool sTableInited = false;
-static const int MAX_KEYCODE = GLFW_KEY_LAST;
+static const int MAX_KEYCODE = GLFW_KEY_LAST + 1;
 int sKeyTable[MAX_KEYCODE];
 
 static void initKeyTable()
