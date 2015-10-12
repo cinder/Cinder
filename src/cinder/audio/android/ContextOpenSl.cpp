@@ -276,6 +276,9 @@ struct InputDeviceNodeOpenSlImpl {
 
 	void initRecorder( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
+		mSampleBuffer.resize( framesPerBlock * numChannels );
+		mNumSamplesBuffered = 0;
+
 		auto context = mContextOpenSl.lock();
 		SLEngineItf engine = context->getSLEngineEngine();
 
@@ -347,13 +350,34 @@ struct InputDeviceNodeOpenSlImpl {
 		SLresult result = (*mRecorderRecord)->SetRecordState( mRecorderRecord, SL_RECORDSTATE_RECORDING );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 
-		// TODO NEXT: run initial enqueue
+		enqueueSamples( mBufferQueue );
+	}
+
+	void stopRecording()
+	{
+		CI_LOG_I( "bang" );
+		SLresult result = (*mRecorderRecord)->SetRecordState( mRecorderRecord, SL_RECORDSTATE_STOPPED );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+	}
+
+	void enqueueSamples( SLAndroidSimpleBufferQueueItf bufferQueue )
+	{
+//		if( ( master()->getNumProcessedFrames() / master()->getFramesPerBlock() ) % 20 == 0 ) {
+//			CI_LOG_I( "thread id: " << std::this_thread::get_id() );
+//		}
+
+		SLresult result = (*bufferQueue)->Enqueue( bufferQueue, mSampleBuffer.data(), mSampleBuffer.size() * sizeof( int16_t ) );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+		mNumSamplesBuffered = mSampleBuffer.size();
 	}
 
 	static void recorderCallback( SLAndroidSimpleBufferQueueItf bufferQueue, void *context )
 	{
-		// TODO
+		InputDeviceNodeOpenSlImpl *impl = (InputDeviceNodeOpenSlImpl *)context;
+		impl->enqueueSamples( bufferQueue );
 	}
+
 
 	InputDeviceNodeOpenSl*          mParent = nullptr;
 	std::weak_ptr<ContextOpenSl>    mContextOpenSl;
@@ -361,6 +385,13 @@ struct InputDeviceNodeOpenSlImpl {
 	SLObjectItf mRecorderObject = nullptr;
 	SLRecordItf mRecorderRecord = nullptr;
 	SLAndroidSimpleBufferQueueItf mBufferQueue = nullptr;
+
+	std::vector<int16_t>    mSampleBuffer;
+	// TODO: probably want:
+//	dsp::RingBuffer			mRingBuffer;
+
+	size_t	                mNumSamplesBuffered = 0;
+	size_t	                mNumSamplesRequestedEnqueued = 0;
 };
 
 // ----------------------------------------------------------------------------------------------------
@@ -399,19 +430,22 @@ void InputDeviceNodeOpenSl::uninitialize()
 
 void InputDeviceNodeOpenSl::enableProcessing()
 {
-	CI_LOG_I( "bang" );
-
-	// TODO
+	mImpl->beginRecording();
 }
 
 void InputDeviceNodeOpenSl::disableProcessing()
 {
-	// TODO
+	mImpl->stopRecording();
 }
 
 void InputDeviceNodeOpenSl::process( Buffer *buffer )
 {
-	// TODO: consume recorder samples
+	// consume recorder samples
+	if( mImpl->mNumSamplesBuffered >= buffer->getSize() ) {
+		int16_t *sourceInt16Samples = mImpl->mSampleBuffer.data();
+		dsp::deinterleave( sourceInt16Samples, buffer->getData(), buffer->getNumFrames(), buffer->getNumChannels(), buffer->getNumFrames() );
+		mImpl->mNumSamplesBuffered -= buffer->getSize();
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------
