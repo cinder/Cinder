@@ -378,6 +378,11 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             archsStr = archsStr.substring( 0, archsStr.length() - 1 );
         }
 
+        def numCores = Runtime.getRuntime().availableProcessors();
+        println( "numCores: ${numCores}" );
+        ndkBuildArgs.add(this.makeNdkArg("--jobs", "${numCores}"));
+        
+
         if( project.cinder.verbose ) {
             ndkBuildArgs.add(this.makeNdkArg("V", "1"));
         }       
@@ -655,8 +660,8 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         }
     }
 
-    String makeNdkArg(key, value) {
-        String result = "${key}=${value}"
+    String makeNdkArg(String key, String value) {
+        String result = value.isEmpty() ?  "${key}" : "${key}=${value}"
         return result
     }
 }
