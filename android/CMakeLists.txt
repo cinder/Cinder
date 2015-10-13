@@ -473,8 +473,8 @@ if( NDK_GLES2 )
 elseif( NDK_GLES31 )
     set( C_FLAGS "-DCINDER_GL_ES_3_1 ${C_FLAGS}")
 endif()
-set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
-set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
+set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g -rdynamic" )
+set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -rdynamic -ffast-math ${C_FLAGS}" )
 
 # CXX_FLAGS
 if( NDK_TOOLCHAIN_CLANG )
@@ -487,8 +487,8 @@ if( NDK_GLES2 )
 elseif( NDK_GLES31 )
     set( CXX_FLAGS "-DCINDER_GL_ES_3_1 ${CXX_FLAGS}")
 endif()
-set( CMAKE_CXX_FLAGS_DEBUG   "${CXX_FLAGS} -g -fexceptions -frtti" )
-set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
+set( CMAKE_CXX_FLAGS_DEBUG   "${CXX_FLAGS} -g -rdynamic -fexceptions -frtti" )
+set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -Os -rdynamic -fexceptions -frtti -ffast-math" )
 
 set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/android/android_native_app_glue.c

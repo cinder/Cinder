@@ -28,7 +28,7 @@ SCRIPT_DIR=$( pwd )
 
 CLEAN=false
 BUILDTYPES=(Debug)
-NUMPROCS=4
+NUMPROCS=$( nproc )
 GLES=
 OPENGL_PLAT="ogl"
 FULLBUILD=true
@@ -89,14 +89,14 @@ do
         # OpenGL ES 2.0
         -es2)
             GLES="-DCINDER_GL_ES_2=1"
-			OPENGL_PLAT="es20"
+			OPENGL_PLAT="es2"
 			shift 1
         ;;
 
         # OpenGL ES 3.0
         -es3)
             GLES="-DCINDER_GL_ES_3=1"
-			OPENGL_PLAT="es30"
+			OPENGL_PLAT="es3"
 			shift 1
         ;;
 
@@ -118,7 +118,7 @@ do
 		-rpi2)
 			RPI2="-DCINDER_LINUX_EGL_RPI2=1"
 			GLES="-DCINDER_GL_ES_2=1"
-			OPENGL_PLAT="es20-rpi2"
+			OPENGL_PLAT="es2-rpi2"
 			shift 1
 		;;
 
@@ -131,6 +131,12 @@ do
 		# Verbose
 		-v)
 			VERBOSE="VERBOSE=1"
+			shift 1
+		;;
+
+		# Sample - dummy arg so samples can build without a flag
+		-sample)
+			echo "Building a sample..."
 			shift 1
 		;;
 

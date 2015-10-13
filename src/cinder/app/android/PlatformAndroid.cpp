@@ -35,6 +35,11 @@
 #include "cinder/android/AndroidDevLog.h"
 using namespace cinder::android;
 
+#include <cstdint>
+#include <cxxabi.h>
+#include <dlfcn.h>
+#include <unwind.h>
+
 namespace cinder {
 
 extern void FontManager_destroyStaticInstance();
@@ -192,9 +197,61 @@ void PlatformAndroid::launchWebBrowser( const Url &url )
 	cinder::android::app::CinderNativeActivity::launchWebBrowser( url );
 }
 
+struct BacktraceState {
+	void** current;
+	void** end;
+};
+
+static _Unwind_Reason_Code unwindCallback( struct _Unwind_Context *context, void* arg )
+{
+	BacktraceState* state = static_cast<BacktraceState*>( arg );
+	uintptr_t pc = _Unwind_GetIP( context );
+	if( pc ) {
+		if( state->current == state->end ) {
+			return _URC_END_OF_STACK;
+		}
+		else {
+			*state->current++ = reinterpret_cast<void*>( pc );
+		}
+	}
+	return _URC_NO_REASON;
+}
+
 std::vector<std::string> PlatformAndroid::stackTrace()
 {
-	return std::vector<std::string>();
+	std::vector<std::string> result;
+
+	static const size_t MAX_DEPTH = 128;
+	void* callStack[MAX_DEPTH];
+
+	BacktraceState state = { callStack, callStack + MAX_DEPTH };
+	_Unwind_Backtrace( unwindCallback, &state );
+
+	size_t count = state.current - callStack;
+
+	for( size_t i = 0; i < count; ++i ) {
+		const void* addr = callStack[i];
+		const char* symbol = "";
+
+		Dl_info info;
+		if( dladdr( addr, &info ) && info.dli_sname ) {
+			symbol = info.dli_sname;
+
+			int status;
+			char* demangled = abi::__cxa_demangle( symbol, NULL, 0, &status );
+			if( ( 0 == status ) && demangled ) {
+				symbol = demangled;
+			}
+		}
+
+		std::string s = symbol;
+		// Avoid these symbols
+		if( ( s != "cinder::app::PlatformAndroid::stackTrace()" ) && ( s != "cinder::stackTrace()" ) )  {
+			result.push_back( std::string( symbol ) );			
+		}
+	}
+
+	return result;
 }
 
 const std::vector<DisplayRef>& PlatformAndroid::getDisplays()

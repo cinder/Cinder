@@ -658,7 +658,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 
 #include "glfw/glfw3.h"
 static bool sTableInited = false;
-static const int MAX_KEYCODE = GLFW_KEY_LAST;
+static const int MAX_KEYCODE = GLFW_KEY_LAST + 1;
 int sKeyTable[MAX_KEYCODE];
 
 static void initKeyTable()

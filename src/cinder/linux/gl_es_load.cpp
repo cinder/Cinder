@@ -13,6 +13,8 @@
 
 static bool 	hasExtension( const std::string& extName );
 static void* 	loadEglProc( const std::string& procName ) ;
+static void 	clearLoadCount();
+static uint32_t	getLoadCount();
 
 #define _GL_ES_LOAD_DEBUG_ 
 
@@ -146,8 +148,9 @@ PFNGLGETINTERNALFORMATIVPROC fnptr_ci_glGetInternalformativ = nullptr;
 
 void gl_es_3_0_load() 
 {
-	DEBUG( "gl_es_3_0_load entered..." );
+	//DEBUG( "gl_es_3_0_load entered..." );
 
+	clearLoadCount();
 	fnptr_ci_glReadBuffer = (PFNGLREADBUFFERPROC)loadEglProc("glReadBuffer");
 	fnptr_ci_glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC)loadEglProc("glDrawRangeElements");
 	fnptr_ci_glTexImage3D = (PFNGLTEXIMAGE3DPROC)loadEglProc("glTexImage3D");
@@ -253,7 +256,7 @@ void gl_es_3_0_load()
 	fnptr_ci_glTexStorage3D = (PFNGLTEXSTORAGE3DPROC)loadEglProc("glTexStorage3D");
 	fnptr_ci_glGetInternalformativ = (PFNGLGETINTERNALFORMATIVPROC)loadEglProc("glGetInternalformativ");
 
-	DEBUG( "gl_es_3_0_load: SUCCESSFUL" );
+	DEBUG( "gl_es_3_0_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");
 }
 #endif // defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
 
@@ -332,8 +335,9 @@ PFNGLVERTEXBINDINGDIVISORPROC fnptr_ci_glVertexBindingDivisor = nullptr;
 
 void gl_es_3_1_load()
 {
-	DEBUG( "gl_es_3_1_load entered..." );
+	//DEBUG( "gl_es_3_1_load entered..." );
 
+	clearLoadCount();
 	fnptr_ci_glDispatchCompute = (PFNGLDISPATCHCOMPUTEPROC)loadEglProc("glDispatchCompute"); 
 	fnptr_ci_glDispatchComputeIndirect = (PFNGLDISPATCHCOMPUTEINDIRECTPROC)loadEglProc("glDispatchComputeIndirect"); 
 	fnptr_ci_glDrawArraysIndirect = (PFNGLDRAWARRAYSINDIRECTPROC)loadEglProc("glDrawArraysIndirect"); 
@@ -403,7 +407,7 @@ void gl_es_3_1_load()
 	fnptr_ci_glVertexAttribBinding = (PFNGLVERTEXATTRIBBINDINGPROC)loadEglProc("glVertexAttribBinding"); 
 	fnptr_ci_glVertexBindingDivisor = (PFNGLVERTEXBINDINGDIVISORPROC)loadEglProc("glVertexBindingDivisor"); 
 
-	DEBUG( "gl_es_3_1_load: SUCCESSFUL" );
+	DEBUG( "gl_es_3_1_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");
 }
 #endif // defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1 )
 
@@ -458,8 +462,9 @@ PFNGLTEXSTORAGE3DMULTISAMPLEPROC fnptr_ci_glTexStorage3DMultisample = nullptr;
 
 void gl_es_3_2_load()
 {
-	DEBUG( "gl_es_3_2_load entered..." );
+	//DEBUG( "gl_es_3_2_load entered..." );
 
+	clearLoadCount();
 	fnptr_ci_glBlendBarrier = (PFNGLBLENDBARRIERPROC)loadEglProc("glBlendBarrier"); 
 	fnptr_ci_glCopyImageSubData = (PFNGLCOPYIMAGESUBDATAPROC)loadEglProc("glCopyImageSubData"); 
 	fnptr_ci_glDebugMessageControl = (PFNGLDEBUGMESSAGECONTROLPROC)loadEglProc("glDebugMessageControl"); 
@@ -505,7 +510,7 @@ void gl_es_3_2_load()
 	fnptr_ci_glTexBufferRange = (PFNGLTEXBUFFERRANGEPROC)loadEglProc("glTexBufferRange"); 
 	fnptr_ci_glTexStorage3DMultisample = (PFNGLTEXSTORAGE3DMULTISAMPLEPROC)loadEglProc("glTexStorage3DMultisample"); 
 
-	DEBUG( "gl_es_3_2_load: SUCCESSFUL" );	
+	DEBUG( "gl_es_3_2_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");
 }
 #endif // defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_2 )
 
@@ -890,8 +895,9 @@ PFNGLMAPBUFFEROESPROC fnptr_ci_glMapBufferOES = nullptr;
 
 void gl_es_2_0_ext_load() 
 {
-	DEBUG( "gl_es_2_0_ext_load entered..." );
+	//DEBUG( "gl_es_2_0_ext_load entered..." );
 
+	clearLoadCount();
 	fnptr_ci_glBlendBarrierKHR = (PFNGLBLENDBARRIERKHRPROC)loadEglProc("glBlendBarrierKHR"); 
 	fnptr_ci_glDebugMessageControlKHR = (PFNGLDEBUGMESSAGECONTROLKHRPROC)loadEglProc("glDebugMessageControlKHR"); 
 	fnptr_ci_glDebugMessageInsertKHR = (PFNGLDEBUGMESSAGEINSERTKHRPROC)loadEglProc("glDebugMessageInsertKHR"); 
@@ -1299,14 +1305,15 @@ void gl_es_2_0_ext_load()
 	}	
 #endif	
 
-	DEBUG( "gl_es_2_0_ext_load: SUCCESSFUL" );
+	DEBUG( "gl_es_2_0_ext_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");	
 }
 #endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
 
 // ----------------------------------------------------------------------------
 // gl_es_load
 // ----------------------------------------------------------------------------
-static bool sInitialized = false;
+static bool 	sInitialized = false;
+static uint32_t	sLoadCount = 0;
 
 void gl_es_load()
 {
@@ -1375,7 +1382,18 @@ static void* loadEglProc( const std::string& procName )
 {
 	uint8_t* result = (uint8_t *)eglGetProcAddress( procName.c_str() );
 	if( nullptr != result ) {
+		++sLoadCount;
 		//DEBUG( "   " << "loaded EGL proc: " << procName );
 	}
 	return reinterpret_cast<void*>( result );
+}
+
+static void clearLoadCount()
+{
+	sLoadCount = 0;
+}
+
+static uint32_t	getLoadCount()
+{
+	return sLoadCount;
 }

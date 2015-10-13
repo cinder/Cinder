@@ -36,7 +36,11 @@ BufferObjRef BufferObj::create( GLenum target, GLsizeiptr allocationSize, const 
 BufferObj::BufferObj( GLenum target )
 	: mId( 0 ), mSize( 0 ), mTarget( target ),
 #if defined( CINDER_GL_ES )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mUsage( GL_DYNAMIC_DRAW )
+  #else	
 	mUsage( 0 ) /* GL ES default buffer usage is undefined(?) */
+  #endif	
 #else
 	mUsage( GL_READ_WRITE )
 #endif

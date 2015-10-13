@@ -182,13 +182,27 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 	if( format.mMaxAnisotropy > 1.0f )
 		glTexParameterf( mTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, format.mMaxAnisotropy );
 
-	if( format.mInternalFormat == -1 )
+	if( format.mInternalFormat == -1 ) {
 		mInternalFormat = defaultInternalFormat;
-	else
+	}
+	else {
 		mInternalFormat = format.mInternalFormat;
+	}
 
-	if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) )
+	//if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) )
+	//	format.mDataType = defaultDataType;
+
+	// Try to find a matching data type based on the internal format, use the 
+	// defaultDataType if a match isn't found.
+	GLenum dataFormatFromInternal = GL_INVALID_ENUM;
+	GLenum dataTypeFromInternal = GL_INVALID_ENUM;
+	TextureBase::getInternalFormatInfo( mInternalFormat, &dataFormatFromInternal, &dataTypeFromInternal );
+	if( -1 == format.mDataType && ( GL_INVALID_ENUM != dataTypeFromInternal ) ) {
+		format.mDataType = dataTypeFromInternal;
+	}
+	else if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) ) {
 		format.mDataType = defaultDataType;
+	}
 
 	// Swizzle mask
 #if ! defined( CINDER_GL_ES )
@@ -417,10 +431,14 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 		case GL_COMPRESSED_SIGNED_RG11_EAC:					dataFormat = GL_RG;		dataType = 0;					break;
 #endif
 
-		default:
+		default: 		
 			CI_LOG_W( "Unknown internalFormat:" << gl::constantToString( internalFormat ) );
-			dataFormat = GL_RGBA;
-			dataType = GL_UNSIGNED_BYTE;
+			// Defaulting to GL_RGBA and GL_UNSIGNED_BYTE can cause the wrong texture storage
+			// allocation to happen for the wrong data type. This leads to FBOs having 
+			// incomplete attachments on Android and Linux.
+			dataFormat = GL_INVALID_ENUM; //GL_RGBA;
+			dataType = GL_INVALID_ENUM; //GL_UNSIGNED_BYTE;
+			break;
 	}
 	
 	if( outAlpha )
@@ -967,7 +985,7 @@ Texture2d::Texture2d( int width, int height, Format format )
 	initParams( format, GL_RGBA, GL_UNSIGNED_BYTE );
 #endif
 
-	initMaxMipmapLevel();
+	//initMaxMipmapLevel();
 	env()->allocateTexStorage2d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, width, height, format.isImmutableStorage(), format.getDataType() );
 }
 

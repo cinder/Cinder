@@ -84,7 +84,8 @@ endif()
 project( cinder_linux )
 
 # Output path
-set( LIBRARY_OUTPUT_PATH "${CINDER_DIR}/lib/linux/${CINDER_ARCH}" )
+#set( LIBRARY_OUTPUT_PATH "${CINDER_DIR}/lib/linux/${CINDER_ARCH}" )
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CINDER_DIR}/lib/linux/${CINDER_ARCH}" )
 
 message( "" )
 if( CINDER_LINUX_EGL_RPI2 )
@@ -321,6 +322,8 @@ list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 
     ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Blur.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Checkerboard.cpp
     ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp
     ${CINDER_SRC_DIR}/cinder/ip/Fill.cpp
     ${CINDER_SRC_DIR}/cinder/ip/Flip.cpp
@@ -405,8 +408,12 @@ endif()
 set( CMAKE_DEBUG_POSTFIX "_d" )
 if( CINDER_GL_ES_2 )
 	add_library( cinder-es2 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
-elseif( CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
+elseif( CINDER_GL_ES_3 )
 	add_library( cinder-es3 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+elseif( CINDER_GL_ES_3_1 )
+    add_library( cinder-es31 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+elseif( CINDER_GL_ES_3_2 )
+    add_library( cinder-es32 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
 else()
 	add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
 endif()

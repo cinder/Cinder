@@ -32,6 +32,10 @@ FULLBUILD=true
 VERBOSE=
 TOOLCHAIN=gcc49
 
+if [ "$(uname -o)" = "GNU/Linux" ]; then
+	NUMPROCS=$(nproc)
+fi
+
 # Process arguments
 while (( $# >= 1 )) 
 do
