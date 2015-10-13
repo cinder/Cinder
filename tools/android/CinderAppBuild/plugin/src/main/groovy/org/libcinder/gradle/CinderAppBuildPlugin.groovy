@@ -59,6 +59,7 @@ class CinderAppBuildPluginExtension {
     def moduleName       = "";
     def gles2            = false;
     def srcFiles         = [];
+    def srcFilesExclude  = [];
     def srcDirs          = [];
     def includeDirs      = [];
     def ldLibs           = [];
@@ -137,7 +138,8 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     def mArchFlagsBlocks = [];
     def mSourceFilesFullPath = []; // Used to for depenedency check
     def mStaticLibsFullPaths = []; // Used to for depenedency check
-    
+    def mSourceFilesExcludeFullPath = [];
+
     void apply(Project project) {
         project.extensions.create("cinder", CinderAppBuildPluginExtension)
 
@@ -448,9 +450,11 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     void addSourceFile( String path, cppBuildDir ) {
         if( isValidSourceFileExt( path ) ) {
             if( ! path.startsWith( "." ) ) {
-                String relPath = this.relativePath( cppBuildDir, path )
-                this.mSourceFiles.add("\t" + relPath + " \\")
-                this.mSourceFilesFullPath.add( path );              
+                if( ! mSourceFilesExcludeFullPath.contains( path ) ) {
+                    String relPath = this.relativePath( cppBuildDir, path )
+                    this.mSourceFiles.add("\t" + relPath + " \\")
+                    this.mSourceFilesFullPath.add( path );
+                }
             }
         }
         else {
@@ -461,6 +465,17 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     void parseSourceFiles(Project project, cppBuildDir) {
         this.mSourceFiles = [];
         this.mSourceFilesFullPath = [];
+        this.mSourceFilesExcludeFullPath = [];
+
+        // Exclude Files
+        if( ! project.cinder.srcFilesExclude.isEmpty() ) {
+            project.cinder.srcFilesExclude.each {
+                def file = new File("${project.projectDir}/" + it)
+                String path = file.canonicalPath.toString()
+                mSourceFilesExcludeFullPath.add( path )
+            }
+        }
+
         // Files
         if(! project.cinder.srcFiles.isEmpty()) {
             this.mSourceFiles.add("\\")
