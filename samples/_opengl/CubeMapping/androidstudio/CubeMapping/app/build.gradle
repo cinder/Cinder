@@ -84,8 +84,8 @@ android {
                 release = "-Os -std=c++11"
             }
         }
-        includeDirs = ["../../../include", "${cinderDir}/include", "${cinderDir}/include/freetype", "${cinderDir}/boost"]
-        ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
+        includeDirs = ["../../../include", "${cinderDir}/include", "${cinderDir}/boost"]
+        ldLibs = ["log", "android", "EGL", "GLESv3", "OpenSLES", "z"]
         libCinder = [
                 "debug" : "${cinderDir}/lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libcinder_d.a",
                 "release" : "${cinderDir}/lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libcinder.a"
@@ -96,7 +96,7 @@ android {
         ]
         stl = "gnustl_static"
         toolChainVersion = "4.9"
-        archs = ["armeabi-v7a"]
+        archs = ["armeabi-v7a","x86"]
         //archs = ["armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86","x86_64"]
     }
 

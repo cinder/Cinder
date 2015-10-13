@@ -42,6 +42,9 @@
 	#define CINDER_AUDIO_WASAPI
 	#include "cinder/audio/msw/ContextWasapi.h"
 	#include "cinder/audio/msw/DeviceManagerWasapi.h"
+#elif defined( CINDER_ANDROID )
+	#include "cinder/audio/android/ContextOpenSl.h"
+	#include "cinder/audio/android/DeviceManagerOpenSl.h"
 #endif
 
 using namespace std;
@@ -80,6 +83,8 @@ Context* Context::master()
 	#else
 		sMasterContext.reset( new msw::ContextXAudio() );
 	#endif
+#elif defined( CINDER_ANDROID )
+		sMasterContext.reset( new android::ContextOpenSl() );
 #endif
 		if( ! sIsRegisteredForCleanup )
 			registerClearStatics();
@@ -101,7 +106,10 @@ DeviceManager* Context::deviceManager()
 	//#else
 	//	CI_ASSERT( 0 && "TODO: simple DeviceManagerXp" );
 	#endif
+#elif defined( CINDER_ANDROID )
+		sDeviceManager.reset( new android::DeviceManagerOpenSl() );
 #endif
+
 		if( ! sIsRegisteredForCleanup )
 			registerClearStatics();
 	}
@@ -171,10 +179,10 @@ void Context::initializeAllNodes()
 void Context::uninitializeAllNodes()
 {
 	set<NodeRef> traversedNodes;
-	uninitRecursisve( mOutput, traversedNodes );
+	uninitRecursive( mOutput, traversedNodes );
 
 	for( const auto& node : mAutoPulledNodes )
-		uninitRecursisve( node, traversedNodes );
+		uninitRecursive( node, traversedNodes );
 }
 
 void Context::disconnectAllNodes()
@@ -234,7 +242,7 @@ void Context::initRecursisve( const NodeRef &node, set<NodeRef> &traversedNodes 
 	node->configureConnections();
 }
 
-void Context::uninitRecursisve( const NodeRef &node, set<NodeRef> &traversedNodes )
+void Context::uninitRecursive( const NodeRef &node, set<NodeRef> &traversedNodes )
 {
 	if( ! node || traversedNodes.count( node ) )
 		return;
@@ -242,7 +250,7 @@ void Context::uninitRecursisve( const NodeRef &node, set<NodeRef> &traversedNode
 	traversedNodes.insert( node );
 
 	for( auto &input : node->getInputs() )
-		uninitRecursisve( input, traversedNodes );
+		uninitRecursive( input, traversedNodes );
 
 	node->uninitializeImpl();
 }

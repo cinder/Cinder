@@ -36,7 +36,11 @@ BufferObjRef BufferObj::create( GLenum target, GLsizeiptr allocationSize, const 
 BufferObj::BufferObj( GLenum target )
 	: mId( 0 ), mSize( 0 ), mTarget( target ),
 #if defined( CINDER_GL_ES )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mUsage( GL_DYNAMIC_DRAW )
+  #else	
 	mUsage( 0 ) /* GL ES default buffer usage is undefined(?) */
+  #endif	
 #else
 	mUsage( GL_READ_WRITE )
 #endif
@@ -112,61 +116,65 @@ void BufferObj::ensureMinimumSize( GLsizeiptr minimumSize )
 	}
 }
 
-#if ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
 void* BufferObj::map( GLenum access ) const
 {
+	void* result = nullptr;
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES_2 )
-	return reinterpret_cast<void*>( glMapBufferOES( mTarget, access ) );
-#else
-	return reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
-#endif
+	if( gl::env()->supportsMapBuffer() ) {
+		result = reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
+	}
+	return result;
 }
-#endif
 
-#if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
-void* BufferObj::mapWriteOnly( bool invalidatePrevious )
+void* BufferObj::mapWriteOnly()
+{
+	void* result = nullptr;
+	ScopedBuffer bufferBind( mTarget, mId );
+	if( gl::env()->supportsMapBufferRange() ) {
+		GLbitfield access = GL_MAP_WRITE_BIT;
+		result = reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );	
+	}
+	else if( gl::env()->supportsMapBuffer() ) {
+		result = reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY ) );
+	}
+	return result;
+}
+
+void* BufferObj::mapReplace()
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-	// iOS ES 2 only has glMapBufferOES()
-#if defined( CINDER_GL_ES_2 )
-	if( invalidatePrevious )
+	void* result = nullptr;
+	if( gl::env()->supportsMapBufferRange() ) {
+		GLbitfield access = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT;
+		result = reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+	}
+	else {
 		glBufferData( mTarget, mSize, nullptr, mUsage );
-	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
-#else	
-	// ES 3 has only glMapBufferRange
-	GLbitfield access = GL_MAP_WRITE_BIT;
-	if( invalidatePrevious )
-		access |= GL_MAP_INVALIDATE_BUFFER_BIT;
-	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
-#endif
+		result = reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY ) );
+	}
+	return result;
 }
 
-#if ! defined( CINDER_ANDROID )
 void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const
 {
+	void* result = nullptr;
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES_2 )
-	return reinterpret_cast<void*>( glMapBufferRangeEXT( mTarget, offset, length, access ) );
-#else
-	return reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
-#endif
+	if( gl::env()->supportsMapBufferRange() ) {
+		result = reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
+	}
+	return result;
 }
-#endif
 
 void BufferObj::unmap() const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES_2 )	
-	GLboolean result = glUnmapBufferOES( mTarget );
-#else
-	GLboolean result = glUnmapBuffer( mTarget );
-#endif
-	if ( result != GL_TRUE ) {
-		//throw BufferFailedUnmapExc();
+	if( gl::env()->supportsMapBuffer() ) {
+		GLboolean result = glUnmapBuffer( mTarget );
+		if ( GL_TRUE != result ) {
+			//throw BufferFailedUnmapExc();
+		}
 	}
 }
-#endif // #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
 
 size_t BufferObj::getSize() const
 {
@@ -220,10 +228,10 @@ GLuint BufferObj::getBindingConstantForTarget( GLenum target )
 void BufferObj::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+#if defined( CINDER_GL_HAS_DEBUG_LABEL )
 	env()->objectLabel( GL_BUFFER_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
-#else
-	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );	
+#elif defined( CINDER_HAS_KHR_DEBUG )
+	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );
 #endif
 }
 

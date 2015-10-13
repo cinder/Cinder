@@ -34,16 +34,6 @@
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
 #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
 
-// These aren't defined on ARM32 or ARM64 for OpenGL ES 2. They 
-// get loaded in RendererGlAndroid::initialize via eglGetProcAddress.
-#if defined(CINDER_ANDROID) && defined(CINDER_GL_ES_2) && (defined(__arm__) || defined(__aarch64__))
-	PFNGLGENVERTEXARRAYSOESPROC 				glGenVertexArraysOESEXT = nullptr;
-	PFNGLBINDVERTEXARRAYOESPROC 				glBindVertexArrayOESEXT = nullptr;
-	PFNGLDELETEVERTEXARRAYSOESPROC 				glDeleteVertexArraysOESEXT = nullptr;
-	PFNGLISVERTEXARRAYOESPROC 					glIsVertexArrayOESEXT = nullptr;
-	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC	glRenderbufferStorageMultisampleIMGEXT = nullptr;
-#endif
-
 namespace cinder { namespace app {
 
 void checkGlStatus();
@@ -61,14 +51,6 @@ RendererGlAndroid::~RendererGlAndroid()
 
 bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sharedRenderer )
 {
-#if defined( CINDER_ANDROID ) && defined( CINDER_GL_ES_2 ) && (defined(__arm__) || defined(__aarch64__))
-	glGenVertexArraysOESEXT = (PFNGLGENVERTEXARRAYSOESPROC)eglGetProcAddress( "glGenVertexArraysOES" );
-	glBindVertexArrayOESEXT = (PFNGLBINDVERTEXARRAYOESPROC)eglGetProcAddress( "glBindVertexArrayOES" );
-	glDeleteVertexArraysOESEXT = (PFNGLDELETEVERTEXARRAYSOESPROC)eglGetProcAddress( "glDeleteVertexArraysOES" );
-	glIsVertexArrayOESEXT = (PFNGLISVERTEXARRAYOESPROC)eglGetProcAddress( "glIsVertexArrayOES" );
-	glRenderbufferStorageMultisampleIMGEXT = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC)eglGetProcAddress( "glRenderbufferStorageMultisampleIMG" );
-#endif
-
 	std::vector<EGLint> configAttribs;
 
 	// OpenGL ES 3 also uses EGL_OPENGL_ES2_BIT
@@ -109,35 +91,35 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	}
 
 	//
-    // EGL_NATIVE_VISUAL_ID is an attribute of the EGLConfig that is
-    // guaranteed to be accepted by ANativeWindow_setBuffersGeometry().
-    // As soon as we picked a EGLConfig, we can safely reconfigure the
-    // ANativeWindow buffers to match, using EGL_NATIVE_VISUAL_ID.
-    //
-    EGLint format;
-    eglGetConfigAttrib( mDisplay, mConfig, EGL_NATIVE_VISUAL_ID, &format );
-    ANativeWindow_setBuffersGeometry( nativeWindow, 0, 0, format );	
+	// EGL_NATIVE_VISUAL_ID is an attribute of the EGLConfig that is
+	// guaranteed to be accepted by ANativeWindow_setBuffersGeometry().
+	// As soon as we picked a EGLConfig, we can safely reconfigure the
+	// ANativeWindow buffers to match, using EGL_NATIVE_VISUAL_ID.
+	//
+	EGLint format;
+	eglGetConfigAttrib( mDisplay, mConfig, EGL_NATIVE_VISUAL_ID, &format );
+	ANativeWindow_setBuffersGeometry( nativeWindow, 0, 0, format );	
 
 	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, NULL );
- 
+
 	auto err = eglGetError();
 	if( err != EGL_SUCCESS ) {
 		return false;
 	}
 
-    EGLint contextAttibutes[] = {
+	EGLint contextAttibutes[] = {
 #if defined( CINDER_GL_ES_3 )
 		EGL_CONTEXT_CLIENT_VERSION, 3,
 #else
 		EGL_CONTEXT_CLIENT_VERSION, 2,
 #endif
 		EGL_NONE
-    };
+	};
 
-    mContext = eglCreateContext( mDisplay, mConfig, NULL, contextAttibutes );
-    if( eglGetError() != EGL_SUCCESS ) {
+	mContext = eglCreateContext( mDisplay, mConfig, NULL, contextAttibutes );
+	if( eglGetError() != EGL_SUCCESS ) {
 		return false;
-    }
+	}
 	checkGlStatus();
 
 	eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
@@ -147,6 +129,7 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	checkGlStatus();
 
 	gl::Environment::setEs();
+	gl::env()->initializeFunctionPointers();
 	checkGlStatus();
 
 	std::shared_ptr<gl::PlatformDataAndroid> platformData( new gl::PlatformDataAndroid( mContext, mDisplay, mSurface, mConfig ) );

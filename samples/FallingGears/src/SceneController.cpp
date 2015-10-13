@@ -194,7 +194,7 @@ shared_ptr<Island> SceneController::makeIsland()
 	auto island = make_shared<Island>( mAudio );
 	island->mOuterVerts = calcNextOuterBumperVerts( baseHeight, topHeight, baseWidth, topWidth );
 	island->mInnerVerts = calcInnerBumperVerts( baseHeight, topHeight, baseWidth );
-	island->makeBumpers();
+	island->setupGeometry();
 
 	vector<b2Vec2> vertsBox2d;
 

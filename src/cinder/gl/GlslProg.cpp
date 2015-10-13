@@ -30,6 +30,7 @@
 #include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 #include "cinder/Noncopyable.h"
+#include "cinder/Utilities.h"
 
 #include "glm/gtc/type_ptr.hpp"
 
@@ -604,7 +605,7 @@ GlslProg::GlslProg( const Format &format )
 			}
 		}
 		if( ! active ) {
-			CI_LOG_E( "Unknown attribute: \"" << userAttrib.mName << "\"" );
+			CI_LOG_W( "Unknown attribute: \"" << userAttrib.mName << "\"" );
 		}
 	}
     
@@ -682,6 +683,16 @@ void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPat
 	glGetShaderiv( (GLuint) handle, GL_COMPILE_STATUS, &status );
 	if( status != GL_TRUE ) {
 		std::string log = getShaderLog( (GLuint)handle );
+#if defined( CINDER_ANDROID ) | defined( CINDER_LINUX )
+		std::vector<std::string> lines = ci::split( shaderSource, "\r\n" );
+		if( ! lines.empty() ) {
+			std::stringstream ss;
+			for( size_t i = 0; i < lines.size(); ++i ) {
+				ss << std::setw( (int)std::log( lines.size() ) ) << (i + 1) << ": " << lines[i] << "\n"; 
+			}
+			log += "\n" + ss.str();
+		}
+#endif		
 		throw GlslProgCompileExc( log, shaderType );
 	}
 	glAttachShader( mHandle, handle );
@@ -965,12 +976,18 @@ void GlslProg::logUniformWrongType( const std::string &name, GLenum uniformType,
 void GlslProg::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_GL_ES )
-#if ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+  #if defined( CINDER_GL_HAS_DEBUG_LABEL )
 	env()->objectLabel( GL_PROGRAM_OBJECT_EXT, mHandle, (GLsizei)label.size(), label.c_str() );
-#endif
-#else
+  #endif
+#else 
+  #if defined( CINDER_GL_ES )
+    #if ! defined( CINDER_GL_ANGLE )
+	env()->objectLabel( GL_PROGRAM_OBJECT_EXT, mHandle, (GLsizei)label.size(), label.c_str() );
+ 	 #endif
+  #else
 	env()->objectLabel( GL_PROGRAM, mHandle, (GLsizei)label.size(), label.c_str() );
+  #endif
 #endif
 }
 
@@ -1182,7 +1199,7 @@ void GlslProg::uniformBlock( int loc, int binding )
 		}
 	}
 	else {
-		CI_LOG_E( "Uniform block at " << loc << " location not found" );
+		CI_LOG_W( "Uniform block at " << loc << " location not found" );
 	}
 }
 
@@ -1196,7 +1213,7 @@ void GlslProg::uniformBlock( const std::string &name, GLint binding )
 		}
 	}
 	else {
-		CI_LOG_E( "Uniform block \"" << name << "\" not found" );
+		CI_LOG_W( "Uniform block \"" << name << "\" not found" );
 	}
 }
 
@@ -1385,9 +1402,10 @@ bool GlslProg::checkUniformType( GLenum uniformType ) const
 		case GL_UNSIGNED_INT: return std::is_same<T,uint32_t>::value;
 #if ! defined( CINDER_GL_ES )
 		case GL_SAMPLER_1D:						return std::is_same<T,int32_t>::value;
-		case GL_SAMPLER_BUFFER_EXT:		return std::is_same<T,int32_t>::value;
-		case GL_SAMPLER_2D_RECT:		return std::is_same<T,int32_t>::value;
-		case GL_INT_SAMPLER_2D_RECT:	return std::is_same<T,int32_t>::value;
+		case GL_SAMPLER_BUFFER_EXT:				return std::is_same<T,int32_t>::value;
+		case GL_UNSIGNED_INT_SAMPLER_BUFFER:	return std::is_same<T, int32_t>::value;
+		case GL_SAMPLER_2D_RECT:				return std::is_same<T,int32_t>::value;
+		case GL_INT_SAMPLER_2D_RECT:			return std::is_same<T,int32_t>::value;
 		case GL_UNSIGNED_INT_SAMPLER_2D_RECT:	return std::is_same<T,int32_t>::value;		
 #endif
 #if ! defined( CINDER_GL_ES_2 )
@@ -1408,7 +1426,13 @@ bool GlslProg::checkUniformType( GLenum uniformType ) const
 		case GL_UNSIGNED_INT_SAMPLER_CUBE:		return std::is_same<T,int32_t>::value;		
 		case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:	return std::is_same<T,int32_t>::value;
 #else
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	  #if defined( CINDER_GL_HAS_SHADOW_SAMPLERS )
 		case GL_SAMPLER_2D_SHADOW_EXT: return std::is_same<T,int32_t>::value;
+	  #endif
+	#else
+		case GL_SAMPLER_2D_SHADOW_EXT: return std::is_same<T,int32_t>::value;
+	#endif
 #endif
 		case GL_SAMPLER_CUBE: return std::is_same<T,int32_t>::value;
 		// float

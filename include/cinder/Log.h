@@ -100,10 +100,8 @@ namespace cinder { namespace log {
 
 typedef enum {
 	LEVEL_VERBOSE,
-	LEVEL_INFO,
-#if defined( CINDER_ANDROID )
 	LEVEL_DEBUG,
-#endif	
+	LEVEL_INFO,
 	LEVEL_WARNING,
 	LEVEL_ERROR,
 	LEVEL_FATAL
@@ -169,9 +167,12 @@ class LoggerConsole : public Logger {
 
 class LoggerFile : public Logger {
   public:
-	//! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
+	// Standard loggerFile, will write to a single log file.  File appending is configurable.
+	// ! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	// daily rotating logger, if folder or format are empty, ignores request
+	// daily rotating logger, will write to a formatted log file, updated at the first log request
+	// after midnight.
+	// ! If \a folder or \a formatStr are empty, ignores request
 	LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	virtual ~LoggerFile();
 
@@ -232,8 +233,27 @@ protected:
 	std::unique_ptr<ImplConsole> mImpl;
 #endif
 };
-	
-class LoggerImplMulti;
+
+//! \brief Logger that can log to multiple other Loggers.
+//!
+//! This is primarily used by LogManager as it's base Logger, when multiple log outputs are enabled (ex. console and file)
+class LoggerMulti : public Logger {
+  public:
+	void add( Logger *logger )							{ mLoggers.push_back( std::unique_ptr<Logger>( logger ) ); }
+	void add( std::unique_ptr<Logger> &&logger )		{ mLoggers.emplace_back( move( logger ) ); }
+
+	template <typename LoggerT>
+	LoggerT* findType();
+
+	void remove( Logger *logger );
+
+	const std::vector<std::unique_ptr<Logger> >& getLoggers() const	{ return mLoggers; }
+
+	void write( const Metadata &meta, const std::string &text ) override;
+
+  private:
+	std::vector<std::unique_ptr<Logger> >	mLoggers;
+};
 
 class LogManager {
 public:
@@ -252,6 +272,9 @@ public:
 	void removeLogger( Logger *logger );
 	//! Returns a pointer to the current base Logger instance.
 	Logger* getLogger()	{ return mLogger.get(); }
+	//! Returns a logger of a specifc type, or nullptr is that type of Logger is currently not in use.
+	template<typename LoggerT>
+	LoggerT* getLogger();
 	//! Returns a vector of all current loggers
 	std::vector<Logger *> getAllLoggers();
 	//! Returns the mutex used for thread safe loggers. Also used when adding or resetting new loggers.
@@ -263,10 +286,10 @@ public:
 	bool isConsoleLoggingEnabled() const				{ return mConsoleLoggingEnabled; }
 
 	void enableFileLogging( const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void enableFileLogging( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
+	void enableFileLoggingRotating( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
 	void disableFileLogging();
 	void setFileLoggingEnabled( bool enable, const fs::path &filePath = fs::path(), bool appendToExisting = true );
-	void setFileLoggingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
+	void setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	bool isFileLoggingEnabled() const					{ return mFileLoggingEnabled; }
 
 	void enableSystemLogging();
@@ -289,7 +312,7 @@ protected:
 	bool initFileLogging();
 
 	std::unique_ptr<Logger>	mLogger;
-	LoggerImplMulti			*mLoggerMulti;
+	LoggerMulti*			mLoggerMulti;
 	mutable std::mutex		mMutex;
 	bool					mConsoleLoggingEnabled, mFileLoggingEnabled, mSystemLoggingEnabled, mBreakOnLogEnabled;
 	Level					mSystemLoggingLevel;
@@ -355,6 +378,33 @@ class ThreadSafeT : public LoggerT {
 typedef ThreadSafeT<LoggerConsole>		LoggerConsoleThreadSafe;
 typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
 
+// ----------------------------------------------------------------------------------
+// Template method implementations
+
+template <typename LoggerT>
+LoggerT* LoggerMulti::findType()
+{
+	for( const auto &logger : mLoggers ) {
+		auto result = dynamic_cast<LoggerT *>( logger.get() );
+		if( result )
+			return result;
+	}
+
+	return nullptr;
+}
+
+template<typename LoggerT>
+LoggerT* LogManager::getLogger()
+{
+	auto loggerMulti = dynamic_cast<LoggerMulti *>( mLogger.get() );
+	if( loggerMulti ) {
+		return loggerMulti->findType<LoggerT>();
+	}
+	else {
+		return dynamic_cast<LoggerT *>( mLogger.get() );
+	}
+}
+
 } } // namespace cinder::log
 
 // ----------------------------------------------------------------------------------
@@ -362,41 +412,47 @@ typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
 
 #define CINDER_LOG_STREAM( level, stream ) ::cinder::log::Entry( level, ::cinder::log::Location( CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) ) << stream
 
-// CI_MAX_LOG_LEVEL is designed so that if you set it to 0, nothing logs, 1 only fatal, 2 fatal + error, etc...
+// CI_MIN_LOG_LEVEL is designed so that if you set it to 7 : nothing logs, 6 : only fatal, 5 : fatal + error, ..., 1 : everything
 
-#if ! defined( CI_MAX_LOG_LEVEL )
+#if ! defined( CI_MIN_LOG_LEVEL )
 	#if ! defined( NDEBUG )
-		#define CI_MAX_LOG_LEVEL 5	// debug mode default is LEVEL_VERBOSE
+		#define CI_MIN_LOG_LEVEL 0	// debug mode default is LEVEL_VERBOSE
 	#else
-		#define CI_MAX_LOG_LEVEL 4	// release mode default is LEVEL_INFO
+		#define CI_MIN_LOG_LEVEL 2	// release mode default is LEVEL_INFO
 	#endif
 #endif
 
-#if( CI_MAX_LOG_LEVEL >= 5 )
+#if( CI_MIN_LOG_LEVEL <= 0 )
 	#define CI_LOG_V( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_VERBOSE, stream )
 #else
 	#define CI_LOG_V( stream )	((void)0)
 #endif
 
-#if( CI_MAX_LOG_LEVEL >= 4 )
+#if( CI_MIN_LOG_LEVEL <= 1 )
+#define CI_LOG_D( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_DEBUG, stream )
+#else
+#define CI_LOG_D( stream )	((void)0)
+#endif
+
+#if( CI_MIN_LOG_LEVEL <= 2 )
 	#define CI_LOG_I( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_INFO, stream )
 #else
 	#define CI_LOG_I( stream )	((void)0)
 #endif
 
-#if( CI_MAX_LOG_LEVEL >= 3 )
+#if( CI_MIN_LOG_LEVEL <= 3 )
 	#define CI_LOG_W( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_WARNING, stream )
 #else
 	#define CI_LOG_W( stream )	((void)0)
 #endif
 
-#if( CI_MAX_LOG_LEVEL >= 2 )
+#if( CI_MIN_LOG_LEVEL <= 4 )
 	#define CI_LOG_E( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_ERROR, stream )
 #else
 	#define CI_LOG_E( stream )	((void)0)
 #endif
 
-#if( CI_MAX_LOG_LEVEL >= 1 )
+#if( CI_MIN_LOG_LEVEL <= 5 )
 	#define CI_LOG_F( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_FATAL, stream )
 #else
 	#define CI_LOG_F( stream )	((void)0)

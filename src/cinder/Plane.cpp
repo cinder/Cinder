@@ -28,38 +28,39 @@
 namespace cinder {
 
 template<typename T>
-Plane<T>::Plane( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 )
+PlaneT<T>::PlaneT( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 )
 {
 	set( v1, v2, v3 );
 }
 
 template<typename T>
-Plane<T>::Plane( const Vec3T &point, const Vec3T &normal )
+PlaneT<T>::PlaneT( const Vec3T &point, const Vec3T &normal )
 {
 	set( point, normal );
 }
 
 template<typename T>
-Plane<T>::Plane( T a, T b, T c, T d )
+PlaneT<T>::PlaneT( T a, T b, T c, T d )
 {
 	set( a, b, c, d );
 }
 
 template<typename T>
-void Plane<T>::set( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 )
+void PlaneT<T>::set( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 )
 {
 	Vec3T normal = cross( v2 - v1, v3 - v1 );
 	
-	if( length2( normal ) == 0 )
-		 // error! invalid parameters
+	if( length2( normal ) == 0 ) {
+		// error! invalid parameters
 		throw PlaneExc();
+	}
 
 	mNormal = normalize( normal );
 	mDistance = dot( mNormal, v1 );
 }
 
 template<typename T>
-void Plane<T>::set( const Vec3T &point, const Vec3T &normal )
+void PlaneT<T>::set( const Vec3T &point, const Vec3T &normal )
 {
 	if( length2( normal ) == 0 )
 		 // error! invalid parameters
@@ -70,20 +71,21 @@ void Plane<T>::set( const Vec3T &point, const Vec3T &normal )
 }
 
 template<typename T>
-void Plane<T>::set( T a, T b, T c, T d )
+void PlaneT<T>::set( T a, T b, T c, T d )
 {
 	Vec3T normal( a, b, c );
 
 	T length = glm::length( normal );
-	if( length == 0 )
-		 // error! invalid parameters
+	if( length == 0 ) {
+		// error! invalid parameters
 		throw PlaneExc();
+	}
 
 	mNormal = normalize( normal );
 	mDistance = d / length;
 }
 
-template class Plane<float>;
-template class Plane<double>;
+template class PlaneT<float>;
+template class PlaneT<double>;
 
 } // namespace cinder

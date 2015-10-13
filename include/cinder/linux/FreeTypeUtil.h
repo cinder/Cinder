@@ -128,7 +128,6 @@ inline Measure MeasureString( const std::string& utf8, FT_Face face, bool tightF
 	return Measure( size, baseline );
 } 
 
-
 inline void DrawBitmap( 
 	const ivec2&		offset,
 	FT_Bitmap*			bitmap, 
@@ -195,7 +194,7 @@ inline ci::SurfaceRef RenderString( const std::string& utf8, FT_Face face, bool 
 			FT_Set_Transform( face, nullptr, &pen );
 
 			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
-			FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+			FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
 
 			FT_GlyphSlot slot = face->glyph;
 			ivec2 offset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
@@ -225,6 +224,5 @@ inline std::string GetFontName( FT_Face face, const std::string &subName = "" )
 	}
 	return fontName;
 }
-
 
 }}} // namespace cinder::linux::ftutil

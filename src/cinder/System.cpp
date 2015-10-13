@@ -42,7 +42,6 @@
 	#import <net/ethernet.h>
 	#import <net/if_dl.h>
 	#include <sys/sysctl.h>
-	#include <cxxabi.h>
 #elif defined( CINDER_MSW )
 	#include <windows.h>
 	#include <windowsx.h>
@@ -62,7 +61,12 @@
 	using namespace cinder::winrt;
 #endif
 
+#if defined( __clang__ ) || defined( __GNUC__ )
+	#include <cxxabi.h>
+#endif
+
 #include <string>
+
 using namespace std;
 
 namespace cinder {
@@ -622,14 +626,13 @@ int32_t System::getMaxMultiTouchPoints()
 
 string System::demangleTypeName( const char *mangledName )
 {
-#if defined( CINDER_COCOA )
+#if defined( CINDER_MSW )
+	return mangledName;
+#else
 	int status = 0;
-
-	std::unique_ptr<char, void(*)(void *)> result { abi::__cxa_demangle( mangledName, NULL, NULL, &status ), std::free };
+	std::unique_ptr<char, void(*)(void *)> result { abi::__cxa_demangle( mangledName, NULL, NULL, &status ), free };
 
 	return ( status == 0 ) ? result.get() : mangledName;
-#else
-	return mangledName;
 #endif
 }
 

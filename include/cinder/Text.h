@@ -129,7 +129,7 @@ class TextBox {
 	bool				getLigate() const { return mLigate; }
 	void				setLigate( bool ligateText ) { mLigate = ligateText; }
 
-	vec2									measure() const;
+	vec2				measure() const;
 	/** Returns a vector of pairs of glyph indices and the position of their left baselines
 		\warning Does not support word wrapping on Windows. **/
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
@@ -162,6 +162,7 @@ class TextBox {
 	mutable std::u16string	mWideText;
 #elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	std::vector<std::string>	calculateLineBreaks( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) const;
+	void 						calculate() const;
 #endif
 };
 

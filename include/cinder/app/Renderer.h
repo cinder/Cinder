@@ -106,7 +106,7 @@ class Renderer {
 #elif defined( CINDER_ANDROID )
 	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;	
 #elif defined( CINDER_LINUX )
-	virtual void	setup( GLFWwindow* glfwWindow, RendererRef sharedRenderer ) = 0;
+	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) = 0;
 #endif
 
 	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;

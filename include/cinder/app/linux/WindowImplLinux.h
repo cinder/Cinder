@@ -27,8 +27,12 @@
 #include "cinder/app/Window.h"
 #include "cinder/Display.h"
 
-#include "glfw/glfw3.h"
-#include "glfw/glfw3native.h"
+#if defined( CINDER_LINUX_EGL_ONLY )
+	#include "EGL/eglplatform.h"
+#else
+	#include "glfw/glfw3.h"
+	#include "glfw/glfw3native.h"
+#endif
 
 namespace cinder { namespace app {
 
@@ -55,8 +59,14 @@ public:
 	virtual DisplayRef	getDisplay() const { return mDisplay; }
 	virtual RendererRef	getRenderer() const { return mRenderer; }
 	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
+
+#if defined( CINDER_LINUX_EGL_ONLY )
+	virtual EGLNativeWindowType	getNative();
+	virtual EGLNativeWindowType getNative() const;
+#else
 	virtual GLFWwindow  *getNative() { return mGlfwWindow; }
 	virtual GLFWwindow  *getNative() const { return mGlfwWindow; }
+#endif
 
 	bool			    isBorderless() const { return mBorderless; }
 	void			    setBorderless( bool borderless );
@@ -78,7 +88,14 @@ public:
 protected:
  	AppImplLinux    	*mAppImpl = nullptr;
 	WindowRef       	mWindowRef;
+
+#if defined( CINDER_LINUX_EGL_ONLY )
+	struct NativeWindow;
+	std::unique_ptr<NativeWindow> mNativeWindow;
+	bool 				mShowCursor = true;
+#else
 	GLFWwindow      	*mGlfwWindow = nullptr;
+#endif
 
 	std::string     	mTitle;
 	bool            	mBorderless = false;

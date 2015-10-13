@@ -209,6 +209,32 @@ int VideoPlayer::getHeight() const
 	return (int)result;
 }
 
+float VideoPlayer::getDuration() const
+{
+	jfloat result = JniHelper::Get()->CallFloatMethod( mJavaObject->getObject(), Java::getDuration );
+	return result;
+}
+
+void VideoPlayer::seekToTime( float seconds )
+{
+	JniHelper::Get()->CallVoidMethod( mJavaObject->getObject(), Java::seekToTime, (jfloat)seconds );
+}
+
+void VideoPlayer::seekToStart()
+{
+	JniHelper::Get()->CallVoidMethod( mJavaObject->getObject(), Java::seekToStart );
+}
+
+void VideoPlayer::seekToEnd()
+{
+	JniHelper::Get()->CallVoidMethod( mJavaObject->getObject(), Java::seekToEnd );
+}
+
+void VideoPlayer::setLoop( bool loop )
+{
+	JniHelper::Get()->CallVoidMethod( mJavaObject->getObject(), Java::setLoop, (jboolean)loop );
+}
+
 bool VideoPlayer::isNewFrameAvailable() const
 {
 	jboolean result = JniHelper::Get()->CallBooleanMethod( mJavaObject->getObject(), Java::isNewFrameAvailable );

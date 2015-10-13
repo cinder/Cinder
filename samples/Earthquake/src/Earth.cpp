@@ -67,7 +67,7 @@ void Earth::update()
 
 	// Update the instance data.
 	if( !mQuakes.empty() && mNumQuakes == 0 ) {
-		mat4 *data = (mat4*) mInstanceDataVbo->mapWriteOnly( true );
+		mat4 *data = (mat4*) mInstanceDataVbo->mapReplace();
 		{
 			mNumQuakes = 0;
 			for( auto &quake : mQuakes ) {

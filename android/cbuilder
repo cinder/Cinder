@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if (( $# == 0 )); then
-    echo -e  "cbuilder.sh - Cinder for Android wrapper script"
+    echo -e  "cbuilder - Cinder for Android wrapper script"
     echo -e "usage:"
-    echo -e "\tcbuilder.sh -j 4 -p 19,21 -a armeabi,armeabi-v7a,x86,mips,arm64-v8a,x86_64,mips64 -b Debug -v"
+    echo -e "\tcbuilder -j 4 -p 19,21 -a armeabi,armeabi-v7a,x86,mips,arm64-v8a,x86_64,mips64 -b Debug -v"
     echo -e ""
     echo -e "options:"
     echo -e "\t-p [str] Android platform, ex: -p 19"
@@ -12,11 +12,11 @@ if (( $# == 0 )); then
     echo -e "\t-j [n]   Number of compile processes, ex: -j 4"
     echo -e ""
     echo -e "flags:"
-    echo -e "\t-es2    Build for OpenGL ES 2 instead of OpenGL ES 3"
+    echo -e "\t-es2    Build for OpenGL ES 2.0 instead of OpenGL ES 3"
+    echo -e "\t-es31   Build for OpenGL ES 3.1 instead of OpenGL ES 3"
     echo -e "\t-r      Rebuild instead of full build"
     echo -e "\t-v      Turns on verbose mode"
-    echo -e "\t-v      Turns on verbose mode"
-    echo -e "\t-clang  Uses clang3.5 toolchain (experimental)"
+    #echo -e "\t-clang  Uses clang toolchain (experimental)"
     echo -e ""
     exit 0
 fi
@@ -25,12 +25,16 @@ fi
 PLATFORMS=(19 21)
 ARCHS=(armeabi armeabi-v7a x86 mips arm64-v8a x86_64 mips64)
 BUILDTYPES=(Debug Release)
+NUMPROCS=4
 ES2=
 ES2_INFO=
-NUMPROCS=4
 FULLBUILD=true
 VERBOSE=
 TOOLCHAIN=gcc49
+
+if [ "$(uname -o)" = "GNU/Linux" ]; then
+	NUMPROCS=$(nproc)
+fi
 
 # Process arguments
 while (( $# >= 1 )) 
@@ -137,15 +141,21 @@ do
             fi
         ;;
 
-        # OpenGL ES2
+        # OpenGL ES 2.0
         -es2)
             ES2="-DNDK_GLES2=1"
             ES2_INFO="GLES2: true"
         ;;
 
-        # Clang 3.5
+        # OpenGL ES 3.1
+        -es31)
+            ES2="-DNDK_GLES31=1"
+            ES2_INFO="GLES31: true"
+        ;;
+
+        # Clang
         -clang)
-            TOOLCHAIN=clang35
+            TOOLCHAIN=clang
         ;;
 
         # Rebuild
@@ -201,7 +211,7 @@ for plat in ${PLATFORMS[@]}; do
             cmake_build_dir=${SAVED_DIR}/build/$arch_dir/$plat/$build
 
             # Build commands
-            echo "\n(CINDER-ANDROID): Building: android-$plat $arch $build"
+            echo -e "\n(CINDER-ANDROID): Building: android-$plat $arch $build"
         
             cd $SAVED_DIR
             echo "(CINDER-ANDROID): Changed dir: $(pwd)"

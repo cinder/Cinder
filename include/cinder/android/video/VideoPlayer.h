@@ -37,7 +37,7 @@ class CinderNativeActivity;
 namespace cinder { namespace android { namespace video {
 
 class VideoPlayer;
-typedef std::shared_ptr<VideoPlayer> VideoPlayerRef;
+using VideoPlayerRef = std::shared_ptr<VideoPlayer>;
 
 class VideoPlayer {
 public:
@@ -51,6 +51,14 @@ public:
 	int 					getWidth() const;
 	int 					getHeight() const;
 
+	float 					getDuration() const;
+
+	void					seekToTime( float seconds );
+	void					seekToStart();
+	void					seekToEnd();	
+
+	void 					setLoop( bool loop );
+
 	bool					isNewFrameAvailable() const;
 
 	bool 					isPlaying() const;
@@ -58,7 +66,6 @@ public:
 	void 					stop();
 
 	ci::gl::Texture2dRef	getTexture() const;
-
 
 private:
 	struct Java {

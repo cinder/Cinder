@@ -23,68 +23,78 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
-#include "cinder/android/ExMediaPlayer" 
+#include "cinder/android/video/VideoPlayer.h"
 
 namespace cinder { namespace android { namespace video {
 
 class MovieGl;
-typedef std::shared_ptr<MovieGl>	MovieGlRef;
-
-/** \class MovieBase
- *
- */
-class MovieBase {
-public:
-
-	virtual ~MovieBase() {}
-
-	//! Returns whether the movie has loaded and buffered enough to playback without interruption
-	bool		checkPlayable();	
-
-	//! Returns the width of the movie in pixels
-	int32_t		getWidth() const { return mMoviePlayer->getWidth(); }
-	//! Returns the height of the movie in pixels
-	int32_t		getHeight() const { return mMoviePlayer->getHeight(); }
-	//! Returns the size of the movie in pixels
-	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }
-	//! Returns the movie's aspect ratio, the ratio of its width to its height
-	float		getAspectRatio() const { return getWidth() / (float)getHeight(); }
-	//! the Area defining the Movie's bounds in pixels: [0,0]-[width,height]
-	Area		getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
-	//! Returns the movie's pixel aspect ratio. Returns 1.0 if the movie does not contain an explicit pixel aspect ratio.
-	float		getPixelAspectRatio() const { return 1.0f; }
-	//! Returns the movie's length measured in seconds
-	float		getDuration() const { return mMoviePlayer->getDuration(); }
-	//! Returns the movie's framerate measured as frames per second
-	float		getFramerate() const { return 0.0f; }
-	//! Returns the total number of frames (video samples) in the movie
-	int32_t		getNumFrames() const { return 0; }
-	//! Returns whether the first video track in the movie contains an alpha channel. Returns false in the absence of visual media.
-	bool		hasAlpha() const;	
-
-protected:
-	MovieBase() {}
-
-	ExMediaPlayerRef	mMoviePlayer;
-};
+using MovieGlRef = std::shared_ptr<MovieGl>;
 
 /** \class MovieGl
  *
  */
-class MovieGl : public MovieBase {
+class MovieGl {
 public:
 
-	MovieGl();
 	virtual ~MovieGl();
 
+	static MovieGlRef		create( const ci::fs::path &path );
+
+	//! Returns whether the movie has loaded and buffered enough to playback without interruption
+	bool					checkPlayable();	
+
+	//! Returns the width of the movie in pixels
+	int32_t					getWidth() const { return mVideoPlayer->getWidth(); }
+	//! Returns the height of the movie in pixels
+	int32_t					getHeight() const { return mVideoPlayer->getHeight(); }
+	//! Returns the size of the movie in pixels
+	ivec2					getSize() const { return ivec2( getWidth(), getHeight() ); }
+	//! Returns the movie's aspect ratio, the ratio of its width to its height
+	float					getAspectRatio() const { return getWidth() / (float)getHeight(); }
+	//! the Area defining the Movie's bounds in pixels: [0,0]-[width,height]
+	Area					getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
+	//! Returns the movie's pixel aspect ratio. Returns 1.0 if the movie does not contain an explicit pixel aspect ratio.
+	float					getPixelAspectRatio() const { return 1.0f; }
+	//! Returns the movie's length measured in seconds
+	float					getDuration() const { return mVideoPlayer->getDuration(); }
+	//! Returns the movie's framerate measured as frames per second
+	float					getFramerate() const { return 0.0f; }
+	//! Returns the total number of frames (video samples) in the movie
+	int32_t					getNumFrames() const { return 0; }
+	//! Returns whether the first video track in the movie contains an alpha channel. Returns false in the absence of visual media.
+	bool					hasAlpha() const { return false; }
+
+	//! Sets the movie to the time \a seconds
+	void					seekToTime( float seconds );
+	//! Sets the movie time to its beginning
+	void					seekToStart();
+	//! Sets the movie time to its end
+	void					seekToEnd();
+
+	//! Sets whether the movie is set to loop during playback. If \a palindrome is true, the movie will "ping-pong" back and forth
+	void					setLoop( bool loop = true, bool palindrome = false );	
+
+	//! Begins movie playback.
+	void					play();
+	//! Stops movie playback.
+	void					stop();
+	//! Returns if the movie is playing or not.
+	bool                    isPlaying() const   { return mIsPlaying; }
+
+	const gl::TextureRef	getTexture() { return mVideoPlayer->getTexture(); }
+
+private:
+	MovieGl( const ci::fs::path &path );
+	
+	VideoPlayerRef	mVideoPlayer;
+	bool            mIsPlaying;
 };
 
 }}} // namespace cinder::android::video
 
 namespace cinder { namespace qtime {
 
-using cinder::android::MovieGl;
-using cinder::android::MovieGlRef;
+using cinder::android::video::MovieGl;
+using cinder::android::video::MovieGlRef;
 
 }} // namespace cinder::qtime

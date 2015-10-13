@@ -133,11 +133,8 @@ void ParticleSphereCPUApp::update()
 
 	// Copy particle data onto the GPU.
 	// Map the GPU memory and write over it.
-	Particle *gpu = static_cast<Particle*>( mParticleVbo->mapWriteOnly( false ) );
-	for( const auto &cpu : mParticles ) {
-		*gpu = cpu;
-		++gpu;
-	}
+	void *gpuMem = mParticleVbo->mapReplace();
+	memcpy( gpuMem, mParticles.data(), mParticles.size() * sizeof(Particle) );
 	mParticleVbo->unmap();
 }
 

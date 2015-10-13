@@ -57,11 +57,12 @@ class Platform {
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
 	virtual DataSourceRef	loadAsset( const fs::path &relativePath );
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
-	fs::path				getAssetPath( const fs::path &relativePath );
-	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
+	virtual fs::path		getAssetPath( const fs::path &relativePath ) const;
+	//! Adds an absolute path to the list of directories which are searched for assets.
+	//! \note Not thread-safe, e.g. you should not call this when loadAsset() or getAssetPath() can occur from a different thread.
 	void					addAssetDirectory( const fs::path &directory );
 	//! Returns a vector of directories that are searched when looking up an asset path.
-	const std::vector<fs::path>&	getAssetDirectories();
+	const std::vector<fs::path>&	getAssetDirectories() const;
 
 	// Resources
 #if defined( CINDER_MSW )
@@ -75,7 +76,7 @@ class Platform {
 	//! Returns the absolute file path to the resources folder. Returns an empty fs::path on windows. \sa CinderResources
 	virtual fs::path	getResourceDirectory() const = 0;
 	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa CinderResources
-	virtual fs::path	getResourcePath( const fs::path &rsrcRelativePath ) = 0;
+	virtual fs::path	getResourcePath( const fs::path &rsrcRelativePath ) const = 0;
 
 	//! Returns the path to the associated executable
 	fs::path			getExecutablePath() const;
@@ -132,19 +133,18 @@ class Platform {
 	virtual const std::vector<DisplayRef>&	getDisplays() = 0;
 
   protected:
-	Platform() : mAssetDirsInitialized( false )	{}
+	Platform()	{}
 
 	//! Called when asset directories are first prepared, subclasses can override to add platform specific directories.
-	virtual void prepareAssetLoading()		{}
+	virtual void	prepareAssetLoading()		{}
+	//! Called to add the default assets folder by walking up the path from the executable until a folder named 'assets' is found. Subclasses can override this method to disable this functionality.
+	virtual void	findAndAddDefaultAssetPath();
 
-	void				findAndAddAssetBasePath();
-	virtual fs::path	findAssetPath( const fs::path &relativePath );
-	void				ensureAssetDirsPrepared();
+  private:
+	void			initialize();
+	void			initAssetDirectories();
 
 	std::vector<fs::path>		mAssetDirectories;
-	bool						mAssetDirsInitialized;
-
-  private:	
 	mutable fs::path			mExecutablePath; // lazily defaulted if none exists
 };
 

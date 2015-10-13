@@ -23,16 +23,35 @@ class RotatingCubeApp : public App {
 void RotatingCubeApp::setup()
 {
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
-	
-	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
-	//mTexture->bind();
 
+	try {
+		mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
+		//mTexture->bind();
+		console() << "Loaded texture" << std::endl;
+	}
+	catch( const std::exception& e ) {
+		console() << "Texture Error: " << e.what() << std::endl;
+	}
+
+	try {
 #if defined( CINDER_GL_ES )
-	mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
+		mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
 #else
-	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
+		mGlsl = gl::GlslProg::create(loadAsset("shader.vert"), loadAsset("shader.frag"));
 #endif
-	mBatch = gl::Batch::create( geom::Cube(), mGlsl );
+		console() << "Loaded shader" << std::endl;
+	}
+	catch( const std::exception& e ) {
+		console() << "Shader Error: " << e.what() << std::endl;
+	}
+
+	try {
+		mBatch = gl::Batch::create( geom::Cube(), mGlsl );
+		console() << "Creaeted batch" << std::endl;
+	}
+	catch( const std::exception& e ) {
+		console() << "Shader Error: " << e.what() << std::endl;
+	}
 
 	gl::enableDepthWrite();
 	gl::enableDepthRead();

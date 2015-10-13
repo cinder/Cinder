@@ -1166,9 +1166,6 @@
     <ClInclude Include="..\include\cinder\audio\Context.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\Debug.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\audio\DelayNode.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>

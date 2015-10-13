@@ -119,15 +119,7 @@ if( NOT NDK_PLATFORM )
     set( NDK_PLATFORM ${DEFAULT_NDK_PLATFORM} )
 endif()
 
-if( "16" STREQUAL "${NDK_PLATFORM}" )
-    set( NDK_PLATFORM_OUT "android-16" )
-    set( NDK_GLES2 1 )
-elseif( "17" STREQUAL "${NDK_PLATFORM}" )
-    set( NDK_PLATFORM_OUT "android-17" )
-    set( NDK_GLES2 1 )
-elseif( "18" STREQUAL "${NDK_PLATFORM}" )
-    set( NDK_PLATFORM_OUT "android-18" )
-elseif( "19" STREQUAL "${NDK_PLATFORM}" )
+if( "19" STREQUAL "${NDK_PLATFORM}" )
     set( NDK_PLATFORM_OUT "android-19" )
 elseif( "21" STREQUAL "${NDK_PLATFORM}" )
     set( NDK_PLATFORM_OUT "android-21" )
@@ -135,6 +127,9 @@ else()
     message( FATAL_ERROR "${BoldRed}Unsupported Platform (API Level) ${NDK_PLATFORM}${ColorReset}" )
 endif()
 
+if( NDK_GLES31 AND ( ${NDK_PLATFORM} LESS 21 ) )
+	message( FATAL_ERROR "${BoldRed}OpenGL ES 3.1 requires Platform 21 or later${ColorReset}" )
+endif()
 
 # ------------------------------------------------------------------------
 # NDK_ARCH
@@ -156,9 +151,15 @@ message( "${BoldBlue}NDK_ARCH     : ${NDK_ARCH}${ColorReset}" )
 if( NDK_GLES2 )
     message( "${BoldBlue}NDK_GLES2    : TRUE${ColorReset}" )
     message( "${BoldBlue}NDK_GLES3    : FALSE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES31   : FALSE${ColorReset}" )
+elseif( NDK_GLES31 )
+    message( "${BoldBlue}NDK_GLES2    : FALSE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES3    : FALSE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES31   : TRUE${ColorReset}" )
 else()
     message( "${BoldBlue}NDK_GLES2    : FALSE${ColorReset}" )
     message( "${BoldBlue}NDK_GLES3    : TRUE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES31   : FALSE${ColorReset}" )
 endif()
 message( "" )
 
@@ -188,8 +189,8 @@ if( "armeabi" STREQUAL "${NDK_ARCH}" )
     elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "arm-linux-androideabi-4.9" )
         set( NDK_TOOLCHAIN_PREFIX "arm-linux-androideabi" )
-    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
-        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+    elseif( "clang" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.6" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
@@ -204,8 +205,8 @@ elseif( "armeabi-v7a" STREQUAL "${NDK_ARCH}" )
     elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "arm-linux-androideabi-4.9" )
         set( NDK_TOOLCHAIN_PREFIX "arm-linux-androideabi" )
-    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
-        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+    elseif( "clang" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.6" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
@@ -217,8 +218,8 @@ elseif( "arm64-v8a" STREQUAL "${NDK_ARCH}" )
     if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "aarch64-linux-android-4.9" )
         set( NDK_TOOLCHAIN_PREFIX "aarch64-linux-android" )
-    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
-        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+    elseif( "clang" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.6" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
@@ -233,8 +234,8 @@ elseif( "x86" STREQUAL "${NDK_ARCH}" )
     elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "x86-4.9" )
         set( NDK_TOOLCHAIN_PREFIX "i686-linux-android" )
-    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
-        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+    elseif( "clang" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.6" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
@@ -246,8 +247,8 @@ elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
     if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "x86_64-4.9" )
         set( NDK_TOOLCHAIN_PREFIX "x86_64-linux-android" )
-    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
-        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+    elseif( "clang" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.6" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
@@ -262,8 +263,8 @@ elseif( "mips" STREQUAL "${NDK_ARCH}" )
     elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "mipsel-linux-android-4.9" )
         set( NDK_TOOLCHAIN_PREFIX "mipsel-linux-android" )
-    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
-        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+    elseif( "clang" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.6" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
@@ -275,8 +276,8 @@ elseif( "mips64" STREQUAL "${NDK_ARCH}" )
     if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "mips64el-linux-android-4.9" )
         set( NDK_TOOLCHAIN_PREFIX "mips64el-linux-android" )
-    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
-        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+    elseif( "clang" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.6" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
@@ -390,10 +391,11 @@ if( NDK_TOOLCHAIN_CLANG )
     set( CMAKE_C_COMPILER   ${NKD_TOOLCHAIN_ROOT}/bin/clang     CACHE FILEPATH "" FORCE )
     set( CMAKE_CXX_COMPILER ${NKD_TOOLCHAIN_ROOT}/bin/clang++   CACHE FILEPATH "" FORCE )
     set( CMAKE_AR           ${NKD_TOOLCHAIN_ROOT}/bin/llvm-ar   CACHE FILEPATH "" FORCE )
-    set( CMAKE_LINKER       ${NKD_TOOLCHAIN_ROOT}/bin/clang++   CACHE FILEPATH "" FORCE )
+    set( CMAKE_LINKER       ${NKD_TOOLCHAIN_ROOT}/bin/clang++ 	CACHE FILEPATH "" FORCE )
     set( CMAKE_NM           ${NKD_TOOLCHAIN_ROOT}/bin/          CACHE FILEPATH "" FORCE )
-    set( CMAKE_RANLIB       ${NKD_TOOLCHAIN_ROOT}/bin/          CACHE FILEPATH "" FORCE )
-    set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/          CACHE FILEPATH "" FORCE )
+    #set( CMAKE_RANLIB       ${NKD_TOOLCHAIN_ROOT}/bin/llvm-ar   CACHE FILEPATH "" FORCE )
+    set( CMAKE_RANLIB       ${NDK_ROOT}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ranlib   CACHE FILEPATH "" FORCE )
+    set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/ndk-strip CACHE FILEPATH "" FORCE )
 else()
     set( CMAKE_C_COMPILER   ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-gcc    CACHE FILEPATH "" FORCE )
     set( CMAKE_CXX_COMPILER ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-g++    CACHE FILEPATH "" FORCE )
@@ -409,8 +411,6 @@ set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
 
-# Output path
-set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/android/${NDK_PLATFORM_OUT}/${NKD_ARCH_OUT} )
 
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
@@ -430,13 +430,21 @@ message( "" )
 
 project( cinder_android )
 
+# Output path
+set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/android/${NDK_PLATFORM_OUT}/${NKD_ARCH_OUT} )
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH} )
+
 include_directories( 
     ${CINDER_INC_DIR} 
     ${CINDER_INC_DIR}/freetype
-    ${CINDER_INC_DIR}/jsoncpp 
-    ${CINDER_SRC_DIR}/linebreak 
-    ${CINDER_SRC_DIR}/libtess2 
-    ${BOOST_INC_DIR} 
+    ${CINDER_INC_DIR}/jsoncpp
+    ${CINDER_INC_DIR}/oggvorbis
+    ${CINDER_SRC_DIR}/linebreak
+    ${CINDER_SRC_DIR}/libtess2
+    ${CINDER_SRC_DIR}/oggvorbis/vorbis
+    ${CINDER_SRC_DIR}/r8brain
+    ${CINDER_INC_DIR}/tinyexr
+    ${BOOST_INC_DIR}
 )
 
 # Arch flags
@@ -444,7 +452,7 @@ if( "armeabi" STREQUAL "${NDK_ARCH}" )
     set( ARCH_FLAGS "-march=armv5te -mtune=xscale -msoft-float -mthumb" )
 elseif( "armeabi-v7a" STREQUAL "${NDK_ARCH}" )
     if( NDK_TOOLCHAIN_CLANG )
-        set( ARCH_FLAGS "-gcc-toolchain ${NDK_ROOT}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64 -fpic -ffunction-sections -funwind-tables -fstack-protector -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes -fno-integrated-as -target armv7-none-linux-androideab -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb" )
+        set( ARCH_FLAGS "-gcc-toolchain ${NDK_ROOT}/toolchains/arm-linux-androideabi-4.8/prebuilt/darwin-x86_64 -fpic -ffunction-sections -funwind-tables -fstack-protector -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes -target armv7-none-linux-androideab -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb" )
     else()
         set( ARCH_FLAGS "-march=armv7-a -mfpu=neon -mthumb" )
     endif()
@@ -462,21 +470,25 @@ else()
 endif()
 if( NDK_GLES2 )
     set( C_FLAGS "-DCINDER_GL_ES_2 ${C_FLAGS}")
+elseif( NDK_GLES31 )
+    set( C_FLAGS "-DCINDER_GL_ES_3_1 ${C_FLAGS}")
 endif()
-set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
-set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
+set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g -rdynamic" )
+set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -rdynamic -ffast-math ${C_FLAGS}" )
 
 # CXX_FLAGS
 if( NDK_TOOLCHAIN_CLANG )
-    set( CXX_FLAGS "-DANDROID -DFT2_BUILD_LIBRARY ${ARCH_FLAGS} -fvisibility=default -std=c++11 -I${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include -I${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include -I${NDK_ROOT}/sources/cxx-stl/system/include" )
+    set( CXX_FLAGS "-DANDROID -DFT2_BUILD_LIBRARY ${ARCH_FLAGS} -fvisibility=default -stdlib=libstdc++ -std=c++11 -I${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include -I${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include -I${NDK_ROOT}/sources/cxx-stl/system/include" )
 else()
     set( CXX_FLAGS "-DFT2_BUILD_LIBRARY ${ARCH_FLAGS} -fvisibility=default -std=c++11" )
 endif()
 if( NDK_GLES2 )
     set( CXX_FLAGS "-DCINDER_GL_ES_2 ${CXX_FLAGS}")
+elseif( NDK_GLES31 )
+    set( CXX_FLAGS "-DCINDER_GL_ES_3_1 ${CXX_FLAGS}")
 endif()
-set( CMAKE_CXX_FLAGS_DEBUG   "${CXX_FLAGS} -g -fexceptions -frtti" )
-set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
+set( CMAKE_CXX_FLAGS_DEBUG   "${CXX_FLAGS} -g -rdynamic -fexceptions -frtti" )
+set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -Os -rdynamic -fexceptions -frtti -ffast-math" )
 
 set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/android/android_native_app_glue.c
@@ -495,6 +507,9 @@ set( CINDER_C_SRC_FILES
 )
 
 set( CINDER_CXX_SRC_FILES
+    ${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+
+    ${CINDER_SRC_DIR}/cinder/android/libc_helper.cpp
     ${CINDER_SRC_DIR}/cinder/android/AndroidDevLog.cpp
     ${CINDER_SRC_DIR}/cinder/android/CinderAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/android/JniHelper.cpp
@@ -503,7 +518,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/app/CinderNativeActivity.cpp
     ${CINDER_SRC_DIR}/cinder/android/app/ComponentManager.cpp
     ${CINDER_SRC_DIR}/cinder/android/net/UrlLoader.cpp
-    #${CINDER_SRC_DIR}/cinder/android/video/MovieGl.cpp
+    ${CINDER_SRC_DIR}/cinder/android/video/MovieGl.cpp
     ${CINDER_SRC_DIR}/cinder/android/video/VideoPlayer.cpp
 
     ${CINDER_SRC_DIR}/cinder/app/android/AppAndroid.cpp
@@ -522,6 +537,37 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/Renderer.cpp
     ${CINDER_SRC_DIR}/cinder/app/RendererGl.cpp
     ${CINDER_SRC_DIR}/cinder/app/Window.cpp
+
+    ${CINDER_SRC_DIR}/cinder/audio/Node.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/ChannelRouterNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/FilterNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/NodeMath.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/SampleRecorderNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/WaveTable.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Context.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/GenNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/OutputNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Source.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/DelayNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/InputNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/PanNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Target.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Device.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/MonitorNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Param.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Utilities.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/FileOggVorbis.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Node.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/SamplePlayerNode.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/Voice.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/android/ContextOpenSl.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/android/DeviceManagerOpenSl.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/Biquad.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/Converter.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/ConverterR8brain.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/Dsp.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/Fft.cpp
+    ${CINDER_SRC_DIR}/cinder/audio/dsp/ooura/fftsg.cpp
 
     ${CINDER_SRC_DIR}/cinder/gl/draw.cpp
     ${CINDER_SRC_DIR}/cinder/gl/scoped.cpp
@@ -590,6 +636,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/ImageSourceFileRadiance.cpp
     ${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
     ${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
+    ${CINDER_SRC_DIR}/cinder/ImageFileTinyExr.cpp
     ${CINDER_SRC_DIR}/cinder/Json.cpp
     ${CINDER_SRC_DIR}/cinder/Log.cpp
     ${CINDER_SRC_DIR}/cinder/Matrix.cpp
@@ -665,7 +712,36 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/freetype/pshinter/pshinter.c
     ${CINDER_SRC_DIR}/freetype/psnames/psnames.c
     ${CINDER_SRC_DIR}/freetype/cid/type1cid.c
-    ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c 
+    ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c
+
+    ${CINDER_SRC_DIR}/tinyexr/tinyexr.cc
+
+	${CINDER_SRC_DIR}/r8brain/r8bbase.cpp
+
+	${CINDER_SRC_DIR}/oggvorbis/ogg/bitwise.c
+	${CINDER_SRC_DIR}/oggvorbis/ogg/framing.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/analysis.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/bitrate.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/block.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/codebook.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/envelope.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/floor0.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/floor1.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/info.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/lookup.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/lpc.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/lsp.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/mapping0.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/mdct.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/psy.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/registry.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/res0.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/sharedbook.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/smallft.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/synthesis.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/vorbisenc.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/vorbisfile.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/window.c
 
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionManager.cpp
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionImplAndroid.cpp
@@ -677,5 +753,3 @@ if( NDK_GLES2 )
 else()
     add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
 endif()
-
-

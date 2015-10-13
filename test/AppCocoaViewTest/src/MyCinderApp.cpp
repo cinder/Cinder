@@ -30,7 +30,7 @@ MyCinderApp::~MyCinderApp()
 void MyCinderApp::setup()
 {
 	testCbo.setState( TestCallbackOrder::SETUP );
-	getSignalCleanup().connect( [this] { testCbo.setState( TestCallbackOrder::SHUTDOWN ); } );
+	getSignalCleanup().connect( [this] { testCbo.setState( TestCallbackOrder::CLEANUP ); } );
 
 	mRadius = 50;
 	mAnimatedRadius = 0;
@@ -76,10 +76,10 @@ void MyCinderApp::draw()
 #endif
 }
 
-void MyCinderApp::shutdown()
+void MyCinderApp::cleanup()
 {
-	console() << "Shutdown" << std::endl;
-	testCbo.setState( TestCallbackOrder::SHUTDOWN );
+	console() << "Cleanup" << std::endl;
+	testCbo.setState( TestCallbackOrder::CLEANUP );
 }
 
 void MyCinderApp::mouseDown( MouseEvent event )

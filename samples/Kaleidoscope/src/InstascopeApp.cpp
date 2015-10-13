@@ -1,6 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
@@ -276,15 +276,14 @@ void InstascopeApp::updateMirrors( vector<TrianglePiece> *vec )
 	vec2 mSamplePt2( mSamplePt1.x + 1, mSamplePt1.y);
 	vec2 mSamplePt3( mSamplePt1.x + (cos(M_PI/3)), mSamplePt1.y + (sin(M_PI/3)));
 	
-	// translate the points via an affine matrix
-	MatrixAffine2f mtrx = MatrixAffine2f::identity();
-	mtrx.translate(mSamplePt.value());
-	mtrx.scale(mSampleSize);
-	mtrx.rotate((getElapsedFrames()*4)/2*M_PI);
+	mat3 mtrx( 1.0f );
+	mtrx = glm::translate( mtrx, mSamplePt.value() );
+	mtrx = glm::scale( mtrx, vec2( mSampleSize ) );
+	mtrx = glm::rotate( mtrx, float((getElapsedFrames()*4)/2*M_PI) );
 	
-	mSamplePt1 = mtrx.transformPoint(mSamplePt1);
-	mSamplePt2 = mtrx.transformPoint(mSamplePt2);
-	mSamplePt3 = mtrx.transformPoint(mSamplePt3);
+	mSamplePt1 = vec2( mtrx * vec3( mSamplePt1, 1.0 ) );
+	mSamplePt2 = vec2( mtrx * vec3( mSamplePt2, 1.0 ) );
+	mSamplePt3 = vec2( mtrx * vec3( mSamplePt3, 1.0 ) );
 	
 	mSamplePt1 /= mMirrorTexture->getSize();
 	mSamplePt2 /= mMirrorTexture->getSize();
@@ -324,9 +323,7 @@ void InstascopeApp::mirrorIn()
 }
 
 void InstascopeApp::draw()
-{	 
-	gl::pushModelMatrix();
-	
+{
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::enableAlphaBlending( PREMULT );
 	
@@ -335,18 +332,16 @@ void InstascopeApp::draw()
 	
 	drawMirrors( &mTriPieces );
 	mTextRibbon->draw();
-	gl::popModelMatrix();
 }
 
 void InstascopeApp::drawMirrors( vector<TrianglePiece> *vec ) 
 {
-	gl::pushModelMatrix();
+	gl::ScopedModelMatrix scopedMat;
 	gl::translate( getWindowCenter() );
 	gl::rotate( mMirrorRot );
 	for( int i = 0; i < vec->size(); i++ ) {
 		(*vec)[i].draw();
 	}
-	gl::popModelMatrix();
 }
 
-CINDER_APP( InstascopeApp, RendererGl )
+CINDER_APP( InstascopeApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )

@@ -104,7 +104,6 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	mPolygonModeStack.push_back( GL_FILL );
 #endif
 	
-
 	mImmediateMode = gl::VertBatch::create();
 	
 	GLint params[4];
@@ -132,6 +131,10 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	// set default shader
 	pushGlslProg( getStockShader( ShaderDef().color() ) );
 	
+	// enable unpremultiplied alpha blending by default
+	pushBoolState( GL_BLEND, GL_TRUE );
+	pushBlendFuncSeparate( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
 #if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 	if( mPlatformData->mDebug ) {
 		mDebugLogSeverity = mPlatformData->mDebugLogSeverity;
@@ -603,7 +606,7 @@ void Context::bufferDeleted( const BufferObj *buffer )
 
 	// if 'id' was bound to 'target', mark 'target's binding as 0
 	auto existingIt = mBufferBindingStack.find( target );
-	if( existingIt != mBufferBindingStack.end() ) {
+	if( existingIt != mBufferBindingStack.end() && ! existingIt->second.empty() ) {
 		if( mBufferBindingStack[target].back() == buffer->getId() ) {
 			mBufferBindingStack[target].back() = 0;
 			// alert the currently bound VAO
@@ -1820,17 +1823,20 @@ void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, co
 // Shaders
 GlslProgRef& Context::getStockShader( const ShaderDef &shaderDef )
 {
-
 	auto existing = mStockShaders.find( shaderDef );
 	if( existing == mStockShaders.end() ) {
-#if defined( CINDER_ANDROID )		
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 		try {
 			auto result = gl::env()->buildShader( shaderDef );
 			mStockShaders[shaderDef] = result;
 			return mStockShaders[shaderDef];
 		}
 		catch( const exception& e ) {
+	#if defined( CINDER_ANDROID )
 			ci::android::dbg_app_error( std::string( "getStockShader error: " ) + e.what() );
+	#elif defined( CINDER_LINUX )
+			std::cout << "getStockShader error: " << e.what() << std::endl;
+	#endif
 		}
 #else
 		auto result = gl::env()->buildShader( shaderDef );

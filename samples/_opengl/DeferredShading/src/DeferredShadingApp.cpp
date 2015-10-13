@@ -20,7 +20,7 @@
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/CameraUi.h"
-#if !defined( CINDER_COCOA_TOUCH )
+#if !defined( CINDER_GL_ES )
 #include "cinder/params/Params.h"
 #endif
 
@@ -61,7 +61,7 @@ private:
 	bool						mDebugMode;
 	bool						mEnabledFxaa;
 	bool						mEnabledShadow;
-#if !defined( CINDER_COCOA_TOUCH )
+#if !defined( CINDER_GL_ES )
 	float						mFrameRate;
 	bool						mFullScreen;
 	ci::params::InterfaceGlRef	mParams;
@@ -71,7 +71,7 @@ private:
 
 #include "cinder/app/RendererGl.h"
 #include "cinder/Log.h"
-#if !defined( CINDER_COCOA_TOUCH )
+#if !defined( CINDER_GL_ES )
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #endif
@@ -86,8 +86,8 @@ DeferredShadingApp::DeferredShadingApp()
 	gl::color( ColorAf::white() );
 	gl::disableAlphaBlending();
 	
-#if defined( CINDER_COCOA_TOUCH ) && !defined( CINDER_GL_ES_3 )
-	CI_LOG_V( "CINDER_GL_ES_3 must be defined in Cinder and this application when targeting iOS." );
+#if defined( CINDER_GL_ES ) && ! ( CINDER_GL_VERSION >= CINDER_GL_VERSION_3 )
+	CI_LOG_V( "CINDER_GL_ES_3 must be defined in Cinder and this application when targeting OpenGL ES." );
 	quit();
 	return;
 #endif
@@ -134,7 +134,7 @@ DeferredShadingApp::DeferredShadingApp()
 	// Call resize to create FBOs
 	resize();
 	
-#if !defined( CINDER_COCOA_TOUCH )
+#if !defined( CINDER_GL_ES )
 	mFrameRate	= 0.0f;
 	mFullScreen	= isFullScreen();
 	
@@ -333,7 +333,7 @@ void DeferredShadingApp::draw()
 		}
 	}
 	
-#if !defined( CINDER_COCOA_TOUCH )
+#if !defined( CINDER_GL_ES )
 	mParams->draw();
 #endif
 }
@@ -438,7 +438,7 @@ void DeferredShadingApp::resize()
 	const ivec2 winSize = getWindowSize();
 	const int32_t h		= winSize.y;
 	const int32_t w		= winSize.x;
-	{
+	try {
 		gl::Fbo::Format fboFormat;
 		mTextureFboGBuffer[ 0 ] = gl::Texture2d::create( w, h, colorTextureFormat );
 		mTextureFboGBuffer[ 1 ] = gl::Texture2d::create( w, h, dataTextureFormat );
@@ -452,18 +452,24 @@ void DeferredShadingApp::resize()
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboGBuffer->getSize() );
 		gl::clear();
 	}
+	catch( const std::exception& e ) {
+		console() << "mFboGBuffer failed: " << e.what() << std::endl;
+	}
 	
 	// Create FBO for the light buffer (L-buffer). The L-buffer reads the
 	// G-buffer textures to render the scene inside light volumes.
-	{
+	try {
 		mFboLBuffer	= gl::Fbo::create( w, h, gl::Fbo::Format().colorTexture() );
 		const gl::ScopedFramebuffer scopedFramebuffer( mFboLBuffer );
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
 		gl::clear();
 	}
+	catch( const std::exception& e ) {
+		console() << "mFboLBuffer failed: " << e.what() << std::endl;
+	}
 }
 
-#if !defined( CINDER_COCOA_TOUCH )
+#if !defined( CINDER_GL_ES )
 void DeferredShadingApp::screenShot()
 {
 	const fs::path path = getAppPath();
@@ -473,7 +479,7 @@ void DeferredShadingApp::screenShot()
 
 void DeferredShadingApp::update()
 {
-#if ! defined( CINDER_COCOA_TOUCH )
+#if ! defined( CINDER_GL_ES )
 	mFrameRate	= getAverageFps();
 	
 	if( mFullScreen != isFullScreen() ) {
@@ -503,7 +509,7 @@ void DeferredShadingApp::update()
 	}
 }
 
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_ES )
 CINDER_APP( DeferredShadingApp, RendererGl, []( App::Settings* settings )
 {
 	settings->disableFrameRate();

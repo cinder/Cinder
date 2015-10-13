@@ -23,10 +23,30 @@
 
 #pragma once
 
-#define _GLFW_X11
-#define _GLFW_USE_OPENGL
-#define _GLFW_GLX
-
 #define GLFW_EXPOSE_NATIVE_X11
-#define GLFW_EXPOSE_NATIVE_GLX
 
+#if defined( CINDER_GL_ES_2 )
+	#define GLFW_EXPOSE_NATIVE_EGL
+	#define GLFW_INCLUDE_NONE
+#elif defined( CINDER_GL_ES_3 ) || defined( CINDER_GL_ES_3_1 ) || defined( CINDER_GL_ES_3_2 ) 
+	#define GLFW_EXPOSE_NATIVE_EGL
+	#define GLFW_INCLUDE_NONE
+#else
+	#define GLFW_EXPOSE_NATIVE_GLX
+#endif
+
+
+/*
+#define _GLFW_X11
+#define GLFW_EXPOSE_NATIVE_X11
+
+#if defined( CINDER_GL_ES_2 )
+	#define _GLFW_GLX
+	#define _GLFW_USE_GLESV2
+	#define GLFW_EXPOSE_NATIVE_EGL
+#else
+	#define _GLFW_GLX
+	#define _GLFW_USE_OPENGL
+	#define GLFW_EXPOSE_NATIVE_GLX
+#endif
+*/

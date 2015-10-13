@@ -390,7 +390,7 @@ void Line::render( Surface &surface, float currentY, float xBorder, float maxWid
 			FT_Set_Transform( face, nullptr, &pen );
 
 			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
-			FT_Error error = FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+			FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
 
 			FT_GlyphSlot slot = face->glyph;
 			ivec2 offset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
@@ -1033,6 +1033,37 @@ Surface	TextBox::render( vec2 offset )
 
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 
+void TextBox::calculate() const
+{
+	if( ! mInvalid ) {	
+		return;
+	}
+
+	if( mText.empty() ) {
+		mCalculatedSize = vec2();
+		return;
+	}	
+
+	mCalculatedSize = vec2();
+	FT_Face face = mFont.getFreetypeFace();
+
+	vector<string> lines = calculateLineBreaks( nullptr );
+	for( const auto& text : lines ) {
+		auto measure = ci::linux::ftutil::MeasureString( text, face );
+		float fullWidth = measure.getBaseline().x + measure.getWidth();
+		mCalculatedSize.x = std::max( mCalculatedSize.x, fullWidth );
+		mCalculatedSize.y += measure.getHeight();
+	}
+
+	mInvalid = false;
+}
+
+vec2 TextBox::measure() const
+{
+	calculate();
+	return mCalculatedSize;
+}
+
 vector<string> TextBox::calculateLineBreaks( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics ) const
 {
 	vector<string> result;
@@ -1056,16 +1087,16 @@ vector<string> TextBox::calculateLineBreaks( const std::map<Font::Glyph, Font::G
 			int measuredWidth = 0;
 			FT_Vector pen = { 0, 0 };
 			for( const auto& ch : utf32Chars ) {
-				FT_Vector advance = { 0, 0 };
+				ivec2 advance = { 0, 0 };
 				FT_UInt glyphIndex = FT_Get_Char_Index( mFont, ch );
 				if( nullptr != mCachedGlyphMerics ) {
 					auto iter = mCachedGlyphMerics->find( glyphIndex );
-					advance = iter->second.advance;					
+					advance = iter->second.advance;		
 				}
 				else  {
 					FT_Load_Glyph( mFont, glyphIndex, FT_LOAD_DEFAULT );
 					const FT_GlyphSlot& slot = mFont->glyph;
-					advance = slot->advance;
+					advance = ivec2( slot->advance.x, slot->advance.y );
 				}
 
 				pen.x += advance.x;
@@ -1105,7 +1136,7 @@ vector<pair<uint32_t,vec2>> TextBox::measureGlyphs( const std::map<Font::Glyph, 
 
 		FT_Vector pen = { 0, 0 };
 		for( const auto& ch : utf32Chars ) {
-			FT_Vector advance = { 0, 0 };
+			ivec2 advance = { 0, 0 };
 			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
 			if( nullptr != cachedGlyphMetrics ) {
 				auto iter = cachedGlyphMetrics->find( glyphIndex );
@@ -1114,7 +1145,7 @@ vector<pair<uint32_t,vec2>> TextBox::measureGlyphs( const std::map<Font::Glyph, 
 			else {
 				FT_Load_Glyph( face, glyphIndex, FT_LOAD_DEFAULT );
 				const FT_GlyphSlot& slot = face->glyph;
-				advance = slot->advance;
+				advance = ivec2( slot->advance.x, slot->advance.y );
 			}
 
 			float xPos = (pen.x / 64.0f) + 0.5f;
@@ -1125,6 +1156,90 @@ vector<pair<uint32_t,vec2>> TextBox::measureGlyphs( const std::map<Font::Glyph, 
 		}
 
 		curY += mFont.getAscent() + mFont.getDescent();
+	}
+
+	return result;
+}
+
+Surface TextBox::render( vec2 offset )
+{
+	mCalculatedSize = vec2();
+	FT_Face face = mFont.getFreetypeFace();
+
+	std::vector<ci::linux::ftutil::Measure> measures;
+	std::vector<string> lines = calculateLineBreaks( nullptr );
+	for( const auto& text : lines ) {
+		auto measure = ci::linux::ftutil::MeasureString( text, face );
+		measures.push_back( measure );
+
+		float fullWidth = measure.getBaseline().x + measure.getWidth();
+		mCalculatedSize.x = std::max( mCalculatedSize.x, fullWidth );
+		mCalculatedSize.y += measure.getHeight();		
+	}
+
+	float sizeX = ( mSize.x <= 0 ) ? mCalculatedSize.x : mSize.x;
+	float sizeY = ( mSize.y <= 0 ) ? mCalculatedSize.y : mSize.y;
+	sizeX = math<float>::ceil( sizeX );
+	sizeY = math<float>::ceil( sizeY );
+	sizeX += offset.x;
+	sizeY += offset.y;
+	sizeY += 1.0f;	
+
+	// Give Android a bit of padding on the right	
+#if defined( CINDER_ANDROID )	
+	sizeX += 3.0f;
+#endif
+
+	Surface result( (int)sizeX, (int)sizeY, true );
+	ip::fill( &result, mBackgroundColor );
+
+	uint8_t*	dstData = result.getData(); 
+	size_t 		dstPixelInc = result.getPixelInc();
+	size_t 		dstRowBytes = result.getRowBytes();
+	ivec2 		dstSize = result.getSize();
+
+	int curY = 0;
+	for( size_t i = 0; i < lines.size(); ++i ) {
+		const auto& text = lines[i];
+		const auto& measure = measures[i];
+
+		vec2 baseline = measure.getBaseline();
+		float penX = baseline.x + offset.x;
+		float penY = dstSize.y - (baseline.y + offset.y + curY);
+		if( TextBox::RIGHT == mAlign ) {
+			penX = dstSize.x - (measure.getWidth() + offset.x + 3.0f);
+		}
+		else if( TextBox::CENTER == mAlign ) {
+			penX = 0.5f*(dstSize.x - measure.getWidth());		
+		}
+
+		FT_Vector pen = { (int)(penX*64.0f), (int)(penY*64.0f) };
+
+		std::u32string utf32Chars = ci::toUtf32( text );		
+		for( const auto& ch : utf32Chars ) {
+			FT_Set_Transform( face, nullptr, &pen );
+
+			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+			FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+			const FT_GlyphSlot& slot = face->glyph;
+
+			if( '\n' != (char)ch ) {
+				ivec2 drawOffset = ivec2( slot->bitmap_left, dstSize.y - slot->bitmap_top );
+				ci::linux::ftutil::DrawBitmap( drawOffset, &(slot->bitmap), mColor, dstData, dstPixelInc, dstRowBytes, dstSize );
+			}
+
+			pen.x += slot->advance.x;
+			pen.y += slot->advance.y;	
+		}
+
+		curY += measure.getHeight();
+	}
+
+	if( ! mPremultiplied ) {
+		ip::unpremultiply( &result );
+	}
+	else {
+		result.setPremultiplied( true );		
 	}
 
 	return result;

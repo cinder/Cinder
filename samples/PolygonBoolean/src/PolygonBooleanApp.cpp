@@ -119,7 +119,6 @@ void PolygonBooleanApp::setup()
 
 void PolygonBooleanApp::draw()
 {
-	gl::enableAlphaBlending();
 	gl::clear( Color( 0.24f, 0.24f, 0.24f ) );
 	
 	gl::color( ColorA( 0.25f, 0.5f, 1.0f, 0.15f ) );

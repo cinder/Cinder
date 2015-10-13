@@ -58,25 +58,6 @@ using namespace std;
 
 namespace cinder { namespace log {
 
-class LoggerImplMulti : public Logger {
-public:
-
-	void add( Logger *logger )							{ mLoggers.push_back( std::unique_ptr<Logger>( logger ) ); }
-	void add( std::unique_ptr<Logger> &&logger )		{ mLoggers.emplace_back( move( logger ) ); }
-
-	template <typename LoggerT>
-	LoggerT* findType();
-
-	void remove( Logger *logger );
-
-	const vector<unique_ptr<Logger> >& getLoggers() const	{ return mLoggers; }
-
-	void write( const Metadata &meta, const std::string &text ) override;
-
-private:
-	vector<unique_ptr<Logger> >	mLoggers; // TODO: make set? don't want duplicates
-};
-
 namespace  {
 
 // output format is YYYY-MM-DD.HH:mm:ss
@@ -134,7 +115,7 @@ void LogManager::resetLogger( Logger *logger )
 
 	mLogger.reset( logger );
 
-	LoggerImplMulti *multi = dynamic_cast<LoggerImplMulti *>( logger );
+	LoggerMulti *multi = dynamic_cast<LoggerMulti *>( logger );
 	mLoggerMulti = multi ? multi : nullptr;
 
 	mConsoleLoggingEnabled = mFileLoggingEnabled = mSystemLoggingEnabled = false;
@@ -145,7 +126,7 @@ void LogManager::addLogger( Logger *logger )
 	lock_guard<mutex> lock( mMutex );
 
 	if( ! mLoggerMulti ) {
-		auto loggerMulti = unique_ptr<LoggerImplMulti>( new LoggerImplMulti );
+		auto loggerMulti = unique_ptr<LoggerMulti>( new LoggerMulti );
 		loggerMulti->add( move( mLogger ) );
 		mLoggerMulti = loggerMulti.get();
 		mLogger = move( loggerMulti );
@@ -173,12 +154,13 @@ void LogManager::restoreToDefault()
 	mSystemLoggingEnabled = false;
 	mBreakOnLogEnabled = false;
 
-	switch( CI_MAX_LOG_LEVEL ) {
-		case 5: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
-		case 4: mSystemLoggingLevel = LEVEL_INFO;		break;
+	switch( CI_MIN_LOG_LEVEL ) {
+		case 5: mSystemLoggingLevel = LEVEL_FATAL;      break;
+		case 4: mSystemLoggingLevel = LEVEL_ERROR;      break;
 		case 3: mSystemLoggingLevel = LEVEL_WARNING;	break;
-		case 2: mSystemLoggingLevel = LEVEL_ERROR;		break;
-		case 1: mSystemLoggingLevel = LEVEL_FATAL;		break;
+		case 2: mSystemLoggingLevel = LEVEL_INFO;       break;
+		case 1: mSystemLoggingLevel = LEVEL_DEBUG;		break;
+		case 0: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
 		default: CI_ASSERT_NOT_REACHABLE();
 	}
 }
@@ -229,7 +211,7 @@ void LogManager::enableFileLogging( const fs::path &path, bool appendToExisting 
 	mFileLoggingEnabled = true;
 }
 
-void LogManager::enableFileLogging( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
+void LogManager::enableFileLoggingRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
 {
 	if( ! initFileLogging() ) {
 		return;
@@ -248,10 +230,10 @@ void LogManager::setFileLoggingEnabled( bool enable, const fs::path &filePath, b
 }
 
 
-void LogManager::setFileLoggingEnabled( bool enable, const fs::path &folder, const string &formatStr, bool appendToExisting )
+void LogManager::setFileLoggingRotatingEnabled( bool enable, const fs::path &folder, const string &formatStr, bool appendToExisting )
 {
 	if( enable )
-		enableFileLogging( folder, formatStr, appendToExisting );
+		enableFileLoggingRotating( folder, formatStr, appendToExisting );
 	else
 		disableFileLogging();
 }
@@ -387,22 +369,10 @@ void LoggerConsole::write( const Metadata &meta, const string &text )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerImplMulti
+// MARK: - LoggerMulti
 // ----------------------------------------------------------------------------------------------------
 
-template <typename LoggerT>
-LoggerT* LoggerImplMulti::findType()
-{
-	for( const auto &logger : mLoggers ) {
-		auto result = dynamic_cast<LoggerT *>( logger.get() );
-		if( result )
-			return result;
-	}
-
-	return nullptr;
-}
-
-void LoggerImplMulti::remove( Logger *logger )
+void LoggerMulti::remove( Logger *logger )
 {
 	mLoggers.erase( remove_if( mLoggers.begin(), mLoggers.end(),
 							  [logger]( const std::unique_ptr<Logger> &o ) {
@@ -411,7 +381,7 @@ void LoggerImplMulti::remove( Logger *logger )
 				   mLoggers.end() );
 }
 
-void LoggerImplMulti::write( const Metadata &meta, const string &text )
+void LoggerMulti::write( const Metadata &meta, const string &text )
 {
 	for( auto &logger : mLoggers )
 		logger->write( meta, text );
@@ -540,6 +510,7 @@ protected:
 				// We never return lower than LOG_NOTICE for OS X SysLog to ensure the message arrives
 				// http://apple.stackexchange.com/questions/13484/messages-issued-by-syslog-not-showing-up-in-system-logs
 			case LEVEL_INFO:	return LOG_NOTICE;
+			case LEVEL_DEBUG:	return LOG_NOTICE;
 			case LEVEL_VERBOSE:	return LOG_NOTICE;
 			default: CI_ASSERT_NOT_REACHABLE();
 		}
@@ -597,7 +568,10 @@ public:
 		wStrings[0] = wMeta.c_str();
 		wStrings[1] = wText.c_str();
 	
-		::ReportEventW( mHLog, eventLevel, 0, 0, 0, 2, 0, wStrings, 0 );
+		// Windows manifests do not allow 0 based event IDs.
+		DWORD eventID = meta.mLevel + 100;
+
+		::ReportEventW( mHLog, eventLevel, 0, eventID, 0, 2, 0, wStrings, 0 );
 	}
 
 protected:
@@ -609,6 +583,7 @@ protected:
 			case LEVEL_ERROR:	return EVENTLOG_ERROR_TYPE;
 			case LEVEL_WARNING:	return EVENTLOG_WARNING_TYPE;
 			case LEVEL_INFO:	return EVENTLOG_INFORMATION_TYPE;
+			case LEVEL_DEBUG:	return EVENTLOG_INFORMATION_TYPE;
 			case LEVEL_VERBOSE:	return EVENTLOG_INFORMATION_TYPE;
 			default: CI_ASSERT_NOT_REACHABLE();
 		}
@@ -644,7 +619,7 @@ public:
 #elif defined( CINDER_LINUX )
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - ImplConsoleCat
+// MARK: - ImplConsole
 // ----------------------------------------------------------------------------------------------------
 
 class LoggerSystem::ImplConsole : public Logger {
@@ -714,10 +689,8 @@ ostream& operator<<( ostream &lhs, const Level &rhs )
 {
 	switch( rhs ) {
 		case LEVEL_VERBOSE:		lhs << "|verbose|";	break;
-		case LEVEL_INFO:		lhs << "|info   |";	break;
-#if defined( CINDER_ANDROID )
 		case LEVEL_DEBUG:		lhs << "|debug  |";	break;
-#endif		
+		case LEVEL_INFO:		lhs << "|info   |";	break;	
 		case LEVEL_WARNING:		lhs << "|warning|";	break;
 		case LEVEL_ERROR:		lhs << "|error  |";	break;
 		case LEVEL_FATAL:		lhs << "|fatal  |";	break;

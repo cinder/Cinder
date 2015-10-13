@@ -421,13 +421,13 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( GLFWwindow *glfwWindow, RendererRef sharedRenderer )
+void RendererGl::setup( void* nativeWindow, RendererRef sharedRenderer )
 {
 	if( ! mImpl ) {
 		mImpl = new RendererGlLinux( this );
     }
 
-	if( ! mImpl->initialize( glfwWindow, sharedRenderer ) ) {
+	if( ! mImpl->initialize( nativeWindow, sharedRenderer ) ) {
 		throw ExcRendererAllocation( "RendererGlLinux initialization failed." );
     }
 }

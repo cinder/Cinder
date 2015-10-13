@@ -40,11 +40,11 @@ class PlatformAndroid : public Platform {
 	virtual void 					cleanupLaunch() override;
 
 	virtual DataSourceRef			loadAsset( const fs::path &relativePath );
-
+	virtual fs::path				getAssetPath( const fs::path &relativePath ) const override;
 	virtual DataSourceRef			loadResource( const fs::path &resourcePath ) override;
 
 	virtual fs::path				getResourceDirectory() const override;
-	virtual fs::path				getResourcePath( const fs::path &rsrcRelativePath ) override;
+	virtual fs::path				getResourcePath( const fs::path &rsrcRelativePath ) const override;
 
 	virtual fs::path 				getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 	virtual fs::path 				getFolderPath( const fs::path &initialPath ) override;
@@ -75,8 +75,8 @@ class PlatformAndroid : public Platform {
 	virtual void 					prepareAssetLoading() override;	
 
 	// Empty directories are not copied into the APK, so this will fail on empty directories
-	virtual fs::path				findAssetPath( const fs::path &relativePath );
-	virtual void					findAndAddAssetBasePath();
+	//virtual fs::path				findAssetPath( const fs::path &relativePath );
+	//virtual void					findAndAddAssetBasePath();
 
  private:
 	std::unique_ptr<std::ostream>	mOutputStream;

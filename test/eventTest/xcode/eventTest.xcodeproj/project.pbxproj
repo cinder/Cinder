@@ -20,6 +20,8 @@
 		00C074DE0FF338E3004801EA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C074DA0FF338E3004801EA /* AudioToolbox.framework */; };
 		00C074DF0FF338E3004801EA /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C074DB0FF338E3004801EA /* AudioUnit.framework */; };
 		00C074E00FF338E3004801EA /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C074DC0FF338E3004801EA /* CoreAudio.framework */; };
+		113241D21B66DCF30064A24A /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 113241D11B66DCF30064A24A /* IOKit.framework */; };
+		113241D41B66DCFE0064A24A /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 113241D31B66DCFE0064A24A /* IOSurface.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		00C074DA0FF338E3004801EA /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00C074DB0FF338E3004801EA /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00C074DC0FF338E3004801EA /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		113241D11B66DCF30064A24A /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		113241D31B66DCFE0064A24A /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -49,6 +53,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				113241D41B66DCFE0064A24A /* IOSurface.framework in Frameworks */,
+				113241D21B66DCF30064A24A /* IOKit.framework in Frameworks */,
 				006D729C1995319F008149E2 /* AVFoundation.framework in Frameworks */,
 				006D729D1995319F008149E2 /* CoreMedia.framework in Frameworks */,
 				00BC6ADA0F93DEDD0086A1DC /* QuickTime.framework in Frameworks */,
@@ -141,6 +147,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				113241D31B66DCFE0064A24A /* IOSurface.framework */,
+				113241D11B66DCF30064A24A /* IOKit.framework */,
 				006D729A1995319F008149E2 /* AVFoundation.framework */,
 				006D729B1995319F008149E2 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,

@@ -45,15 +45,18 @@
 #elif defined( CINDER_WINRT )
 	#include <dwrite.h>
 	#include "cinder/winrt/FontEnumerator.h"
-#elif defined( CINDER_ANDROID )
-	#include "freetype/ftsnames.h"
-	#include "freetype/ttnameid.h"
- 	#include "cinder/linux/FreeTypeUtil.h"
- 	#include <set>
-#elif defined( CINDER_LINUX )
-	#include <fontconfig/fontconfig.h>
- 	#include "cinder/linux/FreeTypeUtil.h"
- 	#include <set>
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+ 	#include "ft2build.h"
+	#include FT_FREETYPE_H 
+	#include FT_OUTLINE_H 
+ 	#include "cinder/linux/FreeTypeUtil.h" 
+	#include <set>
+ 	#if defined( CINDER_ANDROID )
+		#include "freetype/ftsnames.h"
+		#include "freetype/ttnameid.h"
+	#elif defined( CINDER_LINUX )
+		#include <fontconfig/fontconfig.h>
+ 	#endif
 #endif
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"

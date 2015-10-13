@@ -23,41 +23,77 @@ if(NOT WIN32)
   set(BoldWhite     "${Esc}[1;37m" )
 endif()
 
+if( "rpi2" STREQUAL "${CINDER_LINUX_EGL_ONLY}" )
+	#if( NOT "arm7vl" STREQUAL "${CINDER_ARCH}" )
+	#	message( FATAL_ERROR "${BoldRed}Wrong architecture for Raspberry Pi 2: ${CINDER_ARCH}${ColorReset}" ) 
+	#endif()
+
+	set( CINDER_LINUX_EGL_RPI2 true )
+	set( CINDER_GL_ES true )
+endif()
+
+if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
+	set( CINDER_GL_ES true )
+	if( CINDER_GL_ES_2 )
+		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_2" )
+	elseif( CINDER_GL_ES_3 )
+		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3" )
+	elseif( CINDER_GL_ES_3_1 )
+		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3_1" )
+	elseif( CINDER_GL_ES_3_2 )
+		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3_2" )
+	endif()
+
+endif()
+
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
 
-# Output path
-set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/linux/${CINDER_ARCH} )
-
-project( cinder_linux )
-
 set( CINDER_TOOLCHAIN_CLANG true )
 
 if( CINDER_TOOLCHAIN_CLANG )
-    set(CMAKE_TOOLCHAIN_PREFIX "llvm-" ) 
-    set(CMAKE_C_COMPILER                      "clang")
-    set(CMAKE_CXX_COMPILER                    "clang++")
-    #set(CMAKE_C_COMPILER                      "/usr/bin/clang-3.5")
-    #set(CMAKE_CXX_COMPILER                    "/usr/bin/clang++-3.5")
+    set( CMAKE_C_COMPILER	"clang" 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER	"clang++" 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_AR           "llvm-ar"		CACHE FILEPATH "" FORCE )
+    set( CMAKE_LINKER       "llvm-link" 	CACHE FILEPATH "" FORCE )
+    set( CMAKE_NM           "llvm-nm " 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_RANLIB       "llvm-ranlib"	CACHE FILEPATH "" FORCE )
+    #set( CMAKE_STRIP        ""				CACHE FILEPATH "" FORCE )
 
-    set(CMAKE_C_FLAGS_INIT                    "-Wall -std=c99")
-    set(CMAKE_C_FLAGS_DEBUG_INIT              "-g")
-    set(CMAKE_C_FLAGS_MINSIZEREL_INIT         "-Os -DNDEBUG")
-    set(CMAKE_C_FLAGS_RELEASE_INIT            "-O4 -DNDEBUG")
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT     "-O2 -g")
-    set(CMAKE_C_FLAGS                          "${CMAKE_C_FLAGS} -fmessage-length=0 ")
+    set(CMAKE_C_FLAGS_INIT					"-Wall -std=c99" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS_DEBUG_INIT			"-g" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS_MINSIZEREL_INIT		"-Os -DNDEBUG" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS_RELEASE_INIT			"-O4 -DNDEBUG" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT	"-O2 -g" CACHE STRING "" FORCE )
+    set(CMAKE_C_FLAGS						"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
 
-    set(CMAKE_CXX_FLAGS_INIT                  "-Wall")
-    set(CMAKE_CXX_FLAGS_DEBUG_INIT            "-g")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT       "-Os -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE_INIT          "-O4 -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT   "-O2 -g")
-    set(CMAKE_CCC_FLAGS                       "${CMAKE_C_FLAGS} -fmessage-length=0 ")
+    set(CMAKE_CXX_FLAGS_INIT				"-Wall" CACHE STRING "" FORCE )
+    set(CMAKE_CXX_FLAGS_DEBUG_INIT			"-g" CACHE STRING "" FORCE )
+    set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT		"-Os -DNDEBUG" CACHE STRING "" FORCE ) 
+    set(CMAKE_CXX_FLAGS_RELEASE_INIT		"-O4 -DNDEBUG" CACHE STRING "" FORCE )
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT	"-O2 -g" CACHE STRING "" FORCE )
+    set(CMAKE_CCC_FLAGS						"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
+else()
+    set( CMAKE_C_COMPILER	"gcc-4.8" 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER	"g++-4.8" 		CACHE FILEPATH "" FORCE )	
 endif()
 
-message( "${BoldGreen}CINDER_ARCH: ${CINDER_ARCH}${ColorReset}" )
+# Needs to come ater compilers are set
+project( cinder_linux )
+
+# Output path
+#set( LIBRARY_OUTPUT_PATH "${CINDER_DIR}/lib/linux/${CINDER_ARCH}" )
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CINDER_DIR}/lib/linux/${CINDER_ARCH}" )
+
+message( "" )
+if( CINDER_LINUX_EGL_RPI2 )
+	message( "${BoldGreen}CINDER_ARCH : ${CINDER_ARCH}${ColorReset}" )
+	message( "${BoldGreen}CINDER_LINUX: ${CINDER_LINUX}${ColorReset}" )
+else()
+	message( "${BoldGreen}CINDER_ARCH: ${CINDER_ARCH}${ColorReset}" )
+endif()
 message( "" )
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
@@ -70,52 +106,92 @@ message( "${BoldGreen}CMAKE_AR          : ${CMAKE_AR}${ColorReset}" )
 message( "${BoldGreen}CMAKE_LINKER      : ${CMAKE_LINKER}${ColorReset}" ) 
 message( "${BoldGreen}CMAKE_NM          : ${CMAKE_NM}${ColorReset}" ) 
 message( "${BoldGreen}CMAKE_RANLIB      : ${CMAKE_RANLIB}${ColorReset}" ) 
-message( "${BoldGreen}CMAKE_STRIP       : ${CMAKE_STRIP}${ColorReset}" ) 
+#message( "${BoldGreen}CMAKE_STRIP       : ${CMAKE_STRIP}${ColorReset}" ) 
+#message( "" )
+#message( "${BoldGreen}CMAKE_SYSROOT     : ${CMAKE_SYSROOT}${ColorReset}" ) 
 message( "" )
-message( "${BoldGreen}CMAKE_SYSROOT     : ${CMAKE_SYSROOT}${ColorReset}" ) 
-message( "" )
 
+if( CINDER_LINUX_EGL_RPI2 )
+	include_directories( 
+		/opt/vc/include
+		/opt/vc/include/interface/vcos/pthreads
+		/opt/vc/include/interface/vmcs_host/linux
+		${CINDER_INC_DIR} 
+		${CINDER_INC_DIR}/freetype
+		${CINDER_INC_DIR}/jsoncpp 
+		${CINDER_SRC_DIR}/linebreak 
+		${CINDER_SRC_DIR}/libtess2 
+		${CINDER_SRC_DIR}/AntTweakBar
+		${BOOST_INC_DIR}  
+	)
+else()
+	include_directories( 
+		${CINDER_INC_DIR} 
+		${CINDER_INC_DIR}/freetype
+		${CINDER_INC_DIR}/glfw
+		${CINDER_INC_DIR}/jsoncpp 
+		${CINDER_SRC_DIR}/linebreak 
+		${CINDER_SRC_DIR}/libtess2 
+		${CINDER_SRC_DIR}/AntTweakBar
+		${BOOST_INC_DIR}  
+	)
+endif()
 
+if( NOT CINDER_LINUX_EGL_RPI2 )
+	if( CINDER_GL_ES )
+		set( GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_EGL -D_GLFW_USE_GLESV2" )
+	else()
+		set( GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_GLX -D_GLFW_USE_OPENGL" )
+	endif()
+endif()
 
-include_directories( 
-    ${CINDER_INC_DIR} 
-    ${CINDER_INC_DIR}/freetype
-    ${CINDER_INC_DIR}/glfw
-    ${CINDER_INC_DIR}/jsoncpp 
-    ${CINDER_SRC_DIR}/linebreak 
-    ${CINDER_SRC_DIR}/libtess2 
-    ${CINDER_SRC_DIR}/AntTweakBar
-    ${BOOST_INC_DIR}  
-)
-
-set( C_FLAGS "-fvisibility=default -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX" )
+set( C_FLAGS "-fvisibility=default ${GLFW_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX" )
 set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
 set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
-set( CXX_FLAGS "-stdlib=libc++ -std=c++11 -fvisibility=default -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX" )
+# Disable these warnings, many of which are coming from Boost
+set( CXX_DISABLE_WARNINGS "-Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef -Wno-tautological-compare -Wno-missing-braces" )
+set( CXX_FLAGS "-stdlib=libstdc++ -std=c++11 -fvisibility=default ${CINDER_GL_ES_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX ${CXX_DISABLE_WARNINGS}" )
+
+if( CINDER_LINUX_EGL_RPI2 )
+	set( CXX_FLAGS "${CXX_FLAGS} -DCINDER_LINUX_EGL_ONLY -DCINDER_LINUX_EGL_RPI2 -DCINDER_GL_ES_2" )
+endif()
+
 set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g -fexceptions -frtti" )
 set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
 
-set( CINDER_C_SRC_FILES
-    ${CINDER_SRC_DIR}/glfw/src/context.c
-    ${CINDER_SRC_DIR}/glfw/src/init.c
-    ${CINDER_SRC_DIR}/glfw/src/input.c
-    ${CINDER_SRC_DIR}/glfw/src/monitor.c
-    ${CINDER_SRC_DIR}/glfw/src/window.c
+if( NOT CINDER_LINUX_EGL_RPI2 )
+	list( APPEND CINDER_C_SRC_FILES
+		${CINDER_SRC_DIR}/glfw/src/context.c
+		${CINDER_SRC_DIR}/glfw/src/init.c
+		${CINDER_SRC_DIR}/glfw/src/input.c
+		${CINDER_SRC_DIR}/glfw/src/monitor.c
+		${CINDER_SRC_DIR}/glfw/src/window.c
 
-    ${CINDER_SRC_DIR}/glfw/src/window.c
-    ${CINDER_SRC_DIR}/glfw/src/glx_context.c
-    ${CINDER_SRC_DIR}/glfw/src/x11_init.c
-    ${CINDER_SRC_DIR}/glfw/src/x11_monitor.c
-    ${CINDER_SRC_DIR}/glfw/src/x11_window.c
-    ${CINDER_SRC_DIR}/glfw/src/xkb_unicode.c
-    ${CINDER_SRC_DIR}/glfw/src/linux_joystick.c
-    ${CINDER_SRC_DIR}/glfw/src/posix_time.c
-    ${CINDER_SRC_DIR}/glfw/src/posix_tls.c
+		${CINDER_SRC_DIR}/glfw/src/window.c
+		${CINDER_SRC_DIR}/glfw/src/x11_init.c
+		${CINDER_SRC_DIR}/glfw/src/x11_monitor.c
+		${CINDER_SRC_DIR}/glfw/src/x11_window.c
+		${CINDER_SRC_DIR}/glfw/src/xkb_unicode.c
+		${CINDER_SRC_DIR}/glfw/src/linux_joystick.c
+		${CINDER_SRC_DIR}/glfw/src/posix_time.c
+		${CINDER_SRC_DIR}/glfw/src/posix_tls.c
+	)
+	
+	if( CINDER_GL_ES )
+		list( APPEND CINDER_C_SRC_FILES
+			${CINDER_SRC_DIR}/glfw/src/egl_context.c
+		)
+	else()
+		list( APPEND CINDER_C_SRC_FILES
+			${CINDER_SRC_DIR}/glfw/src/glx_context.c
+			${CINDER_SRC_DIR}/glload/gl_load.c
+			${CINDER_SRC_DIR}/glload/glx_load.c
+		)
+	endif()
+endif()
 
-    ${CINDER_SRC_DIR}/glload/gl_load.c
-    ${CINDER_SRC_DIR}/glload/glx_load.c
-
+list( APPEND CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/linebreak/linebreak.c
     ${CINDER_SRC_DIR}/linebreak/linebreakdata.c
     ${CINDER_SRC_DIR}/linebreak/linebreakdef.c
@@ -175,14 +251,38 @@ set( CINDER_C_SRC_FILES
 
 )
 
-set( CINDER_CXX_SRC_FILES
+if( CINDER_LINUX_EGL_RPI2 )
+	list( APPEND CINDER_CXX_SRC_FILES
+   		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxEgl.cpp
+    	${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxEgl.cpp
+    	${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxEgl.cpp
+	)
+else()
+	if( NOT CINDER_GL_ES )
+		list( APPEND CINDER_CXX_SRC_FILES
+			${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
+			${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
+		)
+	endif()
+
+	list( APPEND CINDER_CXX_SRC_FILES
+   		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
+    	${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
+    	${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
+	)
+endif()
+
+if( CINDER_GL_ES )
+	list( APPEND CINDER_CXX_SRC_FILES
+   		${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+	)
+endif()
+
+list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/linux/CinderLinux.cpp
 
-    ${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinux.cpp
     ${CINDER_SRC_DIR}/cinder/app/linux/AppLinux.cpp
     ${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
-    ${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinux.cpp
-    ${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinux.cpp
 
     ${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
     ${CINDER_SRC_DIR}/cinder/app/KeyEvent.cpp
@@ -221,10 +321,9 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 
-    ${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
-    ${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
-
     ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Blur.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Checkerboard.cpp
     ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp
     ${CINDER_SRC_DIR}/cinder/ip/Fill.cpp
     ${CINDER_SRC_DIR}/cinder/ip/Flip.cpp
@@ -290,17 +389,31 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 
     ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
-
-    ${CINDER_SRC_DIR}/cinder/params/Params.cpp
-    ${CINDER_SRC_DIR}/AntTweakBar/LoadOGL.cpp
-    ${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
-    ${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
-    ${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
-    ${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
-    ${CINDER_SRC_DIR}/AntTweakBar/TwOpenGL.cpp
-    ${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
-    ${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
 )
 
+if( NOT CINDER_GL_ES )
+	list( APPEND CINDER_CXX_SRC_FILES
+		${CINDER_SRC_DIR}/cinder/params/Params.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/LoadOGL.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGL.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
+	)
+endif()
+
 set( CMAKE_DEBUG_POSTFIX "_d" )
-add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+if( CINDER_GL_ES_2 )
+	add_library( cinder-es2 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+elseif( CINDER_GL_ES_3 )
+	add_library( cinder-es3 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+elseif( CINDER_GL_ES_3_1 )
+    add_library( cinder-es31 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+elseif( CINDER_GL_ES_3_2 )
+    add_library( cinder-es32 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+else()
+	add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+endif()

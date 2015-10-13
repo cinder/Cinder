@@ -70,59 +70,53 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 	mInternalFormat = internalFormat;
 	mSamples = msaaSamples;
 	mCoverageSamples = coverageSamples;
-#if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
-	static bool csaaSupported = ( glext_NV_framebuffer_multisample_coverage != 0 );
-#else
-	static bool csaaSupported = false;
-#endif
+
+	static bool csaaSupported = gl::env()->supportsCoverageSample();
 
 	glGenRenderbuffers( 1, &mId );
 
 	if( mSamples > Fbo::getMaxSamples() )
 		mSamples = Fbo::getMaxSamples();
 
-	if( ! csaaSupported )
+	if( ! csaaSupported ) {
 		mCoverageSamples = 0;
+	}
 
 	gl::ScopedRenderbuffer rbb( GL_RENDERBUFFER, mId );
 
-#if defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
-  #if defined( CINDER_MSW )  && ( ! defined( CINDER_GL_ES ) )
-	if( mCoverageSamples ) // create a CSAA buffer
-		glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER, mCoverageSamples, mSamples, mInternalFormat, mWidth, mHeight );
-	else
-  #endif
-		if( mSamples )
-			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
-		else
-			glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
-#elif defined( CINDER_GL_ES )
-  #if defined( CINDER_ANDROID ) && ! defined( CINDER_GL_ES_2 )
-	if( mInternalFormat == GL_RGBA )
-		mInternalFormat = GL_RGBA8;
-	else if( mInternalFormat == GL_RGB )
-		mInternalFormat = GL_RGB8;
-	else if( mInternalFormat == GL_DEPTH_COMPONENT )
-		mInternalFormat = GL_DEPTH_COMPONENT24;
-  #else
-	// this is gross, but GL_RGBA & GL_RGB are not suitable internal formats for Renderbuffers. We know what you meant though.
-	if( mInternalFormat == GL_RGBA )
-		mInternalFormat = GL_RGBA8_OES;
-	else if( mInternalFormat == GL_RGB )
-		mInternalFormat = GL_RGB8_OES;
-	else if( mInternalFormat == GL_DEPTH_COMPONENT )
-		mInternalFormat = GL_DEPTH_COMPONENT24_OES;
-  #endif	
-	
-	if( mSamples )
-  #if defined( CINDER_ANDROID ) && defined( CINDER_GL_ES_2 )
-		glRenderbufferStorageMultisampleIMG( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
-  #else		
-		glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
-  #endif	
-	else
+	if( gl::env()->supportsFboMultiSample() ) {
+		// create a CSAA buffer
+		if( mCoverageSamples ) {
+#if defined( CINDER_GL_ES )
+			// @TODO: Add coverage sampling support
+#else
+			glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER, mCoverageSamples, mSamples, mInternalFormat, mWidth, mHeight );
+#endif
+		}
+		else {
+			if( mSamples ) {
+				glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
+			}
+			else {
+				glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );		
+			}
+		}
+	}
+	else {
+#if defined( CINDER_GL_ES_2 )
+		// This is gross, but GL_RGBA & GL_RGB are not suitable internal formats for Renderbuffers. We know what you meant though.
+		if( mInternalFormat == GL_RGBA ) {
+			mInternalFormat = GL_RGBA8_OES;
+		}
+		else if( mInternalFormat == GL_RGB ) {
+			mInternalFormat = GL_RGB8_OES;
+		}
+		else if( mInternalFormat == GL_DEPTH_COMPONENT ) {
+			mInternalFormat = GL_DEPTH_COMPONENT24_OES;	
+		}
+#endif
 		glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
-#endif	
+	}
 }
 
 Renderbuffer::~Renderbuffer()
@@ -370,14 +364,16 @@ void Fbo::prepareAttachments( const Fbo::Format &format, bool multisampling )
 void Fbo::attachAttachments()
 {
 	// attach Renderbuffers
-	for( auto &bufferAttachment : mAttachmentsBuffer )
+	for( auto &bufferAttachment : mAttachmentsBuffer ) {
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, bufferAttachment.first, GL_RENDERBUFFER, bufferAttachment.second->getId() );
+	}
 	
 	// attach Textures
 	for( auto &textureAttachment : mAttachmentsTexture ) {
 		auto textureTarget = textureAttachment.second->getTarget();
-		if( textureTarget == GL_TEXTURE_CUBE_MAP )
+		if( textureTarget == GL_TEXTURE_CUBE_MAP ) {
 			textureTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+		}
 		glFramebufferTexture2D( GL_FRAMEBUFFER, textureAttachment.first, textureTarget, textureAttachment.second->getId(), 0 );
 	}	
 }
@@ -420,7 +416,8 @@ void Fbo::init()
 	ScopedFramebuffer fbScp( GL_FRAMEBUFFER, mId );
 
 	// determine multisampling settings
-	bool useMsaa, useCsaa;
+	bool useMsaa = false;
+	bool useCsaa = false;
 	initMultisamplingSettings( &useMsaa, &useCsaa, &mFormat );
 
 	prepareAttachments( mFormat, useMsaa || useCsaa );
@@ -776,10 +773,10 @@ Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
 }
 
 #if ! defined( CINDER_GL_ES )
-void Fbo::blitTo( Fbo dst, const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
+void Fbo::blitTo( const FboRef &dst, const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
 {
 	ScopedFramebuffer readScp( GL_READ_FRAMEBUFFER, mId );
-	ScopedFramebuffer drawScp( GL_DRAW_FRAMEBUFFER, dst.getId() );
+	ScopedFramebuffer drawScp( GL_DRAW_FRAMEBUFFER, dst->getId() );
 
 	glBlitFramebuffer( srcArea.getX1(), srcArea.getY1(), srcArea.getX2(), srcArea.getY2(), dstArea.getX1(), dstArea.getY1(), dstArea.getX2(), dstArea.getY2(), mask, filter );
 }

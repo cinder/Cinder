@@ -35,6 +35,11 @@
 #include "cinder/android/AndroidDevLog.h"
 using namespace cinder::android;
 
+#include <cstdint>
+#include <cxxabi.h>
+#include <dlfcn.h>
+#include <unwind.h>
+
 namespace cinder {
 
 extern void FontManager_destroyStaticInstance();
@@ -83,7 +88,7 @@ void PlatformAndroid::cleanupLaunch()
 
 DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
 {
-	fs::path assetPath = findAssetPath( relativePath );
+	fs::path assetPath = getAssetPath( relativePath );
 	if( ! assetPath.empty() ) {
 		if( ci::app::PlatformAndroid::isAssetPath( assetPath ) ) {
 			return DataSourceAndroidAsset::create( assetPath );
@@ -97,6 +102,20 @@ DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
 	}
 }
 
+fs::path PlatformAndroid::getAssetPath( const fs::path &relativePath ) const
+{
+	const auto &assetDirs = getAssetDirectories();
+
+	for( const auto &directory : assetDirs ) {
+		auto fullPath = directory / relativePath;
+		if( android::AssetFileSystem_exists( fullPath ) ) {
+			return fullPath;
+		}
+	}
+
+	return fs::path(); // empty implies failure	
+}
+
 DataSourceRef PlatformAndroid::loadResource( const fs::path &resourcePath )
 {
 	return loadAsset( resourcePath );
@@ -107,7 +126,7 @@ fs::path PlatformAndroid::getResourceDirectory() const
 	return fs::path(); 
 }
 
-fs::path PlatformAndroid::getResourcePath( const fs::path &rsrcRelativePath )
+fs::path PlatformAndroid::getResourcePath( const fs::path &rsrcRelativePath ) const
 { 
 	return getAssetPath( rsrcRelativePath );
 }
@@ -178,9 +197,61 @@ void PlatformAndroid::launchWebBrowser( const Url &url )
 	cinder::android::app::CinderNativeActivity::launchWebBrowser( url );
 }
 
+struct BacktraceState {
+	void** current;
+	void** end;
+};
+
+static _Unwind_Reason_Code unwindCallback( struct _Unwind_Context *context, void* arg )
+{
+	BacktraceState* state = static_cast<BacktraceState*>( arg );
+	uintptr_t pc = _Unwind_GetIP( context );
+	if( pc ) {
+		if( state->current == state->end ) {
+			return _URC_END_OF_STACK;
+		}
+		else {
+			*state->current++ = reinterpret_cast<void*>( pc );
+		}
+	}
+	return _URC_NO_REASON;
+}
+
 std::vector<std::string> PlatformAndroid::stackTrace()
 {
-	return std::vector<std::string>();
+	std::vector<std::string> result;
+
+	static const size_t MAX_DEPTH = 128;
+	void* callStack[MAX_DEPTH];
+
+	BacktraceState state = { callStack, callStack + MAX_DEPTH };
+	_Unwind_Backtrace( unwindCallback, &state );
+
+	size_t count = state.current - callStack;
+
+	for( size_t i = 0; i < count; ++i ) {
+		const void* addr = callStack[i];
+		const char* symbol = "";
+
+		Dl_info info;
+		if( dladdr( addr, &info ) && info.dli_sname ) {
+			symbol = info.dli_sname;
+
+			int status;
+			char* demangled = abi::__cxa_demangle( symbol, NULL, 0, &status );
+			if( ( 0 == status ) && demangled ) {
+				symbol = demangled;
+			}
+		}
+
+		std::string s = symbol;
+		// Avoid these symbols
+		if( ( s != "cinder::app::PlatformAndroid::stackTrace()" ) && ( s != "cinder::stackTrace()" ) )  {
+			result.push_back( std::string( symbol ) );			
+		}
+	}
+
+	return result;
 }
 
 const std::vector<DisplayRef>& PlatformAndroid::getDisplays()
@@ -202,15 +273,17 @@ bool PlatformAndroid::isAssetPath( const fs::path &path )
 
 void PlatformAndroid::prepareAssetLoading()
 {
-	// NOTE: Add an empty string for the asset file system
+	const auto &assetDirs = getAssetDirectories();
 
+	// NOTE: Add an empty string for the asset file system
 	fs::path directory = "";
-	auto it = find( mAssetDirectories.begin(), mAssetDirectories.end(), directory );
-	if( it == mAssetDirectories.end() ) {
-		mAssetDirectories.push_back( directory );	
+	auto it = find( assetDirs.begin(), assetDirs.end(), directory );
+	if( it == assetDirs.end() ) {
+		addAssetDirectory( directory );	
 	}
 }
 
+/*
 fs::path PlatformAndroid::findAssetPath( const fs::path &relativePath )
 {
 	if( ! mAssetDirsInitialized ) {
@@ -233,6 +306,6 @@ void PlatformAndroid::findAndAddAssetBasePath()
 {
 	// Does nothing
 }
-
+*/
 
 } } // namespace cinder::app
