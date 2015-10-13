@@ -9,62 +9,6 @@ using namespace std;
 
 #include "OtherClass.h"
 
-/*
-#include <cxxabi.h>
-#include <dlfcn.h>
-#include <unwind.h>
-
-
-struct BacktraceState {
-	void** current;
-	void** end;
-};
-
-_Unwind_Reason_Code unwindCallback( struct _Unwind_Context *context, void* arg )
-{
-	BacktraceState* state = static_cast<BacktraceState*>( arg );
-	uintptr_t pc = _Unwind_GetIP( context );
-	if( pc ) {
-		if( state->current == state->end ) {
-			return _URC_END_OF_STACK;
-		}
-		else {
-			*state->current++ = reinterpret_cast<void*>( pc );
-		}
-	}
-	return _URC_NO_REASON;
-}
-
-void dumpBacktrace()
-{
-	const size_t kMax = 30;
-	void* buffer[kMax];
-
-	BacktraceState state = { buffer, buffer + kMax };
-	_Unwind_Backtrace( unwindCallback, &state );
-
-	size_t count = state.current - buffer;
-
-	for( size_t i = 0; i < count; ++i ) {
-		const void* addr = buffer[i];
-		const char* symbol = "";
-
-		Dl_info info;
-		if( dladdr( addr, &info ) && info.dli_sname ) {
-			symbol = info.dli_sname;
-
-			int status;
-			char* demangled = abi::__cxa_demangle( symbol, NULL, 0, &status );
-			if( ( 0 == status ) && demangled ) {
-				symbol = demangled;
-			}
-		}
-
-		console() << i << ": " << symbol << std::endl;
-	}
-}
-*/
-
 void printStackTrace( const std::vector<std::string>& bt )
 {
 	console() << "StackTrace:" << std::endl;
@@ -116,22 +60,8 @@ class Backtrace : public App {
 	}
 };
 
-/*
-struct sigaction psa, oldPsa;
-
-void handleCrash( int signalNumber, siginfo_t *sigInfo, void *context )
-{
-	dumpBacktrace();
-	sigaction( signalNumber, &oldPsa, NULL );
-}
- */
-
 void Backtrace::setup()
 {
-	//psa.sa_sigaction = handleCrash;
-	//psa.sa_flags = SA_SIGINFO;
-	//sigaction( SIGSEGV, &psa, &oldPsa );
-
 	console() << "-" << std::endl;
 	console() << "-" << std::endl;
 

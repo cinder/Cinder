@@ -1,8 +1,9 @@
+# DeferredShading
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE )
-include( ${CINDER_DIR}/tools/linux/Cinder.cmake )
+include( ${CINDER_DIR}/tools/linux/cmake/Cinder.cmake )
 
 project( DeferredShading )
 
@@ -15,11 +16,13 @@ message( "" )
 message( "${BoldGreen}SRC_DIR       : ${SRC_DIR}${ColorReset}" )
 message( "" )
 
-include_directories( ${INC_DIR} )
+include_directories(
+	${INC_DIR}
+)
 
 set( SRC_FILES
-  ${SRC_DIR}/DeferredShadingApp.cpp
-  ${SRC_DIR}/Light.cpp
+	${SRC_DIR}/Light.cpp
+	${SRC_DIR}/DeferredShadingApp.cpp
 )
 
 set( EXE_NAME "${CMAKE_PROJECT_NAME}" )
@@ -34,4 +37,3 @@ if( CINDER_LINUX_EGL_RPI2 )
 else()
 	target_link_libraries( "${EXE_NAME}" stdc++ dl pthread z ${CINDER_GL_LIBS} X11 Xcursor Xinerama Xrandr Xi fontconfig )
 endif()
-
