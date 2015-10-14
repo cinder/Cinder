@@ -99,6 +99,7 @@ std::string	constantToString( GLenum constant )
 		// Buffer bindings
 		sSymbols[GL_ARRAY_BUFFER] = "GL_ARRAY_BUFFER";
 		sSymbols[GL_ELEMENT_ARRAY_BUFFER] = "GL_ELEMENT_ARRAY_BUFFER";
+		
 #if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_PIXEL_PACK_BUFFER] = "GL_PIXEL_PACK_BUFFER";
 		sSymbols[GL_PIXEL_UNPACK_BUFFER] = "GL_PIXEL_UNPACK_BUFFER";
@@ -143,23 +144,15 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_LUMINANCE] = "GL_LUMINANCE";
 		sSymbols[GL_LUMINANCE_ALPHA] = "GL_LUMINANCE_ALPHA";
 #endif		
-//#else
+
 		sSymbols[GL_RED] = "GL_RED";
 		sSymbols[GL_RG] = "GL_RG";
 		sSymbols[GL_R8] = "GL_R8";
-		sSymbols[GL_R8_SNORM] = "GL_R8_SNORM";
 		sSymbols[GL_RG8] = "GL_RG8";
-		sSymbols[GL_RG8_SNORM] = "GL_RG8_SNORM";
 		sSymbols[GL_RGB8] = "GL_RGB8";
-		sSymbols[GL_RGB8_SNORM] = "GL_RGB8_SNORM";
 		sSymbols[GL_RGBA4] = "GL_RGBA4";
 		sSymbols[GL_RGB5_A1] = "GL_RGB5_A1";
 		sSymbols[GL_RGBA8] = "GL_RGBA8";
-		sSymbols[GL_RGBA8_SNORM] = "GL_RGBA8_SNORM";
-		sSymbols[GL_RGB10_A2] = "GL_RGB10_A2";
-		sSymbols[GL_RGB10_A2UI] = "GL_RGB10_A2UI";
-		sSymbols[GL_SRGB8] = "GL_SRGB8";
-		sSymbols[GL_SRGB8_ALPHA8] = "GL_SRGB8_ALPHA8";
 		sSymbols[GL_R16F] = "GL_R16F";
 		sSymbols[GL_RG16F] = "GL_RG16F";
 		sSymbols[GL_RGB16F] = "GL_RGB16F";
@@ -168,8 +161,11 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_RG32F] = "GL_RG32F";
 		sSymbols[GL_RGB32F] = "GL_RGB32F";
 		sSymbols[GL_RGBA32F] = "GL_RGBA32F";
+		
 		sSymbols[GL_R11F_G11F_B10F] = "GL_R11F_G11F_B10F";
 		sSymbols[GL_RGB9_E5] = "GL_RGB9_E5";
+		
+#if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_R8I] = "GL_R8I";
 		sSymbols[GL_R8UI] = "GL_R8UI";
 		sSymbols[GL_R16I] = "GL_R16I";
@@ -194,19 +190,44 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_RGBA16UI] = "GL_RGBA16UI";
 		sSymbols[GL_RGBA32I] = "GL_RGBA32I";
 		sSymbols[GL_RGBA32UI] = "GL_RGBA32UI";
-//#endif // ! defined( CINDER_GL_ES )
+#endif // ! defined( CINDER_GL_ES_2 )
+
+#if defined( CINDER_HAS_GL_SRGB )
+		sSymbols[GL_SRGB8] = "GL_SRGB8";
+		sSymbols[GL_SRGB8_ALPHA8] = "GL_SRGB8_ALPHA8";
+#endif // defined( CINDER_HAS_GL_SRGB )
+
+#if defined( CINDER_GL_HAS_REQUIRED_INTERNALFORMAT )
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+		sSymbols[GL_RGB10] = "GL_RGB10";
+	#endif
+		sSymbols[GL_RGB10_A2] = "GL_RGB10_A2";
+		sSymbols[GL_RGB10_A2UI] = "GL_RGB10_A2UI";
+#endif
+
+#if defined( CINDER_GL_HAS_TEXTURE_NORM16 )
+		sSymbols[GL_R16] = "GL_R16";
+		sSymbols[GL_RG16] = "GL_RG16";
+#endif
 
 #if ! defined( CINDER_GL_ES )
-		sSymbols[GL_R16] = "GL_R16";
-		sSymbols[GL_R16_SNORM] = "GL_R16_SNORM";
-		sSymbols[GL_RG16] = "GL_RG16";
-		sSymbols[GL_RG16_SNORM] = "GL_RG16_SNORM";
 		sSymbols[GL_R3_G3_B2] = "GL_R3_G3_B2";
 		sSymbols[GL_RGB4] = "GL_RGB4";
 		sSymbols[GL_RGB5] = "GL_RGB5";
-		sSymbols[GL_RGB10] = "GL_RGB10";
 		sSymbols[GL_RGB12] = "GL_RGB12";
+#endif
+
+#if defined( CINDER_GL_HAS_RENDER_SNORM )
+		sSymbols[GL_R8_SNORM] = "GL_R8_SNORM";
+		sSymbols[GL_RG8_SNORM] = "GL_RG8_SNORM";
+		sSymbols[GL_RGB8_SNORM] = "GL_RGB8_SNORM";
+		sSymbols[GL_RGBA8_SNORM] = "GL_RGBA8_SNORM";
+		sSymbols[GL_R16_SNORM] = "GL_R16_SNORM";
+		sSymbols[GL_RG16_SNORM] = "GL_RG16_SNORM";
 		sSymbols[GL_RGB16_SNORM] = "GL_RGB16_SNORM";
+#endif
+		
+#if ! defined( CINDER_GL_ES )
 		sSymbols[GL_RGBA2] = "GL_RGBA2";
 		sSymbols[GL_RGBA12] = "GL_RGBA12";
 		sSymbols[GL_RGBA16] = "GL_RGBA16";

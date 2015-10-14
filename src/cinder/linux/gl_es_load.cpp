@@ -868,29 +868,24 @@ PFNGLEXTGETPROGRAMBINARYSOURCEQCOMPROC fnptr_ci_glExtGetProgramBinarySourceQCOM 
 PFNGLSTARTTILINGQCOMPROC fnptr_ci_glStartTilingQCOM = nullptr; 
 PFNGLENDTILINGQCOMPROC fnptr_ci_glEndTilingQCOM = nullptr; 
 
-PFNGLMAPBUFFEROESPROC fnptr_ci_glMapBufferOES = nullptr; 
 
 #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
-	// GLES3 will already have glUnmapBuffer
-	PFNGLUNMAPBUFFEROESPROC fnptr_ci_glUnmapBufferOES = nullptr; 
-#endif
-
-#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
+	// GL_OES_vertex_array_object
 	PFNGLBINDVERTEXARRAYOESPROC fnptr_ci_glBindVertexArrayOES = nullptr; 
 	PFNGLDELETEVERTEXARRAYSOESPROC fnptr_ci_glDeleteVertexArraysOES = nullptr; 
 	PFNGLGENVERTEXARRAYSOESPROC fnptr_ci_glGenVertexArraysOES = nullptr; 
 	PFNGLISVERTEXARRAYOESPROC fnptr_ci_glIsVertexArrayOES = nullptr; 
 
+	// GL_OES_mapbuffer
+    PFNGLMAPBUFFEROESPROC fnptr_ci_glMapBufferOES = nullptr; 
+	PFNGLUNMAPBUFFEROESPROC fnptr_ci_glUnmapBufferOES = nullptr; 
+
+	// GL_EXT_map_buffer_range
 	PFNGLMAPBUFFERRANGEEXTPROC fnptr_ci_glMapBufferRangeEXT = nullptr; 
 	PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC fnptr_ci_glFlushMappedBufferRangeEXT = nullptr; 
 
+	// GL_EXT_multisampled_render_to_texture and the like
 	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC fnptr_ci_glRenderbufferStorageMultisample = nullptr; 
-#endif
-
-// Android Extension Pack
-#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
-	PFNGLFRAMEBUFFERTEXTUREPROC fnptr_ci_glFramebufferTexture = nullptr;
-	PFNGLPATCHPARAMETERIPROC fnptr_ci_glPatchParameteri = nullptr;
 #endif
 
 void gl_es_2_0_ext_load() 
@@ -1248,14 +1243,6 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glStartTilingQCOM = (PFNGLSTARTTILINGQCOMPROC)loadEglProc("glStartTilingQCOM"); 
 	fnptr_ci_glEndTilingQCOM = (PFNGLENDTILINGQCOMPROC)loadEglProc("glEndTilingQCOM"); 	
 
-	// GL_OES_mapbuffer
-	if( hasExtension( "GL_OES_mapbuffer" ) ) {
-		fnptr_ci_glMapBufferOES = (PFNGLMAPBUFFEROESPROC)loadEglProc("glMapBufferOES"); 	
-		// GLES3 will already have glUnmapBuffer
-		#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
-			fnptr_ci_glUnmapBufferOES = (PFNGLUNMAPBUFFEROESPROC)loadEglProc("glUnmapBufferOES");
-		#endif		
-	}
 
 #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
 	// GL_OES_vertex_array_object
@@ -1264,6 +1251,12 @@ void gl_es_2_0_ext_load()
 		fnptr_ci_glDeleteVertexArraysOES = (PFNGLDELETEVERTEXARRAYSOESPROC)loadEglProc("glDeleteVertexArraysOES"); 
 		fnptr_ci_glGenVertexArraysOES = (PFNGLGENVERTEXARRAYSOESPROC)loadEglProc("glGenVertexArraysOES"); 
 		fnptr_ci_glIsVertexArrayOES = (PFNGLISVERTEXARRAYOESPROC)loadEglProc("glIsVertexArrayOES"); 
+	}
+
+	// GL_OES_mapbuffer
+	if( hasExtension( "GL_OES_mapbuffer" ) ) {
+		fnptr_ci_glMapBufferOES = (PFNGLMAPBUFFEROESPROC)loadEglProc("glMapBufferOES"); 	
+		fnptr_ci_glUnmapBufferOES = (PFNGLUNMAPBUFFEROESPROC)loadEglProc("glUnmapBufferOES");
 	}
 
 	// GL_EXT_map_buffer_range
@@ -1290,8 +1283,22 @@ void gl_es_2_0_ext_load()
 	}
 #endif
 
+	DEBUG( "gl_es_2_0_ext_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");	
+}
+#endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
+
+
+// ----------------------------------------------------------------------------
 // Android Extension Pack
+// ----------------------------------------------------------------------------
 #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+PFNGLFRAMEBUFFERTEXTUREPROC fnptr_ci_glFramebufferTexture = nullptr;
+PFNGLPATCHPARAMETERIPROC fnptr_ci_glPatchParameteri = nullptr;
+
+void gl_es_aep_load() 
+{
+	//DEBUG( "gl_es_aep_load entered..." );
+
 	if( hasExtension( "GL_EXT_geometry_shader" ) ) {
 		fnptr_ci_glFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)loadEglProc("glFramebufferTextureEXT");
 	}
@@ -1303,11 +1310,10 @@ void gl_es_2_0_ext_load()
 	else if( hasExtension( "GL_OES_tessellation_shader" ) ) {
 		fnptr_ci_glPatchParameteri = (PFNGLPATCHPARAMETERIOESPROC)loadEglProc("glPatchParameteriOES");
 	}	
-#endif	
 
 	DEBUG( "gl_es_2_0_ext_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");	
 }
-#endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
+#endif
 
 // ----------------------------------------------------------------------------
 // gl_es_load
@@ -1337,6 +1343,10 @@ void gl_es_load()
 
 #if defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_2 )
 	gl_es_3_2_load();
+#endif
+
+#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+    gl_es_aep_load()
 #endif
 
 	sInitialized = true;
