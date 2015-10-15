@@ -1,7 +1,7 @@
 ### Cinder 0.9.1dev: [libcinder.org](http://libcinder.org)
 
 <p align="center">
-  <img src="http://libcinder.org/images/logo.png" alt="Cinder Logo"/>
+  <img src="https://cdn.rawgit.com/cinder/Cinder/master/docs/htmlsrc/_assets/images/cinder_logo.svg" width="256" height="auto" alt="Cinder Logo"/>
 </p>
 
 **Cinder is a peer-reviewed, free, open source C++ library for creative coding.**
