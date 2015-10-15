@@ -144,7 +144,7 @@ size_t DeviceManagerOpenSl::getFramesPerBlock( const DeviceRef &device )
 	// Nodes require frames per block to to be power of 2, and most android devices don't want power of 2 blocksizes
 	// So we round up, OutputDeviceNodeOpenSl will ask for hardware block size directly.
 	size_t framesPerBlockHardware = getFramesPerBlockHardware( device );
-	size_t framesPerBlockPow2 = nextPowerOf2( framesPerBlockHardware );
+	size_t framesPerBlockPow2 = ( isPowerOf2( framesPerBlockHardware ) ? framesPerBlockHardware : nextPowerOf2( framesPerBlockHardware ) );
 	CI_LOG_I( "framesPerBlockHardware: " << framesPerBlockHardware << ", framesPerBlockPow2: " << framesPerBlockPow2 );
 	return framesPerBlockPow2;
 }
