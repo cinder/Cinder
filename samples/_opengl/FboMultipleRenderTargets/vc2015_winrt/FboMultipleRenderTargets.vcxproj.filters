@@ -22,6 +22,9 @@
     <Filter Include="ANGLE\x64">
       <UniqueIdentifier>{96d88de8-ede7-4c87-baf2-c228e16226b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\VisualAssets">
+      <UniqueIdentifier>{315b8a6f-2ce6-4799-b7e1-3609849b6e6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\FboMultipleRenderTargetsApp.cpp">
@@ -61,16 +64,16 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="VisualAssets\Logo.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="VisualAssets\SmallLogo.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="VisualAssets\StoreLogo.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\VisualAssets</Filter>
     </Image>
     <Image Include="VisualAssets\SplashScreen.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\VisualAssets</Filter>
+    </Image>
+    <Image Include="VisualAssets\SmallLogo.png">
+      <Filter>Resource Files\VisualAssets</Filter>
+    </Image>
+    <Image Include="VisualAssets\StoreLogo.png">
+      <Filter>Resource Files\VisualAssets</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
