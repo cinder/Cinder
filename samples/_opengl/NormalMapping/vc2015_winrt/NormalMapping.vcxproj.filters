@@ -22,11 +22,14 @@
     <Filter Include="ANGLE\x64">
       <UniqueIdentifier>{96d88de8-ede7-4c87-baf2-c228e16226b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\VisualAssets">
-      <UniqueIdentifier>{78d8126a-43b6-4d0e-8fec-a7e8883ce3bc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Shaders">
-      <UniqueIdentifier>{c59cfff8-cde6-40e8-bc60-3a3301481990}</UniqueIdentifier>
+      <UniqueIdentifier>{e94d015f-7e51-45a6-b6a4-454f9ee3f5c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{89c7de59-726c-42e6-a856-c3205761f2ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Geometry">
+      <UniqueIdentifier>{a3b45cda-8ef5-439b-a6b6-f2489076fefe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -71,36 +74,36 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="..\assets\leprechaun.msh">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Geometry</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="VisualAssets\Logo.png">
-      <Filter>Resource Files\VisualAssets</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="VisualAssets\SmallLogo.png">
-      <Filter>Resource Files\VisualAssets</Filter>
-    </Image>
-    <Image Include="VisualAssets\SplashScreen.png">
-      <Filter>Resource Files\VisualAssets</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="VisualAssets\StoreLogo.png">
-      <Filter>Resource Files\VisualAssets</Filter>
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="VisualAssets\SplashScreen.png">
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\assets\copyright.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Textures</Filter>
     </Image>
     <Image Include="..\assets\leprechaun_diffuse.jpg">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Textures</Filter>
     </Image>
     <Image Include="..\assets\leprechaun_emmisive.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Textures</Filter>
     </Image>
     <Image Include="..\assets\leprechaun_normal.jpg">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Textures</Filter>
     </Image>
     <Image Include="..\assets\leprechaun_specular.jpg">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
