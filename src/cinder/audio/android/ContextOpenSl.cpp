@@ -23,7 +23,6 @@
 
 #include "cinder/audio/android/ContextOpenSl.h"
 #include "cinder/audio/dsp/Converter.h"
-#include "cinder/audio/dsp/RingBuffer.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
 
@@ -267,6 +266,8 @@ void OutputDeviceNodeOpenSl::renderToBufferFromInputs()
 // InputDeviceNodeOpenSlImpl (private)
 // ----------------------------------------------------------------------------------------------------
 
+const size_t NUM_ENQUEUE_BUFFERS = 2;
+
 struct InputDeviceNodeOpenSlImpl {
 	InputDeviceNodeOpenSlImpl( InputDeviceNodeOpenSl *parent, const shared_ptr<ContextOpenSl> &context )
 		: mParent( parent ), mContextOpenSl( context )
@@ -276,8 +277,19 @@ struct InputDeviceNodeOpenSlImpl {
 
 	void initRecorder( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
-		mSampleBuffer.resize( framesPerBlock * numChannels );
+		mCurrentEnqueBufferWriteIndex = 0;
+		mCurrentEnqueBufferReadIndex = 0;
+		mEnqueueBuffers.resize( NUM_ENQUEUE_BUFFERS );
+		size_t numSamples = framesPerBlock * numChannels;
+		for( auto &buf : mEnqueueBuffers ) {
+			buf.mBuffer.resize( numSamples );
+			buf.mFilled = false;
+		}
+
+//		mEnqueueBuffer.resize( framesPerBlock * numChannels );
 		mNumSamplesBuffered = 0;
+
+		CI_LOG_I( "framesPerBlock: " << framesPerBlock << ", numChannels: " << numChannels );
 
 		auto context = mContextOpenSl.lock();
 		SLEngineItf engine = context->getSLEngineEngine();
@@ -359,17 +371,40 @@ struct InputDeviceNodeOpenSlImpl {
 		SLresult result = (*mRecorderRecord)->SetRecordState( mRecorderRecord, SL_RECORDSTATE_STOPPED );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 	}
+	
+//	std::string mDebugString;
 
 	void enqueueSamples( SLAndroidSimpleBufferQueueItf bufferQueue )
 	{
-//		if( ( master()->getNumProcessedFrames() / master()->getFramesPerBlock() ) % 20 == 0 ) {
-//			CI_LOG_I( "thread id: " << std::this_thread::get_id() );
+//		size_t currentBlock = master()->getNumProcessedFrames() / master()->getFramesPerBlock();
+//		if( mDebugString.size() < 400 ) {
+//			mDebugString += "[" + to_string( master()->getNumProcessedSeconds() ) + ", " + to_string( app::getElapsedSeconds() ) + "] ";
+//		}
+//		if( currentBlock % 80 == 0 ) {
+//			CI_LOG_I( "currentBlock: " << currentBlock << " - " << mDebugString );
+//			mDebugString.clear();
 //		}
 
-		SLresult result = (*bufferQueue)->Enqueue( bufferQueue, mSampleBuffer.data(), mSampleBuffer.size() * sizeof( int16_t ) );
+		// The previously enqueued samples are ready
+		if( mNumSamplesEnqueued != 0 ) {
+			auto &currentEnqueueBuf = mEnqueueBuffers.at( mCurrentEnqueBufferWriteIndex );
+			currentEnqueueBuf.mFilled = true;
+			mNumSamplesEnqueued = 0;
+
+			mCurrentEnqueBufferWriteIndex = ( mCurrentEnqueBufferWriteIndex + 1 ) % NUM_ENQUEUE_BUFFERS;
+		}
+
+		// request more samples to be enqueued into the next buffer. They will be ready when this callback is next called.
+		auto &nextEnqueueBuf = mEnqueueBuffers.at( mCurrentEnqueBufferWriteIndex );
+		if( nextEnqueueBuf.mFilled ) {
+			CI_LOG_W( "expected EnqueueBuffer at index " << mCurrentEnqueBufferWriteIndex << " to be empty, it is filled." );
+			mParent->markOverrun();
+		}
+
+		SLresult result = (*bufferQueue)->Enqueue( bufferQueue, nextEnqueueBuf.mBuffer.data(), nextEnqueueBuf.mBuffer.size() * sizeof( int16_t ) );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 
-		mNumSamplesBuffered = mSampleBuffer.size();
+		mNumSamplesEnqueued = nextEnqueueBuf.mBuffer.size();
 	}
 
 	static void recorderCallback( SLAndroidSimpleBufferQueueItf bufferQueue, void *context )
@@ -386,12 +421,17 @@ struct InputDeviceNodeOpenSlImpl {
 	SLRecordItf mRecorderRecord = nullptr;
 	SLAndroidSimpleBufferQueueItf mBufferQueue = nullptr;
 
-	std::vector<int16_t>    mSampleBuffer;
-	// TODO: probably want:
-//	dsp::RingBuffer			mRingBuffer;
+	struct EnqueueBuffer {
+		std::vector<int16_t>    mBuffer;
+		bool                    mFilled;
+	};
+
+	std::vector<EnqueueBuffer>  mEnqueueBuffers;
 
 	size_t	                mNumSamplesBuffered = 0;
-	size_t	                mNumSamplesRequestedEnqueued = 0;
+	size_t	                mNumSamplesEnqueued = 0;
+	size_t                  mCurrentEnqueBufferWriteIndex = 0;
+	size_t                  mCurrentEnqueBufferReadIndex = 0;
 };
 
 // ----------------------------------------------------------------------------------------------------
@@ -441,10 +481,16 @@ void InputDeviceNodeOpenSl::disableProcessing()
 void InputDeviceNodeOpenSl::process( Buffer *buffer )
 {
 	// consume recorder samples
-	if( mImpl->mNumSamplesBuffered >= buffer->getSize() ) {
-		int16_t *sourceInt16Samples = mImpl->mSampleBuffer.data();
+	auto &enqueueBuf = mImpl->mEnqueueBuffers.at( mImpl->mCurrentEnqueBufferReadIndex );
+	if( enqueueBuf.mFilled ) {
+		int16_t *sourceInt16Samples = enqueueBuf.mBuffer.data();
 		dsp::deinterleave( sourceInt16Samples, buffer->getData(), buffer->getNumFrames(), buffer->getNumChannels(), buffer->getNumFrames() );
-		mImpl->mNumSamplesBuffered -= buffer->getSize();
+		enqueueBuf.mFilled = false;
+		mImpl->mCurrentEnqueBufferReadIndex = (mImpl->mCurrentEnqueBufferReadIndex + 1 ) % NUM_ENQUEUE_BUFFERS;
+	}
+	else {
+		CI_LOG_W( "expected EnqueueBuffer at index " << mImpl->mCurrentEnqueBufferReadIndex << " to be filled, it isn't." );
+		markUnderrun();
 	}
 }
 
