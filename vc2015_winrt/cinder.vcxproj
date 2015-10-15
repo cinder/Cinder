@@ -1061,7 +1061,7 @@
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
@@ -1073,7 +1073,7 @@
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
@@ -1085,7 +1085,7 @@
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
