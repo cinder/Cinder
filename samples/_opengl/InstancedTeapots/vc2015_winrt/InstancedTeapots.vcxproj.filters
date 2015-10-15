@@ -23,10 +23,7 @@
       <UniqueIdentifier>{96d88de8-ede7-4c87-baf2-c228e16226b2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource Files\VisualAssets">
-      <UniqueIdentifier>{b6f71c6b-f80d-4e8a-ace2-8b32470d9d6b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\Shaders">
-      <UniqueIdentifier>{e4685d91-069a-41da-a1cf-48fde515ef3b}</UniqueIdentifier>
+      <UniqueIdentifier>{55d7b970-5b06-44b8-8ca5-9cd965939416}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -59,16 +56,13 @@
       <Filter>ANGLE\x64</Filter>
     </None>
     <None Include="..\assets\shader_es3.frag">
-      <Filter>Resource Files\Shaders</Filter>
+      <Filter>Resource Files</Filter>
     </None>
     <None Include="..\assets\shader_es3.vert">
-      <Filter>Resource Files\Shaders</Filter>
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\assets\texture.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="VisualAssets\Logo.png">
       <Filter>Resource Files\VisualAssets</Filter>
     </Image>
@@ -80,6 +74,9 @@
     </Image>
     <Image Include="VisualAssets\StoreLogo.png">
       <Filter>Resource Files\VisualAssets</Filter>
+    </Image>
+    <Image Include="..\assets\texture.jpg">
+      <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
