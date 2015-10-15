@@ -22,6 +22,9 @@
     <Filter Include="ANGLE\x64">
       <UniqueIdentifier>{96d88de8-ede7-4c87-baf2-c228e16226b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\VisualAssets">
+      <UniqueIdentifier>{bea5a44d-28ce-4fa3-9c03-f9c4bb472b27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\HighDynamicRangeApp.cpp">
@@ -40,16 +43,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\\lib\winrt\x86\libEGL.dll">
+    <None Include="..\..\..\..\lib\winrt\x86\libEGL.dll">
       <Filter>ANGLE\Win32</Filter>
     </None>
-    <None Include="..\..\..\..\\lib\winrt\x86\libGLESv2.dll">
+    <None Include="..\..\..\..\lib\winrt\x86\libGLESv2.dll">
       <Filter>ANGLE\Win32</Filter>
     </None>
-    <None Include="..\..\..\..\\lib\winrt\x64\libEGL.dll">
+    <None Include="..\..\..\..\lib\winrt\x64\libEGL.dll">
       <Filter>ANGLE\x64</Filter>
     </None>
-    <None Include="..\..\..\..\\lib\winrt\x64\libGLESv2.dll">
+    <None Include="..\..\..\..\lib\winrt\x64\libGLESv2.dll">
       <Filter>ANGLE\x64</Filter>
     </None>
     <None Include="..\assets\Desk_oBA2_scaled.hdr">
@@ -64,16 +67,16 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="VisualAssets\Logo.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\VisualAssets</Filter>
     </Image>
     <Image Include="VisualAssets\SmallLogo.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="VisualAssets\StoreLogo.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\VisualAssets</Filter>
     </Image>
     <Image Include="VisualAssets\SplashScreen.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\VisualAssets</Filter>
+    </Image>
+    <Image Include="VisualAssets\StoreLogo.png">
+      <Filter>Resource Files\VisualAssets</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
