@@ -22,8 +22,8 @@
     <Filter Include="ANGLE\x64">
       <UniqueIdentifier>{96d88de8-ede7-4c87-baf2-c228e16226b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Shaders">
-      <UniqueIdentifier>{cc7f104c-9410-4012-bfcb-270d08fa8b75}</UniqueIdentifier>
+    <Filter Include="Resource Files\VisualAssets">
+      <UniqueIdentifier>{9ead0396-1218-4e7b-9873-0019c09bb84a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -43,43 +43,43 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\\lib\winrt\x86\libEGL.dll">
+    <None Include="..\..\..\..\lib\winrt\x86\libEGL.dll">
       <Filter>ANGLE\Win32</Filter>
     </None>
-    <None Include="..\..\..\..\\lib\winrt\x86\libGLESv2.dll">
+    <None Include="..\..\..\..\lib\winrt\x86\libGLESv2.dll">
       <Filter>ANGLE\Win32</Filter>
     </None>
-    <None Include="..\..\..\..\\lib\winrt\x64\libEGL.dll">
+    <None Include="..\..\..\..\lib\winrt\x64\libEGL.dll">
       <Filter>ANGLE\x64</Filter>
     </None>
-    <None Include="..\..\..\..\\lib\winrt\x64\libGLESv2.dll">
+    <None Include="..\..\..\..\lib\winrt\x64\libGLESv2.dll">
       <Filter>ANGLE\x64</Filter>
-    </None>
-    <None Include="..\assets\no_op_es3.fs">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="..\assets\particleUpdate_es3.vs">
-      <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="..\assets\draw_es3.frag">
-      <Filter>Resource Files\Shaders</Filter>
+      <Filter>Resource Files</Filter>
     </None>
     <None Include="..\assets\draw_es3.vert">
-      <Filter>Resource Files\Shaders</Filter>
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\assets\no_op_es3.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\assets\particleUpdate_es3.vs">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="VisualAssets\Logo.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\VisualAssets</Filter>
     </Image>
     <Image Include="VisualAssets\SmallLogo.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="VisualAssets\StoreLogo.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\VisualAssets</Filter>
     </Image>
     <Image Include="VisualAssets\SplashScreen.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\VisualAssets</Filter>
+    </Image>
+    <Image Include="VisualAssets\StoreLogo.png">
+      <Filter>Resource Files\VisualAssets</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
