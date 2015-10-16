@@ -357,12 +357,12 @@ std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 	ShaderSource ss;
 
 #if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
-  #if defined( CINDER_GL_ES_VERSION_3_1 )
-	ss << "#version 310 es";		
-  #elif	defined( CINDER_GL_ES_VERSION_3_2 )
-	ss << "#version 320 es";
-  #else
+  #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3 )
 	ss << "#version 300 es";
+  #elif	( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+	ss << "#version 310 es";
+  #elif ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_2 )
+	ss << "#version 320 es";
   #endif
 
 	ss << "uniform mat4 ciModelViewProjection;";
@@ -557,12 +557,12 @@ std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 	ShaderSource ss;	
 
 #if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
-  #if defined( CINDER_GL_ES_VERSION_3_1 )
-	ss << "#version 310 es";		
-  #elif	defined( CINDER_GL_ES_VERSION_3_2 )
-	ss << "#version 320 es";
-  #else
+  #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3 )
 	ss << "#version 300 es";
+  #elif	( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+	ss << "#version 310 es";
+  #elif ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_2 )
+	ss << "#version 320 es";
   #endif
 
   #if defined( CINDER_ANDROID )
