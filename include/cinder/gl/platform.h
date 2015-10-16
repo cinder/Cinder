@@ -132,89 +132,13 @@
 
 // OpenGL ES
 #if defined( CINDER_GL_ES )
-	// iOS
-	#if defined( CINDER_COCOA_TOUCH )
-		#if defined( CINDER_GL_ES_2 )
-			// GL_OES_texture_half_float
-			#define GL_HALF_FLOAT								GL_HALF_FLOAT_OES
-
-			// GL_EXT_texture_rg
-			#define GL_RED										GL_RED_EXT
-			#define GL_RG										GL_RG_EXT
-			#define GL_R8										GL_R8_EXT
-			#define GL_RG8										GL_RG8_EXT
-
-			// GL_OES_rgb8_rgba8
-			#define GL_RGB8										GL_RGB8_OES
-			#define GL_RGBA8									GL_RGBA8_OES
-
-			// GL_EXT_color_buffer_half_float
-			#define GL_RGBA16F									GL_RGBA16F_EXT
-			#define GL_RGB16F									GL_RGB16F_EXT
-			#define GL_RG16F									GL_RG16F_EXT
-			#define GL_R16F										GL_R16F_EXT
-			#define GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE	GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT
-			#define GL_UNSIGNED_NORMALIZED						GL_UNSIGNED_NORMALIZED_EXT
-
-			// GL_EXT_texture_storage
-			#define GL_RGBA32F									GL_RGBA32F_EXT
-			#define GL_RGB32F									GL_RGB32F_EXT
-			#define GL_RG32F									GL_RG32F_EXT
-			#define GL_R32F										GL_R32F_EXT
-
-			// GL_APPLE_texture_packed_float
-			#define GL_UNSIGNED_INT_10F_11F_11F_REV 			GL_UNSIGNED_INT_10F_11F_11F_REV_APPLE
-			#define GL_UNSIGNED_INT_5_9_9_9_REV 				GL_UNSIGNED_INT_5_9_9_9_REV_APPLE
-			#define GL_R11F_G11F_B10F           				GL_R11F_G11F_B10F_APPLE
-			#define GL_RGB9_E5                  				GL_RGB9_E5_APPLE
-
-			// GL_EXT_sRGB
-			#define GL_SRGB										GL_SRGB_EXT
-			#define GL_SRGB_ALPHA								GL_SRGB_ALPHA_EXT
-			#define GL_SRGB8_ALPHA8								GL_SRGB8_ALPHA8_EXT
-			#define GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING	GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT
-
-			// GL_OES_depth24
-			#define GL_DEPTH_COMPONENT24						GL_DEPTH_COMPONENT24_OES
-
-			#define GL_WRITE_ONLY								GL_WRITE_ONLY_OES
-			#define GL_BUFFER_ACCESS							GL_BUFFER_ACCESS_OES
-			#define GL_BUFFER_MAPPED							GL_BUFFER_MAPPED_OES
-			#define GL_BUFFER_MAP_POINTER						GL_BUFFER_MAP_POINTER_OES
-
-			#define GL_MAP_READ_BIT								GL_MAP_READ_BIT_EXT
-			#define GL_MAP_WRITE_BIT							GL_MAP_WRITE_BIT_EXT
-			#define GL_MAP_INVALIDATE_RANGE_BIT					GL_MAP_INVALIDATE_RANGE_BIT_EXT
-			#define GL_MAP_INVALIDATE_BUFFER_BIT				GL_MAP_INVALIDATE_BUFFER_BIT_EXT
-			#define GL_MAP_FLUSH_EXPLICIT_BIT					GL_MAP_FLUSH_EXPLICIT_BIT_EXT
-			#define GL_MAP_UNSYNCHRONIZED_BIT					GL_MAP_UNSYNCHRONIZED_BIT_EXT
-
-			#define GL_READ_FRAMEBUFFER							GL_READ_FRAMEBUFFER_APPLE
-			#define GL_DRAW_FRAMEBUFFER							GL_DRAW_FRAMEBUFFER_APPLE
-			#define GL_READ_FRAMEBUFFER_BINDING					GL_READ_FRAMEBUFFER_BINDING_APPLE
-			#define GL_DRAW_FRAMEBUFFER_BINDING					GL_DRAW_FRAMEBUFFER_BINDING_APPLE
-
-			#define glBindVertexArray							glBindVertexArrayOES
-			#define glDeleteVertexArrays						glDeleteVertexArraysOES
-			#define glGenVertexArrays							glGenVertexArraysOES
-			#define glIsVertexArray								glIsVertexArrayOES
-
-			#define glMapBuffer									glMapBufferOES
-			#define glUnmapBuffer								glUnmapBufferOES
-
-			#define glMapBufferRange							glMapBufferRangeEXT
-
-			#define glRenderbufferStorageMultisample			glRenderbufferStorageMultisampleAPPLE
-			#define glResolveMultisampleFramebuffer				glResolveMultisampleFramebufferAPPLE
-
- 			#define glVertexAttribDivisor 						glVertexAttribDivisorEXT
-		#endif
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) 	
+		#define GL_ES_EXT_VERSION_2_0
+	#endif 
+	#include "cinder/linux/gl_es_load.h"
 
 	// Android and Linux
-	#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-		#define GL_ES_EXT_VERSION_2_0
-		#include "cinder/linux/gl_es_load.h"
-
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 		#define CINDER_GL_HAS_DRAW_INSTANCED
 		#define CINDER_GL_HAS_TEXTURE_NORM16
 
@@ -227,6 +151,7 @@
 
 	// Android, iOS, and Linux
 	#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
+ 		// OpenGL ES 3+
 		#define CINDER_GL_HAS_DRAW_INSTANCED
 		#define CINDER_GL_HAS_FBO_MULTISAMPLING
 		#define CINDER_GL_HAS_UNIFORM_BLOCKS
@@ -234,7 +159,8 @@
 		#define CINDER_GL_HAS_TRANSFORM_FEEDBACK 
 		#define CINDER_GL_HAS_RENDER_SNORM
 		#define CINDER_GL_HAS_REQUIRED_INTERNALFORMAT
-	#else // OpenGL ES 2
+	#else 
+		// OpenGL ES 2
 		#define CINDER_GL_HAS_DRAW_INSTANCED
 		#define CINDER_GL_HAS_FBO_MULTISAMPLING
 		#define CINDER_GL_HAS_MAP_BUFFER
