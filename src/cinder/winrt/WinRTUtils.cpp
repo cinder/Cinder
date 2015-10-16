@@ -145,7 +145,7 @@ void deleteFileAsync(const sys::path &path)
 		throw Exception( "Must specify path to file to delete." );
 	}
 
-	String^ p = toPlatformString(path);
+	String^ p = toPlatformString( path.string() );
 
 	create_task(StorageFile::GetFileFromPathAsync (p)).then([] (StorageFile^ file) 
 	{
@@ -160,7 +160,7 @@ void deleteFileAsync(const sys::path &path)
 
 Concurrency::task<StorageFile^> copyFileToTempDirAsync(const sys::path &path)
 {
-	String^ p = toPlatformString( path );
+	String^ p = toPlatformString( path.string() );
 
 	// get the temporary StorageFolder
 

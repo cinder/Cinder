@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -7,14 +7,14 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="_TBOX_LOWER_UUID_0_"
+    Name="5fb8941d-5648-4880-b327-1fbc36974cae"
     Publisher="CN=cinderuser"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="_TBOX_LOWER_UUID_0_" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="5fb8941d-5648-4880-b327-1fbc36974cae" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>_TBOX_PREFIX_</DisplayName>
+    <DisplayName>FboBasic</DisplayName>
     <PublisherDisplayName>cinderuser</PublisherDisplayName>
     <Logo>VisualAssets\StoreLogo.png</Logo>
   </Properties>
@@ -30,12 +30,12 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="_TBOX_PREFIX_.App">
+      EntryPoint="FboBasic.App">
       <uap:VisualElements
-        DisplayName="_TBOX_PREFIX_"
+        DisplayName="FboBasic"
         Square150x150Logo="VisualAssets\Square150x150Logo.png"
         Square44x44Logo="VisualAssets\Square44x44Logo.png"
-        Description="_TBOX_PREFIX_"
+        Description="FboBasic"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="VisualAssets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="VisualAssets\SplashScreen.png" />

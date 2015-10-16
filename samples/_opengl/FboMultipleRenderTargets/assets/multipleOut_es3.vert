@@ -1,5 +1,7 @@
 #version 300 es
 
+precision highp float;
+
 uniform mat4  ciModelViewProjection;
 uniform mat3	ciNormalMatrix;
 
