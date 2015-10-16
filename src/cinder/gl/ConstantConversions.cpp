@@ -23,11 +23,15 @@
 
 #include "cinder/gl/ConstantConversions.h"
 #include "cinder/gl/gl.h"
-
 #include "cinder/Log.h"
+
+#if ! defined( CINDER_GL_ES )
+	#define CINDER_GL_DESKTOP
+#endif
 
 #include <sstream>
 #include <unordered_map>
+
 
 namespace cinder { namespace gl {
 
@@ -202,12 +206,17 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_RGB10] = "GL_RGB10";
 	#endif
 		sSymbols[GL_RGB10_A2] = "GL_RGB10_A2";
+
+	#if ( ! defined( CINDER_GL_ES ) ) || ( defined( CINDER_GL_ES ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 ) )
 		sSymbols[GL_RGB10_A2UI] = "GL_RGB10_A2UI";
+	#endif		
 #endif
 
 #if defined( CINDER_GL_HAS_TEXTURE_NORM16 )
 		sSymbols[GL_R16] = "GL_R16";
 		sSymbols[GL_RG16] = "GL_RG16";
+		sSymbols[GL_RGB16] = "GL_RGB16";
+		sSymbols[GL_RGBA16] = "GL_RGBA16";
 #endif
 
 #if ! defined( CINDER_GL_ES )
@@ -220,11 +229,18 @@ std::string	constantToString( GLenum constant )
 #if defined( CINDER_GL_HAS_RENDER_SNORM )
 		sSymbols[GL_R8_SNORM] = "GL_R8_SNORM";
 		sSymbols[GL_RG8_SNORM] = "GL_RG8_SNORM";
+
+	#if defined( CINDER_GL_DESKTOP ) || ( defined( CINDER_GL_ES ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 ) )
 		sSymbols[GL_RGB8_SNORM] = "GL_RGB8_SNORM";
+	#endif
+
 		sSymbols[GL_RGBA8_SNORM] = "GL_RGBA8_SNORM";
+  #if ! defined( CINDER_COCOA_TOUCH )
+		// iOS doesn't have these
 		sSymbols[GL_R16_SNORM] = "GL_R16_SNORM";
 		sSymbols[GL_RG16_SNORM] = "GL_RG16_SNORM";
 		sSymbols[GL_RGB16_SNORM] = "GL_RGB16_SNORM";
+  #endif
 #endif
 		
 #if ! defined( CINDER_GL_ES )
@@ -593,3 +609,7 @@ uint8_t typeToBytes( GLenum type )
 }
 
 } } // namespace cinder::gl
+
+#if defined( CINDER_GL_DESKTOP )
+	#undef CINDER_GL_DESKTOP
+#endif

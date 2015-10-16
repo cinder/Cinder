@@ -525,12 +525,8 @@
 	extern PFNGLENDPERFMONITORAMDPROC fnptr_ci_glEndPerfMonitorAMD; 
 	extern PFNGLGETPERFMONITORCOUNTERDATAAMDPROC fnptr_ci_glGetPerfMonitorCounterDataAMD; 
 	extern PFNGLBLITFRAMEBUFFERANGLEPROC fnptr_ci_glBlitFramebufferANGLE; 
-	extern PFNGLDRAWARRAYSINSTANCEDANGLEPROC fnptr_ci_glDrawArraysInstancedANGLE; 
-	extern PFNGLDRAWELEMENTSINSTANCEDANGLEPROC fnptr_ci_glDrawElementsInstancedANGLE; 
-	extern PFNGLVERTEXATTRIBDIVISORANGLEPROC fnptr_ci_glVertexAttribDivisorANGLE; 
 	extern PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC fnptr_ci_glGetTranslatedShaderSourceANGLE; 
 	extern PFNGLCOPYTEXTURELEVELSAPPLEPROC fnptr_ci_glCopyTextureLevelsAPPLE; 
-	extern PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC fnptr_ci_glResolveMultisampleFramebufferAPPLE; 
 	extern PFNGLFENCESYNCAPPLEPROC fnptr_ci_glFenceSyncAPPLE; 
 	extern PFNGLISSYNCAPPLEPROC fnptr_ci_glIsSyncAPPLE; 
 	extern PFNGLDELETESYNCAPPLEPROC fnptr_ci_glDeleteSyncAPPLE; 
@@ -577,9 +573,6 @@
 	extern PFNGLDRAWRANGEELEMENTSBASEVERTEXEXTPROC fnptr_ci_glDrawRangeElementsBaseVertexEXT; 
 	extern PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXEXTPROC fnptr_ci_glDrawElementsInstancedBaseVertexEXT; 
 	extern PFNGLMULTIDRAWELEMENTSBASEVERTEXEXTPROC fnptr_ci_glMultiDrawElementsBaseVertexEXT; 
-	extern PFNGLDRAWARRAYSINSTANCEDEXTPROC fnptr_ci_glDrawArraysInstancedEXT; 
-	extern PFNGLDRAWELEMENTSINSTANCEDEXTPROC fnptr_ci_glDrawElementsInstancedEXT; 
-	extern PFNGLVERTEXATTRIBDIVISOREXTPROC fnptr_ci_glVertexAttribDivisorEXT; 
 	extern PFNGLMULTIDRAWARRAYSEXTPROC fnptr_ci_glMultiDrawArraysEXT; 
 	extern PFNGLMULTIDRAWELEMENTSEXTPROC fnptr_ci_glMultiDrawElementsEXT; 
 	extern PFNGLMULTIDRAWARRAYSINDIRECTEXTPROC fnptr_ci_glMultiDrawArraysIndirectEXT; 
@@ -690,8 +683,6 @@
 	extern PFNGLCOVERAGEMASKNVPROC fnptr_ci_glCoverageMaskNV; 
 	extern PFNGLCOVERAGEOPERATIONNVPROC fnptr_ci_glCoverageOperationNV; 
 	extern PFNGLDRAWBUFFERSNVPROC fnptr_ci_glDrawBuffersNV; 
-	extern PFNGLDRAWARRAYSINSTANCEDNVPROC fnptr_ci_glDrawArraysInstancedNV; 
-	extern PFNGLDRAWELEMENTSINSTANCEDNVPROC fnptr_ci_glDrawElementsInstancedNV; 
 	extern PFNGLDELETEFENCESNVPROC fnptr_ci_glDeleteFencesNV; 
 	extern PFNGLGENFENCESNVPROC fnptr_ci_glGenFencesNV; 
 	extern PFNGLISFENCENVPROC fnptr_ci_glIsFenceNV; 
@@ -704,7 +695,6 @@
 	extern PFNGLCOVERAGEMODULATIONTABLENVPROC fnptr_ci_glCoverageModulationTableNV; 
 	extern PFNGLGETCOVERAGEMODULATIONTABLENVPROC fnptr_ci_glGetCoverageModulationTableNV; 
 	extern PFNGLCOVERAGEMODULATIONNVPROC fnptr_ci_glCoverageModulationNV; 
-	extern PFNGLVERTEXATTRIBDIVISORNVPROC fnptr_ci_glVertexAttribDivisorNV; 
 	extern PFNGLGETINTERNALFORMATSAMPLEIVNVPROC fnptr_ci_glGetInternalformatSampleivNV; 
 	extern PFNGLUNIFORMMATRIX2X3FVNVPROC fnptr_ci_glUniformMatrix2x3fvNV; 
 	extern PFNGLUNIFORMMATRIX3X2FVNVPROC fnptr_ci_glUniformMatrix3x2fvNV; 
@@ -877,7 +867,6 @@
 	#define glBlitFramebufferANGLE fnptr_ci_glBlitFramebufferANGLE 
 	#define glDrawArraysInstancedANGLE fnptr_ci_glDrawArraysInstancedANGLE 
 	#define glDrawElementsInstancedANGLE fnptr_ci_glDrawElementsInstancedANGLE 
-	#define glVertexAttribDivisorANGLE fnptr_ci_glVertexAttribDivisorANGLE 
 	#define glGetTranslatedShaderSourceANGLE fnptr_ci_glGetTranslatedShaderSourceANGLE 
 	#define glCopyTextureLevelsAPPLE fnptr_ci_glCopyTextureLevelsAPPLE 
 	#define glResolveMultisampleFramebufferAPPLE fnptr_ci_glResolveMultisampleFramebufferAPPLE 
@@ -914,7 +903,6 @@
 	#define glGetQueryObjectuivEXT fnptr_ci_glGetQueryObjectuivEXT 
 	#define glGetQueryObjecti64vEXT fnptr_ci_glGetQueryObjecti64vEXT 
 	#define glGetQueryObjectui64vEXT fnptr_ci_glGetQueryObjectui64vEXT 
-	#define glDrawBuffersEXT fnptr_ci_glDrawBuffersEXT 
 	#define glEnableiEXT fnptr_ci_glEnableiEXT 
 	#define glDisableiEXT fnptr_ci_glDisableiEXT 
 	#define glBlendEquationiEXT fnptr_ci_glBlendEquationiEXT 
@@ -929,7 +917,6 @@
 	#define glMultiDrawElementsBaseVertexEXT fnptr_ci_glMultiDrawElementsBaseVertexEXT 
 	#define glDrawArraysInstancedEXT fnptr_ci_glDrawArraysInstancedEXT 
 	#define glDrawElementsInstancedEXT fnptr_ci_glDrawElementsInstancedEXT  
-	#define glVertexAttribDivisorEXT fnptr_ci_glVertexAttribDivisorEXT 
 	#define glMapBufferRangeEXT fnptr_ci_glMapBufferRangeEXT 
 	#define glMultiDrawArraysEXT fnptr_ci_glMultiDrawArraysEXT 
 	#define glMultiDrawElementsEXT fnptr_ci_glMultiDrawElementsEXT 
@@ -1055,7 +1042,6 @@
 	#define glCoverageModulationTableNV fnptr_ci_glCoverageModulationTableNV 
 	#define glGetCoverageModulationTableNV fnptr_ci_glGetCoverageModulationTableNV 
 	#define glCoverageModulationNV fnptr_ci_glCoverageModulationNV 
-	#define glVertexAttribDivisorNV fnptr_ci_glVertexAttribDivisorNV 
 	#define glGetInternalformatSampleivNV fnptr_ci_glGetInternalformatSampleivNV 
 	#define glUniformMatrix2x3fvNV fnptr_ci_glUniformMatrix2x3fvNV 
 	#define glUniformMatrix3x2fvNV fnptr_ci_glUniformMatrix3x2fvNV 
@@ -1121,7 +1107,6 @@
 	#define glProgramPathFragmentInputGenNV fnptr_ci_glProgramPathFragmentInputGenNV 
 	#define glGetProgramResourcefvNV fnptr_ci_glGetProgramResourcefvNV 
 	#define glPolygonModeNV fnptr_ci_glPolygonModeNV 
-	#define glReadBufferNV fnptr_ci_glReadBufferNV 
 	#define glFramebufferSampleLocationsfvNV fnptr_ci_glFramebufferSampleLocationsfvNV 
 	#define glNamedFramebufferSampleLocationsfvNV fnptr_ci_glNamedFramebufferSampleLocationsfvNV 
 	#define glResolveDepthValuesNV fnptr_ci_glResolveDepthValuesNV 
@@ -1160,60 +1145,81 @@
 
 	#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
         // GL_OES_required_internalformat
-        #define GL_ALPHA8 GL_ALPHA8_OES
-        //#define GL_DEPTH_COMPONENT16 GL_DEPTH_COMPONENT16_OES
-        #define GL_LUMINANCE4_ALPHA4 GL_LUMINANCE4_ALPHA4_OES
-        #define GL_LUMINANCE8_ALPHA8 GL_LUMINANCE8_ALPHA8_OES
-        #define GL_LUMINANCE8 GL_LUMINANCE8_OES
-        //#define GL_RGBA4 GL_RGBA4_OES
-        //#define GL_RGB5_A1 GL_RGB5_A1_OES
-        //#define GL_RGB565 GL_RGB565_OES
-        #define GL_RGB8 GL_RGB8_OES
-        #define GL_RGBA8 GL_RGBA8_OES
-        #define GL_RGB10 GL_RGB10_EXT        
+        #define GL_ALPHA8                                   GL_ALPHA8_OES
+        //#define GL_DEPTH_COMPONENT16                        GL_DEPTH_COMPONENT16_OES
+        #define GL_LUMINANCE4_ALPHA4                        GL_LUMINANCE4_ALPHA4_OES
+        #define GL_LUMINANCE8_ALPHA8                        GL_LUMINANCE8_ALPHA8_OES
+        #define GL_LUMINANCE8                               GL_LUMINANCE8_OES
+        //#define GL_RGBA4                                    GL_RGBA4_OES
+        //#define GL_RGB5_A1                                  GL_RGB5_A1_OES
+        //#define GL_RGB565                                   GL_RGB565_OES
+        #define GL_RGB8                                     GL_RGB8_OES
+        #define GL_RGBA8                                    GL_RGBA8_OES
+        #define GL_RGB10                                    GL_RGB10_EXT
+		#define GL_RGB10_A2                  				GL_RGB10_A2_EXT
 
         // GL_EXT_texture_rg
-        #define GL_RED GL_RED_EXT
-        #define GL_RG GL_RG_EXT
-        #define GL_R8 GL_R8_EXT
-        #define GL_RG8 GL_RG8_EXT
+        #define GL_RED                                      GL_RED_EXT
+        #define GL_RG                                       GL_RG_EXT
+        #define GL_R8                                       GL_R8_EXT
+        #define GL_RG8                                      GL_RG8_EXT
 
         // GL_OES_texture_half_float
-        #define GL_HALF_FLOAT GL_HALF_FLOAT_OES
+        #define GL_HALF_FLOAT                               GL_HALF_FLOAT_OES
+
+		// GL_EXT_color_buffer_half_float
+		#define GL_RGBA16F									GL_RGBA16F_EXT
+		#define GL_RGB16F									GL_RGB16F_EXT
+		#define GL_RG16F									GL_RG16F_EXT
+		#define GL_R16F										GL_R16F_EXT
+		#define GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE	GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT
+		#define GL_UNSIGNED_NORMALIZED						GL_UNSIGNED_NORMALIZED_EXT
+
+		// GL_EXT_texture_storage
+		#define GL_RGBA32F									GL_RGBA32F_EXT
+		#define GL_RGB32F									GL_RGB32F_EXT
+		#define GL_RG32F									GL_RG32F_EXT
+		#define GL_R32F										GL_R32F_EXT
+
+		// GL_APPLE_texture_packed_float
+		#define GL_UNSIGNED_INT_10F_11F_11F_REV 			GL_UNSIGNED_INT_10F_11F_11F_REV_APPLE
+		#define GL_UNSIGNED_INT_5_9_9_9_REV 				GL_UNSIGNED_INT_5_9_9_9_REV_APPLE
+		#define GL_R11F_G11F_B10F           				GL_R11F_G11F_B10F_APPLE
+		#define GL_RGB9_E5                  				GL_RGB9_E5_APPLE
 
         // GL_OES_depth24
-        #define GL_DEPTH_COMPONENT24 GL_DEPTH_COMPONENT24_OES
+        #define GL_DEPTH_COMPONENT24 						GL_DEPTH_COMPONENT24_OES
 
         // GL_OES_mapbuffer
-        #define GL_WRITE_ONLY GL_WRITE_ONLY_OES
-    	extern PFNGLMAPBUFFEROESPROC fnptr_ci_glMapBufferOES;
-		extern PFNGLUNMAPBUFFEROESPROC fnptr_ci_glUnmapBufferOES; 
-    	#define glMapBuffer fnptr_ci_glMapBufferOES
-        #define glUnmapBuffer fnptr_ci_glUnmapBufferOES 
+        #define GL_WRITE_ONLY 								GL_WRITE_ONLY_OES
+    	extern PFNGLMAPBUFFEROESPROC 						fnptr_ci_glMapBufferOES;
+		extern PFNGLUNMAPBUFFEROESPROC 						fnptr_ci_glUnmapBufferOES; 
+    	#define glMapBuffer 								fnptr_ci_glMapBufferOES
+        #define glUnmapBuffer 								fnptr_ci_glUnmapBufferOES 
 
 		// GL_OES_vertex_array_object
-		extern PFNGLBINDVERTEXARRAYOESPROC fnptr_ci_glBindVertexArrayOES; 
-		extern PFNGLDELETEVERTEXARRAYSOESPROC fnptr_ci_glDeleteVertexArraysOES; 
-		extern PFNGLGENVERTEXARRAYSOESPROC fnptr_ci_glGenVertexArraysOES; 
-		extern PFNGLISVERTEXARRAYOESPROC fnptr_ci_glIsVertexArrayOES; 
-		#define glBindVertexArray fnptr_ci_glBindVertexArrayOES 
-		#define glDeleteVertexArrays fnptr_ci_glDeleteVertexArraysOES 
-		#define glGenVertexArrays fnptr_ci_glGenVertexArraysOES 
-		#define glIsVertexArray fnptr_ci_glIsVertexArrayOES 
+		extern PFNGLBINDVERTEXARRAYOESPROC 					fnptr_ci_glBindVertexArrayOES; 
+		extern PFNGLDELETEVERTEXARRAYSOESPROC 				fnptr_ci_glDeleteVertexArraysOES; 
+		extern PFNGLGENVERTEXARRAYSOESPROC 					fnptr_ci_glGenVertexArraysOES; 
+		extern PFNGLISVERTEXARRAYOESPROC 					fnptr_ci_glIsVertexArrayOES; 
+		#define glBindVertexArray 							fnptr_ci_glBindVertexArrayOES 
+		#define glDeleteVertexArrays 						fnptr_ci_glDeleteVertexArraysOES 
+		#define glGenVertexArrays 							fnptr_ci_glGenVertexArraysOES 
+		#define glIsVertexArray 							fnptr_ci_glIsVertexArrayOES 
 
 		// GL_EXT_map_buffer_range
 		#if ! defined( GL_MAP_READ_BIT )
-			#define GL_MAP_READ_BIT 				GL_MAP_READ_BIT_EXT
-			#define GL_MAP_WRITE_BIT 				GL_MAP_WRITE_BIT_EXT
+			#define GL_MAP_READ_BIT 						GL_MAP_READ_BIT_EXT
+			#define GL_MAP_WRITE_BIT 						GL_MAP_WRITE_BIT_EXT
 		#endif
-		#define GL_MAP_INVALIDATE_RANGE_BIT		GL_MAP_INVALIDATE_RANGE_BIT_EXT
-		#define GL_MAP_INVALIDATE_BUFFER_BIT	GL_MAP_INVALIDATE_BUFFER_BIT_EXT
-		#define GL_MAP_FLUSH_EXPLICIT_BIT		GL_MAP_FLUSH_EXPLICIT_BIT_EXT
-		#define GL_MAP_UNSYNCHRONIZED_BIT		GL_MAP_UNSYNCHRONIZED_BIT_EXT
-		extern PFNGLMAPBUFFERRANGEEXTPROC fnptr_ci_glMapBufferRangeEXT; 
-		extern PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC fnptr_ci_glFlushMappedBufferRangeEXT; 
-		#define glMapBufferRange fnptr_ci_glMapBufferRangeEXT 
-		#define glFlushMappedBufferRangeEXT fnptr_ci_glFlushMappedBufferRangeEXT 
+		#define GL_MAP_INVALIDATE_RANGE_BIT					GL_MAP_INVALIDATE_RANGE_BIT_EXT
+		#define GL_MAP_INVALIDATE_BUFFER_BIT				GL_MAP_INVALIDATE_BUFFER_BIT_EXT
+		#define GL_MAP_FLUSH_EXPLICIT_BIT					GL_MAP_FLUSH_EXPLICIT_BIT_EXT
+		#define GL_MAP_UNSYNCHRONIZED_BIT					GL_MAP_UNSYNCHRONIZED_BIT_EXT
+		extern PFNGLMAPBUFFERRANGEEXTPROC 					fnptr_ci_glMapBufferRangeEXT; 
+		extern PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC 			fnptr_ci_glFlushMappedBufferRangeEXT; 
+		#define glMapBufferRange 							fnptr_ci_glMapBufferRangeEXT 
+		#define glFlushMappedBufferRangeEXT 				fnptr_ci_glFlushMappedBufferRangeEXT 
 
 		// GL_EXT_multisampled_render_to_texture and the like
 		//
@@ -1224,12 +1230,58 @@
 		//    glRenderbufferStorageMultisampleIMG
 		//    glRenderbufferStorageMultisampleNV
 		//
+		#define GL_READ_FRAMEBUFFER         				0x8CA8
+		#define GL_DRAW_FRAMEBUFFER         				0x8CA9	
+		#define GL_DRAW_FRAMEBUFFER_BINDING 				0x8CA6
+		#define GL_READ_FRAMEBUFFER_BINDING 				0x8CAA
 		typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
-		extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC fnptr_ci_glRenderbufferStorageMultisample; 
-		#define glRenderbufferStorageMultisample fnptr_ci_glRenderbufferStorageMultisample 
+		extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC 		fnptr_ci_glRenderbufferStorageMultisample;
+		#define glRenderbufferStorageMultisample 			fnptr_ci_glRenderbufferStorageMultisample 
+
+		// GL_NV_framebuffer_blit, GL_ANGLE_framebuffer_blit
+		typedef void (GL_APIENTRYP PFNGLBLITFRAMEBUFFERPROC) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+		extern PFNGLBLITFRAMEBUFFERPROC 					fnptr_ci_glBlitFramebuffer;
+		#define glBlitFramebuffer 							fnptr_ci_glBlitFramebuffer
+
+		// GL_EXT_draw_buffers
+		#define glDrawBuffers 								fnptr_ci_glDrawBuffersEXT
+
+		// GL_NV_read_buffer
+		#define glReadBuffer 								fnptr_ci_glReadBufferNV
+
+		// GL_ANGLE_instanced_arrays, GL_EXT_draw_instanced, GL_NV_draw_instanced
+		typedef void (GL_APIENTRYP PFNGLDRAWARRAYSINSTANCEDPROC) (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
+		typedef void (GL_APIENTRYP PFNGLDRAWELEMENTSINSTANCEDPROC) (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei primcount);
+		extern PFNGLDRAWARRAYSINSTANCEDPROC 				fnptr_ci_glDrawArraysInstanced; 
+		extern PFNGLDRAWELEMENTSINSTANCEDPROC 				fnptr_ci_glDrawElementsInstanced; 
+		#define glDrawArraysInstanced						fnptr_ci_glDrawArraysInstanced
+		#define glDrawElementsInstanced 					fnptr_ci_glDrawElementsInstanced
+
+		// GL_ANGLE_instanced_arrays, GL_EXT_instanced_arrays, GL_NV_instanced_arrays
+		typedef void (GL_APIENTRYP PFNGLVERTEXATTRIBDIVISORPROC) (GLuint index, GLuint divisor);
+		extern PFNGLVERTEXATTRIBDIVISORPROC 				fnptr_ci_glVertexAttribDivisor;
+		#define glVertexAttribDivisor 						fnptr_ci_glVertexAttribDivisor 
 	#endif	
 #endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
 
+#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
+	// GL_EXT_render_snorm, GL_EXT_texture_norm16 (GL_RGB16_SNORM_EXT)
+	#define GL_R16_SNORM 									GL_R16_SNORM_EXT
+	#define GL_RG16_SNORM 									GL_RG16_SNORM_EXT
+	#define GL_RGB16_SNORM 									GL_RGB16_SNORM_EXT
+	#define GL_RGBA16_SNORM 								GL_RGBA16_SNORM_EXT
+
+	// GL_EXT_texture_norm16
+	#define GL_R16 											GL_R16_EXT
+	#define GL_RG16 										GL_RG16_EXT
+	#define GL_RGB16 										GL_RGB16_EXT	
+	#define GL_RGBA16 										GL_RGBA16_EXT
+#endif
+
+#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
+	// GL_OES_required_internalformat
+   	#define GL_RGB10                                    	GL_RGB10_EXT
+#endif
 
 // Android Extension Pack
 #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )

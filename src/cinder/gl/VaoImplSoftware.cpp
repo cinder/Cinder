@@ -135,7 +135,7 @@ void VaoImplSoftware::vertexAttribIPointerImpl( GLuint index, GLint size, GLenum
 {
 	mLayout.vertexAttribIPointer( index, size, type, stride, pointer );
 
-#if ! defined( CINDER_GL_ES )
+#if ( ! defined( CINDER_GL_ES ) ) || ( defined( CINDER_GL_ES ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 ) )
 	glVertexAttribIPointer( index, size, type, stride, pointer );	
 #endif
 }
@@ -143,10 +143,13 @@ void VaoImplSoftware::vertexAttribIPointerImpl( GLuint index, GLint size, GLenum
 void VaoImplSoftware::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 {
 	mLayout.vertexAttribDivisor( index, divisor );
+	glVertexAttribDivisor( index, divisor );
 
+/*
 #if ! defined( CINDER_GL_ES )
 	glVertexAttribDivisor( index, divisor );
 #endif
+*/
 }
 
 void VaoImplSoftware::reflectBindBufferImpl( GLenum target, GLuint buffer )

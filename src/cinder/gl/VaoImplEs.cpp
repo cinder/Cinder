@@ -66,21 +66,26 @@ VaoRef createVaoImplEs()
 VaoImplEs::VaoImplEs()
 {
 	mId	= 0;
-
+	glGenVertexArrays( 1, &mId );
+/*
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	glGenVertexArrays( 1, &mId );	
+	glGenVertexArrays( 1, &mId );
 #else
 	glGenVertexArraysOES( 1, &mId );
 #endif
+*/
 }
 
 VaoImplEs::~VaoImplEs()
 {
+	glDeleteVertexArrays( 1, &mId );
+/*
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	glDeleteVertexArrays( 1, &mId );
 #else	
 	glDeleteVertexArraysOES( 1, &mId );
 #endif
+*/
 }
 
 void VaoImplEs::bindImpl( Context *context )
@@ -90,12 +95,14 @@ void VaoImplEs::bindImpl( Context *context )
 		reassignImpl( context );
 	}
 
+	glBindVertexArray( mId );	
+/*
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	glBindVertexArray( mId );	
 #else
 	glBindVertexArrayOES( mId );
 #endif
-
+*/
 	if( context ) {
 		context->reflectBufferBinding( GL_ELEMENT_ARRAY_BUFFER, mLayout.mElementArrayBufferBinding );
 		mLayout.mCachedArrayBufferBinding = context->getBufferBinding( GL_ARRAY_BUFFER );
@@ -114,6 +121,13 @@ void VaoImplEs::reassignImpl( Context *newContext )
 
 	mCtx = newContext;
 
+	// generate
+	glGenVertexArrays( 1, &mId );
+
+	// assign
+	glBindVertexArray( mId );
+
+/*
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	// generate
 	glGenVertexArrays( 1, &mId );
@@ -127,7 +141,7 @@ void VaoImplEs::reassignImpl( Context *newContext )
 	// assign
 	glBindVertexArrayOES( mId );
 #endif	
-	
+*/
 	// instantiate the VAO using the layout
 	auto oldBuffer = mCtx->getBufferBinding( GL_ARRAY_BUFFER );
 
@@ -150,12 +164,14 @@ void VaoImplEs::reassignImpl( Context *newContext )
 
 void VaoImplEs::unbindImpl( Context *context )
 {
+	glBindVertexArray( 0 );
+/*
 #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	glBindVertexArray( 0 );	
 #else	
 	glBindVertexArrayOES( 0 );
 #endif
-	
+*/	
 	mCtx->invalidateBufferBindingCache( GL_ELEMENT_ARRAY_BUFFER );
 }
 
@@ -199,7 +215,7 @@ void VaoImplEs::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 {
 #if defined( CINDER_GL_HAS_INSTANCED_ARRAYS )
 	mLayout.vertexAttribDivisor( index, divisor );
-	glVertexAttribDivisorEXT( index, divisor );
+	glVertexAttribDivisor( index, divisor );
 #endif
 }
 

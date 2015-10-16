@@ -567,7 +567,7 @@ void Fbo::resolveTextures() const
 		
 		glBlitFramebufferANGLE( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
 	}
-#elif defined( CINDER_GL_HAS_FBO_MULTISAMPLING ) && defined( CINDER_GL_ES_2 )
+#elif defined( CINDER_GL_HAS_FBO_MULTISAMPLING ) && defined( CINDER_COCOA_TOUCH ) && defined( CINDER_GL_ES_2 )
 	// iOS-specific multisample resolution code
 	if( mMultisampleFramebufferId ) {
 		ScopedFramebuffer drawFbScp( GL_DRAW_FRAMEBUFFER_APPLE, mId );
