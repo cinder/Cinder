@@ -23,7 +23,10 @@
       <UniqueIdentifier>{96d88de8-ede7-4c87-baf2-c228e16226b2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resource Files\VisualAssets">
-      <UniqueIdentifier>{2182ee6c-fa02-4f5f-aa84-63042ab58914}</UniqueIdentifier>
+      <UniqueIdentifier>{71cb7fa7-d7a3-4ccc-9721-54b45b236a61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Images">
+      <UniqueIdentifier>{b87ec434-40fa-4226-909f-168515be18f2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,34 +73,34 @@
       <Filter>Resource Files\VisualAssets</Filter>
     </Image>
     <Image Include="..\resources\anisotropicbutton.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="..\resources\checkerboard.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="..\resources\GL_LIN_MIP_LIN.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="..\resources\GL_LIN_MIP_NEA.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="..\resources\GL_NEA_MIP_LIN.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="..\resources\GL_NEA_MIP_NEA.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="..\resources\glgenmipmap.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="..\resources\non_pot_checkerboard.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="..\resources\usergenmipmap.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
     <Image Include="..\resources\userresizedmipmap.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Images</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
