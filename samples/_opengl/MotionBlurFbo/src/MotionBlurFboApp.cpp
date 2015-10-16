@@ -43,7 +43,7 @@ void MotionBlurFboApp::setup()
 													.internalFormat( GL_RGB ) ).disableDepth() );
 #else
 	mAccumFbo = gl::Fbo::create( getWindowWidth(), getWindowHeight(),
-		gl::Fbo::Format().colorTexture( gl::Texture::Format().internalFormat( GL_RGB16F ) ).disableDepth() );
+						gl::Fbo::Format().colorTexture( gl::Fbo::Format().getDefaultColorTextureFormat().internalFormat( GL_RGB16F ) ).disableDepth() );
 #endif
 
 	mPaused = false;
