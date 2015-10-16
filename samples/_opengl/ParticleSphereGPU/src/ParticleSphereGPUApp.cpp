@@ -96,10 +96,7 @@ void ParticleSphereGPUApp::setup()
 	// Mark as static since we only write from the CPU once.
 	mParticleBuffer[mSourceIndex] = gl::Vbo::create( GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), particles.data(), GL_STATIC_DRAW );
 	mParticleBuffer[mDestinationIndex] = gl::Vbo::create( GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), nullptr, GL_STATIC_DRAW );
-	
-	// Create a default color shader.
-	mRenderProg = gl::getStockShader( gl::ShaderDef().color() );
-	
+
 	for( int i = 0; i < 2; ++i )
 	{	// Describe the particle layout for OpenGL.
 		mAttributes[i] = gl::Vao::create();
@@ -123,9 +120,12 @@ void ParticleSphereGPUApp::setup()
 	// Match up our attribute locations with the description we gave.
 	
 #if defined( CINDER_GL_ES_3 )
+	mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "draw_es3.vert" ) )
+									   .fragment( loadAsset( "draw_es3.frag" ) ) );
 	mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleUpdate_es3.vs" ) )
 									   .fragment( loadAsset( "no_op_es3.fs" ) )
 #else
+	mRenderProg = gl::getStockShader( gl::ShaderDef().color() );
 	mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleUpdate.vs" ) )
 #endif
 			.feedbackFormat( GL_INTERLEAVED_ATTRIBS )
