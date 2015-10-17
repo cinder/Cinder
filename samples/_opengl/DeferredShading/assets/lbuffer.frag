@@ -18,11 +18,7 @@ uniform mat4 	uShadowMatrix;
 uniform mat4 	uViewMatrixInverse;
 uniform vec2	uWindowSize;
 
-in Vertex
-{
-	vec2 	uv;
-} vertex;
-
+in vec2     uv;
 out vec4 	oColor;
 
 void main( void )
