@@ -203,6 +203,14 @@ void ShadowMappingBasic::draw()
 	mGlsl->uniform( "uShadowMatrix", shadowMatrix );
 	
 	drawScene( false );
+    
+    // Uncomment for debug
+    /*
+    gl::setMatricesWindow( getWindowSize() );
+    gl::color( 1.0f, 1.0f, 1.0f );
+    float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
+    gl::draw( mShadowMapTex, Rectf( 0, 0, size, size ) );
+    */
 }
 
 CINDER_APP( ShadowMappingBasic, RendererGl, ShadowMappingBasic::prepareSettings )
