@@ -20,6 +20,7 @@ if(NOT WIN32)
 endif()
 
 execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
+execute_process( COMMAND which clang OUTPUT_VARIABLE CLANG_PATH )
 
 # Include Directories
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
@@ -43,7 +44,9 @@ set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 # Library Directories
 set( CINDER_LIB_DIR ${CINDER_DIR}/lib/linux/${CINDER_ARCH} )
 
-set( CINDER_TOOLCHAIN_CLANG true )
+if( NOT "${CLANG_PATH}" STREQUAL "" )
+    set( CINDER_TOOLCHAIN_CLANG true )
+endif()
 
 if( CINDER_TOOLCHAIN_CLANG )
     set(CMAKE_TOOLCHAIN_PREFIX 					"llvm-"		CACHE STRING "" FORCE ) 
@@ -63,9 +66,14 @@ if( CINDER_TOOLCHAIN_CLANG )
     set(CMAKE_CXX_FLAGS_RELEASE_INIT          	"-O4 -DNDEBUG"	CACHE STRING "" FORCE )
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT   	"-O2 -g"		CACHE STRING "" FORCE )
     set(CMAKE_CCC_FLAGS                       	"${CMAKE_C_FLAGS} -fmessage-length=0"	CACHE STRING "" FORCE )
+
+    set(STDCXXLIB                               "-stdlib=libstdc++" )
+else()
+    set( CMAKE_C_COMPILER	"gcc-4.9" 		    CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER	"g++-4.9" 		    CACHE FILEPATH "" FORCE )	
 endif()
 
-set( CXX_FLAGS "-stdlib=libstdc++ -std=c++11 -Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef" CACHE STRING "" FORCE )
+set( CXX_FLAGS "${STDCXXLIB} -std=c++11 -Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g -fexceptions -frtti" 				CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" 	CACHE STRING "" FORCE )
 

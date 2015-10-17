@@ -115,7 +115,7 @@
 		extern PFNGLTEXIMAGE3DPROC fnptr_ci_glTexImage3D;
 		extern PFNGLTEXSUBIMAGE3DPROC fnptr_ci_glTexSubImage3D;
 		extern PFNGLCOPYTEXSUBIMAGE3DPROC fnptr_ci_glCopyTexSubImage3D;
-		extern PFNGLCOMPRESSEDTEXIMAGE3DPROC fnptr_ci_glCompressedTexImage3D;/
+		extern PFNGLCOMPRESSEDTEXIMAGE3DPROC fnptr_ci_glCompressedTexImage3D;
 		extern PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC fnptr_ci_glCompressedTexSubImage3D;
 		extern PFNGLGENQUERIESPROC fnptr_ci_glGenQueries;
 		extern PFNGLDELETEQUERIESPROC fnptr_ci_glDeleteQueries;

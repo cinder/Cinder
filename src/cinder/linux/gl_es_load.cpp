@@ -793,7 +793,6 @@ PFNGLGETFENCEIVNVPROC fnptr_ci_glGetFenceivNV = nullptr;
 PFNGLFINISHFENCENVPROC fnptr_ci_glFinishFenceNV = nullptr; 
 PFNGLSETFENCENVPROC fnptr_ci_glSetFenceNV = nullptr; 
 PFNGLFRAGMENTCOVERAGECOLORNVPROC fnptr_ci_glFragmentCoverageColorNV = nullptr; 
-PFNGLBLITFRAMEBUFFERNVPROC fnptr_ci_glBlitFramebufferNV = nullptr; 
 PFNGLCOVERAGEMODULATIONTABLENVPROC fnptr_ci_glCoverageModulationTableNV = nullptr; 
 PFNGLGETCOVERAGEMODULATIONTABLENVPROC fnptr_ci_glGetCoverageModulationTableNV = nullptr; 
 PFNGLCOVERAGEMODULATIONNVPROC fnptr_ci_glCoverageModulationNV = nullptr; 
@@ -1001,7 +1000,6 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glBeginPerfMonitorAMD = (PFNGLBEGINPERFMONITORAMDPROC)loadEglProc("glBeginPerfMonitorAMD"); 
 	fnptr_ci_glEndPerfMonitorAMD = (PFNGLENDPERFMONITORAMDPROC)loadEglProc("glEndPerfMonitorAMD"); 
 	fnptr_ci_glGetPerfMonitorCounterDataAMD = (PFNGLGETPERFMONITORCOUNTERDATAAMDPROC)loadEglProc("glGetPerfMonitorCounterDataAMD"); 
-	fnptr_ci_glBlitFramebufferANGLE = (PFNGLBLITFRAMEBUFFERANGLEPROC)loadEglProc("glBlitFramebufferANGLE"); 
 	fnptr_ci_glGetTranslatedShaderSourceANGLE = (PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC)loadEglProc("glGetTranslatedShaderSourceANGLE"); 
 	fnptr_ci_glCopyTextureLevelsAPPLE = (PFNGLCOPYTEXTURELEVELSAPPLEPROC)loadEglProc("glCopyTextureLevelsAPPLE"); 
 	fnptr_ci_glResolveMultisampleFramebufferAPPLE = (PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC)loadEglProc("glResolveMultisampleFramebufferAPPLE"); 

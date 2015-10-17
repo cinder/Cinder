@@ -1,7 +1,8 @@
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
-set( CMAKE_VERBOSE_MAKEFILE ON )
+set( CMAKE_VERBOSE_MAKEFILE on )
 
 execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
+execute_process( COMMAND which clang OUTPUT_VARIABLE CLANG_PATH )
 
 if(NOT WIN32)
   string(ASCII 27 Esc)
@@ -51,7 +52,10 @@ set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
 
-set( CINDER_TOOLCHAIN_CLANG true )
+if( NOT "${CLANG_PATH}" STREQUAL "" )
+    set( CINDER_TOOLCHAIN_CLANG true )
+endif()
+
 
 if( CINDER_TOOLCHAIN_CLANG )
     set( CMAKE_C_COMPILER	"clang" 		CACHE FILEPATH "" FORCE )
@@ -75,9 +79,11 @@ if( CINDER_TOOLCHAIN_CLANG )
     set(CMAKE_CXX_FLAGS_RELEASE_INIT		"-O4 -DNDEBUG" CACHE STRING "" FORCE )
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT	"-O2 -g" CACHE STRING "" FORCE )
     set(CMAKE_CCC_FLAGS						"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
+
+    set(STDCXXLIB                           "-stdlib=libstdc++" )
 else()
-    set( CMAKE_C_COMPILER	"gcc-4.8" 		CACHE FILEPATH "" FORCE )
-    set( CMAKE_CXX_COMPILER	"g++-4.8" 		CACHE FILEPATH "" FORCE )	
+    set( CMAKE_C_COMPILER	"gcc-4.9" 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER	"g++-4.9" 		CACHE FILEPATH "" FORCE )	
 endif()
 
 # Needs to come ater compilers are set
@@ -151,7 +157,7 @@ set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
 # Disable these warnings, many of which are coming from Boost
 set( CXX_DISABLE_WARNINGS "-Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef -Wno-tautological-compare -Wno-missing-braces" )
-set( CXX_FLAGS "-stdlib=libstdc++ -std=c++11 -fvisibility=default ${CINDER_GL_ES_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX ${CXX_DISABLE_WARNINGS}" )
+set( CXX_FLAGS "${STDCXXLIB} -std=c++11 -fvisibility=default ${CINDER_GL_ES_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_UNIX ${CXX_DISABLE_WARNINGS}" )
 
 if( CINDER_LINUX_EGL_RPI2 )
 	set( CXX_FLAGS "${CXX_FLAGS} -DCINDER_LINUX_EGL_ONLY -DCINDER_LINUX_EGL_RPI2 -DCINDER_GL_ES_2" )
