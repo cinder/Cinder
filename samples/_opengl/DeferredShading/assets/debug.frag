@@ -1,4 +1,7 @@
-#include "precision.glsl"
+#if __VERSION__ == 300
+	precision highp float;
+	precision highp sampler2DShadow;
+#endif
 
 const int MODE_ALBEDO	= 0;
 const int MODE_NORMAL	= 1;

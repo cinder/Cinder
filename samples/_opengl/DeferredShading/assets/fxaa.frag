@@ -1,4 +1,7 @@
-#include "precision.glsl"
+#if __VERSION__ == 300
+	precision highp float;
+	precision highp sampler2DShadow;
+#endif
 
 uniform vec2		uPixel;
 uniform sampler2D	uSampler;
