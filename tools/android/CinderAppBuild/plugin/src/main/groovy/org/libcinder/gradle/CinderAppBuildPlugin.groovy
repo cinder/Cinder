@@ -379,9 +379,7 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         }
 
         def numCores = Runtime.getRuntime().availableProcessors();
-        println( "numCores: ${numCores}" );
         ndkBuildArgs.add(this.makeNdkArg("--jobs", "${numCores}"));
-        
 
         if( project.cinder.verbose ) {
             ndkBuildArgs.add(this.makeNdkArg("V", "1"));
