@@ -62,8 +62,11 @@ public:
 	bool					isNewFrameAvailable() const;
 
 	bool 					isPlaying() const;
+	bool 					isDone() const;
+
 	void 					play();
 	void 					stop();
+	void 					pause();
 
 	ci::gl::Texture2dRef	getTexture() const;
 
@@ -89,7 +92,8 @@ private:
 		static jmethodID 	isPlaying;
 		static jmethodID 	isDone;
 		static jmethodID 	play;
-		static jmethodID 	stop;		
+		static jmethodID 	stop;
+		static jmethodID 	pause;
 	};
 
 	static void 			cacheJni();

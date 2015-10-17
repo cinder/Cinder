@@ -60,8 +60,9 @@ void QuickTimeSampleApp::loadMovieFile( const fs::path &moviePath )
 	try {
 		// load up the movie, set it to loop, and begin playing
 		mMovie = qtime::MovieGl::create( moviePath );
-		mMovie->setLoop();
+		//mMovie->setLoop();
 		mMovie->play();
+		console() << "Playing: " << mMovie->isPlaying() << std::endl;
 	}
 	catch( ci::Exception &exc ) {
 		console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
@@ -87,6 +88,12 @@ void QuickTimeSampleApp::update()
 {
 	if( mMovie )
 		mFrameTexture = mMovie->getTexture();
+
+	static bool sPrintedDone = false;
+	if( ! sPrintedDone && mMovie->isDone() ) {
+		console() << "Done Playing" << std::endl;
+		sPrintedDone = true;
+	}
 }
 
 void QuickTimeSampleApp::draw()
