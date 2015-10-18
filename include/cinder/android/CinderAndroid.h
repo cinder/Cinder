@@ -55,6 +55,8 @@ namespace fs {
 
 //! Returns true if path exists on asset fs or regular fs
 bool exists( const ci::fs::path& path );
+//! Returns the normalized path
+cinder::fs::path normalizePath( const cinder::fs::path &path );
 
 } // namespace fs
 
