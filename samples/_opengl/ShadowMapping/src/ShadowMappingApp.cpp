@@ -48,14 +48,15 @@
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/params/Params.h"
 #include "cinder/gl/gl.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Rand.h"
 #include "cinder/CameraUi.h"
 #include "cinder/Log.h"
 #include "cinder/Color.h"
-
+#if ! defined( CINDER_GL_ES )
+	#include "cinder/params/Params.h"
+#endif
 #include "glm/gtx/euler_angles.hpp"
 
 using namespace ci;
@@ -115,7 +116,7 @@ class ShadowMappingApp : public App {
 	void keyDown( KeyEvent event ) override;
   private:
 	void drawScene( float spinAngle, const gl::GlslProgRef& glsl = nullptr );
-#if ! defined( CINDER_LINUX )
+#if ! defined( CINDER_GL_ES )
 	params::InterfaceGlRef		mParams;
 #endif	
 
@@ -167,16 +168,19 @@ void ShadowMappingApp::setup()
 	
 	
 	try {
+#if defined( CINDER_GL_ES )
+		mShadowShader	= gl::GlslProg::create( loadAsset( "shadow_mapping_es3.vert"), loadAsset("shadow_mapping_es3.frag") );
+#else
 		mShadowShader	= gl::GlslProg::create( loadAsset( "shadow_mapping.vert"), loadAsset("shadow_mapping.frag") );
+#endif
 	} catch ( const gl::GlslProgCompileExc& exc ) {
-		CI_LOG_E( "Shader failed to load: " << exc.what() );
-		quit();
+		console() << "Shader failed to load: " << exc.what() << std::endl;
 	}
 	
 	mShadowMap		= ShadowMap::create( mShadowMapSize );
 	mLight.camera.setPerspective( mLight.fov, mShadowMap->getAspectRatio(), 0.5, 500.0 );
 	
-#if ! defined( CINDER_LINUX )
+#if ! defined( CINDER_GL_ES )
 	mParams = params::InterfaceGl::create( "Settings", toPixels( ivec2( 300, 325 ) ) );
 	mParams->addParam( "Framerate", &mFrameRate, "", true );
 	mParams->addSeparator();
@@ -321,7 +325,7 @@ void ShadowMappingApp::draw()
 	// Render light direction vector
 	gl::drawVector( mLight.viewpoint, 4.5f * normalize( mLight.viewpoint ) );
 
-#if ! defined( CINDER_LINUX )	
+#if ! defined( CINDER_GL_ES )
 	mParams->draw();
 #endif
 }
@@ -332,13 +336,15 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 		app::setFullScreen( !app::isFullScreen() );
 	}
 	else if( event.getChar() == KeyEvent::KEY_SPACE ) {
-#if ! defined( CINDER_LINUX )
+#if ! defined( CINDER_GL_ES )
 		mParams->maximize( ! mParams->isMaximized() );
 #endif
 	}
 }
 
 CINDER_APP( ShadowMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ), []( App::Settings *settings ) {
-//	settings->enableHighDensityDisplay();
+#if ! defined( CINDER_GL_ES )
+	//settings->enableHighDensityDisplay();
 	settings->setWindowSize( 900, 900 );
+#endif
 } )
