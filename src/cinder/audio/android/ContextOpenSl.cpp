@@ -23,6 +23,7 @@
 
 #include "cinder/audio/android/ContextOpenSl.h"
 #include "cinder/audio/dsp/Converter.h"
+#include "cinder/audio/dsp/RingBuffer.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
 
@@ -267,30 +268,28 @@ void OutputDeviceNodeOpenSl::renderToBufferFromInputs()
 // InputDeviceNodeOpenSlImpl (private)
 // ----------------------------------------------------------------------------------------------------
 
-const size_t NUM_ENQUEUE_BUFFERS = 2;
+const size_t MIN_RINGBUFFER_FRAMES = 4096;
 
 struct InputDeviceNodeOpenSlImpl {
 	InputDeviceNodeOpenSlImpl( InputDeviceNodeOpenSl *parent, const shared_ptr<ContextOpenSl> &context )
 		: mParent( parent ), mContextOpenSl( context )
 	{
-
 	}
 
 	void initRecorder( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
-		mCurrentEnqueBufferWriteIndex = 0;
-//		mCurrentEnqueBufferReadIndex = 0;
-		mEnqueueBuffers.resize( NUM_ENQUEUE_BUFFERS );
-		size_t numSamples = framesPerBlock * numChannels;
-		for( auto &buf : mEnqueueBuffers ) {
-			buf.mBuffer.resize( numSamples );
-			buf.mFilled = false;
+		mNumFramesEnqueued = 0;
+		mNumFramesBuffered = 0;
+		mEnqueueBuffer.resize( framesPerBlock * numChannels );
+		mConvertBuffer.setSize( framesPerBlock, numChannels );
+		mRingBuffers.resize( numChannels );
+
+		size_t numRingBufferFrames = max( framesPerBlock * 2, MIN_RINGBUFFER_FRAMES );
+		CI_LOG_I( "framesPerBlock: " << framesPerBlock << ", numChannels: " << numChannels << ", numRingBufferFrames: " << numRingBufferFrames );
+
+		for( auto &ringBuffer : mRingBuffers ) {
+			ringBuffer.resize( numRingBufferFrames );
 		}
-
-//		mEnqueueBuffer.resize( framesPerBlock * numChannels );
-		mNumSamplesBuffered = 0;
-
-		CI_LOG_I( "framesPerBlock: " << framesPerBlock << ", numChannels: " << numChannels );
 
 		auto context = mContextOpenSl.lock();
 		SLEngineItf engine = context->getSLEngineEngine();
@@ -368,48 +367,39 @@ struct InputDeviceNodeOpenSlImpl {
 
 	void stopRecording()
 	{
-		CI_LOG_I( "bang" );
 		SLresult result = (*mRecorderRecord)->SetRecordState( mRecorderRecord, SL_RECORDSTATE_STOPPED );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 	}
 
-	// TODO NEXT: sort out overrun / underrun markers, log timestamps
-
-	std::string mDebugString;
-
+	// TODO: On the device I tested, it seems like ringbuffers always have about 2000 frames in them,
+	// it might be possible to reduce latency by throwing some of these away (overwriting in this method)
 	void enqueueSamples( SLAndroidSimpleBufferQueueItf bufferQueue )
 	{
-		size_t currentBlock = master()->getNumProcessedFrames() / master()->getFramesPerBlock();
-		CI_LOG_I( "currentBlock: " << currentBlock << " - " << mDebugString );
-//		if( mDebugString.size() < 400 ) {
-//			mDebugString += "[" + to_string( master()->getNumProcessedSeconds() ) + ", " + to_string( app::getElapsedSeconds() ) + "] ";
-//		}
-//		if( currentBlock % 80 == 0 ) {
-//			CI_LOG_I( "currentBlock: " << currentBlock << " - " << mDebugString );
-//			mDebugString.clear();
-//		}
+		// convert the enqueued samples into de-interleaved floating point, push those into the ringbuffer
+//		size_t currentBlock = master()->getNumProcessedFrames() / master()->getFramesPerBlock();
+//		CI_LOG_I( "currentBlock: " << currentBlock << " - " << mDebugString );
 
-		// The previously enqueued samples are ready
-		if( mNumSamplesEnqueued != 0 ) {
-			auto &currentEnqueueBuf = mEnqueueBuffers.at( mCurrentEnqueBufferWriteIndex );
-			currentEnqueueBuf.mFilled = true;
-			mNumSamplesEnqueued = 0;
+		dsp::deinterleave( mEnqueueBuffer.data(), mConvertBuffer.getData(), mConvertBuffer.getNumFrames(), mConvertBuffer.getNumChannels(), mNumFramesEnqueued );
 
-			mCurrentEnqueBufferReadIndex = mCurrentEnqueBufferWriteIndex;
-			mCurrentEnqueBufferWriteIndex = ( mCurrentEnqueBufferWriteIndex + 1 ) % NUM_ENQUEUE_BUFFERS;
+		size_t framesBuffered = 0;
+		for( size_t ch = 0; ch < mRingBuffers.size(); ch++ ) {
+			if( mRingBuffers[ch].write( mConvertBuffer.getChannel( ch ), mNumFramesEnqueued ) ) {
+				// only set this to non-zero if we succeeded at writing to the ringbuffer
+				framesBuffered = mNumFramesEnqueued;
+			}
+			else {
+//				CI_LOG_W( "RingBuffer full for channel: " << ch );
+				mParent->markOverrun();
+			}
 		}
 
-		// request more samples to be enqueued into the next buffer. They will be ready when this callback is next called.
-		auto &nextEnqueueBuf = mEnqueueBuffers.at( mCurrentEnqueBufferWriteIndex );
-		if( nextEnqueueBuf.mFilled ) {
-			CI_LOG_W( "expected EnqueueBuffer at index " << mCurrentEnqueBufferWriteIndex << " to be empty, it is filled." );
-			mParent->markOverrun();
-		}
+		mNumFramesBuffered += framesBuffered;
+//		CI_LOG_I( "frames buffered: " << mNumFramesBuffered );
 
-		SLresult result = (*bufferQueue)->Enqueue( bufferQueue, nextEnqueueBuf.mBuffer.data(), nextEnqueueBuf.mBuffer.size() * sizeof( int16_t ) );
+		SLresult result = (*bufferQueue)->Enqueue( bufferQueue, mEnqueueBuffer.data(), mEnqueueBuffer.size() * sizeof( int16_t ) );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 
-		mNumSamplesEnqueued = nextEnqueueBuf.mBuffer.size();
+		mNumFramesEnqueued = mEnqueueBuffer.size();
 	}
 
 	static void recorderCallback( SLAndroidSimpleBufferQueueItf bufferQueue, void *context )
@@ -426,17 +416,12 @@ struct InputDeviceNodeOpenSlImpl {
 	SLRecordItf mRecorderRecord = nullptr;
 	SLAndroidSimpleBufferQueueItf mBufferQueue = nullptr;
 
-	struct EnqueueBuffer {
-		std::vector<int16_t>    mBuffer;
-		bool                    mFilled;
-	};
+	std::vector<int16_t>            mEnqueueBuffer;
+	audio::BufferDynamic            mConvertBuffer;
+	std::vector<dsp::RingBuffer>    mRingBuffers;
 
-	std::vector<EnqueueBuffer>  mEnqueueBuffers;
-
-	size_t	                mNumSamplesBuffered = 0;
-	size_t	                mNumSamplesEnqueued = 0;
-	int                     mCurrentEnqueBufferWriteIndex = -1;
-	int                     mCurrentEnqueBufferReadIndex = -1;
+	size_t	                mNumFramesEnqueued = 0; // amount requested from OpenSL
+	size_t	                mNumFramesBuffered = 0; // amount of floating-point frames available to be read in the ringbuffer
 };
 
 // ----------------------------------------------------------------------------------------------------
@@ -446,7 +431,6 @@ struct InputDeviceNodeOpenSlImpl {
 InputDeviceNodeOpenSl::InputDeviceNodeOpenSl( const DeviceRef &device, const Node::Format &format, const shared_ptr<ContextOpenSl> &context )
 	: InputDeviceNode( device, format ), mImpl( new InputDeviceNodeOpenSlImpl( this, context ) )
 {
-	CI_LOG_I( "bang" );
 }
 
 InputDeviceNodeOpenSl::~InputDeviceNodeOpenSl()
@@ -455,8 +439,6 @@ InputDeviceNodeOpenSl::~InputDeviceNodeOpenSl()
 
 void InputDeviceNodeOpenSl::initialize()
 {
-	CI_LOG_I( "bang" );
-
 	const size_t sampleRate = getSampleRate();
 	const size_t framesPerBlock = getFramesPerBlock();
 	const size_t numChannels = getNumChannels();
@@ -485,28 +467,22 @@ void InputDeviceNodeOpenSl::disableProcessing()
 
 void InputDeviceNodeOpenSl::process( Buffer *buffer )
 {
-	size_t currentBlock = master()->getNumProcessedFrames() / master()->getFramesPerBlock();
+//	size_t currentBlock = master()->getNumProcessedFrames() / master()->getFramesPerBlock();
+//	CI_LOG_I( "currentBlock: " << currentBlock );
 
-	int readIndex = mImpl->mCurrentEnqueBufferReadIndex;
-	CI_LOG_I( "currentBlock: " << currentBlock << ", readIndex: " << readIndex );
-
-	if( readIndex < 0 ) {
-		// no input samples yet;
+	const size_t framesNeeded = buffer->getNumFrames();
+	if( mImpl->mNumFramesBuffered < framesNeeded ) {
+//		CI_LOG_W( "not enough frames buffered, need: " << framesNeeded << ", have: " << mImpl->mNumFramesBuffered );
+		markUnderrun();
 		return;
 	}
 
-	// consume recorder samples
-	auto &enqueueBuf = mImpl->mEnqueueBuffers.at( readIndex );
-	if( enqueueBuf.mFilled ) {
-		int16_t *sourceInt16Samples = enqueueBuf.mBuffer.data();
-		dsp::deinterleave( sourceInt16Samples, buffer->getData(), buffer->getNumFrames(), buffer->getNumChannels(), buffer->getNumFrames() );
-		enqueueBuf.mFilled = false;
-		mImpl->mCurrentEnqueBufferReadIndex = ( readIndex + 1 ) % NUM_ENQUEUE_BUFFERS;
+	for( size_t ch = 0; ch < getNumChannels(); ch++ ) {
+		bool readSuccess = mImpl->mRingBuffers[ch].read( buffer->getChannel( ch ), framesNeeded );
+		CI_ASSERT( readSuccess );
 	}
-	else {
-		CI_LOG_W( "expected EnqueueBuffer at index " << readIndex << " to be filled, it isn't." );
-		markUnderrun();
-	}
+
+	mImpl->mNumFramesBuffered -= framesNeeded;
 }
 
 // ----------------------------------------------------------------------------------------------------
