@@ -119,12 +119,8 @@ void BufferObj::ensureMinimumSize( GLsizeiptr minimumSize )
 #if defined( CINDER_GL_HAS_MAP_BUFFER )
 void* BufferObj::map( GLenum access ) const
 {
-	void* result = nullptr;
 	ScopedBuffer bufferBind( mTarget, mId );
-	if( gl::env()->supportsMapBuffer() ) {
-		result = reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
-	}
-	return result;
+	return reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
 }
 #endif
 
