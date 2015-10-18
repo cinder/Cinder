@@ -128,8 +128,6 @@ struct OutputDeviceNodeOpenSlImpl {
 			(*mOutputMixObject)->Destroy( mOutputMixObject );
 			mOutputMixObject = nullptr;
 		}
-
-		// TODO: check if all sl objects for player have been destroyed
 	}
 
 	void play()
@@ -353,12 +351,14 @@ struct InputDeviceNodeOpenSlImpl {
 
 	void destroyRecorder()
 	{
-		// TODO
+		if( mRecorderObject ) {
+			(*mRecorderObject)->Destroy( mRecorderObject );
+			mRecorderObject = nullptr;
+		}
 	}
 
 	void beginRecording()
 	{
-		CI_LOG_I( "bang" );
 		SLresult result = (*mRecorderRecord)->SetRecordState( mRecorderRecord, SL_RECORDSTATE_RECORDING );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 
