@@ -34,6 +34,8 @@
 
 namespace cinder { namespace app {
 
+static AppImplAndroid* sInstance = nullptr;
+
 AppImplAndroid::TrackedTouch::TrackedTouch( int aId, float aX, float aY, double aCurrentTime )
 	: id( aId ), x( aX ), y( aY ), prevX( aX ), prevY( aY ), currentTime( aCurrentTime )
 {
@@ -51,6 +53,8 @@ void AppImplAndroid::TrackedTouch::update( float aX, float aY, double aCurrentTi
 AppImplAndroid::AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &settings )
 	: mApp( aApp ), mSetupHasBeenCalled( false ), mCanProcessEvents( false ), mActive( false ) //, mFocused( false )
 {
+	sInstance = this;
+
 	EventManagerAndroid::instance()->setAppImplInst( this );
 	mNativeApp = EventManagerAndroid::instance()->getNativeApp();
 
@@ -81,6 +85,11 @@ AppImplAndroid::AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &se
 
 AppImplAndroid::~AppImplAndroid()
 {
+}
+
+AppImplAndroid *AppImplAndroid::getInstance()
+{
+	return sInstance;
 }
 
 AppAndroid* AppImplAndroid::getApp() 
@@ -511,6 +520,16 @@ fs::path AppImplAndroid::getFolderPath( const fs::path &initialPath )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 
 	return fs::path();
+}
+
+ivec2 AppImplAndroid::getScreenSize() const
+{
+	ivec2 result = ivec2( 0 );
+	if( nullptr != mNativeApp->window ) {
+		result.x = ANativeWindow_getWidth( mNativeApp->window );
+		result.y = ANativeWindow_getHeight( mNativeApp->window );
+	}
+	return result;
 }
 
 } } // namespace cinder::app

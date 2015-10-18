@@ -22,6 +22,7 @@
 */
 
 #include "cinder/app/android/PlatformAndroid.h"
+#include "cinder/app/android/AppImplAndroid.h"
 #include "cinder/app/android/AssetFileSystem.h"
 #include "cinder/app/android/EventManagerAndroid.h"
 #include "cinder/android/LogCatStream.h"
@@ -257,6 +258,15 @@ std::vector<std::string> PlatformAndroid::stackTrace()
 const std::vector<DisplayRef>& PlatformAndroid::getDisplays()
 {
 	if( ! mDisplaysInitialized ) {
+		ivec2 screenSize = AppImplAndroid::getInstance()->getScreenSize();
+		DisplayAndroid *newDisplay = new DisplayAndroid();
+		newDisplay->mArea = Area( 0, 0, screenSize.x, screenSize.y );
+		newDisplay->mContentScale = 1.0f;
+		newDisplay->mBitsPerPixel = 32;
+
+		mDisplays.push_back( DisplayRef( newDisplay ) );		
+
+		mDisplaysInitialized = true;
 	}
 
 	return mDisplays;
