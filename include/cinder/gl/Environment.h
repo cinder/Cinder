@@ -83,8 +83,6 @@ class Environment {
 	virtual bool			supportsHardwareVao() const = 0;
 	virtual bool 			supportsInstancedArrays() const = 0;
 	virtual bool			supportsTextureLod() const = 0;
-	virtual bool			supportsMapBuffer() const = 0;
-	virtual bool 			supportsMapBufferRange() const = 0;
 	virtual bool 			supportsGeometryShader() const = 0;
 	virtual bool 			supportsTessellationShader() const = 0;
 

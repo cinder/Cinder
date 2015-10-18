@@ -88,8 +88,6 @@ class EnvironmentEs : public Environment {
 	bool	supportsHardwareVao() const override;
 	bool 	supportsInstancedArrays() const override;
 	bool	supportsTextureLod() const override;
-	bool	supportsMapBuffer() const override;
-	bool 	supportsMapBufferRange() const override;
 	bool	supportsGeometryShader() const override;
 	bool	supportsTessellationShader() const override;	
 
@@ -216,23 +214,6 @@ bool EnvironmentEs::supportsTextureLod() const
 	static bool result = isExtensionAvailable( "GL_EXT_shader_texture_lod" );
 	return result;
 #endif
-}
-
-bool EnvironmentEs::supportsMapBuffer() const
-{
-	static bool result = isExtensionAvailable( "GL_OES_mapbuffer" );
-	return result;
-}
-
-bool EnvironmentEs::supportsMapBufferRange() const
-{
-#if defined( CINDER_GL_ES_2 )
-	static bool result = isExtensionAvailable( "GL_EXT_map_buffer_range" ) || isExtensionAvailable( "GL_ARB_map_buffer_range" );
-	return result;
-#else
-	// Assumes OpenGL ES 3 or greater
-	return true;
-#endif	
 }
 
 bool EnvironmentEs::supportsGeometryShader() const

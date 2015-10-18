@@ -45,8 +45,6 @@ class EnvironmentCore : public Environment {
 	bool	supportsHardwareVao() const override;
 	bool 	supportsInstancedArrays() const override;
 	bool	supportsTextureLod() const override;
-	bool	supportsMapBuffer() const override;
-	bool 	supportsMapBufferRange() const override;
 	bool	supportsGeometryShader() const override;
 	bool	supportsTessellationShader() const override;
 
@@ -123,17 +121,6 @@ bool EnvironmentCore::supportsInstancedArrays() const
 }
 
 bool EnvironmentCore::supportsTextureLod() const
-{
-	return true;
-}
-
-
-bool EnvironmentCore::supportsMapBuffer() const
-{
-	return true;
-}
-
-bool EnvironmentCore::supportsMapBufferRange() const
 {
 	return true;
 }

@@ -68,7 +68,7 @@ android {
         ndkDir = plugins.getPlugin('com.android.application').sdkHandler.getNdkFolder().toString()
         cinderDir = "${projectDir}/../../../../../.."
         verbose = false 
-        moduleName = "InstancedTeapotsApp"
+        moduleName = "InstancedTeapots"
         srcDirs = ["../../../src"]
         cFlags {
             "all_archs" {
@@ -112,6 +112,16 @@ android {
     }
 }
 
+repositories {
+    jcenter()
+    flatDir {
+        dirs "${projectDir}/../../../../../../lib/android"
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    debugCompile 'org.libcinder:libcinder-debug:1.0@aar'
+    releaseCompile 'org.libcinder:libcinder-release:1.0@aar'
 }
+

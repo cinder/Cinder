@@ -66,26 +66,13 @@ VaoRef createVaoImplEs()
 VaoImplEs::VaoImplEs()
 {
 	mId	= 0;
+
 	glGenVertexArrays( 1, &mId );
-/*
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	glGenVertexArrays( 1, &mId );
-#else
-	glGenVertexArraysOES( 1, &mId );
-#endif
-*/
 }
 
 VaoImplEs::~VaoImplEs()
 {
 	glDeleteVertexArrays( 1, &mId );
-/*
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	glDeleteVertexArrays( 1, &mId );
-#else	
-	glDeleteVertexArraysOES( 1, &mId );
-#endif
-*/
 }
 
 void VaoImplEs::bindImpl( Context *context )
@@ -96,13 +83,7 @@ void VaoImplEs::bindImpl( Context *context )
 	}
 
 	glBindVertexArray( mId );	
-/*
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	glBindVertexArray( mId );	
-#else
-	glBindVertexArrayOES( mId );
-#endif
-*/
+
 	if( context ) {
 		context->reflectBufferBinding( GL_ELEMENT_ARRAY_BUFFER, mLayout.mElementArrayBufferBinding );
 		mLayout.mCachedArrayBufferBinding = context->getBufferBinding( GL_ARRAY_BUFFER );
@@ -127,21 +108,6 @@ void VaoImplEs::reassignImpl( Context *newContext )
 	// assign
 	glBindVertexArray( mId );
 
-/*
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	// generate
-	glGenVertexArrays( 1, &mId );
-
-	// assign
-	glBindVertexArray( mId );
-#else
-	// generate
-	glGenVertexArraysOES( 1, &mId );
-
-	// assign
-	glBindVertexArrayOES( mId );
-#endif	
-*/
 	// instantiate the VAO using the layout
 	auto oldBuffer = mCtx->getBufferBinding( GL_ARRAY_BUFFER );
 
@@ -165,13 +131,7 @@ void VaoImplEs::reassignImpl( Context *newContext )
 void VaoImplEs::unbindImpl( Context *context )
 {
 	glBindVertexArray( 0 );
-/*
-#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	glBindVertexArray( 0 );	
-#else	
-	glBindVertexArrayOES( 0 );
-#endif
-*/	
+
 	mCtx->invalidateBufferBindingCache( GL_ELEMENT_ARRAY_BUFFER );
 }
 
@@ -213,10 +173,8 @@ void VaoImplEs::vertexAttribIPointerImpl( GLuint index, GLint size, GLenum type,
 
 void VaoImplEs::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 {
-#if defined( CINDER_GL_HAS_INSTANCED_ARRAYS )
 	mLayout.vertexAttribDivisor( index, divisor );
 	glVertexAttribDivisor( index, divisor );
-#endif
 }
 
 void VaoImplEs::reflectBindBufferImpl( GLenum target, GLuint buffer )

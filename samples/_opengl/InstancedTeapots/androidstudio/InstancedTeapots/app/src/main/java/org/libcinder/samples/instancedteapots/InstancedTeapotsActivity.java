@@ -1,7 +1,7 @@
 package org.libcinder.samples.instancedteapots;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class InstancedTeapotsActivity extends NativeActivity {
+public class InstancedTeapotsActivity extends CinderNativeActivity {
     static final String TAG = "InstancedTeapotsActivity";
 }
