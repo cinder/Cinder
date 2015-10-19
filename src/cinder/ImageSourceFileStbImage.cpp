@@ -25,6 +25,7 @@
 #define STBI_NO_PIC
 #define STBI_NO_PNM
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC
 #include "stb/stb_image.h"
 
 namespace cinder {
