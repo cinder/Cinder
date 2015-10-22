@@ -34,6 +34,9 @@
 #elif defined( CINDER_MSW )
 	#include <Windows.h>
 	#include <codecvt>
+#elif defined( CINDER_ANDROID )
+	#include <android/log.h>
+ 	#define TAG "cinder"
 #endif
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
@@ -136,7 +139,13 @@ std::vector<LoggerRef> LogManager::getAllLoggers()
 void LogManager::restoreToDefault()
 {
 	clearLoggers();
+
+#if defined( CINDER_ANDROID )
+	// LoggerConsole goes nowhere on android, so by default use LoggerSystem (android logcat)
+	makeLogger<LoggerSystem>();
+#else
 	makeLogger<LoggerConsole>();
+#endif
 }
 	
 void LogManager::write( const Metadata &meta, const std::string &text )
@@ -416,6 +425,41 @@ protected:
 
 #endif
 
+#if defined( CINDER_ANDROID )
+// ----------------------------------------------------------------------------------------------------
+// MARK: - ImplLogCat
+// ----------------------------------------------------------------------------------------------------
+
+class LoggerSystem::ImplLogCat : public Logger {
+public:
+	ImplLogCat()
+	{
+	}
+
+	virtual ~ImplLogCat()
+	{
+	}
+
+	void write( const Metadata &meta, const std::string &text ) override
+	{
+		std::stringstream ss;
+		writeDefault( ss, meta, text );
+
+		android_LogPriority prio = ANDROID_LOG_DEFAULT;
+		switch( meta.mLevel ) {
+			case LEVEL_VERBOSE:	prio = ANDROID_LOG_VERBOSE; break;
+			case LEVEL_INFO:	prio = ANDROID_LOG_INFO; 	break;
+			case LEVEL_DEBUG:	prio = ANDROID_LOG_DEBUG; 	break;
+			case LEVEL_WARNING:	prio = ANDROID_LOG_WARN; 	break;
+			case LEVEL_ERROR:	prio = ANDROID_LOG_ERROR; 	break;
+			case LEVEL_FATAL:	prio = ANDROID_LOG_FATAL; 	break;
+		}
+
+		__android_log_print( prio, TAG, ss.str().c_str() );
+	}
+};
+
+#endif // defined ( CINDER_ANDROID )
 	
 // ----------------------------------------------------------------------------------------------------
 // MARK: - LoggerSystem
@@ -428,6 +472,8 @@ LoggerSystem::LoggerSystem()
 	LoggerSystem::mImpl = std::unique_ptr<ImplSysLog>( new ImplSysLog() );
 #elif defined( CINDER_MSW )
 	LoggerSystem::mImpl = std::unique_ptr<ImplEventLog>( new ImplEventLog() );
+#elif defined( CINDER_ANDROID )
+	mImpl = std::unique_ptr<ImplLogCat>( new ImplLogCat() );
 #endif
 }
 
@@ -443,7 +489,7 @@ void LoggerSystem::write( const Metadata &meta, const std::string &text )
 	}
 #endif
 }
-	
+
 // ----------------------------------------------------------------------------------------------------
 // MARK: - Helper Classes
 // ----------------------------------------------------------------------------------------------------

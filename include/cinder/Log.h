@@ -182,6 +182,9 @@ protected:
 #elif defined( CINDER_MSW )
 	class ImplEventLog;
 	std::unique_ptr<ImplEventLog> mImpl;
+#elif defined( CINDER_ANDROID )
+	class ImplLogCat;
+	std::unique_ptr<ImplLogCat> mImpl;
 #endif
 };
 
