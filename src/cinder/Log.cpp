@@ -458,6 +458,23 @@ public:
 		__android_log_print( prio, TAG, ss.str().c_str() );
 	}
 };
+#elif defined( CINDER_LINUX )
+// ----------------------------------------------------------------------------------------------------
+// MARK: - ImplConsole
+// ----------------------------------------------------------------------------------------------------
+class LoggerSystem::ImplConsole : public Logger {
+public:
+    ImplConsole()
+    {
+    }
+    virtual ~ImplConsole()
+    {
+    }
+    void write( const Metadata &meta, const std::string &text ) override
+    {
+        writeDefault( std::cout, meta, text );
+    }
+};
 
 #endif // defined ( CINDER_ANDROID )
 	
