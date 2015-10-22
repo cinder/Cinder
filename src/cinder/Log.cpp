@@ -37,6 +37,8 @@
 #elif defined( CINDER_ANDROID )
 	#include <android/log.h>
  	#define TAG "cinder"
+#elif defined( CINDER_LINUX )
+    #include <syslog.h>
 #endif
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
@@ -300,7 +302,7 @@ void LoggerBreakpoint::write( const Metadata &meta, const string &text )
 	}
 }
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 
 // ----------------------------------------------------------------------------------------------------
 // MARK: - ImplSysLog
@@ -310,12 +312,23 @@ class LoggerSystem::ImplSysLog : public Logger {
 public:
 	ImplSysLog()
 	{
+#if defined( CINDER_COCOA )
 		// determine app name from it's NSBundle. https://developer.apple.com/library/mac/qa/qa1544/_index.html
 		NSBundle *bundle = app::PlatformCocoa::get()->getBundle();
 		NSString *bundlePath = [bundle bundlePath];
 		NSString *appName = [[NSFileManager defaultManager] displayNameAtPath: bundlePath];
-		
 		const char *cAppName = [appName UTF8String];
+#elif defined( CINDER_LINUX )
+    	std::vector<char> buf( PATH_MAX );
+	    std::memset( &(buf[0]), 0, buf.size()  );
+        ssize_t len = ::readlink("/proc/self/exe", &(buf[0]), buf.size() - 1 );
+        if( ( -1 != len ) && ( len < buf.size() ) ) {
+            buf[len] = '\0';
+        }
+       
+        std::string exeName = fs::path( (const char *)(&buf[0]) ).filename().string();
+        const char* cAppName = exeName.c_str();
+#endif
 		openlog( cAppName, ( LOG_CONS | LOG_PID ), LOG_USER );
 	}
 	
@@ -468,12 +481,12 @@ public:
 LoggerSystem::LoggerSystem()
 {
 	mMinLevel = static_cast<Level>(CI_MIN_LOG_LEVEL);
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	LoggerSystem::mImpl = std::unique_ptr<ImplSysLog>( new ImplSysLog() );
 #elif defined( CINDER_MSW )
 	LoggerSystem::mImpl = std::unique_ptr<ImplEventLog>( new ImplEventLog() );
 #elif defined( CINDER_ANDROID )
-	mImpl = std::unique_ptr<ImplLogCat>( new ImplLogCat() );
+	LoggerSystem::mImpl = std::unique_ptr<ImplLogCat>( new ImplLogCat() );
 #endif
 }
 
