@@ -24,8 +24,10 @@ fi
 
 
 #SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-SCRIPT_DIR=$( pwd )
-
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+#SCRIPT_DIR=$( pwd )
+echo $SCRIPT_DIR
+#exit
 CLEAN=false
 BUILDTYPES=(Debug)
 NUMPROCS=$( nproc )
@@ -149,7 +151,7 @@ done
 
 for build in ${BUILDTYPES[@]}; do
 	build_type=${build}
-	build_dir=$(pwd)/${build}/${OPENGL_PLAT}
+    build_dir=${SCRIPT_DIR}/../../linux/${build}/${OPENGL_PLAT}
 
 	# Clean
 	if [ ${CLEAN} == true ] || [ ${FULLBUILD} == true ]; then
@@ -165,8 +167,8 @@ for build in ${BUILDTYPES[@]}; do
 	fi
 
 	# Check for CMakeLists.txt
-	if [ ! -f "${SCRIPT_DIR}/CMakeLists.txt" ]; then
-		echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}"
+	if [ ! -f "${SCRIPT_DIR}/../../linux/CMakeLists.txt" ]; then
+		echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}/../../linux"
 		exit
 	fi
 
@@ -181,7 +183,7 @@ for build in ${BUILDTYPES[@]}; do
 
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
-		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2}
+		cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2}
 	fi
 	make -j ${NUMPROCS} ${VERBOSE}
 
