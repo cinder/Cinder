@@ -215,3 +215,8 @@ configure_file( "${PROJECT_SOURCE_DIR}/cmake/cinderConfig.buildtree.cmake.in"
                     "${PROJECT_BINARY_DIR}/cinderConfig.cmake" )
 
 add_subdirectory( ${CINDER_DIR}/samples/BasicApp/linux ${CINDER_DIR}/samples/BasicApp/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )
+add_subdirectory( ${CINDER_DIR}/samples/BasicAppMultiWindow/linux ${CINDER_DIR}/samples/BasicAppMultiWindow/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )
+add_subdirectory( ${CINDER_DIR}/samples/_opengl/ShadowMapping/linux ${CINDER_DIR}/samples/_opengl/ShadowMapping/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )
+add_subdirectory( ${CINDER_DIR}/samples/_opengl/ShadowMappingBasic/linux ${CINDER_DIR}/samples/_opengl/ShadowMappingBasic/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )
+add_subdirectory( ${CINDER_DIR}/samples/_opengl/NormalMapping/linux ${CINDER_DIR}/samples/_opengl/NormalMapping/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )
+add_subdirectory( ${CINDER_DIR}/samples/_opengl/CubeMapping/linux ${CINDER_DIR}/samples/_opengl/CubeMapping/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )
