@@ -27,6 +27,7 @@ fi
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 CLEAN=false
 BUILDTYPES=(Debug)
+BUILDING_SAMPLE=false
 NUMPROCS=$( nproc )
 GLES=
 OPENGL_PLAT="ogl"
@@ -136,6 +137,7 @@ do
 		# Sample - dummy arg so samples can build without a flag
 		-sample)
 			echo "Building a sample..."
+            BUILDING_SAMPLE=true
 			shift 1
 		;;
 
@@ -148,7 +150,12 @@ done
 
 for build in ${BUILDTYPES[@]}; do
 	build_type=${build}
-    build_dir=${SCRIPT_DIR}/../../linux/${build}/${OPENGL_PLAT}
+
+    if [ "${BUILDING_SAMPLE}" = false ]; then
+        build_dir=${SCRIPT_DIR}/../../linux/${build}/${OPENGL_PLAT}
+    else
+        build_dir=$(pwd)/${build}/${OPENGL_PLAT}
+    fi
 
 	# Clean
 	if [ ${CLEAN} == true ] || [ ${FULLBUILD} == true ]; then
@@ -164,10 +171,17 @@ for build in ${BUILDTYPES[@]}; do
 	fi
 
 	# Check for CMakeLists.txt
-	if [ ! -f "${SCRIPT_DIR}/../../linux/CMakeLists.txt" ]; then
-		echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}/../../linux"
-		exit
-	fi
+    if [ "${BUILDING_SAMPLE}" = false ]; then
+        if [ ! -f "${SCRIPT_DIR}/../../linux/CMakeLists.txt" ]; then
+            echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}/../../linux"
+            exit
+        fi
+    else
+        if [ ! -f "$(pwd)/CMakeLists.txt" ]; then
+            echo "ERROR: Couldn't find CMakeLists.txt in $(pwd)"
+            exit
+        fi
+    fi
 
 	# Build
 	echo "---------------------------------------------------------------------------------"
