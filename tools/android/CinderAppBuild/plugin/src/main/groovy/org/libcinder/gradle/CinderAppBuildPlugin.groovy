@@ -68,6 +68,8 @@ class CinderAppBuildPluginExtension {
     def stl              = "gnustl_static";
     def toolChainVersion = "4.9";
     def archs            = [];
+
+    def disableFormatStringChecks  = false;
 }
 
 /** @class CompileNdkTask
@@ -220,6 +222,9 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         lines.add("# Module Name" )
         lines.add("LOCAL_MODULE := ${project.cinder.moduleName}")
         lines.add("")
+        lines.add("# Module Flags")
+        lines.add("LOCAL_DISABLE_FORMAT_STRING_CHECKS := " + (project.cinder.disableFormatStringChecks ? "true" : "false" ) );
+        lines.add("");
         lines.add("# C++ Source Files" )
         lines.add("LOCAL_SRC_FILES := "+ this.mSourceFiles.join("\n"))
         lines.add("");
