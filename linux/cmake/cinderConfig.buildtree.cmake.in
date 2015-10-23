@@ -1,0 +1,5 @@
+if( NOT TARGET cinder${CINDER_GL_ES_POSTFIX} )
+    include( ${PROJECT_BINARY_DIR}/cinderTargets.cmake )
+endif()
+
+
