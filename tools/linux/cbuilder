@@ -25,9 +25,6 @@ fi
 
 #SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-#SCRIPT_DIR=$( pwd )
-echo $SCRIPT_DIR
-#exit
 CLEAN=false
 BUILDTYPES=(Debug)
 NUMPROCS=$( nproc )
