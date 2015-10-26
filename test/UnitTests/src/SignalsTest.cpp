@@ -40,64 +40,63 @@ static char floatCallback( float f, int, string )
 
 } // namespace
 
-TEST_CASE( "Basic Signal Tests" )
-{
-	sAccum = "";
-
-	Connection conn0;
-	assert( ! conn0.isConnected() );
-
-	Signal<char (float, int, string)> sig1;
-	auto conn1 = sig1.connect( floatCallback );
-	auto conn2 = sig1.connect( [] ( float, int i, string ) { sAccum += "int: " + to_string( i ) + "\n"; return 0; } );
-	auto conn3 = sig1.connect( [] ( float, int, const string &s ) { sAccum += "string: " + s + "\n"; return 0; } );
-
-	assert( sig1.getNumSlots() == 3 );
-	assert( conn1.isConnected() && conn2.isConnected() && conn3.isConnected() );
-
-	sig1.emit( 0.3f, 4, "huhu" );
-
-	bool success;
-	success = conn1.disconnect();	assert( success == true  );	assert( sig1.getNumSlots() == 2 );
-	success = conn1.disconnect();	assert( success == false ); assert( sig1.getNumSlots() == 2 );
-	success = conn2.disconnect();	assert( success == true  );	assert( sig1.getNumSlots() == 1 );
-	success = conn3.disconnect();	assert( success == true  );	assert( sig1.getNumSlots() == 0 );
-	success = conn3.disconnect();	assert( success == false ); assert( sig1.getNumSlots() == 0 );
-	success = conn2.disconnect();	assert( success == false );	assert( sig1.getNumSlots() == 0 );
-
-	assert( ! conn1.isConnected() && ! conn2.isConnected() && ! conn3.isConnected() );
-
-	Foo foo;
-	sig1.connect( slot( foo, &Foo::fooBool ) );
-	sig1.connect( slot( &foo, &Foo::fooBool ) );
-
-	sig1.connect( bind( &Foo::fooBool, foo, placeholders::_1, placeholders::_2, placeholders::_3 ) );
-
-	sig1.emit( 0.5f, 1, "12" );
-
-	Signal<void (string, int)> sig2;
-	sig2.connect( [] ( string msg, int ) { sAccum += "msg: " + msg; } );
-	sig2.connect( [] ( string, int d )   { sAccum += " *" + to_string( d ) + "*\n"; } );
-	sig2.emit( "in sig2", 17 );
-
-	sAccum += "DONE";
-
-	const char *expected =
-		"float: 0.30\n"
-		"int: 4\n"
-		"string: huhu\n"
-		"Foo: 3.50\n"
-		"Foo: 3.50\n"
-		"Foo: 3.50\n"
-		"msg: in sig2 *17*\n"
-		"DONE";
-
-	cout << "sAccum: " << sAccum << endl;
-	REQUIRE( sAccum == expected );
-}
-
 TEST_CASE( "Signals" )
 {
+	SECTION( "Basic signal tests" )
+	{
+		sAccum = "";
+
+		Connection conn0;
+		assert( ! conn0.isConnected() );
+
+		Signal<char (float, int, string)> sig1;
+		auto conn1 = sig1.connect( floatCallback );
+		auto conn2 = sig1.connect( [] ( float, int i, string ) { sAccum += "int: " + to_string( i ) + "\n"; return 0; } );
+		auto conn3 = sig1.connect( [] ( float, int, const string &s ) { sAccum += "string: " + s + "\n"; return 0; } );
+
+		assert( sig1.getNumSlots() == 3 );
+		assert( conn1.isConnected() && conn2.isConnected() && conn3.isConnected() );
+
+		sig1.emit( 0.3f, 4, "huhu" );
+
+		bool success;
+		success = conn1.disconnect();	assert( success == true  );	assert( sig1.getNumSlots() == 2 );
+		success = conn1.disconnect();	assert( success == false ); assert( sig1.getNumSlots() == 2 );
+		success = conn2.disconnect();	assert( success == true  );	assert( sig1.getNumSlots() == 1 );
+		success = conn3.disconnect();	assert( success == true  );	assert( sig1.getNumSlots() == 0 );
+		success = conn3.disconnect();	assert( success == false ); assert( sig1.getNumSlots() == 0 );
+		success = conn2.disconnect();	assert( success == false );	assert( sig1.getNumSlots() == 0 );
+
+		assert( ! conn1.isConnected() && ! conn2.isConnected() && ! conn3.isConnected() );
+
+		Foo foo;
+		sig1.connect( slot( foo, &Foo::fooBool ) );
+		sig1.connect( slot( &foo, &Foo::fooBool ) );
+
+		sig1.connect( bind( &Foo::fooBool, foo, placeholders::_1, placeholders::_2, placeholders::_3 ) );
+
+		sig1.emit( 0.5f, 1, "12" );
+
+		Signal<void (string, int)> sig2;
+		sig2.connect( [] ( string msg, int ) { sAccum += "msg: " + msg; } );
+		sig2.connect( [] ( string, int d )   { sAccum += " *" + to_string( d ) + "*\n"; } );
+		sig2.emit( "in sig2", 17 );
+
+		sAccum += "DONE";
+
+		const char *expected =
+			"float: 0.30\n"
+			"int: 4\n"
+			"string: huhu\n"
+			"Foo: 3.50\n"
+			"Foo: 3.50\n"
+			"Foo: 3.50\n"
+			"msg: in sig2 *17*\n"
+			"DONE";
+
+		cout << "sAccum: " << sAccum << endl;
+		REQUIRE( sAccum == expected );
+	}
 
 	SECTION( "Signals can call member functions of a class instance" )
 	{
@@ -219,315 +218,314 @@ TEST_CASE( "Signals" )
 			REQUIRE( accum == "fdbcage" );
 		}
 	}
-};
-
-TEST_CASE( "Priority group disconnection" )
-{
-	SECTION( "Default Group" )
+	SECTION( "Priority group disconnection" )
 	{
-		Signal<void ()>	sig;
-		string accum;
+		SECTION( "Default Group" )
+		{
+			Signal<void ()>	sig;
+			string accum;
 
-		auto conn1 = sig.connect( [&] { accum += "a"; } );
+			auto conn1 = sig.connect( [&] { accum += "a"; } );
 
-		sig.emit();
-		REQUIRE( accum == "a" );
+			sig.emit();
+			REQUIRE( accum == "a" );
 
-		bool success = conn1.disconnect(); REQUIRE( success ); REQUIRE( sig.getNumSlots() == 0 );
+			bool success = conn1.disconnect(); REQUIRE( success ); REQUIRE( sig.getNumSlots() == 0 );
 
-		sig.emit();
-		REQUIRE( accum == "a" );
+			sig.emit();
+			REQUIRE( accum == "a" );
+		}
+
+		SECTION( "default group, two connections" )
+		{
+			Signal<void ()>	sig;
+			string accum;
+
+			auto conn1 = sig.connect( [&] { accum += "a"; } );
+			auto conn2 = sig.connect( [&] { accum += "b"; } );
+
+			sig.emit();
+			REQUIRE( accum == "ab" );
+
+			bool success = conn1.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 1 );
+
+			sig.emit();
+			REQUIRE( accum == "abb" );
+
+			success = conn2.disconnect();		REQUIRE( success ); REQUIRE( sig.getNumSlots() == 0 );
+			sig.emit();
+			REQUIRE( accum == "abb" );
+		}
+
+		SECTION( "default group and another group, three connections" )
+		{
+			Signal<void ()>	sig;
+			string accum;
+
+			auto conn1 = sig.connect( [&] { accum += "a"; } );
+			auto conn2 = sig.connect( 2, [&] { accum += "b"; } );
+			auto conn3 = sig.connect( 2, [&] { accum += "c"; } );
+
+			sig.emit();
+			REQUIRE( accum == "bca" );
+
+			bool success = conn2.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 2 );
+			accum.clear();
+			sig.emit();
+			REQUIRE( accum == "ca" );
+
+			success = conn3.disconnect();		REQUIRE( success ); REQUIRE( sig.getNumSlots() == 1 );
+			accum.clear();
+			sig.emit();
+			REQUIRE( accum == "a" );
+
+			success = conn1.disconnect();		REQUIRE( success ); REQUIRE( sig.getNumSlots() == 0 );
+			accum.clear();
+			sig.emit();
+			REQUIRE( accum == "" );
+		}
+
+		SECTION( "add to group, remove all of group, then add another" )
+		{
+			Signal<void ()>	sig;
+			string accum;
+
+			auto conn1 = sig.connect( 2, [&] { accum += "a"; } );
+			auto conn2 = sig.connect( 2, [&] { accum += "b"; } );
+			auto conn3 = sig.connect( 2, [&] { accum += "c"; } );
+
+			bool success = conn1.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 2 );
+			success = conn2.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 1 );
+			success = conn3.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 0 );
+
+			auto conn4 = sig.connect( 2, [&] { accum += "d"; } );
+
+			sig.emit();
+			REQUIRE( accum == "d" );
+		}
 	}
 
-	SECTION( "default group, two connections" )
+	SECTION( "Scoped connections" )
 	{
-		Signal<void ()>	sig;
-		string accum;
+		Signal<void ()> sig;
+		int accum = 0;
+		auto slot = [&] { accum++; };
 
-		auto conn1 = sig.connect( [&] { accum += "a"; } );
-		auto conn2 = sig.connect( [&] { accum += "b"; } );
+		sig.connect( slot );
+		ScopedConnection conn1 = sig.connect( slot );
+
+		{
+			ScopedConnection conn2 = sig.connect( slot );
+			REQUIRE( sig.getNumSlots() == 3 );
+		}
+
+		REQUIRE( sig.getNumSlots() == 2 );
 
 		sig.emit();
-		REQUIRE( accum == "ab" );
-
-		bool success = conn1.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 1 );
-
-		sig.emit();
-		REQUIRE( accum == "abb" );
-
-		success = conn2.disconnect();		REQUIRE( success ); REQUIRE( sig.getNumSlots() == 0 );
-		sig.emit();
-		REQUIRE( accum == "abb" );
+		REQUIRE( accum == 2 );
 	}
 
-	SECTION( "default group and another group, three connections" )
+	SECTION("Signal result collection")
 	{
-		Signal<void ()>	sig;
-		string accum;
+		SECTION("TestCollectorVector")
+		{
+			auto handler1 = [] { return 1; };
+			auto handler42 = []  { return 42; };
+			auto handler777 = []	{ return 777; };
 
-		auto conn1 = sig.connect( [&] { accum += "a"; } );
-		auto conn2 = sig.connect( 2, [&] { accum += "b"; } );
-		auto conn3 = sig.connect( 2, [&] { accum += "c"; } );
+			Signal<int (), CollectorVector<int>> sig;
 
-		sig.emit();
-		REQUIRE( accum == "bca" );
+			sig.connect( handler777 );
+			sig.connect( handler42 );
+			sig.connect( handler1 );
+			sig.connect( handler42 );
+			sig.connect( handler777 );
 
-		bool success = conn2.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 2 );
-		accum.clear();
-		sig.emit();
-		REQUIRE( accum == "ca" );
+			vector<int> results = sig.emit();
 
-		success = conn3.disconnect();		REQUIRE( success ); REQUIRE( sig.getNumSlots() == 1 );
-		accum.clear();
-		sig.emit();
-		REQUIRE( accum == "a" );
+			const vector<int> reference = { 777, 42, 1, 42, 777 };
+			REQUIRE( results == reference );
+		}
+		SECTION( "TestCollectorUntil0" )
+		{
+			struct TestCollectorUntil0 {
+				bool check1, check2;
 
-		success = conn1.disconnect();		REQUIRE( success ); REQUIRE( sig.getNumSlots() == 0 );
-		accum.clear();
-		sig.emit();
-		REQUIRE( accum == "" );
-	}
+				TestCollectorUntil0()
+					: check1( false ) , check2( false )
+				{}
 
-	SECTION( "add to group, remove all of group, then add another" )
-	{
-		Signal<void ()>	sig;
-		string accum;
+				bool handlerTrue()		{ check1 = true; return true; }
+				bool handlerFalse()		{ check2 = true; return false; }
+				bool handlerAbort()		{ abort(); }
+			};
 
-		auto conn1 = sig.connect( 2, [&] { accum += "a"; } );
-		auto conn2 = sig.connect( 2, [&] { accum += "b"; } );
-		auto conn3 = sig.connect( 2, [&] { accum += "c"; } );
+			TestCollectorUntil0 self;
+			Signal<bool (), CollectorUntil0<bool>> sig;
 
-		bool success = conn1.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 2 );
-		success = conn2.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 1 );
-		success = conn3.disconnect();	REQUIRE( success ); REQUIRE( sig.getNumSlots() == 0 );
+			sig.connect( slot( self, &TestCollectorUntil0::handlerTrue ) );
+			sig.connect( slot( self, &TestCollectorUntil0::handlerFalse ) );
+			sig.connect( slot( self, &TestCollectorUntil0::handlerAbort ) );
 
-		auto conn4 = sig.connect( 2, [&] { accum += "d"; } );
+			REQUIRE( (! self.check1 && ! self.check2) );
 
-		sig.emit();
-		REQUIRE( accum == "d" );
-	}
-}
+			const bool result = sig.emit();
 
-TEST_CASE( "Scoped connections " )
-{
-	Signal<void ()> sig;
-	int accum = 0;
-	auto slot = [&] { accum++; };
+			REQUIRE( (! result && self.check1 && self.check2) );
+		}
 
-	sig.connect( slot );
-	ScopedConnection conn1 = sig.connect( slot );
+		SECTION( "TestCollectorWhile0" )
+		{
+			struct TestCollectorWhile0 {
+				bool check1, check2;
 
-	{
-		ScopedConnection conn2 = sig.connect( slot );
-		REQUIRE( sig.getNumSlots() == 3 );
-	}
+				TestCollectorWhile0()
+					: check1( false ), check2( false )
+				{}
 
-	REQUIRE( sig.getNumSlots() == 2 );
+				bool handler0()		{ check1 = true; return false; }
+				bool handler1()		{ check2 = true; return true; }
+				bool handlerAbort()	{ abort(); }
+			};
 
-	sig.emit();
-	REQUIRE( accum == 2 );
-};
+			TestCollectorWhile0 self;
+			Signal<bool (), CollectorWhile0<bool>> sig;
 
-TEST_CASE("Signal result collection")
-{
-	SECTION("TestCollectorVector")
-	{
-		auto handler1 = [] { return 1; };
-		auto handler42 = []  { return 42; };
-		auto handler777 = []	{ return 777; };
+			sig.connect( slot( self, &TestCollectorWhile0::handler0 ) );
+			sig.connect( slot( self, &TestCollectorWhile0::handler1 ) );
+			sig.connect( slot( self, &TestCollectorWhile0::handlerAbort ) );
 
-		Signal<int (), CollectorVector<int>> sig;
+			REQUIRE( (! self.check1 && ! self.check2) );
 
-		sig.connect( handler777 );
-		sig.connect( handler42 );
-		sig.connect( handler1 );
-		sig.connect( handler42 );
-		sig.connect( handler777 );
+			const bool result = sig.emit();
 
-		vector<int> results = sig.emit();
+			REQUIRE( (result == true && self.check1 && self.check2) );
+		}
 
-		const vector<int> reference = { 777, 42, 1, 42, 777 };
-		REQUIRE( results == reference );
-	}
-	SECTION( "TestCollectorUntil0" )
-	{
-		struct TestCollectorUntil0 {
-			bool check1, check2;
+		SECTION( "TestCollectorBooleanAnd" )
+		{
+			struct TestCollectorBooleanAnd {
+				bool check1, check2, check3;
 
-			TestCollectorUntil0()
-				: check1( false ) , check2( false )
-			{}
+				TestCollectorBooleanAnd()
+					: check1( false ), check2( false ), check3( false )
+				{}
 
-			bool handlerTrue()		{ check1 = true; return true; }
-			bool handlerFalse()		{ check2 = true; return false; }
-			bool handlerAbort()		{ abort(); }
-		};
+				bool handlerTrue()		{ check1 = true; return true; }
+				bool handlerFalse()		{ check2 = true; return false; }
+				bool handlerTrue2()		{ check3 = true; return true; }
+			};
 
-		TestCollectorUntil0 self;
-		Signal<bool (), CollectorUntil0<bool>> sig;
+			TestCollectorBooleanAnd self;
+			Signal<bool (), CollectorBooleanAnd> sig;
 
-		sig.connect( slot( self, &TestCollectorUntil0::handlerTrue ) );
-		sig.connect( slot( self, &TestCollectorUntil0::handlerFalse ) );
-		sig.connect( slot( self, &TestCollectorUntil0::handlerAbort ) );
+			sig.connect( slot( self, &TestCollectorBooleanAnd::handlerTrue ) );
+			sig.connect( slot( self, &TestCollectorBooleanAnd::handlerFalse ) );
+			sig.connect( slot( self, &TestCollectorBooleanAnd::handlerTrue2 ) );
 
-		REQUIRE( (! self.check1 && ! self.check2) );
+			REQUIRE( (! self.check1 && ! self.check2 && ! self.check3) );
 
-		const bool result = sig.emit();
+			const bool result = sig.emit();
 
-		REQUIRE( (! result && self.check1 && self.check2) );
-	}
+			REQUIRE( (! result && self.check1 && self.check2 && self.check3) );
+		}
 
-	SECTION( "TestCollectorWhile0" )
-	{
-		struct TestCollectorWhile0 {
-			bool check1, check2;
+		SECTION( "TestCollectorBitwiseAnd" )
+		{
+			struct TestCollectorBitwiseAnd {
+				bool check1, check2;
 
-			TestCollectorWhile0()
+				TestCollectorBitwiseAnd()
 				: check1( false ), check2( false )
-			{}
+				{}
 
-			bool handler0()		{ check1 = true; return false; }
-			bool handler1()		{ check2 = true; return true; }
-			bool handlerAbort()	{ abort(); }
+				uint8_t handler1()	{ check1 = true; return ( 1 << 0 ); }
+				uint8_t handler2()	{ check2 = true; return ( 1 << 0 ) | ( 1 << 2 ); }
+			};
+
+			TestCollectorBitwiseAnd self;
+			Signal<uint8_t (), CollectorBitwiseAnd<uint8_t> > sig;
+
+			sig.connect( slot( self, &TestCollectorBitwiseAnd::handler1 ) );
+			sig.connect( slot( self, &TestCollectorBitwiseAnd::handler2 ) );
+
+			REQUIRE( (! self.check1 && ! self.check2) );
+
+			const uint8_t result = sig.emit();
+
+			REQUIRE( ( self.check1 && self.check2 ) );
+			REQUIRE( ( result & ( 1 << 0 ) ) );
+			REQUIRE_FALSE( ( result & ( 1 << 1 ) ) );
+			REQUIRE_FALSE( ( result & ( 1 << 2 ) ) );
 		};
 
-		TestCollectorWhile0 self;
-		Signal<bool (), CollectorWhile0<bool>> sig;
-
-		sig.connect( slot( self, &TestCollectorWhile0::handler0 ) );
-		sig.connect( slot( self, &TestCollectorWhile0::handler1 ) );
-		sig.connect( slot( self, &TestCollectorWhile0::handlerAbort ) );
-
-		REQUIRE( (! self.check1 && ! self.check2) );
-
-		const bool result = sig.emit();
-
-		REQUIRE( (result == true && self.check1 && self.check2) );
-	}
-
-	SECTION( "TestCollectorBooleanAnd" )
-	{
-		struct TestCollectorBooleanAnd {
-			bool check1, check2, check3;
-
-			TestCollectorBooleanAnd()
-				: check1( false ), check2( false ), check3( false )
-			{}
-
-			bool handlerTrue()		{ check1 = true; return true; }
-			bool handlerFalse()		{ check2 = true; return false; }
-			bool handlerTrue2()		{ check3 = true; return true; }
-		};
-
-		TestCollectorBooleanAnd self;
-		Signal<bool (), CollectorBooleanAnd> sig;
-
-		sig.connect( slot( self, &TestCollectorBooleanAnd::handlerTrue ) );
-		sig.connect( slot( self, &TestCollectorBooleanAnd::handlerFalse ) );
-		sig.connect( slot( self, &TestCollectorBooleanAnd::handlerTrue2 ) );
-
-		REQUIRE( (! self.check1 && ! self.check2 && ! self.check3) );
-
-		const bool result = sig.emit();
-
-		REQUIRE( (! result && self.check1 && self.check2 && self.check3) );
-	}
-
-	SECTION( "TestCollectorBitwiseAnd" )
-	{
-		struct TestCollectorBitwiseAnd {
-			bool check1, check2;
-
-			TestCollectorBitwiseAnd()
-			: check1( false ), check2( false )
-			{}
-
-			uint8_t handler1()	{ check1 = true; return ( 1 << 0 ); }
-			uint8_t handler2()	{ check2 = true; return ( 1 << 0 ) | ( 1 << 2 ); }
-		};
-
-		TestCollectorBitwiseAnd self;
-		Signal<uint8_t (), CollectorBitwiseAnd<uint8_t> > sig;
-
-		sig.connect( slot( self, &TestCollectorBitwiseAnd::handler1 ) );
-		sig.connect( slot( self, &TestCollectorBitwiseAnd::handler2 ) );
-
-		REQUIRE( (! self.check1 && ! self.check2) );
-
-		const uint8_t result = sig.emit();
-
-		REQUIRE( ( self.check1 && self.check2 ) );
-		REQUIRE( ( result & ( 1 << 0 ) ) );
-		REQUIRE_FALSE( ( result & ( 1 << 1 ) ) );
-		REQUIRE_FALSE( ( result & ( 1 << 2 ) ) );
-	};
-
-	SECTION( "TestCollectorAppEvent" )
-	{
-
-		struct TestEvent : public app::Event {
-		};
-
-		SECTION( "Test standard" )
+		SECTION( "TestCollectorAppEvent" )
 		{
-			Signal<void( TestEvent & ), app::CollectorEvent<TestEvent>> sig;
 
-			bool check1 = false;
-			bool check2 = false;
-			bool check3 = false;
+			struct TestEvent : public app::Event {
+			};
 
-			sig.connect( [&]( TestEvent &event ) { check1 = true; } );
-			sig.connect( [&]( TestEvent &event ) { check2 = true; event.setHandled(); } );
-			sig.connect( [&]( TestEvent &event ) { check3 = true; } );
+			SECTION( "Test standard" )
+			{
+				Signal<void( TestEvent & ), app::CollectorEvent<TestEvent>> sig;
 
-			TestEvent event;
-			app::CollectorEvent<TestEvent> collector( &event );
-			sig.emit( collector, event );
+				bool check1 = false;
+				bool check2 = false;
+				bool check3 = false;
 
-			REQUIRE( check1 );
-			REQUIRE( check2 );
-			REQUIRE( ! check3 );
-		}
+				sig.connect( [&]( TestEvent &event ) { check1 = true; } );
+				sig.connect( [&]( TestEvent &event ) { check2 = true; event.setHandled(); } );
+				sig.connect( [&]( TestEvent &event ) { check3 = true; } );
 
-		SECTION( "Test with priorities" )
-		{
-			Signal<void( TestEvent & ), app::CollectorEvent<TestEvent>> sig;
+				TestEvent event;
+				app::CollectorEvent<TestEvent> collector( &event );
+				sig.emit( collector, event );
 
-			bool check1 = false;
-			bool check2 = false;
+				REQUIRE( check1 );
+				REQUIRE( check2 );
+				REQUIRE( ! check3 );
+			}
 
-			sig.connect( [&]( TestEvent &event ) { check1 = true; event.setHandled(); } );
-			sig.connect( -1, [&]( TestEvent &event ) { check2 = true; } );
+			SECTION( "Test with priorities" )
+			{
+				Signal<void( TestEvent & ), app::CollectorEvent<TestEvent>> sig;
 
-			TestEvent event;
-			app::CollectorEvent<TestEvent> collector( &event );
-			sig.emit( collector, event );
+				bool check1 = false;
+				bool check2 = false;
 
-			REQUIRE( check1 );
-			REQUIRE( ! check2 );
+				sig.connect( [&]( TestEvent &event ) { check1 = true; event.setHandled(); } );
+				sig.connect( -1, [&]( TestEvent &event ) { check2 = true; } );
+
+				TestEvent event;
+				app::CollectorEvent<TestEvent> collector( &event );
+				sig.emit( collector, event );
+
+				REQUIRE( check1 );
+				REQUIRE( ! check2 );
+			}
 		}
 	}
-}
 
-TEST_CASE( "Connection Toggling" )
-{
-	SECTION( "Disabling a connection temporarily removes it from signal flow. It can be reenabled." )
+	SECTION( "Connection Toggling" )
 	{
-		Signal<void (int)> signal;
-		int sum = 0;
+		SECTION( "Disabling a connection temporarily removes it from signal flow. It can be reenabled." )
+		{
+			Signal<void (int)> signal;
+			int sum = 0;
 
-		auto connection = signal.connect( [&]( int amount ){ sum += amount; } );
-		signal.emit( 5 );
-		REQUIRE( sum == 5 );
+			auto connection = signal.connect( [&]( int amount ){ sum += amount; } );
+			signal.emit( 5 );
+			REQUIRE( sum == 5 );
 
-		connection.disable();
-		signal.emit( 5 );
-		REQUIRE( ! connection.isEnabled() );
-		REQUIRE( sum == 5 );
+			connection.disable();
+			signal.emit( 5 );
+			REQUIRE( ! connection.isEnabled() );
+			REQUIRE( sum == 5 );
 
-		connection.enable();
-		signal.emit( 5 );
-		REQUIRE( connection.isEnabled() );
-		REQUIRE( sum == 10 );
+			connection.enable();
+			signal.emit( 5 );
+			REQUIRE( connection.isEnabled() );
+			REQUIRE( sum == 10 );
+		}
 	}
-}
+} // Signals

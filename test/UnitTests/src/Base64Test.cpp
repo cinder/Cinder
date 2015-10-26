@@ -16,7 +16,7 @@ std::string toString( Buffer b )
 	return string( temp );
 }
 
-TEST_CASE("Base64_test")
+TEST_CASE("Base64")
 {
 	SECTION("Carnal Redux")
 	{
