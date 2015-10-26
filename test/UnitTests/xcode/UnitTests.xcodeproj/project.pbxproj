@@ -19,10 +19,10 @@
 		9CC02E9A1BDE763000B5058A /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		9CC02E9B1BDE763600B5058A /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		9CC02E9C1BDE764400B5058A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
-		9CC02E9E1BDE777700B5058A /* System_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E9D1BDE777700B5058A /* System_test.cpp */; };
-		9CC02EA01BDE780C00B5058A /* ObjLoader_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E9F1BDE780C00B5058A /* ObjLoader_test.cpp */; };
-		9CC02EA41BDE7CAE00B5058A /* Signals_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02EA31BDE7CAE00B5058A /* Signals_test.cpp */; };
-		9CC02EA51BDE86BF00B5058A /* Base64_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02EA11BDE7A0C00B5058A /* Base64_test.cpp */; };
+		9CC02E9E1BDE777700B5058A /* SystemTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E9D1BDE777700B5058A /* SystemTest.cpp */; };
+		9CC02EA01BDE780C00B5058A /* ObjLoaderTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E9F1BDE780C00B5058A /* ObjLoaderTest.cpp */; };
+		9CC02EA41BDE7CAE00B5058A /* SignalsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02EA31BDE7CAE00B5058A /* SignalsTest.cpp */; };
+		9CC02EA51BDE86BF00B5058A /* Base64Test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02EA11BDE7A0C00B5058A /* Base64Test.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -58,10 +58,10 @@
 		9CC02E911BDE75FE00B5058A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9CC02E931BDE760600B5058A /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		9CC02E951BDE760B00B5058A /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
-		9CC02E9D1BDE777700B5058A /* System_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = System_test.cpp; sourceTree = "<group>"; };
-		9CC02E9F1BDE780C00B5058A /* ObjLoader_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjLoader_test.cpp; sourceTree = "<group>"; };
-		9CC02EA11BDE7A0C00B5058A /* Base64_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Base64_test.cpp; sourceTree = "<group>"; };
-		9CC02EA31BDE7CAE00B5058A /* Signals_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signals_test.cpp; sourceTree = "<group>"; };
+		9CC02E9D1BDE777700B5058A /* SystemTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SystemTest.cpp; sourceTree = "<group>"; };
+		9CC02E9F1BDE780C00B5058A /* ObjLoaderTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjLoaderTest.cpp; sourceTree = "<group>"; };
+		9CC02EA11BDE7A0C00B5058A /* Base64Test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Base64Test.cpp; sourceTree = "<group>"; };
+		9CC02EA31BDE7CAE00B5058A /* SignalsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SignalsTest.cpp; sourceTree = "<group>"; };
 		C0A5E928B33D45F6A388E366 /* UnitTests_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = UnitTests_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -177,10 +177,10 @@
 			isa = PBXGroup;
 			children = (
 				9CC02E881BDE751200B5058A /* TestMain.cpp */,
-				9CC02E9D1BDE777700B5058A /* System_test.cpp */,
-				9CC02E9F1BDE780C00B5058A /* ObjLoader_test.cpp */,
-				9CC02EA11BDE7A0C00B5058A /* Base64_test.cpp */,
-				9CC02EA31BDE7CAE00B5058A /* Signals_test.cpp */,
+				9CC02E9D1BDE777700B5058A /* SystemTest.cpp */,
+				9CC02E9F1BDE780C00B5058A /* ObjLoaderTest.cpp */,
+				9CC02EA11BDE7A0C00B5058A /* Base64Test.cpp */,
+				9CC02EA31BDE7CAE00B5058A /* SignalsTest.cpp */,
 			);
 			name = Source;
 			path = ../src;
@@ -242,11 +242,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CC02EA41BDE7CAE00B5058A /* Signals_test.cpp in Sources */,
-				9CC02E9E1BDE777700B5058A /* System_test.cpp in Sources */,
+				9CC02EA41BDE7CAE00B5058A /* SignalsTest.cpp in Sources */,
+				9CC02E9E1BDE777700B5058A /* SystemTest.cpp in Sources */,
 				9CC02E8E1BDE75C300B5058A /* TestMain.cpp in Sources */,
-				9CC02EA01BDE780C00B5058A /* ObjLoader_test.cpp in Sources */,
-				9CC02EA51BDE86BF00B5058A /* Base64_test.cpp in Sources */,
+				9CC02EA01BDE780C00B5058A /* ObjLoaderTest.cpp in Sources */,
+				9CC02EA51BDE86BF00B5058A /* Base64Test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
