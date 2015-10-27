@@ -33,6 +33,7 @@ class DeviceTestApp : public App {
 
 	void setupSine();
 	void setupNoise();
+	void setupInputPulled();
 	void setupIOClean();
 	void setupIOProcessed();
 	void setupIOAndSine();
@@ -212,6 +213,14 @@ void DeviceTestApp::setupNoise()
 	mGen->enable();
 }
 
+void DeviceTestApp::setupInputPulled()
+{
+	mOutputDeviceNode->disconnectAllInputs();
+
+	mInputDeviceNode >> mGain >> mMonitor;
+	mInputDeviceNode->enable();
+}
+
 void DeviceTestApp::setupIOClean()
 {
 	mInputDeviceNode->connect( mGain );
@@ -293,6 +302,7 @@ void DeviceTestApp::setupUI()
 
 	mTestSelector.mSegments.push_back( "sinewave" );
 	mTestSelector.mSegments.push_back( "noise" );
+	mTestSelector.mSegments.push_back( "input (pulled)" );
 	mTestSelector.mSegments.push_back( "I/O (clean)" );
 	mTestSelector.mSegments.push_back( "I/O (processed)" );
 	mTestSelector.mSegments.push_back( "I/O and sine" );
@@ -462,6 +472,8 @@ void DeviceTestApp::setupTest( string test )
 		setupSine();
 	else if( test == "noise" )
 		setupNoise();
+	else if( test == "input (pulled)" )
+		setupInputPulled();
 	else if( test == "I/O (clean)" )
 		setupIOClean();
 	else if( test == "I/O (processed)" )
@@ -610,4 +622,5 @@ void DeviceTestApp::draw()
 
 CINDER_APP( DeviceTestApp, RendererGl, []( App::Settings *settings ) {
 	settings->setWindowSize( 800, 600 );
+	settings->setWindowPos( 10, 10 );
 } )
