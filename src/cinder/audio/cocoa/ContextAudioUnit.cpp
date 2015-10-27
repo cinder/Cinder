@@ -234,8 +234,11 @@ void InputDeviceNodeAudioUnit::initialize()
 			device->updateFormat( deviceFormat );
 			// check if we were able to update the samplerate, if we weren't then use a Converter
 			if( device->getSampleRate() != sampleRate ) {
-				// TODO NEXT: make ConverterRef
-				CI_LOG_W( "samplerates mismatch (output sr: " << sampleRate << ", input: " << device->getSampleRate() << ", using Converter" );
+				mConverter = audio::dsp::Converter::create( device->getSampleRate(), sampleRate, getNumChannels(), getNumChannels(), framesPerBlock );
+				mReadBuffer.setSize( framesPerBlock, getNumChannels() );
+				mConvertedReadBuffer.setSize( mConverter->getDestMaxFramesPerBlock(), getNumChannels() );
+
+				asbd = createFloatAsbd( device->getSampleRate(), getNumChannels() );
 			}
 		}
 
@@ -321,14 +324,27 @@ OSStatus InputDeviceNodeAudioUnit::inputCallback( void *data, ::AudioUnitRenderA
 	if( status != noErr )
 		return status;
 
-	if( inputDeviceNode->mRingBuffer.getAvailableWrite() >= nodeBufferList->mNumberBuffers * numFrames ) {
-		for( size_t ch = 0; ch < nodeBufferList->mNumberBuffers; ch++ ) {
-			float *channel = static_cast<float *>( nodeBufferList->mBuffers[ch].mData );
-			inputDeviceNode->mRingBuffer.write( channel, numFrames );
+	const size_t numChannels = nodeBufferList->mNumberBuffers;
+
+	if( inputDeviceNode->mConverter ) {
+		// TODO: use shallow AudioBufferList to avoid this extra copy
+		copyFromBufferList( &inputDeviceNode->mReadBuffer, nodeBufferList );
+		pair<size_t, size_t> count = inputDeviceNode->mConverter->convert( &inputDeviceNode->mReadBuffer, &inputDeviceNode->mConvertedReadBuffer );
+		for( size_t ch = 0; ch < numChannels; ch++ ) {
+			if( ! inputDeviceNode->mRingBuffer.write( inputDeviceNode->mConvertedReadBuffer.getChannel( ch ), count.second ) )
+				inputDeviceNode->markOverrun();
 		}
 	}
-	else
-		inputDeviceNode->markOverrun();
+	else {
+		if( inputDeviceNode->mRingBuffer.getAvailableWrite() >= nodeBufferList->mNumberBuffers * numFrames ) {
+			for( size_t ch = 0; ch < numChannels; ch++ ) {
+				float *channel = static_cast<float *>( nodeBufferList->mBuffers[ch].mData );
+				inputDeviceNode->mRingBuffer.write( channel, numFrames );
+			}
+		}
+		else
+			inputDeviceNode->markOverrun();
+	}
 
 	return noErr;
 }
