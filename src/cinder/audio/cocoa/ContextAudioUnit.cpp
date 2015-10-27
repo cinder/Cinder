@@ -24,8 +24,8 @@
 #include "cinder/audio/cocoa/ContextAudioUnit.h"
 #include "cinder/audio/cocoa/CinderCoreAudio.h"
 #include "cinder/CinderAssert.h"
-
 #include "cinder/Utilities.h"
+#include "cinder/Log.h"
 
 #if defined( CINDER_MAC )
 	#include "cinder/audio/cocoa/DeviceManagerCoreAudio.h"
@@ -219,8 +219,25 @@ void InputDeviceNodeAudioUnit::initialize()
 			outputDeviceNodeAu->enable();
 	}
 	else {
-		if( device->getSampleRate() != sampleRate || device->getFramesPerBlock() != framesPerBlock )
-			device->updateFormat( Device::Format().sampleRate( sampleRate ).framesPerBlock( framesPerBlock ) );
+		auto deviceFormat = Device::Format();
+		bool deviceFormatNeedsUpdate = false;
+
+		if( device->getSampleRate() != sampleRate ) {
+				deviceFormatNeedsUpdate = true;
+				deviceFormat.sampleRate( sampleRate );
+		}
+		if( device->getFramesPerBlock() != framesPerBlock ) {
+			deviceFormatNeedsUpdate = true;
+			deviceFormat.framesPerBlock( framesPerBlock );
+		}
+		if( deviceFormatNeedsUpdate ) {
+			device->updateFormat( deviceFormat );
+			// check if we were able to update the samplerate, if we weren't then use a Converter
+			if( device->getSampleRate() != sampleRate ) {
+				// TODO NEXT: make ConverterRef
+				CI_LOG_W( "samplerates mismatch (output sr: " << sampleRate << ", input: " << device->getSampleRate() << ", using Converter" );
+			}
+		}
 
 		mRingBuffer.resize( framesPerBlock * getNumChannels() * mRingBufferPaddingFactor );
 		mBufferList = createNonInterleavedBufferList( framesPerBlock, getNumChannels() );
