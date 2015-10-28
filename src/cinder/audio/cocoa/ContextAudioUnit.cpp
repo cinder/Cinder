@@ -239,11 +239,22 @@ void InputDeviceNodeAudioUnit::initialize()
 				mConvertedReadBuffer.setSize( mConverter->getDestMaxFramesPerBlock(), getNumChannels() );
 
 				asbd = createFloatAsbd( device->getSampleRate(), getNumChannels() );
+
+				// the AudioBufferList just points at the ReadBuffer to avoid an extra copy
+				mBufferList = createNonInterleavedBufferListShallow( getNumChannels() );
+				for( size_t ch = 0; ch < getNumChannels(); ch++ ) {
+					::AudioBuffer *buffer = &mBufferList->mBuffers[ch];
+					buffer->mNumberChannels = 1;
+					buffer->mDataByteSize = static_cast<UInt32>( mReadBuffer.getNumFrames() * sizeof( float ) );
+					buffer->mData = mReadBuffer.getChannel( ch );
+				}
 			}
+		}
+		else {
+			mBufferList = createNonInterleavedBufferList( framesPerBlock, getNumChannels() );
 		}
 
 		mRingBuffer.resize( framesPerBlock * getNumChannels() * mRingBufferPaddingFactor );
-		mBufferList = createNonInterleavedBufferList( framesPerBlock, getNumChannels() );
 
 		::AURenderCallbackStruct callbackStruct = { InputDeviceNodeAudioUnit::inputCallback, &mRenderData };
 		setAudioUnitProperty( mAudioUnit, kAudioOutputUnitProperty_SetInputCallback, callbackStruct, kAudioUnitScope_Global, DeviceBus::INPUT );
@@ -327,8 +338,7 @@ OSStatus InputDeviceNodeAudioUnit::inputCallback( void *data, ::AudioUnitRenderA
 	const size_t numChannels = nodeBufferList->mNumberBuffers;
 
 	if( inputDeviceNode->mConverter ) {
-		// TODO: use shallow AudioBufferList to avoid this extra copy
-		copyFromBufferList( &inputDeviceNode->mReadBuffer, nodeBufferList );
+		// nodeBufferList's buffers point to the channels of mReadBuffer
 		pair<size_t, size_t> count = inputDeviceNode->mConverter->convert( &inputDeviceNode->mReadBuffer, &inputDeviceNode->mConvertedReadBuffer );
 		for( size_t ch = 0; ch < numChannels; ch++ ) {
 			if( ! inputDeviceNode->mRingBuffer.write( inputDeviceNode->mConvertedReadBuffer.getChannel( ch ), count.second ) )

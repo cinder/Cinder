@@ -174,6 +174,16 @@ void printASBD( const ::AudioStreamBasicDescription &asbd ) {
 	printf( "  Bits per Channel:    %10d\n",    (unsigned int)asbd.mBitsPerChannel );
 }
 
+void AudioBufferListDeleter::operator()( ::AudioBufferList *bufferList )
+{
+	if( ! mShallow ) {
+		for( size_t i = 0; i < bufferList->mNumberBuffers; i++ )
+			free( bufferList->mBuffers[i].mData );
+	}
+
+	free( bufferList );
+}
+
 AudioBufferListPtr createNonInterleavedBufferList( size_t numFrames, size_t numChannels )
 {
 	::AudioBufferList *bufferList = static_cast<::AudioBufferList *>( calloc( 1, sizeof( ::AudioBufferList ) + sizeof( ::AudioBuffer ) * (numChannels - 1) ) );
@@ -188,7 +198,7 @@ AudioBufferListPtr createNonInterleavedBufferList( size_t numFrames, size_t numC
 	return AudioBufferListPtr( bufferList );
 }
 
-AudioBufferListShallowPtr createNonInterleavedBufferListShallow( size_t numChannels )
+AudioBufferListPtr createNonInterleavedBufferListShallow( size_t numChannels )
 {
 	::AudioBufferList *bufferList = static_cast<::AudioBufferList *>( calloc( 1, sizeof( ::AudioBufferList ) + sizeof( ::AudioBuffer ) * (numChannels - 1) ) );
 	bufferList->mNumberBuffers = static_cast<UInt32>( numChannels );
@@ -199,7 +209,9 @@ AudioBufferListShallowPtr createNonInterleavedBufferListShallow( size_t numChann
 		buffer->mData = nullptr;
 	}
 
-	return AudioBufferListShallowPtr( bufferList );
+	auto result = AudioBufferListPtr( bufferList );
+	result.get_deleter().mShallow = true;
+	return result;
 }
 
 ::AudioComponent findAudioComponent( const ::AudioComponentDescription &componentDescription )
