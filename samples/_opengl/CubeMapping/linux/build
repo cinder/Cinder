@@ -1,2 +1,2 @@
 #!/bin/sh
-../../../../tools/linux/cbuilder -sample "$@"
+../../../../linux/cbuilder -sample "$@"
