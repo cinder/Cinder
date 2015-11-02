@@ -10,7 +10,8 @@ set( CINDER_LIBS_DEPENDS )
 set( CINDER_USE_X11 True )
 set( CINDER_USE_SYSTEM_GL_HEADERS True )
 
-if( "rpi2" STREQUAL "${CINDER_LINUX_EGL_ONLY}" )
+if( CINDER_LINUX_EGL_RPI2 )
+message( "RPI " ${CINDER_LINUX_EGL_ONLY} )
 	#if( NOT "arm7vl" STREQUAL "${CINDER_ARCH}" )
 	#	message( FATAL_ERROR "${BoldRed}Wrong architecture for Raspberry Pi 2: ${CINDER_ARCH}${ColorReset}" ) 
 	#endif()
@@ -23,7 +24,7 @@ if( "rpi2" STREQUAL "${CINDER_LINUX_EGL_ONLY}" )
     list( APPEND CINDER_INCLUDE_DEPENDS /opt/vc/include
                                         /opt/vc/include/interface/vcos/pthreads )
 
-    list( APPEND CINDER_LIBS_DEPENDS EGL GLESv2 /opt/vc/lib/libbcm_host.so )
+    list( APPEND CINDER_LIBS_DEPENDS /opt/vc/lib/libEGL.so /opt/vc/lib/libGLESv2.so /opt/vc/lib/libbcm_host.so )
 endif()
 
 set( CINDER_LIB_SUFFIX )
@@ -32,7 +33,9 @@ set( CINDER_OUT_DIR_PREFIX )
 if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
 	set( CINDER_GL_ES true )
     set( CINDER_USE_SYSTEM_GL_HEADERS False )
-    list( APPEND CINDER_LIBS_DEPENDS EGL GLESv2 )
+    if( NOT CINDER_LINUX_EGL_RPI2 ) # RPI2 is GL libs are include and linked from '/opt/vc'. 
+        list( APPEND CINDER_LIBS_DEPENDS EGL GLESv2 )
+    endif()
 	if( CINDER_GL_ES_2 )
 		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_2" )
         set( CINDER_LIB_SUFFIX -es2 )
@@ -206,14 +209,18 @@ else()
     include( ${CMAKE_MODULE_PATH}/Freetype2Sources.cmake )
     list( APPEND CINDER_C_SRC_FILES ${FREETYPE2_SOURCES} )
 
-    list( APPEND CINDER_INCLUDE_DEPENDS ${CINDER_INC_DIR}/freetype
-                                        ${CINDER_INC_DIR}/boost )
+
+    list( APPEND CINDER_INCLUDE_DEPENDS ${CINDER_INC_DIR}/freetype )
 
     list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/libboost_system.a
                                     ${CINDER_LIB_DIR}/libboost_filesystem.a )
 endif()
 
 add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+
+if( NOT CINDER_USE_SYSTEM_LIBS )
+    target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${CINDER_INC_DIR}/boost> )
+endif()
 
 target_include_directories( cinder${CINDER_LIB_SUFFIX} PUBLIC "$<BUILD_INTERFACE:${CINDER_INCLUDE_DIRS};${CINDER_INCLUDE_DEPENDS}>" )
 
