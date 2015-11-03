@@ -161,7 +161,7 @@ for build in ${BUILD_TYPES[@]}; do
 	build_type=${build}
 	build_dir=$(pwd)/${build}/${OPENGL_PLAT}
 
-	if [ ${APP_BUILD} == true]; then
+	if [ ${APP_BUILD} == true ]; then
 		build_dir=$(pwd)/${build}/${OPENGL_PLAT}
 	else
 		build_dir=${SCRIPT_DIR}/../../linux/${build}/${OPENGL_PLAT}
