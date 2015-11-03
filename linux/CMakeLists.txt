@@ -7,35 +7,43 @@ execute_process( COMMAND which clang OUTPUT_VARIABLE CLANG_PATH )
 set( CINDER_INCLUDE_DEPENDS )
 set( CINDER_LIBS_DEPENDS )
 
-set( CINDER_USE_X11 True )
-set( CINDER_USE_SYSTEM_GL_HEADERS True )
+set( CINDER_USE_X11 				true )
+set( CINDER_USE_SYSTEM_GL_HEADERS 	true )
 
 if( CINDER_LINUX_EGL_RPI2 )
-message( "RPI " ${CINDER_LINUX_EGL_ONLY} )
 	#if( NOT "arm7vl" STREQUAL "${CINDER_ARCH}" )
 	#	message( FATAL_ERROR "${BoldRed}Wrong architecture for Raspberry Pi 2: ${CINDER_ARCH}${ColorReset}" ) 
 	#endif()
 
-	set( CINDER_LINUX_EGL_RPI2 true )
-	set( CINDER_GL_ES true )
-    set( CINDER_USE_X11 False )
-    set( CINDER_USE_SYSTEM_GL_HEADERS False )
+	set( CINDER_LINUX_EGL_RPI2 			true )
+	set( CINDER_GL_ES 					true )
+    set( CINDER_USE_X11 				false )
+    set( CINDER_USE_SYSTEM_GL_HEADERS 	false )
 
-    list( APPEND CINDER_INCLUDE_DEPENDS /opt/vc/include
-                                        /opt/vc/include/interface/vcos/pthreads )
+    list( APPEND CINDER_INCLUDE_DEPENDS 
+		/opt/vc/include
+		/opt/vc/include/interface/vcos/pthreads 
+	)
 
-    list( APPEND CINDER_LIBS_DEPENDS /opt/vc/lib/libEGL.so /opt/vc/lib/libGLESv2.so /opt/vc/lib/libbcm_host.so )
+    list( APPEND CINDER_LIBS_DEPENDS 
+		/opt/vc/lib/libEGL.so
+		/opt/vc/lib/libGLESv2.so 
+		/opt/vc/lib/libbcm_host.so 
+	)
 endif()
 
 set( CINDER_LIB_SUFFIX )
 set( CINDER_OUT_DIR_PREFIX )
 
 if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
-	set( CINDER_GL_ES true )
-    set( CINDER_USE_SYSTEM_GL_HEADERS False )
-    if( NOT CINDER_LINUX_EGL_RPI2 ) # RPI2 is GL libs are include and linked from '/opt/vc'. 
+	set( CINDER_GL_ES 					true )
+    set( CINDER_USE_SYSTEM_GL_HEADERS 	false )
+
+	# RPI2 is GL libs are include and linked from '/opt/vc'.
+    if( NOT CINDER_LINUX_EGL_RPI2 )
         list( APPEND CINDER_LIBS_DEPENDS EGL GLESv2 )
     endif()
+
 	if( CINDER_GL_ES_2 )
 		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_2" )
         set( CINDER_LIB_SUFFIX -es2 )
@@ -69,38 +77,37 @@ endif()
 
 
 if( CINDER_TOOLCHAIN_CLANG )
-    set( CMAKE_C_COMPILER	"clang" 		CACHE FILEPATH "" FORCE )
-    set( CMAKE_CXX_COMPILER	"clang++" 		CACHE FILEPATH "" FORCE )
-    set( CMAKE_AR           "llvm-ar"		CACHE FILEPATH "" FORCE )
-    set( CMAKE_LINKER       "llvm-link" 	CACHE FILEPATH "" FORCE )
-    set( CMAKE_NM           "llvm-nm " 		CACHE FILEPATH "" FORCE )
-    set( CMAKE_RANLIB       "llvm-ranlib"	CACHE FILEPATH "" FORCE )
-    #set( CMAKE_STRIP        ""				CACHE FILEPATH "" FORCE )
+    set( CMAKE_C_COMPILER						"clang" 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER						"clang++" 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_AR          						"llvm-ar"		CACHE FILEPATH "" FORCE )
+    set( CMAKE_LINKER       					"llvm-link" 	CACHE FILEPATH "" FORCE )
+    set( CMAKE_NM           					"llvm-nm " 		CACHE FILEPATH "" FORCE )
+    set( CMAKE_RANLIB       					"llvm-ranlib"	CACHE FILEPATH "" FORCE )
 
-    set( CMAKE_C_FLAGS_INIT					"-Wall -std=c99" CACHE STRING "" FORCE )
-    set( CMAKE_C_FLAGS_DEBUG_INIT			"-g" CACHE STRING "" FORCE )
-    set( CMAKE_C_FLAGS_MINSIZEREL_INIT		"-Os -DNDEBUG" CACHE STRING "" FORCE )
-    set( CMAKE_C_FLAGS_RELEASE_INIT			"-O4 -DNDEBUG" CACHE STRING "" FORCE )
-    set( CMAKE_C_FLAGS_RELWITHDEBINFO_INIT	"-O2 -g" CACHE STRING "" FORCE )
-    set( CMAKE_C_FLAGS						"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_INIT						"-Wall -std=c99" CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_DEBUG_INIT				"-g" CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_MINSIZEREL_INIT			"-Os -DNDEBUG" CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_RELEASE_INIT				"-O4 -DNDEBUG" CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_RELWITHDEBINFO_INIT		"-O2 -g" CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS							"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
 
-    set( CMAKE_CXX_FLAGS_INIT				"-Wall" CACHE STRING "" FORCE )
-    set( CMAKE_CXX_FLAGS_DEBUG_INIT			"-g" CACHE STRING "" FORCE )
+    set( CMAKE_CXX_FLAGS_INIT					"-Wall" CACHE STRING "" FORCE )
+    set( CMAKE_CXX_FLAGS_DEBUG_INIT				"-g" CACHE STRING "" FORCE )
     set( CMAKE_CXX_FLAGS_MINSIZEREL_INIT		"-Os -DNDEBUG" CACHE STRING "" FORCE ) 
-    set( CMAKE_CXX_FLAGS_RELEASE_INIT		"-O4 -DNDEBUG" CACHE STRING "" FORCE )
+    set( CMAKE_CXX_FLAGS_RELEASE_INIT			"-O4 -DNDEBUG" CACHE STRING "" FORCE )
     set( CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT	"-O2 -g" CACHE STRING "" FORCE )
     set( CMAKE_CCC_FLAGS						"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
 
-    set( STDCXXLIB                           "-stdlib=libstdc++" )
+    set( STDCXXLIB                           	"-stdlib=libstdc++" )
 else()
-    set( CMAKE_C_COMPILER	"gcc-4.9" 		CACHE FILEPATH "" FORCE )
-    set( CMAKE_CXX_COMPILER	"g++-4.9" 		CACHE FILEPATH "" FORCE )	
+    set( CMAKE_C_COMPILER	"gcc-4.9" 			CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER	"g++-4.9" 			CACHE FILEPATH "" FORCE )	
 endif()
 
-# Needs to come ater compilers are set
+# Needs to come atfer compilers are set
 project( cinder_linux )
 
-cmake_policy(SET CMP0022 NEW)
+cmake_policy( SET CMP0022 NEW )
 
 # Output path
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
@@ -114,6 +121,7 @@ if( CINDER_LINUX_EGL_RPI2 )
 else()
 	message( "${BoldGreen}CINDER_ARCH: ${CINDER_ARCH}${ColorReset}" )
 endif()
+
 message( "" )
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
@@ -179,7 +187,7 @@ find_package( FontConfig REQUIRED )
 list( APPEND CINDER_INCLUDE_DEPENDS ${FONTGONFIG_INCLUDE_DIRS} )
 list( APPEND CINDER_LIBS_DEPENDS ${FONTCONFIG_LIBRARIES} )
 
-set( CINDER_USE_GSTREAMER False )
+set( CINDER_USE_GSTREAMER false )
 
 if( CINDER_USE_GSTREAMER )
     find_package (Glib REQUIRED COMPONENTS gobject )
@@ -192,7 +200,7 @@ if( CINDER_USE_GSTREAMER )
 endif()
 
 # Set this to use system wide libs instead of compiling dependencies from source.
-set( CINDER_USE_SYSTEM_LIBS False )
+set( CINDER_USE_SYSTEM_LIBS false )
 if( CINDER_USE_SYSTEM_LIBS )
     find_package( Boost 1.54 REQUIRED COMPONENTS system filesystem )
     list( APPEND CINDER_INCLUDE_DEPENDS ${Boost_INCLUDE_DIRS} )
@@ -233,7 +241,7 @@ export( TARGETS cinder${CINDER_LIB_SUFFIX} FILE "${PROJECT_BINARY_DIR}/cinderTar
 configure_file( "${PROJECT_SOURCE_DIR}/cmake/cinderConfig.buildtree.cmake.in"
                     "${PROJECT_BINARY_DIR}/cinderConfig.cmake" )
 
-set( CINER_BUILD_SAMPLES False )
+set( CINER_BUILD_SAMPLES false )
 if( CINDER_BUILD_SAMPLES )
     add_subdirectory( ${CINDER_DIR}/samples/BasicApp/linux ${CINDER_DIR}/samples/BasicApp/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )
     add_subdirectory( ${CINDER_DIR}/samples/BasicAppMultiWindow/linux ${CINDER_DIR}/samples/BasicAppMultiWindow/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )

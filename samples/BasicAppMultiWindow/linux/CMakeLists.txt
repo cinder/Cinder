@@ -1,13 +1,14 @@
-# Basic
+# BasicAppMultiWindow
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
-set( CMAKE_VERBOSE_MAKEFILE ON )
+set( CMAKE_VERBOSE_MAKEFILE on )
 
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../.." ABSOLUTE )
-include(${CINDER_DIR}/linux/cmake/Cinder.cmake)
+include( ${CINDER_DIR}/linux/cmake/Cinder.cmake )
 
 project( BasicAppMultiWindow )
 
 get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src" ABSOLUTE )
+get_filename_component( INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include" ABSOLUTE )
 
 if( NOT TARGET cinder${CINDER_LIB_SUFFIX} )
     find_package( cinder REQUIRED
@@ -16,15 +17,17 @@ if( NOT TARGET cinder${CINDER_LIB_SUFFIX} )
     )
 endif()
 
-set( SRC_FILES
-    ${SRC_DIR}/BasicAppMultiWindowApp.cpp
+include_directories(
+	${INC_DIR}
 )
 
-### CMAKE_PROJECT_NAME returns the top-level project name
-### if present so use PROJECT_NAME instead.
+set( SRC_FILES
+	${SRC_DIR}/BasicAppMultiWindowApp.cpp
+)
+
+# Use PROJECT_NAME since CMAKE_PROJET_NAME returns the top-level project name.
 set( EXE_NAME ${PROJECT_NAME} )
 
 add_executable( "${EXE_NAME}" ${SRC_FILES} )
 
 target_link_libraries( "${EXE_NAME}" cinder${CINDER_LIB_SUFFIX} )
-
