@@ -227,7 +227,7 @@ else()
                                     ${CINDER_LIB_DIR}/libboost_filesystem.a )
 endif()
 
-### Create out Cinder target.
+### Create our Cinder target.
 add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
 
 ### https://cmake.org/cmake/help/v3.0/command/target_include_directories.html
@@ -273,6 +273,8 @@ set_target_properties( cinder${CINDER_LIB_SUFFIX} PROPERTIES DEBUG_POSTFIX "_d" 
 ### This config file loads the 'cinderTargets.cmake' file which CMake generates for us with the export command under the current build directory.
 ### This file 'describes' Cinder as a target and its dependencies so that can then be consumed by projects linking with Cinder. 
 ### The INTERFACE_INCLUDE_DIRECTORIES and INTERFACE_LINK_LIBRARIES properies mentioned above are for example part of this file.
+###
+### Check one of the samples for example usage of the generated config file.
 
 export( TARGETS cinder${CINDER_LIB_SUFFIX} FILE "${PROJECT_BINARY_DIR}/cinderTargets.cmake" )
 
