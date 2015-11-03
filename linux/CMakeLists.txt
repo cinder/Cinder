@@ -165,13 +165,14 @@ set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math"
 include(${CMAKE_MODULE_PATH}/CinderIncludes.cmake)
 include(${CMAKE_MODULE_PATH}/CinderSources.cmake)
 
-# If this is set then we should be on Desktop.
+### If this is set then we should be on Desktop.
 if( CINDER_USE_SYSTEM_GL_HEADERS )
     find_package( OpenGL REQUIRED )
     list( APPEND CINDER_INCLUDE_DEPENDS ${OPENGL_INCLUDE_DIR} )
     list( APPEND CINDER_LIBS_DEPENDS ${OPENGL_LIBRARIES} )
 endif()
 
+### No X for RPI2.
 if( CINDER_USE_X11 )
     find_package( X11 REQUIRED )
     list( APPEND CINDER_INCLUDE_DEPENDS ${X11_INCLUDE_DIR} )
@@ -201,7 +202,7 @@ if( CINDER_USE_GSTREAMER )
     list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_LIBRARIES} ${GSTREAMER_BASE_LIBRARIES} ${GSTREAMER_APP_LIBRARIES} ${GSTREAMER_VIDEO_LIBRARIES} )
 endif()
 
-# Set this to use system wide libs instead of compiling dependencies from source.
+### Set this to use system wide libs instead of compiling dependencies from source.
 set( CINDER_USE_SYSTEM_LIBS false )
 if( CINDER_USE_SYSTEM_LIBS )
     find_package( Boost 1.54 REQUIRED COMPONENTS system filesystem )
@@ -226,8 +227,34 @@ else()
                                     ${CINDER_LIB_DIR}/libboost_filesystem.a )
 endif()
 
+### Create our Cinder target.
 add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
 
+### https://cmake.org/cmake/help/v3.0/command/target_include_directories.html
+###
+### target_include_directories:
+### ---------------------------
+### Arguments specified with the PRIVATE keyword WILL NOT populate the INTERFACE_INCLUDE_DIRECTORIES property.
+### Arguments specified with the INTERFACE or PUBLIC keywords WILL populate the INTERFACE_INCLUDE_DIRECTORIES.
+### This essentially means that when a project links with Cinder it does not have to respecify include directories 
+### that are parts of Cinder's INTERFACE_INCLUDE_DIRECTORY property.
+
+### https://cmake.org/cmake/help/v3.0/command/target_link_libraries.html 
+###
+### target_link_libraries:
+### ----------------------
+### The same idea as for target_include_directories but in this case the INTERFACE_LINK_LIBRARIES property
+### gets populated. Again, this essentially means that libraries that have been specified with the 
+### INTERFACE or PUBLIC keyword do not need to be respecified when a project links with Cinder.
+###
+### e.g you could do :
+###
+### target_link_libraries( binary cinder )
+###
+### and this will pull all Cinder's dependencies specified with INTERFACE or PUBLIC.
+
+### There is a conflict between boost/regex.h and /usr/include/regex.h when building the examples
+### so avoid propagating the boost dirs across the compilation of samples.
 if( NOT CINDER_USE_SYSTEM_LIBS )
     target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${CINDER_INC_DIR}/boost> )
 endif()
@@ -237,6 +264,17 @@ target_include_directories( cinder${CINDER_LIB_SUFFIX} PUBLIC "$<BUILD_INTERFACE
 target_link_libraries( cinder${CINDER_LIB_SUFFIX} INTERFACE ${CINDER_LIBS_DEPENDS} )
 
 set_target_properties( cinder${CINDER_LIB_SUFFIX} PROPERTIES DEBUG_POSTFIX "_d" )
+
+### https://cmake.org/cmake/help/v3.0/command/export.html
+###
+### export
+### ------
+### This command exports a config file named 'cinderConfig.cmake' in the build directory of Cinder. 
+### This config file loads the 'cinderTargets.cmake' file which CMake generates for us with the export command under the current build directory.
+### This file 'describes' Cinder as a target and its dependencies so that can then be consumed by projects linking with Cinder. 
+### The INTERFACE_INCLUDE_DIRECTORIES and INTERFACE_LINK_LIBRARIES properies mentioned above are for example part of this file.
+###
+### Check one of the samples for example usage of the generated config file.
 
 export( TARGETS cinder${CINDER_LIB_SUFFIX} FILE "${PROJECT_BINARY_DIR}/cinderTargets.cmake" )
 
