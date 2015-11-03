@@ -24,10 +24,12 @@ fi
 
 
 #SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-SCRIPT_DIR=$( pwd )
+#SCRIPT_DIR=$( pwd )
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 CLEAN=false
 BUILD_TYPES=(Debug)
+BUILDING_SAMPLE=false
 NUMPROCS=$( nproc )
 GLES=
 OPENGL_PLAT="ogl"
@@ -138,6 +140,7 @@ do
 		# Dummy arg so samples (or apps) can build without a flag
 		-app)
 			echo "Building a sample..."
+            BUILDING_SAMPLE=true
 			shift 1
 		;;
 	
@@ -158,6 +161,12 @@ for build in ${BUILD_TYPES[@]}; do
 	build_type=${build}
 	build_dir=$(pwd)/${build}/${OPENGL_PLAT}
 
+    if [ "${BUILDING_SAMPLE}" = false ]; then
+        build_dir=${SCRIPT_DIR}/../../linux/${build}/${OPENGL_PLAT}
+    else
+        build_dir=$(pwd)/${build}/${OPENGL_PLAT}
+    fi
+
 	# Clean
 	if [ ${CLEAN} == true ] || [ ${FULLBUILD} == true ]; then
 		echo "Cleaning ${build_type} ..."
@@ -172,11 +181,17 @@ for build in ${BUILD_TYPES[@]}; do
 	fi
 
 	# Check for CMakeLists.txt
-	if [ ! -f "${SCRIPT_DIR}/CMakeLists.txt" ]; then
-		echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}"
-		exit
-	fi
-
+	if [ "${BUILDING_SAMPLE}" = false ]; then
+        if [ ! -f "${SCRIPT_DIR}/../../linux/CMakeLists.txt" ]; then
+            echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}/../../linux"
+            exit
+        fi
+    else
+        if [ ! -f "$(pwd)/CMakeLists.txt" ]; then
+            echo "ERROR: Couldn't find CMakeLists.txt in $(pwd)"
+            exit
+        fi
+    fi
 	# Build
 	echo "---------------------------------------------------------------------------------"
 	echo "Building Cinder in ${build_type} mode"
@@ -188,7 +203,7 @@ for build in ${BUILD_TYPES[@]}; do
 
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
-		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2} ${SAMPLES}
+		cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2} ${SAMPLES}
 	fi
 	make -j ${NUMPROCS} ${VERBOSE}
 
