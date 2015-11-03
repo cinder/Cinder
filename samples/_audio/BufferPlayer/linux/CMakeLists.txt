@@ -17,17 +17,18 @@ if( NOT TARGET cinder${CINDER_LIB_SUFFIX} )
     )
 endif()
 
-include_directories(
-	${INC_DIR}
-)
+# Use PROJECT_NAME since CMAKE_PROJET_NAME returns the top-level project name.
+set( EXE_NAME ${PROJECT_NAME} )
 
 set( SRC_FILES
 	${SRC_DIR}/BufferPlayerApp.cpp
 )
 
-# Use PROJECT_NAME since CMAKE_PROJET_NAME returns the top-level project name.
-set( EXE_NAME ${PROJECT_NAME} )
-
 add_executable( "${EXE_NAME}" ${SRC_FILES} )
+
+target_include_directories(
+	"${EXE_NAME}"
+	PUBLIC ${INC_DIR}
+)
 
 target_link_libraries( "${EXE_NAME}" cinder${CINDER_LIB_SUFFIX} )
