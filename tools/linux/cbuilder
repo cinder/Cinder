@@ -25,6 +25,7 @@ fi
 
 #SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 SCRIPT_DIR=$( pwd )
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 CLEAN=false
 BUILD_TYPES=(Debug)
@@ -34,6 +35,7 @@ OPENGL_PLAT="ogl"
 FULLBUILD=true
 RPI2=
 VERBOSE=
+APP_BUILD=false
 SAMPLES=
 
 # Process arguments
@@ -137,7 +139,8 @@ do
 
 		# Dummy arg so samples (or apps) can build without a flag
 		-app)
-			echo "Building a sample..."
+			echo "Building a app..."
+			APP_BUILD=true
 			shift 1
 		;;
 	
@@ -158,6 +161,12 @@ for build in ${BUILD_TYPES[@]}; do
 	build_type=${build}
 	build_dir=$(pwd)/${build}/${OPENGL_PLAT}
 
+	if [ ${APP_BUILD} == true]; then
+		build_dir=$(pwd)/${build}/${OPENGL_PLAT}
+	else
+		build_dir=${SCRIPT_DIR}/../../linux/${build}/${OPENGL_PLAT}
+	fi
+
 	# Clean
 	if [ ${CLEAN} == true ] || [ ${FULLBUILD} == true ]; then
 		echo "Cleaning ${build_type} ..."
@@ -172,8 +181,13 @@ for build in ${BUILD_TYPES[@]}; do
 	fi
 
 	# Check for CMakeLists.txt
-	if [ ! -f "${SCRIPT_DIR}/CMakeLists.txt" ]; then
-		echo "ERROR: Couldn't find CMakeLists.txt in ${SCRIPT_DIR}"
+	cmake_file_path="${SCRIPT_DIR}/../../linux/CMakeLists.txt"
+	if [ ${APP_BUILD} == true ]; then
+		cmake_file_path="$(pwd)/CMakeLists.txt"
+	fi
+
+	if [ ! -f "${cmake_file_path}" ]; then
+		echo "ERROR: Couldn't find CMakeLists.txt in $(cmake_file_path)"
 		exit
 	fi
 
@@ -188,7 +202,7 @@ for build in ${BUILD_TYPES[@]}; do
 
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
-		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2} ${SAMPLES}
+		cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2} ${SAMPLES}
 	fi
 	make -j ${NUMPROCS} ${VERBOSE}
 
