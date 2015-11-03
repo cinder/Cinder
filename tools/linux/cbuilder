@@ -27,13 +27,14 @@ fi
 SCRIPT_DIR=$( pwd )
 
 CLEAN=false
-BUILDTYPES=(Debug)
+BUILD_TYPES=(Debug)
 NUMPROCS=$( nproc )
 GLES=
 OPENGL_PLAT="ogl"
 FULLBUILD=true
 RPI2=
 VERBOSE=
+SAMPLES=
 
 # Process arguments
 while (( $# >= 1 ))
@@ -50,7 +51,7 @@ do
         # Build types
         -b)
             # Clear array
-            BUILDTYPES=()            
+            BUILD_TYPES=()            
             # Split string into tokens
             tokens=(${2//,/ })
             # Parse build types
@@ -58,11 +59,11 @@ do
                 build=$(echo $tok | tr '[:upper:]' '[:lower:]')
                 case $build in
                     debug)
-                        BUILDTYPES+=(Debug) 
+                        BUILD_TYPES+=(Debug) 
                     ;;
 
                     release)
-                        BUILDTYPES+=(Release)
+                        BUILD_TYPES+=(Release)
                     ;;
 
                     *)
@@ -134,10 +135,16 @@ do
 			shift 1
 		;;
 
-		# Sample - dummy arg so samples can build without a flag
-		-sample)
+		# Dummy arg so samples (or apps) can build without a flag
+		-app)
 			echo "Building a sample..."
 			shift 1
+		;;
+	
+		# Build samples
+		-samples)
+			SAMPLES="-DCINDER_BUILD_SAMPLES=1"
+			shift
 		;;
 
 		?*)
@@ -147,7 +154,7 @@ do
 	esac
 done
 
-for build in ${BUILDTYPES[@]}; do
+for build in ${BUILD_TYPES[@]}; do
 	build_type=${build}
 	build_dir=$(pwd)/${build}/${OPENGL_PLAT}
 
@@ -181,7 +188,7 @@ for build in ${BUILDTYPES[@]}; do
 
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
-		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2}
+		cmake ${SCRIPT_DIR} -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2} ${SAMPLES}
 	fi
 	make -j ${NUMPROCS} ${VERBOSE}
 
