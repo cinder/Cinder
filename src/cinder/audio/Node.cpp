@@ -536,10 +536,21 @@ void NodeAutoPullable::disconnectInput( const NodeRef &input )
 	updatePullMethod();
 }
 
+void NodeAutoPullable::disconnectOutput( const NodeRef &output )
+{
+	// make sure we live past disconnection, as output could be the last guy with a strong reference to us
+	auto thisRef = shared_from_this();
+	Node::disconnectOutput( output );
+	updatePullMethod();
+}
+
 void NodeAutoPullable::disconnectAllOutputs()
 {
+	// make sure we live past disconnection, as output could be the last guy with a strong reference to us
+	auto thisRef = shared_from_this();
 	Node::disconnectAllOutputs();
 
+	// no need to query getOutputs() as we know it is empty now, so just remove from auto pull list if needed
 	if( mIsPulledByContext ) {
 		mIsPulledByContext = false;
 		getContext()->removeAutoPulledNode( shared_from_this() );

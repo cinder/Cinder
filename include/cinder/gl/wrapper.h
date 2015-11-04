@@ -122,7 +122,7 @@ void enableBlending( bool enable = false );
 //! Disables blending state via \c GL_BLEND, but does not modify blend function
 inline void disableBlending() { enableBlending( false ); }
 //! Enables blending via \c GL_BLEND and sets the blend function to unpremultiplied alpha blending when \p enable is \c true; otherwise disables blending without modifying the blend function.
-void enableAlphaBlending( bool enable = false );
+void enableAlphaBlending( bool enable = true );
 //! Enables blending via \c GL_BLEND and sets the blend function to premultiplied alpha blending
 void enableAlphaBlendingPremult();
 //! Disables blending state as governed by \c GL_BLEND but does not modify blend function.. Deprecated; prefer disableBlending()

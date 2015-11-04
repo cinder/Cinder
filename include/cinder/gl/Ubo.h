@@ -22,9 +22,9 @@
 
 #pragma once
 
-#if ! defined( CINDER_GL_ES_2 )
-
 #include "cinder/gl/BufferObj.h"
+
+#if ! defined( CINDER_GL_ES_2 )
 
 namespace cinder { namespace gl {
 	
