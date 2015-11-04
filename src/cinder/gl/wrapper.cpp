@@ -186,9 +186,10 @@ void clear( const ColorA& color, bool clearDepthBuffer )
 {
 	clearColor( color );
 	if ( clearDepthBuffer ) {
-		depthMask( GL_TRUE );
+		ScopedDepthWrite depthWriteScp( GL_TRUE );
 		clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	} else {
+	}
+	else {
 		clear( GL_COLOR_BUFFER_BIT );
 	}
 }
@@ -292,21 +293,25 @@ void enable( GLenum state, bool enable )
 	ctx->enable( state, enable );
 }
 
-void enableAlphaBlending( bool premultiplied )
+void enableBlending( bool enable )
+{
+	auto ctx = gl::context();
+	ctx->enable( GL_BLEND, enable );
+}
+
+void enableAlphaBlending( bool enable )
 {
 	auto ctx = gl::context();
 	ctx->enable( GL_BLEND );
-	if( ! premultiplied ) {
+	if( enable )
 		ctx->blendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	}
-	else {
-		ctx->blendFunc( GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
-	}
 }
 
-void disableAlphaBlending()
+void enableAlphaBlendingPremult()
 {
-	gl::disable( GL_BLEND );
+	auto ctx = gl::context();
+	ctx->enable( GL_BLEND );
+	ctx->blendFunc( GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
 }
 
 void enableAdditiveBlending()

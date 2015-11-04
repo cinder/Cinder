@@ -1,9 +1,0 @@
-#include "..\include\Resources.h"
-
-RES_PARTICLE		
-RES_EMITTER			
-RES_NORMAL			
-RES_BUMP			
-RES_SPEC_EXPONENT	
-RES_EMITTER_VERT	
-RES_EMITTER_FRAG	

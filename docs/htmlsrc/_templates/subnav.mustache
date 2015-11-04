@@ -1,0 +1,31 @@
+<div id="sub-nav">
+  	<ul>
+      {{#public_types.length }}
+      <li><a href="#{{public_types.anchor}}">Public Types</a></li>
+      {{/public_types.length }}
+
+  		{{#enumerations.length }}
+  		<li><a href="#{{enumerations.anchor}}">Enums</a></li>
+  		{{/enumerations.length }}
+
+  		{{#public_functions.length }}
+  		<li><a href="#{{public_functions.anchor}}">Public Member Functions</a></li>
+  		{{/public_functions.length }}
+
+  		{{#public_static_functions.length }}
+  		<li><a href="#{{public_static_functions.anchor}}">Static Public Member Functions</a></li>
+  		{{/public_static_functions.length }}
+
+  		{{#protected_functions.length }}
+  		<li><a href="#{{protected_functions.anchor}}">Protected Member Functions</a></li>
+  		{{/protected_functions.length }}
+
+  		{{#protected_attrs.length }}
+  		<li><a href="#{{protected_attrs.anchor}}">Protected Attributes</a></li>
+  		{{/protected_attrs.length }}
+
+  		{{#friends.length }}
+  		<li><a href="#{{friends.anchor}}">Friends</a></li>
+  		{{/friends.length }}
+  	</ul>
+</div>

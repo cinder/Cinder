@@ -1,6 +1,6 @@
-#version 330
+#version 300 es
 
-uniform mat4    ciModelViewProjection;
+uniform mat4  ciModelViewProjection;
 uniform mat3	ciNormalMatrix;
 
 in vec4			ciPosition;

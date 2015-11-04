@@ -1,0 +1,37 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MipMap", "MipMap.vcxproj", "{6F643B01-3F9E-4804-8CF6-82925EF84F04}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|ARM = Release|ARM
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Debug|ARM.ActiveCfg = Debug|ARM
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Debug|ARM.Build.0 = Debug|ARM
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Debug|ARM.Deploy.0 = Debug|ARM
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Debug|Win32.Build.0 = Debug|Win32
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Debug|Win32.Deploy.0 = Debug|Win32
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Debug|x64.ActiveCfg = Debug|x64
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Debug|x64.Build.0 = Debug|x64
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Debug|x64.Deploy.0 = Debug|x64
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Release|ARM.ActiveCfg = Release|Win32
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Release|Win32.ActiveCfg = Release|Win32
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Release|Win32.Build.0 = Release|Win32
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Release|Win32.Deploy.0 = Release|Win32
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Release|x64.ActiveCfg = Release|x64
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Release|x64.Build.0 = Release|x64
+		{6F643B01-3F9E-4804-8CF6-82925EF84F04}.Release|x64.Deploy.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

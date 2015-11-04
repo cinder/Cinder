@@ -8,7 +8,7 @@
 #include "cinder/params/Params.h"
 
 // Define this to blow up the selection area that is picked.
-//#define DEBUG_PICKING 1
+//#define DEBUG_PICKING
 
 using namespace ci;
 using namespace ci::app;
@@ -132,6 +132,8 @@ void PickingFBOApp::renderScene()
 
 	gl::ScopedGlslProg glslScope( mNotPickableProg );
 	gl::setDefaultShaderVars();
+
+	gl::ScopedBlend blend( false );
 
 	// Draw gradient.
 	gl::disableDepthWrite();

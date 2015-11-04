@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Update title -->
+		<title>Creating Windows Projects</title>
+
+		<!-- keywords used for searching -->
+		<meta name="keywords" content="guide">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- reference to Cinder classes -->
+   		<!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+		<!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+		
+	</head>
+
+	<body id="guide-contents" class="language-c++">
+
+		<!-- CONTENT STARTS HERE -->
+		<h1>Creating a Windows Project</h1>
+		<p>The TinderBox tool which comes with Cinder is the easiest way to create new projects, and in general we recommend you use that. However it can be instructive to know how to create a Cinder project from scratch, which is discussed in the <a href="#fromScratch">section below</a>.
+
+
+		<section>
+			<h2><a name="tinderbox">TinderBox</a></h2>
+			<p>TinderBox is our GUI tool for creating Cinder projects quickly and easily. It can generate Xcode as well as Visual C++ 2012 and 2013 projects. It is located at <em>cinder/tools/TinderBox</em> in our packaged releases. The first time you launch it, TinderBox will ask you to point it at the location of Cinder on your hard drive.
+			
+			<img class="center shadow rounded" alt="TinderBox welcome" src="images/TinderBox_first.png"></img>
+			
+			<p>Navigate to the top level Cinder directory and hit <b>Choose</b>. If you ever need to change this later, you can do so from the preferences menu.</p>
+			
+			<img class="center shadow rounded" alt="TinderBox Cinder Location" src="images/TinderBox_second.png"></img>
+			
+			<p>There are a number of settings in TinderBox, but the defaults will suffice for most users. Simply hit the <B>Create</B> button, and you'll have a complete Cinder project ready for you to start coding in.</p>
+
+			<img class="center shadow rounded" alt="TinderBox Settings" src="images/TinderBox_fourth.png"></img>
+
+			<img class="center shadow rounded" alt="TinderBox Results" src="images/TinderBox_fifth.png"></img>
+		</section>
+		
+
+		<section>
+			<h2><a name="fromScratch">Creating Projects from Scratch</a></h2>
+
+			<p>Creating a Windows project from scratch in Cinder is not too difficult. Visual C++ offers tremendous flexibility in how
+			users can structure their projects, and this guide will show you how to setup a project similarly to the samples. However Cinder is designed to be flexible and you should feel free to adapt things to your preferences.</p>
+			
+		 	<p>Let's start in Windows Explorer. We'll create a folder for our project, and  inside that a folder for source code called <em>src</em>.</p>
+			
+			<p>Now open up Visual C++, and from the <b>File</b> menu select <b>New Project</b>. In the dialog box, select <b>Win32 Project</b> from the <b>Win32</b> category.</p>
+
+			<img class="center shadow" alt="New Project in VC" src="images/newproject.png"></img>
+			
+			<p>Tell Visual C++ to save the project in the project folder we created earlier. In the following options dialog box, make sure to specify creating an empty project.</p>
+
+			<img class="center shadow" alt="Save new project" src="images/applicationsettings.png">
+			
+			<p>At this point we would recommend closing your project in Visual C++, and then locating your project in the Explorer. Rename the folder named after your project (and housing your.vcproj) to <em>vc2013</em>. This is certainly optional, but can simplify the eventual possibility of your project accomodating other compilers or operating systems.</p>
+			
+			<img class="center shadow" alt="New Project in Finder" src="images/explorersetup.png"></img>
+			
+			<p>Now open your project back up in Visual C++. We'll create our first .cpp file by right-clicking on the Source folder and selecting <b>Add | New Item...</b> Specify the destination as the <em>src</em> folder we created earlier.</p>
+
+			<img class="center shadow" alt="New C++ File" src="images/newcppfile.png"></img>
+			
+			<p>For the purposes of this guide, we'll just copy and paste the code from <em>cinder/samples/basicApp/src/basicApp.cpp</em> as a starting point for this project.</p>
+
+			<p>At this point if you were to try to build your project, you'll get a number of compile errors due to Visual C++ not being able to find Cinder, so let's point it at the right places for finding its headers and libraries. Under the <em>Project</em> menu, select <b>Properties</b>. Go to the <b>Build</b> tab and in the <em>Configuration</em> popup in the window's upper left corner, select <b>All Configurations</b>. Under the <em>C/C++</em> section select the <b>General</b> category. Now modify the <b>Additional Include Directories</b> and set it to be <em><b>&lt;path to cinder&gt;</b>\include; &lt;<b>path to cinder&gt;</b>\boost</em></p>
+
+			<img class="center shadow" alt="Compile Settings" src="images/compilesettings.png"></img>
+			<p>You'll need to modify the following settings in a similar fashion.</p>
+
+			<p>
+				<table style="text-align: left; width: 100%; border-spacing:10px" border="0" cellpadding="8" cellspacing="8px">
+				  <tbody>
+				    <tr>
+				      <td style="vertical-align: top; background-color: rgb(235, 237, 234); font-weight: bold; width:180px">Category</td>
+				      <td style="vertical-align: top; background-color: rgb(235, 237, 234); font-weight: bold; width:150px">Setting</td>
+				      <td style="vertical-align: top; background-color: rgb(235, 237, 234); font-weight: bold;">Value</td>
+				    </tr>
+				    <tr>
+				      <td style="vertical-align: top;"><em>All Configurations: </em><br/>C/C++ | General</td>
+				      <td style="vertical-align: top;">Additional Include Directories</td>
+				      <td style="vertical-align: top; font-family: monospace;"><b>&lt;path to Cinder&gt;</b>\include;<b>&lt;path to Cinder&gt;</b>\boost</td>
+				    </tr>
+				    <tr>
+				      <td style="vertical-align: top;"><em>All Configurations: </em><br/>Linker | General</td>
+				      <td style="vertical-align: top;">Additional Library Directories</td>
+				      <td style="vertical-align: top; font-family: monospace;"><b>&lt;path to Cinder&gt;</b>\lib;&lt;<b>path to Cinder&gt;</b>\lib\msw</td>
+				    </tr>
+				    <tr>
+				      <td style="vertical-align: top;"><em>Debug: </em><br/>Linker | Input</td>                          
+				      <td style="vertical-align: top;">Additional Dependencies</td>
+				      <td style="vertical-align: top; font-family: monospace;">cinder_d.lib</td>
+				    </tr>
+				    <tr>
+				      <td style="vertical-align: top;"><em>Release: </em><br/>Linker | Input</td>
+				      <td style="vertical-align: top;">Additional Dependencies</td>
+				      <td style="vertical-align: top; font-family: monospace;">cinder.lib</td>
+				    </tr>
+				    <tr>
+				      <td style="vertical-align: top;"><em>Debug: </em><br/>C/C++ | Code Generation</td>                    
+				      <td style="vertical-align: top;">Runtime Library</td>
+				      <td style="vertical-align: top; font-family: monospace;">Multi-threaded Debug (/MTd)</td>
+				    </tr><tr>
+				      <td style="vertical-align: top;"><em>Release: </em><br/>C/C++ | Code Generation</td>
+				      <td style="vertical-align: top;">Runtime Library</td>
+				      <td style="vertical-align: top; font-family: monospace;">Multi-threaded (/MT)</td>
+				    </tr>
+				    <tr>
+				      <td style="vertical-align: top;"><em>All Configurations:</em><br/> Linker | Advanced</td>                    
+				      <td style="vertical-align: top;">Data Execution Prevention (DEP)</td>
+				      <td style="vertical-align: top; font-family: monospace;">Image is not compatible with DEP (/NXCOMPAT:NO)</td>
+				    </tr>
+				    <tr>
+				      <td style="vertical-align: top;"><em>Debug: </em><br/>Linker | Input</td>
+				      <td style="vertical-align: top;">Ignore Specific Default Libraries</td>
+				      <td style="vertical-align: top; font-family: monospace;">libc.lib, libcmt.lib, msvcrt.lib, libcd.lib, msvcrtd.lib</td>
+				    </tr>
+				    <tr>
+				      <td style="vertical-align: top;"><em>Release: </em><br/>Linker | Input</td>
+				      <td style="vertical-align: top;">Ignore Specific Default Libraries</td>
+				      <td style="vertical-align: top; font-family: monospace;">libc.lib, msvcrt.lib, libcd.lib, libcmtd.lib, msvcrtd.lib</td>
+				    </tr>
+				  </tbody>
+				</table>
+			</p>
+		</section>
+		<!-- END CONTENT -->
+
+		<!-- Scripts -->
+		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+		<!-- Place additional scripts here (optional) -->
+		<!-- <script type="text/javascript"></script> -->
+
+	</body>
+</html> 

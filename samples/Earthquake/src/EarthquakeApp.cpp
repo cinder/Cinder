@@ -146,7 +146,7 @@ void EarthquakeApp::draw()
 {
 	gl::clear( Color( 1, 0, 0 ) );
 
-	gl::ScopedDepth       depth( true, true );
+	gl::ScopedDepth       depth( true );
 	gl::ScopedColor       color( 1, 1, 1 );
 
 	// Draw stars.

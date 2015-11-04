@@ -1,0 +1,112 @@
+@import global
+
+body.section_home
+	background: $background-gray
+	font-size: 16px
+	
+	#top-primary 
+			box-shadow: none
+	
+	#main-content
+		label
+			text-transform: uppercase
+			color: #fff
+			margin-bottom: 0.5em
+			font-size: 1.2em
+			font-weight: 700
+		
+		ul.fancy>li a:hover
+			color: $cinder-orange
+				
+		li	
+			list-style: none
+			margin-left: 0
+			
+			a
+				transition: all 250ms
+				display: block
+				color: $light-gray-text
+				font-weight: 400
+				// font-size: 0.8em
+				width: 100%
+				line-height: 1.8em
+		
+		.content		
+			p
+				font-size: 1.3em
+		
+		
+		#top-content
+			background: $gray-gradient-1
+			color: $light-gray-text
+			
+			h1
+				font-weight: 700
+				margin-bottom: 0			
+
+			#sub-nav
+				display: none
+		
+		#mid-content
+			background: $background-gray
+			
+			&>.row
+				padding: 40px 0
+			
+			ul
+				margin-bottom: 10px
+				
+		#bottom-content
+			background: $background-gray-light
+			color: $light-gray-text
+			padding: 40px 0				
+			
+		#intro
+			padding: 40px 0 75px 0	
+			border-top: 2px solid #434747
+			
+			#downloads
+				padding-top: 20px
+				
+				li 
+					padding: 0 2em 0 0
+					
+					a
+						padding: 0em 0 0 0.9375em
+						margin-left: -0.9375em
+						
+						&:hover
+							background: $cinder-orange
+							color: #fff
+							text-decoration: none
+						
+					&.active
+						a
+							background: $cinder-red
+							color: #fff
+							text-decoration: none
+							pointer-events: none
+							
+		.samples
+			text-align: center
+			padding-top: 40px
+			
+			.img-wrap
+				width: 100%
+				height: 200px
+				background: black
+				border: 5px $background-gray solid
+				margin-bottom: 15px
+				overflow: hidden
+				
+				img
+					width: 100%
+					height: auto
+			
+				
+
+		@media all and (min-width: 640px)
+			#top-content
+				h1
+					font-size: 3em
+			

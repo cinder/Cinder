@@ -10,14 +10,10 @@ using namespace std;
 
 class LoggingApp : public App {
 	
-	/**
-	 * This sample shows three basic logging use cases:
-	 * - File Logging
-	 * - Rotating File Logging
-	 * - System Logging
-	 *
-	 * Note: only one file logging type can be enabled at a time.
-	 */
+	//! This sample shows three basic logging use cases:
+	//!  - File Logging
+	//!  - Rotating File Logging
+	//!  - System Logging
 	
   public:
 	void setup() override;
@@ -25,70 +21,54 @@ class LoggingApp : public App {
 	void update() override;
 	void draw() override;
 	
-	/** @breif enableFileLogging will enable logging to a given file.
-	 * This file will not rotate, but you can control the file appending. 
-	 */
+	//! enableFileLogging will enable logging to a given file.
+	//! This file will not rotate, but you can control the file appending.
 	void enableFileLogging();
 	
-	/** @breif enableFileLoggingRotating will enable logging to a daily rotating file.
-	 * The file will rotate daily at the first logging event past midnight.
-	 */
+	//! enableFileLoggingRotating will enable logging to a daily rotating file.
+	//! The file will rotate daily at the first logging event past midnight.
 	void enableFileLoggingRotating();
 	
-	/** @breif enableSysLogging will enable platform specific system logging.
- 	 * Currently this means syslog (OS X) and EventLog (Windows).
-	 */
+	//! enableSysLogging will enable platform specific system logging.
+	//! Currently this means syslog (OS X) and EventLog (Windows).
 	void enableSysLogging();
+	
 };
 
 void LoggingApp::setup()
 {
-	/**
-	 * Logging is only supported for one file at a time.  Calling both
-	 * enableFileLogging and enableRotatingFileLogging at the same tile 
-	 * will cause the most recent call to take precedence.
-	 */
-	
-	//enableFileLogging();
+	enableFileLogging();
 	enableFileLoggingRotating();
 	enableSysLogging();
 }
 
 void LoggingApp::enableFileLogging()
 {
-	/**
-	 * This call will append log messages to the file `cinder.log` in the folder
-	 * `/tmp/logging`.  If the folder path `/tmp/logging` does not exist,
-	 * it will be created for you.
-	 */
+	//! This call will append log messages to the file `cinder.log` in the folder `/tmp/logging`.
+	//! If the folder path `/tmp/logging` does not exist, it will be created for you.
 	
-	log::manager()->enableFileLogging( "/tmp/logging/cinder.log", true );
+	log::makeLogger<log::LoggerFile>( "/tmp/logging/cinder.log", true );
 }
 
 void LoggingApp::enableFileLoggingRotating()
 {
-	/**
-	 * This call will append log messages to a rotating file in the folder `/tmp/logging`.
-	 * The filename `cinder.%Y.%m.%d.log` will be evaluated by strftime.  For example
-	 * the filename could evaluate to `cinder.2015.08.28.log`.
-	 */
-	log::manager()->enableFileLoggingRotating( "/tmp/logging", "cinder.%Y.%m.%d.log" );
+	//! This call will append log messages to a rotating file in the folder `/tmp/logging`.
+	//! The filename `cinder.%Y.%m.%d.log` will be evaluated by strftime.  For the example
+	//! below, the filename could evaluate to `cinder.2015.08.28.log`.
+
+	log::makeLogger<log::LoggerFileRotating>( "/tmp/logging", "cinder.%Y.%m.%d.log" );
 }
 
 void LoggingApp::enableSysLogging()
 {
-	/**
-	 * This call will enable system logging, which will default to the same logging 
-	 * level as console/file logging.
-	 */
-	log::manager()->enableSystemLogging();
+	//! This call will enable system logging, which will default to the same logging
+	//! level as console/file logging.
 	
-	/**
-	 * This call will set the system logging level independent of the file/console
-	 * logging level.  The system logging level can not be lower than the
-	 * file/console logging.
-	 */
-	log::manager()->setSystemLoggingLevel(log::LEVEL_WARNING);
+	auto sysLogger = log::makeLogger<log::LoggerSystem>();
+	
+	//! This call will set the system logging level independent of the file/console logging level.
+	//! The system logging level can not be lower than the file/console logging.
+	sysLogger->setLoggingLevel( log::LEVEL_WARNING );
 }
 
 void LoggingApp::mouseDown( MouseEvent event )

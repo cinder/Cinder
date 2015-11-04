@@ -261,7 +261,9 @@ class NodeAutoPullable : public Node {
 	void connect( const NodeRef &output )					override;
 	void connectInput( const NodeRef &input )				override;
 	void disconnectInput( const NodeRef &input )			override;
-	//! Overridden to also remove from  Context's auto-pulled list
+	//! Overridden to remove from Context's auto-pulled list if there are no more outputs
+	void disconnectOutput( const NodeRef &output )			override;
+	//! Overridden to also remove from Context's auto-pulled list
 	void disconnectAllOutputs()								override;
 
   protected:

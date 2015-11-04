@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 61.5 61.5" enable-background="new 0 0 61.5 61.5" xml:space="preserve">
+<circle fill-rule="evenodd" clip-rule="evenodd" fill="#2D3333" cx="30.7" cy="30.8" r="30.7"/>
+<circle fill="#A41C12" cx="30.7" cy="30.8" r="25.1"/>
+<g>
+	<defs>
+		<circle id="SVGID_1_" cx="30.8" cy="30.7" r="30.7"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  overflow="visible"/>
+	</clipPath>
+	
+		<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="277.8425" y1="-13.3763" x2="331.3707" y2="-13.3763" gradientTransform="matrix(-0.4255 -0.4255 0.7071 -0.7071 158.728 140.6388)">
+		<stop  offset="0" style="stop-color:#FFFFFF;stop-opacity:0.05"/>
+		<stop  offset="1" style="stop-color:#FBFBFB;stop-opacity:0"/>
+	</linearGradient>
+	<polygon clip-path="url(#SVGID_2_)" fill="url(#SVGID_3_)" points="31.6,-14.3 54.4,8.5 7.7,55.2 -15.1,32.5 	"/>
+</g>
+<circle fill="#D65037" cx="31.1" cy="31.3" r="13.9"/>
+<g>
+	<g>
+		<path fill="#FFFFFF" d="M27.4,17.9c0.5-1.8,2.7-3.7,4.7-3.7c0.8,0,1.5,0.4,1.5,1.3c0,0.8-0.6,1.3-1.3,1.3c-0.5,0-0.8-0.3-0.8-0.8
+			c0-0.5,0.5-0.6,0.5-0.8c0-0.2-0.2-0.3-0.3-0.3c-0.8,0-1.3,2.3-1.5,2.9L27.3,29h3.3v1.3H27l-2.8,11.1c-0.3,1-0.7,1.9-1.4,2.7
+			c-0.7,0.7-2.3,1.1-3.3,1.1c-0.8,0-1.5-0.4-1.5-1.3c0-0.8,0.5-1.4,1.3-1.4c0.5,0,0.8,0.3,0.8,0.8s-0.5,0.6-0.5,0.8
+			c0,0.2,0.2,0.3,0.3,0.3c0.8,0,1.4-2.3,1.5-2.9l2.8-11.3H21V29h3.6L27.4,17.9z"/>
+		<path fill="#FFFFFF" d="M29.1,37.9c0-3.3,2.1-5.6,4-6.7l0.6,0.9c-1.8,1.1-3.4,3-3.4,5.8c0,2.8,1.6,4.7,3.4,5.8l-0.6,0.9
+			C31.2,43.6,29.1,41.2,29.1,37.9z"/>
+		<path fill="#FFFFFF" d="M33.8,40.5h0.8l1.9-2l-1.8-1.9h-0.8v-1h2.8v0.9h-0.8l1.2,1.4l1.2-1.4h-0.8v-0.9h2.7v1h-0.8l-1.7,1.9l1.9,2
+			h0.8v1h-2.8v-0.9h0.8L37,39l-1.3,1.5h0.8v0.9h-2.7V40.5z"/>
+		<path fill="#FFFFFF" d="M40.5,43.8c1.8-1.1,3.4-3,3.4-5.8c0-2.8-1.6-4.7-3.4-5.8l0.6-0.9c1.9,1.1,4,3.4,4,6.7c0,3.3-2.1,5.6-4,6.7
+			L40.5,43.8z"/>
+	</g>
+</g>
+</svg>

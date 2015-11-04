@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		002BA65B1BBCF31E00E3E904 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002BA65A1BBCF31E00E3E904 /* Accelerate.framework */; };
 		007480C5165D586F0024B57A /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007480C3165D586F0024B57A /* ImageIO.framework */; };
 		007480C6165D586F0024B57A /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007480C4165D586F0024B57A /* MobileCoreServices.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		002BA65A1BBCF31E00E3E904 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		007480C3165D586F0024B57A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		007480C4165D586F0024B57A /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -50,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				002BA65B1BBCF31E00E3E904 /* Accelerate.framework in Frameworks */,
 				007480C5165D586F0024B57A /* ImageIO.framework in Frameworks */,
 				007480C6165D586F0024B57A /* MobileCoreServices.framework in Frameworks */,
 				C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */,
@@ -125,6 +128,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				002BA65A1BBCF31E00E3E904 /* Accelerate.framework */,
 				007480C3165D586F0024B57A /* ImageIO.framework */,
 				007480C4165D586F0024B57A /* MobileCoreServices.framework */,
 				C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */,
@@ -166,6 +170,8 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TextTest_iOS" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -223,7 +229,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "TextTest_iOS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"",
 					"-lz",
@@ -233,6 +239,7 @@
 					"-lz",
 				);
 				PRODUCT_NAME = TextTest_iOS;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -248,7 +255,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "TextTest_iOS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone.a\"",
 					"-lz",
@@ -258,6 +265,7 @@
 					"-lz",
 				);
 				PRODUCT_NAME = TextTest_iOS;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

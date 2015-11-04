@@ -182,13 +182,13 @@ void PlatformWinRt::getSaveFilePathAsync( const std::function<void(const fs::pat
 		}
 	}
 	else if( ! initialPath.empty() ) {
-		plainTextExtensions->Append( ref new ::Platform::String( msw::toWideString( initialPath.extension() ).c_str() ) );
+		plainTextExtensions->Append( ref new ::Platform::String( initialPath.extension().wstring().c_str() ) );
 	} 
 
     savePicker->FileTypeChoices->Insert( "", plainTextExtensions );
 
 	if( ! initialPath.empty() ) {
-		savePicker->SuggestedFileName = ref new ::Platform::String( msw::toWideString( initialPath.filename() ).c_str() );
+		savePicker->SuggestedFileName = ref new ::Platform::String( initialPath.filename().wstring().c_str() );
 	}
 	else {
 		savePicker->SuggestedFileName = "New Document";

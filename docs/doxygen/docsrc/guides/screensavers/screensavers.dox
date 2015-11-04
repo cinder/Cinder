@@ -1,9 +1,0 @@
-/**
-\page ScreensaverPage Screensaver Notes
-\section Targeting Mac OS 10.7
-
-Mac OS 10.7 requires screensavers to support Garbage Collection. Mercifully Apple has deprecated GC and starting in 10.8 it's no longer necessary for screensavers. However if you do need to target 10.7, you'll need to rebuild Cinder with Garbage Collection enabled. In order to do this, you'll need to set the \c GCC_ENABLE_OBJC_GC User-Defined build setting to be <em>supported</em>. Then rebuild Cinder for both the Debug and Release target.
-
-\image html images_screensaver_10_7.png
-
-**/
