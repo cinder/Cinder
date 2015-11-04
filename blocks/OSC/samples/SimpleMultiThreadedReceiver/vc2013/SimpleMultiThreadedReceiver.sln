@@ -1,0 +1,20 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleMultiThreadedReceiver", "SimpleMultiThreadedReceiver.vcxproj", "{C90A6AE1-08A6-496C-B624-4B5C26065DD1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C90A6AE1-08A6-496C-B624-4B5C26065DD1}.Debug|x64.ActiveCfg = Debug|x64
+		{C90A6AE1-08A6-496C-B624-4B5C26065DD1}.Debug|x64.Build.0 = Debug|x64
+		{C90A6AE1-08A6-496C-B624-4B5C26065DD1}.Release|x64.ActiveCfg = Release|x64
+		{C90A6AE1-08A6-496C-B624-4B5C26065DD1}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
