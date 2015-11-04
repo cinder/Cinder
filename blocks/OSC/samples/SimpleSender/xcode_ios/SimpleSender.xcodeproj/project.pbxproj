@@ -139,12 +139,12 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		395F94F664D644259CDF5918 /* newosc */ = {
+		395F94F664D644259CDF5918 /* OSC */ = {
 			isa = PBXGroup;
 			children = (
 				CA43A74A0DBD4C129D584E3D /* src */,
 			);
-			name = newosc;
+			name = OSC;
 			sourceTree = "<group>";
 		};
 		99692BD914FF149000D0A05F /* Headers */ = {
@@ -159,7 +159,7 @@
 		99692BD914FF149000DFFFFF /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				395F94F664D644259CDF5918 /* newosc */,
+				395F94F664D644259CDF5918 /* OSC */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
