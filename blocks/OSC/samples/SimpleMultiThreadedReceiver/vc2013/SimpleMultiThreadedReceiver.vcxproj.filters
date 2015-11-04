@@ -15,10 +15,10 @@
     <Filter Include="Blocks">
       <UniqueIdentifier>{1CE2A155-E71F-4A4D-AFD5-F721ED7D8A45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Blocks\newosc">
+    <Filter Include="Blocks\OSC">
       <UniqueIdentifier>{CEF71199-2D3B-4C03-88D1-9B4A1C2C10CA}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Blocks\newosc\src">
+    <Filter Include="Blocks\OSC\src">
       <UniqueIdentifier>{637ABE6C-554E-461C-B2C2-565798F77C33}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -33,10 +33,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClCompile Include="..\..\..\src\Osc.cpp">
-      <Filter>Blocks\newosc\src</Filter>
+      <Filter>Blocks\OSC\src</Filter>
     </ClCompile>
     <ClInclude Include="..\..\..\src\Osc.h">
-      <Filter>Blocks\newosc\src</Filter>
+      <Filter>Blocks\OSC\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
