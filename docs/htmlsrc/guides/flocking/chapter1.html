@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Update title -->
+		<title>Flocking: Part 1</title>
+
+		<!-- keywords used for searching -->
+		<meta name="keywords" content="guide, flocking, particles">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- reference to Cinder classes -->
+   		<!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+		<!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+		
+	</head>
+
+	<body id="guide-contents" class="language-c++">
+
+		<!-- CONTENT STARTS HERE -->
+		<h1><a class="anchor" id="intro"></a>
+		Introduction</h1>
+		<p><br />
+		This tutorial picks up where <a class="el" href="hello_cinder.html">Hello, Cinder: Section 1</a> left off. If you recall, the previous section walked us through the creation of a simple particle engine. We are going to modify that particle engine and turn it into a flocking simulation. We will be starting with the code from <a class="el" href="hello_cinder_chapter5.html">Section 1: Chapter 5</a> but we are going to strip out a few things we no longer need (like the kitty source image and all references to Perlin noise, and for now, the repulsion force code). If you are unfamiliar with Cinder and have not gone through <a class="el" href="hello_cinder.html">Section 1</a> of the 'Hello, Cinder' tour, we would recommend starting there.<br />
+		<br />
+		Note: This tutorial builds on the work of two luminaries in the field: Craig Reynolds, the father of <a href="http://www.red3d.com/cwr/boids/">boids</a> and author of <em><a href="http://www.red3d.com/cwr/steer/gdc99/">Steering Behaviors for Autonomous Characters</a>,</em> and <a href="http://webscript.princeton.edu/~icouzin/website/">Iain Couzin</a>, head of the Collective Animal Behavior lab at Princeton. <br />
+		<br />
+		</p>
+		<h1><a class="anchor" id="camera"></a>
+		Camera</h1>
+		<p><br />
+		In the previous tour, we only concerned ourselves with a 2D view of the <em>Particles</em>. They existed in their flatland, oblivious to the third dimension. It is time to throw an extra dimension at our <em>Particles</em> to see how they will behave in a 3D space. The best place to start in our new 3D project is the Cinder <em>Camera</em> class.<br />
+		<br />
+		First, the include:<br />
+		<br />
+		</p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="_camera_8h.html">cinder/Camera.h</a>&quot;</span></div>
+		</div><!-- fragment --><p> <br />
+		Then in the main class, we create a <a class="el" href="classcinder_1_1_camera_persp.html">CameraPersp</a>.<br />
+		<br />
+		</p><div class="fragment"><div class="line">CameraPersp mCam;</div>
+		</div><!-- fragment --><p> <br />
+		The perspective <em>Camera</em> (as opposed to the orthographic <em>Camera</em>) is the standard way to move around in a virtual space. To describe our perspective <em>Camera</em> <em>lens</em>, we will use the <a class="el" href="classcinder_1_1_camera_persp.html#a67245f71d145cf37cdf649b1d3c6b809">setPerspective()</a> method. Also note we prefix our member variables with the letter 'm' versus local variables which have no prefix. This is simply to make the code more readable later on. When you see variables with the 'm' prefix, you instantly know you are dealing with a member variable.<br />
+		<br />
+		</p><div class="fragment"><div class="line">mCam.setPerspective( 60.0f, <a class="code" href="namespacecinder_1_1app.html#a78b0039ce9950289e91d23e0bed2c2af">getWindowAspectRatio</a>(), 5.0f, 3000.0f );</div>
+		</div><!-- fragment --><p><br />
+		The camera's <a class="el" href="classcinder_1_1_camera_persp.html#a67245f71d145cf37cdf649b1d3c6b809">setPerspective()</a> method takes four parameters. First is the horizontal <a href="http://en.wikipedia.org/wiki/Field_of_view">Field Of View</a>. The smaller the number, the tighter the viewing <a href="http://en.wikipedia.org/wiki/Frustum">frustum</a>. <em>(I usually choose a number between 60.0 and 90.0. <a href="http://www.gamedev.net/community/forums/topic.asp?topic_id=123224">There is some debate</a> about the FOV of the human eye. It is estimated to be around 60 but the eye is very accommodating so this number varies. Also, if you take into account peripheral vision and the fact we have two eyes, the estimate would be as high as 140 to 180.)</em><br />
+		 <br />
+		The second parameter is the aspect ratio of the application window. Cinder provides the <a class="el" href="namespacecinder_1_1app.html#a78b0039ce9950289e91d23e0bed2c2af" title="Returns the aspect ratio of the active App&#39;s window or the screen in full-screen mode. ">getWindowAspectRatio()</a> convenience method for getting the aspect ratio. If you prefer, you can calculate this yourself by taking the window width and dividing it by the window height.<br />
+		 <br />
+		The third and fourth parameters are for the clipping planes. The easiest way to think of it is this: Don't draw anything that is closer than the <em>near</em> clipping plane and dont draw anything that is further away than the <em>far</em> clipping plane. Since we are just looking at a bunch of particles that exist in a relatively confined area, we will choose values for the clipping plane that will accommodate our particles without also paying attention to a bunch of extra space where particles will likely never go. No reason to look all the way to infinity if nothing ever wanders more than 500 units from the camera.<br />
+		 <br />
+		Here is our camera setup explaining the <a class="el" href="classcinder_1_1_camera_persp.html#a67245f71d145cf37cdf649b1d3c6b809">setPerspective()</a> parameters. Everything in the viewing volume will be shown in the application window.<br />
+		</p>
+		<p><br />
+		</p><div class="image">
+		<img src="images/camPersp.jpg" alt="camPersp.jpg"/>
+		</div>
+		<p> <br />
+		 <br />
+		Now that we have defined our camera, all that is left is for us to tell it where to be and where to look. This is definitely easier than it sounds but it will take a few lines to get it all squared away. First we need to create a Vec3fs for each of the three vectors the <a class="el" href="classcinder_1_1_camera_persp.html">CameraPersp</a> is expecting.<br />
+		<br />
+		</p><div class="fragment"><div class="line">mEye    = Vec3f( 0.0f, 0.0f, 500.0f );</div>
+		<div class="line">mCenter   = Vec3f::zero();</div>
+		<div class="line">mUp     = Vec3f::yAxis();</div>
+		</div><!-- fragment --><p><br />
+		The first vector, called <em>mEye</em>, represents the position of the Camera. The second vector, called <em>mCenter</em>, represents the point in space towards which the <em>Camera</em> is pointed. Finally, the oddest vector of the bunch is called <em>mUp</em>. This is a normalized vector which tells the <em>Camera</em> which direction it should use as the <em>up</em> orientation. Generally, <a href="http://stackoverflow.com/questions/3755426/opengl-convention-for-which-axis-is-up">though not without debate</a>, the <em>up</em> axis corresponds with the y-axis. Some people prefer to use the z-axis as the <em>up</em> axis but we have found the former to be more intuitive. With this setup, we have a camera that is looking at the origin along the z-axis from a distance of <em>500.0</em> with an up orientation corresponding to the y-axis.<br />
+		 <br />
+		</p><div class="image">
+		<img src="images/camVectors.jpg" alt="camVectors.jpg"/>
+		</div>
+		<p> <br />
+		 <br />
+		The following two lines do all the hard work. You provide it with the three Vec3fs (eye, center, and up) and sit back and enjoy your new perspective view. You will have a camera at <em>mEye</em> which is pointed towards <em>mCenter</em> with an up orientation of <em>mUp</em>, and this camera will have a FOV of 75, the proper aspect ratio for the application window, and will clip any content closer than <em>5.0</em> and further away than <em>2000.0</em>.<br />
+		<br />
+		</p><div class="fragment"><div class="line">mCam.lookAt( mEye, mCenter, mUp );</div>
+		<div class="line"><a class="code" href="namespacecinder_1_1dx.html#a1370457d8bc484eb45249a350b00114c">gl::setMatrices</a>( mCam );</div>
+		</div><!-- fragment --><p><br />
+		The <a class="el" href="namespacecinder_1_1dx.html#a1370457d8bc484eb45249a350b00114c" title="Sets the MODELVIEW and PROJECTION matrices to reflect the values of cam. Leaves the MatrixMode as MOD...">setMatrices()</a> method takes the parameters we established with our camera and then translates them into a ModelView and a Perspective matrix and sets them to be the current matrices in OpenGL. Now that we have our virtual camera, it is time to give it some user control. This can be a tricky thing to set up but lucky for us, we have the Params class to make it incredibly simple.<br />
+		 </p>
+		<h1><a class="anchor" id="params"></a>
+		PARAMS</h1>
+		<p><br />
+		Hopefully by now you have played around with the Params class built around the <a href="http://www.antisphere.com/Wiki/tools:anttweakbar">AntTweakBar</a> by <a href="http://www.antisphere.com/">Antisphere</a>. Params allows for an easy way to adjust variables in runtime with a minimal amount of setup. It really is surprisingly easy.<br />
+		<br />
+		</p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="_params_8h.html">cinder/params/Params.h</a>&quot;</span></div>
+		</div><!-- fragment --><p><br />
+		After the include, make a new <a class="el" href="classcinder_1_1params_1_1_interface_gl.html">cinder::params::InterfaceGl</a> InterfaceGl called <em>mParams</em>. It has three initial parameters: title, size and color (optional).<br />
+		<br />
+		</p><div class="fragment"><div class="line">params::InterfaceGl mParams;</div>
+		<div class="line">mParams = params::InterfaceGl( <span class="stringliteral">&quot;Flocking&quot;</span>, Vec2i( 225, 200 ) );</div>
+		</div><!-- fragment --><p><br />
+		All we need now is to give it a reference of the variable we wish to control at runtime. In our case, we want a whole new variable that we can use to rotate the scene. We are going to invoke the power of the mighty <a href="http://en.wikipedia.org/wiki/Quaternion">Quaternion</a>. Don't be scared, you don't need to know the math behind the quaternion to enjoy some of the benefits.<br />
+		<br />
+		</p><div class="fragment"><div class="line">Quatf mSceneRotation;</div>
+		</div><!-- fragment --><p><br />
+		Then in <em>setup()</em>, after we initialize mParams, we add the following line.<br />
+		 </p><div class="fragment"><div class="line">mParams.addParam( <span class="stringliteral">&quot;Scene Rotation&quot;</span>, &amp;mSceneRotation );</div>
+		</div><!-- fragment --><p><br />
+		With this line, now have the ability to control <em>mSceneRotation</em> in runtime using the <em>mParams</em> window. When adding a new tweakable parameter to your InterfaceGl instance, the <a class="el" href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">addParam()</a> method is expecting the memory address of your variable so it know where to look for its value. That's what the C++ Address-of operator (&amp;) does. It grabs the memory address of a variable. Since we are asking <em>mParams</em> to give us control of a quaternion, it automatically does the right thing and gives us an arc-ball.<br />
+		 <br />
+		</p><div class="image">
+		<img src="images/params.jpg" alt="params.jpg"/>
+		</div>
+		<p> <br />
+		 <br />
+		Now we just need to add one more line below the code we used to set up the virtual camera.<br />
+		<br />
+		</p><div class="fragment"><div class="line">mCam.lookAt( mEye, mCenter, mUp );</div>
+		<div class="line"><a class="code" href="namespacecinder_1_1dx.html#a1370457d8bc484eb45249a350b00114c">gl::setMatrices</a>( mCam );</div>
+		<div class="line"><a class="code" href="namespacecinder_1_1dx.html#a7a9a6781061ca63c0a885a69ede35e3d">gl::rotate</a>( mSceneRotation );</div>
+		</div><!-- fragment --><p><br />
+		When you click and drag in the params arc-ball miniwindow, the entire scene will rotate. Cinder does have an <a class="el" href="classcinder_1_1_arcball.html">Arcball</a> class which is explained in the ArcballDemo project in the samples folder. If you want more control over the arc-ball, that would be the place to start.<br />
+		 <br />
+		</p><div class="image">
+		<img src="images/camLayout.jpg" alt="camLayout.jpg"/>
+		</div>
+		<p> <br />
+		 <br />
+		Since we are already here, we can go ahead and add the <em>mCameraDistance</em> to the params window. It works just like the Quatf we already added but we are going to customize it a bit using the third parameter which takes a string. We can define the minimum and maximum allowed values, the keys for increasing and decreasing the value, and the amount by which the value is adjusted per key press.<br />
+		<br />
+		</p><div class="fragment"><div class="line">mParams.addParam( <span class="stringliteral">&quot;Eye Distance&quot;</span>, &amp;mCameraDistance, <span class="stringliteral">&quot;min=50.0 max=1000.0 step=50.0 keyIncr=s keyDecr=w&quot;</span> );</div>
+		</div><!-- fragment --><p><br />
+		Now we can zoom into our scene by pressing the 'w' key and zoom out with the 's' key. We can also control it using the rotoslider which you can access by clicking the circle-and-dot icon that appears when you rollover the 'Eye Distance' item. You may have noticed we did not do any <em>KeyEvent</em> bindings on <em>KeyDown()</em> like we have in the past. It is all handled by Params. And best of all, it takes only one line of code to add a new variable.<br />
+		 <br />
+		</p><div class="image">
+		<img src="images/params2.jpg" alt="params2.jpg"/>
+		</div>
+		<p> <br />
+		 </p>
+		<h1><a class="anchor" id="flocking"></a>
+		FLOCKING</h1>
+		<p><br />
+		As we mentioned at the beginning of this chapter, much of the code is copied over from the 'Hello, Cinder' tour. In that 5 chapter tutorial, we created a particle engine which created space-filling particles that would spread out using a repulsive force. For now, we have removed the repulsive force but we will add it back in the next chapter.<br />
+		 <br />
+		When you run the Chapter 1 source code, you will see a bunch of <em>Particle</em>s appear near the center of the screen and spread out into the 3D environment. To get comfortable with the application, we recommend dragging the Params' Scene Rotation arcball around so you can see how the camera control works. You can also adjust the camera distance using either the 'w' and 's' keys, or you can click the corresponding buttons in the Params window.<br />
+		 <br />
+		</p><div class="image">
+		<img src="images/chapter1.jpg" alt="chapter1.jpg"/>
+		</div>
+		<p> <br />
+		 <br />
+		One thing that happens with flocking simulations in an unbounded 3D space is they objects tend to wander off screen and sometimes never return. There are a few different ways to handle this problem. You could create a bounding box which would prevent the objects from leaving but can result in frustrating bunching in the corners and along the edges. You could have the camera follow the densest bunch of objects but if they split into groups, the camera will have to choose one to follow and the others will be forgotten. The solution we will be using for this tutorial is to have the objects gravitate towards the middle of the screen. It is a subtle pulling force that isn't strong enough to upset the system, but it will help draw the wanderers back in.<br />
+		 <br />
+		To see this force in action, press the 'g' key to toggle the (g)ravitational force. Slowly, the <em>Particle</em>s outside of the maximum allowed distance will pull back into the center of the screen. To create this force, we tell each <em>Particle</em> to check its distance to the center of the screen. If this distance is greater than our distance threshold, pull the <em>Particle</em> back towards the center. The further away the <em>Particle</em> wanders, the stronger the pull back to the center. This will ensure we don't lose any <em>Particle</em>s. Since we are also using a distance threshold and pull strength, we can make the effect as subtle as we'd like.<br />
+		<br />
+		</p><div class="fragment"><div class="line"><span class="keywordtype">void</span> Particle::pullToCenter( <span class="keyword">const</span> Vec3f &amp;center ){</div>
+		<div class="line">  Vec3f dirToCenter = mPos - center;</div>
+		<div class="line">  <span class="keywordtype">float</span> distToCenter  = dirToCenter.length();</div>
+		<div class="line">  <span class="keywordtype">float</span> maxDistance = 300.0f;</div>
+		<div class="line"></div>
+		<div class="line">  <span class="keywordflow">if</span>( distToCenter &gt; maxDistance ){</div>
+		<div class="line">    <span class="keywordtype">float</span> pullStrength = 0.0001f;</div>
+		<div class="line">    mVel -= dirToCenter.normalized() * ( ( distToCenter - maxDistance ) * pullStrength );</div>
+		<div class="line">  }</div>
+		<div class="line">}</div>
+		</div><!-- fragment --><p><br />
+		That concludes Chapter 1. In <a class="el" href="chapter2.html">Flocking Chapter 2</a>, we will explain the first rule of flocking: Separation.<br />
+		<br />
+		</p>
+	
+		<!-- END CONTENT -->
+
+		<!-- Scripts -->
+		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+		<!-- Place additional scripts here (optional) -->
+		<!-- <script type="text/javascript"></script> -->
+
+	</body>
+</html> 

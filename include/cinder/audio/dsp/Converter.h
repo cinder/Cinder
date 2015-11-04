@@ -128,7 +128,7 @@ void interleave( const T *nonInterleavedSourceArray, T *interleavedDestArray, si
 	}
 }
 
-//! Interleaves \a numCopyFrames of \a nonInterleavedSourceArray and converts from floating point to 16-bit int precision at the same time, placing the result in \a interleavedDestArray. \a numFramesPerChannel and \a numChannels describe the layout of the non-interleaved array.
+//! Interleaves \a numCopyFrames of \a nonInterleavedFloatSourceArray and converts from floating point to 16-bit int precision at the same time, placing the result in \a interleavedInt16DestArray. \a numFramesPerChannel and \a numChannels describe the layout of the non-interleaved array.
 template<typename FloatT>
 void interleave( const FloatT *nonInterleavedFloatSourceArray, int16_t *interleavedInt16DestArray, size_t numFramesPerChannel, size_t numChannels, size_t numCopyFrames )
 {
@@ -158,7 +158,7 @@ void deinterleave( const T *interleavedSourceArray, T *nonInterleavedDestArray, 
 	}
 }
 
-//! De-interleaves \a numCopyFrames of \a interleavedSourceArray and converts from 16-bit int to floating point precision at the same time, placing the result in \a nonInterleavedDestArray. \a numFramesPerChannel and \a numChannels describe the layout of the non-interleaved array.
+//! De-interleaves \a numCopyFrames of \a interleavedInt16SourceArray and converts from 16-bit int to floating point precision at the same time, placing the result in \a nonInterleavedFloatDestArray. \a numFramesPerChannel and \a numChannels describe the layout of the non-interleaved array.
 template<typename FloatT>
 void deinterleave( const int16_t *interleavedInt16SourceArray, FloatT *nonInterleavedFloatDestArray, size_t numFramesPerChannel, size_t numChannels, size_t numCopyFrames )
 {

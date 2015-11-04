@@ -24,8 +24,8 @@
 #include "cinder/audio/cocoa/ContextAudioUnit.h"
 #include "cinder/audio/cocoa/CinderCoreAudio.h"
 #include "cinder/CinderAssert.h"
-
 #include "cinder/Utilities.h"
+#include "cinder/Log.h"
 
 #if defined( CINDER_MAC )
 	#include "cinder/audio/cocoa/DeviceManagerCoreAudio.h"
@@ -219,11 +219,42 @@ void InputDeviceNodeAudioUnit::initialize()
 			outputDeviceNodeAu->enable();
 	}
 	else {
-		if( device->getSampleRate() != sampleRate || device->getFramesPerBlock() != framesPerBlock )
-			device->updateFormat( Device::Format().sampleRate( sampleRate ).framesPerBlock( framesPerBlock ) );
+		auto deviceFormat = Device::Format();
+		bool deviceFormatNeedsUpdate = false;
 
-		mRingBuffer.resize( framesPerBlock * getNumChannels() * mRingBufferPaddingFactor );
-		mBufferList = createNonInterleavedBufferList( framesPerBlock, getNumChannels() );
+		if( device->getSampleRate() != sampleRate ) {
+				deviceFormatNeedsUpdate = true;
+				deviceFormat.sampleRate( sampleRate );
+		}
+		if( device->getFramesPerBlock() != framesPerBlock ) {
+			deviceFormatNeedsUpdate = true;
+			deviceFormat.framesPerBlock( framesPerBlock );
+		}
+		if( deviceFormatNeedsUpdate ) {
+			device->updateFormat( deviceFormat );
+			// check if we were able to update the samplerate, if we weren't then use a Converter
+			if( device->getSampleRate() != sampleRate ) {
+				mConverter = audio::dsp::Converter::create( device->getSampleRate(), sampleRate, getNumChannels(), getNumChannels(), framesPerBlock );
+				mReadBuffer.setSize( framesPerBlock, getNumChannels() );
+				mConvertedReadBuffer.setSize( mConverter->getDestMaxFramesPerBlock(), getNumChannels() );
+				mRingBuffer.resize( mConverter->getDestMaxFramesPerBlock() * getNumChannels() * mRingBufferPaddingFactor );
+
+				asbd = createFloatAsbd( device->getSampleRate(), getNumChannels() );
+
+				// the AudioBufferList just points at the ReadBuffer to avoid an extra copy
+				mBufferList = createNonInterleavedBufferListShallow( getNumChannels() );
+				for( size_t ch = 0; ch < getNumChannels(); ch++ ) {
+					::AudioBuffer *buffer = &mBufferList->mBuffers[ch];
+					buffer->mNumberChannels = 1;
+					buffer->mDataByteSize = static_cast<UInt32>( mReadBuffer.getNumFrames() * sizeof( float ) );
+					buffer->mData = mReadBuffer.getChannel( ch );
+				}
+			}
+		}
+		else {
+			mBufferList = createNonInterleavedBufferList( framesPerBlock, getNumChannels() );
+			mRingBuffer.resize( framesPerBlock * getNumChannels() * mRingBufferPaddingFactor );
+		}
 
 		::AURenderCallbackStruct callbackStruct = { InputDeviceNodeAudioUnit::inputCallback, &mRenderData };
 		setAudioUnitProperty( mAudioUnit, kAudioOutputUnitProperty_SetInputCallback, callbackStruct, kAudioUnitScope_Global, DeviceBus::INPUT );
@@ -304,14 +335,26 @@ OSStatus InputDeviceNodeAudioUnit::inputCallback( void *data, ::AudioUnitRenderA
 	if( status != noErr )
 		return status;
 
-	if( inputDeviceNode->mRingBuffer.getAvailableWrite() >= nodeBufferList->mNumberBuffers * numFrames ) {
-		for( size_t ch = 0; ch < nodeBufferList->mNumberBuffers; ch++ ) {
-			float *channel = static_cast<float *>( nodeBufferList->mBuffers[ch].mData );
-			inputDeviceNode->mRingBuffer.write( channel, numFrames );
+	const size_t numChannels = nodeBufferList->mNumberBuffers;
+
+	if( inputDeviceNode->mConverter ) {
+		// nodeBufferList's buffers point to the channels of mReadBuffer
+		pair<size_t, size_t> count = inputDeviceNode->mConverter->convert( &inputDeviceNode->mReadBuffer, &inputDeviceNode->mConvertedReadBuffer );
+		for( size_t ch = 0; ch < numChannels; ch++ ) {
+			if( ! inputDeviceNode->mRingBuffer.write( inputDeviceNode->mConvertedReadBuffer.getChannel( ch ), count.second ) )
+				inputDeviceNode->markOverrun();
 		}
 	}
-	else
-		inputDeviceNode->markOverrun();
+	else {
+		if( inputDeviceNode->mRingBuffer.getAvailableWrite() >= nodeBufferList->mNumberBuffers * numFrames ) {
+			for( size_t ch = 0; ch < numChannels; ch++ ) {
+				float *channel = static_cast<float *>( nodeBufferList->mBuffers[ch].mData );
+				inputDeviceNode->mRingBuffer.write( channel, numFrames );
+			}
+		}
+		else
+			inputDeviceNode->markOverrun();
+	}
 
 	return noErr;
 }

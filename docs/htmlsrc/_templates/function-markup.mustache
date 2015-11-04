@@ -1,0 +1,21 @@
+<li class="row functionDef {{#description}}expandable{{/description}}">
+    <a class="anchor" name="{{anchor}}"></a>
+        
+    <div class="returnCol columns large-3">
+        {{^is_constructor}}
+        <div class="type">{{{return}}}</div>
+        {{/is_constructor}}
+    </div>
+    
+    <div class="definitionCol columns large-9">
+        {{#definition}}
+        <div class="definition"><strong>{{{name}}}</strong> {{#args}}{{args}}{{/args}}</div>
+        {{/definition}}
+
+        {{#description}}
+        <div class="description content">
+            {{{description}}}
+        </div>
+        {{/description}}
+    </div>
+</li>

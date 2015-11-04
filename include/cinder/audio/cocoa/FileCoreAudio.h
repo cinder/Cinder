@@ -61,10 +61,10 @@ class SourceFileCoreAudio : public SourceFile {
 	void		performSeek( size_t readPositionFrames )	override;
 	bool		supportsConversion()						override	{ return true; }
 
-	ExtAudioFilePtr					mExtAudioFile;
-	AudioBufferListShallowPtr		mBufferList;
-	ci::DataSourceRef				mDataSource;
-	size_t							mNumChannels, mSampleRateNative;
+	ExtAudioFilePtr				mExtAudioFile;
+	AudioBufferListPtr			mBufferList;
+	ci::DataSourceRef			mDataSource;
+	size_t						mNumChannels, mSampleRateNative;
 };
 
 class TargetFileCoreAudio : public TargetFile {
@@ -78,7 +78,7 @@ class TargetFileCoreAudio : public TargetFile {
 	static ::AudioFileTypeID getFileTypeIdFromExtension( const std::string &ext );
 
 	ExtAudioFilePtr				mExtAudioFile;
-	AudioBufferListShallowPtr	mBufferList;
+	AudioBufferListPtr			mBufferList;
 };
 
 } } } // namespace cinder::audio::cocoa

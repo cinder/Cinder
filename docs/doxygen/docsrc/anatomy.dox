@@ -1,7 +1,0 @@
-/**
-\page anatomypage The Anatomy of a Cinder App
-<H2>Introduction</H2>
-This diagram shows the program flow of a Cinder app.
-<H2>Structure</H2>
-\image html anatomy/CinderLoop.png
-*/

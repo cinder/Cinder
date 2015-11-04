@@ -1,0 +1,17 @@
+<li class="row expandable enumDef">
+    <a class="anchor" name="{{anchor}}"></a>
+    <div class="definitionCol columns large-3"></div>
+    <div class="definitionCol columns large-9">
+        <div class="definition"><strong>{{name}}</strong></div>
+        <div class="description content">
+            {{#description}}<p>{{{description}}}</p>{{/description}}
+            {
+            <ul>
+                {{#values}}
+                <li>{{name}}</li>
+                {{/values}}
+            </ul>
+            }
+        </div>
+    </div>
+</li>

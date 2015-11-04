@@ -1,0 +1,31 @@
+<div id="sub-nav">
+  	<ul>
+  		{{#namespaces.length }}
+  		<li><a href="#{{namespaces.anchor}}">Namespaces</a></li>
+  		{{/namespaces.length }}
+
+  		{{#classes.length }}
+  		<li><a href="#{{classes.anchor}}">Classes</a></li>
+  		{{/classes.length }}
+  		
+  		{{#typedefs.length }}
+  		<li><a href="#{{typedefs.anchor}}">Typedefs</a></li>
+  		{{/typedefs.length }}
+
+  		{{#enumerations.length }}
+  		<li><a href="#{{enumerations.anchor}}">Enumerations</a></li>
+  		{{/enumerations.length }}
+
+      {{#free_functions.length }}
+      <li><a href="#{{free_functions.anchor}}">Free Functions</a></li>
+      {{/free_functions.length }}
+
+  		{{#public_functions.length }}
+  		<li><a href="#{{public_functions.anchor}}">Functions</a></li>
+  		{{/public_functions.length }}
+
+  		{{#variables.length }}
+  		<li><a href="#{{variables.anchor}}">Variables</a></li>
+  		{{/variables.length }}
+  	</ul>
+</div>

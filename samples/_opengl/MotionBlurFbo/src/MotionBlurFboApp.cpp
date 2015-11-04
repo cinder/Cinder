@@ -31,7 +31,7 @@ const int SUBFRAMES = 16; // increasing this number increases quality
 
 void MotionBlurFboApp::setup()
 {
-	mCam.lookAt( vec3( 0, 0, 7 ), vec3( 0 ) );
+	mCam.lookAt( vec3( 0, 0, 2.5 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
 	mBatch = gl::Batch::create( geom::Cube().colors(), gl::getStockShader( gl::ShaderDef().color() ) );
@@ -43,7 +43,7 @@ void MotionBlurFboApp::setup()
 													.internalFormat( GL_RGB ) ).disableDepth() );
 #else
 	mAccumFbo = gl::Fbo::create( getWindowWidth(), getWindowHeight(),
-		gl::Fbo::Format().colorTexture( gl::Texture::Format().internalFormat( GL_RGB16F ) ).disableDepth() );
+						gl::Fbo::Format().colorTexture( gl::Fbo::Format().getDefaultColorTextureFormat().internalFormat( GL_RGB16F ) ).disableDepth() );
 #endif
 
 	mPaused = false;
@@ -77,11 +77,11 @@ void MotionBlurFboApp::draw()
 		double startTime = getElapsedSeconds();
 		for( int i = 0; i < SUBFRAMES; ++i ) {
 			// draw the Cube's sub-frame into mFbo
-			gl::enableDepthRead();
-			gl::enableDepthWrite();
+			gl::enableDepth();
 			gl::enableAlphaBlending();
 			mFbo->bindFramebuffer();
 			gl::clear();
+			gl::enableDepth();
 			gl::setMatrices( mCam );
 			updateCubeRotation( startTime + i / (float)SUBFRAMES );
 			gl::multModelMatrix( mCubeRotation );
@@ -91,14 +91,13 @@ void MotionBlurFboApp::draw()
 			mAccumFbo->bindFramebuffer();
 			gl::setMatricesWindow( mAccumFbo->getSize() );
 			gl::enableAdditiveBlending();
-			gl::disableDepthWrite();
-			gl::disableDepthRead();		
+			gl::enableDepth( false );
 			gl::draw( mFbo->getColorTexture() );
 		}
 	}
 	
 	gl::disableDepthRead();
-	gl::enableAlphaBlending();
+	gl::disableAlphaBlending();
 	// set the color to be 1/SUBFRAMES, which divides the HDR image by the number of sub-frames we rendered
 	gl::color( 1.0f / SUBFRAMES, 1.0f / SUBFRAMES, 1.0f / SUBFRAMES, 1 );
 	gl::setMatricesWindow( getWindowSize() );

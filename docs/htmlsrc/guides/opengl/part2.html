@@ -1,0 +1,258 @@
+<html>
+	<head>
+		<!-- Update title -->
+		<title>OpenGL in Cinder: The Third Dimension</title>
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+	</head>
+
+<body id="guide-contents" >
+
+<h2>The Third Dimension</h2>
+<p>Now that we've gotten comfortable with transformations and basic drawing, let's look at how to work in 3D. If you explore some of the <ci dox="ci::gl">ci::gl namespace</ci> you'll spot some 3D cousins to <ci>gl::drawSolidCircle()</ci> - functions like <ci>gl::drawSphere()</ci> and <ci>gl::drawCube()</ci>.</p>
+
+<p>Let's see what happens if we simply swap in a call to <ci>gl::drawCube()</ci>:</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+
+class BasicApp : public App {
+  public:
+	void draw() override;
+};
+
+void BasicApp::draw()
+{
+	gl::clear();
+	
+	// this will work, right?
+	gl::drawCube( vec3(), vec3( 2 ) );
+}
+
+CINDER_APP( BasicApp, RendererGl )
+</code></pre>
+</div>
+<div class="col">
+<img src="images/blank.png" class="shadow" />
+</div>
+</div>
+
+<p>Not quite what we'd hoped for. As you may recall, by default Cinder sets things up so that the coordinate systems match the <ci>app::Window</ci> pixel-for-pixel in 2D. However to draw in 3D we'll need to create a 3D coordinate system. The simplest way is to use a <ci>CameraPersp</ci>. This class allows us to create a virtual camera, specifying the point at which the camera is positioned, and the point that it is looking at. To position a CameraPersp at <code>(3, 3, 3)</code> and have it look at the origin <code>(0, 0, 0)</code>, we'll use <ci dox="CameraPersp::lookAt(const vec3&,const vec3&)">CameraPersp::lookAt( vec3( 3 ), vec3( 0 ) )</ci>.</p>
+
+<p>A very valuable tool for understanding the <ci>CameraPersp</ci> class is the sample by the same name:</p>
+
+<center>
+<img src="images/cameraPersp.jpg" class="shadow" />
+</center>
+<br />
+
+<p>After creating a <ci>CameraPersp</ci>, we need to set our matrices to match. In addition to the <code>Model</code> matrix discussed previously, Cinder maintains a <code>View</code> matrix and a <code>Projection</code> matrix. While the <code>Model</code> matrix is used to position an object in the world (more formally the <em>object to world-space transformation</em>), the <code>View</code> matrix is used to position our virtual "eye" in the world (the <em>world to view-space transformation</em>). We are manipulating a View matrix when we call routines like <ci dox="CameraPersp::lookAt(const vec3&,const vec3&)">CameraPersp::lookAt()</ci>, thereby modifying the position and orientation by which the virtual world is viewed. Other properties affect how 3D is projected onto the 2D image plane or screen. These include the aspect ratio, field-of-view and clipping planes. Together, this data represents a Projection matrix. By calling <ci>gl::setMatrices()</ci> and passing a <ci>CameraPersp</ci>, Cinder's OpenGL <code>View</code> and <code>Projection</code> matrices are set.</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+void BasicApp::draw()
+{
+	gl::clear();
+
+	CameraPersp cam;
+	cam.lookAt( vec3( 3, 3, 3 ), vec3( 0 ) );
+	gl::setMatrices( cam );
+
+	gl::drawCube( vec3(), vec3( 2 ) );
+}
+</code></pre>
+</div>
+<div class="col">
+<img src="images/basic_cube.png" class="shadow" />
+</div>
+</div>
+
+<p>While it lacks the shading that we normally associate with 3D, the result is the distinctive outline of a cube. We'll look at how to improve its look soon, and some of the details of how these matrices interact with convenience methods like <ci>gl::drawCube()</ci> will become apparent as well. In the meantime, a helpful debugging technique can be to print these matrices to the console. For this purpose we can use <ci>gl::getModelMatrix()</ci>, <ci>gl::getViewMatrix()</ci>, and <ci>gl::getProjectionMatrix()</ci>.</p>
+
+<div>
+<pre><code class="lang-cpp">console() << gl::getProjectionMatrix() << std::endl;
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code class="markup">[[    1.299,    0.000,    0.000,    0.000]
+ [    0.000,    1.732,    0.000,    0.000]
+ [    0.000,    0.000,   -1.002,   -2.002]
+ [    0.000,    0.000,   -1.000,    0.000]]
+</code></pre>
+</div>
+
+<p>Let's add some simple Lambert shading to the example. We'll get into shaders in more detail later, but for the time being we'll use <ci>gl::ShaderDef</ci>. This class allows us to easily create basic shaders without writing any GLSL shader code. In order to make this the active shader, we call <ci>gl::getStockShader()</ci>, and then <ci dox="gl::GlslProg::bind">bind()</ci> the result. Again, we'll go into much more depth with shaders in the upcoming sections, so don't get too hung up on this yet.</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+#include "cinder/gl/Shader.h"
+&hellip;
+
+void BasicApp::draw()
+{
+	gl::clear();
+
+	CameraPersp cam;
+	cam.lookAt( vec3( 3, 3, 3 ), vec3( 0 ) );
+	gl::setMatrices( cam );
+
+	auto lambert = gl::ShaderDef().lambert();
+	auto shader = gl::getStockShader( lambert );
+	shader->bind();
+	// draw sphere at the origin, radius 1
+	gl::drawSphere( vec3(), 1.0f );
+}
+</code></pre>
+</div>
+<div class="col">
+<img src="images/no_z_sphere.png" class="shadow" />
+</div>
+</div>
+
+<p>This is a start, but has a couple of visible problems. We've switched to <ci>gl::drawSphere()</ci>, but the sphere itself looks pretty low resolution. Perhaps more problematic though, there are mysterious black triangles on its left side. Fortunately the solution for both of these problems are straightforward:</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+void BasicApp::draw()
+{
+	gl::clear();
+	// turn on z-buffering
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
+
+	CameraPersp cam;
+	cam.lookAt( vec3( 3, 3, 3 ), vec3( 0 ) );
+	gl::setMatrices( cam );
+
+	auto lambert = gl::ShaderDef().lambert();
+	auto shader = gl::getStockShader( lambert );
+	shader->bind();
+	gl::drawSphere( vec3(), 1.0f, 40 );
+}
+</code></pre>
+</div>
+<div class="col">
+<img src="images/fixed_sphere.png" class="shadow" />
+</div>
+</div>
+
+<p>Much better. First, our black triangle artifact is gone, because we've enabled the Z-Buffer (also known as the depth buffer). If you're not familiar, Z-Buffering is the standard technique for preventing fragments from drawing on top of each other incorrectly. It uses a per-pixel depth value to ensure that no pixel draws on top of a pixel it is "behind." Various effects can be achieved by variously enabling and disabling depth buffer read and write, as well as its testing function, which we won't be exploring here. Just keep in mind that in the general 3D case, we want to call <ci>gl::enableDepthRead()</ci> and <ci>gl::enableDepthWrite()</ci>. In addition this example provides the optional third parameter to <ci>gl::drawSphere()</ci> which increases the subdivisions to 40, resulting in a much smoother appearance.</p>
+
+<a id="3d_transforms#"></a>
+<h2>3D Transforms</h2>
+
+<p>Let's extend the use of transformations into 3D:</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+void BasicApp::draw()
+{
+	gl::clear();
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
+
+	CameraPersp cam;
+	cam.lookAt( vec3( 5, 2, 5 ), vec3( 0, 1, 0 ) );
+	gl::setMatrices( cam );
+
+	auto lambert = gl::ShaderDef().lambert().color();
+	auto shader = gl::getStockShader( lambert );
+	shader->bind();
+	
+	int numSpheres = 64;
+	float maxAngle = M_PI * 7;
+	float spiralRadius = 1;
+	float height = 3;
+	
+	for( int s = 0; s < numSpheres; ++s ) {
+		float rel = s / (float)numSpheres;
+		float angle = rel * maxAngle;
+		float y = rel * height;
+		float r = rel * spiralRadius * spiralRadius;
+		vec3 offset( r * cos( angle ), y, r * sin( angle ) );
+		
+		gl::pushModelMatrix();
+		gl::translate( offset );
+		gl::color( Color( CM_HSV, rel, 1, 1 ) );
+		gl::drawSphere( vec3(), 0.1f, 30 );
+		gl::popModelMatrix();
+	}
+}
+</code></pre>
+</div>
+<div class="col">
+<img src="images/sphere_spiral.png" class="shadow" />
+</div>
+</div>
+
+<p>One change this snippet highlights is the addition of <ci dox="gl::ShaderDef::color">.color()</ci> on the Lambert shader. It should otherwise be familiar. Let's look at introducing a bit of animation now.</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+void BasicApp::draw()
+{
+	gl::clear();
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
+
+	CameraPersp cam;
+	cam.lookAt( vec3( 3, 4.5, 4.5 ), vec3( 0, 1, 0 ) );
+	gl::setMatrices( cam );
+
+	auto lambert = gl::ShaderDef().lambert().color();
+	auto shader = gl::getStockShader( lambert );
+	shader->bind();
+	
+	int numSpheres = 64;
+	float maxAngle = M_PI * 7;
+	float spiralRadius = 1;
+	float height = 2;
+	float anim = getElapsedFrames() / 30.0f;
+
+	for( int s = 0; s < numSpheres; ++s ) {
+		float rel = s / (float)numSpheres;
+		float angle = rel * maxAngle;
+		float y = fabs( cos( rel * M_PI + anim ) ) * height;
+		float r = rel * spiralRadius;
+		vec3 offset( r * cos( angle ), y / 2, r * sin( angle ) );
+		
+		gl::pushModelMatrix();
+		gl::translate( offset );
+		gl::scale( vec3( 0.05f, y, 0.05f ) );
+		gl::color( Color( CM_HSV, rel, 1, 1 ) );
+		gl::drawCube( vec3(), vec3( 1 ) );
+		gl::popModelMatrix();
+	}
+}
+</code></pre>
+</div>
+<div class="col">
+<video width="400" height="400" autoplay loop>
+	<source src="images/3d_transform.mp4" type="video/mp4">
+	Your browser does not support embedded video.
+</video>
+</div>
+</div>
+
+<p>Here we're creating the <em>anim</em> variable as a function of <ci>getElapsedFrames()</ci> and then using it to govern the scale of the boxes.</p>
+
+<p>In the next section we'll graduate from the GL convenience methods and look at using <ci>gl::Batch</ci> to improve performance.</p>
+
+<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+</body>
+</html>

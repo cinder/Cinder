@@ -1,3 +1,5 @@
+#version 100
+
 uniform mat4	uModelViewProjection;
 uniform mat3	uNormalMatrix;
 

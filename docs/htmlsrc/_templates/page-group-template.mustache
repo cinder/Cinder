@@ -1,0 +1,185 @@
+{{!-- START page-group-template.mustache ============= -->}}
+
+<div class="row content-row">
+
+    <!-- side nav -->
+    <div id="side-nav" class="columns large-3" >
+    </div>
+
+
+    <!-- main content area -->
+    <div class="columns large-9" data-equalizer-watch="content">
+
+        <div id="container">
+
+            <div class="content">
+                <!-- content -->
+                <h1 id="page-title">
+                    <em>{{name}}</em> 
+                    Module Reference
+                </h1>
+
+                <!-- description and side bar -->
+                <div id="description" class="row">
+                    <div id="description-prose" class="prose columns large-9">
+                        {{{description}}}
+                        {{{prefix}}}
+                    </div>
+                </div>
+                <hr/>
+            </div>
+
+       
+            <div class="reference-lists">
+                <!-- show/hide buttons -->
+                <div id="show-hide">
+                    <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+                </div>
+
+                <!-- subgroups -->
+                {{#subgroups.length}}
+                {{#subgroups}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Modules</h1>
+                    <ul>
+                        {{#list}}
+                        <li><a href="{{link}}">{{label}}</a></li>
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/subgroups}}
+                {{/subgroups.length}}
+
+                <!-- typedefs -->
+                {{#typedefs.length}}
+                {{#typedefs}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Typedefs</h1>
+                    <ul>
+                       {{#list}}
+                       {{> function-markup }}
+                       {{/list}}
+                   </ul>
+               </section>
+               <hr/>
+               {{/typedefs}}
+               {{/typedefs.length}}
+
+                <!-- public types -->
+                {{#public_types.length}}
+                {{#public_types}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Public Types</h1>
+                    <ul>
+                        {{#list}}
+                        {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/public_types}}
+                {{/public_types.length}}
+
+                <!-- enumerations -->
+                {{#enumerations.length}}
+                {{#enumerations}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Enumerations</h1>
+                    <ul>
+                        {{#list}}
+                        {{> enum-markup}}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/enumerations}}
+                {{/enumerations.length}}
+
+                <!-- public member functions -->
+                {{#public_functions.length}}
+                <a name="{{public_functions.anchor}}"></a>
+                <section>
+                    <h1>Public Member Functions</h1>
+                    {{! function -> "Public Member Functions", }}
+                    {{! interface -> "interface": "Instance Methods" }}
+                    <ul>
+                        {{#public_functions.list}}
+                        {{> function-markup }}
+                        {{/public_functions.list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/public_functions.length}}
+
+                <!-- public member functions -->
+                {{#public_static_functions.length}}
+                <a name="{{public_static_functions.anchor}}"></a>
+                <section>
+                    <h1>Static Public Member Functions</h1>
+                    <ul>
+                        {{#public_static_functions.list}}
+                        {{> function-markup }}
+                        {{/public_static_functions.list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/public_static_functions.length}}
+
+                <!-- protected member functions -->
+                {{#protected_functions}}
+                {{#length}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Protected Member Functions</h1>
+                    <ul>
+                        {{#list}}
+                        {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/length}}
+                {{/protected_functions}}
+
+                <!-- protected attributes -->
+                {{#protected_attrs}}
+                {{#length}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Protected Attributes</h1>
+                    <ul>
+                        {{#list}}
+                        {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/length}}
+                {{/protected_attrs}}
+
+                <!-- friends -->
+                {{#friends}}
+                {{#length}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Friends</h1>
+                    <ul>
+                        {{#list}}
+                        {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/length}}
+                {{/friends}}
+
+            </div>
+
+        </div>  <!-- end #container -->
+    </div> <!-- end column -->
+</div> <!-- row -->

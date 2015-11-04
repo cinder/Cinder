@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Update title -->
+        <title>Path2D Guide: Part 2</title>
+
+        <!-- keywords used for searching -->
+        <meta name="keywords" content="guide">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- reference to Cinder classes -->
+        <!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+
+        <!-- master stylesheet - these links will be replaced when compiled -->
+        <link rel="stylesheet" href="../../_assets/css/foundation.css">
+        <link rel="stylesheet" href="../../_assets/css/prism.css">
+        <link rel="stylesheet" href="../../_assets/css/style.css">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+        <!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+        <link rel="stylesheet" href="path2d.css">
+    </head>
+
+    <body id="guide-contents" >    
+
+        <!-- CONTENT STARTS HERE -->
+        <div class="">
+            
+            <h1>Part 2: Path2D Drawing Functions</h1>
+            <p>There are a variety of Path2d drawing functions, all of which result in paths that are constructed of the same basic segment types explained in the previous section. These are the basic drawing functions:</p>
+            <ul>
+                <li><strong><ci dox="cinder::Path2d::moveTo">moveTo</ci></strong>: Moves the path2d to a start point. All subsequent drawing functions will continue from this point. Accepts 1 coordinate and results in a <strong>MOVETO</strong> segment.<br>
+                    <!-- <code>moveTo (const vec2 &amp;p)</code><br>
+                    <code>moveTo (float x, float y)</code> --></li>
+                <li><strong><ci dox="cinder::Path2d::lineTo">lineTo</ci></strong>: Accepts 1 coordinate and draws a line from the previously specified point in the path to the given one. Results in a <strong>LINETO</strong> segment.</li>
+                <li><strong><ci dox="cinder::Path2d::quadTo">quadTo</ci></strong>: Accepts 1 central handle point and 1 end point to create a quadratic bezier curve resulting in a <strong>QUADTO</strong> segment.</li>
+                <li><strong><ci dox="cinder::Path2d::curveTo">curveTo</ci></strong>: Accepts 2 handle points and 1 end point to create a cubic bezier curve resulting in a <strong>CUBICTO</strong> segment </li>
+                <li><strong><ci dox="cinder::Path2d::arc">arc</ci></strong>: Accepts a center point, a radius, start angle (in radians), end angle (in radians), and optional boolean for direction of the arc (defaults to true for forward). This results in a <strong>CUBICTO</strong> segment.</li>
+                <li><strong><ci dox="cinder::Path2d::arcTo">arcTo</ci></strong>: Draws a line segment from the current point toward the first point given to draw a rounded corner. This segment terminates in an arc with the specified radius whose end is tangent to the line segment connecting the two points specified. Accepts a target point, a tangent position, and a radius. Results in a path composed of <strong>LINETO</strong> and/or <strong>CUBICTO</strong> segments.</li>
+            </ul>
+            
+            <iframe seamless src="_tut_part2.html" id="tutorial"  width="100%" > </iframe>
+
+            <div id="bottomNav">
+                &laquo; <a href="part1.html">Part 1: Path2d Basics</a> | 
+                <a href="part3.html">Part 3: Advanced Functions</a> &raquo;
+            </div>
+                                          
+        </div>
+                
+        
+        <!-- END CONTENT -->
+
+        <!-- Scripts -->
+        <script src="iframeResizer.min.js" type="text/javascript"></script>
+        
+        <script type="text/javascript">
+            iFrameResize({log:false});
+        </script> 
+
+    </body>
+</html> 

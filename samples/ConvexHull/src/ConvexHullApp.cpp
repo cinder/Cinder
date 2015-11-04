@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ConvexHull.h"
 #include "cinder/Rand.h"
 #include "cinder/params/Params.h"
