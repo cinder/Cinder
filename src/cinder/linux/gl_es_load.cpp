@@ -1,3 +1,25 @@
+/*
+ Copyright (c) 2015, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+*/
 #include "cinder/gl/platform.h"
 #include "cinder/linux/gl_es_load.h"
 
@@ -11,8 +33,22 @@
 	#include <android/log.h>
 #endif
 
+// -----------------------------------------------------------------------------
+// iOS
+// -----------------------------------------------------------------------------
+#if defined( CINDER_COCOA_TOUCH )
+
+// Nothing for now
+
+// -----------------------------------------------------------------------------
+// Android and Linux
+// -----------------------------------------------------------------------------
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+
 static bool 	hasExtension( const std::string& extName );
 static void* 	loadEglProc( const std::string& procName ) ;
+static void 	clearLoadCount();
+static uint32_t	getLoadCount();
 
 #define _GL_ES_LOAD_DEBUG_ 
 
@@ -34,6 +70,8 @@ static void _dbg_out( const std::string& s )
 		_dbg_out( tmpss.str() );	\
 	}
 
+#define EXT_QUOTE_STR( STR ) \
+	#STR
 
 // ----------------------------------------------------------------------------
 // OpenGL ES 3.0
@@ -146,8 +184,9 @@ PFNGLGETINTERNALFORMATIVPROC fnptr_ci_glGetInternalformativ = nullptr;
 
 void gl_es_3_0_load() 
 {
-	DEBUG( "gl_es_3_0_load entered..." );
+	//DEBUG( "gl_es_3_0_load entered..." );
 
+	clearLoadCount();
 	fnptr_ci_glReadBuffer = (PFNGLREADBUFFERPROC)loadEglProc("glReadBuffer");
 	fnptr_ci_glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC)loadEglProc("glDrawRangeElements");
 	fnptr_ci_glTexImage3D = (PFNGLTEXIMAGE3DPROC)loadEglProc("glTexImage3D");
@@ -253,7 +292,7 @@ void gl_es_3_0_load()
 	fnptr_ci_glTexStorage3D = (PFNGLTEXSTORAGE3DPROC)loadEglProc("glTexStorage3D");
 	fnptr_ci_glGetInternalformativ = (PFNGLGETINTERNALFORMATIVPROC)loadEglProc("glGetInternalformativ");
 
-	DEBUG( "gl_es_3_0_load: SUCCESSFUL" );
+	DEBUG( "gl_es_3_0_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");
 }
 #endif // defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
 
@@ -332,8 +371,9 @@ PFNGLVERTEXBINDINGDIVISORPROC fnptr_ci_glVertexBindingDivisor = nullptr;
 
 void gl_es_3_1_load()
 {
-	DEBUG( "gl_es_3_1_load entered..." );
+	//DEBUG( "gl_es_3_1_load entered..." );
 
+	clearLoadCount();
 	fnptr_ci_glDispatchCompute = (PFNGLDISPATCHCOMPUTEPROC)loadEglProc("glDispatchCompute"); 
 	fnptr_ci_glDispatchComputeIndirect = (PFNGLDISPATCHCOMPUTEINDIRECTPROC)loadEglProc("glDispatchComputeIndirect"); 
 	fnptr_ci_glDrawArraysIndirect = (PFNGLDRAWARRAYSINDIRECTPROC)loadEglProc("glDrawArraysIndirect"); 
@@ -403,7 +443,7 @@ void gl_es_3_1_load()
 	fnptr_ci_glVertexAttribBinding = (PFNGLVERTEXATTRIBBINDINGPROC)loadEglProc("glVertexAttribBinding"); 
 	fnptr_ci_glVertexBindingDivisor = (PFNGLVERTEXBINDINGDIVISORPROC)loadEglProc("glVertexBindingDivisor"); 
 
-	DEBUG( "gl_es_3_1_load: SUCCESSFUL" );
+	DEBUG( "gl_es_3_1_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");
 }
 #endif // defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1 )
 
@@ -458,8 +498,9 @@ PFNGLTEXSTORAGE3DMULTISAMPLEPROC fnptr_ci_glTexStorage3DMultisample = nullptr;
 
 void gl_es_3_2_load()
 {
-	DEBUG( "gl_es_3_2_load entered..." );
+	//DEBUG( "gl_es_3_2_load entered..." );
 
+	clearLoadCount();
 	fnptr_ci_glBlendBarrier = (PFNGLBLENDBARRIERPROC)loadEglProc("glBlendBarrier"); 
 	fnptr_ci_glCopyImageSubData = (PFNGLCOPYIMAGESUBDATAPROC)loadEglProc("glCopyImageSubData"); 
 	fnptr_ci_glDebugMessageControl = (PFNGLDEBUGMESSAGECONTROLPROC)loadEglProc("glDebugMessageControl"); 
@@ -505,7 +546,7 @@ void gl_es_3_2_load()
 	fnptr_ci_glTexBufferRange = (PFNGLTEXBUFFERRANGEPROC)loadEglProc("glTexBufferRange"); 
 	fnptr_ci_glTexStorage3DMultisample = (PFNGLTEXSTORAGE3DMULTISAMPLEPROC)loadEglProc("glTexStorage3DMultisample"); 
 
-	DEBUG( "gl_es_3_2_load: SUCCESSFUL" );	
+	DEBUG( "gl_es_3_2_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");
 }
 #endif // defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_2 )
 
@@ -513,6 +554,11 @@ void gl_es_3_2_load()
 // OpenGL ES 2.0 Extensions
 // ----------------------------------------------------------------------------
 #if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
+
+#define extstr_GL_NV_read_buffer 			EXT_QUOTE_STR(GL_NV_read_buffer)
+#define extstr_GL_OES_vertex_array_object	EXT_QUOTE_STR(GL_OES_vertex_array_object)
+#define extstr_GL_ARB_vertex_array_object	EXT_QUOTE_STR(GL_ARB_vertex_array_object)
+
 PFNGLBLENDBARRIERKHRPROC fnptr_ci_glBlendBarrierKHR = nullptr; 
 PFNGLDEBUGMESSAGECONTROLKHRPROC fnptr_ci_glDebugMessageControlKHR = nullptr; 
 PFNGLDEBUGMESSAGEINSERTKHRPROC fnptr_ci_glDebugMessageInsertKHR = nullptr; 
@@ -580,10 +626,6 @@ PFNGLSELECTPERFMONITORCOUNTERSAMDPROC fnptr_ci_glSelectPerfMonitorCountersAMD = 
 PFNGLBEGINPERFMONITORAMDPROC fnptr_ci_glBeginPerfMonitorAMD = nullptr; 
 PFNGLENDPERFMONITORAMDPROC fnptr_ci_glEndPerfMonitorAMD = nullptr; 
 PFNGLGETPERFMONITORCOUNTERDATAAMDPROC fnptr_ci_glGetPerfMonitorCounterDataAMD = nullptr; 
-PFNGLBLITFRAMEBUFFERANGLEPROC fnptr_ci_glBlitFramebufferANGLE = nullptr; 
-PFNGLDRAWARRAYSINSTANCEDANGLEPROC fnptr_ci_glDrawArraysInstancedANGLE = nullptr; 
-PFNGLDRAWELEMENTSINSTANCEDANGLEPROC fnptr_ci_glDrawElementsInstancedANGLE = nullptr; 
-PFNGLVERTEXATTRIBDIVISORANGLEPROC fnptr_ci_glVertexAttribDivisorANGLE = nullptr; 
 PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC fnptr_ci_glGetTranslatedShaderSourceANGLE = nullptr; 
 PFNGLCOPYTEXTURELEVELSAPPLEPROC fnptr_ci_glCopyTextureLevelsAPPLE = nullptr; 
 PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC fnptr_ci_glResolveMultisampleFramebufferAPPLE = nullptr; 
@@ -633,9 +675,6 @@ PFNGLDRAWELEMENTSBASEVERTEXEXTPROC fnptr_ci_glDrawElementsBaseVertexEXT = nullpt
 PFNGLDRAWRANGEELEMENTSBASEVERTEXEXTPROC fnptr_ci_glDrawRangeElementsBaseVertexEXT = nullptr; 
 PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXEXTPROC fnptr_ci_glDrawElementsInstancedBaseVertexEXT = nullptr; 
 PFNGLMULTIDRAWELEMENTSBASEVERTEXEXTPROC fnptr_ci_glMultiDrawElementsBaseVertexEXT = nullptr; 
-PFNGLDRAWARRAYSINSTANCEDEXTPROC fnptr_ci_glDrawArraysInstancedEXT = nullptr; 
-PFNGLDRAWELEMENTSINSTANCEDEXTPROC fnptr_ci_glDrawElementsInstancedEXT = nullptr; 
-PFNGLVERTEXATTRIBDIVISOREXTPROC fnptr_ci_glVertexAttribDivisorEXT = nullptr; 
 PFNGLMULTIDRAWARRAYSEXTPROC fnptr_ci_glMultiDrawArraysEXT = nullptr; 
 PFNGLMULTIDRAWELEMENTSEXTPROC fnptr_ci_glMultiDrawElementsEXT = nullptr; 
 PFNGLMULTIDRAWARRAYSINDIRECTEXTPROC fnptr_ci_glMultiDrawArraysIndirectEXT = nullptr; 
@@ -746,8 +785,6 @@ PFNGLCOPYBUFFERSUBDATANVPROC fnptr_ci_glCopyBufferSubDataNV = nullptr;
 PFNGLCOVERAGEMASKNVPROC fnptr_ci_glCoverageMaskNV = nullptr; 
 PFNGLCOVERAGEOPERATIONNVPROC fnptr_ci_glCoverageOperationNV = nullptr; 
 PFNGLDRAWBUFFERSNVPROC fnptr_ci_glDrawBuffersNV = nullptr; 
-PFNGLDRAWARRAYSINSTANCEDNVPROC fnptr_ci_glDrawArraysInstancedNV = nullptr; 
-PFNGLDRAWELEMENTSINSTANCEDNVPROC fnptr_ci_glDrawElementsInstancedNV = nullptr; 
 PFNGLDELETEFENCESNVPROC fnptr_ci_glDeleteFencesNV = nullptr; 
 PFNGLGENFENCESNVPROC fnptr_ci_glGenFencesNV = nullptr; 
 PFNGLISFENCENVPROC fnptr_ci_glIsFenceNV = nullptr; 
@@ -756,11 +793,9 @@ PFNGLGETFENCEIVNVPROC fnptr_ci_glGetFenceivNV = nullptr;
 PFNGLFINISHFENCENVPROC fnptr_ci_glFinishFenceNV = nullptr; 
 PFNGLSETFENCENVPROC fnptr_ci_glSetFenceNV = nullptr; 
 PFNGLFRAGMENTCOVERAGECOLORNVPROC fnptr_ci_glFragmentCoverageColorNV = nullptr; 
-PFNGLBLITFRAMEBUFFERNVPROC fnptr_ci_glBlitFramebufferNV = nullptr; 
 PFNGLCOVERAGEMODULATIONTABLENVPROC fnptr_ci_glCoverageModulationTableNV = nullptr; 
 PFNGLGETCOVERAGEMODULATIONTABLENVPROC fnptr_ci_glGetCoverageModulationTableNV = nullptr; 
 PFNGLCOVERAGEMODULATIONNVPROC fnptr_ci_glCoverageModulationNV = nullptr; 
-PFNGLVERTEXATTRIBDIVISORNVPROC fnptr_ci_glVertexAttribDivisorNV = nullptr; 
 PFNGLGETINTERNALFORMATSAMPLEIVNVPROC fnptr_ci_glGetInternalformatSampleivNV = nullptr; 
 PFNGLUNIFORMMATRIX2X3FVNVPROC fnptr_ci_glUniformMatrix2x3fvNV = nullptr; 
 PFNGLUNIFORMMATRIX3X2FVNVPROC fnptr_ci_glUniformMatrix3x2fvNV = nullptr; 
@@ -863,35 +898,41 @@ PFNGLEXTGETPROGRAMBINARYSOURCEQCOMPROC fnptr_ci_glExtGetProgramBinarySourceQCOM 
 PFNGLSTARTTILINGQCOMPROC fnptr_ci_glStartTilingQCOM = nullptr; 
 PFNGLENDTILINGQCOMPROC fnptr_ci_glEndTilingQCOM = nullptr; 
 
-PFNGLMAPBUFFEROESPROC fnptr_ci_glMapBufferOES = nullptr; 
 
 #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
-	// GLES3 will already have glUnmapBuffer
-	PFNGLUNMAPBUFFEROESPROC fnptr_ci_glUnmapBufferOES = nullptr; 
-#endif
-
-#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
+	// GL_OES_vertex_array_object
 	PFNGLBINDVERTEXARRAYOESPROC fnptr_ci_glBindVertexArrayOES = nullptr; 
 	PFNGLDELETEVERTEXARRAYSOESPROC fnptr_ci_glDeleteVertexArraysOES = nullptr; 
 	PFNGLGENVERTEXARRAYSOESPROC fnptr_ci_glGenVertexArraysOES = nullptr; 
 	PFNGLISVERTEXARRAYOESPROC fnptr_ci_glIsVertexArrayOES = nullptr; 
 
+	// GL_OES_mapbuffer
+    PFNGLMAPBUFFEROESPROC fnptr_ci_glMapBufferOES = nullptr; 
+	PFNGLUNMAPBUFFEROESPROC fnptr_ci_glUnmapBufferOES = nullptr; 
+
+	// GL_EXT_map_buffer_range
 	PFNGLMAPBUFFERRANGEEXTPROC fnptr_ci_glMapBufferRangeEXT = nullptr; 
 	PFNGLFLUSHMAPPEDBUFFERRANGEEXTPROC fnptr_ci_glFlushMappedBufferRangeEXT = nullptr; 
 
+	// GL_EXT_multisampled_render_to_texture and the like
 	PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC fnptr_ci_glRenderbufferStorageMultisample = nullptr; 
-#endif
 
-// Android Extension Pack
-#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
-	PFNGLFRAMEBUFFERTEXTUREPROC fnptr_ci_glFramebufferTexture = nullptr;
-	PFNGLPATCHPARAMETERIPROC fnptr_ci_glPatchParameteri = nullptr;
+	// GL_NV_framebuffer_blit, GL_ANGLE_framebuffer_blit
+	PFNGLBLITFRAMEBUFFERANGLEPROC fnptr_ci_glBlitFramebuffer = nullptr; 
+
+	// GL_ANGLE_instanced_arrays, GL_EXT_draw_instanced, GL_NV_draw_instanced
+	PFNGLDRAWARRAYSINSTANCEDPROC fnptr_ci_glDrawArraysInstanced = nullptr; 
+	PFNGLDRAWELEMENTSINSTANCEDPROC fnptr_ci_glDrawElementsInstanced = nullptr; 
+
+	// GL_ANGLE_instanced_arrays, GL_EXT_instanced_arrays, GL_NV_instanced_arrays
+	PFNGLVERTEXATTRIBDIVISORPROC fnptr_ci_glVertexAttribDivisor = nullptr; 
 #endif
 
 void gl_es_2_0_ext_load() 
 {
-	DEBUG( "gl_es_2_0_ext_load entered..." );
+	//DEBUG( "gl_es_2_0_ext_load entered..." );
 
+	clearLoadCount();
 	fnptr_ci_glBlendBarrierKHR = (PFNGLBLENDBARRIERKHRPROC)loadEglProc("glBlendBarrierKHR"); 
 	fnptr_ci_glDebugMessageControlKHR = (PFNGLDEBUGMESSAGECONTROLKHRPROC)loadEglProc("glDebugMessageControlKHR"); 
 	fnptr_ci_glDebugMessageInsertKHR = (PFNGLDEBUGMESSAGEINSERTKHRPROC)loadEglProc("glDebugMessageInsertKHR"); 
@@ -959,10 +1000,6 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glBeginPerfMonitorAMD = (PFNGLBEGINPERFMONITORAMDPROC)loadEglProc("glBeginPerfMonitorAMD"); 
 	fnptr_ci_glEndPerfMonitorAMD = (PFNGLENDPERFMONITORAMDPROC)loadEglProc("glEndPerfMonitorAMD"); 
 	fnptr_ci_glGetPerfMonitorCounterDataAMD = (PFNGLGETPERFMONITORCOUNTERDATAAMDPROC)loadEglProc("glGetPerfMonitorCounterDataAMD"); 
-	fnptr_ci_glBlitFramebufferANGLE = (PFNGLBLITFRAMEBUFFERANGLEPROC)loadEglProc("glBlitFramebufferANGLE"); 
-	fnptr_ci_glDrawArraysInstancedANGLE = (PFNGLDRAWARRAYSINSTANCEDANGLEPROC)loadEglProc("glDrawArraysInstancedANGLE"); 
-	fnptr_ci_glDrawElementsInstancedANGLE = (PFNGLDRAWELEMENTSINSTANCEDANGLEPROC)loadEglProc("glDrawElementsInstancedANGLE"); 
-	fnptr_ci_glVertexAttribDivisorANGLE = (PFNGLVERTEXATTRIBDIVISORANGLEPROC)loadEglProc("glVertexAttribDivisorANGLE"); 
 	fnptr_ci_glGetTranslatedShaderSourceANGLE = (PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC)loadEglProc("glGetTranslatedShaderSourceANGLE"); 
 	fnptr_ci_glCopyTextureLevelsAPPLE = (PFNGLCOPYTEXTURELEVELSAPPLEPROC)loadEglProc("glCopyTextureLevelsAPPLE"); 
 	fnptr_ci_glResolveMultisampleFramebufferAPPLE = (PFNGLRESOLVEMULTISAMPLEFRAMEBUFFERAPPLEPROC)loadEglProc("glResolveMultisampleFramebufferAPPLE"); 
@@ -1012,9 +1049,6 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glDrawRangeElementsBaseVertexEXT = (PFNGLDRAWRANGEELEMENTSBASEVERTEXEXTPROC)loadEglProc("glDrawRangeElementsBaseVertexEXT"); 
 	fnptr_ci_glDrawElementsInstancedBaseVertexEXT = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXEXTPROC)loadEglProc("glDrawElementsInstancedBaseVertexEXT"); 
 	fnptr_ci_glMultiDrawElementsBaseVertexEXT = (PFNGLMULTIDRAWELEMENTSBASEVERTEXEXTPROC)loadEglProc("glMultiDrawElementsBaseVertexEXT"); 
-	fnptr_ci_glDrawArraysInstancedEXT = (PFNGLDRAWARRAYSINSTANCEDEXTPROC)loadEglProc("glDrawArraysInstancedEXT"); 
-	fnptr_ci_glDrawElementsInstancedEXT = (PFNGLDRAWELEMENTSINSTANCEDEXTPROC)loadEglProc("glDrawElementsInstancedEXT");
-	fnptr_ci_glVertexAttribDivisorEXT = (PFNGLVERTEXATTRIBDIVISOREXTPROC)loadEglProc("glVertexAttribDivisorEXT"); 
 	fnptr_ci_glMultiDrawArraysEXT = (PFNGLMULTIDRAWARRAYSEXTPROC)loadEglProc("glMultiDrawArraysEXT"); 
 	fnptr_ci_glMultiDrawElementsEXT = (PFNGLMULTIDRAWELEMENTSEXTPROC)loadEglProc("glMultiDrawElementsEXT"); 
 	fnptr_ci_glMultiDrawArraysIndirectEXT = (PFNGLMULTIDRAWARRAYSINDIRECTEXTPROC)loadEglProc("glMultiDrawArraysIndirectEXT"); 
@@ -1125,8 +1159,6 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glCoverageMaskNV = (PFNGLCOVERAGEMASKNVPROC)loadEglProc("glCoverageMaskNV"); 
 	fnptr_ci_glCoverageOperationNV = (PFNGLCOVERAGEOPERATIONNVPROC)loadEglProc("glCoverageOperationNV"); 
 	fnptr_ci_glDrawBuffersNV = (PFNGLDRAWBUFFERSNVPROC)loadEglProc("glDrawBuffersNV"); 
-	fnptr_ci_glDrawArraysInstancedNV = (PFNGLDRAWARRAYSINSTANCEDNVPROC)loadEglProc("glDrawArraysInstancedNV"); 
-	fnptr_ci_glDrawElementsInstancedNV = (PFNGLDRAWELEMENTSINSTANCEDNVPROC)loadEglProc("glDrawElementsInstancedNV"); 
 	fnptr_ci_glDeleteFencesNV = (PFNGLDELETEFENCESNVPROC)loadEglProc("glDeleteFencesNV"); 
 	fnptr_ci_glGenFencesNV = (PFNGLGENFENCESNVPROC)loadEglProc("glGenFencesNV"); 
 	fnptr_ci_glIsFenceNV = (PFNGLISFENCENVPROC)loadEglProc("glIsFenceNV"); 
@@ -1135,11 +1167,9 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glFinishFenceNV = (PFNGLFINISHFENCENVPROC)loadEglProc("glFinishFenceNV"); 
 	fnptr_ci_glSetFenceNV = (PFNGLSETFENCENVPROC)loadEglProc("glSetFenceNV"); 
 	fnptr_ci_glFragmentCoverageColorNV = (PFNGLFRAGMENTCOVERAGECOLORNVPROC)loadEglProc("glFragmentCoverageColorNV"); 
-	fnptr_ci_glBlitFramebufferNV = (PFNGLBLITFRAMEBUFFERNVPROC)loadEglProc("glBlitFramebufferNV"); 
 	fnptr_ci_glCoverageModulationTableNV = (PFNGLCOVERAGEMODULATIONTABLENVPROC)loadEglProc("glCoverageModulationTableNV"); 
 	fnptr_ci_glGetCoverageModulationTableNV = (PFNGLGETCOVERAGEMODULATIONTABLENVPROC)loadEglProc("glGetCoverageModulationTableNV"); 
 	fnptr_ci_glCoverageModulationNV = (PFNGLCOVERAGEMODULATIONNVPROC)loadEglProc("glCoverageModulationNV"); 
-	fnptr_ci_glVertexAttribDivisorNV = (PFNGLVERTEXATTRIBDIVISORNVPROC)loadEglProc("glVertexAttribDivisorNV"); 
 	fnptr_ci_glGetInternalformatSampleivNV = (PFNGLGETINTERNALFORMATSAMPLEIVNVPROC)loadEglProc("glGetInternalformatSampleivNV"); 
 	fnptr_ci_glUniformMatrix2x3fvNV = (PFNGLUNIFORMMATRIX2X3FVNVPROC)loadEglProc("glUniformMatrix2x3fvNV"); 
 	fnptr_ci_glUniformMatrix3x2fvNV = (PFNGLUNIFORMMATRIX3X2FVNVPROC)loadEglProc("glUniformMatrix3x2fvNV"); 
@@ -1205,7 +1235,11 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glProgramPathFragmentInputGenNV = (PFNGLPROGRAMPATHFRAGMENTINPUTGENNVPROC)loadEglProc("glProgramPathFragmentInputGenNV"); 
 	fnptr_ci_glGetProgramResourcefvNV = (PFNGLGETPROGRAMRESOURCEFVNVPROC)loadEglProc("glGetProgramResourcefvNV"); 
 	fnptr_ci_glPolygonModeNV = (PFNGLPOLYGONMODENVPROC)loadEglProc("glPolygonModeNV"); 
-	fnptr_ci_glReadBufferNV = (PFNGLREADBUFFERNVPROC)loadEglProc("glReadBufferNV"); 
+
+	if( hasExtension( extstr_GL_NV_read_buffer ) ) {
+		fnptr_ci_glReadBufferNV = (PFNGLREADBUFFERNVPROC)loadEglProc("glReadBufferNV"); 
+	}
+
 	fnptr_ci_glFramebufferSampleLocationsfvNV = (PFNGLFRAMEBUFFERSAMPLELOCATIONSFVNVPROC)loadEglProc("glFramebufferSampleLocationsfvNV"); 
 	fnptr_ci_glNamedFramebufferSampleLocationsfvNV = (PFNGLNAMEDFRAMEBUFFERSAMPLELOCATIONSFVNVPROC)loadEglProc("glNamedFramebufferSampleLocationsfvNV"); 
 	fnptr_ci_glResolveDepthValuesNV = (PFNGLRESOLVEDEPTHVALUESNVPROC)loadEglProc("glResolveDepthValuesNV"); 
@@ -1242,22 +1276,20 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glStartTilingQCOM = (PFNGLSTARTTILINGQCOMPROC)loadEglProc("glStartTilingQCOM"); 
 	fnptr_ci_glEndTilingQCOM = (PFNGLENDTILINGQCOMPROC)loadEglProc("glEndTilingQCOM"); 	
 
-	// GL_OES_mapbuffer
-	if( hasExtension( "GL_OES_mapbuffer" ) ) {
-		fnptr_ci_glMapBufferOES = (PFNGLMAPBUFFEROESPROC)loadEglProc("glMapBufferOES"); 	
-		// GLES3 will already have glUnmapBuffer
-		#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
-			fnptr_ci_glUnmapBufferOES = (PFNGLUNMAPBUFFEROESPROC)loadEglProc("glUnmapBufferOES");
-		#endif		
-	}
 
 #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
 	// GL_OES_vertex_array_object
-	if( hasExtension( "GL_OES_vertex_array_object" ) || hasExtension( "GL_ARB_vertex_array_object" ) ) {
+	if( hasExtension( extstr_GL_OES_vertex_array_object ) || hasExtension( "GL_ARB_vertex_array_object" ) ) {
 		fnptr_ci_glBindVertexArrayOES = (PFNGLBINDVERTEXARRAYOESPROC)loadEglProc("glBindVertexArrayOES"); 
 		fnptr_ci_glDeleteVertexArraysOES = (PFNGLDELETEVERTEXARRAYSOESPROC)loadEglProc("glDeleteVertexArraysOES"); 
 		fnptr_ci_glGenVertexArraysOES = (PFNGLGENVERTEXARRAYSOESPROC)loadEglProc("glGenVertexArraysOES"); 
 		fnptr_ci_glIsVertexArrayOES = (PFNGLISVERTEXARRAYOESPROC)loadEglProc("glIsVertexArrayOES"); 
+	}
+
+	// GL_OES_mapbuffer
+	if( hasExtension( "GL_OES_mapbuffer" ) ) {
+		fnptr_ci_glMapBufferOES = (PFNGLMAPBUFFEROESPROC)loadEglProc("glMapBufferOES"); 	
+		fnptr_ci_glUnmapBufferOES = (PFNGLUNMAPBUFFEROESPROC)loadEglProc("glUnmapBufferOES");
 	}
 
 	// GL_EXT_map_buffer_range
@@ -1282,10 +1314,57 @@ void gl_es_2_0_ext_load()
 	else if( hasExtension( "GL_NV_framebuffer_multisample" ) ) {
 		fnptr_ci_glRenderbufferStorageMultisample = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)loadEglProc("glRenderbufferStorageMultisampleNV");
 	}
+
+	// // GL_NV_framebuffer_blit, GL_ANGLE_framebuffer_blit
+	if( hasExtension( "GL_NV_framebuffer_blit" ) ) {
+		fnptr_ci_glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)loadEglProc("glBlitFramebufferNV"); 
+	}
+	else if( hasExtension( "GL_ANGLE_framebuffer_blit" ) ) {
+		fnptr_ci_glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)loadEglProc("glBlitFramebufferANGLE"); 
+	}
+
+	// GL_ANGLE_instanced_arrays, GL_EXT_draw_instanced, GL_NV_draw_instanced
+	if( hasExtension( "GL_ANGLE_instanced_arrays" ) ) {
+		fnptr_ci_glDrawArraysInstanced = (PFNGLDRAWARRAYSINSTANCEDPROC)loadEglProc("glDrawArraysInstancedANGLE"); 
+		fnptr_ci_glDrawElementsInstanced = (PFNGLDRAWELEMENTSINSTANCEDPROC)loadEglProc("glDrawElementsInstancedANGLE"); 
+	}
+	else if( hasExtension( "GL_EXT_draw_instanced" ) ) {
+		fnptr_ci_glDrawArraysInstanced = (PFNGLDRAWARRAYSINSTANCEDPROC)loadEglProc("glDrawArraysInstancedEXT"); 
+		fnptr_ci_glDrawElementsInstanced = (PFNGLDRAWELEMENTSINSTANCEDPROC)loadEglProc("glDrawElementsInstancedEXT");
+	}
+	else if( hasExtension( "GL_NV_draw_instanced" ) ) {
+		fnptr_ci_glDrawArraysInstanced = (PFNGLDRAWARRAYSINSTANCEDPROC)loadEglProc("glDrawArraysInstancedNV"); 
+		fnptr_ci_glDrawElementsInstanced = (PFNGLDRAWELEMENTSINSTANCEDPROC)loadEglProc("glDrawElementsInstancedNV"); 
+	}
+
+	// GL_ANGLE_instanced_arrays, GL_EXT_instanced_arrays, GL_NV_instanced_arrays
+	if( hasExtension( "GL_ANGLE_instanced_arrays" ) ) {
+		fnptr_ci_glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORPROC)loadEglProc("glVertexAttribDivisorANGLE"); 
+	}
+	else if( hasExtension( "GL_EXT_instanced_arrays" ) ) {
+		fnptr_ci_glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORPROC)loadEglProc("glVertexAttribDivisorEXT"); 
+	}
+	else if( hasExtension( "GL_NV_instanced_arrays" ) ) {
+		fnptr_ci_glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORPROC)loadEglProc("glVertexAttribDivisorNV"); 
+	}
 #endif
 
+	DEBUG( "gl_es_2_0_ext_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");	
+}
+#endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
+
+
+// ----------------------------------------------------------------------------
 // Android Extension Pack
+// ----------------------------------------------------------------------------
 #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+PFNGLFRAMEBUFFERTEXTUREPROC fnptr_ci_glFramebufferTexture = nullptr;
+PFNGLPATCHPARAMETERIPROC fnptr_ci_glPatchParameteri = nullptr;
+
+void gl_es_aep_load() 
+{
+	//DEBUG( "gl_es_aep_load entered..." );
+
 	if( hasExtension( "GL_EXT_geometry_shader" ) ) {
 		fnptr_ci_glFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)loadEglProc("glFramebufferTextureEXT");
 	}
@@ -1297,16 +1376,19 @@ void gl_es_2_0_ext_load()
 	else if( hasExtension( "GL_OES_tessellation_shader" ) ) {
 		fnptr_ci_glPatchParameteri = (PFNGLPATCHPARAMETERIOESPROC)loadEglProc("glPatchParameteriOES");
 	}	
-#endif	
 
-	DEBUG( "gl_es_2_0_ext_load: SUCCESSFUL" );
+	DEBUG( "gl_es_2_0_ext_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");	
 }
-#endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
+#endif
+
+#endif // defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
 
 // ----------------------------------------------------------------------------
 // gl_es_load
 // ----------------------------------------------------------------------------
-static bool sInitialized = false;
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	    
+static bool 	sInitialized = false;
+static uint32_t	sLoadCount = 0;
 
 void gl_es_load()
 {
@@ -1330,6 +1412,10 @@ void gl_es_load()
 
 #if defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_2 )
 	gl_es_3_2_load();
+#endif
+
+#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+    gl_es_aep_load();
 #endif
 
 	sInitialized = true;
@@ -1375,7 +1461,20 @@ static void* loadEglProc( const std::string& procName )
 {
 	uint8_t* result = (uint8_t *)eglGetProcAddress( procName.c_str() );
 	if( nullptr != result ) {
+		++sLoadCount;
 		//DEBUG( "   " << "loaded EGL proc: " << procName );
 	}
 	return reinterpret_cast<void*>( result );
 }
+
+static void clearLoadCount()
+{
+	sLoadCount = 0;
+}
+
+static uint32_t	getLoadCount()
+{
+	return sLoadCount;
+}
+
+#endif // defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	

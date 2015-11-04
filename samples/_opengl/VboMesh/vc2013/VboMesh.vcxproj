@@ -150,7 +150,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\lib\msw\$(PlatformTarget)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -176,7 +176,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\lib\msw\$(PlatformTarget)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

@@ -51,7 +51,7 @@ using namespace std;
 namespace cinder { namespace gl {
 
 // defined in VaoImplEs
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_2 )
 extern VaoRef createVaoImplEs();
 #else
 extern VaoRef createVaoImplCore();
@@ -60,16 +60,18 @@ extern VaoRef createVaoImplSoftware();
 
 VaoRef Vao::create()
 {
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_2 )
 	#if defined( CINDER_COCOA_TOUCH )
 		return createVaoImplEs();
 	#elif defined( CINDER_GL_ANGLE )
 		return createVaoImplSoftware();
 	#else
-		if( env()->supportsHardwareVao() )
+		if( env()->supportsHardwareVao() ) {
 			return createVaoImplEs();
-		else
+		}
+		else {
 			return createVaoImplSoftware();
+		}
 	#endif
 #else
 	return createVaoImplCore();

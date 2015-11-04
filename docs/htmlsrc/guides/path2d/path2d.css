@@ -1,0 +1,138 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+}
+a {
+  color: #a41c12;
+  font-family: 'Open Sans', sans-serif;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+iframe {
+  margin: 20px 0;
+}
+.path2d {
+  width: 800px;
+  margin: 0 auto;
+}
+.path2d ul#sketchLinks {
+  list-style: none;
+  padding: 0;
+  background: #232323;
+  height: auto;
+  margin: 0;
+  text-indent: 0;
+}
+.path2d ul#sketchLinks li {
+  display: inline-block;
+  padding: 0 12px;
+  margin: 0;
+}
+.path2d ul#sketchLinks li:before {
+  content: none;
+}
+.path2d ul#sketchLinks a {
+  color: #e7e7e7;
+  font-family: 'Open Sans', sans-serif;
+  text-decoration: none;
+  padding: 10px 0;
+}
+.path2d ul#sketchLinks a:hover {
+  color: #fff;
+}
+.path2d ul#sketchLinks a.active {
+  border-bottom: 0.4em solid #a41c12;
+}
+.path2d .canvases {
+  position: relative;
+}
+.path2d .canvases .left {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+}
+.path2d .canvases .right {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+.path2d pre[class*="language-"] {
+  margin: 0;
+}
+.path2d canvas {
+  width: 100%;
+  height: 340px;
+  outline: #f5f2f0 solid 1px;
+}
+.path2d .active {
+  display: block;
+}
+.path2d .invisible,
+.path2d .inactive {
+  display: none;
+}
+.path2d button {
+  padding: 1em;
+}
+.path2d #tutorial button {
+  background: none;
+  border: 1px solid #a41c12;
+  color: #a41c12;
+  text-transform: uppercase;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.75em;
+  padding: 0.75em 1.5em;
+  margin: 0;
+  cursor: pointer;
+}
+.path2d #tutorial button:hover {
+  background: #a41c12;
+  color: #fff;
+}
+.path2d #tutorial button:focus {
+  outline: none;
+}
+.path2d #tutorial .dg.main {
+  position: absolute;
+  top: 0;
+  right: 10px;
+}
+.path2d .codeModule {
+  position: relative;
+  line-height: 1.5em;
+}
+.path2d .codeModule a#copy-button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+.path2d .sketch {
+  line-height: 0;
+}
+#bottomNav {
+  margin: 20px 0;
+  text-align: center;
+}
+/* Fixes for dat-gui */
+.dg input[type=text] {
+  font-size: inherit !important;
+  height: 100% !important;
+  -webkit-box-sizing: content-box !important;
+  -moz-box-sizing: content-box !important;
+  box-sizing: content-box !important;
+}
+.dg ul {
+  margin: 0 !important;
+  text-indent: 0 !important;
+}
+.dg ul > li:before {
+  content: none !important;
+}
+.dg button {
+  background: none;
+  display: block;
+  padding: 0;
+}

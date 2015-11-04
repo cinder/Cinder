@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 61.5 61.5" enable-background="new 0 0 61.5 61.5" xml:space="preserve">
+<g>
+	<g>
+		<circle fill-rule="evenodd" clip-rule="evenodd" fill="#2D3333" cx="30.7" cy="30.8" r="30.7"/>
+		<circle fill="#A41E22" cx="30.7" cy="30.8" r="25.1"/>
+	</g>
+	<g>
+		<polygon fill="none" stroke="#D65237" stroke-width="0.9756" stroke-miterlimit="10" points="17.5,40.9 29.8,14.7 42.1,40.9 		"/>
+		<rect x="15.8" y="22.2" fill="#481918" stroke="#A63C2D" stroke-width="1.25" stroke-miterlimit="10" width="28" height="20.5"/>
+		<circle fill="#F3F3F3" cx="29.8" cy="14.7" r="1.1"/>
+		<rect x="16.4" y="36.8" fill="#6D271D" width="26.7" height="5.3"/>
+		<polygon fill="#FFFFFF" points="38.9,29.1 36.9,29.1 36.9,27 35,27 35,29.1 32.9,29.1 32.9,31 35,31 35,33.1 36.9,33.1 36.9,31 
+			38.9,31 		"/>
+		<polygon fill="#FFFFFF" points="31.5,26.5 30.4,26.5 30.4,25.4 29.3,25.4 29.3,26.5 28.2,26.5 28.2,27.5 29.3,27.5 29.3,28.6 
+			30.4,28.6 30.4,27.5 31.5,27.5 		"/>
+		<polygon fill="#FFFFFF" points="26.7,28.8 25.8,28.8 25.8,28 25,28 25,28.8 24.2,28.8 24.2,29.6 25,29.6 25,30.5 25.8,30.5 
+			25.8,29.6 26.7,29.6 		"/>
+		<g>
+			<polygon fill="#A41E22" points="19.8,42.1 26,31.4 32.1,42.1 			"/>
+			<polygon fill="#D65237" points="16.3,42.1 21.5,33.1 26.6,42.1 			"/>
+		</g>
+	</g>
+	<g>
+		<defs>
+			<circle id="SVGID_1_" cx="30.8" cy="30.7" r="30.7"/>
+		</defs>
+		<clipPath id="SVGID_2_">
+			<use xlink:href="#SVGID_1_"  overflow="visible"/>
+		</clipPath>
+		
+			<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="279.718" y1="-13.986" x2="333.2463" y2="-13.986" gradientTransform="matrix(-0.4255 -0.4255 0.7071 -0.7071 159.9572 141.0057)">
+			<stop  offset="0" style="stop-color:#FFFFFF;stop-opacity:0.05"/>
+			<stop  offset="1" style="stop-color:#FBFBFB;stop-opacity:0"/>
+		</linearGradient>
+		<polygon clip-path="url(#SVGID_2_)" fill="url(#SVGID_3_)" points="31.6,-14.3 54.4,8.5 7.7,55.2 -15.1,32.5 		"/>
+	</g>
+</g>
+</svg>

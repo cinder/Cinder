@@ -25,6 +25,7 @@
 
 #include "cinder/app/Platform.h"
 #include "cinder/android/CinderAndroid.h"
+#include "cinder/Display.h"
 
 namespace cinder { namespace app {
 
@@ -83,6 +84,15 @@ class PlatformAndroid : public Platform {
 
 	bool							mDisplaysInitialized;
 	std::vector<DisplayRef>			mDisplays;
+ };
+
+class DisplayAndroid : public Display {
+ public:
+
+
+ 
+ protected:
+ 	friend class PlatformAndroid;
 };
 
 } } // namespace cinder::app

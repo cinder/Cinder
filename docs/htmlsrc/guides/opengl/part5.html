@@ -1,0 +1,365 @@
+<html>
+	<head>
+		<!-- Update title -->
+		<title>OpenGL in Cinder: Shaders</title>
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+	</head>
+
+<body id="guide-contents" >
+
+<a id="basic_shaders"></a>
+<h2>Basic Shaders</h2>
+<p>It's time to graduate to writing our own shaders. Much of the power of realtime graphics lies in custom shaders. While we only have space to give a very high-level overview of shaders, this should be enough to get started. First, a shader is a program (written in GLSL in the case of OpenGL) which runs on the GPU. This is as opposed to your C++ code, which of course runs on the CPU. In the general case, to create a complete GLSL Program, we need to supply two kinds of shaders - a <em>vertex</em> shader, and a <em>fragment</em> shader. The first, the vertex shader, operates on each vertex of whatever geometry we're applying it to. The fragment shader operates on each pixel, which (typically) are interpolated across a triangle when the geometry is rasterized. Without getting too bogged down in details yet, let's look at a minimal shader that outputs orange pixels:</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+class BasicApp : public App {
+  public:
+	void	setup() override;
+	void	draw() override;
+
+	CameraPersp         mCam;
+	gl::BatchRef        mCube;
+	gl::GlslProgRef		mGlsl;
+};
+
+void BasicApp::setup()
+{
+	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
+
+	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
+	.vertex(	CI_GLSL( 150,
+		uniform mat4	ciModelViewProjection;
+		in vec4			ciPosition;
+		
+		void main( void ) {
+			gl_Position	= ciModelViewProjection * ciPosition;
+		}
+	 ) )
+	.fragment(	CI_GLSL( 150,
+		out vec4			oColor;
+		
+		void main( void ) {
+			oColor = vec4( 1, 0.5, 0.25, 1 );
+		}
+	) ) );
+
+	mCube = gl::Batch::create( geom::Cube(), mGlsl );
+	
+	gl::enableDepthWrite();
+	gl::enableDepthRead();
+}
+
+void BasicApp::draw()
+{
+	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );
+	gl::setMatrices( mCam );
+	mCube->draw();
+}
+</code></pre>
+</div>
+<div class="col">
+<img src="images/first_shader.png" class="shadow" />
+</div>
+</div>
+
+<p>There's a number of new concepts wrapped up in this short sample. Recall that previously we were creating a <ci>gl::GlslProg</ci> using the function <ci>gl::getStockShader()</ci> and the <ci>gl::ShaderDef</ci> class. Now we're using the <ci>gl::GlslProg::create()</ci> method, passing it a <ci>gl::GlslProg::Format</ci>, which in turn was constructed using the <code>CI_GLSL</code> macro for both <ci dox="gl::GlslProg::Format::vertex">vertex()</ci> and <ci dox="gl::GlslProg::Format::fragment">fragment()</ci>. This macro is a convenient way to write GLSL code inline with our C++ code. Note that its first argument is the numer <code>150</code>. This specifies the version of GLSL we're writing. Since we're targeting OpenGL version 3.2 or later, we're writing version 150 of GLSL. Slightly confusing, but <a href="https://en.wikipedia.org/wiki/OpenGL_Shading_Language#Versions">this table</a> should clarify if you're interested. We'll look at the actual GLSL code below. Note however that for the most part, the application is similar to examples we've looked at in previous sections. We still create a <ci>gl::Batch</ci>, this time using a <ci>geom::Cube</ci> and our <em>mGlsl</em> variable as parameters. We still call <ci>gl::setMatrices()</ci> to setup our camera, and we'll see what this does behind the scenes shortly.</p>
+
+<p>The role of the vertex shader is twofold. First, it's responsible for expressing what attributes we want to be available to the fragment shader. For example, if we want a different color for each vertex, we'd need to output that from the vertex shader. We'll look into this more later. The vertex shader's other role is to take vertex positions expressed in <code>Object</code> space and output them as positions in <code>Clip</code> space. If this term is not familiar to you, <code>Clip</code> space is essentially the coordinate system representing points which have been transformed into World space (via the <code>Model</code> matrix), then transformed from World into View space (via the <code>View</code> matrix) and then projected onto the screen (via the <code>Projection</code> matrix). All three of these transformations can be encoded into a single matrix, which is the <code>ModelViewProjection</code> matrix. In Cinder you can access this matrix with <ci>gl::getModelViewProjection()</ci>.</p>
+
+<p>Let's look at the vertex shader code in detail. First the line <code>uniform mat4	ciModelViewProjection;</code> introduces an unfamiliar keyword. <code>uniform</code>s are simply variables that are passed into the shader "from C++". Later examples will show how to pass custom uniforms yourself, but there are several uniforms which Cinder passes to your shader automatically when you name them a specific name. In this case, a uniform named <em>ciModelViewProjection</em> will automatically receive the current <code>ModelViewProjection</code> matrix from Cinder. Next, the line <code>in vec4 		ciPosition;</code> introduces the <code>in</code> keyword, which declares a variable to be per-vertex data supplied by the draw call. In our case, we're calling <code>mCube->draw()</code>, which uses the vertex data supplied by <ci>geom::Cube</ci>. Similar to the uniform, because this variable is named <em>ciPosition</em>, Cinder automatically knows how to supply it with the relevant position data - that generated by the <ci>geom::Cube</ci> in this particular case. Next we see a <code>main()</code> declaration which is simply how we declare the actual code of our shader, much like one would in C or C++. Finally, our one-line implementation, <code>gl_Position = ciModelViewProjection * ciPosition;</code>. This line sets the built-in variable <code>gl_Position</code>, which must always be set by a vertex shader to specify the final position in Clip space. This variable is set to its canonical value; we transform our input vertex position (expressed in Object space) into Clip space by multiplying it by the <code>ModelViewProjection</code> matrix.</p>
+
+<p>Finally, we'll look at the fragment shader, whose job is to set a final pixel color. We first encounter an <code>out</code> variable called <em>oColor</em>, which in the case of a fragment shader records its result. Our one-line implementation simply sets this variable <em>oColor</em> to a constant value representing the color orange.</p>
+
+<p>Let's keep moving by looking at how variables can be interpolated across a polygon using the vertex shader:</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+class BasicApp : public App {
+  public:
+	void	setup() override;
+	void	draw() override;
+
+	CameraPersp         mCam;
+	gl::BatchRef        mRect;
+	gl::GlslProgRef		mGlsl;
+};
+
+void BasicApp::setup()
+{
+	mCam.lookAt( vec3( 2, 1, 3 ), vec3( 0 ) );
+
+	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
+	.vertex(	CI_GLSL( 150,
+		uniform mat4	ciModelViewProjection;
+		in vec4			ciPosition;
+		in vec4			ciColor;
+		out vec4		Color;
+		
+		void main( void ) {
+			gl_Position	= ciModelViewProjection * ciPosition;
+			Color = ciColor;
+		}
+	 ) )
+	.fragment(	CI_GLSL( 150,
+		in vec4		Color;
+		out vec4	oColor;
+		
+		void main( void ) {
+			oColor = Color;
+		}
+	) ) );
+
+	auto rect = geom::Rect().colors( Color( 1, 0, 0 ),
+									 Color( 0, 0, 1 ),
+									 Color( 0, 0, 1 ),
+									 Color( 1, 0, 0 ) );
+	mRect = gl::Batch::create( rect, mGlsl );
+	
+	gl::enableDepthWrite();
+	gl::enableDepthRead();
+}
+
+void BasicApp::draw()
+{
+	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );
+	gl::setMatrices( mCam );
+	mRect->draw();
+}
+</code></pre>
+</div>
+<div class="col">
+<img src="images/basic_grad.png" class="shadow" />
+</div>
+</div>
+
+<p>Much of this sample is similar to the previous, but a couple of key concepts are illustrated. A red to blue gradient is created by using the <ci dox="geom::Rect::colors">colors()</ci> method on <ci>geom::Rect</ci>, which allows us to specify a different color for each corner, starting in the upper left and moving sequentially clockwise through the vertices. Note that the <ci>geom::Rect</ci> is defined in the XY-plane, but we're using a 3D <ci>CameraPersp</ci> to view it at an angle.</p>
+
+<p>The key changes here though are in the shaders. The first change is the addition of a new <code>in</code> variable <em>ciColor</em> in the vertex shader. Much like <em>ciPosition</em>, this is a per-vertex attribute which Cinder automatically recognizes and supplies. Additionally, a new <code>out</code> variable <em>Color</em> has been added. <code>out</code> variables in a vertex shader are interpolated across the vertices that form a given triangle (or in some cases, line) and are made available to the subsequent fragment shader. We're choosing to define and interpolate color in this case, and this occurs in the body of the shader in the very simple line, <code>Color = ciColor;</code>. Another way to read this line might be, "make the output, interpolated color value match this vertex's input color value." It's in the fragment shader that this value is utilized. There we see a matching <code>in</code> variable, defined with the line <code>in vec4 Color</code> - the matching <code>in</code> variable for the vertex shader's <code>out</code>. In the fragment shader's body, we simply assign the output color <em>oColor</em> to be the same as this fragment's interpolated <em>Color</em> value. The final result in our case is a gradient across the rectangle.</p>
+
+<p>Next we'll look at how to send data from your C++ code to a GLSL program.</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+class BasicApp : public App {
+  public:
+	void	setup() override;
+	void	draw() override;
+
+	CameraPersp			mCam;
+	gl::BatchRef		mRect;
+	gl::GlslProgRef		mGlsl;
+};
+
+void BasicApp::setup()
+{
+	mCam.lookAt( vec3( 3, 2, 3 ), vec3( 0 ) );
+
+	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
+	.vertex(	CI_GLSL( 150,
+		uniform mat4	ciModelViewProjection;
+		in vec4			ciPosition;
+		
+		void main( void ) {
+			gl_Position	= ciModelViewProjection * ciPosition;
+		}
+	 ) )
+	.fragment(	CI_GLSL( 150,
+		uniform vec4	uColor;
+		out vec4		oColor;
+		
+		void main( void ) {
+			oColor = uColor;
+		}
+	) ) );
+
+	mRect = gl::Batch::create( geom::Plane(), mGlsl );
+	
+	gl::enableDepthWrite();
+	gl::enableDepthRead();
+}
+
+void BasicApp::draw()
+{
+	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );
+	gl::setMatrices( mCam );
+	
+	const int NUM_PLANES = 30;
+	for( int p = 0; p < NUM_PLANES; ++p ) {
+		float hue = p / (float)NUM_PLANES;
+		ColorAf color( CM_HSV, hue, 1, 1, 1 );
+		mGlsl->uniform( "uColor", color );
+		
+		gl::ScopedModelMatrix scpMtx;
+		float angle = M_PI * p / (float)NUM_PLANES;
+		gl::rotate( angleAxis( angle, vec3( 1, 0, 0 ) ) );
+		mRect->draw();
+	}
+}
+</code></pre>
+</div>
+<div class="col">
+<img src="images/uniform_planes.png" class="shadow" />
+</div>
+</div>
+
+<p>From a high level, this example creates a batch with our custom shader and a <em>geom::Plane</em>. It makes 30 copies of this plane, rotating each around the Z-axis, and assigning a different color. In many ways this is similar to examples we looked at in previous sections, but the key difference here of course is that we're using a custom shader. In particular, we're using a custom uniform. Whereas uniforms like <code>ciModelViewProjection</code> are automatically supplied by Cinder, here we've created a new uniform <em>uColor</em>, declared and used in the fragment shader. The way we're using from GLSL it is straightforward. The interesting bit lies in the C++ code, specifically the for-loop inside <code>draw()</code>. Here we call the <ci dox="gl::GlslProg::uniform(const vec4&)">uniform()</ci> function, passing it a <code>ColorAf</code> called <em>color</em>. Calling this function (and its many siblings) allows us to send a variable from our C++ code to the shader.</p>
+
+<p>Next we'll look at how to use textures from shaders.</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+void BasicApp::setup()
+{
+	mCam.lookAt( vec3( 3, 2, 3 ), vec3( 0 ) );
+
+	auto img = loadImage( loadAsset( "texture.jpg" ) );
+	mTex = gl::Texture2d::create( img );
+	mTex->bind( 0 );
+
+	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
+	.vertex(	CI_GLSL( 150,
+		uniform mat4	ciModelViewProjection;
+		in vec4			ciPosition;
+		in vec2			ciTexCoord0;
+		out vec2		TexCoord0;
+		
+		void main( void ) {
+			gl_Position	= ciModelViewProjection * ciPosition;
+			TexCoord0 = ciTexCoord0;
+		}
+	 ) )
+	.fragment(	CI_GLSL( 150,
+		uniform vec4		uColor;
+		uniform sampler2D	uTex0;
+		
+		in vec2				TexCoord0;
+		out vec4			oColor;
+		
+		void main( void ) {
+			oColor = texture( uTex0, TexCoord0 ) * uColor;
+		}
+	) ) );
+
+	mRect = gl::Batch::create( geom::Plane(), mGlsl );
+	
+	gl::enableDepthWrite();
+	gl::enableDepthRead();
+}
+
+void BasicApp::draw()
+{
+	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );
+	gl::setMatrices( mCam );
+	
+	const int NUM_PLANES = 7;
+	for( int p = 0; p < NUM_PLANES; ++p ) {
+		float hue = p / (float)NUM_PLANES;
+		ColorAf color( CM_HSV, hue, 1, 1, 1 );
+		mGlsl->uniform( "uTex0", 0 );
+		mGlsl->uniform( "uColor", color );
+		
+		gl::ScopedModelMatrix scpMtx;
+		float angle = M_PI * p / (float)NUM_PLANES;
+		gl::rotate( angleAxis( angle, vec3( 1, 0, 0 ) ) );
+		mRect->draw();
+	}
+	
+	gl::setMatricesWindow( getWindowSize() );
+	gl::draw( mTex, Rectf( 0, getWindowHeight() - 100,
+							150, getWindowHeight() ) );
+}
+</code></pre>
+</div>
+<div class="col">
+<img src="images/shader_texture_basic.jpg" class="shadow" />
+</div>
+</div>
+
+<p>We've modified the previous example to multiply the solid color with a texture, using an image <a href="http://shadowhousecreations.blogspot.com/2010/06/grunge-texture-set.html">available here</a>. Note that in the vertex shader, we're now using a variable <em>ciTexCoord0</em>, and outputting a matching <em>TexCoord0</em>. This vertex data is supplied by Cinder automatically, corresponding to <ci dox="geom::Attrib">geom::Attrib::TEX_COORD_0</ci>. This attribute is supplied by <ci>geom::Plane</ci> in our case. In the fragment shader, note the <em>uTex0</em> uniform, which is of type <code>sampler2D</code>. This type corresponds to a texture sampler, which operates on a specific texture unit (not a Texture itself). Note that in <code>setup()</code> we call <ci dox="gl::Texture2d::bind()">bind()</ci> on the texture, and pass it 0. This is the default value, but it's explicit here to highlight that there are multiple texture units. We specify this texture unit when we call <code>mGlsl->uniform( "uTex0", 0 )</code> later.</p> 
+
+<p>To sample from GLSL, we call the <code>texture()</code> function, passing it the <code>sampler2D</code> we'd like to sample from, and the texture coordinates to sample at. Again, we received the texture coordinates from <ci>geom::Plane</ci> automatically. However we could perform some sort of mathematical manipulation on them, or use these coordinates for other purposes. Let's try that now, in addition to looking at how to perform some more interesting manipulation in the vertex shader.</p>
+
+<div class="cols-2">
+<div class="col">
+<pre><code class="lang-cpp">
+
+void BasicApp::setup()
+{
+	mCam.lookAt( vec3( 3, 2, 3 ), vec3( 0 ) );
+
+	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
+	.vertex(	CI_GLSL( 150,
+		uniform mat4	ciModelViewProjection;
+		in vec4			ciPosition;
+		in vec2			ciTexCoord0;
+		out vec2		TexCoord0;
+		
+		float offset( vec2 uv )
+		{
+			return ( sin( uv.x * 15.0 ) +
+					cos( uv.y * 7.0f + uv.x * 13.0f ) ) * 0.1f;
+		}
+		
+		void main( void ) {
+			vec4 pos = ciPosition;
+			pos.y = offset( ciTexCoord0 );
+			gl_Position	= ciModelViewProjection * pos;
+			TexCoord0 = ciTexCoord0;
+		}
+	 ) )
+	.fragment(	CI_GLSL( 150,
+		uniform float		uCheckSize;
+		
+		in vec2				TexCoord0;
+		out vec4			oColor;
+		
+		vec4 checker( vec2 uv )
+		{
+			float v = floor( uCheckSize * uv.x ) +
+							floor( uCheckSize * uv.y );
+			if( mod( v, 2.0 ) < 1.0 )
+				return vec4( 1, 1, 1, 1 );
+			else
+				return vec4( 0, 0, 0, 1 );
+		}
+		
+		void main( void ) {
+			oColor = checker( TexCoord0 );
+		}
+	) ) );
+
+	auto plane = geom::Plane().subdivisions( ivec2( 30 ) );
+	mRect = gl::Batch::create( plane, mGlsl );
+	
+	gl::enableDepthWrite();
+	gl::enableDepthRead();
+}
+
+void BasicApp::draw()
+{
+	gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
+	gl::setMatrices( mCam );
+	
+	mGlsl->uniform( "uCheckSize", 30.0f );
+	mRect->draw();
+}
+</code></pre>
+</div>
+<div class="col">
+<img src="images/shader_offset.png" class="shadow" />
+</div>
+</div>
+
+<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+</body>
+</html>

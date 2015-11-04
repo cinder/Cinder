@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Update title -->
+    <title>Path2D Tutorial Part 1</title>
+    <link rel="stylesheet" href="prism.css">
+    <link rel="stylesheet" href="path2d.css">
+</head>
+
+<body>  
+    <div class="path2d" >
+        <div id="tutorial">
+            <ul id="sketchLinks"></ul>
+            <div class="canvases">
+                <canvas id="moveto"         data-name="MOVETO" class="active" width="800" height="340"></canvas>
+                <canvas id="linetosegment"  data-name="LINETO" width="800" height="340"></canvas>
+                <canvas id="quadtosegment"  data-name="QUADTO" width="800" height="340"></canvas>
+                <canvas id="cubictosegment" data-name="CUBICTO" width="800" height="340"></canvas>
+                <canvas id="close"          data-name="CLOSE" width="800" height="340"></canvas>
+
+                <div class="canvasButtons">
+                    <div class="left">
+                        <button id="handle-toggle" >Toggle Handles</button>
+                    </div>
+                    <div class="right">
+                        <button id="reset" >Reset</button>
+                    </div>
+                </div>
+            </div>
+            <div class="codeModule">
+                <pre><code id="output" class="language-cpp"></code></pre>
+                <a id="copy-button" href="#">copy to clipboard</a>
+            </div>
+            
+        </div>
+    </div>
+  
+
+    <script src="path2dpart1.js"></script>

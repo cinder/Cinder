@@ -27,6 +27,11 @@
 
 #include <iostream>
 
+#if defined( CINDER_ANDROID )
+#include <android/log.h>
+#include <sstream>
+#endif
+
 namespace cinder { namespace detail {
 
 void assertionFailedBreak( char const *expr, char const *function, char const *file, long line )
@@ -43,12 +48,15 @@ void assertionFailedMessageBreak( char const *expr, char const *msg, char const 
 
 void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line )
 {
-	std::cerr << "*** Assertion Failed *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
 #if defined( CINDER_ANDROID )
+	std::stringstream ss;
+	ss << "*** Assertion Failed *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
+	__android_log_print( ANDROID_LOG_FATAL, "cinder", ss.str().c_str() );
 	std::terminate();
-#else	
+#else
+	std::cerr << "*** Assertion Failed *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
 	std::abort();
-#endif	
+#endif
 }
 
 } } // namespace cinder::detail

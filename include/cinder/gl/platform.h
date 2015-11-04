@@ -37,11 +37,13 @@
 	#if defined( CINDER_GL_ES_2 )
 		#include "GLES2/gl2.h"
 		#include "GLES2/gl2ext.h"
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
 	#else
 		#include "GLES3/gl3.h"
 		#include "GLES3/gl3ext.h"
 		#include "GLES2/gl2ext.h"
 		#define CINDER_GL_ES_3
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
 	#endif
 	#pragma comment( lib, "libEGL.lib" )
 	#pragma comment( lib, "libGLESv2.lib" )
@@ -50,56 +52,57 @@
 	#define CINDER_GL_ES
  	#include "EGL/egl.h" 
  	#if defined( CINDER_GL_ES_2 )
- 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
  		#define GL_GLEXT_PROTOTYPES
 		#include "cinder/linux/GLES2/gl2.h"
 		#include "cinder/linux/GLES2/gl2ext.h"
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
 	#elif defined( CINDER_GL_ES_3_1 )
-		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_1
 		#define GL_GLEXT_PROTOTYPES
 		#include "cinder/linux/GLES3/gl31.h"
 		#include "cinder/linux/GLES2/gl2ext.h"
+		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_1
 	#elif defined( CINDER_GL_ES_3_2 )
-		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
 		#define GL_GLEXT_PROTOTYPES
 		#include "cinder/linux/GLES3/gl32.h"
 		#include "cinder/linux/GLES2/gl2ext.h"  
+		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
  	#else
-		#define CINDER_GL_ES_3
- 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
  		#define GL_GLEXT_PROTOTYPES
 		#include "cinder/linux/GLES3/gl3.h"
 		#include "cinder/linux/GLES2/gl2ext.h"
- 	#endif 
+		#define CINDER_GL_ES_3
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
+ 	#endif
 #elif defined( CINDER_LINUX )
+	// Default is Desktop
  	#if defined( CINDER_GL_ES_2 )
- 		#define CINDER_GL_ES
- 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
  		#define GL_GLEXT_PROTOTYPES
  		#include "EGL/egl.h" 
 		#include "cinder/linux/GLES2/gl2.h"
 		#include "cinder/linux/GLES2/gl2ext.h"
- 	#elif defined( CINDER_GL_ES_3 )
  		#define CINDER_GL_ES
- 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2
+ 	#elif defined( CINDER_GL_ES_3 )
  		#define GL_GLEXT_PROTOTYPES
  		#include "EGL/egl.h"
 		#include "cinder/linux/GLES3/gl3.h"
 		#include "cinder/linux/GLES2/gl2ext.h"
-	#elif defined( CINDER_GL_ES_3_1 )
  		#define CINDER_GL_ES
-		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_1
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
+	#elif defined( CINDER_GL_ES_3_1 )
 		#define GL_GLEXT_PROTOTYPES
  		#include "EGL/egl.h" 
 		#include "cinder/linux/GLES3/gl31.h"
 		#include "cinder/linux/GLES2/gl2ext.h"
-	#elif defined( CINDER_GL_ES_3_2 )
  		#define CINDER_GL_ES
-		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
+		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_1
+	#elif defined( CINDER_GL_ES_3_2 )
 		#define GL_GLEXT_PROTOTYPES
  		#include "EGL/egl.h" 
 		#include "cinder/linux/GLES3/gl32.h"
 		#include "cinder/linux/GLES2/gl2ext.h" 
+ 		#define CINDER_GL_ES
+		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3_2
  	#else
  		#include "glload/gl_core.h"
  	#endif
@@ -115,30 +118,60 @@
 #else // iOS
 	#define CINDER_GL_ES
 	// the default for iOS is GL ES 2, but can be overridden with CINDER_GL_ES_3
-	#if ! defined( CINDER_GL_ES_3 )
+	#if defined( CINDER_GL_ES_3 )
+		#include <OpenGLES/ES3/gl.h>
+		#include <OpenGLES/ES3/glext.h>
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
+	#else
 		#include <OpenGLES/ES2/gl.h>
 		#include <OpenGLES/ES2/glext.h>
 		#define CINDER_GL_ES_2
-	#else
-		#include <OpenGLES/ES3/gl.h>
-		#include <OpenGLES/ES3/glext.h>
+ 		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2		
 	#endif
 #endif
 
+// OpenGL ES
 #if defined( CINDER_GL_ES )
-	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX ) 	
 		#define GL_ES_EXT_VERSION_2_0
-		#include "cinder/linux/gl_es_load.h"
+	#endif 
+	#include "cinder/linux/gl_es_load.h"
+
+	// Android and Linux
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+		#define CINDER_GL_HAS_DRAW_INSTANCED
+		#define CINDER_GL_HAS_TEXTURE_NORM16
+
+		// Requires: GL_ANDROID_extension_pack_es31a
+		#if defined( CINDER_ANDROID ) && ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+			#define CINDER_GL_HAS_GEOM_SHADER
+			#define CINDER_GL_HAS_TESS_SHADER 
+		#endif
 	#endif
 
-	// Requires: GL_ANDROID_extension_pack_es31a
-	#if defined( CINDER_ANDROID ) && ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
-		#define CINDER_GL_HAS_GEOM_SHADER
-		#define CINDER_GL_HAS_TESS_SHADER 
+	// Android, iOS, and Linux
+	#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
+ 		// OpenGL ES 3+
+		#define CINDER_GL_HAS_DRAW_INSTANCED
+		#define CINDER_GL_HAS_FBO_MULTISAMPLING
+		#define CINDER_GL_HAS_UNIFORM_BLOCKS
+		#define CINDER_GL_HAS_MAP_BUFFER_RANGE
+		#define CINDER_GL_HAS_TRANSFORM_FEEDBACK 
+		#define CINDER_GL_HAS_RENDER_SNORM
+		#define CINDER_GL_HAS_REQUIRED_INTERNALFORMAT
+	#else 
+		// OpenGL ES 2
+		#define CINDER_GL_HAS_DRAW_INSTANCED
+		#define CINDER_GL_HAS_FBO_MULTISAMPLING
+		#define CINDER_GL_HAS_MAP_BUFFER
+		#define CINDER_GL_HAS_MAP_BUFFER_RANGE
+		#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+			#define CINDER_GL_HAS_RENDER_SNORM
+			#define CINDER_GL_HAS_REQUIRED_INTERNALFORMAT
+		#endif
 	#endif
-#endif
 
-#if ! defined( CINDER_GL_ES ) // Desktop Only
+#else // OpenGL Desktop
 	#define CINDER_GL_HAS_UNIFORM_BLOCKS
 	#define CINDER_GL_HAS_DRAW_INSTANCED
 	#define CINDER_GL_HAS_FBO_MULTISAMPLING
@@ -148,12 +181,14 @@
  	#define CINDER_GL_HAS_MAP_BUFFER
  	#define CINDER_GL_HAS_MAP_BUFFER_RANGE
  	#define CINDER_GL_HAS_INSTANCED_ARRAYS
-	#if ! defined( CINDER_GL_ES_3 ) // Desktop Only
-		#define CINDER_GL_HAS_GEOM_SHADER
-		#define CINDER_GL_HAS_TESS_SHADER
-	#endif // ! defined( CINDER_GL_ES_3 )
-#endif // ! defined( CINDER_GL_ES_2 )
+	#define CINDER_GL_HAS_GEOM_SHADER
+	#define CINDER_GL_HAS_TESS_SHADER
+	
+	#define CINDER_GL_HAS_RENDER_SNORM
+	#define CINDER_GL_HAS_REQUIRED_INTERNALFORMAT
 
+	#define CINDER_GL_HAS_TEXTURE_NORM16
+#endif
 
 #if defined( CINDER_MSW )
 	#if ! defined( CINDER_GL_ANGLE ) // MSW Desktop Only
@@ -170,21 +205,7 @@
 		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
 		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleANGLE
 	#endif
-#endif // defined( CINDER_COCOA )
-
-#if defined( CINDER_COCOA_TOUCH ) // iOS Only
-	#define CINDER_GL_HAS_DRAW_INSTANCED
-	#define CINDER_GL_HAS_FBO_MULTISAMPLING
-	// platform-specific synonyms
-	#if ! defined( CINDER_GL_ES_3 )
-		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
-		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
-		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_APPLE
-		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_APPLE
-		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleAPPLE
-		#define glResolveMultisampleFramebuffer		glResolveMultisampleFramebufferAPPLE
-	#endif
-#endif // defined( CINDER_COCOA )
+#endif // defined( CINDER_MSW )
 
 #if defined( GL_EXT_debug_label )
 	#define CINDER_GL_HAS_DEBUG_LABEL 

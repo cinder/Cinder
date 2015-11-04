@@ -174,12 +174,15 @@ void VaoImplCore::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 	if( gl::env()->supportsInstancedArrays() ) {
 		glVertexAttribDivisor( index, divisor );
 	}
-  #endif
+  #endif	
 #else
-	if( glVertexAttribDivisor ) // not always available
+	if( glVertexAttribDivisor ) {
+		// not always available
 		glVertexAttribDivisor( index, divisor );
-	else if( glVertexAttribDivisorARB )
-		glVertexAttribDivisorARB( index, divisor );	
+	}
+	else if( glVertexAttribDivisorARB ) {
+		glVertexAttribDivisorARB( index, divisor );
+	}
 #endif
 
 /*

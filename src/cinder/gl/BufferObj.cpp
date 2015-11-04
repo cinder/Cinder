@@ -36,7 +36,11 @@ BufferObjRef BufferObj::create( GLenum target, GLsizeiptr allocationSize, const 
 BufferObj::BufferObj( GLenum target )
 	: mId( 0 ), mSize( 0 ), mTarget( target ),
 #if defined( CINDER_GL_ES )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mUsage( GL_DYNAMIC_DRAW )
+  #else	
 	mUsage( 0 ) /* GL ES default buffer usage is undefined(?) */
+  #endif	
 #else
 	mUsage( GL_READ_WRITE )
 #endif
@@ -112,27 +116,25 @@ void BufferObj::ensureMinimumSize( GLsizeiptr minimumSize )
 	}
 }
 
+#if defined( CINDER_GL_HAS_MAP_BUFFER )
 void* BufferObj::map( GLenum access ) const
 {
-	void* result = nullptr;
 	ScopedBuffer bufferBind( mTarget, mId );
-	if( gl::env()->supportsMapBuffer() ) {
-		result = reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
-	}
-	return result;
+	return reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
 }
+#endif
 
+#if defined( CINDER_GL_HAS_MAP_BUFFER ) || defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 void* BufferObj::mapWriteOnly()
 {
 	void* result = nullptr;
 	ScopedBuffer bufferBind( mTarget, mId );
-	if( gl::env()->supportsMapBufferRange() ) {
-		GLbitfield access = GL_MAP_WRITE_BIT;
-		result = reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );	
-	}
-	else if( gl::env()->supportsMapBuffer() ) {
-		result = reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY ) );
-	}
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
+	GLbitfield access = GL_MAP_WRITE_BIT;
+	result = reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+#elif defined( CINDER_GL_HAS_MAP_BUFFER )
+	result = reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY ) );
+#endif
 	return result;
 }
 
@@ -140,37 +142,35 @@ void* BufferObj::mapReplace()
 {
 	ScopedBuffer bufferBind( mTarget, mId );
 	void* result = nullptr;
-	if( gl::env()->supportsMapBufferRange() ) {
-		GLbitfield access = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT;
-		result = reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
-	}
-	else {
-		glBufferData( mTarget, mSize, nullptr, mUsage );
-		result = reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY ) );
-	}
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
+	GLbitfield access = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT;
+	result = reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+#elif defined( CINDER_GL_HAS_MAP_BUFFER )
+	glBufferData( mTarget, mSize, nullptr, mUsage );
+	result = reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY ) );
+#endif
 	return result;
 }
+#endif
 
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const
 {
-	void* result = nullptr;
 	ScopedBuffer bufferBind( mTarget, mId );
-	if( gl::env()->supportsMapBufferRange() ) {
-		result = reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
-	}
-	return result;
+    return reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
 }
+#endif
 
+#if defined( CINDER_GL_HAS_MAP_BUFFER ) || defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 void BufferObj::unmap() const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-	if( gl::env()->supportsMapBuffer() ) {
-		GLboolean result = glUnmapBuffer( mTarget );
-		if ( GL_TRUE != result ) {
-			//throw BufferFailedUnmapExc();
-		}
-	}
+    GLboolean result = glUnmapBuffer( mTarget );
+    if ( GL_TRUE != result ) {
+        //throw BufferFailedUnmapExc();
+    }
 }
+#endif
 
 size_t BufferObj::getSize() const
 {

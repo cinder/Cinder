@@ -1,2 +1,2 @@
 #!/bin/sh
-../../../linux/cbuilder "$@"
+../../../tools/linux/cbuilder -app "$@"

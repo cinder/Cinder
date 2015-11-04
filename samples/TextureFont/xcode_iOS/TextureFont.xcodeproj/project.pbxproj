@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		002BA6531BBCF2D700E3E904 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002BA6521BBCF2D700E3E904 /* ImageIO.framework */; };
+		002BA6571BBCF2E400E3E904 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002BA6561BBCF2E400E3E904 /* Accelerate.framework */; };
+		002BA6591BBCF2F600E3E904 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002BA6581BBCF2F600E3E904 /* MobileCoreServices.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
 		00CFDFE011384CC60091E310 /* TextureFontApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CFDFDF11384CC60091E310 /* TextureFontApp.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -22,6 +25,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		002BA6521BBCF2D700E3E904 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		002BA6541BBCF2DF00E3E904 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
+		002BA6561BBCF2E400E3E904 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		002BA6581BBCF2F600E3E904 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDFDF11384CC60091E310 /* TextureFontApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFontApp.cpp; path = ../src/TextureFontApp.cpp; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -44,6 +51,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				002BA6591BBCF2F600E3E904 /* MobileCoreServices.framework in Frameworks */,
+				002BA6571BBCF2E400E3E904 /* Accelerate.framework in Frameworks */,
+				002BA6531BBCF2D700E3E904 /* ImageIO.framework in Frameworks */,
 				C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */,
 				C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -116,6 +126,10 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				002BA6581BBCF2F600E3E904 /* MobileCoreServices.framework */,
+				002BA6561BBCF2E400E3E904 /* Accelerate.framework */,
+				002BA6541BBCF2DF00E3E904 /* ExternalAccessory.framework */,
+				002BA6521BBCF2D700E3E904 /* ImageIO.framework */,
 				C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */,
 				C7FB19D5124BC0D70045AFD3 /* CoreText.framework */,
 				C727C02B121B400300192073 /* CoreMedia.framework */,
@@ -155,6 +169,8 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TextureFont" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
@@ -200,8 +216,9 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
@@ -211,7 +228,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "TextureFont-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"",
 					"-lz",
@@ -221,14 +238,16 @@
 					"-lz",
 				);
 				PRODUCT_NAME = TextureFont;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -236,7 +255,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "TextureFont-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone.a\"",
 					"-lz",
@@ -246,6 +265,7 @@
 					"-lz",
 				);
 				PRODUCT_NAME = TextureFont;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

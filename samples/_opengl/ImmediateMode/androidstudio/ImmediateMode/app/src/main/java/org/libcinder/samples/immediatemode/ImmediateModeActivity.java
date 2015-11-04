@@ -1,7 +1,7 @@
 package org.libcinder.samples.immediatemode;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class ImmediateModeActivity extends NativeActivity {
+public class ImmediateModeActivity extends CinderNativeActivity {
     static final String TAG = "ImmediateModeActivity";
 }

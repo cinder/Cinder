@@ -1,8 +1,0 @@
-/**
-\class cinder::XmlTree
-\details
-The XmlTree class is designed to parse and XML documents and represent them hierarchically. An XmlTree node is composed of an optional value, attributes and a collection of children nodes, which are in turn XmlTree's.
-\sa
-\ref guide_XmlTree <BR>
-
-*/

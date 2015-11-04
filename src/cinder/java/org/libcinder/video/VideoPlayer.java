@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Surface;
 
@@ -15,7 +16,7 @@ import org.libcinder.app.CinderNativeActivity;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class VideoPlayer implements SurfaceTexture.OnFrameAvailableListener {
+public class VideoPlayer implements SurfaceTexture.OnFrameAvailableListener, MediaPlayer.OnCompletionListener {
 
     private static final String TAG = "libcinder...VideoPlayer";
 
@@ -24,6 +25,9 @@ public class VideoPlayer implements SurfaceTexture.OnFrameAvailableListener {
     private HandlerThread mHandlerThread;
 
     private float mVolume = 1.0f;
+    private boolean mIsPlaying = false;
+    private boolean mIsDone = false;
+    private boolean mLoop = false;
 
     private AtomicBoolean mFrameAvailable = new AtomicBoolean(false);
     private SurfaceTexture mSurfaceTexture;
@@ -63,6 +67,9 @@ public class VideoPlayer implements SurfaceTexture.OnFrameAvailableListener {
 
     private void initialize(URL url) {
         initializeCommon();
+        if( null != mMediaPlayer ) {
+            mMediaPlayer.setOnCompletionListener(this);
+        }
     }
 
     private void initialize(String filePath) {
@@ -75,6 +82,9 @@ public class VideoPlayer implements SurfaceTexture.OnFrameAvailableListener {
         }
         catch(Exception e) {
             Log.e(TAG, "VideoPlayer.initialize(String filePath) error: " + e.getMessage());
+        }
+        if( null != mMediaPlayer ) {
+            mMediaPlayer.setOnCompletionListener(this);
         }
     }
 
@@ -99,6 +109,12 @@ public class VideoPlayer implements SurfaceTexture.OnFrameAvailableListener {
                 mFrameAvailable.set(false);
             }
         }
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        mIsPlaying = false;
+        mIsDone = true;
     }
 
     /** createFromUrl
@@ -202,6 +218,7 @@ public class VideoPlayer implements SurfaceTexture.OnFrameAvailableListener {
      *
      */
     public void setLoop(final boolean loop) {
+        mLoop = loop;
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -246,20 +263,23 @@ public class VideoPlayer implements SurfaceTexture.OnFrameAvailableListener {
      *
      */
     public boolean isPlaying() {
-        return (null != mMediaPlayer) && mMediaPlayer.isPlaying();
+        return mIsPlaying;
+        //return (null != mMediaPlayer) && mMediaPlayer.isPlaying();
     }
 
     /** isDone
      *
      */
     public boolean isDone() {
-        return true;
+        return mLoop ? false : mIsDone;
     }
 
     /** play
      *
      */
     public void play() {
+        mIsPlaying = true;
+        mIsDone = false;
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -274,11 +294,28 @@ public class VideoPlayer implements SurfaceTexture.OnFrameAvailableListener {
      *
      */
     public void stop() {
+        mIsPlaying = false;
+        mIsDone = true;
         mHandler.post(new Runnable() {
             @Override
             public void run() {
                 if( null != mMediaPlayer ) {
                     mMediaPlayer.stop();
+                }
+            }
+        });
+    }
+
+    /** pause
+     *
+     */
+    public void pause() {
+        mIsPlaying = false;
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if( null != mMediaPlayer ) {
+                    mMediaPlayer.pause();
                 }
             }
         });

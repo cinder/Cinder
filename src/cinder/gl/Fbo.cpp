@@ -364,14 +364,16 @@ void Fbo::prepareAttachments( const Fbo::Format &format, bool multisampling )
 void Fbo::attachAttachments()
 {
 	// attach Renderbuffers
-	for( auto &bufferAttachment : mAttachmentsBuffer )
+	for( auto &bufferAttachment : mAttachmentsBuffer ) {
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, bufferAttachment.first, GL_RENDERBUFFER, bufferAttachment.second->getId() );
+	}
 	
 	// attach Textures
 	for( auto &textureAttachment : mAttachmentsTexture ) {
 		auto textureTarget = textureAttachment.second->getTarget();
-		if( textureTarget == GL_TEXTURE_CUBE_MAP )
+		if( textureTarget == GL_TEXTURE_CUBE_MAP ) {
 			textureTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+		}
 		glFramebufferTexture2D( GL_FRAMEBUFFER, textureAttachment.first, textureTarget, textureAttachment.second->getId(), 0 );
 	}	
 }
@@ -414,7 +416,8 @@ void Fbo::init()
 	ScopedFramebuffer fbScp( GL_FRAMEBUFFER, mId );
 
 	// determine multisampling settings
-	bool useMsaa, useCsaa;
+	bool useMsaa = false;
+	bool useCsaa = false;
 	initMultisamplingSettings( &useMsaa, &useCsaa, &mFormat );
 
 	prepareAttachments( mFormat, useMsaa || useCsaa );
@@ -564,7 +567,7 @@ void Fbo::resolveTextures() const
 		
 		glBlitFramebufferANGLE( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
 	}
-#elif defined( CINDER_GL_HAS_FBO_MULTISAMPLING ) && defined( CINDER_GL_ES_2 )
+#elif defined( CINDER_GL_HAS_FBO_MULTISAMPLING ) && defined( CINDER_COCOA_TOUCH ) && defined( CINDER_GL_ES_2 )
 	// iOS-specific multisample resolution code
 	if( mMultisampleFramebufferId ) {
 		ScopedFramebuffer drawFbScp( GL_DRAW_FRAMEBUFFER_APPLE, mId );

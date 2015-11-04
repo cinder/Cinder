@@ -50,6 +50,7 @@ jmethodID 	VideoPlayer::Java::isPlaying			= nullptr;
 jmethodID 	VideoPlayer::Java::isDone				= nullptr;
 jmethodID 	VideoPlayer::Java::play					= nullptr;
 jmethodID 	VideoPlayer::Java::stop					= nullptr; 
+jmethodID 	VideoPlayer::Java::pause				= nullptr; 
 
 VideoPlayer::VideoPlayer( jobject obj )
 {
@@ -144,6 +145,7 @@ void VideoPlayer::cacheJni()
 				Java::isDone				= JniHelper::Get()->GetMethodId( Java::ClassObject, "isDone", "()Z" );
 				Java::play					= JniHelper::Get()->GetMethodId( Java::ClassObject, "play", "()V" );
 				Java::stop					= JniHelper::Get()->GetMethodId( Java::ClassObject, "stop", "()V" ); 
+				Java::pause					= JniHelper::Get()->GetMethodId( Java::ClassObject, "pause", "()V" ); 
 				jni_obtained_check( VideoPlayer::Java::createFromUrl );
 				jni_obtained_check( VideoPlayer::Java::createFromFilePath );
 				jni_obtained_check( VideoPlayer::Java::destroy );
@@ -163,6 +165,7 @@ void VideoPlayer::cacheJni()
 				jni_obtained_check( VideoPlayer::Java::isDone );
 				jni_obtained_check( VideoPlayer::Java::play );
 				jni_obtained_check( VideoPlayer::Java::stop );
+				jni_obtained_check( VideoPlayer::Java::pause );
 			}
 		}
 		catch( const std::exception& e ) {
@@ -193,7 +196,8 @@ void VideoPlayer::destroyJni()
 		Java::isPlaying				= nullptr;
 		Java::isDone				= nullptr;
 		Java::play					= nullptr;
-		Java::stop					= nullptr; 
+		Java::stop					= nullptr;
+		Java::pause					= nullptr;
 	}
 }
 
@@ -247,6 +251,12 @@ bool VideoPlayer::isPlaying() const
 	return (bool)result;
 }
 
+bool VideoPlayer::isDone() const
+{
+	jboolean result = JniHelper::Get()->CallBooleanMethod( mJavaObject->getObject(), Java::isDone );
+	return (bool)result;
+}
+
 void VideoPlayer::play()
 {
 	if( ! isPlaying() ) {
@@ -257,6 +267,11 @@ void VideoPlayer::play()
 void VideoPlayer::stop()
 {
 	JniHelper::Get()->CallVoidMethod( mJavaObject->getObject(), Java::stop );
+}
+
+void VideoPlayer::pause()
+{
+	JniHelper::Get()->CallVoidMethod( mJavaObject->getObject(), Java::pause );
 }
 
 ci::gl::Texture2dRef VideoPlayer::getTexture() const

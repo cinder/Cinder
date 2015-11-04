@@ -1,0 +1,28 @@
+{
+	"data":{
+		"metadata":
+		{
+			"keywords": ["path2d", "shape2d", "bezier", "curves", "path", "lines"]
+		},
+		"nav":[
+			{
+				"label": "Part 1",
+				"link": "part1.html"
+			},
+			{
+				"label": "Part 2",
+				"link": "part2.html"
+			},
+			{
+				"label": "Part 3",
+				"link": "part3.html"
+			}
+		],
+		"seealso":
+		{
+			"label": "Path2d Guide",
+			"dox": ["ci::Path2d", "ci::Shape2d"]
+		}
+	}
+
+}

@@ -52,6 +52,8 @@ private:
 	//void 				delayedSetup();
 
 public:
+	static AppImplAndroid	*getInstance();
+
 	AppAndroid 			*getApp();
  	android_app			*getNative();
 
@@ -90,6 +92,8 @@ public:
 	fs::path			getOpenFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
 	fs::path			getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
 	fs::path			getFolderPath( const fs::path &initialPath );
+
+	ivec2				getScreenSize() const;
 
  protected:
  	void 				onTouchBegan( int id, float x, float y );
@@ -131,6 +135,7 @@ public:
 	friend class AppAndroid;
 	friend class WindowImplAndroid;
 	friend class EventManagerAndroid;
+	friend class PlatformAndroid;
 };
 
 

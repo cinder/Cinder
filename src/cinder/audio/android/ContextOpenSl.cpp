@@ -29,51 +29,30 @@
 
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
+
 //#include <cinder/audio/android/DeviceManagerOpenSl.h>
 
-//#include "cinder/app/App.h"
+#include "cinder/app/App.h"
 
 using namespace std;
 
 namespace cinder { namespace audio { namespace android {
 
+// ----------------------------------------------------------------------------------------------------
+// OutputDeviceNodeOpenSlImpl (private)
+// ----------------------------------------------------------------------------------------------------
+
 struct OutputDeviceNodeOpenSlImpl {
-    OutputDeviceNodeOpenSlImpl( OutputDeviceNodeOpenSl *parent )
-		    : mParent( parent )
+    OutputDeviceNodeOpenSlImpl( OutputDeviceNodeOpenSl *parent, const shared_ptr<ContextOpenSl> &context )
+		    : mParent( parent ), mContextOpenSl( context )
     {
-		initEngine();
     }
-
-	~OutputDeviceNodeOpenSlImpl()
-	{
-		destroyEngine();
-	}
-
-    void initEngine()
-    {
-	    SLresult result = slCreateEngine( &mSLObject, 0, NULL, 0, NULL, NULL );
-	    CI_VERIFY( result == SL_RESULT_SUCCESS );
-
-	    SLboolean realizeAsync = SL_BOOLEAN_FALSE;
-	    result = (*mSLObject)->Realize( mSLObject, realizeAsync );
-	    CI_VERIFY( result == SL_RESULT_SUCCESS );
-
-	    result = (*mSLObject)->GetInterface( mSLObject, SL_IID_ENGINE, &mSLEngine );
-	    CI_VERIFY( result == SL_RESULT_SUCCESS );
-
-	    CI_LOG_I( "complete" );
-    }
-
-	void destroyEngine()
-	{
-		if( mSLObject ) {
-			(*mSLObject)->Destroy( mSLObject );
-			mSLEngine = nullptr;
-		}
-	}
 
 	void initPlayer( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
+		auto context = mContextOpenSl.lock();
+		SLEngineItf engine = context->getSLEngineEngine();
+
 		mNumSamplesBuffered = 0;
 		mSamplesPerProcessingBlock = framesPerBlock * numChannels;
 
@@ -105,7 +84,7 @@ struct OutputDeviceNodeOpenSlImpl {
 		audioSource.pLocator = &simpleBufferQueue;
 		audioSource.pFormat = &sourceFormat;
 
-		SLresult result = (*mSLEngine)->CreateOutputMix( mSLEngine, &mOutputMixObject, 0, nullptr, nullptr );
+		SLresult result = (*engine )->CreateOutputMix( engine, &mOutputMixObject, 0, nullptr, nullptr );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 
 		result = (*mOutputMixObject)->Realize( mOutputMixObject, SL_BOOLEAN_FALSE );
@@ -120,10 +99,10 @@ struct OutputDeviceNodeOpenSlImpl {
 		audioSink.pFormat = nullptr; // parameter is ignored for SLDataLocator_OutputMix
 
 		// create audio player
-		const SLInterfaceID playIds[] = { SL_IID_ANDROIDSIMPLEBUFFERQUEUE };
-		const SLboolean playRec[] = { SL_BOOLEAN_TRUE };
+		const SLInterfaceID playerInterfaceIds[] = { SL_IID_ANDROIDSIMPLEBUFFERQUEUE };
+		const SLboolean playerInterfacesRequired[] = { SL_BOOLEAN_TRUE };
 
-		result = (*mSLEngine)->CreateAudioPlayer( mSLEngine, &mPlayerObject, &audioSource, &audioSink, 1, playIds, playRec );
+		result = (*engine )->CreateAudioPlayer( engine, &mPlayerObject, &audioSource, &audioSink, 1, playerInterfaceIds, playerInterfacesRequired );
 		CI_VERIFY( result == SL_RESULT_SUCCESS );
 
 		result = (*mPlayerObject)->Realize( mPlayerObject, SL_BOOLEAN_FALSE );
@@ -149,8 +128,6 @@ struct OutputDeviceNodeOpenSlImpl {
 			(*mOutputMixObject)->Destroy( mOutputMixObject );
 			mOutputMixObject = nullptr;
 		}
-
-		// TODO: check if all sl objects for player have been destroyed
 	}
 
 	void play()
@@ -161,6 +138,13 @@ struct OutputDeviceNodeOpenSlImpl {
 		// need to fill the BufferQueue initially with samples, playerCallback() will be called to do this when needed afterwards
 		enqueueSamples( mPlayerBufferQueue );
 	}
+
+	void stop()
+	{
+		SLresult result = (*mPlayerPlay)->SetPlayState( mPlayerPlay, SL_PLAYSTATE_STOPPED );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+	}
+
 
 //	int mNumCallbackCalls = 0;
 //	string mDebugMessage;
@@ -194,10 +178,10 @@ struct OutputDeviceNodeOpenSlImpl {
 		impl->enqueueSamples( bufferQueue );
 	}
 
-	OutputDeviceNodeOpenSl* mParent = nullptr;
+	OutputDeviceNodeOpenSl*    mParent = nullptr;
+	weak_ptr<ContextOpenSl>    mContextOpenSl;
 
-	SLObjectItf mSLObject = nullptr;
-	SLEngineItf mSLEngine = nullptr;
+
 	SLObjectItf mOutputMixObject = nullptr;
 	SLObjectItf mPlayerObject = nullptr;
 	SLPlayItf   mPlayerPlay = nullptr;
@@ -212,17 +196,17 @@ struct OutputDeviceNodeOpenSlImpl {
 // OutputDeviceNodeOpenSl
 // ----------------------------------------------------------------------------------------------------
 
-OutputDeviceNodeOpenSl::OutputDeviceNodeOpenSl( const DeviceRef &device, const Node::Format &format )
-	: OutputDeviceNode( device, format ), mImpl( new OutputDeviceNodeOpenSlImpl( this ) )
+OutputDeviceNodeOpenSl::OutputDeviceNodeOpenSl( const DeviceRef &device, const Node::Format &format, const shared_ptr<ContextOpenSl> &context )
+	: OutputDeviceNode( device, format ), mImpl( new OutputDeviceNodeOpenSlImpl( this, context ) )
 {
 }
 
 void OutputDeviceNodeOpenSl::initialize()
 {
-	size_t sampleRate = getOutputSampleRate();
-	size_t framesPerBlock = getOutputFramesPerBlock();
-
+	const size_t sampleRate = getOutputSampleRate();
+	const size_t framesPerBlock = getOutputFramesPerBlock();
 	const size_t numChannels = getNumChannels();
+
 	if( numChannels > 2 ) {
 		throw AudioFormatExc( string( "Device can not accommodate " ) + to_string( numChannels ) + " output channels, only one or two are supported." );
 	}
@@ -242,7 +226,7 @@ void OutputDeviceNodeOpenSl::enableProcessing()
 
 void OutputDeviceNodeOpenSl::disableProcessing()
 {
-	// TODO
+	mImpl->stop();
 }
 
 void OutputDeviceNodeOpenSl::renderToBufferFromInputs()
@@ -279,12 +263,173 @@ void OutputDeviceNodeOpenSl::renderToBufferFromInputs()
 }
 
 // ----------------------------------------------------------------------------------------------------
+// InputDeviceNodeOpenSlImpl (private)
+// ----------------------------------------------------------------------------------------------------
+
+const size_t MIN_RINGBUFFER_FRAMES = 4096;
+
+struct InputDeviceNodeOpenSlImpl {
+	InputDeviceNodeOpenSlImpl( InputDeviceNodeOpenSl *parent, const shared_ptr<ContextOpenSl> &context )
+		: mParent( parent ), mContextOpenSl( context )
+	{
+	}
+
+	void initRecorder( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
+	{
+		mNumFramesEnqueued = 0;
+		mNumFramesBuffered = 0;
+		mEnqueueBuffer.resize( framesPerBlock * numChannels );
+		mConvertBuffer.setSize( framesPerBlock, numChannels );
+		mRingBuffers.resize( numChannels );
+
+		size_t numRingBufferFrames = max( framesPerBlock * 2, MIN_RINGBUFFER_FRAMES );
+		CI_LOG_I( "framesPerBlock: " << framesPerBlock << ", numChannels: " << numChannels << ", numRingBufferFrames: " << numRingBufferFrames );
+
+		for( auto &ringBuffer : mRingBuffers ) {
+			ringBuffer.resize( numRingBufferFrames );
+		}
+
+		auto context = mContextOpenSl.lock();
+		SLEngineItf engine = context->getSLEngineEngine();
+
+		SLDataLocator_IODevice locatorIoDevice = { 0 };
+		locatorIoDevice.locatorType  = SL_DATALOCATOR_IODEVICE;
+		locatorIoDevice.deviceType   = SL_IODEVICE_AUDIOINPUT;
+		locatorIoDevice.deviceID     = SL_DEFAULTDEVICEID_AUDIOINPUT;
+		locatorIoDevice.device       = nullptr;
+
+		SLDataSource audioSource = { 0 };
+		audioSource.pLocator = &locatorIoDevice;
+		audioSource.pFormat = nullptr;
+
+		SLuint32 channelMask = SL_SPEAKER_FRONT_CENTER;
+		if( numChannels == 2 ) {
+			channelMask = SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT;
+		}
+
+		SLDataFormat_PCM sinkFormat = { 0 };
+		sinkFormat.formatType     = SL_DATAFORMAT_PCM;
+		sinkFormat.numChannels    = numChannels;
+		sinkFormat.samplesPerSec  = sampleRate * 1000; // despite the variable name, the samplerate must be specified in milliHertz.
+		sinkFormat.bitsPerSample  = SL_PCMSAMPLEFORMAT_FIXED_16;
+		sinkFormat.containerSize  = 16,
+		sinkFormat.channelMask    = channelMask;
+		sinkFormat.endianness     = SL_BYTEORDER_LITTLEENDIAN;
+
+		SLDataLocator_AndroidSimpleBufferQueue simpleBufferQueue = { 0 };
+		simpleBufferQueue.locatorType   = SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE;
+		simpleBufferQueue.numBuffers    = 1;
+
+		SLDataSink audioSink = { 0 };
+		audioSink.pLocator = &simpleBufferQueue;
+		audioSink.pFormat = &sinkFormat;
+
+		const SLInterfaceID recorderInterfaceIds[1] = { SL_IID_ANDROIDSIMPLEBUFFERQUEUE };
+		const SLboolean recorderInterfacesRequired[1] = { SL_BOOLEAN_TRUE };
+
+		SLresult result = (*engine)->CreateAudioRecorder( engine, &mRecorderObject, &audioSource, &audioSink, 1, recorderInterfaceIds, recorderInterfacesRequired );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+		// realize the audio recorder
+		result = (*mRecorderObject)->Realize( mRecorderObject, SL_BOOLEAN_FALSE );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+		// get the record interface
+		result = (*mRecorderObject)->GetInterface( mRecorderObject, SL_IID_RECORD, &mRecorderRecord );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+		// get the buffer queue interface
+		result = (*mRecorderObject)->GetInterface( mRecorderObject, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &mBufferQueue );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+		// register callback on the buffer queue
+		result = (*mBufferQueue)->RegisterCallback( mBufferQueue, &InputDeviceNodeOpenSlImpl::recorderCallback, this );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+		CI_LOG_I( "complete" );
+	}
+
+	void destroyRecorder()
+	{
+		if( mRecorderObject ) {
+			(*mRecorderObject)->Destroy( mRecorderObject );
+			mRecorderObject = nullptr;
+		}
+	}
+
+	void beginRecording()
+	{
+		SLresult result = (*mRecorderRecord)->SetRecordState( mRecorderRecord, SL_RECORDSTATE_RECORDING );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+		enqueueSamples( mBufferQueue );
+	}
+
+	void stopRecording()
+	{
+		SLresult result = (*mRecorderRecord)->SetRecordState( mRecorderRecord, SL_RECORDSTATE_STOPPED );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+	}
+
+	// TODO: On the device I tested, it seems like ringbuffers always have about 2000 frames in them,
+	// it might be possible to reduce latency by throwing some of these away (overwriting in this method)
+	void enqueueSamples( SLAndroidSimpleBufferQueueItf bufferQueue )
+	{
+		// convert the enqueued samples into de-interleaved floating point, push those into the ringbuffer
+//		size_t currentBlock = master()->getNumProcessedFrames() / master()->getFramesPerBlock();
+//		CI_LOG_I( "currentBlock: " << currentBlock << " - " << mDebugString );
+
+		dsp::deinterleave( mEnqueueBuffer.data(), mConvertBuffer.getData(), mConvertBuffer.getNumFrames(), mConvertBuffer.getNumChannels(), mNumFramesEnqueued );
+
+		size_t framesBuffered = 0;
+		for( size_t ch = 0; ch < mRingBuffers.size(); ch++ ) {
+			if( mRingBuffers[ch].write( mConvertBuffer.getChannel( ch ), mNumFramesEnqueued ) ) {
+				// only set this to non-zero if we succeeded at writing to the ringbuffer
+				framesBuffered = mNumFramesEnqueued;
+			}
+			else {
+//				CI_LOG_W( "RingBuffer full for channel: " << ch );
+				mParent->markOverrun();
+			}
+		}
+
+		mNumFramesBuffered += framesBuffered;
+//		CI_LOG_I( "frames buffered: " << mNumFramesBuffered );
+
+		SLresult result = (*bufferQueue)->Enqueue( bufferQueue, mEnqueueBuffer.data(), mEnqueueBuffer.size() * sizeof( int16_t ) );
+		CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+		mNumFramesEnqueued = mEnqueueBuffer.size();
+	}
+
+	static void recorderCallback( SLAndroidSimpleBufferQueueItf bufferQueue, void *context )
+	{
+		InputDeviceNodeOpenSlImpl *impl = (InputDeviceNodeOpenSlImpl *)context;
+		impl->enqueueSamples( bufferQueue );
+	}
+
+
+	InputDeviceNodeOpenSl*          mParent = nullptr;
+	std::weak_ptr<ContextOpenSl>    mContextOpenSl;
+
+	SLObjectItf mRecorderObject = nullptr;
+	SLRecordItf mRecorderRecord = nullptr;
+	SLAndroidSimpleBufferQueueItf mBufferQueue = nullptr;
+
+	std::vector<int16_t>            mEnqueueBuffer;
+	audio::BufferDynamic            mConvertBuffer;
+	std::vector<dsp::RingBuffer>    mRingBuffers;
+
+	size_t	                mNumFramesEnqueued = 0; // amount requested from OpenSL
+	size_t	                mNumFramesBuffered = 0; // amount of floating-point frames available to be read in the ringbuffer
+};
+
+// ----------------------------------------------------------------------------------------------------
 // InputDeviceNodeOpenSl
 // ----------------------------------------------------------------------------------------------------
 
-#if 0
-InputDeviceNodeOpenSl::InputDeviceNodeOpenSl( const DeviceRef &device, const Node::Format &format )
-	: InputDeviceNode( device, format )
+InputDeviceNodeOpenSl::InputDeviceNodeOpenSl( const DeviceRef &device, const Node::Format &format, const shared_ptr<ContextOpenSl> &context )
+	: InputDeviceNode( device, format ), mImpl( new InputDeviceNodeOpenSlImpl( this, context ) )
 {
 }
 
@@ -294,40 +439,91 @@ InputDeviceNodeOpenSl::~InputDeviceNodeOpenSl()
 
 void InputDeviceNodeOpenSl::initialize()
 {
+	const size_t sampleRate = getSampleRate();
+	const size_t framesPerBlock = getFramesPerBlock();
+	const size_t numChannels = getNumChannels();
+
+	if( numChannels > 2 ) {
+		throw AudioFormatExc( string( "Device can not accommodate " ) + to_string( numChannels ) + " output channels, only one or two are supported." );
+	}
+
+	mImpl->initRecorder( numChannels, sampleRate, framesPerBlock );
 }
 
 void InputDeviceNodeOpenSl::uninitialize()
 {
+	mImpl->destroyRecorder();
 }
 
 void InputDeviceNodeOpenSl::enableProcessing()
 {
+	mImpl->beginRecording();
 }
 
 void InputDeviceNodeOpenSl::disableProcessing()
 {
+	mImpl->stopRecording();
 }
 
 void InputDeviceNodeOpenSl::process( Buffer *buffer )
 {
+//	size_t currentBlock = master()->getNumProcessedFrames() / master()->getFramesPerBlock();
+//	CI_LOG_I( "currentBlock: " << currentBlock );
+
+	const size_t framesNeeded = buffer->getNumFrames();
+	if( mImpl->mNumFramesBuffered < framesNeeded ) {
+//		CI_LOG_W( "not enough frames buffered, need: " << framesNeeded << ", have: " << mImpl->mNumFramesBuffered );
+		markUnderrun();
+		return;
+	}
+
+	for( size_t ch = 0; ch < getNumChannels(); ch++ ) {
+		bool readSuccess = mImpl->mRingBuffers[ch].read( buffer->getChannel( ch ), framesNeeded );
+		CI_ASSERT( readSuccess );
+	}
+
+	mImpl->mNumFramesBuffered -= framesNeeded;
 }
-#endif
 
 // ----------------------------------------------------------------------------------------------------
 // ContextOpenSl
 // ----------------------------------------------------------------------------------------------------
 
+ContextOpenSl::ContextOpenSl()
+{
+	SLresult result = slCreateEngine( &mSLEngineObject, 0, NULL, 0, NULL, NULL );
+	CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+	SLboolean realizeAsync = SL_BOOLEAN_FALSE;
+	result = (*mSLEngineObject)->Realize( mSLEngineObject, realizeAsync );
+	CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+	result = (*mSLEngineObject)->GetInterface( mSLEngineObject, SL_IID_ENGINE, &mSLEngineEngine );
+	CI_VERIFY( result == SL_RESULT_SUCCESS );
+
+	CI_LOG_I( "complete" );
+}
+
+ContextOpenSl::~ContextOpenSl()
+{
+	if( mSLEngineObject ) {
+		(*mSLEngineObject)->Destroy( mSLEngineObject );
+	}
+
+	mSLEngineObject = nullptr;
+	mSLEngineEngine = nullptr;
+}
+
 OutputDeviceNodeRef ContextOpenSl::createOutputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
-	return makeNode( new OutputDeviceNodeOpenSl( device, format ) );
+	auto thisRef = dynamic_pointer_cast<ContextOpenSl>( shared_from_this() );
+	return makeNode( new OutputDeviceNodeOpenSl( device, format, thisRef ) );
 }
 
 InputDeviceNodeRef ContextOpenSl::createInputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
-	CI_ASSERT( 0 && "not yet implemented" );
-
-//	return makeNode( new InputDeviceNodeOpenSl( device, format ) );
-	return nullptr;
+	auto thisRef = dynamic_pointer_cast<ContextOpenSl>( shared_from_this() );
+	return makeNode( new InputDeviceNodeOpenSl( device, format, thisRef ) );
 }
 
 } } } // namespace cinder::audio::android

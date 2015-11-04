@@ -31,6 +31,7 @@
 #if defined( CINDER_GL_ES )
 
 #include "cinder/gl/Shader.h"
+#include "cinder/gl/ConstantConversions.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Texture.h"
@@ -87,8 +88,6 @@ class EnvironmentEs : public Environment {
 	bool	supportsHardwareVao() const override;
 	bool 	supportsInstancedArrays() const override;
 	bool	supportsTextureLod() const override;
-	bool	supportsMapBuffer() const override;
-	bool 	supportsMapBufferRange() const override;
 	bool	supportsGeometryShader() const override;
 	bool	supportsTessellationShader() const override;	
 
@@ -171,8 +170,9 @@ bool EnvironmentEs::isExtensionAvailable( const std::string &extName ) const
 
 	// convert to lower case
 	std::string extension = extName;
-	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>( tolower ) );	
-	return sExtensions.count( extension ) > 0;
+	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>( tolower ) );
+	bool result = ( sExtensions.count( extension ) > 0 );
+	return result;
 }
 
 bool EnvironmentEs::supportsFboMultiSample() const
@@ -188,7 +188,8 @@ bool EnvironmentEs::supportsCoverageSample() const
 bool EnvironmentEs::supportsHardwareVao() const
 {
 #if defined( CINDER_GL_ES_2 )
-	return isExtensionAvailable( "GL_OES_vertex_array_object" ) || isExtensionAvailable( "GL_ARB_vertex_array_object" );
+	static bool result = isExtensionAvailable( "GL_OES_vertex_array_object" ) || isExtensionAvailable( "GL_ARB_vertex_array_object" );
+	return result;
 #else
 	// Assumes OpenGL ES 3 or greater
 	return true;
@@ -197,7 +198,12 @@ bool EnvironmentEs::supportsHardwareVao() const
 
 bool EnvironmentEs::supportsInstancedArrays() const
 {
-	return false;
+#if defined( CINDER_GL_ES_2 )
+	static bool result = isExtensionAvailable( "GL_EXT_draw_instanced" ) || isExtensionAvailable( "GL_NV_draw_instanced" );
+	return result;
+#else
+	return true;
+#endif
 }
 
 bool EnvironmentEs::supportsTextureLod() const
@@ -210,29 +216,16 @@ bool EnvironmentEs::supportsTextureLod() const
 #endif
 }
 
-bool EnvironmentEs::supportsMapBuffer() const
-{
-	return isExtensionAvailable( "GL_OES_mapbuffer" );
-}
-
-bool EnvironmentEs::supportsMapBufferRange() const
-{
-#if defined( CINDER_GL_ES_2 )
-	return isExtensionAvailable( "GL_EXT_map_buffer_range" ) || isExtensionAvailable( "GL_ARB_map_buffer_range" );
-#else
-	// Assumes OpenGL ES 3 or greater
-	return true;
-#endif	
-}
-
 bool EnvironmentEs::supportsGeometryShader() const
 {
-	return isExtensionAvailable( "GL_EXT_geometry_shader" );
+	static bool result = isExtensionAvailable( "GL_EXT_geometry_shader" );
+	return result;
 }
 
 bool EnvironmentEs::supportsTessellationShader() const
 {
-	return isExtensionAvailable( "GL_EXT_tessellation_shader" );
+	static bool result = isExtensionAvailable( "GL_EXT_tessellation_shader" );
+	return result;
 }
 
 GLenum EnvironmentEs::getPreferredIndexType() const
@@ -259,7 +252,7 @@ void EnvironmentEs::allocateTexStorage1d( GLenum target, GLsizei levels, GLenum 
 void EnvironmentEs::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType )
 {
 #if defined( CINDER_GL_ES_2 )
-	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
+	// Test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
 	// both ANGLE and iOS support EXT_texture_storage
   #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	static auto texStorage2DFn = (void (*)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height))nullptr;
@@ -271,12 +264,13 @@ void EnvironmentEs::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum 
 #endif
 	if( immutable && texStorage2DFn ) {
 		texStorage2DFn( target, levels, internalFormat, width, height );
-	}
+	} 
 	else {
 		GLenum dataFormat, dataType;
 		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
-		if( texImageDataType != -1 )
+		if( texImageDataType != -1 ) {
 			dataType = texImageDataType;
+		}
 // on ES 2 non-sized formats are required for internalFormat
 #if defined( CINDER_GL_ES_2 )
 		internalFormat = dataFormat;
@@ -331,152 +325,290 @@ void EnvironmentEs::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFo
 	}
 }
 
+class ShaderSource {
+public:
+	ShaderSource& operator<<( const std::string& s ) { mStream << s << "\n"; return *this; }
+	std::string str() const { return mStream.str(); }
+private:
+	std::stringstream mStream;
+};
+
 std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 {
-	std::string s;
+	ShaderSource ss;
 
-#if defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
-	s +=		"#version 100\n";
-#endif
-	
-	s +=		"uniform mat4	ciModelViewProjection;\n";
+#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
+  #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3 )
+	ss << "#version 300 es";
+  #elif	( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+	ss << "#version 310 es";
+  #elif ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_2 )
+	ss << "#version 320 es";
+  #endif
 
-	if( shader.mLambert )
-		s +=	"uniform mat3	ciNormalMatrix;\n";
-
-	s +=		"\n"
-				"attribute vec4		ciPosition;\n"
-				;
+	ss << "uniform mat4 ciModelViewProjection;";
+	ss << "in vec4      ciPosition;";
 
 	if( shader.mUniformBasedPosAndTexCoord ) {
-		s +=	"uniform vec2 uPositionOffset, uPositionScale;\n";
+		ss << "uniform vec2 uPositionOffset, uPositionScale;";
 		if( shader.mTextureMapping ) {
-			s+= "uniform vec2 uTexCoordOffset, uTexCoordScale;\n";
+			ss << "uniform vec2 uTexCoordOffset, uTexCoordScale;";
 		}
 	}
 
 	if( shader.mTextureMapping ) {
-		s +=	"attribute vec2     ciTexCoord0;\n"
-				"varying highp vec2	TexCoord;\n"
-				;
-	}
-	if( shader.mColor ) {
-		s +=	"attribute vec4    ciColor;\n"
-				"varying lowp vec4 Color;\n"
-				;
-	}
-	if( shader.mLambert ) {
-		s += "attribute vec3    ciNormal;\n"
-			"varying highp vec3 Normal;\n"
-			;
+		ss << "in vec2        ciTexCoord0;";
+		ss << "out highp vec2 TexCoord;";
 	}
 
-	s +=		"void main( void )\n"
-				"{\n"
-				;
-	if( shader.mUniformBasedPosAndTexCoord )
-		s +=	"	gl_Position = ciModelViewProjection * ( vec4( uPositionOffset, 0, 0 ) + vec4( uPositionScale, 1, 1 ) * ciPosition );\n";
-	else
-		s +=	"	gl_Position	= ciModelViewProjection * ciPosition;\n"
-				;
-				
-	if( shader.mTextureMapping ) {	
-		if( shader.mUniformBasedPosAndTexCoord )
-			s+= "	TexCoord	= uTexCoordOffset + uTexCoordScale * ciTexCoord0;\n";
-		else
-			s+=	"	TexCoord	= ciTexCoord0;\n";
-				;
-	}
 	if( shader.mColor ) {
-		s +=	"	Color = ciColor;\n"
-				;
+		ss << "in vec4        ciColor;";
+		ss << "out lowp vec4  Color;";
 	}
+
 	if( shader.mLambert ) {
-		s +=	"	Normal = ciNormalMatrix * ciNormal;\n"
-				;
+		ss << "in vec3        ciNormal;";
+		ss << "out highp vec3 Normal;";
 	}
-	
-	s +=		"}\n";
-	
-	return s;
+
+
+	ss << "void main( void )";
+	ss << "{";
+
+	if( shader.mUniformBasedPosAndTexCoord ) {
+		ss << "    gl_Position = ciModelViewProjection * ( vec4( uPositionOffset, 0, 0 ) + vec4( uPositionScale, 1, 1 ) * ciPosition );";
+	}
+	else {
+		ss << "    gl_Position = ciModelViewProjection * ciPosition;";
+	}
+
+	if( shader.mTextureMapping ) {	
+		if( shader.mUniformBasedPosAndTexCoord ) {
+			ss << "    TexCoord = uTexCoordOffset + uTexCoordScale * ciTexCoord0;";
+		}
+		else {
+			ss << "    TexCoord = ciTexCoord0;";
+		}
+	}
+
+	if( shader.mColor ) {
+		ss << "    Color = ciColor;";
+	}
+
+	if( shader.mLambert ) {
+		ss << "    Normal = ciNormalMatrix * ciNormal;";
+	}
+
+	ss << "}";	
+
+#else // OpenGL ES 2.0
+
+	ss << "#version 100";
+
+	ss << "uniform mat4   ciModelViewProjection;";
+	ss << "attribute vec4 ciPosition;";
+
+	if( shader.mUniformBasedPosAndTexCoord ) {
+		ss << "uniform vec2 uPositionOffset, uPositionScale;";
+		if( shader.mTextureMapping ) {
+			ss << "uniform vec2 uTexCoordOffset, uTexCoordScale;";
+		}
+	}
+
+	if( shader.mTextureMapping ) {
+		ss << "attribute vec2 ciTexCoord0;";
+		ss << "varying highp vec2 TexCoord;";
+	}
+
+	if( shader.mColor ) {
+		ss << "attribute vec4    ciColor;";
+		ss << "varying lowp vec4 Color;";
+	}
+
+	if( shader.mLambert ) {
+		ss << "attribute vec3     ciNormal;";
+		ss << "varying highp vec3 Normal;";
+	}
+
+
+	ss << "void main( void )";
+	ss << "{";
+
+	if( shader.mUniformBasedPosAndTexCoord ) {
+		ss << "    gl_Position = ciModelViewProjection * ( vec4( uPositionOffset, 0, 0 ) + vec4( uPositionScale, 1, 1 ) * ciPosition );";
+	}
+	else {
+		ss << "    gl_Position = ciModelViewProjection * ciPosition;";
+	}
+
+	if( shader.mTextureMapping ) {	
+		if( shader.mUniformBasedPosAndTexCoord ) {
+			ss << "    TexCoord = uTexCoordOffset + uTexCoordScale * ciTexCoord0;";
+		}
+		else {
+			ss << "    TexCoord = ciTexCoord0;";
+		}
+	}
+
+	if( shader.mColor ) {
+		ss << "    Color = ciColor;";
+	}
+
+	if( shader.mLambert ) {
+		ss << "    Normal = ciNormalMatrix * ciNormal;";
+	}
+
+	ss << "}";
+#endif
+
+	return ss.str();
 }
 
 std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 {
-	std::string s;
+	ShaderSource ss;	
 
-#if defined( CINDER_LINUX ) && ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
-	s +=		"#version 100\n";
-#endif	
+#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )
+  #if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3 )
+	ss << "#version 300 es";
+  #elif	( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_1 )
+	ss << "#version 310 es";
+  #elif ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_3_2 )
+	ss << "#version 320 es";
+  #endif
 
-#if defined( CINDER_ANDROID )
+  #if defined( CINDER_ANDROID )
 	if( shader.mTextureMappingExternalOes) {
-		s += 	"#extension GL_OES_EGL_image_external : require\n"
-				;
+		ss << "#extension GL_OES_EGL_image_external : require";
 	}
-#endif		
+  #endif
 
-	s +=		"precision highp float;\n";
+	ss << "precision highp float;";
 
-#if defined( CINDER_ANDROID )
+  #if defined( CINDER_ANDROID )
 	if( shader.mTextureMapping ) {	
 		if( shader.mTextureMappingExternalOes ) {
-			s +=	"uniform samplerExternalOES	uTex0;\n"
-					"varying highp vec2         TexCoord;\n"
-					;
+			ss << "uniform samplerExternalOES uTex0;";
+			ss << "in highp vec2              TexCoord;";
 		}
 		else {
-			s +=	"uniform sampler2D  uTex0;\n"
-					"varying highp vec2	TexCoord;\n"
-					;
+			ss << "uniform sampler2D uTex0;";
+			ss << "in highp vec2     TexCoord;";
 		}
 	}
-#else	
+  #else	
 	if( shader.mTextureMapping ) {
-		s +=	"uniform sampler2D  uTex0;\n"
-				"varying highp vec2 TexCoord;\n"
-				;
+		ss << "uniform sampler2D uTex0;";
+		ss << "in highp vec2     TexCoord;";
 	}
-#endif
-
+  #endif
 	if( shader.mColor ) {
-		s +=	"varying lowp vec4 Color;\n";
+		ss << "in lowp vec4 Color;";
 	}
 
 	if( shader.mLambert ) { 
-		s +=	"varying highp vec3 Normal;\n";
+		ss << "in highp vec3 Normal;";
 	}
 
-	s +=		"void main( void )\n"
-				"{\n"
-				;
+	ss << "out lowp vec4 outColor;";
+	ss << "void main( void )";
+	ss << "{\n";
 
 	if( shader.mLambert ) {
-		s +=	"	const vec3 L = vec3( 0, 0, 1 );\n"
-				"	vec3 N = normalize( Normal );\n"
-				"	float lambert = max( 0.0, dot( N, L ) );\n"
-				;
+		ss << "    const vec3 L = vec3( 0, 0, 1 );";
+		ss << "    vec3 N = normalize( Normal );";
+		ss << "    float lambert = max( 0.0, dot( N, L ) );";
 	}
 	
-	s +=		"	gl_FragColor = vec4( 1 )";
+	std::string s = "outColor = vec4( 1 )";
 	
 	if( shader.mTextureMapping ) {
-		s +=	" * texture2D( uTex0, TexCoord.st )";
+		s += " * texture( uTex0, TexCoord.st )";
 	}
 	
 	if( shader.mColor ) {
-		s +=	" * Color";
+		s += " * Color";
 	}
 
 	if( shader.mLambert ) {
-		s +=	" * vec4( vec3( lambert ), 1.0 )";
+		s += " * vec4( vec3( lambert ), 1.0 )";
 	}
 
-	s +=		";\n";
+	s += ";";
 	
-	s +=		"}\n";
+	ss << "    " + s;
 	
-	return s;
+	ss << "}";
+
+#else // OpenGL ES 2.0
+
+	ss << "#version 100";
+
+  #if defined( CINDER_ANDROID )
+	if( shader.mTextureMappingExternalOes) {
+		ss << "#extension GL_OES_EGL_image_external : require";
+	}
+  #endif
+
+	ss << "precision highp float;";
+
+  #if defined( CINDER_ANDROID )
+	if( shader.mTextureMapping ) {	
+		if( shader.mTextureMappingExternalOes ) {
+			ss << "uniform samplerExternalOES uTex0;";
+			ss << "varying highp vec2         TexCoord;";
+		}
+		else {
+			ss << "uniform sampler2D  uTex0;";
+			ss << "varying highp vec2 TexCoord;";
+		}
+	}
+  #else	
+	if( shader.mTextureMapping ) {
+		ss << "uniform sampler2D  uTex0;";
+		ss << "varying highp vec2 TexCoord;";
+	}
+  #endif
+	if( shader.mColor ) {
+		ss << "varying lowp vec4 Color;";
+	}
+
+	if( shader.mLambert ) { 
+		ss << "varying highp vec3 Normal;";
+	}
+
+	ss << "void main( void )";
+	ss << "{\n";
+
+	if( shader.mLambert ) {
+		ss << "    const vec3 L = vec3( 0, 0, 1 );";
+		ss << "    vec3 N = normalize( Normal );";
+		ss << "    float lambert = max( 0.0, dot( N, L ) );";
+	}
+	
+	std::string s = "gl_FragColor = vec4( 1 )";
+	
+	if( shader.mTextureMapping ) {
+		s += " * texture2D( uTex0, TexCoord.st )";
+	}
+	
+	if( shader.mColor ) {
+		s += " * Color";
+	}
+
+	if( shader.mLambert ) {
+		s += " * vec4( vec3( lambert ), 1.0 )";
+	}
+
+	s += ";";
+
+	ss << "    " << s;
+	
+	ss << "}";
+
+#endif
+
+	return ss.str();	
 }
 
 

@@ -32,6 +32,10 @@ WindowImplAndroid::WindowImplAndroid( ANativeWindow *nativeWindow, const Window:
 	: mAppImpl( appImpl ), mNativeWindow( nativeWindow )
 {
 	mDisplay = format.getDisplay();
+	if( ! mDisplay ) {
+		mDisplay = Display::getMainDisplay();
+	}
+
 	mRenderer = format.getRenderer();
 
 	mRenderer->setup( mNativeWindow, sharedRenderer );

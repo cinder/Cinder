@@ -100,7 +100,7 @@ android {
         ]
         stl = "gnustl_static"
         toolChainVersion = "4.9"
-        archs = ["armeabi-v7a", "x86"]
+        archs = ["armeabi-v7a"]
         //archs = ["armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86","x86_64"]
     }
     task ndkBuildDebug(dependsOn: 'cinderCompileDebugNdk') {}

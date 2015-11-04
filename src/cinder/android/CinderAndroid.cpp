@@ -74,6 +74,86 @@ bool exists( const ci::fs::path& path )
 	return ci::fs::exists( path ) || ci::app::android::AssetFileSystem_exists( path );
 }
 
+std::string strReplaceAllCopy( const std::string& source, const std::string& search, const std::string& replace) 
+{
+    std::string result = source;
+    size_t pos = 0;
+    while((pos = result.find(search, pos)) != std::string::npos) {
+         result.replace(pos, search.length(), replace);
+         pos += replace.length();
+    }
+    return result;
+}
+
+std::vector<std::string> strSplit( const std::string& source, char delim )
+{
+    std::string singleDelim( 1, delim );
+    std::string doubleDelim( 2, delim );
+    std::string copy = source;
+    while( std::string::npos != copy.find( doubleDelim ) ) {
+        copy = strReplaceAllCopy( copy, doubleDelim, singleDelim );
+    }
+
+    std::vector<std::string> result;
+    size_t i = 0;
+    size_t pos = copy.find( delim );
+    while( std::string::npos != pos ) {
+        result.push_back( copy.substr( i, pos - i ) );
+        i = ++pos;
+        pos = copy.find( delim, pos );
+        if( std::string::npos == pos ) {
+            result.push_back( copy.substr( i, copy.length() ) );
+        }
+    }
+    return result;
+}
+
+cinder::fs::path normalizePath( const cinder::fs::path &path )
+{
+    const std::string sep = "/";
+    const std::string singleDot = ".";
+    const std::string doubleDot = "..";
+
+    std::vector<std::string> tokens = strSplit( path.string(), sep[0] );
+    std::vector<std::string> pathParts;
+    if( ! tokens.empty() ) {
+        std::vector<std::string>::const_iterator iter = tokens.begin();
+        size_t dotDotCount = 0;
+        for( ; iter != tokens.end(); ++iter ) {
+            if( doubleDot == *iter ) {
+                if( ! pathParts.empty() ) {
+                    pathParts.pop_back();
+                }
+                else {
+                    ++dotDotCount;
+                }
+            }
+            else {
+                if( dotDotCount > 0 ) {
+                    --dotDotCount;
+                }
+                else {
+                	if( singleDot != *iter ) {
+                   		pathParts.push_back( *iter );
+                   	}
+                }
+            }
+        }
+    }
+
+   	cinder::fs::path result;
+    if( ! pathParts.empty() ) {
+        std::vector<std::string>::const_iterator iter = pathParts.begin();
+        result = *iter;
+        ++iter;
+        for( ; iter != pathParts.end(); ++iter ) {
+            result = result / *iter;
+        }
+    }
+
+    return result;
+}
+
 } // namespace fs
 
 cinder::fs::path getCacheDirectory()

@@ -29,7 +29,6 @@ namespace cinder { namespace android { namespace video {
  *
  */
 MovieGl::MovieGl( const ci::fs::path &path )
-	: mIsPlaying( false )
 {
 	mVideoPlayer = VideoPlayer::create( path );
 }
@@ -67,13 +66,21 @@ void MovieGl::setLoop( bool loop, bool palindrome )
 void MovieGl::play()
 {
 	mVideoPlayer->play();
-	mIsPlaying = true;
 }
 
 void MovieGl::stop()
 {
 	mVideoPlayer->stop();
-	mIsPlaying = false;
+}
+
+bool MovieGl::isPlaying() const
+{
+	return mVideoPlayer->isPlaying();
+}
+
+bool MovieGl::isDone() const
+{
+	return mVideoPlayer->isDone();
 }
 
 }}} // namespace cinder::android::video

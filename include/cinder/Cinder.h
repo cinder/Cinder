@@ -36,8 +36,8 @@
 //  CINDER_VERSION % 100 is the patch level
 //  CINDER_VERSION / 100 % 1000 is the minor version
 //  CINDER_VERSION / 100000 is the major version
-#define CINDER_VERSION		900
-#define CINDER_VERSION_STR	"0.9.0.dev"
+#define CINDER_VERSION		901
+#define CINDER_VERSION_STR	"0.9.1dev"
 
 #define ASIO_STANDALONE 1
 

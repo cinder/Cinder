@@ -59,6 +59,7 @@ class CinderAppBuildPluginExtension {
     def moduleName       = "";
     def gles2            = false;
     def srcFiles         = [];
+    def srcFilesExclude  = [];
     def srcDirs          = [];
     def includeDirs      = [];
     def ldLibs           = [];
@@ -67,6 +68,8 @@ class CinderAppBuildPluginExtension {
     def stl              = "gnustl_static";
     def toolChainVersion = "4.9";
     def archs            = [];
+
+    def disableFormatStringChecks  = false;
 }
 
 /** @class CompileNdkTask
@@ -137,7 +140,8 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     def mArchFlagsBlocks = [];
     def mSourceFilesFullPath = []; // Used to for depenedency check
     def mStaticLibsFullPaths = []; // Used to for depenedency check
-    
+    def mSourceFilesExcludeFullPath = [];
+
     void apply(Project project) {
         project.extensions.create("cinder", CinderAppBuildPluginExtension)
 
@@ -218,6 +222,9 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         lines.add("# Module Name" )
         lines.add("LOCAL_MODULE := ${project.cinder.moduleName}")
         lines.add("")
+        lines.add("# Module Flags")
+        lines.add("LOCAL_DISABLE_FORMAT_STRING_CHECKS := " + (project.cinder.disableFormatStringChecks ? "true" : "false" ) );
+        lines.add("");
         lines.add("# C++ Source Files" )
         lines.add("LOCAL_SRC_FILES := "+ this.mSourceFiles.join("\n"))
         lines.add("");
@@ -378,6 +385,9 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             archsStr = archsStr.substring( 0, archsStr.length() - 1 );
         }
 
+        def numCores = Runtime.getRuntime().availableProcessors();
+        ndkBuildArgs.add(this.makeNdkArg("--jobs", "${numCores}"));
+
         if( project.cinder.verbose ) {
             ndkBuildArgs.add(this.makeNdkArg("V", "1"));
         }       
@@ -443,9 +453,11 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     void addSourceFile( String path, cppBuildDir ) {
         if( isValidSourceFileExt( path ) ) {
             if( ! path.startsWith( "." ) ) {
-                String relPath = this.relativePath( cppBuildDir, path )
-                this.mSourceFiles.add("\t" + relPath + " \\")
-                this.mSourceFilesFullPath.add( path );              
+                if( ! mSourceFilesExcludeFullPath.contains( path ) ) {
+                    String relPath = this.relativePath( cppBuildDir, path )
+                    this.mSourceFiles.add("\t" + relPath + " \\")
+                    this.mSourceFilesFullPath.add( path );
+                }
             }
         }
         else {
@@ -456,6 +468,17 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     void parseSourceFiles(Project project, cppBuildDir) {
         this.mSourceFiles = [];
         this.mSourceFilesFullPath = [];
+        this.mSourceFilesExcludeFullPath = [];
+
+        // Exclude Files
+        if( ! project.cinder.srcFilesExclude.isEmpty() ) {
+            project.cinder.srcFilesExclude.each {
+                def file = new File("${project.projectDir}/" + it)
+                String path = file.canonicalPath.toString()
+                mSourceFilesExcludeFullPath.add( path )
+            }
+        }
+
         // Files
         if(! project.cinder.srcFiles.isEmpty()) {
             this.mSourceFiles.add("\\")
@@ -655,8 +678,8 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         }
     }
 
-    String makeNdkArg(key, value) {
-        String result = "${key}=${value}"
+    String makeNdkArg(String key, String value) {
+        String result = value.isEmpty() ?  "${key}" : "${key}=${value}"
         return result
     }
 }

@@ -1,26 +1,48 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="_TBOX_LOWER_UUID_0_" Publisher="CN=cinderuser" Version="1.0.0.0" />
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  IgnorableNamespaces="uap mp">
+
+  <Identity
+    Name="_TBOX_LOWER_UUID_0_"
+    Publisher="CN=cinderuser"
+    Version="1.0.0.0" />
+
+  <mp:PhoneIdentity PhoneProductId="_TBOX_LOWER_UUID_0_" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+
   <Properties>
     <DisplayName>_TBOX_PREFIX_</DisplayName>
     <PublisherDisplayName>cinderuser</PublisherDisplayName>
     <Logo>VisualAssets\StoreLogo.png</Logo>
   </Properties>
-  <Prerequisites>
-    <OSMinVersion>6.2.1</OSMinVersion>
-    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
-  </Prerequisites>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+  </Dependencies>
+
   <Resources>
-    <Resource Language="x-generate" />
+    <Resource Language="x-generate"/>
   </Resources>
+
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="_TBOX_PREFIX_">
-      <VisualElements DisplayName="_TBOX_PREFIX_" Logo="VisualAssets\Logo.png" SmallLogo="VisualAssets\SmallLogo.png" Description="Created with Cinder." ForegroundText="light" BackgroundColor="#0c0000">
-        <DefaultTile ShowName="allLogos" />
-        <SplashScreen Image="VisualAssets\SplashScreen.png" BackgroundColor="#0c0000" />
-      </VisualElements>
+    <Application Id="App"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="_TBOX_PREFIX_.App">
+      <uap:VisualElements
+        DisplayName="_TBOX_PREFIX_"
+        Square150x150Logo="VisualAssets\Square150x150Logo.png"
+        Square44x44Logo="VisualAssets\Square44x44Logo.png"
+        Description="_TBOX_PREFIX_"
+        BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="VisualAssets\Wide310x150Logo.png"/>
+        <uap:SplashScreen Image="VisualAssets\SplashScreen.png" />
+      </uap:VisualElements>
     </Application>
   </Applications>
+
   <Capabilities>
     <Capability Name="internetClient" />
   </Capabilities>

@@ -1,0 +1,94 @@
+{
+	"data":{
+		"metadata":
+		{
+			"keywords": ["guide, opengl, graphics"]
+		},
+		"nav":[
+			{
+				"label": "OpenGL in Cinder",
+				"link": "index.html",
+				"pagenav":[
+					{
+						"label": "Introduction",
+						"link": "#intro"
+					}
+				]
+			},
+			{
+				"label": "Getting Started",
+				"link": "part1.html",
+				"pagenav":[
+					{
+						"label": "Convenience Functions",
+						"link": "#convenience_functions"
+					},
+					{
+						"label": "Transformations",
+						"link": "#transformations"
+					}
+				]
+			},
+			{
+				"label": "The Third Dimension",
+				"link": "part2.html",
+				"pagenav":[
+					{
+						"label": "3D Cameras",
+						"link": "#camera_3d"
+					}
+				]
+			},
+			{
+				"label": "Batches",
+				"link": "part3.html",
+				"pagenav":[
+					{
+						"label": "Introducing Batches",
+						"link": "#introducing"
+					}
+				]
+			},
+			{
+				"label": "Textures",
+				"link": "part4.html",
+				"pagenav":[
+					{
+						"label": "Textures",
+						"link": "#textures"
+					}
+				]
+			},		
+			{
+				"label": "Shaders",
+				"link": "part5.html",
+				"pagenav":[
+					{
+						"label": "Basic Shaders",
+						"link": "#basic_shaders"
+					}
+				]
+			},
+			{
+				"label": "Further Reading",
+				"link": "further_reading.html",
+				"pagenav":[
+					{
+						"label": "Books",
+						"link": "#further_reading_books"
+					},
+					{
+						"label": "Websites",
+						"link": "#further_reading_websites"
+					}					
+				]
+			}			
+		],
+		"seealso":
+		{
+			"label": "OpenGL in Cinder",
+			"dox": ["cinder::gl"]
+		}
+	}
+
+}
