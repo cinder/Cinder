@@ -1505,8 +1505,8 @@ void ReceiverTcp::accept()
 		}
 		else
 			handleAcceptorError( error );
-		if( mAcceptor->is_open() )
-			accept();
+		
+		accept();
 	}, socket, _1 ) );
 }
 	
