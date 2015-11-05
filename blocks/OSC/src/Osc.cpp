@@ -1017,6 +1017,8 @@ void SenderTcp::bindImpl()
 	
 void SenderTcp::connect()
 {
+	if( ! mSocket->is_open() ) return;
+	
 	mSocket->async_connect( mRemoteEndpoint,
 	[&]( const asio::error_code &error ){
 		if( error )
@@ -1287,6 +1289,8 @@ void ReceiverUdp::setAmountToReceive( uint32_t amountToReceive )
 
 void ReceiverUdp::listenImpl()
 {
+	if ( ! mSocket->is_open() ) return;
+	
 	uint32_t prepareAmount = 0;
 	{
 		std::lock_guard<std::mutex> lock( mAmountToReceiveMutex );
@@ -1368,14 +1372,17 @@ std::pair<iterator, bool> ReceiverTcp::Connection::readMatchCondition( iterator 
 
 void ReceiverTcp::Connection::read()
 {
+	if( ! mSocket->is_open() ) return;
+	
+	auto receiver = mReceiver;
+	
 	std::function<std::pair<iterator, bool>( iterator, iterator )> match = &readMatchCondition;
 	if( mReceiver->mPacketFraming )
 		match = std::bind( &PacketFraming::messageComplete, mReceiver->mPacketFraming,
 						  std::placeholders::_1, std::placeholders::_2 );
 	asio::async_read_until( *mSocket, mBuffer, match,
-	[&]( const asio::error_code &error, size_t bytesTransferred ) {
+	[&, receiver]( const asio::error_code &error, size_t bytesTransferred ) {
 		if( error ) {
-			auto receiver = mReceiver;
 			receiver->handleSocketError( error, mIdentifier, mSocket->remote_endpoint() );
 			receiver->closeConnection( mIdentifier );
 		}
@@ -1398,7 +1405,7 @@ void ReceiverTcp::Connection::read()
 			}
 			{
 				std::lock_guard<std::mutex> lock( mReceiver->mDispatchMutex );
-				mReceiver->dispatchMethods( dataPtr, dataSize );
+				receiver->dispatchMethods( dataPtr, dataSize );
 			}
 			read();
 		}
@@ -1464,7 +1471,7 @@ void ReceiverTcp::setOnAcceptFn( OnAcceptFn acceptFn )
 
 void ReceiverTcp::listenImpl()
 {
-	if( ! mAcceptor ) return;
+	if( ! mAcceptor || ! mAcceptor->is_open() ) return;
 	
 	asio::error_code ec;
 	mAcceptor->listen( socket_base::max_connections, ec );
@@ -1477,7 +1484,7 @@ void ReceiverTcp::listenImpl()
 	
 void ReceiverTcp::accept()
 {
-	if( ! mAcceptor ) return;
+	if( ! mAcceptor || ! mAcceptor->is_open() ) return;
 	
 	auto socket = TcpSocketRef( new tcp::socket( mAcceptor->get_io_service() ) );
 	
