@@ -30,7 +30,7 @@
 
 #pragma once
 #if ! defined( ASIO_STANDALONE )
-#define ASIO_STANDALONE
+#define ASIO_STANDALONE 1
 #endif
 #include "asio/asio.hpp"
 
