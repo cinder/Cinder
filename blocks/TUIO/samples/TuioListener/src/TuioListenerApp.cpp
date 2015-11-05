@@ -31,9 +31,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#include "TuioClient.h"
-#include "TuioCursor.h"
-#include "OscMessage.h"
+#include "Tuio.h"
 
 class TuioClientApp : public App {
   public:
@@ -44,50 +42,35 @@ class TuioClientApp : public App {
 	void draw2b( tuio::Cursor cursor );
 	void draw25d( tuio::Cursor25d cursor );
 	void draw();
-	
-	void cursorAdded( tuio::Cursor cursor );
-	void cursorUpdated( tuio::Cursor cursor );
-	void cursorRemoved( tuio::Cursor cursor );
-	void oscMessage( const osc::Message *message );
 
 	tuio::Client tuio;
 
-	CallbackId	mUpdatedCallbackIndex;
+	ci::signals::Connection	mUpdatedCallbackIndex;
 };
-
 
 void TuioClientApp::setup()
 {
-	tuio.connect( 3333 );
+	tuio.connect();
 	
-	tuio.registerCursorAdded( this, &TuioClientApp::cursorAdded );
-	mUpdatedCallbackIndex = tuio.registerCursorUpdated( this, &TuioClientApp::cursorUpdated );
-	tuio.registerCursorRemoved( this, &TuioClientApp::cursorRemoved );
-	tuio.registerOscMessageReceived( this, &TuioClientApp::oscMessage );
-}
-
-void TuioClientApp::cursorAdded( tuio::Cursor cursor ) {
-	console() << "Cursor added " << cursor.getSessionId() << std::endl;
-}
-
-void TuioClientApp::cursorUpdated( tuio::Cursor cursor ) {
-	console() << "Cursor updated " << cursor.getSessionId() << std::endl;
-}
-
-void TuioClientApp::cursorRemoved( tuio::Cursor cursor ) {
-	console() << "Cursor removed " << cursor.getSessionId() << std::endl;
-}
-
-void TuioClientApp::oscMessage( const osc::Message *message) {
-	console() << "OSC Message " << message->getAddress() << std::endl;
+	tuio.registerCursorAdded(
+	[&]( tuio::Cursor cursor ) {
+		console() << "Cursor added " << cursor.getSessionId() << std::endl;
+	});
+	mUpdatedCallbackIndex = tuio.registerCursorUpdated(
+	[&]( tuio::Cursor cursor ) {
+		console() << "Cursor updated " << cursor.getSessionId() << std::endl;
+	});
+	tuio.registerCursorRemoved(
+	[&]( tuio::Cursor cursor ) {
+		console() << "Cursor removed " << cursor.getSessionId() << std::endl;
+	});
 }
 
 void TuioClientApp::update()
 {
-	if( getElapsedSeconds() > 10.0f && mUpdatedCallbackIndex > -1 ) {
+	if( getElapsedSeconds() > 10.0f && mUpdatedCallbackIndex.isConnected() ) {
 		console() << "Unregistering cursor updated." << std::endl;
-		tuio.unregisterCursorUpdated( mUpdatedCallbackIndex );
-		mUpdatedCallbackIndex = -1;
+		mUpdatedCallbackIndex.disconnect();
 	}
 }
 
@@ -124,9 +107,9 @@ void TuioClientApp::draw()
 			
 		// Draw a center dot in all the cursors, to test the ability
 		// of tuio.getCursors() to get all cursors in one vector.
-		vector<tuio::Cursor> cursors = tuio.getCursors();
-		for( auto cursor = cursors.begin(); cursor != cursors.end(); ++cursor )
-			draw2b( *cursor );
+		auto cursors = tuio.getCursors();
+		for( auto cursor : cursors )
+			draw2b( cursor );
 
 		// Draw each source's cursors in a different color, to test the ability
 		// of tuio.getCursors() to get each source's cursors independently.
