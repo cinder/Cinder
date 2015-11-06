@@ -28,110 +28,104 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"
+#include "boost/signals2/signal.hpp"
 #include "Osc.h"
 
 namespace cinder { namespace tuio {
 	
-// Base class from which the Object and Cursor profiles are derived
-class ProfileBase {
-  public:
-	ProfileBase();
-	ProfileBase( const std::string &source, int32_t sessionId );
+namespace detail {
 	
-	int32_t	getSessionId() const { return mSessionId; }
-	const std::string & getSource() const { return mSource; }
+struct Profile {
+	int32_t getSessionId() { return mSessionId; }
+	const std::string& getSource() { return mSource; }
 	
-	//! Translates into a ci::TouchEvent::Touch
-	ci::app::TouchEvent::Touch getTouch( double time, const vec2 &posScale ) const;
+protected:
+	Profile( const osc::Message &msg );
+	~Profile() = default;
 	
-	virtual vec2	getPos() const = 0;
-	virtual vec2	getPrevPos() const = 0;
-	
-  protected:
 	int32_t		mSessionId;
 	std::string mSource;
-};
 	
-class Cursor : public ProfileBase {
-  public:
-	Cursor() = default;
-	Cursor( const std::string &source, int32_t sessionId, vec2 pos, vec2 speed = vec2( 0 ), float motionAccel = 0 );
-	
-	vec2	getPos() const { return mPos; }
-	vec2	getPrevPos() const { return mPrevPos; }
-	vec2	getSpeed() const { return mSpeed; }
-	float	getMotionAccel() const { return mMotionAccel; }
-	
-	// Create from an OSC message
-	static Cursor createFromSetMessage( const osc::Message &message );
-	
-  protected:
-	vec2		mPos, mPrevPos;
-	vec2		mSpeed;
-	float		mMotionAccel;
-};
-	
-class Cursor25d : public ProfileBase {
-public:
-	Cursor25d() = default;
-	Cursor25d( const std::string &source, int32_t sessionId, vec3 pos, vec3 speed = vec3( 0 ), float motionAccel = 0 );
-	
-	vec2	getPos() const { return vec2( mPos25.x, mPos25.y ); }
-	vec2	getPrevPos() const { return vec2( mPrevPos25.x, mPrevPos25.y ); }
-	vec2	getSpeed() const { return vec2( mSpeed25.x, mSpeed25.y ); }
-	
-	vec3	getPos25() const { return mPos25; }
-	vec3	getSpeed25() const { return mSpeed25; }
-	
-	// Create from an OSC message
-	static Cursor25d createFromSetMessage( const osc::Message &message );
-	
-private:
-	vec3 mPos25;
-	vec3 mPrevPos25;
-	vec3 mSpeed25;
-	float mMotionAccel;
+	friend class Client;
 };
 
-class Object : public ProfileBase {
-  public:
-	Object() : ProfileBase() {}
-	
-	Object( std::string source, int32_t sessionId, int32_t fiducialId, vec2 pos, float angle, vec2 speed, float rotationSpeed, float motionAccel, float rotationAccel );
-	
-	// Create from a '2dobj' 'set' message
-	static Object createFromSetMessage( const osc::Message &message );
-	
-	vec2	getPos() const { return mPos; }
-	vec2	getPrevPos() const { return mPrevPos; }
-	vec2	getSpeed() const { return mSpeed; }
-	float	getMotionAccel() const { return mMotionAccel; }
-	
-	int32_t getFiducialId() const {  return mFiducialId; };
-	//! Returns the angle of the object measured in radians
-	float getAngle() const { return mAngle; }
-	float getRotationSpeed() const { return mRotationSpeed; }
-	float getRotationAccel() const {  return mRotationAccel; }
-	
-  protected:
-	int32_t		mFiducialId;
-	float		mAngle;
-	float		mRotationSpeed, mRotationAccel;
-	vec2		mPos, mPrevPos;
-	vec2		mSpeed;
-	float		mMotionAccel;
+template<typename VEC_T>
+struct Cursor : public Profile {
+	Cursor( const osc::Message &msg );
+	const VEC_T&	getPosition() const { return mPosition; }
+	const VEC_T&	getVelocity() const { return mVelocity; }
+	float			getAcceleration() const { return mAcceleration; }
+protected:
+	VEC_T		mPosition,
+				mVelocity;
+	float		mAcceleration;
 };
 	
-//template <typename T> struct ProfileHandler;
+template<typename VEC_T, typename ROT_T>
+struct Object : public Profile {
+	Object( const osc::Message &msg );
+	int32_t			getClassId() const { return mClassId; }
+	const VEC_T&	getPosition() const { return mPosition; }
+	const VEC_T&	getVelocity() const { return mVelocity; }
+	const ROT_T&	getAngle() const { return mAngle; }
+	const ROT_T&	getRotationVelocity() const { return mRotationVelocity; }
+	float			getAcceleration() const { return mAcceleration; }
+	float			getRotationAcceleration() const { return mRotateAccel; }
+protected:
+	int32_t		mClassId;
+	VEC_T		mPosition, mVelocity;
+	ROT_T		mAngle, mRotationVelocity;
+	float		mAcceleration, mRotateAccel;
+};
+	
+template<typename VEC_T, typename ROT_T, typename DIM_T>
+struct Blob : public Profile {
+	Blob( const osc::Message &msg );
+	const VEC_T&	getPosition() const { return mPosition; }
+	const VEC_T&	getVelocity() const { return mVelocity; }
+	const ROT_T&	getAngle() const { return mAngle; }
+	const ROT_T&	getRotationVelocity() const { return mRotationVelocity; }
+	float			getAcceleration() const { return mAcceleration; }
+	float			getRotationAcceleration() const { return mRotateAccel; }
+	const DIM_T&	getDimension() { return mDimensions; }
+	
+protected:
+	VEC_T		mPosition, mVelocity;
+	ROT_T		mAngle, mRotationVelocity;
+	DIM_T		mDimensions;
+	float		mAcceleration, mRotateAccel;
+	float		mGeometry;
+};
+	
+} // detail
+
+using Cursor2D	= detail::Cursor<ci::vec2>;
+using Cursor25D = detail::Cursor<ci::vec3>;
+using Cursor3D	= detail::Cursor<ci::vec3>;
+	
+using Object2D	= detail::Object<ci::vec2, float>;
+using Object25D = detail::Object<ci::vec3, float>;
+using Object3D	= detail::Object<ci::vec3, ci::vec3>;
+	
+struct Blob2D : public detail::Blob<ci::vec2, float, ci::vec2> {
+	Blob2D( const osc::Message &msg );
+	float getArea() { return mGeometry; }
+};
+struct Blob25D : public detail::Blob<ci::vec3, float, ci::vec2> {
+	Blob25D( const osc::Message &msg );
+	float getArea() const { return mGeometry; }
+};
+struct Blob3D : public detail::Blob<ci::vec3, ci::vec3, ci::vec3> {
+	Blob3D( const osc::Message &msg );
+	float getVolume() const { return mGeometry; }
+};
 
 //! Implements a client for the TUIO 1.1 protocol, described here: http://www.tuio.org/?specification
 class Client {
 public:
-	using CursorFn = std::function<void(Cursor)>;
-	using ObjectFn = std::function<void(Object)>;
-	using Cursor25dFn = std::function<void(Cursor25d)>;
-	using TouchFn = std::function<void (app::TouchEvent)>;
-	using Connection = ci::signals::Connection;
+	template<typename Profile>
+	using ProfileFn = std::function<void(const Profile&)>;
+	using TouchesFn = std::function<void (app::TouchEvent)>;
 	
 	Client( uint16_t port = DEFAULT_TUIO_PORT, asio::io_service &io = ci::app::App::get()->io_service() );
 	
@@ -142,38 +136,28 @@ public:
 	//! Returns whether their is an active TUIO connection
 	bool isConnected() const { return mConnected; }
 	
-	//! Returns a vector of currently active Objects
-	std::vector<Object>		getObjects( const std::string &source ) const;
-	//! Returns a vector of currently active Cursors
-	std::vector<Cursor>		getCursors( const std::string &source = "") const;
-	//! Returns a vector of currently active Cursors25d
-	std::vector<Cursor25d>	getCursors25d( const std::string &source = "") const;
-	
 	//! Returns a vector of currently active sources (IP addresses)
 	const std::set<std::string>&	getSources() const;
 	
 	//! Registers an async callback which fires when a new cursor is added
-	Connection	registerCursorAdded( CursorFn callback );
+	template<typename T>
+	void	registerProfileAddedCallback( ProfileFn<T> callback );
 	//! Registers an async callback which fires when a cursor is updated
-	Connection	registerCursorUpdated( CursorFn callback );
+	template<typename T>
+	void	registerProfileUpdatedCallback( ProfileFn<T> callback );
 	//! Registers an async callback which fires when a cursor is removed
-	Connection	registerCursorRemoved( CursorFn callback );
-	//! Registers an async callback which fires when a new object is added
-	Connection	registerObjectAdded( ObjectFn callback );
-	//! Registers an async callback which fires when an object is updated
-	Connection	registerObjectUpdated( ObjectFn callback );
-	//! Registers an async callback which fires when an object is removed
-	Connection	registerObjectRemoved( ObjectFn callback );
+	template<typename T>
+	void	registerProfileRemovedCallback( ProfileFn<T> callback );
 	
 	//! Registers an async callback for touchesBegan events, derived from \c 2Dcur messages.
 	//! Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
-	Connection		registerTouchesBegan( TouchFn callback );
+	void	registerTouchesBegan( TouchesFn callback );
 	//! Registers an async callback for touchesMoved events, derived from \c 2Dcur messages.
 	//! Returns a unique identifier which can be used as a parameter to unregisterTouchesMoved().
-	Connection		registerTouchesMoved( TouchFn callback );
+	void	registerTouchesMoved( TouchesFn callback );
 	//! Registers an async callback for touchesEnded events, derived from \c 2Dcur messages.
 	//! Returns a unique identifier which can be used as a parameter to unregisterTouchesEnded().
-	Connection		registerTouchesEnded( TouchFn callback );
+	void	registerTouchesEnded( TouchesFn callback );
 	
 	//! Registers all touches event handlers for an app
 	void registerTouches( ci::app::App *app )
@@ -201,6 +185,8 @@ private:
 	template<typename T>
 	struct ProfileHandler {
 		using ProfileMap = std::map<std::string, std::vector<T>>;
+		template<typename Fn>
+		using Signal = boost::signals2::signal<Fn>;
 		
 		ProfileHandler( int32_t pastFrameThreshold ) : mPastFrameThreshold( pastFrameThreshold ) {}
 		
@@ -220,10 +206,9 @@ private:
 		// Last frame we processed per the 'fseq' message
 		std::map<std::string, int32_t> mPreviousFrame;
 		
-		ci::signals::Signal<void(T)> mAddedSignal, mUpdatedSignal, mRemovedSignal;
-		ci::signals::Signal<void(cinder::app::TouchEvent)> mTouchesBeganSignal, mTouchesMovedSignal, mTouchesEndedSignal;
-		
-		mutable std::mutex			mMutex;
+		Signal<void(T)>					mAddedSignal, mUpdatedSignal, mRemovedSignal;
+		Signal<void(app::TouchEvent)>	mTouchesBeganSignal, mTouchesMovedSignal, mTouchesEndedSignal;
+
 		int32_t						mPastFrameThreshold;
 	};
 	

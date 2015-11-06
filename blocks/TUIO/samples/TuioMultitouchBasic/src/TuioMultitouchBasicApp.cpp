@@ -28,7 +28,7 @@ struct TouchPoint {
 			gl::color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0f ) );
 		else
 			gl::color( mColor );
-
+		
 		gl::draw( mLine );
 	}
 	
