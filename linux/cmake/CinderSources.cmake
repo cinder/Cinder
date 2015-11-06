@@ -185,6 +185,14 @@ list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
 )
 
+# Audio - keep this in its own blcok for now
+if( NOT CINDER_GL_ES )
+	list( APPEND CINDER_CXX_SRC_FILES
+		${CINDER_SRC_DIR}/cinder/audio/linux/ContextJack.cpp
+		${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerJack.cpp
+	)
+endif()
+
 if( NOT CINDER_GL_ES )
 	list( APPEND CINDER_CXX_SRC_FILES
 		${CINDER_SRC_DIR}/cinder/params/Params.cpp
