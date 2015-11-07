@@ -123,7 +123,6 @@ private:
     static GstFlowReturn onGstSample( GstAppSink* sink, gpointer userData );
     // ..and forwarded to the following.
     void eos();
-    void preroll( GstSample* sample );
     void sample( GstSample* sample );
 
     GstState getCurrentState();
