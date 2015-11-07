@@ -30,6 +30,7 @@ namespace cinder { namespace audio { namespace linux {
 class DeviceManagerJack : public DeviceManager {
   public:
 	DeviceManagerJack();
+	virtual ~DeviceManagerJack();
 
 	const std::vector<DeviceRef>& getDevices()									override;
 	DeviceRef getDefaultOutput()												override;

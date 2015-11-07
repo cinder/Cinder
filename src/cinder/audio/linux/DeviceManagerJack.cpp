@@ -25,4 +25,14 @@
 
 namespace cinder { namespace audio { namespace linux {
 
+DeviceManagerJack::DeviceManagerJack()
+{
+
+}
+
+DeviceManagerJack::~DeviceManagerJack()
+{
+	
+}
+
 } } } // namespace cinder::audio::linux

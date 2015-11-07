@@ -25,4 +25,26 @@
 
 namespace cinder { namespace audio { namespace linux {
 
+ContextJack::ContextJack()
+{
+
+}
+
+ContextJack::~ContextJack()
+{
+
+}
+
+OutputDeviceNodeRef	ContextJack::createOutputDeviceNode( const DeviceRef &device, const Node::Format &format )
+{
+	OutputDeviceNodeRef result;
+	return result;
+}
+
+InputDeviceNodeRef ContextJack::createInputDeviceNode( const DeviceRef &device, const Node::Format &format  )
+{
+	InputDeviceNodeRef result;
+	return result;
+}
+
 } } } // namespace cinder::audio::linux

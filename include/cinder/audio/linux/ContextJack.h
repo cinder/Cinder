@@ -72,7 +72,7 @@ class InputDeviceNodeJack : public InputDeviceNode {
 class ContextJack : public Context {
   public:
 	ContextJack();
-	~ContextJack();
+	virtual ~ContextJack();
 
 	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() ) override;
 	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format()  ) override;
