@@ -207,7 +207,8 @@ GstPlayer::GstPlayer()
     , mGstBus(NULL)
     , mGstPipeline(NULL)
     , mGstAppSink(NULL)
-    , mVideoBuffer(NULL)
+    , mFrontVBuffer(NULL)
+    , mBackVBuffer(NULL)
     , mUseNativeFormat(false)
     , mStride(-1)
     , mNewFrame(false)
@@ -247,10 +248,17 @@ void GstPlayer::cleanup()
         mGMainLoopThread.join();
     }
     
-    if( mVideoBuffer ){
-        delete mVideoBuffer;
-        mVideoBuffer = NULL;
+    mMutex.lock();
+    if( mFrontVBuffer ){
+        delete mFrontVBuffer;
+        mFrontVBuffer = NULL;
     }
+    
+    if( mBackVBuffer ) {
+        delete mBackVBuffer;
+        mBackVBuffer = NULL;
+    }
+    mMutex.unlock();
 }
 
 void GstPlayer::startGMainLoopThread()
@@ -654,11 +662,14 @@ GstData& GstPlayer::getGstData()
 
 unsigned char * GstPlayer::getVideoBuffer()
 {
-    std::lock_guard<std::mutex> lock( mMutex );
-
-    mNewFrame = false;
-
-    return mVideoBuffer;
+    mMutex.lock();
+    if( mNewFrame ){
+        std::swap( mFrontVBuffer, mBackVBuffer );
+        mNewFrame = false;
+    }
+    mMutex.unlock();
+    
+    return mFrontVBuffer;
 }
 
 void GstPlayer::onGstEos( GstAppSink* sink, gpointer userData )
@@ -673,22 +684,21 @@ GstFlowReturn GstPlayer::onGstPreroll( GstAppSink* sink, gpointer userData )
 {
     GstPlayer* me = static_cast<GstPlayer*>( userData );
     GstSample* newSample = gst_app_sink_pull_preroll( sink );
-    me->preroll( newSample );
+    me->sample( newSample );
     gst_sample_unref( newSample );
     newSample = NULL;
     return GST_FLOW_OK;
 }
 
-void GstPlayer::preroll( GstSample* sample )
+void GstPlayer::sample( GstSample* sample )
 {
     std::lock_guard<std::mutex> lock( mMutex );
     GstBuffer* buffer;
     buffer = gst_sample_get_buffer( sample );
     gst_buffer_map( buffer, &mMemoryMapInfo, GST_MAP_READ ); // Map the buffer for reading the data.
     
-    // We have pre-rolled to PAUSE state so query info
-    // and allocate new buffer if we have a new video.
-    if( newVideo() || !mVideoBuffer ) {
+    // We have pre-rolled so query info and allocate buffers if we have a new video.
+    if( newVideo() ) {
         GstCaps* currentCaps = gst_sample_get_caps( sample );
         gboolean success = gst_video_info_from_caps( &mVideoInfo, currentCaps );
         if( success ) {
@@ -705,19 +715,29 @@ void GstPlayer::preroll( GstSample* sample )
             std::cout << " STRIDE PLANE 3 : " << mVideoInfo.stride[2] << std::endl;*/
         }
         
-        if( mVideoBuffer ){
-            delete mVideoBuffer;
-            mVideoBuffer = NULL;
+        // Take care of the front buffer.
+        if( mFrontVBuffer ) {
+            delete mFrontVBuffer;
+            mFrontVBuffer = NULL;
         }
         
-        mVideoBuffer = new unsigned char[ mMemoryMapInfo.size ];
+        if( !mFrontVBuffer )
+            mFrontVBuffer = new unsigned char[ mMemoryMapInfo.size ];
+        
+        // Take care of the back buffer.
+        if( mBackVBuffer ) {
+            delete mBackVBuffer;
+            mBackVBuffer = NULL;
+        }
+        
+        if( !mBackVBuffer )
+            mBackVBuffer = new unsigned char[ mMemoryMapInfo.size ];
         
         ///Reset the new video flag .
         mGstData.mVideoHasChanged = false;
-        mNewFrame = true;
     }
-
-    memcpy( mVideoBuffer, mMemoryMapInfo.data, mMemoryMapInfo.size);
+    mNewFrame = true;
+    memcpy( mBackVBuffer, mMemoryMapInfo.data, mMemoryMapInfo.size );
     gst_buffer_unmap( buffer, &mMemoryMapInfo );
 }
 
@@ -731,14 +751,4 @@ GstFlowReturn GstPlayer::onGstSample( GstAppSink* sink, gpointer userData )
     return GST_FLOW_OK;
 }
 
-void GstPlayer::sample( GstSample* sample )
-{
-    std::lock_guard<std::mutex> lock( mMutex );
-    GstBuffer* buffer;
-    buffer = gst_sample_get_buffer( sample );
-    gst_buffer_map( buffer, &mMemoryMapInfo, GST_MAP_READ );
-    memcpy( mVideoBuffer, mMemoryMapInfo.data, mMemoryMapInfo.size);
-    gst_buffer_unmap( buffer, &mMemoryMapInfo );
-    mNewFrame = true;
-}
 } }

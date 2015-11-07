@@ -142,9 +142,9 @@ private:
     GstElement* mGstPipeline; // Our playbin pipeline.
     GstElement* mGstAppSink; // Raw buffer destination and eos.
 
+    unsigned char* mBackVBuffer; // The write buffer.
+    unsigned char* mFrontVBuffer; // The read buffer.
     
-    unsigned char* mVideoBuffer; // The video buffer.
-
     std::mutex mMutex; // Protect our buffer since the appsink callbacks are executed from the streaming thread internally from GStreamer.
 
     bool mUseNativeFormat;
