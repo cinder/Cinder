@@ -15,6 +15,8 @@ class MovieBase
     public:
         virtual ~MovieBase();
 
+        void    setCustomPipeline( const std::string& pipeline );
+    
         void    load( const ci::fs::path &path );
         void    load( const ci::Url &url );
     
@@ -68,6 +70,8 @@ class MovieSurface : public MovieBase {
         virtual ~MovieSurface(){}
         static MovieSurfaceRef create( const ci::fs::path &path ){ return MovieSurfaceRef( new MovieSurface( path ) ); }
         static MovieSurfaceRef create( const ci::Url &url ){ return MovieSurfaceRef( new MovieSurface( url ) ); }
+        static MovieSurfaceRef create( const std::string &pipeline ){ return MovieSurfaceRef( new MovieSurface( pipeline ) ); }
+
     
         ci::Surface8uRef getSurface();
 
@@ -75,6 +79,8 @@ class MovieSurface : public MovieBase {
         MovieSurface() : MovieBase(){}
         MovieSurface( const ci::fs::path &path );
         MovieSurface( const ci::Url &url );
+        MovieSurface( const std::string &pipeline );
+
 };
 
 class MovieGl;
@@ -84,13 +90,16 @@ public:
     virtual ~MovieGl(){}
     static MovieGlRef create( const ci::fs::path &path ){ return MovieGlRef( new MovieGl( path ) ); }
     static MovieGlRef create( const ci::Url &url ){ return MovieGlRef( new MovieGl( url ) ); }
-    
+    static MovieGlRef create( const std::string &pipeline ){ return MovieGlRef( new MovieGl( pipeline ) ); }
+
     ci::gl::Texture2dRef getTexture();
     
 protected:
     MovieGl() : MovieBase(){}
     MovieGl( const ci::fs::path &path );
     MovieGl( const ci::Url &url );
+    MovieGl( const std::string &pipeline );
+
 };
     
 } }
