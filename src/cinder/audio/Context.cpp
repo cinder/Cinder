@@ -46,8 +46,8 @@
 	#include "cinder/audio/android/ContextOpenSl.h"
 	#include "cinder/audio/android/DeviceManagerOpenSl.h"
 #elif defined( CINDER_LINUX )
-	#include "cinder/audio/linux/ContextJack.h"
- 	#include "cinder/audio/linux/DeviceManagerJack.h"
+	#include "cinder/audio/linux/ContextPulseAudio.h"
+ 	#include "cinder/audio/linux/DeviceManagerPulseAudio.h"
 #else
 	#define CINDER_AUDIO_DISABLED
 #endif
@@ -93,7 +93,7 @@ Context* Context::master()
 #elif defined( CINDER_ANDROID )
 		sMasterContext.reset( new android::ContextOpenSl() );
 #elif defined( CINDER_LINUX )
-		sMasterContext.reset( new linux::ContextJack() );
+		sMasterContext.reset( new linux::ContextPulseAudio() );
 #endif
 		if( ! sIsRegisteredForCleanup )
 			registerClearStatics();
@@ -118,7 +118,7 @@ DeviceManager* Context::deviceManager()
 #elif defined( CINDER_ANDROID )
 		sDeviceManager.reset( new android::DeviceManagerOpenSl() );
 #elif defined( CINDER_LINUX ) 
-		sDeviceManager.reset( new linux::DeviceManagerJack() );
+		sDeviceManager.reset( new linux::DeviceManagerPulseAudio() );
 #endif
 
 		if( ! sIsRegisteredForCleanup )
