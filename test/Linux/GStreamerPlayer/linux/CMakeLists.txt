@@ -30,7 +30,7 @@ set( EXE_NAME ${PROJECT_NAME} )
 
 add_executable( "${EXE_NAME}" ${SRC_FILES} )
 
-target_include_directories( "${EXE_NAME}" PRIVATE ${INC_DIR} )
+target_include_directories( "${EXE_NAME}" PRIVATE "${INC_DIR}")#;/usr/local/lib/gstreamer-1.0/include/" )
 
 target_link_libraries( "${EXE_NAME}" cinder${CINDER_LIB_SUFFIX} )
 
