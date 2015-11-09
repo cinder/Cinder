@@ -650,6 +650,8 @@ class Cylinder : public Source {
 	Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
 	//! Specifies the number of slices along the Cylinder's height. Defaults to \c 1.
 	Cylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; updateCounts(); return *this; }
+	//! Specifies the number of rings for the Cylinder's cap. Defaults to \c 3.
+	Cylinder&	subdivisionsCap( int rings ) { mSubdivisionsCap = rings; updateCounts(); return *this; }
 	//! Specifies the height of the cylinder.
 	Cylinder&	height( float height ) { mHeight = height; return *this; }
 	//! Specifies the base and apex radius.
@@ -680,14 +682,14 @@ class Cylinder : public Source {
 	float		mRadiusApex;
 	int			mSubdivisionsAxis;
 	int			mSubdivisionsHeight;
+	int			mSubdivisionsCap;
 	bool		mHasColors;
 	int			mNumSegments, mNumSlices;
 };
 
 class Cone : public Cylinder {
   public:
-	Cone()
-	{ radius( 1.0f, 0.0f ); }
+	Cone() { radius( 1.0f, 0.0f ); subdivisionsHeight( 6 ); }
 
 	//! Enables colors. Disabled by default.
 	Cone&	colors( bool enable = true ) { mHasColors = enable; return *this; }
