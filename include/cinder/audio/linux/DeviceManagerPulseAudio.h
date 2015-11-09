@@ -31,16 +31,18 @@ class DeviceManagerPulseAudio : public DeviceManager {
   public:
 
   	struct DeviceInfo {
-  		enum Usage { INPUT, OUTPUT }
+  		enum Usage { INPUT, OUTPUT };
 
-		std::string mKey;
+        std::string mKey;
 		std::string mName;
+        int32_t     mIndex = -1;
+        uint32_t    mCard = (uint32_t)-1;
 		Usage		mUsage;
 		size_t 		mNumChannels;
 		size_t 		mSampleRate;
 		size_t 		mFramesPerBlock;
+        std::string mDescription;
   	};
-
 
 	DeviceManagerPulseAudio();
 	virtual ~DeviceManagerPulseAudio();
@@ -62,11 +64,8 @@ class DeviceManagerPulseAudio : public DeviceManager {
 	size_t getFramesPerBlockHardware( const DeviceRef &device );
 
 private:
-	DeviceRef getDefaultDevice();
-	DeviceRef   mDefaultDevice;	
-
+    DeviceInfo& getDeviceInfo( const DeviceRef &device );
 	void parseDevices( DeviceInfo::Usage usage );
-
 	std::map<DeviceRef, DeviceInfo>	mDeviceInfoSet;
 };	
 
