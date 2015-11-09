@@ -2358,7 +2358,7 @@ void TorusKnot::calculate( std::vector<vec3> *positions, std::vector<vec3> *norm
 // Cylinder
 Cylinder::Cylinder()
 	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ),
-		mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 1 ), mHasColors( false )
+		mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 1 ), mSubdivisionsCap( 3 ), mHasColors( false )
 {
 	updateCounts();
 }
@@ -2386,19 +2386,19 @@ size_t Cylinder::getNumVertices() const
 {
 	size_t result = mNumSegments * mNumSlices;
 	if( mRadiusBase > 0 )
-		result += mNumSegments * 2;
+		result += mNumSegments * mSubdivisionsCap * 2;
 	if( mRadiusApex > 0.0f )
-		result += mNumSegments * 2;
+		result += mNumSegments * mSubdivisionsCap * 2;
 	return result;
 }
 
 size_t Cylinder::getNumIndices() const
 {
-	size_t result = (mNumSegments - 1) * (mNumSlices - 1) * 6;
+	size_t result = ( mNumSegments - 1 ) * ( mNumSlices - 1 ) * 6;
 	if( mRadiusBase > 0 )
-		result += 3 * (mNumSegments - 1);
+		result += 6 * ( mNumSegments - 1 ) * mSubdivisionsCap;
 	if( mRadiusApex > 0 )
-		result += 3 * (mNumSegments - 1);
+		result += 6 * ( mNumSegments - 1 ) * mSubdivisionsCap;
 	return result;
 }
 
@@ -2460,43 +2460,59 @@ void Cylinder::calculateCap( bool flip, float height, float radius, vector<vec3>
 {
 	const size_t index = positions->size();
 	const vec3 n = flip ? -mDirection : mDirection;
-	normals->resize( index + mNumSegments * 2, n );
-	colors->resize( index + mNumSegments * 2, vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
+	normals->resize( index + mSubdivisionsCap * mNumSegments * 2, n );
+	colors->resize( index + mSubdivisionsCap *mNumSegments * 2, vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
 
 	const quat axis( vec3( 0, 1, 0 ), mDirection );
 
 	// vertices
-	const float segmentIncr = 1.0f / (mNumSegments - 1);
-	for( int i = 0; i < mNumSegments; ++i ) {
-		// center point
-		positions->emplace_back( mOrigin + mDirection * height );
-		texCoords->emplace_back( i * segmentIncr, 1.0f - height / mHeight );
+	const float segmentIncr = 1.0f / ( mNumSegments - 1 );
+	for( int r = 0; r < mSubdivisionsCap; ++r ) {
+		for( int i = 0; i < mNumSegments; ++i ) {
+			float cosPhi = -math<float>::cos( i * segmentIncr * float( M_PI * 2 ) );
+			float sinPhi = math<float>::sin( i * segmentIncr * float( M_PI * 2 ) );
 
-		// edge point
-		float cosPhi = -math<float>::cos( i * segmentIncr * float(M_PI * 2) );
-		float sinPhi =  math<float>::sin( i * segmentIncr * float(M_PI * 2) );
+			// inner point
+			float x = ( radius * cosPhi * float( r ) ) / mSubdivisionsCap;
+			float y = height;
+			float z = ( radius * sinPhi * float( r ) ) / mSubdivisionsCap;
 
-		float x = radius * cosPhi;
-		float y = height;
-		float z = radius * sinPhi;
+			positions->emplace_back( mOrigin + axis * vec3( x, y, z ) );
+			texCoords->emplace_back( i * segmentIncr, 1.0f - height / mHeight );
 
-		positions->emplace_back( mOrigin + axis * vec3( x, y, z ) );
-		texCoords->emplace_back( i * segmentIncr, 1.0f - height / mHeight );
+			// outer point
+			x = ( radius * cosPhi * float( r + 1 ) ) / mSubdivisionsCap;
+			y = height;
+			z = ( radius * sinPhi * float( r + 1 ) ) / mSubdivisionsCap;
+
+			positions->emplace_back( mOrigin + axis * vec3( x, y, z ) );
+			texCoords->emplace_back( i * segmentIncr, 1.0f - height / mHeight );
+		}
 	}
 
 	// index buffer
-	indices->reserve( indices->size() + 3 * (mNumSegments - 1) );
+	indices->reserve( indices->size() + 6 * mNumSegments * mSubdivisionsCap );
 
-	for( int i = 0; i < mNumSegments - 1; ++i ) {
-		if( flip ) {
-			indices->push_back( (uint32_t)(index + i * 2 + 0) );
-			indices->push_back( (uint32_t)(index + i * 2 + 3) );
-			indices->push_back( (uint32_t)(index + i * 2 + 1) );
-		}
-		else {
-			indices->push_back( (uint32_t)(index + i * 2 + 0) );
-			indices->push_back( (uint32_t)(index + i * 2 + 1) );
-			indices->push_back( (uint32_t)(index + i * 2 + 3) );
+	for( int r = 0; r < mSubdivisionsCap; ++r ) {
+		for( int i = 0; i < ( mNumSegments - 1 ); ++i ) {
+			if( flip ) {
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 0 ) );
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 2 ) );
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 3 ) );
+
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 0 ) );
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 3 ) );
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 1 ) );
+			}
+			else {
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 0 ) );
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 3 ) );
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 2 ) );
+
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 0 ) );
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 1 ) );
+				indices->push_back( (uint32_t)( index + r * mNumSegments * 2 + i * 2 + 3 ) );
+			}
 		}
 	}
 }
