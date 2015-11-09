@@ -240,9 +240,7 @@ void GstPlayer::cleanup()
         mGMainLoopThread.join();
     }
     
-    mMutex.lock();
     resetVideoBuffers();
-    mMutex.unlock();
 }
 
 void GstPlayer::startGMainLoopThread()
@@ -313,7 +311,8 @@ void GstPlayer::resetBus()
 
 void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
 {
-    /// If we have a custom pipeline we reset before re-using.
+    // Similar to loading and maybe merged at some point.
+    // If we have a custom pipeline we reset before re-using.
     if( mGstPipeline ) {
         resetPipeline();
         // Reset the bus since the associated pipeline got destroyed.
@@ -328,8 +327,15 @@ void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
         g_error_free (error);
     }
     
-    setPipelineState( GST_STATE_READY );
+    // Prepare for loading custom pipeline.
+    // We lock until we switch to GST_STATE_READY since there is not much to do if we dont reach at least there.
+    gst_element_set_state( mGstPipeline, GST_STATE_READY );
+    gst_element_get_state( mGstPipeline, NULL, NULL, GST_CLOCK_TIME_NONE );
     
+
+    // Reset the buffers for the next pre-roll.
+    resetVideoBuffers();
+
     if( mGstPipeline ) {
         // Currently assumes that the pipeline has an appsink named 'videosink'.
         // This is just for testing and it has to be more generic.
@@ -347,7 +353,8 @@ void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
         gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
     }
     mUsingCustomPipeline = true;
-    setPipelineState( GST_STATE_PAUSED );
+    // async pre-roll
+    gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );
 }
     
 void GstPlayer::addBusWatch( GstElement* pipeline )
@@ -394,17 +401,25 @@ bool GstPlayer::initialize()
     return true;
 }
 
-void GstPlayer::load( std::string _path )
+void GstPlayer::resetCustomPipeline()
 {
-    // In case we use load after we have used setCustomPipeline ..
-    if( mGstPipeline && mUsingCustomPipeline ) {
+    // In case we use load after we 've set a custom pipeline ..
+    if( mGstPipeline ) {
         resetPipeline(); // reset the custom pipeline
         resetBus(); // reset the associated bus
-        initialize(); // create our default setup with playbin and appsink
         mUsingCustomPipeline = false;
     }
-    
-    // If we still dont have a valid pipeline somethins is off....
+}
+
+void GstPlayer::load( std::string _path )
+{
+    // If we were using a custom pipeline we have to reset for now.
+    if( mUsingCustomPipeline ) {
+        resetCustomPipeline();
+        initialize(); // create our default setup with playbin and appsink
+    }
+
+    // If we still dont have a valid pipeline something is off....
     if( !mGstPipeline ) return;
     
     // Prepare for loading with playbin.
@@ -752,6 +767,7 @@ unsigned char * GstPlayer::getVideoBuffer()
 
 void GstPlayer::resetVideoBuffers()
 {
+    mMutex.lock();
     // Take care of the front buffer.
     if( mFrontVBuffer ) {
         delete mFrontVBuffer;
@@ -763,7 +779,7 @@ void GstPlayer::resetVideoBuffers()
         delete mBackVBuffer;
         mBackVBuffer = nullptr;
     }
-    
+    mMutex.unlock();
 }
 
 void GstPlayer::onGstEos( GstAppSink* sink, gpointer userData )

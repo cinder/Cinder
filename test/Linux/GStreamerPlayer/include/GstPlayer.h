@@ -144,12 +144,12 @@ namespace gst { namespace video {
         
         bool sendSeekEvent( gint64 seekTime );
         
-        // Resets.
-        void resetPipeline();
         void addBusWatch( GstElement* pipeline );
+        // Resets.
+        void resetCustomPipeline();
+        void resetPipeline();
         void resetBus();
         void cleanup();
-        
         void resetVideoBuffers();
     private:
         GMainLoop* mGMainLoop; // Needed for message activation since we are not using signals.
