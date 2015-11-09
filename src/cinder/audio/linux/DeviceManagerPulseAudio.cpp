@@ -34,14 +34,13 @@ using DeviceInfo = cinder::audio::linux::DeviceManagerPulseAudio::DeviceInfo;
 
 struct StateData {
 	enum Request { INVALID, GET_SINKS, GET_SOURCES, GET_DEFAULT_SINK_NAME, GET_DEFAULT_SOURCE_NAME, DONE };
-	Request					request = StateData::INVALID;
-	std::vector<DeviceInfo>	*deviceInfos = nullptr;
-	std::string 			defaultDeviceName;
-	// Used by PuslseAudio mainloop
-	pa_mainloop_api 		*mainLoopApi = nullptr;
+	Request						request = StateData::INVALID;
+	std::vector<DeviceInfo>*	deviceInfos = nullptr;
+	std::string 				defaultDeviceName;
+	pa_mainloop_api*			mainLoopApi = nullptr;
 };
 
-void drainContextComplete( pa_context *context, void *userData )
+void drainContextComplete( pa_context *context, void* userData )
 {
 	pa_context_disconnect( context );
 }
@@ -82,7 +81,7 @@ DeviceInfo createDeviceInfo( const PulseInfoT* info )
 	return result;
 }
 
-void processSinkInfo( pa_context *context, const pa_sink_info *info, int eol, void *userData )
+void processSinkInfo( pa_context* context, const pa_sink_info* info, int eol, void* userData )
 {
 	StateData* stateData = reinterpret_cast<StateData*>( userData );
 
@@ -101,7 +100,7 @@ void processSinkInfo( pa_context *context, const pa_sink_info *info, int eol, vo
 	checkComplete( context, stateData );
 }
 
-void processSourceInfo( pa_context *context, const pa_source_info *info, int eol, void *userData )
+void processSourceInfo( pa_context* context, const pa_source_info* info, int eol, void* userData )
 {
 	StateData* stateData = reinterpret_cast<StateData*>( userData );
 
@@ -120,7 +119,7 @@ void processSourceInfo( pa_context *context, const pa_source_info *info, int eol
 	checkComplete( context, stateData );
 }
 
-void processServerInfo( pa_context *context, const pa_server_info *info, void *userData )
+void processServerInfo( pa_context* context, const pa_server_info* info, void* userData )
 {
 	StateData* stateData = reinterpret_cast<StateData*>( userData );
 
@@ -139,59 +138,66 @@ void processServerInfo( pa_context *context, const pa_server_info *info, void *u
 	checkComplete( context, stateData );
 }
 
-void processContextState( pa_context *context, void *userData )
+void processContextState( pa_context* context, void* userData )
 {
 	StateData* stateData = reinterpret_cast<StateData*>( userData );
 	pa_context_state_t state = ::pa_context_get_state( context );
 	switch( state ) {
-		case PA_CONTEXT_READY: 
-			{
-				switch( stateData->request ) {
-					case StateData::GET_SINKS:
-						pa_operation_unref( pa_context_get_sink_info_list( context, processSinkInfo, userData ) );
-						break;
-					case StateData::GET_SOURCES:
-						pa_operation_unref( pa_context_get_source_info_list( context, processSourceInfo, userData ) );
-						break;
-					case StateData::GET_DEFAULT_SINK_NAME:
-						pa_operation_unref( pa_context_get_server_info( context, processServerInfo, userData ) );
-						break;
-					case StateData::GET_DEFAULT_SOURCE_NAME:
-						pa_operation_unref( pa_context_get_server_info( context, processServerInfo, userData ) );
-						break;
-					case StateData::DONE:
-						stateData->mainLoopApi->quit( stateData->mainLoopApi, 0 );
-						break;
-					case StateData::INVALID:
-						stateData->mainLoopApi->quit( stateData->mainLoopApi, -1 );
-						break;
-				}
+		case PA_CONTEXT_READY: {
+			switch( stateData->request ) {
+				case StateData::GET_SINKS:
+					pa_operation_unref( pa_context_get_sink_info_list( context, processSinkInfo, userData ) );
+				break;
+
+				case StateData::GET_SOURCES:
+					pa_operation_unref( pa_context_get_source_info_list( context, processSourceInfo, userData ) );
+				break;
+
+				case StateData::GET_DEFAULT_SINK_NAME:
+					pa_operation_unref( pa_context_get_server_info( context, processServerInfo, userData ) );
+				break;
+
+				case StateData::GET_DEFAULT_SOURCE_NAME:
+					pa_operation_unref( pa_context_get_server_info( context, processServerInfo, userData ) );
+				break;
+
+				case StateData::DONE:
+					stateData->mainLoopApi->quit( stateData->mainLoopApi, 0 );
+				break;
+
+				case StateData::INVALID:
+					stateData->mainLoopApi->quit( stateData->mainLoopApi, -1 );
+				break;
 			}
-			break;
+		}
+		break;
+
 		case PA_CONTEXT_TERMINATED:
 			stateData->mainLoopApi->quit( stateData->mainLoopApi, 0 );
-			break;
+		break;
+
 		case PA_CONTEXT_FAILED:
 			stateData->mainLoopApi->quit( stateData->mainLoopApi, -1 );
-			break;
+		break;
+		
 		default:
-			break;
+		break;
 	}
 }
 
 void executeRequest( StateData* stateData )
 {
 	// Create mainloop
-	pa_mainloop *mainLoop = pa_mainloop_new();
+	pa_mainloop* mainLoop = pa_mainloop_new();
 	// Create mainloop API
-	pa_mainloop_api *mainLoopApi = pa_mainloop_get_api( mainLoop );
+	pa_mainloop_api* mainLoopApi = pa_mainloop_get_api( mainLoop );
 	// Create context
-	pa_context *context = pa_context_new( mainLoopApi, "test" );
+	pa_context* context = pa_context_new( mainLoopApi, "cinder-requests" );
 	// Set context state callback
 	stateData->mainLoopApi = mainLoopApi;
 	pa_context_set_state_callback( context, processContextState, reinterpret_cast<void*>( &stateData ) );
 	// Connect context
-	if( pa_context_connect( context, nullptr, (pa_context_flags_t)0, nullptr ) >= 0 ) {
+	if( pa_context_connect( context, nullptr, PA_CONTEXT_NOFLAGS, nullptr ) >= 0 ) {
 		// Run mainloop
 		int result = 0;
 		if( pa_mainloop_run( mainLoop, &result ) < 0 ) {

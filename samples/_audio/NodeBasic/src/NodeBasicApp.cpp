@@ -24,7 +24,7 @@ void NodeBasic::setup()
 {
 	// You use the audio::Context to make new audio::Node instances (audio::master() is the speaker-facing Context).
 	auto ctx = audio::master();
-	mGen = ctx->makeNode( new audio::GenSineNode );
+/*	mGen = ctx->makeNode( new audio::GenSineNode );
 	mGain = ctx->makeNode( new audio::GainNode );
 
 	mGen->setFreq( 220 );
@@ -38,12 +38,15 @@ void NodeBasic::setup()
 
 	// Context also must be started. Starting and stopping this controls the entire DSP graph.
 	ctx->enable();
+*/
 }
 
 void NodeBasic::mouseDrag( MouseEvent event )
 {
+/*
 	mGen->setFreq( event.getPos().x );
 	mGain->setValue( 1.0f - (float)event.getPos().y / (float)getWindowHeight() );
+*/
 }
 
 void NodeBasic::draw()

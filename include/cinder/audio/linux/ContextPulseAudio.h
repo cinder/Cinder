@@ -23,7 +23,10 @@
 
 #pragma once
 
-#include "cinder/audio/Context.h" 
+#include "cinder/audio/Context.h"
+
+struct pa_context;
+struct pa_threaded_mainloop;
 
 namespace cinder { namespace audio { namespace linux {
 
@@ -43,7 +46,6 @@ class OutputDeviceNodePulseAudio : public OutputDeviceNode {
 	bool supportsProcessInPlace() const	override	{ return false; }
 
   private:
-	void renderToBufferFromInputs();
 
 	std::unique_ptr<OutputDeviceNodePulseAudioImpl>     mImpl;
 
@@ -77,12 +79,12 @@ class ContextPulseAudio : public Context {
 	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() ) override;
 	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format()  ) override;
 
-	//SLObjectItf getSLEngineObject() { return mSLEngineObject; }
-	//SLEngineItf getSLEngineEngine() { return mSLEngineEngine; }
+	pa_threaded_mainloop	*getPulseAudioMainLoop() const { return mMainLoop; }
+	pa_context 				*getPulseAudioContext() const { return mContext; }
 
   private:
-	//SLObjectItf mSLEngineObject = nullptr;
-	//SLEngineItf mSLEngineEngine = nullptr;
+	pa_threaded_mainloop	*mMainLoop = nullptr;
+	pa_context 				*mContext = nullptr;
 };	
 
 } } } // namespace cinder::audio::linux
