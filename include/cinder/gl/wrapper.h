@@ -92,10 +92,10 @@ void clearStencil( const int s );
 	
 void colorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
 void depthMask( GLboolean flag );
-void stencilMask( GLboolean mask );
 	
 void stencilFunc( GLenum func, GLint ref, GLuint mask );
 void stencilOp( GLenum fail, GLenum zfail, GLenum zpass );
+void stencilMask( GLuint mask );
 
 std::pair<ivec2, ivec2> getViewport();
 void viewport( const std::pair<ivec2, ivec2> positionAndSize );
