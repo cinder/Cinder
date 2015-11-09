@@ -28,23 +28,235 @@
 // the preferred frame size in PulseAudio.
 #define PREFERRED_FRAMES_PER_BLOCK 512
 
+namespace pulse {
+
+using DeviceInfo = cinder::audio::linux::DeviceManagerPulseAudio::DeviceInfo;
+
+struct StateData {
+	enum Request { INVALID, GET_SINKS, GET_SOURCES, GET_DEFAULT_SINK_NAME, GET_DEFAULT_SOURCE_NAME, DONE };
+	Request					request = StateData::INVALID;
+	std::vector<DeviceInfo>	*deviceInfos = nullptr;
+	std::string 			defaultDeviceName;
+	// Used by PuslseAudio mainloop
+	pa_mainloop_api 		*mainLoopApi = nullptr;
+};
+
+void drainContextComplete( pa_context *context, void *userData )
+{
+	pa_context_disconnect( context );
+}
+
+void drainContext( pa_context *context, StateData* stateData )
+{
+	pa_operation *op = pa_context_drain( context, drainContextComplete, nullptr );
+	if( ! op ) {
+		pa_context_disconnect( context );
+	}
+	else {
+		pa_operation_unref( op );
+	}
+}
+
+void checkComplete( pa_context *context, StateData* stateData )
+{
+	if( StateData::DONE == stateData->request ) {
+		drainContext( context, stateData );
+	}
+}
+
+template <typename PulseInfoT>
+DeviceInfo createDeviceInfo( const PulseInfoT* info )
+{
+	std::string deviceName = std::string( info->name );
+
+	DeviceInfo result;
+	result.mKey				= deviceName;
+	result.mName 			= deviceName;
+	result.mIndex			= info->index;
+	result.mCard			= info->card;
+	result.mUsage			= DeviceInfo::INPUT;
+	result.mNumChannels		= info->channel_map.channels;
+	result.mSampleRate		= info->sample_spec.rate;
+	result.mFramesPerBlock	= PREFERRED_FRAMES_PER_BLOCK;
+	result.mDescription		= std::string( info->description );
+	return result;
+}
+
+void processSinkInfo( pa_context *context, const pa_sink_info *info, int eol, void *userData )
+{
+	StateData* stateData = reinterpret_cast<StateData*>( userData );
+
+	if( eol < 0 ) {
+		return;
+	}
+
+	if( eol ) {
+		stateData->request = StateData::DONE;
+	}
+	else {
+		DeviceInfo devInfo = createDeviceInfo<pa_sink_info>( info );
+		stateData->deviceInfos->push_back( devInfo );
+	}
+	
+	checkComplete( context, stateData );
+}
+
+void processSourceInfo( pa_context *context, const pa_source_info *info, int eol, void *userData )
+{
+	StateData* stateData = reinterpret_cast<StateData*>( userData );
+
+	if( eol < 0 ) {
+		return;
+	}
+
+	if( eol ) {
+		stateData->request = StateData::DONE;
+	}
+	else {
+		DeviceInfo devInfo = createDeviceInfo<pa_source_info>( info );
+		stateData->deviceInfos->push_back( devInfo );
+	}
+	
+	checkComplete( context, stateData );
+}
+
+void processServerInfo( pa_context *context, const pa_server_info *info, void *userData )
+{
+	StateData* stateData = reinterpret_cast<StateData*>( userData );
+
+	switch( stateData->request ) {
+		case StateData::GET_DEFAULT_SINK_NAME:
+			stateData->defaultDeviceName = std::string( info->default_sink_name );
+			break;
+		case StateData::GET_DEFAULT_SOURCE_NAME:
+			stateData->defaultDeviceName = std::string( info->default_source_name );
+			break;
+		default:
+			break;
+	}
+
+	stateData->request = StateData::DONE;
+	checkComplete( context, stateData );
+}
+
+void processContextState( pa_context *context, void *userData )
+{
+	StateData* stateData = reinterpret_cast<StateData*>( userData );
+	pa_context_state_t state = ::pa_context_get_state( context );
+	switch( state ) {
+		case PA_CONTEXT_READY: 
+			{
+				switch( stateData->request ) {
+					case StateData::GET_SINKS:
+						pa_operation_unref( pa_context_get_sink_info_list( context, processSinkInfo, userData ) );
+						break;
+					case StateData::GET_SOURCES:
+						pa_operation_unref( pa_context_get_source_info_list( context, processSourceInfo, userData ) );
+						break;
+					case StateData::GET_DEFAULT_SINK_NAME:
+						pa_operation_unref( pa_context_get_server_info( context, processServerInfo, userData ) );
+						break;
+					case StateData::GET_DEFAULT_SOURCE_NAME:
+						pa_operation_unref( pa_context_get_server_info( context, processServerInfo, userData ) );
+						break;
+					case StateData::DONE:
+						stateData->mainLoopApi->quit( stateData->mainLoopApi, 0 );
+						break;
+					case StateData::INVALID:
+						stateData->mainLoopApi->quit( stateData->mainLoopApi, -1 );
+						break;
+				}
+			}
+			break;
+		case PA_CONTEXT_TERMINATED:
+			stateData->mainLoopApi->quit( stateData->mainLoopApi, 0 );
+			break;
+		case PA_CONTEXT_FAILED:
+			stateData->mainLoopApi->quit( stateData->mainLoopApi, -1 );
+			break;
+		default:
+			break;
+	}
+}
+
+void executeRequest( StateData* stateData )
+{
+	// Create mainloop
+	pa_mainloop *mainLoop = pa_mainloop_new();
+	// Create mainloop API
+	pa_mainloop_api *mainLoopApi = pa_mainloop_get_api( mainLoop );
+	// Create context
+	pa_context *context = pa_context_new( mainLoopApi, "test" );
+	// Set context state callback
+	stateData->mainLoopApi = mainLoopApi;
+	pa_context_set_state_callback( context, processContextState, reinterpret_cast<void*>( &stateData ) );
+	// Connect context
+	if( pa_context_connect( context, nullptr, (pa_context_flags_t)0, nullptr ) >= 0 ) {
+		// Run mainloop
+		int result = 0;
+		if( pa_mainloop_run( mainLoop, &result ) < 0 ) {
+			// Handle error
+		}
+	}
+	pa_context_unref( context );
+	pa_mainloop_free( mainLoop );
+}
+
+std::vector<DeviceInfo> getDeviceInfos( DeviceInfo::Usage usage )
+{
+	std::vector<DeviceInfo> result;
+
+	StateData::Request request = StateData::INVALID;
+	switch( usage ) {
+		case DeviceInfo::OUTPUT : request = StateData::GET_SINKS;   break;
+		case DeviceInfo::INPUT  : request = StateData::GET_SOURCES; break;
+	}
+
+	if( ( StateData::GET_SINKS == request ) || ( StateData::GET_SOURCES == request ) ) {
+		StateData stateData;
+		stateData.request = request;
+		stateData.deviceInfos = &result;
+		executeRequest( &stateData );
+	}
+
+	return result;
+}
+
+std::string getDefaultSinkName() 
+{
+	StateData stateData;
+	stateData.request = StateData::GET_DEFAULT_SINK_NAME;
+	executeRequest( &stateData );
+	return stateData.defaultDeviceName;
+}
+
+std::string getDefaultSourceName()
+{
+	StateData stateData;
+	stateData.request = StateData::GET_DEFAULT_SOURCE_NAME;
+	executeRequest( &stateData );
+	return stateData.defaultDeviceName;
+}
+
+} // namespace pulse
+
 namespace cinder { namespace audio { namespace linux {
 
 DeviceManagerPulseAudio::DeviceManagerPulseAudio()
 {
-
+	parseDevices( DeviceInfo::INPUT );
+	parseDevices( DeviceInfo::OUTPUT );
 }
 
 DeviceManagerPulseAudio::~DeviceManagerPulseAudio()
 {
-	
 }
 
 const std::vector<DeviceRef>& DeviceManagerPulseAudio::getDevices()
 {
 	if( mDevices.empty() ) {
-	    parseDevices( DeviceInfo::INPUT );
-	    parseDevices( DeviceInfo::OUTPUT );
+		parseDevices( DeviceInfo::INPUT );
+		parseDevices( DeviceInfo::OUTPUT );
 	}
 
 	return mDevices;	
@@ -52,12 +264,14 @@ const std::vector<DeviceRef>& DeviceManagerPulseAudio::getDevices()
 
 DeviceRef DeviceManagerPulseAudio::getDefaultOutput()
 {
-	
+	std::string key = pulse::getDefaultSinkName();
+	return findDeviceByKey( key );
 }
 
 DeviceRef DeviceManagerPulseAudio::getDefaultInput()
 {
-	
+	std::string key = pulse::getDefaultSourceName();
+	return findDeviceByKey( key );	
 }
 
 std::string DeviceManagerPulseAudio::getName( const DeviceRef &device )
@@ -122,162 +336,6 @@ DeviceManagerPulseAudio::DeviceInfo& DeviceManagerPulseAudio::getDeviceInfo( con
 {
 	return mDeviceInfoSet.at( device );
 }
-
-namespace pulse {
-
-using DeviceInfo = DeviceManagerPulseAudio::DeviceInfo;
-
-struct StateData {
-	enum Request { INVALID, SINKS, SOURCES, DONE };
-	Request					request = StateData::INVALID;	
-	pa_mainloop_api 		*mainLoopApi = nullptr;
-	std::vector<DeviceInfo>	*deviceInfos = nullptr;
-};
-
-void drainContextComplete( pa_context *context, void *userData )
-{
-	pa_context_disconnect( context );
-}
-
-void drainContext( pa_context *context, StateData* stateData )
-{
-	pa_operation *op = pa_context_drain( context, drainContextComplete, nullptr );
-	if( ! op ) {
-		pa_context_disconnect( context );
-	}
-	else {
-		pa_operation_unref( op );
-	}
-}
-
-void checkComplete( pa_context *context, StateData* stateData )
-{
-	if( StateData::DONE == stateData->request ) {
-		drainContext( context, stateData );
-	}
-}
-
-template <typename PulseInfoT>
-DeviceInfo createDeviceInfo( const PulseInfoT* info )
-{
-	DeviceInfo result;
-	result.mName 			= std::string( info->name );
-	result.mIndex			= info->index;
-	result.mCard			= info->card;
-	result.mUsage			= DeviceInfo::INPUT;
-	result.mNumChannels		= info->channel_map.channels;
-	result.mSampleRate		= info->sample_spec.rate;
-	result.mFramesPerBlock	= PREFERRED_FRAMES_PER_BLOCK;
-	result.mDescription		= std::string( info->description );
-	return result;
-}
-
-void processSinkInfo( pa_context *context, const pa_sink_info *info, int eol, void *userData )
-{
-	StateData* stateData = reinterpret_cast<StateData*>( userData );
-
-	if( eol < 0 ) {
-		return;
-	}
-
-	if( eol ) {
-		stateData->request = StateData::DONE;
-	}
-	else {
-		DeviceInfo devInfo = createDeviceInfo<pa_sink_info>( info );
-		stateData->deviceInfos->push_back( devInfo );
-	}
-	
-	checkComplete( context, stateData );
-}
-
-void processSourceInfo( pa_context *context, const pa_source_info *info, int eol, void *userData )
-{
-	StateData* stateData = reinterpret_cast<StateData*>( userData );
-
-	if( eol < 0 ) {
-		return;
-	}
-
-	if( eol ) {
-		stateData->request = StateData::DONE;
-	}
-	else {
-		DeviceInfo devInfo = createDeviceInfo<pa_source_info>( info );
-		stateData->deviceInfos->push_back( devInfo );
-	}
-	
-	checkComplete( context, stateData );
-}
-
-void processContextState( pa_context *context, void *userData )
-{
-	StateData* stateData = reinterpret_cast<StateData*>( userData );
-	pa_context_state_t state = ::pa_context_get_state( context );
-	switch( state ) {
-		case PA_CONTEXT_READY: 
-			{
-				switch( stateData->request ) {
-					case StateData::SINKS:
-						pa_operation_unref( pa_context_get_sink_info_list( context, processSinkInfo, userData ) );
-						break;
-					case StateData::SOURCES:
-						pa_operation_unref( pa_context_get_source_info_list( context, processSourceInfo, userData ) );
-						break;
-					case StateData::DONE:
-						stateData->mainLoopApi->quit( stateData->mainLoopApi, 0 );
-						break;
-					case StateData::INVALID:
-						stateData->mainLoopApi->quit( stateData->mainLoopApi, -1 );
-						break;
-				}
-			}
-			break;
-		case PA_CONTEXT_TERMINATED:
-			stateData->mainLoopApi->quit( stateData->mainLoopApi, 0 );
-			break;
-		case PA_CONTEXT_FAILED:
-			stateData->mainLoopApi->quit( stateData->mainLoopApi, -1 );
-			break;
-		default:
-			break;
-	}
-}
-
-std::vector<DeviceInfo> getDeviceInfos( DeviceInfo::Usage usage )
-{
-	std::vector<DeviceInfo> result;
-
-	// Create mainloop
-	pa_mainloop *mainLoop = pa_mainloop_new();
-	// Create mainloop API
-	pa_mainloop_api *mainLoopApi = pa_mainloop_get_api( mainLoop );
-	// Create context
-	pa_context *context = pa_context_new( mainLoopApi, "test" );
-	// Set context state callback
-	StateData stateData;
-	stateData.mainLoopApi = mainLoopApi;
-	stateData.deviceInfos = &result;
-	switch( usage ) {
-		case DeviceInfo::OUTPUT : stateData.request = StateData::SINKS;   break;
-		case DeviceInfo::INPUT  : stateData.request = StateData::SOURCES; break;
-	}
-	pa_context_set_state_callback( context, processContextState, reinterpret_cast<void*>( &stateData ) );
-	// Connect context
-	if( pa_context_connect( context, nullptr, (pa_context_flags_t)0, nullptr ) >= 0 ) {
-		// Run mainloop
-		int result = 0;
-		if( pa_mainloop_run( mainLoop, &result ) < 0 ) {
-			// Handle error
-		}
-	}
-	pa_context_unref( context );
-	pa_mainloop_free( mainLoop );
-
-	return result;
-}
-
-} // namespace pulse
 
 void DeviceManagerPulseAudio::parseDevices( DeviceInfo::Usage usage )
 {
