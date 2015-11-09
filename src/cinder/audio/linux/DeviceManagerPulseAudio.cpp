@@ -83,7 +83,7 @@ DeviceInfo createDeviceInfo( const PulseInfoT* info )
 
 void processSinkInfo( pa_context* context, const pa_sink_info* info, int eol, void* userData )
 {
-	StateData* stateData = reinterpret_cast<StateData*>( userData );
+	StateData* stateData = static_cast<StateData*>( userData );
 
 	if( eol < 0 ) {
 		return;
@@ -102,7 +102,7 @@ void processSinkInfo( pa_context* context, const pa_sink_info* info, int eol, vo
 
 void processSourceInfo( pa_context* context, const pa_source_info* info, int eol, void* userData )
 {
-	StateData* stateData = reinterpret_cast<StateData*>( userData );
+	StateData* stateData = static_cast<StateData*>( userData );
 
 	if( eol < 0 ) {
 		return;
@@ -121,7 +121,7 @@ void processSourceInfo( pa_context* context, const pa_source_info* info, int eol
 
 void processServerInfo( pa_context* context, const pa_server_info* info, void* userData )
 {
-	StateData* stateData = reinterpret_cast<StateData*>( userData );
+	StateData* stateData = static_cast<StateData*>( userData );
 
 	switch( stateData->request ) {
 		case StateData::GET_DEFAULT_SINK_NAME:
@@ -140,7 +140,7 @@ void processServerInfo( pa_context* context, const pa_server_info* info, void* u
 
 void processContextState( pa_context* context, void* userData )
 {
-	StateData* stateData = reinterpret_cast<StateData*>( userData );
+	StateData* stateData = static_cast<StateData*>( userData );
 	pa_context_state_t state = ::pa_context_get_state( context );
 	switch( state ) {
 		case PA_CONTEXT_READY: {
@@ -195,7 +195,7 @@ void executeRequest( StateData* stateData )
 	pa_context* context = pa_context_new( mainLoopApi, "cinder-requests" );
 	// Set context state callback
 	stateData->mainLoopApi = mainLoopApi;
-	pa_context_set_state_callback( context, processContextState, reinterpret_cast<void*>( &stateData ) );
+	pa_context_set_state_callback( context, processContextState, static_cast<void*>( &stateData ) );
 	// Connect context
 	if( pa_context_connect( context, nullptr, PA_CONTEXT_NOFLAGS, nullptr ) >= 0 ) {
 		// Run mainloop
