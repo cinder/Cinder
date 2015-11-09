@@ -169,8 +169,11 @@ MovieSurface::MovieSurface( const GstCustomPipelineData &customPipeline )
 }
 
 ci::Surface8uRef MovieSurface::getSurface()
-{
-    Surface8uRef surf = Surface8uRef( new ci::Surface8u( mGstPlayer->getVideoBuffer(), getWidth(), (int32_t)getHeight(), mGstPlayer->stride(),  getChannelOrder() ) );
+{ 
+    Surface8uRef surf;
+    if( mGstPlayer->getVideoBuffer() ) {
+        surf = Surface8uRef( new ci::Surface8u( mGstPlayer->getVideoBuffer(), getWidth(), (int32_t)getHeight(), mGstPlayer->stride(),  getChannelOrder() ) );
+    }
     return surf;
 }
     
@@ -192,8 +195,11 @@ MovieGl::MovieGl( const GstCustomPipelineData &customPipeline )
 
 ci::gl::Texture2dRef MovieGl::getTexture()
 {
-    ci::gl::Texture2dRef tex = ci::gl::Texture2d::create( mGstPlayer->getVideoBuffer(), GL_RGB, getWidth(), getHeight() );
-    tex->setTopDown();
+    ci::gl::Texture2dRef tex;
+    if( mGstPlayer->getVideoBuffer() ) {
+        ci::gl::Texture2dRef tex = ci::gl::Texture2d::create( mGstPlayer->getVideoBuffer(), GL_RGB, getWidth(), getHeight() );
+        tex->setTopDown();
+    }
     return tex;
 }
 
