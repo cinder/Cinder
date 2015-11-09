@@ -150,6 +150,7 @@ namespace gst { namespace video {
         void resetBus();
         void cleanup();
         
+        void resetVideoBuffers();
     private:
         GMainLoop* mGMainLoop; // Needed for message activation since we are not using signals.
         GstBus* mGstBus; // Delivers the messages.

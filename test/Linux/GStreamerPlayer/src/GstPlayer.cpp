@@ -241,15 +241,7 @@ void GstPlayer::cleanup()
     }
     
     mMutex.lock();
-    if( mFrontVBuffer ){
-        delete mFrontVBuffer;
-        mFrontVBuffer = nullptr;
-    }
-    
-    if( mBackVBuffer ) {
-        delete mBackVBuffer;
-        mBackVBuffer = nullptr;
-    }
+    resetVideoBuffers();
     mMutex.unlock();
 }
 
@@ -415,8 +407,14 @@ void GstPlayer::load( std::string _path )
     // If we still dont have a valid pipeline somethins is off....
     if( !mGstPipeline ) return;
     
-    // Prepare for loading with playbin
-    setPipelineState( GST_STATE_READY );
+    // Prepare for loading with playbin.
+    // We lock until we switch to GST_STATE_READY since
+    // there is not much we can do if dont reach this state.
+    gst_element_set_state( mGstPipeline, GST_STATE_READY );
+    gst_element_get_state( mGstPipeline, NULL, NULL, GST_CLOCK_TIME_NONE );
+
+    // Reset the buffers after we have reached GST_STATE_READY.
+    resetVideoBuffers();
     
     mGstData.mIsStream = true;
     
@@ -431,8 +429,8 @@ void GstPlayer::load( std::string _path )
     // set the new movie path
     g_object_set( G_OBJECT ( mGstPipeline ), "uri", _path.c_str(), nullptr );
     
-    // and preroll.
-    setPipelineState( GST_STATE_PAUSED );
+    // and preroll async.
+    gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );
 }
 
 void GstPlayer::play()
@@ -752,6 +750,22 @@ unsigned char * GstPlayer::getVideoBuffer()
     return mFrontVBuffer;
 }
 
+void GstPlayer::resetVideoBuffers()
+{
+    // Take care of the front buffer.
+    if( mFrontVBuffer ) {
+        delete mFrontVBuffer;
+        mFrontVBuffer = nullptr;
+    }
+
+    // Take care of the back buffer.
+    if( mBackVBuffer ) {
+        delete mBackVBuffer;
+        mBackVBuffer = nullptr;
+    }
+    
+}
+
 void GstPlayer::onGstEos( GstAppSink* sink, gpointer userData )
 {
 }
@@ -794,24 +808,14 @@ void GstPlayer::sample( GstSample* sample )
              std::cout << " STRIDE PLANE 2 : " << mVideoInfo.stride[1];
              std::cout << " STRIDE PLANE 3 : " << mVideoInfo.stride[2] << std::endl;*/
         }
-        
-        // Take care of the front buffer.
-        if( mFrontVBuffer ) {
-            delete mFrontVBuffer;
-            mFrontVBuffer = nullptr;
-        }
-        
-        if( !mFrontVBuffer )
+
+        if( !mFrontVBuffer ) {
             mFrontVBuffer = new unsigned char[ mMemoryMapInfo.size ];
-        
-        // Take care of the back buffer.
-        if( mBackVBuffer ) {
-            delete mBackVBuffer;
-            mBackVBuffer = nullptr;
         }
         
-        if( !mBackVBuffer )
+        if( !mBackVBuffer ) {
             mBackVBuffer = new unsigned char[ mMemoryMapInfo.size ];
+        }
         
         ///Reset the new video flag .
         mGstData.mVideoHasChanged = false;
