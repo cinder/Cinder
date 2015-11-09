@@ -3,6 +3,7 @@
 #include "GstPlayer.h"
 #include "cinder/Surface.h"
 #include "cinder/Url.h"
+#include "cinder/gl/gl.h"
 
 using namespace cinder;
 
@@ -15,7 +16,7 @@ class MovieBase
     public:
         virtual ~MovieBase();
 
-        void    setCustomPipeline( const std::string& pipeline );
+        void    setCustomPipeline( const GstCustomPipelineData &customPipeline );
     
         void    load( const ci::fs::path &path );
         void    load( const ci::Url &url );
@@ -70,7 +71,7 @@ class MovieSurface : public MovieBase {
         virtual ~MovieSurface(){}
         static MovieSurfaceRef create( const ci::fs::path &path ){ return MovieSurfaceRef( new MovieSurface( path ) ); }
         static MovieSurfaceRef create( const ci::Url &url ){ return MovieSurfaceRef( new MovieSurface( url ) ); }
-        static MovieSurfaceRef create( const std::string &pipeline ){ return MovieSurfaceRef( new MovieSurface( pipeline ) ); }
+        static MovieSurfaceRef create( const GstCustomPipelineData &customPipeline ){ return MovieSurfaceRef( new MovieSurface( customPipeline ) ); }
 
     
         ci::Surface8uRef getSurface();
@@ -79,7 +80,7 @@ class MovieSurface : public MovieBase {
         MovieSurface() : MovieBase(){}
         MovieSurface( const ci::fs::path &path );
         MovieSurface( const ci::Url &url );
-        MovieSurface( const std::string &pipeline );
+        MovieSurface( const GstCustomPipelineData &customPipeline );
 
 };
 
@@ -90,7 +91,7 @@ public:
     virtual ~MovieGl(){}
     static MovieGlRef create( const ci::fs::path &path ){ return MovieGlRef( new MovieGl( path ) ); }
     static MovieGlRef create( const ci::Url &url ){ return MovieGlRef( new MovieGl( url ) ); }
-    static MovieGlRef create( const std::string &pipeline ){ return MovieGlRef( new MovieGl( pipeline ) ); }
+    static MovieGlRef create( const GstCustomPipelineData &customPipeline ){ return MovieGlRef( new MovieGl( customPipeline ) ); }
 
     ci::gl::Texture2dRef getTexture();
     
@@ -98,7 +99,7 @@ protected:
     MovieGl() : MovieBase(){}
     MovieGl( const ci::fs::path &path );
     MovieGl( const ci::Url &url );
-    MovieGl( const std::string &pipeline );
+    MovieGl( const GstCustomPipelineData &customPipeline );
 
 };
     

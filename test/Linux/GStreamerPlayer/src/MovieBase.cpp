@@ -25,10 +25,10 @@ void MovieBase::load( const ci::Url &url )
     loadNewMovie( url.str() );
 }
 
-void MovieBase::setCustomPipeline( const std::string& pipeline )
+void MovieBase::setCustomPipeline( const GstCustomPipelineData &customPipeline )
 {
     if( !mGstPlayer ) return;
-    mGstPlayer->setCustomPipeline( pipeline );
+    mGstPlayer->setCustomPipeline( customPipeline );
 }
 
 void MovieBase::loadNewMovie( std::string _path )
@@ -163,9 +163,9 @@ MovieSurface::MovieSurface( const ci::Url &url )
     load( url.str() );
 }
     
-MovieSurface::MovieSurface( const std::string &pipeline )
+MovieSurface::MovieSurface( const GstCustomPipelineData &customPipeline )
 {
-    setCustomPipeline( pipeline );
+    setCustomPipeline( customPipeline );
 }
 
 ci::Surface8uRef MovieSurface::getSurface()
@@ -185,9 +185,9 @@ MovieGl::MovieGl( const ci::Url &url )
     load( url.str() );
 }
 
-MovieGl::MovieGl( const std::string &pipeline )
+MovieGl::MovieGl( const GstCustomPipelineData &customPipeline )
 {
-    setCustomPipeline( pipeline );
+    setCustomPipeline( customPipeline );
 }
 
 ci::gl::Texture2dRef MovieGl::getTexture()

@@ -319,7 +319,7 @@ void GstPlayer::resetBus()
     mGstBus = nullptr;
 }
 
-void GstPlayer::setCustomPipeline( const std::string& pipeline )
+void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
 {
     /// If we have a custom pipeline we reset before re-using.
     if( mGstPipeline ) {
@@ -329,7 +329,7 @@ void GstPlayer::setCustomPipeline( const std::string& pipeline )
     }
 
     GError *error = nullptr;
-    mGstPipeline = gst_parse_launch( pipeline.c_str(), &error );
+    mGstPipeline = gst_parse_launch( customPipeline.pipeline.c_str(), &error );
     
     if( error != nullptr ) {
         g_print( "Could not construct custom pipeline: %s\n", error->message );

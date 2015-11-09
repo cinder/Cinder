@@ -73,7 +73,7 @@ namespace gst { namespace video {
         
         bool initialize();
         
-        void setCustomPipeline( const std::string& pipeline );
+        void setCustomPipeline( const GstCustomPipelineData &customPipeline );
         
         void load( std::string _path );
         bool newVideo() const;
