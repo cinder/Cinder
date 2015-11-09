@@ -234,11 +234,6 @@ void depthMask( GLboolean flag )
 	ctx->depthMask( flag );
 }
 
-void stencilMask( GLboolean mask )
-{
-	glStencilMask( mask );
-}
-
 void stencilFunc( GLenum func, GLint ref, GLuint mask )
 {
     glStencilFunc( func, ref, mask );
@@ -247,6 +242,11 @@ void stencilFunc( GLenum func, GLint ref, GLuint mask )
 void stencilOp( GLenum fail, GLenum zfail, GLenum zpass )
 {
     glStencilOp( fail, zfail, zpass );
+}
+
+void stencilMask( GLuint mask )
+{
+	glStencilMask( mask );
 }
 
 std::pair<ivec2, ivec2> getViewport()
