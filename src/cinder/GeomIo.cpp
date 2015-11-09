@@ -800,16 +800,18 @@ void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &reque
 		tangents[0] = vec3( 0.7071067f, 0.7071067f, 0 );
 	if( bufferColors )
 		colors[0] = (mColors[0] / 4.0f) + (mColors[1] / 4.0f) + (mColors[2] / 4.0f) + (mColors[3] / 4.0f);
-	
+
+	float cornerRadius = glm::max( 0.0f, glm::min( mCornerRadius, 0.5f * glm::min( mRectPositions.getWidth(), mRectPositions.getHeight() ) ) );
+
 	size_t tri = 1;
 	const float angleDelta = (float)(1 / (float)mSubdivisions * M_PI / 2);
 	const std::array<vec2, 4> cornerCenterVerts = {
-		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y2 - mCornerRadius ),
-		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y2 - mCornerRadius ),
-		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y1 + mCornerRadius ),
-		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y1 + mCornerRadius )
+		vec2( mRectPositions.x2 - cornerRadius, mRectPositions.y2 - cornerRadius ),
+		vec2( mRectPositions.x1 + cornerRadius, mRectPositions.y2 - cornerRadius ),
+		vec2( mRectPositions.x1 + cornerRadius, mRectPositions.y1 + cornerRadius ),
+		vec2( mRectPositions.x2 - cornerRadius, mRectPositions.y1 + cornerRadius )
 	};
-	vec2 texCoordOffset = ( mCornerRadius / mRectPositions.getSize() ) * mRectTexCoords.getSize();
+	vec2 texCoordOffset = ( cornerRadius / mRectPositions.getSize() ) * mRectTexCoords.getSize();
 	const std::array<vec2, 4> cornerCenterTexCoords = {
 		vec2( mRectTexCoords.x2 - texCoordOffset.x, texCoordOffset.y + mRectTexCoords.y1 ), // lower right
 		vec2( texCoordOffset.x + mRectTexCoords.x1, texCoordOffset.y + mRectTexCoords.y1 ), // lower left
@@ -828,8 +830,8 @@ void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &reque
 			auto currentTexCoord = vec2( cornerTexCoord.x + cosVal * texCoordOffset.x,
 										cornerTexCoord.y - sinVal * texCoordOffset.y );
 			if( bufferPositions )
-				positions[tri] = vec2( cornerCenter.x + cosVal * mCornerRadius,
-									   cornerCenter.y + sinVal * mCornerRadius );
+				positions[tri] = vec2( cornerCenter.x + cosVal * cornerRadius,
+									   cornerCenter.y + sinVal * cornerRadius );
 			if( bufferTexCoords )
 				texCoords[tri] = currentTexCoord;
 			if( bufferNormals )
@@ -849,7 +851,7 @@ void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &reque
 	auto currentTexCoord = vec2( mRectTexCoords.x2, texCoordOffset.y + mRectTexCoords.y1 );
 	// close it off
 	if( bufferPositions )
-		positions[tri] = vec2( mRectPositions.x2, mRectPositions.y2 - mCornerRadius );
+		positions[tri] = vec2( mRectPositions.x2, mRectPositions.y2 - cornerRadius );
 	if( bufferTexCoords )
 		texCoords[tri] = currentTexCoord;
 	if( bufferNormals )
@@ -1947,10 +1949,10 @@ void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 ///////////////////////////////////////////////////////////////////////////////////////
 // Capsule
 Capsule::Capsule()
-	: mDirection( 0, 1, 0 ), mLength( 1.0f ), mSubdivisionsAxis( 6 ), mHasColors( false )
+	: mDirection( 0, 1, 0 ), mLength( 1.0f ), mSubdivisionsAxis( 12 ), mHasColors( false )
 {
 	radius( 0.5f );
-	subdivisionsHeight( 6 );
+	subdivisionsHeight( 12 );
 }
 
 Capsule& Capsule::set( const vec3 &from, const vec3 &to )
@@ -2229,6 +2231,127 @@ void Torus::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	}
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// TorusKnot
+TorusKnot::TorusKnot()
+	: mP( 2 ), mQ( 3 ), mRadius( 0.2f ), mSubdivisionsAxis( 12 ), mSubdivisionsHeight( 128 ), mScale( 1 ), mHasColors( false )
+{
+}
+
+size_t TorusKnot::getNumVertices() const
+{
+	return size_t( ( mSubdivisionsHeight + 1 ) * ( mSubdivisionsAxis + 1 ) );
+}
+
+size_t TorusKnot::getNumIndices() const
+{
+	return mSubdivisionsAxis * mSubdivisionsHeight * 6;
+}
+
+uint8_t TorusKnot::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 3;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		case Attrib::TANGENT: return 3;
+		default:
+			return 0;
+	}
+}
+
+AttribSet TorusKnot::getAvailableAttribs() const
+{
+	return{ Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
+}
+
+void TorusKnot::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	auto numVertices = getNumVertices();
+	auto numIndices = getNumIndices();
+
+	std::vector<vec3> positions( numVertices ), normals( numVertices );
+	std::vector<vec2> texCoords( numVertices );
+	std::vector<vec3> colors( numVertices );
+	std::vector<vec3> tangents( numVertices );
+	std::vector<uint32_t> indices( numIndices );
+
+	std::vector<vec3> *colorsPtr = ( requestedAttribs.count( Attrib::COLOR ) ) ? &colors : nullptr;
+	std::vector<vec3> *tangentsPtr = ( requestedAttribs.count( Attrib::TANGENT ) ) ? &tangents : nullptr;
+
+	calculate( &positions, &normals, &texCoords, colorsPtr, tangentsPtr, &indices );
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
+
+	if( requestedAttribs.count( Attrib::COLOR ) )
+		target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+	if( requestedAttribs.count( geom::TANGENT ) )
+		target->copyAttrib( Attrib::TANGENT, 3, 0, value_ptr( *tangents.data() ), tangents.size() );
+
+	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
+}
+
+void TorusKnot::calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<vec3> *tangents, std::vector<uint32_t> *indices ) const
+{
+	float stepHeight = float( 2.0 * M_PI ) / mSubdivisionsHeight;
+	float stepAxis = float( 2.0 * M_PI ) / mSubdivisionsAxis;
+
+	// Prevent geometry from penetrating itself.
+	int divider = gcd( mP, mQ );
+	int _p = ( divider != 0 ) ? mP / divider : 1;
+	int _q = ( divider != 0 ) ? mQ / divider : 0;
+
+	for( int i = 0; i <= mSubdivisionsHeight; ++i ) {
+		float p = _p * i * stepHeight;
+		float q = _q * i * stepHeight;
+		float r = 0.5f * ( 2.0f + glm::cos( q ) );
+		vec3 center( r * glm::sin( p ) * mScale.x, r * glm::sin( q ) * mScale.y, r * glm::cos( p ) * mScale.z );
+
+		p = _p * ( i + 1 ) * stepHeight;
+		q = _q * ( i + 1 ) * stepHeight;
+		r = 0.5f * ( 2.0f + glm::cos( q ) );
+		vec3 next( r * glm::sin( p ) * mScale.x, r * glm::sin( q ) * mScale.y, r * glm::cos( p ) * mScale.z );
+
+		vec3 T = normalize( next - center );
+		vec3 B = normalize( cross( T, next + center ) );
+		vec3 N = normalize( cross( B, T ) );
+
+		for( int j = 0; j <= mSubdivisionsAxis; ++j ) {
+			float x = glm::cos( j * stepAxis ) * mRadius;
+			float y = glm::sin( j * stepAxis ) * mRadius;
+
+			int idx = i * ( mSubdivisionsAxis + 1 ) + j;
+			( *normals )[idx] = B * x + N * y;
+			( *positions )[idx] = ( *normals )[idx] + center;
+			( *normals )[idx] = glm::normalize( ( *normals )[idx] );
+			( *texCoords )[idx].y = float( j ) / mSubdivisionsAxis;
+			( *texCoords )[idx].x = float( i ) / mSubdivisionsHeight;
+
+			if( tangents )
+				( *tangents )[idx] = T; 
+			
+			if( colors )
+				( *colors )[idx] = ( *normals )[idx] * 0.5f + 0.5f;
+		}
+	}
+
+	int nAxis = mSubdivisionsAxis + 1;
+	for( int j = 0; j < mSubdivisionsAxis; j++ ) {
+		for( int i = 0; i < mSubdivisionsHeight; i++ ) {
+			int idx = 6 * ( j * mSubdivisionsHeight + i );
+			( *indices )[idx + 0] = ( j + i * nAxis );
+			( *indices )[idx + 1] = ( j + ( i + 1 ) * nAxis );
+			( *indices )[idx + 2] = ( ( j + 1 ) + i * nAxis );
+			( *indices )[idx + 3] = ( ( j + 1 ) + i * nAxis );
+			( *indices )[idx + 4] = ( j + ( i + 1 ) * nAxis );
+			( *indices )[idx + 5] = ( ( j + 1 ) + ( i + 1 ) * nAxis );
+		}
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -3596,14 +3719,16 @@ void WireRoundedRect::updateVertexCount()
 	
 void WireRoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &requestedAttribs ) const
 {
+	float cornerRadius = glm::max( 0.0f, glm::min( mCornerRadius, 0.5f * glm::min( mRectPositions.getWidth(), mRectPositions.getHeight() ) ) );
+
 	std::vector<vec2> verts( mNumVertices );
 	vec2* ptr = verts.data();
 	const float angleDelta = (float)(1 / (float)mCornerSubdivisions * M_PI / 2);
 	const std::array<vec2, 4> cornerCenterVerts = {
-		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y2 - mCornerRadius ),
-		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y2 - mCornerRadius ),
-		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y1 + mCornerRadius ),
-		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y1 + mCornerRadius )
+		vec2( mRectPositions.x2 - cornerRadius, mRectPositions.y2 - cornerRadius ),
+		vec2( mRectPositions.x1 + cornerRadius, mRectPositions.y2 - cornerRadius ),
+		vec2( mRectPositions.x1 + cornerRadius, mRectPositions.y1 + cornerRadius ),
+		vec2( mRectPositions.x2 - cornerRadius, mRectPositions.y1 + cornerRadius )
 	};
 	// provide the last vert as the starting point to loop around to.
 	*ptr++ = vec2( cornerCenterVerts[3].x + math<float>::cos( ( 3 * (float)M_PI / 2 ) + ( angleDelta * mCornerSubdivisions ) ) * mCornerRadius,
@@ -3613,11 +3738,11 @@ void WireRoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &r
 		vec2 cornerCenter( cornerCenterVerts[corner] );
 		for( int s = 0; s <= mCornerSubdivisions; s++ ) {
 			// This is the ending point of the first line
-			*ptr++ = vec2( cornerCenter.x + math<float>::cos( angle ) * mCornerRadius,
-						  cornerCenter.y + math<float>::sin( angle ) * mCornerRadius );
-			// This is the starting point of the next line
-			*ptr++ = vec2( cornerCenter.x + math<float>::cos( angle ) * mCornerRadius,
-						  cornerCenter.y + math<float>::sin( angle ) * mCornerRadius );
+			*ptr++ = vec2( cornerCenter.x + math<float>::cos( angle ) * cornerRadius,
+						   cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
+			 // This is the starting point of the next line
+			*ptr++ = vec2( cornerCenter.x + math<float>::cos( angle ) * cornerRadius,
+						   cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
 			angle += angleDelta;
 		}
 	}
