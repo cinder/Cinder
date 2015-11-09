@@ -128,12 +128,12 @@ void CameraUi::mouseWheel( app::MouseEvent &event )
 	event.setHandled();
 }
 
-void CameraUi::mouseUp( const ivec2 &mousePos )
+void CameraUi::mouseUp( const vec2 &mousePos )
 {
 	mLastAction = ACTION_NONE;
 }
 
-void CameraUi::mouseDown( const ivec2 &mousePos )
+void CameraUi::mouseDown( const vec2 &mousePos )
 {
 	if( ! mCamera || ! mEnabled )
 		return;
@@ -157,7 +157,7 @@ void CameraUi::mouseDrag( app::MouseEvent &event )
 	event.setHandled();
 }
 
-void CameraUi::mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
+void CameraUi::mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
 {
 	if( ! mCamera || ! mEnabled )
 		return;
