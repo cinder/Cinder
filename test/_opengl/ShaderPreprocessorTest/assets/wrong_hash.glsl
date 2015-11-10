@@ -1,4 +1,4 @@
 float hash( float n )
 {
-	return 0.0;
+	return sin( n );
 }
