@@ -197,7 +197,7 @@ ci::gl::Texture2dRef MovieGl::getTexture()
 {
     ci::gl::Texture2dRef tex;
     if( mGstPlayer->getVideoBuffer() ) {
-        ci::gl::Texture2dRef tex = ci::gl::Texture2d::create( mGstPlayer->getVideoBuffer(), GL_RGB, getWidth(), getHeight() );
+        tex = ci::gl::Texture2d::create( mGstPlayer->getVideoBuffer(), GL_RGB, getWidth(), getHeight() );
         tex->setTopDown();
     }
     return tex;
