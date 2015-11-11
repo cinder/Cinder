@@ -22,7 +22,7 @@
 */
 
 #include "cinder/audio/linux/ContextPulseAudio.h"
-#include "cinder/Utilities.h"
+#include "cinder/audio/dsp/Converter.h"
 
 #include <iostream>
 #include <pulse/pulseaudio.h>
@@ -93,11 +93,16 @@ struct OutputDeviceNodePulseAudioImpl {
 
 	void initPlayer( size_t numChannels, size_t sampleRate, size_t framesPerBlock )
 	{
-std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer" << std::endl;		
+std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer: framesPerBlock=" << framesPerBlock << std::endl;		
 		auto context = mContextPulseAudio.lock();
 
 		auto paMainLoop = context->getPulseAudioMainLoop();
 		pulse::ScopedLock scopedLock( paMainLoop );
+
+		//mBytesPerBuffer = 512*numChannels*sizeof(float);
+		mBytesPerSample = sizeof(float);
+		mBytesPerFrame  = numChannels*mBytesPerSample;
+		mBytesPerBuffer = framesPerBlock*mBytesPerFrame;
 
 		pa_sample_spec sampleSpec;
 		sampleSpec.format 	= PA_SAMPLE_FLOAT32LE;
@@ -109,12 +114,14 @@ std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer" << std::endl;
 
 		{
 			pulse::ScopedPropertyList propList;
-			pa_proplist_sets( propList.get(), PA_PROP_APPLICATION_ICON_NAME, "cinder-pulseaudio-output" );
+			//pa_proplist_sets( propList.get(), PA_PROP_APPLICATION_ICON_NAME, "cinder-pulseaudio-output" );
 
 			auto paContext = context->getPulseAudioContext();
 			mStream = pa_stream_new_with_proplist( paContext, "Playback", &sampleSpec, map, propList.get() );
-			if( 0 != mStream ) {
-				throw AudioContextExc( "Could not create PulseAudio output stream" );
+			if( ! mStream ) {
+				int errorNum = pa_context_errno( paContext );
+				std::string errorText = pa_strerror( errorNum );
+				throw AudioContextExc( "Could not create PulseAudio output stream" + errorText );
 			}
 
 			pa_stream_set_state_callback( mStream, &OutputDeviceNodePulseAudioImpl::streamNotifyCallback, static_cast<void*>( this ) );
@@ -124,13 +131,11 @@ std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer" << std::endl;
 			pa_stream_set_write_callback( mStream, &OutputDeviceNodePulseAudioImpl::playerCallback, static_cast<void*>( this ) );
 
 
-			const size_t kBytesPerSample = sizeof(float);
-			size_t bytesPerBuffer = 512*numChannels*kBytesPerSample;
 			pa_buffer_attr bufferAttr;
 			bufferAttr.maxlength 	= static_cast<uint32_t>(-1);
-			bufferAttr.minreq		= bytesPerBuffer / 2;
+			bufferAttr.minreq		= mBytesPerBuffer / 2;
 			bufferAttr.prebuf		= static_cast<uint32_t>(-1);
-			bufferAttr.tlength		= bytesPerBuffer * 3;
+			bufferAttr.tlength		= mBytesPerBuffer * 3;
 			bufferAttr.fragsize		= static_cast<uint32_t>(-1);
 
 			pa_stream_flags_t streamFlags = PA_STREAM_START_CORKED;
@@ -179,19 +184,75 @@ std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer" << std::endl;
 
 	void play()
 	{
+		auto context = mContextPulseAudio.lock();
+		auto paMainLoop = context->getPulseAudioMainLoop();
+		auto paContext = context->getPulseAudioContext();
+
+		{		
+			pulse::ScopedLock scopedLock( paMainLoop );
+
+			// Ensure the context and stream are ready.
+			pa_context_state_t contextState = pa_context_get_state( paContext );
+			pa_stream_state_t streamState = pa_stream_get_state( mStream );
+			if( ( PA_CONTEXT_READY != contextState ) && ( PA_STREAM_READY != streamState ) ) {
+				return;
+			}
+
+			 // Uncork (resume) the stream.
+			pa_operation* op = pa_stream_cork( mStream, 0, &pulse::streamSuccessCallback, paMainLoop );
+			pulse::waitForOperationCompletion( paMainLoop, op );
+		}
 	}
 
 	void stop()
 	{
+		auto context = mContextPulseAudio.lock();
+		auto paMainLoop = context->getPulseAudioMainLoop();
+
+		{		
+			pulse::ScopedLock scopedLock( paMainLoop );
+
+			// Flush the stream prior to cork, doing so after will cause hangs.  Write
+			// callbacks are suspended while inside pa_threaded_mainloop_lock() so this
+			// is all thread safe.
+			pa_operation* op = pa_stream_flush( mStream, &pulse::streamSuccessCallback, paMainLoop );
+			pulse::waitForOperationCompletion( paMainLoop, op );
+
+			op = pa_stream_cork( mStream, 1, &pulse::streamSuccessCallback, paMainLoop );
+			pulse::waitForOperationCompletion( paMainLoop, op );
+		}		
 	}
 
-	void enqueueSamples( size_t requestedBytes )
+	void enqueueSamples( size_t numSamples )
 	{
+		std::cout << "OutputDeviceNodePulseAudioImpl::enqueueSamples: numSamples=" << numSamples << std::endl;
+
+
+
+		/*
+		size_t bytesRemaining = requestedBytes;
+		while( bytesRemaining > 0 ) {
+			std::cout << "bytesRemaining: " << bytesRemaining << std::endl;
+
+			void* buffer = nullptr;
+			size_t bytesToFill = mBytesPerBuffer;
+			pa_stream_begin_write( mStream, &buffer, &bytesToFill );
+
+
+
+			std::cout << "bytesToFill: " << bytesToFill << std::endl;
+
+			bytesRemaining -= bytesToFill;
+		}
+		*/
 	}
 
 	static void playerCallback( pa_stream* stream, size_t requestedBytes, void* userData )
-	{
-std::cout << "OutputDeviceNodePulseAudioImpl::playerCallback: requestedBytes=" << requestedBytes << std::endl;
+	{		
+		OutputDeviceNodePulseAudioImpl* thisObj = static_cast<OutputDeviceNodePulseAudioImpl*>( userData );
+
+		size_t numSamples = requestedBytes / thisObj->mBytesPerSample;
+		thisObj->enqueueSamples( numSamples );
 	}
 
 	static void streamNotifyCallback( pa_stream* stream, void* userData )
@@ -217,6 +278,11 @@ std::cout << "OutputDeviceNodePulseAudioImpl::playerCallback: requestedBytes=" <
 	std::weak_ptr<ContextPulseAudio>	mContextPulseAudio;
 
 	pa_stream*							mStream = nullptr;
+	size_t 								mBytesPerSample = 0;
+	size_t 								mBytesPerFrame = 0;
+	size_t								mBytesPerBuffer = 0;
+
+	size_t								mNumFramesBuffered = 0;
 };
 
 // ----------------------------------------------------------------------------------------------------
@@ -236,6 +302,8 @@ std::cout << "OutputDeviceNodePulseAudio::initialize" << std::endl;
 	const size_t numChannels = getNumChannels();
 
 	mImpl->initPlayer( numChannels, sampleRate, framesPerBlock );
+
+	mInterleavedBuffer = BufferInterleaved( framesPerBlock, numChannels );
 }
 
 void OutputDeviceNodePulseAudio::uninitialize()
@@ -253,13 +321,41 @@ void OutputDeviceNodePulseAudio::disableProcessing()
 	mImpl->stop();
 }
 
+void OutputDeviceNodePulseAudio::renderInputs()
+{
+	auto ctx = getContext();
+	if( ! ctx )
+		return;
+
+	std::lock_guard<std::mutex> lock( ctx->getMutex() );
+
+	// verify context still exists, since its destructor may have been holding the lock
+	ctx = getContext();
+	if( ! ctx )
+		return;
+
+	ctx->preProcess();
+
+	auto internalBuffer = getInternalBuffer();
+	internalBuffer->zero();
+	pullInputs( internalBuffer );
+
+	if( checkNotClipping() )
+		internalBuffer->zero();
+
+	dsp::interleaveBuffer( internalBuffer, &mInterleavedBuffer );
+	//bool writeSuccess = mRenderImpl->mRingBuffer->write( mInterleavedBuffer.getData(), mInterleavedBuffer.getSize() );
+	//CI_ASSERT( writeSuccess ); // Since this is sync read / write, the write should always succeed.
+
+	mImpl->mNumFramesBuffered += mInterleavedBuffer.getNumFrames();
+	ctx->postProcess();
+}
+
 // ----------------------------------------------------------------------------------------------------
 // ContextPulseAudio
 // ----------------------------------------------------------------------------------------------------
 ContextPulseAudio::ContextPulseAudio()
 {
-std::cout << "ContextPulseAudio::ContextPulseAudio ENTER" << std::endl;
-
 	mMainLoop = pa_threaded_mainloop_new();
 	if( ! mMainLoop ) {
 		throw AudioContextExc( "Could not create PulseAudio threaded mainloop" );
@@ -297,7 +393,6 @@ std::cout << "ContextPulseAudio::ContextPulseAudio ENTER" << std::endl;
 			pa_threaded_mainloop_wait( mMainLoop );
 		}
 	}
-
 std::cout << "ContextPulseAudio::ContextPulseAudio EXIT" << std::endl;
 }
 
@@ -325,12 +420,8 @@ ContextPulseAudio::~ContextPulseAudio()
 
 OutputDeviceNodeRef	ContextPulseAudio::createOutputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
-std::cout << "ContextPulseAudio::createOutputDeviceNode" << std::endl;	
-	//auto thisRef = std::dynamic_pointer_cast<ContextPulseAudio>( shared_from_this() );
-	//return makeNode( new OutputDeviceNodePulseAudio( device, format, thisRef ) );
-
-OutputDeviceNodeRef result;
-return result;
+	auto thisRef = std::dynamic_pointer_cast<ContextPulseAudio>( shared_from_this() );
+	return makeNode( new OutputDeviceNodePulseAudio( device, format, thisRef ) );
 }
 
 InputDeviceNodeRef ContextPulseAudio::createInputDeviceNode( const DeviceRef &device, const Node::Format &format  )

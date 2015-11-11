@@ -24,6 +24,8 @@
 #include "cinder/audio/linux/DeviceManagerPulseAudio.h"
 #include <pulse/pulseaudio.h>
 
+#include <iostream>
+
 // Similar to Windows - there doesn't seem to be a way to get
 // the preferred frame size in PulseAudio.
 #define PREFERRED_FRAMES_PER_BLOCK 512
@@ -33,7 +35,7 @@ namespace pulse {
 using DeviceInfo = cinder::audio::linux::DeviceManagerPulseAudio::DeviceInfo;
 
 struct StateData {
-	enum Request { INVALID, GET_SINKS, GET_SOURCES, GET_DEFAULT_SINK_NAME, GET_DEFAULT_SOURCE_NAME, DONE };
+	enum Request { INVALID = 0, GET_SINKS, GET_SOURCES, GET_DEFAULT_SINK_NAME, GET_DEFAULT_SOURCE_NAME, DONE };
 	Request						request = StateData::INVALID;
 	std::vector<DeviceInfo>*	deviceInfos = nullptr;
 	std::string 				defaultDeviceName;
@@ -64,7 +66,7 @@ void checkComplete( pa_context *context, StateData* stateData )
 }
 
 template <typename PulseInfoT>
-DeviceInfo createDeviceInfo( const PulseInfoT* info )
+DeviceInfo createDeviceInfo( const PulseInfoT* info, DeviceInfo::Usage usage )
 {
 	std::string deviceName = std::string( info->name );
 
@@ -73,7 +75,7 @@ DeviceInfo createDeviceInfo( const PulseInfoT* info )
 	result.mName 			= deviceName;
 	result.mIndex			= info->index;
 	result.mCard			= info->card;
-	result.mUsage			= DeviceInfo::INPUT;
+	result.mUsage			= usage;
 	result.mNumChannels		= info->channel_map.channels;
 	result.mSampleRate		= info->sample_spec.rate;
 	result.mFramesPerBlock	= PREFERRED_FRAMES_PER_BLOCK;
@@ -93,7 +95,7 @@ void processSinkInfo( pa_context* context, const pa_sink_info* info, int eol, vo
 		stateData->request = StateData::DONE;
 	}
 	else {
-		DeviceInfo devInfo = createDeviceInfo<pa_sink_info>( info );
+		DeviceInfo devInfo = createDeviceInfo<pa_sink_info>( info, DeviceInfo::OUTPUT );
 		stateData->deviceInfos->push_back( devInfo );
 	}
 	
@@ -112,7 +114,7 @@ void processSourceInfo( pa_context* context, const pa_source_info* info, int eol
 		stateData->request = StateData::DONE;
 	}
 	else {
-		DeviceInfo devInfo = createDeviceInfo<pa_source_info>( info );
+		DeviceInfo devInfo = createDeviceInfo<pa_source_info>( info, DeviceInfo::INPUT );
 		stateData->deviceInfos->push_back( devInfo );
 	}
 	
@@ -195,7 +197,7 @@ void executeRequest( StateData* stateData )
 	pa_context* context = pa_context_new( mainLoopApi, "cinder-requests" );
 	// Set context state callback
 	stateData->mainLoopApi = mainLoopApi;
-	pa_context_set_state_callback( context, processContextState, static_cast<void*>( &stateData ) );
+	pa_context_set_state_callback( context, processContextState, static_cast<void*>( stateData ) );
 	// Connect context
 	if( pa_context_connect( context, nullptr, PA_CONTEXT_NOFLAGS, nullptr ) >= 0 ) {
 		// Run mainloop
@@ -297,10 +299,13 @@ size_t DeviceManagerPulseAudio::getNumInputChannels( const DeviceRef &device )
 
 size_t DeviceManagerPulseAudio::getNumOutputChannels( const DeviceRef &device )
 {
+std::cout << "DeviceManagerPulseAudio::getNumOutputChannels 1" << std::endl;	
 	auto& devInfo = getDeviceInfo( device );
 	if( devInfo.mUsage != DeviceInfo::Usage::OUTPUT ) {
 		return 0;
     }
+
+std::cout << "DeviceManagerPulseAudio::getNumOutputChannels 2" << std::endl;	
 
 	return devInfo.mNumChannels;	
 }

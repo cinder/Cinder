@@ -148,23 +148,17 @@ Context::~Context()
 
 void Context::enable()
 {
-std::cout << "Context::enable(): 1" << std::endl;
 	if( mEnabled )
 		return;
 
-std::cout << "Context::enable(): 2" << std::endl;
 	const auto &output = getOutput();
 
-std::cout << "Context::enable(): 3" << std::endl;
 	// output may not yet be initialized if no Node's are connected to it.
 	if( ! output->isInitialized() )
 		output->initializeImpl();
 
-std::cout << "Context::enable(): 4" << std::endl;
 	mEnabled = true;
 	getOutput()->enable();
-
-std::cout << "Context::enable(): 5" << std::endl;	
 }
 
 void Context::disable()
@@ -218,12 +212,9 @@ void Context::setOutput( const OutputNodeRef &output )
 
 const OutputNodeRef& Context::getOutput()
 {
-std::cout << "Context::getOutput(): 1" << std::endl;
 	if( ! mOutput ) {
-std::cout << "Context::getOutput(): 2" << std::endl;
 		mOutput = createOutputDeviceNode();
 	}
-std::cout << "Context::getOutput(): 3" << std::endl;	
 	return mOutput;
 }
 

@@ -24,25 +24,19 @@ void NodeBasic::setup()
 {
 	// You use the audio::Context to make new audio::Node instances (audio::master() is the speaker-facing Context).
 	auto ctx = audio::master();
-std::cout << "Mark 1" << std::endl;
+	auto output = ctx->getOutput();
+
 	mGen = ctx->makeNode( new audio::GenSineNode );
 	mGain = ctx->makeNode( new audio::GainNode );
-
-std::cout << "Mark 2" << std::endl;
 
 	mGen->setFreq( 220 );
 	mGain->setValue( 0.5f );
 
-std::cout << "Mark 2.1" << std::endl;
 	// connections can be made this way or with connect(). The master Context's getOutput() is the speakers by default.
 	mGen >> mGain >> ctx->getOutput();
 
-std::cout << "Mark 3" << std::endl;
-
 	// Node's need to be enabled to process audio. EffectNode's are enabled by default, while NodeSource's (like Gen) need to be switched on.
 	mGen->enable();
-
-std::cout << "Mark 4" << std::endl;
 
 	// Context also must be started. Starting and stopping this controls the entire DSP graph.
 	ctx->enable();
@@ -50,15 +44,15 @@ std::cout << "Mark 4" << std::endl;
 
 void NodeBasic::mouseDrag( MouseEvent event )
 {
-	mGen->setFreq( event.getPos().x );
-	mGain->setValue( 1.0f - (float)event.getPos().y / (float)getWindowHeight() );
+	//mGen->setFreq( event.getPos().x );
+	//mGain->setValue( 1.0f - (float)event.getPos().y / (float)getWindowHeight() );
 }
 
 void NodeBasic::draw()
 {
-	gl::clear( Color( 0, mGain->getValue(), 0.2f ) );
+	//gl::clear( Color( 0, mGain->getValue(), 0.2f ) );
 }
 
 CINDER_APP( NodeBasic, RendererGl, []( App::Settings *settings ) {
-	settings->setMultiTouchEnabled( false );
+	//settings->setMultiTouchEnabled( false );
 } )

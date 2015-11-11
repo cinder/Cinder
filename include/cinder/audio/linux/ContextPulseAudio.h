@@ -46,8 +46,10 @@ class OutputDeviceNodePulseAudio : public OutputDeviceNode {
 	bool supportsProcessInPlace() const	override	{ return false; }
 
   private:
+	void renderInputs();
 
 	std::unique_ptr<OutputDeviceNodePulseAudioImpl>     mImpl;
+	BufferInterleaved									mInterleavedBuffer;
 
 	friend struct OutputDeviceNodePulseAudioImpl;
 };
@@ -76,8 +78,8 @@ class ContextPulseAudio : public Context {
 	ContextPulseAudio();
 	virtual ~ContextPulseAudio();
 
-	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() ) override;
-	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format()  ) override;
+	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device = Device::getDefaultOutput(), const Node::Format &format = Node::Format() ) override;
+	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device = Device::getDefaultInput(), const Node::Format &format = Node::Format()  ) override;
 
 	pa_threaded_mainloop	*getPulseAudioMainLoop() const { return mMainLoop; }
 	pa_context 				*getPulseAudioContext() const { return mContext; }
