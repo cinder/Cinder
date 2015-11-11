@@ -24,7 +24,7 @@ void NodeBasic::setup()
 {
 	// You use the audio::Context to make new audio::Node instances (audio::master() is the speaker-facing Context).
 	auto ctx = audio::master();
-	auto output = ctx->getOutput();
+	//auto output = ctx->getOutput();
 
 	mGen = ctx->makeNode( new audio::GenSineNode );
 	mGain = ctx->makeNode( new audio::GainNode );
@@ -44,15 +44,15 @@ void NodeBasic::setup()
 
 void NodeBasic::mouseDrag( MouseEvent event )
 {
-	//mGen->setFreq( event.getPos().x );
-	//mGain->setValue( 1.0f - (float)event.getPos().y / (float)getWindowHeight() );
+	mGen->setFreq( event.getPos().x );
+	mGain->setValue( 1.0f - (float)event.getPos().y / (float)getWindowHeight() );
 }
 
 void NodeBasic::draw()
 {
-	//gl::clear( Color( 0, mGain->getValue(), 0.2f ) );
+	gl::clear( Color( 0, mGain->getValue(), 0.2f ) );
 }
 
 CINDER_APP( NodeBasic, RendererGl, []( App::Settings *settings ) {
-	//settings->setMultiTouchEnabled( false );
+	settings->setMultiTouchEnabled( false );
 } )

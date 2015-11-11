@@ -75,8 +75,6 @@ void waitForOperationCompletion( pa_threaded_mainloop* mainLoop, pa_operation* o
 	pa_operation_unref( op );
 }
 
-
-
 } // namespace pulse
 
 namespace cinder { namespace audio { namespace linux {
@@ -130,15 +128,14 @@ std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer: framesPerBlock=" << fr
 			// after setup. OutputDeviceNodePulseAudioImpl::playerCallback() must fulfill the write.
 			pa_stream_set_write_callback( mStream, &OutputDeviceNodePulseAudioImpl::playerCallback, static_cast<void*>( this ) );
 
-
 			pa_buffer_attr bufferAttr;
-			bufferAttr.maxlength 	= static_cast<uint32_t>(-1);
+			bufferAttr.maxlength	= static_cast<uint32_t>(-1);
 			bufferAttr.minreq		= mBytesPerBuffer / 2;
 			bufferAttr.prebuf		= static_cast<uint32_t>(-1);
 			bufferAttr.tlength		= mBytesPerBuffer * 3;
 			bufferAttr.fragsize		= static_cast<uint32_t>(-1);
 
-			pa_stream_flags_t streamFlags = PA_STREAM_START_CORKED;
+			pa_stream_flags_t streamFlags = static_cast<pa_stream_flags_t>( PA_STREAM_START_CORKED | PA_STREAM_AUTO_TIMING_UPDATE | PA_STREAM_INTERPOLATE_TIMING );
 			if( 0 != pa_stream_connect_playback( mStream, nullptr, &bufferAttr, streamFlags, nullptr, nullptr ) ) {
 				throw AudioContextExc( "Could not connect PulseAudio output stream playback" );	
 			}
@@ -201,6 +198,8 @@ std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer: framesPerBlock=" << fr
 			 // Uncork (resume) the stream.
 			pa_operation* op = pa_stream_cork( mStream, 0, &pulse::streamSuccessCallback, paMainLoop );
 			pulse::waitForOperationCompletion( paMainLoop, op );
+
+			mPlaying = true;
 		}
 	}
 
@@ -211,6 +210,8 @@ std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer: framesPerBlock=" << fr
 
 		{		
 			pulse::ScopedLock scopedLock( paMainLoop );
+			
+			mPlaying = false;
 
 			// Flush the stream prior to cork, doing so after will cause hangs.  Write
 			// callbacks are suspended while inside pa_threaded_mainloop_lock() so this
@@ -223,36 +224,45 @@ std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer: framesPerBlock=" << fr
 		}		
 	}
 
-	void enqueueSamples( size_t numSamples )
+	void enqueueSamples( size_t requestedBytes )
 	{
-		std::cout << "OutputDeviceNodePulseAudioImpl::enqueueSamples: numSamples=" << numSamples << std::endl;
+		mBuffer = nullptr;
+		size_t bytesToFill = requestedBytes;
+		int ret = pa_stream_begin_write( mStream, &mBuffer, &bytesToFill );
 
+		if( ret >= 0 ) {
+			mNumSamplesRequested = bytesToFill / mBytesPerSample;
 
+//std::cout << requestedBytes << " | " << ( mNumSamplesRequested * mBytesPerSample ) << std::endl;
 
-		/*
-		size_t bytesRemaining = requestedBytes;
-		while( bytesRemaining > 0 ) {
-			std::cout << "bytesRemaining: " << bytesRemaining << std::endl;
+			size_t filledBytes = mNumSamplesRequested * mBytesPerSample;
+			if( requestedBytes != filledBytes ) {
+				std::cout << "Misaligned: " << requestedBytes << "|" << filledBytes << std::endl;
+			}
+			
 
-			void* buffer = nullptr;
-			size_t bytesToFill = mBytesPerBuffer;
-			pa_stream_begin_write( mStream, &buffer, &bytesToFill );
+			if( mPlaying ) {
+				while( mNumSamplesBuffered < mNumSamplesRequested ) {
+					mParent->renderInputs();
+				}
+				mNumSamplesBuffered = mNumSamplesRequested;
+			}
+			else {
+				std::memset( mBuffer, 0, mNumSamplesRequested*mBytesPerSample );
+				mNumSamplesBuffered = mNumSamplesRequested;
+			}
 
-
-
-			std::cout << "bytesToFill: " << bytesToFill << std::endl;
-
-			bytesRemaining -= bytesToFill;
+			ret = pa_stream_write( mStream, mBuffer, mNumSamplesBuffered*mBytesPerSample, nullptr, 0, PA_SEEK_RELATIVE );
 		}
-		*/
+
+		mNumSamplesRequested = 0;
+		mNumSamplesBuffered = 0;
 	}
 
 	static void playerCallback( pa_stream* stream, size_t requestedBytes, void* userData )
 	{		
 		OutputDeviceNodePulseAudioImpl* thisObj = static_cast<OutputDeviceNodePulseAudioImpl*>( userData );
-
-		size_t numSamples = requestedBytes / thisObj->mBytesPerSample;
-		thisObj->enqueueSamples( numSamples );
+		thisObj->enqueueSamples( requestedBytes );
 	}
 
 	static void streamNotifyCallback( pa_stream* stream, void* userData )
@@ -278,11 +288,16 @@ std::cout << "OutputDeviceNodePulseAudioImpl::initPlayer: framesPerBlock=" << fr
 	std::weak_ptr<ContextPulseAudio>	mContextPulseAudio;
 
 	pa_stream*							mStream = nullptr;
+	void*								mBuffer = nullptr;
+	size_t								mNumSamplesRequested = 0;
+
 	size_t 								mBytesPerSample = 0;
 	size_t 								mBytesPerFrame = 0;
 	size_t								mBytesPerBuffer = 0;
 
-	size_t								mNumFramesBuffered = 0;
+	size_t								mNumSamplesBuffered = 0;
+
+	bool 								mPlaying = false;
 };
 
 // ----------------------------------------------------------------------------------------------------
@@ -296,7 +311,6 @@ std::cout << "OutputDeviceNodePulseAudio::OutputDeviceNodePulseAudio" << std::en
 
 void OutputDeviceNodePulseAudio::initialize()
 {
-std::cout << "OutputDeviceNodePulseAudio::initialize" << std::endl;		
 	const size_t sampleRate = getOutputSampleRate();
 	const size_t framesPerBlock = getOutputFramesPerBlock();
 	const size_t numChannels = getNumChannels();
@@ -343,11 +357,32 @@ void OutputDeviceNodePulseAudio::renderInputs()
 	if( checkNotClipping() )
 		internalBuffer->zero();
 
-	dsp::interleaveBuffer( internalBuffer, &mInterleavedBuffer );
-	//bool writeSuccess = mRenderImpl->mRingBuffer->write( mInterleavedBuffer.getData(), mInterleavedBuffer.getSize() );
-	//CI_ASSERT( writeSuccess ); // Since this is sync read / write, the write should always succeed.
+	dsp::interleaveBuffer( internalBuffer, &mInterleavedBuffer );	
 
-	mImpl->mNumFramesBuffered += mInterleavedBuffer.getNumFrames();
+std::cout << mInterleavedBuffer.getSize() << std::endl;
+
+/*
+	size_t numSamplesAvailable =  mInterleavedBuffer.getSize() / mImpl->mBytesPerSample;
+	numSamplesAvailable = std::min( numSamplesAvailable, mImpl->mNumSamplesRequested );
+	
+	uint8_t *dst = (uint8_t*)(mImpl->mBuffer) + (mImpl->mNumSamplesBuffered * mImpl->mBytesPerSample);
+	const uint8_t *src = reinterpret_cast<const uint8_t*>( mInterleavedBuffer.getData() );
+	size_t nbytes = numSamplesAvailable * mImpl->mBytesPerSample;
+	std::memcpy( dst, src, nbytes );
+
+	mImpl->mNumSamplesBuffered += numSamplesAvailable;
+*/
+
+/*
+	size_t nbytes = mImpl->mNumSamplesRequested*mImpl->mBytesPerSample;
+	nbytes = std::min( nbytes, mInterleavedBuffer.getSize() );
+
+	void *dst = mImpl->mBuffer + (mImpl->mNumSamplesBuffered * mImpl->mBytesPerSample);
+	std::memcpy( mImpl->mBuffer, mInterleavedBuffer.getData(), nbytes );
+
+	mImpl->mNumSamplesBuffered += mImpl->mNumSamplesRequested;
+*/
+
 	ctx->postProcess();
 }
 
