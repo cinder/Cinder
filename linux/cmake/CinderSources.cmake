@@ -186,7 +186,7 @@ list( APPEND CINDER_CXX_SRC_FILES
 )
 
 # Audio - keep this in its own blcok for now
-if( NOT CINDER_GL_ES )
+#if( NOT CINDER_GL_ES )
 	list( APPEND CINDER_C_SRC_FILES
 		${CINDER_SRC_DIR}/oggvorbis/ogg/bitwise.c
 		${CINDER_SRC_DIR}/oggvorbis/ogg/framing.c
@@ -251,7 +251,7 @@ if( NOT CINDER_GL_ES )
 
 		${CINDER_SRC_DIR}/r8brain/r8bbase.cpp
 	)
-endif()
+#endif()
 
 if( NOT CINDER_GL_ES )
 	list( APPEND CINDER_CXX_SRC_FILES
