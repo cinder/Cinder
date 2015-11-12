@@ -299,13 +299,10 @@ size_t DeviceManagerPulseAudio::getNumInputChannels( const DeviceRef &device )
 
 size_t DeviceManagerPulseAudio::getNumOutputChannels( const DeviceRef &device )
 {
-std::cout << "DeviceManagerPulseAudio::getNumOutputChannels 1" << std::endl;	
 	auto& devInfo = getDeviceInfo( device );
 	if( devInfo.mUsage != DeviceInfo::Usage::OUTPUT ) {
 		return 0;
     }
-
-std::cout << "DeviceManagerPulseAudio::getNumOutputChannels 2" << std::endl;	
 
 	return devInfo.mNumChannels;	
 }
