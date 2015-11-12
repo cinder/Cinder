@@ -25,9 +25,6 @@
 
 #include "cinder/audio/Context.h"
 
-struct pa_context;
-struct pa_threaded_mainloop;
-
 namespace cinder { namespace audio { namespace linux {
 
 struct OutputDeviceNodePulseAudioImpl;
@@ -52,6 +49,10 @@ class OutputDeviceNodePulseAudio : public OutputDeviceNode {
 	BufferInterleaved									mInterleavedBuffer;
 
 	friend struct OutputDeviceNodePulseAudioImpl;
+
+  private:
+	void destroyPulseObjects();
+	friend class ContextPulseAudio;
 };
 
 class InputDeviceNodePulseAudio : public InputDeviceNode {
@@ -71,6 +72,10 @@ class InputDeviceNodePulseAudio : public InputDeviceNode {
 	std::unique_ptr<InputDeviceNodePulseAudioImpl>   mImpl;
 
 	friend struct InputDeviceNodePulseAudioImpl;
+
+  private:
+	void destroyPulseObjects();
+	friend class ContextPulseAudio;
 };
 
 class ContextPulseAudio : public Context {
@@ -81,12 +86,9 @@ class ContextPulseAudio : public Context {
 	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device = Device::getDefaultOutput(), const Node::Format &format = Node::Format() ) override;
 	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device = Device::getDefaultInput(), const Node::Format &format = Node::Format()  ) override;
 
-	pa_threaded_mainloop	*getPulseAudioMainLoop() const { return mMainLoop; }
-	pa_context 				*getPulseAudioContext() const { return mContext; }
-
   private:
-	pa_threaded_mainloop	*mMainLoop = nullptr;
-	pa_context 				*mContext = nullptr;
+	std::vector<OutputDeviceNodeRef>	mOutputDeviceNodes;
+	std::vector<InputDeviceNodeRef>		mInputDeviceNodes;
 };	
 
 } } } // namespace cinder::audio::linux
