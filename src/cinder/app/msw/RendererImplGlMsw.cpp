@@ -102,11 +102,11 @@ HWND createDummyWindow()
 	wc.lpszMenuName		= NULL;									// We Don't Want A Menu
 	wc.lpszClassName	= TEXT("FLINTTEMP");
 
-	if( ! ::RegisterClass( &wc ) ) {								// Attempt To Register The Window Class
+	if( ! ::RegisterClass( &wc ) ) {											// Attempt To Register The Window Class
 		DWORD err = ::GetLastError();
 		return 0;											
 	}
-	windowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
+	windowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE | WS_EX_ACCEPTFILES;		// Window Extended Style
 	windowStyle = ( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );
 
 	::AdjustWindowRectEx( &WindowRect, windowStyle, FALSE, windowExStyle );
