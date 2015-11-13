@@ -248,6 +248,7 @@ list( APPEND CINDER_CXX_SRC_FILES
 		${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerJack.cpp
 		${CINDER_SRC_DIR}/cinder/audio/linux/ContextPulseAudio.cpp
 		${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerPulseAudio.cpp
+		${CINDER_SRC_DIR}/cinder/audio/linux/FileAudioLoader.cpp
 
 		${CINDER_SRC_DIR}/r8brain/r8bbase.cpp
 	)
