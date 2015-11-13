@@ -68,7 +68,7 @@ DataSourceRef PlatformLinux::loadResource( const fs::path &resourcePath )
 {
 	fs::path fullPath = getResourcePath( resourcePath );
 	if( fullPath.empty() )
-		throw ResourceLoadExc( resourcePath );
+		throw ResourceLoadExc( std::string( "Could not resolve absolute path for: " ) + resourcePath.string() );
 	else
 		return DataSourcePath::create( fullPath );	
 }
@@ -83,8 +83,8 @@ fs::path PlatformLinux::getResourcePath( const fs::path &rsrcRelativePath ) cons
 {
 	if( ! mResourceDirsInitialized ) {
 		mResourceDirsInitialized = true;
-		// first search the local directory, then its parent, up to ASSET_SEARCH_DEPTH levels up
-		// check at least the app path, even if it has no parent directory
+		// First search the local directory, then its parent, up to ASSET_SEARCH_DEPTH levels up
+		// check at least the app path, even if it has no parent directory.
 		auto execPath = getExecutablePath();
 		size_t parentCt = 0;
 		for( fs::path curPath = execPath; curPath.has_parent_path() || ( curPath == execPath ); curPath = curPath.parent_path(), ++parentCt ) {
@@ -100,6 +100,13 @@ fs::path PlatformLinux::getResourcePath( const fs::path &rsrcRelativePath ) cons
 				break;
 			}
 		}
+
+		// Next add the executable's directory in case the resource is specified with
+		// a path that doesn't contain a 'resources' directory.
+		mResourceDirectories.push_back( execPath.parent_path() );
+
+		// Finally add the current working directory for the same reason as above.
+		mResourceDirectories.push_back( fs::current_path() );
 	}
 
 	for( const auto &directory : mResourceDirectories ) {
