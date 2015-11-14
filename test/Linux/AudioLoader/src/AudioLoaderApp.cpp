@@ -44,13 +44,17 @@ void AudioLoaderApp::setup()
 	// connect and enable the Context
 	mBufferPlayerNode >> mGain >> ctx->getOutput();
 	ctx->enable();
+
+	mBufferPlayerNode->start();
 }
 
 void AudioLoaderApp::resize()
 {
 	// visualize the audio buffer
-	if( mBufferPlayerNode )
+	if( mBufferPlayerNode ) {
+		//auto buf = mBufferPlayerNode->getBuffer();
 		mWaveformPlot.load( mBufferPlayerNode->getBuffer(), getWindowBounds() );
+	}	
 }
 
 void AudioLoaderApp::fileDrop( FileDropEvent event )

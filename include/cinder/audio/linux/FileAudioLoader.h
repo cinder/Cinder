@@ -50,12 +50,15 @@ class SourceFileAudioLoader : public SourceFile {
 	static std::vector<std::string>	getSupportedExtensions();
 
   private:
-  	std::unique_ptr<audioloader::FileLoader>	mFileLoader;
+	std::unique_ptr<audioloader::FileLoader>	mFileLoader;
 
-  	DataSourceRef	mDataSource;  // stored so that clone() can tell if original data source is a file
-  	ci::IStreamRef	mStream;
+	DataSourceRef	mDataSource;  // stored so that clone() can tell if original data source is a file
+	ci::IStreamRef	mStream;
+	BufferDynamic	mAudioData;
 
-  	void 			init();
+	BufferDynamic	mReadBuffer;
+
+	void 			init();
 };
 
 } } } // namespace cinder::audio::linux

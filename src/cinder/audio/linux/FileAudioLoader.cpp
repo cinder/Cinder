@@ -22,6 +22,7 @@
 */
 
 #include "cinder/audio/linux/FileAudioLoader.h"
+#include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Exception.h" 
 #include "cinder/audio/SampleType.h"
 
@@ -121,6 +122,46 @@ struct IStreamSndFile {
 	}
 };
 
+//! \class IStreamMpg123
+//!
+//!
+struct IStreamMpg123 {
+	static ssize_t read( void* userData, void* ptr, size_t count ) {
+		ci::IStreamCinder* stream = static_cast<ci::IStreamCinder*>( userData );
+		size_t pos0 = stream->tell();
+		stream->readData( ptr, count );
+		size_t pos1 = stream->tell();
+		return pos1 - pos0;
+	}
+
+	static off_t seek( void* userData, off_t offset, int whence ) {
+		ci::IStreamCinder* stream = static_cast<ci::IStreamCinder*>( userData );
+		switch( whence ) {
+			case SEEK_SET:
+				stream->seekAbsolute( offset );
+			break;
+
+			case SEEK_CUR:
+				stream->seekRelative( offset );
+			break;
+
+			case SEEK_END: {
+				size_t absOffset = stream->size() - offset;
+				stream->seekAbsolute( absOffset );
+			}
+			break;
+
+			default :
+				stream->seekAbsolute( 0 );
+			break;
+		}
+		return stream->tell();
+	}
+
+	// NOTE: 'cleanup' is not overridden, pass in nullptr to mpg123_replace_reader_handle to
+	//       use the default one.
+};
+
 //!
 FileType determineFileType( const ci::IStreamRef& stream )
 {
@@ -187,6 +228,8 @@ FileType determineFileType( const ci::IStreamRef& stream )
 		}
 	}
 
+	stream->seekAbsolute( 0 );
+
 	return result;	
 }
 
@@ -203,6 +246,11 @@ class FileLoader {
 
 	//! Returns the length in frames.
 	virtual size_t		getNumFrames() const = 0;
+
+	//! Reads frameCount (or less) frames into buffer. Returns the actual number of frames read
+	virtual size_t 		read( void* buffer, size_t frameCount ) = 0;
+	//! Seeks to the absolute position specified by readPositionFrames
+	virtual void 		seek( int readPositionFrames ) = 0;
 
   protected:
 	SourceFileAudioLoader*	mCinderParent = nullptr;
@@ -239,7 +287,10 @@ class FileLoaderMpg123 : public FileLoader {
 	virtual ~FileLoaderMpg123();
 
 	//! Returns the length in frames.
-	virtual size_t	getNumFrames() const override;
+	virtual size_t		getNumFrames() const override;
+
+	virtual size_t 		read( void* buffer, size_t frameCount ) override;
+	virtual void 		seek( int readPositionFrames ) override;
 
   private:
   	mpg123_handle*	mHandle = nullptr;
@@ -249,87 +300,59 @@ class FileLoaderMpg123 : public FileLoader {
 FileLoaderMpg123::FileLoaderMpg123( SourceFileAudioLoader* cinderParent, const ci::IStreamRef& stream )
 	: FileLoader( cinderParent, stream )
 {
-	// Determine format - for now use the information from the first block.
-	// This is a bit redudant and there should definitely be a better way.
-	{
-		int ret = MPG123_OK;
-		mpg123_handle* handle = mpg123_new( nullptr, &ret );
-		if( ( MPG123_OK == ret ) && ( MPG123_OK == mpg123_open_feed( handle ) ) ) {
-			const size_t kStreamSize = mStream->size();
-
-			const size_t kBufSize = 4096;
-			char buf[kBufSize];
-
-			size_t totalBytesRead = 0;
-			do {
-				size_t readSize = std::min<size_t>( kBufSize, ( kStreamSize - mStream->tell() ) );
-				size_t pos0 = mStream->tell();
-				mStream->readData( static_cast<void*>( buf ), readSize );
-				size_t pos1 = mStream->tell();
-				size_t amountRead = pos1 - pos0;
-				if( 0 == amountRead ) {
-					break;
-				}
-				totalBytesRead += amountRead;
-				ret = mpg123_decode( handle, reinterpret_cast<const unsigned char*>( buf ), amountRead, nullptr, 0, nullptr );
-			}
-			while( ( MPG123_NEED_MORE == ret ) && ( totalBytesRead < 64*1024 ) );
-
-			long rate = 0;
-			int channels = 0;
-			int encodings = -1;
-			if( ( MPG123_NEW_FORMAT == ret ) && ( MPG123_OK == mpg123_getformat( handle, &rate, &channels, &encodings ) ) ) {
-				mSampleRate = rate;
-				mNumChannels = channels;
-				mEncodings = encodings;
-				mpg123_delete( handle );
-			}
-			else {
-				mpg123_delete( handle );
-				throw AudioFileExc( "Could not determine MP3 format" );
-			}
-
-			// Reset the stream once we're done
-			mStream->seekAbsolute( 0 );
-
-			switch( mEncodings ) {
-				case MPG123_ENC_8			: std::cout << "MPG123_ENC_8" << std::endl; break;
-				case MPG123_ENC_16			: std::cout << "MPG123_ENC_16" << std::endl; break;
-				case MPG123_ENC_24			: std::cout << "MPG123_ENC_24" << std::endl; break;
-				case MPG123_ENC_32			: std::cout << "MPG123_ENC_32" << std::endl; break;
-				case MPG123_ENC_SIGNED		: std::cout << "MPG123_ENC_SIGNED" << std::endl; break;
-				case MPG123_ENC_FLOAT		: std::cout << "MPG123_ENC_FLOAT" << std::endl; break;
-				case MPG123_ENC_SIGNED_16	: std::cout << "MPG123_ENC_SIGNED_16" << std::endl; break;
-				case MPG123_ENC_UNSIGNED_16	: std::cout << "MPG123_ENC_UNSIGNED_16" << std::endl; break;
-				case MPG123_ENC_UNSIGNED_8	: std::cout << "MPG123_ENC_UNSIGNED_8" << std::endl; break;
-				case MPG123_ENC_SIGNED_8	: std::cout << "MPG123_ENC_SIGNED_8" << std::endl; break;
-				case MPG123_ENC_ULAW_8		: std::cout << "MPG123_ENC_ULAW_8" << std::endl; break;
-				case MPG123_ENC_ALAW_8		: std::cout << "MPG123_ENC_ALAW_8" << std::endl; break;
-				case MPG123_ENC_SIGNED_32	: std::cout << "MPG123_ENC_SIGNED_32" << std::endl; break;
-				case MPG123_ENC_UNSIGNED_32	: std::cout << "MPG123_ENC_UNSIGNED_32" << std::endl; break;
-				case MPG123_ENC_SIGNED_24	: std::cout << "MPG123_ENC_SIGNED_24" << std::endl; break;
-				case MPG123_ENC_UNSIGNED_24	: std::cout << "MPG123_ENC_UNSIGNED_24" << std::endl; break;
-				case MPG123_ENC_FLOAT_32	: std::cout << "MPG123_ENC_FLOAT_32" << std::endl; break;
-				case MPG123_ENC_FLOAT_64	: std::cout << "MPG123_ENC_FLOAT_64" << std::endl; break;
-				case MPG123_ENC_ANY			: std::cout << "MPG123_ENC_ANY" << std::endl; break;
-			}			
-		}
-	}
-
-	// Now open it for actual porcessing
 	int ret = MPG123_OK;
 	mHandle = mpg123_new( nullptr, &ret );
-	if( MPG123_OK != ret ) {
-		throw AudioFileExc( "Could not allocate mpg123 handle" );
+	if( MPG123_OK == ret ) {
+		if( MPG123_OK != mpg123_replace_reader_handle( mHandle, IStreamMpg123::read, IStreamMpg123::seek, nullptr ) ) {
+			throw AudioFileExc( "Could not replace mpg123 reader handle" );
+		}
+
+		if( MPG123_OK != mpg123_param( mHandle, MPG123_ADD_FLAGS, MPG123_FORCE_FLOAT, 0 ) ) {
+			mpg123_delete( mHandle );
+			throw AudioFileExc( "Could not force float output" );					
+		}
+
+		if( MPG123_OK != mpg123_open_handle( mHandle, mStream.get() ) ) {
+			mpg123_delete( mHandle );
+			throw AudioFileExc( "Could not determine MP3 format: failed to open handle" );		
+		}
+
+		long rate = 0;
+		int channels = 0;
+		int encodings = -1;
+		if( MPG123_OK != mpg123_getformat( mHandle, &rate, &channels, &encodings ) ) {
+			mpg123_delete( mHandle );
+			throw AudioFileExc( "Could not determine MP3 format: failed to get rate, channel and encoding" );
+		}		
+
+		mSampleRate = rate;
+		mNumChannels = channels;
+		mEncodings = encodings;		
+
+		switch( mEncodings ) {
+			case MPG123_ENC_8			: std::cout << "MPG123_ENC_8" << std::endl; break;
+			case MPG123_ENC_16			: std::cout << "MPG123_ENC_16" << std::endl; break;
+			case MPG123_ENC_24			: std::cout << "MPG123_ENC_24" << std::endl; break;
+			case MPG123_ENC_32			: std::cout << "MPG123_ENC_32" << std::endl; break;
+			case MPG123_ENC_SIGNED		: std::cout << "MPG123_ENC_SIGNED" << std::endl; break;
+			case MPG123_ENC_FLOAT		: std::cout << "MPG123_ENC_FLOAT" << std::endl; break;
+			case MPG123_ENC_SIGNED_16	: std::cout << "MPG123_ENC_SIGNED_16" << std::endl; break;
+			case MPG123_ENC_UNSIGNED_16	: std::cout << "MPG123_ENC_UNSIGNED_16" << std::endl; break;
+			case MPG123_ENC_UNSIGNED_8	: std::cout << "MPG123_ENC_UNSIGNED_8" << std::endl; break;
+			case MPG123_ENC_SIGNED_8	: std::cout << "MPG123_ENC_SIGNED_8" << std::endl; break;
+			case MPG123_ENC_ULAW_8		: std::cout << "MPG123_ENC_ULAW_8" << std::endl; break;
+			case MPG123_ENC_ALAW_8		: std::cout << "MPG123_ENC_ALAW_8" << std::endl; break;
+			case MPG123_ENC_SIGNED_32	: std::cout << "MPG123_ENC_SIGNED_32" << std::endl; break;
+			case MPG123_ENC_UNSIGNED_32	: std::cout << "MPG123_ENC_UNSIGNED_32" << std::endl; break;
+			case MPG123_ENC_SIGNED_24	: std::cout << "MPG123_ENC_SIGNED_24" << std::endl; break;
+			case MPG123_ENC_UNSIGNED_24	: std::cout << "MPG123_ENC_UNSIGNED_24" << std::endl; break;
+			case MPG123_ENC_FLOAT_32	: std::cout << "MPG123_ENC_FLOAT_32" << std::endl; break;
+			case MPG123_ENC_FLOAT_64	: std::cout << "MPG123_ENC_FLOAT_64" << std::endl; break;
+			case MPG123_ENC_ANY			: std::cout << "MPG123_ENC_ANY" << std::endl; break;
+		}		
 	}
 
-	// Helps with determining track length
-	mpg123_set_filesize( mHandle, static_cast<off_t>( mStream->size() ) );
-
-	if( MPG123_OK != mpg123_open_feed( mHandle ) ) {
-		mpg123_delete( mHandle );
-		throw AudioFileExc( "Could not open feed for stream" );
-	}
+	mBytesPerSample = sizeof( float );
 }
 
 FileLoaderMpg123::~FileLoaderMpg123()
@@ -343,13 +366,34 @@ size_t FileLoaderMpg123::getNumFrames() const
 {
 	size_t result = 0;
 	if( nullptr != mHandle) {
+		// mpg123_length seems to return the number of frames - not samples as stated in the docs.
 		off_t len = static_cast<size_t>( mpg123_length( mHandle ) );
-		std::cout << "len: "<< len << std::endl;
 		if( MPG123_ERR != len ) {
-			result = len;
+			result = len ;
 		}
 	}
 	return result;
+}
+
+size_t FileLoaderMpg123::read( void* buffer, size_t frameCount )
+{
+
+	const size_t byteCount = frameCount * getNumChannels() * mBytesPerSample;
+
+	size_t numDecodedBytes = 0;
+	int ret = mpg123_read( mHandle, static_cast<unsigned char*>( buffer ), byteCount, &numDecodedBytes );
+	if( MPG123_OK != ret ) {
+		// Handle error
+	}
+
+	size_t numDecodedFrames = numDecodedBytes / (getNumChannels() * mBytesPerSample);
+	return numDecodedFrames;
+}
+
+void FileLoaderMpg123::seek( int readPositionFrames )
+{
+	off_t sampleoff = readPositionFrames*getNumChannels();
+	mpg123_seek( mHandle, sampleoff, SEEK_SET );
 }
 
 //! \class FileLoaderSndFile
@@ -361,7 +405,10 @@ class FileLoaderSndFile : public FileLoader {
 	virtual ~FileLoaderSndFile();
 
 	//! Returns the length in frames.
-	virtual size_t	getNumFrames() const override { return 0; }
+	virtual size_t		getNumFrames() const override { return 0; }
+
+	virtual size_t 		read( void* buffer, size_t frameCount ) override { return 0; };
+	virtual void 		seek( int readPositionFrames ) override {}
 
   private:
 };
@@ -435,17 +482,21 @@ void SourceFileAudioLoader::init()
 		}
 	}
 
-	mNumFrames = mFileLoader->getNumFrames();
+	mNumFrames = mFileNumFrames = mFileLoader->getNumFrames();
 
 	std::cout << "Sample rate  : " << getSampleRateNative() << std::endl;
 	std::cout << "Num channels : " << getNumChannels() << std::endl;
 	std::cout << "Num frames   : " << getNumFrames() << std::endl;
 	std::cout << "Num seconds  : " << getNumSeconds() << std::endl;
+
+	mAudioData.setSize( getMaxFramesPerRead(), mFileLoader->getNumChannels() );
 }
 
 SourceFileRef SourceFileAudioLoader::cloneWithSampleRate( size_t sampleRate ) const
 {
-	SourceFileRef result;
+	auto result = std::make_shared<SourceFileAudioLoader>( mDataSource, sampleRate );
+	result->setupSampleRateConversion();
+
 	return result;
 }
 
@@ -461,12 +512,48 @@ size_t SourceFileAudioLoader::getSampleRateNative() const
 
 size_t SourceFileAudioLoader::performRead( Buffer *buffer, size_t bufferFrameOffset, size_t numFramesNeeded )
 {
-	return 0;
+	CI_ASSERT( buffer->getNumFrames() >= bufferFrameOffset + numFramesNeeded );
+//std::cout << "numFramesNeeded: " << numFramesNeeded << std::endl;
+
+	size_t readCount = 0;
+
+	const size_t numChannels = mFileLoader->getNumChannels();
+
+	mReadBuffer.setSize( getMaxFramesPerRead(), numChannels );
+
+	while( readCount < numFramesNeeded ) {
+		// Read the audio audio data
+		const size_t maxFrames = std::min<size_t>( mAudioData.getNumFrames(), getNumFrames() - readCount );
+		size_t numFramesRead = mFileLoader->read( mAudioData.getData(), maxFrames );
+		if( 0 == numFramesRead ) {
+			break;
+		}
+
+		// Deinterleave the audio data
+		if( 1 == numChannels ) {
+			std::memcpy( mReadBuffer.getData(), mAudioData.getData(), numFramesRead * sizeof( float ) );
+		}
+		else {
+			dsp::deinterleave( mAudioData.getData(), mReadBuffer.getData(), mReadBuffer.getNumFrames(), numChannels, numFramesRead );
+		}
+
+		// Copy to channels
+		for( size_t ch = 0; ch < numChannels; ch++ ) {
+			float *readChannel = mReadBuffer.getChannel( ch );
+			float *resultChannel = buffer->getChannel( ch );
+			std::memcpy( resultChannel + readCount, readChannel, numFramesRead * sizeof( float ) );
+		}		
+
+		readCount += numFramesRead;
+	}
+	
+//std::cout << "readCount: " << readCount << std::endl;	
+	return static_cast<size_t>( readCount );
 }
 
 void SourceFileAudioLoader::performSeek( size_t readPositionFrames )
 {
-
+	mFileLoader->seek( readPositionFrames );
 }
 
 std::vector<std::string> SourceFileAudioLoader::getSupportedExtensions()
