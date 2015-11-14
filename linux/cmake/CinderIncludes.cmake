@@ -25,3 +25,10 @@ else()
 		${BOOST_INC_DIR}  
 	)
 endif()
+
+# GStreamer include paths.
+list(APPEND CINDER_INCLUDE_DIRS 
+		${CINDER_LIB_DIR}/gstreamer/gstreamer-1.0/include # gstconfig.h lives there since 1.5.1 .
+		${CINDER_INC_DIR}/gstreamer/gstreamer-1.0		
+		${CINDER_INC_DIR}/gstreamer/va # for vaapi.		
+)

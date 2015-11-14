@@ -190,16 +190,17 @@ find_package( FontConfig REQUIRED )
 list( APPEND CINDER_INCLUDE_DEPENDS ${FONTGONFIG_INCLUDE_DIRS} )
 list( APPEND CINDER_LIBS_DEPENDS ${FONTCONFIG_LIBRARIES} )
 
-set( CINDER_USE_GSTREAMER false )
+set( CINDER_USE_GSTREAMER true )
 
 if( CINDER_USE_GSTREAMER )
     find_package (Glib REQUIRED COMPONENTS gobject )
     list( APPEND CINDER_INCLUDE_DEPENDS ${GLIB_INCLUDE_DIRS} )
     list(APPEND CINDER_LIBS_DEPENDS ${GLIB_GOBJECT_LIBRARIES} ${GLIB_LIBRARIES} )
 
-    find_package( GStreamer REQUIRED )
-    list( APPEND CINDER_INCLUDE_DEPENDS ${GSTREAMER_INCLUDE_DIRS} ${GSTREAMER_BASE_INCLUDE_DIRS} ${GSTREAMER_APP_INCLUDE_DIRS} ${GSTREAMER_VIDEO_INCLUDE_DIRS} )
-    list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_LIBRARIES} ${GSTREAMER_BASE_LIBRARIES} ${GSTREAMER_APP_LIBRARIES} ${GSTREAMER_VIDEO_LIBRARIES} )
+    # We use a local version of GStreamer for now.
+    #find_package( GStreamer REQUIRED )
+    #list( APPEND CINDER_INCLUDE_DEPENDS ${GSTREAMER_INCLUDE_DIRS} ${GSTREAMER_BASE_INCLUDE_DIRS} ${GSTREAMER_APP_INCLUDE_DIRS} ${GSTREAMER_VIDEO_INCLUDE_DIRS} )
+    #list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_LIBRARIES} ${GSTREAMER_BASE_LIBRARIES} ${GSTREAMER_APP_LIBRARIES} ${GSTREAMER_VIDEO_LIBRARIES} )
 endif()
 
 ### Set this to use system wide libs instead of compiling dependencies from source.
@@ -225,6 +226,42 @@ else()
 
     list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/libboost_system.a
                                     ${CINDER_LIB_DIR}/libboost_filesystem.a )
+
+    list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/gstreamer/libgstbase-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstbadvideo-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstbadbase-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstallocators-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstadaptivedemux-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstgl-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstfft-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstcontroller-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstcodecparsers_vpx.so
+					${CINDER_LIB_DIR}/gstreamer/libgstcodecparsers-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstcheck-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstbasecamerabinsrc-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstpbutils-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstmpegts-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstinsertbin-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstphotography-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstrtsp-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstriff-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgsturidownloader-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgsttag-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstsdp-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstvaapi-1.6.so
+					${CINDER_LIB_DIR}/gstreamer/libgstvaapi-glx-1.6.so
+					${CINDER_LIB_DIR}/gstreamer/libva-x11.so
+					${CINDER_LIB_DIR}/gstreamer/libva-tpi.so
+					${CINDER_LIB_DIR}/gstreamer/libva.so
+					${CINDER_LIB_DIR}/gstreamer/libva-glx.so
+					${CINDER_LIB_DIR}/gstreamer/libva-drm.so
+					${CINDER_LIB_DIR}/gstreamer/libgstbase-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstnet-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstvideo-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstaudio-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstapp-1.0.so
+					${CINDER_LIB_DIR}/gstreamer/libgstreamer-1.0.so
+)
 endif()
 
 ### Create our Cinder target.
