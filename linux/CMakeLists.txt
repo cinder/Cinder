@@ -235,7 +235,6 @@ else()
 					${CINDER_LIB_DIR}/gstreamer/libgstgl-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstfft-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstcontroller-1.0.so
-					${CINDER_LIB_DIR}/gstreamer/libgstcodecparsers_vpx.so
 					${CINDER_LIB_DIR}/gstreamer/libgstcodecparsers-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstcheck-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstbasecamerabinsrc-1.0.so
@@ -248,13 +247,6 @@ else()
 					${CINDER_LIB_DIR}/gstreamer/libgsturidownloader-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgsttag-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstsdp-1.0.so
-					${CINDER_LIB_DIR}/gstreamer/libgstvaapi-1.6.so
-					${CINDER_LIB_DIR}/gstreamer/libgstvaapi-glx-1.6.so
-					${CINDER_LIB_DIR}/gstreamer/libva-x11.so
-					${CINDER_LIB_DIR}/gstreamer/libva-tpi.so
-					${CINDER_LIB_DIR}/gstreamer/libva.so
-					${CINDER_LIB_DIR}/gstreamer/libva-glx.so
-					${CINDER_LIB_DIR}/gstreamer/libva-drm.so
 					${CINDER_LIB_DIR}/gstreamer/libgstbase-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstnet-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstvideo-1.0.so
