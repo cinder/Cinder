@@ -1,11 +1,11 @@
-# NodeBasic
+# AudioLoader
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE on )
 
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE )
 include( ${CINDER_DIR}/linux/cmake/Cinder.cmake )
 
-project( NodeBasic )
+project( AudioLoader )
 
 get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src" ABSOLUTE )
 get_filename_component( INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include" ABSOLUTE )
@@ -21,7 +21,8 @@ endif()
 set( EXE_NAME ${PROJECT_NAME} )
 
 set( SRC_FILES
-	${SRC_DIR}/NodeBasicApp.cpp
+	${SRC_DIR}/AudioLoaderApp.cpp
+	${SRC_DIR}/../../../../samples/_audio/common/AudioDrawUtils.cpp
 )
 
 add_executable( "${EXE_NAME}" ${SRC_FILES} )
@@ -33,3 +34,5 @@ target_include_directories(
 
 target_link_libraries( "${EXE_NAME}" cinder${CINDER_LIB_SUFFIX} )
 target_link_libraries( "${EXE_NAME}" pulse )
+target_link_libraries( "${EXE_NAME}" mpg123 )
+target_link_libraries( "${EXE_NAME}" sndfile )
