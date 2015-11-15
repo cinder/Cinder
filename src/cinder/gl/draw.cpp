@@ -1300,6 +1300,11 @@ void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] )
 	ctx->popVao();
 }
 
+void drawSphere( const Sphere &sphere, int subdivisions )
+{
+	drawSphere( sphere.getCenter(), sphere.getRadius(), subdivisions );
+}
+
 void drawSphere( const vec3 &center, float radius, int subdivisions )
 {
 	draw( geom::Sphere().center( center ).radius( radius ).subdivisions( subdivisions ) );
