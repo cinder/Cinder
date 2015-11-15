@@ -318,6 +318,14 @@ endif()
 ###
 ### and this will pull all Cinder's dependencies specified with INTERFACE or PUBLIC.
 
+set( GST_PLUGINS_PATH "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/gstreamer/gstreamer-1.0" )
+configure_file( 
+	"${PROJECT_SOURCE_DIR}/cmake/GStreamerPluginsConfig.h.in"
+	"${PROJECT_BINARY_DIR}/GstreamerPluginsConfig.h"
+	@ONLY
+)
+target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${PROJECT_BINARY_DIR} )
+
 target_include_directories( cinder${CINDER_LIB_SUFFIX} PUBLIC "$<BUILD_INTERFACE:${CINDER_INCLUDE_DIRS};${CINDER_INCLUDE_DEPENDS}>" )
 
 target_link_libraries( cinder${CINDER_LIB_SUFFIX} INTERFACE ${CINDER_LIBS_DEPENDS} )
@@ -341,6 +349,7 @@ configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake/cinderConfig.buildtree.cmake.in"
 	"${PROJECT_BINARY_DIR}/cinderConfig.cmake" 
 )
+
 
 if( CINDER_BUILD_SAMPLES )
     add_subdirectory( ${CINDER_DIR}/samples/BasicApp/linux ${CINDER_DIR}/samples/BasicApp/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )
