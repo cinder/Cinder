@@ -31,8 +31,8 @@ void AudioLoaderApp::setup()
 	auto ctx = audio::Context::master();
 
 	// create a SourceFile and set its output samplerate to match the Context.
-	audio::SourceFileRef sourceFile = audio::load( loadAsset( "Sirius.mp3" ), ctx->getSampleRate() );
-	//audio::SourceFileRef sourceFile = audio::load( loadAsset( "Drumstylin.wav" ), ctx->getSampleRate() );
+	//audio::SourceFileRef sourceFile = audio::load( loadAsset( "Sirius.mp3" ), ctx->getSampleRate() );
+	audio::SourceFileRef sourceFile = audio::load( loadAsset( "Drumstylin.wav" ), ctx->getSampleRate() );
 
 	// load the entire sound file into a BufferRef, and construct a BufferPlayerNode with this.
 	audio::BufferRef buffer = sourceFile->loadBuffer();

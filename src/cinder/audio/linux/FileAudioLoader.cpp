@@ -41,14 +41,14 @@ enum class FileType {
 	PCM
 };
 
-//! \class ProcessScopedMpg123
-//!
-//!
+// ----------------------------------------------------------------------------------------------------
+// ProcessScopedMpg123
+// ----------------------------------------------------------------------------------------------------
 class ProcessScopedMpg123 {
 public:
 	~ProcessScopedMpg123() {
 		mpg123_exit();
-std::cout << "ProcessScopedMpg123::~ProcessScopedMpg123()" << std::endl;
+//std::cout << "ProcessScopedMpg123::~ProcessScopedMpg123()" << std::endl;
 	}
 
 	static void initialize() {
@@ -63,7 +63,7 @@ std::cout << "ProcessScopedMpg123::~ProcessScopedMpg123()" << std::endl;
 private:
 	ProcessScopedMpg123() {
 		mpg123_init();
-std::cout << "ProcessScopedMpg123::ProcessScopedMpg123()" << std::endl;
+//std::cout << "ProcessScopedMpg123::ProcessScopedMpg123()" << std::endl;
 	}
 
 	static std::unique_ptr<ProcessScopedMpg123> sInstance;
@@ -71,9 +71,9 @@ std::cout << "ProcessScopedMpg123::ProcessScopedMpg123()" << std::endl;
 
 std::unique_ptr<ProcessScopedMpg123> ProcessScopedMpg123::sInstance;
 
-//! \class IStreamSndFile
-//!
-//!
+// ----------------------------------------------------------------------------------------------------
+// IStreamSndFile
+// ----------------------------------------------------------------------------------------------------
 struct IStreamSndFile {
 	static sf_count_t get_filelen( void* userData ) {
 		ci::IStreamCinder* stream = static_cast<ci::IStreamCinder*>( userData );
@@ -122,9 +122,9 @@ struct IStreamSndFile {
 	}
 };
 
-//! \class IStreamMpg123
-//!
-//!
+// ----------------------------------------------------------------------------------------------------
+// IStreamMpg123
+// ----------------------------------------------------------------------------------------------------
 struct IStreamMpg123 {
 	static ssize_t read( void* userData, void* ptr, size_t count ) {
 		ci::IStreamCinder* stream = static_cast<ci::IStreamCinder*>( userData );
@@ -173,6 +173,7 @@ FileType determineFileType( const ci::IStreamRef& stream )
 
 		stream->seekAbsolute( 0 );
 
+		// @TOD: Fix this block
 		int ret = MPG123_OK;
 		mpg123_handle* handle = mpg123_new( nullptr, &ret );
 		if( ( MPG123_OK == ret ) && ( MPG123_OK == mpg123_open_feed( handle ) ) ) {
@@ -233,9 +234,9 @@ FileType determineFileType( const ci::IStreamRef& stream )
 	return result;	
 }
 
-//! \class FileLoader
-//!
-//!
+// ----------------------------------------------------------------------------------------------------
+// FileLoader
+// ----------------------------------------------------------------------------------------------------
 class FileLoader {
   public:
 	FileLoader( SourceFileAudioLoader* cinderParent, const ci::IStreamRef& stream );
@@ -246,7 +247,6 @@ class FileLoader {
 
 	//! Returns the length in frames.
 	virtual size_t		getNumFrames() const = 0;
-
 	//! Reads frameCount (or less) frames into buffer. Returns the actual number of frames read
 	virtual size_t 		read( void* buffer, size_t frameCount ) = 0;
 	//! Seeks to the absolute position specified by readPositionFrames
@@ -278,9 +278,9 @@ FileLoader::~FileLoader()
 {
 }
 
-//! \class FileLoaderMpg123
-//!
-//!
+// ----------------------------------------------------------------------------------------------------
+// FileLoaderMpg123
+// ----------------------------------------------------------------------------------------------------
 class FileLoaderMpg123 : public FileLoader {
   public:
 	FileLoaderMpg123( SourceFileAudioLoader* cinderParent, const ci::IStreamRef& stream );
@@ -288,8 +288,9 @@ class FileLoaderMpg123 : public FileLoader {
 
 	//! Returns the length in frames.
 	virtual size_t		getNumFrames() const override;
-
+	//! Reads frameCount (or less) frames into buffer. Returns the actual number of frames read
 	virtual size_t 		read( void* buffer, size_t frameCount ) override;
+	//! Seeks to the absolute position specified by readPositionFrames
 	virtual void 		seek( int readPositionFrames ) override;
 
   private:
@@ -327,8 +328,9 @@ FileLoaderMpg123::FileLoaderMpg123( SourceFileAudioLoader* cinderParent, const c
 
 		mSampleRate = rate;
 		mNumChannels = channels;
-		mEncodings = encodings;		
+		mEncodings = encodings;
 
+		/*
 		switch( mEncodings ) {
 			case MPG123_ENC_8			: std::cout << "MPG123_ENC_8" << std::endl; break;
 			case MPG123_ENC_16			: std::cout << "MPG123_ENC_16" << std::endl; break;
@@ -349,7 +351,8 @@ FileLoaderMpg123::FileLoaderMpg123( SourceFileAudioLoader* cinderParent, const c
 			case MPG123_ENC_FLOAT_32	: std::cout << "MPG123_ENC_FLOAT_32" << std::endl; break;
 			case MPG123_ENC_FLOAT_64	: std::cout << "MPG123_ENC_FLOAT_64" << std::endl; break;
 			case MPG123_ENC_ANY			: std::cout << "MPG123_ENC_ANY" << std::endl; break;
-		}		
+		}
+		*/		
 	}
 
 	mBytesPerSample = sizeof( float );
@@ -377,6 +380,10 @@ size_t FileLoaderMpg123::getNumFrames() const
 
 size_t FileLoaderMpg123::read( void* buffer, size_t frameCount )
 {
+	if( nullptr == mHandle ) {
+		// @TODO: Should probably throw here?
+		return 0;
+	}
 
 	const size_t byteCount = frameCount * getNumChannels() * mBytesPerSample;
 
@@ -392,40 +399,94 @@ size_t FileLoaderMpg123::read( void* buffer, size_t frameCount )
 
 void FileLoaderMpg123::seek( int readPositionFrames )
 {
+	if( nullptr == mHandle ) {
+		return;
+	}
+
 	off_t sampleoff = readPositionFrames*getNumChannels();
 	mpg123_seek( mHandle, sampleoff, SEEK_SET );
 }
 
-//! \class FileLoaderSndFile
-//!
-//!
+// ----------------------------------------------------------------------------------------------------
+// FileLoaderSndFile
+// ----------------------------------------------------------------------------------------------------
 class FileLoaderSndFile : public FileLoader {
   public:
 	FileLoaderSndFile( SourceFileAudioLoader* cinderParent, const ci::IStreamRef& stream );
 	virtual ~FileLoaderSndFile();
 
 	//! Returns the length in frames.
-	virtual size_t		getNumFrames() const override { return 0; }
-
-	virtual size_t 		read( void* buffer, size_t frameCount ) override { return 0; };
-	virtual void 		seek( int readPositionFrames ) override {}
+	virtual size_t		getNumFrames() const override;
+	//! Reads frameCount (or less) frames into buffer. Returns the actual number of frames read
+	virtual size_t 		read( void* buffer, size_t frameCount ) override;
+	//! Seeks to the absolute position specified by readPositionFrames
+	virtual void 		seek( int readPositionFrames ) override;
 
   private:
+  	SF_INFO		mInfo;
+  	SNDFILE*	mHandle = nullptr;
 };
 
 FileLoaderSndFile::FileLoaderSndFile( SourceFileAudioLoader* cinderParent, const ci::IStreamRef& stream )
 	: FileLoader( cinderParent, stream )
 {
+	SF_VIRTUAL_IO vio;
+	vio.get_filelen	= IStreamSndFile::get_filelen;
+	vio.seek		= IStreamSndFile::seek;
+	vio.read		= IStreamSndFile::read;
+	vio.write		= IStreamSndFile::write;
+	vio.tell		= IStreamSndFile::tell;
+
+	std::memset( &mInfo, 0, sizeof( SF_INFO ) );
+	mHandle = sf_open_virtual( &vio, SFM_READ, &mInfo, static_cast<void*>( stream.get() ) );
+	if( nullptr == mHandle ) {
+		throw AudioFileExc( "Could not open handle for sndfile stream" );
+	}
+
+	mSampleRate = mInfo.samplerate;
+	mNumChannels = mInfo.channels;
 }
 
 FileLoaderSndFile::~FileLoaderSndFile()
 {
+	if( nullptr != mHandle ) {
+		sf_close( mHandle );
+		mHandle = nullptr;
+	}
+}
+
+size_t FileLoaderSndFile::getNumFrames() const
+{
+	return mInfo.frames;
+}
+
+size_t FileLoaderSndFile::read( void* buffer, size_t frameCount )
+{
+	if( nullptr == mHandle ) {
+		return 0;
+	}
+
+	size_t numFramesRead = sf_readf_float( mHandle, static_cast<float*>( buffer ), frameCount );
+
+	return numFramesRead;
+}
+
+void FileLoaderSndFile::seek( int readPositionFrames )
+{
+	if( nullptr == mHandle ) {
+		return;
+	}
+
+	sf_seek( mHandle, readPositionFrames, SEEK_SET );
 }
 
 } // namespace audioloader
 
 namespace cinder { namespace audio { namespace linux {
 
+// ----------------------------------------------------------------------------------------------------
+// SourceFileAudioLoader
+// ----------------------------------------------------------------------------------------------------
 SourceFileAudioLoader::SourceFileAudioLoader()
 	: SourceFile( 0 )
 {
@@ -444,7 +505,7 @@ SourceFileAudioLoader::~SourceFileAudioLoader()
 void SourceFileAudioLoader::init()
 {
 	if( mDataSource->isFilePath() ) {
-		std::cout << "Loading into stream: " << mDataSource->getFilePath().string() << std::endl;
+		//std::cout << "Loading into stream: " << mDataSource->getFilePath().string() << std::endl;
 		mStream = ci::loadFileStream( mDataSource->getFilePath() );
 	}
 	else {
@@ -453,6 +514,7 @@ void SourceFileAudioLoader::init()
 
 	audioloader::FileType fileType = audioloader::determineFileType( mStream );
 
+	/*
 	switch( fileType ) {
 		case audioloader::FileType::UNKNOWN:
 			std::cout << "fileType: UNKNOWN" << std::endl;
@@ -466,6 +528,7 @@ void SourceFileAudioLoader::init()
 			std::cout << "fileType: PCM" << std::endl;
 		break;
 	}
+	*/
 
 	if( audioloader::FileType::MP3 == fileType ) {
 		mFileLoader.reset( new audioloader::FileLoaderMpg123( this, mStream ) );
@@ -484,10 +547,12 @@ void SourceFileAudioLoader::init()
 
 	mNumFrames = mFileNumFrames = mFileLoader->getNumFrames();
 
+	/*
 	std::cout << "Sample rate  : " << getSampleRateNative() << std::endl;
 	std::cout << "Num channels : " << getNumChannels() << std::endl;
 	std::cout << "Num frames   : " << getNumFrames() << std::endl;
 	std::cout << "Num seconds  : " << getNumSeconds() << std::endl;
+	*/
 
 	mAudioData.setSize( getMaxFramesPerRead(), mFileLoader->getNumChannels() );
 }
