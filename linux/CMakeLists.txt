@@ -100,8 +100,8 @@ if( CINDER_TOOLCHAIN_CLANG )
 
     set( STDCXXLIB                           	"-stdlib=libstdc++" )
 else()
-    set( CMAKE_C_COMPILER	"gcc-4.9" 			CACHE FILEPATH "" FORCE )
-    set( CMAKE_CXX_COMPILER	"g++-4.9" 			CACHE FILEPATH "" FORCE )	
+    set( CMAKE_C_COMPILER	"gcc" 			CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER	"g++" 			CACHE FILEPATH "" FORCE )	
 endif()
 
 # Needs to come atfer compilers are set
