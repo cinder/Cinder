@@ -32,3 +32,6 @@ target_include_directories(
 )
 
 target_link_libraries( "${EXE_NAME}" cinder${CINDER_LIB_SUFFIX} )
+target_link_libraries( "${EXE_NAME}" pulse )
+target_link_libraries( "${EXE_NAME}" mpg123 )
+target_link_libraries( "${EXE_NAME}" sndfile )

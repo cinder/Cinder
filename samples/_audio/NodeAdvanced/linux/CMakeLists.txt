@@ -22,7 +22,7 @@ set( EXE_NAME ${PROJECT_NAME} )
 
 set( SRC_FILES
 	${SRC_DIR}/NodeAdvancedApp.cpp
-  ${SRC_DIR}/../../common/AudioDrawUtils.cpp
+	${SRC_DIR}/../../common/AudioDrawUtils.cpp
 )
 
 add_executable( "${EXE_NAME}" ${SRC_FILES} )
