@@ -210,7 +210,7 @@ find_package( SNDFILE REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${SNDFILE_LIBRARY} )
 
 # GStreamer
-set( CINDER_USE_GSTREAMER false )
+set( CINDER_USE_GSTREAMER true )
 
 if( CINDER_USE_GSTREAMER )
     find_package (Glib REQUIRED COMPONENTS gobject )
@@ -223,13 +223,10 @@ if( CINDER_USE_GSTREAMER )
     #list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_LIBRARIES} ${GSTREAMER_BASE_LIBRARIES} ${GSTREAMER_APP_LIBRARIES} ${GSTREAMER_VIDEO_LIBRARIES} )
 endif()
 
+
 ### Set this to use system wide libs instead of compiling dependencies from source.
 set( CINDER_USE_SYSTEM_LIBS false )
 if( CINDER_USE_SYSTEM_LIBS )
-    find_package( Boost 1.54 REQUIRED COMPONENTS system filesystem )
-    list( APPEND CINDER_INCLUDE_DEPENDS ${Boost_INCLUDE_DIRS} )
-    list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
-
     find_package( Freetype2 REQUIRED )
     list( APPEND CINDER_INCLUDE_DEPENDS ${FREETYPE2_INCLUDE_DIRS} )
     list( APPEND CINDER_LIBS_DEPENDS ${FREETYPE2_LIBRARIES} )
@@ -241,11 +238,7 @@ else()
     include( ${CMAKE_MODULE_PATH}/Freetype2Sources.cmake )
     list( APPEND CINDER_C_SRC_FILES ${FREETYPE2_SOURCES} )
 
-
     list( APPEND CINDER_INCLUDE_DEPENDS ${CINDER_INC_DIR}/freetype )
-
-    list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/libboost_system.a
-                                    ${CINDER_LIB_DIR}/libboost_filesystem.a )
 
     list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/gstreamer/libgstbase-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstbadvideo-1.0.so
@@ -279,6 +272,29 @@ endif()
 ### Create our Cinder target.
 add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
 
+# Boost. If on gcc >= 5.0 we need to switch to system installed boost since the one that ships with Cinder is compiled against older ABI.
+set( USE_SYSTEM_BOOST false )
+
+execute_process( COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION )
+if( "${GCC_VERSION}" VERSION_GREATER 5.0 OR "${GCC_VERSION}" VERSION_EQUAL 5.0 )
+	message( "Detected gcc >= 5.0 -- You will need libboost-system1.58-dev and libboost-filesystem1.58-dev installed in your system." )
+	set( USE_SYSTEM_BOOST true )
+endif()
+
+if( USE_SYSTEM_BOOST )
+    find_package( Boost 1.58 REQUIRED COMPONENTS system filesystem )
+    list( APPEND CINDER_INCLUDE_DEPENDS ${Boost_INCLUDE_DIRS} )
+    list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
+else()
+    ### There is a conflict between boost/regex.h and /usr/include/regex.h when building the examples
+    ### so avoid propagating the boost dirs across the compilation of samples.
+    target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${CINDER_INC_DIR}/boost> )
+
+    list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/libboost_system.a
+                                    ${CINDER_LIB_DIR}/libboost_filesystem.a )
+
+endif()
+
 ### https://cmake.org/cmake/help/v3.0/command/target_include_directories.html
 ###
 ### target_include_directories:
@@ -301,12 +317,6 @@ add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CX
 ### target_link_libraries( binary cinder )
 ###
 ### and this will pull all Cinder's dependencies specified with INTERFACE or PUBLIC.
-
-### There is a conflict between boost/regex.h and /usr/include/regex.h when building the examples
-### so avoid propagating the boost dirs across the compilation of samples.
-if( NOT CINDER_USE_SYSTEM_LIBS )
-    target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${CINDER_INC_DIR}/boost> )
-endif()
 
 target_include_directories( cinder${CINDER_LIB_SUFFIX} PUBLIC "$<BUILD_INTERFACE:${CINDER_INCLUDE_DIRS};${CINDER_INCLUDE_DEPENDS}>" )
 
