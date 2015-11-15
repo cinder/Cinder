@@ -179,6 +179,7 @@ list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Tween.cpp
     ${CINDER_SRC_DIR}/cinder/Unicode.cpp
     ${CINDER_SRC_DIR}/cinder/Url.cpp
+    ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp
     ${CINDER_SRC_DIR}/cinder/Utilities.cpp
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 
