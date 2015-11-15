@@ -23,21 +23,23 @@
 #include "cinder/UrlImplCurl.h"
 
 #include <curl/curl.h>
-#include <boost/noncopyable.hpp>
 
 namespace cinder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // CURLLib
-class CURLLib : private boost::noncopyable
-{
+class CURLLib {
 public:
 	CURLLib();
 	~CURLLib();
 
 	static CURLLib*		instance();
 
-	static CURLLib	*sInstance;
+private:
+	CURLLib( const CURLLib& );
+	CURLLib& operator=( const CURLLib& );
+
+	static CURLLib*		sInstance;
 };
 
 CURLLib *CURLLib::sInstance = 0;

@@ -165,6 +165,10 @@ set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math"
 include(${CMAKE_MODULE_PATH}/CinderIncludes.cmake)
 include(${CMAKE_MODULE_PATH}/CinderSources.cmake)
 
+# Required defaults
+list( APPEND CINDER_LIBS_DEPENDS dl )
+list( APPEND CINDER_LIBS_DEPENDS pthread )
+
 ### If this is set then we should be on Desktop.
 if( CINDER_USE_SYSTEM_GL_HEADERS )
     find_package( OpenGL REQUIRED )
@@ -179,18 +183,34 @@ if( CINDER_USE_X11 )
     list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
 endif()
 
+# zlib
 find_package( ZLIB REQUIRED )
 list( APPEND CINDER_INCLUDE_DEPENDS ${ZLIB_INCLUDE_DIR} )
 list( APPEND CINDER_LIBS_DEPENDS ${ZLIB_LIBRARIES} )
 
-list( APPEND CINDER_LIBS_DEPENDS dl )
-list( APPEND CINDER_LIBS_DEPENDS pthread )
+# curl
+find_package( CURL REQUIRED )
+list( APPEND CINDER_LIBS_DEPENDS ${CURL_LIBRARIES} )
 
+# fontconfig
 find_package( FontConfig REQUIRED )
 list( APPEND CINDER_INCLUDE_DEPENDS ${FONTGONFIG_INCLUDE_DIRS} )
 list( APPEND CINDER_LIBS_DEPENDS ${FONTCONFIG_LIBRARIES} )
 
-set( CINDER_USE_GSTREAMER true )
+# PulseAudio
+find_package( PulseAudio REQUIRED )
+list( APPEND CINDER_LIBS_DEPENDS ${PULSEAUDIO_LIBRARY} )
+
+## mpg123
+find_package( MPG123 REQUIRED )
+list( APPEND CINDER_LIBS_DEPENDS ${MPG123_LIBRARY} )
+
+# sndfile
+find_package( SNDFILE REQUIRED )
+list( APPEND CINDER_LIBS_DEPENDS ${SNDFILE_LIBRARY} )
+
+# GStreamer
+set( CINDER_USE_GSTREAMER false )
 
 if( CINDER_USE_GSTREAMER )
     find_package (Glib REQUIRED COMPONENTS gobject )

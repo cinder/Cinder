@@ -23,6 +23,7 @@ set( EXE_NAME ${PROJECT_NAME} )
 set( SRC_FILES
 	${SRC_DIR}/CustomTremoloNode.cpp
 	${SRC_DIR}/NodeSubclassingApp.cpp
+	${SRC_DIR}/../../common/AudioDrawUtils.cpp
 )
 
 add_executable( "${EXE_NAME}" ${SRC_FILES} )
@@ -33,3 +34,4 @@ target_include_directories(
 )
 
 target_link_libraries( "${EXE_NAME}" cinder${CINDER_LIB_SUFFIX} )
+target_link_libraries( "${EXE_NAME}" pulse )
