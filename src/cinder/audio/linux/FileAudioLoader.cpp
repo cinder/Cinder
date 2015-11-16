@@ -467,6 +467,10 @@ size_t FileLoaderSndFile::read( void* buffer, size_t frameCount )
 	}
 
 	size_t numFramesRead = sf_readf_float( mHandle, static_cast<float*>( buffer ), frameCount );
+	int errorNum = sf_error( mHandle );
+	if( SF_ERR_NO_ERROR != errorNum ) {
+		throw AudioFileExc( std::string( "sndfile I/O error: " ) + sf_error_number( errorNum ) );
+	}
 
 	return numFramesRead;
 }
