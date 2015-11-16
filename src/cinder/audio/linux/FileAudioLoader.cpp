@@ -173,6 +173,7 @@ FileType determineFileType( const ci::IStreamRef& stream )
 
 		stream->seekAbsolute( 0 );
 
+		/*
 		// @TOD: Fix this block
 		int ret = MPG123_OK;
 		mpg123_handle* handle = mpg123_new( nullptr, &ret );
@@ -206,6 +207,21 @@ FileType determineFileType( const ci::IStreamRef& stream )
 				}
 			}
 
+			mpg123_delete( handle );
+		}
+		*/
+
+		int ret = MPG123_OK;
+		mpg123_handle* handle = mpg123_new( nullptr, &ret );
+		if( ( MPG123_OK == ret ) && ( MPG123_OK == mpg123_replace_reader_handle( handle, IStreamMpg123::read, IStreamMpg123::seek, nullptr ) ) ) {
+			if( MPG123_OK == mpg123_open_handle( handle, stream.get() ) ) {
+				long rate = 0;
+				int channels = 0;
+				int encodings = -1;
+				if( MPG123_OK == mpg123_getformat( handle, &rate, &channels, &encodings ) ) {
+					result = FileType::MP3;
+				}
+			}		
 			mpg123_delete( handle );
 		}
 	}
@@ -551,12 +567,10 @@ void SourceFileAudioLoader::init()
 
 	mNumFrames = mFileNumFrames = mFileLoader->getNumFrames();
 
-	/*
 	std::cout << "Sample rate  : " << getSampleRateNative() << std::endl;
 	std::cout << "Num channels : " << getNumChannels() << std::endl;
 	std::cout << "Num frames   : " << getNumFrames() << std::endl;
 	std::cout << "Num seconds  : " << getNumSeconds() << std::endl;
-	*/
 
 	mAudioData.setSize( getMaxFramesPerRead(), mFileLoader->getNumChannels() );
 }
