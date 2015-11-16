@@ -8,9 +8,8 @@
 
 set( SNDFILE_FOUND false )
 
-set( SNDFILE_INCLUDE_DIRS /usr/local/include /usr/include )
-
-set( SNDFILE_LIBRARY_DIRS /usr/lib /usr/local/lib )
+set( SNDFILE_INCLUDE_DIRS /opt/local/include /usr/local/include /usr/include )
+set( SNDFILE_LIBRARY_DIRS /opt/local/lib /usr/local/lib /usr/lib )
 
 find_path( SNDFILE_INCLUDE_DIR NAMES sndfile.h PATHS ${SNDFILE_INCLUDE_DIRS} PATH_SUFFIXES include )
 find_library( SNDFILE_LIBRARY  NAMES sndfile   PATHS ${SNDFILE_LIBRARY_DIRS} PATH_SUFFIXES lib )

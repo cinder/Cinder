@@ -8,9 +8,9 @@
 
 set( MPG123_FOUND false )
 
-set( MPG123_INCLUDE_DIRS /usr/local/include /usr/include )
+set( MPG123_INCLUDE_DIRS /opt/local/include /usr/local/include /usr/include )
 
-set( MPG123_LIBRARY_DIRS /usr/lib /usr/local/lib )
+set( MPG123_LIBRARY_DIRS /opt/local/lib /usr/local/lib /usr/lib )
 
 find_path( MPG123_INCLUDE_DIR NAMES mpg123.h PATHS ${MPG123_INCLUDE_DIRS} PATH_SUFFIXES include )
 find_library( MPG123_LIBRARY  NAMES mpg123   PATHS ${MPG123_LIBRARY_DIRS} PATH_SUFFIXES lib )
