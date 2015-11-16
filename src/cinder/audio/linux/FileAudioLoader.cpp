@@ -218,8 +218,11 @@ FileType determineFileType( const ci::IStreamRef& stream )
 				long rate = 0;
 				int channels = 0;
 				int encodings = -1;
-				if( MPG123_OK == mpg123_getformat( handle, &rate, &channels, &encodings ) ) {
-					result = FileType::MP3;
+				off_t len = MPG123_ERR;
+				if( ( MPG123_OK == mpg123_getformat( handle, &rate, &channels, &encodings ) ) && ( len =mpg123_length( handle ) ) ) {
+					if( ( MPG123_ERR != len ) && ( len > 0 ) ) {
+						result = FileType::MP3;
+					}
 				}
 			}		
 			mpg123_delete( handle );
@@ -386,7 +389,7 @@ size_t FileLoaderMpg123::getNumFrames() const
 	size_t result = 0;
 	if( nullptr != mHandle) {
 		// mpg123_length seems to return the number of frames - not samples as stated in the docs.
-		off_t len = static_cast<size_t>( mpg123_length( mHandle ) );
+		off_t len = mpg123_length( mHandle );
 		if( MPG123_ERR != len ) {
 			result = len ;
 		}
