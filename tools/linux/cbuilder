@@ -38,6 +38,12 @@ VERBOSE=
 APP_BUILD=false
 SAMPLES=
 
+_CORE_COUNT=$(getconf _NPROCESSORS_CONF)
+if [ "$_CORE_COUNT" -gt "$NUMPROCS" ]; then
+	NUMPROCS=$_CORE_COUNT
+fi
+
+
 # Process arguments
 while (( $# >= 1 ))
 do
@@ -193,7 +199,7 @@ for build in ${BUILD_TYPES[@]}; do
 
 	# Build
 	echo "---------------------------------------------------------------------------------"
-	echo "Building Cinder in ${build_type} mode"
+	echo "Building Cinder in ${build_type} mode with ${NUMPROCS} compile processes"
 
 	if [ ! -d "${build_dir}" ]; then
 		mkdir -p ${build_dir}
