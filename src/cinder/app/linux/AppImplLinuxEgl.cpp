@@ -240,16 +240,27 @@ void AppImplLinux::run()
 
 					int initiator = 0;
 					if( sMouseState.leftDown ) {
-						initiator |= MouseEvent::LEFT_DOWN;
+						initiator = MouseEvent::LEFT_DOWN;
 					}
-					if( sMouseState.middleDown ) {
-						initiator |= MouseEvent::MIDDLE_DOWN;
+					else if( sMouseState.middleDown ) {
+						initiator = MouseEvent::MIDDLE_DOWN;
 					}
-					if( sMouseState.rightDown ) {
-						initiator |= MouseEvent::RIGHT_DOWN;
+					else if( sMouseState.rightDown ) {
+						initiator = MouseEvent::RIGHT_DOWN;
 					}
 
-					MouseEvent event( getWindow(), initiator, sMouseState.pos.x, sMouseState.pos.y, 0, 0.0f, 0 );
+					int modifiers = 0;
+					if( sMouseState.leftDown ) {
+						modifiers |= MouseEvent::LEFT_DOWN;
+					}
+					if( sMouseState.middleDown ) {
+						modifiers |= MouseEvent::MIDDLE_DOWN;
+					}
+					if( sMouseState.rightDown ) {
+						modifiers |= MouseEvent::RIGHT_DOWN;
+					}
+
+					MouseEvent event( getWindow(), initiator, sMouseState.pos.x, sMouseState.pos.y, modifiers, 0.0f, 0 );
 					if( 0 != initiator ) {
 						mMainWindow->emitMouseDrag( &event );
 					}

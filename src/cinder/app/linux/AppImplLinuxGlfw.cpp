@@ -85,16 +85,27 @@ public:
 
 			int initiator = 0;
 			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_LEFT ) ) {
-				initiator |= MouseEvent::LEFT_DOWN;
+				initiator = MouseEvent::LEFT_DOWN;
 			}
-			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE ) ) {
-				initiator |= MouseEvent::MIDDLE_DOWN;
+			else if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE ) ) {
+				initiator = MouseEvent::MIDDLE_DOWN;
 			}
-			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_RIGHT ) ) {
-				initiator |= MouseEvent::RIGHT_DOWN;
+			else if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_RIGHT ) ) {
+				initiator = MouseEvent::RIGHT_DOWN;
 			}
 
-			MouseEvent event( getWindow(), initiator, (int)mouseX, (int)mouseY, 0, 0.0f, 0 );
+			int modifiers = 0;
+			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_LEFT ) ) {
+				modifiers |= MouseEvent::LEFT_DOWN;
+			}
+			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE ) ) {
+				modifiers |= MouseEvent::MIDDLE_DOWN;
+			}
+			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_RIGHT ) ) {
+				modifiers |= MouseEvent::RIGHT_DOWN;
+			}
+
+			MouseEvent event( getWindow(), initiator, (int)mouseX, (int)mouseY, modifiers, 0.0f, 0 );
 			if( 0 != initiator ) {
 				cinderWindow->emitMouseDrag( &event );
 			}

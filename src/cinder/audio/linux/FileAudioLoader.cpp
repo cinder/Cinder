@@ -173,44 +173,6 @@ FileType determineFileType( const ci::IStreamRef& stream )
 
 		stream->seekAbsolute( 0 );
 
-		/*
-		// @TOD: Fix this block
-		int ret = MPG123_OK;
-		mpg123_handle* handle = mpg123_new( nullptr, &ret );
-		if( ( MPG123_OK == ret ) && ( MPG123_OK == mpg123_open_feed( handle ) ) ) {
-			const size_t kStreamSize = stream->size();
-
-			const size_t kBufSize = 4096;
-			char buf[kBufSize];
-
-			size_t totalBytesRead = 0;
-			do {
-				size_t readSize = std::min<size_t>( kBufSize, ( kStreamSize - stream->tell() ) );
-				size_t pos0 = stream->tell();
-				stream->readData( static_cast<void*>( buf ), readSize );
-				size_t pos1 = stream->tell();
-				size_t amountRead = pos1 - pos0;
-				if( 0 == amountRead ) {
-					break;
-				}
-				totalBytesRead += amountRead;
-				ret = mpg123_decode( handle, reinterpret_cast<const unsigned char*>( buf ), amountRead, nullptr, 0, nullptr );
-			}
-			while( ( MPG123_NEED_MORE == ret ) && ( totalBytesRead < 64*1024 ) );
-
-			long rate = 0;
-			int channels = 0;
-			int encodings = -1;
-			if( ( MPG123_NEW_FORMAT == ret ) && ( MPG123_OK == mpg123_getformat( handle, &rate, &channels, &encodings ) ) ) {
-				if( ( MPG123_OK == mpg123_format_none( handle ) ) && ( MPG123_OK == mpg123_format( handle, rate, channels, MPG123_ENC_SIGNED_16 ) ) ) {
-					result = FileType::MP3;
-				}
-			}
-
-			mpg123_delete( handle );
-		}
-		*/
-
 		int ret = MPG123_OK;
 		mpg123_handle* handle = mpg123_new( nullptr, &ret );
 		if( ( MPG123_OK == ret ) && ( MPG123_OK == mpg123_replace_reader_handle( handle, IStreamMpg123::read, IStreamMpg123::seek, nullptr ) ) ) {
@@ -570,10 +532,12 @@ void SourceFileAudioLoader::init()
 
 	mNumFrames = mFileNumFrames = mFileLoader->getNumFrames();
 
+/*
 	std::cout << "Sample rate  : " << getSampleRateNative() << std::endl;
 	std::cout << "Num channels : " << getNumChannels() << std::endl;
 	std::cout << "Num frames   : " << getNumFrames() << std::endl;
 	std::cout << "Num seconds  : " << getNumSeconds() << std::endl;
+*/
 
 	mAudioData.setSize( getMaxFramesPerRead(), mFileLoader->getNumChannels() );
 }
