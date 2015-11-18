@@ -510,8 +510,8 @@ private:
 	friend class AppImplAndroid;
 	WindowImplAndroid   *getImpl() { return mImpl; }
 #elif defined( CINDER_LINUX )
-  friend class AppImplLinux;
-  WindowImplLinux     *getImpl() { return mImpl; }
+	friend class AppImplLinux;
+	WindowImplLinux     *getImpl() { return mImpl; }
 #endif    
 };
 
