@@ -66,6 +66,8 @@ class InterfaceGl {
 		const std::string&	getKeyIncr() const			{ return mKeyIncr; }
 		const std::string&	getKeyDecr() const			{ return mKeyDecr; }
 
+		void				setVisible( bool visible = true );
+
 	  protected:
 		OptionsBase( const std::string &name, void *targetVoidPtr, InterfaceGl *parent );
 
@@ -126,6 +128,9 @@ class InterfaceGl {
 		//!! Sets an update function that will be called after the target param is updated.
 		Options&	updateFn( const UpdateFn &updateFn );
 
+		//! Shows or hides this param.
+		Options&	visible( bool visible = true ) { setVisible( visible ); return *this; }
+
 	  private:
 		T*				mTarget;
 		int				mTwType;
@@ -148,8 +153,18 @@ class InterfaceGl {
 	void	minimize();
 	//! Returns whether the interface is maximized or not. \see maximize(), minimize()
 	bool	isMaximized() const;
+	//! Gets the position of this interface instance
+	ivec2	getPosition() const;
 	//! Sets the position of this interface instance
 	void	setPosition( const ci::ivec2 &pos );
+	//! Gets the width of this interface instance
+	int		getWidth() const { return getSize().x; }
+	//! Gets the height of this interface instance
+	int		getHeight() const { return getSize().y; }
+	//! Gets the size of this interface instance
+	ivec2	getSize() const;
+	//! Sets the size of this interface instance
+	void	setSize( const ci::ivec2 &size );
 	//! Adds \a target as a param to the interface, referring to it with \a name. \return Options<T> for chaining options to the param.
 	template <typename T>
 	Options<T>	addParam( const std::string &name, T *target, bool readOnly = false );

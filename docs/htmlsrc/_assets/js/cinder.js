@@ -5,7 +5,6 @@ $(document).ready(function() {
 	var rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf( window.docsRoot + '/' ) + ( window.docsRoot.length + 1 ) );
 	var windowHeight = window.innerHeight;
 	var input = document.querySelector( '#search-input' );
-	var clicked = false;
 
 	var cinderJs = {
 
@@ -13,17 +12,7 @@ $(document).ready(function() {
 			this.selectNamspace( window.selectedNamespace );
  			this.showContent( hash );
  			this.adjustClassInfoLinks();
-
- 			// focus on search input on keydown if no clicking has happened yet
- 			$( window ).keydown( function(){
- 				if( ! clicked ){
- 					$( input ).focus();	
- 				}
- 			} );
-
- 			$( window ).one( "click", function(){
- 				clicked = true;
- 			} );
+			$( input ).focus();	
 		},
 		
 	 	/*

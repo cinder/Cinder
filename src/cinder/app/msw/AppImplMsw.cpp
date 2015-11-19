@@ -346,7 +346,7 @@ void WindowImplMsw::setWindowStyleValues()
 		mWindowStyle = WS_POPUP;
 	}
 	else {
-		mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
+		mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE | WS_EX_ACCEPTFILES;				// Window Extended Style
 		mWindowStyle = ( mResizable ) ? WS_OVERLAPPEDWINDOW
 			:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MINIMIZEBOX & ~WS_MAXIMIZEBOX );	// Windows Style
 	}
@@ -728,7 +728,7 @@ void WindowImplMsw::setBorderless( bool borderless )
 			mWindowStyle = WS_POPUP;
 		}
 		else {
-			mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
+			mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE | WS_EX_ACCEPTFILES;	// Window Extended Style
 			mWindowStyle = ( mResizable ) ? WS_OVERLAPPEDWINDOW
 				:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style
 		}
