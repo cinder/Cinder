@@ -1,5 +1,13 @@
 #include "GstPlayer.h"
 
+#include "glfw/glfw3.h"
+
+#define GLFW_EXPOSE_NATIVE_X11
+#define GLFW_EXPOSE_NATIVE_GLX
+#include "glfw/glfw3native.h"
+
+#include "cinder/app/AppBase.h"
+
 namespace gst { namespace video {
 
 GstData::GstData()
@@ -48,6 +56,41 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
             }
             break;
         }
+	case GST_MESSAGE_HAVE_CONTEXT:
+	{
+	     GstContext *context;
+	     const gchar *context_type;
+	     gchar *context_str;
+
+	     gst_message_parse_have_context( message, &context );
+	     context_type = gst_context_get_context_type( context );
+	     context_str = gst_structure_to_string( gst_context_get_structure( context ) );
+	     g_print ("Got __HAVE__ context %s from element %s\n", context_type, GST_ELEMENT_NAME( GST_MESSAGE_SRC( message ) ) );
+
+	     g_free( context_str );
+	     if( context ) gst_context_unref( context );
+	     break;
+	}
+	case GST_MESSAGE_NEED_CONTEXT:
+	{
+	     const gchar *context_type;
+      	     gst_message_parse_context_type( message, &context_type );
+	     g_print( "Got **NEED** context %s from element %s\n", context_type, GST_ELEMENT_NAME( GST_MESSAGE_SRC( message ) ) );
+	     GstContext* context = nullptr;
+	     if( g_strcmp0( context_type, GST_GL_DISPLAY_CONTEXT_TYPE ) == 0 ) {
+	        context = gst_context_new( GST_GL_DISPLAY_CONTEXT_TYPE, TRUE );
+		gst_context_set_gl_display( context, data.mCinderDisplay );
+		gst_element_set_context( GST_ELEMENT( message->src ), context );
+	     }
+	     else if( g_strcmp0( context_type, "gst.gl.app_context" ) == 0 ) {
+		context = gst_context_new( "gst.gl.app_context", TRUE );
+		GstStructure *s = gst_context_writable_structure( context );
+		gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, data.mCinderContext, NULL );
+		gst_element_set_context( GST_ELEMENT( message->src ), context );
+	     }
+	    if( context ) gst_context_unref( context ); 
+	    break;
+	}
         case GST_MESSAGE_BUFFERING:
         {
             if( data.mIsLive ) break; ///> No buffering for live sources.
@@ -207,9 +250,6 @@ GstPlayer::GstPlayer()
 , mGstBus(nullptr)
 , mGstPipeline(nullptr)
 , mGstAppSink(nullptr)
-, mFrontVBuffer(nullptr)
-, mBackVBuffer(nullptr)
-, mUseNativeFormat(false)
 , mStride(-1)
 , mNewFrame(false)
 , mUsingCustomPipeline(false)
@@ -225,11 +265,14 @@ GstPlayer::~GstPlayer()
 
 void GstPlayer::cleanup()
 {
+
     if( mGstPipeline != nullptr ) {
         resetPipeline();
         // Reset the bus since the associated pipeline got resetted.
         resetBus();
     }
+
+    resetVideoBuffers();
     
     if( g_main_loop_is_running( mGMainLoop ) ) {
         g_main_loop_quit( mGMainLoop );
@@ -240,7 +283,6 @@ void GstPlayer::cleanup()
         mGMainLoopThread.join();
     }
     
-    resetVideoBuffers();
 }
 
 void GstPlayer::startGMainLoopThread()
@@ -288,12 +330,15 @@ bool GstPlayer::initializeGStreamer()
 void GstPlayer::resetPipeline()
 {
     if( mGstPipeline ) {
+
         gst_element_set_state( mGstPipeline, GST_STATE_NULL);
         gst_element_get_state( mGstPipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE);
         
         gst_object_unref( GST_OBJECT( mGstPipeline ) );
         mGstPipeline = nullptr;
         
+	mGstData.mCinderContext = nullptr;
+	mGstData.mCinderDisplay = nullptr;
         // Unref-ing the pipeline takes care of the appsink as well.
         mGstAppSink = nullptr;
     }
@@ -333,9 +378,6 @@ void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
     gst_element_get_state( mGstPipeline, NULL, NULL, GST_CLOCK_TIME_NONE );
     
 
-    // Reset the buffers for the next pre-roll.
-    resetVideoBuffers();
-
     if( mGstPipeline ) {
         // Currently assumes that the pipeline has an appsink named 'videosink'.
         // This is just for testing and it has to be more generic.
@@ -353,6 +395,16 @@ void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
         gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
     }
     mUsingCustomPipeline = true;
+
+    // Reset the buffers for the next pre-roll.
+    resetVideoBuffers();
+
+    queue_input_buf = g_async_queue_new();
+    queue_output_buf = g_async_queue_new();
+
+    g_object_set_data( G_OBJECT( mGstAppSink ), "queue_input_buf", queue_input_buf );
+    g_object_set_data( G_OBJECT( mGstAppSink ), "queue_output_buf", queue_output_buf );
+
     // async pre-roll
     gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );
 }
@@ -366,38 +418,14 @@ void GstPlayer::addBusWatch( GstElement* pipeline )
     
 bool GstPlayer::initialize()
 {        
-    mGstPipeline = gst_element_factory_make( "playbin", "videoplayer" );
-    mGstAppSink = gst_element_factory_make("appsink", "videosink");
-    g_object_set( mGstAppSink, "sync", true, (void*)nullptr );
-    g_object_set( mGstAppSink, "max-buffers", 1, (void*)nullptr );
-    g_object_set( mGstAppSink, "drop", true, (void*)nullptr );
-    
-    // Forward buffers to our appsink.
-    g_object_set( mGstPipeline, "video-sink", mGstAppSink, (void*)nullptr);
+    const gchar* platform = "glx";
 
-    addBusWatch( mGstPipeline );
-    
-    std::string videoFormats;
-    //mUseNativeFormat = true;
-    if( mUseNativeFormat ) {
-        videoFormats = "format={RGB, RGBA, BGR, BGRA, I420}";
-    }
-    else {
-        videoFormats = "format={RGB}";
-    }
-    std::string videoType = "video/x-raw";
-    std::string capsString = videoType + "," + videoFormats;
-    
-    GstCaps* caps = gst_caps_from_string( capsString.c_str() );
-    GstAppSinkCallbacks appSinkCallbacks;
-    appSinkCallbacks.eos = onGstEos;
-    appSinkCallbacks.new_preroll = onGstPreroll;
-    appSinkCallbacks.new_sample = onGstSample;
-    
-    gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
-    gst_app_sink_set_caps( GST_APP_SINK( mGstAppSink), caps);
-    gst_caps_unref(caps);
-    
+    mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
+
+    ::GLFWwindow *window =  (::GLFWwindow*)ci::app::AppBase::get()->getWindow()->getNative() ;
+
+    mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetGLXContext(window), gst_gl_platform_from_string( platform ), GST_GL_API_OPENGL );
+
     return true;
 }
 
@@ -414,15 +442,41 @@ void GstPlayer::resetCustomPipeline()
 void GstPlayer::load( std::string _path )
 {
     // If we were using a custom pipeline we have to reset for now.
-    if( mUsingCustomPipeline ) {
+    if( mUsingCustomPipeline || mGstPipeline ) {
         resetCustomPipeline();
-        initialize(); // create our default setup with playbin and appsink
+        initialize(); // intialize shared context.
     }
 
-    // If we still dont have a valid pipeline something is off....
-    if( !mGstPipeline ) return;
+    if( !mGstPipeline ){
+
+	GError *error = nullptr;
+	std::string capsGL = "video/x-raw(memory:GLMemory), format=RGBA";
+	std::string pipelineStr = "uridecodebin name=uridecode ! glupload ! glcolorconvert ! appsink name=videosink caps=\""+capsGL+"\"";
+	mGstPipeline = gst_parse_launch( pipelineStr.c_str(), &error );
+	
+	if( error != nullptr ) {
+	    g_print( "Could not construct custom pipeline: %s\n", error->message );
+	    g_error_free (error);
+	}
+
+	if( mGstPipeline ) {
+	    // Currently assumes that the pipeline has an appsink named 'videosink'.
+	    // This is just for testing and it has to be more generic.
+	    mGstAppSink = gst_bin_get_by_name (GST_BIN (mGstPipeline), "videosink");
+	}
+	
+	addBusWatch( mGstPipeline );
+	
+	if( mGstAppSink ) {
+	    GstAppSinkCallbacks appSinkCallbacks;
+	    appSinkCallbacks.eos = onGstEos;
+	    appSinkCallbacks.new_preroll = onGstPreroll;
+	    appSinkCallbacks.new_sample = onGstSample;
+	
+	    gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
+	}
+    }
     
-    // Prepare for loading with playbin.
     // We lock until we switch to GST_STATE_READY since
     // there is not much we can do if dont reach this state.
     gst_element_set_state( mGstPipeline, GST_STATE_READY );
@@ -431,6 +485,15 @@ void GstPlayer::load( std::string _path )
     // Reset the buffers after we have reached GST_STATE_READY.
     resetVideoBuffers();
     
+    if( !queue_input_buf ) {
+	queue_input_buf = g_async_queue_new();
+        g_object_set_data( G_OBJECT( mGstAppSink ), "queue_input_buf", queue_input_buf );
+    }
+    if( !queue_output_buf ) {
+        queue_output_buf = g_async_queue_new();
+        g_object_set_data( G_OBJECT( mGstAppSink ), "queue_output_buf", queue_output_buf );
+    }
+
     mGstData.mIsStream = true;
     
     if( _path.find( "://", 0 ) == std::string::npos ) {
@@ -442,7 +505,7 @@ void GstPlayer::load( std::string _path )
         mGstData.mIsStream = false;
     }
     // set the new movie path
-    g_object_set( G_OBJECT ( mGstPipeline ), "uri", _path.c_str(), nullptr );
+    g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "uridecode" ) ), "uri", _path.c_str(), nullptr );
     
     // and preroll async.
     gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );
@@ -753,33 +816,51 @@ GstData& GstPlayer::getGstData()
     return mGstData;
 }
 
-unsigned char * GstPlayer::getVideoBuffer()
+ci::gl::Texture2dRef GstPlayer::getVideoTexture()
 {
     mMutex.lock();
     if( mNewFrame ){
-        std::swap( mFrontVBuffer, mBackVBuffer );
-        mNewFrame = false;
+	videoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, mGstTextureID, width(), height(), true );
+	if( videoTexture ) videoTexture->setTopDown();
+	mNewFrame = false;
     }
     mMutex.unlock();
-    
-    return mFrontVBuffer;
+
+    // Pop any old buffers.
+    GAsyncQueue *queue_output_buf = nullptr;
+    queue_output_buf = (GAsyncQueue*)g_object_get_data( G_OBJECT(mGstAppSink), "queue_output_buf" );
+    if( g_async_queue_length( queue_output_buf ) > 3 ) {
+        GstBuffer* old = (GstBuffer*) g_async_queue_pop( queue_output_buf );
+	gst_buffer_unref( old );
+    }
+
+    return videoTexture;
 }
 
 void GstPlayer::resetVideoBuffers()
 {
-    mMutex.lock();
-    // Take care of the front buffer.
-    if( mFrontVBuffer ) {
-        delete mFrontVBuffer;
-        mFrontVBuffer = nullptr;
-    }
+  if( queue_input_buf ) {
+      while( g_async_queue_length (queue_input_buf) > 0 ) {
+             GstBuffer *buf = (GstBuffer *) g_async_queue_pop (queue_input_buf);
+	     gst_buffer_unref (buf);
+      }
+  }
 
-    // Take care of the back buffer.
-    if( mBackVBuffer ) {
-        delete mBackVBuffer;
-        mBackVBuffer = nullptr;
-    }
-    mMutex.unlock();
+  if( queue_output_buf ) {
+      while( g_async_queue_length (queue_output_buf) > 0 ) {
+             GstBuffer *buf = (GstBuffer *) g_async_queue_pop (queue_output_buf);
+             gst_buffer_unref (buf);
+      }
+  }
+  
+  if( queue_input_buf ) {
+    g_async_queue_unref( queue_input_buf );
+    queue_input_buf = nullptr;
+  }
+  if( queue_output_buf ) {
+    g_async_queue_unref( queue_output_buf );
+    queue_output_buf = nullptr;
+  }
 }
 
 void GstPlayer::onGstEos( GstAppSink* sink, gpointer userData )
@@ -794,61 +875,78 @@ GstFlowReturn GstPlayer::onGstPreroll( GstAppSink* sink, gpointer userData )
 {
     GstPlayer* me = static_cast<GstPlayer*>( userData );
     GstSample* newSample = gst_app_sink_pull_preroll( sink );
-    me->sample( newSample );
+    me->sample( newSample, sink );
     gst_sample_unref( newSample );
     newSample = nullptr;
     return GST_FLOW_OK;
 }
 
-void GstPlayer::sample( GstSample* sample )
+void GstPlayer::sample( GstSample* sample, GstAppSink* sink )
 {
-    std::lock_guard<std::mutex> lock( mMutex );
     GstBuffer* buffer;
     buffer = gst_sample_get_buffer( sample );
-    gst_buffer_map( buffer, &mMemoryMapInfo, GST_MAP_READ ); // Map the buffer for reading the data.
-    
-    // We have pre-rolled so query info and allocate buffers if we have a new video.
-    if( newVideo() ) {
-        GstCaps* currentCaps = gst_sample_get_caps( sample );
-        gboolean success = gst_video_info_from_caps( &mVideoInfo, currentCaps );
-        if( success ) {
-            mGstData.mWidth = mVideoInfo.width;
-            mGstData.mHeight = mVideoInfo.height;
-            mStride = mVideoInfo.stride[0];
-            mGstData.mVideoFormat = mVideoInfo.finfo->format;
-            /*std::cout << " FORMAT : " << mVideoInfo.finfo->name;
-             std::cout << " WIDTH : " << mGstData.mWidth;
-             std::cout << " HEIGHT : " << mGstData.mHeight;
-             std::cout << " BytesPerRow : " << mGstData.mWidth*(mVideoInfo.finfo->pixel_stride[0]);
-             std::cout << " STRIDE PLANE 1 : " << mStride;
-             std::cout << " STRIDE PLANE 2 : " << mVideoInfo.stride[1];
-             std::cout << " STRIDE PLANE 3 : " << mVideoInfo.stride[2] << std::endl;*/
-        }
+   
+    // Save the buffer for avoiding override on next sample and use with the async queue.
+    gst_buffer_ref( buffer );
 
-        if( !mFrontVBuffer ) {
-            mFrontVBuffer = new unsigned char[ mMemoryMapInfo.size ];
-        }
-        
-        if( !mBackVBuffer ) {
-            mBackVBuffer = new unsigned char[ mMemoryMapInfo.size ];
-        }
-        
-        ///Reset the new video flag .
-        mGstData.mVideoHasChanged = false;
+    GAsyncQueue *queue_input_buf = nullptr;
+
+    queue_input_buf = (GAsyncQueue*)g_object_get_data( G_OBJECT( sink ), "queue_input_buf" );
+    g_async_queue_push( queue_input_buf, buffer );
+
+    if( g_async_queue_length (queue_input_buf) > 0 ) {
+	    updateTexture( sample, sink );
     }
     mNewFrame = true;
-    memcpy( mBackVBuffer, mMemoryMapInfo.data, mMemoryMapInfo.size );
-    gst_buffer_unmap( buffer, &mMemoryMapInfo );
 }
 
 GstFlowReturn GstPlayer::onGstSample( GstAppSink* sink, gpointer userData )
 {
     GstPlayer* me = static_cast<GstPlayer*>( userData );
     GstSample* newSample = gst_app_sink_pull_sample( sink );
-    me->sample( newSample );
+    me->sample( newSample, sink );
     gst_sample_unref( newSample );
     newSample = nullptr;
     return GST_FLOW_OK;
+}
+
+void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
+{
+    GAsyncQueue* queue_input_buf = (GAsyncQueue*) g_object_get_data( G_OBJECT( sink ), "queue_input_buf" );
+
+    // Grab a buffer from the queue.
+    GstBuffer* buffer = (GstBuffer*)g_async_queue_pop( queue_input_buf );
+
+    // Map the GL memory for reading. This will give us the texture id that arrives from GStreamer.
+    gst_buffer_map( buffer, &mMemoryMapInfo, (GstMapFlags)(GST_MAP_READ | GST_MAP_GL) ); 
+
+    GstCaps* currentCaps = gst_sample_get_caps( sample );
+    gboolean success = gst_video_info_from_caps( &mVideoInfo, currentCaps );
+
+    if( success ) {
+        mGstData.mWidth = mVideoInfo.width;
+        mGstData.mHeight = mVideoInfo.height;
+        mStride = mVideoInfo.stride[0];
+        mGstData.mVideoFormat = mVideoInfo.finfo->format;
+        /*std::cout << " FORMAT : " << mVideoInfo.finfo->name;
+        std::cout << " WIDTH : " << mGstData.mWidth;
+        std::cout << " HEIGHT : " << mGstData.mHeight;
+        std::cout << " BytesPerRow : " << mGstData.mWidth*(mVideoInfo.finfo->pixel_stride[0]);
+        std::cout << " STRIDE PLANE 1 : " << mStride;
+        std::cout << " STRIDE PLANE 2 : " << mVideoInfo.stride[1];
+        std::cout << " STRIDE PLANE 3 : " << mVideoInfo.stride[2] << std::endl;*/
+    }
+
+    // Save the texture ID.
+    mMutex.lock();
+    mGstTextureID = *(guint*)mMemoryMapInfo.data;
+    mMutex.unlock();
+
+    // Unmap the memory. 
+    gst_buffer_unmap( buffer, &mMemoryMapInfo );
+
+    // Push the buffer on the out queue for unref-ing later on.
+    g_async_queue_push( queue_output_buf, buffer );
 }
 
 } }

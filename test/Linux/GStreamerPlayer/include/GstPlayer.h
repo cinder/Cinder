@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cinder/gl/Texture.h"
+
 #ifdef __linux__
 #include <cstring>
 #endif
@@ -15,12 +17,15 @@
 #include <thread>
 #include <mutex>
 
-
-#include "cinder/Thread.h"
+#include <gst/gl/gstglconfig.h>
+#include <gst/gl/gstglcontext.h>
+#include <gst/gl/gstgldisplay.h>
+#include <gst/gl/x11/gstgldisplay_x11.h>
 
 
 namespace gst { namespace video {
-    
+
+ 
     struct GstCustomPipelineData{
         std::string pipeline;
         std::string video_sink;
@@ -63,6 +68,9 @@ namespace gst { namespace video {
         std::atomic<bool> mPalindrome;
         std::atomic<float> mRate;
         std::atomic<bool> mIsStream;
+
+	GstGLContext* mCinderContext = nullptr;
+	GstGLDisplay* mCinderDisplay = nullptr;
     };
     
     class GstPlayer
@@ -112,14 +120,13 @@ namespace gst { namespace video {
         
         GstElement* getPipeline();
         
-        unsigned char* getVideoBuffer();
-        
         void seekToTime( float seconds );
         
         bool isStream() const;
 
         GstData& getGstData();
 
+	ci::gl::Texture2dRef getVideoTexture();
     private:
         
         bool initializeGStreamer();
@@ -132,7 +139,7 @@ namespace gst { namespace video {
         static GstFlowReturn onGstSample( GstAppSink* sink, gpointer userData );
         // ..and forwarded to the following.
         void eos();
-        void sample( GstSample* sample );
+        void sample( GstSample* sample, GstAppSink* sink );
         
         // States..
         bool setPipelineState( GstState targetState );
@@ -151,28 +158,32 @@ namespace gst { namespace video {
         void resetBus();
         void cleanup();
         void resetVideoBuffers();
+
+        void updateTexture( GstSample* sample, GstAppSink* sink );
     private:
         GMainLoop* mGMainLoop; // Needed for message activation since we are not using signals.
         GstBus* mGstBus; // Delivers the messages.
         int  busID; // Save the id of the bus for releasing when not needed.
         std::thread mGMainLoopThread; // Seperate thread for GMainLoop.
         
-        GstMapInfo mMemoryMapInfo; // Memory map that holds the raw video buffer.
+        GstMapInfo mMemoryMapInfo; // Memory map that holds the Gst_GL texture ID.
         GstVideoInfo mVideoInfo; // For retrieving video info.
-        GstElement* mGstPipeline; // Our playbin pipeline.
+        GstElement* mGstPipeline; // Our pipeline.
         GstElement* mGstAppSink; // Raw buffer destination and eos.
         
-        unsigned char* mBackVBuffer; // The write buffer.
-        unsigned char* mFrontVBuffer; // The read buffer.
+        std::mutex mMutex; // Protect  since the appsink callbacks are executed from the streaming thread internally from GStreamer.
         
-        std::mutex mMutex; // Protect our buffer since the appsink callbacks are executed from the streaming thread internally from GStreamer.
-        
-        bool mUseNativeFormat;
         bool mUsingCustomPipeline;
         GstData mGstData; // Data that describe the current state of the pipeline.
         
         std::atomic<int> mStride; // Video stride.. This needs more thinking..
         std::atomic<bool> mNewFrame;
+
+	ci::gl::Texture2dRef videoTexture;
+	GLint mGstTextureID;
+	
+	GAsyncQueue* queue_input_buf = nullptr;
+	GAsyncQueue* queue_output_buf = nullptr;
     };
     
 } }
