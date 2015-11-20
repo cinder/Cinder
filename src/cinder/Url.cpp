@@ -46,8 +46,8 @@
 	#include "cinder/UrlImplJni.h"
 	typedef cinder::IStreamUrlImplJni		IStreamUrlPlatformImpl;
 #elif defined( CINDER_LINUX ) 
-	#include "cinder/UrlImplNull.h"
-	typedef cinder::IStreamUrlImplNull	IStreamUrlPlatformImpl;
+	#include "cinder/UrlImplCurl.h"
+	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;
 #else
 	#include "cinder/UrlImpl.h"
 	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;

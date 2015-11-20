@@ -173,39 +173,20 @@ FileType determineFileType( const ci::IStreamRef& stream )
 
 		stream->seekAbsolute( 0 );
 
-		// @TOD: Fix this block
 		int ret = MPG123_OK;
 		mpg123_handle* handle = mpg123_new( nullptr, &ret );
-		if( ( MPG123_OK == ret ) && ( MPG123_OK == mpg123_open_feed( handle ) ) ) {
-			const size_t kStreamSize = stream->size();
-
-			const size_t kBufSize = 4096;
-			char buf[kBufSize];
-
-			size_t totalBytesRead = 0;
-			do {
-				size_t readSize = std::min<size_t>( kBufSize, ( kStreamSize - stream->tell() ) );
-				size_t pos0 = stream->tell();
-				stream->readData( static_cast<void*>( buf ), readSize );
-				size_t pos1 = stream->tell();
-				size_t amountRead = pos1 - pos0;
-				if( 0 == amountRead ) {
-					break;
+		if( ( MPG123_OK == ret ) && ( MPG123_OK == mpg123_replace_reader_handle( handle, IStreamMpg123::read, IStreamMpg123::seek, nullptr ) ) ) {
+			if( MPG123_OK == mpg123_open_handle( handle, stream.get() ) ) {
+				long rate = 0;
+				int channels = 0;
+				int encodings = -1;
+				off_t len = MPG123_ERR;
+				if( ( MPG123_OK == mpg123_getformat( handle, &rate, &channels, &encodings ) ) && ( len =mpg123_length( handle ) ) ) {
+					if( ( MPG123_ERR != len ) && ( len > 0 ) ) {
+						result = FileType::MP3;
+					}
 				}
-				totalBytesRead += amountRead;
-				ret = mpg123_decode( handle, reinterpret_cast<const unsigned char*>( buf ), amountRead, nullptr, 0, nullptr );
-			}
-			while( ( MPG123_NEED_MORE == ret ) && ( totalBytesRead < 64*1024 ) );
-
-			long rate = 0;
-			int channels = 0;
-			int encodings = -1;
-			if( ( MPG123_NEW_FORMAT == ret ) && ( MPG123_OK == mpg123_getformat( handle, &rate, &channels, &encodings ) ) ) {
-				if( ( MPG123_OK == mpg123_format_none( handle ) ) && ( MPG123_OK == mpg123_format( handle, rate, channels, MPG123_ENC_SIGNED_16 ) ) ) {
-					result = FileType::MP3;
-				}
-			}
-
+			}		
 			mpg123_delete( handle );
 		}
 	}
@@ -370,7 +351,7 @@ size_t FileLoaderMpg123::getNumFrames() const
 	size_t result = 0;
 	if( nullptr != mHandle) {
 		// mpg123_length seems to return the number of frames - not samples as stated in the docs.
-		off_t len = static_cast<size_t>( mpg123_length( mHandle ) );
+		off_t len = mpg123_length( mHandle );
 		if( MPG123_ERR != len ) {
 			result = len ;
 		}
@@ -467,6 +448,10 @@ size_t FileLoaderSndFile::read( void* buffer, size_t frameCount )
 	}
 
 	size_t numFramesRead = sf_readf_float( mHandle, static_cast<float*>( buffer ), frameCount );
+	int errorNum = sf_error( mHandle );
+	if( SF_ERR_NO_ERROR != errorNum ) {
+		throw AudioFileExc( std::string( "sndfile I/O error: " ) + sf_error_number( errorNum ) );
+	}
 
 	return numFramesRead;
 }
@@ -547,12 +532,12 @@ void SourceFileAudioLoader::init()
 
 	mNumFrames = mFileNumFrames = mFileLoader->getNumFrames();
 
-	/*
+/*
 	std::cout << "Sample rate  : " << getSampleRateNative() << std::endl;
 	std::cout << "Num channels : " << getNumChannels() << std::endl;
 	std::cout << "Num frames   : " << getNumFrames() << std::endl;
 	std::cout << "Num seconds  : " << getNumSeconds() << std::endl;
-	*/
+*/
 
 	mAudioData.setSize( getMaxFramesPerRead(), mFileLoader->getNumChannels() );
 }

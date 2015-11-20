@@ -100,8 +100,8 @@ if( CINDER_TOOLCHAIN_CLANG )
 
     set( STDCXXLIB                           	"-stdlib=libstdc++" )
 else()
-    set( CMAKE_C_COMPILER	"gcc" 			CACHE FILEPATH "" FORCE )
-    set( CMAKE_CXX_COMPILER	"g++" 			CACHE FILEPATH "" FORCE )	
+    set( CMAKE_C_COMPILER	"gcc" 				CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER	"g++" 				CACHE FILEPATH "" FORCE )	
 endif()
 
 # Needs to come atfer compilers are set
@@ -203,25 +203,12 @@ list( APPEND CINDER_LIBS_DEPENDS ${PULSEAUDIO_LIBRARY} )
 
 ## mpg123
 find_package( MPG123 REQUIRED )
+list( APPEND CINDER_INCLUDE_DEPENDS ${MPG123_INCLUDE_DIR} )
 list( APPEND CINDER_LIBS_DEPENDS ${MPG123_LIBRARY} )
 
 # sndfile
 find_package( SNDFILE REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${SNDFILE_LIBRARY} )
-
-# GStreamer
-set( CINDER_USE_GSTREAMER true )
-
-if( CINDER_USE_GSTREAMER )
-    find_package (Glib REQUIRED COMPONENTS gobject )
-    list( APPEND CINDER_INCLUDE_DEPENDS ${GLIB_INCLUDE_DIRS} )
-    list(APPEND CINDER_LIBS_DEPENDS ${GLIB_GOBJECT_LIBRARIES} ${GLIB_LIBRARIES} )
-
-    # We use a local version of GStreamer for now.
-    #find_package( GStreamer REQUIRED )
-    #list( APPEND CINDER_INCLUDE_DEPENDS ${GSTREAMER_INCLUDE_DIRS} ${GSTREAMER_BASE_INCLUDE_DIRS} ${GSTREAMER_APP_INCLUDE_DIRS} ${GSTREAMER_VIDEO_INCLUDE_DIRS} )
-    #list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_LIBRARIES} ${GSTREAMER_BASE_LIBRARIES} ${GSTREAMER_APP_LIBRARIES} ${GSTREAMER_VIDEO_LIBRARIES} )
-endif()
 
 
 ### Set this to use system wide libs instead of compiling dependencies from source.
@@ -240,7 +227,57 @@ else()
 
     list( APPEND CINDER_INCLUDE_DEPENDS ${CINDER_INC_DIR}/freetype )
 
-    list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/gstreamer/libgstbase-1.0.so
+endif()
+
+### Create our Cinder target.
+add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+
+# Boost. If on gcc >= 5.0 we need to switch to system installed boost since the one that ships with Cinder is compiled against older ABI.
+set( USE_SYSTEM_BOOST false )
+set( USE_SYSTEM_GSTREAMER false )
+
+execute_process( COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION )
+if( "${GCC_VERSION}" VERSION_GREATER 5.0 OR "${GCC_VERSION}" VERSION_EQUAL 5.0 )
+	message( "Detected gcc >= 5.0 -- You will need libboost-system1.58-dev and libboost-filesystem1.58-dev and GStreamer ( to be continued ) installed in your system." )
+	set( USE_SYSTEM_BOOST true )
+        set( USE_SYSTEM_GSTREAMER true )
+endif()
+
+if( USE_SYSTEM_BOOST )
+    find_package( Boost 1.58 REQUIRED COMPONENTS system filesystem )
+    list( APPEND CINDER_INCLUDE_DEPENDS ${Boost_INCLUDE_DIRS} )
+    list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
+else()
+    ### There is a conflict between boost/regex.h and /usr/include/regex.h when building the examples
+    ### so avoid propagating the boost dirs across the compilation of samples.
+    target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${CINDER_INC_DIR}/boost> )
+
+    list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/libboost_system.a
+                                    ${CINDER_LIB_DIR}/libboost_filesystem.a )
+
+endif()
+
+# GStreamer
+set( CINDER_USE_GSTREAMER true )
+
+if( CINDER_USE_GSTREAMER )
+    find_package (Glib REQUIRED COMPONENTS gobject )
+    list( APPEND CINDER_INCLUDE_DEPENDS ${GLIB_INCLUDE_DIRS} )
+    list(APPEND CINDER_LIBS_DEPENDS ${GLIB_GOBJECT_LIBRARIES} ${GLIB_LIBRARIES} )
+
+    if( USE_SYSTEM_GSTREAMER )
+        # We use a local version of GStreamer for now.
+        find_package( GStreamer REQUIRED )
+        list( APPEND CINDER_INCLUDE_DEPENDS ${GSTREAMER_INCLUDE_DIRS} ${GSTREAMER_BASE_INCLUDE_DIRS} ${GSTREAMER_APP_INCLUDE_DIRS} ${GSTREAMER_VIDEO_INCLUDE_DIRS} ${GSTREAMER_GL_INCLUDE_DIRS} )
+        list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_LIBRARIES} ${GSTREAMER_BASE_LIBRARIES} ${GSTREAMER_APP_LIBRARIES} ${GSTREAMER_VIDEO_LIBRARIES} ${GSTREAMER_GL_LIBRARIES})
+    else()
+        # GStreamer include paths.
+        list(APPEND CINDER_INCLUDE_DIRS 
+	     ${CINDER_LIB_DIR}/gstreamer/gstreamer-1.0/include # gstconfig.h lives there since 1.5.1 .
+	     ${CINDER_INC_DIR}/gstreamer/gstreamer-1.0		
+        )
+      
+        list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/gstreamer/libgstbase-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstbadvideo-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstbadbase-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstallocators-1.0.so
@@ -265,35 +302,10 @@ else()
 					${CINDER_LIB_DIR}/gstreamer/libgstvideo-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstaudio-1.0.so
 					${CINDER_LIB_DIR}/gstreamer/libgstapp-1.0.so
-					${CINDER_LIB_DIR}/gstreamer/libgstreamer-1.0.so
-)
+					${CINDER_LIB_DIR}/gstreamer/libgstreamer-1.0.so	 )
+     endif()
 endif()
 
-### Create our Cinder target.
-add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
-
-# Boost. If on gcc >= 5.0 we need to switch to system installed boost since the one that ships with Cinder is compiled against older ABI.
-set( USE_SYSTEM_BOOST false )
-
-execute_process( COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION )
-if( "${GCC_VERSION}" VERSION_GREATER 5.0 OR "${GCC_VERSION}" VERSION_EQUAL 5.0 )
-	message( "Detected gcc >= 5.0 -- You will need libboost-system1.58-dev and libboost-filesystem1.58-dev installed in your system." )
-	set( USE_SYSTEM_BOOST true )
-endif()
-
-if( USE_SYSTEM_BOOST )
-    find_package( Boost 1.58 REQUIRED COMPONENTS system filesystem )
-    list( APPEND CINDER_INCLUDE_DEPENDS ${Boost_INCLUDE_DIRS} )
-    list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
-else()
-    ### There is a conflict between boost/regex.h and /usr/include/regex.h when building the examples
-    ### so avoid propagating the boost dirs across the compilation of samples.
-    target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${CINDER_INC_DIR}/boost> )
-
-    list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/libboost_system.a
-                                    ${CINDER_LIB_DIR}/libboost_filesystem.a )
-
-endif()
 
 ### https://cmake.org/cmake/help/v3.0/command/target_include_directories.html
 ###

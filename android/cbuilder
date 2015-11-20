@@ -31,9 +31,9 @@ FULLBUILD=true
 VERBOSE=
 TOOLCHAIN=gcc49
 
-if [ "$(uname -s)" == "GNU/Linux" ]; then
+if [[ "$(uname -s)" == *"Linux"* ]]; then
 	NUMPROCS=$(nproc)
-elif [ "$(uname -s)" == "Darwin" ]; then
+elif [[ "$(uname -s)" == *"Darwin"* ]]; then
     NUMPROCS=$(sysctl -n hw.ncpu)
 fi
 

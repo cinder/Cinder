@@ -24,8 +24,3 @@ list( APPEND CINDER_INCLUDE_DIRS
 		${CINDER_SRC_DIR}/r8brain
 )
 
-# GStreamer include paths.
-list(APPEND CINDER_INCLUDE_DIRS 
-		${CINDER_LIB_DIR}/gstreamer/gstreamer-1.0/include # gstconfig.h lives there since 1.5.1 .
-		${CINDER_INC_DIR}/gstreamer/gstreamer-1.0		
-)

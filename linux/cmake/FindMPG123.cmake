@@ -8,12 +8,13 @@
 
 set( MPG123_FOUND false )
 
-set( MPG123_INCLUDE_DIRS /usr/local/include /usr/include )
+set( MPG123_INCLUDE_DIRS /opt/local/include /usr/local/include /usr/include )
+set( MPG123_LIBRARY_DIRS /opt/local/lib /usr/local/lib /usr/lib )
 
-set( MPG123_LIBRARY_DIRS /usr/lib /usr/local/lib )
+set( MPG123_LIB_SUFFIXES lib x86_64-linux-gnu arm-linux-gnueabihf )
 
-find_path( MPG123_INCLUDE_DIR NAMES mpg123.h PATHS ${MPG123_INCLUDE_DIRS} PATH_SUFFIXES include )
-find_library( MPG123_LIBRARY  NAMES mpg123   PATHS ${MPG123_LIBRARY_DIRS} PATH_SUFFIXES lib )
+find_path( MPG123_INCLUDE_DIR NAMES "mpg123.h" PATHS ${MPG123_INCLUDE_DIRS} PATH_SUFFIXES include NO_DEFAULT_PATH )
+find_library( MPG123_LIBRARY  NAMES "mpg123"   PATHS ${MPG123_LIBRARY_DIRS} PATH_SUFFIXES ${MPG123_LIB_SUFFIXES} NO_DEFAULT_PATH )
 
 mark_as_advanced( MPG123_INCLUDE_DIR MPG123_LIBRARY )
 
@@ -38,4 +39,5 @@ find_package_handle_standard_args(
 )
 
 if( MPG123_FOUND )
+	message( STATUS "  using MPG123 headers at: ${MPG123_INCLUDE_DIR}" )
 endif()

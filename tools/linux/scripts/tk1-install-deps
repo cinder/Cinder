@@ -1,0 +1,13 @@
+apt-get install libxcursor-dev \
+libxrandr-dev \
+libxinerama-dev \
+libxi-dev \
+libgl1-mesa-dev \
+libgles2-mesa-dev \
+zlib1g-dev \
+libfontconfig1-dev \
+libsndfile1 \
+libsndfile1-dev \
+libpulse-dev \
+libasound2-dev \
+libcurl4-gnutls-dev

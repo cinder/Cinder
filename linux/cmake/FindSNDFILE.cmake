@@ -8,12 +8,13 @@
 
 set( SNDFILE_FOUND false )
 
-set( SNDFILE_INCLUDE_DIRS /usr/local/include /usr/include )
+set( SNDFILE_INCLUDE_DIRS /opt/local/include /usr/local/include /usr/include )
+set( SNDFILE_LIBRARY_DIRS /opt/local/lib /usr/local/lib /usr/lib )
 
-set( SNDFILE_LIBRARY_DIRS /usr/lib /usr/local/lib )
+set( SNDFILE_LIB_SUFFIXES lib x86_64-linux-gnu arm-linux-gnueabihf )
 
-find_path( SNDFILE_INCLUDE_DIR NAMES sndfile.h PATHS ${SNDFILE_INCLUDE_DIRS} PATH_SUFFIXES include )
-find_library( SNDFILE_LIBRARY  NAMES sndfile   PATHS ${SNDFILE_LIBRARY_DIRS} PATH_SUFFIXES lib )
+find_path( SNDFILE_INCLUDE_DIR NAMES "sndfile.h" PATHS ${SNDFILE_INCLUDE_DIRS} PATH_SUFFIXES include NO_DEFAULT_PATH )
+find_library( SNDFILE_LIBRARY  NAMES "sndfile"   PATHS ${SNDFILE_LIBRARY_DIRS} PATH_SUFFIXES ${SNDFILE_LIB_SUFFIXES} NO_DEFAULT_PATH )
 
 mark_as_advanced( SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY )
 
@@ -30,10 +31,13 @@ if( SNDFILE_LIBRARY AND EXISTS "${SNDFILE_LIBRARY}" )
     set( SNDFILE_PATCH_VERSION "${SNDFILE_VERSION_PATCH}" )
 endif()
 
-
 include( FindPackageHandleStandardArgs )
 find_package_handle_standard_args( 
 	SNDFILE	
 	REQUIRED_VARS SNDFILE_LIBRARY SNDFILE_INCLUDE_DIR 
 	VERSION_VAR SNDFILE_VERSION_STRING
 )
+
+if( SNDFILE_FOUND )
+	message( STATUS "  using SNDFILE headers at: ${SNDFILE_INCLUDE_DIR}" )
+endif()

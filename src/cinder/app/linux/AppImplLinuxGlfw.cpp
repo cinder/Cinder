@@ -32,10 +32,10 @@ namespace cinder { namespace app {
 class GlfwCallbacks {
 public:
 	
-	static std::map<GLFWwindow*, WindowRef> sWindowMapping;
+	static std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> sWindowMapping;
 
-	static void registerWindowEvents( GLFWwindow *glfwWindow, const WindowRef& cinderWindow ) {
-		sWindowMapping[glfwWindow] = cinderWindow;
+	static void registerWindowEvents( GLFWwindow *glfwWindow, AppImplLinux* cinderAppImpl, const WindowRef& cinderWindow ) {
+		sWindowMapping[glfwWindow] = std::make_pair( cinderAppImpl, cinderWindow );
 
 		::glfwSetWindowSizeCallback( glfwWindow, GlfwCallbacks::onWindowSize );
 		::glfwSetKeyCallback( glfwWindow, GlfwCallbacks::onKeyboard );
@@ -54,7 +54,10 @@ public:
 	static void onWindowSize( GLFWwindow* glfwWindow, int width, int height ) {
 		auto iter = sWindowMapping.find( glfwWindow );
 		if( sWindowMapping.end() != iter ) {
-			auto& cinderWindow = iter->second;
+			auto& cinderAppImpl = iter->second.first;
+			auto& cinderWindow = iter->second.second;
+			cinderAppImpl->setWindow( cinderWindow );
+
 			cinderWindow->emitResize();
 		}
 	}
@@ -62,7 +65,9 @@ public:
 	static void onKeyboard( GLFWwindow *glfwWindow, int key, int scancode, int action, int mods ) {
 		auto iter = sWindowMapping.find( glfwWindow );
 		if( sWindowMapping.end() != iter ) {
-			auto& cinderWindow = iter->second;
+			auto& cinderAppImpl = iter->second.first;
+			auto& cinderWindow = iter->second.second;
+			cinderAppImpl->setWindow( cinderWindow );
 
 			int nativeKeyCode = KeyEvent::translateNativeKeyCode( key );
 			uint32_t char32 = 0;
@@ -81,20 +86,33 @@ public:
 	static void onMousePos( GLFWwindow* glfwWindow, double mouseX, double mouseY ) {
 		auto iter = sWindowMapping.find( glfwWindow );
 		if( sWindowMapping.end() != iter ) {
-			auto& cinderWindow = iter->second;
+			auto& cinderAppImpl = iter->second.first;
+			auto& cinderWindow = iter->second.second;
+			cinderAppImpl->setWindow( cinderWindow );
 
 			int initiator = 0;
 			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_LEFT ) ) {
-				initiator |= MouseEvent::LEFT_DOWN;
+				initiator = MouseEvent::LEFT_DOWN;
 			}
-			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE ) ) {
-				initiator |= MouseEvent::MIDDLE_DOWN;
+			else if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE ) ) {
+				initiator = MouseEvent::MIDDLE_DOWN;
 			}
-			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_RIGHT ) ) {
-				initiator |= MouseEvent::RIGHT_DOWN;
+			else if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_RIGHT ) ) {
+				initiator = MouseEvent::RIGHT_DOWN;
 			}
 
-			MouseEvent event( getWindow(), initiator, (int)mouseX, (int)mouseY, 0, 0.0f, 0 );
+			int modifiers = 0;
+			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_LEFT ) ) {
+				modifiers |= MouseEvent::LEFT_DOWN;
+			}
+			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE ) ) {
+				modifiers |= MouseEvent::MIDDLE_DOWN;
+			}
+			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_RIGHT ) ) {
+				modifiers |= MouseEvent::RIGHT_DOWN;
+			}
+
+			MouseEvent event( getWindow(), initiator, (int)mouseX, (int)mouseY, modifiers, 0.0f, 0 );
 			if( 0 != initiator ) {
 				cinderWindow->emitMouseDrag( &event );
 			}
@@ -107,7 +125,9 @@ public:
 	static void onMouseButton(GLFWwindow* glfwWindow, int button, int action, int mod ) {
 		auto iter = sWindowMapping.find( glfwWindow );
 		if( sWindowMapping.end() != iter ) {
-			auto& cinderWindow = iter->second;
+			auto& cinderAppImpl = iter->second.first;
+			auto& cinderWindow = iter->second.second;
+			cinderAppImpl->setWindow( cinderWindow );
 
 			double mouseX, mouseY;
 			::glfwGetCursorPos( glfwWindow, &mouseX, &mouseY );
@@ -132,7 +152,7 @@ public:
 	}
 };
 
-std::map<GLFWwindow*, WindowRef> GlfwCallbacks::sWindowMapping;
+std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> GlfwCallbacks::sWindowMapping;
 
 ////////////////////////////////////////////////////////////////////////////////
 // AppImplLinux
@@ -366,7 +386,7 @@ ivec2 AppImplLinux::getMousePos() const
 
 void AppImplLinux::registerWindowEvents( WindowImplLinux* window )
 {
-	GlfwCallbacks::registerWindowEvents( window->getNative(), window->getWindow() );
+	GlfwCallbacks::registerWindowEvents( window->getNative(), this, window->getWindow() );
 }
 
 void AppImplLinux::unregisterWindowEvents( WindowImplLinux* window )
