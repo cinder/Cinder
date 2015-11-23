@@ -1,12 +1,14 @@
 #include "GstPlayer.h"
 
-#include "glfw/glfw3.h"
-
-#define GLFW_EXPOSE_NATIVE_X11
-#define GLFW_EXPOSE_NATIVE_GLX
-#include "glfw/glfw3native.h"
+#ifndef CINDER_LINUX_EGL_ONLY
+    #include "glfw/glfw3.h"
+    #define GLFW_EXPOSE_NATIVE_X11
+    #define GLFW_EXPOSE_NATIVE_GLX
+    #include "glfw/glfw3native.h"
+#endif
 
 #include "cinder/app/AppBase.h"
+#include "cinder/gl/Environment.h"
 
 namespace gst { namespace video {
 
@@ -418,6 +420,11 @@ void GstPlayer::addBusWatch( GstElement* pipeline )
     
 bool GstPlayer::initialize()
 {        
+    auto _platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataLinux>( ci::gl::context()->getPlatformData() );
+#if defined( CINDER_LINUX_EGL_ONLY )
+    mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_egl_new_with_egl_display( _platformData->mDisplay );
+    mGstData.mCinderContext= gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)_platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
+#else
     const gchar* platform = "glx";
 
     mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
@@ -425,6 +432,7 @@ bool GstPlayer::initialize()
     ::GLFWwindow *window =  (::GLFWwindow*)ci::app::AppBase::get()->getWindow()->getNative() ;
 
     mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetGLXContext(window), gst_gl_platform_from_string( platform ), GST_GL_API_OPENGL );
+#endif
 
     return true;
 }
@@ -451,7 +459,7 @@ void GstPlayer::load( std::string _path )
 
 	GError *error = nullptr;
 	std::string capsGL = "video/x-raw(memory:GLMemory), format=RGBA";
-	std::string pipelineStr = "uridecodebin name=uridecode ! glupload ! glcolorconvert ! appsink name=videosink caps=\""+capsGL+"\"";
+	std::string pipelineStr = "uridecodebin name=uridecode uridecode. ! queue name=audioqueue ! audioconvert ! autoaudiosink uridecode. ! queue ! glupload ! glcolorconvert ! appsink name=videosink caps=\""+capsGL+"\"";
 	mGstPipeline = gst_parse_launch( pipelineStr.c_str(), &error );
 	
 	if( error != nullptr ) {
@@ -506,6 +514,7 @@ void GstPlayer::load( std::string _path )
     }
     // set the new movie path
     g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "uridecode" ) ), "uri", _path.c_str(), nullptr );
+    g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "audioqueue" ) ), "max-size-buffers", 1, nullptr );
     
     // and preroll async.
     gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );

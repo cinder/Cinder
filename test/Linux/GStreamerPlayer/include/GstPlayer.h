@@ -20,7 +20,12 @@
 #include <gst/gl/gstglconfig.h>
 #include <gst/gl/gstglcontext.h>
 #include <gst/gl/gstgldisplay.h>
-#include <gst/gl/x11/gstgldisplay_x11.h>
+
+#ifdef CINDER_LINUX_EGL_ONLY
+    #include <gst/gl/egl/gstgldisplay_egl.h>
+#else
+    #include <gst/gl/x11/gstgldisplay_x11.h>
+#endif
 
 
 namespace gst { namespace video {
