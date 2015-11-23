@@ -73,9 +73,16 @@ namespace gst { namespace video {
         std::atomic<bool> mPalindrome;
         std::atomic<float> mRate;
         std::atomic<bool> mIsStream;
+        std::atomic<bool> mHasAudio;
 
 	GstGLContext* mCinderContext = nullptr;
 	GstGLDisplay* mCinderDisplay = nullptr;
+
+	GstElement* uridecode = nullptr;
+ 	GstElement* glupload = nullptr;
+	GstElement* glcolorconvert = nullptr;
+	GstElement* audioconvert = nullptr;
+	GstElement* audiosink = nullptr;
     };
     
     class GstPlayer

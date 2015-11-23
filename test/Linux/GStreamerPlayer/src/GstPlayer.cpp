@@ -245,7 +245,54 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
         default:
             break;
     }
-    return TRUE;}
+    return TRUE; 
+}
+
+static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
+{ 
+    GstData & data = player->getGstData();
+    GstPad *sinkPad = nullptr; 
+    GstCaps *new_pad_caps = nullptr;
+    GstStructure *new_pad_structure = nullptr;
+    const gchar *new_pad_type = nullptr;
+    new_pad_caps= gst_pad_get_current_caps( newPad );
+    new_pad_structure = gst_caps_get_structure( new_pad_caps, 0 );
+    new_pad_type = gst_structure_get_name( new_pad_structure );
+    bool audio = false;
+    if( g_str_has_prefix( new_pad_type, "audio/x-raw" ) ){
+	gst_bin_add_many( GST_BIN( player->getPipeline() ), data.audioconvert, data.audiosink, NULL );
+	if( !gst_element_link( data.audioconvert, data.audiosink ) ) {
+	    g_printerr( " FAILED to LINK AUDIO elements.\n" );
+  	}
+        data.mHasAudio = true;
+	sinkPad = gst_element_get_static_pad( data.audioconvert, "sink" ); 
+    }
+    else if( g_str_has_prefix( new_pad_type, "video/x-raw" )  ) {
+	sinkPad = gst_element_get_static_pad( data.glupload, "sink" );
+    }
+
+    GstPadLinkReturn ret;
+    g_print ("Received new pad '%s' from '%s'\n", GST_PAD_NAME (newPad), GST_ELEMENT_NAME (src));
+    if( gst_pad_is_linked( sinkPad ) ) {
+    	g_print( "Pad already linked! Nothing to do...\n");
+	return;
+    }
+   
+    ret = gst_pad_link( newPad, sinkPad );
+    if (GST_PAD_LINK_FAILED (ret)) {
+    	g_print ("  Type is '%s' but link failed.\n", new_pad_type);
+    } else {
+    	g_print ("  Link succeeded (type '%s').\n", new_pad_type);
+    }
+
+    if( data.mHasAudio ) {
+    	gst_element_sync_state_with_parent( data.audioconvert );
+    	gst_element_sync_state_with_parent( data.audiosink );
+    }
+
+    if( new_pad_caps != nullptr ) gst_caps_unref( new_pad_caps );
+    gst_object_unref( sinkPad );
+}
 
 GstPlayer::GstPlayer()
 : mGMainLoop(nullptr)
@@ -460,19 +507,31 @@ void GstPlayer::load( std::string _path )
 	GError *error = nullptr;
 	std::string capsGL = "video/x-raw(memory:GLMemory), format=RGBA";
 	std::string pipelineStr = "uridecodebin name=uridecode uridecode. ! queue name=audioqueue ! audioconvert ! autoaudiosink uridecode. ! queue ! glupload ! glcolorconvert ! appsink name=videosink caps=\""+capsGL+"\"";
-	mGstPipeline = gst_parse_launch( pipelineStr.c_str(), &error );
+	//mGstPipeline = gst_parse_launch( pipelineStr.c_str(), &error );
 	
+	mGstPipeline = gst_pipeline_new( "cinder-pipeline" );
+ 	mGstData.uridecode = gst_element_factory_make( "uridecodebin", "uridecode" );	
+ 	mGstData.glupload = gst_element_factory_make( "glupload", "upload" );
+	mGstData.glcolorconvert = gst_element_factory_make( "glcolorconvert", "convert" );
+	mGstAppSink = gst_element_factory_make( "appsink", "videosink" );
+
+	mGstData.audioconvert = gst_element_factory_make( "audioconvert", "audioconv" );
+	mGstData.audiosink = gst_element_factory_make( "autoaudiosink", "audiosink" );
+
+	if( !mGstPipeline || !mGstData.uridecode || !mGstData.glupload || !mGstData.glcolorconvert || !mGstAppSink || !mGstData.audioconvert || !mGstData.audiosink ) {
+	    g_printerr( "Not all elements could be created !\n" );
+	}
+
+	gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.uridecode, mGstData.glupload, mGstData.glcolorconvert, mGstAppSink, NULL );
+	if( !gst_element_link_many( mGstData.glupload, mGstData.glcolorconvert, mGstAppSink, nullptr ) ) {
+	    g_printerr( " FAILED to LINK VIDEO elements.\n" );
+	}
+
 	if( error != nullptr ) {
 	    g_print( "Could not construct custom pipeline: %s\n", error->message );
 	    g_error_free (error);
 	}
 
-	if( mGstPipeline ) {
-	    // Currently assumes that the pipeline has an appsink named 'videosink'.
-	    // This is just for testing and it has to be more generic.
-	    mGstAppSink = gst_bin_get_by_name (GST_BIN (mGstPipeline), "videosink");
-	}
-	
 	addBusWatch( mGstPipeline );
 	
 	if( mGstAppSink ) {
@@ -482,6 +541,9 @@ void GstPlayer::load( std::string _path )
 	    appSinkCallbacks.new_sample = onGstSample;
 	
 	    gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
+	    GstCaps* caps = gst_caps_from_string( capsGL.c_str() );
+	    gst_app_sink_set_caps( GST_APP_SINK( mGstAppSink), caps);
+	    gst_caps_unref(caps);
 	}
     }
     
@@ -514,7 +576,8 @@ void GstPlayer::load( std::string _path )
     }
     // set the new movie path
     g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "uridecode" ) ), "uri", _path.c_str(), nullptr );
-    g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "audioqueue" ) ), "max-size-buffers", 1, nullptr );
+    //g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "audioqueue" ) ), "max-size-buffers", 1, nullptr );
+    g_signal_connect( mGstData.uridecode, "pad-added", G_CALLBACK( cb_new_pad ), this );
     
     // and preroll async.
     gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );
