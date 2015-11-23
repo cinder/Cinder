@@ -472,13 +472,8 @@ bool GstPlayer::initialize()
     mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_egl_new_with_egl_display( _platformData->mDisplay );
     mGstData.mCinderContext= gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)_platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
 #else
-    const gchar* platform = "glx";
-
     mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
-
-    ::GLFWwindow *window =  (::GLFWwindow*)ci::app::AppBase::get()->getWindow()->getNative() ;
-
-    mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetGLXContext(window), gst_gl_platform_from_string( platform ), GST_GL_API_OPENGL );
+    mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetGLXContext( _platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
 #endif
 
     return true;
