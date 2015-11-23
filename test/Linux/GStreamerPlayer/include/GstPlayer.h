@@ -50,6 +50,7 @@ namespace gst { namespace video {
             mHeight = -1;
             mAsyncStateChangePending = false;
             mTargetState = mCurrentState = GST_STATE_NULL;
+            mHasAudio = false;
         }
         
         std::atomic<bool> mPaused;
@@ -75,14 +76,16 @@ namespace gst { namespace video {
         std::atomic<bool> mIsStream;
         std::atomic<bool> mHasAudio;
 
-	GstGLContext* mCinderContext = nullptr;
-	GstGLDisplay* mCinderDisplay = nullptr;
+	    GstGLContext* mCinderContext = nullptr;
+	    GstGLDisplay* mCinderDisplay = nullptr;
 
-	GstElement* uridecode = nullptr;
- 	GstElement* glupload = nullptr;
-	GstElement* glcolorconvert = nullptr;
-	GstElement* audioconvert = nullptr;
-	GstElement* audiosink = nullptr;
+	    GstElement* uridecode = nullptr;
+ 	    GstElement* glupload = nullptr;
+	    GstElement* glcolorconvert = nullptr;
+	    GstElement* audioconvert = nullptr;
+	    GstElement* audiosink = nullptr;
+        GstElement* audioQueue = nullptr;
+        GstElement* videoQueue = nullptr;
     };
     
     class GstPlayer

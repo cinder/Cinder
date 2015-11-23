@@ -258,17 +258,16 @@ static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
     new_pad_caps= gst_pad_get_current_caps( newPad );
     new_pad_structure = gst_caps_get_structure( new_pad_caps, 0 );
     new_pad_type = gst_structure_get_name( new_pad_structure );
-    bool audio = false;
     if( g_str_has_prefix( new_pad_type, "audio/x-raw" ) ){
-	gst_bin_add_many( GST_BIN( player->getPipeline() ), data.audioconvert, data.audiosink, NULL );
-	if( !gst_element_link( data.audioconvert, data.audiosink ) ) {
-	    g_printerr( " FAILED to LINK AUDIO elements.\n" );
-  	}
+        gst_bin_add_many( GST_BIN( player->getPipeline() ), data.audioQueue, data.audioconvert, data.audiosink, NULL );
+        if( !gst_element_link_many( data.audioQueue, data.audioconvert, data.audiosink, nullptr ) ) {
+            g_printerr( " FAILED to LINK AUDIO elements.\n" );
+        }
         data.mHasAudio = true;
-	sinkPad = gst_element_get_static_pad( data.audioconvert, "sink" ); 
+        sinkPad = gst_element_get_static_pad( data.audioQueue, "sink" ); 
     }
     else if( g_str_has_prefix( new_pad_type, "video/x-raw" )  ) {
-	sinkPad = gst_element_get_static_pad( data.glupload, "sink" );
+        sinkPad = gst_element_get_static_pad( data.videoQueue, "sink" );
     }
 
     GstPadLinkReturn ret;
@@ -286,7 +285,10 @@ static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
     }
 
     if( data.mHasAudio ) {
+        // Added/linked elements inside the pad-added callback need to be 
+        // explicitely synced with their parent state.
     	gst_element_sync_state_with_parent( data.audioconvert );
+    	gst_element_sync_state_with_parent( data.audioQueue );
     	gst_element_sync_state_with_parent( data.audiosink );
     }
 
@@ -499,47 +501,54 @@ void GstPlayer::load( std::string _path )
 
     if( !mGstPipeline ){
 
-	GError *error = nullptr;
-	std::string capsGL = "video/x-raw(memory:GLMemory), format=RGBA";
-	std::string pipelineStr = "uridecodebin name=uridecode uridecode. ! queue name=audioqueue ! audioconvert ! autoaudiosink uridecode. ! queue ! glupload ! glcolorconvert ! appsink name=videosink caps=\""+capsGL+"\"";
-	//mGstPipeline = gst_parse_launch( pipelineStr.c_str(), &error );
-	
-	mGstPipeline = gst_pipeline_new( "cinder-pipeline" );
- 	mGstData.uridecode = gst_element_factory_make( "uridecodebin", "uridecode" );	
- 	mGstData.glupload = gst_element_factory_make( "glupload", "upload" );
-	mGstData.glcolorconvert = gst_element_factory_make( "glcolorconvert", "convert" );
-	mGstAppSink = gst_element_factory_make( "appsink", "videosink" );
+        GError *error = nullptr;
+        std::string capsGL = "video/x-raw(memory:GLMemory), format=RGBA";
+        std::string pipelineStr = "uridecodebin name=uridecode uridecode. ! queue name=audioqueue ! audioconvert ! autoaudiosink uridecode. ! queue ! glupload ! glcolorconvert ! appsink name=videosink caps=\""+capsGL+"\"";
+        //mGstPipeline = gst_parse_launch( pipelineStr.c_str(), &error );
+        
+        mGstPipeline = gst_pipeline_new( "cinder-pipeline" );
+        mGstData.uridecode = gst_element_factory_make( "uridecodebin", "uridecode" );	
+        mGstData.videoQueue = gst_element_factory_make( "queue", "videoqueue" );
+        g_object_set( mGstData.videoQueue, "max-size-buffers", 3, (void*)nullptr );
+        mGstData.glupload = gst_element_factory_make( "glupload", "upload" );
+        mGstData.glcolorconvert = gst_element_factory_make( "glcolorconvert", "convert" );
+        mGstAppSink = gst_element_factory_make( "appsink", "videosink" );
+        g_object_set( mGstAppSink, "sync", true, (void*)nullptr );
+        g_object_set( mGstAppSink, "max-buffers", 1, (void*)nullptr );
+        g_object_set( mGstAppSink, "drop", true, (void*)nullptr );
 
-	mGstData.audioconvert = gst_element_factory_make( "audioconvert", "audioconv" );
-	mGstData.audiosink = gst_element_factory_make( "autoaudiosink", "audiosink" );
+        mGstData.audioQueue = gst_element_factory_make( "queue", "audioqueue" );
+        g_object_set( mGstData.audioQueue, "max-size-buffers", 3, (void*)nullptr );
+        mGstData.audioconvert = gst_element_factory_make( "audioconvert", "audioconv" );
+        mGstData.audiosink = gst_element_factory_make( "autoaudiosink", "audiosink" );
 
-	if( !mGstPipeline || !mGstData.uridecode || !mGstData.glupload || !mGstData.glcolorconvert || !mGstAppSink || !mGstData.audioconvert || !mGstData.audiosink ) {
-	    g_printerr( "Not all elements could be created !\n" );
-	}
+        if( !mGstPipeline || !mGstData.uridecode || !mGstData.videoQueue || !mGstData.glupload || !mGstData.glcolorconvert || !mGstAppSink || !mGstData.audioQueue || !mGstData.audioconvert || !mGstData.audiosink ) {
+            g_printerr( "Not all elements could be created !\n" );
+        }
 
-	gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.uridecode, mGstData.glupload, mGstData.glcolorconvert, mGstAppSink, NULL );
-	if( !gst_element_link_many( mGstData.glupload, mGstData.glcolorconvert, mGstAppSink, nullptr ) ) {
-	    g_printerr( " FAILED to LINK VIDEO elements.\n" );
-	}
+        gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.uridecode, mGstData.videoQueue, mGstData.glupload, mGstData.glcolorconvert, mGstAppSink, NULL );
+        if( !gst_element_link_many( mGstData.videoQueue, mGstData.glupload, mGstData.glcolorconvert, mGstAppSink, nullptr ) ) {
+            g_printerr( " FAILED to LINK VIDEO elements.\n" );
+        }
 
-	if( error != nullptr ) {
-	    g_print( "Could not construct custom pipeline: %s\n", error->message );
-	    g_error_free (error);
-	}
+        if( error != nullptr ) {
+            g_print( "Could not construct custom pipeline: %s\n", error->message );
+            g_error_free (error);
+        }
 
-	addBusWatch( mGstPipeline );
-	
-	if( mGstAppSink ) {
-	    GstAppSinkCallbacks appSinkCallbacks;
-	    appSinkCallbacks.eos = onGstEos;
-	    appSinkCallbacks.new_preroll = onGstPreroll;
-	    appSinkCallbacks.new_sample = onGstSample;
-	
-	    gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
-	    GstCaps* caps = gst_caps_from_string( capsGL.c_str() );
-	    gst_app_sink_set_caps( GST_APP_SINK( mGstAppSink), caps);
-	    gst_caps_unref(caps);
-	}
+        addBusWatch( mGstPipeline );
+        
+        if( mGstAppSink ) {
+            GstAppSinkCallbacks appSinkCallbacks;
+            appSinkCallbacks.eos = onGstEos;
+            appSinkCallbacks.new_preroll = onGstPreroll;
+            appSinkCallbacks.new_sample = onGstSample;
+        
+            gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
+            GstCaps* caps = gst_caps_from_string( capsGL.c_str() );
+            gst_app_sink_set_caps( GST_APP_SINK( mGstAppSink), caps);
+            gst_caps_unref(caps);
+        }
     }
     
     // We lock until we switch to GST_STATE_READY since
