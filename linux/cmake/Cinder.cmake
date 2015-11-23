@@ -39,6 +39,7 @@ set( CXX_FLAGS "${STDCXXLIB} -std=c++11 -Wno-reorder -Wno-unused-private-field -
 set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g -fexceptions -frtti" 				CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" 	CACHE STRING "" FORCE )
 
+
 set( CINDER_LIB_SUFFIX )
 set( CINDER_OUT_DIR_PREFIX )
 
@@ -48,6 +49,7 @@ if( CINDER_GL_ES_2 )
     set( CINDER_LIB_SUFFIX -es2 )
     if( CINDER_LINUX_EGL_RPI2 )
         set( CINDER_OUT_DIR_PREFIX es2-rpi2 )
+        add_definitions( -DCINDER_LINUX_EGL_ONLY )
     else()
         set( CINDER_OUT_DIR_PREFIX es2 )
     endif()
