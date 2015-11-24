@@ -499,13 +499,9 @@ void GstPlayer::load( std::string _path )
         initialize(); // intialize shared context.
     }
 
-    if( !mGstPipeline ){
+    if( !mGstPipeline ) {
 
-        GError *error = nullptr;
         std::string capsGL = "video/x-raw(memory:GLMemory), format=RGBA";
-        std::string pipelineStr = "uridecodebin name=uridecode uridecode. ! queue name=audioqueue ! audioconvert ! autoaudiosink uridecode. ! queue ! glupload ! glcolorconvert ! appsink name=videosink caps=\""+capsGL+"\"";
-        //mGstPipeline = gst_parse_launch( pipelineStr.c_str(), &error );
-        
         mGstPipeline = gst_pipeline_new( "cinder-pipeline" );
         mGstData.uridecode = gst_element_factory_make( "uridecodebin", "uridecode" );	
         mGstData.videoQueue = gst_element_factory_make( "queue", "videoqueue" );
@@ -531,6 +527,7 @@ void GstPlayer::load( std::string _path )
             g_printerr( " FAILED to LINK VIDEO elements.\n" );
         }
 
+        GError *error = nullptr;
         if( error != nullptr ) {
             g_print( "Could not construct custom pipeline: %s\n", error->message );
             g_error_free (error);
@@ -841,7 +838,6 @@ bool GstPlayer::setPipelineState( GstState targetState )
     if( isBuffering() && targetState > GST_STATE_READY ) {
         mGstData.mTargetState = targetState;
         mGstData.mCurrentState = current;
-        return true;
     }
     else if( isBuffering() && targetState <= GST_STATE_READY ) {
         mGstData.mIsBuffering = false;
