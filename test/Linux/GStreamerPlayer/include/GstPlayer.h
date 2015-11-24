@@ -163,6 +163,7 @@ namespace gst { namespace video {
         void resetBus();
         void cleanup();
         void resetVideoBuffers();
+        void unlinkAudioBranch();
 
         void updateTexture( GstSample* sample, GstAppSink* sink );
     private:
@@ -183,11 +184,11 @@ namespace gst { namespace video {
         
         std::atomic<bool> mNewFrame;
 
-	ci::gl::Texture2dRef videoTexture;
-	GLint mGstTextureID;
+	    ci::gl::Texture2dRef videoTexture;
+	    GLint mGstTextureID;
 	
-	GAsyncQueue* queue_input_buf = nullptr;
-	GAsyncQueue* queue_output_buf = nullptr;
+	    GAsyncQueue* mInputVideoBuffers = nullptr;
+	    GAsyncQueue* mOutputVideoBuffers = nullptr;
     };
     
 } }
