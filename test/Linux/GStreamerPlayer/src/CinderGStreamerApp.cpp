@@ -21,12 +21,9 @@ class CinderGStreamerApp : public App {
 
 void CinderGStreamerApp::setup()
 {
-    movie = MovieGl::create( getAssetPath("bbb.mp4") );
+    movie = MovieGl::create( "http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov" );
     movie->play();
     movie->setLoop( true);
-
-    movies.push_back("http://movies.apple.com/media/us/quicktime/guide/hd/480p/noisettes_m480p.mov");
-    movies.push_back(getAssetPath("bbb.mp4").string());
 }
 
 void CinderGStreamerApp::mouseDown( MouseEvent event )
@@ -55,19 +52,21 @@ void CinderGStreamerApp::keyDown(KeyEvent event)
             movie->setLoop( true, false );
         }
         else if( event.getChar() == '7' ) {
-            movie->load( getAssetPath("bbb.mp4") );
-	    movie->play();
+            movie->load( "http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov" );
+	        movie->play();
         }
         else if( event.getChar() == '8' ) {
-    	    std::string capsGL = "video/x-raw(memory:GLMemory), format=RGBA";
-            GstCustomPipelineData pipelineData;
-    	    pipelineData.pipeline = "uridecodebin uri=http://movies.apple.com/media/us/quicktime/guide/hd/480p/noisettes_m480p.mov ! glupload ! glcolorconvert ! appsink name=videosink caps=\""+capsGL+"\""; // For now if you use appsink it has to be named 'videosink'. This is still experimental and it will change.
-            movie = MovieGl::create( pipelineData );
-            movie->play();
+            movie->load( getAssetPath("bbb.mp4") );
+	        movie->play();
+    	    //std::string capsGL = "video/x-raw(memory:GLMemory), format=RGBA";
+            //GstCustomPipelineData pipelineData;
+    	    //pipelineData.pipeline = "uridecodebin uri=http://movies.apple.com/media/us/quicktime/guide/hd/480p/noisettes_m480p.mov ! glupload ! glcolorconvert ! appsink name=videosink caps=\""+capsGL+"\""; // For now if you use appsink it has to be named 'videosink'. This is still experimental and it will change.
+            //movie = MovieGl::create( pipelineData );
+            //movie->play();
         }
         else if( event.getChar() == '9' ) {
             //pipelineData.pipeline = "uridecodebin uri=http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov name=decode decode. ! audioconvert ! queue ! autoaudiosink decode. ! videoconvert ! queue ! appsink name=videosink caps=\""+caps+"\""; // For now if you use appsink it has to be named 'videosink'. This is still experimental and it will change.
-            movie->load( getAssetPath("fingers.mov" ) );
+            movie->load("http://movies.apple.com/media/us/quicktime/guide/hd/480p/noisettes_m480p.mov");
             movie->play();
         }
     }
