@@ -890,13 +890,16 @@ GstData& GstPlayer::getGstData()
 
 ci::gl::Texture2dRef GstPlayer::getVideoTexture()
 {
-    mMutex.lock();
     if( mNewFrame ){
-	videoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, mGstTextureID, width(), height(), true );
+	int _currentTexture = -1;
+	mMutex.lock();
+	_currentTexture = mGstTextureID;
+	mMutex.unlock();
+
+	videoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, _currentTexture, width(), height(), true );
 	if( videoTexture ) videoTexture->setTopDown();
 	mNewFrame = false;
     }
-    mMutex.unlock();
 
     // Pop any old buffers.
     GAsyncQueue *queue_output_buf = nullptr;
@@ -968,8 +971,8 @@ void GstPlayer::sample( GstSample* sample, GstAppSink* sink )
 
     if( g_async_queue_length (queue_input_buf) > 0 ) {
 	    updateTexture( sample, sink );
+	    mNewFrame = true;
     }
-    mNewFrame = true;
 }
 
 GstFlowReturn GstPlayer::onGstSample( GstAppSink* sink, gpointer userData )
