@@ -151,6 +151,8 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
                     }
                     case GST_STATE_READY:
                     {
+			// If we just started reset our data.
+			if( old == GST_STATE_NULL ) data.reset();
                         data.mIsPrerolled = false;
                         data.mVideoHasChanged = true;
                         data.mIsDone = false;
