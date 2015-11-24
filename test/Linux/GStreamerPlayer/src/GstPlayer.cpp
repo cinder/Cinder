@@ -20,7 +20,7 @@ GstData::GstData()
 , mWidth(-1)
 , mHeight(-1)
 , mVideoHasChanged(false)
-, mVideoFormat(GST_VIDEO_FORMAT_RGB)
+, mVideoFormat(GST_VIDEO_FORMAT_RGBA)
 , mAsyncStateChangePending(false)
 , mCurrentState(GST_STATE_NULL)
 , mTargetState(GST_STATE_NULL)
@@ -29,12 +29,25 @@ GstData::GstData()
 , mIsDone(false)
 , mIsLoaded(false)
 , mIsPlayable(false)
+, mRequestedSeekTime(-1)
 , mRequestedSeek(false)
-, mPalindrome(false)
 , mLoop(false)
+, mPalindrome(false)
 , mRate(1.0f)
 , mIsStream(false)
+, mHasAudio(false)
 {
+}
+void GstData::reset() {
+    mIsPrerolled = false;
+    mVideoHasChanged = false;
+    mIsBuffering = false;
+    mPosition = 0;
+    mWidth = -1;
+    mHeight = -1;
+    mAsyncStateChangePending = false;
+    mTargetState = mCurrentState = GST_STATE_NULL;
+    mHasAudio = false;
 }
 
 gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer )
@@ -252,6 +265,11 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 
 static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
 { 
+    // Here we check to see if we have audio and video.
+    // If we have audio then we create and link the audio branch to uridecodebin.
+    // This approach allows to process files with or without audio through uridecodebin.
+    // For video, the creation of the branch is happening during loading and here we just link
+    // since we assume that our *video file* has at least one *video channel*...
     GstData & data = player->getGstData();
     GstPad *sinkPad = nullptr; 
     GstCaps *new_pad_caps = nullptr;
@@ -261,15 +279,17 @@ static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
     new_pad_structure = gst_caps_get_structure( new_pad_caps, 0 );
     new_pad_type = gst_structure_get_name( new_pad_structure );
     if( g_str_has_prefix( new_pad_type, "audio/x-raw" ) ){
-        gst_bin_add_many( GST_BIN( player->getPipeline() ), data.audioQueue, data.audioconvert, data.audiosink, NULL );
-        if( !gst_element_link_many( data.audioQueue, data.audioconvert, data.audiosink, nullptr ) ) {
+	// Add and link the audio branch to our pipeline.
+        gst_bin_add_many( GST_BIN( player->getPipeline() ), data.mAudioQueue, data.mAudioconvert, data.mAudiosink, NULL );
+        if( !gst_element_link_many( data.mAudioQueue, data.mAudioconvert, data.mAudiosink, nullptr ) ) {
             g_printerr( " FAILED to LINK AUDIO elements.\n" );
         }
         data.mHasAudio = true;
-        sinkPad = gst_element_get_static_pad( data.audioQueue, "sink" ); 
+        sinkPad = gst_element_get_static_pad( data.mAudioQueue, "sink" ); 
     }
     else if( g_str_has_prefix( new_pad_type, "video/x-raw" )  ) {
-        sinkPad = gst_element_get_static_pad( data.videoQueue, "sink" );
+	// Here we are on the video branch.
+        sinkPad = gst_element_get_static_pad( data.mVideoQueue, "sink" );
     }
 
     GstPadLinkReturn ret;
@@ -279,6 +299,7 @@ static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
 	return;
     }
    
+    // Here the actual linking of the uridecodebin pad aka newPad with our relevant sinkPad ( audio or video ) is happening.
     ret = gst_pad_link( newPad, sinkPad );
     if (GST_PAD_LINK_FAILED (ret)) {
     	g_print ("  Type is '%s' but link failed.\n", new_pad_type);
@@ -289,9 +310,9 @@ static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
     if( data.mHasAudio ) {
         // Added/linked elements inside the pad-added callback need to be 
         // explicitely synced with their parent state.
-    	gst_element_sync_state_with_parent( data.audioconvert );
-    	gst_element_sync_state_with_parent( data.audioQueue );
-    	gst_element_sync_state_with_parent( data.audiosink );
+    	gst_element_sync_state_with_parent( data.mAudioconvert );
+    	gst_element_sync_state_with_parent( data.mAudioQueue );
+    	gst_element_sync_state_with_parent( data.mAudiosink );
     }
 
     if( new_pad_caps != nullptr ) gst_caps_unref( new_pad_caps );
@@ -303,7 +324,6 @@ GstPlayer::GstPlayer()
 , mGstBus(nullptr)
 , mGstPipeline(nullptr)
 , mGstAppSink(nullptr)
-, mStride(-1)
 , mNewFrame(false)
 , mUsingCustomPipeline(false)
 {
@@ -505,27 +525,27 @@ void GstPlayer::load( std::string _path )
 
         std::string capsGL = "video/x-raw(memory:GLMemory), format=RGBA";
         mGstPipeline = gst_pipeline_new( "cinder-pipeline" );
-        mGstData.uridecode = gst_element_factory_make( "uridecodebin", "uridecode" );	
-        mGstData.videoQueue = gst_element_factory_make( "queue", "videoqueue" );
-        g_object_set( mGstData.videoQueue, "max-size-buffers", 3, (void*)nullptr );
-        mGstData.glupload = gst_element_factory_make( "glupload", "upload" );
-        mGstData.glcolorconvert = gst_element_factory_make( "glcolorconvert", "convert" );
+        mGstData.mUriDecode = gst_element_factory_make( "uridecodebin", "uridecode" );	
+        mGstData.mVideoQueue = gst_element_factory_make( "queue", "videoqueue" );
+        g_object_set( mGstData.mVideoQueue, "max-size-buffers", 3, (void*)nullptr );
+        mGstData.mGLupload = gst_element_factory_make( "glupload", "upload" );
+        mGstData.mGLcolorconvert = gst_element_factory_make( "glcolorconvert", "convert" );
         mGstAppSink = gst_element_factory_make( "appsink", "videosink" );
         g_object_set( mGstAppSink, "sync", true, (void*)nullptr );
         g_object_set( mGstAppSink, "max-buffers", 1, (void*)nullptr );
         g_object_set( mGstAppSink, "drop", true, (void*)nullptr );
 
-        mGstData.audioQueue = gst_element_factory_make( "queue", "audioqueue" );
-        g_object_set( mGstData.audioQueue, "max-size-buffers", 3, (void*)nullptr );
-        mGstData.audioconvert = gst_element_factory_make( "audioconvert", "audioconv" );
-        mGstData.audiosink = gst_element_factory_make( "autoaudiosink", "audiosink" );
+        mGstData.mAudioQueue = gst_element_factory_make( "queue", "audioqueue" );
+        g_object_set( mGstData.mAudioQueue, "max-size-buffers", 3, (void*)nullptr );
+        mGstData.mAudioconvert = gst_element_factory_make( "audioconvert", "audioconv" );
+        mGstData.mAudiosink = gst_element_factory_make( "autoaudiosink", "audiosink" );
 
-        if( !mGstPipeline || !mGstData.uridecode || !mGstData.videoQueue || !mGstData.glupload || !mGstData.glcolorconvert || !mGstAppSink || !mGstData.audioQueue || !mGstData.audioconvert || !mGstData.audiosink ) {
+        if( !mGstPipeline || !mGstData.mUriDecode || !mGstData.mVideoQueue || !mGstData.mGLupload || !mGstData.mGLcolorconvert || !mGstAppSink || !mGstData.mAudioQueue || !mGstData.mAudioconvert || !mGstData.mAudiosink ) {
             g_printerr( "Not all elements could be created !\n" );
         }
 
-        gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.uridecode, mGstData.videoQueue, mGstData.glupload, mGstData.glcolorconvert, mGstAppSink, NULL );
-        if( !gst_element_link_many( mGstData.videoQueue, mGstData.glupload, mGstData.glcolorconvert, mGstAppSink, nullptr ) ) {
+        gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mUriDecode, mGstData.mVideoQueue, mGstData.mGLupload, mGstData.mGLcolorconvert, mGstAppSink, NULL );
+        if( !gst_element_link_many( mGstData.mVideoQueue, mGstData.mGLupload, mGstData.mGLcolorconvert, mGstAppSink, nullptr ) ) {
             g_printerr( " FAILED to LINK VIDEO elements.\n" );
         }
 
@@ -580,7 +600,7 @@ void GstPlayer::load( std::string _path )
     // set the new movie path
     g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "uridecode" ) ), "uri", _path.c_str(), nullptr );
     //g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "audioqueue" ) ), "max-size-buffers", 1, nullptr );
-    g_signal_connect( mGstData.uridecode, "pad-added", G_CALLBACK( cb_new_pad ), this );
+    g_signal_connect( mGstData.mUriDecode, "pad-added", G_CALLBACK( cb_new_pad ), this );
     
     // and preroll async.
     gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );
@@ -598,57 +618,52 @@ void GstPlayer::stop()
     
 bool GstPlayer::newVideo() const
 {
-    return mGstData.mVideoHasChanged.load();
+    return mGstData.mVideoHasChanged;
 }
 
 int GstPlayer::width() const
 {
-    return mGstData.mWidth.load();
+    return mGstData.mWidth;
 }
 
 int GstPlayer::height() const
 {
-    return mGstData.mHeight.load();
+    return mGstData.mHeight;
 }
 
 bool GstPlayer::isPaused() const
 {
-    return mGstData.mPaused.load();
+    return mGstData.mPaused;
 }
 
 bool GstPlayer::isPlayable() const
 {
-    return mGstData.mIsPlayable.load();
+    return mGstData.mIsPlayable;
 }
 
 bool GstPlayer::isLoaded() const
 {
-    return mGstData.mIsLoaded.load();
+    return mGstData.mIsLoaded;
 }
 
 bool GstPlayer::isLiveSource() const
 {
-    return mGstData.mIsLive.load();
+    return mGstData.mIsLive;
 }
 
 bool GstPlayer::isBuffering() const
 {
-    return mGstData.mIsBuffering.load();
-}
-
-int GstPlayer::stride() const
-{
-    return mStride.load();
+    return mGstData.mIsBuffering;
 }
 
 bool GstPlayer::isPrerolled() const
 {
-    return mGstData.mIsPrerolled.load();
+    return mGstData.mIsPrerolled;
 }
 
 GstVideoFormat GstPlayer::format() const
 {
-    return mGstData.mVideoFormat.load();
+    return mGstData.mVideoFormat;
 }
 
 gint64 GstPlayer::getDurationNanos()
@@ -667,7 +682,7 @@ gint64 GstPlayer::getDurationNanos()
         mGstData.mDuration = -1;
         g_warning("Cannot query duration ! Pipeline is NOT PRE-ROLLED ");
     }
-    return mGstData.mDuration.load();
+    return mGstData.mDuration;
 }
 
 float GstPlayer::getDurationSeconds()
@@ -692,7 +707,7 @@ gint64 GstPlayer::getPositionNanos()
         mGstData.mPosition = -1.0f;
         g_warning("Cannot query duration ! Pipeline is NOT PRE-ROLLED ");
     }
-    return mGstData.mPosition.load();
+    return mGstData.mPosition;
 }
 
 float GstPlayer::getPositionSeconds()
@@ -717,7 +732,7 @@ float GstPlayer::getVolume()
 
 bool GstPlayer::isDone() const
 {
-    return mGstData.mIsDone.load();
+    return mGstData.mIsDone;
 }
 
 void GstPlayer::seekToTime( float seconds )
@@ -766,17 +781,17 @@ void GstPlayer::setRate( float rate )
 
 float GstPlayer::getRate() const
 {
-    return mGstData.mRate.load();
+    return mGstData.mRate;
 }
 
 bool GstPlayer::hasNewFrame() const
 {
-    return mNewFrame.load();
+    return mNewFrame;
 }
 
 bool GstPlayer::isStream() const
 {
-    return mGstData.mIsStream.load();
+    return mGstData.mIsStream;
 }
 
 bool GstPlayer::sendSeekEvent( gint64 seekTime )
@@ -1003,13 +1018,11 @@ void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
     if( success ) {
         mGstData.mWidth = mVideoInfo.width;
         mGstData.mHeight = mVideoInfo.height;
-        mStride = mVideoInfo.stride[0];
         mGstData.mVideoFormat = mVideoInfo.finfo->format;
         /*std::cout << " FORMAT : " << mVideoInfo.finfo->name;
         std::cout << " WIDTH : " << mGstData.mWidth;
         std::cout << " HEIGHT : " << mGstData.mHeight;
         std::cout << " BytesPerRow : " << mGstData.mWidth*(mVideoInfo.finfo->pixel_stride[0]);
-        std::cout << " STRIDE PLANE 1 : " << mStride;
         std::cout << " STRIDE PLANE 2 : " << mVideoInfo.stride[1];
         std::cout << " STRIDE PLANE 3 : " << mVideoInfo.stride[2] << std::endl;*/
     }

@@ -41,18 +41,8 @@ namespace gst { namespace video {
     
     struct GstData{
         GstData();
-        
-        void reset() {
-            mIsPrerolled = false;
-            mVideoHasChanged = false;
-            mPosition = 0;
-            mWidth = -1;
-            mHeight = -1;
-            mAsyncStateChangePending = false;
-            mTargetState = mCurrentState = GST_STATE_NULL;
-            mHasAudio = false;
-        }
-        
+
+	void reset();
         std::atomic<bool> mPaused;
         std::atomic<bool> mIsBuffering; // Streaming..
         std::atomic<bool> mIsLive; // We disable buffering if on live sources ( webcams, etc. )
@@ -76,16 +66,16 @@ namespace gst { namespace video {
         std::atomic<bool> mIsStream;
         std::atomic<bool> mHasAudio;
 
-	    GstGLContext* mCinderContext = nullptr;
-	    GstGLDisplay* mCinderDisplay = nullptr;
+	GstGLContext* mCinderContext = nullptr;
+	GstGLDisplay* mCinderDisplay = nullptr;
 
-	    GstElement* uridecode = nullptr;
- 	    GstElement* glupload = nullptr;
-	    GstElement* glcolorconvert = nullptr;
-	    GstElement* audioconvert = nullptr;
-	    GstElement* audiosink = nullptr;
-        GstElement* audioQueue = nullptr;
-        GstElement* videoQueue = nullptr;
+	GstElement* mUriDecode = nullptr;
+ 	GstElement* mGLupload = nullptr;
+	GstElement* mGLcolorconvert = nullptr;
+	GstElement* mAudioconvert = nullptr;
+	GstElement* mAudiosink = nullptr;
+        GstElement* mAudioQueue = nullptr;
+        GstElement* mVideoQueue = nullptr;
     };
     
     class GstPlayer
@@ -191,7 +181,6 @@ namespace gst { namespace video {
         bool mUsingCustomPipeline;
         GstData mGstData; // Data that describe the current state of the pipeline.
         
-        std::atomic<int> mStride; // Video stride.. This needs more thinking..
         std::atomic<bool> mNewFrame;
 
 	ci::gl::Texture2dRef videoTexture;

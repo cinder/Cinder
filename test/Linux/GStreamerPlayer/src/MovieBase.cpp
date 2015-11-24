@@ -76,11 +76,6 @@ int MovieBase::getHeight() const
     return mGstPlayer->height();
 }
 
-int MovieBase::getRowBytes()
-{
-    return mGstPlayer->stride();
-}
-
 bool MovieBase::isPlaying() const
 {
     return !mGstPlayer->isPaused();

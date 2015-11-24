@@ -45,8 +45,6 @@ class MovieBase
         void	setLoop( bool loop = true, bool palindrome = false );
         void    setRate( float rate );
 
-        int     getRowBytes();
-
         void    setVolume( float targetVolume ) const;
         float   getVolume() const;
     
