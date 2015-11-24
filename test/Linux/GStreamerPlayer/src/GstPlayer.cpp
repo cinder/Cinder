@@ -515,8 +515,8 @@ void GstPlayer::resetCustomPipeline()
 
 void GstPlayer::load( std::string _path )
 {
-    // If we were using a custom pipeline we have to reset for now.
-    if( mUsingCustomPipeline || mGstPipeline ) {
+    // If we are already using a pipeline we have to reset for now.
+    if( mGstPipeline ) {
         resetCustomPipeline();
         initialize(); // intialize shared context.
     }
@@ -599,7 +599,7 @@ void GstPlayer::load( std::string _path )
     }
     // set the new movie path
     g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "uridecode" ) ), "uri", _path.c_str(), nullptr );
-    //g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "audioqueue" ) ), "max-size-buffers", 1, nullptr );
+    // With this cb we check if we have audio or not and if yes we link the audio branch of the pipeline.
     g_signal_connect( mGstData.mUriDecode, "pad-added", G_CALLBACK( cb_new_pad ), this );
     
     // and preroll async.
@@ -908,24 +908,28 @@ GstData& GstPlayer::getGstData()
 ci::gl::Texture2dRef GstPlayer::getVideoTexture()
 {
     if( mNewFrame ){
-	int _currentTexture = -1;
+    	// Pop any old buffers.
+    	GAsyncQueue *queue_output_buf = nullptr;
+    	queue_output_buf = (GAsyncQueue*)g_object_get_data( G_OBJECT(mGstAppSink), "queue_output_buf" );
+	GstBuffer* old = nullptr;
+        if( g_async_queue_length( queue_output_buf ) > 0 ) {
+            old = (GstBuffer*) g_async_queue_pop( queue_output_buf );
+        }
+	// We keep the buffer memory around until we are done with this texture.
+        auto deleter = [ old ] ( ci::gl::Texture *texture ) {
+                delete texture;
+                if( old ) gst_buffer_unref( old );
+        };
+
+	int currentTextureID = -1;
 	mMutex.lock();
-	_currentTexture = mGstTextureID;
+	currentTextureID = mGstTextureID;
 	mMutex.unlock();
 
-	videoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, _currentTexture, width(), height(), true );
+	videoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, currentTextureID, width(), height(), true, deleter );
 	if( videoTexture ) videoTexture->setTopDown();
 	mNewFrame = false;
     }
-
-    // Pop any old buffers.
-    GAsyncQueue *queue_output_buf = nullptr;
-    queue_output_buf = (GAsyncQueue*)g_object_get_data( G_OBJECT(mGstAppSink), "queue_output_buf" );
-    if( g_async_queue_length( queue_output_buf ) > 3 ) {
-        GstBuffer* old = (GstBuffer*) g_async_queue_pop( queue_output_buf );
-	gst_buffer_unref( old );
-    }
-
     return videoTexture;
 }
 
@@ -946,12 +950,12 @@ void GstPlayer::resetVideoBuffers()
   }
   
   if( queue_input_buf ) {
-    g_async_queue_unref( queue_input_buf );
-    queue_input_buf = nullptr;
+      g_async_queue_unref( queue_input_buf );
+      queue_input_buf = nullptr;
   }
   if( queue_output_buf ) {
-    g_async_queue_unref( queue_output_buf );
-    queue_output_buf = nullptr;
+      g_async_queue_unref( queue_output_buf );
+      queue_output_buf = nullptr;
   }
 }
 
