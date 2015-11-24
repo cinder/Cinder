@@ -960,7 +960,7 @@ ci::gl::Texture2dRef GstPlayer::getVideoTexture()
     	mOutputVideoBuffers = (GAsyncQueue*)g_object_get_data( G_OBJECT(mGstAppSink), "queue_output_buf" );
 	    GstBuffer* old = nullptr;
         if( g_async_queue_length( mOutputVideoBuffers ) > 0 ) {
-            old = (GstBuffer*) g_async_queue_pop( mOutputVideoBuffers );
+            old = (GstBuffer*)g_async_queue_pop( mOutputVideoBuffers );
         }
         // We keep the buffer memory around until we are done with this texture.
         auto deleter = [ old ] ( ci::gl::Texture *texture ) {
@@ -984,15 +984,15 @@ void GstPlayer::resetVideoBuffers()
 {
   if( mInputVideoBuffers ) {
       while( g_async_queue_length( mInputVideoBuffers ) > 0 ) {
-            GstBuffer *buf = (GstBuffer*) g_async_queue_pop (mInputVideoBuffers);
-	        gst_buffer_unref (buf);
+            GstBuffer *buf = (GstBuffer*)g_async_queue_pop( mInputVideoBuffers );
+	        gst_buffer_unref( buf );
       }
   }
 
   if( mOutputVideoBuffers ) {
       while( g_async_queue_length( mOutputVideoBuffers ) > 0 ) {
-            GstBuffer *buf = (GstBuffer*) g_async_queue_pop (mOutputVideoBuffers);
-            gst_buffer_unref (buf);
+            GstBuffer *buf = (GstBuffer*)g_async_queue_pop( mOutputVideoBuffers );
+            gst_buffer_unref( buf );
       }
   }
   
@@ -1037,7 +1037,7 @@ void GstPlayer::sample( GstSample* sample, GstAppSink* sink )
     mInputVideoBuffers = (GAsyncQueue*)g_object_get_data( G_OBJECT( sink ), "queue_input_buf" );
     g_async_queue_push( mInputVideoBuffers, buffer );
 
-    if( g_async_queue_length (mInputVideoBuffers) > 0 ) {
+    if( g_async_queue_length( mInputVideoBuffers ) > 0 ) {
 	    updateTexture( sample, sink );
 	    mNewFrame = true;
     }
