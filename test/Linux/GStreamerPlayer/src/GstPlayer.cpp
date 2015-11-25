@@ -543,17 +543,22 @@ void GstPlayer::load( std::string _path )
         mGstData.mGLupload = gst_element_factory_make( "glupload", "upload" );
         mGstData.mGLcolorconvert = gst_element_factory_make( "glcolorconvert", "convert" );
         mGstAppSink = gst_element_factory_make( "appsink", "videosink" );
-        g_object_set( mGstAppSink, "sync", true, (void*)nullptr );
-        g_object_set( mGstAppSink, "max-buffers", 1, (void*)nullptr );
-        g_object_set( mGstAppSink, "drop", true, (void*)nullptr );
+	gst_app_sink_set_max_buffers( GST_APP_SINK(mGstAppSink), 1 );
+	gst_app_sink_set_drop( GST_APP_SINK(mGstAppSink), true);
+ 	gst_base_sink_set_qos_enabled( GST_BASE_SINK(mGstAppSink), true );
+ 	gst_base_sink_set_sync( GST_BASE_SINK(mGstAppSink), true );
+ 	gst_base_sink_set_max_lateness( GST_BASE_SINK(mGstAppSink), 20 );
 
         mGstData.mAudioQueue = gst_element_factory_make( "queue", "audioqueue" );
         g_object_ref(mGstData.mAudioQueue); // We keep a reference on the audio elements so that we can add/remove at will.
         g_object_set( mGstData.mAudioQueue, "max-size-buffers", 5, (void*)nullptr );
         mGstData.mAudioconvert = gst_element_factory_make( "audioconvert", "audioconv" );
-        g_object_ref(mGstData.mAudioconvert);
-        mGstData.mAudiosink = gst_element_factory_make( "autoaudiosink", "audiosink" );
-        g_object_ref(mGstData.mAudiosink);
+        g_object_ref( mGstData.mAudioconvert );
+
+        mGstData.mAudiosink = gst_element_factory_make( "alsasink", "audiosink" );
+ 	gst_base_sink_set_qos_enabled( GST_BASE_SINK(mGstData.mAudiosink), true );
+ 	gst_base_sink_set_max_lateness( GST_BASE_SINK(mGstData.mAudiosink), 20 );
+        g_object_ref( mGstData.mAudiosink );
 
         if( !mGstPipeline || !mGstData.mUriDecode || !mGstData.mVideoQueue || !mGstData.mGLupload || !mGstData.mGLcolorconvert || !mGstAppSink || !mGstData.mAudioQueue || !mGstData.mAudioconvert || !mGstData.mAudiosink ) {
             g_printerr( "Not all elements could be created !\n" );
