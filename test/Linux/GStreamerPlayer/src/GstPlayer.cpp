@@ -555,9 +555,7 @@ void GstPlayer::load( std::string _path )
         mGstData.mAudioconvert = gst_element_factory_make( "audioconvert", "audioconv" );
         g_object_ref( mGstData.mAudioconvert );
 
-        mGstData.mAudiosink = gst_element_factory_make( "alsasink", "audiosink" );
- 	gst_base_sink_set_qos_enabled( GST_BASE_SINK(mGstData.mAudiosink), true );
- 	gst_base_sink_set_max_lateness( GST_BASE_SINK(mGstData.mAudiosink), 20 );
+        mGstData.mAudiosink = gst_element_factory_make( "autoaudiosink", "audiosink" );
         g_object_ref( mGstData.mAudiosink );
 
         if( !mGstPipeline || !mGstData.mUriDecode || !mGstData.mVideoQueue || !mGstData.mGLupload || !mGstData.mGLcolorconvert || !mGstAppSink || !mGstData.mAudioQueue || !mGstData.mAudioconvert || !mGstData.mAudiosink ) {
