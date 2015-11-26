@@ -148,8 +148,8 @@ endif()
 # Disable warnings for C files
 set( C_DISABLE_WARNINGS "-Wno-unused-function" )
 set( C_FLAGS "-fvisibility=default ${GLFW_FLAGS} -D_UNIX" )
-set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
-set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math" )
+set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g3 -ggdb3 -O0" )
+set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -O3 -ffast-math" )
 
 # Disable these warnings, many of which are coming from Boost
 set( CXX_DISABLE_WARNINGS "-Wno-reorder -Wno-unused-function -Wno-unused-private-field -Wno-unused-local-typedef -Wno-tautological-compare -Wno-missing-braces" )
@@ -159,8 +159,8 @@ if( CINDER_LINUX_EGL_RPI2 )
 	set( CXX_FLAGS "${CXX_FLAGS} -DCINDER_LINUX_EGL_ONLY -DCINDER_LINUX_EGL_RPI2 -DCINDER_GL_ES_2" )
 endif()
 
-set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g -fexceptions -frtti" )
-set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
+set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g3 -ggdb3 -O0 -fexceptions -frtti" )
+set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -O3 -fexceptions -frtti -ffast-math" )
 
 include(${CMAKE_MODULE_PATH}/CinderIncludes.cmake)
 include(${CMAKE_MODULE_PATH}/CinderSources.cmake)
