@@ -27,15 +27,131 @@
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 
-#include <regex>
-
 using namespace std;
 
 namespace cinder { namespace gl {
 
 namespace {
-	const regex sIncludeRegex = regex( "^[ \t]*#[ ]*include[ ]+[\"<](.*)[\">].*" );
-	const regex sVersionRegex = regex( "^[ \t]*#[ ]*version[ ]+([123456789][0123456789][0123456789]).*" );
+// due to null or the rest of the line being a comment (//)
+bool isTerminated( const char *c )
+{
+	if( *c == '\0' )
+		return true;
+	const char *next = c + 1;
+	if( *c == '/' && *next && *next == '/' )
+		return true;
+	return false;
+}
+
+bool isWhiteSpace( const char *c )
+{
+	return *c == ' ' || *c == '\t';
+}
+
+bool isInlineCommentStart( const char *c )
+{
+	if( (*c == '\0') || (*c != '/') )
+		return false;
+	const char *next = c + 1;
+	if( *next && *next == '*' )
+		return true;
+	return false;
+}
+
+bool isInlineCommentEnd( const char *c )
+{
+	if( (*c == '\0') || (*c != '*') )
+		return false;
+	const char *next = c + 1;
+	if( *next && *next == '/' )
+		return true;
+	return false;
+}
+
+// consumes tabs, spaces, and inline comments; sets 'c' to first character that is none of these, or the terminus
+void consumeWhiteSpace( const char **c )
+{
+	while( ( ! isTerminated( *c ) ) && isWhiteSpace( *c ) )
+		++*c;
+	if( isTerminated( *c ) )
+		return;
+	// did we encounter an inline comment?
+	while( isInlineCommentStart( *c ) || isWhiteSpace( *c ) ) {
+		while( isWhiteSpace( *c ) )
+			++*c;
+		const char *startBeforeComment = *c;
+		while( ! isTerminated( *c ) && ! isInlineCommentEnd( *c ) )
+			++*c;
+		if( isTerminated( *c ) ) {
+			*c = startBeforeComment;
+			break;
+		}
+		else
+			*c += 2;
+	}
+	return;
+}
+
+bool findIncludeStatement( const std::string &line, std::string *out )
+{
+	const int INCLUDE_KEYWORD_LEN = 7;
+	const char *resultStart = nullptr;
+	const char *c = line.c_str();
+	consumeWhiteSpace( &c );
+	// leading '#'
+	if( ( isTerminated( c ) ) || ( *c != '#' ) )
+		return false;
+	++c;
+	consumeWhiteSpace( &c );
+	if( isTerminated( c ) )
+		return false;
+	// include keyword
+	if( strncmp( c, "include", INCLUDE_KEYWORD_LEN ) )
+		return false;
+	c += INCLUDE_KEYWORD_LEN;
+	consumeWhiteSpace( &c );
+	// leading quote or angle bracket
+	if( ( isTerminated( c ) ) || ( *c != '\"' && *c != '<' ) )
+		return false;
+	++c;
+	resultStart = c;
+	while( ( ! isTerminated( c ) )  && *c != '\"' && *c != '>' )
+		++c;
+	if( isTerminated( c ) ) // we hit the terminus before the closing symbol
+		return false;
+	if( out )
+		*out = std::string( resultStart, c );
+	return true;
+}
+
+bool findVersionStatement( const std::string &line, std::string *out )
+{
+	const int VERSION_KEYWORD_LEN = 7;
+	const char *resultStart = nullptr;
+	const char *c = line.c_str();
+	consumeWhiteSpace( &c );
+	// leading '#'
+	if( isTerminated( c ) || ( *c != '#' ) )
+		return false;
+	++c;
+	consumeWhiteSpace( &c );
+	if( isTerminated( c ) )
+		return false;
+	// version keyword
+	if( strncmp( c, "version", VERSION_KEYWORD_LEN ) ) // 7 == strlen( "version" )
+		return false;
+	c += VERSION_KEYWORD_LEN;
+	consumeWhiteSpace( &c );
+	// leading digit
+	if( isTerminated( c ) || (! isdigit( *c )) )
+		return false;
+	resultStart = c;
+	while( ( ! isTerminated( c ) ) && isdigit( *c ) )
+		++c;
+	if( out )
+		*out = std::string( resultStart, c );
+	return true;
+}
 } // anonymous namespace
 
 ShaderPreprocessor::ShaderPreprocessor()
@@ -82,34 +198,32 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	stringstream output;
 	istringstream input( source );
 	
-	string version;
+	string versionLine;
 	
 	// go through each line and find the #version directive
 	string line;
 	while( getline( input, line ) ) {
-		if( regex_search( line, sVersionRegex ) ) {
-			version = line;
-		}
+		if( findVersionStatement( line, nullptr ) )
+			versionLine = line;
 		else
 			output << line;
-
 		output << endl;
 	}
 	
 	// if we don't have a version yet, add the default one
-	if( version.empty() ) {
+	if( versionLine.empty() ) {
 #if defined( CINDER_GL_ES_3 )
-		version = "#version " + to_string( mVersion ) + " es\n";
+		versionLine = "#version " + to_string( mVersion ) + " es\n";
 #else
-		version = "#version " + to_string( mVersion ) + "\n";
+		versionLine = "#version " + to_string( mVersion ) + "\n";
 #endif
 	}
 	else if( ! mDefineDirectives.empty() ) {
-		version += "\n";
+		versionLine += "\n";
 	}
 
 	// copy the preprocessor directives to a string starting with the version
-	std::string directivesString = version;
+	std::string directivesString = versionLine;
 	for( auto define : mDefineDirectives ) {
 		directivesString += "#define " + define + "\n";
 	}
@@ -124,13 +238,13 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 
 	// go through each line and process includes
 	string line;
-	smatch matches;
 
 	size_t lineNumber = 1;
 
 	while( getline( input, line ) ) {
-		if( regex_search( line, matches, sIncludeRegex ) ) {
-			output << parseRecursive( matches[1].str(), currentDirectory, includedFiles );
+		std::string includeFilePath;
+		if( findIncludeStatement( line, &includeFilePath ) ) {
+			output << parseRecursive( includeFilePath, currentDirectory, includedFiles );
 			output << "#line " << lineNumber << endl;
 		}
 		else
@@ -159,13 +273,13 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 
 	// go through each line and process includes
 	string line;
-	smatch matches;
 
 	size_t lineNumber = 1;
 
 	while( getline( input, line ) ) {
-		if( regex_search( line, matches, sIncludeRegex ) ) {
-			output << parseRecursive( matches[1].str(), fullPath.parent_path(), includeTree );
+		std::string includeFilePath;
+		if( findIncludeStatement( line, &includeFilePath ) ) {
+			output << parseRecursive( includeFilePath, fullPath.parent_path(), includeTree );
 			output << "#line " << lineNumber << endl;
 		}
 		else
