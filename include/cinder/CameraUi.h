@@ -59,10 +59,10 @@ class CameraUi {
 	void mouseWheel( app::MouseEvent &event );
 	void mouseDrag( app::MouseEvent &event );
 
-	void mouseDown( const ivec2 &mousePos );
-	void mouseUp( const ivec2 &mousePos );
+	void mouseDown( const vec2 &mousePos );
+	void mouseUp( const vec2 &mousePos );
 	void mouseWheel( float increment );
-	void mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown );
+	void mouseDrag( const vec2 &mousePos, bool leftDown, bool middleDown, bool rightDown );
 
 	//! Returns a reference to the currently controlled CameraPersp
 	const	CameraPersp& getCamera() const		{ return *mCamera; }
@@ -87,7 +87,7 @@ class CameraUi {
 
 	ivec2	getWindowSize() const;
  
-	ivec2				mInitialMousePos;
+	vec2				mInitialMousePos;
 	CameraPersp			mInitialCam;
 	CameraPersp			*mCamera;
 	float				mInitialPivotDistance;

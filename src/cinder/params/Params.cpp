@@ -427,10 +427,32 @@ bool InterfaceGl::isMaximized() const
 	return maximizedInt == 0;
 }
 
+ivec2 InterfaceGl::getPosition() const
+{
+	ivec2 pos;
+	TwGetParam( mBar.get(), NULL, "position", TW_PARAM_INT32, 2, &pos );
+
+	return pos;
+}
+
 void InterfaceGl::setPosition( const ci::ivec2 &pos )
 {
 	string posStr = string( "position='" ) + to_string( pos.x ) + " " + to_string( pos.y ) + "'";
 	setOptions( "", posStr );
+}
+
+ivec2 InterfaceGl::getSize() const
+{
+	ivec2 size;
+	TwGetParam( mBar.get(), NULL, "size", TW_PARAM_INT32, 2, &size );
+
+	return size;
+}
+
+void InterfaceGl::setSize( const ci::ivec2 &size )
+{
+	string sizeStr = string( "size='" ) + to_string( size.x ) + " " + to_string( size.y ) + "'";
+	setOptions( "", sizeStr );
 }
 
 InterfaceGl::OptionsBase::OptionsBase( const std::string &name, void *targetVoidPtr, InterfaceGl *parent )
@@ -521,6 +543,14 @@ void InterfaceGl::OptionsBase::setGroup( const std::string &group )
 	string optionsStr = "group=`" + group + "`";
 	mParent->setOptions( getName(), optionsStr );
 	mGroup = group;
+}
+
+void InterfaceGl::OptionsBase::setVisible( bool visible )
+{
+	assert( mParent );
+
+	string optionsStr = "visible=" + string( visible ? "true" : "false" );
+	mParent->setOptions( getName(), optionsStr );
 }
 
 void InterfaceGl::OptionsBase::setOptionsStr( const string &optionsStr )
