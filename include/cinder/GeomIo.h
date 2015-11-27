@@ -1572,7 +1572,7 @@ inline SourceMods operator>>( const Source *source, const Modifier &modifier )
 	return result;
 }
 
-inline SourceMods operator&( const Source &source, const Modifier &modifier )
+inline SourceMods operator>>( const Source &source, const Modifier &modifier )
 {
 	SourceMods result( &source, true ); // clone the source since it's a temporary
 	result.append( modifier );
