@@ -47,7 +47,8 @@ def projgen( appName, appPath, appDomain, appGenCpp ):
     appPath = appPath.strip()
     appDomain = appDomain.strip()
 
-    appPath = os.path.join(os.path.abspath(appPath), appName)
+    if ( len(appPath) > 0 ) and ( "." != appPath ):
+        appPath = os.path.join(os.path.abspath(appPath), appName)
     appPackage = ("%s.%s" % (appDomain, appName.lower()))
     print( "App Name   : %s" % appName)
     print( "App Path   : %s" % appPath)
