@@ -1366,7 +1366,13 @@
 			// GL_ANGLE_instanced_arrays, GL_EXT_instanced_arrays, GL_NV_instanced_arrays
 			typedef void (GL_APIENTRYP PFNGLVERTEXATTRIBDIVISORPROC) (GLuint index, GLuint divisor);
 			extern PFNGLVERTEXATTRIBDIVISORPROC 				fnptr_ci_glVertexAttribDivisor;
-			#define glVertexAttribDivisor 						fnptr_ci_glVertexAttribDivisor 
+			#define glVertexAttribDivisor 						fnptr_ci_glVertexAttribDivisor
+
+			// GL_EXT_shadow_samplers
+			#define GL_TEXTURE_COMPARE_MODE						0x884C
+			#define GL_TEXTURE_COMPARE_FUNC						0x884D
+			#define GL_COMPARE_REF_TO_TEXTURE					0x884E
+			#define GL_SAMPLER_2D_SHADOW						0x8B62
 		#endif	
 	#endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
 
