@@ -71,8 +71,24 @@ public:
 
 			int nativeKeyCode = KeyEvent::translateNativeKeyCode( key );
 			uint32_t char32 = 0;
-			char char8 = (char)key;
+			// Limit char8 to ASCII input for now.
+			char char8 = ( key <= 127 ) ? (char)key : 0;
+
+			// Modifiers
 			uint32_t modifiers = 0;
+			if( mods & GLFW_MOD_SHIFT ) {
+				modifiers |= KeyEvent::SHIFT_DOWN;
+			}
+			if( mods & GLFW_MOD_CONTROL ) {
+				modifiers |= KeyEvent::CTRL_DOWN;
+			}
+			if( mods & GLFW_MOD_ALT ) {
+				modifiers |= KeyEvent::ALT_DOWN;
+			}
+			if( mods & GLFW_MOD_SUPER ) {
+				modifiers |= KeyEvent::META_DOWN;
+			}
+
 			KeyEvent event( cinderWindow, nativeKeyCode, char32, char8, modifiers, scancode );
 			if( GLFW_PRESS == action ) {
 				cinderWindow->emitKeyDown( &event );
