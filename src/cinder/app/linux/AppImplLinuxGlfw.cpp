@@ -127,6 +127,18 @@ public:
 			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_RIGHT ) ) {
 				modifiers |= MouseEvent::RIGHT_DOWN;
 			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_SHIFT ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_SHIFT ) ) ) {
+				modifiers |= MouseEvent::SHIFT_DOWN;
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_CONTROL ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_CONTROL ) ) ) {
+				modifiers |= MouseEvent::CTRL_DOWN;
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_ALT ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_ALT ) ) ) {
+				modifiers |= MouseEvent::ALT_DOWN;
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_SUPER ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_SUPER ) )  ) {
+				modifiers |= MouseEvent::META_DOWN;
+			}
 
 			MouseEvent event( getWindow(), initiator, (int)mouseX, (int)mouseY, modifiers, 0.0f, 0 );
 			if( 0 != initiator ) {
@@ -164,7 +176,19 @@ public:
 			}
 			if( GLFW_PRESS == glfwGetMouseButton( glfwWindow, GLFW_MOUSE_BUTTON_RIGHT ) ) {
 				modifiers |= MouseEvent::RIGHT_DOWN;
-			}			
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_SHIFT ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_SHIFT ) ) ) {
+				modifiers |= MouseEvent::SHIFT_DOWN;
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_CONTROL ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_CONTROL ) ) ) {
+				modifiers |= MouseEvent::CTRL_DOWN;
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_ALT ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_ALT ) ) ) {
+				modifiers |= MouseEvent::ALT_DOWN;
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_SUPER ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_SUPER ) )  ) {
+				modifiers |= MouseEvent::META_DOWN;
+			}
 
 			if( 0 != initiator ) {
 				MouseEvent event( getWindow(), initiator, (int)mouseX, (int)mouseY, modifiers, 0.0f, 0 );
