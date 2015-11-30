@@ -340,7 +340,7 @@ void	drawBuffer( GLenum dst );
 void	readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data );
 
 // Compute
-#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
 //! Launches one or more compute work groups. Analogous to glDispatchCompute(). 
 inline void	dispatchCompute( GLuint numGroupsX, GLuint numGroupsY, GLuint numGroupsZ ) { glDispatchCompute( numGroupsX, numGroupsY, numGroupsZ ); }
 //! Defines a barrier ordering memory transactions. Analogous to glMemoryBarrier().

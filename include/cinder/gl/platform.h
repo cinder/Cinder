@@ -171,6 +171,11 @@
 		#endif
 	#endif
 
+ 	// Android, Linux
+	#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1 )
+ 		#define CINDER_GL_HAS_COMPUTE_SHADER
+ 	#endif
+
 #else // OpenGL Desktop
 	#define CINDER_GL_HAS_UNIFORM_BLOCKS
 	#define CINDER_GL_HAS_DRAW_INSTANCED
@@ -188,6 +193,10 @@
 	#define CINDER_GL_HAS_REQUIRED_INTERNALFORMAT
 
 	#define CINDER_GL_HAS_TEXTURE_NORM16
+
+ 	#if defined( CINDER_LINUX )
+ 		#define CINDER_GL_HAS_COMPUTE_SHADER
+ 	#endif
 #endif
 
 #if defined( CINDER_MSW )
