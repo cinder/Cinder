@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_handle_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -440,19 +440,16 @@ size_t win_iocp_handle_service::do_read(
   if (!ok)
   {
     DWORD last_error = ::GetLastError();
-    if (last_error != ERROR_MORE_DATA)
+    if (last_error == ERROR_HANDLE_EOF)
     {
-      if (last_error == ERROR_HANDLE_EOF)
-      {
-        ec = asio::error::eof;
-      }
-      else
-      {
-        ec = asio::error_code(last_error,
-            asio::error::get_system_category());
-      }
+      ec = asio::error::eof;
     }
-    return 0;
+    else
+    {
+      ec = asio::error_code(last_error,
+          asio::error::get_system_category());
+    }
+    return (last_error == ERROR_MORE_DATA) ? bytes_transferred : 0;
   }
 
   ec = asio::error_code();

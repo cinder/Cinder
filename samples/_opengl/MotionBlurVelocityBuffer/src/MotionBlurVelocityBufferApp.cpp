@@ -72,9 +72,16 @@ class MotionBlurVelocityBufferApp : public App {
 	float					mAverageGpuTime = 0.0f;
 	float					mAverageCpuTime = 0.0f;
 
+#if ! defined( CINDER_ANDROID )
 	params::InterfaceGlRef	mParams;
+<<<<<<< HEAD
+#endif
+	int						mTileSize = 20;
+	int						mSampleCount = 31;
+=======
 	int						mTileSize = 20;		// TileMax program samples a TileSize x TileSize region of pixels for each of its output pixels.
 	int						mSampleCount = 31;	// Number of samples used when calculating motion blur. Low-movement areas skip calculation.
+>>>>>>> upstream/master
 	float					mAnimationSpeed = 1.0f;
 	float					mBlurNoise = 0.0f;
 	bool					mBlurEnabled = true;
@@ -92,6 +99,7 @@ void MotionBlurVelocityBufferApp::setup()
 	createBuffers();
 	loadShaders();
 
+#if ! defined( CINDER_ANDROID )
 	mParams = params::InterfaceGl::create( "Motion Blur Options", ivec2( 250, 300 ) );
 	mParams->addParam( "Average GPU Draw (ms)", &mAverageGpuTime );
 	mParams->addParam( "Average CPU Draw (ms)", &mAverageCpuTime );
@@ -102,6 +110,7 @@ void MotionBlurVelocityBufferApp::setup()
 	mParams->addParam( "Animation Speed", &mAnimationSpeed ).min( 0.05f ).step( 0.2f );
 	mParams->addParam( "Max Samples", &mSampleCount ).min( 1 ).step( 2 );
 	mParams->addParam( "Blur Noise", &mBlurNoise ).min( 0.0f ).step( 0.01f );
+#endif
 
 #if defined( CINDER_COCOA_TOUCH )
 	getSignalSupportedOrientations().connect( [] { return InterfaceOrientation::LandscapeAll; } );
@@ -305,13 +314,18 @@ void MotionBlurVelocityBufferApp::draw()
 		drawVelocityBuffers();
 	}
 
+<<<<<<< HEAD
+#if ! defined( CINDER_ANDROID )
+=======
 	mCpuTimer.stop();
 	mGpuTimer->end();
 
 	mAverageCpuTime = (mCpuTimer.getSeconds() * 200) + mAverageCpuTime * 0.8f;
 	mAverageGpuTime = mGpuTimer->getElapsedMilliseconds() * 0.2f + mAverageGpuTime * 0.8f;
 
+>>>>>>> upstream/master
 	mParams->draw();
+#endif
 }
 
 void MotionBlurVelocityBufferApp::drawVelocityBuffers()

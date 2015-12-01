@@ -33,6 +33,10 @@
 #include "cinder/Sphere.h"
 #include <algorithm>
 
+#if defined( CINDER_ANDROID )
+  #include "cinder/app/App.h"
+#endif
+
 using namespace std;
 
 namespace cinder { namespace geom {

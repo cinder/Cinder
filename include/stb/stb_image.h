@@ -376,6 +376,25 @@ License:
 // and only if iPhone convert-to-rgb processing is on).
 //
 
+#if defined(__ANDROID__) && (defined(linux) || defined(__linux) || defined(__linux__))
+  #include "cinder/app/android/AssetFileSystem.h"
+  #include <android/asset_manager.h>
+  #define ci_stbi_FILE      cinder::app::android::AssetFileSystem_FILE
+  #define ci_stbi_fopen     cinder::app::android::AssetFileSystem_fopen
+  #define ci_stbi_fclose    cinder::app::android::AssetFileSystem_fclose
+  #define ci_stbi_fseek     cinder::app::android::AssetFileSystem_fseek
+  #define ci_stbi_ftell     cinder::app::android::AssetFileSystem_ftell
+  #define ci_stbi_fread     cinder::app::android::AssetFileSystem_fread
+  #define ci_stbi_feof      cinder::app::android::AssetFileSystem_feof
+#else
+  #define ci_stbi_FILE      FILE
+  #define ci_stbi_fopen     fopen
+  #define ci_stbi_fclose    fclose
+  #define ci_stbi_fseek     fseek
+  #define ci_stbi_ftell     ftell
+  #define ci_stbi_fread     fread
+  #define ci_stbi_feof      feof
+#endif
 
 #ifndef STBI_NO_STDIO
 #include <stdio.h>
@@ -426,7 +445,7 @@ STBIDEF stbi_uc *stbi_load_from_memory   (stbi_uc           const *buffer, int l
 STBIDEF stbi_uc *stbi_load_from_callbacks(stbi_io_callbacks const *clbk  , void *user, int *x, int *y, int *comp, int req_comp);
 
 #ifndef STBI_NO_STDIO
-STBIDEF stbi_uc *stbi_load_from_file  (FILE *f,                  int *x, int *y, int *comp, int req_comp);
+STBIDEF stbi_uc *stbi_load_from_file  (ci_stbi_FILE *f,                  int *x, int *y, int *comp, int req_comp);
 // for stbi_load_from_file, file pointer is left pointing immediately after image
 #endif
 
@@ -436,7 +455,7 @@ STBIDEF stbi_uc *stbi_load_from_file  (FILE *f,                  int *x, int *y,
    STBIDEF float *stbi_loadf_from_callbacks  (stbi_io_callbacks const *clbk, void *user, int *x, int *y, int *comp, int req_comp);
 
    #ifndef STBI_NO_STDIO
-   STBIDEF float *stbi_loadf_from_file  (FILE *f,                int *x, int *y, int *comp, int req_comp);
+   STBIDEF float *stbi_loadf_from_file  (ci_stbi_FILE *f,                int *x, int *y, int *comp, int req_comp);
    #endif
 #endif
 
@@ -455,7 +474,7 @@ STBIDEF int    stbi_is_hdr_from_callbacks(stbi_io_callbacks const *clbk, void *u
 STBIDEF int    stbi_is_hdr_from_memory(stbi_uc const *buffer, int len);
 #ifndef STBI_NO_STDIO
 STBIDEF int      stbi_is_hdr          (char const *filename);
-STBIDEF int      stbi_is_hdr_from_file(FILE *f);
+STBIDEF int      stbi_is_hdr_from_file(ci_stbi_FILE *f);
 #endif // STBI_NO_STDIO
 
 
@@ -472,7 +491,7 @@ STBIDEF int      stbi_info_from_callbacks(stbi_io_callbacks const *clbk, void *u
 
 #ifndef STBI_NO_STDIO
 STBIDEF int      stbi_info            (char const *filename,     int *x, int *y, int *comp);
-STBIDEF int      stbi_info_from_file  (FILE *f,                  int *x, int *y, int *comp);
+STBIDEF int      stbi_info_from_file  (ci_stbi_FILE *f,          int *x, int *y, int *comp);
 
 #endif
 
@@ -747,17 +766,17 @@ static void stbi__start_callbacks(stbi__context *s, stbi_io_callbacks *c, void *
 
 static int stbi__stdio_read(void *user, char *data, int size)
 {
-   return (int) fread(data,1,size,(FILE*) user);
+   return (int) ci_stbi_fread(data,1,size,(ci_stbi_FILE*) user);
 }
 
 static void stbi__stdio_skip(void *user, int n)
 {
-   fseek((FILE*) user, n, SEEK_CUR);
+   ci_stbi_fseek((ci_stbi_FILE*) user, n, SEEK_CUR);
 }
 
 static int stbi__stdio_eof(void *user)
 {
-   return feof((FILE*) user);
+   return ci_stbi_feof((ci_stbi_FILE*) user);
 }
 
 static stbi_io_callbacks stbi__stdio_callbacks =
@@ -767,7 +786,7 @@ static stbi_io_callbacks stbi__stdio_callbacks =
    stbi__stdio_eof,
 };
 
-static void stbi__start_file(stbi__context *s, FILE *f)
+static void stbi__start_file(stbi__context *s, ci_stbi_FILE *f)
 {
    stbi__start_callbacks(s, &stbi__stdio_callbacks, (void *) f);
 }
@@ -927,14 +946,14 @@ static unsigned char *stbi_load_main(stbi__context *s, int *x, int *y, int *comp
 
 #ifndef STBI_NO_STDIO
 
-static FILE *stbi__fopen(char const *filename, char const *mode)
+static ci_stbi_FILE *stbi__fopen(char const *filename, char const *mode)
 {
-   FILE *f;
+   ci_stbi_FILE *f;
 #if defined(_MSC_VER) && _MSC_VER >= 1400
    if (0 != fopen_s(&f, filename, mode))
       f=0;
 #else
-   f = fopen(filename, mode);
+   f = ci_stbi_fopen(filename, mode);
 #endif
    return f;
 }
@@ -942,15 +961,15 @@ static FILE *stbi__fopen(char const *filename, char const *mode)
 
 STBIDEF stbi_uc *stbi_load(char const *filename, int *x, int *y, int *comp, int req_comp)
 {
-   FILE *f = stbi__fopen(filename, "rb");
+   ci_stbi_FILE *f = stbi__fopen(filename, "rb");
    unsigned char *result;
    if (!f) return stbi__errpuc("can't fopen", "Unable to open file");
    result = stbi_load_from_file(f,x,y,comp,req_comp);
-   fclose(f);
+   ci_stbi_fclose(f);
    return result;
 }
 
-STBIDEF stbi_uc *stbi_load_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
+STBIDEF stbi_uc *stbi_load_from_file(ci_stbi_FILE *f, int *x, int *y, int *comp, int req_comp)
 {
    unsigned char *result;
    stbi__context s;
@@ -958,7 +977,7 @@ STBIDEF stbi_uc *stbi_load_from_file(FILE *f, int *x, int *y, int *comp, int req
    result = stbi_load_main(&s,x,y,comp,req_comp);
    if (result) {
       // need to 'unget' all the characters in the IO buffer
-      fseek(f, - (int) (s.img_buffer_end - s.img_buffer), SEEK_CUR);
+      ci_stbi_fseek(f, - (int) (s.img_buffer_end - s.img_buffer), SEEK_CUR);
    }
    return result;
 }
@@ -1010,14 +1029,14 @@ STBIDEF float *stbi_loadf_from_callbacks(stbi_io_callbacks const *clbk, void *us
 STBIDEF float *stbi_loadf(char const *filename, int *x, int *y, int *comp, int req_comp)
 {
    float *result;
-   FILE *f = stbi__fopen(filename, "rb");
+   ci_stbi_FILE *f = stbi__fopen(filename, "rb");
    if (!f) return stbi__errpf("can't fopen", "Unable to open file");
    result = stbi_loadf_from_file(f,x,y,comp,req_comp);
-   fclose(f);
+   ci_stbi_fclose(f);
    return result;
 }
 
-STBIDEF float *stbi_loadf_from_file(FILE *f, int *x, int *y, int *comp, int req_comp)
+STBIDEF float *stbi_loadf_from_file(ci_stbi_FILE *f, int *x, int *y, int *comp, int req_comp)
 {
    stbi__context s;
    stbi__start_file(&s,f);
@@ -1047,16 +1066,16 @@ STBIDEF int stbi_is_hdr_from_memory(stbi_uc const *buffer, int len)
 #ifndef STBI_NO_STDIO
 STBIDEF int      stbi_is_hdr          (char const *filename)
 {
-   FILE *f = stbi__fopen(filename, "rb");
+   ci_stbi_FILE *f = stbi__fopen(filename, "rb");
    int result=0;
    if (f) {
       result = stbi_is_hdr_from_file(f);
-      fclose(f);
+      ci_stbi_fclose(f);
    }
    return result;
 }
 
-STBIDEF int      stbi_is_hdr_from_file(FILE *f)
+STBIDEF int      stbi_is_hdr_from_file(ci_stbi_FILE *f)
 {
    #ifndef STBI_NO_HDR
    stbi__context s;
@@ -6153,22 +6172,22 @@ static int stbi__info_main(stbi__context *s, int *x, int *y, int *comp)
 #ifndef STBI_NO_STDIO
 STBIDEF int stbi_info(char const *filename, int *x, int *y, int *comp)
 {
-    FILE *f = stbi__fopen(filename, "rb");
+    ci_stbi_FILE *f = stbi__fopen(filename, "rb");
     int result;
     if (!f) return stbi__err("can't fopen", "Unable to open file");
     result = stbi_info_from_file(f, x, y, comp);
-    fclose(f);
+    ci_stbi_fclose(f);
     return result;
 }
 
-STBIDEF int stbi_info_from_file(FILE *f, int *x, int *y, int *comp)
+STBIDEF int stbi_info_from_file(ci_stbi_FILE *f, int *x, int *y, int *comp)
 {
    int r;
    stbi__context s;
-   long pos = ftell(f);
+   long pos = ci_stbi_ftell(f);
    stbi__start_file(&s, f);
    r = stbi__info_main(&s,x,y,comp);
-   fseek(f,pos,SEEK_SET);
+   ci_stbi_fseek(f,pos,SEEK_SET);
    return r;
 }
 #endif // !STBI_NO_STDIO

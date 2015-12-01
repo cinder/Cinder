@@ -2038,10 +2038,22 @@ void TextSpan::renderSelf( Renderer &renderer ) const
 
 std::vector<std::pair<uint16_t,vec2> > TextSpan::getGlyphMeasures() const
 {
-	if( ! mGlyphMeasures ) {
+	if( ! mGlyphMeasures ) {		
 		TextBox tbox = TextBox().font( *getFont() ).text( mString );
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+		auto tmpGlyphs = tbox.measureGlyphs();
+		mGlyphMeasures = shared_ptr<std::vector<std::pair<uint16_t,vec2> > >( 
+			new std::vector<std::pair<uint16_t,vec2> >( tmpGlyphs.size() ) );
+		for( size_t i = 0; i < tmpGlyphs.size(); ++i ) {
+			const auto& src = tmpGlyphs[i];
+			auto& dst = (*mGlyphMeasures)[i];
+			dst.first = (uint16_t)src.first;
+			dst.second = src.second;
+		}
+#else	
 		mGlyphMeasures = shared_ptr<std::vector<std::pair<uint16_t,vec2> > >( 
 			new std::vector<std::pair<uint16_t,vec2> >( tbox.measureGlyphs() ) );
+#endif		
 	}
 	
 	return *mGlyphMeasures;

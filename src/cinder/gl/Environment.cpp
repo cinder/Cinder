@@ -37,6 +37,14 @@
 	#include "EGL/egl.h"
 #elif defined( CINDER_MSW )
 	#include <windows.h>
+#elif defined( CINDER_ANDROID )
+	#include "EGL/egl.h"
+#elif defined( CINDER_LINUX )
+  #if defined( CINDER_LINUX_EGL_ONLY )
+ 	#include "EGL/egl.h"
+  #else
+	#include "glfw/glfw3.h"
+  #endif
 #endif
 
 #include "cinder/Log.h"
@@ -90,6 +98,10 @@ void destroyPlatformData( Context::PlatformData *data )
 	auto platformData = dynamic_cast<PlatformDataMsw*>( data );
 	::wglMakeCurrent( NULL, NULL );
 	::wglDeleteContext( platformData->mGlrc );
+#elif defined( CINDER_ANDROID )
+	auto platformData = dynamic_cast<PlatformDataAndroid*>( data );
+#elif defined( CINDER_LINUX )
+	auto platformData = dynamic_cast<PlatformDataLinux*>( data );
 #endif
 
 	delete data;
@@ -142,6 +154,31 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 	}
 	::wglMakeCurrent( sharedContextDc, rc );
 	shared_ptr<Context::PlatformData> platformData = shared_ptr<Context::PlatformData>( new PlatformDataMsw( sharedContextPlatformData, rc, sharedContextDc ), destroyPlatformData );
+#elif defined( CINDER_ANDROID )
+	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataAndroid>( sharedContext->getPlatformData() );
+	EGLContext prevEglContext = ::eglGetCurrentContext();
+	EGLDisplay prevEglDisplay = ::eglGetCurrentDisplay();
+	EGLSurface prevEglSurface = ::eglGetCurrentSurface( EGL_DRAW );
+
+	EGLint surfaceAttribList[] = { EGL_NONE, EGL_NONE };
+	EGLContext eglContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
+
+	shared_ptr<Context::PlatformData> platformData( new PlatformDataAndroid( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );
+#elif defined( CINDER_LINUX )
+  #if defined( CINDER_LINUX_EGL_ONLY )
+	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
+	EGLContext prevEglContext = ::eglGetCurrentContext();
+	EGLDisplay prevEglDisplay = ::eglGetCurrentDisplay();
+	EGLSurface prevEglSurface = ::eglGetCurrentSurface( EGL_DRAW );
+
+	EGLint surfaceAttribList[] = { EGL_NONE, EGL_NONE };
+	EGLContext eglContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
+
+	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );	
+  #else
+	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
+  	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedContextPlatformData->mContext ) );
+  #endif
 #endif
 
 	ContextRef result( new Context( platformData ) );
@@ -199,6 +236,25 @@ void Environment::makeContextCurrent( const Context *context )
 	else {
 		::wglMakeCurrent( NULL, NULL );
 	}
+#elif defined( CINDER_ANDROID )
+	// NOTE: Does not work as advertised on Android. Disabling for now.
+	//	
+	// if( context ) {
+	// 	auto platformData = dynamic_pointer_cast<PlatformDataAndroid>( context->getPlatformData() );
+	// 	EGLBoolean status = ::eglMakeCurrent( platformData->mDisplay, platformData->mSurface, platformData->mSurface, platformData->mContext );
+	// 	assert( status );
+	// }
+#elif defined( CINDER_LINUX )
+  #if defined( CINDER_LINUX_EGL_ONLY )
+  #else
+	if( context ) {
+		auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
+		glfwMakeContextCurrent( platformData->mContext );
+  	}
+	else {
+		glfwMakeContextCurrent( nullptr );
+	}
+  #endif
 #endif
 }
 

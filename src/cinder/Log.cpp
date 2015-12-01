@@ -34,6 +34,11 @@
 #elif defined( CINDER_MSW )
 	#include <Windows.h>
 	#include <codecvt>
+#elif defined( CINDER_ANDROID )
+	#include <android/log.h>
+ 	#define TAG "cinder"
+#elif defined( CINDER_LINUX )
+    #include <syslog.h>
 #endif
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
@@ -136,7 +141,13 @@ std::vector<LoggerRef> LogManager::getAllLoggers()
 void LogManager::restoreToDefault()
 {
 	clearLoggers();
+
+#if defined( CINDER_ANDROID )
+	// LoggerConsole goes nowhere on android, so by default use LoggerSystem (android logcat)
+	makeLogger<LoggerSystem>();
+#else
 	makeLogger<LoggerConsole>();
+#endif
 }
 	
 void LogManager::write( const Metadata &meta, const std::string &text )
@@ -291,7 +302,7 @@ void LoggerBreakpoint::write( const Metadata &meta, const string &text )
 	}
 }
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 
 // ----------------------------------------------------------------------------------------------------
 // MARK: - ImplSysLog
@@ -301,12 +312,23 @@ class LoggerSystem::ImplSysLog : public Logger {
 public:
 	ImplSysLog()
 	{
+#if defined( CINDER_COCOA )
 		// determine app name from it's NSBundle. https://developer.apple.com/library/mac/qa/qa1544/_index.html
 		NSBundle *bundle = app::PlatformCocoa::get()->getBundle();
 		NSString *bundlePath = [bundle bundlePath];
 		NSString *appName = [[NSFileManager defaultManager] displayNameAtPath: bundlePath];
-		
 		const char *cAppName = [appName UTF8String];
+#elif defined( CINDER_LINUX )
+    	std::vector<char> buf( PATH_MAX );
+	    std::memset( &(buf[0]), 0, buf.size()  );
+        ssize_t len = ::readlink("/proc/self/exe", &(buf[0]), buf.size() - 1 );
+        if( ( -1 != len ) && ( len < buf.size() ) ) {
+            buf[len] = '\0';
+        }
+       
+        std::string exeName = fs::path( (const char *)(&buf[0]) ).filename().string();
+        const char* cAppName = exeName.c_str();
+#endif
 		openlog( cAppName, ( LOG_CONS | LOG_PID ), LOG_USER );
 	}
 	
@@ -416,6 +438,41 @@ protected:
 
 #endif
 
+#if defined( CINDER_ANDROID )
+// ----------------------------------------------------------------------------------------------------
+// MARK: - ImplLogCat
+// ----------------------------------------------------------------------------------------------------
+
+class LoggerSystem::ImplLogCat : public Logger {
+public:
+	ImplLogCat()
+	{
+	}
+
+	virtual ~ImplLogCat()
+	{
+	}
+
+	void write( const Metadata &meta, const std::string &text ) override
+	{
+		std::stringstream ss;
+		writeDefault( ss, meta, text );
+
+		android_LogPriority prio = ANDROID_LOG_DEFAULT;
+		switch( meta.mLevel ) {
+			case LEVEL_VERBOSE:	prio = ANDROID_LOG_VERBOSE; break;
+			case LEVEL_INFO:	prio = ANDROID_LOG_INFO; 	break;
+			case LEVEL_DEBUG:	prio = ANDROID_LOG_DEBUG; 	break;
+			case LEVEL_WARNING:	prio = ANDROID_LOG_WARN; 	break;
+			case LEVEL_ERROR:	prio = ANDROID_LOG_ERROR; 	break;
+			case LEVEL_FATAL:	prio = ANDROID_LOG_FATAL; 	break;
+		}
+
+		__android_log_print( prio, TAG, ss.str().c_str() );
+	}
+};
+
+#endif // defined ( CINDER_ANDROID )
 	
 // ----------------------------------------------------------------------------------------------------
 // MARK: - LoggerSystem
@@ -424,10 +481,12 @@ protected:
 LoggerSystem::LoggerSystem()
 {
 	mMinLevel = static_cast<Level>(CI_MIN_LOG_LEVEL);
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	LoggerSystem::mImpl = std::unique_ptr<ImplSysLog>( new ImplSysLog() );
 #elif defined( CINDER_MSW )
 	LoggerSystem::mImpl = std::unique_ptr<ImplEventLog>( new ImplEventLog() );
+#elif defined( CINDER_ANDROID )
+	LoggerSystem::mImpl = std::unique_ptr<ImplLogCat>( new ImplLogCat() );
 #endif
 }
 
@@ -443,7 +502,7 @@ void LoggerSystem::write( const Metadata &meta, const std::string &text )
 	}
 #endif
 }
-	
+
 // ----------------------------------------------------------------------------------------------------
 // MARK: - Helper Classes
 // ----------------------------------------------------------------------------------------------------

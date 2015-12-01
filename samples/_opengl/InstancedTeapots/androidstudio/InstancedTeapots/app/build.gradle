@@ -1,0 +1,127 @@
+apply plugin: 'com.android.application'
+apply plugin: org.libcinder.gradle.CinderAppBuildPlugin
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    println "PROJECT DIR: ${projectDir}"
+    println "BUILD DIR  : ${buildDir}"
+
+    defaultConfig {
+        applicationId "org.libcinder.samples.instancedteapots"
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            jni.srcDirs = ['src/main/jni', '../../../src', '../../../include']
+            jniLibs.srcDirs = ['src/main/jniLibs', '../../../../../lib']
+            assets.srcDirs = ['src/main/assets', '../../../assets']
+        }
+    }
+
+    task cinderCleanNdk() << {
+        File cinderNdkDir = new File( "${project.buildDir}/cinder-ndk" );
+        if( cinderNdkDir.exists() ) {
+            cinderNdkDir.delete();
+        }
+
+        tasks.each {
+            if(("cinderCompileDebugNdk" ==  it.name) || ("cinderCompileReleaseNdk" ==  it.name)) {
+                it.outputs.upToDateWhen {false}
+            }
+        }
+    }
+
+    def cleanBuildTask = tasks.getByPath( ":app:clean" );
+    if( cleanBuildTask ) {
+        cleanBuildTask.dependsOn cinderCleanNdk
+    }
+
+    task disableDefaultNdkBuild() {
+        doFirst {
+            tasks.each {
+                if(("compileDebugNdk" ==  it.name) || ("compileReleaseNdk" ==  it.name)) {
+                    it.enabled = false
+                }
+            }
+        }
+    }
+
+    def prebuildTask = tasks.getByPath( ":app:preBuild" )
+    if( prebuildTask ) {
+        prebuildTask.dependsOn disableDefaultNdkBuild
+    }
+
+    cinder {
+        ndkDir = plugins.getPlugin('com.android.application').sdkHandler.getNdkFolder().toString()
+        cinderDir = "${projectDir}/../../../../../.."
+        verbose = false 
+        moduleName = "InstancedTeapots"
+        srcDirs = ["../../../src"]
+        cFlags {
+            "all_archs" {
+                debug = "-g"
+                release = "-Os"
+            }
+        }
+        cppFlags {
+            "all_archs" {
+                debug = "-g -std=c++11"
+                release = "-Os -std=c++11"
+            }
+        }
+        includeDirs = ["${cinderDir}/include", "${cinderDir}/boost"]
+        ldLibs = ["log", "android", "EGL", "GLESv3", "OpenSLES", "z"]
+        libCinder = [
+            "debug" : "${cinderDir}/lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libcinder_d.a",
+            "release" : "${cinderDir}/lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libcinder.a"
+        ]
+        staticLibs = [
+            "${cinderDir}/lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libboost_filesystem.a",
+            "${cinderDir}/lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libboost_system.a"
+        ]
+        stl = "gnustl_static"
+        toolChainVersion = "4.9"
+        archs = ["armeabi-v7a"]
+        //archs = ["armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86","x86_64"]
+    }
+
+    task ndkBuildDebug(dependsOn: 'cinderCompileDebugNdk') {}
+    task ndkBuildRelease(dependsOn: 'cinderCompileReleaseNdk') {}
+
+    tasks.withType(JavaCompile) {
+        compileTask ->
+            if("compileDebugJavaWithJavac" == compileTask.name) {
+                compileTask.dependsOn ndkBuildDebug
+            }
+            else if("compileReleaseJavaWithJavac" == compileTask.name) {
+                compileTask.dependsOn ndkBuildRelease
+            }
+    }
+}
+
+repositories {
+    jcenter()
+    flatDir {
+        dirs "${projectDir}/../../../../../../lib/android"
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    debugCompile 'org.libcinder:libcinder-debug:1.0@aar'
+    releaseCompile 'org.libcinder:libcinder-release:1.0@aar'
+}
+

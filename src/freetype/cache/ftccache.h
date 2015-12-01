@@ -4,8 +4,7 @@
 /*                                                                         */
 /*    FreeType internal cache interface (specification).                   */
 /*                                                                         */
-/*  Copyright 2000-2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009, 2010,   */
-/*            2011 by                                                      */
+/*  Copyright 2000-2015 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -25,8 +24,8 @@
 
 FT_BEGIN_HEADER
 
-#define _FTC_FACE_ID_HASH( i )                                                \
-          ((FT_PtrDist)(( (FT_PtrDist)(i) >> 3 ) ^ ( (FT_PtrDist)(i) << 7 )))
+#define _FTC_FACE_ID_HASH( i )                                  \
+          ( ( (FT_Offset)(i) >> 3 ) ^ ( (FT_Offset)(i) << 7 ) )
 
   /* handle to cache object */
   typedef struct FTC_CacheRec_*  FTC_Cache;
@@ -60,7 +59,7 @@ FT_BEGIN_HEADER
   {
     FTC_MruNodeRec  mru;          /* circular mru list pointer           */
     FTC_Node        link;         /* used for hashing                    */
-    FT_PtrDist      hash;         /* used for hashing too                */
+    FT_Offset       hash;         /* used for hashing too                */
     FT_UShort       cache_index;  /* index of cache the node belongs to  */
     FT_Short        ref_count;    /* reference count for this node       */
 
@@ -81,16 +80,10 @@ FT_BEGIN_HEADER
               : ( ( hash ) &   ( cache )->mask ) ) )
 #else
   FT_LOCAL( FTC_Node* )
-  ftc_get_top_node_for_hash( FTC_Cache   cache,
-                             FT_PtrDist  hash );
+  ftc_get_top_node_for_hash( FTC_Cache  cache,
+                             FT_Offset  hash );
 #define FTC_NODE__TOP_FOR_HASH( cache, hash )            \
         ftc_get_top_node_for_hash( ( cache ), ( hash ) )
-#endif
-
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-  FT_BASE( void )
-  ftc_node_destroy( FTC_Node     node,
-                    FTC_Manager  manager );
 #endif
 
 
@@ -186,14 +179,14 @@ FT_BEGIN_HEADER
 #ifndef FTC_INLINE
   FT_LOCAL( FT_Error )
   FTC_Cache_Lookup( FTC_Cache   cache,
-                    FT_PtrDist  hash,
+                    FT_Offset   hash,
                     FT_Pointer  query,
                     FTC_Node   *anode );
 #endif
 
   FT_LOCAL( FT_Error )
   FTC_Cache_NewNode( FTC_Cache   cache,
-                     FT_PtrDist  hash,
+                     FT_Offset   hash,
                      FT_Pointer  query,
                      FTC_Node   *anode );
 
@@ -218,12 +211,12 @@ FT_BEGIN_HEADER
   FT_BEGIN_STMNT                                                         \
     FTC_Node             *_bucket, *_pnode, _node;                       \
     FTC_Cache             _cache   = FTC_CACHE(cache);                   \
-    FT_PtrDist            _hash    = (FT_PtrDist)(hash);                 \
+    FT_Offset             _hash    = (FT_Offset)(hash);                  \
     FTC_Node_CompareFunc  _nodcomp = (FTC_Node_CompareFunc)(nodecmp);    \
     FT_Bool               _list_changed = FALSE;                         \
                                                                          \
                                                                          \
-    error = FTC_Err_Ok;                                                  \
+    error = FT_Err_Ok;                                                   \
     node  = NULL;                                                        \
                                                                          \
     /* Go to the `top' node of the list sharing same masked hash */      \
@@ -328,7 +321,7 @@ FT_BEGIN_HEADER
 
 
 #define FTC_CACHE_TRYLOOP_END( list_changed )                     \
-      if ( !error || error != FTC_Err_Out_Of_Memory )             \
+      if ( !error || FT_ERR_NEQ( error, Out_Of_Memory ) )         \
         break;                                                    \
                                                                   \
       _try_done = FTC_Manager_FlushN( _try_manager, _try_count ); \

@@ -1,13 +1,12 @@
-#include "precision.glsl"
+#if __VERSION__ == 300
+	precision highp float;
+	precision highp sampler2DShadow;
+#endif
 
 uniform vec2		uPixel;
 uniform sampler2D	uSampler;
 
-in Vertex
-{
-	vec2 	uv;
-} vertex;
-
+in vec2     uv;
 out vec4 	oColor;
 
 void main( void )
@@ -16,12 +15,12 @@ void main( void )
 	float fxaaReduceMul	= 1.0 / fxaaSpanMax;
 	float fxaaReduceMin	= 1.0 / 128.0;
 
-	vec3 rgbUL	= texture( uSampler, vertex.uv + vec2( -1.0, -1.0 ) * uPixel ).xyz;
-	vec3 rgbUR	= texture( uSampler, vertex.uv + vec2(  1.0, -1.0 ) * uPixel ).xyz;
-	vec3 rgbBL	= texture( uSampler, vertex.uv + vec2( -1.0,  1.0 ) * uPixel ).xyz;
-	vec3 rgbBR	= texture( uSampler, vertex.uv + vec2(  1.0,  1.0 ) * uPixel ).xyz;
-	vec3 rgbM	= texture( uSampler, vertex.uv ).xyz;
-	
+	vec3 rgbUL	= texture( uSampler, uv + vec2( -1.0, -1.0 ) * uPixel ).xyz;
+	vec3 rgbUR	= texture( uSampler, uv + vec2(  1.0, -1.0 ) * uPixel ).xyz;
+	vec3 rgbBL	= texture( uSampler, uv + vec2( -1.0,  1.0 ) * uPixel ).xyz;
+	vec3 rgbBR	= texture( uSampler, uv + vec2(  1.0,  1.0 ) * uPixel ).xyz;
+	vec3 rgbM	= texture( uSampler, uv ).xyz;
+
 	vec3 luma		= vec3( 0.299, 0.587, 0.114 );
 	float lumaUL	= dot( rgbUL, luma );
 	float lumaUR	= dot( rgbUR, luma );
@@ -42,11 +41,11 @@ void main( void )
 		  dir * rcpDirMin ) ) * uPixel;
 
 	vec3 color0 = 0.5 * (
-		texture( uSampler, vertex.uv + dir * ( 1.0 / 3.0 - 0.5 ) ).rgb +
-		texture( uSampler, vertex.uv + dir * ( 2.0 / 3.0 - 0.5 ) ).rgb );
+		texture( uSampler, uv + dir * ( 1.0 / 3.0 - 0.5 ) ).rgb +
+		texture( uSampler, uv + dir * ( 2.0 / 3.0 - 0.5 ) ).rgb );
 	vec3 color1 = color0 * 0.5 + 0.25 * (
-		texture( uSampler, vertex.uv + dir * -0.5 ).rgb +
-		texture( uSampler, vertex.uv + dir *  0.5 ).rgb );
+		texture( uSampler, uv + dir * -0.5 ).rgb +
+		texture( uSampler, uv + dir *  0.5 ).rgb );
 	
 	float lumaB = dot( color1, luma );
 

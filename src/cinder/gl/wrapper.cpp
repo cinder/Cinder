@@ -721,10 +721,12 @@ void patchParameteri( GLenum pname, GLint value )
 	glPatchParameteri( pname, value );
 }
 
+#if ! defined( CINDER_GL_ES )
 void patchParameterfv( GLenum pname, GLfloat *value )
 {
 	glPatchParameterfv( pname, value );
 }
+#endif 
 #endif // defined( CINDER_GL_HAS_TESS_SHADER )
 
 void color( float r, float g, float b )
@@ -953,7 +955,7 @@ void readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
 }
 
 // Compute
-#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
 ivec3 getMaxComputeWorkGroupCount()
 {
 	ivec3 count;
@@ -971,7 +973,7 @@ ivec3 getMaxComputeWorkGroupSize()
 	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &size.z );
 	return size;
 }
-#endif // defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+#endif // defined( CINDER_GL_HAS_COMPUTE_SHADER )
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

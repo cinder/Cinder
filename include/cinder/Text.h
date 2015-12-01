@@ -31,6 +31,7 @@
 #include <vector>
 #include <deque>
 #include <string>
+#include <map> 
 
 // Core Text forward declarations
 #if defined( CINDER_COCOA )
@@ -128,10 +129,14 @@ class TextBox {
 	bool				getLigate() const { return mLigate; }
 	void				setLigate( bool ligateText ) { mLigate = ligateText; }
 
-	vec2									measure() const;
+	vec2				measure() const;
 	/** Returns a vector of pairs of glyph indices and the position of their left baselines
 		\warning Does not support word wrapping on Windows. **/
-	std::vector<std::pair<uint16_t,vec2> >	measureGlyphs() const;
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
+	std::vector<std::pair<Font::Glyph,vec2>>	measureGlyphs( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) const;
+#else
+	std::vector<std::pair<Font::Glyph,vec2>>	measureGlyphs() const;
+#endif
 
 	Surface				render( vec2 offset = vec2() );
 
@@ -155,8 +160,9 @@ class TextBox {
 	void						calculate() const;
 
 	mutable std::u16string	mWideText;
-#elif defined( CINDER_WINRT )
-	std::vector<std::string>	calculateLineBreaks() const;
+#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	std::vector<std::string>	calculateLineBreaks( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) const;
+	void 						calculate() const;
 #endif
 };
 

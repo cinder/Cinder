@@ -31,6 +31,8 @@
 	#include "cinder/qtime/QuickTimeGlImplLegacy.h"
 #elif ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || defined( CINDER_COCOA_TOUCH )
 	#include "cinder/qtime/QuickTimeGlImplAvf.h"
+#elif defined( CINDER_ANDROID )
+	#include "cinder/android/MovieGl.h" 
 #else
 	// QuickTime is not supported on 10.7 64-bit or Windows 64-bit
 #endif

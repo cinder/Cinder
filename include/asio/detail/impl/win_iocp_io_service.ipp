@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_io_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -21,6 +21,7 @@
 
 #include "asio/error.hpp"
 #include "asio/io_service.hpp"
+#include "asio/detail/cstdint.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
 #include "asio/detail/limits.hpp"
@@ -456,11 +457,17 @@ size_t win_iocp_io_service::do_one(bool block, asio::error_code& ec)
 
 DWORD win_iocp_io_service::get_gqcs_timeout()
 {
-  OSVERSIONINFO version_info;
-  version_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-  if (::GetVersionEx(&version_info))
-    if (version_info.dwMajorVersion >= 6)
-      return INFINITE;
+  OSVERSIONINFOEX osvi;
+  ZeroMemory(&osvi, sizeof(osvi));
+  osvi.dwOSVersionInfoSize = sizeof(osvi);
+  osvi.dwMajorVersion = 6ul;
+
+  const uint64_t condition_mask = ::VerSetConditionMask(
+      0, VER_MAJORVERSION, VER_GREATER_EQUAL);
+
+  if (!!::VerifyVersionInfo(&osvi, VER_MAJORVERSION, condition_mask))
+    return INFINITE;
+
   return default_gqcs_timeout;
 }
 

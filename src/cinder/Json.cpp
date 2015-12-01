@@ -190,12 +190,12 @@ JsonTree::JsonTree( const string &key, uint32_t value )
 
 JsonTree::JsonTree( const string &key, int64_t value )
 {
-	init( key, Json::Value( value ), true, NODE_VALUE, VALUE_INT );
+	init( key, Json::Value( static_cast<Json::Value::Int64>( value ) ), true, NODE_VALUE, VALUE_INT );
 }
 	
 JsonTree::JsonTree( const string &key, uint64_t value )
 {
-	init( key, Json::Value( value ), true, NODE_VALUE, VALUE_UINT );
+	init( key, Json::Value( static_cast<Json::Value::UInt64>( value ) ), true, NODE_VALUE, VALUE_UINT );
 }
 
 JsonTree JsonTree::makeArray( const std::string &key )
@@ -627,13 +627,13 @@ Json::Value JsonTree::createNativeDoc( WriteOptions writeOptions ) const
 				value = Json::Value( fromString<double>( mValue ) );
 				break;
 			case VALUE_INT:
-				value = Json::Value( fromString<int64_t>( mValue ) );
+				value = Json::Value( static_cast<Json::Value::Int64>( fromString<int64_t>( mValue ) ) );
 				break;
 			case VALUE_STRING:
 				value = Json::Value( mValue );
 				break;
 			case VALUE_UINT:
-				value = Json::Value( fromString<uint64_t>( mValue ) );
+				value = Json::Value( static_cast<Json::Value::UInt64>( fromString<uint64_t>( mValue ) ) );
 				break;
 			}
 		break;

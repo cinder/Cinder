@@ -32,6 +32,10 @@
 	#include "cinder/app/winrt/WindowImplWinRt.h"
 #elif defined( CINDER_COCOA )
 	#include <Foundation/Foundation.h>
+#elif defined( CINDER_ANDROID )
+	#include "cinder/app/android/WindowImplAndroid.h"
+#elif defined( CINDER_LINUX )
+	#include "cinder/app/linux/WindowImplLinux.h"
 #endif
 
 namespace cinder { namespace app {
@@ -392,6 +396,10 @@ const std::vector<TouchEvent::Touch>& Window::getActiveTouches() const
 	return mImpl->getActiveTouches();
 #elif defined( CINDER_WINRT )
 	return mImpl->getActiveTouches();
+#elif defined( CINDER_ANDROID )
+	return mImpl->getActiveTouches();	
+#elif defined( CINDER_LINUX )
+	return mImpl->getActiveTouches();	
 #endif
 }
 

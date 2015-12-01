@@ -1,0 +1,51 @@
+#version 310 es 
+#extension GL_ARB_compute_shader : enable
+#extension GL_ARB_shader_storage_buffer_object : enable
+#extension GL_ARB_compute_variable_group_size : enable
+
+uniform float uMouseForce;
+uniform vec3  uMousePos;
+
+struct Particle
+{
+	vec3	pos;
+	vec3	ppos;
+	vec3	home;
+	vec4	color;
+	float	damping;
+};
+
+layout( std140, binding = 0 ) buffer Part
+{
+    Particle particles[];
+};
+
+//layout( local_size_variable ) in;
+layout( local_size_x = 128, local_size_y = 1, local_size_z = 1 ) in;
+
+const float dt2 = 1.0 / (60.0 * 60.0);
+
+void main()
+{
+  uint gid = gl_GlobalInvocationID.x;	// The .y and .z are both 1 in this case.
+
+  vec3 position =  particles[gid].pos;
+  vec3 pposition = particles[gid].ppos;
+  float damping =  particles[gid].damping;
+  vec3 home =      particles[gid].home;
+  vec4 color =     particles[gid].color;
+
+  // mouse interaction
+  if( uMouseForce > 0.0 )
+  {
+    vec3 dir = position - uMousePos;
+    float d2 = length( dir );
+    d2 *= d2;
+    position += uMouseForce * dir / d2;
+  }
+
+  vec3 vel = (position - pposition) * damping;
+  particles[gid].ppos = position;
+  vec3 acc = (home - position) * 32.0f;
+  particles[gid].pos = position + vel + acc * dt2;
+}

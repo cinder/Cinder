@@ -58,12 +58,14 @@ SourceFileOggVorbis::~SourceFileOggVorbis()
 void SourceFileOggVorbis::init()
 {
 	CI_ASSERT( mDataSource );
+#if ! defined( CINDER_ANDROID )
 	if( mDataSource->isFilePath() ) {
 		int status = ov_fopen( mDataSource->getFilePath().string().c_str(), &mOggVorbisFile );
 		if( status )
 			throw AudioFileExc( string( "Failed to open Ogg Vorbis file with error: " ), (int32_t)status );
 	}
 	else {
+#endif
 		mStream = mDataSource->createStream();
 
 		ov_callbacks callbacks;
@@ -74,7 +76,10 @@ void SourceFileOggVorbis::init()
 
 		int status = ov_open_callbacks( this, &mOggVorbisFile, NULL, 0, callbacks );
 		CI_VERIFY( status == 0 );
+
+#if ! defined( CINDER_ANDROID )
 	}
+#endif
 
 	vorbis_info *info = ov_info( &mOggVorbisFile, -1 );
     mNumChannels = info->channels;

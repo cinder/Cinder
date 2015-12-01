@@ -25,6 +25,9 @@
 
 #include "cinder/TriMesh.h"
 #include "cinder/Exception.h"
+#if defined( CINDER_ANDROID )
+	#include "cinder/android/CinderAndroid.h"
+#endif 
 
 using namespace std;
 
@@ -459,7 +462,7 @@ void TriMesh::read( const DataSourceRef &dataSource )
 		readImplV2( in );
 	}
 	else {
-		throw Exception( "TriMesh::read() error: wrong version number. expected version = 1 or 2, version read: " + to_string( versionNumber ) );
+		throw Exception( "TriMesh::read() error: wrong version number. expected version = 1 or 2, version read: " + std::to_string( versionNumber ) );
 	}
 }
 
