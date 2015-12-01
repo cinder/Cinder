@@ -55,13 +55,11 @@ SMAA::SMAA()
 	// Search Texture (Grayscale, 8 bits unsigned).
 	fmt.setInternalFormat( GL_R8 );
 	fmt.setSwizzleMask( GL_RED, GL_RED, GL_RED, GL_ONE );
-	fmt.loadTopDown( true );
 	mSearchTex = gl::Texture2d::create( searchTexBytes, GL_RED, SEARCHTEX_WIDTH, SEARCHTEX_HEIGHT, fmt );
 
 	// Area Texture (Red+Green Channels, 8 bits unsigned).
 	fmt.setInternalFormat( GL_RG8 );
 	fmt.setSwizzleMask( GL_RED, GL_GREEN, GL_ZERO, GL_ONE );
-	fmt.loadTopDown( true );
 	mAreaTex = gl::Texture2d::create( areaTexBytes, GL_RG, AREATEX_WIDTH, AREATEX_HEIGHT, fmt );
 
 	// Specify the Fbo format.
