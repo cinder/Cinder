@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9CBF9C4F1C0F550F00E876D7 /* Base64Test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CBF9C4D1C0F550F00E876D7 /* Base64Test.cpp */; };
+		9CBF9C501C0F550F00E876D7 /* ObjLoaderTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CBF9C4E1C0F550F00E876D7 /* ObjLoaderTest.cpp */; };
 		9CC02E8E1BDE75C300B5058A /* TestMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E881BDE751200B5058A /* TestMain.cpp */; };
 		9CC02E8F1BDE75EF00B5058A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720219952D00008149E2 /* AVFoundation.framework */; };
 		9CC02E901BDE75F600B5058A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720319952D00008149E2 /* CoreMedia.framework */; };
@@ -20,9 +22,7 @@
 		9CC02E9B1BDE763600B5058A /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		9CC02E9C1BDE764400B5058A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		9CC02E9E1BDE777700B5058A /* SystemTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E9D1BDE777700B5058A /* SystemTest.cpp */; };
-		9CC02EA01BDE780C00B5058A /* ObjLoaderTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E9F1BDE780C00B5058A /* ObjLoaderTest.cpp */; };
 		9CC02EA41BDE7CAE00B5058A /* SignalsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02EA31BDE7CAE00B5058A /* SignalsTest.cpp */; };
-		9CC02EA51BDE86BF00B5058A /* Base64Test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02EA11BDE7A0C00B5058A /* Base64Test.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,15 +53,15 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		6E8118130C2B4ADCA23B5B2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9CBF9C4D1C0F550F00E876D7 /* Base64Test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Base64Test.cpp; path = ../cinder/Base64Test.cpp; sourceTree = "<group>"; };
+		9CBF9C4E1C0F550F00E876D7 /* ObjLoaderTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ObjLoaderTest.cpp; path = ../cinder/ObjLoaderTest.cpp; sourceTree = "<group>"; };
 		9CC02E801BDE74AA00B5058A /* CinderUnitTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CinderUnitTests; sourceTree = BUILT_PRODUCTS_DIR; };
-		9CC02E881BDE751200B5058A /* TestMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestMain.cpp; sourceTree = "<group>"; };
+		9CC02E881BDE751200B5058A /* TestMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestMain.cpp; path = ../TestMain.cpp; sourceTree = "<group>"; };
 		9CC02E911BDE75FE00B5058A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		9CC02E931BDE760600B5058A /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		9CC02E951BDE760B00B5058A /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
-		9CC02E9D1BDE777700B5058A /* SystemTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SystemTest.cpp; sourceTree = "<group>"; };
-		9CC02E9F1BDE780C00B5058A /* ObjLoaderTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjLoaderTest.cpp; sourceTree = "<group>"; };
-		9CC02EA11BDE7A0C00B5058A /* Base64Test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Base64Test.cpp; sourceTree = "<group>"; };
-		9CC02EA31BDE7CAE00B5058A /* SignalsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SignalsTest.cpp; sourceTree = "<group>"; };
+		9CC02E9D1BDE777700B5058A /* SystemTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemTest.cpp; path = ../cinder/SystemTest.cpp; sourceTree = "<group>"; };
+		9CC02EA31BDE7CAE00B5058A /* SignalsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SignalsTest.cpp; path = ../cinder/signals/SignalsTest.cpp; sourceTree = "<group>"; };
 		C0A5E928B33D45F6A388E366 /* UnitTests_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = UnitTests_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -178,9 +178,9 @@
 			children = (
 				9CC02E881BDE751200B5058A /* TestMain.cpp */,
 				9CC02E9D1BDE777700B5058A /* SystemTest.cpp */,
-				9CC02E9F1BDE780C00B5058A /* ObjLoaderTest.cpp */,
-				9CC02EA11BDE7A0C00B5058A /* Base64Test.cpp */,
 				9CC02EA31BDE7CAE00B5058A /* SignalsTest.cpp */,
+				9CBF9C4D1C0F550F00E876D7 /* Base64Test.cpp */,
+				9CBF9C4E1C0F550F00E876D7 /* ObjLoaderTest.cpp */,
 			);
 			name = Source;
 			path = ../src;
@@ -242,11 +242,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CBF9C4F1C0F550F00E876D7 /* Base64Test.cpp in Sources */,
 				9CC02EA41BDE7CAE00B5058A /* SignalsTest.cpp in Sources */,
+				9CBF9C501C0F550F00E876D7 /* ObjLoaderTest.cpp in Sources */,
 				9CC02E9E1BDE777700B5058A /* SystemTest.cpp in Sources */,
 				9CC02E8E1BDE75C300B5058A /* TestMain.cpp in Sources */,
-				9CC02EA01BDE780C00B5058A /* ObjLoaderTest.cpp in Sources */,
-				9CC02EA51BDE86BF00B5058A /* Base64Test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +292,7 @@
 					"-lcurl",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../";
 			};
 			name = Debug;
 		};
@@ -329,6 +330,7 @@
 					"-lcurl",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../";
 			};
 			name = Release;
 		};
@@ -376,6 +378,7 @@
 				9CC02E861BDE74AA00B5058A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "UnitTests" */ = {
 			isa = XCConfigurationList;
