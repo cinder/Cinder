@@ -1566,7 +1566,7 @@ void Octahedron::loadInto(Target *target, const AttribSet &requestedAttribs) con
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Dodecahedron
-#undef PHI	// take the reciprocal of phi, to obtain an icosahedron that fits a unit cube
+#undef PHI	// take the reciprocal of phi, to obtain an Dodecahedron that fits a unit cube
 #define PHI 1.618033
 #define PHI2 0.618033
 
