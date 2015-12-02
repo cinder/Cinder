@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		9CBF9C4F1C0F550F00E876D7 /* Base64Test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CBF9C4D1C0F550F00E876D7 /* Base64Test.cpp */; };
 		9CBF9C501C0F550F00E876D7 /* ObjLoaderTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CBF9C4E1C0F550F00E876D7 /* ObjLoaderTest.cpp */; };
+		9CBF9C5C1C0F5D1B00E876D7 /* UnicodeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CBF9C5B1C0F5D1B00E876D7 /* UnicodeTest.cpp */; };
 		9CC02E8E1BDE75C300B5058A /* TestMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E881BDE751200B5058A /* TestMain.cpp */; };
 		9CC02E8F1BDE75EF00B5058A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720219952D00008149E2 /* AVFoundation.framework */; };
 		9CC02E901BDE75F600B5058A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720319952D00008149E2 /* CoreMedia.framework */; };
@@ -55,6 +56,7 @@
 		6E8118130C2B4ADCA23B5B2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9CBF9C4D1C0F550F00E876D7 /* Base64Test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Base64Test.cpp; path = ../cinder/Base64Test.cpp; sourceTree = "<group>"; };
 		9CBF9C4E1C0F550F00E876D7 /* ObjLoaderTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ObjLoaderTest.cpp; path = ../cinder/ObjLoaderTest.cpp; sourceTree = "<group>"; };
+		9CBF9C5B1C0F5D1B00E876D7 /* UnicodeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UnicodeTest.cpp; path = ../cinder/UnicodeTest.cpp; sourceTree = "<group>"; };
 		9CC02E801BDE74AA00B5058A /* CinderUnitTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CinderUnitTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CC02E881BDE751200B5058A /* TestMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestMain.cpp; path = ../TestMain.cpp; sourceTree = "<group>"; };
 		9CC02E911BDE75FE00B5058A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -181,6 +183,7 @@
 				9CC02EA31BDE7CAE00B5058A /* SignalsTest.cpp */,
 				9CBF9C4D1C0F550F00E876D7 /* Base64Test.cpp */,
 				9CBF9C4E1C0F550F00E876D7 /* ObjLoaderTest.cpp */,
+				9CBF9C5B1C0F5D1B00E876D7 /* UnicodeTest.cpp */,
 			);
 			name = Source;
 			path = ../src;
@@ -245,6 +248,7 @@
 				9CBF9C4F1C0F550F00E876D7 /* Base64Test.cpp in Sources */,
 				9CC02EA41BDE7CAE00B5058A /* SignalsTest.cpp in Sources */,
 				9CBF9C501C0F550F00E876D7 /* ObjLoaderTest.cpp in Sources */,
+				9CBF9C5C1C0F5D1B00E876D7 /* UnicodeTest.cpp in Sources */,
 				9CC02E9E1BDE777700B5058A /* SystemTest.cpp in Sources */,
 				9CC02E8E1BDE75C300B5058A /* TestMain.cpp in Sources */,
 			);
