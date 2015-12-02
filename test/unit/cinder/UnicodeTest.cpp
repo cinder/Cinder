@@ -39,6 +39,9 @@ TEST_CASE("Unicode")
 		REQUIRE( u16 == toUtf16( u32 ) );
 		REQUIRE( u32 == toUtf32( u16 ) );
 
+		// Note that in Terminal the left-to-right contents of the file are overwritten by the
+		// right-to-left contents. All characters are rendered in Xcode's console.
+		// A better way to see the text in terminal is to run the tests with the `-s` flag to show successful results.
 		cout << "Unicode file contents: " << endl;
 		cout << u8 << endl;
 	}
