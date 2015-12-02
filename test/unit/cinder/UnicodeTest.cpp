@@ -2,6 +2,7 @@
 #include "cinder/Unicode.h"
 #include "cinder/DataSource.h"
 #include "cinder/Utilities.h"
+#include "cinder/app/App.h"
 #include "catch.hpp"
 
 using namespace ci;
@@ -42,8 +43,8 @@ TEST_CASE("Unicode")
 		// Note that in Terminal the left-to-right contents of the file are overwritten by the
 		// right-to-left contents. All characters are rendered in Xcode's console.
 		// A better way to see the text in terminal is to run the tests with the `-s` flag to show successful results.
-		cout << "Unicode file contents: " << endl;
-		cout << u8 << endl;
+		app::console() << "Unicode file contents: " << endl;
+		app::console() << u8 << endl;
 	}
 
 }
