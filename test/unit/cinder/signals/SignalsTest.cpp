@@ -40,7 +40,7 @@ static char floatCallback( float f, int, string )
 
 } // namespace
 
-TEST_CASE( "Signals" )
+TEST_CASE( "signals/Signals" )
 {
 	SECTION( "Basic signal tests" )
 	{
