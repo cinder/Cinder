@@ -18,6 +18,21 @@
 #include <mutex>
 
 #include <gst/gl/gstglconfig.h>
+
+#ifndef CINDER_LINUX_EGL_ONLY
+#ifdef GST_GL_HAVE_PLATFORM_EGL
+    #undef GST_GL_HAVE_PLATFORM_EGL
+#endif
+
+#ifdef GST_GL_HAVE_GLES2
+    #undef GST_GL_HAVE_GLES2
+#endif
+
+#ifdef GST_GL_HAVE_GLEGLIMAGEOES
+    #undef GST_GL_HAVE_GLEGLIMAGEOES
+#endif 
+#endif
+
 #include <gst/gl/gstglcontext.h>
 #include <gst/gl/gstgldisplay.h>
 
@@ -135,6 +150,11 @@ namespace gst { namespace video {
     private:
         
         bool initializeGStreamer();
+        void initializeGstGL();
+        void initializeGst();
+
+        void constructGLPipeline();
+
         void startGMainLoopThread();
         void startGMainLoop( GMainLoop* loop );
         
@@ -163,8 +183,12 @@ namespace gst { namespace video {
         void resetBus();
         void cleanup();
         void resetVideoBuffers();
+        void resetGLBuffers();
+        void resetSystemMemoryBuffers();
         void unlinkAudioBranch();
 
+        void createTextureFromMemory();
+        void createTextureFromID();
         void updateTexture( GstSample* sample, GstAppSink* sink );
     private:
         GMainLoop* mGMainLoop; // Needed for message activation since we are not using signals.
@@ -189,6 +213,10 @@ namespace gst { namespace video {
 	
 	    GAsyncQueue* mInputVideoBuffers = nullptr;
 	    GAsyncQueue* mOutputVideoBuffers = nullptr;
+        
+        unsigned char * mFrontVBuffer = nullptr;
+        unsigned char * mBackVBuffer = nullptr;
+        
     };
     
 } }
