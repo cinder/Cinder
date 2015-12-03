@@ -40,7 +40,7 @@ class PlatformAndroid : public Platform {
 
 	virtual void 					cleanupLaunch() override;
 
-	virtual DataSourceRef			loadAsset( const fs::path &relativePath );
+	virtual DataSourceRef			loadAsset( const fs::path &relativePath ) override;
 	virtual fs::path				getAssetPath( const fs::path &relativePath ) const override;
 	virtual DataSourceRef			loadResource( const fs::path &resourcePath ) override;
 
@@ -62,13 +62,13 @@ class PlatformAndroid : public Platform {
 	virtual fs::path				getDocumentsDirectory() const override;
 	virtual fs::path				getDefaultExecutablePath() const override;
 
-	virtual void 					sleep( float milliseconds );
+	virtual void 					sleep( float milliseconds ) override;
 
-	virtual void 					launchWebBrowser( const Url &url );
+	virtual void 					launchWebBrowser( const Url &url ) override;
 
-	virtual std::vector<std::string>		stackTrace();
+	virtual std::vector<std::string>		stackTrace() override;
 
-	virtual const std::vector<DisplayRef>&	getDisplays();
+	virtual const std::vector<DisplayRef>&	getDisplays() override;
 
 	static bool 					isAssetPath( const fs::path &path );
 

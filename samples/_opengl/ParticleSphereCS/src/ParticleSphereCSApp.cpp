@@ -100,9 +100,15 @@ void ParticleSphereCSApp::setup()
 	
 	// Create a default color shader.
 	try {
+#if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1 
+		mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleRender_es31.vert" ) )
+			.fragment( loadAsset( "particleRender_es31.frag" ) )
+			.attribLocation( "particleId", 0 ) );
+#else
 		mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleRender.vert" ) )
 			.fragment( loadAsset( "particleRender.frag" ) )
 			.attribLocation( "particleId", 0 ) );
+#endif
 	}
 	catch( gl::GlslProgCompileExc e ) {
 		ci::app::console() << e.what() << std::endl;
@@ -122,8 +128,13 @@ void ParticleSphereCSApp::setup()
 	
 	try {
 		//// Load our update program.
+#if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1 
+		mUpdateProg = gl::GlslProg::
+			create( gl::GlslProg::Format().compute( loadAsset( "particleUpdate_es31.comp" ) ) );
+#else
 		mUpdateProg = gl::GlslProg::
 			create( gl::GlslProg::Format().compute( loadAsset( "particleUpdate.comp" ) ) );
+#endif
 	}
 	catch( gl::GlslProgCompileExc e ) {
 		ci::app::console() << e.what() << std::endl;

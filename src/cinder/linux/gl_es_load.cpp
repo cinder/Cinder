@@ -643,7 +643,6 @@ PFNGLBINDFRAGDATALOCATIONINDEXEDEXTPROC fnptr_ci_glBindFragDataLocationIndexedEX
 PFNGLBINDFRAGDATALOCATIONEXTPROC fnptr_ci_glBindFragDataLocationEXT = nullptr; 
 PFNGLGETPROGRAMRESOURCELOCATIONINDEXEXTPROC fnptr_ci_glGetProgramResourceLocationIndexEXT = nullptr; 
 PFNGLGETFRAGDATAINDEXEXTPROC fnptr_ci_glGetFragDataIndexEXT = nullptr; 
-PFNGLBUFFERSTORAGEEXTPROC fnptr_ci_glBufferStorageEXT = nullptr; 
 PFNGLCOPYIMAGESUBDATAEXTPROC fnptr_ci_glCopyImageSubDataEXT = nullptr; 
 PFNGLLABELOBJECTEXTPROC fnptr_ci_glLabelObjectEXT = nullptr; 
 PFNGLGETOBJECTLABELEXTPROC fnptr_ci_glGetObjectLabelEXT = nullptr; 
@@ -928,6 +927,11 @@ PFNGLENDTILINGQCOMPROC fnptr_ci_glEndTilingQCOM = nullptr;
 	PFNGLVERTEXATTRIBDIVISORPROC fnptr_ci_glVertexAttribDivisor = nullptr; 
 #endif
 
+
+#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
+	PFNGLBUFFERSTORAGEPROC fnptr_ci_glBufferStorage = nullptr; 
+#endif	
+
 void gl_es_2_0_ext_load() 
 {
 	//DEBUG( "gl_es_2_0_ext_load entered..." );
@@ -1017,7 +1021,6 @@ void gl_es_2_0_ext_load()
 	fnptr_ci_glBindFragDataLocationEXT = (PFNGLBINDFRAGDATALOCATIONEXTPROC)loadEglProc("glBindFragDataLocationEXT"); 
 	fnptr_ci_glGetProgramResourceLocationIndexEXT = (PFNGLGETPROGRAMRESOURCELOCATIONINDEXEXTPROC)loadEglProc("glGetProgramResourceLocationIndexEXT"); 
 	fnptr_ci_glGetFragDataIndexEXT = (PFNGLGETFRAGDATAINDEXEXTPROC)loadEglProc("glGetFragDataIndexEXT"); 
-	fnptr_ci_glBufferStorageEXT = (PFNGLBUFFERSTORAGEEXTPROC)loadEglProc("glBufferStorageEXT"); 
 	fnptr_ci_glCopyImageSubDataEXT = (PFNGLCOPYIMAGESUBDATAEXTPROC)loadEglProc("glCopyImageSubDataEXT"); 
 	fnptr_ci_glLabelObjectEXT = (PFNGLLABELOBJECTEXTPROC)loadEglProc("glLabelObjectEXT"); 
 	fnptr_ci_glGetObjectLabelEXT = (PFNGLGETOBJECTLABELEXTPROC)loadEglProc("glGetObjectLabelEXT"); 
@@ -1347,7 +1350,11 @@ void gl_es_2_0_ext_load()
 	else if( hasExtension( "GL_NV_instanced_arrays" ) ) {
 		fnptr_ci_glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORPROC)loadEglProc("glVertexAttribDivisorNV"); 
 	}
-#endif
+#endif // ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
+
+#if ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
+	fnptr_ci_glBufferStorage = (PFNGLBUFFERSTORAGEPROC)loadEglProc("glBufferStorageEXT"); 
+#endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
 
 	DEBUG( "gl_es_2_0_ext_load: SUCCESSFUL! | " << getLoadCount() << " procs loaded");	
 }

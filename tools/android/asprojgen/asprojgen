@@ -47,7 +47,8 @@ def projgen( appName, appPath, appDomain, appGenCpp ):
     appPath = appPath.strip()
     appDomain = appDomain.strip()
 
-    appPath = os.path.join(os.path.abspath(appPath), appName)
+    if ( len(appPath) > 0 ) and ( "." != appPath ):
+        appPath = os.path.join(os.path.abspath(appPath), appName)
     appPackage = ("%s.%s" % (appDomain, appName.lower()))
     print( "App Name   : %s" % appName)
     print( "App Path   : %s" % appPath)
@@ -71,7 +72,11 @@ def projgen( appName, appPath, appDomain, appGenCpp ):
         dstCppFile = os.path.join(appPath, "src", ("%s.cpp" % appName))
         if not os.path.exists(os.path.dirname(dstCppFile)):
             os.makedirs(os.path.dirname(dstCppFile))
-        lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcCppFile, dstCppFile)
+
+        if not os.path.exists(dstCppFile):
+            lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcCppFile, dstCppFile)
+        else:
+            print( "SKIPPED CPP GENERATION: File aready exits: %s" % dstCppFile )
     else:
         print( "SKIPPED CPP GENERATION" )
         pass
@@ -115,8 +120,8 @@ def projgen( appName, appPath, appDomain, appGenCpp ):
     outFile.write("public class %sActivity extends CinderNativeActivity {\n" % appName)
     outFile.write("    static final String TAG = \"%sActivity\";\n" % appName)
     outFile.write("}\n")
-    
-    print("Project generated at: %s" % appPath)
+       
+    print("\nProject generated at: %s" % appPath)
     print("")
     
     pass

@@ -37,6 +37,13 @@ RPI2=
 VERBOSE=
 APP_BUILD=false
 SAMPLES=
+GCC=
+
+_CORE_COUNT=$(getconf _NPROCESSORS_CONF)
+if [ "$_CORE_COUNT" -gt "$NUMPROCS" ]; then
+	NUMPROCS=$_CORE_COUNT
+fi
+
 
 _CORE_COUNT=$(getconf _NPROCESSORS_CONF)
 if [ "$_CORE_COUNT" -gt "$NUMPROCS" ]; then
@@ -153,6 +160,12 @@ do
 		# Build samples
 		-samples)
 			SAMPLES="-DCINDER_BUILD_SAMPLES=1"
+			shift 1
+		;;
+
+		# GCC
+		-gcc)
+			GCC="-DCINDER_TOOLCHAIN_GCC=1"
 			shift
 		;;
 
@@ -208,7 +221,8 @@ for build in ${BUILD_TYPES[@]}; do
 
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
-		cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GLES} ${RPI2} ${SAMPLES}
+		echo "CMAKE COMMAND: cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES}"
+		cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES}
 	fi
 	make -j ${NUMPROCS} ${VERBOSE}
 

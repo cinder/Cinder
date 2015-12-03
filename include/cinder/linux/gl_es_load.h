@@ -647,7 +647,6 @@
 		extern PFNGLBINDFRAGDATALOCATIONEXTPROC fnptr_ci_glBindFragDataLocationEXT; 
 		extern PFNGLGETPROGRAMRESOURCELOCATIONINDEXEXTPROC fnptr_ci_glGetProgramResourceLocationIndexEXT; 
 		extern PFNGLGETFRAGDATAINDEXEXTPROC fnptr_ci_glGetFragDataIndexEXT; 
-		extern PFNGLBUFFERSTORAGEEXTPROC fnptr_ci_glBufferStorageEXT; 
 		extern PFNGLCOPYIMAGESUBDATAEXTPROC fnptr_ci_glCopyImageSubDataEXT; 
 		extern PFNGLLABELOBJECTEXTPROC fnptr_ci_glLabelObjectEXT; 
 		extern PFNGLGETOBJECTLABELEXTPROC fnptr_ci_glGetObjectLabelEXT; 
@@ -990,7 +989,6 @@
 		#define glBindFragDataLocationEXT fnptr_ci_glBindFragDataLocationEXT 
 		#define glGetProgramResourceLocationIndexEXT fnptr_ci_glGetProgramResourceLocationIndexEXT 
 		#define glGetFragDataIndexEXT fnptr_ci_glGetFragDataIndexEXT 
-		#define glBufferStorageEXT fnptr_ci_glBufferStorageEXT 
 		#define glCopyImageSubDataEXT fnptr_ci_glCopyImageSubDataEXT 
 		#define glLabelObjectEXT fnptr_ci_glLabelObjectEXT 
 		#define glGetObjectLabelEXT fnptr_ci_glGetObjectLabelEXT 
@@ -1366,9 +1364,15 @@
 			// GL_ANGLE_instanced_arrays, GL_EXT_instanced_arrays, GL_NV_instanced_arrays
 			typedef void (GL_APIENTRYP PFNGLVERTEXATTRIBDIVISORPROC) (GLuint index, GLuint divisor);
 			extern PFNGLVERTEXATTRIBDIVISORPROC 				fnptr_ci_glVertexAttribDivisor;
-			#define glVertexAttribDivisor 						fnptr_ci_glVertexAttribDivisor 
+			#define glVertexAttribDivisor 						fnptr_ci_glVertexAttribDivisor
+
+			// GL_EXT_shadow_samplers
+			#define GL_TEXTURE_COMPARE_MODE						0x884C
+			#define GL_TEXTURE_COMPARE_FUNC						0x884D
+			#define GL_COMPARE_REF_TO_TEXTURE					0x884E
+			#define GL_SAMPLER_2D_SHADOW						0x8B62
 		#endif	
-	#endif // ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
+	#endif // ( CINDER_GL_ES_VERSION == CINDER_GL_ES_VERSION_2 )
 
 	#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_2 )
 		// GL_EXT_render_snorm, GL_EXT_texture_norm16 (GL_RGB16_SNORM_EXT)
@@ -1382,6 +1386,11 @@
 		#define GL_RG16 										GL_RG16_EXT
 		#define GL_RGB16 										GL_RGB16_EXT	
 		#define GL_RGBA16 										GL_RGBA16_EXT
+
+		// GL_EXT_buffer_storage
+		typedef void (GL_APIENTRYP PFNGLBUFFERSTORAGEPROC) (GLenum target, GLsizeiptr size, const void *data, GLbitfield flags);
+		extern PFNGLBUFFERSTORAGEPROC 							fnptr_ci_glBufferStorage;
+		#define glBufferStorage									fnptr_ci_glBufferStorage
 	#endif
 
 	#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3 )

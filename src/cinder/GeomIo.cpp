@@ -4554,6 +4554,9 @@ void Subdivide::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 void SourceMods::copyImpl( const SourceMods &rhs )
 {
 	mVariablesCached = false;
+	mChildren.clear();
+	mModifiers.clear();
+	mSourceStorage.reset();
 
 	if( rhs.mSourcePtr ) {
 		mSourceStorage = std::unique_ptr<Source>( rhs.mSourcePtr->clone() );
@@ -4705,37 +4708,30 @@ void SourceMods::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 
 void SourceMods::append( const Modifier &modifier )
 {
-	mModifiers.push_back( std::unique_ptr<Modifier>( modifier.clone() ) );
+	mModifiers.emplace_back( modifier.clone() );
 	mVariablesCached = false;
 }
 
 void SourceMods::append( const Source &source )
 {
-	if( mSourcePtr ) { // if we already have a Source, append a Combine modifier
-		SourceMods sourceMods( &source, true ); // clone the source since it's a temporary
-		append( sourceMods );
-	}
-	else {
-		mSourceStorage = std::unique_ptr<Source>( source.clone() );
-		mSourcePtr = mSourceStorage.get();
-	}
+	append( SourceMods( source ) );
 }
 
 void SourceMods::append( const SourceMods &sourceMods )
 {
-	// if we don't have a Source, this is no problem
+	// if we don't have a Source (ie we're not a "bachelor"), this is no problem; just add 'sourceMods' as another child
 	if( ! mSourcePtr ) {
-		mChildren.push_back( std::unique_ptr<SourceMods>( sourceMods.clone() ) );
+		mChildren.emplace_back( sourceMods.clone() );
 	}
-	else { // we were a bachelor SouceMods before; now we need to make a child of ourselves and then add 'sourceMods' as a second child
+	else { // we're a "bachelor"; now we need to make a child of ourselves and then add 'sourceMods' as the second child
 		CI_ASSERT( mChildren.empty() );
-		mChildren.push_back( std::unique_ptr<SourceMods>( clone() ) );
+		mChildren.emplace_back( clone() );
 		// clear traces of when we owned our Source & Modifiers
 		mSourcePtr = nullptr;
 		mSourceStorage.reset();
 		mModifiers.clear();
 		// add the original SourceMods we were combining with
-		mChildren.push_back( std::unique_ptr<SourceMods>( sourceMods.clone() ) );
+		mChildren.emplace_back( sourceMods.clone() );
 	}
 }
 

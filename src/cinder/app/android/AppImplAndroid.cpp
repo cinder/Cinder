@@ -179,7 +179,10 @@ void AppImplAndroid::onTouchBegan( int id, float x, float y )
 		if( -1 == mMouseTouchId ) {
 			mMouseTouchId = id;
 			mMouseTouchPos = ivec2( tt.x, tt.y );
-			MouseEvent event( getWindow(), MouseEvent::LEFT_DOWN, tt.x, tt.y, 0, 0.0f, 0 );
+
+			int initiator = MouseEvent::LEFT_DOWN;
+			int modifier = MouseEvent::LEFT_DOWN;
+			MouseEvent event( getWindow(), initiator, tt.x, tt.y, modifier, 0.0f, 0 );
 			getWindow()->emitMouseDown( &event );
 		}
 	}
@@ -247,7 +250,9 @@ void AppImplAndroid::onTouchesMoved( const std::vector<AppImplAndroid::TrackedTo
 				TrackedTouch& tt = iter->second;
 				mMouseTouchPos = ivec2( tt.x, tt.y );
 				
-				MouseEvent event( getWindow(), MouseEvent::LEFT_DOWN, tt.x, tt.y, 0, 0.0f, 0 );
+				int initiator = MouseEvent::LEFT_DOWN;
+				int modifier = MouseEvent::LEFT_DOWN;
+				MouseEvent event( getWindow(), initiator, tt.x, tt.y, modifier, 0.0f, 0 );
 				getWindow()->emitMouseDrag( &event );	
 			}
 		}
@@ -276,7 +281,10 @@ void AppImplAndroid::onTouchEnded( int id, float x, float y )
 		else {
 			if( id == mMouseTouchId ) {
 				mMouseTouchId = -1;
-				MouseEvent event( getWindow(), MouseEvent::LEFT_DOWN, tt.x, tt.y, 0, 0.0f, 0 );
+				
+				int initiator = MouseEvent::LEFT_DOWN;
+				int modifier = MouseEvent::LEFT_DOWN;
+				MouseEvent event( getWindow(), initiator, tt.x, tt.y, modifier, 0.0f, 0 );
 				getWindow()->emitMouseUp( &event );
 			}
 		}

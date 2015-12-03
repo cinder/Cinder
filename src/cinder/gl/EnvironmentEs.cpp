@@ -347,6 +347,11 @@ std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
   #endif
 
 	ss << "uniform mat4 ciModelViewProjection;";
+
+	if( shader.mLambert ) {
+		ss <<  "uniform mat3	ciNormalMatrix;";
+	}
+	
 	ss << "in vec4      ciPosition;";
 
 	if( shader.mUniformBasedPosAndTexCoord ) {
@@ -406,6 +411,11 @@ std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 	ss << "#version 100";
 
 	ss << "uniform mat4   ciModelViewProjection;";
+
+	if( shader.mLambert ) {
+		ss <<  "uniform mat3	ciNormalMatrix;";
+	}
+
 	ss << "attribute vec4 ciPosition;";
 
 	if( shader.mUniformBasedPosAndTexCoord ) {

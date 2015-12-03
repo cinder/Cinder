@@ -53,6 +53,20 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0 );
 	std::cout << "Rendering with OpenGL ES 2.0" << std::endl;	
   #endif
+
+#else // Desktop
+	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
+	int32_t majorVersion = options.getVersion().first;
+	int32_t minorVersion = options.getVersion().second;
+	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, majorVersion );
+	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, minorVersion );
+	if( options.getCoreProfile() ) {
+		::glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
+		std::cout << "Rendering with OpenGL Core Profile " << majorVersion << "." << minorVersion << std::endl;
+	}
+	else {
+		std::cout << "Rendering with OpenGL " << majorVersion << "." << minorVersion << std::endl;		
+	}
 #endif
 
 	auto windowSize = format.getSize();
