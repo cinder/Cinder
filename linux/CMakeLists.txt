@@ -232,7 +232,7 @@ find_package( SNDFILE REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${SNDFILE_LIBRARY} )
 
 # GStreamer
-set( CINDER_USE_GSTREAMER false )
+set( CINDER_USE_GSTREAMER true )
 
 if( CINDER_USE_GSTREAMER )
     find_package (Glib REQUIRED COMPONENTS gobject )
