@@ -1,4 +1,4 @@
-Welcome to the Cinder for Android port! Please see **[Getting started with Cinder for Android](https://github.com/chaoticbob/Cinder/wiki)** for details on how to get going.
+Welcome to the Cinder for Android and Linux ports! Please see **[Cinder for Android](https://github.com/cinder/Cinder/wiki/Cinder-for-Android)** and **[Cinder for Linux](https://github.com/cinder/Cinder/wiki/Cinder-for-Linux)** for details on how to get going.
 
 If you run into any issues or have any questions, please [visit the forums](https://forum.libcinder.org).
 
