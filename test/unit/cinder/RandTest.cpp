@@ -37,7 +37,7 @@ void printDistribution( const vector<T> &values, int numBins )
 	}
 }
 
-TEST_CASE("Rand")
+TEST_CASE("Rand", "[noisy]")
 {
 	const int NUM_TESTS = 10000;
 

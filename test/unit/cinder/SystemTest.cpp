@@ -7,7 +7,7 @@ using namespace cinder;
 using namespace app;
 using namespace std;
 
-TEST_CASE("System")
+TEST_CASE("System", "[noisy]")
 {
 	console() << "System information:" << std::endl;
 #if ! defined( CINDER_WINRT )
