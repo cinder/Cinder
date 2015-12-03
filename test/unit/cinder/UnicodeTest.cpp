@@ -27,6 +27,7 @@ TEST_CASE("Unicode")
 	{
 		// these files should be identical except for their encoding
 		// includes codes > U+0xFFFF
+		// To see the parsed text in terminal is to run the tests with the `-s` flag to show successful results.
 		auto u8 = loadStringFromFile<string>( loadFile( "data/test_text_utf8.txt" ) );
 		auto u16 = loadStringFromFile<u16string>( loadFile( "data/test_text_utf16.txt" ) );
 		auto u32 = loadStringFromFile<u32string>( loadFile( "data/test_text_utf32.txt" ) );
@@ -39,12 +40,6 @@ TEST_CASE("Unicode")
 		// utf16 <-> utf32
 		REQUIRE( u16 == toUtf16( u32 ) );
 		REQUIRE( u32 == toUtf32( u16 ) );
-
-		// Note that in Terminal the left-to-right contents of the file are overwritten by the
-		// right-to-left contents. All characters are rendered in Xcode's console.
-		// A better way to see the text in terminal is to run the tests with the `-s` flag to show successful results.
-		app::console() << "Unicode file contents: " << endl;
-		app::console() << u8 << endl;
 	}
 
 }

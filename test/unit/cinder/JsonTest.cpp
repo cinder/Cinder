@@ -8,7 +8,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-TEST_CASE("Json")
+TEST_CASE("Json", "[noisy]")
 {
 	SECTION("Basic JSON Parsing")
 	{
