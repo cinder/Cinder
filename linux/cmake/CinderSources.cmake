@@ -41,8 +41,6 @@ list( APPEND CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/libtess2/priorityq.c
     ${CINDER_SRC_DIR}/libtess2/sweep.c
     ${CINDER_SRC_DIR}/libtess2/tess.c
-
-
 )
 
 if( CINDER_LINUX_EGL_RPI2 )
@@ -131,6 +129,7 @@ list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/svg/Svg.cpp
 
     ${CINDER_SRC_DIR}/cinder/Area.cpp
+    ${CINDER_SRC_DIR}/cinder/Base64.cpp
     ${CINDER_SRC_DIR}/cinder/BSpline.cpp
     ${CINDER_SRC_DIR}/cinder/BSplineFit.cpp
     ${CINDER_SRC_DIR}/cinder/Buffer.cpp
