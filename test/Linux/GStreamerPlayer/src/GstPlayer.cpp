@@ -48,6 +48,7 @@ void GstData::reset() {
     mPosition = 0;
     mWidth = -1;
     mHeight = -1;
+    mRate = 1.0f;
     mAsyncStateChangePending = false;
     mTargetState = mCurrentState = GST_STATE_NULL;
     mHasAudio = false;
@@ -167,12 +168,14 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
                     }
                     case GST_STATE_READY:
                     {
-			// If we just started reset our data.
-			if( old == GST_STATE_NULL ) data.reset();
+                        // If we just started reset our data.
+                        if( old == GST_STATE_NULL ) data.reset();
+                        // else if we are reloading reset only the necessary parts.
                         data.mIsPrerolled = false;
                         data.mVideoHasChanged = true;
                         data.mIsDone = false;
                         data.mPosition = 0;
+                        data.mRate = 1.0f;
                         break;
                     }
                     case GST_STATE_NULL:
@@ -716,7 +719,6 @@ void GstPlayer::unlinkAudioBranch()
         gst_element_get_state( mGstData.mAudiosink, nullptr, nullptr, GST_CLOCK_TIME_NONE );
 
         gst_bin_remove_many( GST_BIN( mGstPipeline ), mGstData.mAudioQueue, mGstData.mAudioconvert, mGstData.mAudiosink, nullptr );
-
         mGstData.mHasAudio = false;
     }
 }
