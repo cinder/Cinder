@@ -41,21 +41,16 @@ if( NOT CMAKE_CXX_COMPILER OR NOT CMAKE_C_COMPILER )
     endif()
 endif()
 
-# Initial C++ flags
-set( CXX_FLAGS "${STDCXXLIB} -std=c++11 -Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef" CACHE STRING "" FORCE )
+# C++ flags - TODO: Add logic for the case when GCC5's new C++ ABI is desired.
+set( CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 ${STDCXXLIB} -std=c++11 -Wno-reorder -Wno-unused-private-field -Wno-unused-local-typedef" )
 
 if( CINDER_TOOLCHAIN_CLANG )
 	# Disable these warnings, many of which are coming from Boost - append at end
 	set( CXX_DISABLE_WARNINGS "-Wno-reorder -Wno-unused-function -Wno-unused-private-field -Wno-unused-local-typedef -Wno-tautological-compare -Wno-missing-braces" )
 elseif( CINDER_TOOLCHAIN_GCC )
-	# If GCC is 5 or later - add the compatability flag for the old C++ ABI
 	execute_process( COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION )
 	if( ( "${GCC_VERSION}" VERSION_GREATER 5.0 ) OR ( "${GCC_VERSION}" VERSION_EQUAL 5.0 ) )
-		message( "${BoldGreen}Detected GCC 5, adding -D_GLIBCXX_USE_CXX11_ABI=0 to C++ compile flags${ColorReset}" )
-		message( "" )
-
-		set( CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 ${CXX_FLAGS}" )
-		
+		# Disable these warnings, many of which are coming from Boost - append at end
 		set( CXX_DISABLE_WARNINGS "-Wno-deprecated-declarations" )
 	endif()
 endif()
