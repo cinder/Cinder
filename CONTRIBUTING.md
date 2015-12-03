@@ -37,13 +37,14 @@ Please make sure your code conforms to the following general guidelines. If some
 * Static variables begin with an 's' prefix (`sInstance`).
 * enum types are all upper case with underscore separators (`enum Types { TYPE_1, TYPE_2, TYPE_UNKNOWN }`).
 
-#### Spacing
+#### Spacing and Line Breaks
 
 * Use tabs for indentation, with a tab stop value of 4.
 * Anything inside a namespace starts with no indentation.
 * Place spaces between braces, braces and arguments, etc.
 * Place a space between `!` and variables to negate them, ex. `if( ! mEnabled ) { ...`
 * Brackets for class methods and functions begin on a new line. Brackets for everything else (class declarations, if / for / while loops, etc. ) begin on the same line following a space.
+* The contents of an `if`, `for`, or `while` statement should always be on a new line. This not only makes it easier to read but also prevents some ambiguities that come up in some debugging situations, where you can't tell if you've jumped into the body of the statement or not. 
 
 #### Types
 
@@ -63,6 +64,8 @@ Please make sure your code conforms to the following general guidelines. If some
 * Place comments in the header files (in the form of doxygen for public or protected interfaces) and leave the implementations as concise as possible.
 * If there is something you think is not obvious in an implementation, then comments can help clarify, but in general it is nice to let the code do the explaining.
 * We generate reference documentation using doxygen, so you are encouraged to give descriptions to as much of the public interface as possible in order to fill out the reference documentation.
+* To make it easier to distinguish the end of a namespace, place a comment after the namespace's closing bracket
+  *  ex. `} // namespace ci::gl`
 
 #### Example: Class Declaration
 
