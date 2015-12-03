@@ -3,8 +3,10 @@
 #include "cinder/gl/gl.h"
 #include "cinder/ConvexHull.h"
 #include "cinder/Rand.h"
-#include "cinder/params/Params.h"
 #include "cinder/Font.h"
+#if ! defined( CINDER_GL_ES )
+	#include "cinder/params/Params.h"
+#endif
 
 using namespace ci;
 using namespace ci::app;
@@ -25,15 +27,19 @@ class ConvexHullApp : public App {
 
 	PolyLine2f			mConvexHull;
 	
+#if ! defined( CINDER_GL_ES )
 	params::InterfaceGlRef	mParams;
+#endif
 };
 
 void ConvexHullApp::setup()
 {
 	mUsingShape = true;
+#if ! defined( CINDER_GL_ES )
 	mParams = params::InterfaceGl::create( "App parameters", ivec2( 180, 100 ) );
 	mParams->addParam( "Use Glyph", &mUsingShape );
 	mParams->addButton( "Clear Points", [&] { mPoints.clear(); } );
+#endif
 	
 	if( mUsingShape )
 		makeNewLetter();
@@ -41,7 +47,7 @@ void ConvexHullApp::setup()
 
 void ConvexHullApp::makeNewLetter()
 {
-	Font arial( "Times", 512 );
+	ci::Font arial( "Times", 512 );
 	mShape = arial.getGlyphShape( arial.getGlyphChar( '!' + randInt( 92 ) ) );
 //	mat2 transform = MatrixAffine2f::makeTranslate( vec2( 100, getWindowHeight() - 100 ) );
 	mShape.transform( translate( mat3(), vec2( 100, getWindowHeight() - 100 ) ) );
@@ -100,7 +106,9 @@ void ConvexHullApp::draw()
 		}
 	}
 		
+#if ! defined( CINDER_GL_ES )
 	mParams->draw();
+#endif
 }
 
 CINDER_APP( ConvexHullApp, RendererGl )

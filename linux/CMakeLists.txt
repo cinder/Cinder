@@ -48,6 +48,10 @@ if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
 		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_2" )
         set( CINDER_LIB_SUFFIX -es2 )
         set( CINDER_OUT_DIR_PREFIX es2 )
+		# Raspberry Pi special flags
+		if( CINDER_LINUX_EGL_RPI2 )
+			set( CINDER_GL_ES_FLAGS "${CINDER_GL_ES_FLAGS} -DCINDER_LINUX_EGL_ONLY -DCINDER_LINUX_EGL_RPI2" )
+		endif()		
 	elseif( CINDER_GL_ES_3 )
 		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3" )
         set( CINDER_LIB_SUFFIX -es3 )
@@ -76,7 +80,7 @@ if( NOT "${CLANG_PATH}" STREQUAL "" )
 endif()
 
 
-if( CINDER_TOOLCHAIN_CLANG )
+if( NOT CINDER_TOOLCHAIN_GCC AND CINDER_TOOLCHAIN_CLANG )
     set( CMAKE_C_COMPILER						"clang" 		CACHE FILEPATH "" FORCE )
     set( CMAKE_CXX_COMPILER						"clang++" 		CACHE FILEPATH "" FORCE )
     set( CMAKE_AR          						"llvm-ar"		CACHE FILEPATH "" FORCE )
@@ -84,27 +88,30 @@ if( CINDER_TOOLCHAIN_CLANG )
     set( CMAKE_NM           					"llvm-nm " 		CACHE FILEPATH "" FORCE )
     set( CMAKE_RANLIB       					"llvm-ranlib"	CACHE FILEPATH "" FORCE )
 
-    set( CMAKE_C_FLAGS_INIT						"-Wall -std=c99" CACHE STRING "" FORCE )
-    set( CMAKE_C_FLAGS_DEBUG_INIT				"-g" CACHE STRING "" FORCE )
-    set( CMAKE_C_FLAGS_MINSIZEREL_INIT			"-Os -DNDEBUG" CACHE STRING "" FORCE )
-    set( CMAKE_C_FLAGS_RELEASE_INIT				"-O4 -DNDEBUG" CACHE STRING "" FORCE )
-    set( CMAKE_C_FLAGS_RELWITHDEBINFO_INIT		"-O2 -g" CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_INIT						"-Wall -std=c99" 	CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_DEBUG_INIT				"-g" 				CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_MINSIZEREL_INIT			"-Os -DNDEBUG" 		CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_RELEASE_INIT				"-O4 -DNDEBUG" 		CACHE STRING "" FORCE )
+    set( CMAKE_C_FLAGS_RELWITHDEBINFO_INIT		"-O2 -g" 			CACHE STRING "" FORCE )
     set( CMAKE_C_FLAGS							"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
 
-    set( CMAKE_CXX_FLAGS_INIT					"-Wall" CACHE STRING "" FORCE )
-    set( CMAKE_CXX_FLAGS_DEBUG_INIT				"-g" CACHE STRING "" FORCE )
-    set( CMAKE_CXX_FLAGS_MINSIZEREL_INIT		"-Os -DNDEBUG" CACHE STRING "" FORCE ) 
-    set( CMAKE_CXX_FLAGS_RELEASE_INIT			"-O4 -DNDEBUG" CACHE STRING "" FORCE )
-    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT	"-O2 -g" CACHE STRING "" FORCE )
+    set( CMAKE_CXX_FLAGS_INIT					"-Wall" 		CACHE STRING "" FORCE )
+    set( CMAKE_CXX_FLAGS_DEBUG_INIT				"-g" 			CACHE STRING "" FORCE )
+    set( CMAKE_CXX_FLAGS_MINSIZEREL_INIT		"-Os -DNDEBUG" 	CACHE STRING "" FORCE ) 
+    set( CMAKE_CXX_FLAGS_RELEASE_INIT			"-O4 -DNDEBUG" 	CACHE STRING "" FORCE )
+    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT	"-O2 -g" 		CACHE STRING "" FORCE )
     set( CMAKE_CCC_FLAGS						"${CMAKE_C_FLAGS} -fmessage-length=0 " CACHE STRING "" FORCE )
 
     set( STDCXXLIB                           	"-stdlib=libstdc++" )
 else()
-    set( CMAKE_C_COMPILER	"gcc" 				CACHE FILEPATH "" FORCE )
-    set( CMAKE_CXX_COMPILER	"g++" 				CACHE FILEPATH "" FORCE )	
+	# Keep these versionless
+    set( CMAKE_C_COMPILER						"gcc"	CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER						"g++" 	CACHE FILEPATH "" FORCE )
+	set( CINDER_TOOLCHAIN_GCC 					true 	CACHE BOOL "" FORCE )
+	set( CINDER_TOOLCHAIN_CLANG 				false 	CACHE BOOL "" FORCE )
 endif()
 
-# Needs to come atfer compilers are set
+# Needs to come after compilers are set
 project( cinder_linux )
 
 cmake_policy( SET CMP0022 NEW )
@@ -145,24 +152,46 @@ if( NOT CINDER_LINUX_EGL_RPI2 )
 	endif()
 endif()
 
-# Disable warnings for C files
+# Initial C flags
+set( C_FLAGS "-fvisibility=default -D_UNIX ${GLFW_FLAGS} ${CINDER_GL_ES_FLAGS}" )
+
+# Disable warnings for C files - append at end
 set( C_DISABLE_WARNINGS "-Wno-unused-function" )
-set( C_FLAGS "-fvisibility=default ${GLFW_FLAGS} -D_UNIX" )
-set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g3 -ggdb3 -O0" )
-set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -O3 -ffast-math" )
 
-# Disable these warnings, many of which are coming from Boost
-set( CXX_DISABLE_WARNINGS "-Wno-reorder -Wno-unused-function -Wno-unused-private-field -Wno-unused-local-typedef -Wno-tautological-compare -Wno-missing-braces" )
-set( CXX_FLAGS "${STDCXXLIB} -std=c++11 -fvisibility=default ${CINDER_GL_ES_FLAGS} -D_UNIX ${CXX_DISABLE_WARNINGS}" )
+# Set C flags
+set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g3 -ggdb3 -O0 ${C_DISABLE_WARNINGS}" )
+set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -O3 -ffast-math ${C_DISABLE_WARNINGS}" )
 
-if( CINDER_LINUX_EGL_RPI2 )
-	set( CXX_FLAGS "${CXX_FLAGS} -DCINDER_LINUX_EGL_ONLY -DCINDER_LINUX_EGL_RPI2 -DCINDER_GL_ES_2" )
+# Initial C++ flags
+set( CXX_FLAGS "${STDCXXLIB} -std=c++11 -fvisibility=default -D_UNIX" )
+
+# Final C++ flags
+set( CXX_FLAGS "${CXX_FLAGS} ")
+
+if( CINDER_TOOLCHAIN_CLANG )
+	# Disable these warnings, many of which are coming from Boost - append at end
+	set( CXX_DISABLE_WARNINGS "-Wno-reorder -Wno-unused-function -Wno-unused-private-field -Wno-unused-local-typedef -Wno-tautological-compare -Wno-missing-braces" )
+elseif( CINDER_TOOLCHAIN_GCC )
+	# If GCC is 5 or later - add the compatability flag for the old C++ ABI
+	execute_process( COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION )
+	if( ( "${GCC_VERSION}" VERSION_GREATER 5.0 ) OR ( "${GCC_VERSION}" VERSION_EQUAL 5.0 ) )
+		message( "${BoldGreen}Detected GCC 5, adding -D_GLIBCXX_USE_CXX11_ABI=0 to C++ compile flags${ColorReset}" )
+		message( "" )
+
+		set( CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 ${CXX_FLAGS}" )
+		
+		set( CXX_DISABLE_WARNINGS "-Wno-deprecated-declarations" )
+	endif()
 endif()
 
-set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g3 -ggdb3 -O0 -fexceptions -frtti" )
-set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -O3 -fexceptions -frtti -ffast-math" )
+# C++ flags
+set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g3 -ggdb3 -O0 -fexceptions -frtti ${CINDER_GL_ES_FLAGS} ${CXX_DISABLE_WARNINGS}" )
+set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -O3 -fexceptions -frtti -ffast-math ${CINDER_GL_ES_FLAGS} ${CXX_DISABLE_WARNINGS}" )
 
+# Include directories
 include(${CMAKE_MODULE_PATH}/CinderIncludes.cmake)
+
+# Source files
 include(${CMAKE_MODULE_PATH}/CinderSources.cmake)
 
 # Required defaults
@@ -173,20 +202,20 @@ list( APPEND CINDER_LIBS_DEPENDS pthread )
 if( CINDER_USE_SYSTEM_GL_HEADERS )
     find_package( OpenGL REQUIRED )
     list( APPEND CINDER_INCLUDE_DEPENDS ${OPENGL_INCLUDE_DIR} )
-    list( APPEND CINDER_LIBS_DEPENDS ${OPENGL_LIBRARIES} )
+    list( APPEND CINDER_LIBS_DEPENDS 	${OPENGL_LIBRARIES} )
 endif()
 
 ### No X for RPI2.
 if( CINDER_USE_X11 )
     find_package( X11 REQUIRED )
     list( APPEND CINDER_INCLUDE_DEPENDS ${X11_INCLUDE_DIR} )
-    list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
+    list( APPEND CINDER_LIBS_DEPENDS 	${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
 endif()
 
 # zlib
 find_package( ZLIB REQUIRED )
 list( APPEND CINDER_INCLUDE_DEPENDS ${ZLIB_INCLUDE_DIR} )
-list( APPEND CINDER_LIBS_DEPENDS ${ZLIB_LIBRARIES} )
+list( APPEND CINDER_LIBS_DEPENDS 	${ZLIB_LIBRARIES} )
 
 # curl
 find_package( CURL REQUIRED )
@@ -195,16 +224,16 @@ list( APPEND CINDER_LIBS_DEPENDS ${CURL_LIBRARIES} )
 # fontconfig
 find_package( FontConfig REQUIRED )
 list( APPEND CINDER_INCLUDE_DEPENDS ${FONTGONFIG_INCLUDE_DIRS} )
-list( APPEND CINDER_LIBS_DEPENDS ${FONTCONFIG_LIBRARIES} )
+list( APPEND CINDER_LIBS_DEPENDS 	${FONTCONFIG_LIBRARIES} )
 
 # PulseAudio
 find_package( PulseAudio REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${PULSEAUDIO_LIBRARY} )
 
-## mpg123
+# mpg123
 find_package( MPG123 REQUIRED )
 list( APPEND CINDER_INCLUDE_DEPENDS ${MPG123_INCLUDE_DIR} )
-list( APPEND CINDER_LIBS_DEPENDS ${MPG123_LIBRARY} )
+list( APPEND CINDER_LIBS_DEPENDS 	${MPG123_LIBRARY} )
 
 # sndfile
 find_package( SNDFILE REQUIRED )
@@ -216,11 +245,21 @@ set( CINDER_USE_GSTREAMER false )
 if( CINDER_USE_GSTREAMER )
     find_package (Glib REQUIRED COMPONENTS gobject )
     list( APPEND CINDER_INCLUDE_DEPENDS ${GLIB_INCLUDE_DIRS} )
-    list(APPEND CINDER_LIBS_DEPENDS ${GLIB_GOBJECT_LIBRARIES} ${GLIB_LIBRARIES} )
+    list( APPEND CINDER_LIBS_DEPENDS 	${GLIB_GOBJECT_LIBRARIES} ${GLIB_LIBRARIES} )
 
     find_package( GStreamer REQUIRED )
-    list( APPEND CINDER_INCLUDE_DEPENDS ${GSTREAMER_INCLUDE_DIRS} ${GSTREAMER_BASE_INCLUDE_DIRS} ${GSTREAMER_APP_INCLUDE_DIRS} ${GSTREAMER_VIDEO_INCLUDE_DIRS} )
-    list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_LIBRARIES} ${GSTREAMER_BASE_LIBRARIES} ${GSTREAMER_APP_LIBRARIES} ${GSTREAMER_VIDEO_LIBRARIES} )
+    list( APPEND CINDER_INCLUDE_DEPENDS 
+		${GSTREAMER_INCLUDE_DIRS} 
+		${GSTREAMER_BASE_INCLUDE_DIRS}
+		${GSTREAMER_APP_INCLUDE_DIRS}
+		${GSTREAMER_VIDEO_INCLUDE_DIRS} 
+	)
+    list( APPEND CINDER_LIBS_DEPENDS 
+		${GSTREAMER_LIBRARIES} 
+		${GSTREAMER_BASE_LIBRARIES} 
+		${GSTREAMER_APP_LIBRARIES} 
+		${GSTREAMER_VIDEO_LIBRARIES} 
+	)
 endif()
 
 ### Set this to use system wide libs instead of compiling dependencies from source.
@@ -228,24 +267,30 @@ set( CINDER_USE_SYSTEM_LIBS false )
 if( CINDER_USE_SYSTEM_LIBS )
     find_package( Boost 1.54 REQUIRED COMPONENTS system filesystem )
     list( APPEND CINDER_INCLUDE_DEPENDS ${Boost_INCLUDE_DIRS} )
-    list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
+    list( APPEND CINDER_LIBS_DEPENDS 	${Boost_LIBRARIES} )
 
     find_package( Freetype2 REQUIRED )
     list( APPEND CINDER_INCLUDE_DEPENDS ${FREETYPE2_INCLUDE_DIRS} )
-    list( APPEND CINDER_LIBS_DEPENDS ${FREETYPE2_LIBRARIES} )
+    list( APPEND CINDER_LIBS_DEPENDS 	${FREETYPE2_LIBRARIES} )
 
 else()
     set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE" )
 
     include( ${CMAKE_MODULE_PATH}/Freetype2Sources.cmake )
-    list( APPEND CINDER_C_SRC_FILES ${FREETYPE2_SOURCES} )
 
+    list( APPEND CINDER_C_SRC_FILES 
+		${FREETYPE2_SOURCES} 
+	)
 
-    list( APPEND CINDER_INCLUDE_DEPENDS ${CINDER_INC_DIR}/freetype )
+    list( APPEND CINDER_INCLUDE_DEPENDS 
+		${CINDER_INC_DIR}/freetype 
+	)
 
-    list( APPEND CINDER_LIBS_DEPENDS ${CINDER_LIB_DIR}/libboost_system.a
-                                    ${CINDER_LIB_DIR}/libboost_filesystem.a )
+    list( APPEND CINDER_LIBS_DEPENDS 
+		${CINDER_LIB_DIR}/libboost_system.a
+		${CINDER_LIB_DIR}/libboost_filesystem.a 
+	)
 endif()
 
 ### Create our Cinder target.
