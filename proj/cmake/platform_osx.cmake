@@ -3,3 +3,6 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 set( CINDER_PLATFORM "MacOS X" )
 
+include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
+include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
+include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )
