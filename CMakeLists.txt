@@ -1,0 +1,35 @@
+cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
+set( CMAKE_VERBOSE_MAKEFILE ON )
+
+project( cinder )
+
+set( CINDER_ROOT      "${CMAKE_CURRENT_SOURCE_DIR}" )
+set( CINDER_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake" )
+
+# If there's a target specified, try to build for that. Otherwise, build 
+# based the current host OS.
+if( CINDER_TARGET )
+	if( "android" STREQUAL "${CINDER_TARGET}" )
+		include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/platform_android.cmake" )
+	elseif( "ios" STREQUAL "${CINDER_TARGET}" )
+		include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/platform_ios.cmake" )
+	elseif( "linux" STREQUAL "${CINDER_TARGET}" )
+		include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/platform_linux.cmake" )
+	elseif( "osx" STREQUAL "${CINDER_TARGET}" )
+		include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/platform_osx.cmake" )
+	elseif( "windows" STREQUAL "${CINDER_TARGET}" )
+		include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/platform_windows.cmake" )
+	endif()
+else()
+	if( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
+        set( CINDER_TARGET "osx" )
+		include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/platform_android.cmake" )
+	elseif( CMAKE_SYSTEM_NAME MATCHES "Linux" )
+        set( CINDER_TARGET "linux" )
+		include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/platform_linux.cmake" )
+	elseif( CMAKE_SYSTEM_NAME MATCHES "Windows" )
+        set( CINDER_TARGET "windows" )
+		include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/platform_windows.cmake" )
+	endif()
+endif()
+
