@@ -33,3 +33,5 @@ else()
 	endif()
 endif()
 
+set( CINDER_SAMPLES TRUE )
+add_subdirectory( ${CINDER_ROOT}/samples/BasicApp/proj/cmake ${CINDER_ROOT}/tmpbuild )
