@@ -1,8 +1,11 @@
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE on )
 
+# Module path
+set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
+
+# Find architecture name
 execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
-execute_process( COMMAND which clang OUTPUT_VARIABLE CLANG_PATH )
 
 set( CINDER_INCLUDE_DEPENDS )
 set( CINDER_LIBS_DEPENDS )
@@ -75,18 +78,17 @@ set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( CINDER_LIB_DIR ${CINDER_DIR}/lib/linux/${CINDER_ARCH} )
 
-if( NOT "${CLANG_PATH}" STREQUAL "" )
-    set( CINDER_TOOLCHAIN_CLANG true )
-endif()
+find_package( CLANG )
 
+if( NOT CINDER_TOOLCHAIN_GCC AND CLANG_FOUND )
+	set( CINDER_TOOLCHAIN_CLANG TRUE )
 
-if( NOT CINDER_TOOLCHAIN_GCC AND CINDER_TOOLCHAIN_CLANG )
-    set( CMAKE_C_COMPILER						"clang" 		CACHE FILEPATH "" FORCE )
-    set( CMAKE_CXX_COMPILER						"clang++" 		CACHE FILEPATH "" FORCE )
-    set( CMAKE_AR          						"llvm-ar"		CACHE FILEPATH "" FORCE )
-    set( CMAKE_LINKER       					"llvm-link" 	CACHE FILEPATH "" FORCE )
-    set( CMAKE_NM           					"llvm-nm " 		CACHE FILEPATH "" FORCE )
-    set( CMAKE_RANLIB       					"llvm-ranlib"	CACHE FILEPATH "" FORCE )
+    set( CMAKE_C_COMPILER						"${CLANG_CLANG}"		CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER						"${CLANG_CLANGXX}"		CACHE FILEPATH "" FORCE )
+    set( CMAKE_AR          						"${CLANG_LLVM_AR}"		CACHE FILEPATH "" FORCE )
+    set( CMAKE_LINKER       					"${CLANG_LLVM_LINK}"	CACHE FILEPATH "" FORCE )
+    set( CMAKE_NM           					"${CLANG_LLVM_NM}"		CACHE FILEPATH "" FORCE )
+    set( CMAKE_RANLIB       					"${CLANG_LLVM_RANLIB}"	CACHE FILEPATH "" FORCE )
 
     set( CMAKE_C_FLAGS_INIT						"-Wall -std=c99" 	CACHE STRING "" FORCE )
     set( CMAKE_C_FLAGS_DEBUG_INIT				"-g" 				CACHE STRING "" FORCE )
@@ -117,7 +119,6 @@ project( cinder_linux )
 cmake_policy( SET CMP0022 NEW )
 
 # Output path
-set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CINDER_DIR}/lib/linux/${CINDER_ARCH}" )
 
 include(${CMAKE_MODULE_PATH}/DebugColours.cmake)
@@ -232,7 +233,7 @@ find_package( SNDFILE REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${SNDFILE_LIBRARY} )
 
 # GStreamer
-set( CINDER_USE_GSTREAMER false )
+set( CINDER_USE_GSTREAMER FALSE )
 
 if( CINDER_USE_GSTREAMER )
     find_package (Glib REQUIRED COMPONENTS gobject )
@@ -244,13 +245,16 @@ if( CINDER_USE_GSTREAMER )
 		${GSTREAMER_INCLUDE_DIRS} 
 		${GSTREAMER_BASE_INCLUDE_DIRS}
 		${GSTREAMER_APP_INCLUDE_DIRS}
-		${GSTREAMER_VIDEO_INCLUDE_DIRS} 
+		${GSTREAMER_VIDEO_INCLUDE_DIRS}
+        ${GSTREAMER_GL_INCLUDE_DIRS}
 	)
+
     list( APPEND CINDER_LIBS_DEPENDS 
 		${GSTREAMER_LIBRARIES} 
 		${GSTREAMER_BASE_LIBRARIES} 
 		${GSTREAMER_APP_LIBRARIES} 
 		${GSTREAMER_VIDEO_LIBRARIES} 
+        ${GSTREAMER_GL_LIBRARIES}
 	)
 endif()
 
@@ -340,6 +344,7 @@ configure_file(
 	"${PROJECT_SOURCE_DIR}/cmake/cinderConfig.buildtree.cmake.in"
 	"${PROJECT_BINARY_DIR}/cinderConfig.cmake" 
 )
+
 
 if( CINDER_BUILD_SAMPLES )
     add_subdirectory( ${CINDER_DIR}/samples/BasicApp/linux ${CINDER_DIR}/samples/BasicApp/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX} )

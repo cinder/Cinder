@@ -45,6 +45,12 @@ if [ "$_CORE_COUNT" -gt "$NUMPROCS" ]; then
 fi
 
 
+_CORE_COUNT=$(getconf _NPROCESSORS_CONF)
+if [ "$_CORE_COUNT" -gt "$NUMPROCS" ]; then
+	NUMPROCS=$_CORE_COUNT
+fi
+
+
 # Process arguments
 while (( $# >= 1 ))
 do
