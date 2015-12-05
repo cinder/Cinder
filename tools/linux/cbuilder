@@ -234,7 +234,7 @@ for build in ${BUILD_TYPES[@]}; do
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
 		echo "CMAKE COMMAND: cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}"
-		cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}
+		cmake ../.. --no-warn-unused-cli -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}
 	fi
 	make -j ${NUMPROCS} ${VERBOSE}
 
