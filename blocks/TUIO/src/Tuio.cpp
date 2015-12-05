@@ -1,6 +1,6 @@
 //
 //  Tuio.cpp
-//  TUIOListener
+//  TUIOReceiver
 //
 //  Created by ryan bartley on 11/5/15.
 //
@@ -13,359 +13,763 @@ using namespace ci;
 using namespace ci::app;
 using namespace asio;
 using namespace asio::ip;
-using Connection = boost::signals2::connection;
 
 namespace cinder { namespace  tuio {
 	
 namespace detail {
 	
-Profile::Profile( const osc::Message &msg )
-: mSessionId( msg[0].int32() )
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Type
+	
+bool Type::operator<(const Type & other) const
+{
+	return mSource < other.mSource &&
+		mSessionId < other.mSessionId;
+}
+
+Type::Type( const osc::Message &msg )
+: mSessionId( msg[1].int32() )
 {
 }
 
+Type::Type( Type &&other ) NOEXCEPT
+: mSessionId( other.mSessionId ), mSource( std::move( other.mSource ) )
+{
+}
+
+Type& Type::operator=( Type &&other ) NOEXCEPT
+{
+	if ( this != &other ) {
+		mSessionId = other.mSessionId;
+		mSource = std::move( other.mSource );
+	}
+	return *this;
+}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Cursor
+	
+template class Cursor<vec2>;
+template class Cursor<vec3>;
+
 template<>
-Cursor<ci::vec2>::Cursor( const osc::Message &msg )
-: Profile( msg ), mPosition( msg[1].flt(), msg[2].flt() ),
-	mVelocity( msg[3].flt(), msg[4].flt() ), mAcceleration( msg[5].flt() )
+Cursor<vec2>::Cursor( const osc::Message &msg )
+: Type( msg ), mPosition( msg[2].flt(), msg[3].flt() ),
+	mVelocity( msg[4].flt(), msg[5].flt() ), mAcceleration( msg[6].flt() )
 {
 }
 	
 template<>
-Cursor<ci::vec3>::Cursor( const osc::Message &msg )
-: Profile( msg ), mPosition( msg[1].flt(), msg[2].flt(), msg[3].flt() ),
-mVelocity( msg[4].flt(), msg[5].flt(), msg[6].flt() ), mAcceleration( msg[7].flt() )
+Cursor<vec3>::Cursor( const osc::Message &msg )
+: Type( msg ), mPosition( msg[2].flt(), msg[3].flt(), msg[4].flt() ),
+mVelocity( msg[5].flt(), msg[6].flt(), msg[7].flt() ), mAcceleration( msg[8].flt() )
 {
 }
+
+template<typename VEC_T>
+Cursor<VEC_T>::Cursor( Cursor<VEC_T> &&other ) NOEXCEPT
+: Type( std::move( other ) ), mPosition( std::move( other.mPosition ) ),
+	mVelocity( std::move( other.mVelocity ) ), mAcceleration( other.mAcceleration )
+{
+}
+
+template<typename VEC_T>
+Cursor<VEC_T>& Cursor<VEC_T>::operator=( Cursor<VEC_T> &&other ) NOEXCEPT
+{
+	if( this != &other ) {
+		Type::operator=( std::move( other ) );
+		mPosition = std::move( other.mPosition );
+		mVelocity = std::move( other.mVelocity );
+		mAcceleration = other.mAcceleration;
+	}
+	return *this;
+}
+	
+template<typename T>
+app::TouchEvent::Touch Cursor<T>::convertToTouch( const ci::app::WindowRef &window ) const
+{
+	auto windowSize = vec2(window->getSize());
+	app::TouchEvent::Touch ret( vec2(getPosition()) * windowSize,
+								vec2(getPosition() - getVelocity()) * windowSize,
+								getSessionId(),
+								app::getElapsedSeconds(),
+								nullptr );
+	return ret;
+}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Object
+	
+template class Object<ci::vec2, float>;
+template class Object<ci::vec3, float>;
+template class Object<ci::vec3, ci::vec3>;
 	
 template<>
 Object<ci::vec2, float>::Object( const osc::Message &msg )
-: Profile( msg ), mClassId( msg[1].int32() ), mPosition( msg[2].flt(), msg[3].flt() ),
-	mAngle( msg[4].flt() ), mVelocity( msg[5].flt(), msg[6].flt() ),
-	mRotationVelocity( msg[7].flt() ), mAcceleration( msg[8].flt() ),
-	mRotateAccel( msg[9].flt() )
+: Type( msg ), mClassId( msg[2].int32() ), mPosition( msg[3].flt(), msg[4].flt() ),
+	mAngle( msg[5].flt() ), mVelocity( msg[6].flt(), msg[7].flt() ),
+	mRotationVelocity( msg[8].flt() ), mAcceleration( msg[9].flt() ),
+	mRotateAccel( msg[10].flt() )
 {
 }
 	
 template<>
 Object<ci::vec3, float>::Object( const osc::Message &msg )
-: Profile( msg ), mClassId( msg[1].int32() ),
-	mPosition( msg[2].flt(), msg[3].flt(), msg[4].flt() ),
-	mAngle( msg[5].flt() ), mVelocity( msg[6].flt(), msg[7].flt(), msg[8].flt() ),
-	mRotationVelocity( msg[9].flt() ), mAcceleration( msg[10].flt() ),
-	mRotateAccel( msg[11].flt() )
+: Type( msg ), mClassId( msg[2].int32() ),
+	mPosition( msg[3].flt(), msg[4].flt(), msg[5].flt() ),
+	mAngle( msg[6].flt() ), mVelocity( msg[7].flt(), msg[8].flt(), msg[9].flt() ),
+	mRotationVelocity( msg[10].flt() ), mAcceleration( msg[11].flt() ),
+	mRotateAccel( msg[12].flt() )
 {
 }
 	
 template<>
 Object<ci::vec3, ci::vec3>::Object( const osc::Message &msg )
-: Profile( msg ), mClassId( msg[1].int32() ),
-	mPosition(	msg[2].flt(), msg[3].flt(), msg[4].flt() ),
-	mAngle(		msg[5].flt(), msg[6].flt(), msg[7].flt() ),
-	mVelocity(	msg[8].flt(), msg[9].flt(), msg[10].flt() ),
-	mRotationVelocity( msg[11].flt(), msg[12].flt(), msg[13].flt() ),
-	mAcceleration( msg[14].flt() ), mRotateAccel( msg[15].flt() )
+: Type( msg ), mClassId( msg[2].int32() ),
+	mPosition(	msg[3].flt(), msg[4].flt(), msg[5].flt() ),
+	mAngle(		msg[6].flt(), msg[7].flt(), msg[8].flt() ),
+	mVelocity(	msg[9].flt(), msg[10].flt(), msg[11].flt() ),
+	mRotationVelocity( msg[12].flt(), msg[13].flt(), msg[14].flt() ),
+	mAcceleration( msg[15].flt() ), mRotateAccel( msg[16].flt() )
 {
 }
+
+template<typename VEC_T, typename ROT_T>
+Object<VEC_T, ROT_T>::Object( Object<VEC_T, ROT_T> &&other ) NOEXCEPT
+: Type( std::move( other ) ), mClassId( other.mClassId ), mPosition( std::move( other.mPosition ) ),
+	mVelocity( std::move( other.mVelocity ) ), mAngle( std::move( other.mAngle ) ),
+	mRotationVelocity( std::move( other.mRotationVelocity ) ), mAcceleration( other.mAcceleration ),
+	mRotateAccel( other.mRotateAccel )
+{
+}
+
+template<typename VEC_T, typename ROT_T>
+Object<VEC_T, ROT_T>& Object<VEC_T, ROT_T>::operator=( Object<VEC_T, ROT_T> &&other ) NOEXCEPT
+{
+	if( this != &other ) {
+		Type::operator=( std::move( other ) );
+		mClassId = other.mClassId;
+		mPosition = std::move( other.mPosition );
+		mVelocity = std::move( other.mVelocity );
+		mAngle = std::move( other.mAngle );
+		mRotationVelocity = std::move( other.mRotationVelocity );
+		mAcceleration = other.mAcceleration;
+		mRotateAccel = other.mRotateAccel;
+	}
+	return *this;
+}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Blob
 	
 template<>
 Blob<ci::vec2, float, ci::vec2>::Blob( const osc::Message &msg )
-: Profile( msg ), mPosition( msg[1].flt(), msg[2].flt() ), mAngle( msg[3].flt() ),
-	mDimensions( msg[4].flt(), msg[5].flt() ), mGeometry( msg[6].flt() ),
-	mVelocity( msg[7].flt(), msg[8].flt() ), mRotationVelocity( msg[9].flt() ),
-	mAcceleration( msg[10].flt() ), mRotateAccel( msg[11].flt() )
+: Type( msg ), mPosition( msg[2].flt(), msg[3].flt() ), mAngle( msg[4].flt() ),
+	mDimensions( msg[5].flt(), msg[6].flt() ), mGeometry( msg[7].flt() ),
+	mVelocity( msg[8].flt(), msg[9].flt() ), mRotationVelocity( msg[10].flt() ),
+	mAcceleration( msg[11].flt() ), mRotateAccel( msg[12].flt() )
 {
 }
 	
 template<>
 Blob<ci::vec3, float, ci::vec2>::Blob( const osc::Message &msg )
-: Profile( msg ), mPosition( msg[1].flt(), msg[2].flt(), msg[3].flt() ),
-	mAngle( msg[4].flt() ), mDimensions( msg[5].flt(), msg[6].flt() ),
-	mGeometry( msg[7].flt() ), mVelocity( msg[8].flt(), msg[9].flt(), msg[10].flt() ),
-	mRotationVelocity( msg[11].flt() ), mAcceleration( msg[12].flt() ),
-	mRotateAccel( msg[13].flt() )
+: Type( msg ), mPosition( msg[2].flt(), msg[3].flt(), msg[4].flt() ),
+	mAngle( msg[5].flt() ), mDimensions( msg[6].flt(), msg[7].flt() ),
+	mGeometry( msg[8].flt() ), mVelocity( msg[9].flt(), msg[10].flt(), msg[11].flt() ),
+	mRotationVelocity( msg[12].flt() ), mAcceleration( msg[13].flt() ),
+	mRotateAccel( msg[14].flt() )
 {
 }
 	
 template<>
 Blob<ci::vec3, ci::vec3, ci::vec3>::Blob( const osc::Message &msg )
-: Profile( msg ), mPosition( msg[1].flt(), msg[2].flt(), msg[3].flt() ),
-	mAngle( msg[4].flt(), msg[5].flt(), msg[6].flt() ),
-	mDimensions( msg[7].flt(), msg[8].flt(), msg[9].flt() ),
-	mGeometry( msg[10].flt() ), mVelocity( msg[11].flt(), msg[12].flt(), msg[13].flt() ),
-	mRotationVelocity( msg[14].flt(), msg[15].flt(), msg[16].flt() ),
-	mAcceleration( msg[12].flt() ), mRotateAccel( msg[13].flt() )
+: Type( msg ), mPosition( msg[2].flt(), msg[3].flt(), msg[4].flt() ),
+	mAngle( msg[5].flt(), msg[6].flt(), msg[7].flt() ),
+	mDimensions( msg[8].flt(), msg[9].flt(), msg[10].flt() ),
+	mGeometry( msg[11].flt() ), mVelocity( msg[12].flt(), msg[13].flt(), msg[14].flt() ),
+	mRotationVelocity( msg[15].flt(), msg[16].flt(), msg[17].flt() ),
+	mAcceleration( msg[18].flt() ), mRotateAccel( msg[19].flt() )
 {
 }
+
+template<typename VEC_T, typename ROT_T, typename DIM_T>
+Blob<VEC_T, ROT_T, DIM_T>::Blob( Blob<VEC_T, ROT_T, DIM_T> &&other ) NOEXCEPT
+: Type( std::move( other ) ), mPosition( std::move( other.mPosition ) ),
+	mVelocity( std::move( other.mVelocity ) ), mAngle( std::move( other.mAngle ) ),
+	mRotationVelocity( std::move( other.mRotationVelocity ) ), 
+	mDimensions( std::move( other.mDimensions ) ), mAcceleration( other.mAcceleration ),
+	mRotateAccel( other.mRotateAccel ), mGeometry( other.mGeometry )
+{
+}
+
+template<typename VEC_T, typename ROT_T, typename DIM_T>
+Blob<VEC_T, ROT_T, DIM_T>& Blob<VEC_T, ROT_T, DIM_T>::operator=( Blob<VEC_T, ROT_T, DIM_T> &&other ) NOEXCEPT
+{
+	if( this != &other ) {
+		Type::operator=( std::move( other ) );
+		mPosition = std::move( other.mPosition );
+		mVelocity = std::move( other.mVelocity );
+		mAngle = std::move( other.mAngle );
+		mRotationVelocity = std::move( other.mRotationVelocity );
+		mDimensions = std::move( other.mDimensions );
+		mAcceleration = other.mAcceleration;
+		mRotateAccel = other.mRotateAccel;
+		mGeometry = other.mGeometry;
+	}
+	return *this;
+}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Blob2d
+
+Blob2d::Blob2d( const osc::Message &msg )
+: Blob( msg )
+{
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Blob25d
+
+Blob25d::Blob25d( const osc::Message &msg )
+: Blob( msg )
+{
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Blob3d
+
+Blob3d::Blob3d( const osc::Message &msg )
+: Blob( msg )
+{
+}
+
+template<typename T>
+using TypeFn = Receiver::TypeFn<T>;
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Blob3D
+
+template<typename TuioType>
+class TypeHandler : public TypeHandlerBase {
+public:
+	//! TODO: Need to figure out about "PastFrameThreshold", got rid of it.
+	TypeHandler() = default;
+	virtual ~TypeHandler() = default;
+
+	//! Handles incoming osc::Messages from the osc::Receiver.
+	void			handleMessage( const osc::Message &message ) override;
+	//! Abstract function that represents calling the function handlers.
+	virtual void	handleFseq( int32_t frame ) = 0;
+	
+protected:
+	std::string						mCurrentSource;
+	std::vector<int32_t>			mAdded, mUpdated;
+	std::vector<TuioType>			mSetOfCurrentTouches,
+									mRemovedTouches;
+	std::map<std::string, int32_t>	mSourceFrameNums;
+};
+	
+//! Represents a handler with seperated callbacks
+template<typename TuioType>
+class SeparatedCallbackHandler : public TypeHandler<TuioType> {
+public:
+	SeparatedCallbackHandler() = default;
+	~SeparatedCallbackHandler() = default;
+	
+	//! Sets the underlying TuioType Added Callback function.
+	void setAddedHandler( TypeFn<TuioType> callback );
+	//! Sets the underlying TuioType Updated Callback function.
+	void setUpdatedHandler( TypeFn<TuioType> callback );
+	//! Sets the underlying TuioType Removed Callback function.
+	void setRemovedHandler( TypeFn<TuioType> callback );
+	//! Overriden function which processes the Added, Updated, and Removed
+	//! TuioTypes for this frame.
+	void handleFseq( int32_t frame ) override;
+	
+protected:
+	TypeFn<TuioType>	mAddCallback, mUpdateCallback, mRemoveCallback;
+	std::mutex			mCallbackMutex;
+};
+
+//! Represents a specialized handler for ci::app::Windows
+class WindowCursorHandler : public TypeHandler<Cursor2d> {
+public:
+	//! callback for window
+	using FseqFn = std::function<void( const std::vector<Cursor2d> &/*added*/,
+									   const std::vector<Cursor2d> &/*updated*/,
+									   const std::vector<Cursor2d> &/*removed*/)>;
+	WindowCursorHandler() = default;
+	~WindowCursorHandler() = default;
+	
+	//! Sets the underlying FseqFn for this handler.
+	void setFseqFn( FseqFn fseqFn );
+	//! Overriden function which processes the Added, Updated, and Removed
+	//! TuioTypes for this frame.
+	void handleFseq( int32_t frame ) override;
+	
+protected:
+	std::mutex	mFseqMutex;
+	FseqFn		mFseqFn;
+};
 	
 } // namespace detail
 	
-Blob2D::Blob2D( const osc::Message &msg )
-: Blob( msg )
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Receiver
+	
+Receiver::Receiver( uint16_t localPort, const asio::ip::udp &protocol, asio::io_service &io )
+: mReceiver( new osc::ReceiverUdp( localPort, protocol, io ) ), mOwnsReceiver( true )
 {
+}
+	
+Receiver::Receiver( osc::ReceiverBase *ptr )
+: mReceiver(  ptr ), mOwnsReceiver( false )
+{
+}
+	
+Receiver::Receiver( const app::WindowRef &window, uint16_t localPort, const asio::ip::udp &protocol )
+: mReceiver( new osc::ReceiverUdp( localPort, protocol, app::App::get()->io_service() ) ), mOwnsReceiver( true )
+{
+	setupWindowReceiver( window );
+}
+	
+Receiver::Receiver( const app::WindowRef &window, osc::ReceiverBase *ptr )
+: mReceiver( ptr ), mOwnsReceiver( false )
+{
+	setupWindowReceiver( window );
+}
+	
+Receiver::~Receiver()
+{
+	for( auto & handler : mHandlers ) {
+		mReceiver->removeListener( handler.first );
+	}
+	mHandlers.clear();
+	if( mOwnsReceiver )
+		delete mReceiver;
+}
+	
+template<typename TuioType>
+void Receiver::setAddedFn( TypeFn<TuioType> callback )
+{
+	auto address = getOscAddressFromType<TuioType>();
+	auto found = mHandlers.find( address );
+	if( found != mHandlers.end() ) {
+		auto typeHandler = dynamic_cast<detail::SeparatedCallbackHandler<TuioType>*>(found->second.get());
+		typeHandler->setAddedHandler( callback );
+	}
+	else {
+		auto inserted = mHandlers.emplace( address, std::unique_ptr<detail::SeparatedCallbackHandler<TuioType>>( new detail::SeparatedCallbackHandler<TuioType>() ) );
+		auto created = dynamic_cast<detail::SeparatedCallbackHandler<TuioType>*>(inserted.first->second.get());
+		created->setAddedHandler( callback );
+		mReceiver->setListener( address, std::bind( &detail::TypeHandlerBase::handleMessage,
+												   created, std::placeholders::_1 ) );
+	}
 }
 
-Blob25D::Blob25D( const osc::Message &msg )
-: Blob( msg )
+
+template<typename TuioType>
+void Receiver::setUpdatedFn( TypeFn<TuioType> callback )
 {
+	auto address = getOscAddressFromType<TuioType>();
+	auto found = mHandlers.find( address );
+	if( found != mHandlers.end() ) {
+		auto typeHandler = dynamic_cast<detail::SeparatedCallbackHandler<TuioType>*>(found->second.get());
+		typeHandler->setUpdatedHandler( callback );
+	}
+	else {
+		auto inserted = mHandlers.emplace( address, std::unique_ptr<detail::SeparatedCallbackHandler<TuioType>>( new detail::SeparatedCallbackHandler<TuioType>() ) );
+		auto created = dynamic_cast<detail::SeparatedCallbackHandler<TuioType>*>(inserted.first->second.get());
+		created->setUpdatedHandler( callback );
+		mReceiver->setListener( address, std::bind( &detail::TypeHandlerBase::handleMessage,
+												   created, std::placeholders::_1 ) );
+	}
 }
 
-Blob3D::Blob3D( const osc::Message &msg )
-: Blob( msg )
+template<typename TuioType>
+void Receiver::setRemovedFn( TypeFn<TuioType> callback )
 {
+	auto address = getOscAddressFromType<TuioType>();
+	auto found = mHandlers.find( address );
+	if( found != mHandlers.end() ) {
+		auto typeHandler = dynamic_cast<detail::SeparatedCallbackHandler<TuioType>*>(found->second.get());
+		typeHandler->setRemovedHandler( callback );
+	}
+	else {
+		auto inserted = mHandlers.emplace( address, std::unique_ptr<detail::SeparatedCallbackHandler<TuioType>>( new detail::SeparatedCallbackHandler<TuioType>() ) );
+		auto created = dynamic_cast<detail::SeparatedCallbackHandler<TuioType>*>(inserted.first->second.get());
+		created->setRemovedHandler( callback );
+		mReceiver->setListener( address, std::bind( &detail::TypeHandlerBase::handleMessage,
+												   created, std::placeholders::_1 ) );
+	}
 }
 	
+template<>
+void Receiver::setAddedFn( TypeFn<Cursor2d> callback )
+{
+	auto address = getOscAddressFromType<Cursor2d>();
+	auto found = mHandlers.find( address );
+	if( found != mHandlers.end() ) {
+		auto typeHandler = dynamic_cast<detail::SeparatedCallbackHandler<Cursor2d>*>(found->second.get());
+		// could be WindowCursorHandler
+		if( typeHandler ) {
+			typeHandler->setAddedHandler( callback );
+		}
+		else {
+			CI_LOG_W("app::Window is already capturing this event");
+		}
+	}
+	else {
+		auto inserted = mHandlers.emplace( address, std::unique_ptr<detail::SeparatedCallbackHandler<Cursor2d>>( new detail::SeparatedCallbackHandler<Cursor2d>() ) );
+		auto created = dynamic_cast<detail::SeparatedCallbackHandler<Cursor2d>*>(inserted.first->second.get());
+		created->setAddedHandler( callback );
+		mReceiver->setListener( address, std::bind( &detail::TypeHandlerBase::handleMessage,
+												   created, std::placeholders::_1 ) );
+	}
+}
+template<>
+void Receiver::setUpdatedFn( TypeFn<Cursor2d> callback )
+{
+	auto address = getOscAddressFromType<Cursor2d>();
+	auto found = mHandlers.find( address );
+	if( found != mHandlers.end() ) {
+		auto typeHandler = dynamic_cast<detail::SeparatedCallbackHandler<Cursor2d>*>(found->second.get());
+		// could be WindowCursorHandler
+		if( typeHandler ) {
+			typeHandler->setUpdatedHandler( callback );
+		}
+		else {
+			CI_LOG_W("app::Window is already capturing this event");
+		}
+	}
+	else {
+		auto inserted = mHandlers.emplace( address, std::unique_ptr<detail::SeparatedCallbackHandler<Cursor2d>>( new detail::SeparatedCallbackHandler<Cursor2d>() ) );
+		auto created = dynamic_cast<detail::SeparatedCallbackHandler<Cursor2d>*>(inserted.first->second.get());
+		created->setUpdatedHandler( callback );
+		mReceiver->setListener( address, std::bind( &detail::TypeHandlerBase::handleMessage,
+												   created, std::placeholders::_1 ) );
+	}
+}
+template<>
+void Receiver::setRemovedFn( TypeFn<Cursor2d> callback )
+{
+	auto address = getOscAddressFromType<Cursor2d>();
+	auto found = mHandlers.find( address );
+	if( found != mHandlers.end() ) {
+		auto typeHandler = dynamic_cast<detail::SeparatedCallbackHandler<Cursor2d>*>(found->second.get());
+		// could be WindowCursorHandler
+		if( typeHandler ) {
+			typeHandler->setRemovedHandler( callback );
+		}
+		else {
+			CI_LOG_W("app::Window is already capturing this event");
+		}
+	}
+	else {
+		auto inserted = mHandlers.emplace( address, std::unique_ptr<detail::SeparatedCallbackHandler<Cursor2d>>( new detail::SeparatedCallbackHandler<Cursor2d>() ) );
+		auto created = dynamic_cast<detail::SeparatedCallbackHandler<Cursor2d>*>(inserted.first->second.get());
+		created->setRemovedHandler( callback );
+		mReceiver->setListener( address, std::bind( &detail::TypeHandlerBase::handleMessage,
+												   created, std::placeholders::_1 ) );
+	}
+}
+
+template<typename TuioType>
+void Receiver::clear()
+{
+	auto address = getOscAddressFromType<TuioType>();
+	auto found = mHandlers.find( address );
+	if( found != mHandlers.end() ) {
+		mReceiver->removeListener( address );
+		mHandlers.erase( found );
+	}
+}
 	
-//app::TouchEvent::Touch ProfileBase::getTouch( double time, const vec2 &posScale ) const
-//{
-//	return app::TouchEvent::Touch( getPos() * posScale,
-//								   getPrevPos() * posScale,
-//								   (uint32_t)getSessionId(),
-//								   time, NULL );
-//}
+void Receiver::setupWindowReceiver( ci::app::WindowRef window )
+{
+	auto address = getOscAddressFromType<Cursor2d>();
+	auto inserted = mHandlers.emplace( address, std::unique_ptr<detail::WindowCursorHandler>( new detail::WindowCursorHandler() ) );
+	auto handler = dynamic_cast<detail::WindowCursorHandler*>(inserted.first->second.get());
+	mReceiver->setListener( address, std::bind( &detail::TypeHandlerBase::handleMessage,
+												   handler, std::placeholders::_1 ) );
 	
-//template<typename T>
-//void Client::ProfileHandler<T>::handleMessage( const osc::Message &message )
-//{
-//	auto messageType = message[0].string();
-//	auto currentTime = app::getElapsedSeconds();
-//	std::string source;// = message.getRemoteIp();
-//	
-//	mSources.insert( source );
-//	
-//	if( messageType == "source" ) {
-//		
-//	}
-//	if( messageType == "set" ) {
-//		T inst = T::createFromSetMessage( message );
-//		
-//		if( mInstances[source].find( inst.getSessionId() ) == mInstances[source].end() )
-//			mProfileAdds[source].push_back( inst );
-//		else
-//			mProfileUpdates[source].push_back( inst );
-//	}
-//	else if( messageType == "alive" ) {
-//		set<int32_t> aliveInstances;
-//		for( int i = 1; i < message.getNumArgs(); i++ )
-//			aliveInstances.insert( message[i].int32() );
-//		
-//		// anything not in 'aliveInstances' has been removed
-//		
-//		// We look at all (and only) the instances owned by the source of the message
-//		auto instanceMap = mInstances.find( source );
-//		if ( instanceMap != mInstances.end() ) {
-//			for( auto & inst : instanceMap->second ) {
-//				if( aliveInstances.find( inst.first ) == aliveInstances.end() )
-//					mProfileDeletes[source].push_back( inst.second );
-//			}
-//		}
-//	}
-//	else if( messageType == "fseq" ) {
-//		auto frame = message[1].int32();
-//		
-//		// due to UDP's unpredictability, it is possible to receive messages from "the past". Don't process these updates if that's true here
-//		// note that a frame of -1 implies that this is just an update, but doesn't represent a new time so we'll just process it
-//		
-//		// If the frame is "too far" in the past, we assume that the source has
-//		// been reset/restarted, or it's a different source, and we accept it.
-//		int32_t prev_frame = mPreviousFrame[source];
-//		int32_t dframe = frame - prev_frame;
-//		
-//		if( ( frame == -1 ) || ( dframe > 0 ) || ( dframe < -mPastFrameThreshold ) ) {
-//			auto windowSize = app::getWindowSize();
-//			auto window = app::WindowRef();
-//			// propagate the newly added instances
-//			vector<app::TouchEvent::Touch> beganTouches;
-//			for( auto & added : mProfileAdds[source] ) {
-//				mAddedSignal( added );
-//				mInstances[source][added.getSessionId()] = added;
-//				beganTouches.push_back( added.getTouch( currentTime, windowSize ) );
-//			}
-//			
-//			// send a touchesBegan
-//			if( ! beganTouches.empty() )
-//				mTouchesBeganSignal( app::TouchEvent( window, beganTouches ) );
-//			
-//			// propagate the updated instances
-//			vector<app::TouchEvent::Touch> movedTouches;
-//			for( auto & updated : mProfileUpdates[source] ) {
-//				mUpdatedSignal( updated );
-//				mInstances[source][updated.getSessionId()] = updated;
-//				movedTouches.push_back( updated.getTouch( currentTime, windowSize ) );
-//			}
-//			
-//			// send a touchesMoved
-//			if( ! movedTouches.empty() )
-//				mTouchesMovedSignal( app::TouchEvent( window, movedTouches ) );
-//			
-//			// propagate the deleted instances
-//			vector<app::TouchEvent::Touch> endedTouches;
-//			auto endIt = mProfileDeletes[source].end();
-//			for( auto removedIt = mProfileDeletes[source].begin(); removedIt != endIt; ++removedIt ) {
-//				mRemovedSignal( *removedIt );
-//				auto removedId = removedIt->getSessionId();
-//				auto removedTouch = mInstances[source][removedId].getTouch( currentTime, windowSize );
-//				endedTouches.push_back( removedTouch );
-//				
-//				// call this last - we're using it in the callbacks
-//				mInstances[source].erase( removedId );
-//			}
-//			
-//			// send a touchesEnded
-//			if( ! endedTouches.empty() )
-//				mTouchesEndedSignal( app::TouchEvent( app::WindowRef(), endedTouches ) );
-//			
-//			mPreviousFrame[source] = ( frame == -1 ) ? mPreviousFrame[source] : frame;
-//		}
-//		
-//		mProfileUpdates[source].clear();
-//		mProfileAdds[source].clear();
-//		mProfileDeletes[source].clear();
-//	}
-//}
-//
-//template<typename T>
-//vector<T> Client::ProfileHandler<T>::getInstancesAsVector( const std::string &source ) const
-//{
-//	vector<T> result;
-//	
-//	if( source == "" ) {
-//		// Get instances across all sources
-//		for( auto & s : mSources ) {
-//			auto instanceMap = mInstances.find(s);
-//			if ( instanceMap != mInstances.end() ) {
-//				for ( auto & inst : instanceMap->second )
-//					result.push_back( inst.second );
-//			}
-//		}
-//	}
-//	else {
-//		// We collect only the instances owned by the specified source
-//		auto instanceMap = mInstances.find(source);
-//		if ( instanceMap != mInstances.end() ) {
-//			for ( auto & inst : instanceMap->second )
-//				result.push_back( inst.second );
-//		}
-//	}
-//	return result;
-//}
-//
-//Client::Client( uint16_t port, asio::io_service &io )
-//: mListener( port, udp::v4(), io ),
-//mHandlerObject( new ProfileHandler<Object>( DEFAULT_PAST_FRAME_THRESHOLD ) ),
-//mHandlerCursor( new ProfileHandler<Cursor>( DEFAULT_PAST_FRAME_THRESHOLD ) ),
-//mHandlerCursor25d( new ProfileHandler<Cursor25d>( DEFAULT_PAST_FRAME_THRESHOLD ) )
-//{
-//}
-//
-//void Client::connect()
-//{
-//	mListener.bind();
-//	mListener.setListener( "/tuio/2Dobj", std::bind( &ProfileHandler<Object>::handleMessage, mHandlerObject.get(), std::placeholders::_1 ) );
-//	mListener.setListener( "/tuio/2Dcur", std::bind( &ProfileHandler<Cursor>::handleMessage, mHandlerCursor.get(), std::placeholders::_1 ) );
-//	mListener.setListener( "/tuio/25Dcur", std::bind( &ProfileHandler<Cursor25d>::handleMessage, mHandlerCursor25d.get(), std::placeholders::_1 ) );
-//	mListener.listen();
-//	mConnected = true;
-//}
-//
-//void Client::disconnect()
-//{
-//	lock_guard<mutex> lock( mMutex );
-//	mListener.close();
-//	mConnected = false;
-//}
-//
-//Connection Client::registerCursorAdded( CursorFn callback )
-//{
-//	return mHandlerCursor->mAddedSignal.connect( callback );
-//}
-//
-//Connection Client::registerCursorUpdated( CursorFn callback )
-//{
-//	return mHandlerCursor->mUpdatedSignal.connect( callback );
-//}
-//
-//Connection Client::registerCursorRemoved( CursorFn callback )
-//{
-//	return mHandlerCursor->mRemovedSignal.connect( callback );
-//}
-//
-//Connection Client::registerObjectAdded( ObjectFn callback )
-//{
-//	return mHandlerObject->mAddedSignal.connect( callback );
-//}
-//
-//Connection Client::registerObjectUpdated( ObjectFn callback )
-//{
-//	return mHandlerObject->mUpdatedSignal.connect( callback );
-//}
-//
-//Connection Client::registerObjectRemoved( ObjectFn callback )
-//{
-//	return mHandlerObject->mRemovedSignal.connect( callback );
-//}
-//
-//Connection Client::registerTouchesBegan( TouchesFn callback )
-//{
-//	return mHandlerCursor->mTouchesBeganSignal.connect( callback );
-//}
-//
-//Connection Client::registerTouchesMoved( TouchesFn callback )
-//{
-//	return mHandlerCursor->mTouchesMovedSignal.connect( callback );
-//}
-//
-//Connection Client::registerTouchesEnded( TouchesFn callback )
-//{
-//	return mHandlerCursor->mTouchesEndedSignal.connect( callback );
-//}
-//
-//const std::set<std::string>& Client::getSources() const
-//{
-//	return mSources;
-//}
-//
-//vector<Cursor> Client::getCursors( const std::string &source ) const
-//{
-//	return mHandlerCursor->getInstancesAsVector(source);
-//}
-//
-//vector<Cursor25d> Client::getCursors25d( const std::string &source ) const
-//{
-//	return mHandlerCursor25d->getInstancesAsVector(source);
-//}
-//
-//vector<Object> Client::getObjects( const std::string &source ) const
-//{
-//	return mHandlerObject->getInstancesAsVector(source);
-//}
-//
-//vector<app::TouchEvent::Touch> Client::getActiveTouches( std::string source ) const
-//{
-//	lock_guard<mutex> lock( mMutex );
-//	
-//	double currentTime = app::getElapsedSeconds();
-//	vector<app::TouchEvent::Touch> result;
-//	if ( source == "" ) {
-//		// Get cursors from all sources
-//		auto & sources = getSources();
-//		int sourcenum = 0;
-//		for( auto & source :sources ) {
-//			vector<Cursor> cursors = mHandlerCursor->getInstancesAsVector( source );
-//			for( auto & inst : cursors ) {
-//				result.push_back( inst.getTouch( currentTime, app::getWindowSize() ) );
-//			}
-//			++sourcenum;
-//		}
-//	} else {
-//		// Get cursors from one source
-//		auto cursors = mHandlerCursor->getInstancesAsVector(source);
-//		for( auto & inst : cursors ) {
-//			result.push_back( inst.getTouch( currentTime, app::getWindowSize() ) );
-//		}
-//	}
-//	
-//	return result;	
-//}
-//
-}} // namespace tuio // namespace cinder
+	// Take a weak pointer, so that we don't try to access it after it's been destroyed.
+	auto weakWindow = std::weak_ptr<app::Window>( window );
+	// Set the Fseq lambda
+	handler->setFseqFn(
+	[weakWindow]( const std::vector<Cursor2d> &added,
+					const std::vector<Cursor2d> &updated,
+					const std::vector<Cursor2d> &removed ) {
+		auto shared = weakWindow.lock();
+		if( shared ) {
+			auto transformFn = [shared]( const Cursor2d &cursor ) { return cursor.convertToTouch( shared ); };
+			if( ! added.empty() ) {
+				std::vector<TouchEvent::Touch> touches( added.size() );
+				std::transform( begin( added ), end( added ), touches.begin(), transformFn );
+				ci::app::TouchEvent event( shared, touches );
+				shared->emitTouchesBegan( &event );
+			}
+			if( ! updated.empty() ) {
+				std::vector<TouchEvent::Touch> touches( updated.size() );
+				std::transform( begin( updated ), end( updated ), touches.begin(), transformFn );
+				ci::app::TouchEvent event( shared, touches );
+				shared->emitTouchesMoved( &event );
+			}
+			if( ! removed.empty() ) {
+				std::vector<TouchEvent::Touch> touches( removed.size() );
+				std::transform( begin( removed ), end( removed ), touches.begin(), transformFn );
+				ci::app::TouchEvent event( shared, touches );
+				shared->emitTouchesEnded( &event );
+			}
+		}
+	});
+}
+
+template<typename T>
+const char* Receiver::getOscAddressFromType()
+{
+	if( std::is_same<T, Cursor2d>::value ) return "/tuio/2Dcur";
+	else if( std::is_same<T, Cursor25d>::value ) return "/tuio/25Dcur";
+	else if( std::is_same<T, Cursor3d>::value ) return "/tuio/3Dcur";
+	else if( std::is_same<T, Object2d>::value ) return "/tuio/2Dobj";
+	else if( std::is_same<T, Object25d>::value ) return "/tuio/25Dobj";
+	else if( std::is_same<T, Object3d>::value ) return "/tuio/3Dobj";
+	else if( std::is_same<T, Blob2d>::value ) return "/tuio/2Dblb";
+	else if( std::is_same<T, Blob25d>::value ) return "/tuio/25Dblb";
+	else if( std::is_same<T, Blob3d>::value ) return "/tuio/3Dblb";
+	else return "Unknown Target";
+}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// Detail
+	
+namespace detail {
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// TypeHandler templated
+	
+template<typename TuioType>
+void TypeHandler<TuioType>::handleMessage( const osc::Message &message )
+{
+	auto messageType = message[0].string();
+	
+	using namespace std;
+	if( messageType == "source" ) {
+		mCurrentSource = message[1].string();
+	}
+	else if( messageType == "set" ) {
+		auto sessionId = message[1].int32();
+		auto & source = mCurrentSource;
+		auto it = find_if( begin( mSetOfCurrentTouches ), end( mSetOfCurrentTouches ),
+		[sessionId, source]( const TuioType &type ){
+			  return source == type.getSource() &&
+					 sessionId == type.getSessionId();
+		});
+		if( it == end( mSetOfCurrentTouches ) ) {
+			TuioType type( message );
+			auto insert = lower_bound( begin( mSetOfCurrentTouches ),
+									  end( mSetOfCurrentTouches ),
+									  type,
+			[]( const TuioType &lhs, const TuioType &value ){
+				  return lhs < value;
+			});
+			type.setSource( mCurrentSource );
+			mSetOfCurrentTouches.emplace( insert, std::move( type ) );
+			mAdded.push_back( sessionId );
+		}
+		else {
+			TuioType type( message );
+			type.setSource( mCurrentSource );
+			*it = std::move( type );
+			mUpdated.push_back( sessionId );
+		}
+	}
+	else if( messageType == "alive" ) {
+		std::vector<int32_t> aliveIds( message.getNumArgs() - 1 );
+		int i = 1;
+		for( auto & aliveId : aliveIds ) {
+			aliveId = message[i++].int32();
+		}
+		std::sort( begin( aliveIds ), end( aliveIds ) );
+		auto & aliveIdsRef = aliveIds;
+		auto & currentSourceRef = mCurrentSource;
+		std::function<bool(const TuioType &)> aliveIdsRemoveIf = [aliveIdsRef, currentSourceRef]( const TuioType &type ) {
+			return type.getSource() == currentSourceRef && binary_search( begin( aliveIdsRef ), end( aliveIdsRef ), type.getSessionId() );
+		};
+		auto currentEnd = end( mSetOfCurrentTouches );
+		auto remove = stable_partition( begin( mSetOfCurrentTouches ), currentEnd, aliveIdsRemoveIf );
+		if( remove != currentEnd ) {
+			std::move( remove, currentEnd, back_inserter( mRemovedTouches ) );
+			mSetOfCurrentTouches.erase( remove, currentEnd );
+		}
+	}
+	else if( messageType == "fseq" ) {
+		handleFseq( message[1].int32() );
+	}
+}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// SeparatedCallbackHandler templated
+	
+template<typename TuioType>
+void SeparatedCallbackHandler<TuioType>::setAddedHandler( TypeFn<TuioType> callback )
+{
+	std::lock_guard<std::mutex> lock( mCallbackMutex );
+	mAddCallback = callback;
+}
+
+template<typename TuioType>
+void SeparatedCallbackHandler<TuioType>::setUpdatedHandler( TypeFn<TuioType> callback )
+{
+	std::lock_guard<std::mutex> lock( mCallbackMutex );
+	mUpdateCallback = callback;
+}
+
+template<typename TuioType>
+void SeparatedCallbackHandler<TuioType>::setRemovedHandler( TypeFn<TuioType> callback )
+{
+	std::lock_guard<std::mutex> lock( mCallbackMutex );
+	mRemoveCallback = callback;
+}
+	
+template<typename TuioType>
+void SeparatedCallbackHandler<TuioType>::handleFseq( int32_t frame )
+{
+	int32_t prev_frame = this->mSourceFrameNums[this->mCurrentSource];
+	int32_t delta_frame = frame - prev_frame;
+	// TODO: figure out about past frame threshold updating, this was also in the if condition ( dframe < -mPastFrameThreshold )
+	if( frame == -1 || delta_frame > 0 ) {
+		std::lock_guard<std::mutex> lock( mCallbackMutex );
+		auto begin = std::begin( this->mSetOfCurrentTouches );
+		auto end = std::end( this->mSetOfCurrentTouches );
+		if( ! this->mAdded.empty() ) {
+			if( mAddCallback ) {
+				for( auto & added : this->mAdded ) {
+					auto found = find_if( begin, end,
+					[added]( const TuioType &type ) {
+						 return added == type.getSessionId();
+					});
+					if( found != end )
+						mAddCallback( *found );
+				}
+			}
+			this->mAdded.clear();
+		}
+		if ( ! this->mUpdated.empty() ) {
+			if( mUpdateCallback ) {
+				for( auto & updated : this->mUpdated ) {
+					auto found = find_if( begin, end,
+					[updated]( const TuioType &type ) {
+						 return updated == type.getSessionId();
+					});
+					if( found != end )
+						mUpdateCallback( *found );
+				}
+			}
+			this->mUpdated.clear();
+		}
+		if( ! this->mRemovedTouches.empty() ){
+			if( mRemoveCallback )
+				for( auto & removed : this->mRemovedTouches ) {
+					mRemoveCallback( removed );
+				}
+			this->mRemovedTouches.clear();
+		}
+		this->mSourceFrameNums[this->mCurrentSource] = ( frame == -1 ) ? this->mSourceFrameNums[this->mCurrentSource] : frame;
+	}
+}
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////
+///// WindowCursorHandler
+	
+void WindowCursorHandler::setFseqFn( FseqFn fseqFn )
+{
+	std::lock_guard<std::mutex> lock( mFseqMutex );
+	mFseqFn = fseqFn;
+}
+	
+void WindowCursorHandler::handleFseq( int32_t frame )
+{
+	int32_t prev_frame = this->mSourceFrameNums[this->mCurrentSource];
+	int32_t delta_frame = frame - prev_frame;
+	// TODO: figure out about past frame threshold updating, this was also in the if condition ( dframe < -mPastFrameThreshold )
+	if( frame == -1 || delta_frame > 0 ) {
+		auto begin = std::begin( this->mSetOfCurrentTouches );
+		auto end = std::end( this->mSetOfCurrentTouches );
+		std::vector<Cursor2d> addedCursors, updatedCursors;
+		if( ! this->mAdded.empty() ) {
+			for( auto & added : this->mAdded ) {
+				auto found = find_if( begin, end,
+				[added]( const Cursor2d &type ) {
+					 return added == type.getSessionId();
+				});
+				if( found != end )
+					addedCursors.push_back( *found );
+			}
+			this->mAdded.clear();
+		}
+		if ( ! this->mUpdated.empty() ) {
+			for( auto & updated : this->mUpdated ) {
+				auto found = find_if( begin, end,
+				[updated]( const Cursor2d &type ) {
+					 return updated == type.getSessionId();
+				});
+				if( found != end )
+					updatedCursors.push_back( *found );
+			}
+			this->mUpdated.clear();
+		}
+		this->mSourceFrameNums[this->mCurrentSource] = ( frame == -1 ) ? this->mSourceFrameNums[this->mCurrentSource] : frame;
+		{
+			std::lock_guard<std::mutex> lock( mFseqMutex );
+			mFseqFn( addedCursors, updatedCursors, this->mRemovedTouches );
+		}
+		this->mRemovedTouches.clear();
+	}
+}
+
+} // namespace detail
+
+//! Specializations per type.
+	
+template void Receiver::setAddedFn( TypeFn<tuio::detail::Cursor<ci::vec2>> );
+template void Receiver::setUpdatedFn( TypeFn<tuio::detail::Cursor<ci::vec2>> );
+template void Receiver::setRemovedFn( TypeFn<tuio::detail::Cursor<ci::vec2>> );
+template void Receiver::clear<tuio::detail::Cursor<ci::vec2>>();
+	
+template void Receiver::setAddedFn( TypeFn<tuio::detail::Cursor<ci::vec3>> );
+template void Receiver::setUpdatedFn( TypeFn<tuio::detail::Cursor<ci::vec3>> );
+template void Receiver::setRemovedFn( TypeFn<tuio::detail::Cursor<ci::vec3>> );
+template void Receiver::clear<tuio::detail::Cursor<ci::vec3>>();
+	
+template void Receiver::setAddedFn( TypeFn<tuio::Object2d> );
+template void Receiver::setUpdatedFn( TypeFn<tuio::Object2d> );
+template void Receiver::setRemovedFn( TypeFn<tuio::Object2d> );
+template void Receiver::clear<tuio::Object2d>();
+	
+template void Receiver::setAddedFn( TypeFn<tuio::Object25d> );
+template void Receiver::setUpdatedFn( TypeFn<tuio::Object25d> );
+template void Receiver::setRemovedFn( TypeFn<tuio::Object25d> );
+template void Receiver::clear<tuio::Object25d>();
+	
+template void Receiver::setAddedFn( TypeFn<tuio::Object3d> );
+template void Receiver::setUpdatedFn( TypeFn<tuio::Object3d> );
+template void Receiver::setRemovedFn( TypeFn<tuio::Object3d> );
+template void Receiver::clear<tuio::Object3d>();
+	
+template void Receiver::setAddedFn( TypeFn<tuio::Blob2d> );
+template void Receiver::setUpdatedFn( TypeFn<tuio::Blob2d> );
+template void Receiver::setRemovedFn( TypeFn<tuio::Blob2d> );
+template void Receiver::clear<tuio::Blob2d>();
+	
+template void Receiver::setAddedFn( TypeFn<tuio::Blob25d> );
+template void Receiver::setUpdatedFn( TypeFn<tuio::Blob25d> );
+template void Receiver::setRemovedFn( TypeFn<tuio::Blob25d> );
+template void Receiver::clear<tuio::Blob25d>();
+	
+template void Receiver::setAddedFn( TypeFn<tuio::Blob3d> );
+template void Receiver::setUpdatedFn( TypeFn<tuio::Blob3d> );
+template void Receiver::setRemovedFn( TypeFn<tuio::Blob3d> );
+template void Receiver::clear<tuio::Blob3d>();
+
+}}  // namespace tuio // namespace cinder
