@@ -33,6 +33,7 @@ NUMPROCS=$( nproc )
 GLES=
 OPENGL_PLAT="ogl"
 CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=ogl"
+CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING="
 FULLBUILD=true
 RPI2=
 VERBOSE=
@@ -108,6 +109,7 @@ do
             GLES="-DCINDER_GL_ES_2=1"
 			OPENGL_PLAT="es2"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es2"
+            CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es2"
 			shift 1
         ;;
 
@@ -116,6 +118,7 @@ do
             GLES="-DCINDER_GL_ES_3=1"
 			OPENGL_PLAT="es3"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es3"
+            CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es3"
 			shift 1
         ;;
 
@@ -124,6 +127,7 @@ do
             GLES="-DCINDER_GL_ES_3_1=1"
 			OPENGL_PLAT="es31"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es31"
+            CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es31"
 			shift 1
         ;;
 
@@ -132,6 +136,7 @@ do
             GLES="-DCINDER_GL_ES_3_2=1"
 			OPENGL_PLAT="es32"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es32"
+            CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es32"
 			shift 1
         ;;
 
@@ -140,6 +145,7 @@ do
 			RPI2="-DCINDER_LINUX_EGL_RPI2=1"
 			GLES="-DCINDER_GL_ES_2=1"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es2-rpi2"
+            CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es2"
 			OPENGL_PLAT="es2-rpi2"
 			shift 1
 		;;
@@ -227,8 +233,8 @@ for build in ${BUILD_TYPES[@]}; do
 
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
-		echo "CMAKE COMMAND: cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX}"
-		cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX}
+		echo "CMAKE COMMAND: cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}"
+		cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}
 	fi
 	make -j ${NUMPROCS} ${VERBOSE}
 
