@@ -7,8 +7,9 @@ set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 # Find architecture name
 execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
 
-# We start with Desktop as default but this variable will be overwritten from cbuilder based on the target system.
+# We start with Desktop as default but these variable will be overwritten from cbuilder based on the target system.
 set( CINDER_OUT_DIR_PREFIX "ogl" CACHE STRING "" FORCE )
+set( CINDER_LIB_SUFFIX "" CACHE STRING "" FORCE )
 
 set( CINDER_INCLUDE_DEPENDS )
 set( CINDER_LIBS_DEPENDS )
@@ -38,7 +39,6 @@ if( CINDER_LINUX_EGL_RPI2 )
 	)
 endif()
 
-set( CINDER_LIB_SUFFIX )
 set( CINDER_DEFINITIONS )
 
 if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
@@ -52,20 +52,16 @@ if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
 
 	if( CINDER_GL_ES_2 )
         list( APPEND CINDER_DEFINITIONS "-DCINDER_GL_ES_2" )
-        set( CINDER_LIB_SUFFIX -es2 )
 		# Raspberry Pi special flags
 		if( CINDER_LINUX_EGL_RPI2 )
             list( APPEND CINDER_DEFINITIONS "-DCINDER_LINUX_EGL_ONLY -DCINDER_LINUX_EGL_RPI2" )
 		endif()		
 	elseif( CINDER_GL_ES_3 )
         list( APPEND CINDER_DEFINITIONS "-DCINDER_GL_ES_3" )
-        set( CINDER_LIB_SUFFIX -es3 )
 	elseif( CINDER_GL_ES_3_1 )
         list( APPEND CINDER_DEFINITIONS "-DCINDER_GL_ES_3_1" )
-        set( CINDER_LIB_SUFFIX -es31 )
 	elseif( CINDER_GL_ES_3_2 )
         list( APPEND CINDER_DEFINITIONS "-DCINDER_GL_ES_3_2" )
-        set( CINDER_LIB_SUFFIX -es32 )
 	endif()
 endif() # For Desktop we keep the defaults.
 
@@ -128,6 +124,7 @@ endif()
 
 message( "" )
 message( "${BoldGreen}CINDER_OUTPUT_DIR_PREFIX: ${CINDER_OUT_DIR_PREFIX}" )
+message( "${BoldGreen}CINDER_LIB_SUFFIX: ${CINDER_LIB_SUFFIX}" )
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
 message( "" )
