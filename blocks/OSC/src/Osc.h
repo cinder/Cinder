@@ -623,7 +623,8 @@ class SenderTcp : public SenderBase {
 //! Represents an OSC Receiver(called a \a client in the OSC spec) and implements a unified
 //! interface without implementing any of the networking layer.
 class ReceiverBase {
-  public:
+public:
+	virtual ~ReceiverBase() = default;
 	//! Alias function representing a message callback.
 	using ListenerFn = std::function<void( const Message &message )>;
 	//! Alias container for callbacks.
@@ -645,7 +646,6 @@ class ReceiverBase {
 	
   protected:
 	ReceiverBase( PacketFramingRef packetFraming ) : mPacketFraming( packetFraming ) {}
-	virtual ~ReceiverBase() = default;
 	//! Non-copyable.
 	ReceiverBase( const ReceiverBase &other ) = delete;
 	//! Non-copyable.
