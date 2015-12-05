@@ -28,65 +28,252 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"
-#include "boost/signals2/signal.hpp"
 #include "Osc.h"
+#include "cinder/Log.h"
 
 namespace cinder { namespace tuio {
+
+//! forward declarations
+namespace detail {
+template<typename VEC_T> class Cursor;
+template<typename VEC_T, typename ROT_T> class Object;
+template<typename VEC_T, typename ROT_T, typename DIM_T> class Blob;
+	
+class Blob2d;
+class Blob25d;
+class Blob3d;
+	
+class TypeHandlerBase  {
+public:
+	virtual ~TypeHandlerBase() = default;
+	virtual void handleMessage( const osc::Message &message ) = 0;
+};
+}
+
+//! Alias representing the tuio Cursor2d type. vec2 used for position and velocity.
+using Cursor2d = detail::Cursor<ci::vec2>;
+//! Alias representing the tuio Cursor25d type. vec3 used for position and velocity.
+using Cursor25d = detail::Cursor<ci::vec3>;
+//! Alias representing the tuio Cursor3d type. vec3 used for position and velocity.
+using Cursor3d	= detail::Cursor<ci::vec3>;
+
+//! Alias represneting the tuio Object2d type. vec2 used for position and velocity
+//! and float used for angle and rotational velocity.
+using Object2d	= detail::Object<ci::vec2, float>;
+//! Alias representing the tuio Object25d type. vec3 used for position and velocity
+//! and float used for angle and rotational velocity.
+using Object25d = detail::Object<ci::vec3, float>;
+//! Alias representing the tuio Object3d type. vec3 used for position and velociy
+//! and vec3 used for angle and rotational velocity.
+using Object3d	= detail::Object<ci::vec3, ci::vec3>;
+	
+//! Alias representing a tuio Blob2d
+using Blob2d = detail::Blob2d;
+//! Alias representing a tuio Blob25d
+using Blob25d = detail::Blob25d;
+//! Alias representing a tuio Blob3d
+using Blob3d = detail::Blob3d;
+	
+//! Implements a Receiver for the TUIO 1.1 protocol, described here: http://www.tuio.org/?specification
+class Receiver {
+public:
+	// Alias for the type of function used to callback from Receiver.
+	template<typename Type>
+	using TypeFn = std::function<void(const Type &)>;
+	
+	//! Constructs a Receiver which uses udp, whose local endpoint is defined by \a
+	//! localPort, which defaults to 3333 (tuio default port), \a protocol, which
+	//! defaults to v4 and \a io as the sockets io_service, which defaults to app's
+	//! io_service.
+	Receiver( uint16_t localPort = DEFAULT_TUIO_PORT,
+		      const asio::ip::udp &protocol = asio::ip::udp::v4(),
+			  asio::io_service &io = ci::app::App::get()->io_service() );
+	//! Constructs a Receiver with an already constructed osc::Receiver. Used for more
+	//! advanced osc socket setup.
+	Receiver( osc::ReceiverBase *ptr );
+	//! Constructs a Receiver which uses udp, whose local endpoint is defined by \a
+	//! localPort, which defaults to 3333 (tuio default port) and \a protocol, which
+	//! defaults to v4. Sets up \a window to receive touchesBegan, Moved, and Ended
+	//! events from corresponding Cursor2d tuio events. Also, uses app's io_service
+	//! by default when constructing the socket. Note: calling setAddedFn, setUpdatedFn
+	//! or setRemovedFn for Cursor2d type when using this constructor does nothing.
+	Receiver( const app::WindowRef &window,
+			  uint16_t localPort = DEFAULT_TUIO_PORT,
+			  const asio::ip::udp &protocol = asio::ip::udp::v4() );
+	//! Constructs a Receiver with an already constructed osc::Receiver. Used for more
+	//! advanced osc socket setup. Sets up \a window to receive touchesBegan, Moved, and Ended
+	//! events from corresponding Cursor2d tuio events. Note: calling setAddedFn, setUpdatedFn
+	//! or setRemovedFn for Cursor2d type when using this constructor does nothing.
+	Receiver( const app::WindowRef &window, osc::ReceiverBase *ptr );
+	// Destructor
+	~Receiver();
+	
+	//! Sets the Added Callback function for \a TuioType and creates a TypeHandler if one isn't
+	//! already available. \a callback called when \a TuioType has been added.
+	template<typename TuioType>
+	void	setAddedFn( TypeFn<TuioType> callback );
+	//! Sets the Updated Callback function for \a TuioType and creates a TypeHandler if one isn't
+	//! already available. \a callback called when \a TuioType has been updated.
+	template<typename TuioType>
+	void	setUpdatedFn( TypeFn<TuioType> callback );
+	//! Sets the Removed Callback function for \a TuioType and creates a TypeHandler if one isn't
+	//! already available. \a callback called when \a TuioType has been removed.
+	template<typename TuioType>
+	void	setRemovedFn( TypeFn<TuioType> callback );
+	
+	//! Removes TypeHandler for \a TuioType and stops listening for that type.
+	template<typename TuioType>
+	void	clear();
+	
+	//! Returns the threshold for a frame ID being old enough to imply a new source
+	int32_t	getPastFrameThreshold() const;
+	//! Sets the threshold for a frame ID being old enough to imply a new source
+	void	setPastFrameThreshold( int32_t pastFrameThreshold );
+	
+	//! Returns a pointer to the Osc Receiver network transport.
+	osc::ReceiverBase* getOscReceiver() const { return mReceiver; }
+	
+	//! Default tuio port, from the spec.
+	static const uint16_t DEFAULT_TUIO_PORT = 3333;
+	// default threshold for a frame ID being old enough to imply a new source
+	static const uint32_t DEFAULT_PAST_FRAME_THRESHOLD = 10;
+	
+private:
+	//! Returns the osc address associated with this type.
+	template<typename T>
+	static const char*	getOscAddressFromType();
+	//! Sets up \a window to receive touchesBegan, Moved, and Ended events from Cursor2d events.
+	void				setupWindowReceiver( ci::app::WindowRef window );
+	//! Alias representing the handler collection with osc address being the key.
+	using TypeHandlers = std::map<std::string, std::unique_ptr<detail::TypeHandlerBase>>;
+	
+	osc::ReceiverBase	*mReceiver;
+	TypeHandlers		mHandlers;
+	bool				mOwnsReceiver;
+};
 	
 namespace detail {
 	
-struct Profile {
-	int32_t getSessionId() { return mSessionId; }
-	const std::string& getSource() { return mSource; }
-	
+//! Represents the base info of a tuio type.
+class Type {
+public:
+	//! Returns the sessionId for this type.
+	int32_t getSessionId() const { return mSessionId; }
+	//! Returns the source of this type.
+	const std::string& getSource() const { return mSource; }
+	//! Sets the source of this type.
+	void setSource( const std::string &source ) { mSource = source; }
+	//! Less than operator used for sorting order. Sorts on Source and
+	//! SessionId
+	bool operator<( const Type &other ) const;
 protected:
-	Profile( const osc::Message &msg );
-	~Profile() = default;
+	Type( const osc::Message &msg );
+	Type( Type &&other ) NOEXCEPT;
+	Type& operator=( Type &&other ) NOEXCEPT;
+	Type( const Type &other ) = default;
+	Type& operator=( const Type &other ) = default;
+	~Type() = default;
 	
 	int32_t		mSessionId;
 	std::string mSource;
-	
-	friend class Client;
 };
 
+//! Represents a touch with dimension defined by VEC_T
 template<typename VEC_T>
-struct Cursor : public Profile {
+class Cursor : public Type {
+public:
+	//! Constructor taking an osc::Message for construction
 	Cursor( const osc::Message &msg );
+	Cursor( Cursor &&other ) NOEXCEPT;
+	Cursor& operator=( Cursor &&other ) NOEXCEPT;
+	Cursor( const Cursor &other ) = default;
+	Cursor& operator=( const Cursor &other ) = default;
+	~Cursor() = default;
+	
+	//! Returns the position of this Cursor in the dimension of VEC_T. From the spec,
+	//! will contain x, y, (z) in the range of 0...1
 	const VEC_T&	getPosition() const { return mPosition; }
+	//! Returns the velocity of this Cursor in the dimension of VEC_T. From the spec,
+	//! will contain x, y, (z) in the range of 0...1
 	const VEC_T&	getVelocity() const { return mVelocity; }
+	//! Returns a float representing the acceleration of this Cursor.
 	float			getAcceleration() const { return mAcceleration; }
+	//! Helper function which converts a cursor to a Touch. Takes a window, which
+	//! calculates the position on the screen.
+	app::TouchEvent::Touch	convertToTouch( const ci::app::WindowRef &window ) const;
+	
 protected:
-	VEC_T		mPosition,
-				mVelocity;
+	VEC_T		mPosition, mVelocity;
 	float		mAcceleration;
 };
-	
+
 template<typename VEC_T, typename ROT_T>
-struct Object : public Profile {
+class Object : public Type {
+public:
+	//! Constructor taking an osc::Message for construction
 	Object( const osc::Message &msg );
+	Object( Object &&other ) NOEXCEPT;
+	Object& operator=( Object &&other ) NOEXCEPT;
+	Object( const Object &other ) = default;
+	Object& operator=( const Object &other ) = default;
+	~Object() = default;
+	
+	//! Returns the int32_t ClassId of this Object, which corresponds to a
+	//! unique identifier that can be associated with a tangible object
 	int32_t			getClassId() const { return mClassId; }
+	//! Returns the position of this Object in the dimension of VEC_T. From the spec,
+	//! will contain x, y, (z) in the range of 0...1
 	const VEC_T&	getPosition() const { return mPosition; }
+	//! Returns the velocity of this Object in the dimension of VEC_T. From the spec,
+	//! will contain x, y, (z) in the range of 0...1
 	const VEC_T&	getVelocity() const { return mVelocity; }
+	//! Returns the angle of this Object in the dimension of ROT_T. From the spec,
+	//! will contain a, (b, c) in the range of 0..2PI
 	const ROT_T&	getAngle() const { return mAngle; }
+	//! Returns the velocity of this Object in the dimension of ROT_T. From the spec,
+	//! will contain A, (B, C) as float(s)
 	const ROT_T&	getRotationVelocity() const { return mRotationVelocity; }
+	//! Returns a float representing the acceleration of this Object.
 	float			getAcceleration() const { return mAcceleration; }
+	//! Returns a float representing the rotational acceleration of this Object.
 	float			getRotationAcceleration() const { return mRotateAccel; }
+	
 protected:
 	int32_t		mClassId;
 	VEC_T		mPosition, mVelocity;
 	ROT_T		mAngle, mRotationVelocity;
 	float		mAcceleration, mRotateAccel;
 };
-	
+
 template<typename VEC_T, typename ROT_T, typename DIM_T>
-struct Blob : public Profile {
+class Blob : public Type {
+public:
+	//! Constructor taking an osc::Message for construction
 	Blob( const osc::Message &msg );
+	Blob( Blob &&other ) NOEXCEPT;
+	Blob& operator=( Blob &&other ) NOEXCEPT;
+	Blob( const Blob &other ) = default;
+	Blob& operator=( const Blob &other ) = default;
+	~Blob() = default;
+	
+	//! Returns the position of this Blob in the dimension of VEC_T. From the spec,
+	//! will contain x, y, (z) in the range of 0...1
 	const VEC_T&	getPosition() const { return mPosition; }
+	//! Returns the velocity of this Blob in the dimension of VEC_T. From the spec,
+	//! will contain x, y, (z) in the range of 0...1
 	const VEC_T&	getVelocity() const { return mVelocity; }
+	//! Returns the angle of this Blob in the dimension of ROT_T. From the spec,
+	//! will contain a, (b, c) in the range of 0..2PI
 	const ROT_T&	getAngle() const { return mAngle; }
+	//! Returns the rotational velocity of this Blob in the dimension of ROT_T. From the spec,
+	//! will contain A, (B, C) as float(s)
 	const ROT_T&	getRotationVelocity() const { return mRotationVelocity; }
+	//! Returns a float representing the acceleration of this Blob.
 	float			getAcceleration() const { return mAcceleration; }
+	//! Returns a float representing the rotational acceleration of this Object.
 	float			getRotationAcceleration() const { return mRotateAccel; }
+	//! Returns a float representing the rotational acceleration of this Object. From the spec,
+	//! will contain w, h, (d) in the range of 0...1
 	const DIM_T&	getDimension() { return mDimensions; }
 	
 protected:
@@ -97,130 +284,28 @@ protected:
 	float		mGeometry;
 };
 	
-} // detail
-
-using Cursor2D	= detail::Cursor<ci::vec2>;
-using Cursor25D = detail::Cursor<ci::vec3>;
-using Cursor3D	= detail::Cursor<ci::vec3>;
-	
-using Object2D	= detail::Object<ci::vec2, float>;
-using Object25D = detail::Object<ci::vec3, float>;
-using Object3D	= detail::Object<ci::vec3, ci::vec3>;
-	
-struct Blob2D : public detail::Blob<ci::vec2, float, ci::vec2> {
-	Blob2D( const osc::Message &msg );
-	float getArea() { return mGeometry; }
-};
-struct Blob25D : public detail::Blob<ci::vec3, float, ci::vec2> {
-	Blob25D( const osc::Message &msg );
+//! Represents a 2 dimensional Blob
+class Blob2d : public detail::Blob<ci::vec2, float, ci::vec2> {
+public:
+	Blob2d( const osc::Message &msg );
+	//! Returns a float representing the total area of this blob.
 	float getArea() const { return mGeometry; }
 };
-struct Blob3D : public detail::Blob<ci::vec3, ci::vec3, ci::vec3> {
-	Blob3D( const osc::Message &msg );
+//! Represents a 2.5 dimensional Blob
+class Blob25d : public detail::Blob<ci::vec3, float, ci::vec2> {
+public:
+	Blob25d( const osc::Message &msg );
+	//! Returns a float representing the total area of this blob.
+	float getArea() const { return mGeometry; }
+};
+//! Represents a 3 dimensional Blob
+class Blob3d : public detail::Blob<ci::vec3, ci::vec3, ci::vec3> {
+public:
+	Blob3d( const osc::Message &msg );
+	//! Returns a float representing the total volume of this blob
 	float getVolume() const { return mGeometry; }
 };
+	
+} // namespace detail
 
-//! Implements a client for the TUIO 1.1 protocol, described here: http://www.tuio.org/?specification
-class Client {
-public:
-	template<typename Profile>
-	using ProfileFn = std::function<void(const Profile&)>;
-	using TouchesFn = std::function<void (app::TouchEvent)>;
-	
-	Client( uint16_t port = DEFAULT_TUIO_PORT, asio::io_service &io = ci::app::App::get()->io_service() );
-	
-	//! Creates a TUIO connection on port \a port and begins listening for incoming messages
-	void connect();
-	//! Closes the connection if one is open
-	void disconnect();
-	//! Returns whether their is an active TUIO connection
-	bool isConnected() const { return mConnected; }
-	
-	//! Returns a vector of currently active sources (IP addresses)
-	const std::set<std::string>&	getSources() const;
-	
-	//! Registers an async callback which fires when a new cursor is added
-	template<typename T>
-	void	registerProfileAddedCallback( ProfileFn<T> callback );
-	//! Registers an async callback which fires when a cursor is updated
-	template<typename T>
-	void	registerProfileUpdatedCallback( ProfileFn<T> callback );
-	//! Registers an async callback which fires when a cursor is removed
-	template<typename T>
-	void	registerProfileRemovedCallback( ProfileFn<T> callback );
-	
-	//! Registers an async callback for touchesBegan events, derived from \c 2Dcur messages.
-	//! Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
-	void	registerTouchesBegan( TouchesFn callback );
-	//! Registers an async callback for touchesMoved events, derived from \c 2Dcur messages.
-	//! Returns a unique identifier which can be used as a parameter to unregisterTouchesMoved().
-	void	registerTouchesMoved( TouchesFn callback );
-	//! Registers an async callback for touchesEnded events, derived from \c 2Dcur messages.
-	//! Returns a unique identifier which can be used as a parameter to unregisterTouchesEnded().
-	void	registerTouchesEnded( TouchesFn callback );
-	
-	//! Registers all touches event handlers for an app
-	void registerTouches( ci::app::App *app )
-	{
-		registerTouchesBegan( std::bind( &ci::app::App::touchesBegan, app, std::placeholders::_1 ) );
-		registerTouchesMoved( std::bind( &ci::app::App::touchesMoved, app, std::placeholders::_1 ) );
-		registerTouchesEnded( std::bind( &ci::app::App::touchesEnded, app, std::placeholders::_1 ) );
-	}
-	
-	//! Returns a std::vector of all active touches, derived from \c 2Dcur (Cursor) messages
-	std::vector<app::TouchEvent::Touch>		getActiveTouches(std::string source = "") const;
-	
-	//! Returns the threshold for a frame ID being old enough to imply a new source
-	int32_t	getPastFrameThreshold() const;
-	//! Sets the threshold for a frame ID being old enough to imply a new source
-	void	setPastFrameThreshold( int32_t pastFrameThreshold );
-	
-	static const int DEFAULT_TUIO_PORT = 3333;
-	// default threshold for a frame ID being old enough to imply a new source
-	static const int32_t DEFAULT_PAST_FRAME_THRESHOLD = 10;
-	
-private:
-	
-	// This class handles each of the profile types, currently Object: '2Dobj' and Cursor: '2Dcur'
-	template<typename T>
-	struct ProfileHandler {
-		using ProfileMap = std::map<std::string, std::vector<T>>;
-		template<typename Fn>
-		using Signal = boost::signals2::signal<Fn>;
-		
-		ProfileHandler( int32_t pastFrameThreshold ) : mPastFrameThreshold( pastFrameThreshold ) {}
-		
-		void			handleMessage( const osc::Message &message );
-		std::vector<T>	getInstancesAsVector( const std::string &source = "" ) const;
-		
-		std::set<std::string>					mSources;
-		
-		//////////////////////////////////////////////////////////////////////
-		// For all of the following maps, the key is the source IP address
-		//////////////////////////////////////////////////////////////////////
-		
-		// current instances of this profile
-		std::map<std::string, std::map<int32_t,T>>		mInstances;
-		// containers for changes which will be propagated upon receipt of 'fseq'
-		ProfileMap		mProfileUpdates, mProfileAdds, mProfileDeletes;
-		// Last frame we processed per the 'fseq' message
-		std::map<std::string, int32_t> mPreviousFrame;
-		
-		Signal<void(T)>					mAddedSignal, mUpdatedSignal, mRemovedSignal;
-		Signal<void(app::TouchEvent)>	mTouchesBeganSignal, mTouchesMovedSignal, mTouchesEndedSignal;
-
-		int32_t						mPastFrameThreshold;
-	};
-	
-	osc::ReceiverUdp	mListener;
-	
-	std::unique_ptr<ProfileHandler<Object>>		mHandlerObject;
-	std::unique_ptr<ProfileHandler<Cursor>>		mHandlerCursor;
-	std::unique_ptr<ProfileHandler<Cursor25d>>	mHandlerCursor25d;
-	std::set<std::string>						mSources;
-	
-	bool				mConnected;
-	mutable std::mutex	mMutex;
-};
-	
-} } // namespace cinder::tuio
+} } // namespace tuio // namespace cinder
