@@ -8,7 +8,7 @@ set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
 
 # We start with Desktop as default but this variable will be overwritten from cbuilder based on the target system.
-set( CINDER_OUT_DIR_PREFIX "ogl" CACHE STRING "Cinder's output dir prefix." )
+set( CINDER_OUT_DIR_PREFIX "ogl" CACHE STRING "" FORCE )
 
 set( CINDER_INCLUDE_DEPENDS )
 set( CINDER_LIBS_DEPENDS )
