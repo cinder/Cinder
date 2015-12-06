@@ -96,4 +96,9 @@ extern double	swapEndian( double val );
 extern void swapEndianBlock( uint16_t *blockPtr, size_t blockSizeInBytes );
 extern void swapEndianBlock( float *blockPtr, size_t blockSizeInBytes );
 
+//! Reinterpret a float as an unsigned 32-bit integer.
+extern uint32_t asInt( float a );
+//! Reinterpret an unsigned 32-bit integer as a float.
+extern float asFloat( uint32_t a );
+
 } // namespace cinder

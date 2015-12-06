@@ -31,6 +31,7 @@
 #include "cinder/gl/scoped.h"
 #include "cinder/ip/Flip.h"
 #include "cinder/Log.h"
+#include "cinder/Utilities.h"
 #include <stdio.h>
 #include <algorithm>
 #include <memory>
@@ -666,7 +667,55 @@ TextureBase::Format::Format()
 	mSwizzleSpecified = false;
 	mSwizzleMask[0] = GL_RED; mSwizzleMask[1] = GL_GREEN; mSwizzleMask[2] = GL_BLUE; mSwizzleMask[3] = GL_ALPHA;
 	mCompareMode = -1;
-	mCompareFunc = -1;	
+	mCompareFunc = -1;
+}
+
+TextureBase::Format::Format( GLenum target, GLuint textureId )
+{
+	// Throw an exception if textureId is invalid.
+	if( ! glIsTexture( textureId ) )
+		throw TextureFormatExc( "The supplied textureId is not valid." );
+
+	mTarget = target;
+	ScopedTextureBind scopedBind( mTarget, textureId );
+
+	GLint w, h, d;
+	glGetTexLevelParameteriv( mTarget, 0, GL_TEXTURE_WIDTH, &w );
+	glGetTexLevelParameteriv( mTarget, 0, GL_TEXTURE_HEIGHT, &h );
+	glGetTexLevelParameteriv( mTarget, 0, GL_TEXTURE_DEPTH, &d );
+
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_WRAP_S, (GLint*)&mWrapS );
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_WRAP_T, (GLint*)&mWrapT );
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_WRAP_R, (GLint*)&mWrapR );
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_MIN_FILTER, (GLint*)&mMinFilter );
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_MAG_FILTER, (GLint*)&mMagFilter );
+	mMinFilterSpecified = ( mMinFilter != GL_LINEAR || mMagFilter != GL_LINEAR );
+	mMipmapping = ( mMinFilter == GL_LINEAR_MIPMAP_LINEAR || 
+					mMinFilter == GL_LINEAR_MIPMAP_NEAREST || 
+					mMinFilter == GL_NEAREST_MIPMAP_LINEAR || 
+					mMinFilter == GL_NEAREST_MIPMAP_NEAREST );
+	mMipmappingSpecified = true;
+	glGetTexParameterIuiv( mTarget, GL_TEXTURE_BASE_LEVEL, &mBaseMipmapLevel );
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_MAX_LEVEL, (GLint*)&mMaxMipmapLevel );
+	if( mMaxMipmapLevel == requiredMipLevels( w, h, d ) - 1 ) mMaxMipmapLevel = -1;
+	glGetTexParameterfv( mTarget, GL_TEXTURE_BORDER_COLOR, (GLfloat*)mBorderColor.data() );
+	if( mBorderColor[0] < 0.0f || mBorderColor[0] > 1.0f || ! isnormal( mBorderColor[0] ) ||
+		mBorderColor[1] < 0.0f || mBorderColor[1] > 1.0f || ! isnormal( mBorderColor[1] ) ||
+		mBorderColor[2] < 0.0f || mBorderColor[2] > 1.0f || ! isnormal( mBorderColor[2] ) ||
+		mBorderColor[3] < 0.0f || mBorderColor[3] > 1.0f || ! isnormal( mBorderColor[3] ) ) {
+		// Invalid border color detected. Color might have been set using integer values, 
+		// but there is no way to convert those back to floats reliably.
+		mBorderColor[0] = mBorderColor[1] = mBorderColor[2] = mBorderColor[3] = 0.0f;
+	}
+	mBorderSpecified = ( mBorderColor[0] != 0.0f || mBorderColor[1] != 0.0f || mBorderColor[2] != 0.0f || mBorderColor[3] != 0.0f );
+	mImmutableStorage = false;
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_INTERNAL_FORMAT, &mInternalFormat );
+	mDataType = -1;
+	glGetTexParameterfv( mTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, &mMaxAnisotropy );
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_SWIZZLE_RGBA, mSwizzleMask.data() );
+	mSwizzleSpecified = (mSwizzleMask[0] != GL_RED || mSwizzleMask[1] != GL_GREEN || mSwizzleMask[2] != GL_BLUE || mSwizzleMask[3] != GL_ALPHA );
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_COMPARE_MODE, &mCompareMode );
+	glGetTexParameterIiv( mTarget, GL_TEXTURE_COMPARE_FUNC, &mCompareFunc );
 }
 
 void TextureBase::Format::setSwizzleMask( GLint r, GLint g, GLint b, GLint a )

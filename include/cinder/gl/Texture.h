@@ -150,7 +150,10 @@ class TextureBase {
 	//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 	void				setLabel( const std::string &label );
 
-	struct Format {			
+	struct Format {
+		//! Constructs a Format based on an existing texture target and texture id.
+		Format( GLenum target, GLuint textureId );
+
 		//! Specifies the texture's target. The default is \c GL_TEXTURE_2D
 		void	setTarget( GLenum target ) { mTarget = target; }
 		//! Sets the texture's target to be \c GL_TEXTURE_RECTANGLE. Not available in OpenGL ES.
@@ -407,6 +410,8 @@ class Texture1d : public TextureBase {
 	struct Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_1D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
 		Format() : TextureBase::Format() { mTarget = GL_TEXTURE_1D; }
+		//!
+		Format( GLuint textureId ) : TextureBase::Format( GL_TEXTURE_1D, textureId ) {}
 
 		//! Chaining functions for Format class.
 		//! Sets the target, defaults to \c GL_TEXTURE_1D
@@ -444,6 +449,8 @@ class Texture1d : public TextureBase {
 	//! Updates the pixels of a Texture1d with the data pointed to by \a data, of format \a dataFormat (Ex: GL_RGB), and type \a dataType (Ex: GL_UNSIGNED_BYTE) of size \a width.
 	void	update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int offset = 0 );
 	
+	//! Returns the Format of this texture. Avoid calling this repeatedly, as the Format is not cached but needs to be reconstructed from the actual OpenGL state.
+	Format			getFormat() const { return Format( mTextureId ); }
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
 	//! Returns the height of the texture in pixels, which is always \c 1
@@ -468,6 +475,8 @@ class Texture2d : public TextureBase {
 	struct Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_2D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
 		Format() : TextureBase::Format(), mLoadTopDown( false ) {}
+		//!
+		Format( GLuint textureId, bool loadTopDown = false ) : TextureBase::Format( GL_TEXTURE_2D, textureId ), mLoadTopDown( loadTopDown ) {}
 
 		//! Chaining functions for Format class.
 		Format& target( GLenum target ) { mTarget = target; return *this; }
@@ -577,6 +586,8 @@ class Texture2d : public TextureBase {
 	//! Replaces the pixels (and data store) of a Texture with contents of \a textureData. Use update() instead if the bounds of \a this match those of \a textureData
 	void			replace( const TextureData &textureData );
 
+	//! Returns the Format of this texture. Avoid calling this repeatedly, as the Format is not cached but needs to be reconstructed from the actual OpenGL state.
+	Format			getFormat() const { return Format( mTextureId, mTopDown ); }
 	//! Returns the width of the texture in pixels.
 	GLint			getWidth() const override { return mCleanBounds.getWidth(); }
 	//! Returns the height of the texture in pixels.
@@ -640,6 +651,8 @@ class Texture3d : public TextureBase {
 	struct Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_3D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
 		Format() : TextureBase::Format() { mTarget = GL_TEXTURE_3D; }
+		//!
+		Format( GLuint textureId ) : TextureBase::Format( GL_TEXTURE_3D, textureId ) {}
 
 		//! Chaining functions for Format class.
 		//! Sets the target, defaults to \c GL_TEXTURE_3D, also supports \c GL_TEXTURE_2D_ARRAY
@@ -679,6 +692,8 @@ class Texture3d : public TextureBase {
 
 	void	update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, int depth, int xOffset = 0, int yOffset = 0, int zOffset = 0 );
 	
+	//! Returns the Format of this texture. Avoid calling this repeatedly, as the Format is not cached but needs to be reconstructed from the actual OpenGL state.
+	Format			getFormat() const { return Format( mTextureId ); }
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
 	//! Returns the height of the texture in pixels
@@ -702,6 +717,8 @@ class TextureCubeMap : public TextureBase
   	struct Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_CUBE_MAP, wrap to \c GL_CLAMP_TO_EDGE, disables mipmapping, the internal format to "automatic"
 		Format();
+		//!
+		Format( GLuint textureId ) : TextureBase::Format( GL_TEXTURE_CUBE_MAP, textureId ) {}
 
 		//! Chaining functions for Format class.
 		Format& target( GLenum target ) { mTarget = target; return *this; }
@@ -745,6 +762,8 @@ class TextureCubeMap : public TextureBase
 	static TextureCubeMapRef	createFromDds( const DataSourceRef &dataSource, const Format &format = Format() );
 #endif
 
+	//! Returns the Format of this texture. Avoid calling this repeatedly, as the Format is not cached but needs to be reconstructed from the actual OpenGL state.
+	Format			getFormat() const { return Format( mTextureId ); }
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
 	//! Returns the height of the texture in pixels
@@ -807,6 +826,11 @@ class KtxParseExc : public Exception {
 class DdsParseExc : public Exception {
   public:	
 	DdsParseExc( const std::string &description ) : Exception( description )	{}
+};
+
+class TextureFormatExc : public Exception {
+public:
+	TextureFormatExc( const std::string &description ) : Exception( description ) {}
 };
 
 class TextureDataExc : public Exception {
