@@ -43,28 +43,32 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		: mNumUnread( 0 ), mContainer( capacity ), mCanceled( false )
 	{}
 
-	void pushFront( param_type item ) {
+	//! Attempts to push \a item to the front of the buffer and waits for an availability. Returns success as true or false.
+	bool pushFront( param_type item ) {
 		// param_type represents the "best" way to pass a parameter of type value_type to a method
 		std::unique_lock<std::mutex> lock( mMutex );
 		while( ! is_not_full_impl() && ! mCanceled ) {
 			mNotFullCond.wait( lock );
 		}
 		if( mCanceled )
-			return;
+			return false;
 		mContainer.push_front( item );
 		++mNumUnread;
 		mNotEmptyCond.notify_one();
+		return true;
 	}
 
-	void popBack(value_type* pItem) {
+	//! Attempts to pop an item from the back of the buffer and waits for an availability. Returns success as true or false.
+	bool popBack(value_type* pItem) {
 		std::unique_lock<std::mutex> lock( mMutex );
 		while( ! is_not_empty_impl() && ! mCanceled ) {
 			mNotEmptyCond.wait( lock );
 		}
 		if( mCanceled )
-			return;
+			return false;
 		*pItem = mContainer[--mNumUnread];
 		mNotFullCond.notify_one();
+		return true;
 	}
 
 	//! Attempts to push \a item to the front of the buffer, but does not wait for an availability. Returns success as true or false.
@@ -99,11 +103,19 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		return is_not_full_impl();
 	}
 	
+	//! Signals all threads that are waiting to push to or pop from the queue.
 	void cancel() {
 		std::lock_guard<std::mutex> lock( mMutex );
 		mCanceled = true;
 		mNotFullCond.notify_all();
 		mNotEmptyCond.notify_all();
+	}
+
+	//! Allows the buffer to be used again after it was cancelled.
+	void reinstate()
+	{
+		std::lock_guard<std::mutex> lock( mMutex );
+		mCanceled = false;
 	}
 	
 	//! Returns the number of items the buffer can hold
