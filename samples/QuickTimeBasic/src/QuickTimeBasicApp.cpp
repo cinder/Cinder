@@ -3,11 +3,11 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
-#if defined( CINDER_ANDROID )
-	#include "cinder/android/video/MovieGl.h"
-#else
+//#if defined( CINDER_ANDROID )
+//	#include "cinder/android/video/MovieGl.h"
+//#else
 	#include "cinder/qtime/QuickTimeGl.h"
-#endif
+//#endif
 
 using namespace ci;
 using namespace ci::app;
@@ -34,7 +34,7 @@ class QuickTimeSampleApp : public App {
 
 void QuickTimeSampleApp::setup()
 {
-#if defined( CINDER_ANDROID )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	fs::path moviePath = getAssetPath( "bbb.mp4" );
 #else
 	fs::path moviePath = getOpenFilePath();
