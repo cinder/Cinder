@@ -33,6 +33,8 @@
 	#include "cinder/qtime/QuickTimeGlImplAvf.h"
 #elif defined( CINDER_ANDROID )
 	#include "cinder/android/MovieGl.h" 
+#elif defined( CINDER_LINUX ) 
+	#include "cinder/linux/Movie.h" 
 #else
 	// QuickTime is not supported on 10.7 64-bit or Windows 64-bit
 #endif

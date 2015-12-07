@@ -3,6 +3,8 @@
 #include "cinder/gl/gl.h"
 #include "MovieBase.h"
 
+#include <iomanip>
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -17,11 +19,15 @@ class CinderGStreamerApp : public App {
 	void draw() override;
     std::vector<string> movies;
     MovieGlRef movie;
+	ci::Font	mFont;
 };
 
 void CinderGStreamerApp::setup()
 {
-    movie = MovieGl::create( "http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov" );
+	mFont = ci::Font( "Droid Sans", 30.0f );
+
+    //movie = MovieGl::create( "http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov" );
+    movie = MovieGl::create( "/home/hai/Downloads/big_buck_bunny_1080p_h264.mov" );
     movie->play();
     movie->setLoop( true);
 }
@@ -86,6 +92,11 @@ void CinderGStreamerApp::draw()
             gl::draw( videoSurface, centeredRect );
         }
     }
+
+	gl::color( Color( 1, 1, 1 ) );
+	std::stringstream ss;
+	ss << "FPS: " << std::setprecision( 2 ) << getAverageFps();
+	gl::drawString( ss.str(), vec2( 5, 30 ), Color( 1, 1, 1 ), mFont ); 
 }
 
 CINDER_APP( CinderGStreamerApp, RendererGl )
