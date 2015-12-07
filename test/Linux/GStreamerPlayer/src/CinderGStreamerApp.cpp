@@ -26,8 +26,7 @@ void CinderGStreamerApp::setup()
 {
 	mFont = ci::Font( "Droid Sans", 30.0f );
 
-    //movie = MovieGl::create( "http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov" );
-    movie = MovieGl::create( "/home/hai/Downloads/big_buck_bunny_1080p_h264.mov" );
+    movie = MovieGl::create( "http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov" );
     movie->play();
     movie->setLoop( true);
 }
