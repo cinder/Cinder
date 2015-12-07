@@ -12,7 +12,7 @@ get_filename_component( INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include" ABSOLUT
 
 if( NOT TARGET cinder${CINDER_LIB_SUFFIX} )
     find_package( cinder REQUIRED
-        PATHS ${PROJECT_SOURCE_DIR}/../../../../linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX}
+        PATHS ${CINDER_DIR}/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX}
         $ENV{Cinder_DIR}/linux/${CMAKE_BUILD_TYPE}/${CINDER_OUT_DIR_PREFIX}
     )
 endif()
