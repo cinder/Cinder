@@ -926,25 +926,24 @@ void GstPlayer::setLoop( bool loop, bool palindrome )
 	mGstData.mPalindrome = palindrome;
 }
 
-void GstPlayer::setRate( float rate )
+bool GstPlayer::setRate( float rate )
 {
-	if( rate == getRate() ) return; // Avoid unnecessary rate change;
+	if( rate == getRate() ) return true; // Avoid unnecessary rate change;
 	// A rate equal to 0 is not valid and has to be handled by pausing the pipeline.
 	if( rate == 0 ){
-		setPipelineState(GST_STATE_PAUSED);
-		return;
+		return setPipelineState(GST_STATE_PAUSED);
 	}
 	
 	if( rate < 0 && isStream() ) {
 		g_print( "No reverse playback supported for streams!\n " );
-		return;
+		return false;
 	}
 	
 	mGstData.mRate = rate;
 	// We need the position in case we have switched
 	// to reverse playeback i.e rate < 0
 	gint64 timeToSeek = getPositionNanos();
-	sendSeekEvent( timeToSeek );
+	return sendSeekEvent( timeToSeek );
 }
 
 float GstPlayer::getRate() const

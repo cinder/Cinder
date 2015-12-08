@@ -119,7 +119,7 @@ namespace gst { namespace video {
 		bool 					isLiveSource() const;
 		int  					stride() const;
 		void 					setLoop( bool loop = true, bool palindrome = false );
-		void 					setRate( float rate );
+		bool 					setRate( float rate );
 		
 		float 					getRate() const;
 		

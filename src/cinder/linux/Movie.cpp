@@ -152,10 +152,7 @@ bool MovieBase::stepBackward()
 
 bool MovieBase::setRate( float rate )
 {
-	mGstPlayer->setRate( rate );
-
-	// @TOD: Fix this!
-	return true;
+	return mGstPlayer->setRate( rate );
 }
 
 void MovieBase::setVolume( float volume )
