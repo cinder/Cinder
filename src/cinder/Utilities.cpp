@@ -162,23 +162,5 @@ void swapEndianBlock( float *blockPtr, size_t blockSizeInBytes )
 	}
 }
 
-//! Reinterpret a float as an unsigned 32-bit integer.
-uint32_t asInt( float a )
-{
-	uint32_t b;
-	char* aPointer = (char*)&a, *bPointer = (char*)&b;
-	memcpy( bPointer, aPointer, sizeof( a ) );
-	return b;
-}
-
-//! Reinterpret an unsigned 32-bit integer as a float.
-float asFloat( uint32_t a )
-{
-	float b;
-	char* aPointer = (char*)&a, *bPointer = (char*)&b;
-	memcpy( bPointer, aPointer, sizeof( a ) );
-	return b;
-}
-
 } // namespace cinder
 
