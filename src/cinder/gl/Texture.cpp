@@ -697,7 +697,8 @@ TextureBase::Format::Format( GLenum target, GLuint textureId )
 	mMipmappingSpecified = true;
 	glGetTexParameterIuiv( mTarget, GL_TEXTURE_BASE_LEVEL, &mBaseMipmapLevel );
 	glGetTexParameterIiv( mTarget, GL_TEXTURE_MAX_LEVEL, (GLint*)&mMaxMipmapLevel );
-	if( mMaxMipmapLevel == requiredMipLevels( w, h, d ) - 1 ) mMaxMipmapLevel = -1;
+	if( mMaxMipmapLevel == requiredMipLevels( w, h, d ) - 1 )
+		mMaxMipmapLevel = -1;
 	glGetTexParameterfv( mTarget, GL_TEXTURE_BORDER_COLOR, (GLfloat*)mBorderColor.data() );
 	if( mBorderColor[0] < 0.0f || mBorderColor[0] > 1.0f || ! isnormal( mBorderColor[0] ) ||
 		mBorderColor[1] < 0.0f || mBorderColor[1] > 1.0f || ! isnormal( mBorderColor[1] ) ||
