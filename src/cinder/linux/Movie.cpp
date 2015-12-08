@@ -82,8 +82,12 @@ float MovieBase::getPixelAspectRatio() const
 
 bool MovieBase::checkPlaythroughOk()
 {
-	// @TODO: Fix me!
-	return false;
+    bool playThroughOk = false;
+
+    if( mGstPlayer->isLoaded() && !mGstPlayer->isBuffering() ) {
+        playThroughOk = true;
+    }
+	return playThroughOk;
 }
 
 int32_t MovieBase::getNumFrames()
