@@ -1289,7 +1289,7 @@ void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 		mGstData.mWidth = mVideoInfo.width;
 		mGstData.mHeight = mVideoInfo.height;
 		mGstData.mVideoFormat = mVideoInfo.finfo->format;
-        mGstData.mFrameRate = mVideoInfo.fps_n/mVideoInfo.fps_d;
+        mGstData.mFrameRate = (float)mVideoInfo.fps_n / (float)mVideoInfo.fps_d;
 		/*std::cout << " FORMAT : " << mVideoInfo.finfo->name;
 		std::cout << " WIDTH : " << mGstData.mWidth;
 		std::cout << " HEIGHT : " << mGstData.mHeight;
