@@ -78,6 +78,16 @@ void MovieBase::initFromPath( const fs::path& filePath )
 	init();
 }
 
+int32_t MovieBase::getWidth() const
+{
+    return mGstPlayer->width();
+}
+
+int32_t MovieBase::getHeight() const
+{
+    return mGstPlayer->height();
+}
+
 float MovieBase::getPixelAspectRatio() const
 {
 	// @TODO: Fix me!
@@ -115,7 +125,7 @@ float MovieBase::getDuration() const
 
 float MovieBase::getFramerate() const
 {
-    mGstPlayer->getFramerate();
+    return mGstPlayer->getFramerate();
 }
 
 int32_t MovieBase::getNumFrames()

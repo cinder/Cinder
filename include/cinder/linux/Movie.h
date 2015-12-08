@@ -47,9 +47,9 @@ class MovieBase {
 	virtual		~MovieBase();
 	
 	//! Returns the width of the movie in pixels
-	int32_t		getWidth() const { return mWidth; }
+	int32_t		getWidth() const; 
 	//! Returns the height of the movie in pixels
-	int32_t		getHeight() const { return mHeight; }
+	int32_t		getHeight() const; 
 	//! Returns the size of the movie in pixels
 	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }	
 	//! Returns the movie's aspect ratio, the ratio of its width to its height
