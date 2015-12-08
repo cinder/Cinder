@@ -80,6 +80,7 @@ namespace gst { namespace video {
 		std::atomic<float> 			mRate;
 		std::atomic<bool> 			mIsStream;
 		std::atomic<bool> 			mHasAudio;
+		std::atomic<float> 			mFrameRate;
 
 		GstGLContext* mCinderContext = nullptr;
 		GstGLDisplay* mCinderDisplay = nullptr;
@@ -131,7 +132,10 @@ namespace gst { namespace video {
 		float 					getPositionSeconds();
 		gint64 					getDurationNanos();
 		float 					getDurationSeconds();
+        float                   getFramerate() const;
 		
+        bool                    hasAudio() const;
+
 		void 					setVolume( float targetVolume );
 		float 					getVolume();
 		

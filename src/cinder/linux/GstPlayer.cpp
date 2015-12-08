@@ -37,7 +37,8 @@ GstData::GstData()
 	  mPalindrome( false ),
 	  mRate( 1.0f ),
 	  mIsStream( false ),
-	  mHasAudio( false )
+	  mHasAudio( false ),
+      mFrameRate(-1.0f)
 {
 }
 
@@ -834,6 +835,16 @@ GstVideoFormat GstPlayer::format() const
 	return mGstData.mVideoFormat;
 }
 
+float GstPlayer::getFramerate() const
+{
+    return mGstData.mFrameRate;
+}
+
+bool GstPlayer::hasAudio() const
+{
+    return mGstData.mHasAudio;
+}
+
 gint64 GstPlayer::getDurationNanos()
 {
 	if( !mGstPipeline ) return -1;
@@ -1278,6 +1289,8 @@ void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 		mGstData.mWidth = mVideoInfo.width;
 		mGstData.mHeight = mVideoInfo.height;
 		mGstData.mVideoFormat = mVideoInfo.finfo->format;
+        mGstData.mFrameRate = mVideoInfo.fps_n/mVideoInfo.fps_d;
+        std::cout << " NOM "<< mVideoInfo.fps_n << " DENOM : " << mVideoInfo.fps_d <<std::endl;
 		/*std::cout << " FORMAT : " << mVideoInfo.finfo->name;
 		std::cout << " WIDTH : " << mGstData.mWidth;
 		std::cout << " HEIGHT : " << mGstData.mHeight;
