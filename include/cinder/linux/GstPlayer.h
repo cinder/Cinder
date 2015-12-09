@@ -75,6 +75,7 @@ namespace gst { namespace video {
 		std::atomic<float> 			mRate;
 		std::atomic<bool> 			mIsStream;
 		std::atomic<bool> 			mHasAudio;
+		std::atomic<float> 			mFrameRate;
 
 		GstGLContext* mCinderContext = nullptr;
 		GstGLDisplay* mCinderDisplay = nullptr;
@@ -114,7 +115,7 @@ namespace gst { namespace video {
 		bool 					isLiveSource() const;
 		int  					stride() const;
 		void 					setLoop( bool loop = true, bool palindrome = false );
-		void 					setRate( float rate );
+		bool 					setRate( float rate );
 		
 		float 					getRate() const;
 		
@@ -126,7 +127,10 @@ namespace gst { namespace video {
 		float 					getPositionSeconds();
 		gint64 					getDurationNanos();
 		float 					getDurationSeconds();
+        float                   getFramerate() const;
 		
+        bool                    hasAudio() const;
+
 		void 					setVolume( float targetVolume );
 		float 					getVolume();
 		
