@@ -1351,20 +1351,23 @@ void Icosphere::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Tetrahedron
-float Tetrahedron::sPositions[4*3] = { 
-    1.0f, 1.0f, 1.0f,    -1.0f, 1.0f, -1.0f,   1.0f, -1.0f, -1.0f,    -1.0f, -1.0f, 1.0f };
+float Tetrahedron::sPositions[4 * 3] = {
+	1.0f, 1.0f, 1.0f,
+   -1.0f, 1.0f,-1.0f,
+	1.0f,-1.0f,-1.0f,
+   -1.0f,-1.0f, 1.0f };
 
 float Tetrahedron::sTexCoords[12 * 2] = {
+	0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
     0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
     0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f};
+    0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f };
 
 uint32_t Tetrahedron::sIndices[12] = {
     1, 2, 3,
     0, 3, 2,
     0, 1, 3,
-    0, 2, 1};
+    0, 2, 1 };
 
 Tetrahedron::Tetrahedron()
     : mHasColors( false )
@@ -1389,7 +1392,7 @@ void Tetrahedron::calculate( vector<vec3> *positions, vector<vec3> *normals, vec
     texcoords->reserve( 12 );
     indices->reserve( 12 );
 
-    for (size_t i = 0; i < 12; ++i) {
+    for( size_t i = 0; i < 12; ++i ) {
         positions->emplace_back( *reinterpret_cast<const vec3*>(&sPositions[sIndices[i]*3]) );
         texcoords->emplace_back( *reinterpret_cast<const vec2*>(&sTexCoords[i*2]) );
         indices->push_back( (uint32_t)i );
@@ -1414,7 +1417,7 @@ void Tetrahedron::calculate( vector<vec3> *positions, vector<vec3> *normals, vec
 
     // color
     size_t numPositions = positions->size();
-    for (size_t i = 0; i < numPositions; ++i)
+    for( size_t i = 0; i < numPositions; ++i )
         colors->emplace_back( (*positions)[i] * 0.5f + vec3( 0.5f ) );
 }
 
@@ -1455,11 +1458,11 @@ void Tetrahedron::loadInto( Target *target, const AttribSet &requestedAttribs ) 
 // Octahedron
 float Octahedron::sPositions[6 * 3] = {
     1.0f, 0.0f, 0.0f,
-    -1.0f, 0.0f, 0.0f,
+   -1.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
-    0.0f, -1.0f, 0.0f,
+    0.0f,-1.0f, 0.0f,
     0.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, -1.0f };
+    0.0f, 0.0f,-1.0f };
 
 float Octahedron::sTexCoords[24 * 2] = {
     1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
@@ -1477,9 +1480,8 @@ uint32_t Octahedron::sIndices[24] = {
     3, 5, 0,
     5, 3, 1 };
 
-
 Octahedron::Octahedron()
-    : mHasColors(false)
+    : mHasColors( false )
 {
 }
 
@@ -1493,23 +1495,23 @@ size_t Octahedron::getNumIndices() const
     return 24;
 }
 
-void Octahedron::calculate(vector<vec3> *positions, vector<vec3> *normals, vector<vec3> *colors, vector<vec2> *texcoords, vector<uint32_t> *indices) const
+void Octahedron::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<vec3> *colors, vector<vec2> *texcoords, vector<uint32_t> *indices ) const
 {
-    positions->reserve(24);
-    normals->resize(24); // needs to be resize rather than reserve
-    colors->reserve(24);
-    texcoords->reserve(24);
-    indices->reserve(24);
+    positions->reserve( 24 );
+    normals->resize( 24 ); // needs to be resize rather than reserve
+    colors->reserve( 24 );
+    texcoords->reserve( 24 );
+    indices->reserve( 24 );
 
-    for (size_t i = 0; i < 24; ++i) {
-        positions->emplace_back(*reinterpret_cast<const vec3*>(&sPositions[sIndices[i] * 3]));
-        texcoords->emplace_back(*reinterpret_cast<const vec2*>(&sTexCoords[i * 2]));
-        indices->push_back((uint32_t)i);
+    for ( size_t i = 0; i < 24; ++i ) {
+        positions->emplace_back( *reinterpret_cast<const vec3*>(&sPositions[sIndices[i] * 3]) );
+        texcoords->emplace_back( *reinterpret_cast<const vec2*>(&sTexCoords[i * 2]) );
+        indices->push_back( (uint32_t)i );
     }
 
     // calculate the face normal for each triangle
     size_t numTriangles = indices->size() / 3;
-    for (size_t i = 0; i < numTriangles; ++i) {
+    for( size_t i = 0; i < numTriangles; ++i ) {
         const uint32_t index0 = (*indices)[i * 3 + 0];
         const uint32_t index1 = (*indices)[i * 3 + 1];
         const uint32_t index2 = (*indices)[i * 3 + 2];
@@ -1521,18 +1523,18 @@ void Octahedron::calculate(vector<vec3> *positions, vector<vec3> *normals, vecto
         vec3 e0 = v1 - v0;
         vec3 e1 = v2 - v0;
 
-        (*normals)[index0] = (*normals)[index1] = (*normals)[index2] = normalize(cross(e0, e1));
+        (*normals)[index0] = (*normals)[index1] = (*normals)[index2] = normalize( cross( e0, e1 ) );
     }
 
     // color
     size_t numPositions = positions->size();
-    for (size_t i = 0; i < numPositions; ++i)
-        colors->emplace_back((*positions)[i] * 0.5f + vec3(0.5f));
+    for( size_t i = 0; i < numPositions; ++i )
+        colors->emplace_back( (*positions)[i] * 0.5f + vec3( 0.5f ) );
 }
 
-uint8_t	Octahedron::getAttribDims(Attrib attr) const
+uint8_t	Octahedron::getAttribDims( Attrib attr ) const
 {
-    switch (attr) {
+    switch( attr ) {
     case Attrib::POSITION: return 3;
     case Attrib::NORMAL: return 3;
     case Attrib::COLOR: return mHasColors ? 3 : 0;
@@ -1547,22 +1549,21 @@ AttribSet Octahedron::getAvailableAttribs() const
     return{ Attrib::POSITION, Attrib::NORMAL, Attrib::COLOR, Attrib::TEX_COORD_0 };
 }
 
-void Octahedron::loadInto(Target *target, const AttribSet &requestedAttribs) const
+void Octahedron::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
     vector<vec3> positions, normals, colors;
     vector<vec2> texcoords;
     vector<uint32_t> indices;
 
-    calculate(&positions, &normals, &colors, &texcoords, &indices);
+    calculate( &positions, &normals, &colors, &texcoords, &indices );
 
-    target->copyAttrib(Attrib::POSITION, 3, 0, value_ptr(*positions.data()), positions.size());
-    target->copyAttrib(Attrib::NORMAL, 3, 0, value_ptr(*normals.data()), normals.size());
-    target->copyAttrib(Attrib::COLOR, 3, 0, value_ptr(*colors.data()), colors.size());
-    target->copyAttrib(Attrib::TEX_COORD_0, 2, 0, value_ptr(*texcoords.data()), texcoords.size());
+    target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+    target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+    target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+    target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texcoords.data() ), texcoords.size() );
 
-    target->copyIndices(Primitive::TRIANGLES, indices.data(), indices.size(), 1);
+    target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 1 );
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Dodecahedron
@@ -1571,26 +1572,26 @@ void Octahedron::loadInto(Target *target, const AttribSet &requestedAttribs) con
 #define PHI2 0.618033
 
 float Dodecahedron::sPositions[20 * 3] = {
-    0, PHI2, PHI,
+    0, PHI2,  PHI,
     0, PHI2, -PHI,
-    0, -PHI2, PHI,
-    0, -PHI2, -PHI,
-    PHI, 0, PHI2,
-    PHI, 0, -PHI2,
-    -PHI, 0, PHI2,
-    -PHI, 0, -PHI2,
-    PHI2, PHI, 0,
-    PHI2, -PHI, 0,
-    -PHI2, PHI, 0,
-    -PHI2, -PHI, 0,
-    1, 1, 1,
-    1, 1, -1,
-    1, -1, 1,
-    1, -1, -1,
-    -1, 1, 1,
-    -1, 1, -1,
-    -1, -1, 1,
-    -1, -1, -1 };
+    0,-PHI2,  PHI,
+    0,-PHI2, -PHI,
+  PHI,    0, PHI2,
+  PHI,    0,-PHI2,
+ -PHI,    0, PHI2,
+ -PHI,    0,-PHI2,
+ PHI2,  PHI,    0,
+ PHI2, -PHI,    0,
+-PHI2,  PHI,    0,
+-PHI2, -PHI,    0,
+    1,    1,    1,
+    1,    1,   -1,
+    1,   -1,    1,
+    1,   -1,   -1,
+   -1,    1,    1,
+   -1,    1,   -1,
+   -1,   -1,    1,
+   -1,   -1,   -1 };
 
 float Dodecahedron::sTexCoords[108 * 2] = {
     1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
@@ -1610,24 +1611,24 @@ float Dodecahedron::sTexCoords[108 * 2] = {
     1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
     1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
     1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+    1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
 
 uint32_t Dodecahedron::sIndices[108] = {
-    0, 12, 8, 0, 8, 10, 0, 10, 16,
+    0, 12, 8, 0, 8,10, 0,10, 16,
     4, 12, 0, 4, 0, 2, 4, 2, 14,
-    2, 18, 11, 2, 11, 9, 2, 9, 14,
+    2, 18,11, 2,11, 9, 2, 9, 14,
     6, 18, 2, 6, 2, 0, 6, 0, 16,
     8, 12, 4, 8, 4, 5, 8, 5, 13,
-    1, 17, 10, 1, 10, 8, 1, 8, 13,
+    1, 17,10, 1,10, 8, 1, 8, 13,
     7, 17, 1, 7, 1, 3, 7, 3, 19,
-    3, 15, 9, 3, 9, 11, 3, 11, 19,
+    3, 15, 9, 3, 9,11, 3,11, 19,
     5, 15, 3, 5, 3, 1, 5, 1, 13,
     9, 15, 5, 9, 5, 4, 9, 4, 14,
-    11, 18, 6, 11, 6, 7, 11, 7, 19,
-    10, 17, 7, 10, 7, 6, 10, 6, 16 };
+    11,18, 6,11, 6, 7,11, 7, 19,
+    10,17, 7,10, 7, 6,10, 6, 16 };
 
 Dodecahedron::Dodecahedron()
-    : mHasColors(false)
+    : mHasColors( false )
 {
 }
 
@@ -1641,26 +1642,26 @@ size_t Dodecahedron::getNumIndices() const
     return 108;
 }
 
-void Dodecahedron::calculate(vector<vec3> *positions, vector<vec3> *normals, vector<vec3> *colors, vector<vec2> *texcoords, vector<uint32_t> *indices) const
+void Dodecahedron::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<vec3> *colors, vector<vec2> *texcoords, vector<uint32_t> *indices ) const
 {
-    positions->reserve(108);
-    normals->resize(108); // needs to be resize rather than reserve
-    colors->reserve(108);
-    texcoords->reserve(108);
-    indices->reserve(108);
+    positions->reserve( 108 );
+    normals->resize( 108 ); // needs to be resize rather than reserve
+    colors->reserve( 108 );
+    texcoords->reserve( 108 );
+    indices->reserve( 108 );
 
-    for (size_t i = 0; i < 108; ++i) {
-        positions->emplace_back(*reinterpret_cast<const vec3*>(&sPositions[sIndices[i] * 3]));
-        texcoords->emplace_back(*reinterpret_cast<const vec2*>(&sTexCoords[i * 2]));
-        indices->push_back((uint32_t)i);
+    for( size_t i = 0; i < 108; ++i ) {
+        positions->emplace_back( *reinterpret_cast<const vec3*>(&sPositions[sIndices[i] * 3]) );
+        texcoords->emplace_back( *reinterpret_cast<const vec2*>(&sTexCoords[i * 2]) );
+        indices->push_back( (uint32_t)i );
     }
 
     // calculate the face normal for each triangle
     size_t numTriangles = indices->size() / 3;
-    for (size_t i = 0; i < numTriangles; ++i) {
-        const uint32_t index0 = (*indices)[i * 3 + 0];
-        const uint32_t index1 = (*indices)[i * 3 + 1];
-        const uint32_t index2 = (*indices)[i * 3 + 2];
+    for( size_t i = 0; i < numTriangles; ++i ) {
+        const uint32_t index0 = (*indices)[i*3+0];
+        const uint32_t index1 = (*indices)[i*3+1];
+        const uint32_t index2 = (*indices)[i*3+2];
 
         const vec3 &v0 = (*positions)[index0];
         const vec3 &v1 = (*positions)[index1];
@@ -1669,18 +1670,18 @@ void Dodecahedron::calculate(vector<vec3> *positions, vector<vec3> *normals, vec
         vec3 e0 = v1 - v0;
         vec3 e1 = v2 - v0;
 
-        (*normals)[index0] = (*normals)[index1] = (*normals)[index2] = normalize(cross(e0, e1));
+        (*normals)[index0] = (*normals)[index1] = (*normals)[index2] = normalize( cross( e0, e1 ) );
     }
 
     // color
     size_t numPositions = positions->size();
-    for (size_t i = 0; i < numPositions; ++i)
-        colors->emplace_back((*positions)[i] * 0.5f + vec3(0.5f));
+    for( size_t i = 0; i < numPositions; ++i )
+        colors->emplace_back( (*positions)[i] * 0.5f + vec3( 0.5f ) );
 }
 
-uint8_t	Dodecahedron::getAttribDims(Attrib attr) const
+uint8_t	Dodecahedron::getAttribDims( Attrib attr ) const
 {
-    switch (attr) {
+    switch( attr ) {
     case Attrib::POSITION: return 3;
     case Attrib::NORMAL: return 3;
     case Attrib::COLOR: return mHasColors ? 3 : 0;
@@ -1695,20 +1696,20 @@ AttribSet Dodecahedron::getAvailableAttribs() const
     return{ Attrib::POSITION, Attrib::NORMAL, Attrib::COLOR, Attrib::TEX_COORD_0 };
 }
 
-void Dodecahedron::loadInto(Target *target, const AttribSet &requestedAttribs) const
+void Dodecahedron::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
     vector<vec3> positions, normals, colors;
     vector<vec2> texcoords;
     vector<uint32_t> indices;
 
-    calculate(&positions, &normals, &colors, &texcoords, &indices);
+    calculate( &positions, &normals, &colors, &texcoords, &indices );
 
-    target->copyAttrib(Attrib::POSITION, 3, 0, value_ptr(*positions.data()), positions.size());
-    target->copyAttrib(Attrib::NORMAL, 3, 0, value_ptr(*normals.data()), normals.size());
-    target->copyAttrib(Attrib::COLOR, 3, 0, value_ptr(*colors.data()), colors.size());
-    target->copyAttrib(Attrib::TEX_COORD_0, 2, 0, value_ptr(*texcoords.data()), texcoords.size());
+    target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+    target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+    target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+    target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texcoords.data() ), texcoords.size() );
 
-    target->copyIndices(Primitive::TRIANGLES, indices.data(), indices.size(), 1);
+    target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 1 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
