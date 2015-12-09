@@ -19,8 +19,6 @@ if( NOT TARGET cinder${CINDER_LIB_SUFFIX} )
 endif()
 
 set( SRC_FILES
-    ${SRC_DIR}/GstPlayer.cpp
-    ${SRC_DIR}/MovieBase.cpp
     ${SRC_DIR}/CinderGStreamerApp.cpp
 )
 
