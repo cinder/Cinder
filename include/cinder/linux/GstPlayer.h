@@ -19,24 +19,35 @@
 
 #include <gst/gl/gstglconfig.h>
 
-#ifndef CINDER_LINUX_EGL_ONLY
-#ifdef GST_GL_HAVE_PLATFORM_EGL
-	#undef GST_GL_HAVE_PLATFORM_EGL
-#endif
+/*
+#if ! defined( CINDER_LINUX_EGL_ONLY )
+	#if defined( GST_GL_HAVE_PLATFORM_EGL )
+		#undef GST_GL_HAVE_PLATFORM_EGL
+	#endif
 
-#ifdef GST_GL_HAVE_GLES2
+	#if defined( GST_GL_HAVE_GLES2 )
+		#undef GST_GL_HAVE_GLES2
+	#endif
+
+	#if defined( GST_GL_HAVE_GLEGLIMAGEOES )
+		#undef GST_GL_HAVE_GLEGLIMAGEOES
+	#endif 
+#endif
+*/
+
+#if defined( CINDER_GL_ES )
+	#undef GST_GL_HAVE_OPENGL
+	#undef GST_GL_HAVE_PLATFORM_GLX
+#else // Desktop
 	#undef GST_GL_HAVE_GLES2
-#endif
-
-#ifdef GST_GL_HAVE_GLEGLIMAGEOES
+	#undef GST_GL_HAVE_PLATFORM_EGL
 	#undef GST_GL_HAVE_GLEGLIMAGEOES
-#endif 
 #endif
 
 #include <gst/gl/gstglcontext.h>
 #include <gst/gl/gstgldisplay.h>
 
-#ifdef CINDER_LINUX_EGL_ONLY
+#if defined( CINDER_LINUX_EGL_ONLY )
 	#include <gst/gl/egl/gstgldisplay_egl.h>
 #else
 	#include <gst/gl/x11/gstgldisplay_x11.h>

@@ -21,6 +21,15 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+// Quell the GL macro redefined warnings.
+#if defined( __CLANG__ )
+	#pragma diagnostic push
+	#pragma diagnostic ignored "-Wmacro-redefined"
+#else // GCC
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wmacro-redefined"	
+#endif
+
 #include "cinder/linux/Movie.h"
 #include "cinder/linux/GstPlayer.h"
 
@@ -211,6 +220,11 @@ gl::TextureRef MovieGl::getTexture()
 {
 	return mGstPlayer->getVideoTexture();
 }
-	
 
 }} // namespace cinder::linux
+
+#if defined( __CLANG__ )
+	#pragma diagnostic pop 
+#else // GCC
+	#pragma GCC diagnostic pop
+#endif

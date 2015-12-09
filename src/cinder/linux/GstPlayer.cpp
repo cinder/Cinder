@@ -1,9 +1,18 @@
+ 
+// Quell the GL macro redefined warnings.
+#if defined( __CLANG__ )
+	#pragma diagnostic push
+	#pragma diagnostic ignored "-Wmacro-redefined"
+#else // GCC
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wmacro-redefined"	
+#endif
+
 #include "cinder/linux/GstPlayer.h"
 
-#if ! defined( CINDER_LINUX_EGL_ONLY )
+#if ! defined( CINDER_LINUX_ONLY )
+	// These files will include a glfw_config.h that's custom to Cinder.
 	#include "glfw/glfw3.h"
-	#define GLFW_EXPOSE_NATIVE_X11
-	#define GLFW_EXPOSE_NATIVE_GLX
 	#include "glfw/glfw3native.h"
 #endif
 
@@ -558,7 +567,11 @@ void GstPlayer::initializeGstGL()
 	mGstData.mCinderContext= gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)_platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
 #else
 	mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
+  #if defined( CINDER_GL_ES )
+	mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetEGLContext( _platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_GLES2 );
+  #else
 	mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetGLXContext( _platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
+  #endif
 #endif
 }
 
@@ -1300,3 +1313,9 @@ void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 }
 
 }} // namespace gst::video
+
+#if defined( __CLANG__ )
+	#pragma diagnostic pop 
+#else // GCC
+	#pragma GCC diagnostic pop
+#endif
