@@ -1,6 +1,0 @@
-#!/bin/bash
-if [ "$#" -eq 0 ]; then
-	../tools/linux/cbuilder -b Debug
-else
-	../tools/linux/cbuilder "$@"
-fi
