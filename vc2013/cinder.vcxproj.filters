@@ -1652,5 +1652,8 @@
     <ClInclude Include="..\include\tinyexr\tinyexr.h">
       <Filter>Header Files\tinyexr</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\msw\ScopedPtr.h">
+      <Filter>Header Files\msw</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

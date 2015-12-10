@@ -761,6 +761,7 @@
     <ClInclude Include="..\include\cinder\Matrix22.h" />
     <ClInclude Include="..\include\cinder\Matrix33.h" />
     <ClInclude Include="..\include\cinder\Matrix44.h" />
+    <ClInclude Include="..\include\cinder\msw\ScopedPtr.h" />
     <ClInclude Include="..\include\cinder\Plane.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />

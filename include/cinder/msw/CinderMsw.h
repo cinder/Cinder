@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -27,13 +29,75 @@
 #include "cinder/Surface.h"
 #include "cinder/Stream.h"
 
+#include "cinder/Log.h"
+
 #include <string>
 #include <windows.h>
+#include <comdef.h> // for _com_error
 #include <Objidl.h>
 #undef min
 #undef max
 
 namespace cinder { namespace msw {
+
+#ifndef LOWORD
+#define LOWORD(_dw)     ((WORD)(((DWORD_PTR)(_dw)) & 0xffff))
+#endif // !LOWORD
+
+#ifndef HIWORD
+#define HIWORD(_dw)     ((WORD)((((DWORD_PTR)(_dw)) >> 16) & 0xffff))
+#endif // !HIWORD
+
+#ifndef LODWORD
+#define LODWORD(_qw)    ((DWORD)(_qw))
+#endif // !LODWORD
+
+#ifndef HIDWORD
+#define HIDWORD(_qw)    ((DWORD)(((_qw) >> 32) & 0xffffffff))
+#endif // !HIDWORD
+
+#ifndef HRESULT_STRING
+#define HRESULT_STRING(hr)            ci::msw::toUtf8String(std::wstring((const wchar_t*)_com_error(hr).ErrorMessage()))
+#endif // !HRESULT_STRING
+
+#ifndef ERROR_STRING
+#define ERROR_STRING(err)             HRESULT_STRING( HRESULT_FROM_WIN32( err ) )
+#endif // !ERROR_STRING
+
+#ifndef BREAK_ON_FAIL
+#define BREAK_ON_FAIL(value)          if( FAILED( value ) ) { break; }
+#endif // !BREAK_ON_FAIL
+
+#ifndef BREAK_ON_FAIL_MSG
+#define BREAK_ON_FAIL_MSG(value, msg) if( FAILED( value ) ) { CI_LOG_E(msg << " (" << HRESULT_STRING(hr) << ")"); break; }
+#endif // !BREAK_ON_FAIL_MSG
+
+#ifndef BREAK_ON_NULL
+#define BREAK_ON_NULL(value, result)  if( value == NULL ) { hr = result; break; }
+#endif // !BREAK_ON_NULL
+
+#ifndef BREAK_ON_NULL_MSG
+#define BREAK_ON_NULL_MSG(value, result, msg)  if( value == NULL ) { hr = result; CI_LOG_E(msg << " (" << HRESULT_STRING(hr) << ")"); break; }
+#endif // !BREAK_ON_NULL_MSG
+
+#ifndef BREAK_IF_TRUE
+#define BREAK_IF_TRUE(test, result)  if( (test) ) { hr = result; break; }
+#endif // !BREAK_IF_TRUE
+
+#ifndef BREAK_IF_TRUE_MSG
+#define BREAK_IF_TRUE_MSG(test, result, msg)  if( (test) ) { hr = result; CI_LOG_E(msg); break; }
+#endif // !BREAK_IF_TRUE_MSG
+
+#ifndef BREAK_IF_FALSE
+#define BREAK_IF_FALSE(test, result)  if( !(test) ) { hr = result; break; }
+#endif // !BREAK_IF_FALSE
+
+#ifndef BREAK_IF_FALSE_MSG
+#define BREAK_IF_FALSE_MSG(test, result, msg)  if( !(test) ) { hr = result; CI_LOG_E(msg); break; }
+#endif // !BREAK_IF_FALSE_MSG
+
+#undef COMPILE_ASSERT
+#define COMPILE_ASSERT(expr, msg)     static_assert(expr, #msg)
 
 /** Converts a Win32 HBITMAP to a cinder::Surface8u
 	\note Currently always copies the alpha channel **/
@@ -49,6 +113,58 @@ std::string toUtf8String( const std::wstring &wideString );
 inline vec2 toVec2( const ::POINTFX &p )
 { return vec2( ( (p.x.value << 16) | p.x.fract ) / 65535.0f, ( (p.y.value << 16) | p.y.fract ) / 65535.0f ); }
 #endif
+
+//! Closes a handle if not NULL, and sets the handle to NULL.
+inline void SafeCloseHandle( HANDLE& h )
+{
+	if( h != NULL ) {
+		CloseHandle( h );
+		h = NULL;
+	}
+}
+
+//! Deletes a pointer allocated with new.
+template <class T> inline void SafeDelete( T*& pT )
+{
+	if( pT != NULL ) {
+		delete pT;
+		pT = NULL;
+	}
+}
+
+//! Deletes a pointer to an array allocated with new[].
+template <class T> inline void SafeDeleteArray( T*& pT )
+{
+	if( pT != NULL ) {
+		delete[] pT;
+		pT = NULL;
+	}
+}
+
+//! Releases a COM pointer if the pointer is not NULL, and sets the pointer to NULL.
+template <class T> inline ULONG SafeRelease( T*& pT )
+{
+	ULONG rc = 0;
+
+	if( pT != NULL ) {
+		rc = pT->Release();
+		pT = NULL;
+	}
+
+	return rc;
+}
+
+//! Converts a value in ticks to a value in milliseconds. One tick is 100 nanoseconds.
+template <class T> inline double TicksToMilliseconds( const T& t )
+{
+	return t / 10000.0;
+}
+
+//! Converts a value in milliseconds to a value in ticks. One tick is 100 nanoseconds.
+template <class T> inline T MillisecondsToTicks( const T& t )
+{
+	return t * 10000;
+}
 
 //! A free function designed to interact with makeComShared, calls Release() on a com-managed object
 void ComDelete( void *p );
@@ -137,5 +253,88 @@ private:
 
 //! Initializes COM on this thread. Uses thread local storage to prevent multiple initializations per thread
 void initializeCom( DWORD params = COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE );
+
+//! Copies a COM pointer and takes care of proper reference counting.
+template <class T>
+void CopyComPtr( T*& dest, T* src )
+{
+	if( dest ) {
+		dest->Release();
+	}
+	dest = src;
+	if( dest ) {
+		dest->AddRef();
+	}
+}
+
+//! Compares two COM pointers and returns \c true if they are equal.
+template <class T1, class T2>
+bool AreComObjectsEqual( T1 *p1, T2 *p2 )
+{
+	if( p1 == NULL && p2 == NULL ) {
+		// Both are NULL
+		return true;
+	}
+	else if( p1 == NULL || p2 == NULL ) {
+		// One is NULL and one is not
+		return false;
+	}
+	else {
+		// Both are not NULL. Compare IUnknowns.
+		ScopedComPtr<IUnknown> pUnk1, pUnk2;
+		if( SUCCEEDED( p1->QueryInterface( IID_IUnknown, (void**)&pUnk1 ) ) ) {
+			if( SUCCEEDED( p2->QueryInterface( IID_IUnknown, (void**)&pUnk2 ) ) ) {
+				return ( pUnk1 == pUnk2 );
+			}
+		}
+	}
+
+	return false;
+}
+
+//! Warps a critical section.
+class CriticalSection {
+private:
+	CRITICAL_SECTION mCriticalSection;
+public:
+	CriticalSection()
+	{
+		::InitializeCriticalSection( &mCriticalSection );
+	}
+
+	~CriticalSection()
+	{
+		assert( mCriticalSection.LockCount == -1 );
+		::DeleteCriticalSection( &mCriticalSection );
+	}
+
+	void Lock()
+	{
+		::EnterCriticalSection( &mCriticalSection );
+	}
+
+	void Unlock()
+	{
+		assert( mCriticalSection.LockCount < -1 );
+		::LeaveCriticalSection( &mCriticalSection );
+	}
+};
+
+//! Provides automatic locking and unlocking of a critical section.
+class ScopedCriticalSection {
+private:
+	CriticalSection *mCriticalSectionPtr;
+public:
+	ScopedCriticalSection( CriticalSection& section )
+	{
+		mCriticalSectionPtr = &section;
+		mCriticalSectionPtr->Lock();
+	}
+	~ScopedCriticalSection()
+	{
+		assert( mCriticalSectionPtr != nullptr );
+		mCriticalSectionPtr->Unlock();
+	}
+};
 
 } } // namespace cinder::msw
