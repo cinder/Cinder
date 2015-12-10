@@ -40,7 +40,7 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	typedef typename boost::call_traits<value_type>::param_type param_type;
 
 	explicit ConcurrentCircularBuffer( size_type capacity )
-		: mNumUnread( 0 ), mContainer( capacity ), mCanceled( false )
+		: mNumUnread( 0 ), mNumWaitingNotEmpty( 0 ), mNumWaitingNotFull( 0 ), mContainer( capacity ), mCanceled( false )
 	{}
 
 	//! Attempts to push \a item to the front of the buffer and waits for an availability. Returns success as true or false.
@@ -48,7 +48,9 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		// param_type represents the "best" way to pass a parameter of type value_type to a method
 		std::unique_lock<std::mutex> lock( mMutex );
 		while( ! is_not_full_impl() && ! mCanceled ) {
+			mNumWaitingNotFull++;
 			mNotFullCond.wait( lock );
+			mNumWaitingNotFull--;
 		}
 		if( mCanceled )
 			return false;
@@ -62,7 +64,9 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	bool popBack(value_type* pItem) {
 		std::unique_lock<std::mutex> lock( mMutex );
 		while( ! is_not_empty_impl() && ! mCanceled ) {
+			mNumWaitingNotEmpty++;
 			mNotEmptyCond.wait( lock );
+			mNumWaitingNotEmpty--;
 		}
 		if( mCanceled )
 			return false;
@@ -79,7 +83,7 @@ class ConcurrentCircularBuffer : private Noncopyable {
 			return false;
 		mContainer.push_front( item );
 		++mNumUnread;
-		mNotEmptyCond.notify_one();	
+		mNotEmptyCond.notify_one();
 		return true;
 	}
 
@@ -105,16 +109,28 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	
 	//! Signals all threads that are waiting to push to or pop from the queue.
 	void cancel() {
-		std::lock_guard<std::mutex> lock( mMutex );
-		mCanceled = true;
-		mNotFullCond.notify_all();
-		mNotEmptyCond.notify_all();
-	}
+		do {
+			std::lock_guard<std::mutex> lock( mMutex );
+			mCanceled = true;
+			mNotFullCond.notify_all();
+			mNotEmptyCond.notify_all();
 
-	//! Allows the buffer to be used again after it was cancelled.
-	void reinstate()
-	{
-		std::lock_guard<std::mutex> lock( mMutex );
+			// Lock is released to allow other threads to cancel.
+		} while( false );
+
+		// Wait for all threads to cancel.
+		while( true ) {
+			if( std::try_lock<std::mutex>( mMutex ) == -1 ) {
+				std::lock_guard<std::mutex> lock( mMutex, std::adopt_lock );
+				if( mNumWaitingNotEmpty == 0 && mNumWaitingNotFull == 0 ) {
+					break;
+				}
+			}
+
+			// Allow other threads to run but get back here ASAP.
+			std::this_thread::sleep_for( std::chrono::milliseconds( 0 ) );
+		}
+
 		mCanceled = false;
 	}
 	
@@ -137,6 +153,10 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	std::condition_variable	mNotEmptyCond;
 	std::condition_variable	mNotFullCond;
 	bool					mCanceled;
+
+	// These don't need to be atomic, as they are also guarded by the mutex.
+	int						mNumWaitingNotEmpty;
+	int						mNumWaitingNotFull;
 };
 
 } // namespace cinder
