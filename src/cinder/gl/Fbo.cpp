@@ -358,10 +358,16 @@ void Fbo::attachAttachments()
 	
 	// attach Textures
 	for( auto &textureAttachment : mAttachmentsTexture ) {
-#if ! defined( CINDER_GL_ES )
-		glFramebufferTexture( GL_FRAMEBUFFER, textureAttachment.first, textureAttachment.second->getId(), 0 );
-#else
 		auto textureTarget = textureAttachment.second->getTarget();
+#if ! defined( CINDER_GL_ES )
+		if( textureTarget == GL_TEXTURE_CUBE_MAP ) {
+			textureTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+			glFramebufferTexture2D( GL_FRAMEBUFFER, textureAttachment.first, textureTarget, textureAttachment.second->getId(), 0 );
+		}
+		else {
+			glFramebufferTexture( GL_FRAMEBUFFER, textureAttachment.first, textureAttachment.second->getId(), 0 );
+		}
+#else
 		if( textureTarget == GL_TEXTURE_CUBE_MAP )
 			textureTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 		glFramebufferTexture2D( GL_FRAMEBUFFER, textureAttachment.first, textureTarget, textureAttachment.second->getId(), 0 );
