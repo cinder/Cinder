@@ -468,23 +468,25 @@ void GstPlayer::resetPipeline()
 	if( sUseGstGl ) {
 		mGstData.mCinderContext = nullptr;
 		mGstData.mCinderDisplay = nullptr;
-
-		// Unref-ing the pipeline takes care of all children as well
-		// except the audio branch for which we kept a reference that we need to unref explicitly.
-		mGstData.mVideoQueue = nullptr;
 		mGstData.mGLupload = nullptr;
 		mGstData.mGLcolorconvert = nullptr;
-		mGstAppSink = nullptr;
-
-		gst_object_unref( mGstData.mAudioQueue );
-		mGstData.mAudioQueue = nullptr;
-
-		gst_object_unref( mGstData.mAudioconvert );
-		mGstData.mAudioconvert = nullptr;
-
-		gst_object_unref( mGstData.mAudiosink );
-		mGstData.mAudiosink = nullptr;
+    }
+    else {
+        mGstData.mVideoconvert = nullptr;
 	}
+    // Unref-ing the pipeline takes care of all children as well
+    // except the audio branch for which we kept a reference that we need to unref explicitly.
+    mGstData.mVideoQueue = nullptr;
+    mGstAppSink = nullptr;
+
+    gst_object_unref( mGstData.mAudioQueue );
+    mGstData.mAudioQueue = nullptr;
+
+    gst_object_unref( mGstData.mAudioconvert );
+    mGstData.mAudioconvert = nullptr;
+
+    gst_object_unref( mGstData.mAudiosink );
+    mGstData.mAudiosink = nullptr;
 }
 	
 void GstPlayer::resetBus()
@@ -560,60 +562,22 @@ void GstPlayer::addBusWatch( GstElement* pipeline )
 	gst_object_unref ( mGstBus );
 }
 
-void GstPlayer::initializeGstGL()
-{
-	auto _platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataLinux>( ci::gl::context()->getPlatformData() );
-#if defined( CINDER_LINUX_EGL_ONLY )
-	mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_egl_new_with_egl_display( _platformData->mDisplay );
-	mGstData.mCinderContext= gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)_platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
-#else
-	mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
-  #if defined( CINDER_GL_ES )
-	mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetEGLContext( _platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_GLES2 );
-  #else
-	mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetGLXContext( _platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
-  #endif
-#endif
-}
-
-void GstPlayer::initializeGst()
-{
-	mGstPipeline = gst_element_factory_make( "playbin", "videoplayer" );
-	mGstAppSink = gst_element_factory_make("appsink", "videosink");
-	g_object_set( mGstAppSink, "sync", true, (void*)nullptr );
-	g_object_set( mGstAppSink, "max-buffers", 1, (void*)nullptr );
-	g_object_set( mGstAppSink, "drop", true, (void*)nullptr );
-	
-	// Forward buffers to our appsink.
-	g_object_set( mGstPipeline, "video-sink", mGstAppSink, (void*)nullptr);
-
-	addBusWatch( mGstPipeline );
-		
-	std::string videoFormats;
-	videoFormats = "format={RGBA}";
-	std::string videoType = "video/x-raw";
-	std::string capsString = videoType + "," + videoFormats;
-	
-	GstCaps* caps = gst_caps_from_string( capsString.c_str() );
-	GstAppSinkCallbacks appSinkCallbacks;
-	appSinkCallbacks.eos = onGstEos;
-	appSinkCallbacks.new_preroll = onGstPreroll;
-	appSinkCallbacks.new_sample = onGstSample;
-	
-	gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
-	gst_app_sink_set_caps( GST_APP_SINK( mGstAppSink), caps);
-	gst_caps_unref(caps);
-}
-	
 bool GstPlayer::initialize()
 {		
-	if( sUseGstGl ) {
-		initializeGstGL();
-	}
-	else {
-		initializeGst();
-	}
-
+    if( sUseGstGl ) {
+        auto _platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataLinux>( ci::gl::context()->getPlatformData() );
+#if defined( CINDER_LINUX_EGL_ONLY )
+        mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_egl_new_with_egl_display( _platformData->mDisplay );
+        mGstData.mCinderContext= gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)_platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
+#else
+        mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
+  #if defined( CINDER_GL_ES )
+        mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetEGLContext( _platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_GLES2 );
+  #else
+        mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetGLXContext( _platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
+  #endif
+#endif
+    }
 	return true;
 }
 
@@ -627,76 +591,88 @@ void GstPlayer::resetCustomPipeline()
 	}
 }
 
-void GstPlayer::constructGLPipeline()
+void GstPlayer::constructPipeline()
 {
-	if( !mGstPipeline ) {
-		std::string capsGl = "video/x-raw(memory:GLMemory), format=RGBA";
+    if( mGstPipeline ) return;
 
-		mGstPipeline 			= gst_pipeline_new( "cinder-pipeline" );
-		mGstData.mUriDecode 	= gst_element_factory_make( "uridecodebin", "uridecode" );	
-		mGstData.mVideoQueue 	= gst_element_factory_make( "queue", "videoqueue" );
-		g_object_set( mGstData.mVideoQueue, "max-size-buffers", 5, (void*)nullptr );
+    mGstPipeline 			= gst_pipeline_new( "cinder-pipeline" );
+    mGstData.mUriDecode 	= gst_element_factory_make( "uridecodebin", "uridecode" );	
+    mGstData.mVideoQueue 	= gst_element_factory_make( "queue", "videoqueue" );
+    mGstAppSink 			= gst_element_factory_make( "appsink", "videosink" );
+    mGstData.mAudioQueue    = gst_element_factory_make( "queue", "audioqueue" );
+    mGstData.mAudioconvert  = gst_element_factory_make( "audioconvert", "audioconv" );
+    mGstData.mAudiosink     = gst_element_factory_make( "autoaudiosink", "audiosink" );
 
-		mGstData.mGLupload 			= gst_element_factory_make( "glupload", "upload" );
-		mGstData.mGLcolorconvert	= gst_element_factory_make( "glcolorconvert", "convert" );
-		mGstAppSink 				= gst_element_factory_make( "appsink", "videosink" );
-		gst_app_sink_set_max_buffers( GST_APP_SINK(mGstAppSink), 1 );
-		gst_app_sink_set_drop( GST_APP_SINK(mGstAppSink), true);
-		gst_base_sink_set_qos_enabled( GST_BASE_SINK(mGstAppSink), true );
-		gst_base_sink_set_sync( GST_BASE_SINK(mGstAppSink), true );
-		gst_base_sink_set_max_lateness( GST_BASE_SINK(mGstAppSink), 20 );
+    if( ! mGstPipeline || 
+        ! mGstData.mUriDecode || 
+        ! mGstData.mVideoQueue || 
+        ! mGstAppSink || 
+        ! mGstData.mAudioQueue || 
+        ! mGstData.mAudioconvert || 
+        ! mGstData.mAudiosink ) 
+    {
+        g_printerr( "Not all elements could be created !\n" );
+    }
 
-		mGstData.mAudioQueue = gst_element_factory_make( "queue", "audioqueue" );
-		g_object_ref(mGstData.mAudioQueue); // We keep a reference on the audio elements so that we can add/remove at will.
-		g_object_set( mGstData.mAudioQueue, "max-size-buffers", 5, (void*)nullptr );
+    g_object_set( mGstData.mVideoQueue, "max-size-buffers", 5, (void*)nullptr );
 
-		mGstData.mAudioconvert = gst_element_factory_make( "audioconvert", "audioconv" );
-		g_object_ref( mGstData.mAudioconvert );
+    g_object_ref(mGstData.mAudioQueue); // We keep a reference on the audio elements so that we can add/remove at will.
+    g_object_set( mGstData.mAudioQueue, "max-size-buffers", 5, (void*)nullptr );
+    g_object_ref( mGstData.mAudioconvert );
+    g_object_ref( mGstData.mAudiosink );
 
-		mGstData.mAudiosink = gst_element_factory_make( "autoaudiosink", "audiosink" );
-		g_object_ref( mGstData.mAudiosink );
+    gst_app_sink_set_max_buffers( GST_APP_SINK(mGstAppSink), 1 );
+    gst_app_sink_set_drop( GST_APP_SINK(mGstAppSink), true);
+    gst_base_sink_set_qos_enabled( GST_BASE_SINK(mGstAppSink), true );
+    gst_base_sink_set_sync( GST_BASE_SINK(mGstAppSink), true );
+    gst_base_sink_set_max_lateness( GST_BASE_SINK(mGstAppSink), 20 );
 
-		if( ! mGstPipeline || 
-			! mGstData.mUriDecode || 
-			! mGstData.mVideoQueue || 
-			! mGstData.mGLupload || 
-			! mGstData.mGLcolorconvert || 
-			! mGstAppSink || 
-			! mGstData.mAudioQueue || 
-			! mGstData.mAudioconvert || 
-			! mGstData.mAudiosink ) 
-		{
+    // With this cb we check if we have audio or not and if yes we link the audio branch of the pipeline.
+    g_signal_connect( mGstData.mUriDecode, "pad-added", G_CALLBACK( cb_new_pad ), this );
+
+    addBusWatch( mGstPipeline );
+		
+    if( sUseGstGl ) {
+        mGstData.mGLupload 			= gst_element_factory_make( "glupload", "upload" );
+        mGstData.mGLcolorconvert	= gst_element_factory_make( "glcolorconvert", "convert" );
+		if( !mGstData.mGLupload || !mGstData.mGLcolorconvert ) {
 			g_printerr( "Not all elements could be created !\n" );
 		}
-
-		gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mUriDecode, mGstData.mVideoQueue, mGstData.mGLupload, mGstData.mGLcolorconvert, mGstAppSink, NULL );
-		if( ! gst_element_link_many( mGstData.mVideoQueue, mGstData.mGLupload, mGstData.mGLcolorconvert, mGstAppSink, nullptr ) ) {
-			g_printerr( " FAILED to LINK VIDEO elements.\n" );
+        gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mUriDecode, mGstData.mVideoQueue, mGstData.mGLupload, mGstData.mGLcolorconvert, mGstAppSink, NULL );
+        if( ! gst_element_link_many( mGstData.mVideoQueue, mGstData.mGLupload, mGstData.mGLcolorconvert, mGstAppSink, nullptr ) ) {
+            g_printerr( " FAILED to LINK VIDEO elements.\n" );
+        }
+    }
+    else {
+        mGstData.mVideoconvert      = gst_element_factory_make( "videoconvert", "convert" );
+		if( !mGstData.mVideoconvert ) {
+			g_printerr( "Not all elements could be created !\n" );
 		}
+        gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mUriDecode, mGstData.mVideoQueue, mGstData.mVideoconvert, mGstAppSink, NULL );
+        if( ! gst_element_link_many( mGstData.mVideoQueue, mGstData.mVideoconvert, mGstAppSink, nullptr ) ) {
+            g_printerr( " FAILED to LINK VIDEO elements.\n" );
+        }
+    }
 
-		GError *error = nullptr;
-		if( error != nullptr ) {
-			g_print( "Could not construct custom pipeline: %s\n", error->message );
-			g_error_free (error);
-		}
+    if( mGstAppSink ) {
+        GstAppSinkCallbacks appSinkCallbacks;
+        appSinkCallbacks.eos = onGstEos;
+        appSinkCallbacks.new_preroll = onGstPreroll;
+        appSinkCallbacks.new_sample = onGstSample;
 
-		// With this cb we check if we have audio or not and if yes we link the audio branch of the pipeline.
-		g_signal_connect( mGstData.mUriDecode, "pad-added", G_CALLBACK( cb_new_pad ), this );
-
-		addBusWatch( mGstPipeline );
-		
-		if( mGstAppSink ) {
-			GstAppSinkCallbacks appSinkCallbacks;
-			appSinkCallbacks.eos = onGstEos;
-			appSinkCallbacks.new_preroll = onGstPreroll;
-			appSinkCallbacks.new_sample = onGstSample;
-		
-			gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
-			GstCaps* caps = gst_caps_from_string( capsGl.c_str() );
-			gst_app_sink_set_caps( GST_APP_SINK( mGstAppSink), caps);
-			gst_caps_unref(caps);
-		}
-	}
+		std::string capsDescr = "video/x-raw(memory:GLMemory), format=RGBA";
+        if( sUseGstGl ) {
+            capsDescr = "video/x-raw(memory:GLMemory), format=RGBA";
+        }
+        else {
+            capsDescr = "video/x-raw, format=RGBA";
+        }
+    
+        gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
+        GstCaps* caps = gst_caps_from_string( capsDescr.c_str() );
+        gst_app_sink_set_caps( GST_APP_SINK( mGstAppSink), caps);
+        gst_caps_unref(caps);
+    }
 }
 
 void GstPlayer::load( const std::string& path )
@@ -704,14 +680,12 @@ void GstPlayer::load( const std::string& path )
 	// If we are already using a pipeline we have to reset for now.
 	if( mUsingCustomPipeline ) {
 		resetCustomPipeline();
-		if( ! sUseGstGl ) {
-			initializeGst(); // we need to recreate our default setup with appsink and playbin if we were using a custom pipeline before.
-		}
 	}
 
-	if( sUseGstGl ) {
-		constructGLPipeline();
-	}
+    // Construct and link the elements of our pipeline if this is our first run..
+    if( !mGstPipeline ) {
+        constructPipeline();
+    }
 	
 	// Prepare for (re)loading....
 	//
@@ -726,7 +700,7 @@ void GstPlayer::load( const std::string& path )
 	// that has no audio channel with the audio branch linked.
 	// The linking of the audio branch happens dynamically in the pad-added cb
 	// where we check for the presence of an audio stream.
-	if( sUseGstGl ) unlinkAudioBranch();
+	unlinkAudioBranch();
 
 	// Reset the buffers after we have reached GST_STATE_READY.
 	resetVideoBuffers();
@@ -760,12 +734,7 @@ void GstPlayer::load( const std::string& path )
 
 	// set the new movie path
 	const gchar* uri = ( ! uriPath.empty() ) ? uriPath.c_str() : path.c_str();
-	if( sUseGstGl ) {
-		g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "uridecode" ) ), "uri", uri, nullptr );
-	}
-	else {
-		g_object_set( G_OBJECT ( mGstPipeline ), "uri", uri, nullptr );
-	}
+    g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "uridecode" ) ), "uri", uri, nullptr );
 	
 	// and preroll async.
 	gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );

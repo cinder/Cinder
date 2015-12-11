@@ -83,6 +83,7 @@ namespace gst { namespace video {
 		GstElement* mUriDecode 		= nullptr;
 		GstElement* mGLupload 		= nullptr;
 		GstElement* mGLcolorconvert = nullptr;
+		GstElement* mVideoconvert   = nullptr;
 		GstElement* mAudioconvert 	= nullptr;
 		GstElement* mAudiosink 		= nullptr;
 		GstElement* mAudioQueue 	= nullptr;
@@ -149,10 +150,9 @@ namespace gst { namespace video {
 
 	private:		
 		bool 					initializeGStreamer();
-		void 					initializeGstGL();
-		void 					initializeGst();
 
 		void 					constructGLPipeline();
+        void                    constructPipeline();
 
 		void 					startGMainLoopThread();
 		void 					startGMainLoop( GMainLoop* loop );
