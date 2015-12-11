@@ -47,9 +47,9 @@ class MovieBase {
 	virtual		~MovieBase();
 	
 	//! Returns the width of the movie in pixels
-	int32_t		getWidth() const { return mWidth; }
+	int32_t		getWidth() const; 
 	//! Returns the height of the movie in pixels
-	int32_t		getHeight() const { return mHeight; }
+	int32_t		getHeight() const; 
 	//! Returns the size of the movie in pixels
 	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }	
 	//! Returns the movie's aspect ratio, the ratio of its width to its height
@@ -63,22 +63,22 @@ class MovieBase {
 	//! Returns whether the movie has loaded and buffered enough to playback without interruption
 	bool		checkPlaythroughOk();
 	//! Returns whether the movie is in a loaded state, implying its structures are ready for reading but it may not be ready for playback
-	bool		isLoaded() const { return mLoaded; }
+	bool		isLoaded() const;
 	//! Returns whether the movie is playable, implying the movie is fully formed and can be played but media data is still downloading
-	bool		isPlayable() const { return mPlayable; }
+	bool		isPlayable() const;
 	//! Returns true if the content represented by the movie is protected by DRM
 	bool		isProtected() const { return mProtected; }
 	//! Returns the movie's length measured in seconds
-	float		getDuration() const { return mDuration; }
+	float		getDuration() const;
 	//! Returns the movie's framerate measured as frames per second
-	float		getFramerate() const { return mFrameRate; }
+	float		getFramerate() const;
 	//! Returns the total number of frames (video samples) in the movie
 	int32_t		getNumFrames();
 
 	//! Returns whether a movie contains at least one visual track, defined as Video, MPEG, Sprite, QuickDraw3D, Text, or TimeCode tracks
 	bool		hasVisuals() const { return mHasVideo; }
 	//! Returns whether a movie contains at least one audio track, defined as Sound, Music, or MPEG tracks
-	bool		hasAudio() const { return mHasAudio; }
+	bool		hasAudio() const;
 	//! Returns whether the first video track in the movie contains an alpha channel. Returns false in the absence of visual media.
 	virtual bool hasAlpha() const { return false; }
 
@@ -144,11 +144,9 @@ class MovieBase {
 	
 	int32_t						mWidth, mHeight;
 	int32_t						mFrameCount;
-	float						mFrameRate;
-	float						mDuration;
-	bool						mLoaded, mPlayThroughOk, mPlayable, mProtected;
+	bool						mProtected;
 	bool						mPlayingForward, mLoop, mPalindrome;
-	bool						mHasAudio, mHasVideo;
+	bool						mHasVideo;
 	bool						mPlaying;	// required to auto-start the movie
 	
 	std::unique_ptr<gst::video::GstPlayer>	mGstPlayer;

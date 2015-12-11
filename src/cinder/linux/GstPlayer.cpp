@@ -1,9 +1,18 @@
+ 
+// Quell the GL macro redefined warnings.
+#if defined( __CLANG__ )
+	#pragma diagnostic push
+	#pragma diagnostic ignored "-Wmacro-redefined"
+#else // GCC
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wmacro-redefined"	
+#endif
+
 #include "cinder/linux/GstPlayer.h"
 
-#if ! defined( CINDER_LINUX_EGL_ONLY )
+#if ! defined( CINDER_LINUX_ONLY )
+	// These files will include a glfw_config.h that's custom to Cinder.
 	#include "glfw/glfw3.h"
-	#define GLFW_EXPOSE_NATIVE_X11
-	#define GLFW_EXPOSE_NATIVE_GLX
 	#include "glfw/glfw3native.h"
 #endif
 
@@ -37,7 +46,8 @@ GstData::GstData()
 	  mPalindrome( false ),
 	  mRate( 1.0f ),
 	  mIsStream( false ),
-	  mHasAudio( false )
+	  mHasAudio( false ),
+      mFrameRate(-1.0f)
 {
 }
 
@@ -558,7 +568,11 @@ void GstPlayer::initializeGstGL()
 	mGstData.mCinderContext= gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)_platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
 #else
 	mGstData.mCinderDisplay = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
+  #if defined( CINDER_GL_ES )
+	mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetEGLContext( _platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_GLES2 );
+  #else
 	mGstData.mCinderContext = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.mCinderDisplay, (guintptr)::glfwGetGLXContext( _platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
+  #endif
 #endif
 }
 
@@ -834,6 +848,16 @@ GstVideoFormat GstPlayer::format() const
 	return mGstData.mVideoFormat;
 }
 
+float GstPlayer::getFramerate() const
+{
+    return mGstData.mFrameRate;
+}
+
+bool GstPlayer::hasAudio() const
+{
+    return mGstData.mHasAudio;
+}
+
 gint64 GstPlayer::getDurationNanos()
 {
 	if( !mGstPipeline ) return -1;
@@ -926,25 +950,24 @@ void GstPlayer::setLoop( bool loop, bool palindrome )
 	mGstData.mPalindrome = palindrome;
 }
 
-void GstPlayer::setRate( float rate )
+bool GstPlayer::setRate( float rate )
 {
-	if( rate == getRate() ) return; // Avoid unnecessary rate change;
+	if( rate == getRate() ) return true; // Avoid unnecessary rate change;
 	// A rate equal to 0 is not valid and has to be handled by pausing the pipeline.
 	if( rate == 0 ){
-		setPipelineState(GST_STATE_PAUSED);
-		return;
+		return setPipelineState(GST_STATE_PAUSED);
 	}
 	
 	if( rate < 0 && isStream() ) {
 		g_print( "No reverse playback supported for streams!\n " );
-		return;
+		return false;
 	}
 	
 	mGstData.mRate = rate;
 	// We need the position in case we have switched
 	// to reverse playeback i.e rate < 0
 	gint64 timeToSeek = getPositionNanos();
-	sendSeekEvent( timeToSeek );
+	return sendSeekEvent( timeToSeek );
 }
 
 float GstPlayer::getRate() const
@@ -1279,6 +1302,7 @@ void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 		mGstData.mWidth = mVideoInfo.width;
 		mGstData.mHeight = mVideoInfo.height;
 		mGstData.mVideoFormat = mVideoInfo.finfo->format;
+        mGstData.mFrameRate = (float)mVideoInfo.fps_n / (float)mVideoInfo.fps_d;
 		/*std::cout << " FORMAT : " << mVideoInfo.finfo->name;
 		std::cout << " WIDTH : " << mGstData.mWidth;
 		std::cout << " HEIGHT : " << mGstData.mHeight;
@@ -1300,3 +1324,9 @@ void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 }
 
 }} // namespace gst::video
+
+#if defined( __CLANG__ )
+	#pragma diagnostic pop 
+#else // GCC
+	#pragma GCC diagnostic pop
+#endif
