@@ -55,9 +55,13 @@ void MovieBase::init()
 		return;
 	}
 
-	mWidth		= mGstPlayer->width(); 
-	mHeight		= mGstPlayer->height();
-	mDuration 	= mGstPlayer->getDurationSeconds();
+    // This here is not correct since with GStreamer in order to be 
+    // able to query video info you must be in a pre-rolled state aka GST_STATE_PAUSED so these queries here will always fail.
+    // Since loading is happening async right now ( i.e we are not waiting for the GST_STATE_PAUSED to complete which is much faster ) on the GstPlayer you have to check if isLoaded before actually requesting any video info.
+
+	//mWidth		= mGstPlayer->width(); 
+	//mHeight		= mGstPlayer->height();
+	//mDuration 	= mGstPlayer->getDurationSeconds();
 	
 }
 
@@ -83,6 +87,16 @@ void MovieBase::initFromPath( const fs::path& filePath )
 	init();
 }
 
+int32_t MovieBase::getWidth() const
+{
+    return mGstPlayer->width();
+}
+
+int32_t MovieBase::getHeight() const
+{
+    return mGstPlayer->height();
+}
+
 float MovieBase::getPixelAspectRatio() const
 {
 	// @TODO: Fix me!
@@ -91,14 +105,47 @@ float MovieBase::getPixelAspectRatio() const
 
 bool MovieBase::checkPlaythroughOk()
 {
-	// @TODO: Fix me!
-	return false;
+    bool playThroughOk = false;
+
+    if( mGstPlayer->isLoaded() && !mGstPlayer->isBuffering() ) {
+        playThroughOk = true;
+    }
+	return playThroughOk;
+}
+
+bool MovieBase::isLoaded() const
+{
+    // With GStreamer if we are loaded we can also play
+    // in contrast with qt where it seems that you can be loaded 
+    // but not ready to play.
+    return mGstPlayer->isLoaded();
+}
+
+bool MovieBase::isPlayable() const
+{
+    // Same as isLoaded()
+    return mGstPlayer->isLoaded();
+}
+
+float MovieBase::getDuration() const
+{
+    return mGstPlayer->getDurationSeconds();
+}
+
+float MovieBase::getFramerate() const
+{
+    return mGstPlayer->getFramerate();
 }
 
 int32_t MovieBase::getNumFrames()
 {
 	// @TODO: Fix me!
 	return 0;	
+}
+
+bool MovieBase::hasAudio() const
+{
+    return mGstPlayer->hasAudio();
 }
 
 bool MovieBase::checkNewFrame()
@@ -161,10 +208,7 @@ bool MovieBase::stepBackward()
 
 bool MovieBase::setRate( float rate )
 {
-	mGstPlayer->setRate( rate );
-
-	// @TOD: Fix this!
-	return true;
+	return mGstPlayer->setRate( rate );
 }
 
 void MovieBase::setVolume( float volume )
