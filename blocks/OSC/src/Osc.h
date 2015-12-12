@@ -672,9 +672,10 @@ public:
 	//! Abstract close implementation function.
 	virtual void closeImpl() = 0;
 	
-	Listeners			mListeners;
-	std::mutex			mListenerMutex, mSocketTransportErrorFnMutex;
-	PacketFramingRef	mPacketFraming;
+	Listeners				mListeners;
+	std::mutex				mListenerMutex, mSocketTransportErrorFnMutex;
+	PacketFramingRef		mPacketFraming;
+	std::set<std::string>	mDisregardedAddresses;
 };
 	
 //! Represents an OSC Receiver(called a \a client in the OSC spec) and implements the UDP transport
