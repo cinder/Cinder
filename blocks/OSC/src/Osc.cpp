@@ -1098,14 +1098,19 @@ void ReceiverBase::dispatchMethods( uint8_t *data, uint32_t size )
 	// iterate through all the messages and find matches with registered methods
 	for( auto & message : messages ) {
 		bool dispatchedOnce = false;
+		auto address = message.getAddress();
 		for( auto & listener : mListeners ) {
-			if( patternMatch( message.getAddress(), listener.first ) ) {
+			if( patternMatch( address, listener.first ) ) {
 				listener.second( message );
 				dispatchedOnce = true;
 			}
 		}
-		if( ! dispatchedOnce )
-			CI_LOG_W("Message: " << message.getAddress() << " doesn't have a listener. Disregarding.");
+		if( ! dispatchedOnce ) {
+			if( mDisregardedAddresses.count( address ) == 0 ) {
+				mDisregardedAddresses.insert( address );
+				CI_LOG_W("Message: " << address << " doesn't have a listener. Disregarding.");
+			}
+		}
 	}
 }
 	
