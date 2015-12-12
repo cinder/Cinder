@@ -40,8 +40,6 @@ public:
 	void fileDrop( FileDropEvent event ) override;
 
 private:
-	void simulate( double timestep );
-
 	void createGrid();
 	void createPhongShader();
 	void createWireShader();
@@ -136,7 +134,7 @@ GeometryApp::GeometryApp()
 
 void GeometryApp::setup()
 {
-	gl::enableVerticalSync( false );
+	gl::enableVerticalSync( true );
 
 	// Initialize variables.
 	mPrimitiveSelected = mPrimitiveCurrent = TEAPOT;
@@ -184,28 +182,6 @@ void GeometryApp::update()
 		createGeometry();
 	}
 
-	// Use a fixed time step for a steady 60 updates per second.
-	static const double timestep = 1.0 / 60.0;
-
-	// Keep track of time.
-	static double time = getElapsedSeconds();
-	static double accumulator = 0.0;
-
-	// Calculate elapsed time since last frame.
-	double elapsed = getElapsedSeconds() - time;
-	time += elapsed;
-
-	// Perform fixed timestep updates.
-	accumulator += math<double>::min( elapsed, 0.1 ); // prevents 'spiral of death'
-
-	while( accumulator >= timestep ) {
-		simulate( timestep );
-		accumulator -= timestep;
-	}
-}
-
-void GeometryApp::simulate( double timestep )
-{
 	// After creating a new primitive, gradually move the camera to get a good view.
 	if( mRecenterCamera ) {
 		float distance = glm::distance( mCamera.getEyePoint(), mCameraLerpTarget );
