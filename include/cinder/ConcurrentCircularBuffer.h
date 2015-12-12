@@ -109,22 +109,23 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	
 	//! Signals all threads that are waiting to push to or pop from the queue.
 	void cancel() {
-		do {
-			std::lock_guard<std::mutex> lock( mMutex );
-			mCanceled = true;
-			mNotFullCond.notify_all();
-			mNotEmptyCond.notify_all();
+		std::unique_lock<std::mutex> lock( mMutex );
 
-			// Lock is released to allow other threads to cancel.
-		} while( false );
+		mCanceled = true;
+		mNotFullCond.notify_all(); // atomic, never throws
+		mNotEmptyCond.notify_all(); // atomic, never throws
+
+		// Lock is released to allow other threads to cancel.
+		lock.unlock();
 
 		// Wait for all threads to cancel.
 		while( true ) {
-			if( std::try_lock<std::mutex>( mMutex ) == -1 ) {
-				std::lock_guard<std::mutex> lock( mMutex, std::adopt_lock );
+			if( lock.try_lock() ) {
 				if( mNumWaitingNotEmpty == 0 && mNumWaitingNotFull == 0 ) {
 					break;
 				}
+
+				lock.unlock();
 			}
 
 			// Allow other threads to run but get back here ASAP.
