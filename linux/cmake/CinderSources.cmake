@@ -126,6 +126,9 @@ list( APPEND CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/ip/Threshold.cpp
     ${CINDER_SRC_DIR}/cinder/ip/Trim.cpp
 
+    ${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp
+    ${CINDER_SRC_DIR}/cinder/linux/Movie.cpp
+
     ${CINDER_SRC_DIR}/cinder/svg/Svg.cpp
 
     ${CINDER_SRC_DIR}/cinder/Area.cpp

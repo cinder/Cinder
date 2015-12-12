@@ -76,13 +76,14 @@ std::string urlencode( const std::string &c )
     std::string escaped;
 	int max = c.length();
 	for( int i = 0; i < max; ++i ) {
-		if( (48 <= c[i] && c[i] <= 57 ) ||//0-9
-			(65 <= c[i] && c[i] <= 90 ) ||//ABC...XYZ
+		if( (48 <= c[i] && c[i] <= 57 ) || //0-9
+			(65 <= c[i] && c[i] <= 90 ) || //ABC...XYZ
 			(97 <= c[i] && c[i] <= 122) || //abc...xyz
 			(c[i]=='~' || c[i]=='-' || c[i]=='_' || c[i]=='.')
 		)
 		{
-			escaped.append( &c[i], 1);
+std::cout << "Appending: " << std::string( &c[i], 1 ) << std::endl; 			
+			escaped.append( &c[i], 1 );
 		}
 		else
 		{
@@ -98,8 +99,7 @@ std::string urlencode( const std::string &c )
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Url
 Url::Url( const std::string &urlString, bool isEscaped )
-	: mStr( isEscaped ? 
-		urlString : encode( urlString ) )
+	: mStr( isEscaped ? urlString : encode( urlString ) )
 {
 }
 
@@ -121,9 +121,12 @@ std::string Url::encode( const std::string &unescaped )
 	std::wstring urlStr = msw::toWideString( unescaped );
 	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));
 	return msw::toUtf8String( std::wstring( uri->AbsoluteCanonicalUri->Data()));
-#elif defined( CINDER_ANDROID )	
+#elif defined( CINDER_ANDROID )
 	std::string result = urlencode( unescaped );
 	return result;
+#elif defined( CINDER_LINUX )
+	// Curl does not seem to agree with encoded URIs.
+	return unescaped;
 #endif	
 }
 
