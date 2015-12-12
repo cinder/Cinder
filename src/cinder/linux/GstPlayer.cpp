@@ -595,13 +595,13 @@ void GstPlayer::constructPipeline()
 {
     if( mGstPipeline ) return;
 
-    mGstPipeline 			= gst_pipeline_new( "cinder-pipeline" );
-    mGstData.mUriDecode 	= gst_element_factory_make( "uridecodebin", "uridecode" );	
-    mGstData.mVideoQueue 	= gst_element_factory_make( "queue", "videoqueue" );
-    mGstAppSink 			= gst_element_factory_make( "appsink", "videosink" );
-    mGstData.mAudioQueue    = gst_element_factory_make( "queue", "audioqueue" );
-    mGstData.mAudioconvert  = gst_element_factory_make( "audioconvert", "audioconv" );
-    mGstData.mAudiosink     = gst_element_factory_make( "autoaudiosink", "audiosink" );
+    mGstPipeline = gst_pipeline_new( "cinder-pipeline" );
+    mGstData.mUriDecode = gst_element_factory_make( "uridecodebin", "uridecode" );	
+    mGstData.mVideoQueue = gst_element_factory_make( "queue", "videoqueue" );
+    mGstAppSink = gst_element_factory_make( "appsink", "videosink" );
+    mGstData.mAudioQueue = gst_element_factory_make( "queue", "audioqueue" );
+    mGstData.mAudioconvert = gst_element_factory_make( "audioconvert", "audioconv" );
+    mGstData.mAudiosink = gst_element_factory_make( "autoaudiosink", "audiosink" );
 
     if( ! mGstPipeline || 
         ! mGstData.mUriDecode || 
@@ -632,23 +632,26 @@ void GstPlayer::constructPipeline()
 
     addBusWatch( mGstPipeline );
 		
+    // Add our standard elements to the pipeline.
+    gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mUriDecode, mGstData.mVideoQueue, mGstAppSink, NULL );
+
     if( sUseGstGl ) {
-        mGstData.mGLupload 			= gst_element_factory_make( "glupload", "upload" );
-        mGstData.mGLcolorconvert	= gst_element_factory_make( "glcolorconvert", "convert" );
+        mGstData.mGLupload = gst_element_factory_make( "glupload", "upload" );
+        mGstData.mGLcolorconvert = gst_element_factory_make( "glcolorconvert", "convert" );
 		if( !mGstData.mGLupload || !mGstData.mGLcolorconvert ) {
-			g_printerr( "Not all elements could be created !\n" );
+			g_printerr( "Not all GL elements could be created !\n" );
 		}
-        gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mUriDecode, mGstData.mVideoQueue, mGstData.mGLupload, mGstData.mGLcolorconvert, mGstAppSink, NULL );
+        gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mGLupload, mGstData.mGLcolorconvert, NULL );
         if( ! gst_element_link_many( mGstData.mVideoQueue, mGstData.mGLupload, mGstData.mGLcolorconvert, mGstAppSink, nullptr ) ) {
             g_printerr( " FAILED to LINK VIDEO elements.\n" );
         }
     }
     else {
-        mGstData.mVideoconvert      = gst_element_factory_make( "videoconvert", "convert" );
+        mGstData.mVideoconvert = gst_element_factory_make( "videoconvert", "convert" );
 		if( !mGstData.mVideoconvert ) {
-			g_printerr( "Not all elements could be created !\n" );
+			g_printerr( "Could not create videoconvert element !\n" );
 		}
-        gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mUriDecode, mGstData.mVideoQueue, mGstData.mVideoconvert, mGstAppSink, NULL );
+        gst_bin_add( GST_BIN( mGstPipeline ), mGstData.mVideoconvert );
         if( ! gst_element_link_many( mGstData.mVideoQueue, mGstData.mVideoconvert, mGstAppSink, nullptr ) ) {
             g_printerr( " FAILED to LINK VIDEO elements.\n" );
         }
@@ -677,7 +680,7 @@ void GstPlayer::constructPipeline()
 
 void GstPlayer::load( const std::string& path )
 {
-	// If we are already using a pipeline we have to reset for now.
+	// If we are already using a custom pipeline we have to reset for now.
 	if( mUsingCustomPipeline ) {
 		resetCustomPipeline();
 	}
