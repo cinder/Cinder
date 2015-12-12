@@ -1,11 +1,11 @@
 set( CLANG_FOUND FALSE )
 
-find_program( CLANG_CLANG		NAMES clang			clang-3.8		clang-3.7		clang-3.6		)
-find_program( CLANG_CLANGXX 	NAMES clang++		clang++-3.8		clang++-3.7		clang++-3.6		)
-find_program( CLANG_LLVM_AR		NAMES llvm-ar		llvm-ar-3.8		llvm-ar-3.7		llvm-ar-3.6		)
-find_program( CLANG_LLVM_LINK	NAMES llvm-link		llvm-link-3.8	llvm-link-3.7	llvm-link-3.6	)
-find_program( CLANG_LLVM_NM		NAMES llvm-nm		llvm-nm-3.8		llvm-nm-3.7		llvm-nm-3.6		)
-find_program( CLANG_LLVM_RANLIB	NAMES llvm-ranlib	llvm-ranlib-3.8	llvm-ranlib-3.7	llvm-ranlib-3.6	)
+find_program( CLANG_CLANG		NAMES clang			clang-3.8		clang-3.7		clang-3.6		clang-3.5		)
+find_program( CLANG_CLANGXX 	NAMES clang++		clang++-3.8		clang++-3.7		clang++-3.6		clang++-3.5		)
+find_program( CLANG_LLVM_AR		NAMES llvm-ar		llvm-ar-3.8		llvm-ar-3.7		llvm-ar-3.6		llvm-ar-3.5		)
+find_program( CLANG_LLVM_LINK	NAMES llvm-link		llvm-link-3.8	llvm-link-3.7	llvm-link-3.6	llvm-link-3.5	)
+find_program( CLANG_LLVM_NM		NAMES llvm-nm		llvm-nm-3.8		llvm-nm-3.7		llvm-nm-3.6		llvm-nm-3.5		)
+find_program( CLANG_LLVM_RANLIB	NAMES llvm-ranlib	llvm-ranlib-3.8	llvm-ranlib-3.7	llvm-ranlib-3.6	llvm-ranlib-3.5	)
 
 if( CLANG_CLANG AND CLANG_CLANGXX AND CLANG_LLVM_AR AND CLANG_LLVM_LINK AND CLANG_LLVM_NM AND CLANG_LLVM_RANLIB )	
 	set( CLANG_FOUND TRUE )

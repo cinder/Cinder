@@ -10,7 +10,7 @@
 
 #include "cinder/linux/GstPlayer.h"
 
-#if ! defined( CINDER_LINUX_ONLY )
+#if ! defined( CINDER_LINUX_EGL_ONLY )
 	// These files will include a glfw_config.h that's custom to Cinder.
 	#include "glfw/glfw3.h"
 	#include "glfw/glfw3native.h"
