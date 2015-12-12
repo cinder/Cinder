@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE on )
 
 # Module path
@@ -35,8 +35,7 @@ if( CINDER_LINUX_EGL_RPI2 )
 	)
 endif()
 
-set( CINDER_LIB_SUFFIX )
-set( CINDER_OUT_DIR_PREFIX )
+set( CINDER_DEFINITIONS )
 
 if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
 	set( CINDER_GL_ES 					true )
@@ -48,30 +47,19 @@ if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
     endif()
 
 	if( CINDER_GL_ES_2 )
-		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_2" )
-        set( CINDER_LIB_SUFFIX -es2 )
-        set( CINDER_OUT_DIR_PREFIX es2 )
+        list( APPEND CINDER_DEFINITIONS "-DCINDER_GL_ES_2" )
 		# Raspberry Pi special flags
 		if( CINDER_LINUX_EGL_RPI2 )
-			set( CINDER_GL_ES_FLAGS "${CINDER_GL_ES_FLAGS} -DCINDER_LINUX_EGL_ONLY -DCINDER_LINUX_EGL_RPI2" )
+            list( APPEND CINDER_DEFINITIONS "-DCINDER_LINUX_EGL_ONLY -DCINDER_LINUX_EGL_RPI2" )
 		endif()		
 	elseif( CINDER_GL_ES_3 )
-		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3" )
-        set( CINDER_LIB_SUFFIX -es3 )
-        set( CINDER_OUT_DIR_PREFIX es3 )
+        list( APPEND CINDER_DEFINITIONS "-DCINDER_GL_ES_3" )
 	elseif( CINDER_GL_ES_3_1 )
-		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3_1" )
-        set( CINDER_LIB_SUFFIX -es31 )
-        set( CINDER_OUT_DIR_PREFIX es31 )
+        list( APPEND CINDER_DEFINITIONS "-DCINDER_GL_ES_3_1" )
 	elseif( CINDER_GL_ES_3_2 )
-		set( CINDER_GL_ES_FLAGS "-DCINDER_GL_ES_3_2" )
-        set( CINDER_LIB_SUFFIX -es32 )
-        set( CINDER_OUT_DIR_PREFIX es32 )
-    else()
-        set( CINDER_LIB_SUFFIX )
-        set( CINDER_OUT_DIR_PREFIX ogl )
+        list( APPEND CINDER_DEFINITIONS "-DCINDER_GL_ES_3_2" )
 	endif()
-endif()
+endif() # For Desktop we keep the defaults.
 
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
@@ -131,6 +119,8 @@ else()
 endif()
 
 message( "" )
+message( "${BoldGreen}CINDER_OUTPUT_DIR_PREFIX: ${CINDER_OUT_DIR_PREFIX}" )
+message( "${BoldGreen}CINDER_LIB_SUFFIX: ${CINDER_LIB_SUFFIX}" )
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
 message( "" )
@@ -147,9 +137,9 @@ message( "" )
 
 if( NOT CINDER_LINUX_EGL_RPI2 )
 	if( CINDER_GL_ES )
-		set( GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_EGL -D_GLFW_USE_GLESV2" )
+        list( APPEND CINDER_DEFINITIONS "-D_GLFW_X11 -D_GLFW_EGL -D_GLFW_USE_GLESV2"  )
 	else()
-		set( GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_GLX -D_GLFW_USE_OPENGL" )
+        list( APPEND CINDER_DEFINITIONS "-D_GLFW_X11 -D_GLFW_GLX -D_GLFW_USE_OPENGL"  )
 	endif()
 endif()
 
@@ -164,7 +154,8 @@ set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g3 -ggdb3 -O0 ${C_DISABLE_WARNINGS}" )
 set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -O3 -ffast-math ${C_DISABLE_WARNINGS}" )
 
 # C++ flags - TODO: Add logic for the case when GCC5's new C++ ABI is desired.
-set( CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 ${STDCXXLIB} -std=c++11 -fvisibility=default -D_UNIX" )
+set( CXX_FLAGS "${STDCXXLIB} -std=c++11 -fvisibility=default -D_UNIX" )
+list( APPEND CINDER_DEFINITIONS "-D_GLIBCXX_USE_CXX11_ABI=0" )
 
 if( CINDER_TOOLCHAIN_CLANG )
 	# Disable these warnings, many of which are coming from Boost - append at end
@@ -178,8 +169,8 @@ elseif( CINDER_TOOLCHAIN_GCC )
 endif()
 
 # C++ flags
-set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g3 -ggdb3 -O0 -fexceptions -frtti ${CINDER_GL_ES_FLAGS} ${CXX_DISABLE_WARNINGS}" )
-set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -O3 -fexceptions -frtti -ffast-math ${CINDER_GL_ES_FLAGS} ${CXX_DISABLE_WARNINGS}" )
+set( CMAKE_CXX_FLAGS_DEBUG    "${CXX_FLAGS} -g3 -ggdb3 -O0 -fexceptions -frtti ${CXX_DISABLE_WARNINGS}" )
+set( CMAKE_CXX_FLAGS_RELEASE  "${CXX_FLAGS} -O3 -fexceptions -frtti -ffast-math ${CXX_DISABLE_WARNINGS}" )
 
 # Include directories
 include(${CMAKE_MODULE_PATH}/CinderIncludes.cmake)
@@ -270,8 +261,7 @@ if( CINDER_USE_SYSTEM_LIBS )
     list( APPEND CINDER_LIBS_DEPENDS 	${FREETYPE2_LIBRARIES} )
 
 else()
-    set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE" )
+    list( APPEND CINDER_DEFINITIONS "-DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE"  )
 
     include( ${CMAKE_MODULE_PATH}/Freetype2Sources.cmake )
 
@@ -291,6 +281,7 @@ endif()
 
 ### Create our Cinder target.
 add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+
 
 ### https://cmake.org/cmake/help/v3.0/command/target_include_directories.html
 ###
@@ -314,6 +305,11 @@ add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CX
 ### target_link_libraries( binary cinder )
 ###
 ### and this will pull all Cinder's dependencies specified with INTERFACE or PUBLIC.
+###
+### The same idea goes for target_compile_definitions also. The definitions will propagate to any target linking with Cinder.
+
+# Compile definitions
+target_compile_definitions( cinder${CINDER_LIB_SUFFIX} PUBLIC ${CINDER_DEFINITIONS} )
 
 ### There is a conflict between boost/regex.h and /usr/include/regex.h when building the examples
 ### so avoid propagating the boost dirs across the compilation of samples.
@@ -321,10 +317,13 @@ if( NOT CINDER_USE_SYSTEM_LIBS )
     target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${CINDER_INC_DIR}/boost> )
 endif()
 
+# Include directories.
 target_include_directories( cinder${CINDER_LIB_SUFFIX} PUBLIC "$<BUILD_INTERFACE:${CINDER_INCLUDE_DIRS};${CINDER_INCLUDE_DEPENDS}>" )
 
+# Link libraries.
 target_link_libraries( cinder${CINDER_LIB_SUFFIX} INTERFACE ${CINDER_LIBS_DEPENDS} )
 
+# Target properties.
 set_target_properties( cinder${CINDER_LIB_SUFFIX} PROPERTIES DEBUG_POSTFIX "_d" )
 
 ### https://cmake.org/cmake/help/v3.0/command/export.html
