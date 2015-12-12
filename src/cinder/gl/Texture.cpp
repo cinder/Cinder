@@ -31,7 +31,6 @@
 #include "cinder/gl/scoped.h"
 #include "cinder/ip/Flip.h"
 #include "cinder/Log.h"
-#include "cinder/Utilities.h"
 #include <stdio.h>
 #include <algorithm>
 #include <memory>
