@@ -35,15 +35,18 @@ Please make sure your code conforms to the following general guidelines. If some
 * Use camelCase; classes begin with upper case and variables with lower case.
 * Member variables begin with an 'm' prefix (`mVariable`).
 * Static variables begin with an 's' prefix (`sInstance`).
-* enum types are all upper case with underscore separators (`enum Types { TYPE_1, TYPE_2, TYPE_UNKNOWN }`).
+* enum types are all upper case with underscore separators
+  * ex. `enum Types { TYPE_1, TYPE_2, TYPE_UNKNOWN }`.
 
-#### Spacing
+#### Spacing and Line Breaks
 
 * Use tabs for indentation, with a tab stop value of 4.
 * Anything inside a namespace starts with no indentation.
 * Place spaces between braces, braces and arguments, etc.
-* Place a space between `!` and variables to negate them, ex. `if( ! mEnabled ) { ...`
+* Place a space between `!` and variables to negate them
+  *  ex. `if( ! mEnabled ) { ...`
 * Brackets for class methods and functions begin on a new line. Brackets for everything else (class declarations, if / for / while loops, etc. ) begin on the same line following a space.
+* The contents of an `if`, `for`, or `while` statement should always be on a new line. This not only makes it easier to read but also prevents some ambiguities that come up in some debugging situations, where you can't tell if you've jumped into the body of the statement or not. 
 
 #### Types
 
@@ -56,13 +59,16 @@ Please make sure your code conforms to the following general guidelines. If some
 
 * When an object doesn't have clear copy semantics (ex. a system resource or `gl::Texture`, inherit from `ci::Noncopyable` so it is obvious that the object cannot be copied.
 * When overriding a virtual method in a subclass, do not use the `virtual` keyword a second time, instead use `override`, which has the added benefit of the compiler checking that the override took place.
-* Unless it is templated or performance critical code, place method implementations in the .cpp to try to keep the header more consise. The exception to this rule is simple getters, ex. `getWidth() const   { return mWidth; }`.
+* Unless it is templated or performance critical code, place method implementations in the .cpp to try to keep the header more consise. The exception to this rule is simple getters
+  *  ex. `getWidth() const   { return mWidth; }`.
 
 #### Comments
 
 * Place comments in the header files (in the form of doxygen for public or protected interfaces) and leave the implementations as concise as possible.
 * If there is something you think is not obvious in an implementation, then comments can help clarify, but in general it is nice to let the code do the explaining.
 * We generate reference documentation using doxygen, so you are encouraged to give descriptions to as much of the public interface as possible in order to fill out the reference documentation.
+* To make it easier to distinguish the end of a namespace, place a comment after the namespace's closing bracket
+  *  ex. `} // namespace ci::gl`
 
 #### Example: Class Declaration
 
@@ -81,23 +87,23 @@ namespace cinder {
 class SomeClass {
   public: // two leading spaces for access specifiers
   	//! description of what you are constructing and any arguments passed in
-  	SomeClass();
+  	SomeClass( int var1 = 0, int var2 = 0 );
 
   	//! Place spaces in between braces and arguments.
   	void someMethod( int argA, const Rectf &bounds );
 
   	//! Inline simple methods by keeping the implementation on the same line as the declaration.
-  	void 	setVar1( int arg )		{ mVar1 = arg; }
+  	void 	setVar1( int var )		{ mVar1 = var; }
   	//! Try to align the interface so it is easier to read.
-  	void 	setVar2( int arg )		{ mVar2 = arg; }
+  	void 	setVar2( int var )		{ mVar2 = var; }
 
   	//! Getters are usually declared as const.
-  	int 	getArg1() const 		{ return mVar1; }
+  	int 	getVar1() const 		{ return mVar1; }
 
   private:
   	void 	doSomething( int arg );
   	
-    int mArg1, mArg2;
+    int mVar1, mVar2;
 };
 	
 } // namespace cinder
@@ -114,16 +120,17 @@ using namespace std;
 
 namespace cinder {
 
-SomeClass::SomeClass()
-	: mArg1( 0 ), mArg2( 0 )
+SomeClass::SomeClass( int var1, int var2 )
+	: mVar1( var1 ), mVar2( var2 )
 {
+  if( var1 == var2 )
+    someMethod( var1, Rectf::zero() );
 }
 
 void SomeClass::someMethod( int argA, const Rectf &bounds )
 {
 	for( int i = 0; i < argA; i++ ) {
-		if( i + argB == 5 )
-			doSomething( argB );
+		doSomething( argA + 2 );
 	}
 }
 

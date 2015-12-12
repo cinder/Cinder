@@ -559,12 +559,65 @@ class Torus : public Source {
 	int			mNumRings, mNumAxis;
 };
 
+class TorusKnot : public Source {
+public:
+	TorusKnot();
+
+	// Enables colors. Disabled by default.
+	TorusKnot&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+	TorusKnot&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; return *this; }
+	TorusKnot&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; return *this; }
+	//! Specifies the \a P and \a Q parameters of the torus knot.
+	TorusKnot&	parameters( int p, int q ) { mP = p; mQ = q; return *this; }
+	//! Specifies the radius of the tube.
+	TorusKnot&	radius( float radius ) { mRadius = math<float>::max( 0, radius ); return *this; }
+	//! Allows you to scale the generated curve.
+	TorusKnot&	scale( const vec3 &scale ) { mScale = scale; return *this; }
+	//! Allows you to scale the generated curve.
+	TorusKnot&	scale( float x, float y, float z ) { mScale = vec3( x, y, z ); return *this; }
+	
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	TorusKnot*	clone() const override { return new TorusKnot( *this ); }
+
+protected:
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<vec3> *tangents, std::vector<uint32_t> *indices ) const;
+
+	inline int	gcd( int a, int b ) const
+	{
+		if( a < b )
+			std::swap( a, b );
+
+		int temp;
+		while( b != 0 ) {
+			temp = a % b;
+			a = b;
+			b = temp;
+		}
+
+		return a;
+	}
+
+	int			mP, mQ;
+	int			mSubdivisionsAxis;
+	int			mSubdivisionsHeight;
+	vec3		mScale;
+	float		mRadius;
+
+	bool		mHasColors;
+};
+
 class Helix : public Torus {
   public:
 	Helix()
 	{
 		height( 2.0f );
 		coils( 3.0f );
+		subdivisionsAxis( 54 );
 	}
 
 	virtual Helix&	center( const vec3 &center ) { Torus::center( center ); return *this; }
@@ -578,6 +631,10 @@ class Helix : public Torus {
 	Helix&			twist( unsigned twist ) { Torus::twist( twist ); return *this; }
 	//! Allows you to twist the helix along the ring. The \a offset is in radians.
 	Helix&			twist( unsigned twist, float offset ) { Torus::twist( twist, offset ); return *this; }
+	//! Specifies the major and minor radius as a ratio (minor : major).
+	Helix&			ratio( float ratio ) { Torus::ratio( ratio ); return *this; }
+	//! Specifies the major and minor radius separately.
+	Helix&			radius( float major, float minor ) { Torus::radius( major, minor ); return *this; }
 };
 
 class Cylinder : public Source {
@@ -593,6 +650,8 @@ class Cylinder : public Source {
 	Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
 	//! Specifies the number of slices along the Cylinder's height. Defaults to \c 1.
 	Cylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; updateCounts(); return *this; }
+	//! Specifies the number of rings for the Cylinder's cap. Defaults to \c 3.
+	Cylinder&	subdivisionsCap( int rings ) { mSubdivisionsCap = rings; updateCounts(); return *this; }
 	//! Specifies the height of the cylinder.
 	Cylinder&	height( float height ) { mHeight = height; return *this; }
 	//! Specifies the base and apex radius.
@@ -623,14 +682,14 @@ class Cylinder : public Source {
 	float		mRadiusApex;
 	int			mSubdivisionsAxis;
 	int			mSubdivisionsHeight;
+	int			mSubdivisionsCap;
 	bool		mHasColors;
 	int			mNumSegments, mNumSlices;
 };
 
 class Cone : public Cylinder {
   public:
-	Cone()
-	{ radius( 1.0f, 0.0f ); }
+	Cone() { radius( 1.0f, 0.0f ); subdivisionsHeight( 6 ); }
 
 	//! Enables colors. Disabled by default.
 	Cone&	colors( bool enable = true ) { mHasColors = enable; return *this; }
@@ -1209,7 +1268,7 @@ class ColorFromAttrib : public Modifier {
 //! Sets an attribute of a geom::Source to be a constant value for every vertex. Determines dimension from constructor (vec4 -> 4, for example)
 class Constant : public Modifier {
   public:
-	Constant( geom::Attrib attrib, float &v )
+	Constant( geom::Attrib attrib, float v )
 		: mAttrib( attrib ), mValue( v, 0, 0, 0 ), mDims( 1 ) {}
 	Constant( geom::Attrib attrib, const vec2 &v )
 		: mAttrib( attrib ), mValue( v, 0, 0 ), mDims( 2 ) {}
@@ -1513,7 +1572,7 @@ inline SourceMods operator>>( const Source *source, const Modifier &modifier )
 	return result;
 }
 
-inline SourceMods operator&( const Source &source, const Modifier &modifier )
+inline SourceMods operator>>( const Source &source, const Modifier &modifier )
 {
 	SourceMods result( &source, true ); // clone the source since it's a temporary
 	result.append( modifier );

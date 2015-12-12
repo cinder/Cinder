@@ -1626,23 +1626,30 @@ def replace_code_chunks(bs4):
     :param bs4:
     :return:
     """
+
     # find all the code chunks
     code_chunks = bs4.find_all("div", "programlisting")
+    code_chunks += bs4.find_all("span", "programlisting")
+
     for chunk in code_chunks:
         pre_tag = bs4.new_tag("pre")
         code_tag = bs4.new_tag("code")
         add_class_to_tag(code_tag, "language-cpp")
 
         # for each code line, add a line of that text to the new div
-        for line in chunk.find("div", "codeline"):
-            line_text = ""
-            for c in line.contents:
-                if type(c) is Tag:
-                    line_text += c.text
-                else:
-                    line_text += c
-            code_tag.append(line_text + "\n")
-        pre_tag.append(code_tag)
+        codeline = chunk.find_all("div", "codeline")
+        codeline += chunk.find_all("span", "codeline")
+
+        if codeline:
+            for line in codeline:
+                line_text = ""
+                for c in line.contents:
+                    if type(c) is Tag:
+                        line_text += c.text
+                    else:
+                        line_text += c
+                code_tag.append(line_text + "\n")
+            pre_tag.append(code_tag)
 
         # replace content in code chunks
         chunk.clear()

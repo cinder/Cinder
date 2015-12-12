@@ -44,7 +44,7 @@ void ShaderPreprocessorTestApp::testGlslProgInclude()
 							.vertex(  loadAsset( "passthrough.vert" ) )
 							.fragment( loadAsset( "shaderWithInclude.frag" ) )
         //                    .define( "COLOR_RED", "vec4( 0, 0, 1, 1 )" )
-        //                    .define( "WRONG_HASH" )
+                            .define( "WRONG_HASH" )
         ;
 
 		mGlslProg = gl::GlslProg::create( format );

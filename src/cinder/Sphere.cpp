@@ -88,6 +88,37 @@ int Sphere::intersect( const Ray &ray, float *intersection ) const
 	return 0;
 }
 
+int Sphere::intersect( const Ray &ray, float *min, float *max ) const
+{
+	vec3		temp = ray.getOrigin() - mCenter;
+	float 		a = dot( ray.getDirection(), ray.getDirection() );
+	float 		b = 2 * dot( temp, ray.getDirection() );
+	float 		c = dot( temp, temp ) - mRadius * mRadius;
+	float 		disc = b * b - 4 * a * c;
+
+	int count = 0;
+	if( disc >= 0.0f ) {
+		float t;
+
+		float e = math<float>::sqrt( disc );
+		float denom = 2.0f * a;
+
+		t = ( -b - e ) / denom;    // smaller root
+		if( t > EPSILON_VALUE ) {
+			*min = t;
+			count++;
+		}
+
+		t = ( -b + e ) / denom;    // larger root
+		if( t > EPSILON_VALUE ) {
+			*max = t;
+			count++;
+		}
+	}
+
+	return count;
+}
+
 vec3 Sphere::closestPoint( const Ray &ray ) const
 {
 	float 		t;
