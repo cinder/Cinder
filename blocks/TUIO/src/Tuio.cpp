@@ -594,7 +594,8 @@ void TypeHandler<TuioType>::handleMessage( const osc::Message &message )
 		auto & aliveIdsRef = aliveIds;
 		auto & currentSourceRef = mCurrentSource;
 		std::function<bool(const TuioType &)> aliveIdsRemoveIf = [aliveIdsRef, currentSourceRef]( const TuioType &type ) {
-			return type.getSource() == currentSourceRef && binary_search( begin( aliveIdsRef ), end( aliveIdsRef ), type.getSessionId() );
+			if( type.getSource() != currentSourceRef ) return true; // this isn't the correct source so leave it where it is.
+			return binary_search( begin( aliveIdsRef ), end( aliveIdsRef ), type.getSessionId() ); // search for the sessionId
 		};
 		auto currentEnd = end( mSetOfCurrentTouches );
 		auto remove = stable_partition( begin( mSetOfCurrentTouches ), currentEnd, aliveIdsRemoveIf );
