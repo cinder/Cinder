@@ -639,6 +639,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/svg/Svg.cpp
 
     ${CINDER_SRC_DIR}/cinder/Area.cpp
+    ${CINDER_SRC_DIR}/cinder/Base64.cpp
     ${CINDER_SRC_DIR}/cinder/BSpline.cpp
     ${CINDER_SRC_DIR}/cinder/BSplineFit.cpp
     ${CINDER_SRC_DIR}/cinder/Buffer.cpp
