@@ -45,8 +45,6 @@ struct TouchPoint {
 class MultiTouchApp : public App {
  public:
 	MultiTouchApp();
-	void	mouseDown( MouseEvent event ) override;
-	void	mouseDrag( MouseEvent event ) override;
 
 	void	touchesBegan( TouchEvent event ) override;
 	void	touchesMoved( TouchEvent event ) override;

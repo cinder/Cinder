@@ -45,7 +45,7 @@ class TuioClientApp : public App {
 	void removed( const tuio::Cursor2d &cursor );
 	
 	std::shared_ptr<tuio::Receiver> tuio;
-	std::map<uint32_t, std::vector<vec2>> mTouches;
+	std::map<std::string, std::vector<vec2>> mTouches;
 };
 
 void TuioClientApp::setup()
@@ -63,18 +63,20 @@ void TuioClientApp::setup()
 void TuioClientApp::added( const tuio::Cursor2d &cursor )
 {
 	auto windowPos = vec2( getWindowSize() ) * cursor.getPosition();
-	mTouches.insert( { cursor.getSessionId(), std::vector<vec2>( { windowPos } ) } );
+	mTouches.insert( { cursor.getSource() + std::to_string(cursor.getSessionId()), std::vector<vec2>( { windowPos } ) } );
 }
 
 void TuioClientApp::updated( const tuio::Cursor2d &cursor )
 {
 	auto windowPos = vec2( getWindowSize() ) * cursor.getPosition();
-	mTouches[cursor.getSessionId()].push_back( windowPos );
+	auto source = cursor.getSource() + std::to_string(cursor.getSessionId());
+	mTouches[source].push_back( windowPos );
 }
 
 void TuioClientApp::removed( const tuio::Cursor2d &cursor )
 {
-	mTouches.erase( cursor.getSessionId() );
+	auto source = cursor.getSource() + std::to_string(cursor.getSessionId());
+	mTouches.erase( source );
 }
 
 void TuioClientApp::draw()
