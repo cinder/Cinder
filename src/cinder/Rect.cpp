@@ -118,6 +118,12 @@ void RectT<T>::offset( const Vec2T &offset )
 }
 
 template<typename T>
+void RectT<T>::moveULTo( const vec2 &newUL )
+{
+	set( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
+}
+
+template<typename T>
 void RectT<T>::inflate( const Vec2T &amount )
 {
 	x1 -= amount.x;

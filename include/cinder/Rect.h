@@ -58,6 +58,10 @@ class RectT {
 	Area		getInteriorArea() const;
 	void		offset( const Vec2T &offset );
 	RectT		getOffset( const Vec2T &off ) const { RectT result( *this ); result.offset( off ); return result; }
+	//! Translates the RectT so that its upper-left corner is \a newUL
+	void		moveULTo( const vec2 &newUL );
+	//! Returns a copy of the RectT translated so that its upper-left corner is \a newUL
+	RectT		getMoveULTo( const Vec2T &newUL ) const	{ RectT result( *this ); result.moveULTo( newUL ); return result; }
 	void		inflate( const Vec2T &amount );
 	RectT		inflated( const Vec2T &amount ) const;
 	//! Translates the rectangle so that its center is at \a center
