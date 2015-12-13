@@ -17,26 +17,29 @@
 #include <thread>
 #include <mutex>
 
-#include <gst/gl/gstglconfig.h>
+#if GST_CHECK_VERSION(1, 4, 5)
+	#include <gst/gl/gstglconfig.h>
 
-#if defined( CINDER_GL_ES )
-	#undef GST_GL_HAVE_OPENGL
-	#undef GST_GL_HAVE_PLATFORM_GLX
-#else // Desktop
-	#undef GST_GL_HAVE_GLES2
-	#undef GST_GL_HAVE_PLATFORM_EGL
-	#undef GST_GL_HAVE_GLEGLIMAGEOES
+	#if defined( CINDER_GL_ES )
+		#undef GST_GL_HAVE_OPENGL
+		#undef GST_GL_HAVE_PLATFORM_GLX
+	#else // Desktop
+		#undef GST_GL_HAVE_GLES2
+		#undef GST_GL_HAVE_PLATFORM_EGL
+		#undef GST_GL_HAVE_GLEGLIMAGEOES
+	#endif
+
+	#include <gst/gl/gstglcontext.h>
+	#include <gst/gl/gstgldisplay.h>
+
+	#if defined( CINDER_LINUX_EGL_ONLY )
+		#include <gst/gl/egl/gstgldisplay_egl.h>
+	#else
+		#include <gst/gl/x11/gstgldisplay_x11.h>
+	#endif
+
+	#define CINDER_GST_HAS_GL
 #endif
-
-#include <gst/gl/gstglcontext.h>
-#include <gst/gl/gstgldisplay.h>
-
-#if defined( CINDER_LINUX_EGL_ONLY )
-	#include <gst/gl/egl/gstgldisplay_egl.h>
-#else
-	#include <gst/gl/x11/gstgldisplay_x11.h>
-#endif
-
 
 namespace gst { namespace video {
  
@@ -77,8 +80,10 @@ namespace gst { namespace video {
 		std::atomic<bool> 			mHasAudio;
 		std::atomic<float> 			mFrameRate;
 
+#if defined( CINDER_GST_HAS_GL )
 		GstGLContext* mCinderContext = nullptr;
 		GstGLDisplay* mCinderDisplay = nullptr;
+#endif
 
 		GstElement* mUriDecode 		= nullptr;
 		GstElement* mGLupload 		= nullptr;
