@@ -20,8 +20,8 @@ public:
 	void mouseDrag( MouseEvent event ) override;
 	void draw() override;
 
-	audio::GainNodeRef				mGain;
-	audio::BufferPlayerNodeRef		mBufferPlayerNode;
+	audio::GainNodeRef			mGain;
+	audio::BufferPlayerNodeRef	mBufferPlayerNode;
 
 	WaveformPlot				mWaveformPlot;
 };
@@ -78,6 +78,30 @@ void AudioLoaderApp::keyDown( KeyEvent event )
 			mBufferPlayerNode->stop();
 		else
 			mBufferPlayerNode->start();
+	}
+	else if( event.getCode() == KeyEvent::KEY_1 ) {
+		mBufferPlayerNode->stop();
+		auto ctx = audio::Context::master();
+
+		std::string fileName = "Drumstylin.wav";
+		std::cout << "Loading " << fileName << " ..." << std::endl;
+		audio::SourceFileRef sourceFile = audio::load( loadAsset( fileName ) );
+		mBufferPlayerNode->loadBuffer( sourceFile );
+		mWaveformPlot.load( mBufferPlayerNode->getBuffer(), getWindowBounds() );
+		mBufferPlayerNode->start();
+		std::cout << "Playing" << fileName << std::endl;
+	}
+	else if( event.getCode() == KeyEvent::KEY_2 ) {
+		mBufferPlayerNode->stop();
+		auto ctx = audio::Context::master();
+
+		std::string fileName = "Sirius.mp3";
+		std::cout << "Loading " << fileName << " ..." << std::endl;
+		audio::SourceFileRef sourceFile = audio::load( loadAsset( fileName ) );
+		mBufferPlayerNode->loadBuffer( sourceFile );
+		mWaveformPlot.load( mBufferPlayerNode->getBuffer(), getWindowBounds() );
+		mBufferPlayerNode->start();
+		std::cout << "Playing " << fileName << std::endl;
 	}
 }
 
