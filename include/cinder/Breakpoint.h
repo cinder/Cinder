@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include "cinder/Cinder.h"
+
 #if ! defined( CINDER_MSW )
 	#include <csignal>
 	#define CI_BREAKPOINT()	std::raise( SIGINT )
