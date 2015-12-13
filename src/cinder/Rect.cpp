@@ -118,9 +118,23 @@ void RectT<T>::offset( const Vec2T &offset )
 }
 
 template<typename T>
-void RectT<T>::moveULTo( const vec2 &newUL )
+RectT<T> RectT<T>::getOffset( const Vec2T &off ) const
+{
+	RectT result( *this ); result.offset( off ); return result;
+}
+
+template<typename T>
+void RectT<T>::moveULTo( const Vec2T &newUL )
 {
 	set( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
+}
+
+template<typename T>
+RectT<T> RectT<T>::getMoveULTo( const Vec2T &newUL ) const
+{
+	RectT result( *this );
+	result.moveULTo( newUL );
+	return result;
 }
 
 template<typename T>
