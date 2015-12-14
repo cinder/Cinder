@@ -82,14 +82,14 @@ FIND_GSTREAMER_COMPONENT(GSTREAMER_BASE gstreamer-base-1.0 gstbase-1.0)
 # 2. Find GStreamer plugins
 # -------------------------
 
-FIND_GSTREAMER_COMPONENT(GSTREAMER_APP gstreamer-app-1.0 gstapp-1.0)
-FIND_GSTREAMER_COMPONENT(GSTREAMER_AUDIO gstreamer-audio-1.0 gstaudio-1.0)
-FIND_GSTREAMER_COMPONENT(GSTREAMER_FFT gstreamer-fft-1.0 gstfft-1.0)
-FIND_GSTREAMER_COMPONENT(GSTREAMER_GL gstreamer-gl-1.0 gstgl-1.0)
-FIND_GSTREAMER_COMPONENT(GSTREAMER_MPEGTS gstreamer-mpegts-1.0>=1.4.0 gstmpegts-1.0)
-FIND_GSTREAMER_COMPONENT(GSTREAMER_PBUTILS gstreamer-pbutils-1.0 gstpbutils-1.0)
-FIND_GSTREAMER_COMPONENT(GSTREAMER_TAG gstreamer-tag-1.0 gsttag-1.0)
-FIND_GSTREAMER_COMPONENT(GSTREAMER_VIDEO gstreamer-video-1.0 gstvideo-1.0)
+FIND_GSTREAMER_COMPONENT(GSTREAMER_APP 		gstreamer-app-1.0 gstapp-1.0)
+FIND_GSTREAMER_COMPONENT(GSTREAMER_AUDIO 	gstreamer-audio-1.0 gstaudio-1.0)
+FIND_GSTREAMER_COMPONENT(GSTREAMER_FFT 		gstreamer-fft-1.0 gstfft-1.0)
+FIND_GSTREAMER_COMPONENT(GSTREAMER_GL 		gstreamer-gl-1.0 gstgl-1.0)
+FIND_GSTREAMER_COMPONENT(GSTREAMER_MPEGTS 	gstreamer-mpegts-1.0>=1.4.0 gstmpegts-1.0)
+FIND_GSTREAMER_COMPONENT(GSTREAMER_PBUTILS 	gstreamer-pbutils-1.0 gstpbutils-1.0)
+FIND_GSTREAMER_COMPONENT(GSTREAMER_TAG 		gstreamer-tag-1.0 gsttag-1.0)
+FIND_GSTREAMER_COMPONENT(GSTREAMER_VIDEO	gstreamer-video-1.0 gstvideo-1.0)
 
 # ------------------------------------------------
 # 3. Process the COMPONENTS passed to FIND_PACKAGE
@@ -106,7 +106,6 @@ endforeach ()
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(GStreamer REQUIRED_VARS _GSTREAMER_REQUIRED_VARS
                                             VERSION_VAR   GSTREAMER_VERSION)
-
 mark_as_advanced(
     GSTREAMER_APP_INCLUDE_DIRS
     GSTREAMER_APP_LIBRARIES
