@@ -710,14 +710,16 @@ GLfloat TextureBase::getMaxAnisotropyMax()
 
 bool TextureBase::supportsHardwareSwizzle()
 {
-	#if defined( CINDER_GL_ES_2 )
-		return false;
-	#elif defined( CINDER_GL_ES_3 )
-		return true;
-	#else
-		static bool supported = ( ( gl::isExtensionAvailable( "GL_EXT_texture_swizzle" ) || gl::getVersion() >= make_pair( 3, 3 ) ) );
-		return supported;
-	#endif
+#if defined( CINDER_GL_ES)
+  #if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3
+	return true;
+  #else
+	return false;
+  #endif
+#else
+	static bool supported = ( ( gl::isExtensionAvailable( "GL_EXT_texture_swizzle" ) || gl::getVersion() >= make_pair( 3, 3 ) ) );
+	return supported;
+#endif
 }
 
 #if defined( CINDER_GL_ES_2 )
