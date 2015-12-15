@@ -4,6 +4,7 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 project( cinder )
 
 set( CINDER_TARGET "" CACHE STRING "Target platform to build for." )
+option( CINDER_FREETYPE_USE_SYSTEM "Use system-detected freetype2 rather than the one that ships with cinder" OFF )
 
 set( CINDER_ROOT      "${CMAKE_CURRENT_SOURCE_DIR}" )
 set( CINDER_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake" )
@@ -11,7 +12,6 @@ set( CINDER_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake" )
 # If there's a target specified, try to build for that. Otherwise, build 
 # based the current host OS.
 if( CINDER_TARGET )
-	message( "CINDER_TARGET set to: ${CINDER_TARGET}" )
 	if( "android" STREQUAL "${CINDER_TARGET}" )
 		include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/platform_android.cmake" )
 	elseif( "ios" STREQUAL "${CINDER_TARGET}" )

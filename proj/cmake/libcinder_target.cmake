@@ -9,3 +9,5 @@ add_library(
     cinder STATIC
     ${CINDER_SRC_FILES}
 )
+
+target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )

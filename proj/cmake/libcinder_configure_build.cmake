@@ -8,6 +8,8 @@ set( CINDER_INC_DIR		"${CINDER_ROOT}/include" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14" )
 add_definitions( -Wfatal-errors )
 
+set( CMAKE_MODULE_PATH ${CINDER_CMAKE_DIR} )
+
 if( NOT CMAKE_BUILD_TYPE )
 	message( "CMAKE_BUILD_TYPE not specified, defaulting to Debug" )
 	set( CMAKE_BUILD_TYPE Debug CACHE STRING
@@ -41,5 +43,19 @@ if( PNG_FOUND )
 	)
 endif()
 
+if( CINDER_FREETYPE_USE_SYSTEM )
+#	TODO: finish this, not sure what to do about library linking
+	find_package( Freetype2 REQUIRED )
+	list( APPEND CINDER_INCLUDE_SYSTEM  ${FREETYPE2_INCLUDE_DIRS} )
+#	list( APPEND CINDER_LIBS_DEPENDS 	${FREETYPE2_LIBRARIES} )
+else()
+	# use freetype copy that ships with cinder
+	message( "using freetype copy that ships with cinder" )
+	list( APPEND CINDER_INCLUDE_SYSTEM
+		${CINDER_INC_DIR}/freetype
+	)
+#	add_definitions( -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE )
+	list( APPEND CINDER_DEFINES "-DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE"  )
+endif()
 include_directories( ${CINDER_INCLUDE_USER} )
 include_directories( ${CINDER_INCLUDE_SYSTEM} SYSTEM )
