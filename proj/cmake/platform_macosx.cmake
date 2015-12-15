@@ -31,6 +31,7 @@ list( APPEND SRC_SET_APP_COCOA
 
 # specify what files need to be compiled as Objective-C++
 list( APPEND CINDER_SOURCES_OBJCPP
+	${CINDER_SRC_DIR}/cinder/Capture.cpp
 	${CINDER_SRC_DIR}/cinder/Clipboard.cpp
 	${CINDER_SRC_DIR}/cinder/Display.cpp
 	${CINDER_SRC_DIR}/cinder/Font.cpp
