@@ -1,1 +1,13 @@
 CinderUnitTests
+vc2013/[Dd]ebug*/
+vc2013/[Rr]elease*/
+vc2013/[Xx]64/
+*.sdf
+*.opensdf
+*.suo
+*.obj
+*.exe
+*.ilk
+*.pdb
+*.idb
+*.tlog
