@@ -12,3 +12,21 @@ if( NOT CMAKE_BUILD_TYPE )
 		FORCE
 	)
 endif()
+
+set( CINDER_INCLUDE_USER
+	${CINDER_INC_DIR}
+	${CINDER_INC_DIR}/json
+	${CINDER_INC_DIR}/tinyexr
+	${CINDER_SRC_DIR}/linebreak
+	${CINDER_SRC_DIR}/oggvorbis
+	${CINDER_SRC_DIR}/r8brain
+)
+
+set( CINDER_INCLUDE_SYSTEM
+	${CINDER_INC_DIR}
+	${CINDER_INC_DIR}/oggvorbis
+	${CINDER_SRC_DIR}/AntTweakBar
+)
+
+include_directories( ${CINDER_INCLUDE_USER} )
+include_directories( ${CINDER_INCLUDE_SYSTEM} SYSTEM )
