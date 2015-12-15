@@ -50,7 +50,6 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/ImageIo.cpp
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileRadiance.cpp
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
-	${CINDER_SRC_DIR}/cinder/ImageSourcePng.cpp
 	${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
 	${CINDER_SRC_DIR}/cinder/Json.cpp
 	${CINDER_SRC_DIR}/cinder/Log.cpp
@@ -83,6 +82,17 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Utilities.cpp
 	${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# libpng
+# ----------------------------------------------------------------------------------------------------------------------
+
+if( PNG_FOUND )
+	message( "PNG_FOUND" )
+	list( APPEND SRC_SET_CINDER
+		${CINDER_SRC_DIR}/cinder/ImageSourcePng.cpp
+	)
+endif()
 
 # ----------------------------------------------------------------------------------------------------------------------
 # FreeType

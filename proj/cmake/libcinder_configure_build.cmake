@@ -16,7 +16,7 @@ if( NOT CMAKE_BUILD_TYPE )
 	)
 endif()
 
-set( CINDER_INCLUDE_USER
+list( APPEND CINDER_INCLUDE_USER
 	${CINDER_INC_DIR}
 	${CINDER_INC_DIR}/json
 	${CINDER_INC_DIR}/tinyexr
@@ -25,11 +25,21 @@ set( CINDER_INCLUDE_USER
 	${CINDER_SRC_DIR}/r8brain
 )
 
-set( CINDER_INCLUDE_SYSTEM
+list( APPEND CINDER_INCLUDE_SYSTEM
 	${CINDER_INC_DIR}
 	${CINDER_INC_DIR}/oggvorbis
 	${CINDER_SRC_DIR}/AntTweakBar
 )
+
+# find cross-platform packages
+
+find_package( PNG )
+
+if( PNG_FOUND )
+	list( APPEND CINDER_INCLUDE_SYSTEM
+		${PNG_INCLUDE_DIRS}
+	)
+endif()
 
 include_directories( ${CINDER_INCLUDE_USER} )
 include_directories( ${CINDER_INCLUDE_SYSTEM} SYSTEM )
