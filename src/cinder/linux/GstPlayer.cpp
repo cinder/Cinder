@@ -10,10 +10,12 @@
 
 #include "cinder/linux/GstPlayer.h"
 
-#if ! defined( CINDER_LINUX_EGL_ONLY )
-	// These files will include a glfw_config.h that's custom to Cinder.
-	#include "glfw/glfw3.h"
-	#include "glfw/glfw3native.h"
+#if defined( CINDER_GST_HAS_GL )
+	#if ! defined( CINDER_LINUX_EGL_ONLY )
+		// These files will include a glfw_config.h that's custom to Cinder.
+		#include "glfw/glfw3.h"
+		#include "glfw/glfw3native.h"
+	#endif
 #endif
 
 #include "cinder/app/AppBase.h"
@@ -107,6 +109,7 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 		}
 		break;
 
+#if defined( CINDER_GST_HAS_GL )
 		case GST_MESSAGE_NEED_CONTEXT: {
 			const gchar *context_type = nullptr;
 			gst_message_parse_context_type( message, &context_type );
@@ -132,6 +135,7 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 
 		}
 		break;
+#endif
 
 		case GST_MESSAGE_BUFFERING: {
 			if( data.mIsLive ) break; ///> No buffering for live sources.
@@ -466,10 +470,12 @@ void GstPlayer::resetPipeline()
 	mGstPipeline = nullptr;
 	
 	if( sUseGstGl ) {
+#if defined( CINDER_GST_HAS_GL )
 		mGstData.mCinderContext = nullptr;
 		mGstData.mCinderDisplay = nullptr;
 		mGstData.mGLupload = nullptr;
 		mGstData.mGLcolorconvert = nullptr;
+#endif
     }
     else {
         mGstData.mVideoconvert = nullptr;
@@ -564,6 +570,7 @@ void GstPlayer::addBusWatch( GstElement* pipeline )
 
 bool GstPlayer::initialize()
 {		
+#if defined( CINDER_GST_HAS_GL )
     if( sUseGstGl ) {
         auto _platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataLinux>( ci::gl::context()->getPlatformData() );
 #if defined( CINDER_LINUX_EGL_ONLY )
@@ -578,6 +585,8 @@ bool GstPlayer::initialize()
   #endif
 #endif
     }
+#endif // defined( CINDER_GST_HAS_GL )
+
 	return true;
 }
 
@@ -1197,6 +1206,7 @@ void GstPlayer::sample( GstSample* sample, GstAppSink* sink )
 	buffer = gst_sample_get_buffer( sample );
 	
 	if( sUseGstGl ) {
+#if defined( CINDER_GST_HAS_GL )
 		// Save the buffer for avoiding override on next sample and use with the async queue.
 		gst_buffer_ref( buffer );
 
@@ -1209,6 +1219,7 @@ void GstPlayer::sample( GstSample* sample, GstAppSink* sink )
 			updateTexture( sample, sink );
 			mNewFrame = true;
 		}
+#endif
 	}
 	else {
 		std::lock_guard<std::mutex> lock( mMutex );
@@ -1259,6 +1270,7 @@ GstFlowReturn GstPlayer::onGstSample( GstAppSink* sink, gpointer userData )
 
 void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 {
+#if defined( CINDER_GST_HAS_GL )
 	GAsyncQueue* mInputVideoBuffers = (GAsyncQueue*) g_object_get_data( G_OBJECT( sink ), "queue_input_buf" );
 
 	// Grab a buffer from the queue.
@@ -1293,6 +1305,7 @@ void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 
 	// Push the buffer into the out queue for unref-ing later on.
 	g_async_queue_push( mOutputVideoBuffers, buffer );
+#endif
 }
 
 }} // namespace gst::video

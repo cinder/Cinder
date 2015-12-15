@@ -1,21 +1,24 @@
 
 include(${CMAKE_CURRENT_LIST_DIR}/DebugColours.cmake)
 
+# Module path
+set( CMAKE_MODULE_PATH ${CINDER_DIR}/linux/cmake )
+
+# Find architecture name
 execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
-execute_process( COMMAND which clang OUTPUT_VARIABLE CLANG_PATH )
 
 if( NOT CMAKE_CXX_COMPILER OR NOT CMAKE_C_COMPILER )
-    if( NOT "${CLANG_PATH}" STREQUAL "" )
-        set( CINDER_TOOLCHAIN_CLANG true )
-    endif()
+	find_package( CLANG )
 
-    if( NOT CINDER_TOOLCHAIN_GCC AND CINDER_TOOLCHAIN_CLANG )
-		set( CMAKE_C_COMPILER						"clang" 		CACHE FILEPATH "" FORCE )
-		set( CMAKE_CXX_COMPILER						"clang++" 		CACHE FILEPATH "" FORCE )
-		set( CMAKE_AR          						"llvm-ar"		CACHE FILEPATH "" FORCE )
-		set( CMAKE_LINKER       					"llvm-link" 	CACHE FILEPATH "" FORCE )
-		set( CMAKE_NM           					"llvm-nm " 		CACHE FILEPATH "" FORCE )
-		set( CMAKE_RANLIB       					"llvm-ranlib"	CACHE FILEPATH "" FORCE )
+    if( NOT CINDER_TOOLCHAIN_GCC AND CLANG_FOUND )
+		set( CINDER_TOOLCHAIN_CLANG TRUE )
+
+		set( CMAKE_C_COMPILER						"${CLANG_CLANG}"		CACHE FILEPATH "" FORCE )
+		set( CMAKE_CXX_COMPILER						"${CLANG_CLANGXX}"		CACHE FILEPATH "" FORCE )
+		set( CMAKE_AR          						"${CLANG_LLVM_AR}"		CACHE FILEPATH "" FORCE )
+		set( CMAKE_LINKER       					"${CLANG_LLVM_LINK}"	CACHE FILEPATH "" FORCE )
+		set( CMAKE_NM           					"${CLANG_LLVM_NM}"		CACHE FILEPATH "" FORCE )
+		set( CMAKE_RANLIB       					"${CLANG_LLVM_RANLIB}"	CACHE FILEPATH "" FORCE )
 
 		set( CMAKE_C_FLAGS_INIT						"-Wall -std=c99" 	CACHE STRING "" FORCE )
 		set( CMAKE_C_FLAGS_DEBUG_INIT				"-g" 				CACHE STRING "" FORCE )
