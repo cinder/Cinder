@@ -5,6 +5,9 @@ message( "Building Cinder for ${CINDER_PLATFORM}" )
 set( CINDER_SRC_DIR 	"${CINDER_ROOT}/src" )
 set( CINDER_INC_DIR		"${CINDER_ROOT}/include" )
 
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14" )
+add_definitions( -Wfatal-errors )
+
 if( NOT CMAKE_BUILD_TYPE )
 	message( "CMAKE_BUILD_TYPE not specified, defaulting to Debug" )
 	set( CMAKE_BUILD_TYPE Debug CACHE STRING
