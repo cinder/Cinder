@@ -5,28 +5,12 @@ cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 # ----------------------------------------------------------------------------------------------------------------------
 list( APPEND SRC_SET_CINDER_APP
 	${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
-	${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp
 	${CINDER_SRC_DIR}/cinder/app/KeyEvent.cpp
 	${CINDER_SRC_DIR}/cinder/app/Platform.cpp
 	${CINDER_SRC_DIR}/cinder/app/Renderer.cpp
-	${CINDER_SRC_DIR}/cinder/app/RendererDx.cpp
 	${CINDER_SRC_DIR}/cinder/app/RendererGl.cpp
 	${CINDER_SRC_DIR}/cinder/app/Window.cpp
 )
-
-if( CINDER_TARGET MATCHES "android" )
-    list( APPEND SRC_SET_CINDER_APP_LINUX
-        ${CINDER_SRC_DIR}/cinder/app/android/android_native_app_glue.c
-        ${CINDER_SRC_DIR}/cinder/app/android/AppAndroid.cpp
-        ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroid.cpp
-        ${CINDER_SRC_DIR}/cinder/app/android/AssetFileSystem.cpp
-        ${CINDER_SRC_DIR}/cinder/app/android/EventManagerAndroid.cpp
-        ${CINDER_SRC_DIR}/cinder/app/android/PlatformAndroid.cpp
-        ${CINDER_SRC_DIR}/cinder/app/android/Renderer2dAndroid.cpp
-        ${CINDER_SRC_DIR}/cinder/app/android/RendererGlAndroid.cpp
-        ${CINDER_SRC_DIR}/cinder/app/android/WindowImplAndroid.cpp
-    )
-endif()
 
 if( CINDER_TARGET MATCHES "linux" )
     list( APPEND SRC_SET_CINDER_APP_LINUX
@@ -49,8 +33,6 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Camera.cpp
 	${CINDER_SRC_DIR}/cinder/CameraUi.cpp
 	${CINDER_SRC_DIR}/cinder/Capture.cpp
-	${CINDER_SRC_DIR}/cinder/CaptureImplDirectShow.cpp
-	${CINDER_SRC_DIR}/cinder/CaptureImplJni.cpp
 	${CINDER_SRC_DIR}/cinder/Channel.cpp
 	${CINDER_SRC_DIR}/cinder/CinderAssert.cpp
 	${CINDER_SRC_DIR}/cinder/CinderMath.cpp
@@ -66,14 +48,10 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/GeomIo.cpp
 	${CINDER_SRC_DIR}/cinder/ImageFileTinyExr.cpp
 	${CINDER_SRC_DIR}/cinder/ImageIo.cpp
-	${CINDER_SRC_DIR}/cinder/ImageSourceFileQuartz.cpp
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileRadiance.cpp
 	${CINDER_SRC_DIR}/cinder/ImageSourceFileStbImage.cpp
-	${CINDER_SRC_DIR}/cinder/ImageSourceFileWic.cpp
 	${CINDER_SRC_DIR}/cinder/ImageSourcePng.cpp
-	${CINDER_SRC_DIR}/cinder/ImageTargetFileQuartz.cpp
 	${CINDER_SRC_DIR}/cinder/ImageTargetFileStbImage.cpp
-	${CINDER_SRC_DIR}/cinder/ImageTargetFileWic.cpp
 	${CINDER_SRC_DIR}/cinder/Json.cpp
 	${CINDER_SRC_DIR}/cinder/Log.cpp
 	${CINDER_SRC_DIR}/cinder/Matrix.cpp
@@ -102,8 +80,6 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Unicode.cpp
 	${CINDER_SRC_DIR}/cinder/Url.cpp
 	${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp
-	${CINDER_SRC_DIR}/cinder/UrlImplJni.cpp
-	${CINDER_SRC_DIR}/cinder/UrlImplWinInet.cpp
 	${CINDER_SRC_DIR}/cinder/Utilities.cpp
 	${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
@@ -320,7 +296,6 @@ list( APPEND SRC_SET_FREETYPE
 # Source groups
 # ----------------------------------------------------------------------------------------------------------------------
 source_group( "cinder\\app"             FILES ${SRC_SET_CINDER_APP} )
-source_group( "cinder\\app\\android"    FILES ${SRC_SET_CINDER_APP_ANDROID} )
 source_group( "cinder\\app\\linux"      FILES ${SRC_SET_CINDER_APP_LINUX} )
 source_group( "cinder" 		            FILES ${SRC_SET_CINDER} )
 source_group( "freetyper" 		        FILES ${SRC_SET_FREETYPE} )
