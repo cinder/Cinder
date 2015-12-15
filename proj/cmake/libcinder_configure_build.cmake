@@ -20,7 +20,7 @@ endif()
 
 list( APPEND CINDER_INCLUDE_USER
 	${CINDER_INC_DIR}
-	${CINDER_INC_DIR}/json
+	${CINDER_INC_DIR}/jsoncpp
 	${CINDER_INC_DIR}/tinyexr
 	${CINDER_SRC_DIR}/linebreak
 	${CINDER_SRC_DIR}/oggvorbis
