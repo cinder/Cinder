@@ -10,4 +10,7 @@ add_library(
     ${CINDER_SRC_FILES}
 )
 
+target_include_directories( cinder BEFORE PUBLIC ${CINDER_INCLUDE_USER} )
+target_include_directories( cinder SYSTEM BEFORE PUBLIC ${CINDER_INCLUDE_SYSTEM} )
+
 target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )

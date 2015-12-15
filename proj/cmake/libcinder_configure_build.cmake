@@ -35,7 +35,9 @@ list( APPEND CINDER_INCLUDE_SYSTEM
 
 # find cross-platform packages
 
-find_package( PNG )
+# TODO: this can cause a system include location to appear before cinder/include's,
+# we need to ensure that can't happen before using this
+#find_package( PNG )
 
 if( PNG_FOUND )
 	list( APPEND CINDER_INCLUDE_SYSTEM
@@ -45,8 +47,8 @@ endif()
 
 if( CINDER_FREETYPE_USE_SYSTEM )
 #	TODO: finish this, not sure what to do about library linking
-	find_package( Freetype2 REQUIRED )
-	list( APPEND CINDER_INCLUDE_SYSTEM  ${FREETYPE2_INCLUDE_DIRS} )
+#	find_package( Freetype2 REQUIRED )
+#	list( APPEND CINDER_INCLUDE_SYSTEM  ${FREETYPE2_INCLUDE_DIRS} )
 #	list( APPEND CINDER_LIBS_DEPENDS 	${FREETYPE2_LIBRARIES} )
 else()
 	# use freetype copy that ships with cinder
@@ -54,8 +56,5 @@ else()
 	list( APPEND CINDER_INCLUDE_SYSTEM
 		${CINDER_INC_DIR}/freetype
 	)
-#	add_definitions( -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE )
-	list( APPEND CINDER_DEFINES "-DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE"  )
+	list( APPEND CINDER_DEFINES "-DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -v"  )
 endif()
-include_directories( ${CINDER_INCLUDE_USER} )
-include_directories( ${CINDER_INCLUDE_SYSTEM} SYSTEM )
