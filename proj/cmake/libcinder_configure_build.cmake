@@ -23,7 +23,7 @@ list( APPEND CINDER_INCLUDE_USER
 	${CINDER_INC_DIR}/jsoncpp
 	${CINDER_INC_DIR}/tinyexr
 	${CINDER_SRC_DIR}/linebreak
-	${CINDER_SRC_DIR}/oggvorbis
+	${CINDER_SRC_DIR}/oggvorbis/vorbis
 	${CINDER_SRC_DIR}/r8brain
 )
 
@@ -58,3 +58,12 @@ else()
 	)
 	list( APPEND CINDER_DEFINES "-DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE"  )
 endif()
+
+# declare whether AntTweakBar is available (isn't on mobile devices)
+if( ${CINDER_TARGET} STREQUAL "ios" OR ${CINDER_TARGET} STREQUAL "android" )
+	set( CINDER_ANTTWEAKBAR_ENABLED FALSE )
+else()
+	set( CINDER_ANTTWEAKBAR_ENABLED TRUE )
+endif()
+
+message( "CINDER_ANTTWEAKBAR_ENABLED: ${CINDER_ANTTWEAKBAR_ENABLED}" )

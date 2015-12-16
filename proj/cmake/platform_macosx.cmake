@@ -45,6 +45,16 @@ list( APPEND CINDER_SOURCES_OBJCPP
 	${CINDER_SRC_DIR}/cinder/app/cocoa/AppMac.cpp
 	${CINDER_SRC_DIR}/cinder/app/cocoa/PlatformCocoa.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Environment.cpp
+
+	${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
+	${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
+	${CINDER_SRC_DIR}/AntTweakBar/LoadOGL.cpp
+	${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
+	${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
+	${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
+	${CINDER_SRC_DIR}/AntTweakBar/TwOpenGl.cpp
+	${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
+	${CINDER_SRC_DIR}/AntTweakBar/TwPrecomp.cpp
 )
 
 set_source_files_properties( ${CINDER_SOURCES_OBJCPP}

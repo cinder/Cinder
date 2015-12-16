@@ -1,26 +1,8 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
 # ----------------------------------------------------------------------------------------------------------------------
-# Cinder
+# cinder
 # ----------------------------------------------------------------------------------------------------------------------
-list( APPEND SRC_SET_CINDER_APP
-	${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
-	${CINDER_SRC_DIR}/cinder/app/KeyEvent.cpp
-	${CINDER_SRC_DIR}/cinder/app/Platform.cpp
-	${CINDER_SRC_DIR}/cinder/app/Renderer.cpp
-	${CINDER_SRC_DIR}/cinder/app/RendererGl.cpp
-	${CINDER_SRC_DIR}/cinder/app/Window.cpp
-)
-
-if( CINDER_TARGET MATCHES "linux" )
-    list( APPEND SRC_SET_CINDER_APP_LINUX
-        ${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
-        ${CINDER_SRC_DIR}/cinder/app/linux/AppLinux.cpp
-        ${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
-        ${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
-        ${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
-    )
-endif()
 
 list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Area.cpp
@@ -83,32 +65,238 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
 
+list( APPEND CINDER_SRC_FILES   ${SRC_SET_CINDER} )
+source_group( "cinder" FILES    ${SRC_SET_CINDER} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# cinder::app
+# ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND SRC_SET_CINDER_APP
+	${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
+	${CINDER_SRC_DIR}/cinder/app/KeyEvent.cpp
+	${CINDER_SRC_DIR}/cinder/app/Platform.cpp
+	${CINDER_SRC_DIR}/cinder/app/Renderer.cpp
+	${CINDER_SRC_DIR}/cinder/app/RendererGl.cpp
+	${CINDER_SRC_DIR}/cinder/app/Window.cpp
+)
+
+list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_APP} )
+source_group( "cinder\\app" FILES   ${SRC_SET_CINDER_APP} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# cinder::audio
+# ----------------------------------------------------------------------------------------------------------------------
+
+# ci::audio sources
+list( APPEND SRC_SET_CINDER_AUDIO
+	${CINDER_SRC_DIR}/cinder/audio/ChannelRouterNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/Context.cpp
+	${CINDER_SRC_DIR}/cinder/audio/DelayNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/Device.cpp
+	${CINDER_SRC_DIR}/cinder/audio/FileOggVorbis.cpp
+	${CINDER_SRC_DIR}/cinder/audio/FilterNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/GenNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/InputNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/Node.cpp
+	${CINDER_SRC_DIR}/cinder/audio/NodeMath.cpp
+	${CINDER_SRC_DIR}/cinder/audio/MonitorNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/OutputNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/PanNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/Param.cpp
+	${CINDER_SRC_DIR}/cinder/audio/SamplePlayerNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/SampleRecorderNode.cpp
+	${CINDER_SRC_DIR}/cinder/audio/Source.cpp
+	${CINDER_SRC_DIR}/cinder/audio/Target.cpp
+	${CINDER_SRC_DIR}/cinder/audio/Utilities.cpp
+	${CINDER_SRC_DIR}/cinder/audio/Voice.cpp
+	${CINDER_SRC_DIR}/cinder/audio/WaveTable.cpp
+	${CINDER_SRC_DIR}/cinder/audio/dsp/Biquad.cpp
+	${CINDER_SRC_DIR}/cinder/audio/dsp/Converter.cpp
+	${CINDER_SRC_DIR}/cinder/audio/dsp/Dsp.cpp
+	${CINDER_SRC_DIR}/cinder/audio/dsp/Fft.cpp
+)
+
+list( APPEND CINDER_SRC_FILES           ${SRC_SET_CINDER_AUDIO} )
+source_group( "cinder\\audio" FILES     ${SRC_SET_CINDER_AUDIO} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# cinder::gl
+# ----------------------------------------------------------------------------------------------------------------------
+
+# ci::gl sources
+list( APPEND SRC_SET_CINDER_GL
+	${CINDER_SRC_DIR}/cinder/gl/Batch.cpp
+	${CINDER_SRC_DIR}/cinder/gl/BufferObj.cpp
+	${CINDER_SRC_DIR}/cinder/gl/BufferTexture.cpp
+	${CINDER_SRC_DIR}/cinder/gl/ConstantConversions.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Context.cpp
+	${CINDER_SRC_DIR}/cinder/gl/draw.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Environment.cpp
+	${CINDER_SRC_DIR}/cinder/gl/EnvironmentCore.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Fbo.cpp
+	${CINDER_SRC_DIR}/cinder/gl/GlslProg.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Pbo.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Query.cpp
+	${CINDER_SRC_DIR}/cinder/gl/scoped.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Shader.cpp
+	${CINDER_SRC_DIR}/cinder/gl/ShaderPreprocessor.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Sync.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Texture.cpp
+	${CINDER_SRC_DIR}/cinder/gl/TextureFont.cpp
+	${CINDER_SRC_DIR}/cinder/gl/TextureFormatParsers.cpp
+	${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObj.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Ubo.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Vao.cpp
+	${CINDER_SRC_DIR}/cinder/gl/VaoImplCore.cpp
+	${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
+	${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
+	${CINDER_SRC_DIR}/cinder/gl/wrapper.cpp
+)
+
+list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_GL} )
+source_group( "cinder\\gl" FILES    ${SRC_SET_CINDER_GL} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# cinder::ip
+# ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND SRC_SET_CINDER_IP
+	${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Fill.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Grayscale.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Premultiply.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Threshold.cpp
+	${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Flip.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Hdr.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Resize.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Trim.cpp
+)
+
+list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_IP} )
+source_group( "cinder\\ip" FILES    ${SRC_SET_CINDER_IP} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# cinder::svg
+# ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND SRC_SET_CINDER_SVG
+	${CINDER_SRC_DIR}/cinder/svg/Svg.cpp
+)
+
+list( APPEND CINDER_SRC_FILES       ${SRC_SET_CINDER_SVG} )
+source_group( "cinder\\svg" FILES   ${SRC_SET_CINDER_SVG} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# tinyexr
+# ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND SRC_SET_TINYEXR
+	${CINDER_SRC_DIR}/tinyexr/tinyexr.cc
+)
+
+list( APPEND CINDER_SRC_FILES               ${SRC_SET_TINYEXR} )
+source_group( "thirdparty\\tinyexr" FILES   ${SRC_SET_TINYEXR} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# glload
+# ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND SRC_SET_GLLOAD
+	${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
+	${CINDER_SRC_DIR}/glload/gl_load.c
+)
+
+list( APPEND CINDER_SRC_FILES               ${SRC_SET_GLLOAD} )
+source_group( "thirdparty\\glload" FILES    ${SRC_SET_GLLOAD} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# jsoncpp
+# ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND SRC_SET_JSONCPP
+	${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
+)
+
+list( APPEND CINDER_SRC_FILES               ${SRC_SET_JSONCPP} )
+source_group( "thirdparty\\jsoncpp" FILES   ${SRC_SET_JSONCPP} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# linebreak
+# ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND SRC_SET_LINEBREAK
+	${CINDER_SRC_DIR}/linebreak/linebreak.c
+	${CINDER_SRC_DIR}/linebreak/linebreakdata.c
+	${CINDER_SRC_DIR}/linebreak/linebreakdef.c
+)
+
+list( APPEND CINDER_SRC_FILES                 ${SRC_SET_LINEBREAK} )
+source_group( "thirdparty\\linebreak" FILES   ${SRC_SET_LINEBREAK} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# libtess
+# ----------------------------------------------------------------------------------------------------------------------
+
+# libtess
+list( APPEND SRC_SET_LIBTESS
+	${CINDER_SRC_DIR}/libtess2/bucketalloc.c
+	${CINDER_SRC_DIR}/libtess2/dict.c
+	${CINDER_SRC_DIR}/libtess2/geom.c
+	${CINDER_SRC_DIR}/libtess2/mesh.c
+	${CINDER_SRC_DIR}/libtess2/priorityq.c
+	${CINDER_SRC_DIR}/libtess2/sweep.c
+	${CINDER_SRC_DIR}/libtess2/tess.c
+)
+
+list( APPEND CINDER_SRC_FILES               ${SRC_SET_LIBTESS} )
+source_group( "thirdparty\\libtess" FILES   ${SRC_SET_LIBTESS} )
+
 # ----------------------------------------------------------------------------------------------------------------------
 # libpng
 # ----------------------------------------------------------------------------------------------------------------------
 
 if( PNG_FOUND )
-	list( APPEND SRC_SET_CINDER
+	list( APPEND SRC_SET_TINYEXR
 		${CINDER_SRC_DIR}/cinder/ImageSourcePng.cpp
 	)
+
+	list( APPEND CINDER_SRC_FILES ${SRC_SET_TINYEXR} )
+	source_group( "cinder" FILES ${SRC_SET_CINDER_APP} )
 endif()
 
 # ----------------------------------------------------------------------------------------------------------------------
-# Source groups
+# cinder::params + AntTweakBar
 # ----------------------------------------------------------------------------------------------------------------------
-source_group( "cinder\\app"             FILES ${SRC_SET_CINDER_APP} )
-source_group( "cinder\\app\\linux"      FILES ${SRC_SET_CINDER_APP_LINUX} )
-source_group( "cinder" 		            FILES ${SRC_SET_CINDER} )
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Combine the sources
-# ----------------------------------------------------------------------------------------------------------------------
-list( APPEND CINDER_SRC_FILES
-	${SRC_SET_CINDER_APP}
-	${SRC_SET_CINDER_APP_ANDROID}
-	${SRC_SET_CINDER_APP_LINUX}
-	${SRC_SET_CINDER}
-)
+if( CINDER_ANTTWEAKBAR_ENABLED )
+
+	list( APPEND SRC_SET_CINDER_PARAMS
+		${CINDER_SRC_DIR}/cinder/params/Params.cpp
+	)
+
+	list( APPEND SRC_SET_ANTTWEAKBAR
+		${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/LoadOGL.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGl.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwPrecomp.cpp
+	)
+
+	list( APPEND CINDER_SRC_FILES
+		${SRC_SET_CINDER_PARAMS}
+		${SRC_SET_ANTTWEAKBAR}
+	)
+
+	source_group( "cinder\\params"	            FILES ${SRC_SET_CINDER_PARAMS} )
+	source_group( "thirdparty\\AntTweakBar"	    FILES ${SRC_SET_ANTTWEAKBAR} )
+
+endif()
 
 # ----------------------------------------------------------------------------------------------------------------------
 # FreeType
@@ -162,10 +350,52 @@ if( NOT CINDER_FREETYPE_USE_SYSTEM )
 		${CINDER_SRC_DIR}/freetype/bdf/bdflib.c
 	)
 
-	list( APPEND CINDER_SRC_FILES
-		${SRC_SET_FREETYPE}
-	)
-
-	source_group( "freetype" 		        FILES ${SRC_SET_FREETYPE} )
+	list( APPEND CINDER_SRC_FILES               ${SRC_SET_FREETYPE}	)
+	source_group( "thirdparty\\freetype" FILES  ${SRC_SET_FREETYPE} )
 
 endif() # ! CINDER_FREETYPE_USE_SYSTEM
+
+# ----------------------------------------------------------------------------------------------------------------------
+# r8brain
+# ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND SRC_SET_R8BRAIN
+	${CINDER_SRC_DIR}/r8brain/r8bbase.cpp
+)
+
+list( APPEND CINDER_SRC_FILES               ${SRC_SET_R8BRAIN}	)
+source_group( "thirdparty\\r8brain" FILES   ${SRC_SET_R8BRAIN} )
+
+# ----------------------------------------------------------------------------------------------------------------------
+# oggvorbis
+# ----------------------------------------------------------------------------------------------------------------------
+
+list( APPEND SRC_SET_OGGVORBIS
+	${CINDER_SRC_DIR}/oggvorbis/ogg/bitwise.c
+	${CINDER_SRC_DIR}/oggvorbis/ogg/framing.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/analysis.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/bitrate.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/block.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/codebook.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/envelope.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/floor0.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/floor1.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/info.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/lookup.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/lpc.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/lsp.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/mapping0.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/mdct.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/psy.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/registry.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/res0.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/sharedbook.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/smallft.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/synthesis.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/vorbisenc.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/vorbisfile.c
+	${CINDER_SRC_DIR}/oggvorbis/vorbis/window.c
+)
+
+list( APPEND CINDER_SRC_FILES                   ${SRC_SET_OGGVORBIS} )
+source_group( "thirdparty\\oggvorbis" FILES     ${SRC_SET_OGGVORBIS} )
