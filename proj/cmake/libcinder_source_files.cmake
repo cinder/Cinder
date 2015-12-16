@@ -88,7 +88,6 @@ source_group( "cinder\\app" FILES   ${SRC_SET_CINDER_APP} )
 # cinder::audio
 # ----------------------------------------------------------------------------------------------------------------------
 
-# ci::audio sources
 list( APPEND SRC_SET_CINDER_AUDIO
 	${CINDER_SRC_DIR}/cinder/audio/ChannelRouterNode.cpp
 	${CINDER_SRC_DIR}/cinder/audio/Context.cpp
@@ -124,7 +123,6 @@ source_group( "cinder\\audio" FILES     ${SRC_SET_CINDER_AUDIO} )
 # cinder::gl
 # ----------------------------------------------------------------------------------------------------------------------
 
-# ci::gl sources
 list( APPEND SRC_SET_CINDER_GL
 	${CINDER_SRC_DIR}/cinder/gl/Batch.cpp
 	${CINDER_SRC_DIR}/cinder/gl/BufferObj.cpp
