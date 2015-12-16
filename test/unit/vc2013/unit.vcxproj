@@ -68,12 +68,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)build\$(PlatformToolset)\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)build\$(PlatformToolset)\$(Configuration)\$(PlatformTarget)\obj\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)build\$(PlatformToolset)\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)build\$(PlatformToolset)\$(Configuration)\$(PlatformTarget)\obj\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
   </PropertyGroup>
@@ -85,9 +85,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>CinderUnitTests</TargetName>
+    <OutDir>$(ProjectDir)build\$(PlatformToolset)\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(ProjectDir)build\$(PlatformToolset)\$(Configuration)\$(PlatformTarget)\obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>CinderUnitTests</TargetName>
+    <OutDir>$(ProjectDir)build\$(PlatformToolset)\$(Configuration)\$(PlatformTarget)\</OutDir>
+    <IntDir>$(ProjectDir)build\$(PlatformToolset)\$(Configuration)\$(PlatformTarget)\obj\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -119,13 +123,15 @@
       <Command>xcopy /e /i /y $(ProjectDir)..\data $(OutDir)data</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy data folder to executable directory</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)data</Command>
+      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)\data</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Copy data folder to ProjectDir for debugging</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -156,13 +162,15 @@
       <Command>xcopy /e /i /y $(ProjectDir)..\data $(OutDir)data</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy data folder to executable directory</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)data</Command>
+      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)\data</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Copy data folder to ProjectDir for debugging</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -197,8 +205,12 @@
       <Command>xcopy /e /i /y $(ProjectDir)..\data $(OutDir)data</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy data folder to executable directory</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)\data</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -231,8 +243,12 @@
       <Command>xcopy /e /i /y $(ProjectDir)..\data $(OutDir)data</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy data folder to executable directory</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)\data</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Base64Test.cpp" />

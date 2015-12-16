@@ -102,7 +102,7 @@ TEST_CASE( "signals/Signals" )
 	{
 		class MemberClass {
 		public:
-			MemberClass() { mAccum = 0; }
+			MemberClass(){ mAccum = 0; }
 			void handler()	{ mAccum++;	}
 			int mAccum;
 		};
