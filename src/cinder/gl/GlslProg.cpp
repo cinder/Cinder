@@ -433,6 +433,12 @@ GlslProgRef GlslProg::create( const string &vertexShader, const string &fragment
 }
 	
 #endif
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+GlslProgRef GlslProg::create( DataSourceRef vertexShader, const std::vector<std::string>& varyings, GLenum format )
+{
+	return GlslProgRef( new GlslProg( GlslProg::Format().vertex( vertexShader ).feedbackVaryings( varyings ).feedbackFormat( format ) ) );
+}
+#endif
 	
 GlslProg::~GlslProg()
 {
