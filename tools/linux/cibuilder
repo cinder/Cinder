@@ -24,10 +24,8 @@ if (( $# == 0 )); then
 fi
 
 
-#SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-SCRIPT_DIR=$( pwd )
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-
+DISTRIBUTION_ID=$(lsb_release -is)
 CLEAN=false
 BUILD_TYPES=(Debug)
 NUMPROCS=$( nproc )
@@ -41,6 +39,15 @@ VERBOSE=
 APP_BUILD=false
 SAMPLES=
 GCC=
+
+if [ "$DISTRIBUTION_ID" == "Raspbian" ]; then
+    echo "Building for Rasbian....."
+    RPI2="-DCINDER_LINUX_EGL_RPI2=1"
+    GLES="-DCINDER_GL_ES_2=1"
+    CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es2-rpi2"
+    CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es2"
+    OPENGL_PLAT="es2-rpi2"
+fi
 
 _CORE_COUNT=$(getconf _NPROCESSORS_CONF)
 if [ "$_CORE_COUNT" -gt "$NUMPROCS" ]; then
