@@ -1,34 +1,34 @@
-#pragma once
+#include "catch.hpp"
 
 #include "cinder/audio/dsp/RingBuffer.h"
-
+#include "cinder/Log.h"
 #include "cinder/Thread.h"
-
-BOOST_AUTO_TEST_SUITE( test_ringbuffer )
 
 using namespace std;
 using namespace ci;
 using namespace ci::audio;
 
+TEST_CASE( "audio/RingBuffer" )
+{
 
-BOOST_AUTO_TEST_CASE( test_full_write_read )
+SECTION( "full write read" )
 {
 	dsp::RingBufferT<int> rb( 100 );
 
 	vector<int> a( rb.getSize() );
 	vector<int> b( rb.getSize() );
 
-	for( size_t i = 0; i < rb.getSize(); i++ )
+	for( int i = 0; i < rb.getSize(); i++ )
 		a[i] = i + 1;
 
 	rb.write( a.data(), a.size() );
 	rb.read( b.data(), b.size() );
 
 	for( size_t i = 0; i < rb.getSize(); i++ )
-		BOOST_CHECK_EQUAL( a[i], b[i] );
+		REQUIRE( a[i] == b[i] );
 }
 
-BOOST_AUTO_TEST_CASE( test_threaded_stress )
+SECTION( "threaded stress" )
 {
 	dsp::RingBufferT<uint32_t> rb( 100 );
 	const uint32_t kNumReads = 10000;
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( test_threaded_stress )
 				size_t count = std::min( avail, buf.size() );
 				rb.read( buf.data(), count );
 				for( size_t i = 0; i < count; i++ )
-					BOOST_REQUIRE( buf[i] == currValue++ );
+					REQUIRE( buf[i] == currValue++ );
 			}
 			++currReads;
 		}
@@ -67,11 +67,11 @@ BOOST_AUTO_TEST_CASE( test_threaded_stress )
 		}
 	} );
 
-	cout << "writer / reader threads created. # reads: " << kNumReads << endl;
+	CI_LOG_I( "writer / reader threads created. # reads: " << kNumReads );
 	reader.join();
-	cout << "reader joined." << endl;
+	CI_LOG_I( "reader joined." );
 	writer.join();
-	cout << "writer joined." << endl;
+	CI_LOG_I( "writer joined." );
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+} // audio/RingBuffer
