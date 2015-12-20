@@ -336,6 +336,7 @@
 					"-lcurl",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = ./build;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../";
 			};
 			name = Debug;
@@ -374,6 +375,7 @@
 					"-lcurl",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = ./build;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../";
 			};
 			name = Release;
@@ -385,7 +387,6 @@
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
-				CONFIGURATION_BUILD_DIR = ../;
 				ENABLE_TESTABILITY = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -404,7 +405,6 @@
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
-				CONFIGURATION_BUILD_DIR = ../;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
