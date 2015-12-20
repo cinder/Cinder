@@ -17,7 +17,7 @@ TEST_CASE("Json", "[noisy]")
 		JsonTree value( "key", "value" );
 		console() << value << endl;
 
-		JsonTree doc( loadResource( "data/library.json" ) );
+		JsonTree doc( loadFile( "data/library.json" ) );
 		JsonTree musicLibrary( doc.getChild( "library" ) );
 
 		JsonTree owner = doc.getChild( "library.owner" );
