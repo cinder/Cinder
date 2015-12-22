@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
-message( "Building Cinder for ${CINDER_PLATFORM}" )
+message( "Building Cinder for ${CINDER_TARGET}" )
 
 set( CINDER_SRC_DIR 	"${CINDER_ROOT}/src" )
 set( CINDER_INC_DIR		"${CINDER_ROOT}/include" )
@@ -60,7 +60,7 @@ else()
 endif()
 
 # declare whether AntTweakBar is available (isn't on mobile devices)
-if( ${CINDER_TARGET} STREQUAL "ios" OR ${CINDER_TARGET} STREQUAL "android" )
+if( CINDER_COCOA_TOUCH OR CINDER_ANDROID )
 	set( CINDER_ANTTWEAKBAR_ENABLED FALSE )
 else()
 	set( CINDER_ANTTWEAKBAR_ENABLED TRUE )
