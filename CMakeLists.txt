@@ -4,6 +4,7 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 project( cinder )
 
 set( CINDER_TARGET "" CACHE STRING "Target platform to build for." )
+option( CINDER_BUILD_SAMPLES "Build Samples" OFF )
 option( CINDER_FREETYPE_USE_SYSTEM "Use system-detected freetype2 rather than the one that ships with cinder" OFF )
 
 set( CINDER_ROOT      "${CMAKE_CURRENT_SOURCE_DIR}" )
@@ -40,5 +41,7 @@ else()
 	endif()
 endif()
 
-set( CINDER_SAMPLES TRUE )
-add_subdirectory( ${CINDER_ROOT}/samples/BasicApp/proj/cmake ${CINDER_ROOT}/tmpbuild )
+if( CINDER_BUILD_SAMPLES )
+	set( CINDER_SAMPLES TRUE )
+	add_subdirectory( ${CINDER_ROOT}/samples/BasicApp/proj/cmake ${CINDER_ROOT}/tmpbuild )
+endif()
