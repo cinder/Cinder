@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
-# TODO: deposit lib files in lib/target/arch folder, this is especially necessary on android
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET}/${CMAKE_BUILD_TYPE} )
+# note: CINDER_TARGET_SUBFOLDER is defined by each platform config, to be a folder that lives in cinder/lib/*
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE} )
 
 message( "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" )
 

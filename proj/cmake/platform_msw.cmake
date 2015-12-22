@@ -1,6 +1,7 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
-set( CINDER_PLATFORM "Windows" )
+set( CINDER_PLATFORM "MSW" )
+set( CINDER_TARGET_SUBFOLDER "msw" ) # TODO: place in msw/arch folder (x64 or x86)
 
 include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
 include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )

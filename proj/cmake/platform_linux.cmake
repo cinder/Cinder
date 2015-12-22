@@ -1,7 +1,8 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
-set( CINDER_PLATFORM "Linux" )
+set( CINDER_PLATFORM "Posix" )
+set( CINDER_TARGET_SUBFOLDER "linux" )
 
 include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
 include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )

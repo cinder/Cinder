@@ -3,6 +3,11 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 set( CINDER_PLATFORM "Android" )
 
+set( CINDER_ANDROID_NDK_PLATFORM 21 )
+set( CINDER_ANDROID_NDK_ARCH "armeabi-v7a" )
+
+set( CINDER_TARGET_SUBFOLDER "android-${CINDER_ANDROID_NDK_PLATFORM/CINDER_ANDROID_NDK_ARCH" )
+
 include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
 include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
 

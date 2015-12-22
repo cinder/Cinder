@@ -1,6 +1,7 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
-set( CINDER_PLATFORM "Mac OS X" )
+set( CINDER_PLATFORM "Cocoa" )
+set( CINDER_TARGET_SUBFOLDER "macosx" )
 
 include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
 include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
