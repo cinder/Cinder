@@ -14,7 +14,6 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Buffer.cpp
 	${CINDER_SRC_DIR}/cinder/Camera.cpp
 	${CINDER_SRC_DIR}/cinder/CameraUi.cpp
-	${CINDER_SRC_DIR}/cinder/Capture.cpp
 	${CINDER_SRC_DIR}/cinder/Channel.cpp
 	${CINDER_SRC_DIR}/cinder/CinderAssert.cpp
 	${CINDER_SRC_DIR}/cinder/CinderMath.cpp
@@ -44,7 +43,6 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Rand.cpp
 	${CINDER_SRC_DIR}/cinder/Ray.cpp
 	${CINDER_SRC_DIR}/cinder/Rect.cpp
-	${CINDER_SRC_DIR}/cinder/Serial.cpp
 	${CINDER_SRC_DIR}/cinder/Shape2d.cpp
 	${CINDER_SRC_DIR}/cinder/Signals.cpp
 	${CINDER_SRC_DIR}/cinder/Sphere.cpp
@@ -64,6 +62,13 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Utilities.cpp
 	${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
+
+if( NOT CINDER_LINUX )
+	list( APPEND SRC_SET_CINDER
+		${CINDER_SRC_DIR}/cinder/Capture.cpp
+		${CINDER_SRC_DIR}/cinder/Serial.cpp
+	)
+endif()
 
 list( APPEND CINDER_SRC_FILES   ${SRC_SET_CINDER} )
 source_group( "cinder" FILES    ${SRC_SET_CINDER} )
@@ -281,7 +286,7 @@ if( CINDER_ANTTWEAKBAR_ENABLED )
 		${CINDER_SRC_DIR}/AntTweakBar/LoadOGLCore.cpp
 		${CINDER_SRC_DIR}/AntTweakBar/TwBar.cpp
 		${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
-		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGl.cpp
+		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGL.cpp
 		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
 		${CINDER_SRC_DIR}/AntTweakBar/TwPrecomp.cpp
 	)
