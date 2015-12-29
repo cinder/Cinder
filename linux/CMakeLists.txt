@@ -322,16 +322,6 @@ target_compile_definitions( cinder${CINDER_LIB_SUFFIX} PUBLIC ${CINDER_DEFINITIO
 # Include directories.
 target_include_directories( cinder${CINDER_LIB_SUFFIX} PUBLIC "$<BUILD_INTERFACE:${CINDER_INCLUDE_DIRS};${CINDER_INCLUDE_DEPENDS}>" )
 
-# NOTE: This needs to come after all the other includedirectories so that boost/asio doesn't get
-#       precendence over cinder/include/asio.
-#
-# There is a conflict between boost/regex.h and /usr/include/regex.h when building the examples
-# so avoid propagating the boost dirs across the compilation of samples.
-if( NOT CINDER_USE_SYSTEM_LIBS )
-    target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${CINDER_INC_DIR}/boost )
-endif()
-
-
 # Link libraries.
 target_link_libraries( cinder${CINDER_LIB_SUFFIX} INTERFACE ${CINDER_LIBS_DEPENDS} )
 
