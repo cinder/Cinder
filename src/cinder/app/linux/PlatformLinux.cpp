@@ -268,7 +268,7 @@ struct DialogHelper {
 			if( dh.isZenity() ) {
 				args.push_back( "--file-selection" );
 				args.push_back( "--save" );
-				args.push_back( " --confirm-overwrite" );
+				args.push_back( "--confirm-overwrite" );
 
 				args.push_back( "--filename");
 				args.push_back( quote( initialPath.string() ) );
