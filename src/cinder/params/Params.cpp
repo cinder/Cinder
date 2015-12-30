@@ -268,6 +268,9 @@ void TW_CALL buttonCallback( void *clientData )
 // struct used to start getter/setter pair
 template <class T>
 struct Accessors {
+	Accessors(std::function<T()> getter)
+		: mSetter(nullptr), mGetter(getter)
+	{}
 	Accessors( std::function<void( T )> setter, std::function<T ()> getter )
 		: mSetter( setter )	, mGetter( getter )
 	{}
@@ -771,6 +774,20 @@ void InterfaceGl::addParamCallbackImpl( const function<void (T)> &setter, const 
 	TwAddVarCB( mBar.get(), name.c_str(), (TwType) type, setterCallback<T>, getterCallback<T>, (void *)callbackPtr.get(), NULL );
 }
 
+template <typename T>
+void InterfaceGl::addParamCallbackImpl(const function<T()> &getter, const Options<T> &options)
+{
+	TwSetCurrentWindow(mTwWindowId);
+
+	const string &name = options.getName();
+	int type = options.mTwType;
+
+	auto callbackPtr = std::make_shared<Accessors<T>>(getter);
+	mStoredCallbacks.insert(make_pair(name, callbackPtr));
+
+	TwAddVarCB(mBar.get(), name.c_str(), (TwType)type, (TwSetVarCallback) nullptr, getterCallback<T>, (void *)callbackPtr.get(), NULL);
+}
+
 template <> InterfaceGl::Options<bool>		InterfaceGl::addParam( const std::string &name, bool *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_BOOLCPP, readOnly ); }
 template <> InterfaceGl::Options<char>		InterfaceGl::addParam( const std::string &name, char *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_CHAR, readOnly ); }
 template <> InterfaceGl::Options<int8_t>	InterfaceGl::addParam( const std::string &name, int8_t *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_INT8, readOnly ); }
@@ -807,4 +824,21 @@ template void InterfaceGl::addParamCallbackImpl( const function<void( dquat )>		
 template void InterfaceGl::addParamCallbackImpl( const function<void( vec3 )>		&setter, const function<vec3 ()>		&getter, const Options<vec3>		&options );
 template void InterfaceGl::addParamCallbackImpl( const function<void( dvec3 )>		&setter, const function<dvec3 ()>		&getter, const Options<dvec3>		&options );
 
+template void InterfaceGl::addParamCallbackImpl( const function<bool ()>		&getter, const Options<bool>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<char ()>		&getter, const Options<char>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<int8_t ()>		&getter, const Options<int8_t>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<uint8_t ()>		&getter, const Options<uint8_t>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<int16_t ()>		&getter, const Options<int16_t>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<uint16_t ()>	&getter, const Options<uint16_t>	&options );
+template void InterfaceGl::addParamCallbackImpl( const function<int32_t ()>		&getter, const Options<int32_t>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<uint32_t ()>	&getter, const Options<uint32_t>	&options );
+template void InterfaceGl::addParamCallbackImpl( const function<float ()>		&getter, const Options<float>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<double ()>		&getter, const Options<double>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<string ()>		&getter, const Options<string>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<Color ()>		&getter, const Options<Color>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<ColorA ()>		&getter, const Options<ColorA>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<quat ()>		&getter, const Options<quat>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<dquat ()>		&getter, const Options<dquat>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<vec3 ()>		&getter, const Options<vec3>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<dvec3 ()>		&getter, const Options<dvec3>		&options );
 } } // namespace cinder::params
