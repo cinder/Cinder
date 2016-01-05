@@ -135,7 +135,7 @@ struct DialogHelper {
 	static DialogHelper get() {
 		DialogHelper result;
 
-		 Zenity gets priority
+		// Zenity gets priority
 		if( fs::exists( "/usr/bin/zenity" ) ) {
 			result.execName = DialogHelper::ZENITY;
 			result.execPath = "/usr/bin/zenity";
