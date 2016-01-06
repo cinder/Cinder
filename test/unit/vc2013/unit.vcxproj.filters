@@ -13,7 +13,10 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="Source Files\Signals">
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{1827bea0-7c6d-42c9-b5e0-c605fffdeb77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\signals">
       <UniqueIdentifier>{d86862cb-6666-42c3-b358-aaa143508507}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -40,12 +43,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\signals\SignalsTest.cpp">
-      <Filter>Source Files\Signals</Filter>
+      <Filter>Source Files\signals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\BufferUnit.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\FftUnit.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\RingBufferUnit.cpp">
+      <Filter>Source Files\audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\catch.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\utils.h">
+      <Filter>Source Files\audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
