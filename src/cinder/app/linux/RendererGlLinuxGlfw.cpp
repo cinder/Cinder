@@ -53,6 +53,7 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 #endif
 	gl::env()->initializeFunctionPointers();
 
+std::cout << "mContext: " << (size_t)mContext << std::endl;
 	std::shared_ptr<gl::PlatformDataLinux> platformData( new gl::PlatformDataLinux( mContext ) );
 	platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
 

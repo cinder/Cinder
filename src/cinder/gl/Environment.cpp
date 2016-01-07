@@ -102,6 +102,7 @@ void destroyPlatformData( Context::PlatformData *data )
 	auto platformData = dynamic_cast<PlatformDataAndroid*>( data );
 #elif defined( CINDER_LINUX )
 	auto platformData = dynamic_cast<PlatformDataLinux*>( data );
+	::glfwDestroyWindow( platformData->mContext );
 #endif
 
 	delete data;
@@ -177,7 +178,10 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );	
   #else
 	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataLinux>( sharedContext->getPlatformData() );
-  	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedContextPlatformData->mContext ) );
+	// Create a shared context GLFW style
+	glfwWindowHint( GLFW_VISIBLE, GL_FALSE );
+	GLFWwindow* sharedGlfwContext = ::glfwCreateWindow( 1, 1, "", NULL, sharedContextPlatformData->mContext );	
+ 	shared_ptr<Context::PlatformData> platformData( new PlatformDataLinux( sharedGlfwContext ), destroyPlatformData );
   #endif
 #endif
 
