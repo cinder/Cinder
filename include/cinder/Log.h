@@ -219,7 +219,7 @@ public:
 	std::shared_ptr<LoggerT> makeLogger( Args&&... args );
 
 	template<typename LoggerT, typename... Args>
-	std::shared_ptr<LoggerT> makeOrGet( Args&&... args );
+	std::shared_ptr<LoggerT> makeOrGetLogger( Args&&... args );
 	
 protected:
 	LogManager();
@@ -266,11 +266,13 @@ std::shared_ptr<LoggerT> makeLogger( Args&&... args )
 {
 	return manager()->makeLogger<LoggerT>( std::forward<Args>( args )... );
 }
-	
+
+//! If a logger of type LoggerT exists, it will return that logger.  Otherwise creates and
+//! returns a new logger of type LoggerT, adding it to the current Logger stack.
 template<typename LoggerT, typename... Args>
-std::shared_ptr<LoggerT> makeOrGet( Args&&... args )
+std::shared_ptr<LoggerT> makeOrGetLogger( Args&&... args )
 {
-	return manager()->makeOrGet<LoggerT>( std::forward<Args>( args )... );
+	return manager()->makeOrGetLogger<LoggerT>( std::forward<Args>( args )... );
 }
 
 // ----------------------------------------------------------------------------------
@@ -287,7 +289,7 @@ std::shared_ptr<LoggerT> LogManager::makeLogger( Args&&... args )
 }
 
 template<typename LoggerT, typename... Args>
-std::shared_ptr<LoggerT> LogManager::makeOrGet( Args&&... args )
+std::shared_ptr<LoggerT> LogManager::makeOrGetLogger( Args&&... args )
 {
 	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
 	
