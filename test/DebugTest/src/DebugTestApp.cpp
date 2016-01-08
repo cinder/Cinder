@@ -317,9 +317,9 @@ void DebugTestApp::testMakeOrGet()
 	}
 	
 	CI_ASSERT( 0 == log::manager()->getLoggers<log::LoggerConsole>().size() );
-	log::makeOrGet<log::LoggerConsole>();
+	log::makeOrGetLogger<log::LoggerConsole>();
 	CI_ASSERT( 1 == log::manager()->getLoggers<log::LoggerConsole>().size() );
-	log::makeOrGet<log::LoggerConsole>();
+	log::makeOrGetLogger<log::LoggerConsole>();
 	CI_ASSERT( 1 == log::manager()->getLoggers<log::LoggerConsole>().size() );
 	
 	CI_LOG_D( "makeOrGet is functioning." );
