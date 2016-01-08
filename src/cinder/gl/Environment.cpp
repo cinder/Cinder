@@ -101,8 +101,10 @@ void destroyPlatformData( Context::PlatformData *data )
 #elif defined( CINDER_ANDROID )
 	auto platformData = dynamic_cast<PlatformDataAndroid*>( data );
 #elif defined( CINDER_LINUX )
+#if !defined( CINDER_LINUX_EGL_ONLY )
 	auto platformData = dynamic_cast<PlatformDataLinux*>( data );
 	::glfwDestroyWindow( platformData->mContext );
+#endif
 #endif
 
 	delete data;
@@ -250,6 +252,13 @@ void Environment::makeContextCurrent( const Context *context )
 	// }
 #elif defined( CINDER_LINUX )
   #if defined( CINDER_LINUX_EGL_ONLY )
+	//if( context ) {
+	//	auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
+	// 	EGLBoolean status = ::eglMakeCurrent( platformData->mDisplay, platformData->mSurface, platformData->mSurface, platformData->mContext );
+	// 	assert( status );
+	//} else {
+	//	EGLBoolean status = eglMakeCurrent( ::eglGetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
+	//}
   #else
 	if( context ) {
 		auto platformData = dynamic_pointer_cast<PlatformDataLinux>( context->getPlatformData() );
