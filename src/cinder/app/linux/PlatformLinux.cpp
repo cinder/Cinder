@@ -135,7 +135,7 @@ struct DialogHelper {
 	static DialogHelper get() {
 		DialogHelper result;
 
-		 Zenity gets priority
+		// Zenity gets priority
 		if( fs::exists( "/usr/bin/zenity" ) ) {
 			result.execName = DialogHelper::ZENITY;
 			result.execPath = "/usr/bin/zenity";
@@ -268,7 +268,7 @@ struct DialogHelper {
 			if( dh.isZenity() ) {
 				args.push_back( "--file-selection" );
 				args.push_back( "--save" );
-				args.push_back( " --confirm-overwrite" );
+				args.push_back( "--confirm-overwrite" );
 
 				args.push_back( "--filename");
 				args.push_back( quote( initialPath.string() ) );
