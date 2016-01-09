@@ -194,6 +194,8 @@ void SamplePlayerNodeTestApp::setupBufferRecorderNode()
 void SamplePlayerNodeTestApp::setSourceFile( const DataSourceRef &dataSource )
 {
 	mSourceFile = audio::load( dataSource, audio::master()->getSampleRate() );
+	mLoopEndSlider.mMax = (float)mSourceFile->getNumSeconds();
+	mLoopBeginSlider.set( (float)mSourceFile->getNumSeconds() );
 
 	getWindow()->setTitle( dataSource->getFilePath().filename().string() );
 
