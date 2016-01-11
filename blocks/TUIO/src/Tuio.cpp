@@ -262,11 +262,11 @@ public:
 	virtual void	handleFseq( int32_t frame ) = 0;
 	
 protected:
-	std::string						mCurrentSource;
-	std::vector<int32_t>			mAdded, mUpdated;
-	std::vector<TuioType>			mSetOfCurrentTouches,
-									mRemovedTouches;
-	std::map<std::string, int32_t>	mSourceFrameNums;
+	typename map<string, vector<TuioType>>::iterator	mCurrentIt;
+	map<string, vector<TuioType>>						mSetOfCurrentTouches;
+	vector<int32_t>					mAdded, mUpdated;
+	vector<TuioType>				mRemovedTouches;
+	map<std::string, int32_t>		mSourceFrameNums;
 };
 	
 //! Represents a handler with seperated callbacks
@@ -555,31 +555,37 @@ void TypeHandler<TuioType>::handleMessage( const osc::Message &message )
 	
 	using namespace std;
 	if( messageType == "source" ) {
-		mCurrentSource = message[1].string();
+		auto source = message[1].string();
+		mCurrentIt = mSetOfCurrentTouches.find( source );
+		if( mCurrentIt == mSetOfCurrentTouches.end() ) {
+			auto emplaced = mSetOfCurrentTouches.emplace( source, std::vector<TuioType>() );
+			mCurrentIt = emplaced.first;
+		}
 	}
 	else if( messageType == "set" ) {
 		auto sessionId = message[1].int32();
-		auto & source = mCurrentSource;
-		auto it = find_if( begin( mSetOfCurrentTouches ), end( mSetOfCurrentTouches ),
-		[sessionId, source]( const TuioType &type ){
-			  return source == type.getSource() &&
-					 sessionId == type.getSessionId();
+		auto &currentSet = mCurrentIt->second;
+		auto currentBegin = begin( currentSet );
+		auto currentEnd = end( currentSet );
+		auto it = find_if( currentBegin, currentEnd,
+		[sessionId]( const TuioType &type ){
+			  return sessionId == type.getSessionId();
 		});
-		if( it == end( mSetOfCurrentTouches ) ) {
+		if( it == currentEnd ) {
 			TuioType type( message );
-			auto insert = lower_bound( begin( mSetOfCurrentTouches ),
-									  end( mSetOfCurrentTouches ),
-									  type,
+			auto insert = lower_bound( currentBegin,
+									   currentEnd,
+									   type,
 			[]( const TuioType &lhs, const TuioType &value ){
 				  return lhs < value;
 			});
-			type.setSource( mCurrentSource );
-			mSetOfCurrentTouches.emplace( insert, std::move( type ) );
+			type.setSource( mCurrentIt->first );
+			currentSet.emplace( insert, std::move( type ) );
 			mAdded.push_back( sessionId );
 		}
 		else {
 			TuioType type( message );
-			type.setSource( mCurrentSource );
+			type.setSource( mCurrentIt->first );
 			*it = std::move( type );
 			mUpdated.push_back( sessionId );
 		}
@@ -592,16 +598,15 @@ void TypeHandler<TuioType>::handleMessage( const osc::Message &message )
 		}
 		std::sort( begin( aliveIds ), end( aliveIds ) );
 		auto & aliveIdsRef = aliveIds;
-		auto & currentSourceRef = mCurrentSource;
-		std::function<bool(const TuioType &)> aliveIdsRemoveIf = [aliveIdsRef, currentSourceRef]( const TuioType &type ) {
-			if( type.getSource() != currentSourceRef ) return true; // this isn't the correct source so leave it where it is.
+		std::function<bool(const TuioType &)> aliveIdsRemoveIf = [aliveIdsRef]( const TuioType &type ) {
 			return binary_search( begin( aliveIdsRef ), end( aliveIdsRef ), type.getSessionId() ); // search for the sessionId
 		};
-		auto currentEnd = end( mSetOfCurrentTouches );
-		auto remove = stable_partition( begin( mSetOfCurrentTouches ), currentEnd, aliveIdsRemoveIf );
+		auto &currentSet = mCurrentIt->second;
+		auto currentEnd = end( currentSet );
+		auto remove = stable_partition( begin( currentSet ), currentEnd, aliveIdsRemoveIf );
 		if( remove != currentEnd ) {
 			std::move( remove, currentEnd, back_inserter( mRemovedTouches ) );
-			mSetOfCurrentTouches.erase( remove, currentEnd );
+			currentSet.erase( remove, currentEnd );
 		}
 	}
 	else if( messageType == "fseq" ) {
@@ -636,21 +641,22 @@ void SeparatedCallbackHandler<TuioType>::setRemovedHandler( TypeFn<TuioType> cal
 template<typename TuioType>
 void SeparatedCallbackHandler<TuioType>::handleFseq( int32_t frame )
 {
-	int32_t prev_frame = this->mSourceFrameNums[this->mCurrentSource];
+	int32_t prev_frame = this->mSourceFrameNums[this->mCurrentIt->first];
 	int32_t delta_frame = frame - prev_frame;
 	// TODO: figure out about past frame threshold updating, this was also in the if condition ( dframe < -mPastFrameThreshold )
 	if( frame == -1 || delta_frame > 0 ) {
 		std::lock_guard<std::mutex> lock( mCallbackMutex );
-		auto begin = std::begin( this->mSetOfCurrentTouches );
-		auto end = std::end( this->mSetOfCurrentTouches );
+		auto & currentSet = this->mCurrentIt->second;
+		auto currentBegin = begin( currentSet );
+		auto currentEnd = end( currentSet );
 		if( ! this->mAdded.empty() ) {
 			if( mAddCallback ) {
 				for( auto & added : this->mAdded ) {
-					auto found = find_if( begin, end,
+					auto found = find_if( currentBegin, currentEnd,
 					[added]( const TuioType &type ) {
 						 return added == type.getSessionId();
 					});
-					if( found != end )
+					if( found != currentEnd )
 						mAddCallback( *found );
 				}
 			}
@@ -659,11 +665,11 @@ void SeparatedCallbackHandler<TuioType>::handleFseq( int32_t frame )
 		if ( ! this->mUpdated.empty() ) {
 			if( mUpdateCallback ) {
 				for( auto & updated : this->mUpdated ) {
-					auto found = find_if( begin, end,
+					auto found = find_if( currentBegin, currentEnd,
 					[updated]( const TuioType &type ) {
 						 return updated == type.getSessionId();
 					});
-					if( found != end )
+					if( found != currentEnd )
 						mUpdateCallback( *found );
 				}
 			}
@@ -676,7 +682,7 @@ void SeparatedCallbackHandler<TuioType>::handleFseq( int32_t frame )
 				}
 			this->mRemovedTouches.clear();
 		}
-		this->mSourceFrameNums[this->mCurrentSource] = ( frame == -1 ) ? this->mSourceFrameNums[this->mCurrentSource] : frame;
+		this->mSourceFrameNums[this->mCurrentIt->first] = ( frame == -1 ) ? this->mSourceFrameNums[this->mCurrentIt->first] : frame;
 	}
 }
 	
@@ -691,36 +697,37 @@ void WindowCursorHandler::setFseqFn( FseqFn fseqFn )
 	
 void WindowCursorHandler::handleFseq( int32_t frame )
 {
-	int32_t prev_frame = this->mSourceFrameNums[this->mCurrentSource];
+	int32_t prev_frame = this->mSourceFrameNums[this->mCurrentIt->first];
 	int32_t delta_frame = frame - prev_frame;
 	// TODO: figure out about past frame threshold updating, this was also in the if condition ( dframe < -mPastFrameThreshold )
 	if( frame == -1 || delta_frame > 0 ) {
-		auto begin = std::begin( this->mSetOfCurrentTouches );
-		auto end = std::end( this->mSetOfCurrentTouches );
+		auto & currentSet = this->mCurrentIt->second;
+		auto currentBegin = begin( currentSet );
+		auto currentEnd = end( currentSet );
 		std::vector<Cursor2d> addedCursors, updatedCursors;
 		if( ! this->mAdded.empty() ) {
 			for( auto & added : this->mAdded ) {
-				auto found = find_if( begin, end,
+				auto found = find_if( currentBegin, currentEnd,
 				[added]( const Cursor2d &type ) {
 					 return added == type.getSessionId();
 				});
-				if( found != end )
+				if( found != currentEnd )
 					addedCursors.push_back( *found );
 			}
 			this->mAdded.clear();
 		}
 		if ( ! this->mUpdated.empty() ) {
 			for( auto & updated : this->mUpdated ) {
-				auto found = find_if( begin, end,
+				auto found = find_if( currentBegin, currentEnd,
 				[updated]( const Cursor2d &type ) {
 					 return updated == type.getSessionId();
 				});
-				if( found != end )
+				if( found != currentEnd )
 					updatedCursors.push_back( *found );
 			}
 			this->mUpdated.clear();
 		}
-		this->mSourceFrameNums[this->mCurrentSource] = ( frame == -1 ) ? this->mSourceFrameNums[this->mCurrentSource] : frame;
+		this->mSourceFrameNums[this->mCurrentIt->first] = ( frame == -1 ) ? this->mSourceFrameNums[this->mCurrentIt->first] : frame;
 		{
 			std::lock_guard<std::mutex> lock( mFseqMutex );
 			mFseqFn( addedCursors, updatedCursors, this->mRemovedTouches );
