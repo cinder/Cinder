@@ -62,6 +62,7 @@ using namespace std::placeholders;
 #define htonll(x) ntohll(x)
 #endif
 
+namespace cinder {
 namespace osc {
 	
 /// Convert 32-bit float to a big-endian network format
@@ -461,19 +462,24 @@ const Argument& Message::operator[]( uint32_t index ) const
 bool Message::operator==( const Message &message ) const
 {
 	auto sameAddress = message.mAddress == mAddress;
-	if( ! sameAddress ) return false;
+	if( ! sameAddress )
+		return false;
 	
 	auto sameDataViewSize = message.mDataViews.size() == mDataViews.size();
-	if( ! sameDataViewSize ) return false;
+	if( ! sameDataViewSize )
+		return false;
 	for( int i = 0; i < mDataViews.size(); i++ ) {
 		auto sameDataView = message.mDataViews[i] == mDataViews[i];
-		if( ! sameDataView ) return false;
+		if( ! sameDataView )
+			return false;
 	}
 	
 	auto sameDataBufferSize = mDataBuffer.size() == message.mDataBuffer.size();
-	if( ! sameDataBufferSize ) return false;
+	if( ! sameDataBufferSize )
+		return false;
 	auto sameDataBuffer = ! memcmp( mDataBuffer.data(), message.mDataBuffer.data(), mDataBuffer.size() );
-	if( ! sameDataBuffer ) return false;
+	if( ! sameDataBuffer )
+		return false;
 	
 	return true;
 }
@@ -848,9 +854,8 @@ void Message::clear()
 std::ostream& operator<<( std::ostream &os, const Message &rhs )
 {
 	os << "Address: " << rhs.getAddress() << std::endl;
-	for( auto &dataView : rhs.mDataViews ) {
+	for( auto &dataView : rhs.mDataViews )
 		os << "\t" << dataView << std::endl;
-	}
 	return os;
 }
 	
@@ -909,9 +914,8 @@ void SenderBase::setSocketTransportErrorFn( SocketTransportErrorFn errorFn )
 void SenderBase::handleError( const asio::error_code &error, const std::string &oscAddress )
 {
 	std::lock_guard<std::mutex> lock( mSocketErrorFnMutex );
-	if( mSocketTransportErrorFn ) {
+	if( mSocketTransportErrorFn )
 		mSocketTransportErrorFn( error, oscAddress );
-	}
 	else
 		CI_LOG_E( "Socket error: " << error.message() << ", didn't send message [" << oscAddress << "]" );
 }
@@ -962,7 +966,8 @@ void SenderUdp::bindImpl()
 	
 void SenderUdp::sendImpl( const ByteBufferRef &data )
 {
-	if( ! mSocket->is_open() ) return;
+	if( ! mSocket->is_open() )
+		return;
 	
 	// data's first 4 bytes(int) comprise the size of the buffer, which datagram doesn't need.
 	mSocket->async_send_to( asio::buffer( data->data() + 4, data->size() - 4 ), mRemoteEndpoint,
@@ -1017,7 +1022,8 @@ void SenderTcp::bindImpl()
 	
 void SenderTcp::connect()
 {
-	if( ! mSocket->is_open() ) return;
+	if( ! mSocket->is_open() )
+		return;
 	
 	mSocket->async_connect( mRemoteEndpoint,
 	[&]( const asio::error_code &error ){
@@ -1039,7 +1045,8 @@ void SenderTcp::setOnConnectFn( OnConnectFn onConnectFn )
 
 void SenderTcp::sendImpl( const ByteBufferRef &data )
 {
-	if( ! mSocket->is_open() ) return;
+	if( ! mSocket->is_open() )
+		return;
 	
 	ByteBufferRef transportData = data;
 	if( mPacketFraming )
@@ -1092,7 +1099,8 @@ void ReceiverBase::dispatchMethods( uint8_t *data, uint32_t size )
 {
 	std::vector<Message> messages;
 	decodeData( data, size, messages );
-	if( messages.empty() ) return;
+	if( messages.empty() )
+		return;
 	
 	std::lock_guard<std::mutex> lock( mListenerMutex );
 	// iterate through all the messages and find matches with registered methods
@@ -1720,3 +1728,5 @@ void calcOffsetFromSystem( uint64_t ntpTime, int64_t *localOffsetSecs, int64_t *
 } // namespace time
 
 } // namespace osc
+	
+} // namespace cinder

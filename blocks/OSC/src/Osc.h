@@ -45,6 +45,7 @@
 #define NOEXCEPT
 #endif
 
+namespace cinder {
 namespace osc {
 	
 //! Argument types suported by the Message class
@@ -914,6 +915,8 @@ namespace time {
 	std::string getClockString( uint64_t ntpTime, bool includeDate = false );
 	//! Sets the current presentation time as NTP time, from which an offset to the system clock is calculated.
 	void calcOffsetFromSystem( uint64_t ntpTime, int64_t *localOffsetSecs, int64_t *localOffsetUSecs );
-};
+} // namespace time
 	
-}
+} // namespace osc
+	
+} // namespace cinder
