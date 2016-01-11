@@ -52,8 +52,11 @@ class ConcurrentCircularBuffer : private Noncopyable {
 			mNotFullCond.wait( lock );
 			mNumWaitingNotFull--;
 		}
-		if( mCanceled )
+		if( mCanceled ) {
+			if( mNumWaitingNotEmpty == 0 && mNumWaitingNotFull == 0 )
+				mCancelCond.notify_all();
 			return false;
+		}
 		mContainer.push_front( item );
 		++mNumUnread;
 		mNotEmptyCond.notify_one();
@@ -68,8 +71,11 @@ class ConcurrentCircularBuffer : private Noncopyable {
 			mNotEmptyCond.wait( lock );
 			mNumWaitingNotEmpty--;
 		}
-		if( mCanceled )
+		if( mCanceled ) {
+			if( mNumWaitingNotEmpty == 0 && mNumWaitingNotFull == 0 )
+				mCancelCond.notify_all();		
 			return false;
+		}
 		*pItem = mContainer[--mNumUnread];
 		mNotFullCond.notify_one();
 		return true;
@@ -115,23 +121,10 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		mNotFullCond.notify_all(); // atomic, never throws
 		mNotEmptyCond.notify_all(); // atomic, never throws
 
-		// Lock is released to allow other threads to cancel.
-		lock.unlock();
-
 		// Wait for all threads to cancel.
-		while( true ) {
-			if( lock.try_lock() ) {
-				if( mNumWaitingNotEmpty == 0 && mNumWaitingNotFull == 0 ) {
-					break;
-				}
+		mCancelCond.wait( lock );
 
-				lock.unlock();
-			}
-
-			// Allow other threads to run but get back here ASAP.
-			std::this_thread::sleep_for( std::chrono::milliseconds( 0 ) );
-		}
-
+		// Done.
 		mCanceled = false;
 	}
 	
@@ -153,6 +146,7 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	mutable std::mutex		mMutex;
 	std::condition_variable	mNotEmptyCond;
 	std::condition_variable	mNotFullCond;
+	std::condition_variable	mCancelCond;
 	bool					mCanceled;
 
 	// These don't need to be atomic, as they are also guarded by the mutex.
