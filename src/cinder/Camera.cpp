@@ -137,21 +137,6 @@ void Camera::getFrustum( float *left, float *top, float *right, float *bottom, f
 	*far = mFarClip;
 }
 
-Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) const
-{	
-	calcMatrices();
-
-	float s = ( uPos - 0.5f ) * imagePlaneApectRatio;
-	float t = ( vPos - 0.5f );
-	float viewDistance = imagePlaneApectRatio / math<float>::abs( mFrustumRight - mFrustumLeft ) * mNearClip;
-	return Ray( mEyePoint, normalize( mU * s + mV * t - ( mW * viewDistance ) ) );
-}
-
-Ray Camera::generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const
-{
-	return generateRay( posPixels.x / imageSizePixels.x, ( imageSizePixels.y - posPixels.y ) / imageSizePixels.y, imageSizePixels.x / imageSizePixels.y );
-}
-
 void Camera::getBillboardVectors( vec3 *right, vec3 *up ) const
 {
 	*right = glm::vec3( glm::row( getViewMatrix(), 0 ) );
@@ -255,6 +240,16 @@ void Camera::calcInverseView() const
 	mInverseModelViewCached = true;
 }
 
+Ray Camera::calcRay( float uPos, float vPos, float imagePlaneApectRatio ) const
+{
+	calcMatrices();
+
+	float s = ( uPos - 0.5f ) * imagePlaneApectRatio;
+	float t = ( vPos - 0.5f );
+	float viewDistance = imagePlaneApectRatio / math<float>::abs( mFrustumRight - mFrustumLeft ) * mNearClip;
+	return Ray( mEyePoint, normalize( mU * s + mV * t - ( mW * viewDistance ) ) );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraPersp
 // Creates a default camera resembling Maya Persp
@@ -305,6 +300,16 @@ void CameraPersp::setPerspective( float verticalFovDegrees, float aspectRatio, f
 	mFarClip		= farPlane;
 
 	mProjectionCached = false;
+}
+
+Ray CameraPersp::calcRay( float uPos, float vPos, float imagePlaneApectRatio ) const
+{
+	calcMatrices();
+
+	float s = ( uPos - 0.5f + 0.5f * mLensShift.x ) * imagePlaneApectRatio;
+	float t = ( vPos - 0.5f + 0.5f * mLensShift.y );
+	float viewDistance = imagePlaneApectRatio / math<float>::abs( mFrustumRight - mFrustumLeft ) * mNearClip;
+	return Ray( mEyePoint, normalize( mU * s + mV * t - ( mW * viewDistance ) ) );
 }
 
 void CameraPersp::calcProjection() const
