@@ -66,9 +66,7 @@ MultiTouchApp::MultiTouchApp()
 
 void MultiTouchApp::setup()
 {
-	auto receiver = mTuio.getOscReceiver();
-	receiver->bind();
-	receiver->listen();
+	mTuio.connect();
 }
 
 void MultiTouchApp::touchesBegan( TouchEvent event )
