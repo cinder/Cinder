@@ -85,7 +85,7 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	bool tryPushFront( param_type item ) {
 		// param_type represents the "best" way to pass a parameter of type value_type to a method
 		std::lock_guard<std::mutex> lock( mMutex );
-		if( ! is_not_full_impl() )
+		if( ! is_not_full_impl() || mCanceled )
 			return false;
 		mContainer.push_front( item );
 		++mNumUnread;
@@ -96,7 +96,7 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	//! Attempts to pop an item from the back of the buffer, but does not wait for an availability. Returns success as true or false.
 	bool tryPopBack( value_type* pItem ) {
 		std::lock_guard<std::mutex> lock( mMutex );
-		if( ! is_not_empty_impl() )
+		if( ! is_not_empty_impl() || mCanceled )
 			return false;
 		*pItem = mContainer[--mNumUnread];
 		mNotFullCond.notify_one();
