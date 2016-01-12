@@ -137,16 +137,6 @@ void Camera::getFrustum( float *left, float *top, float *right, float *bottom, f
 	*far = mFarClip;
 }
 
-Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) const
-{	
-	return calcRay( uPos, vPos, imagePlaneApectRatio );
-}
-
-Ray Camera::generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const
-{
-	return calcRay( posPixels.x / imageSizePixels.x, ( imageSizePixels.y - posPixels.y ) / imageSizePixels.y, imageSizePixels.x / imageSizePixels.y );
-}
-
 void Camera::getBillboardVectors( vec3 *right, vec3 *up ) const
 {
 	*right = glm::vec3( glm::row( getViewMatrix(), 0 ) );

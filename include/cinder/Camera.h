@@ -114,9 +114,9 @@ class Camera {
 	virtual const mat4&	getInverseViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseView(); return mInverseModelViewMatrix; }
 
 	//! Returns a Ray that passes through the image plane coordinates (\a u, \a v) (expressed in the range [0,1]) on an image plane of aspect ratio \a imagePlaneAspectRatio
-	Ray		generateRay( float u, float v, float imagePlaneAspectRatio ) const;
+	Ray		generateRay( float u, float v, float imagePlaneAspectRatio ) const { return calcRay( u, v, imagePlaneAspectRatio ); }
 	//! Returns a Ray that passes through the pixels coordinates \a posPixels on an image of size \a imageSizePixels
-	Ray		generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const;
+	Ray		generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const { return calcRay( posPixels.x / imageSizePixels.x, ( imageSizePixels.y - posPixels.y ) / imageSizePixels.y, imageSizePixels.x / imageSizePixels.y ); }
 	//! Returns the \a right and \a up vectors suitable for billboarding relative to the Camera
 	void	getBillboardVectors( vec3 *right, vec3 *up ) const;
 
