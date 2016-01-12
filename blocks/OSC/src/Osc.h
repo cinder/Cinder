@@ -34,6 +34,7 @@
 #endif
 #include "asio/asio.hpp"
 
+#include <set>
 #include <mutex>
 
 #include "cinder/Buffer.h"
