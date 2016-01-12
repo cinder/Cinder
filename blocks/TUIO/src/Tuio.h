@@ -108,6 +108,13 @@ public:
 	// Destructor
 	~Receiver();
 	
+	//! Binds the underlying Asio socket. Then listens and accepts incomming traffic associated
+	//! with the underlying Asio socket.
+	void connect();
+	//! Cancels all asynchronous events on this Asio socket and closes the socket. After calling
+	//! this, you should receive no more messages.
+	void disconnect();
+	
 	//! Sets the Added Callback function for \a TuioType and creates a TypeHandler if one isn't
 	//! already available. \a callback called when \a TuioType has been added.
 	template<typename TuioType>

@@ -339,6 +339,17 @@ Receiver::Receiver( const app::WindowRef &window, osc::ReceiverBase *ptr )
 	setupWindowReceiver( window );
 }
 	
+void Receiver::connect()
+{
+	mReceiver->bind();
+	mReceiver->listen();
+}
+
+void Receiver::disconnect()
+{
+	mReceiver->close();
+}
+	
 Receiver::~Receiver()
 {
 	for( auto & handler : mHandlers ) {

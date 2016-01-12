@@ -51,9 +51,7 @@ class TuioClientApp : public App {
 void TuioClientApp::setup()
 {
 	tuio = std::shared_ptr<tuio::Receiver>( new tuio::Receiver() );
-	auto receiver = tuio->getOscReceiver();
-	receiver->bind();
-	receiver->listen();
+	tuio->connect();
 	
 	tuio->setAddedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::added, this, std::placeholders::_1 ) );
 	tuio->setUpdatedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::updated, this, std::placeholders::_1 ) );
