@@ -35,7 +35,7 @@ typedef std::shared_ptr<class CallbackProcessorNode>	CallbackProcessorNodeRef;
 
 //! \brief InputNode is the base class for Node's that produce audio. It cannot have any inputs.
 //!
-//! By default, you must call start() before a InputNode will process audio. \see Node::Format::autoEnable()
+//! By default, you must call enable() before a InputNode will process audio. \see Node::Format::autoEnable()
 //! The default ChannelMode is set to Node::ChannelMode::MATCHES_OUTPUT, though subclasses may override this to use SPECIFIED instead.
 class InputNode : public Node {
   public:
