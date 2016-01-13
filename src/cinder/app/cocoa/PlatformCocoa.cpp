@@ -574,11 +574,13 @@ DisplayCocoaTouch::DisplayCocoaTouch( UIScreen *screen )
 	mBitsPerPixel = 24;
 	mContentScale = screen.scale;
 
+#ifndef CINDER_TVOS
 	NSArray *resolutions = [screen availableModes];
 	for( int i = 0; i < [resolutions count]; ++i ) {
 		::UIScreenMode *mode = [resolutions objectAtIndex:i];
 		mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
 	}
+#endif // ! CINDER_TVOS
 }
 
 DisplayCocoaTouch::~DisplayCocoaTouch()
@@ -612,6 +614,7 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 	return mDisplays;
 }
 
+#ifndef CINDER_TVOS
 void DisplayCocoaTouch::setResolution( const ivec2 &resolution )
 {
 	NSArray *modes = [mUiScreen availableModes];
@@ -628,6 +631,7 @@ void DisplayCocoaTouch::setResolution( const ivec2 &resolution )
 	
 	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
 }
+#endif // ! CINDER_TVOS
 #endif
 
 } // namespace cinder

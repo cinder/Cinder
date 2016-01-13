@@ -94,7 +94,7 @@ WindowRef AppCocoaTouch::getWindowIndex( size_t index ) const
 	std::advance( iter, index );
 	return (*iter)->mWindowRef;
 }
-
+#ifndef CINDER_TVOS
 InterfaceOrientation AppCocoaTouch::getOrientation() const
 {
 	UIInterfaceOrientation orientation = [[mImpl getDeviceWindow] interfaceOrientation];
@@ -106,6 +106,7 @@ InterfaceOrientation AppCocoaTouch::getWindowOrientation() const
 	UIInterfaceOrientation orientation = [mImpl->mActiveWindow interfaceOrientation];
 	return [mImpl convertInterfaceOrientation:orientation];
 }
+#endif
 
 void AppCocoaTouch::enableProximitySensor()
 {
@@ -124,6 +125,7 @@ bool AppCocoaTouch::proximityIsClose() const
 	return mImpl->mProximityStateIsClose;
 }
 
+#ifndef CINDER_TVOS
 void AppCocoaTouch::enableBatteryMonitoring()
 {
 	[UIDevice currentDevice].batteryMonitoringEnabled = YES;
@@ -139,6 +141,7 @@ void AppCocoaTouch::disableBatteryMonitoring()
 {
 	[UIDevice currentDevice].batteryMonitoringEnabled = NO;
 }
+#endif // ! CINDER_TVOS
 
 float AppCocoaTouch::getBatteryLevel() const
 {
@@ -180,6 +183,7 @@ void AppCocoaTouch::setKeyboardString( const std::string &keyboardString )
 	return [mImpl getKeyboardTextView];
 }
 
+#ifndef CINDER_TVOS
 void AppCocoaTouch::showStatusBar( AppCocoaTouch::StatusBarAnimation animation )
 {
 	if( animation == StatusBarAnimation::FADE )
@@ -204,6 +208,7 @@ void AppCocoaTouch::hideStatusBar( AppCocoaTouch::StatusBarAnimation animation )
 	else
 		[mImpl hideStatusBar:UIStatusBarAnimationNone];
 }
+#endif // ! CINDER_TVOS
 
 //! Returns the maximum frame-rate the App will attempt to maintain.
 float AppCocoaTouch::getFrameRate() const
