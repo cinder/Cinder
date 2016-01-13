@@ -28,6 +28,7 @@
 #include "cinder/gl/scoped.h"
 
 #include "cinder/gl/Batch.h"
+#include "cinder/gl/BufferTexture.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/Fbo.h"
