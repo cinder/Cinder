@@ -3728,12 +3728,12 @@ if __name__ == "__main__":
     if args.path:
         inPath = args.path
         if not os.path.isfile(inPath) and not os.path.isdir(inPath):
-            log("Nice try! Directory or file '" + inPath + "' doesn't even exist, so we're going to stop right... now!")
+            log("Nice try! Directory or file '" + inPath + "' doesn't even exist, so we're going to stop right... now!", True)
             quit()
 
     if not os.path.exists(TAG_FILE_PATH):
-        log("I got nothin for you. The tag file [" + TAG_FILE_PATH + "] doesn't exist yet. "
-            "Run doxygen first and try me again later.", 2)
+        log("I got nothin' for you. The tag file [" + TAG_FILE_PATH + "] doesn't exist yet. "
+            "Run Doxygen first and try me again later.", 2, True)
         quit()
 
     # load meta data
