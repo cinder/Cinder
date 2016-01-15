@@ -1055,7 +1055,6 @@
 		94B573DC1B531C0B0042BB1A /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
 		94B573DD1B531C100042BB1A /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; };
 		94B573DE1B531C120042BB1A /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
-		9C7258A01C46C23700BD9BD5 /* QuickTimeGlImplAvf.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706419942C31008149E2 /* QuickTimeGlImplAvf.h */; };
 		9C7258A11C46C23700BD9BD5 /* Pbo.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F42F1992D67300647C8B /* Pbo.h */; };
 		9C7258A21C46C23700BD9BD5 /* Cinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241A0C0E80375A004D34EB /* Cinder.h */; };
 		9C7258A31C46C23700BD9BD5 /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241AAE0E830DBA004D34EB /* Camera.h */; };
@@ -1074,7 +1073,6 @@
 		9C7258B01C46C23700BD9BD5 /* ChanTraits.h in Headers */ = {isa = PBXBuildFile; fileRef = 008CE84A0E9467C200644A05 /* ChanTraits.h */; };
 		9C7258B11C46C23700BD9BD5 /* ImageSourceFileRadiance.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FFAED419DB5D330002CA8E /* ImageSourceFileRadiance.h */; };
 		9C7258B21C46C23700BD9BD5 /* Area.h in Headers */ = {isa = PBXBuildFile; fileRef = 008CE8530E94693900644A05 /* Area.h */; };
-		9C7258B31C46C23700BD9BD5 /* QuickTimeImplAvf.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706619942C31008149E2 /* QuickTimeImplAvf.h */; };
 		9C7258B41C46C23700BD9BD5 /* Batch.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F4261992D67300647C8B /* Batch.h */; };
 		9C7258B51C46C23700BD9BD5 /* Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 003832DE0E9C03CB00ACB120 /* Stream.h */; };
 		9C7258B61C46C23700BD9BD5 /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D23A550EAEB4DE0002BF91 /* Color.h */; };
@@ -1090,7 +1088,6 @@
 		9C7258C01C46C23700BD9BD5 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		9C7258C11C46C23700BD9BD5 /* PolyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE46D0F7A9F6700F17CB1 /* PolyLine.h */; };
 		9C7258C21C46C23700BD9BD5 /* TextureFormatParsers.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F4341992D67300647C8B /* TextureFormatParsers.h */; };
-		9C7258C31C46C23700BD9BD5 /* QuickTimeGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706319942C31008149E2 /* QuickTimeGl.h */; };
 		9C7258C41C46C23700BD9BD5 /* psy.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E8B191F703D005C3166 /* psy.h */; };
 		9C7258C51C46C23700BD9BD5 /* BSplineFit.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE5740F803F7A00F17CB1 /* BSplineFit.h */; };
 		9C7258C61C46C23700BD9BD5 /* BSpline.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE5750F803F7A00F17CB1 /* BSpline.h */; };
@@ -1112,7 +1109,6 @@
 		9C7258D61C46C23700BD9BD5 /* Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 000529000FFBE14900F19492 /* Text.h */; };
 		9C7258D71C46C23700BD9BD5 /* Serial.h in Headers */ = {isa = PBXBuildFile; fileRef = EAC3D1A81011F2E700FFBC9E /* Serial.h */; };
 		9C7258D81C46C23700BD9BD5 /* Params.h in Headers */ = {isa = PBXBuildFile; fileRef = 003ADB601038846A00ACF6F2 /* Params.h */; };
-		9C7258D91C46C23700BD9BD5 /* QuickTimeUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706819942C31008149E2 /* QuickTimeUtils.h */; };
 		9C7258DA1C46C23700BD9BD5 /* codebook.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E61191F703D005C3166 /* codebook.h */; };
 		9C7258DB1C46C23700BD9BD5 /* Vao.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F4361992D67300647C8B /* Vao.h */; };
 		9C7258DC1C46C23700BD9BD5 /* System.h in Headers */ = {isa = PBXBuildFile; fileRef = 002F8F71103AFD9A0077CB91 /* System.h */; };
@@ -1139,8 +1135,6 @@
 		9C7258F11C46C23700BD9BD5 /* Hdr.h in Headers */ = {isa = PBXBuildFile; fileRef = 00419C7B11057CDB007EC9AD /* Hdr.h */; };
 		9C7258F21C46C23700BD9BD5 /* Premultiply.h in Headers */ = {isa = PBXBuildFile; fileRef = 00419C7C11057CDB007EC9AD /* Premultiply.h */; };
 		9C7258F31C46C23700BD9BD5 /* Resize.h in Headers */ = {isa = PBXBuildFile; fileRef = 00419C7D11057CDB007EC9AD /* Resize.h */; };
-		9C7258F41C46C23700BD9BD5 /* MovieWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706119942C31008149E2 /* MovieWriter.h */; };
-		9C7258F51C46C23700BD9BD5 /* AvfWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 007364D51AC0B8EC00A3C155 /* AvfWriter.h */; };
 		9C7258F61C46C23700BD9BD5 /* Threshold.h in Headers */ = {isa = PBXBuildFile; fileRef = 00419C7E11057CDB007EC9AD /* Threshold.h */; };
 		9C7258F71C46C23700BD9BD5 /* Trim.h in Headers */ = {isa = PBXBuildFile; fileRef = 00419C7F11057CDB007EC9AD /* Trim.h */; };
 		9C7258F81C46C23700BD9BD5 /* CinderCocoaTouch.h in Headers */ = {isa = PBXBuildFile; fileRef = 0039FD24115B125400BA0BAD /* CinderCocoaTouch.h */; };
@@ -1148,7 +1142,6 @@
 		9C7258FA1C46C23700BD9BD5 /* Timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B729E7115DAC2B00CD71B9 /* Timer.h */; };
 		9C7258FB1C46C23700BD9BD5 /* AxisAlignedBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */; };
 		9C7258FC1C46C23700BD9BD5 /* UrlImplCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */; };
-		9C7258FD1C46C23700BD9BD5 /* QuickTimeImplLegacy.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706719942C31008149E2 /* QuickTimeImplLegacy.h */; };
 		9C7258FE1C46C23700BD9BD5 /* Sync.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F4311992D67300647C8B /* Sync.h */; };
 		9C7258FF1C46C23700BD9BD5 /* Filesystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484D122F607500039A7A /* Filesystem.h */; };
 		9C7259001C46C23700BD9BD5 /* os.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E89191F703D005C3166 /* os.h */; };
@@ -1179,7 +1172,6 @@
 		9C7259191C46C23700BD9BD5 /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 004172F914C9BE520070C0D1 /* Frustum.h */; };
 		9C72591A1C46C23700BD9BD5 /* CameraUi.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FF554C1AEADF9C0085071E /* CameraUi.h */; };
 		9C72591B1C46C23700BD9BD5 /* Plane.h in Headers */ = {isa = PBXBuildFile; fileRef = 0014407E14CDB8D900D99000 /* Plane.h */; };
-		9C72591C1C46C23700BD9BD5 /* QuickTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706219942C31008149E2 /* QuickTime.h */; };
 		9C72591D1C46C23700BD9BD5 /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
 		9C72591E1C46C23700BD9BD5 /* lsp.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E6F191F703D005C3166 /* lsp.h */; };
 		9C72591F1C46C23700BD9BD5 /* BufferTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = 0003F4281992D67300647C8B /* BufferTexture.h */; };
@@ -1191,8 +1183,6 @@
 		9C7259251C46C23700BD9BD5 /* lookup_data.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E6B191F703D005C3166 /* lookup_data.h */; };
 		9C7259261C46C23700BD9BD5 /* highlevel.h in Headers */ = {isa = PBXBuildFile; fileRef = 111A5E67191F703D005C3166 /* highlevel.h */; };
 		9C7259271C46C23700BD9BD5 /* SvgGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439C14F5F39100B55B07 /* SvgGl.h */; };
-		9C7259281C46C23700BD9BD5 /* QuickTimeGlImplLegacy.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706519942C31008149E2 /* QuickTimeGlImplLegacy.h */; };
-		9C7259291C46C23700BD9BD5 /* AvfUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 006D706019942C31008149E2 /* AvfUtils.h */; };
 		9C72592A1C46C23700BD9BD5 /* linebreak.h in Headers */ = {isa = PBXBuildFile; fileRef = 0034C31D151A5B9F003F2E30 /* linebreak.h */; };
 		9C72592B1C46C23700BD9BD5 /* linebreakdef.h in Headers */ = {isa = PBXBuildFile; fileRef = 0034C320151A5B9F003F2E30 /* linebreakdef.h */; };
 		9C72592C1C46C23700BD9BD5 /* CaptureImplCocoaDummy.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E5A41B163F5A2B00AACB3A /* CaptureImplCocoaDummy.h */; };
@@ -1373,8 +1363,6 @@
 		9C7259DD1C46C23700BD9BD5 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007A7B12158D098D00BEAD18 /* Window.cpp */; };
 		9C7259DE1C46C23700BD9BD5 /* Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C21992D64100647C8B /* Context.cpp */; };
 		9C7259DF1C46C23700BD9BD5 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0071BD080FB9FA2C0092E7D6 /* Display.cpp */; };
-		9C7259E01C46C23700BD9BD5 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
-		9C7259E11C46C23700BD9BD5 /* CaptureImplCocoaDummy.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00E5A41D163F5AC500AACB3A /* CaptureImplCocoaDummy.mm */; };
 		9C7259E21C46C23700BD9BD5 /* floor1.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E66191F703D005C3166 /* floor1.c */; };
 		9C7259E31C46C23700BD9BD5 /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
 		9C7259E41C46C23700BD9BD5 /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
@@ -3385,7 +3373,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C7258A01C46C23700BD9BD5 /* QuickTimeGlImplAvf.h in Headers */,
 				9C7258A11C46C23700BD9BD5 /* Pbo.h in Headers */,
 				9C7258A21C46C23700BD9BD5 /* Cinder.h in Headers */,
 				9C7258A31C46C23700BD9BD5 /* Camera.h in Headers */,
@@ -3404,7 +3391,6 @@
 				9C7258B01C46C23700BD9BD5 /* ChanTraits.h in Headers */,
 				9C7258B11C46C23700BD9BD5 /* ImageSourceFileRadiance.h in Headers */,
 				9C7258B21C46C23700BD9BD5 /* Area.h in Headers */,
-				9C7258B31C46C23700BD9BD5 /* QuickTimeImplAvf.h in Headers */,
 				9C7258B41C46C23700BD9BD5 /* Batch.h in Headers */,
 				9C7258B51C46C23700BD9BD5 /* Stream.h in Headers */,
 				9C7258B61C46C23700BD9BD5 /* Color.h in Headers */,
@@ -3420,7 +3406,6 @@
 				9C7258C01C46C23700BD9BD5 /* CinderCocoa.h in Headers */,
 				9C7258C11C46C23700BD9BD5 /* PolyLine.h in Headers */,
 				9C7258C21C46C23700BD9BD5 /* TextureFormatParsers.h in Headers */,
-				9C7258C31C46C23700BD9BD5 /* QuickTimeGl.h in Headers */,
 				9C7258C41C46C23700BD9BD5 /* psy.h in Headers */,
 				9C7258C51C46C23700BD9BD5 /* BSplineFit.h in Headers */,
 				9C7258C61C46C23700BD9BD5 /* BSpline.h in Headers */,
@@ -3442,7 +3427,6 @@
 				9C7258D61C46C23700BD9BD5 /* Text.h in Headers */,
 				9C7258D71C46C23700BD9BD5 /* Serial.h in Headers */,
 				9C7258D81C46C23700BD9BD5 /* Params.h in Headers */,
-				9C7258D91C46C23700BD9BD5 /* QuickTimeUtils.h in Headers */,
 				9C7258DA1C46C23700BD9BD5 /* codebook.h in Headers */,
 				9C7258DB1C46C23700BD9BD5 /* Vao.h in Headers */,
 				9C7258DC1C46C23700BD9BD5 /* System.h in Headers */,
@@ -3469,8 +3453,6 @@
 				9C7258F11C46C23700BD9BD5 /* Hdr.h in Headers */,
 				9C7258F21C46C23700BD9BD5 /* Premultiply.h in Headers */,
 				9C7258F31C46C23700BD9BD5 /* Resize.h in Headers */,
-				9C7258F41C46C23700BD9BD5 /* MovieWriter.h in Headers */,
-				9C7258F51C46C23700BD9BD5 /* AvfWriter.h in Headers */,
 				9C7258F61C46C23700BD9BD5 /* Threshold.h in Headers */,
 				9C7258F71C46C23700BD9BD5 /* Trim.h in Headers */,
 				9C7258F81C46C23700BD9BD5 /* CinderCocoaTouch.h in Headers */,
@@ -3478,7 +3460,6 @@
 				9C7258FA1C46C23700BD9BD5 /* Timer.h in Headers */,
 				9C7258FB1C46C23700BD9BD5 /* AxisAlignedBox.h in Headers */,
 				9C7258FC1C46C23700BD9BD5 /* UrlImplCocoa.h in Headers */,
-				9C7258FD1C46C23700BD9BD5 /* QuickTimeImplLegacy.h in Headers */,
 				9C7258FE1C46C23700BD9BD5 /* Sync.h in Headers */,
 				9C7258FF1C46C23700BD9BD5 /* Filesystem.h in Headers */,
 				9C7259001C46C23700BD9BD5 /* os.h in Headers */,
@@ -3509,7 +3490,6 @@
 				9C7259191C46C23700BD9BD5 /* Frustum.h in Headers */,
 				9C72591A1C46C23700BD9BD5 /* CameraUi.h in Headers */,
 				9C72591B1C46C23700BD9BD5 /* Plane.h in Headers */,
-				9C72591C1C46C23700BD9BD5 /* QuickTime.h in Headers */,
 				9C72591D1C46C23700BD9BD5 /* Json.h in Headers */,
 				9C72591E1C46C23700BD9BD5 /* lsp.h in Headers */,
 				9C72591F1C46C23700BD9BD5 /* BufferTexture.h in Headers */,
@@ -3521,8 +3501,6 @@
 				9C7259251C46C23700BD9BD5 /* lookup_data.h in Headers */,
 				9C7259261C46C23700BD9BD5 /* highlevel.h in Headers */,
 				9C7259271C46C23700BD9BD5 /* SvgGl.h in Headers */,
-				9C7259281C46C23700BD9BD5 /* QuickTimeGlImplLegacy.h in Headers */,
-				9C7259291C46C23700BD9BD5 /* AvfUtils.h in Headers */,
 				9C72592A1C46C23700BD9BD5 /* linebreak.h in Headers */,
 				9C72592B1C46C23700BD9BD5 /* linebreakdef.h in Headers */,
 				9C72592C1C46C23700BD9BD5 /* CaptureImplCocoaDummy.h in Headers */,
@@ -4399,8 +4377,6 @@
 				9C7259DD1C46C23700BD9BD5 /* Window.cpp in Sources */,
 				9C7259DE1C46C23700BD9BD5 /* Context.cpp in Sources */,
 				9C7259DF1C46C23700BD9BD5 /* Display.cpp in Sources */,
-				9C7259E01C46C23700BD9BD5 /* Capture.cpp in Sources */,
-				9C7259E11C46C23700BD9BD5 /* CaptureImplCocoaDummy.mm in Sources */,
 				9C7259E21C46C23700BD9BD5 /* floor1.c in Sources */,
 				9C7259E31C46C23700BD9BD5 /* ImageTargetFileQuartz.cpp in Sources */,
 				9C7259E41C46C23700BD9BD5 /* ImageSourceFileQuartz.cpp in Sources */,
