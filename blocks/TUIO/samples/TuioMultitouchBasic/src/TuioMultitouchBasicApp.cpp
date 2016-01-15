@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/System.h"
 #include "cinder/Rand.h"
+#include "cinder/gl/gl.h"
 #include "TuioClient.h"
 
 using namespace ci;
@@ -25,9 +26,9 @@ struct TouchPoint {
 	void draw() const
 	{
 		if( mTimeOfDeath > 0 ) // are we dying? then fade out
-			gl::color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0f ) );
+			ci::Color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0f ) );
 		else
-			gl::color( mColor );
+			ci::Color( mColor );
 
 		gl::draw( mLine );
 	}
@@ -127,7 +128,7 @@ void MultiTouchApp::draw()
 	}
 	
 	// draw yellow circles at the active touch points
-	gl::color( Color( 1, 1, 0 ) );
+	ci::Color( Color( 1, 1, 0 ) );
 	vector<TouchEvent::Touch> activeTouches( mTuio.getActiveTouches() );
 	for( auto touchIt = activeTouches.begin(); touchIt != activeTouches.end(); ++touchIt )
 		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );

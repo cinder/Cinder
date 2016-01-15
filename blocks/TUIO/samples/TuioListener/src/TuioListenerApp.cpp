@@ -26,6 +26,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -94,25 +95,25 @@ void TuioClientApp::update()
 void TuioClientApp::draw2( tuio::Cursor cursor, int sourcenum )
 {	
 	switch( sourcenum % 6 ) {
-		case 0: gl::color(ColorA(1.0f, 0.0f, 0.0f, 0.6f)); break;
-		case 1: gl::color(ColorA(0.0f, 1.0f, 0.0f, 0.6f)); break;
-		case 2: gl::color(ColorA(0.0f, 0.0f, 1.0f, 0.6f)); break;
-		case 3: gl::color(ColorA(1.0f, 1.0f, 0.0f, 0.6f)); break;
-		case 4: gl::color(ColorA(0.0f, 1.0f, 1.0f, 0.6f)); break;
-		case 5: gl::color(ColorA(1.0f, 0.0f, 1.0f, 0.6f)); break;
+		case 0: ci::Color(ColorA(1.0f, 0.0f, 0.0f, 0.6f)); break;
+		case 1: ci::Color(ColorA(0.0f, 1.0f, 0.0f, 0.6f)); break;
+		case 2: ci::Color(ColorA(0.0f, 0.0f, 1.0f, 0.6f)); break;
+		case 3: ci::Color(ColorA(1.0f, 1.0f, 0.0f, 0.6f)); break;
+		case 4: ci::Color(ColorA(0.0f, 1.0f, 1.0f, 0.6f)); break;
+		case 5: ci::Color(ColorA(1.0f, 0.0f, 1.0f, 0.6f)); break;
 	}
 	gl::drawSolidCircle( cursor.getPos() * vec2(getWindowSize()), 30 );
 }
 
 void TuioClientApp::draw2b( tuio::Cursor cursor )
 {
-	gl::color( Color::white() );
+	ci::Color( Color::white() );
 	gl::drawSolidCircle( cursor.getPos() * vec2(getWindowSize()), 5.0f );
 }
 
 void TuioClientApp::draw25d( tuio::Cursor25d cursor )
 {
-	gl::color(ColorA(0.0f, 1.0f, 0.0f, 1.0f));
+	ci::Color(ColorA(0.0f, 1.0f, 0.0f, 1.0f));
 	float radius = 75.0f * cursor.getPos25().z;
 	gl::drawSolidCircle( cursor.getPos() * vec2(getWindowSize()), radius );
 }
