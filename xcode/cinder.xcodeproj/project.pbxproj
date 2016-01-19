@@ -5560,6 +5560,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+				VALID_ARCHS = "arm64, x86_64";
 			};
 			name = Debug;
 		};
@@ -5590,6 +5591,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+				VALID_ARCHS = "arm64, x86_64";
 			};
 			name = Release;
 		};
