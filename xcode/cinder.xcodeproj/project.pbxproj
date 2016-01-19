@@ -5598,7 +5598,7 @@
 		9C7259F31C46C23700BD9BD5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALTERNATE_PERMISSIONS_FILES = i386;
+				ALTERNATE_PERMISSIONS_FILES = "";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -5615,7 +5615,7 @@
 					../lib/ios/libboost_system.a,
 					../lib/ios/libboost_filesystem.a,
 				);
-				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a";
+				PRELINK_LIBS = "../lib/ios/libboost_system.a ../lib/ios/libboost_filesystem.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -5625,7 +5625,7 @@
 		9C7259F41C46C23700BD9BD5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALTERNATE_PERMISSIONS_FILES = i386;
+				ALTERNATE_PERMISSIONS_FILES = "";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
@@ -5645,7 +5645,7 @@
 					../lib/ios/libboost_system.a,
 					../lib/ios/libboost_filesystem.a,
 				);
-				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a";
+				PRELINK_LIBS = "../lib/ios/libboost_system.a ../lib/ios/libboost_filesystem.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
