@@ -47,27 +47,27 @@ TEST_CASE( "signals/Signals" )
 		sAccum = "";
 
 		Connection conn0;
-		assert( ! conn0.isConnected() );
+		REQUIRE( ! conn0.isConnected() );
 
 		Signal<char (float, int, string)> sig1;
 		auto conn1 = sig1.connect( floatCallback );
 		auto conn2 = sig1.connect( [] ( float, int i, string ) { sAccum += "int: " + to_string( i ) + "\n"; return 0; } );
 		auto conn3 = sig1.connect( [] ( float, int, const string &s ) { sAccum += "string: " + s + "\n"; return 0; } );
 
-		assert( sig1.getNumSlots() == 3 );
-		assert( conn1.isConnected() && conn2.isConnected() && conn3.isConnected() );
+		REQUIRE( sig1.getNumSlots() == 3 );
+		REQUIRE( (conn1.isConnected() && conn2.isConnected() && conn3.isConnected()) );
 
 		sig1.emit( 0.3f, 4, "huhu" );
 
 		bool success;
-		success = conn1.disconnect();	assert( success == true  );	assert( sig1.getNumSlots() == 2 );
-		success = conn1.disconnect();	assert( success == false ); assert( sig1.getNumSlots() == 2 );
-		success = conn2.disconnect();	assert( success == true  );	assert( sig1.getNumSlots() == 1 );
-		success = conn3.disconnect();	assert( success == true  );	assert( sig1.getNumSlots() == 0 );
-		success = conn3.disconnect();	assert( success == false ); assert( sig1.getNumSlots() == 0 );
-		success = conn2.disconnect();	assert( success == false );	assert( sig1.getNumSlots() == 0 );
+		success = conn1.disconnect();	REQUIRE( success == true  );	REQUIRE( sig1.getNumSlots() == 2 );
+		success = conn1.disconnect();	REQUIRE( success == false ); REQUIRE( sig1.getNumSlots() == 2 );
+		success = conn2.disconnect();	REQUIRE( success == true  );	REQUIRE( sig1.getNumSlots() == 1 );
+		success = conn3.disconnect();	REQUIRE( success == true  );	REQUIRE( sig1.getNumSlots() == 0 );
+		success = conn3.disconnect();	REQUIRE( success == false ); REQUIRE( sig1.getNumSlots() == 0 );
+		success = conn2.disconnect();	REQUIRE( success == false );	REQUIRE( sig1.getNumSlots() == 0 );
 
-		assert( ! conn1.isConnected() && ! conn2.isConnected() && ! conn3.isConnected() );
+		REQUIRE( (! conn1.isConnected() && ! conn2.isConnected() && ! conn3.isConnected()) );
 
 		Foo foo;
 		sig1.connect( slot( foo, &Foo::fooBool ) );
@@ -94,7 +94,6 @@ TEST_CASE( "signals/Signals" )
 			"msg: in sig2 *17*\n"
 			"DONE";
 
-		cout << "sAccum: " << sAccum << endl;
 		REQUIRE( sAccum == expected );
 	}
 
