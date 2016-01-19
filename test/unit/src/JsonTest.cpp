@@ -17,7 +17,7 @@ TEST_CASE("Json", "[noisy]")
 		JsonTree value( "key", "value" );
 		console() << value << endl;
 
-		JsonTree doc( loadFile( "data/library.json" ) );
+		JsonTree doc( loadAsset( "library.json" ) );
 		JsonTree musicLibrary( doc.getChild( "library" ) );
 
 		JsonTree owner = doc.getChild( "library.owner" );
@@ -85,7 +85,7 @@ TEST_CASE("Json", "[noisy]")
 		console() << "testing json with comments.." << endl;
 
 		try {
-			JsonTree json( loadFile( "data/test_comments.json" ) );
+			JsonTree json( loadAsset( "test_comments.json" ) );
 			console() << "test_comments.json parsed contents: " << json << endl;
 		}
 		catch( ci::JsonTree::Exception &exc ) {
