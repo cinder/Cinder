@@ -539,13 +539,17 @@ inline DataSourceRef	loadResource( const fs::path &resourcePath )		{ return Plat
 #endif // defined( CINDER_MSW )
 
 //! Returns a DataSourceRef to the active App's's asset. Throws a AssetLoadExc on failure.
-inline DataSourceRef		loadAsset( const fs::path &relativePath )		{ return Platform::get()->loadAsset( relativePath ); }
+inline DataSourceRef		loadAsset( const fs::path &relativePath )				{ return Platform::get()->loadAsset( relativePath ); }
 //! Returns a fs::path to the active App's asset. Returns an empty path on failure.
-inline fs::path				getAssetPath( const fs::path &relativePath )	{ return Platform::get()->getAssetPath( relativePath ); }
+inline fs::path				getAssetPath( const fs::path &relativePath )			{ return Platform::get()->getAssetPath( relativePath ); }
 //! Adds an absolute path \a dirPath to the active App's list of directories which are searched for assets.
-inline void					addAssetDirectory( const fs::path &dirPath )	{ return Platform::get()->addAssetDirectory( dirPath ); }
+inline void					addAssetDirectory( const fs::path &dirPath )			{ return Platform::get()->addAssetDirectory( dirPath ); }
 //! Returns a vector of directories that are searched when looking up an asset path.
-inline const std::vector<fs::path>&	getAssetDirectories()					{ return Platform::get()->getAssetDirectories(); }
+inline const std::vector<fs::path>&	getAssetDirectories()							{ return Platform::get()->getAssetDirectories(); }
+//! Returns the absolute file path to the resources folder. Returns an empty fs::path on windows. \sa CinderResources
+inline fs::path				getResourceDirectory()									{ return Platform::get()->getResourceDirectory(); }
+//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Returns an empty fs::path on windows. Throws ResourceLoadExc on failure. \sa CinderResources
+inline fs::path				getResourcePath( const fs::path &rsrcRelativePath )		{ return Platform::get()->getResourcePath( rsrcRelativePath ); }
 
 //! Returns the path to the active App on disk
 inline fs::path		getAppPath() { return AppBase::get()->getAppPath(); }
