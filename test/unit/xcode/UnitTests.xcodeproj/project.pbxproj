@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		11E4FC491C26788A0082A67E /* BufferUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11E4FC441C26788A0082A67E /* BufferUnit.cpp */; };
+		11E4FC4D1C267DB70082A67E /* FftUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11E4FC451C26788A0082A67E /* FftUnit.cpp */; };
+		11E4FC4E1C26801E0082A67E /* RingBufferUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11E4FC471C26788A0082A67E /* RingBufferUnit.cpp */; };
 		9CA851C01C1F74000049358B /* Base64Test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CA851B61C1F74000049358B /* Base64Test.cpp */; };
 		9CA851C11C1F74000049358B /* JsonTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CA851B81C1F74000049358B /* JsonTest.cpp */; };
 		9CA851C21C1F74000049358B /* ObjLoaderTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CA851B91C1F74000049358B /* ObjLoaderTest.cpp */; };
@@ -52,6 +55,10 @@
 		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		0BFCCD63DF794B1EAE655DCC /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		11E4FC441C26788A0082A67E /* BufferUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BufferUnit.cpp; sourceTree = "<group>"; };
+		11E4FC451C26788A0082A67E /* FftUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FftUnit.cpp; sourceTree = "<group>"; };
+		11E4FC471C26788A0082A67E /* RingBufferUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RingBufferUnit.cpp; sourceTree = "<group>"; };
+		11E4FC481C26788A0082A67E /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
@@ -128,6 +135,17 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		11E4FC431C26788A0082A67E /* audio */ = {
+			isa = PBXGroup;
+			children = (
+				11E4FC441C26788A0082A67E /* BufferUnit.cpp */,
+				11E4FC451C26788A0082A67E /* FftUnit.cpp */,
+				11E4FC471C26788A0082A67E /* RingBufferUnit.cpp */,
+				11E4FC481C26788A0082A67E /* utils.h */,
+			);
+			path = audio;
+			sourceTree = "<group>";
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -183,12 +201,13 @@
 		9CA851B51C1F74000049358B /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				11E4FC431C26788A0082A67E /* audio */,
+				9CA851BB1C1F74000049358B /* signals */,
 				9CA851B61C1F74000049358B /* Base64Test.cpp */,
 				9CA851B71C1F74000049358B /* catch.hpp */,
 				9CA851B81C1F74000049358B /* JsonTest.cpp */,
 				9CA851B91C1F74000049358B /* ObjLoaderTest.cpp */,
 				9CA851BA1C1F74000049358B /* RandTest.cpp */,
-				9CA851BB1C1F74000049358B /* signals */,
 				9CA851BD1C1F74000049358B /* SystemTest.cpp */,
 				9CA851BE1C1F74000049358B /* TestMain.cpp */,
 				9CA851BF1C1F74000049358B /* UnicodeTest.cpp */,
@@ -265,10 +284,13 @@
 				9CA851C61C1F74000049358B /* TestMain.cpp in Sources */,
 				9CA851C01C1F74000049358B /* Base64Test.cpp in Sources */,
 				9CA851C31C1F74000049358B /* RandTest.cpp in Sources */,
+				11E4FC4D1C267DB70082A67E /* FftUnit.cpp in Sources */,
 				9CA851C11C1F74000049358B /* JsonTest.cpp in Sources */,
+				11E4FC4E1C26801E0082A67E /* RingBufferUnit.cpp in Sources */,
 				9CA851C51C1F74000049358B /* SystemTest.cpp in Sources */,
 				9CA851C41C1F74000049358B /* SignalsTest.cpp in Sources */,
 				9CA851C71C1F74000049358B /* UnicodeTest.cpp in Sources */,
+				11E4FC491C26788A0082A67E /* BufferUnit.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,6 +336,7 @@
 					"-lcurl",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = ./build;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../";
 			};
 			name = Debug;
@@ -352,6 +375,7 @@
 					"-lcurl",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = ./build;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../";
 			};
 			name = Release;
@@ -363,7 +387,6 @@
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
-				CONFIGURATION_BUILD_DIR = ../;
 				ENABLE_TESTABILITY = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -382,7 +405,6 @@
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
-				CONFIGURATION_BUILD_DIR = ../;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";

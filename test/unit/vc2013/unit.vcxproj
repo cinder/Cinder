@@ -259,6 +259,9 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\audio\BufferUnit.cpp" />
+    <ClCompile Include="..\src\audio\FftUnit.cpp" />
+    <ClCompile Include="..\src\audio\RingBufferUnit.cpp" />
     <ClCompile Include="..\src\Base64Test.cpp" />
     <ClCompile Include="..\src\JsonTest.cpp" />
     <ClCompile Include="..\src\ObjLoaderTest.cpp" />
@@ -269,6 +272,7 @@
     <ClCompile Include="..\src\UnicodeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\audio\utils.h" />
     <ClInclude Include="..\src\catch.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
