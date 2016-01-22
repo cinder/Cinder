@@ -122,7 +122,8 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		mNotEmptyCond.notify_all(); // atomic, never throws
 
 		// Wait for all threads to cancel.
-		mCancelCond.wait( lock );
+		if( ! ( mNumWaitingNotEmpty == 0 && mNumWaitingNotFull == 0 ) )
+			mCancelCond.wait( lock );
 
 		// Done.
 		mCanceled = false;
