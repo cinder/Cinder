@@ -62,6 +62,7 @@ using namespace std::placeholders;
 #define htonll(x) ntohll(x)
 #endif
 
+namespace cinder {
 namespace osc {
 	
 /// Convert 32-bit float to a big-endian network format
@@ -461,19 +462,24 @@ const Argument& Message::operator[]( uint32_t index ) const
 bool Message::operator==( const Message &message ) const
 {
 	auto sameAddress = message.mAddress == mAddress;
-	if( ! sameAddress ) return false;
+	if( ! sameAddress )
+		return false;
 	
 	auto sameDataViewSize = message.mDataViews.size() == mDataViews.size();
-	if( ! sameDataViewSize ) return false;
+	if( ! sameDataViewSize )
+		return false;
 	for( int i = 0; i < mDataViews.size(); i++ ) {
 		auto sameDataView = message.mDataViews[i] == mDataViews[i];
-		if( ! sameDataView ) return false;
+		if( ! sameDataView )
+			return false;
 	}
 	
 	auto sameDataBufferSize = mDataBuffer.size() == message.mDataBuffer.size();
-	if( ! sameDataBufferSize ) return false;
+	if( ! sameDataBufferSize )
+		return false;
 	auto sameDataBuffer = ! memcmp( mDataBuffer.data(), message.mDataBuffer.data(), mDataBuffer.size() );
-	if( ! sameDataBuffer ) return false;
+	if( ! sameDataBuffer )
+		return false;
 	
 	return true;
 }
@@ -848,9 +854,8 @@ void Message::clear()
 std::ostream& operator<<( std::ostream &os, const Message &rhs )
 {
 	os << "Address: " << rhs.getAddress() << std::endl;
-	for( auto &dataView : rhs.mDataViews ) {
+	for( auto &dataView : rhs.mDataViews )
 		os << "\t" << dataView << std::endl;
-	}
 	return os;
 }
 	
@@ -909,9 +914,8 @@ void SenderBase::setSocketTransportErrorFn( SocketTransportErrorFn errorFn )
 void SenderBase::handleError( const asio::error_code &error, const std::string &oscAddress )
 {
 	std::lock_guard<std::mutex> lock( mSocketErrorFnMutex );
-	if( mSocketTransportErrorFn ) {
+	if( mSocketTransportErrorFn )
 		mSocketTransportErrorFn( error, oscAddress );
-	}
 	else
 		CI_LOG_E( "Socket error: " << error.message() << ", didn't send message [" << oscAddress << "]" );
 }
@@ -962,7 +966,8 @@ void SenderUdp::bindImpl()
 	
 void SenderUdp::sendImpl( const ByteBufferRef &data )
 {
-	if( ! mSocket->is_open() ) return;
+	if( ! mSocket->is_open() )
+		return;
 	
 	// data's first 4 bytes(int) comprise the size of the buffer, which datagram doesn't need.
 	mSocket->async_send_to( asio::buffer( data->data() + 4, data->size() - 4 ), mRemoteEndpoint,
@@ -1017,6 +1022,9 @@ void SenderTcp::bindImpl()
 	
 void SenderTcp::connect()
 {
+	if( ! mSocket->is_open() )
+		return;
+	
 	mSocket->async_connect( mRemoteEndpoint,
 	[&]( const asio::error_code &error ){
 		if( error )
@@ -1037,7 +1045,8 @@ void SenderTcp::setOnConnectFn( OnConnectFn onConnectFn )
 
 void SenderTcp::sendImpl( const ByteBufferRef &data )
 {
-	if( ! mSocket->is_open() ) return;
+	if( ! mSocket->is_open() )
+		return;
 	
 	ByteBufferRef transportData = data;
 	if( mPacketFraming )
@@ -1090,20 +1099,26 @@ void ReceiverBase::dispatchMethods( uint8_t *data, uint32_t size )
 {
 	std::vector<Message> messages;
 	decodeData( data, size, messages );
-	if( messages.empty() ) return;
+	if( messages.empty() )
+		return;
 	
 	std::lock_guard<std::mutex> lock( mListenerMutex );
 	// iterate through all the messages and find matches with registered methods
 	for( auto & message : messages ) {
 		bool dispatchedOnce = false;
+		auto address = message.getAddress();
 		for( auto & listener : mListeners ) {
-			if( patternMatch( message.getAddress(), listener.first ) ) {
+			if( patternMatch( address, listener.first ) ) {
 				listener.second( message );
 				dispatchedOnce = true;
 			}
 		}
-		if( ! dispatchedOnce )
-			CI_LOG_W("Message: " << message.getAddress() << " doesn't have a listener. Disregarding.");
+		if( ! dispatchedOnce ) {
+			if( mDisregardedAddresses.count( address ) == 0 ) {
+				mDisregardedAddresses.insert( address );
+				CI_LOG_W("Message: " << address << " doesn't have a listener. Disregarding.");
+			}
+		}
 	}
 }
 	
@@ -1287,6 +1302,8 @@ void ReceiverUdp::setAmountToReceive( uint32_t amountToReceive )
 
 void ReceiverUdp::listenImpl()
 {
+	if ( ! mSocket->is_open() ) return;
+	
 	uint32_t prepareAmount = 0;
 	{
 		std::lock_guard<std::mutex> lock( mAmountToReceiveMutex );
@@ -1368,14 +1385,17 @@ std::pair<iterator, bool> ReceiverTcp::Connection::readMatchCondition( iterator 
 
 void ReceiverTcp::Connection::read()
 {
+	if( ! mSocket->is_open() ) return;
+	
+	auto receiver = mReceiver;
+	
 	std::function<std::pair<iterator, bool>( iterator, iterator )> match = &readMatchCondition;
 	if( mReceiver->mPacketFraming )
 		match = std::bind( &PacketFraming::messageComplete, mReceiver->mPacketFraming,
 						  std::placeholders::_1, std::placeholders::_2 );
 	asio::async_read_until( *mSocket, mBuffer, match,
-	[&]( const asio::error_code &error, size_t bytesTransferred ) {
+	[&, receiver]( const asio::error_code &error, size_t bytesTransferred ) {
 		if( error ) {
-			auto receiver = mReceiver;
 			receiver->handleSocketError( error, mIdentifier, mSocket->remote_endpoint() );
 			receiver->closeConnection( mIdentifier );
 		}
@@ -1398,7 +1418,7 @@ void ReceiverTcp::Connection::read()
 			}
 			{
 				std::lock_guard<std::mutex> lock( mReceiver->mDispatchMutex );
-				mReceiver->dispatchMethods( dataPtr, dataSize );
+				receiver->dispatchMethods( dataPtr, dataSize );
 			}
 			read();
 		}
@@ -1464,7 +1484,7 @@ void ReceiverTcp::setOnAcceptFn( OnAcceptFn acceptFn )
 
 void ReceiverTcp::listenImpl()
 {
-	if( ! mAcceptor ) return;
+	if( ! mAcceptor || ! mAcceptor->is_open() ) return;
 	
 	asio::error_code ec;
 	mAcceptor->listen( socket_base::max_connections, ec );
@@ -1477,7 +1497,7 @@ void ReceiverTcp::listenImpl()
 	
 void ReceiverTcp::accept()
 {
-	if( ! mAcceptor ) return;
+	if( ! mAcceptor || ! mAcceptor->is_open() ) return;
 	
 	auto socket = TcpSocketRef( new tcp::socket( mAcceptor->get_io_service() ) );
 	
@@ -1498,8 +1518,8 @@ void ReceiverTcp::accept()
 		}
 		else
 			handleAcceptorError( error );
-		if( mAcceptor->is_open() )
-			accept();
+		
+		accept();
 	}, socket, _1 ) );
 }
 	
@@ -1708,3 +1728,5 @@ void calcOffsetFromSystem( uint64_t ntpTime, int64_t *localOffsetSecs, int64_t *
 } // namespace time
 
 } // namespace osc
+	
+} // namespace cinder

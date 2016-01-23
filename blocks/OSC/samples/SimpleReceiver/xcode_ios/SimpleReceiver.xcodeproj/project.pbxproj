@@ -160,17 +160,17 @@
 		99692BD914FF149000DFFFFF /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				ED09423C8C6D4500BD6B2B19 /* newosc */,
+				ED09423C8C6D4500BD6B2B19 /* OSC */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
 		};
-		ED09423C8C6D4500BD6B2B19 /* newosc */ = {
+		ED09423C8C6D4500BD6B2B19 /* OSC */ = {
 			isa = PBXGroup;
 			children = (
 				0D05156027C94E559D7D0643 /* src */,
 			);
-			name = newosc;
+			name = OSC;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

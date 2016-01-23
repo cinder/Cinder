@@ -120,14 +120,16 @@
       <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCPMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(OutDir)data</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>
       </Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)\data</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>
@@ -159,14 +161,16 @@
       <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCPMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(OutDir)data</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>
       </Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)\data</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>
@@ -202,14 +206,16 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(OutDir)data</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>
       </Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)\data</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -240,17 +246,22 @@
       <DataExecutionPrevention />
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(OutDir)data</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>
       </Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>xcopy /e /i /y $(ProjectDir)..\data $(ProjectDir)\data</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\audio\BufferUnit.cpp" />
+    <ClCompile Include="..\src\audio\FftUnit.cpp" />
+    <ClCompile Include="..\src\audio\RingBufferUnit.cpp" />
     <ClCompile Include="..\src\Base64Test.cpp" />
     <ClCompile Include="..\src\JsonTest.cpp" />
     <ClCompile Include="..\src\ObjLoaderTest.cpp" />
@@ -261,6 +272,7 @@
     <ClCompile Include="..\src\UnicodeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\audio\utils.h" />
     <ClInclude Include="..\src\catch.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

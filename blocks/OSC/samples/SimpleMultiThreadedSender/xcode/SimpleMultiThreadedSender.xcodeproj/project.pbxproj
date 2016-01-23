@@ -72,7 +72,7 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				D39F916E4FDD4656938E664A /* newosc */,
+				D39F916E4FDD4656938E664A /* OSC */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
@@ -160,12 +160,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D39F916E4FDD4656938E664A /* newosc */ = {
+		D39F916E4FDD4656938E664A /* OSC */ = {
 			isa = PBXGroup;
 			children = (
 				DD473F3601B04D298B032F98 /* src */,
 			);
-			name = newosc;
+			name = OSC;
 			sourceTree = "<group>";
 		};
 		DD473F3601B04D298B032F98 /* src */ = {

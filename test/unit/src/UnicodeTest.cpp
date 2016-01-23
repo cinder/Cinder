@@ -2,11 +2,13 @@
 #include "cinder/Unicode.h"
 #include "cinder/DataSource.h"
 #include "cinder/Utilities.h"
+#include "cinder/app/Platform.h"
 #include "cinder/app/App.h"
 #include "catch.hpp"
 
 using namespace ci;
 using namespace std;
+using namespace ci::app;
 
 template<typename TYPE>
 TYPE loadStringFromFile( const DataSourceRef &dataSource )
@@ -28,9 +30,9 @@ TEST_CASE("Unicode")
 		// these files should be identical except for their encoding
 		// includes codes > U+0xFFFF
 		// To see the parsed text in terminal is to run the tests with the `-s` flag to show successful results.
-		auto u8 = loadStringFromFile<string>( loadFile( "data/test_text_utf8.txt" ) );
-		auto u16 = loadStringFromFile<u16string>( loadFile( "data/test_text_utf16.txt" ) );
-		auto u32 = loadStringFromFile<u32string>( loadFile( "data/test_text_utf32.txt" ) );
+		auto u8 = loadStringFromFile<string>( loadAsset( "test_text_utf8.txt" ) );
+		auto u16 = loadStringFromFile<u16string>( loadAsset( "test_text_utf16.txt" ) );
+		auto u32 = loadStringFromFile<u32string>( loadAsset( "test_text_utf32.txt" ) );
 		// ->utf8
 		REQUIRE( u8 == toUtf8( u16 ) );
 		REQUIRE( u8 == toUtf8( u32 ) );

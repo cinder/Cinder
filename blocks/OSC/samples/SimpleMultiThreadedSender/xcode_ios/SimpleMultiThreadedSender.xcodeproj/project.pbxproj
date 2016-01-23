@@ -136,12 +136,12 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		2E69D96B277E4DAC944FEF85 /* newosc */ = {
+		2E69D96B277E4DAC944FEF85 /* OSC */ = {
 			isa = PBXGroup;
 			children = (
 				5EC3FDFDD69C44FF85AF2492 /* src */,
 			);
-			name = newosc;
+			name = OSC;
 			sourceTree = "<group>";
 		};
 		5EC3FDFDD69C44FF85AF2492 /* src */ = {
@@ -165,7 +165,7 @@
 		99692BD914FF149000DFFFFF /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				2E69D96B277E4DAC944FEF85 /* newosc */,
+				2E69D96B277E4DAC944FEF85 /* OSC */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";

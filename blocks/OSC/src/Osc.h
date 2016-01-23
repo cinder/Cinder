@@ -30,10 +30,11 @@
 
 #pragma once
 #if ! defined( ASIO_STANDALONE )
-#define ASIO_STANDALONE
+#define ASIO_STANDALONE 1
 #endif
 #include "asio/asio.hpp"
 
+#include <set>
 #include <mutex>
 
 #include "cinder/Buffer.h"
@@ -45,6 +46,7 @@
 #define NOEXCEPT
 #endif
 
+namespace cinder {
 namespace osc {
 	
 //! Argument types suported by the Message class
@@ -623,7 +625,8 @@ class SenderTcp : public SenderBase {
 //! Represents an OSC Receiver(called a \a client in the OSC spec) and implements a unified
 //! interface without implementing any of the networking layer.
 class ReceiverBase {
-  public:
+public:
+	virtual ~ReceiverBase() = default;
 	//! Alias function representing a message callback.
 	using ListenerFn = std::function<void( const Message &message )>;
 	//! Alias container for callbacks.
@@ -645,7 +648,6 @@ class ReceiverBase {
 	
   protected:
 	ReceiverBase( PacketFramingRef packetFraming ) : mPacketFraming( packetFraming ) {}
-	virtual ~ReceiverBase() = default;
 	//! Non-copyable.
 	ReceiverBase( const ReceiverBase &other ) = delete;
 	//! Non-copyable.
@@ -672,9 +674,10 @@ class ReceiverBase {
 	//! Abstract close implementation function.
 	virtual void closeImpl() = 0;
 	
-	Listeners			mListeners;
-	std::mutex			mListenerMutex, mSocketTransportErrorFnMutex;
-	PacketFramingRef	mPacketFraming;
+	Listeners				mListeners;
+	std::mutex				mListenerMutex, mSocketTransportErrorFnMutex;
+	PacketFramingRef		mPacketFraming;
+	std::set<std::string>	mDisregardedAddresses;
 };
 	
 //! Represents an OSC Receiver(called a \a client in the OSC spec) and implements the UDP transport
@@ -913,6 +916,8 @@ namespace time {
 	std::string getClockString( uint64_t ntpTime, bool includeDate = false );
 	//! Sets the current presentation time as NTP time, from which an offset to the system clock is calculated.
 	void calcOffsetFromSystem( uint64_t ntpTime, int64_t *localOffsetSecs, int64_t *localOffsetUSecs );
-};
+} // namespace time
 	
-}
+} // namespace osc
+	
+} // namespace cinder

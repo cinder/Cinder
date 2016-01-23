@@ -72,7 +72,7 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				1B8B9741C1A94E9CB27D3412 /* newosc */,
+				1B8B9741C1A94E9CB27D3412 /* OSC */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
@@ -120,12 +120,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1B8B9741C1A94E9CB27D3412 /* newosc */ = {
+		1B8B9741C1A94E9CB27D3412 /* OSC */ = {
 			isa = PBXGroup;
 			children = (
 				DC28EA8FF47E483FBD0273E3 /* src */,
 			);
-			name = newosc;
+			name = OSC;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* SimpleSender */ = {
