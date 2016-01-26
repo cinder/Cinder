@@ -12,11 +12,7 @@ $(document).ready(function() {
 			this.selectNamspace( window.selectedNamespace );
  			this.showContent( hash );
  			this.adjustClassInfoLinks();
-
- 			// focus on search input on keydown
- 			$( window ).keydown( function( ){
- 				$( input ).focus();
- 			} );
+			$( input ).focus();	
 		},
 		
 	 	/*

@@ -599,18 +599,6 @@ mVoice->getOutputNode() >> mMonitor >> audio::master()->getOutput();
             <li>Windows: test/_audio/Audio2Test.msw/Audio2Test.sln</li>
          </ul>
          <p>These are meant to be more for feature and regression testing than anything else, but they may also be a useful way to see the entire breadth of the available functionality. </p>
-         
-<pre><code class="lang-cpp">
-gl::clear( Color( 0, 0, 0 ) );
-gl::setMatricesWindowPersp( getWindowSize() );
-gl::enableDepthRead();
-gl::enableDepthWrite();
-
-gl::ScopedGlslProg render( mRenderProg );
-gl::ScopedVao vao( mAttributes[mSourceIndex] );
-gl::context()->setDefaultShaderVars();
-gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
-</code></pre>
       </section>
 
       <!-- END CONTENT -->
