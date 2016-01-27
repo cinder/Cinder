@@ -112,18 +112,27 @@ signals::Signal<void()>& CameraUi::getSignalCameraChange()
 
 void CameraUi::mouseDown( app::MouseEvent &event )
 {
+	if( ! mEnabled )
+		return;
+
 	mouseDown( event.getPos() );
 	event.setHandled();
 }
 
 void CameraUi::mouseUp( app::MouseEvent &event )
 {
+	if( ! mEnabled )
+		return;
+
 	mouseUp( event.getPos() );
 	event.setHandled();
 }
 
 void CameraUi::mouseWheel( app::MouseEvent &event )
 {
+	if( ! mEnabled )
+		return;
+
 	mouseWheel( event.getWheelIncrement() );
 	event.setHandled();
 }
@@ -146,6 +155,9 @@ void CameraUi::mouseDown( const vec2 &mousePos )
 
 void CameraUi::mouseDrag( app::MouseEvent &event )
 {
+	if( ! mEnabled )
+		return;
+
 	bool isLeftDown = event.isLeftDown();
 	bool isMiddleDown = event.isMiddleDown() || event.isAltDown();
 	bool isRightDown = event.isRightDown() || event.isControlDown();
