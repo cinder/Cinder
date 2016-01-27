@@ -105,6 +105,11 @@ void CameraUi::disconnect()
 	mWindow.reset();
 }
 
+bool CameraUi::isConnected() const
+{
+	return mWindow != nullptr;
+}
+
 signals::Signal<void()>& CameraUi::getSignalCameraChange()
 {
 	return mSignalCameraChange;
