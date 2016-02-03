@@ -20,11 +20,17 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/AxisAlignedBox.h"
 #include "cinder/Sphere.h"
 
 using std::vector;
 
 namespace cinder {
+
+bool Sphere::intersects( const AxisAlignedBox &box ) const
+{
+	return box.intersects( *this );
+}
 
 bool Sphere::intersects( const Ray &ray ) const
 {
@@ -240,7 +246,7 @@ float Sphere::calcProjectedArea( float focalLength, vec2 screenSizePixels ) cons
 	float z2 = o.z * o.z;
 	float l2 = dot( o, o );
 	
-	float area = -M_PI * focalLength * focalLength * r2 * sqrt( fabs((l2-r2)/(r2-z2)) ) / (r2-z2);
+	float area = -float( M_PI ) * focalLength * focalLength * r2 * sqrt( fabs((l2-r2)/(r2-z2)) ) / (r2-z2);
 	float aspectRatio = screenSizePixels.x / screenSizePixels.y;
 	return area * screenSizePixels.x * screenSizePixels.y * 0.25f / aspectRatio;
 }
