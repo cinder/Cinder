@@ -24,6 +24,7 @@
 
 #include "cinder/Matrix.h"
 #include "cinder/Ray.h"
+#include "cinder/Sphere.h"
 #include "cinder/Vector.h"
 
 namespace cinder {
@@ -81,6 +82,45 @@ public:
 	bool intersects( const AxisAlignedBox &box ) const
 	{
 		return glm::all( glm::lessThanEqual( glm::abs( box.mCenter - mCenter ), box.mExtents + mExtents ) );
+	}
+
+	//! Returns \c true if the axis-aligned box intersects \a sphere.
+	bool intersects( const ci::Sphere &sphere ) const
+	{
+		float dmin = 0;
+
+		auto center = sphere.getCenter();
+		auto bmin = getMin();
+		auto bmax = getMax();
+
+		if( center.x < bmin.x ) {
+			float d = center.x - bmin.x;
+			dmin += d * d;
+		}
+		else if( center.x > bmax.x ) {
+			float d = center.x - bmax.x;
+			dmin += d * d;
+		}
+
+		if( center.y < bmin.y ) {
+			float d = center.y - bmin.y;
+			dmin += d * d;
+		}
+		else if( center.y > bmax.y ) {
+			float d = center.y - bmax.y;
+			dmin += d * d;
+		}
+
+		if( center.z < bmin.z ) {
+			float d = center.z - bmin.z;
+			dmin += d * d;
+		}
+		else if( center.z > bmax.z ) {
+			float d = center.z - bmax.z;
+			dmin += d * d;
+		}
+
+		return dmin <= ( sphere.getRadius() * sphere.getRadius() );
 	}
 
 	//! Returns \c true if the ray intersects the axis-aligned box.

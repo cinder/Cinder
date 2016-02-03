@@ -30,6 +30,8 @@
 
 namespace cinder {
 
+class AxisAlignedBox;
+
 class Sphere {
  public:
 	Sphere() {}
@@ -43,6 +45,7 @@ class Sphere {
 	vec3	getCenter() const { return mCenter; }
 	void	setCenter( const vec3 &center ) { mCenter = center; }
 
+	bool	intersects( const AxisAlignedBox &box ) const;
 	bool	intersects( const Ray &ray ) const;
 	int		intersect( const Ray &ray, float *intersection ) const;
 	int		intersect( const Ray &ray, float *min, float *max ) const;
