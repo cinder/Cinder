@@ -55,7 +55,12 @@ void ObjLoaderApp::setup()
 	mCheckerTexture = gl::Texture::create( ip::checkerboard( 512, 512, 32 ) );
 	mCheckerTexture->bind( 0 );
 
+#if defined( CINDER_ANDROID )
+	console() << "Loading object model" << std::endl;
+	loadObj( loadFile( "8lbs.obj" ) );
+#else
 	loadObj( loadResource( RES_8LBS_OBJ ) );
+#endif
 
 	mArcball = Arcball( &mCam, mBoundingSphere );
 }
