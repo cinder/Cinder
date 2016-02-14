@@ -2417,7 +2417,7 @@ void Cylinder::calculate( vector<vec3> *positions, vector<vec3> *normals, vector
 
 	const float segmentIncr = 1.0f / (mNumSegments - 1);
 	const float ringIncr = 1.0f / (mNumSlices - 1);
-	const quat axis( vec3( 0, 1, 0 ), mDirection );
+	const quat axis = glm::rotation( vec3( 0, 1, 0 ), mDirection );
 
 	// vertex, normal, tex coord and color buffers
 	for( int i = 0; i < mNumSegments; ++i ) {
@@ -2467,7 +2467,7 @@ void Cylinder::calculateCap( bool flip, float height, float radius, vector<vec3>
 	normals->resize( index + mSubdivisionsCap * mNumSegments * 2, n );
 	colors->resize( index + mSubdivisionsCap *mNumSegments * 2, vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
 
-	const quat axis( vec3( 0, 1, 0 ), mDirection );
+	const quat axis = glm::rotation( vec3( 0, 1, 0 ), mDirection );
 
 	// vertices
 	const float segmentIncr = 1.0f / ( mNumSegments - 1 );
@@ -2582,12 +2582,12 @@ Plane& Plane::normal( const vec3 &normal )
 	auto normalNormal = normalize( normal );
 	float yAxisDot = dot( normalNormal, vec3( 0, 1, 0 ) );
 	if( abs( yAxisDot ) < 0.999f ) {
-		quat normalQuat( vec3( 0, 1, 0 ), normalNormal );
+		quat normalQuat = glm::rotation( vec3( 0, 1, 0 ), normalNormal );
 		mAxisU = normalQuat * vec3( 1, 0, 0 );
 		mAxisV = normalQuat * vec3( 0, 0, 1 );
 	}
 	else {
-		quat normalQuat( vec3( 0, 0, 1 ), normalNormal );
+		quat normalQuat = glm::rotation( vec3( 0, 0, 1 ), normalNormal );
 		mAxisU = normalQuat * vec3( 1, 0, 0 );
 		mAxisV = normalQuat * vec3( 0, -1, 0 );
 	}
@@ -3599,7 +3599,7 @@ void WireCapsule::calculate( vector<vec3> *positions ) const
 		calculateRing( radius, t, positions );
 	}
 
-	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
+	const quat quaternion = glm::rotation( vec3( 0, 1, 0 ), mDirection );
 
 	int subdivisionsAxis = mSubdivisionsAxis > 1 ? mSubdivisionsAxis : 0;
 	float axisIncr = 1.0f / (float) ( mSubdivisionsAxis );
@@ -3631,7 +3631,7 @@ void WireCapsule::calculate( vector<vec3> *positions ) const
 
 void WireCapsule::calculateRing( float radius, float d, vector<vec3> *positions ) const
 {
-	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
+	const quat quaternion = glm::rotation( vec3( 0, 1, 0 ), mDirection );
 
 	float length = mLength + 2 * mRadius;
 	float segIncr = 1.0f / (float) ( mNumSegments );
@@ -3874,7 +3874,7 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 
 	vec3 *ptr = positions.data();
 
-	glm::mat3 m = glm::toMat3( glm::quat( vec3( 0, 1, 0 ), mDirection ) );
+	glm::mat3 m = glm::toMat3( glm::rotation( vec3( 0, 1, 0 ), mDirection ) );
 
 	if ( mSubdivisionsAxis > 1 ) {
 		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
@@ -3995,12 +3995,12 @@ WirePlane& WirePlane::normal( const vec3 &normal )
 	auto normalNormal = normalize( normal );
 	float yAxisDot = dot( normalNormal, vec3( 0, 1, 0 ) );
 	if( abs( yAxisDot ) < 0.999f ) {
-		quat normalQuat( vec3( 0, 1, 0 ), normalNormal );
+		quat normalQuat = glm::rotation( vec3( 0, 1, 0 ), normalNormal );
 		mAxisU = normalQuat * vec3( 1, 0, 0 );
 		mAxisV = normalQuat * vec3( 0, 0, 1 );
 	}
 	else {
-		quat normalQuat( vec3( 0, 0, 1 ), normalNormal );
+		quat normalQuat = glm::rotation( vec3( 0, 0, 1 ), normalNormal );
 		mAxisU = normalQuat * vec3( 1, 0, 0 );
 		mAxisV = normalQuat * vec3( 0, -1, 0 );
 	}

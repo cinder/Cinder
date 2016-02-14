@@ -2,7 +2,10 @@ var section;
 $(document).ready(function() {
 
 	var _this = this;
-	var rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf( window.docsRoot + '/' ) + ( window.docsRoot.length + 1 ) );
+	var rootDir = window.location.origin + "/";
+	if(  window.location.pathname.lastIndexOf( window.docsRoot + '/' ) >= 0 ){
+		rootDir = window.location.pathname.substr(0, window.location.pathname.lastIndexOf( window.docsRoot + '/' ) + ( window.docsRoot.length + 1 ) );
+	}
 	var windowHeight = window.innerHeight;
 	var input = document.querySelector( '#search-input' );
 
@@ -12,9 +15,9 @@ $(document).ready(function() {
 			this.selectNamspace( window.selectedNamespace );
  			this.showContent( hash );
  			this.adjustClassInfoLinks();
-			$( input ).focus();	
+			$( input ).focus();
 		},
-		
+
 	 	/*
 		* ----------------------------------------------------------------------
 		*  Selects the correct namepsace nav iten
@@ -29,7 +32,7 @@ $(document).ready(function() {
 
 		/*
 		* ----------------------------------------------------------------------
- 	 	*  Unhides a piece of content if it contains a anchor tag with a 
+ 	 	*  Unhides a piece of content if it contains a anchor tag with a
  	 	*  specific hash
  	 	*  @param {[type]} hash Hash name of the link
  	 	* ----------------------------------------------------------------------
@@ -61,11 +64,11 @@ $(document).ready(function() {
 	      		target = target.length ? target : ($( '[name=' + this.hash.slice(1) +']' ) || $( '[id=' + this.hash.slice(1) +']' ) );
 
 	      		if( target.length ) {
-	      			var limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight ) - window.innerHeight; 
+	      			var limit = Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight ) - window.innerHeight;
 	      			var top = Math.min( target.offset().top, limit );
 	      			var diff = top - $( this ).scrollTop();
 	      			var time = Math.max( Math.min( diff * 0.5, 1200 ), 500 );
-	        
+
 			        // animate to anchor
 			        $( 'html,body' ).animate( {
 			          scrollTop: top,
@@ -136,7 +139,7 @@ $(document).ready(function() {
 						if( $li.find( 'ul' ).length > 0 ) {
 							$li.addClass( 'list-parent' );
 						}
-					} );					
+					} );
 				});
 
 				// For each anchor, add magellan arival data
@@ -209,8 +212,8 @@ $(document).ready(function() {
  		// button.on('click', function(){
  		$this.on('click', function(){
  			$this.toggleClass('hidden');
- 		}); 		
- 		
+ 		});
+
  		// Hide all of the definition tags
  		if( $this.find( ".functionDef, .enumDef, .definitionCol" ).length > 0 ){
  			$this.addClass("hidden");
@@ -241,14 +244,14 @@ $(document).ready(function() {
  		$( '#show-hide a.show-all' ).on( 'click', showAll );
  		$( '#show-hide a.hide-all' ).on( 'click', hideAll );
  	}
- 	
+
 
  	// get anchor tag if there is one
  	var hash = window.location.hash.substring(1);
 
- 	// --- Search stuff --- // 
+ 	// --- Search stuff --- //
  	window.search = function (term) {
-	    
+
 
 		var resultsDiv = $( '#search-results' );
 	    // the search term must be at least 2 characters
@@ -259,7 +262,7 @@ $(document).ready(function() {
 
 	    var searchTerm = term.replace(":", " ");
 	    var maxResults = 15;
-	    var results = search_index.search( searchTerm ); 
+	    var results = search_index.search( searchTerm );
 
 		var classResults = $('#search-results-class'),
 			guideResults = $('#search-results-guide'),
@@ -305,7 +308,7 @@ $(document).ready(function() {
 			var type = data.type;
 			var a = $("<a href=" + link + "> " + data.title + "</a>" );
 			li.append(a);
-			
+
 
 			switch( type ){
 				case 'class':
@@ -337,7 +340,7 @@ $(document).ready(function() {
 		// find the max amount per category based on the number of results and the amount of populated categories
 		var categoryMax = maxResults;
 		if( results.length > maxResults ){
-			categoryMax = Math.floor(Math.min(maxResults, results.length) / amtList.length);	
+			categoryMax = Math.floor(Math.min(maxResults, results.length) / amtList.length);
 		}
 
 		// for each list in the array, only show if they have content
@@ -391,7 +394,7 @@ $(document).ready(function() {
 
 		        	if( prevContainer.length > 0 ){
 		        		// select the last item in the previous valid list
-		        		prevContainer.find('li').last().addClass('selected');	        		
+		        		prevContainer.find('li').last().addClass('selected');
 		        	} else{
 		        		// last list item
 		            	liList.last().addClass("selected");
@@ -423,7 +426,7 @@ $(document).ready(function() {
 
 		        	if( nextContainer.length > 0 ){
 		        		// select the last item in the next valid list
-		        		$(nextContainer.find('li')[0]).addClass('selected');	        		
+		        		$(nextContainer.find('li')[0]).addClass('selected');
 		        	} else{
 		        		// first list item
 		            	liList.first().addClass("selected");
@@ -453,8 +456,8 @@ $(document).ready(function() {
 		    search(input.value);
 		});
 	}
-	
-    
+
+
 	window.search_index = lunr(function () {
 		this.field('title', {boost: 5});
 		this.field('tags', {boost: 10});
@@ -476,7 +479,7 @@ $(document).ready(function() {
 	}
 
 
-	/* 
+	/*
 	* -----------------------------------------------------
 	*	Scroll to anchor on link anchor click
 	* -----------------------------------------------------
@@ -486,7 +489,7 @@ $(document).ready(function() {
 	 		cinderJs.scrollToAnchor.apply(this);
 	 	});
 	} );
-	
+
 
 	// initialization
 	cinderJs.init();
@@ -498,7 +501,7 @@ $(document).ready(function() {
 	if( location.protocol == "file:" ) {
 		history.pushState = false;
 	}
-	
+
 	// set up magellan stuff
 	$(document).foundation({
         "magellan-expedition": {

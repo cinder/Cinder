@@ -18,6 +18,7 @@
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		D84170931BC87E4C0028641F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D84170921BC87E4C0028641F /* IOKit.framework */; };
 		E1C69AC476A94377931896A2 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A553F272EA4926973D9377 /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +41,7 @@
 		56E4EA9D36CF416C8A0834C2 /* DisplayTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = DisplayTest_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* DisplayTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DisplayTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97DB9BA0587E4E3E9EAF4EA8 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		D84170921BC87E4C0028641F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D84170931BC87E4C0028641F /* IOKit.framework in Frameworks */,
 				006D720419952D00008149E2 /* AVFoundation.framework in Frameworks */,
 				006D720519952D00008149E2 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -81,6 +84,7 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D84170921BC87E4C0028641F /* IOKit.framework */,
 				006D720219952D00008149E2 /* AVFoundation.framework */,
 				006D720319952D00008149E2 /* CoreMedia.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,

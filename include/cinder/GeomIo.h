@@ -1268,7 +1268,7 @@ class ColorFromAttrib : public Modifier {
 //! Sets an attribute of a geom::Source to be a constant value for every vertex. Determines dimension from constructor (vec4 -> 4, for example)
 class Constant : public Modifier {
   public:
-	Constant( geom::Attrib attrib, float &v )
+	Constant( geom::Attrib attrib, float v )
 		: mAttrib( attrib ), mValue( v, 0, 0, 0 ), mDims( 1 ) {}
 	Constant( geom::Attrib attrib, const vec2 &v )
 		: mAttrib( attrib ), mValue( v, 0, 0 ), mDims( 2 ) {}

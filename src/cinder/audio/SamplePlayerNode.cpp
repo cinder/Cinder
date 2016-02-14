@@ -163,8 +163,9 @@ void BufferPlayerNode::setBuffer( const BufferRef &buffer )
 
 	mBuffer = buffer;
 
-	if( ! mLoopEnd || mLoopEnd > mNumFrames )
-		mLoopEnd = mNumFrames;
+	// reset loop markers
+	mLoopBegin = 0;
+	mLoopEnd = mNumFrames;
 }
 
 void BufferPlayerNode::loadBuffer( const SourceFileRef &sourceFile )
@@ -336,15 +337,15 @@ void FilePlayerNode::setSourceFile( const SourceFileRef &sourceFile )
 	else
 		mSourceFile = sourceFile->cloneWithSampleRate( sampleRate );
 
+	// reset num frames and loop markers
 	mNumFrames = mSourceFile->getNumFrames();
+	mLoopBegin = 0;
+	mLoopEnd = mNumFrames;
 
 	if( getNumChannels() != mSourceFile->getNumChannels() ) {
 		setNumChannels( mSourceFile->getNumChannels() );
 		configureConnections();
 	}
-
-	if( ! mLoopEnd  || mLoopEnd > mNumFrames )
-		mLoopEnd = mNumFrames;
 
 	if( wasEnabled )
 		enable();

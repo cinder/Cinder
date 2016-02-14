@@ -39,7 +39,9 @@
 #define CINDER_VERSION		901
 #define CINDER_VERSION_STR	"0.9.1dev"
 
+#if ! defined( ASIO_STANDALONE )
 #define ASIO_STANDALONE 1
+#endif
 
 namespace cinder {
 using std::int8_t;
