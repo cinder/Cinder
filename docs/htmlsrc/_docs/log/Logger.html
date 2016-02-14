@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	
+</head>
+<body>
+	<!-- 
+	cinder::ChannelT prefix 
+	-->
+	
+	<ci prefix dox="cinder::log::LoggerFile">
+	<!-- space from the docs in code -->
+	<br><br>
+	<p>
+		<code>LoggerFile( const fs::path &amp;filePath = fs::path(), bool appendToExisting = true );</code>
+		<ul>
+			<li><code>filePath</code> defines the target logfile.  For example, <code>/tmp/cinder.log</code>.  If this parameter is left blank, LoggerFile will target a file named <code>cinder.log</code> that will sit next to the application binary.</li>
+			<li><code>appendToExisting</code> configures file appending.  This parameter defaults to <code>true</code>.</li>
+		</ul>
+	</p>
+	</ci>
+
+	<ci prefix dox="cinder::log::LoggerFileRotating">
+	<!-- space from the docs in code -->
+	<br><br>
+	<p>
+		<code>LoggerFileRotating( const fs::path &amp;folder, const std::string &amp;formatStr, bool appendToExisting = true );</code>
+		<ul>
+			<li><code>folder</code> defines the root folder that will contain the logfile.  If a blank string is provided, the folder will default to the folder that contains the application binary.</li>
+			<li><code>formatStr</code> is the string that will be evaluated by <a href="http://www.cplusplus.com/reference/ctime/strftime/" target="_blank">strftime</a> and turned into the logfile name.  For example, the string <code>cinder.%Y.%m.%d.log</code> could evaluate to <code>cinder.2015.08.28.log</code>.  Note that, since the log name is only re-evaluated once daily, using a format that includes minutes or seconds may not produce the results you're expecting.  If a blank format string is provided, an assertion will be thrown.</li>
+			<li><code>appendToExisting</code> configures file appending.  This parameter defaults to <code>true</code>.</li>
+		</ul>
+	</p>
+	</ci>
+
+</body>
+</html>

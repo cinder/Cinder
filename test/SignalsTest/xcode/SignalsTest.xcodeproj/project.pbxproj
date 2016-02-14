@@ -7,25 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		115FF5A61A8E6F1E002DF368 /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 115FF5A51A8E6F1E002DF368 /* Exception.cpp */; };
-		1180099B1B005D0F000DED1F /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1180099A1B005D0F000DED1F /* libboost_system.a */; };
-		11B112581A8FF31D0067567A /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B112571A8FF31D0067567A /* CoreServices.framework */; };
-		11FD37E81A8EDD10002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E71A8EDD10002B6EA9 /* Signals.cpp */; };
 		11FD37E91A8EDD10002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E71A8EDD10002B6EA9 /* Signals.cpp */; };
-		11FD61251A89A2B0006F42CC /* SignalsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD61241A89A2B0006F42CC /* SignalsTest.cpp */; };
 		11FD61341A8A7FC8006F42CC /* SignalsBenchmark.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD61331A8A7FC8006F42CC /* SignalsBenchmark.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1118C09419AD3AC500F0D18B /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
 		11FD612D1A8A7F63006F42CC /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -38,7 +24,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1118C09619AD3AC500F0D18B /* SignalsTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SignalsTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		115FF5A51A8E6F1E002DF368 /* Exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Exception.cpp; path = ../../../src/cinder/Exception.cpp; sourceTree = "<group>"; };
 		1168DB451A8D937800660ED3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		1168DB461A8D937800660ED3 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
@@ -54,21 +39,11 @@
 		1180099A1B005D0F000DED1F /* libboost_system.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_system.a; path = ../../../lib/macosx/libboost_system.a; sourceTree = "<group>"; };
 		11B112571A8FF31D0067567A /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		11FD37E71A8EDD10002B6EA9 /* Signals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signals.cpp; path = ../../../src/cinder/Signals.cpp; sourceTree = "<group>"; };
-		11FD61241A89A2B0006F42CC /* SignalsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SignalsTest.cpp; path = ../src/SignalsTest.cpp; sourceTree = "<group>"; };
 		11FD61311A8A7F63006F42CC /* SignalsBenchmarks */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SignalsBenchmarks; sourceTree = BUILT_PRODUCTS_DIR; };
 		11FD61331A8A7FC8006F42CC /* SignalsBenchmark.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SignalsBenchmark.cpp; path = ../src/SignalsBenchmark.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1118C09319AD3AC500F0D18B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1180099B1B005D0F000DED1F /* libboost_system.a in Frameworks */,
-				11B112581A8FF31D0067567A /* CoreServices.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		11FD612C1A8A7F63006F42CC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -94,7 +69,6 @@
 		1118C09719AD3AC500F0D18B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1118C09619AD3AC500F0D18B /* SignalsTest */,
 				11FD61311A8A7F63006F42CC /* SignalsBenchmarks */,
 			);
 			name = Products;
@@ -105,7 +79,6 @@
 			children = (
 				115FF5A21A8E6EEA002DF368 /* cinder */,
 				11FD61331A8A7FC8006F42CC /* SignalsBenchmark.cpp */,
-				11FD61241A89A2B0006F42CC /* SignalsTest.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -142,23 +115,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1118C09519AD3AC500F0D18B /* SignalsTest */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1118C09F19AD3AC500F0D18B /* Build configuration list for PBXNativeTarget "SignalsTest" */;
-			buildPhases = (
-				1118C09219AD3AC500F0D18B /* Sources */,
-				1118C09319AD3AC500F0D18B /* Frameworks */,
-				1118C09419AD3AC500F0D18B /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SignalsTest;
-			productName = SignalsTest;
-			productReference = 1118C09619AD3AC500F0D18B /* SignalsTest */;
-			productType = "com.apple.product-type.tool";
-		};
 		11FD61291A8A7F63006F42CC /* SignalsBenchmarks */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 11FD612E1A8A7F63006F42CC /* Build configuration list for PBXNativeTarget "SignalsBenchmarks" */;
@@ -197,23 +153,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1118C09519AD3AC500F0D18B /* SignalsTest */,
 				11FD61291A8A7F63006F42CC /* SignalsBenchmarks */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1118C09219AD3AC500F0D18B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				11FD37E81A8EDD10002B6EA9 /* Signals.cpp in Sources */,
-				115FF5A61A8E6F1E002DF368 /* Exception.cpp in Sources */,
-				11FD61251A89A2B0006F42CC /* SignalsTest.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		11FD612A1A8A7F63006F42CC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -303,28 +248,6 @@
 			};
 			name = Release;
 		};
-		1118C0A019AD3AC500F0D18B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/r/code/rte/mason/lib/cinder/lib/macosx,
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		1118C0A119AD3AC500F0D18B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/r/code/rte/mason/lib/cinder/lib/macosx,
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		11FD612F1A8A7F63006F42CC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -347,15 +270,6 @@
 			buildConfigurations = (
 				1118C09D19AD3AC500F0D18B /* Debug */,
 				1118C09E19AD3AC500F0D18B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1118C09F19AD3AC500F0D18B /* Build configuration list for PBXNativeTarget "SignalsTest" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1118C0A019AD3AC500F0D18B /* Debug */,
-				1118C0A119AD3AC500F0D18B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

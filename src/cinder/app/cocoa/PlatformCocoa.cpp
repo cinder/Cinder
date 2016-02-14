@@ -525,7 +525,6 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 		size_t screenCount = [screens count];
 		for( size_t i = 0; i < screenCount; ++i ) {
 			::NSScreen *screen = [screens objectAtIndex:i];
-			[screen retain]; // this is released in the destructor for Display
 
 			DisplayMac *newDisplay = new DisplayMac();
 

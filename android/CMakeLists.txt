@@ -626,6 +626,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 
     ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Checkerboard.cpp
     ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp
     ${CINDER_SRC_DIR}/cinder/ip/Fill.cpp
     ${CINDER_SRC_DIR}/cinder/ip/Flip.cpp

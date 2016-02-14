@@ -12,9 +12,8 @@ layout (location = 2) out vec4	oNormal;
 
 vec2 pack( vec3 v )
 {
-    vec2 n	= normalize( v.xy ) * ( sqrt( -v.z * 0.5 + 0.5 ) );
-    n		= n * 0.5 + 0.5;
-    return n;
+	float f = sqrt( 8.0 * v.z + 8.0 );
+	return v.xy / f + 0.5;
 }
 
 void main( void )

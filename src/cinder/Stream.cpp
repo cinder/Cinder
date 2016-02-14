@@ -369,7 +369,8 @@ off_t IStreamAndroidAsset::size() const
 
 bool IStreamAndroidAsset::isEof() const
 {
-	return ( ( mBufferOffset >= mBufferFileOffset + (off_t)mBufferSize ) && ( static_cast<bool>( afs_feof( mAsset ) != 0 ) ) );
+	bool result = ( ( mBufferOffset >= mBufferFileOffset + (off_t)mBufferSize ) && ( 0 != afs_feof( mAsset ) ) );
+	return result;
 }
 
 void IStreamAndroidAsset::IORead( void *t, size_t size )

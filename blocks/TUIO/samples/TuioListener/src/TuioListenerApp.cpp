@@ -26,127 +26,71 @@
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#include "TuioClient.h"
-#include "TuioCursor.h"
-#include "OscMessage.h"
+#include "Tuio.h"
+#include "cinder/Log.h"
 
 class TuioClientApp : public App {
   public:
-	void setup();
-	void update();
-
-	void draw2( tuio::Cursor cursor, int sourcenum );
-	void draw2b( tuio::Cursor cursor );
-	void draw25d( tuio::Cursor25d cursor );
-	void draw();
+	void setup() override;
+	void draw() override;
 	
-	void cursorAdded( tuio::Cursor cursor );
-	void cursorUpdated( tuio::Cursor cursor );
-	void cursorRemoved( tuio::Cursor cursor );
-	void oscMessage( const osc::Message *message );
-
-	tuio::Client tuio;
-
-	CallbackId	mUpdatedCallbackIndex;
+	void added( const tuio::Cursor2d &cursor );
+	void updated( const tuio::Cursor2d &cursor );
+	void removed( const tuio::Cursor2d &cursor );
+	
+	std::shared_ptr<tuio::Receiver> tuio;
+	std::map<std::string, std::vector<vec2>> mTouches;
 };
-
 
 void TuioClientApp::setup()
 {
-	tuio.connect( 3333 );
+	tuio = std::shared_ptr<tuio::Receiver>( new tuio::Receiver() );
+	tuio->connect();
 	
-	tuio.registerCursorAdded( this, &TuioClientApp::cursorAdded );
-	mUpdatedCallbackIndex = tuio.registerCursorUpdated( this, &TuioClientApp::cursorUpdated );
-	tuio.registerCursorRemoved( this, &TuioClientApp::cursorRemoved );
-	tuio.registerOscMessageReceived( this, &TuioClientApp::oscMessage );
+	tuio->setAddedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::added, this, std::placeholders::_1 ) );
+	tuio->setUpdatedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::updated, this, std::placeholders::_1 ) );
+	tuio->setRemovedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::removed, this, std::placeholders::_1 ) );
 }
 
-void TuioClientApp::cursorAdded( tuio::Cursor cursor ) {
-	console() << "Cursor added " << cursor.getSessionId() << std::endl;
-}
-
-void TuioClientApp::cursorUpdated( tuio::Cursor cursor ) {
-	console() << "Cursor updated " << cursor.getSessionId() << std::endl;
-}
-
-void TuioClientApp::cursorRemoved( tuio::Cursor cursor ) {
-	console() << "Cursor removed " << cursor.getSessionId() << std::endl;
-}
-
-void TuioClientApp::oscMessage( const osc::Message *message) {
-	console() << "OSC Message " << message->getAddress() << std::endl;
-}
-
-void TuioClientApp::update()
+void TuioClientApp::added( const tuio::Cursor2d &cursor )
 {
-	if( getElapsedSeconds() > 10.0f && mUpdatedCallbackIndex > -1 ) {
-		console() << "Unregistering cursor updated." << std::endl;
-		tuio.unregisterCursorUpdated( mUpdatedCallbackIndex );
-		mUpdatedCallbackIndex = -1;
-	}
+	auto windowPos = vec2( getWindowSize() ) * cursor.getPosition();
+	mTouches.insert( { cursor.getSource() + std::to_string(cursor.getSessionId()), std::vector<vec2>( { windowPos } ) } );
 }
 
-void TuioClientApp::draw2( tuio::Cursor cursor, int sourcenum )
-{	
-	switch( sourcenum % 6 ) {
-		case 0: gl::color(ColorA(1.0f, 0.0f, 0.0f, 0.6f)); break;
-		case 1: gl::color(ColorA(0.0f, 1.0f, 0.0f, 0.6f)); break;
-		case 2: gl::color(ColorA(0.0f, 0.0f, 1.0f, 0.6f)); break;
-		case 3: gl::color(ColorA(1.0f, 1.0f, 0.0f, 0.6f)); break;
-		case 4: gl::color(ColorA(0.0f, 1.0f, 1.0f, 0.6f)); break;
-		case 5: gl::color(ColorA(1.0f, 0.0f, 1.0f, 0.6f)); break;
-	}
-	gl::drawSolidCircle( cursor.getPos() * vec2(getWindowSize()), 30 );
-}
-
-void TuioClientApp::draw2b( tuio::Cursor cursor )
+void TuioClientApp::updated( const tuio::Cursor2d &cursor )
 {
-	gl::color( Color::white() );
-	gl::drawSolidCircle( cursor.getPos() * vec2(getWindowSize()), 5.0f );
+	auto windowPos = vec2( getWindowSize() ) * cursor.getPosition();
+	auto source = cursor.getSource() + std::to_string(cursor.getSessionId());
+	mTouches[source].push_back( windowPos );
 }
 
-void TuioClientApp::draw25d( tuio::Cursor25d cursor )
+void TuioClientApp::removed( const tuio::Cursor2d &cursor )
 {
-	gl::color(ColorA(0.0f, 1.0f, 0.0f, 1.0f));
-	float radius = 75.0f * cursor.getPos25().z;
-	gl::drawSolidCircle( cursor.getPos() * vec2(getWindowSize()), radius );
+	auto source = cursor.getSource() + std::to_string(cursor.getSessionId());
+	mTouches.erase( source );
 }
 
 void TuioClientApp::draw()
 {
-	if( tuio.isConnected() ) {
-		gl::clear( Color( 0, 0, 0 ) );
-			
-		// Draw a center dot in all the cursors, to test the ability
-		// of tuio.getCursors() to get all cursors in one vector.
-		vector<tuio::Cursor> cursors = tuio.getCursors();
-		for( auto cursor = cursors.begin(); cursor != cursors.end(); ++cursor )
-			draw2b( *cursor );
-
-		// Draw each source's cursors in a different color, to test the ability
-		// of tuio.getCursors() to get each source's cursors independently.
-		set<string> sources = tuio.getSources();
-		int sourcenum = 0;
-		for( auto source = sources.begin(); source != sources.end(); ++source,++sourcenum ) {
-			vector<tuio::Cursor> cursors = tuio.getCursors(*source);
-			for( auto cursor = cursors.begin(); cursor != cursors.end(); ++cursor ) {
-				draw2( *cursor, sourcenum );
-			}
+	gl::clear( Color( 0, 0, 0 ) );
+	gl::setMatricesWindow( getWindowSize() );
+	
+	for( auto & touch : mTouches ) {
+		gl::begin( GL_POINTS );
+		for( auto & pos : touch.second ) {
+			gl::color( ColorA( 1, 1, 1, 1 ) );
+			gl::vertex( pos );
 		}
-
-		// If there any 25d cursors, draw them with radius proportional to the z value
-		vector<tuio::Cursor25d> cursors25d = tuio.getCursors25d();
-		for( auto cursor25d = cursors25d.begin(); cursor25d != cursors25d.end(); ++cursor25d ) {
-			draw25d( *cursor25d );
-		}
+		gl::end();
+		gl::drawStrokedCircle( touch.second.back(), 20 );
 	}
-	else
-		gl::clear( Color( 0.4f, 0, 0 ) );
 }
 
 CINDER_APP( TuioClientApp, RendererGl )
