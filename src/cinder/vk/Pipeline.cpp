@@ -399,7 +399,7 @@ void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineC
 	pipelineCreateInfo.basePipelineHandle				= 0;
 	pipelineCreateInfo.basePipelineIndex				= 0;
 
-	VkPipelineCache pipelineCache = ( options.mDisablePipleineCache ? nullptr : ( pipelineCacheRef ? pipelineCacheRef->getPipelineCache() : mContext->getPipelineCache()->getPipelineCache() ) );
+	VkPipelineCache pipelineCache = ( options.mDisablePipleineCache ? VK_NULL_HANDLE : ( pipelineCacheRef ? pipelineCacheRef->getPipelineCache() : mContext->getPipelineCache()->getPipelineCache() ) );
     res = vkCreateGraphicsPipelines( mContext->getDevice(), pipelineCache, 1, &pipelineCreateInfo, NULL, &mPipeline );
     assert( res == VK_SUCCESS );
 
