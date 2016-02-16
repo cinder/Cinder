@@ -43,7 +43,21 @@
  Soft Shadow Mapping
  http://codeflow.org/entries/2013/feb/15/soft-shadow-mapping/
  
- */
+ 
+ Copyright 2016 Google Inc.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
 
 
 #include "cinder/app/App.h"
@@ -54,9 +68,6 @@
 #include "cinder/CameraUi.h"
 #include "cinder/Log.h"
 #include "cinder/Color.h"
-//#if ! defined( CINDER_GL_ES )
-//	#include "cinder/params/Params.h"
-//#endif
 #include "glm/gtx/euler_angles.hpp"
 
 using namespace ci;
@@ -74,14 +85,6 @@ public:
 	
 	void reset( int size )
 	{
-		//vk::Texture2d::Format depthFormat;
-		//depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
-		//depthFormat.setMagFilter( GL_LINEAR );
-		//depthFormat.setMinFilter( GL_LINEAR );
-		//depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		//depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
-		//depthFormat.setCompareFunc( GL_LEQUAL );
-		//mTextureShadowMap = vk::Texture2d::create( size, size, depthFormat );
 		vk::Texture2d::Format depthFormat;
 		depthFormat.setInternalFormat( VK_FORMAT_D32_SFLOAT );
 		depthFormat.setMagFilter( VK_FILTER_LINEAR );
@@ -90,30 +93,17 @@ public:
 		depthFormat.setCompareMode( VK_COMPARE_OP_LESS_OR_EQUAL );
 		mTextureShadowMap = vk::Texture2d::create( size, size, depthFormat );		
 
-		//mColorTexture = vk::Texture::create( size, size, vk::Texture::Format( VK_FORMAT_R8G8B8A8_UNORM ) );
-
-/*
-		vk::Fbo::Format fboFormat;
-		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureShadowMap );
-		mShadowMap = vk::Fbo::create( size, size, fboFormat );
-*/
 		try {	
 			// Render pass
 			vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
-				//.addAttachment( vk::RenderPass::Attachment( mTextureShadowMap->getFormat() ) );
-				//.addAttachment( vk::RenderPass::Attachment( mColorTexture->getFormat() ) )
 				.addAttachment( vk::RenderPass::Attachment( mTextureShadowMap->getFormat().getInternalFormat() ) );
 			vk::RenderPass::SubPass subPasses = vk::RenderPass::SubPass()
-				//.addColorAttachment( 0 )
 				.addDepthStencilAttachment( 0 );
 			renderPassOptions.addSubPass( subPasses );
 			mRenderPass = vk::RenderPass::create( renderPassOptions );
 
-			mRenderPass->setAttachmentClearValue( 0, { 1.0f, 0.0f, 0.0f, 1.0f } );
-
 			// Framebuffer
 			vk::Framebuffer::Format framebufferFormat = vk::Framebuffer::Format()
-				//.addAttachment( vk::Framebuffer::Attachment( mColorTexture ) )
 				.addAttachment( vk::Framebuffer::Attachment( mTextureShadowMap->getImageView() ) );
 			mFramebuffer = vk::Framebuffer::create( mRenderPass->getRenderPass(), mTextureShadowMap->getSize(), framebufferFormat );
 		}
@@ -154,9 +144,6 @@ class ShadowMappingApp : public App {
 	void keyDown( KeyEvent event ) override;
   private:
 	void drawScene( float spinAngle, const vk::GlslProgRef& glsl = nullptr );
-//#if ! defined( CINDER_GL_ES )
-//	params::InterfaceGlRef		mParams;
-//#endif	
 
 	float						mSpinAngle = 0.0f;
 
@@ -166,8 +153,6 @@ class ShadowMappingApp : public App {
 	
 	vk::BatchRef				mSphere, mSphereShadowed;
 
-	//vk::BatchRef				mTeapot, mTeapotShadowed;
-	//std::vector<std::pair<mat4, vec3>>	mTransforms;
 	struct Teapot {
 		vk::BatchRef	mPlain;
 		vk::BatchRef	mShadowed;
@@ -218,8 +203,6 @@ void ShadowMappingApp::setup()
 	mOnlyShadowmap			= false;
 	mPolygonOffsetFactor	= mPolygonOffsetUnits = 3.0f;
 	
-	//vk::context()->getPresentRenderPass()->setAttachmentClearValue( 0, { 0.0, 0.0, 1.0, 1.0 } );
-
 	mShadowMap = ShadowMap::create( mShadowMapSize );
 	mLight.camera.setPerspective( mLight.fov, mShadowMap->getAspectRatio(), 0.5, 1000.0 );
 
@@ -233,7 +216,6 @@ void ShadowMappingApp::setup()
 			.attribute( geom::Attrib::POSITION,    0, 0, vk::glsl_attr_vec4 )
 			.attribute( geom::Attrib::NORMAL,      1, 0, vk::glsl_attr_vec3 )
 			.attribute( geom::Attrib::COLOR,       2, 0, vk::glsl_attr_vec4 );
-			//.uniformLayout( uniformLayout );
 
 		mShadowShader = vk::GlslProg::create( format );
 		mShadowShader->uniform( "uShadowMap", mShadowMap->getTexture() );
@@ -241,32 +223,6 @@ void ShadowMappingApp::setup()
 	catch ( const std::exception& exc ) {
 		console() << "Shader failed to load: " << exc.what() << std::endl;
 	}
-	
-//#if ! defined( CINDER_GL_ES )
-//	mParams = params::Interfacevk::create( "Settings", toPixels( ivec2( 300, 325 ) ) );
-//	mParams->addParam( "Framerate", &mFrameRate, "", true );
-//	mParams->addSeparator();
-//	mParams->addParam( "Light viewpoint", &mLight.toggleViewpoint );
-//	mParams->addParam( "Light distance radius", &mLight.distanceRadius ).min( 0 ).max( 450 ).step( 1 );
-//	mParams->addParam( "Render only shadow map", &mOnlyShadowmap );
-//	mParams->addSeparator();
-//	std::vector<std::string> techniques = { "Hard", "PCF3x3", "PCF4x4", "Random" };
-//	mParams->addParam( "Technique", techniques, &mShadowTechnique );
-//	mParams->addSeparator();
-//	mParams->addParam( "Polygon offset factor", &mPolygonOffsetFactor ).step( 0.025f ).min( 0.0f );
-//	mParams->addParam( "Polygon offset units", &mPolygonOffsetUnits ).step( 0.025f ).min( 0.0f );
-//	mParams->addParam( "Shadow map size",  &mShadowMapSize ).min( 16 ).step( 16 ).updateFn( [this]() {
-//		mShadowMap->reset( mShadowMapSize );
-//	} );
-//	mParams->addParam( "Depth bias", &mDepthBias ).step( 0.00001f ).max( 0.0 );
-//	mParams->addText( "(PCF radius is const: tweak in shader.)" );
-//	mParams->addSeparator();
-//	mParams->addText( "Random sampling params" );
-//	mParams->addParam( "Offset radius", &mRandomOffset ).min( 0.0f ).step( 0.05f );
-//	mParams->addParam( "Auto normal slope offset", &mEnableNormSlopeOffset );
-//	mParams->addParam( "Num samples", &mNumRandomSamples ).min( 1 );
-////	mParams->minimize();
-//#endif
 	
 	auto positionGlsl = vk::getStockShader( vk::ShaderDef().color() );
 
@@ -303,14 +259,6 @@ void ShadowMappingApp::setup()
 
 		mShaderGrouping[mShadowShader].push_back( mTeapots.back().mShadowed );
 	}
-
-	auto& batches = mShaderGrouping[mShadowShader];
-	for( auto& batch : batches ) {
-		//batch->sampler2D( "uShadowMap", mShadowMap->getTexture() );
-	}
-
-	//vk::enableDepthRead();
-	//vk::enableDepthWrite();
 
 	mCamera.setFov( 30.0f );
 	mCamera.setAspectRatio( getWindowAspectRatio() );
@@ -359,7 +307,6 @@ void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadow
 {
 
 	{
-		//vk::ScopedColor red( Color( 0.98f, 0.22f, 0.10f ));
 		vk::ScopedModelMatrix push;
 		vk::scale( vec3(4) );
 		
@@ -391,7 +338,7 @@ void ShadowMappingApp::draw()
 {
 	// Render shadowed scene
 	vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
-	//vk::viewport( toPixels( getWindowSize() ) );
+	vk::viewport( toPixels( getWindowSize() ) );
 	{
 		const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
 		mat4 shadowMatrix = flipY*mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix();
@@ -410,11 +357,6 @@ void ShadowMappingApp::draw()
 
 		drawScene( mSpinAngle, mShadowShader );
 	}
-
-
-//#if ! defined( CINDER_GL_ES )
-//	mParams->draw();
-//#endif
 }
 
 void ShadowMappingApp::keyDown( KeyEvent event )
@@ -422,15 +364,6 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 	if( event.getChar() == 'l' ) {
 		mLight.toggleViewpoint = ! mLight.toggleViewpoint;
 	}
-
-//	if( event.getChar() == 'f' ) {
-//		app::setFullScreen( !app::isFullScreen() );
-//	}
-//	else if( event.getChar() == KeyEvent::KEY_SPACE ) {
-//#if ! defined( CINDER_GL_ES )
-//		mParams->maximize( ! mParams->isMaximized() );
-//#endif
-//	}
 }
 
 CINDER_APP( ShadowMappingApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ), []( App::Settings *settings ) {

@@ -22,7 +22,23 @@ http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-go
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
+
+
+ Copyright 2016 Google Inc.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 */
+
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererVk.h"
@@ -120,10 +136,6 @@ private:
 
 	float				mTime;
 
-//#if ! defined( CINDER_GL_ES )
-//	params::InterfaceGlRef	mParams;
-//#endif
-
 	vk::CommandPoolRef			mCommandPool;
 	vk::CommandBufferRef		mCommandBuffer;
 	vk::UniformSetRef			mUniformSet;
@@ -170,11 +182,6 @@ void NormalMappingApp::setup()
 		mCopyrightMap  = vk::Texture::create( loadImage( loadAsset("copyright.png") ) );
 
 		// load textures
-		//auto texFormat = vk::Texture2d::Format().loadTopDown();
-		//mDiffuseMap  = vk::Texture::create( loadImage( loadAsset("leprechaun_diffuse.jpg") ), texFormat );
-		//mSpecularMap = vk::Texture::create( loadImage( loadAsset("leprechaun_specular.jpg") ), texFormat );
-		//mNormalMap   = vk::Texture::create( loadImage( loadAsset("leprechaun_normal.jpg") ), texFormat );
-		//mEmissiveMap = vk::Texture::create( loadImage( loadAsset("leprechaun_emmisive.png") ), texFormat );
 		auto texFmt = vk::Texture2d::Format();
 		texFmt.setMipmapEnabled();
 		mDiffuseMap  = vk::Texture::create( *Surface::create( loadImage( loadAsset("leprechaun_diffuse.jpg"  ) ) ), texFmt );
@@ -212,25 +219,6 @@ void NormalMappingApp::setup()
 		mShaderNormalMapping->uniform( "ciBlock2.lightSource1_position", vec4() );
 		mShaderNormalMapping->uniform( "ciBlock2.lightSource1_diffuse",  mLightAmbient.diffuse );
 		mShaderNormalMapping->uniform( "ciBlock2.lightSource1_specular", mLightAmbient.specular );	
-
-
-		//vk::GlslProg::Format fmt;
-		//fmt.vertex( loadAsset("wireframe_vert.glsl") );
-		//fmt.geometry( loadAsset("wireframe_geom.glsl") );
-		//fmt.fragment( loadAsset("wireframe_frag.glsl") );
-		//mShaderWireframe = vk::GlslProg::create( fmt );
-
-		/*
-		mShaderNormalMapping->uniform( "uDiffuseMap", 0 );
-		mShaderNormalMapping->uniform( "uSpecularMap", 1 );
-		mShaderNormalMapping->uniform( "uNormalMap", 2 );
-		mShaderNormalMapping->uniform( "uEmmisiveMap", 3 );
-		mShaderNormalMapping->uniform( "uLights[0].diffuse", mLightLantern.diffuse );
-		mShaderNormalMapping->uniform( "uLights[0].specular", mLightLantern.specular );
-		mShaderNormalMapping->uniform( "uLights[1].diffuse", mLightAmbient.diffuse );
-		mShaderNormalMapping->uniform( "uLights[1].specular", mLightAmbient.specular );
-		mShaderNormalMapping->uniform( "uNumOfLights", 2 );
-		*/
 	}
 	catch( const std::exception &e ) {
 		CI_LOG_EXCEPTION( "Error loading asset", e );
@@ -313,28 +301,6 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 		mClearValues[1].depthStencil.stencil	= 0;
 	}
 
-	//// create a parameter window, so we can toggle stuff
-	//std::vector<std::string> viewmodes;
-	//viewmodes.push_back( "Final" );
-	//viewmodes.push_back( "Glossy" );
-	//viewmodes.push_back( "Normals");
-	//viewmodes.push_back( "Lighting" );
-	//viewmodes.push_back( "Mesh" );
-
-//#if ! defined( CINDER_GL_ES )
-//	mParams = params::Interfacevk::create( getWindow(), "Normal Mapping Demo", ivec2(340, 150) );
-//	mParams->setOptions( "", "valueswidth=100" );
-//
-//	mParams->addParam( "Enable Normal Mapping", &mEnableNormalMap );
-//	mParams->addParam( "Viewing Mode", viewmodes, (int*) &mViewMode );
-//
-//	mParams->addSeparator();
-//
-//	mParams->addParam( "Rotate Model", &mAutoRotate );
-//	mParams->addParam( "Animate Light", &mAnimateLantern );
-//	mParams->addParam( "Show Normals & Tangents", &mShowNormalsAndTangents );
-//#endif
-
 	mCamUi = CameraUi( &mCamera, getWindow(), -1 );
 
 	// keep track of time
@@ -367,67 +333,26 @@ void NormalMappingApp::update()
 	mLightAmbient.position = vec4( 0 );
 
 	// set the varying shader uniforms
-/*
-	mShaderNormalMapping->uniform( "bShowNormals", mViewMode == ViewMode::Normals );
-	mShaderNormalMapping->uniform( "bUseDiffuseMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
-	mShaderNormalMapping->uniform( "bUseSpecularMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Lighting ) );
-	mShaderNormalMapping->uniform( "bUseEmmisiveMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
-	mShaderNormalMapping->uniform( "bUseNormalMap", mEnableNormalMap );
-*/
 	mUniformSet->uniform( "ciBlock1.bShowNormals",    mViewMode == ViewMode::Normals );
 	mUniformSet->uniform( "ciBlock1.bUseDiffuseMap",  ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
 	mUniformSet->uniform( "ciBlock1.bUseSpecularMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Lighting ) );
 	mUniformSet->uniform( "ciBlock1.bUseEmmisiveMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
 	mUniformSet->uniform( "ciBlock1.bUseNormalMap",   mEnableNormalMap );
 	
-	//mShaderNormalMapping->uniform( "uLights[0].position", mLightLantern.position );
-	//mShaderNormalMapping->uniform( "uLights[1].position", mLightAmbient.position );
 	mUniformSet->uniform( "ciBlock2.lightSource0_position", mLightLantern.position );
 	mUniformSet->uniform( "ciBlock2.lightSource1_position", mLightAmbient.position );
-
-//#if ! defined( CINDER_GL_ES )
-//	if( mShaderWireframe )
-//		mShaderWireframe->uniform( "uViewportSize", vec2( getWindowSize() ) );
-//#endif
 }
 
 void NormalMappingApp::draw()
 {
-	// clear the window
-	//vk::clear(); 
-	//vk::color( Color::white() );
-
 	if( isInitialized() ) {
 		// get ready to draw in 3D
 		vk::pushMatrices();
 		vk::setMatrices( mCamera );
-
-		//vk::enableDepthRead();
-		//vk::enableDepthWrite();
-
-		//// bind textures
-		//mDiffuseMap->bind(0);
-		//mSpecularMap->bind(1);
-		//mNormalMap->bind(2);
-		//mEmissiveMap->bind(3);
-
-		// render our model
-		//if( mViewMode == ViewMode::Mesh && mShaderWireframe ) {
-		//	// use our wireframe shader for this scope
-		//	vk::ScopedGlslProg glslProgScope( mShaderWireframe );
-		//	vk::pushModelMatrix();
-		//	vk::multModelMatrix( mMeshTransform );
-		//	vk::draw( mMesh );
-		//	vk::popModelMatrix();
-		//}
-		//else
 		{
 			// use our own normal mapping shader for this scope
-			//vk::ScopedGlslProg GlslProgScope( mShaderNormalMapping );
 			vk::pushModelMatrix();
 			vk::multModelMatrix( mMeshTransform );
-			//vk::draw( mMesh );
-
 			{
 				if( ! mDescriptorSet ) {
 					mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), *mUniformSet, mDescriptorSetLayout );
@@ -462,36 +387,10 @@ void NormalMappingApp::draw()
 
 				int32_t numIndices = mMesh->getNumIndices();
 				vkCmdDrawIndexed( cmdBuf, numIndices, 1, 0, 0, 0 );	
-			}
-					
+			}				
 			vk::popModelMatrix();
 		}
-	
-		// render normals, tangents and bitangents if necessary
-		//if( mShowNormalsAndTangents ) {
-		//	// use a default shader for this scope
-		//	vk::ScopedGlslProg glslProgScope( vk::getStockShader( vk::ShaderDef().color() ) );
-		//	vk::pushModelMatrix();
-		//	vk::multModelMatrix( mMeshTransform );
-		//	vk::draw( mMeshDebug );
-		//	vk::popModelMatrix();
-		//}
-
 		vk::popMatrices();
-
-//		// render our parameter window
-//#if ! defined( CINDER_GL_ES )
-//		if( mParams )
-//			mParams->draw();
-//#endif
-
-		// render the copyright message
-		//Area centered = Area::proportionalFit( mCopyrightMap->getBounds(), getWindowBounds(), true, false );
-		//centered.offset( ivec2( 0, ( getWindowHeight() - centered.y2 ) - 20 ) );
-
-		//vk::enableAlphaBlending();
-		//vk::draw( mCopyrightMap, centered );
-		//vk::disableAlphaBlending();
 	}
 }
 
@@ -501,9 +400,6 @@ void NormalMappingApp::keyDown( KeyEvent event )
 		case KeyEvent::KEY_ESCAPE:
 			quit();
 		break;
-		case KeyEvent::KEY_v: {
-			//vk::enableVerticalSync( ! vk::isVerticalSyncEnabled() );
-		}
 		break;
 	}
 }
@@ -557,5 +453,4 @@ vk::VboMeshRef NormalMappingApp::createDebugMesh( const TriMesh& mesh )
 	return result;
 }
 
-//CINDER_APP( NormalMappingApp, RendererGl( Renderervk::Options().msaa( 16 ) ), prepareSettings )
 CINDER_APP( NormalMappingApp, RendererVk(  RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ), prepareSettings )
