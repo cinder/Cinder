@@ -1,6 +1,10 @@
-Welcome to the Cinder for Android and Linux ports! Please see **[Cinder for Android](https://github.com/cinder/Cinder/wiki/Cinder-for-Android)** and **[Cinder for Linux](https://github.com/cinder/Cinder/wiki/Cinder-for-Linux)** for details on how to get going.
+<p align="center">
+  <img src="https://libcinder.org/static/images/notes/vulkan/Vulkan_Mar15.svg" alt="Vulkan Logo" width="256" height="auto"/>
+</p>
 
-If you run into any issues or have any questions, please [visit the forums](https://forum.libcinder.org).
+Welcome to the experimental Vulkan implementation in Cinder.
+
+To get started, please refer to [this forum post](https://forum.libcinder.org/#Topic/23286000002614007).
 
 ### Cinder 0.9.1dev: [libcinder.org](http://libcinder.org)
 
