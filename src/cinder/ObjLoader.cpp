@@ -40,23 +40,23 @@ geom::SourceRef	loadGeom( const fs::path &path )
 	return geom::SourceRef();
 }
 
-ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool includeNormals, bool includeTexCoords, bool optimize )
-	: mStream( stream ), mOutputCached( false ), mOptimizeVertices( optimize ), mGroupIndex( numeric_limits<size_t>::max() )
+ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, ObjLoader::Options options )
+	: mStream( stream ), mOutputCached( false ), mOptimizeVertices( options.mOptimize ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-	parse( includeNormals, includeTexCoords );
+	parse( options );
 }
 
-ObjLoader::ObjLoader( DataSourceRef dataSource, bool includeNormals, bool includeTexCoords, bool optimize )
-	: mStream( dataSource->createStream() ), mOutputCached( false ), mOptimizeVertices( optimize ), mGroupIndex( numeric_limits<size_t>::max() )
+ObjLoader::ObjLoader( DataSourceRef dataSource, ObjLoader::Options options )
+	: mStream( dataSource->createStream() ), mOutputCached( false ), mOptimizeVertices( options.mOptimize ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-	parse( includeNormals, includeTexCoords );
+	parse( options );
 }
 
-ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals, bool includeTexCoords, bool optimize )
-	: mStream( dataSource->createStream() ), mOutputCached( false ), mOptimizeVertices( optimize ), mGroupIndex( numeric_limits<size_t>::max() )
+ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, ObjLoader::Options options )
+	: mStream( dataSource->createStream() ), mOutputCached( false ), mOptimizeVertices( options.mOptimize ), mGroupIndex( numeric_limits<size_t>::max() )
 {
 	parseMaterial( materialSource->createStream() );
-	parse( includeNormals, includeTexCoords );
+	parse( options );
 }
 	
 ObjLoader& ObjLoader::groupIndex( size_t groupIndex )
@@ -186,7 +186,7 @@ void ObjLoader::parseMaterial( std::shared_ptr<IStreamCinder> material )
         mMaterials[m.mName] = m;
 }
 
-void ObjLoader::parse( bool includeNormals, bool includeTexCoords )
+void ObjLoader::parse( const ObjLoader::Options& options )
 {
 	Group *currentGroup;
 	mGroups.push_back( Group() );
@@ -215,21 +215,24 @@ void ObjLoader::parse( bool includeNormals, bool includeTexCoords )
 			mInternalVertices.push_back( v );
 		}
 		else if( tag == "vt" ) { // vertex texture coordinates
-			if( includeTexCoords ) {
+			if( options.mIncludeTexCoords ) {
 				vec2 tex;
 				ss >> tex.x >> tex.y;
+				if( options.mFlipV ) {
+					tex.y = 1.0f - tex.y;
+				}
 				mInternalTexCoords.push_back( tex );
 			}
 		}
 		else if( tag == "vn" ) { // vertex normals
-			if ( includeNormals ) {
+			if ( options.mIncludeNormals ) {
 				vec3 v;
 				ss >> v.x >> v.y >> v.z;
 				mInternalNormals.push_back( normalize( v ) );
 			}
 		}
 		else if( tag == "f" ) { // face
-			parseFace( currentGroup, currentMaterial, line, includeNormals, includeTexCoords );
+			parseFace( currentGroup, currentMaterial, line, options.mIncludeNormals, options.mIncludeTexCoords );
 		}
 		else if( tag == "g" ) { // group
 			if( ! currentGroup->mFaces.empty() )
@@ -447,7 +450,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
 			if( ! forceUnique ) {
 				VertexTriple vTriple = make_tuple( group.mFaces[f].mVertexIndices[v], group.mFaces[f].mTexCoordIndices[v], group.mFaces[f].mNormalIndices[v] );
-				pair<map<VertexTriple,int>::iterator,bool> result = uniqueVerts.insert( make_pair( vTriple, mOutputVertices.size() ) );
+				pair<map<VertexTriple,int>::iterator,bool> result = uniqueVerts.insert( make_pair( vTriple, static_cast<int>( mOutputVertices.size() ) ) );
 				if( result.second ) { // we've got a new, unique vertex here, so let's append it
 					mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 					mOutputNormals.push_back( mInternalNormals[group.mFaces[f].mNormalIndices[v]] );
@@ -514,7 +517,7 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
 			if( ! forceUnique ) {
 				VertexPair vPair = make_tuple( group.mFaces[f].mVertexIndices[v], group.mFaces[f].mNormalIndices[v] );
-				pair<map<VertexPair,int>::iterator,bool> result = uniqueVerts.insert( make_pair( vPair, mOutputVertices.size() ) );
+				pair<map<VertexPair,int>::iterator,bool> result = uniqueVerts.insert( make_pair( vPair, static_cast<int>( mOutputVertices.size() ) ) );
 				if( result.second ) { // we've got a new, unique vertex here, so let's append it
 					mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 					mOutputNormals.push_back( mInternalNormals[group.mFaces[f].mNormalIndices[v]] );
@@ -571,7 +574,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
 			if( ! forceUnique ) {
 				VertexPair vPair = make_tuple( group.mFaces[f].mVertexIndices[v], group.mFaces[f].mTexCoordIndices[v] );
-				pair<map<VertexPair,int>::iterator,bool> result = uniqueVerts.insert( make_pair( vPair, mOutputVertices.size() ) );
+				pair<map<VertexPair,int>::iterator,bool> result = uniqueVerts.insert( make_pair( vPair, static_cast<int>( mOutputVertices.size() ) ) );
 				if( result.second ) { // we've got a new, unique vertex here, so let's append it
 					mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 					mOutputTexCoords.push_back( mInternalTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
@@ -622,7 +625,7 @@ void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts ) const
 		vector<int> faceIndices;
 		faceIndices.reserve( group.mFaces[f].mNumVertices );
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
-			pair<map<int,int>::iterator,bool> result = uniqueVerts.insert( make_pair( group.mFaces[f].mVertexIndices[v], mOutputVertices.size() ) );
+			pair<map<int,int>::iterator,bool> result = uniqueVerts.insert( make_pair( group.mFaces[f].mVertexIndices[v], static_cast<int>( mOutputVertices.size() ) ) );
 			if( result.second ) { // we've got a new, unique vertex here, so let's append it
 				mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
                 if( hasColors )

@@ -47,21 +47,38 @@ namespace cinder {
 
 class ObjLoader : public geom::Source {
   public:
+	  
+	class Options {
+	public:
+		Options() {}
+		virtual ~Options() {}
+		Options& includeNormals( bool value = true ) {  mIncludeNormals = value; return *this; }
+		Options& includeTexCoords( bool value = true ) {  mIncludeTexCoords = value; return *this; }
+		Options& optimize( bool value = true ) {  mOptimize = value; return *this; }
+		Options& flipV( bool value = true ) {  mFlipV = value; return *this; }
+	private:
+		bool mIncludeNormals = true;
+		bool mIncludeTexCoords = true;
+		bool mOptimize = true;
+		bool mFlipV = false;
+		friend class ObjLoader;
+	};
+
 	/**Constructs and does the parsing of the file
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
 	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
 	**/
-	ObjLoader( std::shared_ptr<IStreamCinder> stream, bool includeNormals = true, bool includeTexCoords = true, bool optimize = true );
+	ObjLoader( std::shared_ptr<IStreamCinder> stream, ObjLoader::Options options = ObjLoader::Options() );
 	/**Constructs and does the parsing of the file
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
 	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
 	**/
-	ObjLoader( DataSourceRef dataSource, bool includeNormals = true, bool includeTexCoords = true, bool optimize = true );
+	ObjLoader( DataSourceRef dataSource, ObjLoader::Options options = ObjLoader::Options() );
 	/**Constructs and does the parsing of the file
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
 	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
 	**/
-	ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals = true, bool includeTexCoords = true,  bool optimize = true );
+	ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, ObjLoader::Options options = ObjLoader::Options() );
 
 	/**Loads a specific group index from the file**/
 	ObjLoader&	groupIndex( size_t groupIndex );
@@ -125,7 +142,7 @@ class ObjLoader : public geom::Source {
 	typedef std::tuple<int,int> VertexPair;
 	typedef std::tuple<int,int,int> VertexTriple;
 
-	void	parse( bool includeNormals, bool includeTexCoords );
+	void	parse( const ObjLoader::Options& options );
  	void	parseFace( Group *group, const Material *material, const std::string &s, bool includeNormals, bool includeTexCoords );
     void    parseMaterial( std::shared_ptr<IStreamCinder> material );
 

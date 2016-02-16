@@ -144,6 +144,8 @@ AppBase::AppBase()
 {
 	sInstance = this;
 
+	mName = sSettingsFromMain->getTitle();
+
 	mDefaultRenderer = sSettingsFromMain->getDefaultRenderer();
 	mMultiTouchEnabled = sSettingsFromMain->isMultiTouchEnabled();
 	mHighDensityDisplayEnabled = sSettingsFromMain->isHighDensityDisplayEnabled();
