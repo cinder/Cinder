@@ -44,7 +44,7 @@
 #include "cinder/ImageIo.h"
 
 #include "FishTornadoApp.h"
-#include "Globals.h""
+#include "Globals.h"
 #include "Light.h"
 #include "Ocean.h"
 
