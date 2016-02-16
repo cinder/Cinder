@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<template name="Basic Vulkan"
+	id = "org.libcinder.apptemplates.basicvulkan"
+	>
+	<supports os="msw" />
+	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
+	<header replaceContents="true" isResourceHeader="true">include/Resources.h</header>
+	<platform os="msw">
+		<resource type="ICON" id="1">resources/cinder_app_icon.ico</resource>
+		<includePath absolute="true">$(VULKAN_SDK)\Include</includePath>
+		<includePath absolute="true">$(VULKAN_SDK)\glslang</includePath>
+		<platform config="debug">
+			<staticLibrary absolute="true">$(VULKAN_SDK)\glslang\lib\Debug\glslang.lib</staticLibrary>
+			<staticLibrary absolute="true">$(VULKAN_SDK)\glslang\lib\Debug\OGLCompiler.lib</staticLibrary>
+			<staticLibrary absolute="true">$(VULKAN_SDK)\glslang\lib\Debug\OSDependent.lib</staticLibrary>
+			<staticLibrary absolute="true">$(VULKAN_SDK)\glslang\lib\Debug\SPIRV.lib</staticLibrary>
+		</platform>
+		<platform config="release">
+			<staticLibrary absolute="true">$(VULKAN_SDK)\glslang\lib\Release\glslang.lib</staticLibrary>
+			<staticLibrary absolute="true">$(VULKAN_SDK)\glslang\lib\Release\OGLCompiler.lib</staticLibrary>
+			<staticLibrary absolute="true">$(VULKAN_SDK)\glslang\lib\Release\OSDependent.lib</staticLibrary>
+			<staticLibrary absolute="true">$(VULKAN_SDK)\glslang\lib\Release\SPIRV.lib</staticLibrary>
+		</platform>
+		<staticLibrary absolute="true">$(VULKAN_SDK)\Bin\vulkan-1.lib</staticLibrary>
+	</platform>
+</template>
+</cinder>
