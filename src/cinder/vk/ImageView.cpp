@@ -1083,7 +1083,8 @@ ImageViewRef ImageView::create( int32_t width, const Image::Format& imageOptions
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
 	VkImageViewType viewType = ( imageOptions.getArrayLayers() > 1 ) ? VK_IMAGE_VIEW_TYPE_1D_ARRAY : VK_IMAGE_VIEW_TYPE_1D;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, imageOptions, nullptr, context ) );
+	VkImage nullImage = VK_NULL_HANDLE;
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, imageOptions, nullImage, context ) );
 	return result;
 }
 
@@ -1091,7 +1092,8 @@ ImageViewRef ImageView::create( int32_t width, int32_t height, const Image::Form
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
 	VkImageViewType viewType = ( imageOptions.getArrayLayers() > 1 ) ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : VK_IMAGE_VIEW_TYPE_2D;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, imageOptions, nullptr, context ) );
+	VkImage nullImage = VK_NULL_HANDLE;
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, imageOptions, nullImage, context ) );
 	return result;
 }
 
@@ -1099,7 +1101,8 @@ ImageViewRef ImageView::create( int32_t width, int32_t height, int32_t depth, co
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_3D;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, imageOptions, nullptr, context ) );
+	VkImage nullImage = VK_NULL_HANDLE;
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, imageOptions, nullImage, context ) );
 	return result;
 }
 
