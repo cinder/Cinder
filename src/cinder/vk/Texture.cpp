@@ -126,65 +126,65 @@ Texture2d::Texture2d( const Surface32f& surf, const Texture2d::Format &format, v
 	initialize( surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), context );
 }
 
-Texture2d::Texture2d( const ImageSourceRef& imageSource,const Texture2d::Format &format, vk::Context* context )
-	: TextureBase(), mWidth( imageSource->getWidth() ), mHeight( imageSource->getHeight() ), mFormat( format )
-{
-	VkFormat defaultInternalFormat = VK_FORMAT_UNDEFINED;
-	// Set the internal format based on the image's color space
-	switch( imageSource->getColorModel() ) {
-		// Force RGBA format for now, since VUlkan doesn't seem to like creating RGB images.
-		case ImageIo::CM_RGB:
-			switch( imageSource->getDataType() ) {
-				case ImageIo::UINT16:
-					defaultInternalFormat = VK_FORMAT_R16G16B16A16_UNORM; //( imageSource->hasAlpha() ) ? VK_FORMAT_R16G16B16A16_UNORM : VK_FORMAT_R16G16B16_UNORM;
-				break;
-				case ImageIo::FLOAT16:
-					defaultInternalFormat = VK_FORMAT_R16G16B16A16_SFLOAT; //( imageSource->hasAlpha() ) ? VK_FORMAT_R16G16B16A16_SFLOAT : VK_FORMAT_R16G16B16_SFLOAT;
-				break;
-				case ImageIo::FLOAT32:
-					defaultInternalFormat = VK_FORMAT_R32G32B32A32_SFLOAT; //( imageSource->hasAlpha() ) ? VK_FORMAT_R32G32B32A32_SFLOAT : VK_FORMAT_R32G32B32_SFLOAT;
-				break;
-				default:
-					defaultInternalFormat = VK_FORMAT_R8G8B8A8_UNORM; //( imageSource->hasAlpha() ) ? VK_FORMAT_R8G8B8A8_UNORM : VK_FORMAT_R8G8B8_UNORM;
-				break;
-			}
-		break;
-		case ImageIo::CM_GRAY: {
-			switch( imageSource->getDataType() ) {
-				case ImageIo::UINT16:
-					defaultInternalFormat = ( imageSource->hasAlpha() ) ? VK_FORMAT_R16G16_UNORM : VK_FORMAT_R16_UNORM;
-				break;
-				case ImageIo::FLOAT16:
-					defaultInternalFormat = ( imageSource->hasAlpha() ) ? VK_FORMAT_R16G16_SFLOAT : VK_FORMAT_R16_SFLOAT;
-				break;
-				case ImageIo::FLOAT32:
-					defaultInternalFormat = ( imageSource->hasAlpha() ) ? VK_FORMAT_R32G32_SFLOAT : VK_FORMAT_R32_SFLOAT;
-				break;
-				default:
-					defaultInternalFormat = ( imageSource->hasAlpha() ) ? VK_FORMAT_R8G8_UNORM : VK_FORMAT_R8_UNORM;
-				break;
-			}
-			
-			//if( ! format.mSwizzleSpecified ) {
-			//	std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
-			//	if( imageSource->hasAlpha() )
-			//		swizzleMask[3] = GL_GREEN;
-			//	format.setSwizzleMask( swizzleMask );
-			//}
-		}
-		break;
-		default:
-			throw ImageIoExceptionIllegalColorModel( "Unsupported color model for vk::Texture2d construction." );
-		break;
-	}
-
-	// Set internal format if one isn't defined
-	if( VK_FORMAT_UNDEFINED == mFormat.getInternalFormat() ) {
-		mFormat.setInternalFormat( defaultInternalFormat );
-	}
-
-	initialize( imageSource, context );
-}
+//Texture2d::Texture2d( const ImageSourceRef& imageSource,const Texture2d::Format &format, vk::Context* context )
+//	: TextureBase(), mWidth( imageSource->getWidth() ), mHeight( imageSource->getHeight() ), mFormat( format )
+//{
+//	VkFormat defaultInternalFormat = VK_FORMAT_UNDEFINED;
+//	// Set the internal format based on the image's color space
+//	switch( imageSource->getColorModel() ) {
+//		// Force RGBA format for now, since VUlkan doesn't seem to like creating RGB images.
+//		case ImageIo::CM_RGB:
+//			switch( imageSource->getDataType() ) {
+//				case ImageIo::UINT16:
+//					defaultInternalFormat = VK_FORMAT_R16G16B16A16_UNORM; //( imageSource->hasAlpha() ) ? VK_FORMAT_R16G16B16A16_UNORM : VK_FORMAT_R16G16B16_UNORM;
+//				break;
+//				case ImageIo::FLOAT16:
+//					defaultInternalFormat = VK_FORMAT_R16G16B16A16_SFLOAT; //( imageSource->hasAlpha() ) ? VK_FORMAT_R16G16B16A16_SFLOAT : VK_FORMAT_R16G16B16_SFLOAT;
+//				break;
+//				case ImageIo::FLOAT32:
+//					defaultInternalFormat = VK_FORMAT_R32G32B32A32_SFLOAT; //( imageSource->hasAlpha() ) ? VK_FORMAT_R32G32B32A32_SFLOAT : VK_FORMAT_R32G32B32_SFLOAT;
+//				break;
+//				default:
+//					defaultInternalFormat = VK_FORMAT_R8G8B8A8_UNORM; //( imageSource->hasAlpha() ) ? VK_FORMAT_R8G8B8A8_UNORM : VK_FORMAT_R8G8B8_UNORM;
+//				break;
+//			}
+//		break;
+//		case ImageIo::CM_GRAY: {
+//			switch( imageSource->getDataType() ) {
+//				case ImageIo::UINT16:
+//					defaultInternalFormat = ( imageSource->hasAlpha() ) ? VK_FORMAT_R16G16_UNORM : VK_FORMAT_R16_UNORM;
+//				break;
+//				case ImageIo::FLOAT16:
+//					defaultInternalFormat = ( imageSource->hasAlpha() ) ? VK_FORMAT_R16G16_SFLOAT : VK_FORMAT_R16_SFLOAT;
+//				break;
+//				case ImageIo::FLOAT32:
+//					defaultInternalFormat = ( imageSource->hasAlpha() ) ? VK_FORMAT_R32G32_SFLOAT : VK_FORMAT_R32_SFLOAT;
+//				break;
+//				default:
+//					defaultInternalFormat = ( imageSource->hasAlpha() ) ? VK_FORMAT_R8G8_UNORM : VK_FORMAT_R8_UNORM;
+//				break;
+//			}
+//			
+//			//if( ! format.mSwizzleSpecified ) {
+//			//	std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
+//			//	if( imageSource->hasAlpha() )
+//			//		swizzleMask[3] = GL_GREEN;
+//			//	format.setSwizzleMask( swizzleMask );
+//			//}
+//		}
+//		break;
+//		default:
+//			throw ImageIoExceptionIllegalColorModel( "Unsupported color model for vk::Texture2d construction." );
+//		break;
+//	}
+//
+//	// Set internal format if one isn't defined
+//	if( VK_FORMAT_UNDEFINED == mFormat.getInternalFormat() ) {
+//		mFormat.setInternalFormat( defaultInternalFormat );
+//	}
+//
+//	initialize( imageSource, context );
+//}
 
 Texture2d::~Texture2d()
 {
@@ -423,12 +423,12 @@ Texture2dRef Texture2d::create( const Surface32f& surf, const Texture2d::Format&
 	return result;
 }
 
-Texture2dRef Texture2d::create( ImageSourceRef imageSource, const Format &format, vk::Context* context )
-{
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	Texture2dRef result = Texture2dRef( new Texture2d( imageSource, format, context ) );
-	return result;
-}
+//Texture2dRef Texture2d::create( ImageSourceRef imageSource, const Format &format, vk::Context* context )
+//{
+//	context = ( nullptr != context ) ? context : Context::getCurrent();
+//	Texture2dRef result = Texture2dRef( new Texture2d( imageSource, format, context ) );
+//	return result;
+//}
 
 template <typename T>
 void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t srcRowBytes, size_t srcPixelBytes )
@@ -689,11 +689,11 @@ TextureCubeMap::TextureCubeMap( const Surface32f& surf, TextureCubeMap::Format f
 	initialize( surf.getWidth(), surf.getHeight(),surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), format, context );
 }
 
-TextureCubeMap::TextureCubeMap( ImageSourceRef imageSource, TextureCubeMap::Format format, vk::Context* context )
-	: TextureBase()
-{
-	initialize( imageSource, format, context );
-}
+//TextureCubeMap::TextureCubeMap( ImageSourceRef imageSource, TextureCubeMap::Format format, vk::Context* context )
+//	: TextureBase()
+//{
+//	initialize( imageSource, format, context );
+//}
 
 TextureCubeMap::~TextureCubeMap()
 {
@@ -824,11 +824,11 @@ TextureCubeMapRef TextureCubeMap::create( const Surface32f& surf, const TextureC
 	return result;
 }
 
-TextureCubeMapRef TextureCubeMap::create( ImageSourceRef imageSource, const TextureCubeMap::Format &format, vk::Context* context )
-{
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( imageSource, format, context ) );
-	return result;
-}
+//TextureCubeMapRef TextureCubeMap::create( ImageSourceRef imageSource, const TextureCubeMap::Format &format, vk::Context* context )
+//{
+//	context = ( nullptr != context ) ? context : Context::getCurrent();
+//	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( imageSource, format, context ) );
+//	return result;
+//}
 
 }} // namespace cinder::vk
