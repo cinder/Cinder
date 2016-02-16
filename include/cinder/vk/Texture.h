@@ -214,7 +214,7 @@ public:
 	Texture2d( const Surface8u& surf, const Texture2d::Format &format, vk::Context* context );
 	Texture2d( const Surface16u& surf, const Texture2d::Format &format, vk::Context* context );
 	Texture2d( const Surface32f& surf, const Texture2d::Format &format, vk::Context* context );
-	Texture2d( const ImageSourceRef& imageSource, const Texture2d::Format &format, vk::Context* context );
+	//Texture2d( const ImageSourceRef& imageSource, const Texture2d::Format &format, vk::Context* context );
 	virtual ~Texture2d();
 
 	// Parameter 'format' will override the format in options
@@ -222,7 +222,7 @@ public:
 	static Texture2dRef		create( const Surface8u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
 	static Texture2dRef		create( const Surface16u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
 	static Texture2dRef		create( const Surface32f& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
-	static Texture2dRef		create( ImageSourceRef imageSource, const Format &format = Format(), vk::Context* context = nullptr );
+	//static Texture2dRef		create( ImageSourceRef imageSource, const Format &format = Format(), vk::Context* context = nullptr );
 
 	uint32_t					getWidth() const { return mImageView->getWidth(); }
 	uint32_t					getHeight() const { return mImageView->getHeight(); }
@@ -265,14 +265,14 @@ public:
 	static TextureCubeMapRef	create( const Surface8u& surf, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Context* context = nullptr );
 	static TextureCubeMapRef	create( const Surface16u& surf, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Context* context = nullptr );
 	static TextureCubeMapRef	create( const Surface32f& surf, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Context* context = nullptr );
-	static TextureCubeMapRef	create( ImageSourceRef imageSource, const TextureCubeMap::Format &format = TextureCubeMap::Format(), vk::Context* context = nullptr );
+	//static TextureCubeMapRef	create( ImageSourceRef imageSource, const TextureCubeMap::Format &format = TextureCubeMap::Format(), vk::Context* context = nullptr );
 
 private:
 	TextureCubeMap( int width, int height, TextureCubeMap::Format format, vk::Context* context );
 	TextureCubeMap( const Surface8u& surf, TextureCubeMap::Format format, vk::Context* context );
 	TextureCubeMap( const Surface16u& surf, TextureCubeMap::Format format, vk::Context* context );
 	TextureCubeMap( const Surface32f& surf, TextureCubeMap::Format format, vk::Context* context );
-	TextureCubeMap( ImageSourceRef imageSource, TextureCubeMap::Format format, vk::Context* context );
+	//TextureCubeMap( ImageSourceRef imageSource, TextureCubeMap::Format format, vk::Context* context );
 
 	void						initializeCommon( const TextureCubeMap::Format& format, vk::Context* context  );
 	void						initializeFinal( vk::Context* context );
