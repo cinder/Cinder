@@ -48,11 +48,7 @@
 #include "Light.h"
 #include "Ocean.h"
 
-#if defined( CINDER_ANDROID )
-	int FBO_RES = 60;	// squared = number of fish
-#else
-	int FBO_RES = 100;	// squared = number of fish
-#endif
+int FBO_RES = 100;	// squared = number of fish
 
 using namespace ci;
 using namespace std;

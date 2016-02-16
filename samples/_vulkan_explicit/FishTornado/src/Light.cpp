@@ -53,13 +53,9 @@ Light::Light()
 {	
 	mPos			= vec4( 0.0f, 5000.0, 500.0f, 1.0f );
 	mCenter			= vec3( 0.0f, 0.0f, 0.0f );
-#if defined( CINDER_ANDROID )
-	size_t shadowMapSize = 1024;
-	VkFormat depthInternalFormat = VK_FORMAT_D16_UNORM;
-#else
+
 	size_t shadowMapSize = 512;
 	VkFormat depthInternalFormat = VK_FORMAT_D32_SFLOAT;
-#endif
 
 	float fov		= 15.0f;
 	float aspect	= 1.0f;	// square depth map

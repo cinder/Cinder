@@ -204,11 +204,7 @@ void FishTornadoApp::setup()
 #endif
 
 	try {
-#if defined( CINDER_ANDROID )
-		VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
-#else
 		VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_8_BIT;
-#endif
 
 		// Textures
 		mMainColorTex = vk::Texture::create( getWindowWidth(), getWindowHeight(), vk::Texture::Format( VK_FORMAT_R8G8B8A8_UNORM ) );
@@ -643,11 +639,7 @@ void FishTornadoApp::draw()
 	#define NUM_QUEUES 1
 #endif
 
-#if defined( CINDER_ANDROID )
-CINDER_APP( FishTornadoApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_1_BIT ).setExplicitMode().setWorkQueueCount( NUM_QUEUES ) ) )
-#else
 CINDER_APP( FishTornadoApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode().setWorkQueueCount( NUM_QUEUES ) ), []( FishTornadoApp::Settings *settings ) {	
 	settings->setWindowSize( 1920, 1080 );
 	settings->setResizable( false );
 } )
-#endif
