@@ -114,7 +114,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\..\cinder_master\include";..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\include;..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset)_d.lib;OpenGL32.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -174,7 +174,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>"..\..\..\..\..\cinder_master\include";..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\include;..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset).lib;OpenGL32.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;%(AdditionalDependencies)</AdditionalDependencies>
