@@ -182,7 +182,7 @@ void Swapchain::initColorBuffers()
 void Swapchain::initDepthStencilBuffers()
 {
 	Image::Format imageOptions = Image::Format( mDepthStencilFormat ).setUsageDepthStencilAttachment().setSamples( mDepthStencilSamples );
-	mDepthStencilAttachment = ImageView::create( mSwapchainExtent.width, mSwapchainExtent.height, 1, imageOptions, mContext );
+	mDepthStencilAttachment = ImageView::create( mSwapchainExtent.width, mSwapchainExtent.height, imageOptions, mContext );
 	mDepthStencilAttachment->setImageLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 }
 
