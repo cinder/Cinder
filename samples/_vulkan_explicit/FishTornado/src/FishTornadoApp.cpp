@@ -569,63 +569,68 @@ void FishTornadoApp::drawToMainFbo( const ci::vk::CommandBufferRef& cmdBuf )
 
 void FishTornadoApp::draw()
 {
+	vk::context()->acquireNextPresentImage();
+
+	// Build command buffer
 	auto cmdBuf = vk::context()->getDefaultCommandBuffer();
 	cmdBuf->begin();
-
-	if( mSharkLoaded ) {
-		vk::disableAlphaBlending();
-		mGpuFlocker->swapFbos();
-		mGpuFlocker->beginSimRender( cmdBuf );
-		mGpuFlocker->drawIntoVelocityFbo( mVelocityShader, mCamera.getEyePoint(), mShark->getPos() );
-		mGpuFlocker->nextSimPass();
-		mGpuFlocker->drawIntoPositionFbo( mPositionShader );
-		mGpuFlocker->endSimRender();
-		vk::enableAlphaBlending();
-	}
-
-	// Draw depth
-	drawToDepthFbo( cmdBuf );
-
-	// Draw to main render pass
-	drawToMainFbo( cmdBuf );
-
-	// Present
-	vk::context()->setPresentCommandBuffer( cmdBuf );
-	vk::context()->beginPresentRender();
 	{
-		vk::setMatricesWindow( getWindowSize() );
-		mMainBatch->uniform( "uFboTex",					mMainColorTex );
-		mMainBatch->uniform( "uNoiseNormalsTex",		mNoiseNormalsTex );
-		mMainBatch->uniform( "ciBlock1.uTime",			mTimeElapsed );
-		mMainBatch->uniform( "ciBlock1.uContrast",		mContrast );
-		mMainBatch->uniform( "ciBlock1.uExposure",		mExposure );
-		mMainBatch->uniform( "ciBlock1.uBrightness",	mBrightness );
-		mMainBatch->uniform( "ciBlock1.uBlend",			mBlend );
-		mMainBatch->uniform( "ciBlock1.uDistort",		mDistortion );
-		mMainBatch->uniform( "ciBlock1.uResolution",	vec2( getWindowWidth(), getWindowHeight() ) );
-		mMainBatch->draw();
+		if( mSharkLoaded ) {
+			vk::disableAlphaBlending();
+			mGpuFlocker->swapFbos();
+			mGpuFlocker->beginSimRender( cmdBuf );
+			mGpuFlocker->drawIntoVelocityFbo( mVelocityShader, mCamera.getEyePoint(), mShark->getPos() );
+			mGpuFlocker->nextSimPass();
+			mGpuFlocker->drawIntoPositionFbo( mPositionShader );
+			mGpuFlocker->endSimRender();
+			vk::enableAlphaBlending();
+		}
+
+		// Draw depth
+		drawToDepthFbo( cmdBuf );
+
+		// Draw to main render pass
+		drawToMainFbo( cmdBuf );
+
+		// Present
+		vk::context()->setPresentCommandBuffer( cmdBuf );
+		vk::context()->beginPresentRender();
+		{
+			vk::setMatricesWindow( getWindowSize() );
+			mMainBatch->uniform( "uFboTex",					mMainColorTex );
+			mMainBatch->uniform( "uNoiseNormalsTex",		mNoiseNormalsTex );
+			mMainBatch->uniform( "ciBlock1.uTime",			mTimeElapsed );
+			mMainBatch->uniform( "ciBlock1.uContrast",		mContrast );
+			mMainBatch->uniform( "ciBlock1.uExposure",		mExposure );
+			mMainBatch->uniform( "ciBlock1.uBrightness",	mBrightness );
+			mMainBatch->uniform( "ciBlock1.uBlend",			mBlend );
+			mMainBatch->uniform( "ciBlock1.uDistort",		mDistortion );
+			mMainBatch->uniform( "ciBlock1.uResolution",	vec2( getWindowWidth(), getWindowHeight() ) );
+			mMainBatch->draw();
 
 /*
-		vk::setMatricesWindow( getWindowSize() );
-		//vk::color( Color( 1, 1, 1 ) );
-		vk::draw( mGpuFlocker->mVelocityTextures[0], Rectf( 0, 0, 400, 400 ) );
-		vk::draw( mGpuFlocker->mPositionTextures[0], Rectf( 0, 0, 400, 400 ) + vec2( 410,   0 ) );
-		vk::draw( mGpuFlocker->mVelocityTextures[1], Rectf( 0, 0, 400, 400 ) + vec2(   0, 410 ) );
-		vk::draw( mGpuFlocker->mPositionTextures[1], Rectf( 0, 0, 400, 400 ) + vec2( 410, 410 ) );
+			vk::setMatricesWindow( getWindowSize() );
+			//vk::color( Color( 1, 1, 1 ) );
+			vk::draw( mGpuFlocker->mVelocityTextures[0], Rectf( 0, 0, 400, 400 ) );
+			vk::draw( mGpuFlocker->mPositionTextures[0], Rectf( 0, 0, 400, 400 ) + vec2( 410,   0 ) );
+			vk::draw( mGpuFlocker->mVelocityTextures[1], Rectf( 0, 0, 400, 400 ) + vec2(   0, 410 ) );
+			vk::draw( mGpuFlocker->mPositionTextures[1], Rectf( 0, 0, 400, 400 ) + vec2( 410, 410 ) );
 */
 
 /*
-		vk::context()->pushCommandBuffer( vk::context()->getDefaultCommandBuffer() );
-		vk::setMatricesWindow( getWindowSize() );
-		//vk::color( 1.0f, 1.0f, 1.0f );
-		float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
-		vk::draw( mLight->getBlurredTexture(), Rectf( 0, 0, size, size ) ); 
-		vk::context()->popCommandBuffer();
+			vk::context()->pushCommandBuffer( vk::context()->getDefaultCommandBuffer() );
+			vk::setMatricesWindow( getWindowSize() );
+			//vk::color( 1.0f, 1.0f, 1.0f );
+			float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
+			vk::draw( mLight->getBlurredTexture(), Rectf( 0, 0, size, size ) ); 
+			vk::context()->popCommandBuffer();
 */
+		}
+		vk::context()->endPresentRender();
 	}
-	vk::context()->endPresentRender();
 	cmdBuf->end();
 
+	// Submit command buffer for presentation
 	vk::context()->submitPresentRender();
 
 	if( 0 == ( getElapsedFrames() % 300 ) ) {

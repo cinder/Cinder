@@ -217,40 +217,44 @@ void ShadowMappingBasic::update()
 
 void ShadowMappingBasic::draw()
 {
+	vk::context()->acquireNextPresentImage();
+
+	// Build command buffer
 	auto cmdBuf = vk::context()->getDefaultCommandBuffer();
 	cmdBuf->begin();
-
-	renderDepthFbo();
-
-	vk::context()->setPresentCommandBuffer( cmdBuf );
-	vk::context()->beginPresentRender();
 	{
-		vk::setMatrices( mCam );
+		renderDepthFbo();
 
-		vec4 mvLightPos	= vk::getModelView() * vec4( mLightPos, 1.0f );
-		const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
-		mat4 shadowMatrix = flipY*mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
+		vk::context()->setPresentCommandBuffer( cmdBuf );
+		vk::context()->beginPresentRender();
+		{
+			vk::setMatrices( mCam );
 
-		mTeapotShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
-		mTeapotShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
-		mFloorShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
-		mFloorShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
+			vec4 mvLightPos	= vk::getModelView() * vec4( mLightPos, 1.0f );
+			const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
+			mat4 shadowMatrix = flipY*mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
 
-		drawScene( false ); 
+			mTeapotShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
+			mTeapotShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
+			mFloorShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
+			mFloorShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
 
-		// Uncomment for debug
-		/*    
-		vk::setMatricesWindow( getWindowSize() );
-		//vk::color( 1.0f, 1.0f, 1.0f );
-		float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
-		vk::draw( mShadowMapTex, Rectf( 0, 0, size, size ) );    
-		*/
+			drawScene( false ); 
+
+			// Uncomment for debug
+			/*    
+			vk::setMatricesWindow( getWindowSize() );
+			//vk::color( 1.0f, 1.0f, 1.0f );
+			float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
+			vk::draw( mShadowMapTex, Rectf( 0, 0, size, size ) );    
+			*/
+		}
+		vk::context()->endPresentRender();
 	}
-	vk::context()->endPresentRender();
 	cmdBuf->end();
 
+	// Submit command buffer for presentation
 	vk::context()->submitPresentRender();
-
 }
 
 CINDER_APP( ShadowMappingBasic, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode() ), ShadowMappingBasic::prepareSettings )

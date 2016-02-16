@@ -157,6 +157,7 @@ public:
 	VkFormat								getPresentColorFormat() const { return mPresentColorFormat; }
 	VkFormat								getPresentDepthStencilFormat() const { return mPresentDepthStencilFormat; }
 
+	void									acquireNextPresentImage( VkFence fence = VK_NULL_HANDLE );
 	void									beginPresentRender();
 	void									endPresentRender();
 	void									submitPresentRender();
@@ -422,6 +423,7 @@ private:
 	void									setPresentDepthStencilFormat( VkFormat foramt );
 
 	struct PresentRender {
+		VkPresentModeKHR					mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 		ivec2								mWindowSize = ivec2( 0 );
 		VkSampleCountFlagBits				mSamples = VK_SAMPLE_COUNT_1_BIT;
 		bool								mMultiSample = false;
@@ -435,7 +437,7 @@ private:
 		VkSemaphore							mSemaphore = 0;
 	};
 	std::unique_ptr<PresentRender>			mPresentRender;
-	void									intializePresentRender( const ivec2& mWindowSize, VkSampleCountFlagBits samples );
+	void									initializePresentRender( const ivec2& mWindowSize, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode );
 
 
 	void initialize( const Context* existingContext = nullptr );

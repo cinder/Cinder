@@ -61,7 +61,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset)_d.lib;OpenGL32.lib;$(VULKAN_SDK)\glslang\lib\Debug\glslang.lib;$(VULKAN_SDK)\glslang\lib\Debug\OGLCompiler.lib;$(VULKAN_SDK)\glslang\lib\Debug\OSDependent.lib;$(VULKAN_SDK)\glslang\lib\Debug\SPIRV.lib;$(VULKAN_SDK)\Bin\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>"..\..\..\..\..\cinder_vulkan\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"..\..\..\..\\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -90,7 +90,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset).lib;OpenGL32.lib;$(VULKAN_SDK)\glslang\lib\Release\glslang.lib;$(VULKAN_SDK)\glslang\lib\Release\OGLCompiler.lib;$(VULKAN_SDK)\glslang\lib\Release\OSDependent.lib;$(VULKAN_SDK)\glslang\lib\Release\SPIRV.lib;$(VULKAN_SDK)\Bin\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>"..\..\..\..\..\cinder_vulkan\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"..\..\..\..\\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <SubSystem>Windows</SubSystem>

@@ -37,8 +37,10 @@
 */
 
 #include "cinder/vk/Swapchain.h"
+#include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Environment.h"
+#include "cinder/Log.h"
 
 namespace cinder { namespace vk {
 
@@ -46,11 +48,12 @@ Swapchain::Swapchain()
 {
 }
 
-Swapchain::Swapchain( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSample, Context *context )
+Swapchain::Swapchain( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSample, VkPresentModeKHR presentMode, Context *context )
 	: mContext( context ),
 	  mSwapchainExtent( { size.x, size.y } ),
 	  mHasDepth( depthStencil ),
-	  mDepthStencilSamples( depthStencilSample )
+	  mDepthStencilSamples( depthStencilSample ),
+	  mPresentMode( presentMode )
 {
 	initialize();
 }
@@ -88,20 +91,39 @@ void Swapchain::initColorBuffers()
 		swapChainExtent = surfCapabilities.currentExtent;
 	}
 
-	// If mailbox mode is available, use it, as is the lowest-latency non-
-	// tearing mode.  If not, try IMMEDIATE which will usually be available,
-	// and is fastest (though it tears).  If not, fall back to FIFO which is
-	// always available.
-	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
-	for( size_t i = 0; i < presentModeCount; ++i ) {
-		if( presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR ) {
-			swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
-			break;
-		}
-		if( ( swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR ) && ( presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR ) ) {
-			swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+	// If a sepcific present mode isn't requested, find one.
+	if( VK_PRESENT_MODE_MAX_ENUM == mPresentMode ) {
+		CI_LOG_I( "Finding best present mode..." );
+		// If mailbox mode is available, use it, as is the lowest-latency non-
+		// tearing mode.  If not, try IMMEDIATE which will usually be available,
+		// and is fastest (though it tears).  If not, fall back to FIFO which is
+		// always available.
+		for( size_t i = 0; i < presentModeCount; ++i ) {
+			if( VK_PRESENT_MODE_MAILBOX_KHR == presentModes[i] ) {
+				mPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+				break;
+			}
+			if( ( VK_PRESENT_MODE_MAILBOX_KHR != mPresentMode ) && ( VK_PRESENT_MODE_IMMEDIATE_KHR != presentModes[i] ) ) {
+				mPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+			}
 		}
 	}
+	// Check requested present mode if it isn't FIFO
+	else if( VK_PRESENT_MODE_FIFO_KHR != mPresentMode ) {
+		// Fall back to FIFO if requested present mode isn't supported.
+		bool fallBackToFifo = true;
+		for( size_t i = 9; i < presentModeCount; ++i ) {
+			if( presentModes[i] == mPresentMode ) {
+				fallBackToFifo = false;
+				break;
+			}
+		}
+		if( fallBackToFifo ) {
+			CI_LOG_I( "Rresent mode " << toStringVkPresentMode( mPresentMode ) << " is unavailabe, falling back to VK_PRESENT_MODE_FIFO_KHR" );
+			mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+		}
+	}
+	CI_LOG_I( "mPresentMode: " << toStringVkPresentMode( mPresentMode ) );
 
 	// Determine the number of VkImage's to use in the swap chain (we desire to
 	// own only 1 image at a time, besides the images being displayed and
@@ -129,7 +151,7 @@ void Swapchain::initColorBuffers()
 	createInfo.imageExtent				= mSwapchainExtent;
 	createInfo.preTransform				= preTransform;
 	createInfo.imageArrayLayers			= 1;
-	createInfo.presentMode				= swapchainPresentMode;
+	createInfo.presentMode				= mPresentMode;
 	createInfo.oldSwapchain				= VK_NULL_HANDLE;
 	createInfo.clipped					= true;
 	createInfo.imageColorSpace			= VK_COLORSPACE_SRGB_NONLINEAR_KHR;
@@ -193,10 +215,10 @@ void Swapchain::destroy(bool removeFromTracking)
 	}
 }
 
-SwapchainRef Swapchain::create( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSamples, Context *context )
+SwapchainRef Swapchain::create( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSamples, VkPresentModeKHR presentMode, Context *context )
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
-	SwapchainRef result = SwapchainRef( new Swapchain( size, depthStencil, depthStencilSamples, context ) );
+	SwapchainRef result = SwapchainRef( new Swapchain( size, depthStencil, depthStencilSamples, presentMode, context ) );
 	return result;
 }
 

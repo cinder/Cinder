@@ -40,6 +40,19 @@
 
 namespace cinder { namespace vk {
 
+std::string toStringVkPresentMode( VkPresentModeKHR v )
+{
+	std::string result = "<UNKNOWN>";
+	switch( v ) {
+		case VK_PRESENT_MODE_IMMEDIATE_KHR		: result = "VK_PRESENT_MODE_IMMEDIATE_KHR"; break;
+		case VK_PRESENT_MODE_MAILBOX_KHR		: result = "VK_PRESENT_MODE_MAILBOX_KHR"; break;
+		case VK_PRESENT_MODE_FIFO_KHR			: result = "VK_PRESENT_MODE_FIFO_KHR"; break;
+		case VK_PRESENT_MODE_FIFO_RELAXED_KHR	: result = "VK_PRESENT_MODE_FIFO_RELAXED_KHR"; break;
+		default: break;
+	}
+	return result;
+}
+
 std::string toStringVkFormat( VkFormat v )
 {
 	std::string result = "VK_FORMAT_UNDEFINED";

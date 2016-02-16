@@ -326,54 +326,59 @@ void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadow
 
 void ShadowMappingApp::draw()
 {
+	vk::context()->acquireNextPresentImage();
+
+	// Build command buffer
 	auto cmdBuf = vk::context()->getDefaultCommandBuffer();
 	cmdBuf->begin();
-
-	// Render the shadow map
-	mShadowMap->getRenderPass()->beginRenderExplicit( cmdBuf, mShadowMap->getFramebuffer() );
 	{
-		// Offset to help combat surface acne (self-shadowing)
-		vk::enablePolygonOffsetFill();
-		vk::polygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
-
-
-		vk::ScopedMatrices push;
-
-		vk::setMatrices( mLight.camera );
-		drawScene( mSpinAngle );
-
-		// Disable polygon offset
-		vk::disablePolygonOffsetFill();
-	}
-	mShadowMap->getRenderPass()->endRenderExplicit();
-
-	vk::context()->setPresentCommandBuffer( cmdBuf );
-	vk::context()->beginPresentRender();
-	{
-		// Render shadowed scene
-		vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
+		// Render the shadow map
+		mShadowMap->getRenderPass()->beginRenderExplicit( cmdBuf, mShadowMap->getFramebuffer() );
 		{
-			const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
-			mat4 shadowMatrix = flipY*mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix();
-			vec4 lightPos = vk::getModelView() * vec4( mLight.viewpoint, 1.0 );
-			auto& batches = mShaderGrouping[mShadowShader];
-			for( auto& batch : batches ) {
-				batch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
-				batch->uniform( "ciBlock1.uShadowTechnique", mShadowTechnique );
-				batch->uniform( "ciBlock1.uDepthBias", mDepthBias );
-				batch->uniform( "ciBlock1.uOnlyShadowmap", mOnlyShadowmap );
-				batch->uniform( "ciBlock1.uRandomOffset", mRandomOffset );
-				batch->uniform( "ciBlock1.uNumRandomSamples", mNumRandomSamples );
-				batch->uniform( "ciBlock1.uEnableNormSlopeOffset", mEnableNormSlopeOffset );
-				batch->uniform( "ciBlock1.uLightPos", lightPos );
-			}
+			// Offset to help combat surface acne (self-shadowing)
+			vk::enablePolygonOffsetFill();
+			vk::polygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
 
-			drawScene( mSpinAngle, mShadowShader );
+
+			vk::ScopedMatrices push;
+
+			vk::setMatrices( mLight.camera );
+			drawScene( mSpinAngle );
+
+			// Disable polygon offset
+			vk::disablePolygonOffsetFill();
 		}
+		mShadowMap->getRenderPass()->endRenderExplicit();
+
+		vk::context()->setPresentCommandBuffer( cmdBuf );
+		vk::context()->beginPresentRender();
+		{
+			// Render shadowed scene
+			vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
+			{
+				const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
+				mat4 shadowMatrix = flipY*mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix();
+				vec4 lightPos = vk::getModelView() * vec4( mLight.viewpoint, 1.0 );
+				auto& batches = mShaderGrouping[mShadowShader];
+				for( auto& batch : batches ) {
+					batch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
+					batch->uniform( "ciBlock1.uShadowTechnique", mShadowTechnique );
+					batch->uniform( "ciBlock1.uDepthBias", mDepthBias );
+					batch->uniform( "ciBlock1.uOnlyShadowmap", mOnlyShadowmap );
+					batch->uniform( "ciBlock1.uRandomOffset", mRandomOffset );
+					batch->uniform( "ciBlock1.uNumRandomSamples", mNumRandomSamples );
+					batch->uniform( "ciBlock1.uEnableNormSlopeOffset", mEnableNormSlopeOffset );
+					batch->uniform( "ciBlock1.uLightPos", lightPos );
+				}
+
+				drawScene( mSpinAngle, mShadowShader );
+			}
+		}
+		vk::context()->endPresentRender();
 	}
-	vk::context()->endPresentRender();
 	cmdBuf->end();
 
+	// Submit command buffer for presentation
 	vk::context()->submitPresentRender();
 }
 

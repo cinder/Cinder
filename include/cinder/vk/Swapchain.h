@@ -54,10 +54,10 @@ class Swapchain {
 public:
 	
 	Swapchain();
-	Swapchain( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSamples, Context *context );
+	Swapchain( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSamples, VkPresentModeKHR presentMode, Context *context );
 	virtual ~Swapchain();
 
-	static SwapchainRef			create( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSamples, Context *context = nullptr );
+	static SwapchainRef			create( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSamples, VkPresentModeKHR presentMode, Context *context = nullptr );
 
 	VkSwapchainKHR				getSwapchain() const { return mSwapchain; }
 	uint32_t					getSwapchainImageCount() const { return mSwapchainImageCount; }
@@ -71,6 +71,8 @@ public:
 
 	VkFormat						getDepthStencilFormat() const { return mDepthStencilFormat; }
 	const ImageViewRef&				getDepthStencilAttachment() const { return mDepthStencilAttachment; }
+
+	VkPresentModeKHR			getPresentMode() const { return mPresentMode; }
 
 	void						acquireNextImage();
 	void						present();
@@ -90,6 +92,7 @@ private:
 	VkFormat					mDepthStencilFormat = VK_FORMAT_UNDEFINED;
 	ImageViewRef				mDepthStencilAttachment;
 	VkSampleCountFlagBits		mDepthStencilSamples = VK_SAMPLE_COUNT_1_BIT;
+	VkPresentModeKHR			mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
 
 	void initialize();
 	void destroy(bool removeFromTracking = true);

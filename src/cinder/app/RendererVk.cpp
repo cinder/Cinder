@@ -74,7 +74,7 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	
 	vk::Environment::initializeVulkan();
 	uint32_t gpuIndex = 0;
-	mContext = vk::Environment::getEnv()->createContext( hInst, mWnd, mOptions.getExplicitMode(), mOptions.getWorkQueueCount(), gpuIndex );
+	mContext = vk::Environment::getEnv()->createContext( hInst, mWnd, mOptions.mExplicitMode, mOptions.mWorkQueueCount, gpuIndex );
 	mContext->makeCurrent();
 	mContext->setPresentDepthStencilFormat( mOptions.mDepthStencilFormat );
 
@@ -84,7 +84,7 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	int height = clientRect.bottom - clientRect.top;
 
 	// Initialize the present render
-	mContext->intializePresentRender( ivec2( width, height ), mOptions.mSamples );
+	mContext->initializePresentRender( ivec2( width, height ), mOptions.mSamples, mOptions.mPresentMode );
 }
 
 void RendererVk::kill()
@@ -104,6 +104,7 @@ void RendererVk::startDraw()
 	makeCurrentContext();
 
 	if( ! isExplicitMode() ) {
+		mContext->acquireNextPresentImage();
 		mContext->beginPresentRender();
 	}
 }
@@ -139,7 +140,7 @@ void RendererVk::defaultResize()
 #endif
 
 	if( ! isExplicitMode() ) {
-		mContext->intializePresentRender( ivec2( width, height ), mOptions.mSamples );
+		mContext->initializePresentRender( ivec2( width, height ), mOptions.mSamples, mOptions.mPresentMode );
 
 		vk::viewport( 0, 0, width, height );
 		vk::setMatricesWindow( width, height );

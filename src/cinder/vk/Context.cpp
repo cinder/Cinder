@@ -497,7 +497,7 @@ void Context::setPresentDepthStencilFormat( VkFormat format )
 	mPresentDepthStencilFormat = format;
 }
 
-void Context::intializePresentRender( const ivec2& windowSize, VkSampleCountFlagBits samples )
+void Context::initializePresentRender( const ivec2& windowSize, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode )
 {
 	// Bail if the size hasn't changed
 	if( mPresentRender && ( windowSize == mPresentRender->mWindowSize ) ) {
@@ -518,15 +518,17 @@ void Context::intializePresentRender( const ivec2& windowSize, VkSampleCountFlag
 	// Reset everything
 	mPresentRender.reset( new Context::PresentRender() );
 
-	// Size, area, samples
+	// Present mode, size, area, samples
+	mPresentRender->mPresentMode		= presentMode;
 	mPresentRender->mWindowSize			= windowSize;
 	mPresentRender->mRenderAreea.offset	= { 0, 0 };
 	mPresentRender->mRenderAreea.extent = { windowSize.x, windowSize.y };
 	mPresentRender->mSamples			= samples;
 	mPresentRender->mMultiSample		= samples > VK_SAMPLE_COUNT_1_BIT;
 
-	// Create swapchain
-	mPresentRender->mSwapchain = vk::Swapchain::create( windowSize, true, mPresentRender->mSamples, this );
+	// Create swapchain and update the present mode incase it changed
+	mPresentRender->mSwapchain = vk::Swapchain::create( windowSize, true, mPresentRender->mSamples, mPresentRender->mPresentMode, this );
+	mPresentRender->mPresentMode = mPresentRender->mSwapchain->getPresentMode();
 
 
 	if( mPresentRender->mMultiSample ) {
@@ -617,7 +619,7 @@ void Context::intializePresentRender( const ivec2& windowSize, VkSampleCountFlag
 	mPresentRender->mCommandBuffer = mDefaultCommandBuffer;
 }
 
-void Context::beginPresentRender()
+void Context::acquireNextPresentImage( VkFence fence )
 {
 	// Create the present semaphore
 	{
@@ -631,11 +633,13 @@ void Context::beginPresentRender()
 
 	// Get the index of the next available swapchain image
 	{
-		VkFence nullFence = VK_NULL_HANDLE;
-		VkResult res = this->vkAcquireNextImageKHR( mPresentRender->mSwapchain->getSwapchain(), UINT64_MAX, mPresentRender->mSemaphore, nullFence, &(mPresentRender->mCurrentIamgeIndex) );
+		VkResult res = this->vkAcquireNextImageKHR( mPresentRender->mSwapchain->getSwapchain(), UINT64_MAX, mPresentRender->mSemaphore, fence, &(mPresentRender->mCurrentIamgeIndex) );
 		assert( res == VK_SUCCESS );
 	}
+}
 
+void Context::beginPresentRender()
+{
 	this->pushRenderPass( mPresentRender->mRenderPass );
 	this->pushSubPass( 0 );
 	this->pushFramebuffer( mPresentRender->mFramebuffers[mPresentRender->mCurrentIamgeIndex] );
