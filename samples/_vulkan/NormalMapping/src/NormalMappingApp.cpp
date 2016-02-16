@@ -179,7 +179,7 @@ void NormalMappingApp::setup()
 	// load assets
 	try {
 		// load our copyright message
-		mCopyrightMap  = vk::Texture::create( loadImage( loadAsset("copyright.png") ) );
+		mCopyrightMap  = vk::Texture::create( *Surface::create( loadImage( loadAsset("copyright.png") ) ) );
 
 		// load textures
 		auto texFmt = vk::Texture2d::Format();
