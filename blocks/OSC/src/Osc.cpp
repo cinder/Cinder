@@ -997,19 +997,25 @@ void SenderUdp::closeImpl()
 
 SenderTcp::SenderTcp( uint16_t localPort, const string &destinationHost, uint16_t destinationPort, PacketFramingRef packetFraming, const protocol &protocol, io_service &service )
 : SenderBase( packetFraming ), mSocket( new tcp::socket( service ) ), mLocalEndpoint( protocol, localPort ),
-	mRemoteEndpoint( tcp::endpoint( address::from_string( destinationHost ), destinationPort ) )
+	mRemoteEndpoint( tcp::endpoint( address::from_string( destinationHost ), destinationPort ) ), mIsConnected( false )
 {
 }
 	
 SenderTcp::SenderTcp( uint16_t localPort, const protocol::endpoint &destination, PacketFramingRef packetFraming, const protocol &protocol, io_service &service )
 : SenderBase( packetFraming ), mSocket( new tcp::socket( service ) ), mLocalEndpoint( protocol, localPort ),
-	mRemoteEndpoint( destination )
+	mRemoteEndpoint( destination ), mIsConnected( false )
 {
 }
 	
 SenderTcp::SenderTcp( const TcpSocketRef &socket, const protocol::endpoint &destination, PacketFramingRef packetFraming )
-: SenderBase( packetFraming ), mSocket( socket ), mLocalEndpoint( socket->local_endpoint() ), mRemoteEndpoint( destination )
+: SenderBase( packetFraming ), mSocket( socket ), mLocalEndpoint( socket->local_endpoint() ), mRemoteEndpoint( destination ),
+	mIsConnected( false )
 {
+}
+	
+SenderTcp::~SenderTcp()
+{
+	SenderTcp::closeImpl();
 }
 	
 void SenderTcp::bindImpl()
@@ -1035,11 +1041,25 @@ void SenderTcp::connect()
 		if( error )
 			handleError( error, "" );
 		else {
+			mIsConnected.store( true );
 			std::lock_guard<std::mutex> lock( mOnConnectFnMutex );
 			if( mOnConnectFn )
 				mOnConnectFn( mSocket );
 		}
 	});
+}
+	
+void SenderTcp::shutdown( asio::socket_base::shutdown_type shutdownType )
+{
+	if( ! mSocket->is_open() || ! mIsConnected )
+		return;
+	
+	asio::error_code ec;
+	mSocket->shutdown( shutdownType, ec );
+	mIsConnected.store( false );
+	// the other side may have already shutdown the connection.
+	if( ec && ec != asio::error::not_connected )
+		handleError( ec, "" );
 }
 
 void SenderTcp::setOnConnectFn( OnConnectFn onConnectFn )
@@ -1067,6 +1087,7 @@ void SenderTcp::sendImpl( const ByteBufferRef &data )
 	
 void SenderTcp::closeImpl()
 {
+	shutdown();
 	asio::error_code ec;
 	mSocket->close( ec );
 	if( ec )
@@ -1357,15 +1378,33 @@ void ReceiverUdp::handleError( const asio::error_code &error, const protocol::en
 	
 /////////////////////////////////////////////////////////////////////////////////////////
 //// ReceiverTcp
+	
+ReceiverTcp::~ReceiverTcp()
+{
+	ReceiverTcp::closeImpl();
+}
 
 ReceiverTcp::Connection::Connection( TcpSocketRef socket, ReceiverTcp *receiver, uint64_t identifier )
-: mSocket( socket ), mReceiver( receiver ), mIdentifier( identifier )
+: mSocket( socket ), mReceiver( receiver ), mIdentifier( identifier ), mIsConnected( true )
 {
 }
 
 ReceiverTcp::Connection::~Connection()
 {
 	mReceiver = nullptr;
+}
+	
+void ReceiverTcp::Connection::shutdown( asio::socket_base::shutdown_type shutdownType )
+{
+	if( ! mSocket->is_open() || ! mIsConnected )
+		return;
+	
+	asio::error_code ec;
+	mSocket->shutdown( asio::socket_base::shutdown_both, ec );
+	mIsConnected.store( false );
+	// the other side may have already shutdown the connection.
+	if( ec && ec != asio::error::not_connected )
+		mReceiver->handleSocketError( ec, mIdentifier, mSocket->remote_endpoint() );
 }
 	
 using iterator = asio::buffers_iterator<asio::streambuf::const_buffers_type>;
@@ -1432,25 +1471,25 @@ void ReceiverTcp::Connection::read()
 
 ReceiverTcp::ReceiverTcp( uint16_t port, PacketFramingRef packetFraming, const protocol &protocol, asio::io_service &service )
 : ReceiverBase( packetFraming ), mAcceptor( new tcp::acceptor( service ) ), mLocalEndpoint( protocol, port ),
-	mConnectionIdentifiers( 0 )
+	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 }
 
 ReceiverTcp::ReceiverTcp( const protocol::endpoint &localEndpoint, PacketFramingRef packetFraming, asio::io_service &service )
 : ReceiverBase( packetFraming ), mAcceptor( new tcp::acceptor( service ) ), mLocalEndpoint( localEndpoint ),
-	mConnectionIdentifiers( 0 )
+	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 }
 	
 ReceiverTcp::ReceiverTcp( AcceptorRef acceptor, PacketFramingRef packetFraming )
 : ReceiverBase( packetFraming ), mAcceptor( acceptor ), mLocalEndpoint( mAcceptor->local_endpoint() ),
-	mConnectionIdentifiers( 0 )
+	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 }
 	
 ReceiverTcp::ReceiverTcp( TcpSocketRef socket, PacketFramingRef packetFraming )
 : ReceiverBase( packetFraming ), mAcceptor( nullptr ), mLocalEndpoint( socket->local_endpoint() ),
-	mConnectionIdentifiers( 0 )
+	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 	auto identifier = mConnectionIdentifiers++;
 	std::lock_guard<std::mutex> lock( mConnectionMutex );
@@ -1460,7 +1499,10 @@ ReceiverTcp::ReceiverTcp( TcpSocketRef socket, PacketFramingRef packetFraming )
 	
 void ReceiverTcp::bindImpl()
 {
-	if( ! mAcceptor ) return;
+	if( ! mAcceptor )
+		return;
+	
+	mIsShuttingDown.store( false );
 	
 	asio::error_code ec;
 	mAcceptor->open( mLocalEndpoint.protocol(), ec );
@@ -1468,6 +1510,7 @@ void ReceiverTcp::bindImpl()
 		handleAcceptorError( ec );
 		return;
 	}
+	mAcceptor->set_option( socket_base::reuse_address( true ) );
 	mAcceptor->bind( mLocalEndpoint, ec );
 	if( ec ) {
 		handleAcceptorError( ec );
@@ -1541,19 +1584,32 @@ void ReceiverTcp::closeAcceptor()
 void ReceiverTcp::closeImpl()
 {
 	closeAcceptor();
+	// if there's an error on a socket while shutting down the receiver, it could
+	// cause a recursive run on the mConnectionMutex by someone listening for
+	// connection error and attempting to close the connection on error through
+	// the closeConnection function. This blocks against that ability. Basically,
+	// if we're shutting down we disregard the closeConnection function.
+	mIsShuttingDown.store( true );
 	std::lock_guard<std::mutex> lock( mConnectionMutex );
+	for( auto & connection : mConnections )
+		connection->shutdown( socket_base::shutdown_both );
 	mConnections.clear();
 }
 	
-void ReceiverTcp::closeConnection( uint64_t connectionIdentifier )
+void ReceiverTcp::closeConnection( uint64_t connectionIdentifier, asio::socket_base::shutdown_type shutdownType )
 {
+	if( mIsShuttingDown )
+		return;
+	
 	std::lock_guard<std::mutex> lock( mConnectionMutex );
 	auto rem = remove_if( mConnections.begin(), mConnections.end(),
 	[connectionIdentifier]( const UniqueConnection &cached ) {
 		return cached->mIdentifier == connectionIdentifier;
 	} );
-	if( rem != mConnections.end() )
+	if( rem != mConnections.end() ) {
+		(*rem)->shutdown( shutdownType );
 		mConnections.erase( rem );
+	}
 }
 	
 void ReceiverTcp::handleSocketError( const asio::error_code &error, uint64_t originatorId, const asio::ip::tcp::endpoint &endpoint )

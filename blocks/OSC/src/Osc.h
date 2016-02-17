@@ -441,6 +441,7 @@ class PacketFraming {
 //! interface without implementing any of the networking layer.
 class SenderBase {
   public:
+	virtual ~SenderBase() = default;
 	//! Alias function that represents a general error callback for the socket. Note: for some errors
 	//! there'll not be an accompanying oscAddress, or it'll not have a value set. These errors have
 	//! nothing to do with transport but other socket operations like bind and open. To see more about
@@ -464,7 +465,6 @@ class SenderBase {
 	SenderBase( PacketFramingRef packetFraming )
 	: mPacketFraming( packetFraming ) {}
 	
-	virtual ~SenderBase() = default;
 	SenderBase( const SenderBase &other ) = delete;
 	SenderBase& operator=( const SenderBase &other ) = delete;
 	SenderBase( SenderBase &&other ) = delete;
@@ -580,12 +580,15 @@ class SenderTcp : public SenderBase {
 	SenderTcp( const TcpSocketRef &socket,
 			   const protocol::endpoint &destination,
 			   PacketFramingRef packetFraming = nullptr );
-	virtual ~SenderTcp() = default;
+	virtual ~SenderTcp();
 	
 	//! Connects to the remote endpoint using the underlying socket. Has to be called before attempting to
 	//! send anything. If an error occurs, the SocketTranportErrorFn will be called with a blank oscAddress.
 	//! If no error occurs and OnConnectFn present, the OnConnectFn will be called.
 	void connect();
+	//! Shuts down the underlying socket. Use this function prior to close to clean up the connection and
+	//! end socket linger. If error occurs, it is passed the the SocketErrorFn.
+	void shutdown( asio::socket_base::shutdown_type shutdownType = asio::socket_base::shutdown_both );
 	//! Sets the underlying OnConnectFn. Called after asynchronously connecting to the remote endpoint, if no
 	//! error occurs.
 	void setOnConnectFn( OnConnectFn onConnectFn );
@@ -610,6 +613,7 @@ class SenderTcp : public SenderBase {
 	asio::ip::tcp::endpoint mLocalEndpoint, mRemoteEndpoint;
 	OnConnectFn				mOnConnectFn;
 	std::mutex				mOnConnectFnMutex;
+	std::atomic_bool		mIsConnected;
 	
   public:
 	//! Non-copyable.
@@ -790,7 +794,7 @@ class ReceiverTcp : public ReceiverBase {
 	//! defaults to null. Advanced use only. Does not instantiate an acceptor.
 	ReceiverTcp( TcpSocketRef connection,
 				 PacketFramingRef packetFraming = nullptr );
-	virtual ~ReceiverTcp() = default;
+	virtual ~ReceiverTcp();
 	
 	//! Sets the underlying SocketTransportErrorFn, called on any errors happening on the underlying sockets.
 	void setSocketTransportErrorFn( SocketTransportErrorFn errorFn );
@@ -801,9 +805,10 @@ class ReceiverTcp : public ReceiverBase {
 	void setOnAcceptFn( OnAcceptFn acceptFn );
 	//! Closes the underlying acceptor. Must rebind to listen again after calling this function.
 	void closeAcceptor();
-	//! Closes the Connection associated with the connectionIdentifier. See OnAcceptFn and SocketTransportErrorFn for
-	//! more.
-	void closeConnection( uint64_t connectionIdentifier );
+	//! Closes the Connection associated with the connectionIdentifier. \a connectionIdentifier is the handle
+	//! to the socket, received in the OnAccept method. \a shutdownType sets the shutdown method for the underlying
+	//! socket before closing it. See OnAcceptFn and SocketTransportErrorFn for more.
+	void closeConnection( uint64_t connectionIdentifier, asio::socket_base::shutdown_type shutdownType = asio::socket_base::shutdown_both );
 	
   protected:
 	//! Handles reading from the socket.
@@ -814,6 +819,7 @@ class ReceiverTcp : public ReceiverBase {
 		
 		//! Implements asynchronous read on the underlying socket. Handles the async receive completion operations.
 		void read();
+		void shutdown( asio::socket_base::shutdown_type shutdownType );
 		//! Simple alias for asio buffer iterator type.
 		using iterator = asio::buffers_iterator<asio::streambuf::const_buffers_type>;
 		//! Static method which is used to read the stream as it's coming in and notate each packet. Implementation
@@ -823,6 +829,7 @@ class ReceiverTcp : public ReceiverBase {
 		TcpSocketRef			mSocket;
 		ReceiverTcp*			mReceiver;
 		asio::streambuf			mBuffer;
+		std::atomic_bool		mIsConnected;
 		
 		const uint64_t			mIdentifier;
 		
@@ -846,8 +853,9 @@ class ReceiverTcp : public ReceiverBase {
 	void listenImpl() override;
 	//! Launches acceptor to asynchronously accept connections. If an error occurs, the AcceptorErrorFn will be called.
 	void accept();
-	//! Implements the close operation for the underlying sockets and acceptor. If an error occurs, the AcceptorErrorFn
-	//! will be called.
+	//! Implements the close operation for the underlying sockets and acceptor. For the underlying socket, shutdown is
+	//! called on the prior to close. If an error occurs, the AcceptorErrorFn or the SocketErrorFn will be called
+	//! respectively.
 	void closeImpl() override;
 	//! Helper which handles any errors happening to the acceptor.
 	void handleAcceptorError( const asio::error_code &error );
@@ -867,6 +875,7 @@ class ReceiverTcp : public ReceiverBase {
 	using UniqueConnection = std::unique_ptr<Connection>;
 	std::vector<UniqueConnection>		mConnections;
 	uint64_t							mConnectionIdentifiers;
+	std::atomic_bool					mIsShuttingDown;
 
 	friend struct Connection;
   public:
