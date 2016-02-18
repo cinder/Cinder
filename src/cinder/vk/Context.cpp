@@ -69,6 +69,7 @@ namespace cinder { namespace vk {
 
 Context::Context()
 {
+	mColor = ColorAf::white();
 }
 
 #if defined( CINDER_LINUX )
@@ -77,8 +78,9 @@ Context::Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint
 	: mType( Context::Type::PRIMARY ), mConnection( connection ), mWindow( window ), mExplicitMode( explicitMode ), mWorkQueueCount( workQueueCount), mGpu( gpu )
 {
 	mEnvironment = ( nullptr != env ) ? env : Environment::getEnv();
-
 	initialize();
+
+	mColor = ColorAf::white();
 }
 #endif
 
@@ -87,6 +89,8 @@ Context::Context( const Context* existingContext, int queueIndex )
 {
 	mEnvironment = existingContext->getEnvironment();
 	initialize( existingContext );
+
+	mColor = ColorAf::white();
 }
 
 Context::~Context()
@@ -314,6 +318,9 @@ void Context::initialize( const Context* existingContext )
 	mDefaultCommandBuffer = vk::CommandBuffer::create( mDefaultCommandPool->getCommandPool(), this );
 
 	mPipelineCache = vk::PipelineCache::create( this );
+
+	mDescriptorSetLayoutSelector = vk::DescriptorSetLayoutSelector::create( this );
+	mPipelineLayoutSelector = vk::PipelineLayoutSelector::create( this );
 	mPipelineSelector = vk::PipelineSelector::create( mPipelineCache, this );
 
 	mCachedColorAttachmentBlend.blendEnable			= VK_FALSE;

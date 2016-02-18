@@ -53,9 +53,11 @@ using ShaderProgRef = std::shared_ptr<ShaderProg>;
 using VertexBufferRef = std::shared_ptr<VertexBuffer>;
 
 class PipelineLayout;
+class PipelineLayoutSelector;
 class PipelineCache;
 class Pipeline;
 using PipelineLayoutRef = std::shared_ptr<PipelineLayout>;
+using PipelineLayoutSelectorRef = std::shared_ptr<PipelineLayoutSelector>;
 using PipelineCacheRef = std::shared_ptr<PipelineCache>;
 using PipelineRef = std::shared_ptr<Pipeline>;
 
@@ -66,10 +68,12 @@ class PipelineLayout : public BaseVkObject {
 public:
 
 	PipelineLayout();
-	PipelineLayout( const DescriptorSetLayoutRef &descSetLayout, Context *context );
+	PipelineLayout( const DescriptorSetLayoutRef &descriptorSetLayouts, Context *context );
+	PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, Context *context );
 	virtual ~PipelineLayout();
 
-	static PipelineLayoutRef	create( const DescriptorSetLayoutRef &descSetLayout, Context *context = nullptr );
+	static PipelineLayoutRef	create( const DescriptorSetLayoutRef &descriptorSetLayouts, Context *context = nullptr );
+	static PipelineLayoutRef	create( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, Context *context = nullptr );
 
 	VkPipelineLayout			getPipelineLayout() const { return mPipelineLayout; }
 
@@ -77,8 +81,37 @@ private:
 	VkPipelineLayout			mPipelineLayout = VK_NULL_HANDLE;
 
 	void initialize( const DescriptorSetLayoutRef &descriptorSetLayout );
+	void initialize( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts );
 	void destroy( bool removeFromTracking = true );
 	friend class Context;
+};
+
+//! \class PipelineLayoutSelector
+//!
+//!
+class PipelineLayoutSelector {
+public:
+
+	PipelineLayoutSelector( vk::Context *context );
+	virtual ~PipelineLayoutSelector() {}
+
+	static PipelineLayoutSelectorRef	create( vk::Context *context );
+
+	VkPipelineLayout					getSelectedLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts ) const;
+
+private:
+	vk::Context *mContext = nullptr;
+
+	struct HashData {
+		std::vector<VkDescriptorSetLayout>	mData;
+		uint32_t							mHash = 0;
+
+		HashData( const std::vector<VkDescriptorSetLayout>& data, uint32_t hash )
+			: mData( data ), mHash( hash ) {}
+	};
+	using HashPair = std::pair<PipelineLayoutSelector::HashData, PipelineLayoutRef>;
+
+	mutable std::vector<HashPair>	mPipelineLayouts;
 };
 
 //! \class PipelineCache

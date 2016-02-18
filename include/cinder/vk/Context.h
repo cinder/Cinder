@@ -59,6 +59,7 @@ class CommandPool;
 class DescriptorPool;
 class DescriptorSet;
 class DescriptorSetLayout;
+class DescriptorSetLayoutSelector;
 class Environment;
 class Framebuffer;
 class Image;
@@ -67,6 +68,7 @@ class IndexBuffer;
 class Pipeline;
 class PipelineCache;
 class PipelineLayout;
+class PipelineLayoutSelector;
 class PipelineSelector;
 class RenderPass;
 class ShaderDef;
@@ -82,11 +84,13 @@ using FramebufferRef = std::shared_ptr<Framebuffer>;
 using DescriptorPoolRef = std::shared_ptr<DescriptorPool>;
 using DescriptorSetRef = std::shared_ptr<DescriptorSet>;
 using DescriptorSetLayoutRef = std::shared_ptr<DescriptorSetLayout>;
+using DescriptorSetLayoutSelectorRef = std::shared_ptr<DescriptorSetLayoutSelector>;
 using ImageRef = std::shared_ptr<Image>;
 using ImageViewRef = std::shared_ptr<ImageView>;
 using IndexBufferRef = std::shared_ptr<IndexBuffer>;
 using PipelineRef = std::shared_ptr<Pipeline>;
 using PipelineCacheRef = std::shared_ptr<PipelineCache>;
+using PipelineLayoutSelectorRef = std::shared_ptr<PipelineLayoutSelector>;
 using PipelineLayoutRef = std::shared_ptr<PipelineLayout>;
 using PipelineSelectorRef = std::shared_ptr<PipelineSelector>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
@@ -151,7 +155,10 @@ public:
 	const vk::CommandBufferRef&				getDefaultCommandBuffer() const { return mDefaultCommandBuffer; }
 
 	const vk::PipelineCacheRef&				getPipelineCache() const { return mPipelineCache; }
-	const vk::PipelineSelectorRef&			getPipelineSelector() const { return mPipelineSelector; }
+
+	const vk::DescriptorSetLayoutSelectorRef&	getDescriptorSetLayoutSelector() const { return mDescriptorSetLayoutSelector; }
+	const vk::PipelineLayoutSelectorRef&		getPipelineLayoutSelector() const { return mPipelineLayoutSelector; }
+	const vk::PipelineSelectorRef&				getPipelineSelector() const { return mPipelineSelector; }
 
 	VkSurfaceKHR							getPresentSurface() const { return mPresentSurface; }
 	VkFormat								getPresentColorFormat() const { return mPresentColorFormat; }
@@ -415,6 +422,9 @@ private:
 	vk::CommandPoolRef						mDefaultCommandPool;
 	vk::CommandBufferRef					mDefaultCommandBuffer;
 	vk::PipelineCacheRef					mPipelineCache;
+	
+	vk::DescriptorSetLayoutSelectorRef		mDescriptorSetLayoutSelector;
+	vk::PipelineLayoutSelectorRef			mPipelineLayoutSelector;
 	vk::PipelineSelectorRef					mPipelineSelector;
 	
 	VkSurfaceKHR							mPresentSurface = 0;
