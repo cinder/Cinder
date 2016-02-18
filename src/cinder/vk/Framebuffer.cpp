@@ -156,7 +156,7 @@ void Framebuffer::initialize( const vk::Framebuffer::Format& format )
 
 void Framebuffer::destroy( bool removeFromTracking )
 {
-	if( mFramebuffer ) {
+	if( VK_NULL_HANDLE == mFramebuffer ) {
 		return;
 	}
 

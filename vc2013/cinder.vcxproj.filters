@@ -882,6 +882,9 @@
     <ClCompile Include="..\src\cinder\vk\PipelineSelector.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\TextureFont.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1842,6 +1845,9 @@
       <Filter>Source Files\vk\util</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\vk\PipelineSelector.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\TextureFont.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
   </ItemGroup>

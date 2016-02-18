@@ -150,6 +150,7 @@ public:
 	};
 
 	Pipeline();
+	Pipeline( VkPipeline pipeline, bool ownsPipeline = true );
 	Pipeline( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, Context *context );
 	Pipeline( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef, Context *context );
 	virtual ~Pipeline();
@@ -161,7 +162,9 @@ public:
 
 private:
 	VkPipeline					mPipeline = VK_NULL_HANDLE;
+	bool						mOwnsPipeline = true;
 
+	void initialize( VkPipeline pipeline );
 	void initialize( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef );
 	void initialize( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef );
 	void destroy( bool removeFromTracking = true );

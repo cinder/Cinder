@@ -77,6 +77,7 @@ void DescriptorSetLayout::initialize( const UniformSet &uniformSet )
 		return;
 	}
 
+/*
 	const auto& bindings = uniformSet.getBindings();
 	for( const auto& binding : bindings ) {
 		VkDescriptorSetLayoutBinding layoutBinding = {};
@@ -95,36 +96,13 @@ void DescriptorSetLayout::initialize( const UniformSet &uniformSet )
 				layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 			}
 			break;		
-
-/*
-			case UniformLayout::Uniform::Type::SAMPLER2D: {
-				layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-			}
-			break;
-
-			case UniformLayout::Uniform::Type::SAMPLER2DRECT: {
-				layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-			}
-			break;
-
-			case UniformLayout::Uniform::Type::SAMPLER2DSHADOW: {
-				layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				layoutBinding.stageFlags     = VK_SHADER_STAGE_FRAGMENT_BIT;
-			}
-			break;
-
-			case UniformLayout::Uniform::Type::SAMPLERCUBE: {
-				layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				layoutBinding.stageFlags     = VK_SHADER_STAGE_FRAGMENT_BIT;
-			}
-			break;
-*/
 		}
 
 		mLayoutBindings.push_back( layoutBinding );
 	}
+*/
+
+	mLayoutBindings = uniformSet.getDescriptorSetlayoutBindings();
 
     VkDescriptorSetLayoutCreateInfo descriptorLayout = {};
     descriptorLayout.sType			= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;

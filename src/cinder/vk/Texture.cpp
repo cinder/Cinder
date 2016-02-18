@@ -451,6 +451,7 @@ void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t 
 		Image::copy( context, stagingImage, 0, 0, mImageView->getImage(), 0, 0, ivec2( srcWidth, srcHeight ) );
 	}
 	else {
+		// Use blit to generate mipmaps for each level
 		ivec2 dstSize = ivec2( this->getWidth(), this->getHeight() );
 		for( uint32_t mipLevel = 0; mipLevel < mMipLevels; ++mipLevel ) {
 			ci::Area srcArea = ci::Area( 0, 0, srcWidth, srcHeight );

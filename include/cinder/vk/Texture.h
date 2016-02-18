@@ -170,13 +170,18 @@ public:
 	class Format : public TextureBase::Format {
 	public:
 
-		Format( VkFormat format = VK_FORMAT_UNDEFINED ) : TextureBase::Format( format ) {}
+		Format( VkFormat format = VK_FORMAT_UNDEFINED ) : TextureBase::Format( format ) {
+			mSwizzle.r = VK_COMPONENT_SWIZZLE_R;
+			mSwizzle.g = VK_COMPONENT_SWIZZLE_G;
+			mSwizzle.b = VK_COMPONENT_SWIZZLE_B;
+			mSwizzle.a = VK_COMPONENT_SWIZZLE_A;
+		}
 
 		virtual ~Format() {}
 
 		Texture2d::Format&			samples( VkSampleCountFlagBits value ) { TextureBase::Format::setSamples( value ); return *this; }
 
-		Texture2d::Format&			mipmap( bool value = true ) { TextureBase::Format::setMipmapEnabled( value ); return *this; }
+		Texture2d::Format&			enableMipmapping( bool value = true ) { TextureBase::Format::setMipmapEnabled( value ); return *this; }
 
 		Texture2d::Format&			setSampleAddressModeU( VkSamplerAddressMode uValue, VkSamplerAddressMode vValues ) { mSamplerAddressModeU = uValue; mSamplerAddressModeV = vValues; return *this; }
 		Texture2d::Format&			setSampleAddressModeU( VkSamplerAddressMode value ) { mSamplerAddressModeU = value; return *this; }
@@ -187,6 +192,13 @@ public:
 
 		Texture2d::Format&			setUnnormalizedCoordinates( VkBool32 value = VK_TRUE ) { mUnnormalizedCoordinates = value; return *this; }
 		VkBool32					isUnnormalizedCoordinates() const { return mUnnormalizedCoordinates; }
+
+		Texture2d::Format&			setSwizzle( const VkComponentMapping& value ) { mSwizzle = value; return *this; }
+		Texture2d::Format&			setSwizzle( VkComponentSwizzle r, VkComponentSwizzle g, VkComponentSwizzle b, VkComponentSwizzle a ) { mSwizzle.r = r; mSwizzle.g = g; mSwizzle.b = b; mSwizzle.a = a; return *this; }
+		Texture2d::Format&			setSwizzleR( VkComponentSwizzle r ) { mSwizzle.r = r; return *this; }
+		Texture2d::Format&			setSwizzleG( VkComponentSwizzle g ) { mSwizzle.g = g; return *this; }
+		Texture2d::Format&			setSwizzleB( VkComponentSwizzle b ) { mSwizzle.b = b; return *this; }
+		Texture2d::Format&			setSwizzleA( VkComponentSwizzle a ) { mSwizzle.a = a; return *this; }
 
 	private:
 		VkSamplerAddressMode		mSamplerAddressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
@@ -202,6 +214,8 @@ public:
 		//  – The functions must not use projection.
 		//  – The functions must not use offsets.
 		VkBool32					mUnnormalizedCoordinates = VK_FALSE;
+
+		VkComponentMapping			mSwizzle;
 
 		friend class Texture2d;
 	};

@@ -226,6 +226,12 @@ Pipeline::Pipeline()
 {
 }
 
+Pipeline::Pipeline( VkPipeline pipeline, bool ownsPipeline )
+	: mOwnsPipeline( ownsPipeline )
+{
+	initialize( pipeline );
+}
+
 Pipeline::Pipeline( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, Context *context )
 	: BaseVkObject( context )
 {
@@ -255,6 +261,13 @@ PipelineRef Pipeline::create( const VkGraphicsPipelineCreateInfo& createInfo, co
 	context = ( nullptr != context ) ? context : Context::getCurrent();
 	PipelineRef result = PipelineRef( new Pipeline( createInfo, pipelineCacheRef, context ) );
 	return result;
+}
+
+void Pipeline::initialize( VkPipeline pipeline )
+{
+	mPipeline = pipeline;
+
+	mContext->trackedObjectCreated( this );
 }
 
 void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef )
@@ -399,7 +412,7 @@ void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineC
 	pipelineCreateInfo.basePipelineHandle				= 0;
 	pipelineCreateInfo.basePipelineIndex				= 0;
 
-	VkPipelineCache pipelineCache = ( options.mDisablePipleineCache ? VK_NULL_HANDLE : ( pipelineCacheRef ? pipelineCacheRef->getPipelineCache() : mContext->getPipelineCache()->getPipelineCache() ) );
+	VkPipelineCache pipelineCache = VK_NULL_HANDLE; //( options.mDisablePipleineCache ? VK_NULL_HANDLE : ( pipelineCacheRef ? pipelineCacheRef->getPipelineCache() : mContext->getPipelineCache()->getPipelineCache() ) );
     res = vkCreateGraphicsPipelines( mContext->getDevice(), pipelineCache, 1, &pipelineCreateInfo, NULL, &mPipeline );
     assert( res == VK_SUCCESS );
 
@@ -421,8 +434,10 @@ void Pipeline::destroy(bool removeFromTracking)
 		return;
 	}
 
-	vkDestroyPipeline( mContext->getDevice(), mPipeline, nullptr );
-	mPipeline = VK_NULL_HANDLE;
+	if( mOwnsPipeline ) {
+		vkDestroyPipeline( mContext->getDevice(), mPipeline, nullptr );
+		mPipeline = VK_NULL_HANDLE;
+	}
 	
 	if( removeFromTracking ) {
 		mContext->trackedObjectDestroyed( this );

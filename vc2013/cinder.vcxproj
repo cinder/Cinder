@@ -588,6 +588,7 @@
     <ClCompile Include="..\src\cinder\vk\ShaderProg.cpp" />
     <ClCompile Include="..\src\cinder\vk\Swapchain.cpp" />
     <ClCompile Include="..\src\cinder\vk\Texture.cpp" />
+    <ClCompile Include="..\src\cinder\vk\TextureFont.cpp" />
     <ClCompile Include="..\src\cinder\vk\UniformBuffer.cpp" />
     <ClCompile Include="..\src\cinder\vk\UniformLayout.cpp" />
     <ClCompile Include="..\src\cinder\vk\util\farmhash.cc" />
@@ -837,6 +838,7 @@
     <ClInclude Include="..\include\cinder\vk\ShaderProg.h" />
     <ClInclude Include="..\include\cinder\vk\Swapchain.h" />
     <ClInclude Include="..\include\cinder\vk\Texture.h" />
+    <ClInclude Include="..\include\cinder\vk\TextureFont.h" />
     <ClInclude Include="..\include\cinder\vk\UniformBuffer.h" />
     <ClInclude Include="..\include\cinder\vk\UniformLayout.h" />
     <ClInclude Include="..\include\cinder\vk\Util.h" />

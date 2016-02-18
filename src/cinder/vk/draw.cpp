@@ -41,7 +41,8 @@
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Descriptor.h"
-#include "cinder/vk/Pipeline.h"
+#include "cinder/vk/PipelineSelector.h"
+#include "cinder/vk/RenderPass.h"
 #include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/Texture.h"
 #include "cinder/vk/UniformBuffer.h"
@@ -86,7 +87,7 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 	// Pipeline layout
 	vk::PipelineLayoutRef pipelineLayout = vk::PipelineLayout::create( descriptorSetLayout );
 	vk::context()->addTransient( pipelineLayout );
-
+/*
 	// Pipeline
 	vk::PipelineRef pipeline;
 	{
@@ -122,6 +123,50 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 		pipeline = vk::Pipeline::create( pipelineOptions, nullptr );
 		vk::context()->addTransient( pipeline );
 	}
+/*/
+
+	// Pipeline
+	VkPipeline pipeline = VK_NULL_HANDLE;
+	{
+		// Vertex input attribute description
+		// Position
+		VkVertexInputAttributeDescription viad0 = {};
+		viad0.binding	= 0;
+		viad0.format		= VK_FORMAT_R32G32B32A32_SFLOAT;
+		viad0.location	= 0;
+		viad0.offset		= 0;
+		// UV
+		VkVertexInputAttributeDescription viad1 = {};
+		viad1.binding	= 0;
+		viad1.format		= VK_FORMAT_R32G32_SFLOAT;
+		viad1.location	= 1;
+		viad1.offset		= 4*sizeof( float );
+
+		// Vertex input binding description
+		VkVertexInputBindingDescription vibd = {};
+		vibd.binding	= 0;
+		vibd.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
+		vibd.stride		= 6*sizeof( float );
+
+		auto ctx = vk::context();
+		auto& pipelineSelector = ctx->getPipelineSelector();
+		pipelineSelector->setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
+		pipelineSelector->setVertexInputAttributeDescriptions( { viad0, viad1 } );
+		pipelineSelector->setVertexInputBindingDescriptions( { vibd }  );
+		pipelineSelector->setCullMode( ctx->getCullMode() );
+		pipelineSelector->setFrontFace( ctx->getFrontFace() );
+		pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
+		pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubPassSampleCount( ctx->getSubPass() ) );
+		pipelineSelector->setDepthTest( ctx->getDepthTest() );
+		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
+		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
+		pipelineSelector->setShaderStages( shader->getShaderStages() );
+		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
+		pipelineSelector->setSubPass( ctx->getSubPass() );
+		pipelineSelector->setPipelineLayout( pipelineLayout->getPipelineLayout() );
+		pipeline = pipelineSelector->getSelectedPipeline();
+	}
+//*/
 
 	// This is the separation between the setup and the draw sequence. 
 
@@ -142,7 +187,7 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 	std::vector<VkDeviceSize> offsets = { 0 };
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
 	// Bind pipeline
-	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline() );
+	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );
 
 	std::vector<VkDescriptorSet> descSets = { descriptorSet->getDescriptorSet() };
 	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
