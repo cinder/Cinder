@@ -46,21 +46,33 @@ namespace cinder { namespace vk {
 
 class Context;
 
-//! \class ScopedSemaphore
-//!
-//!
-class ScopedSemaphore : public BaseVkObject {
-public:
+////! \class ScopedSemaphore
+////!
+////!
+//class ScopedSemaphore : public BaseVkObject {
+//public:
+//
+//	ScopedSemaphore( Context *context = nullptr );
+//	virtual ~ScopedSemaphore();
+//
+//	VkSemaphore			obj() const { return mSemaphore; }
+//	const VkSemaphore*	ptr() const { return &mSemaphore; }
+//
+//private:
+//	VkSemaphore			mSemaphore = VK_NULL_HANDLE;
+//};
 
-	ScopedSemaphore( Context *context = nullptr );
-	virtual ~ScopedSemaphore();
+struct ScopedColor : private Noncopyable {
+	ScopedColor();
+	ScopedColor( const ColorAf &color );
+	ScopedColor( float red, float green, float blue, float alpha = 1 );
+	~ScopedColor();
 
-	VkSemaphore			obj() const { return mSemaphore; }
-	const VkSemaphore*	ptr() const { return &mSemaphore; }
-
-private:
-	VkSemaphore			mSemaphore = VK_NULL_HANDLE;
+  private:
+	Context		*mCtx;
+	ColorAf		mColor;
 };
+
 
 //! Controls the current blend mode for the current scope.
 struct ScopedBlend : private Noncopyable {

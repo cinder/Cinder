@@ -95,6 +95,11 @@ Texture2d::Texture2d( int width, int height, const Texture2d::Format &format, vk
 	initialize( context );
 }
 
+Texture2d::Texture2d( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Context* context )
+	: TextureBase(), mWidth( width ), mHeight( height ), mFormat( format )
+{
+}
+
 Texture2d::Texture2d( const Surface8u& surf, const Texture2d::Format &format, vk::Context* context )
 	: TextureBase(), mWidth( surf.getWidth() ), mHeight( surf.getHeight() ), mFormat( format )
 {
@@ -279,6 +284,23 @@ void Texture2d::initialize( vk::Context* context )
 	initializeFinal( context );
 }
 
+void Texture2d::initialize( const void *data, VkFormat dataFormat, vk::Context* context )
+{
+	initializeCommon( context );	
+
+	// Create the premade image
+	vk::Image::Format imageOptions = vk::Image::Format( mFormat.getInternalFormat() )
+		.setSamples( VK_SAMPLE_COUNT_1_BIT )
+		.setMipLevels( mMipLevels )
+		.setTilingOptimal()
+		.setMemoryPropertyDeviceLocal();
+	vk::ImageRef premadeImage = vk::Image::create( mWidth, mHeight, imageOptions, context );
+	premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+	mImageView = vk::ImageView::create( mWidth, mHeight, premadeImage, context );
+		
+	initializeFinal( context );
+}
+
 template <typename T>
 void Texture2d::initialize( const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, vk::Context* context )
 {
@@ -399,6 +421,13 @@ Texture2dRef Texture2d::create( int width, int height, const Texture2d::Format& 
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
 	Texture2dRef result = Texture2dRef( new Texture2d( width, height, format, context ) );
+	return result;
+}
+
+Texture2dRef Texture2d::create( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Context* context )
+{
+	context = ( nullptr != context ) ? context : Context::getCurrent();
+	Texture2dRef result = Texture2dRef( new Texture2d( data, dataFormat, width, height, format, context ) );
 	return result;
 }
 

@@ -66,7 +66,7 @@ using std::unordered_map;
 
 using namespace std;
 
-#if 0
+//#if 0
 namespace cinder { namespace vk {
 
 #if defined( CINDER_COCOA )
@@ -306,7 +306,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				ip::unpremultiply( &tempSurface );
 			
 			vk::Texture::Format textureFormat = vk::Texture::Format();
-			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
+			textureFormat.mipmap( mFormat.hasMipmapping() );
 
 			Surface8u::ConstIter iter( tempSurface, tempSurface.getBounds() );
 			size_t offset = 0;
@@ -322,7 +322,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			VkComponentMapping swizzle = { VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G };
 			textureFormat.setSwizzle( swizzle );
 
-			auto texture = vk::Texture::create( lumAlphaData.get(), textureFormat.getInternalFormat(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat )
+			auto texture = vk::Texture::create( lumAlphaData.get(), textureFormat.getInternalFormat(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat );
 			mTextures.push_back( texture );
 			ip::fill<uint8_t>( &channel, 0 );			
 			curOffset = ivec2( 0, 0 );
@@ -424,7 +424,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			}
 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
+			textureFormat.mipmap( mFormat.hasMipmapping() );
 			GLint dataFormat;
 #if defined( CINDER_GL_ES )
 			dataFormat = GL_LUMINANCE_ALPHA;
@@ -466,6 +466,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 
 void TextureFont::drawGlyphs( const vector<pair<Font::Glyph,vec2> > &glyphMeasures, const vec2 &baselineIn, const DrawOptions &options, const std::vector<ColorA8u> &colors )
 {
+#if 0
 	if( mTextures.empty() )
 		return;
 
@@ -580,10 +581,12 @@ void TextureFont::drawGlyphs( const vector<pair<Font::Glyph,vec2> > &glyphMeasur
 		gl::setDefaultShaderVars();
 		ctx->drawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, 0 );
 	}
+#endif
 }
 
 void TextureFont::drawGlyphs( const std::vector<std::pair<Font::Glyph,vec2> > &glyphMeasures, const Rectf &clip, vec2 offset, const DrawOptions &options, const std::vector<ColorA8u> &colors )
 {
+#if 0
 	if( mTextures.empty() )
 		return;
 
@@ -717,6 +720,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<Font::Glyph,vec2> > &g
 		gl::setDefaultShaderVars();
 		ctx->drawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, 0 );
 	}
+#endif
 }
 
 void TextureFont::drawString( const std::string &str, const vec2 &baseline, const DrawOptions &options )
@@ -754,7 +758,6 @@ void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRec
 
 vec2 TextureFont::measureString( const std::string &str, const DrawOptions &options ) const
 {
-
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
 #if defined( CINDER_COCOA )
 	return tbox.measure();
@@ -805,4 +808,4 @@ vector<pair<Font::Glyph,vec2> > TextureFont::getGlyphPlacementsWrapped( const st
 }
 
 } } // namespace cinder::vk
-#endif
+//#endif

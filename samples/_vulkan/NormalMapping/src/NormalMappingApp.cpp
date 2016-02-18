@@ -346,6 +346,8 @@ void NormalMappingApp::update()
 void NormalMappingApp::draw()
 {
 	if( isInitialized() ) {
+		vk::disableAlphaBlending();
+
 		// get ready to draw in 3D
 		vk::pushMatrices();
 		vk::setMatrices( mCamera );
@@ -391,6 +393,12 @@ void NormalMappingApp::draw()
 			vk::popModelMatrix();
 		}
 		vk::popMatrices();
+
+		vk::enableAlphaBlending();
+		vk::setMatricesWindow( getWindowSize() );
+		Rectf r = mCopyrightMap->getBounds();
+		r += vec2( 0.5f*(getWindowWidth() - r.getWidth()), getWindowHeight() - r.getHeight() );
+		vk::draw( mCopyrightMap, r );
 	}
 }
 

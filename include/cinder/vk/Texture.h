@@ -181,7 +181,7 @@ public:
 
 		Texture2d::Format&			samples( VkSampleCountFlagBits value ) { TextureBase::Format::setSamples( value ); return *this; }
 
-		Texture2d::Format&			enableMipmapping( bool value = true ) { TextureBase::Format::setMipmapEnabled( value ); return *this; }
+		Texture2d::Format&			mipmap( bool value = true ) { TextureBase::Format::setMipmapEnabled( value ); return *this; }
 
 		Texture2d::Format&			setSampleAddressModeU( VkSamplerAddressMode uValue, VkSamplerAddressMode vValues ) { mSamplerAddressModeU = uValue; mSamplerAddressModeV = vValues; return *this; }
 		Texture2d::Format&			setSampleAddressModeU( VkSamplerAddressMode value ) { mSamplerAddressModeU = value; return *this; }
@@ -225,6 +225,7 @@ public:
 
 	Texture2d();
 	Texture2d( int width, int height, const Texture2d::Format &format, vk::Context* context );
+	Texture2d( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Context* context );
 	Texture2d( const Surface8u& surf, const Texture2d::Format &format, vk::Context* context );
 	Texture2d( const Surface16u& surf, const Texture2d::Format &format, vk::Context* context );
 	Texture2d( const Surface32f& surf, const Texture2d::Format &format, vk::Context* context );
@@ -233,6 +234,7 @@ public:
 
 	// Parameter 'format' will override the format in options
 	static Texture2dRef		create( int width, int height, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
+	static Texture2dRef		create( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format = Texture2d::Format(), vk::Context* context = nullptr );
 	static Texture2dRef		create( const Surface8u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
 	static Texture2dRef		create( const Surface16u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
 	static Texture2dRef		create( const Surface32f& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
@@ -259,6 +261,7 @@ private:
 	void						initializeCommon( vk::Context* context );
 	void						initializeFinal( vk::Context* context );
 	void						initialize( vk::Context* context );
+	void						initialize( const void *data, VkFormat dataFormat, vk::Context* context );
 	template <typename T> void	initialize( const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, vk::Context* context );
 	void						initialize( const ImageSourceRef& imageSource, vk::Context* context );
 	void						destroy();
