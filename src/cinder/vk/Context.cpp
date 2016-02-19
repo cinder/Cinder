@@ -626,7 +626,7 @@ void Context::initializePresentRender( const ivec2& windowSize, VkSampleCountFla
 	mPresentRender->mCommandBuffer = mDefaultCommandBuffer;
 }
 
-void Context::acquireNextPresentImage( VkFence fence )
+void Context::acquireNextPresentImage( VkFence fence, VkSemaphore semaphore )
 {
 	// Create the present semaphore
 	{
@@ -640,7 +640,8 @@ void Context::acquireNextPresentImage( VkFence fence )
 
 	// Get the index of the next available swapchain image
 	{
-		VkResult res = this->vkAcquireNextImageKHR( mPresentRender->mSwapchain->getSwapchain(), UINT64_MAX, mPresentRender->mSemaphore, fence, &(mPresentRender->mCurrentIamgeIndex) );
+		VkResult res = this->vkAcquireNextImageKHR( mPresentRender->mSwapchain->getSwapchain(), UINT64_MAX, semaphore, fence, &(mPresentRender->mCurrentIamgeIndex) );
+		//VkResult res = this->vkAcquireNextImageKHR( mPresentRender->mSwapchain->getSwapchain(), UINT64_MAX, mPresentRender->mSemaphore, fence, &(mPresentRender->mCurrentIamgeIndex) );
 		assert( res == VK_SUCCESS );
 	}
 }

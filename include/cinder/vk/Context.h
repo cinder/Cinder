@@ -163,13 +163,17 @@ public:
 	VkSurfaceKHR							getPresentSurface() const { return mPresentSurface; }
 	VkFormat								getPresentColorFormat() const { return mPresentColorFormat; }
 	VkFormat								getPresentDepthStencilFormat() const { return mPresentDepthStencilFormat; }
-
-	void									acquireNextPresentImage( VkFence fence = VK_NULL_HANDLE );
+	
+	void									acquireNextPresentImage( VkFence fence = VK_NULL_HANDLE, VkSemaphore semaphore = VK_NULL_HANDLE );
 	void									beginPresentRender();
 	void									endPresentRender();
 	void									submitPresentRender();
 	void									setPresentCommandBuffer( const vk::CommandBufferRef& cmdBuf );
+
+	const vk::SwapchainRef&					getPresentSwapchain() const { return mPresentRender->mSwapchain; }
 	const vk::RenderPassRef&				getPresentRenderPass() const { return mPresentRender->mRenderPass; }
+	const std::vector<vk::FramebufferRef>&	getPresentFramebuffers() const { return mPresentRender->mFramebuffers; }
+	uint32_t								getPresentImageIndex() const { return mPresentRender->mCurrentIamgeIndex; }
 
 	VkResult	vkCreateSwapchainKHR( const VkSwapchainCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain );
 	void		vkDestroySwapchainKHR( VkSwapchainKHR swapchain, const VkAllocationCallbacks* pAllocator );
