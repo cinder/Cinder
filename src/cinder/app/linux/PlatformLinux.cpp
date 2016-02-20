@@ -406,7 +406,7 @@ fs::path PlatformLinux::getDefaultExecutablePath() const
     if( ( -1 != len ) && ( len < buf.size() ) ) {
       buf[len] = '\0';
     }
- 	return fs::path( std::string( &(buf[0]), len ) );
+ 	return fs::path( std::string( &(buf[0]), len ) ).parent_path();
 }
 
 void PlatformLinux::sleep( float milliseconds ) 
