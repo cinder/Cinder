@@ -43,7 +43,9 @@
 namespace cinder { namespace vk {
 
 class CommandBuffer;
+class Swapchain;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
+using SwapchainRef = std::shared_ptr<Swapchain>;
 
 class Queue;
 using QueueRef = std::shared_ptr<Queue>;
@@ -56,24 +58,28 @@ public:
 
 	virtual ~Queue();
 
-	static QueueRef	create( vk::Context *context = nullptr );
+	static QueueRef	create( uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context = nullptr );
 
 	VkQueue			getQueue() const { return mQueue; }
 
-	void			submit( const std::vector<VkCommandBuffer>& cmdBufs );
-	void			submit( const std::vector<vk::CommandBufferRef>& cmdBufRefs );
+	void			submit( const std::vector<VkSubmitInfo>& submitInfos, VkFence fence );
+	void			submit( const std::vector<VkCommandBuffer>& cmdBufs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence, const std::vector<VkSemaphore>& signalSemaphores = std::vector<VkSemaphore>() );
+	void			submit( const std::vector<vk::CommandBufferRef>& cmdBufRefs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence, const std::vector<VkSemaphore>& signalSemaphores = std::vector<VkSemaphore>() );
+	void			submit( VkCommandBuffer cmdBuf, VkSemaphore waitSemaphoree = VK_NULL_HANDLE, VkPipelineStageFlags waitStageMaske = VK_NULL_HANDLE, VkFence fencee = VK_NULL_HANDLE, VkSemaphore signalSemaphore = VK_NULL_HANDLE );
+	void			submit( const vk::CommandBufferRef& cmdBufRef, VkSemaphore waitSemaphorese = VK_NULL_HANDLE, VkPipelineStageFlags waitStageMaske = VK_NULL_HANDLE, VkFence fencee = VK_NULL_HANDLE, VkSemaphore signalSemaphore = VK_NULL_HANDLE );
 
 	void			present( const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkSwapchainKHR>& swapChains, const std::vector<uint32_t>& imageIndices );
+	void			present( VkSemaphore waitSemaphore, VkSwapchainKHR swapChain, uint32_t imageIndex );
+	void			present( VkSemaphore waitSemaphore, const vk::SwapchainRef& swapChainRef, uint32_t imageIndex );
 
 	void			waitIdle();
 
 private:
-	Queue( vk::Context *context );
+	Queue(  uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context );
 
 	VkQueue			mQueue = VK_NULL_HANDLE;
-	uint32_t		mIndex = std::numeric_limits<uint32_t>::max();
 
-	void			initialize();
+	void			initialize( uint32_t queueFamilyIndex, uint32_t queueIndex );
 	void			destroy( bool removeFromTracking = true );
 	friend class Context;
 };

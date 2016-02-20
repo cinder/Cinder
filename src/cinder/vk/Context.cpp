@@ -47,6 +47,7 @@
 #include "cinder/vk/IndexBuffer.h"
 #include "cinder/vk/Pipeline.h"
 #include "cinder/vk/PipelineSelector.h"
+#include "cinder/vk/Queue.h"
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/Swapchain.h"
@@ -288,7 +289,8 @@ void Context::initSwapchainExtension()
 
 void Context::initDeviceQueue()
 {
-    vkGetDeviceQueue( mDevice, mGraphicsQueueFamilyIndex, mQueueIndex, &mQueue );
+    //vkGetDeviceQueue( mDevice, mGraphicsQueueFamilyIndex, mQueueIndex, &mQueue );
+	mQueue = vk::Queue::create( mGraphicsQueueFamilyIndex, mQueueIndex, this );
 }
 
 void Context::initialize( const Context* existingContext )
@@ -634,7 +636,7 @@ void Context::acquireNextPresentImage( VkFence fence, VkSemaphore semaphore )
 		createInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 		createInfo.pNext = nullptr;
 		createInfo.flags = 0;
-		VkResult res = vkCreateSemaphore( this->getDevice(), &createInfo, nullptr, &(mPresentRender->mSemaphore) );
+		VkResult res = vkCreateSemaphore( this->getDevice(), &createInfo, nullptr, &(mPresentRender->mRenderingCompleteSemaphore) );
 		assert( res == VK_SUCCESS );
 	}
 
@@ -725,6 +727,16 @@ void Context::endPresentRender()
 void Context::submitPresentRender()
 {
 	// Submit command buffer to queue
+	mQueue->submit( mPresentRender->mCommandBuffer, VK_NULL_HANDLE, VK_NULL_HANDLE, VK_NULL_HANDLE, mPresentRender->mRenderingCompleteSemaphore );
+
+	// Make sure command buffer is finished before presenting
+	mQueue->present( mPresentRender->mRenderingCompleteSemaphore, mPresentRender->mSwapchain,  mPresentRender->mCurrentIamgeIndex );
+
+	// Wait for rendering and present to complete
+	mQueue->waitIdle();
+
+/*
+	// Submit command buffer to queue
 	{
 		std::vector<VkCommandBuffer> submits = { mPresentRender->mCommandBuffer->getCommandBuffer() };
 
@@ -764,11 +776,12 @@ void Context::submitPresentRender()
 		err = vkQueueWaitIdle( this->getQueue() );
 		assert( err == VK_SUCCESS );
 	}
+*/
 
 	// Destroy the present semaphore
 	{
-		if( VK_NULL_HANDLE != mPresentRender->mSemaphore ) {
-			vkDestroySemaphore( this->getDevice(), mPresentRender->mSemaphore, nullptr );
+		if( VK_NULL_HANDLE != mPresentRender->mRenderingCompleteSemaphore ) {
+			vkDestroySemaphore( this->getDevice(), mPresentRender->mRenderingCompleteSemaphore, nullptr );
 		}
 	}
 
@@ -804,7 +817,7 @@ VkResult Context::vkAcquireNextImageKHR( VkSwapchainKHR swapchain, uint64_t time
 
 VkResult Context::vkQueuePresentKHR( const VkPresentInfoKHR* pPresentInfo )
 {
-	return this->fpQueuePresentKHR( mQueue, pPresentInfo );
+	return this->fpQueuePresentKHR( mQueue->getQueue(), pPresentInfo );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

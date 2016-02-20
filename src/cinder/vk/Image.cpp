@@ -40,6 +40,7 @@
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Queue.h"
 #include "cinder/vk/wrapper.h"
 
 namespace cinder { namespace vk {
@@ -650,7 +651,7 @@ void Image::copyData( uint32_t dstLayer, const float *srcData, size_t srcRowByte
 	}
 }
 
-void Image::copy(  Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ivec2& srcOffset, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& dstOffset, const ivec2& size )
+void Image::copy( Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ivec2& srcOffset, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& dstOffset, const ivec2& size )
 {
 	vk::CommandPoolRef cmdPool = vk::CommandPool::create( context );
 	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool->getCommandPool(), context );
@@ -682,6 +683,10 @@ void Image::copy(  Context* context, const vk::ImageRef& srcImage, uint32_t srcM
 	}
 	cmdBuf->end();
 
+	context->getQueue()->submit( cmdBuf );
+	context->getQueue()->waitIdle();
+
+/*
 	const VkCommandBuffer cmdBufs[] = { cmdBuf->getCommandBuffer() };
 	VkSubmitInfo submitInfo[1] = {};
 	submitInfo[0].pNext					= NULL;
@@ -698,6 +703,7 @@ void Image::copy(  Context* context, const vk::ImageRef& srcImage, uint32_t srcM
 
 	res = vkQueueWaitIdle( context->getQueue() );
 	assert( VK_SUCCESS == res );
+*/
 }
 
 void Image::copy(  Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& size )
@@ -747,6 +753,10 @@ void Image::blit( Context* context, const vk::ImageRef& srcImage, uint32_t srcMi
 	}
 	cmdBuf->end();
 
+	context->getQueue()->submit( cmdBuf );
+	context->getQueue()->waitIdle();
+
+/*
 	const VkCommandBuffer cmdBufs[] = { cmdBuf->getCommandBuffer() };
 	VkSubmitInfo submitInfo[1] = {};
 	submitInfo[0].pNext					= NULL;
@@ -763,6 +773,7 @@ void Image::blit( Context* context, const vk::ImageRef& srcImage, uint32_t srcMi
 
 	res = vkQueueWaitIdle( context->getQueue() );
 	assert( VK_SUCCESS == res );
+*/
 }
 
 void Image::blit( Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer )

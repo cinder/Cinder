@@ -70,6 +70,7 @@ class PipelineCache;
 class PipelineLayout;
 class PipelineLayoutSelector;
 class PipelineSelector;
+class Queue;
 class RenderPass;
 class ShaderDef;
 class ShaderProg;
@@ -93,6 +94,7 @@ using PipelineCacheRef = std::shared_ptr<PipelineCache>;
 using PipelineLayoutSelectorRef = std::shared_ptr<PipelineLayoutSelector>;
 using PipelineLayoutRef = std::shared_ptr<PipelineLayout>;
 using PipelineSelectorRef = std::shared_ptr<PipelineSelector>;
+using QueueRef = std::shared_ptr<Queue>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
 using ShaderProgRef = std::shared_ptr<ShaderProg>;
 using SwapchainRef = std::shared_ptr<Swapchain>;
@@ -140,7 +142,7 @@ public:
 	
 	VkPhysicalDevice						getGpu() const { return mGpu; }
 	VkDevice								getDevice() const { return mDevice; }
-	VkQueue									getQueue() const { return mQueue; }
+	const vk::QueueRef&						getQueue() const { return mQueue; }
 
 	uint32_t								getGraphicsQueueFamilyIndex() const { return mGraphicsQueueFamilyIndex; }
 	VkPhysicalDeviceProperties				getGpuProperties() const { return mGpuProperties; }
@@ -373,7 +375,7 @@ private:
 
 	VkPhysicalDevice						mGpu = nullptr;
 	VkDevice								mDevice = nullptr;
-	VkQueue									mQueue = nullptr;
+	vk::QueueRef							mQueue;
     uint32_t								mGraphicsQueueFamilyIndex;
     VkPhysicalDeviceProperties				mGpuProperties;
     std::vector<VkQueueFamilyProperties>	mQueueFamilyProperties;
@@ -448,7 +450,7 @@ private:
 		vk::RenderPassRef					mRenderPass;
 		std::vector<vk::FramebufferRef>		mFramebuffers;
 		uint32_t							mCurrentIamgeIndex = 0;
-		VkSemaphore							mSemaphore = 0;
+		VkSemaphore							mRenderingCompleteSemaphore = 0;
 	};
 	std::unique_ptr<PresentRender>			mPresentRender;
 	void									initializePresentRender( const ivec2& mWindowSize, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode );
