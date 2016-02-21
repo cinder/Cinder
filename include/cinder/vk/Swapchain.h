@@ -52,47 +52,71 @@ using SwapchainRef = std::shared_ptr<Swapchain>;
 //!
 class Swapchain {
 public:
+
+	class Options {
+	public:
+		Options() {}
+		virtual ~Options() {}
+
+		Options& surface( VkSurfaceKHR value ) { mSurface = value; return *this; }
+		Options& presentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
+		Options& colorFormat( VkFormat value ) { mColorFormat = value; return *this; }
+		Options& depthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
+		Options& depthStencilSamples( VkSampleCountFlagBits value ) { mDepthStencilSamples = value; return *this; }
+
+	private:
+		VkPresentModeKHR				mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+		VkSurfaceKHR					mSurface = VK_NULL_HANDLE;
+		VkFormat						mColorFormat = VK_FORMAT_UNDEFINED;
+		VkFormat						mDepthStencilFormat = VK_FORMAT_UNDEFINED;
+		VkSampleCountFlagBits			mDepthStencilSamples = VK_SAMPLE_COUNT_1_BIT;
+		friend class Swapchain;
+	};
+
+	// ---------------------------------------------------------------------------------------------
 	
 	Swapchain();
-	Swapchain( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSamples, VkPresentModeKHR presentMode, Context *context );
+	Swapchain( const ivec2& size,  uint32_t imageCount, const Swapchain::Options& options, Context *context );
 	virtual ~Swapchain();
 
-	static SwapchainRef			create( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSamples, VkPresentModeKHR presentMode, Context *context = nullptr );
+	static SwapchainRef			create( const ivec2& size, uint32_t imageCount, const Swapchain::Options& options, Context *context = nullptr );
 
 	VkSwapchainKHR				getSwapchain() const { return mSwapchain; }
-	uint32_t					getSwapchainImageCount() const { return mSwapchainImageCount; }
 
 	int32_t						getWidth() const { return mSwapchainExtent.width; }
 	int32_t						getHeight() const { return mSwapchainExtent.height; }
 	ivec2						getSize() const { return ivec2( mSwapchainExtent.width, mSwapchainExtent.height ); }
 
-	VkFormat						getColorFormat() const { return mColorFormat; }
-	const std::vector<ImageViewRef>	getColorAttachments() const { return mColorAttachments; }
+	uint32_t					getImageCount() const { return mImageCount; }
 
-	VkFormat						getDepthStencilFormat() const { return mDepthStencilFormat; }
-	const ImageViewRef&				getDepthStencilAttachment() const { return mDepthStencilAttachment; }
 
-	VkPresentModeKHR			getPresentMode() const { return mPresentMode; }
+	VkFormat							getColorFormat() const { return mOptions.mColorFormat; }
+	const std::vector<ImageViewRef>&	getColorAttachments() const { return mColorAttachments; }
 
-	void						acquireNextImage();
-	void						present();
+	VkFormat							getDepthStencilFormat() const { return mOptions.mDepthStencilFormat; }
+	const std::vector<ImageViewRef>&	getDepthStencilAttachments() const { return mDepthStencilAttachments; }
+
+	VkPresentModeKHR			getPresentMode() const { return mOptions.mPresentMode; }
 
 private:
 	Context						*mContext = nullptr;
 
 	VkSwapchainKHR				mSwapchain = VK_NULL_HANDLE;
-	uint32_t					mSwapchainImageCount = 0;
-
 	VkExtent2D					mSwapchainExtent;
+	uint32_t					mImageCount = 0;
+	Swapchain::Options			mOptions;
 
-	VkFormat					mColorFormat = VK_FORMAT_UNDEFINED;
 	std::vector<ImageViewRef>	mColorAttachments;
+	std::vector<ImageViewRef>	mDepthStencilAttachments;
 
+/*
+	VkFormat					mColorFormat = VK_FORMAT_UNDEFINED;
 	bool						mHasDepth = false;
 	VkFormat					mDepthStencilFormat = VK_FORMAT_UNDEFINED;
-	ImageViewRef				mDepthStencilAttachment;
+	std::vector<ImageViewRef>	mDepthStencilAttachments;
 	VkSampleCountFlagBits		mDepthStencilSamples = VK_SAMPLE_COUNT_1_BIT;
 	VkPresentModeKHR			mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
+*/
 
 	void initialize();
 	void destroy(bool removeFromTracking = true);

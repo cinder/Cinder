@@ -39,6 +39,7 @@
 #include "cinder/vk/Queue.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Presenter.h"
 #include "cinder/vk/Swapchain.h"
 
 namespace cinder { namespace vk {
@@ -75,30 +76,32 @@ void Queue::destroy( bool removeFromTracking )
 	mQueue = VK_NULL_HANDLE;
 }
 
-void Queue::submit( const std::vector<VkSubmitInfo>& submitInfos, VkFence fence )
+void Queue::submit( const std::vector<VkSubmitInfo>& submits, VkFence fence )
 {
-	assert( ! submitInfos.empty() );
+	assert( ! submits.empty() );
 
-	VkResult err = vkQueueSubmit( mQueue, static_cast<uint32_t>( submitInfos.size() ), submitInfos.data(), fence );
+	uint32_t submitCount = static_cast<uint32_t>( submits.size() );
+	const VkSubmitInfo* pSubmits = submits.data();
+	VkResult err = vkQueueSubmit( mQueue, submitCount, pSubmits, fence );
 	assert( err == VK_SUCCESS );
 }
 
 void Queue::submit( const std::vector<VkCommandBuffer>& cmdBufs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence, const std::vector<VkSemaphore>& signalSemaphores )
 {
-	assert( waitSemaphores.size() == waitStageMasks.size() );
+	const VkPipelineStageFlags* pWaitDstStageMask = ( waitSemaphores.size() == waitStageMasks.size() ) ? waitStageMasks.data() : nullptr;
 
-	VkSubmitInfo submitInfo = {};
-	submitInfo.pNext				= nullptr;
-	submitInfo.sType				= VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.waitSemaphoreCount	= static_cast<uint32_t>( waitSemaphores.size() );
-	submitInfo.pWaitSemaphores		= waitSemaphores.empty() ? nullptr : waitSemaphores.data();
-	submitInfo.pWaitDstStageMask	= waitStageMasks.empty() ? nullptr : waitStageMasks.data();
-	submitInfo.commandBufferCount	= static_cast<uint32_t>( cmdBufs.size() );
-	submitInfo.pCommandBuffers		= cmdBufs.empty() ? nullptr : cmdBufs.data();
-	submitInfo.signalSemaphoreCount	= static_cast<uint32_t>( signalSemaphores.size() );
-	submitInfo.pSignalSemaphores	= signalSemaphores.empty() ? nullptr : signalSemaphores.data();
+	VkSubmitInfo submits = {};
+	submits.sType					= VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submits.pNext					= nullptr;
+	submits.waitSemaphoreCount		= static_cast<uint32_t>( waitSemaphores.size() );
+	submits.pWaitSemaphores			= waitSemaphores.empty() ? nullptr : waitSemaphores.data();
+	submits.pWaitDstStageMask		= pWaitDstStageMask;
+	submits.commandBufferCount		= static_cast<uint32_t>( cmdBufs.size() );
+	submits.pCommandBuffers			= cmdBufs.empty() ? nullptr : cmdBufs.data();
+	submits.signalSemaphoreCount	= static_cast<uint32_t>( signalSemaphores.size() );
+	submits.pSignalSemaphores		= signalSemaphores.empty() ? nullptr : signalSemaphores.data();
 
-	this->submit( { submitInfo }, fence );
+	this->submit( { submits }, fence );
 }
 
 void Queue::submit( const std::vector<vk::CommandBufferRef>& cmdBufRefs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence, const std::vector<VkSemaphore>& signalSemaphores )
@@ -165,6 +168,28 @@ void Queue::present( VkSemaphore waitSemaphore, VkSwapchainKHR swapChain, uint32
 void Queue::present( VkSemaphore waitSemaphore, const vk::SwapchainRef& swapChainRef, uint32_t imageIndex )
 {
 	this->present( waitSemaphore, swapChainRef->getSwapchain(), imageIndex );
+}
+
+void Queue::present( const PresenterRef& presenter, const std::vector<VkSemaphore>& waitSemaphores )
+{
+	std::vector<VkSwapchainKHR> swapChains;
+	std::vector<uint32_t> imageIndices;
+
+	swapChains.push_back( presenter->getSwapchain()->getSwapchain() );
+	imageIndices.push_back( presenter->getCurrentImageIndex() );
+
+	this->present( waitSemaphores, swapChains, imageIndices );
+}
+
+void Queue::present( const PresenterRef& presenter, VkSemaphore waitSemaphore )
+{
+	std::vector<VkSemaphore> waitSemaphores;
+
+	if( VK_NULL_HANDLE != waitSemaphore ) {
+		waitSemaphores.push_back( waitSemaphore );
+	}
+
+	this->present( presenter, waitSemaphores );
 }
 
 void Queue::waitIdle()

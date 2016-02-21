@@ -35,3 +35,243 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 */
+
+#include "cinder/vk/Presenter.h"
+#include "cinder/vk/Context.h"
+#include "cinder/vk/ImageView.h"
+
+namespace cinder { namespace vk {
+
+Presenter::Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const Presenter::Options& options, vk::Context *context  )
+	: mContext( context ), mSwapchainImageCount( swapChainImageCount ), mOptions( options )
+{
+	initialize( windowSize );
+}
+
+Presenter::~Presenter()
+{
+	destroy();
+}
+
+void Presenter::initialize( const ivec2& windowSize )
+{
+	resize( windowSize );
+}
+
+void Presenter::destroy( bool removeFromTracking )
+{
+}
+
+PresenterRef Presenter::create( const ivec2& windowSize, uint32_t swapChainImageCount, const Presenter::Options& options, vk::Context *context )
+{
+	PresenterRef result = PresenterRef( new Presenter( windowSize, swapChainImageCount, options, context ) );
+	return result;
+}
+
+
+const vk::RenderPassRef& Presenter::getCurrentRenderPass() const
+{
+	return mRenderPasses[mCurrentImageIndex];
+}
+
+void Presenter::resize(const ivec2& newWindowSize)
+{
+	if( newWindowSize == mWindowSize ) {
+		return;
+	}
+
+	// Update window size and render area
+	mWindowSize = newWindowSize;
+	mRenderAreea.offset	= { 0, 0 };
+	mRenderAreea.extent = { mWindowSize.x, mWindowSize.y };
+	
+	// Create swapchain and update image count in case the image count was adjusted
+	{
+		vk::Swapchain::Options swapChainOptions = vk::Swapchain::Options();
+		swapChainOptions.presentMode( mOptions.mPresentMode );
+		swapChainOptions.surface( mOptions.mWsiSurface );
+		swapChainOptions.colorFormat( mOptions.mWsiSurfaceFormat );
+		swapChainOptions.depthStencilFormat( mOptions.mDepthStencilFormat);
+		swapChainOptions.depthStencilSamples( mOptions.mSamples );
+
+		mSwapchain = vk::Swapchain::create( mWindowSize, mSwapchainImageCount, swapChainOptions, mContext );
+		mSwapchainImageCount = mSwapchain->getImageCount();
+	}
+
+	// Formats
+	VkFormat colorFormat = mSwapchain->getColorFormat();
+	VkFormat depthStencilFormat = mSwapchain->getDepthStencilFormat();
+
+	// Resize render passes - shouldn't really happen more than once
+	if( mRenderPasses.size() != mSwapchainImageCount ) {
+		mRenderPasses.clear();
+		mRenderPasses.resize( mSwapchainImageCount );
+		mMultiSampleAttachments.resize( mSwapchainImageCount );
+		mFramebuffers.resize( mSwapchainImageCount );
+	}
+
+	// Attachments
+	const auto& colorAttachments = mSwapchain->getColorAttachments();
+	const auto& depthAttachemnts = mSwapchain->getDepthStencilAttachments();
+
+	// Create render passes and framebuffers
+	if( mOptions.mMultiSample ) {
+		for( uint32_t i = 0; i < mSwapchainImageCount; ++i ) {
+			// Create render pass
+			if( ! mRenderPasses[i] ) {
+				vk::RenderPass::Options options = vk::RenderPass::Options()
+					.addAttachment( vk::RenderPass::Attachment( colorFormat ).setSamples( mOptions.mSamples ) )
+					.addAttachment( vk::RenderPass::Attachment( colorFormat ) )
+					.addAttachment( vk::RenderPass::Attachment( depthStencilFormat ).setSamples( mOptions.mSamples ) );
+				vk::RenderPass::SubPass subPass = vk::RenderPass::SubPass()
+					.addColorAttachment( 0, 1 ) // 0 - multiple sample attachment, 1 - single sample auto resolve attachment
+					.addDepthStencilAttachment( 2 );
+				options.addSubPass( subPass );
+				mRenderPasses[i] = vk::RenderPass::create( options, mContext );		
+			}
+
+			// Create the multi-sample attachment
+			{
+				vk::Image::Format imageFormat = vk::Image::Format( colorFormat )
+					.setSamples( mOptions.mSamples )
+					.setTilingOptimal()
+					.setUsageColorAttachment()
+					.setUsageSampled()
+					.setUsageTransferSource()
+					.setMemoryPropertyDeviceLocal();
+				vk::ImageViewRef imageView = vk::ImageView::create( mWindowSize.x, mWindowSize.y, 1, imageFormat, mContext );
+				imageView->setImageLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+				mMultiSampleAttachments[i] = imageView;
+			}
+
+			// Create framebuffer 
+			{
+				// NOTE: Use case for framebuffers and render pass in the context of swapchain is slightly different than the norm.
+				vk::Framebuffer::Format format = vk::Framebuffer::Format()
+					.addAttachment( mMultiSampleAttachments[i] )
+					.addAttachment( colorAttachments[i] )
+					.addAttachment( depthAttachemnts[i] );
+				vk::FramebufferRef framebuffer = vk::Framebuffer::create( mRenderPasses[i]->getRenderPass(), mWindowSize, format, mContext );
+				mFramebuffers[i] = framebuffer;
+			}
+		}
+	}
+	else {
+		for( uint32_t i = 0; i < mSwapchainImageCount; ++i ) {
+			// Create render pass
+			if( ! mRenderPasses[i] ) {
+				vk::RenderPass::Options options = vk::RenderPass::Options()
+					.addAttachment( vk::RenderPass::Attachment( colorFormat ) )
+					.addAttachment( vk::RenderPass::Attachment( depthStencilFormat ) );
+				vk::RenderPass::SubPass subPass = vk::RenderPass::SubPass()
+					.addColorAttachment( 0 )
+					.addDepthStencilAttachment( 1 );
+				options.addSubPass( subPass );
+				mRenderPasses[i] = vk::RenderPass::create( options, mContext );		
+			}
+
+			// Create framebuffer 
+			{
+				// NOTE: Use case for framebuffers and render pass in the context of swapchain is slightly different than the norm.
+				vk::Framebuffer::Format format = vk::Framebuffer::Format()
+					.addAttachment( colorAttachments[i] )
+					.addAttachment( depthAttachemnts[i] );
+				vk::FramebufferRef framebuffer = vk::Framebuffer::create( mRenderPasses[i]->getRenderPass(), mWindowSize, format, mContext );
+				mFramebuffers[i] = framebuffer;
+			}
+		}
+	}
+}
+
+uint32_t Presenter::acquireNextImage( VkFence fence, VkSemaphore signalSemaphore )
+{
+	VkSwapchainKHR swapchain = mSwapchain->getSwapchain();
+	uint64_t timeout = UINT64_MAX;
+	mContext->fpAcquireNextImageKHR( mContext->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
+	return mCurrentImageIndex;
+}
+
+void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf )
+{
+	mCommandBuffer = cmdBuf;
+
+	mContext->pushRenderPass( mRenderPasses[mCurrentImageIndex] );
+	mContext->pushSubPass( 0 );
+	mContext->pushCommandBuffer( mCommandBuffer );
+
+	// Begin the command buffer if not in explicit mode
+	if( ! mOptions.mExplicitMode ) {
+		mCommandBuffer->begin();
+	}
+
+	// Start render pass
+	{
+		const VkRect2D& ra = mRenderAreea;
+		mCommandBuffer->setViewport( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
+		mCommandBuffer->setScissor( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
+
+		const auto& swapChainColorAttachments = mSwapchain->getColorAttachments();
+
+		if( mOptions.mMultiSample ) {
+			const auto& multiSampleImage = mMultiSampleAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+		}
+		else {
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+		}
+
+		const auto& clearValues = mRenderPasses[mCurrentImageIndex]->getAttachmentClearValues();
+		VkRenderPassBeginInfo renderPassBegin;
+		renderPassBegin.sType			= VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassBegin.pNext			= NULL;
+		renderPassBegin.renderPass		= mRenderPasses[mCurrentImageIndex]->getRenderPass();
+		renderPassBegin.framebuffer		= mFramebuffers[mCurrentImageIndex]->getFramebuffer();
+		renderPassBegin.renderArea		= mRenderAreea;
+		renderPassBegin.clearValueCount	= static_cast<uint32_t>( clearValues.size() );
+		renderPassBegin.pClearValues	= clearValues.empty() ? nullptr : clearValues.data();
+		mCommandBuffer->beginRenderPass( &renderPassBegin, VK_SUBPASS_CONTENTS_INLINE );
+	}
+}
+
+void Presenter::endRender()
+{
+	// End render pass
+	{
+		mCommandBuffer->endRenderPass();
+
+		const auto& swapChainColorAttachments = mSwapchain->getColorAttachments();
+
+		if( mOptions.mMultiSample ) {
+			const auto& multiSampleImage = mMultiSampleAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+			mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR );
+			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+		}
+		else {
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+		}
+	}
+
+	// End the command buffer if not in explicit mode
+	if( ! mOptions.mExplicitMode ) {
+		mCommandBuffer->end();
+	}
+
+	mContext->popCommandBuffer();
+	mContext->popSubPass();
+	mContext->popRenderPass();
+
+	// Reset command buffer
+	mCommandBuffer.reset();
+}
+
+}} // cinder::vk

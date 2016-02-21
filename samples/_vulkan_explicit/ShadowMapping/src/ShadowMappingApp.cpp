@@ -339,7 +339,6 @@ void ShadowMappingApp::draw()
 			vk::enablePolygonOffsetFill();
 			vk::polygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
 
-
 			vk::ScopedMatrices push;
 
 			vk::setMatrices( mLight.camera );
@@ -350,8 +349,7 @@ void ShadowMappingApp::draw()
 		}
 		mShadowMap->getRenderPass()->endRenderExplicit();
 
-		vk::context()->setPresentCommandBuffer( cmdBuf );
-		vk::context()->beginPresentRender();
+		vk::context()->beginPresentRender( cmdBuf );
 		{
 			// Render shadowed scene
 			vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
@@ -380,6 +378,7 @@ void ShadowMappingApp::draw()
 
 	// Submit command buffer for presentation
 	vk::context()->submitPresentRender();
+	vk::context()->getQueue()->waitIdle();
 }
 
 void ShadowMappingApp::keyDown( KeyEvent event )

@@ -43,8 +43,10 @@
 namespace cinder { namespace vk {
 
 class CommandBuffer;
+class Presenter;
 class Swapchain;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
+using PresenterRef = std::shared_ptr<Presenter>;
 using SwapchainRef = std::shared_ptr<Swapchain>;
 
 class Queue;
@@ -71,6 +73,8 @@ public:
 	void			present( const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkSwapchainKHR>& swapChains, const std::vector<uint32_t>& imageIndices );
 	void			present( VkSemaphore waitSemaphore, VkSwapchainKHR swapChain, uint32_t imageIndex );
 	void			present( VkSemaphore waitSemaphore, const vk::SwapchainRef& swapChainRef, uint32_t imageIndex );
+	void			present( const PresenterRef& presenter, const std::vector<VkSemaphore>& waitSemaphores );
+	void			present( const PresenterRef& presenter, VkSemaphore waitSemaphore );
 
 	void			waitIdle();
 

@@ -277,7 +277,7 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 		vk::Pipeline::Options pipelineOptions;
 		pipelineOptions.setTopology( mMesh->getPrimitive() );
 		pipelineOptions.setPipelineLayout( mPipelineLayout );
-		pipelineOptions.setRenderPass( vk::context()->getPresentRenderPass() );
+		pipelineOptions.setRenderPass( vk::context()->getPresenter()->getCurrentRenderPass() );
 		pipelineOptions.setShaderProg( mShaderNormalMapping );
 		pipelineOptions.setCullModeBack();
 		{

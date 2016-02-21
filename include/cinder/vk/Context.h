@@ -70,6 +70,7 @@ class PipelineCache;
 class PipelineLayout;
 class PipelineLayoutSelector;
 class PipelineSelector;
+class Presenter;
 class Queue;
 class RenderPass;
 class ShaderDef;
@@ -94,6 +95,7 @@ using PipelineCacheRef = std::shared_ptr<PipelineCache>;
 using PipelineLayoutSelectorRef = std::shared_ptr<PipelineLayoutSelector>;
 using PipelineLayoutRef = std::shared_ptr<PipelineLayout>;
 using PipelineSelectorRef = std::shared_ptr<PipelineSelector>;
+using PresenterRef = std::shared_ptr<Presenter>;
 using QueueRef = std::shared_ptr<Queue>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
 using ShaderProgRef = std::shared_ptr<ShaderProg>;
@@ -162,20 +164,23 @@ public:
 	const vk::PipelineLayoutSelectorRef&		getPipelineLayoutSelector() const { return mPipelineLayoutSelector; }
 	const vk::PipelineSelectorRef&				getPipelineSelector() const { return mPipelineSelector; }
 
-	VkSurfaceKHR							getPresentSurface() const { return mPresentSurface; }
-	VkFormat								getPresentColorFormat() const { return mPresentColorFormat; }
-	VkFormat								getPresentDepthStencilFormat() const { return mPresentDepthStencilFormat; }
-	
-	void									acquireNextPresentImage( VkFence fence = VK_NULL_HANDLE, VkSemaphore semaphore = VK_NULL_HANDLE );
-	void									beginPresentRender();
+	VkSurfaceKHR							getWsiSurface() const { return mWsiSurface; }
+	VkFormat								getWsiSurfaceFormat() const { return mWsiSurfaceFormat; }
+	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
+
+/*
+	uint32_t								acquireNextPresentImage( VkSemaphore semaphore = VK_NULL_HANDLE, VkFence fence = VK_NULL_HANDLE );
+	void									beginPresentRender( const vk::CommandBufferRef& cmdBuf );
 	void									endPresentRender();
 	void									submitPresentRender();
-	void									setPresentCommandBuffer( const vk::CommandBufferRef& cmdBuf );
+*/
 
+#if 0
 	const vk::SwapchainRef&					getPresentSwapchain() const { return mPresentRender->mSwapchain; }
 	const vk::RenderPassRef&				getPresentRenderPass() const { return mPresentRender->mRenderPass; }
 	const std::vector<vk::FramebufferRef>&	getPresentFramebuffers() const { return mPresentRender->mFramebuffers; }
 	uint32_t								getPresentImageIndex() const { return mPresentRender->mCurrentIamgeIndex; }
+#endif
 
 	VkResult	vkCreateSwapchainKHR( const VkSwapchainCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain );
 	void		vkDestroySwapchainKHR( VkSwapchainKHR swapchain, const VkAllocationCallbacks* pAllocator );
@@ -184,9 +189,9 @@ public:
 	//VkResult	vkAcquireNextImageKHR( VkSwapchainKHR swapchain, uint64_t timeout, VkSemaphore semaphore, VkFence fence );
 	VkResult	vkQueuePresentKHR( const VkPresentInfoKHR* pPresentInfo );
 
-	void						pushRenderPass( const vk::RenderPassRef& renderPass );
-	void						popRenderPass();
-	const vk::RenderPassRef&	getRenderPass() const;
+	void									pushRenderPass( const vk::RenderPassRef& renderPass );
+	void									popRenderPass();
+	const vk::RenderPassRef&				getRenderPass() const;
 
 	void						pushSubPass( uint32_t subPass );
 	void						popSubPass();
@@ -433,7 +438,11 @@ private:
 	vk::PipelineLayoutSelectorRef			mPipelineLayoutSelector;
 	vk::PipelineSelectorRef					mPipelineSelector;
 	
-	VkSurfaceKHR							mPresentSurface = 0;
+	VkSurfaceKHR							mWsiSurface = VK_NULL_HANDLE;
+	VkFormat								mWsiSurfaceFormat = VK_FORMAT_UNDEFINED;;
+	vk::PresenterRef						mPresenter;
+
+#if 0
 	VkFormat								mPresentColorFormat = VK_FORMAT_B8G8R8A8_UNORM;
 	VkFormat								mPresentDepthStencilFormat = VK_FORMAT_D16_UNORM;
 	void									setPresentDepthStencilFormat( VkFormat foramt );
@@ -443,7 +452,7 @@ private:
 		ivec2								mWindowSize = ivec2( 0 );
 		VkSampleCountFlagBits				mSamples = VK_SAMPLE_COUNT_1_BIT;
 		bool								mMultiSample = false;
-		vk::ImageViewRef					mMultiSampleAttachment;
+		std::vector<vk::ImageViewRef>		mMultiSampleAttachments;
 		VkRect2D							mRenderAreea;
 		vk::SwapchainRef					mSwapchain;
 		vk::CommandBufferRef				mCommandBuffer;
@@ -453,12 +462,14 @@ private:
 		VkSemaphore							mRenderingCompleteSemaphore = 0;
 	};
 	std::unique_ptr<PresentRender>			mPresentRender;
-	void									initializePresentRender( const ivec2& mWindowSize, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode );
+#endif
+	void									initializePresentRender( const ivec2& windowSize, uint32_t swapchainImageCount, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode, VkFormat depthStencilFormat );
 
 
 	void initialize( const Context* existingContext = nullptr );
 	void destroy( bool removeFromTracking = true );
 	friend class Environment;
+	friend class Presenter;
 
 	VkResult	initDevice();
 	void		initConnection();

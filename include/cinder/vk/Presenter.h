@@ -35,3 +35,83 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 */
+
+#pragma once
+
+#include "cinder/vk/CommandBuffer.h"
+#include "cinder/vk/Framebuffer.h"
+#include "cinder/vk/RenderPass.h"
+#include "cinder/vk/Swapchain.h"
+
+namespace cinder { namespace vk {
+
+class Presenter;
+using PresenterRef = std::shared_ptr<Presenter>;
+
+class Presenter {
+public:
+
+	class Options {
+	public:
+		Options() {}
+		virtual ~Options() {}
+
+		Options& explicitMode( bool value ) { mExplicitMode = value; return *this; }
+		Options& presentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
+		Options& samples( VkSampleCountFlagBits value ) { mSamples = value; mMultiSample = mSamples > VK_SAMPLE_COUNT_1_BIT;  return *this; }
+		Options& wsiSurface( VkSurfaceKHR value ) { mWsiSurface = value; return *this; }
+		Options& wsiSurfaceFormat( VkFormat value ) { mWsiSurfaceFormat = value; return *this; }
+		Options& depthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
+	private:
+		bool							mExplicitMode = false;
+		VkPresentModeKHR				mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+		VkSampleCountFlagBits			mSamples = VK_SAMPLE_COUNT_1_BIT;
+		bool							mMultiSample = false;
+		VkSurfaceKHR					mWsiSurface = VK_NULL_HANDLE;
+		VkFormat						mWsiSurfaceFormat = VK_FORMAT_UNDEFINED;
+		VkFormat						mDepthStencilFormat = VK_FORMAT_UNDEFINED;
+		friend class Presenter;
+	};
+
+	// ---------------------------------------------------------------------------------------------
+
+	virtual ~Presenter();
+
+	static PresenterRef					create( const ivec2& windowSize, uint32_t swapChainImageCount, const Presenter::Options& options, vk::Context *context );
+
+	const vk::SwapchainRef&				getSwapchain() const { return mSwapchain; }
+	uint32_t							getCurrentImageIndex() const { return mCurrentImageIndex; }
+
+	const vk::RenderPassRef&			getCurrentRenderPass() const;
+
+	void								resize( const ivec2& newWindowSize );
+
+	uint32_t							acquireNextImage( VkFence fence, VkSemaphore signalSemaphore );
+
+	void								beginRender( const vk::CommandBufferRef& cmdBuf );
+	void								endRender();
+
+private:
+	Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const Presenter::Options& options, vk::Context *context );
+
+	vk::Context							*mContext = nullptr;
+
+	ivec2								mWindowSize = ivec2( 0 );
+	uint32_t							mSwapchainImageCount = 0;
+	Presenter::Options					mOptions;
+
+	VkRect2D							mRenderAreea;
+	vk::SwapchainRef					mSwapchain;
+	std::vector<vk::RenderPassRef>		mRenderPasses;
+	std::vector<vk::FramebufferRef>		mFramebuffers;
+	std::vector<vk::ImageViewRef>		mMultiSampleAttachments;
+
+	uint32_t							mCurrentImageIndex = 0;
+
+	vk::CommandBufferRef				mCommandBuffer;
+
+	void initialize( const ivec2& size );
+	void destroy( bool removeFromTracking = true );
+};
+
+}} // namespace cinder::vk

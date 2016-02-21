@@ -43,7 +43,7 @@
 using namespace ci;
 using namespace ci::app;
 
-static const int FRAME_LAG = 2;
+static const int FRAME_LAG = 1;
 
 class RotatingCubeApp : public App {
   public:	
@@ -148,28 +148,41 @@ void RotatingCubeApp::draw()
 
 	size_t frameIdx = getElapsedFrames() % FRAME_LAG;
 	if( mFencesInited[frameIdx] ) {
-		vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT64_MAX );
-		vkResetFences( ctx->getDevice(), 1, &mFences[frameIdx] );
+		//vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT64_MAX );
+		//vkResetFences( ctx->getDevice(), 1, &mFences[frameIdx] );
 	}
 
-	ctx->acquireNextPresentImage( mFences[frameIdx], mImageAcquiredSemaphore );
+	auto presenter = ctx->getPresenter();
+	//ctx->acquireNextPresentImage( mFences[frameIdx], mImageAcquiredSemaphore );
+	mFences[frameIdx] = VK_NULL_HANDLE;
+	uint32_t imageIndex = presenter->acquireNextImage( mFences[frameIdx], mImageAcquiredSemaphore );
 	mFencesInited[frameIdx] = true;
+
 
 	auto& cmdBuf = mCommandBuffers[frameIdx];
 	cmdBuf->begin();
 	{
-		ctx->setPresentCommandBuffer( cmdBuf );
-		ctx->beginPresentRender();
+		presenter->beginRender( cmdBuf );
 		{
 			vk::setMatrices( mCam );
 			vk::ScopedModelMatrix modelScope;
 			vk::multModelMatrix( mCubeRotation );
 			mBatch[1]->draw();
 		}
-		ctx->endPresentRender();
+		presenter->endRender();
 	}
 	cmdBuf->end();
 
+    // Submit rendering work to the graphics queue
+	const VkPipelineStageFlags waitDstStageMask = VK_NULL_HANDLE; //VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	ctx->getQueue()->submit( cmdBuf, mImageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore );
+
+	// Submit present operation to present queue
+	ctx->getQueue()->present( presenter, mRenderingCompleteSemaphore );
+
+	//ctx->getQueue()->waitIdle();
+	
+/*
     // Submit rendering work to the graphics queue
     const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	std::vector<VkCommandBuffer> cmdBufs = { cmdBuf->getCommandBuffer() };
@@ -203,28 +216,7 @@ void RotatingCubeApp::draw()
     };
 
     auto result = ctx->fpQueuePresentKHR( ctx->getQueue(), &presentInfo );
-
-	/*
-	size_t frameIdx = getElapsedFrames() % 2;
-
-	auto ctx = vk::context();
-
-	ctx->acquireNextPresentImage( mFences[frameIdx] );
-	mFencesInited[frameIdx] = true;
-
-	auto& cmdBuf = mCommandBuffers[frameIdx];
-
-	auto ctx = vk::context();
-
-	ctx->acquireNextPresentImage();
-
-	
-	vk::setMatrices( mCam );
-	vk::ScopedModelMatrix modelScope;
-	vk::multModelMatrix( mCubeRotation );
-
-	mBatch->draw();
-	*/
+*/
 }
 
 CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode() ) )

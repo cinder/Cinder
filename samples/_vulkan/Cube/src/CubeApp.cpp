@@ -126,6 +126,8 @@ void RotatingCubeApp::draw()
 	vk::multModelMatrix( mCubeRotation );
 
 	mBatch->draw();
+
+	//console() << getElapsedFrames() << std::endl;
 }
 
-CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ) )
+CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_1_BIT ) ) )

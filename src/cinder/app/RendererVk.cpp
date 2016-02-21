@@ -42,6 +42,8 @@
 #include "cinder/vk/Environment.h"
 #include "cinder/vk/Framebuffer.h"
 #include "cinder/vk/ImageView.h"
+#include "cinder/vk/Presenter.h"
+#include "cinder/vk/Queue.h"
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/Swapchain.h"
 #include "cinder/vk/wrapper.h"
@@ -76,7 +78,6 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	uint32_t gpuIndex = 0;
 	mContext = vk::Environment::getEnv()->createContext( hInst, mWnd, mOptions.mExplicitMode, mOptions.mWorkQueueCount, gpuIndex );
 	mContext->makeCurrent();
-	mContext->setPresentDepthStencilFormat( mOptions.mDepthStencilFormat );
 
 	::RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
@@ -84,7 +85,13 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	int height = clientRect.bottom - clientRect.top;
 
 	// Initialize the present render
-	mContext->initializePresentRender( ivec2( width, height ), mOptions.mSamples, mOptions.mPresentMode );
+	const ivec2 windowSize = ivec2( width, height );
+	mContext->initializePresentRender( windowSize, mOptions.mSwapchainImageCount, mOptions.mSamples, mOptions.mPresentMode, mOptions.mDepthStencilFormat );
+
+
+	//const VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	//vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
+	//vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
 }
 
 void RendererVk::kill()
@@ -104,8 +111,20 @@ void RendererVk::startDraw()
 	makeCurrentContext();
 
 	if( ! isExplicitMode() ) {
-		mContext->acquireNextPresentImage();
-		mContext->beginPresentRender();
+		
+		const VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+		vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
+		vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
+		
+		const auto& presenter = mContext->getPresenter();
+		VkFence nullFence = VK_NULL_HANDLE;
+		presenter->acquireNextImage( nullFence, mImageAcquiredSemaphore );
+		presenter->beginRender( mContext->getDefaultCommandBuffer() );
+
+		//mContext->acquireNextPresentImage();
+		//mContext->beginPresentRender( mContext->getDefaultCommandBuffer() );
+
+		//mContext->getDefaultCommandBuffer()->begin();
 	}
 }
 
@@ -113,8 +132,34 @@ void RendererVk::finishDraw()
 {
 	makeCurrentContext();
 
-	if( ! isExplicitMode() ) {
-		mContext->endPresentRender();
+	if( ! isExplicitMode() ) {		
+		const auto& presenter = mContext->getPresenter();
+		presenter->endRender();
+
+		//mContext->getDefaultCommandBuffer()->end();
+
+		const auto& queue = mContext->getQueue();
+		const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		VkFence nullFence = VK_NULL_HANDLE;
+		queue->submit( mContext->getDefaultCommandBuffer(), mImageAcquiredSemaphore, waitDstStageMask, nullFence, mRenderingCompleteSemaphore );
+
+		// Submit present operation to present queue
+		queue->present( presenter, mRenderingCompleteSemaphore );
+
+		// Wait until everything is done
+		mContext->getQueue()->waitIdle();
+		
+		// Clear transient objects
+		//mContext->clearTransients();
+
+		//mContext->endPresentRender();
+		//mContext->getQueue()->waitIdle();
+		//mContext->clearTransients();
+		
+		vkDestroySemaphore( mContext->getDevice(), mImageAcquiredSemaphore, nullptr );
+		vkDestroySemaphore( mContext->getDevice(), mRenderingCompleteSemaphore, nullptr );
+		mImageAcquiredSemaphore = VK_NULL_HANDLE;
+		mRenderingCompleteSemaphore = VK_NULL_HANDLE;
 	}
 }
 
@@ -139,8 +184,10 @@ void RendererVk::defaultResize()
 #elif defined( CINDER_LINUX )
 #endif
 
-	if( ! isExplicitMode() ) {
-		mContext->initializePresentRender( ivec2( width, height ), mOptions.mSamples, mOptions.mPresentMode );
+	//if( ! isExplicitMode() ) 
+	{
+		const ivec2 windowSize = ivec2( width, height );
+		mContext->initializePresentRender( windowSize, mOptions.mSwapchainImageCount, mOptions.mSamples, mOptions.mPresentMode, mOptions.mDepthStencilFormat );
 
 		vk::viewport( 0, 0, width, height );
 		vk::setMatricesWindow( width, height );

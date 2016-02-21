@@ -56,6 +56,8 @@
 #include "cinder/vk/IndexBuffer.h"
 #include "cinder/vk/Pipeline.h"
 #include "cinder/vk/PipelineSelector.h"
+#include "cinder/vk/Presenter.h"
+#include "cinder/vk/Queue.h"
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/Swapchain.h"
