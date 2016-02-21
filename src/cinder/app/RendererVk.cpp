@@ -38,6 +38,7 @@
 
 #include "cinder/app/RendererVk.h"
 #include "cinder/vk/CommandBuffer.h"
+#include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Environment.h"
 #include "cinder/vk/Framebuffer.h"
@@ -47,6 +48,7 @@
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/Swapchain.h"
 #include "cinder/vk/wrapper.h"
+#include "cinder/Log.h"
 
 namespace cinder { namespace app {
 
@@ -84,14 +86,32 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	int width = clientRect.right - clientRect.left;
 	int height = clientRect.bottom - clientRect.top;
 
+	// Validate the requested sample count
+	const VkSampleCountFlags supportedSampleCounts = mContext->mGpuProperties.limits.sampledImageColorSampleCounts;		
+	if( ! ( supportedSampleCounts & mOptions.mSamples ) ) {
+		CI_LOG_I( "Unsupported sample count: " << vk::toStringVkSampleCount( mOptions.mSamples ) );
+		// Find the next highest supported sample count
+		uint32_t sampleCount = static_cast<uint32_t>( mOptions.mSamples ) >> 1;
+		while( ! ( supportedSampleCounts & sampleCount ) && ( sampleCount > 0 ) ) {
+			sampleCount >>= 1;
+		}
+		// Update sample count
+		mOptions.mSamples = ( 0 == sampleCount ) ? VK_SAMPLE_COUNT_1_BIT : static_cast<VkSampleCountFlagBits>( sampleCount );
+	}	 
+	else {
+		// Some drivers will return 0 for sampledImageColorSampleCount.
+		// This just means that only VK_SAMPLE_COUNT_1_BIT is supported.
+		if( 0 == supportedSampleCounts ) {
+			CI_LOG_I( "Driver returned sample count of 0, using VK_SAMPLE_COUNT_1_BIT" );
+			mOptions.mSamples = VK_SAMPLE_COUNT_1_BIT;
+		}
+	}
+
+	CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples ) );
+
 	// Initialize the present render
 	const ivec2 windowSize = ivec2( width, height );
 	mContext->initializePresentRender( windowSize, mOptions.mSwapchainImageCount, mOptions.mSamples, mOptions.mPresentMode, mOptions.mDepthStencilFormat );
-
-
-	//const VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-	//vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
-	//vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
 }
 
 void RendererVk::kill()

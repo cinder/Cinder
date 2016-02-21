@@ -271,4 +271,4 @@ void ShadowMappingBasic::draw()
 	vk::context()->getQueue()->waitIdle();
 }
 
-CINDER_APP( ShadowMappingBasic, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode() ), ShadowMappingBasic::prepareSettings )
+CINDER_APP( ShadowMappingBasic, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_32_BIT ).setExplicitMode() ), ShadowMappingBasic::prepareSettings )
