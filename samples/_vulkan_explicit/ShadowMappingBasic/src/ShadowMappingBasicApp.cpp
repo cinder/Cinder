@@ -217,7 +217,15 @@ void ShadowMappingBasic::update()
 
 void ShadowMappingBasic::draw()
 {
-	vk::context()->acquireNextPresentImage();
+	// Semaphores
+	VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
+	VkSemaphore renderingCompleteSemaphore = VK_NULL_HANDLE;
+	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &imageAcquiredSemaphore );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &renderingCompleteSemaphore );
+
+	// Get next image
+	vk::context()->getPresenter()->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
 
 	// Build command buffer
 	auto cmdBuf = vk::context()->getDefaultCommandBuffer();
@@ -225,8 +233,7 @@ void ShadowMappingBasic::draw()
 	{
 		renderDepthFbo();
 
-		vk::context()->setPresentCommandBuffer( cmdBuf );
-		vk::context()->beginPresentRender();
+		vk::context()->getPresenter()->beginRender( cmdBuf );
 		{
 			vk::setMatrices( mCam );
 
@@ -249,12 +256,19 @@ void ShadowMappingBasic::draw()
 			vk::draw( mShadowMapTex, Rectf( 0, 0, size, size ) );    
 			*/
 		}
-		vk::context()->endPresentRender();
+		vk::context()->getPresenter()->endRender();
 	}
 	cmdBuf->end();
 
-	// Submit command buffer for presentation
-	vk::context()->submitPresentRender();
+    // Submit command buffer for processing
+	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	vk::context()->getQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
+
+	// Submit presentation
+	vk::context()->getQueue()->present( vk::context()->getPresenter(), renderingCompleteSemaphore );
+
+	// Wait for work to be done
+	vk::context()->getQueue()->waitIdle();
 }
 
 CINDER_APP( ShadowMappingBasic, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode() ), ShadowMappingBasic::prepareSettings )

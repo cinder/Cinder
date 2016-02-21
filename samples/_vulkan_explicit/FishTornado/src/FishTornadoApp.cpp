@@ -569,7 +569,16 @@ void FishTornadoApp::drawToMainFbo( const ci::vk::CommandBufferRef& cmdBuf )
 
 void FishTornadoApp::draw()
 {
-	vk::context()->acquireNextPresentImage();
+	// Semaphores
+	VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
+	VkSemaphore renderingCompleteSemaphore = VK_NULL_HANDLE;
+	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &imageAcquiredSemaphore );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &renderingCompleteSemaphore );
+
+	// Get the next image
+	const auto& presenter = vk::context()->getPresenter();
+	uint32_t imageIndex = presenter->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
 
 	// Build command buffer
 	auto cmdBuf = vk::context()->getDefaultCommandBuffer();
@@ -593,8 +602,7 @@ void FishTornadoApp::draw()
 		drawToMainFbo( cmdBuf );
 
 		// Present
-		vk::context()->setPresentCommandBuffer( cmdBuf );
-		vk::context()->beginPresentRender();
+		presenter->beginRender( cmdBuf );		
 		{
 			vk::setMatricesWindow( getWindowSize() );
 			mMainBatch->uniform( "uFboTex",					mMainColorTex );
@@ -626,12 +634,19 @@ void FishTornadoApp::draw()
 			vk::context()->popCommandBuffer();
 */
 		}
-		vk::context()->endPresentRender();
+		presenter->endRender();
 	}
 	cmdBuf->end();
 
-	// Submit command buffer for presentation
-	vk::context()->submitPresentRender();
+    // Submit command buffer for processing
+	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	vk::context()->getQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
+
+	// Submit presentation
+	vk::context()->getQueue()->present( presenter, renderingCompleteSemaphore );
+
+	// Wait for work to be done
+	vk::context()->getQueue()->waitIdle();
 
 	if( 0 == ( getElapsedFrames() % 300 ) ) {
 		console() << "FPS: " << getAverageFps() << std::endl;

@@ -85,6 +85,11 @@ void Presenter::resize(const ivec2& newWindowSize)
 	mRenderAreea.offset	= { 0, 0 };
 	mRenderAreea.extent = { mWindowSize.x, mWindowSize.y };
 	
+	// Reset all the resources that are affected by windoe size change
+	mSwapchain.reset();
+	mMultiSampleAttachments.clear();
+	mFramebuffers.clear();
+
 	// Create swapchain and update image count in case the image count was adjusted
 	{
 		vk::Swapchain::Options swapChainOptions = vk::Swapchain::Options();
@@ -93,7 +98,6 @@ void Presenter::resize(const ivec2& newWindowSize)
 		swapChainOptions.colorFormat( mOptions.mWsiSurfaceFormat );
 		swapChainOptions.depthStencilFormat( mOptions.mDepthStencilFormat);
 		swapChainOptions.depthStencilSamples( mOptions.mSamples );
-
 		mSwapchain = vk::Swapchain::create( mWindowSize, mSwapchainImageCount, swapChainOptions, mContext );
 		mSwapchainImageCount = mSwapchain->getImageCount();
 	}
@@ -106,9 +110,11 @@ void Presenter::resize(const ivec2& newWindowSize)
 	if( mRenderPasses.size() != mSwapchainImageCount ) {
 		mRenderPasses.clear();
 		mRenderPasses.resize( mSwapchainImageCount );
-		mMultiSampleAttachments.resize( mSwapchainImageCount );
-		mFramebuffers.resize( mSwapchainImageCount );
 	}
+
+	// Resize resources that are dependent on window size
+	mMultiSampleAttachments.resize( mSwapchainImageCount );
+	mFramebuffers.resize( mSwapchainImageCount );
 
 	// Attachments
 	const auto& colorAttachments = mSwapchain->getColorAttachments();

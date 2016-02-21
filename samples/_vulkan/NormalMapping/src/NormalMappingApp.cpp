@@ -400,6 +400,10 @@ void NormalMappingApp::draw()
 		r += vec2( 0.5f*(getWindowWidth() - r.getWidth()), getWindowHeight() - r.getHeight() );
 		vk::draw( mCopyrightMap, r );
 	}
+
+	if( 0 == (getElapsedFrames() % 100)) {
+		console() << "FPS: " << getAverageFps() << std::endl;
+	}
 }
 
 void NormalMappingApp::keyDown( KeyEvent event )

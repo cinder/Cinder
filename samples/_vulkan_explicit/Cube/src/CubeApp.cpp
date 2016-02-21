@@ -43,7 +43,9 @@
 using namespace ci;
 using namespace ci::app;
 
-static const int FRAME_LAG = 1;
+#include <queue>
+
+static const int FRAME_LAG = 2;
 
 class RotatingCubeApp : public App {
   public:	
@@ -62,8 +64,8 @@ class RotatingCubeApp : public App {
 	bool					mFencesInited[FRAME_LAG];
 	vk::CommandBufferRef	mCommandBuffers[FRAME_LAG];
 
-	VkSemaphore				mImageAcquiredSemaphore = VK_NULL_HANDLE;
-	VkSemaphore				mRenderingCompleteSemaphore = VK_NULL_HANDLE;
+	VkSemaphore				mImageAcquiredSemaphore[FRAME_LAG];
+	VkSemaphore				mRenderingCompleteSemaphore[FRAME_LAG];
 };
 
 void RotatingCubeApp::setup()
@@ -120,10 +122,6 @@ void RotatingCubeApp::setup()
 
 	mCommandBuffers[0]	= vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
 	mCommandBuffers[1]	= vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
-
-	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
 	
 	vk::enableDepthWrite();
 	vk::enableDepthRead();
@@ -147,17 +145,23 @@ void RotatingCubeApp::draw()
 	auto ctx = vk::context();
 
 	size_t frameIdx = getElapsedFrames() % FRAME_LAG;
+
 	if( mFencesInited[frameIdx] ) {
-		//vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT64_MAX );
-		//vkResetFences( ctx->getDevice(), 1, &mFences[frameIdx] );
+		vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT64_MAX );
+		vkResetFences( ctx->getDevice(), 1, &mFences[frameIdx] );
+
+		vkDestroySemaphore( ctx->getDevice(), mImageAcquiredSemaphore[frameIdx] , nullptr );
+		vkDestroySemaphore( ctx->getDevice(), mRenderingCompleteSemaphore[frameIdx] , nullptr );
 	}
 
-	auto presenter = ctx->getPresenter();
-	//ctx->acquireNextPresentImage( mFences[frameIdx], mImageAcquiredSemaphore );
-	mFences[frameIdx] = VK_NULL_HANDLE;
-	uint32_t imageIndex = presenter->acquireNextImage( mFences[frameIdx], mImageAcquiredSemaphore );
-	mFencesInited[frameIdx] = true;
+	// Create this frames semaphores
+	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore( ctx->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore[frameIdx] );
+	vkCreateSemaphore( ctx->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore[frameIdx] );
 
+	auto presenter = ctx->getPresenter();
+	uint32_t imageIndex = presenter->acquireNextImage( mFences[frameIdx], mImageAcquiredSemaphore[frameIdx] );
+	mFencesInited[frameIdx] = true;
 
 	auto& cmdBuf = mCommandBuffers[frameIdx];
 	cmdBuf->begin();
@@ -174,49 +178,17 @@ void RotatingCubeApp::draw()
 	cmdBuf->end();
 
     // Submit rendering work to the graphics queue
-	const VkPipelineStageFlags waitDstStageMask = VK_NULL_HANDLE; //VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	ctx->getQueue()->submit( cmdBuf, mImageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore );
+	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	ctx->getQueue()->submit( cmdBuf, mImageAcquiredSemaphore[frameIdx], waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore[frameIdx] );
 
 	// Submit present operation to present queue
-	ctx->getQueue()->present( presenter, mRenderingCompleteSemaphore );
+	ctx->getQueue()->present( presenter, mRenderingCompleteSemaphore[frameIdx] );
 
-	//ctx->getQueue()->waitIdle();
-	
-/*
-    // Submit rendering work to the graphics queue
-    const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	std::vector<VkCommandBuffer> cmdBufs = { cmdBuf->getCommandBuffer() };
-    const VkSubmitInfo submitInfo =
-    {
-        VK_STRUCTURE_TYPE_SUBMIT_INFO,          // sType
-        NULL,                                   // pNext
-        1,                                      // waitSemaphoreCount
-        &mImageAcquiredSemaphore,               // pWaitSemaphores
-        &waitDstStageMask,                      // pWaitDstStageMasks
-        cmdBufs.size(),                         // commandBufferCount
-        cmdBufs.data(),                         // pCommandBuffers
-        1,                                      // signalSemaphoreCount
-        &mRenderingCompleteSemaphore            // pSignalSemaphores
-    };
-    vkQueueSubmit( ctx->getQueue(), 1, &submitInfo, VK_NULL_HANDLE );
-
-    // Submit present operation to present queue
-	VkSwapchainKHR swapchains[1] = { ctx->getPresentSwapchain()->getSwapchain() };
-	const uint32_t imageIndices[1] = { ctx->getPresentImageIndex() };
-    const VkPresentInfoKHR presentInfo =
-    {
-        VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,     // sType
-        NULL,                                   // pNext
-        1,                                      // waitSemaphoreCount
-        &mRenderingCompleteSemaphore,           // pWaitSemaphores
-        1,                                      // swapchainCount
-        swapchains,								// pSwapchains
-        imageIndices,							// pImageIndices
-        NULL                                    // pResults
-    };
-
-    auto result = ctx->fpQueuePresentKHR( ctx->getQueue(), &presentInfo );
-*/
+	if( 0 == (getElapsedFrames() % 100)) {
+		console() << "FPS: " << getAverageFps() << std::endl;
+	}
 }
 
-CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode() ) )
+CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode() ), []( App::Settings* settings ) {
+	settings->disableFrameRate();
+} )

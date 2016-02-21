@@ -230,8 +230,6 @@ void ShadowMappingBasic::update()
 
 void ShadowMappingBasic::draw()
 {
-
-	//vk::clear( Color::black() );
 	vk::setMatrices( mCam );
 
 	vec4 mvLightPos	= vk::getModelView() * vec4( mLightPos, 1.0f );

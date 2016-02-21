@@ -326,7 +326,15 @@ void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadow
 
 void ShadowMappingApp::draw()
 {
-	vk::context()->acquireNextPresentImage();
+	// Semaphores
+	VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
+	VkSemaphore renderingCompleteSemaphore = VK_NULL_HANDLE;
+	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &imageAcquiredSemaphore );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &renderingCompleteSemaphore );
+
+	// Get next image
+	vk::context()->getPresenter()->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
 
 	// Build command buffer
 	auto cmdBuf = vk::context()->getDefaultCommandBuffer();
@@ -349,7 +357,7 @@ void ShadowMappingApp::draw()
 		}
 		mShadowMap->getRenderPass()->endRenderExplicit();
 
-		vk::context()->beginPresentRender( cmdBuf );
+		vk::context()->getPresenter()->beginRender( cmdBuf );
 		{
 			// Render shadowed scene
 			vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
@@ -372,12 +380,18 @@ void ShadowMappingApp::draw()
 				drawScene( mSpinAngle, mShadowShader );
 			}
 		}
-		vk::context()->endPresentRender();
+		vk::context()->getPresenter()->endRender();
 	}
 	cmdBuf->end();
 
-	// Submit command buffer for presentation
-	vk::context()->submitPresentRender();
+    // Submit command buffer for processing
+	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	vk::context()->getQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
+
+	// Submit presentation
+	vk::context()->getQueue()->present( vk::context()->getPresenter(), renderingCompleteSemaphore );
+
+	// Wait for work to be done
 	vk::context()->getQueue()->waitIdle();
 }
 

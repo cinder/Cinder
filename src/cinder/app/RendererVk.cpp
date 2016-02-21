@@ -111,20 +111,19 @@ void RendererVk::startDraw()
 	makeCurrentContext();
 
 	if( ! isExplicitMode() ) {
-		
+		// Create semaphores for rendering
 		const VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
 		vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
 		vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
 		
 		const auto& presenter = mContext->getPresenter();
+
+		// Acquire the next image to use as the target
 		VkFence nullFence = VK_NULL_HANDLE;
 		presenter->acquireNextImage( nullFence, mImageAcquiredSemaphore );
+
+		// Begin the renderer. This will also begin the command buffer since this is the non-explicit path.
 		presenter->beginRender( mContext->getDefaultCommandBuffer() );
-
-		//mContext->acquireNextPresentImage();
-		//mContext->beginPresentRender( mContext->getDefaultCommandBuffer() );
-
-		//mContext->getDefaultCommandBuffer()->begin();
 	}
 }
 
@@ -134,11 +133,12 @@ void RendererVk::finishDraw()
 
 	if( ! isExplicitMode() ) {		
 		const auto& presenter = mContext->getPresenter();
+		const auto& queue = mContext->getQueue();
+
+		// End present render. This will also end the command buffer since this is the non-explicit path.
 		presenter->endRender();
 
-		//mContext->getDefaultCommandBuffer()->end();
-
-		const auto& queue = mContext->getQueue();
+		// Submit command buffer for processing
 		const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		VkFence nullFence = VK_NULL_HANDLE;
 		queue->submit( mContext->getDefaultCommandBuffer(), mImageAcquiredSemaphore, waitDstStageMask, nullFence, mRenderingCompleteSemaphore );
@@ -150,12 +150,9 @@ void RendererVk::finishDraw()
 		mContext->getQueue()->waitIdle();
 		
 		// Clear transient objects
-		//mContext->clearTransients();
-
-		//mContext->endPresentRender();
-		//mContext->getQueue()->waitIdle();
-		//mContext->clearTransients();
+		mContext->clearTransients();
 		
+		// Destroy semaphores
 		vkDestroySemaphore( mContext->getDevice(), mImageAcquiredSemaphore, nullptr );
 		vkDestroySemaphore( mContext->getDevice(), mRenderingCompleteSemaphore, nullptr );
 		mImageAcquiredSemaphore = VK_NULL_HANDLE;

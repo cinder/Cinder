@@ -109,15 +109,6 @@ private:
 	std::vector<ImageViewRef>	mColorAttachments;
 	std::vector<ImageViewRef>	mDepthStencilAttachments;
 
-/*
-	VkFormat					mColorFormat = VK_FORMAT_UNDEFINED;
-	bool						mHasDepth = false;
-	VkFormat					mDepthStencilFormat = VK_FORMAT_UNDEFINED;
-	std::vector<ImageViewRef>	mDepthStencilAttachments;
-	VkSampleCountFlagBits		mDepthStencilSamples = VK_SAMPLE_COUNT_1_BIT;
-	VkPresentModeKHR			mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
-*/
-
 	void initialize();
 	void destroy(bool removeFromTracking = true);
 	friend class Context;
