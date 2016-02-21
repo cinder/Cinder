@@ -127,7 +127,11 @@ void RotatingCubeApp::draw()
 
 	mBatch->draw();
 
-	//console() << getElapsedFrames() << std::endl;
+	if( 0 == (getElapsedFrames() % 300)) {
+		console() << "FPS: " << getAverageFps() << std::endl;
+	}
 }
 
-CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_1_BIT ) ) )
+CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ), []( App::Settings *settings ) {
+	settings->disableFrameRate();
+} )

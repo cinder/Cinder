@@ -78,9 +78,7 @@ private:
 	void					drawToMainFbo( const ci::vk::CommandBufferRef& cmdBuf );
 	void					drawToDepthFbo( const ci::vk::CommandBufferRef& cmdBuf );
 
-	//float					mFrameRate;
-	//bool					mFullScreen;
-	//int						mNumFlockers;
+	void					generateCommandBuffer( const ci::vk::CommandBufferRef& cmdBuf );
 	
 	// Time
 	float					mTime;

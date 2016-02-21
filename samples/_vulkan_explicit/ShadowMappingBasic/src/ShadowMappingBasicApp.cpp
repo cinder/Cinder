@@ -81,6 +81,8 @@ class ShadowMappingBasic : public App {
 	vk::BatchRef		mFloorShadowedBatch;
 	
 	float				mTime;
+
+	void generateCommandBuffer( const vk::CommandBufferRef& cmdBuf );
 };
 
 void ShadowMappingBasic::prepareSettings( Settings *settings )
@@ -215,20 +217,8 @@ void ShadowMappingBasic::update()
 	mCam.lookAt( vec3( sin( mTime ) * 5.0f, sin( mTime ) * 2.5f + 2, 5.0f ), vec3( 0.0f ) );
 }
 
-void ShadowMappingBasic::draw()
+void ShadowMappingBasic::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf )
 {
-	// Semaphores
-	VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
-	VkSemaphore renderingCompleteSemaphore = VK_NULL_HANDLE;
-	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &imageAcquiredSemaphore );
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &renderingCompleteSemaphore );
-
-	// Get next image
-	vk::context()->getPresenter()->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
-
-	// Build command buffer
-	auto cmdBuf = vk::context()->getDefaultCommandBuffer();
 	cmdBuf->begin();
 	{
 		renderDepthFbo();
@@ -259,6 +249,23 @@ void ShadowMappingBasic::draw()
 		vk::context()->getPresenter()->endRender();
 	}
 	cmdBuf->end();
+}
+
+void ShadowMappingBasic::draw()
+{
+	// Semaphores
+	VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
+	VkSemaphore renderingCompleteSemaphore = VK_NULL_HANDLE;
+	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &imageAcquiredSemaphore );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &renderingCompleteSemaphore );
+
+	// Get next image
+	vk::context()->getPresenter()->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
+
+	// Build command buffer
+	const auto& cmdBuf = vk::context()->getDefaultCommandBuffer();
+	generateCommandBuffer( cmdBuf );
 
     // Submit command buffer for processing
 	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;

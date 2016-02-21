@@ -120,6 +120,7 @@ public:
 	
 	float						getAspectRatio() const { return mFramebuffer->getAspectRatio(); }
 	ivec2						getSize() const { return mFramebuffer->getSize(); }
+
 private:
 	vk::RenderPassRef			mRenderPass;
 	vk::FramebufferRef			mFramebuffer;
@@ -145,9 +146,6 @@ class ShadowMappingApp : public App {
 	void keyDown( KeyEvent event ) override;
   private:
 	void drawScene( float spinAngle, const vk::GlslProgRef& glsl = nullptr );
-//#if ! defined( CINDER_GL_ES )
-//	params::InterfaceGlRef		mParams;
-//#endif	
 
 	float						mSpinAngle = 0.0f;
 
@@ -157,8 +155,6 @@ class ShadowMappingApp : public App {
 	
 	vk::BatchRef				mSphere, mSphereShadowed;
 
-	//vk::BatchRef				mTeapot, mTeapotShadowed;
-	//std::vector<std::pair<mat4, vec3>>	mTransforms;
 	struct Teapot {
 		vk::BatchRef	mPlain;
 		vk::BatchRef	mShadowed;
@@ -184,6 +180,8 @@ class ShadowMappingApp : public App {
 	float						mRandomOffset;
 	int							mNumRandomSamples;
 	float						mPolygonOffsetFactor, mPolygonOffsetUnits;
+
+	void						generateCommandBuffer( const vk::CommandBufferRef& cmdBuf );
 };
 
 void ShadowMappingApp::setup()
@@ -324,20 +322,8 @@ void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadow
 
 }
 
-void ShadowMappingApp::draw()
+void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf )
 {
-	// Semaphores
-	VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
-	VkSemaphore renderingCompleteSemaphore = VK_NULL_HANDLE;
-	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &imageAcquiredSemaphore );
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &renderingCompleteSemaphore );
-
-	// Get next image
-	vk::context()->getPresenter()->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
-
-	// Build command buffer
-	auto cmdBuf = vk::context()->getDefaultCommandBuffer();
 	cmdBuf->begin();
 	{
 		// Render the shadow map
@@ -383,6 +369,23 @@ void ShadowMappingApp::draw()
 		vk::context()->getPresenter()->endRender();
 	}
 	cmdBuf->end();
+}
+
+void ShadowMappingApp::draw()
+{
+	// Semaphores
+	VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
+	VkSemaphore renderingCompleteSemaphore = VK_NULL_HANDLE;
+	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &imageAcquiredSemaphore );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &renderingCompleteSemaphore );
+
+	// Get next image
+	vk::context()->getPresenter()->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
+
+	// Build command buffer
+	const auto& cmdBuf = vk::context()->getDefaultCommandBuffer();
+	generateCommandBuffer( cmdBuf );
 
     // Submit command buffer for processing
 	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;

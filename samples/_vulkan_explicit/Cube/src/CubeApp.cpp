@@ -54,6 +54,7 @@ class RotatingCubeApp : public App {
 	void	update() override;
 	void	draw() override;
 	
+  private:
 	CameraPersp				mCam;
 	vk::BatchRef			mBatch[FRAME_LAG];
 	vk::TextureRef			mTexture;
@@ -66,6 +67,8 @@ class RotatingCubeApp : public App {
 
 	VkSemaphore				mImageAcquiredSemaphore[FRAME_LAG];
 	VkSemaphore				mRenderingCompleteSemaphore[FRAME_LAG];
+
+	void	generateCommandBuffer( const vk::CommandBufferRef& cmdBuf, uint32_t frameIdx );
 };
 
 void RotatingCubeApp::setup()
@@ -140,11 +143,27 @@ void RotatingCubeApp::update()
 	mCubeRotation *= rotate( toRadians( 0.2f ), normalize( vec3( 0, 1, 0 ) ) );
 }
 
+void RotatingCubeApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf, uint32_t frameIdx )
+{
+	cmdBuf->begin();
+	{
+		vk::context()->getPresenter()->beginRender( cmdBuf );
+		{
+			vk::setMatrices( mCam );
+			vk::ScopedModelMatrix modelScope;
+			vk::multModelMatrix( mCubeRotation );
+			mBatch[frameIdx]->draw();
+		}
+		vk::context()->getPresenter()->endRender();
+	}
+	cmdBuf->end();
+}
+
 void RotatingCubeApp::draw()
 {
-	auto ctx = vk::context();
+	const auto& ctx = vk::context();
 
-	size_t frameIdx = getElapsedFrames() % FRAME_LAG;
+	size_t frameIdx = ( getElapsedFrames() + 1 ) % FRAME_LAG;
 
 	if( mFencesInited[frameIdx] ) {
 		vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT64_MAX );
@@ -159,23 +178,12 @@ void RotatingCubeApp::draw()
 	vkCreateSemaphore( ctx->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore[frameIdx] );
 	vkCreateSemaphore( ctx->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore[frameIdx] );
 
-	auto presenter = ctx->getPresenter();
+	const auto& presenter = ctx->getPresenter();
 	uint32_t imageIndex = presenter->acquireNextImage( mFences[frameIdx], mImageAcquiredSemaphore[frameIdx] );
 	mFencesInited[frameIdx] = true;
 
-	auto& cmdBuf = mCommandBuffers[frameIdx];
-	cmdBuf->begin();
-	{
-		presenter->beginRender( cmdBuf );
-		{
-			vk::setMatrices( mCam );
-			vk::ScopedModelMatrix modelScope;
-			vk::multModelMatrix( mCubeRotation );
-			mBatch[1]->draw();
-		}
-		presenter->endRender();
-	}
-	cmdBuf->end();
+	const auto& cmdBuf = mCommandBuffers[frameIdx];
+	generateCommandBuffer( cmdBuf, frameIdx );
 
     // Submit rendering work to the graphics queue
 	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -184,7 +192,7 @@ void RotatingCubeApp::draw()
 	// Submit present operation to present queue
 	ctx->getQueue()->present( presenter, mRenderingCompleteSemaphore[frameIdx] );
 
-	if( 0 == (getElapsedFrames() % 100)) {
+	if( 0 == (getElapsedFrames() % 300)) {
 		console() << "FPS: " << getAverageFps() << std::endl;
 	}
 }
