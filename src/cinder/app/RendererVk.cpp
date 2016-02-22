@@ -164,7 +164,7 @@ void RendererVk::finishDraw()
 		queue->submit( mContext->getDefaultCommandBuffer(), mImageAcquiredSemaphore, waitDstStageMask, nullFence, mRenderingCompleteSemaphore );
 
 		// Submit present operation to present queue
-		queue->present( presenter, mRenderingCompleteSemaphore );
+		queue->present( mRenderingCompleteSemaphore, presenter );
 
 		// Wait until everything is done
 		mContext->getQueue()->waitIdle();

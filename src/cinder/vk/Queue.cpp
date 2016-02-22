@@ -83,7 +83,16 @@ void Queue::submit( const std::vector<VkSubmitInfo>& submits, VkFence fence )
 	uint32_t submitCount = static_cast<uint32_t>( submits.size() );
 	const VkSubmitInfo* pSubmits = submits.data();
 	VkResult err = vkQueueSubmit( mQueue, submitCount, pSubmits, fence );
-	assert( err == VK_SUCCESS );
+
+	// Why is the assert for both VK_SUCCESS and VK_ERROR_DEVICE_LOST?! 
+	//
+	// From the spec: 
+	//    For any command that may return VK_ERROR_DEVICE_LOST, for the purpose of 
+	//    determining whether a command buffer is pending execution, or whether resources 
+	//    are considered in-use by the device, a return value of VK_ERROR_DEVICE_LOST is 
+	//    equivalent to VK_SUCCESS.
+	//
+	assert( ( err == VK_SUCCESS ) || ( err == VK_ERROR_DEVICE_LOST ) );
 }
 
 void Queue::submit( const std::vector<VkCommandBuffer>& cmdBufs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence, const std::vector<VkSemaphore>& signalSemaphores )
@@ -170,7 +179,7 @@ void Queue::present( VkSemaphore waitSemaphore, const vk::SwapchainRef& swapChai
 	this->present( waitSemaphore, swapChainRef->getSwapchain(), imageIndex );
 }
 
-void Queue::present( const PresenterRef& presenter, const std::vector<VkSemaphore>& waitSemaphores )
+void Queue::present( const std::vector<VkSemaphore>& waitSemaphores, const PresenterRef& presenter)
 {
 	std::vector<VkSwapchainKHR> swapChains;
 	std::vector<uint32_t> imageIndices;
@@ -181,7 +190,7 @@ void Queue::present( const PresenterRef& presenter, const std::vector<VkSemaphor
 	this->present( waitSemaphores, swapChains, imageIndices );
 }
 
-void Queue::present( const PresenterRef& presenter, VkSemaphore waitSemaphore )
+void Queue::present( VkSemaphore waitSemaphore, const PresenterRef& presenter )
 {
 	std::vector<VkSemaphore> waitSemaphores;
 
@@ -189,7 +198,7 @@ void Queue::present( const PresenterRef& presenter, VkSemaphore waitSemaphore )
 		waitSemaphores.push_back( waitSemaphore );
 	}
 
-	this->present( presenter, waitSemaphores );
+	this->present( waitSemaphores, presenter  );
 }
 
 void Queue::waitIdle()

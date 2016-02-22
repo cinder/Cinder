@@ -73,8 +73,8 @@ public:
 	void			present( const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkSwapchainKHR>& swapChains, const std::vector<uint32_t>& imageIndices );
 	void			present( VkSemaphore waitSemaphore, VkSwapchainKHR swapChain, uint32_t imageIndex );
 	void			present( VkSemaphore waitSemaphore, const vk::SwapchainRef& swapChainRef, uint32_t imageIndex );
-	void			present( const PresenterRef& presenter, const std::vector<VkSemaphore>& waitSemaphores );
-	void			present( const PresenterRef& presenter, VkSemaphore waitSemaphore );
+	void			present( const std::vector<VkSemaphore>& waitSemaphores, const PresenterRef& presenter );
+	void			present( VkSemaphore waitSemaphore, const PresenterRef& presenter );
 
 	void			waitIdle();
 

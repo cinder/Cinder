@@ -197,13 +197,15 @@ uint32_t Presenter::acquireNextImage( VkFence fence, VkSemaphore signalSemaphore
 	return mCurrentImageIndex;
 }
 
-void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf )
+void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *context  )
 {
+	vk::Context *ctx = ( nullptr != context ) ? context : mContext;
+
 	mCommandBuffer = cmdBuf;
 
-	mContext->pushRenderPass( mRenderPasses[mCurrentImageIndex] );
-	mContext->pushSubPass( 0 );
-	mContext->pushCommandBuffer( mCommandBuffer );
+	ctx->pushRenderPass( mRenderPasses[mCurrentImageIndex] );
+	ctx->pushSubPass( 0 );
+	ctx->pushCommandBuffer( mCommandBuffer );
 
 	// Begin the command buffer if not in explicit mode
 	if( ! mOptions.mExplicitMode ) {
@@ -243,8 +245,10 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf )
 	}
 }
 
-void Presenter::endRender()
+void Presenter::endRender( vk::Context *context  )
 {
+	vk::Context *ctx = ( nullptr != context ) ? context : mContext;
+
 	// End render pass
 	{
 		mCommandBuffer->endRenderPass();
@@ -272,9 +276,9 @@ void Presenter::endRender()
 		mCommandBuffer->end();
 	}
 
-	mContext->popCommandBuffer();
-	mContext->popSubPass();
-	mContext->popRenderPass();
+	ctx->popCommandBuffer();
+	ctx->popSubPass();
+	ctx->popRenderPass();
 
 	// Reset command buffer
 	mCommandBuffer.reset();

@@ -88,8 +88,8 @@ public:
 
 	uint32_t							acquireNextImage( VkFence fence, VkSemaphore signalSemaphore );
 
-	void								beginRender( const vk::CommandBufferRef& cmdBuf );
-	void								endRender();
+	void								beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *context = nullptr );
+	void								endRender( vk::Context *context = nullptr );
 
 private:
 	Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const Presenter::Options& options, vk::Context *context );
