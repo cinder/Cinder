@@ -445,6 +445,7 @@ public:
 	static UniformSetRef			create( const UniformLayout& layout, Context* context = nullptr );
 
 	const std::vector<Binding>&		getBindings() const { return mBindings; }
+	const std::vector<VkDescriptorSetLayoutBinding>&	getDescriptorSetlayoutBindings() const { return mDescriptorSetLayoutBindings; } 
 
 	void							uniform( const std::string& name, const float    value );
 	void							uniform( const std::string& name, const int32_t  value );
@@ -463,19 +464,15 @@ public:
 	void							uniform( const std::string& name, const mat3&    value );
 	void							uniform( const std::string& name, const mat4&    value );
 	void							uniform( const std::string& name, const TextureBaseRef& texture );
-/*
-	void							sampler2D( const std::string& name, const TextureBaseRef& texture );
-	void							sampler2DRect( const std::string& name, const TextureBaseRef& texture );
-	void							sampler2DShadow( const std::string& name, const TextureBaseRef& texture );
-	void							samplerCube( const std::string& name, const TextureBaseRef& texture );
-*/
 
 	void							bufferPending();
 
 	void							echoValues( std::ostream& os );
 
 private:
-	std::vector<Binding>			mBindings;
+	std::vector<Binding>						mBindings;
+	// Since the bindings are immutable, create the VkDescriptorSetLayoutBinding to be used by caches.
+	std::vector<VkDescriptorSetLayoutBinding>	mDescriptorSetLayoutBindings;
 
 	Binding*						findBindingObject( const std::string& name, Binding::Type bindingType );
 

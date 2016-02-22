@@ -46,7 +46,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\src;..\..\..\..\include;$(VULKAN_SDK)\Include;$(VULKAN_SDK)\glslang</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\include;..\..\..\..\tools\vulkan\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -61,7 +61,7 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset)_d.lib;OpenGL32.lib;$(VULKAN_SDK)\glslang\build\glslang\Debug\glslang.lib;$(VULKAN_SDK)\glslang\build\OGLCompilersDLL\Debug\OGLCompiler.lib;$(VULKAN_SDK)\glslang\build\glslang\OSDependent\Windows\Debug\OSDependent.lib;$(VULKAN_SDK)\glslang\build\SPIRV\Debug\SPIRV.lib;$(VULKAN_SDK)\Bin\vulkan-0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;cinder-$(PlatformToolset)_d.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>"..\..\..\..\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -72,7 +72,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;..\..\..\..\include;$(VULKAN_SDK)\Include;$(VULKAN_SDK)\glslang</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\include;..\..\..\..\tools\vulkan\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -87,7 +87,7 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset).lib;OpenGL32.lib;$(VULKAN_SDK)\glslang\build\glslang\Release\glslang.lib;$(VULKAN_SDK)\glslang\build\OGLCompilersDLL\Release\OGLCompiler.lib;$(VULKAN_SDK)\glslang\build\glslang\OSDependent\Windows\Release\OSDependent.lib;$(VULKAN_SDK)\glslang\build\SPIRV\Release\SPIRV.lib;$(VULKAN_SDK)\Bin\vulkan-0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenGL32.lib;cinder-$(PlatformToolset)_d.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>"..\..\..\..\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -104,63 +104,10 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\cinder\app\RendererVk.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\Batch.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\Buffer.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\CommandBuffer.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\CommandPool.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\ConstantConversion.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\Context.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\Descriptor.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\Environment.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\Framebuffer.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\glsl_types.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\ImageView.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\IndexBuffer.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\Pipeline.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\RenderPass.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\scoped.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\ShaderProg.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\Swapchain.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\Texture.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\UniformBuffer.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\UniformLayout.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\VertexBuffer.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\VertexBufferMesh.cpp" />
-    <ClCompile Include="..\..\..\..\src\cinder\vk\wrapper.cpp" />
     <ClCompile Include="..\src\BasicApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\include\cinder\app\RendererVk.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\BaseVkObject.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Batch.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Buffer.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\CommandBuffer.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\CommandPool.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\ConstantConversion.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Context.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Descriptor.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Environment.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Framebuffer.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\glsl_types.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\gl_types.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\ImageView.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\IndexBuffer.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Pipeline.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\platform.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\RenderPass.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\scoped.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\ShaderProg.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Swapchain.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Texture.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\UniformBuffer.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\UniformLayout.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\Util.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\VertexBuffer.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\VertexBufferMesh.h" />
-    <ClInclude Include="..\..\..\..\include\cinder\vk\wrapper.h" />
     <ClInclude Include="..\include\Resources.h" />
-    <ClInclude Include="..\src\cube_data.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

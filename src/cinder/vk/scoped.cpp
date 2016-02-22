@@ -41,23 +41,50 @@
 
 namespace cinder { namespace vk {
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// ScopedSemaphore
-ScopedSemaphore::ScopedSemaphore( Context *context )
-	: BaseVkObject( ( nullptr != context ) ? context : Context::getCurrent() )
-{
-    VkSemaphoreCreateInfo presentCompleteSemaphoreCreateInfo;
-    presentCompleteSemaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    presentCompleteSemaphoreCreateInfo.pNext = nullptr;
-    presentCompleteSemaphoreCreateInfo.flags = 0;
+/////////////////////////////////////////////////////////////////////////////////////////////
+//// ScopedSemaphore
+//ScopedSemaphore::ScopedSemaphore( Context *context )
+//	: BaseVkObject( ( nullptr != context ) ? context : Context::getCurrent() )
+//{
+//    VkSemaphoreCreateInfo presentCompleteSemaphoreCreateInfo;
+//    presentCompleteSemaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+//    presentCompleteSemaphoreCreateInfo.pNext = nullptr;
+//    presentCompleteSemaphoreCreateInfo.flags = 0;
+//
+//	VkResult res = vkCreateSemaphore( mContext->getDevice(), &presentCompleteSemaphoreCreateInfo, nullptr, &mSemaphore );
+//	assert( res == VK_SUCCESS );
+//}
+//
+//ScopedSemaphore::~ScopedSemaphore()
+//{
+//	vkDestroySemaphore( mContext->getDevice(), mSemaphore, nullptr );
+//}
 
-	VkResult res = vkCreateSemaphore( mContext->getDevice(), &presentCompleteSemaphoreCreateInfo, nullptr, &mSemaphore );
-	assert( res == VK_SUCCESS );
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedColor
+ScopedColor::ScopedColor()
+	: mCtx( vk::context() )
+{
+	mColor = mCtx->getCurrentColor();
 }
 
-ScopedSemaphore::~ScopedSemaphore()
+ScopedColor::ScopedColor( const ColorAf &color )
+	: mCtx( vk::context() )
 {
-	vkDestroySemaphore( mContext->getDevice(), mSemaphore, nullptr );
+	mColor = mCtx->getCurrentColor();
+	mCtx->setCurrentColor( color );
+}
+
+ScopedColor::ScopedColor( float red, float green, float blue, float alpha )
+	: mCtx( vk::context() )
+{
+	mColor = mCtx->getCurrentColor();
+	mCtx->setCurrentColor( ColorA( red, green, blue, alpha ) );	
+}
+
+ScopedColor::~ScopedColor()
+{
+	mCtx->setCurrentColor( mColor );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

@@ -42,6 +42,7 @@
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/VertexBuffer.h"
+#include "util/farmhash.h"
 
 namespace cinder { namespace vk {
 
@@ -59,28 +60,37 @@ PipelineLayout::PipelineLayout( const DescriptorSetLayoutRef &descSetLayout, Con
 	initialize( descSetLayout );
 }
 
+PipelineLayout::PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, Context *context )
+	: BaseVkObject( context )
+{
+	initialize( descriptorSetLayouts );
+}
+
 PipelineLayout::~PipelineLayout()
 {
 	destroy();
 }
 
-PipelineLayoutRef PipelineLayout::create( const DescriptorSetLayoutRef &descSetLayout, Context *context )
+PipelineLayoutRef PipelineLayout::create( const DescriptorSetLayoutRef &descriptorSetLayout, Context *context )
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
-	PipelineLayoutRef result = PipelineLayoutRef( new PipelineLayout( descSetLayout, context ) );
+	PipelineLayoutRef result = PipelineLayoutRef( new PipelineLayout( descriptorSetLayout, context ) );
 	return result;
 }
 
-void PipelineLayout::initialize( const DescriptorSetLayoutRef &descSetLayout )
+PipelineLayoutRef PipelineLayout::create( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, Context *context )
 {
-	if( VK_NULL_HANDLE != mPipelineLayout ) {
-		return;
-	}
+	context = ( nullptr != context ) ? context : Context::getCurrent();
+	PipelineLayoutRef result = PipelineLayoutRef( new PipelineLayout( descriptorSetLayouts, context ) );
+	return result;
+}
 
+void PipelineLayout::initialize( const DescriptorSetLayoutRef &descriptorSetLayout )
+{
 	std::vector<VkDescriptorSetLayout> descSetLayouts;
-	descSetLayouts.push_back( descSetLayout->getDescriptorSetLayout() );
+	descSetLayouts.push_back( descriptorSetLayout->getDescriptorSetLayout() );
 
-    /* Now use the descriptor layout to create a pipeline layout */
+    // Now use the descriptor layout to create a pipeline layout
     VkPipelineLayoutCreateInfo createInfo = {};
     createInfo.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     createInfo.pNext                  = NULL;
@@ -95,7 +105,24 @@ void PipelineLayout::initialize( const DescriptorSetLayoutRef &descSetLayout )
 	mContext->trackedObjectCreated( this );
 }
 
-void PipelineLayout::destroy( bool removeFromTracking )
+void PipelineLayout::initialize( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts )
+{
+	// Now use the descriptor layout to create a pipeline layout
+    VkPipelineLayoutCreateInfo createInfo = {};
+    createInfo.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    createInfo.pNext                  = NULL;
+    createInfo.pushConstantRangeCount = 0;
+    createInfo.pPushConstantRanges    = NULL;
+    createInfo.setLayoutCount         = static_cast<uint32_t>( descriptorSetLayouts.size() );
+    createInfo.pSetLayouts            = descriptorSetLayouts.data();
+
+    VkResult res = vkCreatePipelineLayout( mContext->getDevice(), &createInfo, NULL, &mPipelineLayout );
+    assert( res == VK_SUCCESS );
+
+	mContext->trackedObjectCreated( this );
+}
+
+void PipelineLayout::destroy(bool removeFromTracking)
 {
 	if( VK_NULL_HANDLE == mPipelineLayout ) {
 		return;
@@ -107,6 +134,50 @@ void PipelineLayout::destroy( bool removeFromTracking )
 	if( removeFromTracking ) {
 		mContext->trackedObjectDestroyed( this );
 	}
+}
+
+// ------------------------------------------------------------------------------------------------ 
+// PipelineLayoutSelector
+// ------------------------------------------------------------------------------------------------ 
+PipelineLayoutSelector::PipelineLayoutSelector( vk::Context *context )
+	: mContext( context )
+{
+}
+
+PipelineLayoutSelectorRef PipelineLayoutSelector::create( vk::Context *context )
+{
+	PipelineLayoutSelectorRef result = PipelineLayoutSelectorRef( new PipelineLayoutSelector( context ) );
+	return result;
+}
+
+VkPipelineLayout PipelineLayoutSelector::getSelectedLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts ) const
+{
+	VkPipelineLayout result = VK_NULL_HANDLE;
+	if( ! descriptorSetLayouts.empty() ) {
+		// Calculate the hash
+		const char *s = reinterpret_cast<const char*>( descriptorSetLayouts.data() );
+		size_t len = descriptorSetLayouts.size()*sizeof( VkDescriptorSetLayout );
+		uint32_t hash = util::Hash32( s, len );
+		// Look up using hash
+		auto it = std::find_if(
+			std::begin( mPipelineLayouts ),
+			std::end( mPipelineLayouts ),
+			[hash]( const PipelineLayoutSelector::HashPair& elem ) -> bool {
+				return elem.first.mHash == hash;
+			}
+		);
+		// If a descriptor set layout is found, select it
+		if( it != std::end( mPipelineLayouts ) ) {
+			result = it->second->getPipelineLayout();
+		}
+		// Otherwise create it
+		else {
+			vk::PipelineLayoutRef dsl = vk::PipelineLayout::create( descriptorSetLayouts, mContext );			
+			mPipelineLayouts.push_back( std::make_pair( HashData( descriptorSetLayouts, hash ), dsl ) );
+			result = dsl->getPipelineLayout();
+		}
+	}
+	return result;
 }
 
 // ------------------------------------------------------------------------------------------------ 
@@ -226,6 +297,12 @@ Pipeline::Pipeline()
 {
 }
 
+Pipeline::Pipeline( VkPipeline pipeline, bool ownsPipeline )
+	: mOwnsPipeline( ownsPipeline )
+{
+	initialize( pipeline );
+}
+
 Pipeline::Pipeline( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, Context *context )
 	: BaseVkObject( context )
 {
@@ -255,6 +332,13 @@ PipelineRef Pipeline::create( const VkGraphicsPipelineCreateInfo& createInfo, co
 	context = ( nullptr != context ) ? context : Context::getCurrent();
 	PipelineRef result = PipelineRef( new Pipeline( createInfo, pipelineCacheRef, context ) );
 	return result;
+}
+
+void Pipeline::initialize( VkPipeline pipeline )
+{
+	mPipeline = pipeline;
+
+	mContext->trackedObjectCreated( this );
 }
 
 void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef )
@@ -399,7 +483,7 @@ void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineC
 	pipelineCreateInfo.basePipelineHandle				= 0;
 	pipelineCreateInfo.basePipelineIndex				= 0;
 
-	VkPipelineCache pipelineCache = ( options.mDisablePipleineCache ? VK_NULL_HANDLE : ( pipelineCacheRef ? pipelineCacheRef->getPipelineCache() : mContext->getPipelineCache()->getPipelineCache() ) );
+	VkPipelineCache pipelineCache = VK_NULL_HANDLE; //( options.mDisablePipleineCache ? VK_NULL_HANDLE : ( pipelineCacheRef ? pipelineCacheRef->getPipelineCache() : mContext->getPipelineCache()->getPipelineCache() ) );
     res = vkCreateGraphicsPipelines( mContext->getDevice(), pipelineCache, 1, &pipelineCreateInfo, NULL, &mPipeline );
     assert( res == VK_SUCCESS );
 
@@ -421,8 +505,10 @@ void Pipeline::destroy(bool removeFromTracking)
 		return;
 	}
 
-	vkDestroyPipeline( mContext->getDevice(), mPipeline, nullptr );
-	mPipeline = VK_NULL_HANDLE;
+	if( mOwnsPipeline ) {
+		vkDestroyPipeline( mContext->getDevice(), mPipeline, nullptr );
+		mPipeline = VK_NULL_HANDLE;
+	}
 	
 	if( removeFromTracking ) {
 		mContext->trackedObjectDestroyed( this );

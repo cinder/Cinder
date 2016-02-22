@@ -259,4 +259,20 @@ std::string toStringVkCullMode( VkCullModeFlagBits v )
 	return result;
 }
 
+std::string toStringVkSampleCount( VkSampleCountFlagBits v )
+{
+	std::string result = "<UNKNOWN>";
+	switch( v ) {
+		case VK_SAMPLE_COUNT_1_BIT  : result = "VK_SAMPLE_COUNT_1_BIT"; break;
+		case VK_SAMPLE_COUNT_2_BIT  : result = "VK_SAMPLE_COUNT_2_BIT"; break;
+		case VK_SAMPLE_COUNT_4_BIT  : result = "VK_SAMPLE_COUNT_4_BIT"; break;
+		case VK_SAMPLE_COUNT_8_BIT  : result = "VK_SAMPLE_COUNT_8_BIT"; break;
+		case VK_SAMPLE_COUNT_16_BIT : result = "VK_SAMPLE_COUNT_16_BIT"; break;
+		case VK_SAMPLE_COUNT_32_BIT : result = "VK_SAMPLE_COUNT_32_BIT"; break;
+		case VK_SAMPLE_COUNT_64_BIT : result = "VK_SAMPLE_COUNT_64_BIT"; break;
+		default: break;
+	}
+	return result;
+}
+
 }} // namespace cinder::vk

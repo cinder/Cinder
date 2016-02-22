@@ -882,6 +882,21 @@
     <ClCompile Include="..\src\cinder\vk\PipelineSelector.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\TextureFont.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Presenter.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Queue.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\ObjectTracker.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\StateManager.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1842,6 +1857,21 @@
       <Filter>Source Files\vk\util</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\vk\PipelineSelector.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\TextureFont.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\ObjectTracker.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Queue.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Presenter.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\StageManager.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
   </ItemGroup>

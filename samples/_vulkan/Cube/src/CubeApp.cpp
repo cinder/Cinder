@@ -126,6 +126,10 @@ void RotatingCubeApp::draw()
 	vk::multModelMatrix( mCubeRotation );
 
 	mBatch->draw();
+
+	if( 0 == (getElapsedFrames() % 300)) {
+		console() << "FPS: " << getAverageFps() << std::endl;
+	}
 }
 
 CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ) )

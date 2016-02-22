@@ -38,13 +38,17 @@
 
 #include "cinder/app/RendererVk.h"
 #include "cinder/vk/CommandBuffer.h"
+#include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Environment.h"
 #include "cinder/vk/Framebuffer.h"
 #include "cinder/vk/ImageView.h"
+#include "cinder/vk/Presenter.h"
+#include "cinder/vk/Queue.h"
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/Swapchain.h"
 #include "cinder/vk/wrapper.h"
+#include "cinder/Log.h"
 
 namespace cinder { namespace app {
 
@@ -76,15 +80,38 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	uint32_t gpuIndex = 0;
 	mContext = vk::Environment::getEnv()->createContext( hInst, mWnd, mOptions.mExplicitMode, mOptions.mWorkQueueCount, gpuIndex );
 	mContext->makeCurrent();
-	mContext->setPresentDepthStencilFormat( mOptions.mDepthStencilFormat );
 
 	::RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
 	int width = clientRect.right - clientRect.left;
 	int height = clientRect.bottom - clientRect.top;
 
+	// Validate the requested sample count
+	const VkSampleCountFlags supportedSampleCounts = mContext->mGpuProperties.limits.sampledImageColorSampleCounts;		
+	if( ! ( supportedSampleCounts & mOptions.mSamples ) ) {
+		CI_LOG_I( "Unsupported sample count: " << vk::toStringVkSampleCount( mOptions.mSamples ) );
+		// Find the next highest supported sample count
+		uint32_t sampleCount = static_cast<uint32_t>( mOptions.mSamples ) >> 1;
+		while( ! ( supportedSampleCounts & sampleCount ) && ( sampleCount > 0 ) ) {
+			sampleCount >>= 1;
+		}
+		// Update sample count
+		mOptions.mSamples = ( 0 == sampleCount ) ? VK_SAMPLE_COUNT_1_BIT : static_cast<VkSampleCountFlagBits>( sampleCount );
+	}	 
+	else {
+		// Some drivers will return 0 for sampledImageColorSampleCount.
+		// This just means that only VK_SAMPLE_COUNT_1_BIT is supported.
+		if( 0 == supportedSampleCounts ) {
+			CI_LOG_I( "Driver returned sample count of 0, using VK_SAMPLE_COUNT_1_BIT" );
+			mOptions.mSamples = VK_SAMPLE_COUNT_1_BIT;
+		}
+	}
+
+	CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples ) );
+
 	// Initialize the present render
-	mContext->initializePresentRender( ivec2( width, height ), mOptions.mSamples, mOptions.mPresentMode );
+	const ivec2 windowSize = ivec2( width, height );
+	mContext->initializePresentRender( windowSize, mOptions.mSwapchainImageCount, mOptions.mSamples, mOptions.mPresentMode, mOptions.mDepthStencilFormat );
 }
 
 void RendererVk::kill()
@@ -104,8 +131,19 @@ void RendererVk::startDraw()
 	makeCurrentContext();
 
 	if( ! isExplicitMode() ) {
-		mContext->acquireNextPresentImage();
-		mContext->beginPresentRender();
+		// Create semaphores for rendering
+		const VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+		vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
+		vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
+		
+		const auto& presenter = mContext->getPresenter();
+
+		// Acquire the next image to use as the target
+		VkFence nullFence = VK_NULL_HANDLE;
+		presenter->acquireNextImage( nullFence, mImageAcquiredSemaphore );
+
+		// Begin the renderer. This will also begin the command buffer since this is the non-explicit path.
+		presenter->beginRender( mContext->getDefaultCommandBuffer() );
 	}
 }
 
@@ -113,8 +151,32 @@ void RendererVk::finishDraw()
 {
 	makeCurrentContext();
 
-	if( ! isExplicitMode() ) {
-		mContext->endPresentRender();
+	if( ! isExplicitMode() ) {		
+		const auto& presenter = mContext->getPresenter();
+		const auto& queue = mContext->getQueue();
+
+		// End present render. This will also end the command buffer since this is the non-explicit path.
+		presenter->endRender();
+
+		// Submit command buffer for processing
+		const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		VkFence nullFence = VK_NULL_HANDLE;
+		queue->submit( mContext->getDefaultCommandBuffer(), mImageAcquiredSemaphore, waitDstStageMask, nullFence, mRenderingCompleteSemaphore );
+
+		// Submit present operation to present queue
+		queue->present( mRenderingCompleteSemaphore, presenter );
+
+		// Wait until everything is done
+		mContext->getQueue()->waitIdle();
+		
+		// Clear transient objects
+		mContext->clearTransients();
+		
+		// Destroy semaphores
+		vkDestroySemaphore( mContext->getDevice(), mImageAcquiredSemaphore, nullptr );
+		vkDestroySemaphore( mContext->getDevice(), mRenderingCompleteSemaphore, nullptr );
+		mImageAcquiredSemaphore = VK_NULL_HANDLE;
+		mRenderingCompleteSemaphore = VK_NULL_HANDLE;
 	}
 }
 
@@ -139,8 +201,10 @@ void RendererVk::defaultResize()
 #elif defined( CINDER_LINUX )
 #endif
 
-	if( ! isExplicitMode() ) {
-		mContext->initializePresentRender( ivec2( width, height ), mOptions.mSamples, mOptions.mPresentMode );
+	//if( ! isExplicitMode() ) 
+	{
+		const ivec2 windowSize = ivec2( width, height );
+		mContext->initializePresentRender( windowSize, mOptions.mSwapchainImageCount, mOptions.mSamples, mOptions.mPresentMode, mOptions.mDepthStencilFormat );
 
 		vk::viewport( 0, 0, width, height );
 		vk::setMatricesWindow( width, height );

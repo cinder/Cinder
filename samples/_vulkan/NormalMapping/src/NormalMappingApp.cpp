@@ -277,7 +277,7 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 		vk::Pipeline::Options pipelineOptions;
 		pipelineOptions.setTopology( mMesh->getPrimitive() );
 		pipelineOptions.setPipelineLayout( mPipelineLayout );
-		pipelineOptions.setRenderPass( vk::context()->getPresentRenderPass() );
+		pipelineOptions.setRenderPass( vk::context()->getPresenter()->getCurrentRenderPass() );
 		pipelineOptions.setShaderProg( mShaderNormalMapping );
 		pipelineOptions.setCullModeBack();
 		{
@@ -346,6 +346,8 @@ void NormalMappingApp::update()
 void NormalMappingApp::draw()
 {
 	if( isInitialized() ) {
+		vk::disableAlphaBlending();
+
 		// get ready to draw in 3D
 		vk::pushMatrices();
 		vk::setMatrices( mCamera );
@@ -391,6 +393,16 @@ void NormalMappingApp::draw()
 			vk::popModelMatrix();
 		}
 		vk::popMatrices();
+
+		vk::enableAlphaBlending();
+		vk::setMatricesWindow( getWindowSize() );
+		Rectf r = mCopyrightMap->getBounds();
+		r += vec2( 0.5f*(getWindowWidth() - r.getWidth()), getWindowHeight() - r.getHeight() );
+		vk::draw( mCopyrightMap, r );
+	}
+
+	if( 0 == (getElapsedFrames() % 100)) {
+		console() << "FPS: " << getAverageFps() << std::endl;
 	}
 }
 

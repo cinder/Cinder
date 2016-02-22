@@ -75,6 +75,9 @@ class RendererVk : public Renderer {
 		Options&				setSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
 		VkSampleCountFlagBits	getSamples() const { return mSamples; }
 
+		Options&				setSwapchainImageCount( uint32_t value ) { mSwapchainImageCount = std::max<uint32_t>( 2, value ); return *this; }
+		uint32_t				getSwapchainImageCount() const { return mSwapchainImageCount; }
+
 		Options&				setWorkQueueCount( uint32_t value ) { mWorkQueueCount = value; return *this; }
 		uint32_t				getWorkQueueCount() const { return mWorkQueueCount; }
 
@@ -87,6 +90,7 @@ class RendererVk : public Renderer {
 	private:
 		bool					mExplicitMode = false;
 		uint32_t				mWorkQueueCount = 1;
+		uint32_t				mSwapchainImageCount = 2;
 		VkSampleCountFlagBits	mSamples = VK_SAMPLE_COUNT_1_BIT;
 		VkFormat				mDepthStencilFormat = VK_FORMAT_D16_UNORM;
 		VkPresentModeKHR		mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
@@ -128,6 +132,10 @@ class RendererVk : public Renderer {
 	
 	RendererVk::Options	mOptions;
 	vk::ContextRef		mContext;
+
+	// Used for non-explicit mode
+	VkSemaphore			mImageAcquiredSemaphore = VK_NULL_HANDLE;
+	VkSemaphore			mRenderingCompleteSemaphore = VK_NULL_HANDLE;
 };
 
 }} // namespace cinder::appp

@@ -47,6 +47,8 @@
 #include "cinder/vk/IndexBuffer.h"
 #include "cinder/vk/Pipeline.h"
 #include "cinder/vk/PipelineSelector.h"
+#include "cinder/vk/Presenter.h"
+#include "cinder/vk/Queue.h"
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/Swapchain.h"
@@ -69,6 +71,7 @@ namespace cinder { namespace vk {
 
 Context::Context()
 {
+	mColor = ColorAf::white();
 }
 
 #if defined( CINDER_LINUX )
@@ -77,8 +80,9 @@ Context::Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint
 	: mType( Context::Type::PRIMARY ), mConnection( connection ), mWindow( window ), mExplicitMode( explicitMode ), mWorkQueueCount( workQueueCount), mGpu( gpu )
 {
 	mEnvironment = ( nullptr != env ) ? env : Environment::getEnv();
-
 	initialize();
+
+	mColor = ColorAf::white();
 }
 #endif
 
@@ -87,6 +91,8 @@ Context::Context( const Context* existingContext, int queueIndex )
 {
 	mEnvironment = existingContext->getEnvironment();
 	initialize( existingContext );
+
+	mColor = ColorAf::white();
 }
 
 Context::~Context()
@@ -204,7 +210,7 @@ void Context::initSwapchainExtension()
 	fpAcquireNextImageKHR   = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, AcquireNextImageKHR );
 	fpQueuePresentKHR       = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, QueuePresentKHR );
 
-     VkResult U_ASSERT_ONLY res;
+	VkResult U_ASSERT_ONLY res;
 
 	// Construct the surface description:
 #if defined( CINDER_LINUX )
@@ -215,47 +221,45 @@ void Context::initSwapchainExtension()
     createInfo.pNext		= nullptr;
     createInfo.hinstance	= mConnection;
     createInfo.hwnd			= mWindow;
-    res = vkCreateWin32SurfaceKHR( mEnvironment->getVulkanInstance(), &createInfo, nullptr, &mPresentSurface );
+    res = vkCreateWin32SurfaceKHR( mEnvironment->getVulkanInstance(), &createInfo, nullptr, &mWsiSurface );
 #endif // _WIN32
     assert(res == VK_SUCCESS);
 
     // Iterate over each queue to learn whether it supports presenting:
-    VkBool32* supportsPresent = (VkBool32 *)malloc( mQueueFamilyPropertyCount * sizeof(VkBool32) );
-    for (uint32_t i = 0; i < mQueueFamilyPropertyCount; i++) {
-        mEnvironment->vkGetPhysicalDeviceSurfaceSupportKHR( mGpu, i, mPresentSurface, &supportsPresent[i] );
+	std::vector<VkBool32> supportsPresent( mQueueFamilyPropertyCount, VK_FALSE );
+    for( uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i ) {
+        mEnvironment->vkGetPhysicalDeviceSurfaceSupportKHR( mGpu, i, mWsiSurface, &supportsPresent[i] );
     }
 
     // Search for a graphics queue and a present queue in the array of queue
     // families, try to find one that supports both
     uint32_t graphicsQueueNodeIndex = UINT32_MAX;
     uint32_t presentQueueNodeIndex  = UINT32_MAX;
-    for (uint32_t i = 0; i < mQueueFamilyPropertyCount; i++) {
-        if ((mQueueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0) {
-            if (graphicsQueueNodeIndex == UINT32_MAX) {
+    for( uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i ) {
+        if( ( mQueueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT ) != 0 ) {
+            if( UINT32_MAX == graphicsQueueNodeIndex ) {
                 graphicsQueueNodeIndex = i;
             }
 
-            if (supportsPresent[i] == VK_TRUE) {
+            if( VK_TRUE == supportsPresent[i] ) {
                 graphicsQueueNodeIndex = i;
                 presentQueueNodeIndex = i;
                 break;
             }
         }
     }
-    if (presentQueueNodeIndex == UINT32_MAX) {
-        // If didn't find a queue that supports both graphics and present, then
-        // find a separate present queue.
-        for (uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i) {
-            if (supportsPresent[i] == VK_TRUE) {
+    if( UINT32_MAX == presentQueueNodeIndex ) {
+        // If didn't find a queue that supports both graphics and present, then find a separate present queue.
+        for( uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i ) {
+            if( VK_TRUE == supportsPresent[i] ) {
                 presentQueueNodeIndex = i;
                 break;
             }
         }
     }
-    free(supportsPresent);
 
     // Generate error if could not find both a graphics and a present queue
-    if (graphicsQueueNodeIndex == UINT32_MAX || presentQueueNodeIndex == UINT32_MAX) {
+    if( ( UINT32_MAX == graphicsQueueNodeIndex ) || ( UINT32_MAX == presentQueueNodeIndex ) ) {
         throw std::runtime_error( "Could not find a graphics and a present queue\nCould not find a graphics and a present queue" );
     }
 
@@ -263,28 +267,29 @@ void Context::initSwapchainExtension()
 
     // Get the list of VkFormats that are supported:
     uint32_t formatCount;
-    res = mEnvironment->vkGetPhysicalDeviceSurfaceFormatsKHR( mGpu, mPresentSurface, &formatCount, nullptr );
-    assert(res == VK_SUCCESS);
+    res = mEnvironment->vkGetPhysicalDeviceSurfaceFormatsKHR( mGpu, mWsiSurface, &formatCount, nullptr );
+    assert( res == VK_SUCCESS );
 
-    VkSurfaceFormatKHR *surfFormats = (VkSurfaceFormatKHR *)malloc(formatCount * sizeof(VkSurfaceFormatKHR));
-    res = mEnvironment->vkGetPhysicalDeviceSurfaceFormatsKHR( mGpu, mPresentSurface, &formatCount, surfFormats );
-    assert(res == VK_SUCCESS);
+	std::vector<VkSurfaceFormatKHR> surfFormats( formatCount );
+    res = mEnvironment->vkGetPhysicalDeviceSurfaceFormatsKHR( mGpu, mWsiSurface, &formatCount, surfFormats.data() );
+    assert( res == VK_SUCCESS );
 
     // If the format list includes just one entry of VK_FORMAT_UNDEFINED,
     // the surface has no preferred format.  Otherwise, at least one
     // supported format will be returned.
-    if( formatCount == 1 && surfFormats[0].format == VK_FORMAT_UNDEFINED ) {
-        mPresentColorFormat = VK_FORMAT_B8G8R8A8_UNORM;
+    if( ( 1 == formatCount ) && ( VK_FORMAT_UNDEFINED == surfFormats[0].format ) ) {
+        mWsiSurfaceFormat = VK_FORMAT_B8G8R8A8_UNORM;
     }
     else {
-        assert(formatCount >= 1);
-        mPresentColorFormat = surfFormats[0].format;
+        assert( formatCount >= 1 );
+        mWsiSurfaceFormat = surfFormats[0].format;
     }
 }
 
 void Context::initDeviceQueue()
 {
-    vkGetDeviceQueue( mDevice, mGraphicsQueueFamilyIndex, mQueueIndex, &mQueue );
+    //vkGetDeviceQueue( mDevice, mGraphicsQueueFamilyIndex, mQueueIndex, &mQueue );
+	mQueue = vk::Queue::create( mGraphicsQueueFamilyIndex, mQueueIndex, this );
 }
 
 void Context::initialize( const Context* existingContext )
@@ -314,6 +319,9 @@ void Context::initialize( const Context* existingContext )
 	mDefaultCommandBuffer = vk::CommandBuffer::create( mDefaultCommandPool->getCommandPool(), this );
 
 	mPipelineCache = vk::PipelineCache::create( this );
+
+	mDescriptorSetLayoutSelector = vk::DescriptorSetLayoutSelector::create( this );
+	mPipelineLayoutSelector = vk::PipelineLayoutSelector::create( this );
 	mPipelineSelector = vk::PipelineSelector::create( mPipelineCache, this );
 
 	mCachedColorAttachmentBlend.blendEnable			= VK_FALSE;
@@ -492,284 +500,21 @@ bool Context::findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint3
     return false;
 }
 
-void Context::setPresentDepthStencilFormat( VkFormat format )
+void Context::initializePresentRender( const ivec2& windowSize, uint32_t swapchainImageCount, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode, VkFormat depthStencilFormat )
 {
-	mPresentDepthStencilFormat = format;
-}
-
-void Context::initializePresentRender( const ivec2& windowSize, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode )
-{
-	// Bail if the size hasn't changed
-	if( mPresentRender && ( windowSize == mPresentRender->mWindowSize ) ) {
-		return;
-	}
-
-	// Find the current render pass stack index if it exists
-	int32_t renderPassIndex = -1;
-	if( mPresentRender && mPresentRender->mRenderPass ) {
-		for( size_t i = 0; i < mRenderPassStack.size(); ++i ) {
-			if( mRenderPassStack[i] == mPresentRender->mRenderPass ) {
-				renderPassIndex = static_cast<int32_t>( i );
-				break;
-			}
-		}
-	}
-
-	// Reset everything
-	mPresentRender.reset( new Context::PresentRender() );
-
-	// Present mode, size, area, samples
-	mPresentRender->mPresentMode		= presentMode;
-	mPresentRender->mWindowSize			= windowSize;
-	mPresentRender->mRenderAreea.offset	= { 0, 0 };
-	mPresentRender->mRenderAreea.extent = { windowSize.x, windowSize.y };
-	mPresentRender->mSamples			= samples;
-	mPresentRender->mMultiSample		= samples > VK_SAMPLE_COUNT_1_BIT;
-
-	// Create swapchain and update the present mode incase it changed
-	mPresentRender->mSwapchain = vk::Swapchain::create( windowSize, true, mPresentRender->mSamples, mPresentRender->mPresentMode, this );
-	mPresentRender->mPresentMode = mPresentRender->mSwapchain->getPresentMode();
-
-
-	if( mPresentRender->mMultiSample ) {
-		VkFormat colorFormat = mPresentRender->mSwapchain->getColorFormat();
-		VkFormat depthStencilFormat = mPresentRender->mSwapchain->getDepthStencilFormat();
-
-		// Create render pass
-		{
-			vk::RenderPass::Options options = vk::RenderPass::Options()
-				.addAttachment( vk::RenderPass::Attachment( colorFormat ).setSamples( mPresentRender->mSamples ) )
-				.addAttachment( vk::RenderPass::Attachment( colorFormat ) )
-				.addAttachment( vk::RenderPass::Attachment( depthStencilFormat ).setSamples( mPresentRender->mSamples ) );
-			vk::RenderPass::SubPass subPass = vk::RenderPass::SubPass()
-				.addColorAttachment( 0, 1 )
-				.addDepthStencilAttachment( 2 );
-			options.addSubPass( subPass );
-			mPresentRender->mRenderPass = vk::RenderPass::create( options, this );
-		
-			if( -1 != renderPassIndex ) {
-				mRenderPassStack[renderPassIndex] = mPresentRender->mRenderPass;
-			}
-			else {
-				this->pushRenderPass( mPresentRender->mRenderPass );
-			}
-		}
-
-		// Create the multi-sample attachment
-		{
-			vk::Image::Format imageFormat = vk::Image::Format( colorFormat )
-				.setSamples( mPresentRender->mSamples )
-				.setTilingOptimal()
-				.setUsageColorAttachment()
-				.setUsageSampled()
-				.setUsageTransferSource()
-				.setMemoryPropertyDeviceLocal();
-			mPresentRender->mMultiSampleAttachment = vk::ImageView::create( mPresentRender->mWindowSize.x, mPresentRender->mWindowSize.y, 1, imageFormat, this );
-		}
-
-		// Create framebuffer 
-		{
-
-			// NOTE: Use case for framebuffers and render pass in the context of swapchain is slightly different than the norm.
-			auto depthAttachemnt = mPresentRender->mSwapchain->getDepthStencilAttachment();
-			for( auto colorAttachment : mPresentRender->mSwapchain->getColorAttachments() ) {
-				vk::Framebuffer::Format format = vk::Framebuffer::Format()
-					.addAttachment( mPresentRender->mMultiSampleAttachment )
-					.addAttachment( colorAttachment )
-					.addAttachment( depthAttachemnt );
-				auto framebuffer = vk::Framebuffer::create( mPresentRender->mRenderPass->getRenderPass(), mPresentRender->mWindowSize, format, this );
-				mPresentRender->mFramebuffers.push_back( framebuffer );
-			}
-		}
+	if( ! mPresenter ) {
+		Presenter::Options options = Presenter::Options();
+		options.explicitMode( mExplicitMode );
+		options.samples( samples );
+		options.presentMode( presentMode );
+		options.wsiSurface( mWsiSurface );
+		options.wsiSurfaceFormat( mWsiSurfaceFormat );
+		options.depthStencilFormat( depthStencilFormat );
+		mPresenter = Presenter::create( windowSize, swapchainImageCount, options, this );
 	}
 	else {
-		// Create render pass
-		{
-			vk::RenderPass::Options options = vk::RenderPass::Options()
-				.addAttachment( vk::RenderPass::Attachment( mPresentRender->mSwapchain->getColorFormat() ) )
-				.addAttachment( vk::RenderPass::Attachment( mPresentRender->mSwapchain->getDepthStencilFormat() ) );
-			vk::RenderPass::SubPass subPass = vk::RenderPass::SubPass()
-				.addColorAttachment( 0 )
-				.addDepthStencilAttachment( 1 );
-			options.addSubPass( subPass );
-			mPresentRender->mRenderPass = vk::RenderPass::create( options, this );
-		
-			if( -1 != renderPassIndex ) {
-				mRenderPassStack[renderPassIndex] = mPresentRender->mRenderPass;
-			}
-			else {
-				this->pushRenderPass( mPresentRender->mRenderPass );
-			}
-		}
-
-		// Create framebuffer 
-		{
-			// NOTE: Use case for framebuffers and render pass in the context of swapchain is slightly different than the norm.
-			auto depthAttachemnt = mPresentRender->mSwapchain->getDepthStencilAttachment();
-			for( auto colorAttachment : mPresentRender->mSwapchain->getColorAttachments() ) {
-				vk::Framebuffer::Format format = vk::Framebuffer::Format()
-					.addAttachment( colorAttachment )
-					.addAttachment( depthAttachemnt );
-				auto framebuffer = vk::Framebuffer::create( mPresentRender->mRenderPass->getRenderPass(), mPresentRender->mWindowSize, format, this );
-				mPresentRender->mFramebuffers.push_back( framebuffer );
-			}
-		}
+		mPresenter->resize( windowSize );
 	}
-
-	mPresentRender->mCommandBuffer = mDefaultCommandBuffer;
-}
-
-void Context::acquireNextPresentImage( VkFence fence )
-{
-	// Create the present semaphore
-	{
-		VkSemaphoreCreateInfo createInfo;
-		createInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-		createInfo.pNext = nullptr;
-		createInfo.flags = 0;
-		VkResult res = vkCreateSemaphore( this->getDevice(), &createInfo, nullptr, &(mPresentRender->mSemaphore) );
-		assert( res == VK_SUCCESS );
-	}
-
-	// Get the index of the next available swapchain image
-	{
-		VkResult res = this->vkAcquireNextImageKHR( mPresentRender->mSwapchain->getSwapchain(), UINT64_MAX, mPresentRender->mSemaphore, fence, &(mPresentRender->mCurrentIamgeIndex) );
-		assert( res == VK_SUCCESS );
-	}
-}
-
-void Context::beginPresentRender()
-{
-	this->pushRenderPass( mPresentRender->mRenderPass );
-	this->pushSubPass( 0 );
-	this->pushFramebuffer( mPresentRender->mFramebuffers[mPresentRender->mCurrentIamgeIndex] );
-	this->pushImage( mPresentRender->mSwapchain->getColorAttachments()[mPresentRender->mCurrentIamgeIndex]->getImage() );
-	this->pushCommandBuffer( mPresentRender->mCommandBuffer );
-
-	// Begin the command buffer if not in explicit mode
-	if( ! isExplicitMode() ) {
-		mPresentRender->mCommandBuffer->begin();
-	}
-
-	// Start render pass
-	{
-		const VkRect2D& ra = mPresentRender->mRenderAreea;
-		mPresentRender->mCommandBuffer->setViewport( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
-		mPresentRender->mCommandBuffer->setScissor( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
-
-		if( mPresentRender->mMultiSample ) {
-			mPresentRender->mCommandBuffer->pipelineBarrierImageMemory( mPresentRender->mMultiSampleAttachment->getImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
-			mPresentRender->mCommandBuffer->pipelineBarrierImageMemory( vk::context()->getImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
-		}
-		else {
-			mPresentRender->mCommandBuffer->pipelineBarrierImageMemory( vk::context()->getImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR );
-		}
-
-		const auto& clearValues = mPresentRender->mRenderPass->getAttachmentClearValues();
-		VkRenderPassBeginInfo renderPassBegin;
-		renderPassBegin.sType			= VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassBegin.pNext			= NULL;
-		renderPassBegin.renderPass		= this->getRenderPass()->getRenderPass();
-		renderPassBegin.framebuffer		= this->getFramebuffer()->getFramebuffer();
-		renderPassBegin.renderArea		= mPresentRender->mRenderAreea;
-		renderPassBegin.clearValueCount	= static_cast<uint32_t>( clearValues.size() );
-		renderPassBegin.pClearValues	= clearValues.empty() ? nullptr : clearValues.data();
-		mPresentRender->mCommandBuffer->beginRenderPass( &renderPassBegin, VK_SUBPASS_CONTENTS_INLINE );
-	}
-}
-
-void Context::endPresentRender()
-{
-	// End render pass
-	{
-		mPresentRender->mCommandBuffer->endRenderPass();
-
-		if( mPresentRender->mMultiSample ) {
-			mPresentRender->mCommandBuffer->pipelineBarrierImageMemory( mPresentRender->mMultiSampleAttachment->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
-			mPresentRender->mCommandBuffer->pipelineBarrierImageMemory( mPresentRender->mMultiSampleAttachment->getImage(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
-
-			mPresentRender->mCommandBuffer->pipelineBarrierImageMemory( vk::context()->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR );
-			mPresentRender->mCommandBuffer->pipelineBarrierImageMemory( vk::context()->getImage(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
-		}
-		else {
-			mPresentRender->mCommandBuffer->pipelineBarrierImageMemory( vk::context()->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
-			mPresentRender->mCommandBuffer->pipelineBarrierImageMemory( vk::context()->getImage(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
-		}
-	}
-
-	// End the command buffer if not in explicit mode
-	if( ! isExplicitMode() ) {
-		mPresentRender->mCommandBuffer->end();
-	}
-
-	this->popCommandBuffer();
-	this->popImage();
-	this->popFramebuffer();
-	this->popSubPass();
-	this->popRenderPass();
-
-	// Submit the command buffer for processing and presentation if not in explicit mode
-	if( ! isExplicitMode() ) {
-		submitPresentRender();
-	}
-}
-
-void Context::submitPresentRender()
-{
-	// Submit command buffer to queue
-	{
-		std::vector<VkCommandBuffer> submits = { mPresentRender->mCommandBuffer->getCommandBuffer() };
-
-		VkSubmitInfo submitInfo[1] = {};
-		submitInfo[0].pNext					= nullptr;
-		submitInfo[0].sType					= VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		submitInfo[0].waitSemaphoreCount	= 1;
-		submitInfo[0].pWaitSemaphores		= &(mPresentRender->mSemaphore);
-		submitInfo[0].commandBufferCount	= static_cast<uint32_t>( submits.size() );
-		submitInfo[0].pCommandBuffers		= submits.data();
-		submitInfo[0].signalSemaphoreCount	= 0;
-		submitInfo[0].pSignalSemaphores		= nullptr;
-
-		VkFence nullFence = VK_NULL_HANDLE;
-
-		// Queue the command buffer for execution
-		VkResult err = vkQueueSubmit( this->getQueue(), 1, submitInfo, nullFence );
-		assert( err == VK_SUCCESS );
-	}
-	
-	// Make sure command buffer is finished before presenting
-	{
-		VkSwapchainKHR swapchains[1] = { mPresentRender->mSwapchain->getSwapchain() };
-		const uint32_t imageIndices[1] = { mPresentRender->mCurrentIamgeIndex };
-		VkPresentInfoKHR present;
-		present.sType				= VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-		present.pNext				= nullptr;
-		present.swapchainCount		= 1;
-		present.pSwapchains			= swapchains; //&mInfo.swap_chain;
-		present.pImageIndices		= imageIndices; //&mInfo.current_buffer;
-		present.pWaitSemaphores		= nullptr;
-		present.waitSemaphoreCount	= 0;
-		present.pResults			= nullptr;
-		VkResult err = this->vkQueuePresentKHR( &present );
-		assert( err == VK_SUCCESS );
-
-		err = vkQueueWaitIdle( this->getQueue() );
-		assert( err == VK_SUCCESS );
-	}
-
-	// Destroy the present semaphore
-	{
-		if( VK_NULL_HANDLE != mPresentRender->mSemaphore ) {
-			vkDestroySemaphore( this->getDevice(), mPresentRender->mSemaphore, nullptr );
-		}
-	}
-
-	this->clearTransients();
-}
-
-void Context::setPresentCommandBuffer( const vk::CommandBufferRef& cmdBuf ) 
-{ 
-	mPresentRender->mCommandBuffer = cmdBuf; 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -796,7 +541,7 @@ VkResult Context::vkAcquireNextImageKHR( VkSwapchainKHR swapchain, uint64_t time
 
 VkResult Context::vkQueuePresentKHR( const VkPresentInfoKHR* pPresentInfo )
 {
-	return this->fpQueuePresentKHR( mQueue, pPresentInfo );
+	return this->fpQueuePresentKHR( mQueue->getQueue(), pPresentInfo );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

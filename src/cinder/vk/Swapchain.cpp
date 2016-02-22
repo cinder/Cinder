@@ -48,12 +48,11 @@ Swapchain::Swapchain()
 {
 }
 
-Swapchain::Swapchain( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSample, VkPresentModeKHR presentMode, Context *context )
+Swapchain::Swapchain( const ivec2& size,  uint32_t imageCount, const Swapchain::Options& options, Context *context )
 	: mContext( context ),
 	  mSwapchainExtent( { size.x, size.y } ),
-	  mHasDepth( depthStencil ),
-	  mDepthStencilSamples( depthStencilSample ),
-	  mPresentMode( presentMode )
+	  mImageCount( imageCount ),
+	  mOptions( options )
 {
 	initialize();
 }
@@ -70,17 +69,17 @@ void Swapchain::initColorBuffers()
 	auto env = mContext->getEnvironment();
 
 	VkSurfaceCapabilitiesKHR surfCapabilities;
-	res = env->vkGetPhysicalDeviceSurfaceCapabilitiesKHR( mContext->getGpu(), mContext->getPresentSurface(), &surfCapabilities );
+	res = env->vkGetPhysicalDeviceSurfaceCapabilitiesKHR( mContext->getGpu(), mOptions.mSurface, &surfCapabilities );
 	assert(res == VK_SUCCESS);
 
 	uint32_t presentModeCount;
-	res = env->vkGetPhysicalDeviceSurfacePresentModesKHR( mContext->getGpu() ,mContext->getPresentSurface(), &presentModeCount, nullptr );
+	res = env->vkGetPhysicalDeviceSurfacePresentModesKHR( mContext->getGpu(), mOptions.mSurface, &presentModeCount, nullptr );
 	assert(res == VK_SUCCESS);
 
 	VkPresentModeKHR *presentModes = (VkPresentModeKHR *)malloc( presentModeCount * sizeof(VkPresentModeKHR) );
 	assert(presentModes);
 
-	res = env->vkGetPhysicalDeviceSurfacePresentModesKHR( mContext->getGpu(), mContext->getPresentSurface(), &presentModeCount, presentModes );
+	res = env->vkGetPhysicalDeviceSurfacePresentModesKHR( mContext->getGpu(), mOptions.mSurface, &presentModeCount, presentModes );
 	assert(res == VK_SUCCESS);
 
 	VkExtent2D swapChainExtent;
@@ -91,8 +90,8 @@ void Swapchain::initColorBuffers()
 		swapChainExtent = surfCapabilities.currentExtent;
 	}
 
-	// If a sepcific present mode isn't requested, find one.
-	if( VK_PRESENT_MODE_MAX_ENUM == mPresentMode ) {
+	// If a specific present mode isn't requested, find one.
+	if( VK_PRESENT_MODE_MAX_ENUM == mOptions.mPresentMode ) {
 		CI_LOG_I( "Finding best present mode..." );
 		// If mailbox mode is available, use it, as is the lowest-latency non-
 		// tearing mode.  If not, try IMMEDIATE which will usually be available,
@@ -100,38 +99,35 @@ void Swapchain::initColorBuffers()
 		// always available.
 		for( size_t i = 0; i < presentModeCount; ++i ) {
 			if( VK_PRESENT_MODE_MAILBOX_KHR == presentModes[i] ) {
-				mPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+				mOptions.mPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
 				break;
 			}
-			if( ( VK_PRESENT_MODE_MAILBOX_KHR != mPresentMode ) && ( VK_PRESENT_MODE_IMMEDIATE_KHR != presentModes[i] ) ) {
-				mPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+			if( ( VK_PRESENT_MODE_MAILBOX_KHR != mOptions.mPresentMode ) && ( VK_PRESENT_MODE_IMMEDIATE_KHR != presentModes[i] ) ) {
+				mOptions.mPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
 			}
 		}
 	}
 	// Check requested present mode if it isn't FIFO
-	else if( VK_PRESENT_MODE_FIFO_KHR != mPresentMode ) {
+	else if( VK_PRESENT_MODE_FIFO_KHR !=mOptions. mPresentMode ) {
 		// Fall back to FIFO if requested present mode isn't supported.
 		bool fallBackToFifo = true;
 		for( size_t i = 9; i < presentModeCount; ++i ) {
-			if( presentModes[i] == mPresentMode ) {
+			if( presentModes[i] == mOptions.mPresentMode ) {
 				fallBackToFifo = false;
 				break;
 			}
 		}
 		if( fallBackToFifo ) {
-			CI_LOG_I( "Rresent mode " << toStringVkPresentMode( mPresentMode ) << " is unavailabe, falling back to VK_PRESENT_MODE_FIFO_KHR" );
-			mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+			CI_LOG_I( "Rresent mode " << toStringVkPresentMode( mOptions.mPresentMode ) << " is unavailabe, falling back to VK_PRESENT_MODE_FIFO_KHR" );
+			mOptions.mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 		}
 	}
-	CI_LOG_I( "mPresentMode: " << toStringVkPresentMode( mPresentMode ) );
+	CI_LOG_I( "mPresentMode: " << toStringVkPresentMode( mOptions.mPresentMode ) );
 
-	// Determine the number of VkImage's to use in the swap chain (we desire to
-	// own only 1 image at a time, besides the images being displayed and
-	// queued for display):
-	uint32_t desiredNumberOfSwapChainImages = surfCapabilities.minImageCount + 1;
-	if( ( surfCapabilities.maxImageCount > 0 ) && ( desiredNumberOfSwapChainImages > surfCapabilities.maxImageCount ) ) {
+	// Determine if hardware can support the number of requested swapchain images
+	if( ( surfCapabilities.maxImageCount > 0 ) && ( mImageCount > surfCapabilities.maxImageCount ) ) {
 		// Application must settle for fewer images than desired:
-		desiredNumberOfSwapChainImages = surfCapabilities.maxImageCount;
+		mImageCount = surfCapabilities.maxImageCount;
 	}
 
 	VkSurfaceTransformFlagBitsKHR preTransform;
@@ -145,13 +141,13 @@ void Swapchain::initColorBuffers()
 	VkSwapchainCreateInfoKHR createInfo ={};
 	createInfo.sType					= VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	createInfo.pNext					= nullptr;
-	createInfo.surface					= mContext->getPresentSurface();
-	createInfo.minImageCount			= desiredNumberOfSwapChainImages;
-	createInfo.imageFormat				= mContext->getPresentColorFormat();
+	createInfo.surface					= mOptions.mSurface;
+	createInfo.minImageCount			= mImageCount;
+	createInfo.imageFormat				= mOptions.mColorFormat;
 	createInfo.imageExtent				= mSwapchainExtent;
 	createInfo.preTransform				= preTransform;
 	createInfo.imageArrayLayers			= 1;
-	createInfo.presentMode				= mPresentMode;
+	createInfo.presentMode				= mOptions.mPresentMode;
 	createInfo.oldSwapchain				= VK_NULL_HANDLE;
 	createInfo.clipped					= true;
 	createInfo.imageColorSpace			= VK_COLORSPACE_SRGB_NONLINEAR_KHR;
@@ -161,42 +157,42 @@ void Swapchain::initColorBuffers()
 	createInfo.pQueueFamilyIndices		= nullptr;
 
 	res = mContext->vkCreateSwapchainKHR( &createInfo, nullptr, &mSwapchain );
-	assert(res == VK_SUCCESS);
+	assert( res == VK_SUCCESS );
 
-	res = mContext->vkGetSwapchainImagesKHR( mSwapchain, &mSwapchainImageCount, NULL );
-	assert(res == VK_SUCCESS);
+	res = mContext->vkGetSwapchainImagesKHR( mSwapchain, &(mImageCount), NULL );
+	assert( res == VK_SUCCESS );
 
-	VkImage* swapchainImages = (VkImage*)malloc( mSwapchainImageCount * sizeof(VkImage) );
-	assert(swapchainImages);
+	std::vector<VkImage> swapchainImages = std::vector<VkImage>( mImageCount, VK_NULL_HANDLE );
+	res = mContext->vkGetSwapchainImagesKHR( mSwapchain, &(mImageCount), swapchainImages.data() );
+	assert( res == VK_SUCCESS );
 
-	res = mContext->vkGetSwapchainImagesKHR( mSwapchain, &mSwapchainImageCount, swapchainImages );
-	assert(res == VK_SUCCESS);
-
-	for( uint32_t i = 0; i < mSwapchainImageCount; ++i ) {
-		ImageViewRef imageView = ImageView::create( swapChainExtent.width, swapChainExtent.height, 1, mColorFormat, swapchainImages[i], mContext );
+	for( uint32_t i = 0; i < mImageCount; ++i ) {
+		ImageViewRef imageView = ImageView::create( swapChainExtent.width, swapChainExtent.height, mOptions.mColorFormat, swapchainImages[i], mContext );
 		imageView->setImageLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 		mColorAttachments.push_back( imageView );
 	}
+
+	CI_LOG_I( "Maximum swapchain image count: " << surfCapabilities.maxImageCount );
+	CI_LOG_I( "Allocated swapchain image count: " << mImageCount );	
 }
 
 void Swapchain::initDepthStencilBuffers()
 {
-	Image::Format imageOptions = Image::Format( mDepthStencilFormat ).setUsageDepthStencilAttachment().setSamples( mDepthStencilSamples );
-	mDepthStencilAttachment = ImageView::create( mSwapchainExtent.width, mSwapchainExtent.height, imageOptions, mContext );
-	mDepthStencilAttachment->setImageLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+	// NOTE: Multiple depth attachments are allocated to account for multiple frames in flight.
+	Image::Format imageOptions = Image::Format( mOptions.mDepthStencilFormat ).setUsageDepthStencilAttachment().setSamples( mOptions.mDepthStencilSamples );
+	for( uint32_t i = 0; i < mImageCount; ++i ) {
+		ImageViewRef imageView = ImageView::create( mSwapchainExtent.width, mSwapchainExtent.height, imageOptions, mContext );
+		imageView->setImageLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+		mDepthStencilAttachments.push_back( imageView );
+	}
 }
 
 void Swapchain::initialize()
 {
-	mColorFormat = mContext->getPresentColorFormat();
-	mDepthStencilFormat = mContext->getPresentDepthStencilFormat();
-
 	initColorBuffers();
-	if( mHasDepth ) {
+	if( VK_FORMAT_UNDEFINED != mOptions.mDepthStencilFormat ) {
 		initDepthStencilBuffers();
 	}
-
-	//mCurrentBuffer = 0;
 
 	mContext->trackedObjectCreated( this );
 }
@@ -215,19 +211,11 @@ void Swapchain::destroy(bool removeFromTracking)
 	}
 }
 
-SwapchainRef Swapchain::create( const ivec2& size, bool depthStencil, VkSampleCountFlagBits depthStencilSamples, VkPresentModeKHR presentMode, Context *context )
+SwapchainRef Swapchain::create( const ivec2& size,  uint32_t imageCount, const Swapchain::Options& options, Context *context )
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
-	SwapchainRef result = SwapchainRef( new Swapchain( size, depthStencil, depthStencilSamples, presentMode, context ) );
+	SwapchainRef result = SwapchainRef( new Swapchain( size, imageCount, options, context ) );
 	return result;
-}
-
-void Swapchain::acquireNextImage()
-{
-}
-
-void Swapchain::present()
-{
 }
 
 }} // namespace cinder::vk

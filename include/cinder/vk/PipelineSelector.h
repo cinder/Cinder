@@ -153,6 +153,7 @@ public:
 	void						setShaderStages( const std::vector<VkPipelineShaderStageCreateInfo>& shaderStages );
 
 	VkPipeline					getSelectedPipeline() const;
+	void						invalidate();
 
 private:
 	void initializeDefaultValues();

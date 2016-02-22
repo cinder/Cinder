@@ -170,7 +170,12 @@ public:
 	class Format : public TextureBase::Format {
 	public:
 
-		Format( VkFormat format = VK_FORMAT_UNDEFINED ) : TextureBase::Format( format ) {}
+		Format( VkFormat format = VK_FORMAT_UNDEFINED ) : TextureBase::Format( format ) {
+			mSwizzle.r = VK_COMPONENT_SWIZZLE_R;
+			mSwizzle.g = VK_COMPONENT_SWIZZLE_G;
+			mSwizzle.b = VK_COMPONENT_SWIZZLE_B;
+			mSwizzle.a = VK_COMPONENT_SWIZZLE_A;
+		}
 
 		virtual ~Format() {}
 
@@ -188,6 +193,13 @@ public:
 		Texture2d::Format&			setUnnormalizedCoordinates( VkBool32 value = VK_TRUE ) { mUnnormalizedCoordinates = value; return *this; }
 		VkBool32					isUnnormalizedCoordinates() const { return mUnnormalizedCoordinates; }
 
+		Texture2d::Format&			setSwizzle( const VkComponentMapping& value ) { mSwizzle = value; return *this; }
+		Texture2d::Format&			setSwizzle( VkComponentSwizzle r, VkComponentSwizzle g, VkComponentSwizzle b, VkComponentSwizzle a ) { mSwizzle.r = r; mSwizzle.g = g; mSwizzle.b = b; mSwizzle.a = a; return *this; }
+		Texture2d::Format&			setSwizzleR( VkComponentSwizzle r ) { mSwizzle.r = r; return *this; }
+		Texture2d::Format&			setSwizzleG( VkComponentSwizzle g ) { mSwizzle.g = g; return *this; }
+		Texture2d::Format&			setSwizzleB( VkComponentSwizzle b ) { mSwizzle.b = b; return *this; }
+		Texture2d::Format&			setSwizzleA( VkComponentSwizzle a ) { mSwizzle.a = a; return *this; }
+
 	private:
 		VkSamplerAddressMode		mSamplerAddressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 		VkSamplerAddressMode		mSamplerAddressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
@@ -203,6 +215,8 @@ public:
 		//  – The functions must not use offsets.
 		VkBool32					mUnnormalizedCoordinates = VK_FALSE;
 
+		VkComponentMapping			mSwizzle;
+
 		friend class Texture2d;
 	};
 
@@ -211,6 +225,7 @@ public:
 
 	Texture2d();
 	Texture2d( int width, int height, const Texture2d::Format &format, vk::Context* context );
+	Texture2d( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Context* context );
 	Texture2d( const Surface8u& surf, const Texture2d::Format &format, vk::Context* context );
 	Texture2d( const Surface16u& surf, const Texture2d::Format &format, vk::Context* context );
 	Texture2d( const Surface32f& surf, const Texture2d::Format &format, vk::Context* context );
@@ -219,6 +234,7 @@ public:
 
 	// Parameter 'format' will override the format in options
 	static Texture2dRef		create( int width, int height, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
+	static Texture2dRef		create( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format = Texture2d::Format(), vk::Context* context = nullptr );
 	static Texture2dRef		create( const Surface8u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
 	static Texture2dRef		create( const Surface16u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
 	static Texture2dRef		create( const Surface32f& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
@@ -245,6 +261,7 @@ private:
 	void						initializeCommon( vk::Context* context );
 	void						initializeFinal( vk::Context* context );
 	void						initialize( vk::Context* context );
+	void						initialize( const void *data, VkFormat dataFormat, vk::Context* context );
 	template <typename T> void	initialize( const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, vk::Context* context );
 	void						initialize( const ImageSourceRef& imageSource, vk::Context* context );
 	void						destroy();

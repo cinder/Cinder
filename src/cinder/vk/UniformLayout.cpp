@@ -670,333 +670,14 @@ void UniformLayout::uniform(const std::string& name, const vk::TextureBaseRef& t
 	}
 }
 
-/*
-UniformLayout& UniformLayout::blockBegin( uint32_t binding, const std::string& name )
-{
-	if( mCurrentVariablesBlock ) {
-		blockEnd();
-	}
-
-	mCurrentVariablesBlock = UniformRef( new Uniform( binding, name, Uniform::Type::BLOCK ) );
-	mUniforms.push_back( mCurrentVariablesBlock );
-
-	return *this;
-}
-
-UniformLayout& UniformLayout::blockEnd()
-{
-	mCurrentVariablesBlock.reset();
-	return *this;
-}
-
-UniformLayout::UniformRef& UniformLayout::getCurrentVariablesBlock()
-{
-	if( ! mCurrentVariablesBlock ) {
-		throw std::runtime_error( "Can't access uniform block variables outside of blockBegin/blockEnd" );
-	}
-	return mCurrentVariablesBlock;
-}
-
-void UniformLayout::updateDefaulVariableValueImpl( const std::string& name, const uint8_t* data, const size_t dataSizeBytes, const size_t arraySize, const size_t elemStride )
-{
-	for( auto& uniform : mUniforms ) {
-		if( ! uniform->isBlock() ) {
-			continue;
-		}
-		uniform->updateBlockVariable( name, data, dataSizeBytes, arraySize, elemStride );
-	}
-}
-
-void UniformLayout::updateDefaultSamplerTexture( const std::string& name, const vk::TextureBaseRef& texture )
-{
-	mNameToUniform[name]->setSamplerTexture( texture );
-}
-
-UniformLayout& UniformLayout::uniform(const std::string& name, const float value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_float;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( float );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform(const std::string& name, const int32_t value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_int;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( int32_t );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_int, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( int32_t ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform(const std::string& name, const uint32_t value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_unsigned_int;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( uint32_t );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_unsigned_int, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( uint32_t ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const bool value, size_t arraySize, int32_t offset )
-{
-	const uint32_t mappedValue   = value ? 1 : 0;
-	GlslUniformDataType dataType = glsl_bool;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &mappedValue );
-	size_t dataSizeBytes         = sizeof( uint32_t );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_bool, arraySize, offset, reinterpret_cast<const uint8_t*>( &mappedValue ), sizeof( uint32_t ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const vec2& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_vec2;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( vec2 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_vec2, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( vec2 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const vec3& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_vec3;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( vec3 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_vec3, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( vec3 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const vec4& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_vec4;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( vec4 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_vec4, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( vec4 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const ivec2& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_ivec2;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( ivec2 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_ivec2, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( ivec2 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const ivec3& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_ivec3;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( ivec3 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_ivec3, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( ivec3 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const ivec4& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_ivec4;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( ivec4 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_ivec4, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( ivec4 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const uvec2& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_uvec2;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( uvec2 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_uvec2, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( uvec2 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const uvec3& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_uvec3;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( uvec3 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_uvec3, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( uvec3 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const uvec4& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_uvec4;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( uvec4 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_uvec4, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( uvec4 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const mat2& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_mat2;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( mat2 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_mat2, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( mat2 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const mat3& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_mat3;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( mat3 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_mat3, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( mat3 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::uniform( const std::string& name, const mat4& value, size_t arraySize, int32_t offset )
-{
-	GlslUniformDataType dataType = glsl_mat4;
-	const uint8_t* data          = reinterpret_cast<const uint8_t*>( &value );
-	size_t dataSizeBytes         = sizeof( mat4 );
-	size_t elemStride            = dataSizeBytes;
-	getCurrentVariablesBlock()->addBlockVariable( name, dataType, data, dataSizeBytes, arraySize, elemStride, offset );
-	//getCurrentVariablesBlock()->addBlockVariable( name, glsl_mat4, arraySize, offset, reinterpret_cast<const uint8_t*>( &value ), sizeof( mat4 ) );
-	return *this;
-}
-
-UniformLayout& UniformLayout::sampler2D( uint32_t binding, const std::string& name, const vk::TextureBaseRef& texture )
-{
-	UniformRef uniform = UniformRef( new Uniform( binding, name, Uniform::Type::SAMPLER2D ) );
-	uniform->setSamplerTexture( texture );
-	mUniforms.push_back( uniform );
-	mNameToUniform[name] = uniform;
-	return *this;
-}
-
-UniformLayout::UniformRef& UniformLayout::sampler2D( const std::string& name )
-{
-	// This is not ideal, but it helps identify invalid names being used
-	return mNameToUniform[name];
-}
-
-UniformLayout& UniformLayout::sampler2D( const std::string& name, const vk::TextureBaseRef& texture )
-{
-	if( mNameToUniform.end() == mNameToUniform.find( name ) ) {
-		std::string msg = "couldn't find sampler2D called " + name;
-		throw std::runtime_error( msg );
-	}
-	mNameToUniform[name]->setSamplerTexture( texture );
-	return *this;
-}
-
-UniformLayout& UniformLayout::sampler2DRect( uint32_t binding, const std::string& name, const vk::TextureBaseRef& texture )
-{
-	UniformRef uniform = UniformRef( new Uniform( binding, name, Uniform::Type::SAMPLER2DRECT ) );
-	uniform->setSamplerTexture( texture );
-	mUniforms.push_back( uniform );
-	mNameToUniform[name] = uniform;
-	return *this;
-}
-
-UniformLayout::UniformRef& UniformLayout::sampler2DRect( const std::string& name )
-{
-	// This is not ideal, but it helps identify invalid names being used
-	return mNameToUniform[name];
-}
-
-UniformLayout& UniformLayout::sampler2DRect( const std::string& name, const vk::TextureBaseRef& texture )
-{
-	if( mNameToUniform.end() == mNameToUniform.find( name ) ) {
-		std::string msg = "couldn't find sampler2DRect called " + name;
-		throw std::runtime_error( msg );
-	}
-	mNameToUniform[name]->setSamplerTexture( texture );
-	return *this;
-}
-
-UniformLayout& UniformLayout::samplerCube( uint32_t binding, const std::string& name, const vk::TextureBaseRef& texture )
-{
-	UniformRef uniform = UniformRef( new Uniform( binding, name, Uniform::Type::SAMPLERCUBE ) );
-	uniform->setSamplerTexture( texture );
-	mUniforms.push_back( uniform );
-	mNameToUniform[name] = uniform;
-	return *this;
-}
-
-UniformLayout::UniformRef& UniformLayout::samplerCube( const std::string& name )
-{
-	// This is not ideal, but it helps identify invalid names being used
-	return mNameToUniform[name];
-}
-
-UniformLayout& UniformLayout::samplerCube( const std::string& name, const vk::TextureBaseRef& texture )
-{
-	if( mNameToUniform.end() == mNameToUniform.find( name ) ) {
-		std::string msg = "couldn't find samplerCube called " + name;
-		throw std::runtime_error( msg );
-	}
-	mNameToUniform[name]->setSamplerTexture( texture );
-	return *this;
-}
-
-UniformLayout& UniformLayout::sampler2DShadow( uint32_t binding, const std::string& name, const vk::TextureBaseRef& texture )
-{
-	UniformRef uniform = UniformRef( new Uniform( binding, name, Uniform::Type::SAMPLER2DSHADOW ) );
-	uniform->setSamplerTexture( texture );
-	mUniforms.push_back( uniform );
-	mNameToUniform[name] = uniform;
-	return *this;
-}
-
-UniformLayout::UniformRef& UniformLayout::sampler2DShadow( const std::string& name )
-{
-	// This is not ideal, but it helps identify invalid names being used
-	return mNameToUniform[name];
-}
-
-UniformLayout& UniformLayout::sampler2DShadow( const std::string& name, const vk::TextureBaseRef& texture )
-{
-	if( mNameToUniform.end() == mNameToUniform.find( name ) ) {
-		std::string msg = "couldn't find sampler2DShadow called " + name;
-		throw std::runtime_error( msg );
-	}
-	mNameToUniform[name]->setSamplerTexture( texture );
-	return *this;
-}
-*/
-
 // -------------------------------------------------------------------------------------------------
 // UniformSet
 // -------------------------------------------------------------------------------------------------
 UniformSet::UniformSet( const UniformLayout& layout, Context* context )
 {
+	// Create bindings
 	const auto& srcBindings = layout.getBindings();
 	mBindings.resize( srcBindings.size() );
-
 	for( size_t i = 0; i < srcBindings.size(); ++i ) {
 		const auto& srcBinding = srcBindings[i];
 		mBindings[i] = UniformSet::Binding( srcBinding );
@@ -1004,6 +685,29 @@ UniformSet::UniformSet( const UniformLayout& layout, Context* context )
 			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), context );
 			mBindings[i].mUniformBuffer = buffer;
 		}
+	}
+
+	// Create DescriptorSetLayoutBindings
+	for( const auto& binding : mBindings ) {
+		VkDescriptorSetLayoutBinding layoutBinding = {};
+		layoutBinding.binding            = binding.getBinding();
+		layoutBinding.descriptorCount    = 1;
+		layoutBinding.pImmutableSamplers = nullptr;
+		switch( binding.getType() ) {
+			case UniformLayout::Binding::Type::BLOCK: {
+				layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+			}
+			break;
+
+			case UniformLayout::Binding::Type::SAMPLER: {
+				layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+			}
+			break;		
+		}
+
+		mDescriptorSetLayoutBindings.push_back( layoutBinding );
 	}
 }
 
@@ -1141,28 +845,6 @@ void UniformSet::uniform( const std::string& name, const TextureBaseRef& texture
 	}
 }
 
-/*
-void UniformSet::sampler2D( const std::string& name, const TextureBaseRef& texture )
-{
-	mNameToBinding[name]->setSamplerTexture( texture );
-}
-
-void UniformSet::sampler2DRect( const std::string& name, const TextureBaseRef& texture )
-{
-	mNameToBinding[name]->setSamplerTexture( texture );
-}
-
-void UniformSet::sampler2DShadow( const std::string& name, const TextureBaseRef& texture )
-{
-	mNameToBinding[name]->setSamplerTexture( texture );
-}
-
-void UniformSet::samplerCube( const std::string& name, const TextureBaseRef& texture )
-{
-	mNameToBinding[name]->setSamplerTexture( texture );
-}
-*/
-
 void UniformSet::bufferPending()
 {
 	for( auto& binding : mBindings ) {
@@ -1175,22 +857,6 @@ void UniformSet::bufferPending()
 
 void UniformSet::echoValues( std::ostream& os )
 {
-/*
-	size_t block = 0;
-	for( auto& binding : mBindings ) {
-		if( ! binding.isBlock() ) {
-			continue;
-		}
-
-		os << "Uniform Block " << block << "\n";
-		binding.mUniformBuffer->echoValues( os );
-		
-		++block;
-	}
-
-	os << std::endl;
-*/
 }
-
 
 }} // namespace cinder::vk

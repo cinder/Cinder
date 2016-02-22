@@ -115,27 +115,6 @@ void UniformBuffer::initialize( const UniformLayout::Block& block )
 		}
 	}
 
-/*
-	const auto& sourceUniforms = block.getUniforms();
-	const auto& sourceValues = block.getValues();
-
-	// Copy uniforms
-	for( const auto& uniform : sourceUniforms ) {
-		mUniforms.push_back( UniformBuffer::Uniform( uniform ) );
-	}
-	
-	// Copy uniform values
-	mValues.resize( block.getBlockSizeBytes() );
-	for( size_t i = 0; i < sourceUniforms.size(); ++i ) {
-		const size_t offset = sourceUniforms[i].mOffset;
-		void *dst = mValues.data() + offset;
-		const void *src = sourceValues[i].data();
-		const size_t n = sourceUniforms[i].mSizeBytes;
-		std::memcpy( dst, src, n );
-	}
-*/
-
-
 	auto dst = map();
 	std::memcpy( dst, static_cast<const void *>( mValues.data() ), mValues.size() );
 	unmap();

@@ -496,4 +496,14 @@ VkPipeline PipelineSelector::getSelectedPipeline() const
 	return mSelectedPipeline;
 }
 
+void PipelineSelector::invalidate()
+{
+	mPipelines.clear();
+	mSelectedPipelineHash.value64[0] = 0;
+	mSelectedPipelineHash.value64[1] = 0;
+	mSelectedPipelineHash.value64[2] = 0;
+	mSelectedPipelineHash.value64[3] = 0;
+	mSelectedPipeline = VK_NULL_HANDLE;
+}
+
 }} // namespace cinder::vk

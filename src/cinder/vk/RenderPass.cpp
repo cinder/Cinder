@@ -41,6 +41,7 @@
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Framebuffer.h"
 #include "cinder/vk/ImageView.h"
+#include "cinder/vk/Queue.h"
 #include "cinder/vk/wrapper.h"
 
 namespace cinder { namespace vk {
@@ -365,7 +366,13 @@ void RenderPass::endRender()
 	vk::context()->popCommandBuffer();
 
 	// Process the command buffer
+	vk::context()->getQueue()->submit( mCommandBuffer );
+	vk::context()->getQueue()->waitIdle();
+
+/*
+	// Process the command buffer
 	{
+
 		const VkCommandBuffer cmdBufs[] = { mCommandBuffer->getCommandBuffer() };
 		VkSubmitInfo submitInfo[1] = {};
 		submitInfo[0].pNext					= NULL;
@@ -383,6 +390,7 @@ void RenderPass::endRender()
 		res = vkQueueWaitIdle( vk::context()->getQueue() );
 		assert( VK_SUCCESS == res );
 	}
+*/
 
 	// Pop them
 	vk::context()->popSubPass();
