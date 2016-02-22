@@ -99,6 +99,8 @@ private:
 	ivec2								mWindowSize = ivec2( 0 );
 	uint32_t							mSwapchainImageCount = 0;
 	Presenter::Options					mOptions;
+	VkSampleCountFlagBits				mActualSamples = VK_SAMPLE_COUNT_1_BIT;
+	VkSampleCountFlagBits				mPreviousSamples = VK_SAMPLE_COUNT_64_BIT;
 
 	VkRect2D							mRenderAreea;
 	vk::SwapchainRef					mSwapchain;

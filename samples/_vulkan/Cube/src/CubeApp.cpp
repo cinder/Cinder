@@ -132,6 +132,4 @@ void RotatingCubeApp::draw()
 	}
 }
 
-CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ), []( App::Settings *settings ) {
-	settings->disableFrameRate();
-} )
+CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ) )

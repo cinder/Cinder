@@ -147,7 +147,8 @@ public:
 	const vk::QueueRef&						getQueue() const { return mQueue; }
 
 	uint32_t								getGraphicsQueueFamilyIndex() const { return mGraphicsQueueFamilyIndex; }
-	VkPhysicalDeviceProperties				getGpuProperties() const { return mGpuProperties; }
+	const VkPhysicalDeviceProperties&		getGpuProperties() const { return mGpuProperties; }
+	const VkPhysicalDeviceLimits&			getGpuLimits() const { return mGpuProperties.limits; }
 	std::vector<VkQueueFamilyProperties>	getQueueProperties() const { return mQueueFamilyProperties; }
 	VkPhysicalDeviceMemoryProperties		getMemoryProperties() const { return mMemoryProperties; }
 

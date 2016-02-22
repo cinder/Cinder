@@ -392,7 +392,7 @@ void ShadowMappingApp::draw()
 	vk::context()->getQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
 
 	// Submit presentation
-	vk::context()->getQueue()->present( vk::context()->getPresenter(), renderingCompleteSemaphore );
+	vk::context()->getQueue()->present( renderingCompleteSemaphore, vk::context()->getPresenter() );
 
 	// Wait for work to be done
 	vk::context()->getQueue()->waitIdle();

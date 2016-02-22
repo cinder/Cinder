@@ -39,6 +39,7 @@
 #include "cinder/vk/Presenter.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/ImageView.h"
+#include "cinder/vk/PipelineSelector.h"
 
 namespace cinder { namespace vk {
 
@@ -85,11 +86,32 @@ void Presenter::resize(const ivec2& newWindowSize)
 	mRenderAreea.offset	= { 0, 0 };
 	mRenderAreea.extent = { mWindowSize.x, mWindowSize.y };
 	
-	// Reset all the resources that are affected by windoe size change
+	// Reset all the resources that are affected by window size change
 	mSwapchain.reset();
 	mMultiSampleAttachments.clear();
 	mFramebuffers.clear();
 
+	// Readjust the sampling so samples*winSize doesn't exceed limits
+	mActualSamples = mOptions.mSamples;
+	{
+		const uint32_t kMaxImageDimension = mContext->getGpuLimits().maxImageDimension2D;
+		uint32_t samples = static_cast<uint32_t>( mActualSamples );
+		ivec2 imageSize = ivec2( mWindowSize.x*samples, mWindowSize.y*samples );
+		while( ( imageSize.x > kMaxImageDimension ) || ( imageSize.y > kMaxImageDimension ) ) {
+			samples >>= 1;
+			imageSize = ivec2( mWindowSize.x*samples, mWindowSize.y*samples );
+		}
+		mActualSamples = static_cast<VkSampleCountFlagBits>( samples );
+	}
+	
+	// If the actual samples are not the same as the previous samples, invalidate all resources 
+	// that are dependent on the sample count.
+	if( mActualSamples != mPreviousSamples ) {
+		mContext->getPipelineSelector()->invalidate();
+		mRenderPasses.clear();
+	}
+	mPreviousSamples = mActualSamples;
+	
 	// Create swapchain and update image count in case the image count was adjusted
 	{
 		vk::Swapchain::Options swapChainOptions = vk::Swapchain::Options();
@@ -97,7 +119,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 		swapChainOptions.surface( mOptions.mWsiSurface );
 		swapChainOptions.colorFormat( mOptions.mWsiSurfaceFormat );
 		swapChainOptions.depthStencilFormat( mOptions.mDepthStencilFormat);
-		swapChainOptions.depthStencilSamples( mOptions.mSamples );
+		swapChainOptions.depthStencilSamples( mActualSamples );
 		mSwapchain = vk::Swapchain::create( mWindowSize, mSwapchainImageCount, swapChainOptions, mContext );
 		mSwapchainImageCount = mSwapchain->getImageCount();
 	}
@@ -106,7 +128,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 	VkFormat colorFormat = mSwapchain->getColorFormat();
 	VkFormat depthStencilFormat = mSwapchain->getDepthStencilFormat();
 
-	// Resize render passes - shouldn't really happen more than once
+	// Resize render passes to match the number of swapchain image counts
 	if( mRenderPasses.size() != mSwapchainImageCount ) {
 		mRenderPasses.clear();
 		mRenderPasses.resize( mSwapchainImageCount );
@@ -126,9 +148,9 @@ void Presenter::resize(const ivec2& newWindowSize)
 			// Create render pass
 			if( ! mRenderPasses[i] ) {
 				vk::RenderPass::Options options = vk::RenderPass::Options()
-					.addAttachment( vk::RenderPass::Attachment( colorFormat ).setSamples( mOptions.mSamples ) )
+					.addAttachment( vk::RenderPass::Attachment( colorFormat ).setSamples( mActualSamples ) )
 					.addAttachment( vk::RenderPass::Attachment( colorFormat ) )
-					.addAttachment( vk::RenderPass::Attachment( depthStencilFormat ).setSamples( mOptions.mSamples ) );
+					.addAttachment( vk::RenderPass::Attachment( depthStencilFormat ).setSamples( mActualSamples ) );
 				vk::RenderPass::SubPass subPass = vk::RenderPass::SubPass()
 					.addColorAttachment( 0, 1 ) // 0 - multiple sample attachment, 1 - single sample auto resolve attachment
 					.addDepthStencilAttachment( 2 );
@@ -139,13 +161,13 @@ void Presenter::resize(const ivec2& newWindowSize)
 			// Create the multi-sample attachment
 			{
 				vk::Image::Format imageFormat = vk::Image::Format( colorFormat )
-					.setSamples( mOptions.mSamples )
+					.setSamples( mActualSamples )
 					.setTilingOptimal()
 					.setUsageColorAttachment()
 					.setUsageSampled()
 					.setUsageTransferSource()
 					.setMemoryPropertyDeviceLocal();
-				vk::ImageViewRef imageView = vk::ImageView::create( mWindowSize.x, mWindowSize.y, 1, imageFormat, mContext );
+				vk::ImageViewRef imageView = vk::ImageView::create( mWindowSize.x, mWindowSize.y, imageFormat, mContext );
 				imageView->setImageLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 				mMultiSampleAttachments[i] = imageView;
 			}
