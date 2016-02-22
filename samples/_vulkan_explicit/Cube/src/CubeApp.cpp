@@ -36,6 +36,9 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+// This sample demonstrates how to render a using a queue separate thread and then present 
+// the results using the queue on the main thread.
+
 #include "cinder/app/App.h"
 #include "cinder/app/RendererVk.h"
 #include "cinder/vk/vk.h"
@@ -83,8 +86,6 @@ class RotatingCubeApp : public App {
 
 void RotatingCubeApp::setup()
 {
-	setFrameRate( 1024.0f );
-
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 
 	try {
@@ -116,6 +117,8 @@ void RotatingCubeApp::setup()
 	catch( const std::exception& e ) {
 		console() << "Shader Error: " << e.what() << std::endl;
 	}
+
+	// Allocate per frame specific resources
 
 	try {
 		ColorAf c = ColorAf( 1, 1, 1, 1 );
