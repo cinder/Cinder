@@ -38,9 +38,29 @@
 
 #pragma once
 
-#include "cinder/vk/BaseVkObject.h"
+#include "cinder/vk/platform.h"
 
 namespace cinder { namespace vk {
+
+class Buffer;
+class Context;
+class DescriptorPool;
+class DescriptorSet;
+class DescriptorSetLayout;
+class Framebuffer;
+class Image;
+class ImageView;
+class IndexBuffer;
+class Pipeline;
+class PipelineCache;
+class PipelineLayout;
+class RenderPass;
+class ShaderProg;
+class Swapchain;
+class UniformBuffer;
+class VertexBuffer;
+using ContextRef = std::shared_ptr<Context>;
+using RenderPassRef = std::shared_ptr<RenderPass>;
 
 class Device;
 using DeviceRef = std::shared_ptr<Device>;
@@ -48,14 +68,104 @@ using DeviceRef = std::shared_ptr<Device>;
 //! \class Device
 //!
 //!
-class Device : public vk::BaseVkObject {
+class Device {
 public:
 	virtual ~Device();
 
-	static DeviceRef		create();
+	static DeviceRef					create();
+
+	VkDevice							getDevice() const { return mDevice; }
 
 private:
 	Device();
+
+	VkDevice							mDevice = VK_NULL_HANDLE;
+
+	//! \class TrackedObject
+	template <typename T> class TrackedObject {
+	public:
+		TrackedObject() {}
+		virtual ~TrackedObject() {}
+
+		void objectCreated( T *obj ) {
+			std::lock_guard<std::mutex> lock( mMutex );
+			auto it = std::find( std::begin( mTrackedObjects ), std::end( mTrackedObjects ), obj );
+			if( it == std::end( mTrackedObjects ) ) {
+				mTrackedObjects.push_back( obj );
+			}
+		}
+
+		void objectDestroyed( T *obj ) {
+			std::lock_guard<std::mutex> lock( mMutex );
+			auto it = std::find( std::begin( mTrackedObjects ), std::end( mTrackedObjects ), obj );
+			if( it != std::end( mTrackedObjects ) ) {
+				mTrackedObjects.erase(
+					std::remove( std::begin( mTrackedObjects ), std::end( mTrackedObjects ), obj ),
+					std::end( mTrackedObjects )
+				);
+			}
+		}
+
+	private:
+		std::mutex		mMutex;
+		std::vector<T*>	mTrackedObjects;
+	};
+
+	// Tracked contexts 
+	std::vector<ContextRef>				mTrackedContexts;
+
+	// Tracked Vulkan objects
+	TrackedObject<Image>				mTrackedImages;
+	TrackedObject<ImageView>			mTrackedImageViews;
+	TrackedObject<Buffer>				mTrackedBuffers;
+	TrackedObject<UniformBuffer>		mTrackedUniformBuffers;
+	TrackedObject<IndexBuffer>			mTrackedIndexBuffers;
+	TrackedObject<VertexBuffer>			mTrackedVertexBuffers;
+	TrackedObject<Framebuffer>			mTrackedFramebuffers;
+	TrackedObject<RenderPass>			mTrackedRenderPasses;
+	TrackedObject<PipelineLayout>		mTrackedPipelineLayouts;
+	TrackedObject<PipelineCache>		mTrackedPipelineCaches;
+	TrackedObject<Pipeline>				mTrackedPipelines;
+	TrackedObject<DescriptorSetLayout>	mTrackedDescriptorSetLayouts;
+	TrackedObject<DescriptorPool>		mTrackedDescriptorPools;
+	TrackedObject<DescriptorSet>		mTrackedDescriptorSets;
+	TrackedObject<ShaderProg>			mTrackedShaderProgs;
+	TrackedObject<Swapchain>			mTrackedSwapchains;
+
+public:
+	void trackedObjectCreated(   Image *obj );
+	void trackedObjectDestroyed( Image *obj );
+	void trackedObjectCreated(   ImageView *obj );
+	void trackedObjectDestroyed( ImageView *obj );
+	void trackedObjectCreated(   Buffer *obj );
+	void trackedObjectDestroyed( Buffer *obj );
+	void trackedObjectCreated(   UniformBuffer *obj );
+	void trackedObjectDestroyed( UniformBuffer *obj );
+	void trackedObjectCreated(   IndexBuffer *obj );
+	void trackedObjectDestroyed( IndexBuffer *obj );
+	void trackedObjectCreated(   VertexBuffer *obj );
+	void trackedObjectDestroyed( VertexBuffer *obj );
+	void trackedObjectCreated(   Framebuffer *obj );
+	void trackedObjectDestroyed( Framebuffer *obj );
+	void trackedObjectCreated(   RenderPass *obj );
+	void trackedObjectDestroyed( RenderPass *obj );
+	void trackedObjectCreated(   PipelineLayout *obj );
+	void trackedObjectDestroyed( PipelineLayout *obj );
+	void trackedObjectCreated(   PipelineCache *obj );
+	void trackedObjectDestroyed( PipelineCache *obj );
+	void trackedObjectCreated(   Pipeline *obj );
+	void trackedObjectDestroyed( Pipeline *obj );
+	void trackedObjectCreated(   DescriptorSetLayout *obj );
+	void trackedObjectDestroyed( DescriptorSetLayout *obj );
+	void trackedObjectCreated(   DescriptorPool *obj );
+	void trackedObjectDestroyed( DescriptorPool *obj );
+	void trackedObjectCreated(   DescriptorSet *obj );
+	void trackedObjectDestroyed( DescriptorSet *obj );
+	void trackedObjectCreated(   ShaderProg *obj );
+	void trackedObjectDestroyed( ShaderProg *obj );
+	void trackedObjectCreated(   Swapchain *obj );
+	void trackedObjectDestroyed( Swapchain *obj );
+
 };
 
 }} // namespace cinder::vk

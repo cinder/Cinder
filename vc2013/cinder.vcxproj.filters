@@ -900,6 +900,9 @@
     <ClCompile Include="..\src\cinder\vk\Device.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Allocator.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1878,6 +1881,9 @@
       <Filter>Header Files\vk</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\vk\Device.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Allocator.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
   </ItemGroup>

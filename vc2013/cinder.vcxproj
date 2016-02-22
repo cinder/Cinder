@@ -567,6 +567,7 @@
     <ClCompile Include="..\src\cinder\Url.cpp" />
     <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp" />
     <ClCompile Include="..\src\cinder\Utilities.cpp" />
+    <ClCompile Include="..\src\cinder\vk\Allocator.cpp" />
     <ClCompile Include="..\src\cinder\vk\Batch.cpp" />
     <ClCompile Include="..\src\cinder\vk\Buffer.cpp" />
     <ClCompile Include="..\src\cinder\vk\CommandBuffer.cpp" />
@@ -819,6 +820,7 @@
     <ClInclude Include="..\include\cinder\Tween.h" />
     <ClInclude Include="..\include\cinder\Unicode.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
+    <ClInclude Include="..\include\cinder\vk\Allocator.h" />
     <ClInclude Include="..\include\cinder\vk\BaseVkObject.h" />
     <ClInclude Include="..\include\cinder\vk\Batch.h" />
     <ClInclude Include="..\include\cinder\vk\Buffer.h" />

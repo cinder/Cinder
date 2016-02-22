@@ -35,3 +35,22 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 */
+
+namespace cinder { namespace vk {
+
+class ObjectTracker {
+public:
+
+};
+
+class DeviceObjectTracker {
+public:
+
+};
+
+class ContextObjectTracker {
+private:
+};
+
+
+}} // cinder::vk
