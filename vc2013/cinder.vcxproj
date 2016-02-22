@@ -574,6 +574,7 @@
     <ClCompile Include="..\src\cinder\vk\ConstantConversion.cpp" />
     <ClCompile Include="..\src\cinder\vk\Context.cpp" />
     <ClCompile Include="..\src\cinder\vk\Descriptor.cpp" />
+    <ClCompile Include="..\src\cinder\vk\Device.cpp" />
     <ClCompile Include="..\src\cinder\vk\draw.cpp" />
     <ClCompile Include="..\src\cinder\vk\Environment.cpp" />
     <ClCompile Include="..\src\cinder\vk\Framebuffer.cpp" />
@@ -826,6 +827,7 @@
     <ClInclude Include="..\include\cinder\vk\ConstantConversion.h" />
     <ClInclude Include="..\include\cinder\vk\Context.h" />
     <ClInclude Include="..\include\cinder\vk\Descriptor.h" />
+    <ClInclude Include="..\include\cinder\vk\Device.h" />
     <ClInclude Include="..\include\cinder\vk\draw.h" />
     <ClInclude Include="..\include\cinder\vk\Environment.h" />
     <ClInclude Include="..\include\cinder\vk\Framebuffer.h" />
