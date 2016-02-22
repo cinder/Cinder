@@ -664,7 +664,7 @@ void FishTornadoApp::draw()
 	#define NUM_QUEUES 1
 #endif
 
-CINDER_APP( FishTornadoApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_1_BIT ).setExplicitMode().setWorkQueueCount( NUM_QUEUES ) ), []( FishTornadoApp::Settings *settings ) {	
+CINDER_APP( FishTornadoApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode().setWorkQueueCount( NUM_QUEUES ) ), []( FishTornadoApp::Settings *settings ) {	
 	settings->setWindowSize( 1920, 1080 );
 	settings->setResizable( false );
 } )

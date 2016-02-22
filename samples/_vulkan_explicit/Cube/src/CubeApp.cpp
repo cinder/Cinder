@@ -39,7 +39,9 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererVk.h"
 #include "cinder/vk/vk.h"
+#include "cinder/ConcurrentCircularBuffer.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Log.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -50,29 +52,39 @@ static const int FRAME_LAG = 2;
 class RotatingCubeApp : public App {
   public:	
 	void	setup() override;
+	void	cleanup() override;
 	void	resize() override;
 	void	update() override;
 	void	draw() override;
 	
   private:
-	CameraPersp				mCam;
-	vk::BatchRef			mBatch[FRAME_LAG];
-	vk::TextureRef			mTexture;
-	vk::GlslProgRef			mGlsl;
-	mat4					mCubeRotation;
+	CameraPersp						mCam;
+	vk::BatchRef					mBatch[FRAME_LAG];
+	vk::TextureRef					mTexture;
+	vk::GlslProgRef					mGlsl;
+	mat4							mCubeRotation;
 
-	VkFence					mFences[FRAME_LAG];
-	bool					mFencesInited[FRAME_LAG];
-	vk::CommandBufferRef	mCommandBuffers[FRAME_LAG];
+	VkFence							mFences[FRAME_LAG];
+	vk::CommandBufferRef			mCommandBuffers[FRAME_LAG];
 
-	VkSemaphore				mImageAcquiredSemaphore[FRAME_LAG];
-	VkSemaphore				mRenderingCompleteSemaphore[FRAME_LAG];
+	VkSemaphore						mImageAcquiredSemaphore[FRAME_LAG];
+	VkSemaphore						mRenderingCompleteSemaphore[FRAME_LAG];
 
-	void	generateCommandBuffer( const vk::CommandBufferRef& cmdBuf, uint32_t frameIdx );
+	std::shared_ptr<ConcurrentCircularBuffer<uint32_t>>	mFrameQueue;
+	ci::vk::ContextRef				mRenderThreadContext;
+	std::atomic<bool>				mRenderThreadRunning;
+	std::shared_ptr<std::thread>	mRenderThread;
+
+	void					renderThreadFunc( const ci::vk::ContextRef& ctx );
+	void					generateCommandBuffer( const vk::CommandBufferRef& cmdBuf, uint32_t frameIdx );
+
+	vk::PresenterRef		mPresenter;
 };
 
 void RotatingCubeApp::setup()
 {
+	setFrameRate( 1024.0f );
+
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 
 	try {
@@ -115,26 +127,37 @@ void RotatingCubeApp::setup()
 		console() << "Batch Error: " << e.what() << std::endl;
 	}
 
-
 	VkFenceCreateInfo fenceCreateInfo = { VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
 	vkCreateFence( vk::context()->getDevice(), &fenceCreateInfo, nullptr, &mFences[0] );
 	vkCreateFence( vk::context()->getDevice(), &fenceCreateInfo, nullptr, &mFences[1] );
 
-	mFencesInited[0]	= false;
-	mFencesInited[1]	= false;
-
 	mCommandBuffers[0]	= vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
 	mCommandBuffers[1]	= vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
-	
-	vk::enableDepthWrite();
-	vk::enableDepthRead();
+
+	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore[0] );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore[1] );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore[0] );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore[1] );
+
+	mPresenter = vk::context()->getPresenter();
+
+	mFrameQueue.reset( new ConcurrentCircularBuffer<uint32_t>( FRAME_LAG ) );
+	mRenderThreadContext = vk::Environment::getEnv()->createContextFromExisting( vk::context(), 1 );
+	mRenderThreadRunning = true;
+	mRenderThread.reset( new std::thread( &RotatingCubeApp::renderThreadFunc, this, mRenderThreadContext ) );
+}
+
+void RotatingCubeApp::cleanup()
+{
+	mRenderThreadRunning = false;
+	mRenderThread->join();
+	mRenderThread.reset();
 }
 
 void RotatingCubeApp::resize()
 {
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-
-	vk::setMatrices( mCam );
 }
 
 void RotatingCubeApp::update()
@@ -145,58 +168,73 @@ void RotatingCubeApp::update()
 
 void RotatingCubeApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf, uint32_t frameIdx )
 {
+	auto ctx = vk::context();
+
 	cmdBuf->begin();
 	{
-		vk::context()->getPresenter()->beginRender( cmdBuf );
+		mPresenter->beginRender( cmdBuf, ctx );
 		{
 			vk::setMatrices( mCam );
 			vk::ScopedModelMatrix modelScope;
 			vk::multModelMatrix( mCubeRotation );
 			mBatch[frameIdx]->draw();
 		}
-		vk::context()->getPresenter()->endRender();
+		mPresenter->endRender();
 	}
 	cmdBuf->end();
+}
+
+void RotatingCubeApp::renderThreadFunc( const ci::vk::ContextRef& ctx ) 
+{
+	ctx->makeCurrent();
+
+	while( mRenderThreadRunning ) {
+		uint32_t frameIdx = UINT32_MAX;
+		mFrameQueue->tryPopBack( &frameIdx );
+		if( UINT32_MAX != frameIdx ) {
+			//CI_LOG_I( "Processing frame " << frameIdx );
+
+            // Ensure no more than FRAME_LAG presentations are outstanding
+            vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT64_MAX);
+            vkResetFences( ctx->getDevice(), 1, &mFences[frameIdx]);
+			
+			// Build command buffer
+			//CI_LOG_I( "Generating command buffer for frame " << frameIdx );
+			const auto& cmdBuf = mCommandBuffers[frameIdx];
+			generateCommandBuffer( cmdBuf, frameIdx );
+
+			// Submit rendering work to the graphics queue
+			//CI_LOG_I( "Submitting command buffer for frame " << frameIdx );
+			const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			ctx->getQueue()->submit( cmdBuf, mImageAcquiredSemaphore[frameIdx], waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore[frameIdx] );
+		}
+	}
 }
 
 void RotatingCubeApp::draw()
 {
 	const auto& ctx = vk::context();
 
-	size_t frameIdx = ( getElapsedFrames() + 1 ) % FRAME_LAG;
+	// Top of the frame
+	uint32_t frame = getElapsedFrames() - 1;
+	uint32_t frameIdx = frame % FRAME_LAG;
+	//CI_LOG_I( "Frame: " << frame );
 
-	if( mFencesInited[frameIdx] ) {
-		vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT64_MAX );
-		vkResetFences( ctx->getDevice(), 1, &mFences[frameIdx] );
-
-		vkDestroySemaphore( ctx->getDevice(), mImageAcquiredSemaphore[frameIdx] , nullptr );
-		vkDestroySemaphore( ctx->getDevice(), mRenderingCompleteSemaphore[frameIdx] , nullptr );
-	}
-
-	// Create this frames semaphores
-	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-	vkCreateSemaphore( ctx->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore[frameIdx] );
-	vkCreateSemaphore( ctx->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore[frameIdx] );
-
-	const auto& presenter = ctx->getPresenter();
+	// Acquire next image
+	const auto& presenter = vk::context()->getPresenter();
 	uint32_t imageIndex = presenter->acquireNextImage( mFences[frameIdx], mImageAcquiredSemaphore[frameIdx] );
-	mFencesInited[frameIdx] = true;
 
-	const auto& cmdBuf = mCommandBuffers[frameIdx];
-	generateCommandBuffer( cmdBuf, frameIdx );
-
-    // Submit rendering work to the graphics queue
-	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	ctx->getQueue()->submit( cmdBuf, mImageAcquiredSemaphore[frameIdx], waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore[frameIdx] );
+	// Queue frame for command buffer generation and rendering
+	//CI_LOG_I( "Pushing frame: " << frameIdx );
+	mFrameQueue->pushFront( frameIdx );
 
 	// Submit present operation to present queue
-	ctx->getQueue()->present( presenter, mRenderingCompleteSemaphore[frameIdx] );
+	ctx->getQueue()->present( mRenderingCompleteSemaphore[frameIdx], presenter  );
+	//CI_LOG_I( "Queued for presentation: " << frameIdx );
 
 	if( 0 == (getElapsedFrames() % 300)) {
-		console() << "FPS: " << getAverageFps() << std::endl;
+		CI_LOG_I( "FPS: " << getAverageFps() );
 	}
 }
 
-CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode() ), []( App::Settings* settings ) {
-	settings->disableFrameRate();
-} )
+CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode().setWorkQueueCount( 2 ) ) )
