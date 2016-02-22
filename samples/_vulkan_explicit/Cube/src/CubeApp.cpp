@@ -162,8 +162,7 @@ void RotatingCubeApp::resize()
 
 void RotatingCubeApp::update()
 {
-	// Rotate the cube by 0.2 degrees around the y-axis
-	mCubeRotation *= rotate( toRadians( 0.2f ), normalize( vec3( 0, 1, 0 ) ) );
+	// Moved to render thread
 }
 
 void RotatingCubeApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf, uint32_t frameIdx )
@@ -194,10 +193,20 @@ void RotatingCubeApp::renderThreadFunc( const ci::vk::ContextRef& ctx )
 		if( UINT32_MAX != frameIdx ) {
 			//CI_LOG_I( "Processing frame " << frameIdx );
 
-            // Ensure no more than FRAME_LAG presentations are outstanding
-            vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT64_MAX);
-            vkResetFences( ctx->getDevice(), 1, &mFences[frameIdx]);
-			
+            // Ensure no more than FRAME_LAG presentations are outstanding. Max wait time is 0.5 seconds
+            VkResult result = vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, 5*1e8 );
+			if( ( VK_TIMEOUT == result ) && ( ! mRenderThreadRunning ) ) {
+				break;
+			}
+
+            vkResetFences( ctx->getDevice(), 1, &mFences[frameIdx] );
+
+			// Update 
+			{
+				// Rotate the cube by 0.2 degrees around the y-axis
+				mCubeRotation *= rotate( toRadians( 0.2f ), normalize( vec3( 0, 1, 0 ) ) );
+			}
+
 			// Build command buffer
 			//CI_LOG_I( "Generating command buffer for frame " << frameIdx );
 			const auto& cmdBuf = mCommandBuffers[frameIdx];
