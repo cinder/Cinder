@@ -145,12 +145,9 @@ VkImageUsageFlags determineAttachmentUsage( VkFormat format )
 
 void Image::initialize()
 {
-	if( VK_NULL_HANDLE != mImage ) {
-		return;
-	}
-
 	// Set these here so we don't forget
 	mAspectMask = vk::determineAspectMask( mOptions.mInternalFormat );
+	assert( 0 != mAspectMask );
 
 	if( VK_NULL_HANDLE == mImage ) {
 		VkResult res = VK_NOT_READY;
