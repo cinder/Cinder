@@ -69,14 +69,16 @@ Light::Light()
 	// From Eríc Renault Houde's ShadowMapping sample
 	vk::Texture2d::Format depthFormat;
 	depthFormat.setInternalFormat( depthInternalFormat );
+	depthFormat.setUsageDepthStencilAttachment();
 	depthFormat.setMagFilter( VK_FILTER_LINEAR );
 	depthFormat.setMinFilter( VK_FILTER_LINEAR );
 	depthFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE );
 	depthFormat.setCompareMode( VK_COMPARE_OP_LESS_OR_EQUAL );
 	mShadowMapTex = vk::Texture2d::create( shadowMapSize, shadowMapSize, depthFormat );
 
-	//depthFormat.setInternalFormat( VK_FORMAT_R8G8B8A8_UNORM );
 	depthFormat.setInternalFormat( VK_FORMAT_R16_SFLOAT );
+	depthFormat.setUsageSampled( true );
+	depthFormat.setUsageColorAttachment();
 	mBlurredShadowMapTex[0] = vk::Texture2d::create( shadowMapSize, shadowMapSize, depthFormat );
 	mBlurredShadowMapTex[1] = vk::Texture2d::create( shadowMapSize, shadowMapSize, depthFormat );
 	
