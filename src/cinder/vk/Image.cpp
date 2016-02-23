@@ -53,7 +53,7 @@ Image::Image()
 {
 }
 
-Image::Image( VkImageType imageType, int32_t width, int32_t height, int32_t depth, VkImage image, const Image::Format& options, Context *context )
+Image::Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t depth, VkImage image, const Image::Format& options, Context *context )
 	: BaseVkObject( context ),
 	  mImageType( imageType ),
 	  mExtent( { width, height, depth } ),
@@ -63,7 +63,7 @@ Image::Image( VkImageType imageType, int32_t width, int32_t height, int32_t dept
 	initialize();
 }
 
-Image::Image( int32_t width, int32_t height, const uint8_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context )
+Image::Image( uint32_t width, uint32_t height, const uint8_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context )
 	: BaseVkObject( context ),
 	  mImageType( VK_IMAGE_TYPE_2D ),
 	  mExtent( { width, height, 1 } ),
@@ -76,7 +76,7 @@ Image::Image( int32_t width, int32_t height, const uint8_t *srcData, size_t srcR
 	}
 }
 
-Image::Image( int32_t width, int32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context )
+Image::Image( uint32_t width, uint32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context )
 	: BaseVkObject( context ),
 	  mImageType( VK_IMAGE_TYPE_2D ),
 	  mExtent( { width, height, 1 } ),
@@ -89,7 +89,7 @@ Image::Image( int32_t width, int32_t height, const uint16_t *srcData, size_t src
 	}
 }
 
-Image::Image( int32_t width, int32_t height, const float *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context )
+Image::Image( uint32_t width, uint32_t height, const float *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context )
 	: BaseVkObject( context ),
 	  mImageType( VK_IMAGE_TYPE_2D ),
 	  mExtent( { width, height, 1 } ),
@@ -102,7 +102,7 @@ Image::Image( int32_t width, int32_t height, const float *srcData, size_t srcRow
 	}
 }
 
-Image::Image( int32_t width, int32_t height, const Image::Format& format, Context *context )
+Image::Image( uint32_t width, uint32_t height, const Image::Format& format, Context *context )
 	: Image( width, height, static_cast<const uint8_t*>( nullptr ), 0, 0, ci::Area(), format, context )
 {
 }
@@ -243,21 +243,21 @@ void Image::destroy( bool removeFromTracking )
 	}
 }
 
-ImageRef Image::create( int32_t width, const Image::Format& options, Context *context )
+ImageRef Image::create( uint32_t width, const Image::Format& options, Context *context )
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
 	ImageRef result = ImageRef( new Image( VK_IMAGE_TYPE_1D, width, 1, 1, VK_NULL_HANDLE, options, context ) );
 	return result;
 }
 
-ImageRef Image::create( int32_t width, int32_t height, const Image::Format& options, Context *context )
+ImageRef Image::create( uint32_t width, uint32_t height, const Image::Format& options, Context *context )
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
 	ImageRef result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, options, context ) );
 	return result;
 }
 
-ImageRef Image::create( int32_t width, int32_t height, int32_t depth, const Image::Format& options, Context *context )
+ImageRef Image::create( uint32_t width, uint32_t height, uint32_t depth, const Image::Format& options, Context *context )
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
 	ImageRef result = ImageRef( new Image( VK_IMAGE_TYPE_3D, width, height, depth, VK_NULL_HANDLE, options, context ) );
@@ -675,7 +675,7 @@ void Image::copy( Context* context, const vk::ImageRef& srcImage, uint32_t srcMi
 		region.dstSubresource.baseArrayLayer	= dstLayer;
 		region.dstSubresource.layerCount		= 1;
 		region.dstOffset						= { dstOffset.x, dstOffset.y, 0 };
-		region.extent							= { srcImage->getWidth(), srcImage->getHeight(), 1 };
+		region.extent							= { static_cast<uint32_t>( srcImage->getWidth() ), static_cast<uint32_t>( srcImage->getHeight() ), 1 };
 
 		cmdBuf->copyImage( srcImage->getImage(), srcImage->getImageLayout(), dstImage->getImage(), dstImage->getImageLayout(), 1, &region );
 

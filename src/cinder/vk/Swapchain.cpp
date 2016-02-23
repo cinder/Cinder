@@ -50,7 +50,7 @@ Swapchain::Swapchain()
 
 Swapchain::Swapchain( const ivec2& size,  uint32_t imageCount, const Swapchain::Options& options, Context *context )
 	: mContext( context ),
-	  mSwapchainExtent( { size.x, size.y } ),
+	  mSwapchainExtent( { static_cast<uint32_t>( size.x ), static_cast<uint32_t>( size.y ) } ),
 	  mImageCount( imageCount ),
 	  mOptions( options )
 {
