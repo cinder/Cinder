@@ -90,7 +90,7 @@ public:
 		bool					isTilingLinear() const { return VK_IMAGE_TILING_LINEAR == mTiling; }
 		bool					isTilingOptimal() const { return VK_IMAGE_TILING_OPTIMAL == mTiling; }
 
-		Format&					setUsage( VkImageUsageFlags value, bool exclusive = false ) { if( exclusive ) { mUsage = value; } else { mUsage |= value; } }
+		Format&					setUsage( VkImageUsageFlags value, bool exclusive = false ) { if( exclusive ) { mUsage = value; } else { mUsage |= value; }  return *this; }
 		VkImageUsageFlags		getUsage() const { return mUsage; }
 		void					setUsageTransferSource( bool exclusive = false )         { setUsage( VK_IMAGE_USAGE_TRANSFER_SRC_BIT, exclusive ); }
 		void					setUsageTransferDestination( bool exclusive = false )    { setUsage( VK_IMAGE_USAGE_TRANSFER_DST_BIT, exclusive ); }
