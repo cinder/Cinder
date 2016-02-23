@@ -105,6 +105,7 @@ void ImageView::initialize( VkImageViewType viewType, VkImageType imageType, int
 	imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 	imageViewCreateInfo.subresourceRange.layerCount     = mImage->getArrayLayers();
 	imageViewCreateInfo.subresourceRange.aspectMask	    = mImage->getAspectMask();
+	assert( 0 != imageViewCreateInfo.subresourceRange.aspectMask );
 	if( VK_IMAGE_ASPECT_COLOR_BIT == imageViewCreateInfo.subresourceRange.aspectMask ) {
 		imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
 		imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
@@ -146,6 +147,7 @@ void ImageView::initialize( VkImageViewType viewType, VkImageType imageType, int
 	imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 	imageViewCreateInfo.subresourceRange.layerCount     = mImage->getArrayLayers();
 	imageViewCreateInfo.subresourceRange.aspectMask	    = mImage->getAspectMask();
+	assert( 0 != imageViewCreateInfo.subresourceRange.aspectMask );
 	if( VK_IMAGE_ASPECT_COLOR_BIT == imageViewCreateInfo.subresourceRange.aspectMask ) {
 		imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
 		imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;

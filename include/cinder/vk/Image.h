@@ -125,16 +125,16 @@ public:
 	};
 
 	Image();
-	Image( VkImageType imageType, int32_t width, int32_t height, int32_t depth, VkImage image, const Image::Format& options, Context *context );
-	Image( int32_t width, int32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context );
-	Image( int32_t width, int32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context );
-	Image( int32_t width, int32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context );
-	Image( int32_t width, int32_t height, const Image::Format& options, Context *context );
+	Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t depth, VkImage image, const Image::Format& options, Context *context );
+	Image( uint32_t width, uint32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context );
+	Image( uint32_t width, uint32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context );
+	Image( uint32_t width, uint32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context );
+	Image( uint32_t width, uint32_t height, const Image::Format& options, Context *context );
 	virtual ~Image();
 
-	static ImageRef			create( int32_t width, const Image::Format& options = Image::Format(), Context *context = nullptr );
-	static ImageRef			create( int32_t width, int32_t height, const Image::Format& options = Image::Format(), Context *context = nullptr );
-	static ImageRef			create( int32_t width, int32_t height, int32_t depth, const Image::Format& options = Image::Format(), Context *context = nullptr );
+	static ImageRef			create( uint32_t width, const Image::Format& options = Image::Format(), Context *context = nullptr );
+	static ImageRef			create( uint32_t width, uint32_t height, const Image::Format& options = Image::Format(), Context *context = nullptr );
+	static ImageRef			create( uint32_t width, uint32_t height, uint32_t depth, const Image::Format& options = Image::Format(), Context *context = nullptr );
 
 	// Defaults:
 	//    - format is derived from the source data

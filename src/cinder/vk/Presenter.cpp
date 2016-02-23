@@ -84,7 +84,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 	// Update window size and render area
 	mWindowSize = newWindowSize;
 	mRenderAreea.offset	= { 0, 0 };
-	mRenderAreea.extent = { mWindowSize.x, mWindowSize.y };
+	mRenderAreea.extent = { static_cast<uint32_t>( mWindowSize.x ), static_cast<uint32_t>( mWindowSize.y ) };
 	
 	// Reset all the resources that are affected by window size change
 	mSwapchain.reset();
