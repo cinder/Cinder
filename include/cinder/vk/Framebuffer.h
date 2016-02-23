@@ -62,7 +62,7 @@ public:
 	//!
 	class Attachment {
 	public:
-		Attachment( VkFormat format, VkSampleCountFlagBits samples ) : mFormat( format ), mSamples( samples ) {}
+		Attachment( VkFormat format, VkSampleCountFlagBits samples );
 		Attachment( const vk::ImageViewRef& attachment );
 		virtual ~Attachment() {}
 
@@ -71,8 +71,12 @@ public:
 
 		const vk::ImageViewRef&		getAttachment() const { return mAttachment; }
 
+		bool						isColorAttachment() const { return 0 != ( mFormatFeatures & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT ); }
+		bool						isDepthStencilAttachment() const { return 0 != ( mFormatFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT ); }
+
 	private:
 		VkFormat				mFormat = VK_FORMAT_UNDEFINED;
+		VkFormatFeatureFlags	mFormatFeatures = 0;
 		VkSampleCountFlagBits	mSamples = VK_SAMPLE_COUNT_1_BIT;
 		vk::ImageViewRef		mAttachment;
 		friend class Framebuffer::Format;

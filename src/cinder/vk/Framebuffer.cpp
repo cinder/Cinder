@@ -40,16 +40,37 @@
 #include "cinder/vk/Context.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/RenderPass.h"
+#include "cinder/vk/wrapper.h"
 
 namespace cinder { namespace vk {
 
 // -------------------------------------------------------------------------------------------------
 // Framebuffer::Attachment
 // -------------------------------------------------------------------------------------------------
+Framebuffer::Attachment::Attachment( VkFormat format, VkSampleCountFlagBits samples ) 
+	: mFormat(format), mSamples(samples)
+{
+	VkImageAspectFlags aspectMask = determineAspectMask( mFormat );
+	if( VK_IMAGE_ASPECT_COLOR_BIT == aspectMask ) {
+		mFormatFeatures = VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+	}
+	else {
+		mFormatFeatures = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	}
+}
+
 Framebuffer::Attachment::Attachment( const vk::ImageViewRef& attachment )
 {
 	mAttachment = attachment;
 	mFormat = mAttachment->getFormat();
+
+	VkImageAspectFlags aspectMask = determineAspectMask( mFormat );
+	if( VK_IMAGE_ASPECT_COLOR_BIT == aspectMask ) {
+		mFormatFeatures = VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+	}
+	else {
+		mFormatFeatures = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	}
 }
 
 // -------------------------------------------------------------------------------------------------
