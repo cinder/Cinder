@@ -39,6 +39,7 @@
 #pragma once
 
 #include "cinder/vk/platform.h"
+#include "cinder/Thread.h"
 
 namespace cinder { namespace vk {
 
