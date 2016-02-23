@@ -70,6 +70,7 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 
 	vk::Texture2d::Format texFormat;
 	texFormat.setInternalFormat( textureFormat );
+	texFormat.setUsageColorAttachment();
 	texFormat.setUnnormalizedCoordinates();
 	texFormat.setMagFilter( VK_FILTER_NEAREST );
 	texFormat.setMinFilter( VK_FILTER_NEAREST );

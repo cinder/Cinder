@@ -333,7 +333,12 @@ void RenderPass::beginRender( const vk::CommandBufferRef& cmdBuf,const vk::Frame
 	// Add barriers to make sure all attachments transition from what they needed to be to color attachments
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
 		const auto& attachment = fbAttach.getAttachment();
-		mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getImageLayout(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+		if( fbAttach.isColorAttachment() ) {
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getImageLayout(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+		}
+		else if( fbAttach.isDepthStencilAttachment() ) {
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getImageLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+		}
 	}
 
 	// Begin the render pass
@@ -358,7 +363,12 @@ void RenderPass::endRender()
 	// Add barriers to make sure all attachments transition from undefined to what they need to be
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
 		const auto& attachment = fbAttach.getAttachment();
-		mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, attachment->getImageLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		if( fbAttach.isColorAttachment() ) {
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, attachment->getImageLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		}
+		else if( fbAttach.isDepthStencilAttachment() ) {
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, attachment->getImageLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		}
 	}
 
 	// End the command buffer
@@ -429,7 +439,12 @@ void RenderPass::beginRenderExplicit( const vk::CommandBufferRef& cmdBuf,const v
 	// Add barriers to make sure all attachments transition from what they needed to be to color attachments
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
 		const auto& attachment = fbAttach.getAttachment();
-		mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getImageLayout(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+		if( fbAttach.isColorAttachment() ) {
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getImageLayout(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+		}
+		else if( fbAttach.isDepthStencilAttachment() ) {
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getImageLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+		}
 	}
 
 	// Begin the render pass
@@ -454,7 +469,12 @@ void RenderPass::endRenderExplicit()
 	// Add barriers to make sure all attachments transition from undefined to what they need to be
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
 		const auto& attachment = fbAttach.getAttachment();
-		mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, attachment->getImageLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		if( fbAttach.isColorAttachment() ) {
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, attachment->getImageLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		}
+		else if( fbAttach.isDepthStencilAttachment() ) {
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, attachment->getImageLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		}
 	}
 
 	// Command buffer is not ended in explicit mode

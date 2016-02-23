@@ -241,6 +241,7 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 		mCommandBuffer->setScissor( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
 
 		const auto& swapChainColorAttachments = mSwapchain->getColorAttachments();
+		const auto& swapChainDepthStencilAttachments = mSwapchain->getDepthStencilAttachments();
 
 		if( mOptions.mMultiSample ) {
 			const auto& multiSampleImage = mMultiSampleAttachments[mCurrentImageIndex]->getImage();
@@ -248,10 +249,16 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 
 			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
 			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+
+			const auto& depthStencilImage = swapChainDepthStencilAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 		}
 		else {
 			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
-			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+
+			const auto& depthStencilImage = swapChainDepthStencilAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 		}
 
 		const auto& clearValues = mRenderPasses[mCurrentImageIndex]->getAttachmentClearValues();

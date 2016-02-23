@@ -207,7 +207,9 @@ void FishTornadoApp::setup()
 		VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_8_BIT;
 
 		// Textures
-		mMainColorTex = vk::Texture::create( getWindowWidth(), getWindowHeight(), vk::Texture::Format( VK_FORMAT_R8G8B8A8_UNORM ) );
+		vk::Texture::Format texFormat = vk::Texture::Format( VK_FORMAT_R8G8B8A8_UNORM );
+		texFormat.setUsageColorAttachment();
+		mMainColorTex = vk::Texture::create( getWindowWidth(), getWindowHeight(), texFormat );
 
 		// Render pass
 		ci::vk::RenderPass::Options renderPassOptions = ci::vk::RenderPass::Options()
