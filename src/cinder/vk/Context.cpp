@@ -1414,15 +1414,21 @@ void Context::setDefaultUniformVars( const UniformBufferRef& uniformBuffer )
 
 const std::vector<VkPipelineColorBlendAttachmentState>&	Context::getColorBlendAttachments() const 
 { 
-	uint32_t minSize = 1;
+	// If a subpass is depth/stencil only, mColorAttachmentBlends should be empty.
+	uint32_t minSize = 0;
 	if( this->getRenderPass() ) {
 		uint32_t subPass = this->getSubPass();
 		uint32_t count = this->getRenderPass()->getSubPassColorAttachmentCount( subPass );
 		minSize = std::max( minSize, count );
 	}
 
-	mColorAttachmentBlends.resize( minSize );
-	std::fill( std::begin( mColorAttachmentBlends ), std::end( mColorAttachmentBlends ), mCachedColorAttachmentBlend );
+	if( minSize >0 ) {
+		mColorAttachmentBlends.resize( minSize );	
+		std::fill( std::begin( mColorAttachmentBlends ), std::end( mColorAttachmentBlends ), mCachedColorAttachmentBlend );
+	}
+	else {
+		mColorAttachmentBlends.clear();
+	}
 
 	return mColorAttachmentBlends; 
 }
