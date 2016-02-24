@@ -125,7 +125,7 @@ public:
 	Context();
 #if defined( CINDER_LINUX )
 #elif defined( CINDER_MSW )
-	Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint32_t workQueueCount, VkPhysicalDevice gpu, Environment *env = nullptr );
+	Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint32_t workQueueCount, VkPhysicalDevice gpu, Environment *env );
 #endif
 	Context( const Context* existingContext, int queueIndex );
 	virtual ~Context();
@@ -375,6 +375,15 @@ private:
 	uint32_t								mQueueIndex = 0;
 	uint32_t								mWorkQueueCount = 1;
 	
+	// Device layers
+	struct DeviceLayer {
+		VkLayerProperties					layer;
+		std::vector<VkExtensionProperties>	extensions;
+	};
+	std::vector<DeviceLayer>				mDeviceLayers;
+	bool									mDeviceLayersEnabled = false;
+
+
 	// Default graphics variables
 	std::pair<ivec2,ivec2>					mDefaultViewport;
 	float									mDefaultLineWidth = 1.0f;
@@ -435,7 +444,8 @@ private:
 	friend class Environment;
 	friend class Presenter;
 
-	VkResult	initDevice();
+	void		initDeviceLayers();
+	void		initDevice();
 	void		initConnection();
 	void		initSwapchainExtension();
 	void		initDeviceQueue();

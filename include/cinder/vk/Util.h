@@ -42,11 +42,6 @@
 
 namespace cinder { namespace vk { namespace util { 
 
-struct LayerProperties {
-	VkLayerProperties					properties;
-	std::vector<VkExtensionProperties>	extensions;
-};
-
 template <typename FuncPtrT>
 FuncPtrT getInstanceProc( VkInstance instance, const std::string& fnName )
 {

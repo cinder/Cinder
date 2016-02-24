@@ -87,6 +87,12 @@ class RendererVk : public Renderer {
 		Options&				setPresentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
 		VkPresentModeKHR		getPresentMode() const { return mPresentMode; }
 
+		//! Param 'layers' should be a semicolon delimited list of layer names
+		Options&						setLayers( const std::string& layers );
+		Options&						setLayers( const std::vector<std::string>& layers ) { mInstanceLayers = layers; mDeviceLayers = layers; return *this; }
+		const std::vector<std::string>&	getInstanceLayers() const { return mInstanceLayers; }
+		const std::vector<std::string>&	getDeviceLayers() const { return mDeviceLayers; }
+
 	private:
 		bool					mExplicitMode = false;
 		uint32_t				mWorkQueueCount = 1;
@@ -94,6 +100,8 @@ class RendererVk : public Renderer {
 		VkSampleCountFlagBits	mSamples = VK_SAMPLE_COUNT_1_BIT;
 		VkFormat				mDepthStencilFormat = VK_FORMAT_D16_UNORM;
 		VkPresentModeKHR		mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
+		std::vector<std::string>	mInstanceLayers;
+		std::vector<std::string>	mDeviceLayers;
 		friend class RendererVk;
 	};
 	

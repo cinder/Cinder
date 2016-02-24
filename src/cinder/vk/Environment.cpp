@@ -55,7 +55,8 @@ static std::mutex sTrackedObjectDestroyedMutex;
 //! \class Environment
 //!
 //!
-Environment::Environment()
+Environment::Environment( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers )
+	: mActiveInstanceLayers( instanceLayers ), mActiveDeviceLayers( deviceLayers )
 {
 	create();
 }
@@ -65,158 +66,216 @@ Environment::~Environment()
 	destroy();
 }
 
-VkResult Environment::initGlobaExtensionProperties( util::LayerProperties &layerProps )
+//VkResult Environment::initGlobaExtensionProperties( util::LayerProperties &layerProps )
+//{
+//    VkExtensionProperties *instance_extensions;
+//    uint32_t instance_extension_count;
+//    VkResult res;
+//    char *layer_name = NULL;
+//
+//    layer_name = layerProps.properties.layerName;
+//
+//    do {
+//        res = vkEnumerateInstanceExtensionProperties(layer_name, &instance_extension_count, NULL);
+//        if (res)
+//            return res;
+//
+//        if (instance_extension_count == 0) {
+//            return VK_SUCCESS;
+//        }
+//
+//        layerProps.extensions.resize(instance_extension_count);
+//        instance_extensions = layerProps.extensions.data();
+//        res = vkEnumerateInstanceExtensionProperties(
+//                  layer_name,
+//                  &instance_extension_count,
+//                  instance_extensions);
+//    } while (res == VK_INCOMPLETE);
+//
+//    return res;
+//}
+//
+//VkResult Environment::initGlobalLayerProperties()
+//{
+//    uint32_t instance_layer_count;
+//    VkLayerProperties *vk_props = NULL;
+//    VkResult res;
+//
+//    /*
+//     * It's possible, though very rare, that the number of
+//     * instance layers could change. For example, installing something
+//     * could include new layers that the loader would pick up
+//     * between the initial query for the count and the
+//     * request for VkLayerProperties. The loader indicates that
+//     * by returning a VK_INCOMPLETE status and will update the
+//     * the count parameter.
+//     * The count parameter will be updated with the number of
+//     * entries loaded into the data pointer - in case the number
+//     * of layers went down or is smaller than the size given.
+//     */
+//    do {
+//        res = vkEnumerateInstanceLayerProperties(&instance_layer_count, NULL);
+//        if (res)
+//            return res;
+//
+//        if (instance_layer_count == 0) {
+//            return VK_SUCCESS;
+//        }
+//
+//        vk_props = (VkLayerProperties *) realloc(vk_props, instance_layer_count * sizeof(VkLayerProperties));
+//
+//        res = vkEnumerateInstanceLayerProperties(&instance_layer_count, vk_props);
+//    } while (res == VK_INCOMPLETE);
+//
+//    /*
+//     * Now gather the extension list for each instance layer.
+//     */
+//    for (uint32_t i = 0; i < instance_layer_count; i++) {
+//		util::LayerProperties layerProps;
+//        layerProps.properties = vk_props[i];
+//        res = initGlobaExtensionProperties(layerProps);
+//        if (res)
+//            return res;
+//        mInstanceLayerProperties.push_back(layerProps);
+//    }
+//    free(vk_props);
+//
+//    return res;
+//}
+//
+//void Environment::initInstanceExtensionNames()
+//{
+//	mInstanceExtensionNames.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+//#ifdef _WIN32
+//    mInstanceExtensionNames.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+//#else
+//	mInstanceExtensionNames.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
+//#endif
+//}
+//
+//void Environment::initDeviceExtensionNames()
+//{
+//	mDeviceExtensionNames.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+//}
+
+void initInstanceLayerExtensions( const std::string& layerName, std::vector<VkExtensionProperties>& outExtensions )
 {
-    VkExtensionProperties *instance_extensions;
-    uint32_t instance_extension_count;
-    VkResult res;
-    char *layer_name = NULL;
-
-    layer_name = layerProps.properties.layerName;
-
-    do {
-        res = vkEnumerateInstanceExtensionProperties(layer_name, &instance_extension_count, NULL);
-        if (res)
-            return res;
-
-        if (instance_extension_count == 0) {
-            return VK_SUCCESS;
-        }
-
-        layerProps.extensions.resize(instance_extension_count);
-        instance_extensions = layerProps.extensions.data();
-        res = vkEnumerateInstanceExtensionProperties(
-                  layer_name,
-                  &instance_extension_count,
-                  instance_extensions);
-    } while (res == VK_INCOMPLETE);
-
-    return res;
+	uint32_t extensionCount = 0;
+	VkResult err = vkEnumerateInstanceExtensionProperties( layerName.c_str(), &extensionCount, nullptr );
+	assert( err == VK_SUCCESS );
+	
+	if( extensionCount > 0 ) {
+		outExtensions.resize( extensionCount );
+		err = vkEnumerateInstanceExtensionProperties( layerName.c_str(), &extensionCount, outExtensions.data() );
+		assert( err == VK_SUCCESS );
+	}
 }
 
-VkResult Environment::initGlobalLayerProperties()
+void Environment::initInstanceLayers()
 {
-    uint32_t instance_layer_count;
-    VkLayerProperties *vk_props = NULL;
-    VkResult res;
+	uint32_t layerCount = 0;
+	VkResult err = vkEnumerateInstanceLayerProperties( &layerCount, nullptr );
+	assert( err == VK_SUCCESS );
+	
+	if( layerCount > 0 ) {
+		std::vector<VkLayerProperties> layers( layerCount );
+		err = vkEnumerateInstanceLayerProperties( &layerCount, layers.data() );
+		assert( err == VK_SUCCESS );
 
-    /*
-     * It's possible, though very rare, that the number of
-     * instance layers could change. For example, installing something
-     * could include new layers that the loader would pick up
-     * between the initial query for the count and the
-     * request for VkLayerProperties. The loader indicates that
-     * by returning a VK_INCOMPLETE status and will update the
-     * the count parameter.
-     * The count parameter will be updated with the number of
-     * entries loaded into the data pointer - in case the number
-     * of layers went down or is smaller than the size given.
-     */
-    do {
-        res = vkEnumerateInstanceLayerProperties(&instance_layer_count, NULL);
-        if (res)
-            return res;
+		for( const auto& layer : layers ) {
+			// Check to see if the layer is in the active instance layers list
+			std::string layerName = layer.layerName;
+			auto it = std::find_if( 
+				std::begin( mActiveInstanceLayers ),
+				std::end( mActiveInstanceLayers ),
+				[&layerName]( const std::string& elem ) -> bool {
+					return elem == layerName;
+				} 
+			);
+			if( std::end( mActiveInstanceLayers ) == it ) {
+				continue;
+			}
 
-        if (instance_layer_count == 0) {
-            return VK_SUCCESS;
-        }
+			// Layer is found in active list - add it!
+			Environment::InstanceLayer instanceLayer = {};
+			instanceLayer.layer = layer;
+			mInstanceLayers.push_back( instanceLayer );
+			if( mInstanceLayers.size() > 10 ) {
+				break;
+			}
+		}
+	}
 
-        vk_props = (VkLayerProperties *) realloc(vk_props, instance_layer_count * sizeof(VkLayerProperties));
-
-        res = vkEnumerateInstanceLayerProperties(&instance_layer_count, vk_props);
-    } while (res == VK_INCOMPLETE);
-
-    /*
-     * Now gather the extension list for each instance layer.
-     */
-    for (uint32_t i = 0; i < instance_layer_count; i++) {
-		util::LayerProperties layerProps;
-        layerProps.properties = vk_props[i];
-        res = initGlobaExtensionProperties(layerProps);
-        if (res)
-            return res;
-        mInstanceLayerProperties.push_back(layerProps);
-    }
-    free(vk_props);
-
-    return res;
+	for( auto& layer : mInstanceLayers ) {
+		initInstanceLayerExtensions( layer.layer.layerName, layer.extensions );
+	}
 }
 
-void Environment::initInstanceExtensionNames()
-{
-	mInstanceExtensionNames.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-#ifdef _WIN32
-    mInstanceExtensionNames.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-#else
-	mInstanceExtensionNames.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
-#endif
-}
-
-void Environment::initDeviceExtensionNames()
-{
-	mDeviceExtensionNames.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-}
-
-VkResult Environment::initInstance()
+void Environment::initInstance()
 {
 	const std::string appName = ci::app::AppBase::get()->getName();
 
-    VkApplicationInfo app_info = {};
-    app_info.sType				= VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app_info.pNext				= NULL;
-    app_info.pApplicationName	= appName.c_str();
-    app_info.applicationVersion	= 1;
-    app_info.pEngineName		= appName.c_str();
-    app_info.engineVersion		= 1;
-    app_info.apiVersion			= VK_API_VERSION;
+    VkApplicationInfo appInfo = {};
+    appInfo.sType				= VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pNext				= nullptr;
+    appInfo.pApplicationName	= appName.c_str();
+    appInfo.applicationVersion	= 1;
+    appInfo.pEngineName			= appName.c_str();
+    appInfo.engineVersion		= 1;
+    appInfo.apiVersion			= VK_API_VERSION;
 
-	std::vector<const char *> instance_layer_names;
-	for( auto& elem : mInstanceLayerNames ) {
-		instance_layer_names.push_back( elem.c_str() );
+	std::vector<const char *> instanceLayerNames;
+	std::vector<const char *> instanceExtensionNames;
+	for( const auto& elem : mInstanceLayers ) {
+		instanceLayerNames.push_back( elem.layer.layerName );
+		for( const auto& ext : elem.extensions ) {
+			instanceExtensionNames.push_back( ext.extensionName );
+		}
 	}
 
-	std::vector<const char *> instance_extension_names;
-	for( auto& elem : mInstanceExtensionNames ) {
-		instance_extension_names.push_back( elem.c_str() );
-	}
+#if defined( CINDER_ANDROID )
+	instanceExtensionNames.insert( instanceExtensionNames.begin(), VK_KHR_ANDROID_SURFACE_EXTENSION_NAME );
+#elif defined( CINDER_LINUX )
+	instanceExtensionNames.insert( instanceExtensionNames.begin(), VK_KHR_XCB_SURFACE_EXTENSION_NAME );
+#elif defined( CINDER_MSW )
+    instanceExtensionNames.insert( instanceExtensionNames.begin(), VK_KHR_WIN32_SURFACE_EXTENSION_NAME );
+#endif
+	instanceExtensionNames.insert( instanceExtensionNames.begin(), VK_KHR_SURFACE_EXTENSION_NAME );
 
-    VkInstanceCreateInfo inst_info = {};
-    inst_info.sType						= VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    inst_info.pNext						= NULL;
-    inst_info.flags						= 0;
-    inst_info.pApplicationInfo			= &app_info;
-    inst_info.enabledLayerCount			= static_cast<uint32_t>( instance_layer_names.size() );
-    inst_info.ppEnabledLayerNames		= instance_layer_names.empty() ? nullptr : instance_layer_names.data();
-    inst_info.enabledExtensionCount		= static_cast<uint32_t>( instance_extension_names.size() );
-    inst_info.ppEnabledExtensionNames	= instance_extension_names.empty() ?  nullptr : instance_extension_names.data();
+    VkInstanceCreateInfo createInfo = {};
+    createInfo.sType					= VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pNext					= nullptr;
+    createInfo.flags					= 0;
+    createInfo.pApplicationInfo			= &appInfo;
+    createInfo.enabledLayerCount		= static_cast<uint32_t>( instanceLayerNames.size() );
+    createInfo.ppEnabledLayerNames		= instanceLayerNames.empty() ? nullptr : instanceLayerNames.data();
+    createInfo.enabledExtensionCount	= static_cast<uint32_t>( instanceExtensionNames.size() );
+    createInfo.ppEnabledExtensionNames	= instanceExtensionNames.empty() ?  nullptr : instanceExtensionNames.data();
 
-    VkResult res = vkCreateInstance( &inst_info, NULL, &mVulkanInstance );
-    assert(res == VK_SUCCESS);
-
-    return res;
+    VkResult res = vkCreateInstance( &createInfo, nullptr, &mVulkanInstance );
+    assert( res == VK_SUCCESS );
 }
 
-VkResult Environment::initEnumerateDevice()
+void Environment::initEnumerateDevice()
 {
-	uint32_t gpu_count = 1;
+	const uint32_t requiredGpuCount = 1;
 
-    uint32_t const U_ASSERT_ONLY req_count = gpu_count;
-    VkResult res = vkEnumeratePhysicalDevices( mVulkanInstance, &gpu_count, NULL );
-    assert(gpu_count);
+	uint32_t gpuCount = 0;
+    VkResult res = vkEnumeratePhysicalDevices( mVulkanInstance, &gpuCount, nullptr );
+    assert( ( res == VK_SUCCESS ) && ( 0 != gpuCount ) );
 
-    mGpus.resize( gpu_count );
-    res = vkEnumeratePhysicalDevices( mVulkanInstance, &gpu_count, mGpus.data() );
-    assert(!res && gpu_count >= req_count);
-
-    return res;
+    mGpus.resize( gpuCount );
+    res = vkEnumeratePhysicalDevices( mVulkanInstance, &gpuCount, mGpus.data() );
+    assert( ( res == VK_SUCCESS ) && ( gpuCount >= requiredGpuCount ) );
 }
 
 void Environment::create()
 {
-	initGlobalLayerProperties();
-	initInstanceExtensionNames();
-	initDeviceExtensionNames();
+	//initGlobalLayerProperties();
+	//initInstanceExtensionNames();
+	//initDeviceExtensionNames();
 
+	initInstanceLayers();
 	initInstance();
 	initEnumerateDevice();
 
@@ -264,13 +323,13 @@ void Environment::destroy()
 	destroyInstance();
 }
 
-void Environment::initializeVulkan()
+void Environment::initializeVulkan(const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers)
 {
 	if( sEnvironment ) {
 		return;
 	}
 
-	sEnvironment.reset( new Environment() );
+	sEnvironment.reset( new Environment( instanceLayers, deviceLayers ) );
 }
 
 void Environment::destroyVulkan()
@@ -286,7 +345,7 @@ Environment* Environment::getEnv()
 	return sEnvironment.get();
 }
 
-ContextRef Environment::createContext( void* connection, void* window, bool explicitMode, uint32_t workQueueCount, uint32_t gpuIndex  )
+ContextRef Environment::createContext( void* connection, void* window, bool explicitMode, uint32_t workQueueCount, uint32_t gpuIndex )
 {
 #if defined( CINDER_LINUX )
 #elif defined( CINDER_MSW )

@@ -48,10 +48,24 @@
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/Swapchain.h"
 #include "cinder/vk/wrapper.h"
+#include "cinder/Utilities.h"
 #include "cinder/Log.h"
 
 namespace cinder { namespace app {
 
+// -------------------------------------------------------------------------------------------------
+// RendererVk::Options
+// -------------------------------------------------------------------------------------------------
+RendererVk::Options& RendererVk::Options::setLayers(const std::string& layers)
+{
+	std::vector<std::string> tokens = ci::split( layers, ";" );
+	setLayers( tokens );
+	return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+// RendererVk
+// -------------------------------------------------------------------------------------------------
 RendererVk::RendererVk( const RendererVk::Options& options )
 	: Renderer(), mOptions( options )
 {
@@ -76,7 +90,7 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 
 	mWnd = wnd;
 	
-	vk::Environment::initializeVulkan();
+	vk::Environment::initializeVulkan( mOptions.mInstanceLayers, mOptions.mDeviceLayers );
 	uint32_t gpuIndex = 0;
 	mContext = vk::Environment::getEnv()->createContext( hInst, mWnd, mOptions.mExplicitMode, mOptions.mWorkQueueCount, gpuIndex );
 	mContext->makeCurrent();

@@ -132,4 +132,6 @@ void RotatingCubeApp::draw()
 	}
 }
 
+// Use this version to enable the VK_LAYER_LUNARG_api_dump layer. Use semicolon delimited list to add more layers.
+//CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setLayers( "VK_LAYER_LUNARG_api_dump" ) ) )
 CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ) )

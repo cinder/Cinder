@@ -63,7 +63,8 @@
 
 namespace cinder { namespace vk {
 
-#if defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
 	thread_local Context *sThreadSpecificCurrentContext = nullptr;
 #elif defined( CINDER_MSW )
 	__declspec(thread) Context *sThreadSpecificCurrentContext = nullptr;
@@ -74,10 +75,16 @@ Context::Context()
 	mColor = ColorAf::white();
 }
 
-#if defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
 #elif defined( CINDER_MSW )
 Context::Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint32_t workQueueCount, VkPhysicalDevice gpu, Environment *env )
-	: mType( Context::Type::PRIMARY ), mConnection( connection ), mWindow( window ), mExplicitMode( explicitMode ), mWorkQueueCount( workQueueCount), mGpu( gpu )
+	: mType( Context::Type::PRIMARY ), 
+	  mConnection( connection ), 
+	  mWindow( window ), 
+	  mExplicitMode( explicitMode ), 
+	  mWorkQueueCount( workQueueCount),
+	  mGpu( gpu )
 {
 	mEnvironment = ( nullptr != env ) ? env : Environment::getEnv();
 	initialize();
@@ -106,7 +113,61 @@ ContextRef Context::createFromExisting( const vk::Context* existingContext, int 
 	return result;
 }
 
-VkResult Context::initDevice()
+void initDeviceLayerExtensions( const std::string& layerName, std::vector<VkExtensionProperties>& outExtensions )
+{
+	uint32_t extensionCount = 0;
+	VkResult err = vkEnumerateInstanceExtensionProperties( layerName.c_str(), &extensionCount, nullptr );
+	assert( err == VK_SUCCESS );
+	
+	if( extensionCount > 0 ) {
+		outExtensions.resize( extensionCount );
+		err = vkEnumerateInstanceExtensionProperties( layerName.c_str(), &extensionCount, outExtensions.data() );
+		assert( err == VK_SUCCESS );
+	}
+}
+
+void Context::initDeviceLayers()
+{
+	uint32_t layerCount = 0;
+	VkResult err = vkEnumerateDeviceLayerProperties( mGpu, &layerCount, nullptr );
+	assert( err == VK_SUCCESS );
+	
+	if( layerCount > 0 ) {
+		std::vector<VkLayerProperties> layers( layerCount );
+		err = vkEnumerateDeviceLayerProperties( mGpu, &layerCount, layers.data() );
+		assert( err == VK_SUCCESS );
+
+		const auto& activeDeviceLayers = mEnvironment->getActiveDeviceLayers();
+		for( const auto& layer : layers ) {
+			// Check to see if the layer is in the active instance layers list
+			std::string layerName = layer.layerName;
+			auto it = std::find_if( 
+				std::begin( activeDeviceLayers ),
+				std::end( activeDeviceLayers ),
+				[&layerName]( const std::string& elem ) -> bool {
+					return elem == layerName;
+				} 
+			);
+			if( std::end( activeDeviceLayers ) == it ) {
+				continue;
+			}
+
+			// Layer is found in active list - add it!
+			Context::DeviceLayer deviceLayer = {};
+			deviceLayer.layer = layer;
+			mDeviceLayers.push_back( deviceLayer );
+			if( mDeviceLayers.size() > 0 ) {
+				break;
+			}
+		}
+	}
+
+	for( auto& layer : mDeviceLayers ) {
+		initDeviceLayerExtensions( layer.layer.layerName, layer.extensions );
+	}
+}
+
+void Context::initDevice()
 {
     VkResult res;
     VkDeviceQueueCreateInfo queue_info = {};
@@ -149,35 +210,34 @@ CI_LOG_I( "limits.sampledImageDepthSampleCounts: " << mGpuProperties.limits.samp
 	}
 
     queue_info.sType			= VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queue_info.pNext			= NULL;
+    queue_info.pNext			= nullptr;
     queue_info.queueCount		= mWorkQueueCount;
     queue_info.pQueuePriorities	= ( queuePriorities.empty() ? nullptr : queuePriorities.data() );
 
-	std::vector<const char *> device_layer_names;
-	for( auto& elem : mEnvironment->getDeviceLayerNames() ) {
-		device_layer_names.push_back( elem.c_str() );
+	std::vector<const char *> deviceLayerNames;
+	std::vector<const char *> deviceExtensionNames;
+	for( auto& elem : mDeviceLayers ) {
+		deviceLayerNames.push_back( elem.layer.layerName );
+		for( const auto& ext : elem.extensions ) {
+			deviceExtensionNames.push_back( ext.extensionName );
+		}
 	}
 
-	std::vector<const char *> device_extension_names;
-	for( auto& elem : mEnvironment->getDeviceExtensionNames() ) {
-		device_extension_names.push_back( elem.c_str() );
-	}
+	deviceExtensionNames.insert( deviceExtensionNames.begin(), VK_KHR_SWAPCHAIN_EXTENSION_NAME );
 
-    VkDeviceCreateInfo device_info = {};
-    device_info.sType					= VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    device_info.pNext					= NULL;
-    device_info.queueCreateInfoCount	= 1;
-    device_info.pQueueCreateInfos		= &queue_info;
-    device_info.enabledLayerCount		= static_cast<uint32_t>( device_layer_names.size() );
-    device_info.ppEnabledLayerNames		= device_info.enabledLayerCount ? device_layer_names.data() : NULL;
-    device_info.enabledExtensionCount	= static_cast<uint32_t>( device_extension_names.size() );
-    device_info.ppEnabledExtensionNames	= device_info.enabledExtensionCount ? device_extension_names.data() : NULL;
-    device_info.pEnabledFeatures		= NULL;
+    VkDeviceCreateInfo createInfo = {};
+    createInfo.sType					= VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    createInfo.pNext					= nullptr;
+    createInfo.queueCreateInfoCount		= 1;
+    createInfo.pQueueCreateInfos		= &queue_info;
+    createInfo.enabledLayerCount		= static_cast<uint32_t>( deviceLayerNames.size() );
+    createInfo.ppEnabledLayerNames		= createInfo.enabledLayerCount ? deviceLayerNames.data() : nullptr;
+    createInfo.enabledExtensionCount	= static_cast<uint32_t>( deviceExtensionNames.size() );
+    createInfo.ppEnabledExtensionNames	= createInfo.enabledExtensionCount ? deviceExtensionNames.data() : nullptr;
+    createInfo.pEnabledFeatures			= nullptr;
 
-    res = vkCreateDevice( mGpu, &device_info, NULL, &mDevice );
-    assert(res == VK_SUCCESS);
-
-    return res;
+    res = vkCreateDevice( mGpu, &createInfo, nullptr, &mDevice );
+    assert( res == VK_SUCCESS );
 }
 
 void Context::initConnection()
@@ -213,7 +273,8 @@ void Context::initSwapchainExtension()
 	VkResult U_ASSERT_ONLY res;
 
 	// Construct the surface description:
-#if defined( CINDER_LINUX )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
     res = vkCreateXcbSurfaceKHR( mEnvironment->getVulkanInstance(), mConnection, mWindow, nullptr, &info.surface );
 #elif defined( CINDER_MSW )
     VkWin32SurfaceCreateInfoKHR createInfo = {};
@@ -305,6 +366,9 @@ void Context::initialize( const Context* existingContext )
 		initDeviceQueue();
 	}
 	else {
+		if( mDeviceLayersEnabled ) {
+			initDeviceLayers();
+		}
 		initDevice();
 		initConnection();
 		initSwapchainExtension();

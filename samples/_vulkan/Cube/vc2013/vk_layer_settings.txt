@@ -1,0 +1,6 @@
+ApiDumpDetailed = TRUE
+ApiDumpNoAddr = FALSE
+ApiDumpFile = TRUE
+ApiDumpLogFilename = vk_log.txt 
+ApiDumpFlush = FALSE
+
