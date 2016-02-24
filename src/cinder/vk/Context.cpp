@@ -156,32 +156,6 @@ void Context::initDeviceLayers()
 				CI_LOG_W( "Requested device layer not found: " << activeLayerName );
 			}
 		}
-
-		/*
-		const auto& activeDeviceLayers = mEnvironment->getActiveDeviceLayers();
-		for( const auto& layer : layers ) {
-			// Check to see if the layer is in the active instance layers list
-			std::string layerName = layer.layerName;
-			auto it = std::find_if( 
-				std::begin( activeDeviceLayers ),
-				std::end( activeDeviceLayers ),
-				[&layerName]( const std::string& elem ) -> bool {
-					return elem == layerName;
-				} 
-			);
-			if( std::end( activeDeviceLayers ) == it ) {
-				continue;
-			}
-
-			// Layer is found in active list - add it!
-			Context::DeviceLayer deviceLayer = {};
-			deviceLayer.layer = layer;
-			mDeviceLayers.push_back( deviceLayer );
-			if( mDeviceLayers.size() > 0 ) {
-				break;
-			}
-		}
-		*/
 	}
 
 	for( auto& layer : mDeviceLayers ) {

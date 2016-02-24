@@ -200,32 +200,6 @@ void Environment::initInstanceLayers()
 				CI_LOG_W( "Requested instance layer not found: " << activeLayerName );
 			}
 		}
-
-
-		/*
-		for( const auto& layer : layers ) {
-			// Check to see if the layer is in the active instance layers list
-			std::string layerName = layer.layerName;
-			auto it = std::find_if( 
-				std::begin( mActiveInstanceLayers ),
-				std::end( mActiveInstanceLayers ),
-				[&layerName]( const std::string& elem ) -> bool {
-					return elem == layerName;
-				} 
-			);
-			if( std::end( mActiveInstanceLayers ) == it ) {
-				continue;
-			}
-
-			// Layer is found in active list - add it!
-			Environment::InstanceLayer instanceLayer = {};
-			instanceLayer.layer = layer;
-			mInstanceLayers.push_back( instanceLayer );
-			if( mInstanceLayers.size() > 10 ) {
-				break;
-			}
-		}
-		*/
 	}
 
 	for( auto& layer : mInstanceLayers ) {
