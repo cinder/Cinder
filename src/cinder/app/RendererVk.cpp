@@ -51,6 +51,8 @@
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 
+#include <boost/algorithm/string.hpp>
+
 namespace cinder { namespace app {
 
 // -------------------------------------------------------------------------------------------------
@@ -60,6 +62,22 @@ RendererVk::Options& RendererVk::Options::setLayers(const std::string& layers)
 {
 	std::vector<std::string> tokens = ci::split( layers, ";" );
 	setLayers( tokens );
+	return *this;
+}
+
+RendererVk::Options& RendererVk::Options::setLayers( const std::vector<std::string>& layers )
+{
+	mInstanceLayers = layers; 
+	mDeviceLayers = layers; 
+
+	for( auto& elem : mInstanceLayers ) {
+		boost::trim( elem );
+	}
+
+	for( auto& elem : mDeviceLayers ) {
+		boost::trim( elem );
+	}
+
 	return *this;
 }
 

@@ -381,7 +381,6 @@ private:
 		std::vector<VkExtensionProperties>	extensions;
 	};
 	std::vector<DeviceLayer>				mDeviceLayers;
-	bool									mDeviceLayersEnabled = false;
 
 
 	// Default graphics variables

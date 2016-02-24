@@ -89,7 +89,7 @@ class RendererVk : public Renderer {
 
 		//! Param 'layers' should be a semicolon delimited list of layer names
 		Options&						setLayers( const std::string& layers );
-		Options&						setLayers( const std::vector<std::string>& layers ) { mInstanceLayers = layers; mDeviceLayers = layers; return *this; }
+		Options&						setLayers( const std::vector<std::string>& layers );
 		const std::vector<std::string>&	getInstanceLayers() const { return mInstanceLayers; }
 		const std::vector<std::string>&	getDeviceLayers() const { return mDeviceLayers; }
 

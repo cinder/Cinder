@@ -132,6 +132,18 @@ void RotatingCubeApp::draw()
 	}
 }
 
+const std::vector<std::string> gLayers = {
+	//"VK_LAYER_LUNARG_api_dump",
+	//"VK_LAYER_LUNARG_threading",
+	//"VK_LAYER_LUNARG_mem_tracker",
+	//"VK_LAYER_LUNARG_object_tracker",
+	//"VK_LAYER_LUNARG_draw_state",
+	//"VK_LAYER_LUNARG_param_checker",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_LUNARG_device_limits"
+	//"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_GOOGLE_unique_objects",
+};
+
 // Use this version to enable the VK_LAYER_LUNARG_api_dump layer. Use semicolon delimited list to add more layers.
-//CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setLayers( "VK_LAYER_LUNARG_api_dump" ) ) )
-CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ) )
+CINDER_APP( RotatingCubeApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setLayers( gLayers ) ) )

@@ -38,8 +38,8 @@
 
 #include "cinder/vk/Environment.h"
 #include "cinder/vk/Context.h"
-
 #include "cinder/app/AppBase.h"
+#include "cinder/Log.h"
 
 #include <algorithm>
 
@@ -182,6 +182,27 @@ void Environment::initInstanceLayers()
 		err = vkEnumerateInstanceLayerProperties( &layerCount, layers.data() );
 		assert( err == VK_SUCCESS );
 
+		for( const auto& activeLayerName : mActiveInstanceLayers ) {
+			auto it = std::find_if( 
+				std::begin( layers ),
+				std::end( layers ),
+				[&activeLayerName]( const VkLayerProperties& elem ) -> bool {
+					return std::string( elem.layerName ) == activeLayerName;
+				} 
+			);
+			if( std::end( layers ) != it ) {
+				Environment::InstanceLayer instanceLayer = {};
+				instanceLayer.layer = *it;
+				mInstanceLayers.push_back( instanceLayer );
+				CI_LOG_I( "Queued instance layer for loading: " << activeLayerName );
+			}
+			else {
+				CI_LOG_W( "Requested instance layer not found: " << activeLayerName );
+			}
+		}
+
+
+		/*
 		for( const auto& layer : layers ) {
 			// Check to see if the layer is in the active instance layers list
 			std::string layerName = layer.layerName;
@@ -204,6 +225,7 @@ void Environment::initInstanceLayers()
 				break;
 			}
 		}
+		*/
 	}
 
 	for( auto& layer : mInstanceLayers ) {
@@ -232,6 +254,8 @@ void Environment::initInstance()
 			instanceExtensionNames.push_back( ext.extensionName );
 		}
 	}
+
+	//instanceExtensionNames.insert( instanceExtensionNames.begin(), VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
 
 #if defined( CINDER_ANDROID )
 	instanceExtensionNames.insert( instanceExtensionNames.begin(), VK_KHR_ANDROID_SURFACE_EXTENSION_NAME );

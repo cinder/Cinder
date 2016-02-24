@@ -113,15 +113,15 @@ ContextRef Context::createFromExisting( const vk::Context* existingContext, int 
 	return result;
 }
 
-void initDeviceLayerExtensions( const std::string& layerName, std::vector<VkExtensionProperties>& outExtensions )
+void initDeviceLayerExtensions( VkPhysicalDevice gpu,  const std::string& layerName, std::vector<VkExtensionProperties>& outExtensions )
 {
 	uint32_t extensionCount = 0;
-	VkResult err = vkEnumerateInstanceExtensionProperties( layerName.c_str(), &extensionCount, nullptr );
+	VkResult err = vkEnumerateDeviceExtensionProperties( gpu, layerName.c_str(), &extensionCount, nullptr );
 	assert( err == VK_SUCCESS );
 	
 	if( extensionCount > 0 ) {
 		outExtensions.resize( extensionCount );
-		err = vkEnumerateInstanceExtensionProperties( layerName.c_str(), &extensionCount, outExtensions.data() );
+		err = vkEnumerateDeviceExtensionProperties( gpu, layerName.c_str(), &extensionCount, outExtensions.data() );
 		assert( err == VK_SUCCESS );
 	}
 }
@@ -137,6 +137,27 @@ void Context::initDeviceLayers()
 		err = vkEnumerateDeviceLayerProperties( mGpu, &layerCount, layers.data() );
 		assert( err == VK_SUCCESS );
 
+		const auto& activeDeviceLayers = mEnvironment->getActiveDeviceLayers();
+		for( const auto& activeLayerName : activeDeviceLayers ) {
+			auto it = std::find_if( 
+				std::begin( layers ),
+				std::end( layers ),
+				[&activeLayerName]( const VkLayerProperties& elem ) -> bool {
+					return std::string( elem.layerName ) == activeLayerName;
+				} 
+			);
+			if( std::end( layers ) != it ) {
+				Context::DeviceLayer deviceLayer = {};
+				deviceLayer.layer = *it;
+				mDeviceLayers.push_back( deviceLayer );
+				CI_LOG_I( "Queued device layer for loading: " << activeLayerName );
+			}
+			else {
+				CI_LOG_W( "Requested device layer not found: " << activeLayerName );
+			}
+		}
+
+		/*
 		const auto& activeDeviceLayers = mEnvironment->getActiveDeviceLayers();
 		for( const auto& layer : layers ) {
 			// Check to see if the layer is in the active instance layers list
@@ -160,10 +181,12 @@ void Context::initDeviceLayers()
 				break;
 			}
 		}
+		*/
 	}
 
 	for( auto& layer : mDeviceLayers ) {
-		initDeviceLayerExtensions( layer.layer.layerName, layer.extensions );
+		const std::string layerName( layer.layer.layerName );
+		initDeviceLayerExtensions( mGpu, layerName, layer.extensions );
 	}
 }
 
@@ -368,9 +391,7 @@ void Context::initialize( const Context* existingContext )
 		initDeviceQueue();
 	}
 	else {
-		if( mDeviceLayersEnabled ) {
-			initDeviceLayers();
-		}
+		initDeviceLayers();
 		initDevice();
 		initConnection();
 		initSwapchainExtension();
