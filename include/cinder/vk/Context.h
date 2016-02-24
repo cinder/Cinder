@@ -146,13 +146,13 @@ public:
 	VkDevice								getDevice() const { return mDevice; }
 	const vk::QueueRef&						getQueue() const { return mQueue; }
 
-	uint32_t								getGraphicsQueueFamilyIndex() const { return mGraphicsQueueFamilyIndex; }
+	uint32_t								getQueueFamilyIndex() const { return mQueueFamilyIndex; }
 	const VkPhysicalDeviceProperties&		getGpuProperties() const { return mGpuProperties; }
 	const VkPhysicalDeviceLimits&			getGpuLimits() const { return mGpuProperties.limits; }
 	std::vector<VkQueueFamilyProperties>	getQueueProperties() const { return mQueueFamilyProperties; }
 	VkPhysicalDeviceMemoryProperties		getMemoryProperties() const { return mMemoryProperties; }
 
-	uint32_t								getQueueCount() const { return mQueueFamilyPropertyCount; }
+	uint32_t								getWorkQueueCount() const;
 
 	bool									findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const;
 
@@ -367,8 +367,8 @@ private:
 	VkPhysicalDevice						mGpu = nullptr;
 	VkDevice								mDevice = nullptr;
 	vk::QueueRef							mQueue;
-    uint32_t								mGraphicsQueueFamilyIndex;
     VkPhysicalDeviceProperties				mGpuProperties;
+    uint32_t								mQueueFamilyIndex = 0;
     std::vector<VkQueueFamilyProperties>	mQueueFamilyProperties;
     VkPhysicalDeviceMemoryProperties		mMemoryProperties;
     uint32_t								mQueueFamilyPropertyCount = 0;

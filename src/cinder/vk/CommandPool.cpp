@@ -66,7 +66,7 @@ void CommandPool::initialize()
     VkCommandPoolCreateInfo createInfo = {};
     createInfo.sType			= VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     createInfo.pNext			= nullptr;
-    createInfo.queueFamilyIndex	= mContext->getGraphicsQueueFamilyIndex();
+    createInfo.queueFamilyIndex	= mContext->getQueueFamilyIndex();
     createInfo.flags			= 0;
 
     VkResult res = vkCreateCommandPool( mContext->getDevice(), &createInfo, nullptr, &mCommandPool );

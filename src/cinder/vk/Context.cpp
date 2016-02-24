@@ -183,6 +183,7 @@ CI_LOG_I( "Number of queue families: " << mQueueFamilyPropertyCount );
 
     bool found = false;
     for( uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i ) {
+CI_LOG_I( "queueFamily[" << i << "].queueCount: " << mQueueFamilyProperties[i].queueCount );
         if( mQueueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT ) {
             queue_info.queueFamilyIndex = i;
             found = true;
@@ -209,6 +210,8 @@ CI_LOG_I( "limits.sampledImageDepthSampleCounts: " << mGpuProperties.limits.samp
 		*it = 0.5f;
 	}
 
+	// @TODO: Find a better way to clamp the max number of work queues. For now just use the queue at index 0.
+	mWorkQueueCount = std::min<uint32_t>( mWorkQueueCount, mQueueFamilyProperties[0].queueCount );
     queue_info.sType			= VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queue_info.pNext			= nullptr;
     queue_info.queueCount		= mWorkQueueCount;
@@ -324,7 +327,7 @@ void Context::initSwapchainExtension()
         throw std::runtime_error( "Could not find a graphics and a present queue\nCould not find a graphics and a present queue" );
     }
 
-    mGraphicsQueueFamilyIndex = graphicsQueueNodeIndex;
+    mQueueFamilyIndex = graphicsQueueNodeIndex;
 
     // Get the list of VkFormats that are supported:
     uint32_t formatCount;
@@ -349,8 +352,7 @@ void Context::initSwapchainExtension()
 
 void Context::initDeviceQueue()
 {
-    //vkGetDeviceQueue( mDevice, mGraphicsQueueFamilyIndex, mQueueIndex, &mQueue );
-	mQueue = vk::Queue::create( mGraphicsQueueFamilyIndex, mQueueIndex, this );
+	mQueue = vk::Queue::create( mQueueFamilyIndex, mQueueIndex, this );
 }
 
 void Context::initialize( const Context* existingContext )
@@ -361,7 +363,7 @@ void Context::initialize( const Context* existingContext )
 		mQueueFamilyProperties = existingContext->mQueueFamilyProperties;
 		mMemoryProperties = existingContext->mMemoryProperties;
 		mDevice = existingContext->mDevice;
-		mGraphicsQueueFamilyIndex = existingContext->mGraphicsQueueFamilyIndex;
+		mQueueFamilyIndex = existingContext->mQueueFamilyIndex;
 		mQueueFamilyPropertyCount = existingContext->mQueueFamilyPropertyCount;
 		initDeviceQueue();
 	}
@@ -541,6 +543,11 @@ void Context::makeCurrent()
 	if( this != sThreadSpecificCurrentContext ) {
 		sThreadSpecificCurrentContext = this;
 	}
+}
+
+uint32_t Context::getWorkQueueCount() const 
+{ 
+	return mWorkQueueCount;
 }
 
 bool Context::findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const
