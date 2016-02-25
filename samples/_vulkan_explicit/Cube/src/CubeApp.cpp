@@ -45,6 +45,7 @@
 #include "cinder/ConcurrentCircularBuffer.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Log.h"
+#include "cinder/Utilities.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -68,17 +69,21 @@ class RotatingCubeApp : public App {
 	mat4							mCubeRotation;
 
 	VkFence							mFences[FRAME_LAG];
+	bool							mFencesInited[FRAME_LAG];
 	vk::CommandBufferRef			mCommandBuffers[FRAME_LAG];
 
 	VkSemaphore						mImageAcquiredSemaphore[FRAME_LAG];
 	VkSemaphore						mRenderingCompleteSemaphore[FRAME_LAG];
 
 	std::shared_ptr<ConcurrentCircularBuffer<uint32_t>>	mFrameQueue;
-	ci::vk::ContextRef				mRenderThreadContext;
-	std::atomic<bool>				mRenderThreadRunning;
-	std::shared_ptr<std::thread>	mRenderThread;
+	ci::vk::ContextRef				mWorkThreadContext;
+	std::atomic<bool>				mWorkThreadRunning;
+	std::shared_ptr<std::thread>	mWorkThread;
 
-	void					renderThreadFunc( const ci::vk::ContextRef& ctx );
+	std::mutex					mWorkMutex;
+	std::condition_variable		mWorkCondition;
+
+	void					workThreadFunc( const ci::vk::ContextRef& ctx );
 	void					generateCommandBuffer( const vk::CommandBufferRef& cmdBuf, uint32_t frameIdx );
 
 	vk::PresenterRef		mPresenter;
@@ -86,6 +91,8 @@ class RotatingCubeApp : public App {
 
 void RotatingCubeApp::setup()
 {
+	setFrameRate( 5000.0f );
+
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 
 	try {
@@ -133,6 +140,8 @@ void RotatingCubeApp::setup()
 	VkFenceCreateInfo fenceCreateInfo = { VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
 	vkCreateFence( vk::context()->getDevice(), &fenceCreateInfo, nullptr, &mFences[0] );
 	vkCreateFence( vk::context()->getDevice(), &fenceCreateInfo, nullptr, &mFences[1] );
+	mFencesInited[0] = false;
+	mFencesInited[1] = false;
 
 	mCommandBuffers[0]	= vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
 	mCommandBuffers[1]	= vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
@@ -146,16 +155,16 @@ void RotatingCubeApp::setup()
 	mPresenter = vk::context()->getPresenter();
 
 	mFrameQueue.reset( new ConcurrentCircularBuffer<uint32_t>( FRAME_LAG ) );
-	mRenderThreadContext = vk::Environment::getEnv()->createContextFromExisting( vk::context(), 1 );
-	mRenderThreadRunning = true;
-	mRenderThread.reset( new std::thread( &RotatingCubeApp::renderThreadFunc, this, mRenderThreadContext ) );
+	mWorkThreadContext = vk::Environment::getEnv()->createContextFromExisting( vk::context(), 1 );
+	mWorkThreadRunning = true;
+	mWorkThread.reset( new std::thread( &RotatingCubeApp::workThreadFunc, this, mWorkThreadContext ) );
 }
 
 void RotatingCubeApp::cleanup()
 {
-	mRenderThreadRunning = false;
-	mRenderThread->join();
-	mRenderThread.reset();
+	mWorkThreadRunning = false;
+	mWorkThread->join();
+	mWorkThread.reset();
 }
 
 void RotatingCubeApp::resize()
@@ -186,23 +195,15 @@ void RotatingCubeApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf,
 	cmdBuf->end();
 }
 
-void RotatingCubeApp::renderThreadFunc( const ci::vk::ContextRef& ctx ) 
+void RotatingCubeApp::workThreadFunc( const ci::vk::ContextRef& ctx ) 
 {
 	ctx->makeCurrent();
 
-	while( mRenderThreadRunning ) {
+	while( mWorkThreadRunning ) {	
 		uint32_t frameIdx = UINT32_MAX;
 		mFrameQueue->tryPopBack( &frameIdx );
 		if( UINT32_MAX != frameIdx ) {
-			//CI_LOG_I( "Processing frame " << frameIdx );
-
-            // Ensure no more than FRAME_LAG presentations are outstanding. Max wait time is 0.5 seconds
-            VkResult result = vkWaitForFences( ctx->getDevice(), 1, &mFences[frameIdx], VK_TRUE, 5*1e8 );
-			if( ( VK_TIMEOUT == result ) && ( ! mRenderThreadRunning ) ) {
-				break;
-			}
-
-            vkResetFences( ctx->getDevice(), 1, &mFences[frameIdx] );
+			//CI_LOG_I( "Processing frame: " << frameIdx );
 
 			// Update 
 			{
@@ -211,37 +212,47 @@ void RotatingCubeApp::renderThreadFunc( const ci::vk::ContextRef& ctx )
 			}
 
 			// Build command buffer
-			//CI_LOG_I( "Generating command buffer for frame " << frameIdx );
+			//CI_LOG_I( "Generating command buffer for frame: " << frameIdx );
 			const auto& cmdBuf = mCommandBuffers[frameIdx];
 			generateCommandBuffer( cmdBuf, frameIdx );
 
-			// Submit rendering work to the graphics queue
-			//CI_LOG_I( "Submitting command buffer for frame " << frameIdx );
-			const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			ctx->getQueue()->submit( cmdBuf, mImageAcquiredSemaphore[frameIdx], waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore[frameIdx] );
+			ci::sleep( 14.0f );
+
+			mWorkCondition.notify_one();
 		}
 	}
 }
 
 void RotatingCubeApp::draw()
 {
-	const auto& ctx = vk::context();
 
-	// Top of the frame
+
 	uint32_t frame = getElapsedFrames() - 1;
 	uint32_t frameIdx = frame % FRAME_LAG;
 	//CI_LOG_I( "Frame: " << frame );
 
-	// Acquire next image
-	const auto& presenter = vk::context()->getPresenter();
-	uint32_t imageIndex = presenter->acquireNextImage( mFences[frameIdx], mImageAcquiredSemaphore[frameIdx] );
+	if( mFencesInited[frameIdx] ) {
+		vkWaitForFences( vk::context()->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT32_MAX );
+		vkResetFences(  vk::context()->getDevice(), 1, &mFences[frameIdx] );
+	}
 
-	// Queue frame for command buffer generation and rendering
-	//CI_LOG_I( "Pushing frame: " << frameIdx );
+	//CI_LOG_I( "Acquiring frame: " << frameIdx );
+	vk::context()->getPresenter()->acquireNextImage( mFences[frameIdx], mImageAcquiredSemaphore[frameIdx] );
+	mFencesInited[frameIdx] = true;	
 	mFrameQueue->pushFront( frameIdx );
 
+	{
+		std::unique_lock<std::mutex> lock( mWorkMutex );
+		mWorkCondition.wait( lock );
+	}
+
+	// Submit rendering work to the graphics queue
+	//CI_LOG_I( "Submitting command buffer for frame " << frameIdx );
+	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	vk::context()->getQueue()->submit( mCommandBuffers[frameIdx], mImageAcquiredSemaphore[frameIdx], waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore[frameIdx] );
+
 	// Submit present operation to present queue
-	ctx->getQueue()->present( mRenderingCompleteSemaphore[frameIdx], presenter  );
+	vk::context()->getQueue()->present( mRenderingCompleteSemaphore[frameIdx], vk::context()->getPresenter() );
 	//CI_LOG_I( "Queued for presentation: " << frameIdx );
 
 	if( 0 == (getElapsedFrames() % 300)) {

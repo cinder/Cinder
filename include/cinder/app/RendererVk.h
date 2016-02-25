@@ -116,7 +116,9 @@ class RendererVk : public Renderer {
 
 	RendererRef			clone() const override { return RendererVkRef( new RendererVk( *this ) ); }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 	virtual HWND		getHwnd() override { return mWnd; }
 	virtual void		setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
 	virtual void		kill() override;
@@ -138,7 +140,9 @@ class RendererVk : public Renderer {
 
   private:
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 	HWND				mWnd = nullptr;
 #endif
 	

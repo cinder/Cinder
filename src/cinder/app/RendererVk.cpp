@@ -92,7 +92,9 @@ RendererVk::RendererVk( const RendererVk::Options& options )
 RendererVk::RendererVk( const RendererVk &renderer )
 	: Renderer(), mOptions( renderer.mOptions )
 {
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 	mWnd = renderer.mWnd;
 #endif
 }
@@ -101,7 +103,9 @@ RendererVk::~RendererVk()
 {
 }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	::HINSTANCE hInst = ::GetModuleHandle( nullptr );
@@ -225,12 +229,13 @@ void RendererVk::defaultResize()
 {
 	makeCurrentContext();
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 	::RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
 	int width = clientRect.right - clientRect.left;
 	int height = clientRect.bottom - clientRect.top;
-#elif defined( CINDER_LINUX )
 #endif
 
 	//if( ! isExplicitMode() ) 
