@@ -351,37 +351,37 @@ using namespace cinder::app;
 	[NSApp stop:nil];
 }
 
-- (void)setPowerManagementEnabled:(BOOL)flag
+- (void)setPowerManagementEnabled:(BOOL)enable
 {
-	if( flag && ![self isPowerManagementEnabled] ) {
-		CFStringRef reasonForActivity = CFSTR( "Cinder Application Execution" );
-		IOReturn status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleSystemSleep, kIOPMAssertionLevelOn, reasonForActivity, &mIdleSleepAssertionID );
-		if( status != kIOReturnSuccess ) {
-			CI_LOG_E( "failed to create power management assertion to prevent idle system sleep" );
-		}
+	if( enable == [self isPowerManagementEnabled] )
+		return;
 
-		status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleDisplaySleep, kIOPMAssertionLevelOn, reasonForActivity, &mDisplaySleepAssertionID );
-		if( status != kIOReturnSuccess ) {
+	if( ! enable ) { // do not allow sleep or screensavers
+		CFStringRef reasonForActivity = CFSTR( "Cinder Application Execution" );
+		IOReturn status = ::IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleSystemSleep, kIOPMAssertionLevelOn, reasonForActivity, &mIdleSleepAssertionID );
+		if( status != kIOReturnSuccess )
+			CI_LOG_E( "failed to create power management assertion to prevent idle system sleep" );
+
+		status = ::IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleDisplaySleep, kIOPMAssertionLevelOn, reasonForActivity, &mDisplaySleepAssertionID );
+		if( status != kIOReturnSuccess )
 			CI_LOG_E( "failed to create power management assertion to prevent idle display sleep" );
-		}
-	} else if( !flag && [self isPowerManagementEnabled] ) {
-		IOReturn status = IOPMAssertionRelease( self.idleSleepAssertionID );
-		if( status != kIOReturnSuccess ) {
+	}
+	else {
+		IOReturn status = ::IOPMAssertionRelease( self.idleSleepAssertionID );
+		if( status != kIOReturnSuccess )
 			CI_LOG_E( "failed to release and deactivate power management assertion that prevents idle system sleep" );
-		}
 		self.idleSleepAssertionID = 0;
 
-		status = IOPMAssertionRelease( self.displaySleepAssertionID );
-		if( status != kIOReturnSuccess ) {
+		status = ::IOPMAssertionRelease( self.displaySleepAssertionID );
+		if( status != kIOReturnSuccess )
 			CI_LOG_E( "failed to release and deactivate power management assertion that prevents idle display sleep" );
-		}
 		self.displaySleepAssertionID = 0;
 	}
 }
 
 - (BOOL)isPowerManagementEnabled
 {
-	return self.idleSleepAssertionID != 0 && self.displaySleepAssertionID != 0;
+	return self.idleSleepAssertionID == 0 && self.displaySleepAssertionID == 0;
 }
 
 - (float)getFrameRate
