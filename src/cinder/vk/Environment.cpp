@@ -51,13 +51,48 @@ static std::unique_ptr<Environment> sEnvironment;
 // Mutexes
 static std::mutex sTrackedObjectCreatedMutex;
 static std::mutex sTrackedObjectDestroyedMutex;
+static vk::DebugReportCallbackFn sDebugReportCallbackFn = nullptr;
+
+
+VkBool32 defaultDebugReportCallback(
+    VkDebugReportFlagsEXT      flags,
+    VkDebugReportObjectTypeEXT objectType,
+    uint64_t                   object,
+    size_t                     location,
+    int32_t                    messageCode,
+    const char*                pLayerPrefix,
+    const char*                pMessage,
+    void*                      pUserData
+)
+{
+	return VK_FALSE;
+}
+
+VKAPI_ATTR VkBool32 VKAPI_CALL proxyDebugReportCallback(
+    VkDebugReportFlagsEXT      flags,
+    VkDebugReportObjectTypeEXT objectType,
+    uint64_t                   object,
+    size_t                     location,
+    int32_t                    messageCode,
+    const char*                pLayerPrefix,
+    const char*                pMessage,
+    void*                      pUserData
+)
+{
+	if( sDebugReportCallbackFn ) {
+		return sDebugReportCallbackFn( flags, objectType, object, location, messageCode, pLayerPrefix, pMessage, pUserData );
+	}
+
+	return VK_FALSE;
+}
 
 //! \class Environment
 //!
 //!
-Environment::Environment( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers )
+Environment::Environment( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn )
 	: mActiveInstanceLayers( instanceLayers ), mActiveDeviceLayers( deviceLayers )
 {
+	sDebugReportCallbackFn = debugReportCallbackFn;
 	create();
 }
 
@@ -281,11 +316,36 @@ void Environment::create()
 	fpGetPhysicalDeviceSurfaceCapabilitiesKHR = CI_VK_GET_INSTANCE_PROC_ADDR( mVulkanInstance, GetPhysicalDeviceSurfaceCapabilitiesKHR );
 	fpGetPhysicalDeviceSurfaceFormatsKHR      = CI_VK_GET_INSTANCE_PROC_ADDR( mVulkanInstance, GetPhysicalDeviceSurfaceFormatsKHR );
 	fpGetPhysicalDeviceSurfacePresentModesKHR = CI_VK_GET_INSTANCE_PROC_ADDR( mVulkanInstance, GetPhysicalDeviceSurfacePresentModesKHR );
+
+	// These functions will be null if there is not a requested layer that requires them.
+	fpCreateDebugReportCallbackEXT  = CI_VK_GET_INSTANCE_PROC_ADDR( mVulkanInstance, CreateDebugReportCallbackEXT );
+	fpDestroyDebugReportCallbackEXT = CI_VK_GET_INSTANCE_PROC_ADDR( mVulkanInstance, DestroyDebugReportCallbackEXT );
+	fpDebugReportMessageEXT         = CI_VK_GET_INSTANCE_PROC_ADDR( mVulkanInstance, DebugReportMessageEXT );
+
+	if( ( nullptr != fpCreateDebugReportCallbackEXT ) && ( nullptr != fpDestroyDebugReportCallbackEXT ) && ( nullptr != fpDebugReportMessageEXT ) ) {
+		VkDebugReportCallbackCreateInfoEXT dbgCreateInfo = {};
+        dbgCreateInfo.sType			= VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
+        dbgCreateInfo.pNext			= nullptr;
+        dbgCreateInfo.pfnCallback	= proxyDebugReportCallback;
+        dbgCreateInfo.pUserData		= NULL;
+        dbgCreateInfo.flags			= VK_DEBUG_REPORT_INFORMATION_BIT_EXT | 
+									  VK_DEBUG_REPORT_WARNING_BIT_EXT | 
+									  VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | 
+									  VK_DEBUG_REPORT_ERROR_BIT_EXT |
+									  VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+        VkResult err = fpCreateDebugReportCallbackEXT( mVulkanInstance, &dbgCreateInfo, nullptr, &mDebugReportCallback );
+		assert( err == VK_SUCCESS );
+	}
 }
 
 void Environment::destroyInstance()
 {
 	if( VK_NULL_HANDLE != mVulkanInstance ) {
+		if( VK_NULL_HANDLE != mDebugReportCallback ) {
+			fpDestroyDebugReportCallbackEXT( mVulkanInstance, mDebugReportCallback, nullptr );
+		}
+
+
 		vkDestroyInstance( mVulkanInstance, nullptr );
 		mVulkanInstance = VK_NULL_HANDLE;
 	}
@@ -321,13 +381,13 @@ void Environment::destroy()
 	destroyInstance();
 }
 
-void Environment::initializeVulkan(const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers)
+void Environment::initializeVulkan( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn )
 {
 	if( sEnvironment ) {
 		return;
 	}
 
-	sEnvironment.reset( new Environment( instanceLayers, deviceLayers ) );
+	sEnvironment.reset( new Environment( instanceLayers, deviceLayers, debugReportCallbackFn ) );
 }
 
 void Environment::destroyVulkan()

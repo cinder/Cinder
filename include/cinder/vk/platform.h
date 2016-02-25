@@ -40,10 +40,12 @@
 
 #include "cinder/Cinder.h"
 
-#if defined( CINDER_MSW )
-	#define VK_USE_PLATFORM_WIN32_KHR
+#if defined( CINDER_ANDROID )
+	#define VK_USE_PLATFORM_ANDROID_KHR
 #elif defined( CINDER_LINUX )
 	#define VK_USE_PLATFORM_XCB_KHR
+#elif defined( CINDER_MSW )
+	#define VK_USE_PLATFORM_WIN32_KHR
 #endif
 
 #define VK_PROTOTYPES
@@ -55,10 +57,11 @@
 	#define U_ASSERT_ONLY
 #endif
 
+#include <functional>
 #include <vector>
 
-//namespace cinder { namespace vk {
-//
-//const uint64_t nullobj = 0;
-//
-//}} // namespace cinder::vk
+namespace cinder { namespace vk {
+
+using DebugReportCallbackFn = std::function<VkBool32(VkDebugReportFlagsEXT, VkDebugReportObjectTypeEXT, uint64_t, size_t, int32_t, const char*, const char*, void*)>;
+
+}} // namespace ci::vk

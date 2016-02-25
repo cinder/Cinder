@@ -108,7 +108,7 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 
 	mWnd = wnd;
 	
-	vk::Environment::initializeVulkan( mOptions.mInstanceLayers, mOptions.mDeviceLayers );
+	vk::Environment::initializeVulkan( mOptions.mInstanceLayers, mOptions.mDeviceLayers, mOptions.mDebugReportCallbackFn );
 	uint32_t gpuIndex = 0;
 	mContext = vk::Environment::getEnv()->createContext( hInst, mWnd, mOptions.mExplicitMode, mOptions.mWorkQueueCount, gpuIndex );
 	mContext->makeCurrent();

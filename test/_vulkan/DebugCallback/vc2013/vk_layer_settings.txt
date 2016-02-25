@@ -1,0 +1,71 @@
+# VK_LAYER_LUNARG_api_dump
+ApiDumpDetailed = TRUE
+ApiDumpNoAddr = FALSE
+ApiDumpFile = TRUE
+ApiDumpLogFilename = vk_api_dump_log.txt 
+ApiDumpFlush = FALSE
+
+# VK_LAYER_LUNARG_threading
+ThreadingDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+ThreadingReportFlags = debug,info,error,warn,perf
+ThreadingDetailed = TRUE
+ThreadingFile = TRUE
+ThreadingLogFilename = vk_param_checker_log.txt 
+ThreadingFlush = FALSE
+
+# VK_LAYER_LUNARG_mem_tracker
+MemTrackerDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+MemTrackerReportFlags = debug,info,error,warn,perf
+MemTrackerDetailed = TRUE
+MemTrackerFile = TRUE
+MemTrackerLogFilename = vk_param_checker_log.txt 
+MemTrackerFlush = FALSE
+
+# VK_LAYER_LUNARG_object_tracker
+ObjectTrackerDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+ObjectTrackerReportFlags = debug,info,error,warn,perf
+ObjectTrackerDetailed = TRUE
+ObjectTrackerFile = TRUE
+ObjectTrackerLogFilename = vk_param_checker_log.txt 
+ObjectTrackerFlush = FALSE
+
+# VK_LAYER_LUNARG_draw_state
+DrawStateDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+DrawStateReportFlags = debug,info,error,warn,perf
+DrawStateDetailed = TRUE
+DrawStateFile = FALSE
+DrawStateLogFilename = vk_device_limits_log.txt 
+DrawStateFlush = FALSE
+
+# VK_LAYER_LUNARG_param_checker
+ParamCheckerDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+ParamCheckerReportFlags = debug,info,error,warn,perf
+ParamCheckerDetailed = TRUE
+ParamCheckerFile = TRUE
+ParamCheckerLogFilename = vk_param_checker_log.txt 
+ParamCheckerFlush = FALSE
+
+# VK_LAYER_LUNARG_swapchain
+SwapchainDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+SwapchainReportFlags = debug,info,error,warn,perf
+SwapchainDetailed = TRUE
+SwapchainFile = FALSE
+SwapchainLogFilename = vk_device_limits_log.txt 
+SwapchainFlush = FALSE
+
+# VK_LAYER_LUNARG_device_limits
+DeviceLimitsDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+DeviceLimitsReportFlags = debug,info,error,warn,perf
+DeviceLimitsDetailed = TRUE
+DeviceLimitsFile = FALSE
+DeviceLimitsLogFilename = vk_device_limits_log.txt 
+DeviceLimitsFlush = FALSE
+
+# VK_LAYER_LUNARG_image
+ImageDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+ImageReportFlags = debug,info,error,warn,perf
+ImageDetailed = TRUE
+ImageFile = FALSE
+ImageLogFilename = vk_device_limits_log.txt 
+ImageFlush = FALSE
+

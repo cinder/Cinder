@@ -93,6 +93,9 @@ class RendererVk : public Renderer {
 		const std::vector<std::string>&	getInstanceLayers() const { return mInstanceLayers; }
 		const std::vector<std::string>&	getDeviceLayers() const { return mDeviceLayers; }
 
+		Options&						setDebugReportCallbackFn( vk::DebugReportCallbackFn fn ) { mDebugReportCallbackFn = fn; return *this; }
+		vk::DebugReportCallbackFn		getDebugReportCallbackfn() const { return mDebugReportCallbackFn; }
+
 	private:
 		bool					mExplicitMode = false;
 		uint32_t				mWorkQueueCount = 1;
@@ -102,6 +105,7 @@ class RendererVk : public Renderer {
 		VkPresentModeKHR		mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
 		std::vector<std::string>	mInstanceLayers;
 		std::vector<std::string>	mDeviceLayers;
+		vk::DebugReportCallbackFn	mDebugReportCallbackFn = nullptr;
 		friend class RendererVk;
 	};
 	

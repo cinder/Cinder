@@ -52,10 +52,10 @@ using ContextRef = std::shared_ptr<Context>;
 class Environment {
 public:
 
-	Environment( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers );
+	Environment( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn );
 	virtual ~Environment();
 
-	static void			initializeVulkan( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers );
+	static void			initializeVulkan( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn );
 	static void			destroyVulkan();
 	static Environment*	getEnv();
 
@@ -75,6 +75,11 @@ public:
 	VkResult	vkGetPhysicalDeviceSurfaceFormatsKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pSurfaceFormatCount, VkSurfaceFormatKHR* pSurfaceFormats );
 	VkResult	vkGetPhysicalDeviceSurfacePresentModesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pPresentModeCount, VkPresentModeKHR* pPresentModes );
 
+	VkResult	vkCreateDebugReportCallbackEXT( VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback);
+	void		vkDestroyDebugReportCallbackEXT( VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
+	void		vkDebugReportMessageEXT (VkInstance instance, VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage);
+
+
 private:
 	std::vector<Context*>	mContexts;
 
@@ -83,6 +88,7 @@ private:
 
 	std::vector<std::string>				mActiveInstanceLayers;
 	std::vector<std::string>				mActiveDeviceLayers;
+	VkDebugReportCallbackEXT				mDebugReportCallback = VK_NULL_HANDLE;
 
 	// Instance layers
 	struct InstanceLayer {
@@ -110,6 +116,22 @@ public:
 	PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR	fpGetPhysicalDeviceSurfaceCapabilitiesKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfaceFormatsKHR		fpGetPhysicalDeviceSurfaceFormatsKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfacePresentModesKHR	fpGetPhysicalDeviceSurfacePresentModesKHR = nullptr;
+
+	PFN_vkCreateDebugReportCallbackEXT				fpCreateDebugReportCallbackEXT = nullptr;
+	PFN_vkDestroyDebugReportCallbackEXT				fpDestroyDebugReportCallbackEXT = nullptr;
+	PFN_vkDebugReportMessageEXT						fpDebugReportMessageEXT = nullptr;
 };
+
+//! Default callback for VK_EXT_debug_report
+VkBool32 defaultDebugReportCallback(
+    VkDebugReportFlagsEXT      flags,
+    VkDebugReportObjectTypeEXT objectType,
+    uint64_t                   object,
+    size_t                     location,
+    int32_t                    messageCode,
+    const char*                pLayerPrefix,
+    const char*                pMessage,
+    void*                      pUserData
+);
 
 }} // namespace cinder::vk
