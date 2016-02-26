@@ -109,15 +109,6 @@ void CommandBuffer::begin()
 {
     VkResult U_ASSERT_ONLY res;
     VkCommandBufferBeginInfo beginInfo = {};
-    //beginInfo.sType					= VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    //beginInfo.pNext					= nullptr;
-    //beginInfo.renderPass			= VK_NULL_HANDLE; /* May only set renderPass and framebuffer */
-    //beginInfo.framebuffer			= VK_NULL_HANDLE; /* for secondary command buffers           */
-    //beginInfo.flags					= 0;
-    //beginInfo.subpass				= 0;
-    //beginInfo.occlusionQueryEnable	= VK_FALSE;
-    //beginInfo.queryFlags			= 0;
-    //beginInfo.pipelineStatistics	= 0;
 	beginInfo.sType				= VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.pNext				= nullptr;
 	beginInfo.flags				= 0;
