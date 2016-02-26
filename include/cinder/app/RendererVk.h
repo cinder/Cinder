@@ -87,6 +87,15 @@ class RendererVk : public Renderer {
 		Options&				setPresentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
 		VkPresentModeKHR		getPresentMode() const { return mPresentMode; }
 
+		//! Param 'layers' should be a semicolon delimited list of layer names
+		Options&						setLayers( const std::string& layers );
+		Options&						setLayers( const std::vector<std::string>& layers );
+		const std::vector<std::string>&	getInstanceLayers() const { return mInstanceLayers; }
+		const std::vector<std::string>&	getDeviceLayers() const { return mDeviceLayers; }
+
+		Options&						setDebugReportCallbackFn( vk::DebugReportCallbackFn fn ) { mDebugReportCallbackFn = fn; return *this; }
+		vk::DebugReportCallbackFn		getDebugReportCallbackfn() const { return mDebugReportCallbackFn; }
+
 	private:
 		bool					mExplicitMode = false;
 		uint32_t				mWorkQueueCount = 1;
@@ -94,6 +103,9 @@ class RendererVk : public Renderer {
 		VkSampleCountFlagBits	mSamples = VK_SAMPLE_COUNT_1_BIT;
 		VkFormat				mDepthStencilFormat = VK_FORMAT_D16_UNORM;
 		VkPresentModeKHR		mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
+		std::vector<std::string>	mInstanceLayers;
+		std::vector<std::string>	mDeviceLayers;
+		vk::DebugReportCallbackFn	mDebugReportCallbackFn = nullptr;
 		friend class RendererVk;
 	};
 	
@@ -104,7 +116,9 @@ class RendererVk : public Renderer {
 
 	RendererRef			clone() const override { return RendererVkRef( new RendererVk( *this ) ); }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 	virtual HWND		getHwnd() override { return mWnd; }
 	virtual void		setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
 	virtual void		kill() override;
@@ -126,7 +140,9 @@ class RendererVk : public Renderer {
 
   private:
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 	HWND				mWnd = nullptr;
 #endif
 	

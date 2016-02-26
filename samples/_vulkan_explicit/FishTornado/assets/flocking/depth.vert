@@ -52,9 +52,9 @@ layout(std140, binding = 0) uniform ciBlock0T {
 	uniform int			uFboRes;
 } ciBlock0;
 
-layout(binding = 1) uniform sampler2DRect uPrevPosTex;
-layout(binding = 2) uniform sampler2DRect uCurrPosTex;
-layout(binding = 3) uniform sampler2DRect uCurrVelTex;
+layout(binding = 1) uniform sampler2D uPrevPosTex;
+layout(binding = 2) uniform sampler2D uCurrPosTex;
+layout(binding = 3) uniform sampler2D uCurrVelTex;
 
 layout(location = 0) in vec4 ciPosition;
 layout(location = 1) in vec2 ciTexCoord0;
@@ -77,9 +77,9 @@ void main()
 
 	// texture data
 	vec2 samplePos		= vec2( ( gl_InstanceIndex % ciBlock0.uFboRes ), ( gl_InstanceIndex / ciBlock0.uFboRes ) );
-	vec4 currPos		= texture( uCurrPosTex, samplePos );
-	vec4 prevPos		= texture( uPrevPosTex, samplePos );
-	vec4 currVel		= texture( uCurrVelTex, samplePos );
+	vec4 currPos		= textureLod( uCurrPosTex, samplePos, 0 );
+	vec4 prevPos		= textureLod( uPrevPosTex, samplePos, 0 );
+	vec4 currVel		= textureLod( uCurrVelTex, samplePos, 0 );
 	float leader		= currPos.a;
 	
 	float currZ			= VertPos.z;

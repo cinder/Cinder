@@ -237,6 +237,27 @@ void DescriptorPool::initialize( const std::vector<VkDescriptorSetLayoutBinding>
 		return;
 	}
 
+	std::map<VkDescriptorType, uint32_t> mappedCounts;
+	for( const auto& layoutBinding : layoutBindings ) {
+		VkDescriptorType descType = layoutBinding.descriptorType;
+		auto it = mappedCounts.find( descType );
+		if( it != mappedCounts.end() ) {
+			++mappedCounts[descType];
+		}
+		else {
+			mappedCounts[descType] = 1;
+		}
+	}
+
+	std::vector<VkDescriptorPoolSize> typeCounts;
+	for( const auto &mc : mappedCounts ) {
+		VkDescriptorPoolSize entry = {};
+		entry.type            = mc.first;
+		entry.descriptorCount = mc.second;
+		typeCounts.push_back( entry );
+	}
+
+	/*
 	std::vector<VkDescriptorPoolSize> typeCounts;
 	for( const auto& layoutBinding : layoutBindings ) {
 		VkDescriptorPoolSize entry = {};
@@ -244,13 +265,14 @@ void DescriptorPool::initialize( const std::vector<VkDescriptorSetLayoutBinding>
 		entry.descriptorCount = 1;
 		typeCounts.push_back( entry );
 	}
+	*/
 
 	VkDescriptorPoolCreateInfo createInfo = {};
 	createInfo.sType			= VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	createInfo.pNext			= nullptr;
-	createInfo.maxSets			= static_cast<uint32_t>( typeCounts.size() );
+	createInfo.maxSets			= 1;
 	createInfo.poolSizeCount	= static_cast<uint32_t>( typeCounts.size() );
-	createInfo.pPoolSizes		= typeCounts.data();
+	createInfo.pPoolSizes		= typeCounts.empty() ? nullptr : typeCounts.data();
 
 	VkResult res = vkCreateDescriptorPool( mContext->getDevice(), &createInfo, nullptr, &mDescriptorPool );
 	assert(res == VK_SUCCESS);

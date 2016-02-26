@@ -125,7 +125,7 @@ public:
 	Context();
 #if defined( CINDER_LINUX )
 #elif defined( CINDER_MSW )
-	Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint32_t workQueueCount, VkPhysicalDevice gpu, Environment *env = nullptr );
+	Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint32_t workQueueCount, VkPhysicalDevice gpu, Environment *env );
 #endif
 	Context( const Context* existingContext, int queueIndex );
 	virtual ~Context();
@@ -146,13 +146,13 @@ public:
 	VkDevice								getDevice() const { return mDevice; }
 	const vk::QueueRef&						getQueue() const { return mQueue; }
 
-	uint32_t								getGraphicsQueueFamilyIndex() const { return mGraphicsQueueFamilyIndex; }
+	uint32_t								getQueueFamilyIndex() const { return mQueueFamilyIndex; }
 	const VkPhysicalDeviceProperties&		getGpuProperties() const { return mGpuProperties; }
 	const VkPhysicalDeviceLimits&			getGpuLimits() const { return mGpuProperties.limits; }
 	std::vector<VkQueueFamilyProperties>	getQueueProperties() const { return mQueueFamilyProperties; }
 	VkPhysicalDeviceMemoryProperties		getMemoryProperties() const { return mMemoryProperties; }
 
-	uint32_t								getQueueCount() const { return mQueueFamilyPropertyCount; }
+	uint32_t								getWorkQueueCount() const;
 
 	bool									findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const;
 
@@ -367,14 +367,22 @@ private:
 	VkPhysicalDevice						mGpu = nullptr;
 	VkDevice								mDevice = nullptr;
 	vk::QueueRef							mQueue;
-    uint32_t								mGraphicsQueueFamilyIndex;
     VkPhysicalDeviceProperties				mGpuProperties;
+    uint32_t								mQueueFamilyIndex = 0;
     std::vector<VkQueueFamilyProperties>	mQueueFamilyProperties;
     VkPhysicalDeviceMemoryProperties		mMemoryProperties;
     uint32_t								mQueueFamilyPropertyCount = 0;
 	uint32_t								mQueueIndex = 0;
 	uint32_t								mWorkQueueCount = 1;
 	
+	// Device layers
+	struct DeviceLayer {
+		VkLayerProperties					layer;
+		std::vector<VkExtensionProperties>	extensions;
+	};
+	std::vector<DeviceLayer>				mDeviceLayers;
+
+
 	// Default graphics variables
 	std::pair<ivec2,ivec2>					mDefaultViewport;
 	float									mDefaultLineWidth = 1.0f;
@@ -435,7 +443,8 @@ private:
 	friend class Environment;
 	friend class Presenter;
 
-	VkResult	initDevice();
+	void		initDeviceLayers();
+	void		initDevice();
 	void		initConnection();
 	void		initSwapchainExtension();
 	void		initDeviceQueue();

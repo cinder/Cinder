@@ -48,10 +48,42 @@
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/Swapchain.h"
 #include "cinder/vk/wrapper.h"
+#include "cinder/Utilities.h"
 #include "cinder/Log.h"
+
+#include <boost/algorithm/string.hpp>
 
 namespace cinder { namespace app {
 
+// -------------------------------------------------------------------------------------------------
+// RendererVk::Options
+// -------------------------------------------------------------------------------------------------
+RendererVk::Options& RendererVk::Options::setLayers(const std::string& layers)
+{
+	std::vector<std::string> tokens = ci::split( layers, ";" );
+	setLayers( tokens );
+	return *this;
+}
+
+RendererVk::Options& RendererVk::Options::setLayers( const std::vector<std::string>& layers )
+{
+	mInstanceLayers = layers; 
+	mDeviceLayers = layers; 
+
+	for( auto& elem : mInstanceLayers ) {
+		boost::trim( elem );
+	}
+
+	for( auto& elem : mDeviceLayers ) {
+		boost::trim( elem );
+	}
+
+	return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+// RendererVk
+// -------------------------------------------------------------------------------------------------
 RendererVk::RendererVk( const RendererVk::Options& options )
 	: Renderer(), mOptions( options )
 {
@@ -60,7 +92,9 @@ RendererVk::RendererVk( const RendererVk::Options& options )
 RendererVk::RendererVk( const RendererVk &renderer )
 	: Renderer(), mOptions( renderer.mOptions )
 {
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 	mWnd = renderer.mWnd;
 #endif
 }
@@ -69,14 +103,16 @@ RendererVk::~RendererVk()
 {
 }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	::HINSTANCE hInst = ::GetModuleHandle( nullptr );
 
 	mWnd = wnd;
 	
-	vk::Environment::initializeVulkan();
+	vk::Environment::initializeVulkan( mOptions.mInstanceLayers, mOptions.mDeviceLayers, mOptions.mDebugReportCallbackFn );
 	uint32_t gpuIndex = 0;
 	mContext = vk::Environment::getEnv()->createContext( hInst, mWnd, mOptions.mExplicitMode, mOptions.mWorkQueueCount, gpuIndex );
 	mContext->makeCurrent();
@@ -193,12 +229,13 @@ void RendererVk::defaultResize()
 {
 	makeCurrentContext();
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
 	::RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
 	int width = clientRect.right - clientRect.left;
 	int height = clientRect.bottom - clientRect.top;
-#elif defined( CINDER_LINUX )
 #endif
 
 	//if( ! isExplicitMode() ) 

@@ -52,18 +52,17 @@ using ContextRef = std::shared_ptr<Context>;
 class Environment {
 public:
 
-	Environment();
+	Environment( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn );
 	virtual ~Environment();
 
-	static void			initializeVulkan();
+	static void			initializeVulkan( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn );
 	static void			destroyVulkan();
 	static Environment*	getEnv();
 
 	VkInstance								getVulkanInstance() const { return mVulkanInstance; }
 	std::vector<VkPhysicalDevice>			getGpus() const { return mGpus; }
 
-	const std::vector<std::string>&			getDeviceLayerNames() const { return mDeviceLayerNames; }
-	const std::vector<std::string>&			getDeviceExtensionNames() const { return mDeviceExtensionNames; }
+	const std::vector<std::string>&			getActiveDeviceLayers() const { return mActiveDeviceLayers; }
 
 	ContextRef								createContext( void* connection, void* window, bool explicitMode,  uint32_t workQueueCount, uint32_t gpuIndex );
 	ContextRef								createContextFromExisting( const Context* existingContext, int queueIndex );
@@ -76,33 +75,39 @@ public:
 	VkResult	vkGetPhysicalDeviceSurfaceFormatsKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pSurfaceFormatCount, VkSurfaceFormatKHR* pSurfaceFormats );
 	VkResult	vkGetPhysicalDeviceSurfacePresentModesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pPresentModeCount, VkPresentModeKHR* pPresentModes );
 
+	VkResult	vkCreateDebugReportCallbackEXT( VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback);
+	void		vkDestroyDebugReportCallbackEXT( VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
+	void		vkDebugReportMessageEXT (VkInstance instance, VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage);
+
+
 private:
 	std::vector<Context*>	mContexts;
 
-    std::vector<std::string>				mInstanceLayerNames;
-    std::vector<std::string>				mInstanceExtensionNames;
-	std::vector<util::LayerProperties>		mInstanceLayerProperties;
-	std::vector<VkExtensionProperties>		minstanceExtensionProperties;
-
 	VkInstance								mVulkanInstance = nullptr;
-
-    std::vector<std::string>				mDeviceLayerNames;
-    std::vector<std::string>				mDeviceExtensionNames;
-    std::vector<util::LayerProperties>		mDeviceLayerProperties;
-    std::vector<VkExtensionProperties>		mDevicEextensionProperties;
-
     std::vector<VkPhysicalDevice>			mGpus;
 
+	std::vector<std::string>				mActiveInstanceLayers;
+	std::vector<std::string>				mActiveDeviceLayers;
+	VkDebugReportCallbackEXT				mDebugReportCallback = VK_NULL_HANDLE;
+
+	// Instance layers
+	struct InstanceLayer {
+		VkLayerProperties					layer;
+		std::vector<VkExtensionProperties>	extensions;
+	};
+	std::vector<InstanceLayer>				mInstanceLayers;
+	
 	void create();
 	void destroy();
 
-	VkResult	initGlobaExtensionProperties( util::LayerProperties &layerProps );
-	VkResult	initGlobalLayerProperties();
-	void		initInstanceExtensionNames();
-	void		initDeviceExtensionNames();
+	//VkResult	initGlobaExtensionProperties( util::LayerProperties &layerProps );
+	//VkResult	initGlobalLayerProperties();
+	//void		initInstanceExtensionNames();
+	//void		initDeviceExtensionNames();
 
-	VkResult	initInstance();
-	VkResult	initEnumerateDevice();
+	void		initInstanceLayers();
+	void		initInstance();
+	void		initEnumerateDevice();
 
 	void		destroyInstance();
 
@@ -111,6 +116,10 @@ public:
 	PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR	fpGetPhysicalDeviceSurfaceCapabilitiesKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfaceFormatsKHR		fpGetPhysicalDeviceSurfaceFormatsKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfacePresentModesKHR	fpGetPhysicalDeviceSurfacePresentModesKHR = nullptr;
+
+	PFN_vkCreateDebugReportCallbackEXT				fpCreateDebugReportCallbackEXT = nullptr;
+	PFN_vkDestroyDebugReportCallbackEXT				fpDestroyDebugReportCallbackEXT = nullptr;
+	PFN_vkDebugReportMessageEXT						fpDebugReportMessageEXT = nullptr;
 };
 
 }} // namespace cinder::vk

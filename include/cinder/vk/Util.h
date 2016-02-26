@@ -42,19 +42,14 @@
 
 namespace cinder { namespace vk { namespace util { 
 
-struct LayerProperties {
-	VkLayerProperties					properties;
-	std::vector<VkExtensionProperties>	extensions;
-};
-
 template <typename FuncPtrT>
 FuncPtrT getInstanceProc( VkInstance instance, const std::string& fnName )
 {
 	FuncPtrT result = (FuncPtrT)vkGetInstanceProcAddr( instance, fnName.c_str() );
-	if( nullptr == result ) {
-		std::string err = "vkGetInstanceProcAddr failed to find " + fnName;
-		throw std::runtime_error( err.c_str() );
-	}
+	//if( nullptr == result ) {
+	//	std::string err = "vkGetInstanceProcAddr failed to find " + fnName;
+	//	throw std::runtime_error( err.c_str() );
+	//}
 	return result;
 }
 
@@ -62,10 +57,10 @@ template <typename FuncPtrT>
 FuncPtrT getDeviceProcAddr( VkDevice device, const std::string& fnName )
 {
 	FuncPtrT result = (FuncPtrT)vkGetDeviceProcAddr( device, fnName.c_str() );
-	if( nullptr == result ) {
-		std::string err = "vkGetDeviceProcAddr failed to find " + fnName;
-		throw std::runtime_error( err.c_str() );
-	}
+	//if( nullptr == result ) {
+	//	std::string err = "vkGetDeviceProcAddr failed to find " + fnName;
+	//	throw std::runtime_error( err.c_str() );
+	//}
 	return result;
 }
 

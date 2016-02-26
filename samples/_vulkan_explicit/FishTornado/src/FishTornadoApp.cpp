@@ -51,10 +51,16 @@
 #include "Globals.h"
 
 #include <boost/algorithm/string.hpp>
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+// The number of queues to request. May not get what's requested.
+#if defined( THREADED_LOAD )
+	#define NUM_QUEUES 5
+#else 
+	#define NUM_QUEUES 1
+#endif
 
 FishTornadoApp::FishTornadoApp()
 {
@@ -104,74 +110,169 @@ void FishTornadoApp::setup()
 #if defined( THREADED_LOAD )
 	// The goal here is to demonstrate the flexibility of multi-threaded resources
 	// loading in Vulkan not the most efficient way to do it. 
-
 	auto primaryCtx = vk::context();
 
-	// Light
-	{
+	// The number of requested work queues are available
+	const uint32_t numWorkQueues = primaryCtx->getWorkQueueCount();
+	CI_LOG_I( "Loading using " << numWorkQueues << " work queues" );
+
+	if( numWorkQueues >= NUM_QUEUES ) {
+		// GpuFlocker
+		mGpuFlocker = GpuFlocker::create( this );
+		CI_LOG_I( "GpuFlocker created" );
+
+
+		// Light
+		{
+			uint32_t queueIndex = 1;
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
+			mLightLoadThread = std::shared_ptr<std::thread>( new std::thread( [this, secondaryCtx, primaryCtx]() {
+				secondaryCtx->makeCurrent();
+				this->mLight = Light::create();
+				secondaryCtx->transferTrackedObjects( primaryCtx );
+				this->mLightLoaded = true;
+				CI_LOG_I( "Light assets loaded" );
+			} ) );
+		}
+
+		// Ocean
+		{
+			uint32_t queueIndex = 2;
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
+			mOceanLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
+				secondaryCtx->makeCurrent();
+				this->mOcean = Ocean::create( this );
+				secondaryCtx->transferTrackedObjects( primaryCtx );
+				this->mOceanLoaded = true;
+				CI_LOG_I( "Ocean assets loaded" );
+			} ) );
+		}
+
+		// Shark
+		{
+			uint32_t queueIndex = 3;
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
+			mSharkLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
+				secondaryCtx->makeCurrent();
+				this->mShark = Shark::create( this );
+				secondaryCtx->transferTrackedObjects( primaryCtx );
+				this->mSharkLoaded = true;
+				CI_LOG_I( "Shark assets loaded" );
+			} ) );
+		}
+
+		// Fishes
+		{
+			uint32_t queueIndex = 4;
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
+			mFishLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
+				secondaryCtx->makeCurrent();			
+
+				// High res
+				ObjLoader loader = ObjLoader( loadFile( getAssetPath( "flocking/trevallie.obj" ) ),  ObjLoader::Options().flipV() );
+				this->mHiResFishBatch = vk::Batch::create( loader, mRenderShader );
+				CI_LOG_I( "GpuFlocker (hires) created" );
+
+				// Low res
+				loader = loadFile( getAssetPath( "flocking/trevallie_lowRes.obj" ) );
+				this->mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
+				CI_LOG_I( "GpuFlocker (lowres) created" );
+
+				secondaryCtx->transferTrackedObjects( primaryCtx );
+				this->mFishLoaded = true;
+
+				CI_LOG_I( "Fish assets loaded" );
+			} ) );
+		}
+	}
+	// There's at least 2 work queues but less than the number requested
+	else if( numWorkQueues >= 2 ) {
+		// GpuFlocker
+		mGpuFlocker = GpuFlocker::create( this );
+		CI_LOG_I( "GpuFlocker created" );
+
 		uint32_t queueIndex = 1;
 		auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
 		mLightLoadThread = std::shared_ptr<std::thread>( new std::thread( [this, secondaryCtx, primaryCtx]() {
 			secondaryCtx->makeCurrent();
-			this->mLight = Light::create();
-			secondaryCtx->transferTrackedObjects( primaryCtx );
-			this->mLightLoaded = true;
-			CI_LOG_I( "Light assets loaded" );
+
+			// Light
+			{
+				this->mLight = Light::create();
+				secondaryCtx->transferTrackedObjects( primaryCtx );
+				this->mLightLoaded = true;
+				CI_LOG_I( "Light assets loaded" );
+			}
+
+			// Ocean
+			{
+				this->mOcean = Ocean::create( this );
+				secondaryCtx->transferTrackedObjects( primaryCtx );
+				this->mOceanLoaded = true;
+				CI_LOG_I( "Ocean assets loaded" );
+			}
+
+			// Shark
+			{
+				this->mShark = Shark::create( this );
+				secondaryCtx->transferTrackedObjects( primaryCtx );
+				this->mSharkLoaded = true;
+				CI_LOG_I( "Ocean assets loaded" );
+			}
+
+			// GpuFlocker
+			{
+				// High res
+				ObjLoader loader = ObjLoader( loadFile( getAssetPath( "flocking/trevallie.obj" ) ),  ObjLoader::Options().flipV() );
+				this->mHiResFishBatch = vk::Batch::create( loader, mRenderShader );
+				CI_LOG_I( "GpuFlocker (hires) created" );
+
+				// Low res
+				loader = loadFile( getAssetPath( "flocking/trevallie_lowRes.obj" ) );
+				this->mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
+				CI_LOG_I( "GpuFlocker (lowres) created" );
+
+				secondaryCtx->transferTrackedObjects( primaryCtx );
+				this->mFishLoaded = true;
+
+				CI_LOG_I( "Fish assets loaded" );
+			}
 		} ) );
 	}
+	// Only 1 work queue
+	else {
+		// Light source
+		mLight = Light::create();
+		CI_LOG_I( "Light created" );
 
-	// Ocean
-	{
-		uint32_t queueIndex = 2;
-		auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
-		mOceanLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
-			secondaryCtx->makeCurrent();
-			this->mOcean = Ocean::create( this );
-			secondaryCtx->transferTrackedObjects( primaryCtx );
-			this->mOceanLoaded = true;
-			CI_LOG_I( "Ocean assets loaded" );
-		} ) );
-	}
+		mOcean = Ocean::create( this );
+		CI_LOG_I( "Ocean created" );
 
-	// Shark
-	{
-		uint32_t queueIndex = 3;
-		auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
-		mSharkLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
-			secondaryCtx->makeCurrent();
-			this->mShark = Shark::create( this );
-			secondaryCtx->transferTrackedObjects( primaryCtx );
-			mSharkLoaded = true;
-			CI_LOG_I( "Shark assets loaded" );
-		} ) );
-	}
+		mCachedLightPtr = mLight.get();
+		mCachedOceanPtr = mOcean.get();
 
-	// GpuFlocker
-	mGpuFlocker = GpuFlocker::create( this );
-	CI_LOG_I( "GpuFlocker created" );
+		// Shark
+		mShark = Shark::create( this );
+		CI_LOG_I( "Shark created" );
 
-	// Fishes
-	{
-		uint32_t queueIndex = 4;
-		auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
-		mFishLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
-			secondaryCtx->makeCurrent();			
+		// GpuFlocker
+		mGpuFlocker = GpuFlocker::create( this );
+		CI_LOG_I( "GpuFlocker created" );
+	
+		// High res
+		ObjLoader loader = ObjLoader( loadFile( getAssetPath( "flocking/trevallie.obj" ) ),  ObjLoader::Options().flipV() );
+		mHiResFishBatch	= vk::Batch::create( loader, mRenderShader );
+		CI_LOG_I( "Fish (hires) created" );
 
-			// High res
-			ObjLoader loader = ObjLoader( loadFile( getAssetPath( "flocking/trevallie.obj" ) ),  ObjLoader::Options().flipV() );
-			this->mHiResFishBatch = vk::Batch::create( loader, mRenderShader );
-			CI_LOG_I( "GpuFlocker (hires) created" );
+		// Low res
+		loader = loadFile( getAssetPath( "flocking/trevallie_lowRes.obj" ) );
+		mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
+		CI_LOG_I( "Fish (lowres) created" );
 
-			// Low res
-			loader = loadFile( getAssetPath( "flocking/trevallie_lowRes.obj" ) );
-			this->mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
-			CI_LOG_I( "GpuFlocker (lowres) created" );
-
-			secondaryCtx->transferTrackedObjects( primaryCtx );
-			this->mFishLoaded = true;
-
-			CI_LOG_I( "Fish assets loaded" );
-		} ) );
+		mLightLoaded = true;
+		mOceanLoaded = true;
+		mSharkLoaded = true;
+		mFishLoaded  = true;
 	}
 #else
 	// Light source
@@ -521,11 +622,11 @@ void FishTornadoApp::drawToDepthFbo( const ci::vk::CommandBufferRef& cmdBuf )
 
 	mLight->prepareDraw( cmdBuf );
 
-	if( mSharkLoaded && mDrawShark ) {
+	if( mSharkLoaded && mDrawShark && mLightLoaded && mOceanLoaded ) {
 		mShark->drawDepth();	
 	}
 	
-	if( mFishLoaded ) {
+	if( mFishLoaded && mLightLoaded && mOceanLoaded ) {
 		mGpuFlocker->drawToDepthFbo( mDepthShader, mLoResFishBatch );
 	}
 	
@@ -545,11 +646,11 @@ void FishTornadoApp::drawToMainFbo( const ci::vk::CommandBufferRef& cmdBuf )
 			mOcean->draw();
 		}
 
-		if( mFishLoaded ) {
+		if( mFishLoaded && mLightLoaded && mOceanLoaded ) {
 			mGpuFlocker->draw( mRenderShader, mHiResFishBatch );
 		}
 
-		if( mSharkLoaded && mDrawShark ) {
+		if( mSharkLoaded && mDrawShark && mLightLoaded && mOceanLoaded ) {
 			mShark->draw();
 		}
 
@@ -659,12 +760,6 @@ void FishTornadoApp::draw()
 		console() << "FPS: " << getAverageFps() << std::endl;
 	}
 }
-
-#if defined( THREADED_LOAD )
-	#define NUM_QUEUES 5
-#else 
-	#define NUM_QUEUES 1
-#endif
 
 CINDER_APP( FishTornadoApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode().setWorkQueueCount( NUM_QUEUES ) ), []( FishTornadoApp::Settings *settings ) {	
 	settings->setWindowSize( 1920, 1080 );

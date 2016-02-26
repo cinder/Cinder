@@ -465,4 +465,17 @@ vk::VboMeshRef NormalMappingApp::createDebugMesh( const TriMesh& mesh )
 	return result;
 }
 
-CINDER_APP( NormalMappingApp, RendererVk(  RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ), prepareSettings )
+const std::vector<std::string> gLayers = {
+	//"VK_LAYER_LUNARG_api_dump",
+	//"VK_LAYER_LUNARG_threading",
+	//"VK_LAYER_LUNARG_mem_tracker",
+	//"VK_LAYER_LUNARG_object_tracker",
+	//"VK_LAYER_LUNARG_draw_state",
+	//"VK_LAYER_LUNARG_param_checker",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_LUNARG_device_limits"
+	//"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_GOOGLE_unique_objects",
+};
+
+CINDER_APP( NormalMappingApp, RendererVk(  RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setLayers( gLayers ) ), prepareSettings )
