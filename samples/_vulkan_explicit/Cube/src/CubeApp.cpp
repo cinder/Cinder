@@ -229,7 +229,7 @@ void RotatingCubeApp::draw()
 
 	uint32_t frame = getElapsedFrames() - 1;
 	uint32_t frameIdx = frame % FRAME_LAG;
-	CI_LOG_I( "Frame: " << frame );
+	//CI_LOG_I( "Frame: " << frame );
 
 	if( mFencesInited[frameIdx] ) {
 		vkWaitForFences( vk::context()->getDevice(), 1, &mFences[frameIdx], VK_TRUE, UINT32_MAX );
