@@ -40,17 +40,28 @@
 
 namespace cinder { namespace vk {
 
-Device::Device()
+Device::Device( VkPhysicalDevice gpu )
+	: mGpu( gpu )
 {
+	initialize();
 }
 
 Device::~Device()
 {
+	destroy();
 }
 
-DeviceRef Device::create()
+void Device::initialize()
 {
-	DeviceRef result;
+}
+
+void Device::destroy( bool removeFromTracking )
+{
+}
+
+DeviceRef Device::create( VkPhysicalDevice gpu )
+{
+	DeviceRef result = DeviceRef( new Device( gpu ) );
 	return result;
 }
 

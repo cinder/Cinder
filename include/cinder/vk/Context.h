@@ -364,8 +364,8 @@ private:
 
 	bool									mExplicitMode = false;
 
-	VkPhysicalDevice						mGpu = nullptr;
-	VkDevice								mDevice = nullptr;
+	VkPhysicalDevice						mGpu = VK_NULL_HANDLE;
+	VkDevice								mDevice = VK_NULL_HANDLE;
 	vk::QueueRef							mQueue;
     VkPhysicalDeviceProperties				mGpuProperties;
     uint32_t								mQueueFamilyIndex = 0;

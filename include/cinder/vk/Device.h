@@ -73,15 +73,23 @@ class Device {
 public:
 	virtual ~Device();
 
-	static DeviceRef					create();
+	static DeviceRef						create( VkPhysicalDevice gpu );
 
-	VkDevice							getDevice() const { return mDevice; }
+	VkDevice								getDevice() const { return mDevice; }
 
 private:
-	Device();
+	Device( VkPhysicalDevice gpu );
 
-	VkDevice							mDevice = VK_NULL_HANDLE;
+	VkPhysicalDevice						mGpu = VK_NULL_HANDLE;
+	VkDevice								mDevice = VK_NULL_HANDLE;
+    std::vector<VkQueueFamilyProperties>	mQueueFamilyProperties;
+    VkPhysicalDeviceMemoryProperties		mMemoryProperties;
+	uint32_t								mQueueCount = 0;
+	
+	void initialize();
+	void destroy( bool removeFromTracking = true );
 
+private:
 	//! \class TrackedObject
 	template <typename T> class TrackedObject {
 	public:
