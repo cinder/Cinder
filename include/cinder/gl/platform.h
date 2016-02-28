@@ -139,7 +139,9 @@
 
 	// Android and Linux
 	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-		#define CINDER_GL_HAS_DRAW_INSTANCED
+		#if ! defined( CINDER_LINUX_EGL_RPI2 )
+		    #define CINDER_GL_HAS_DRAW_INSTANCED
+		#endif
 		#define CINDER_GL_HAS_TEXTURE_NORM16
 
 		// Requires: GL_ANDROID_extension_pack_es31a
@@ -161,8 +163,10 @@
 		#define CINDER_GL_HAS_REQUIRED_INTERNALFORMAT
 	#else 
 		// OpenGL ES 2
-		#define CINDER_GL_HAS_DRAW_INSTANCED
-		#define CINDER_GL_HAS_FBO_MULTISAMPLING
+		#if ! defined( CINDER_LINUX_EGL_RPI2 )
+		    #define CINDER_GL_HAS_DRAW_INSTANCED
+		    #define CINDER_GL_HAS_FBO_MULTISAMPLING
+		#endif
 		#define CINDER_GL_HAS_MAP_BUFFER
 		#define CINDER_GL_HAS_MAP_BUFFER_RANGE
 		#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
