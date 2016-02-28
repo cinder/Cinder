@@ -36,69 +36,19 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/vk/scoped.h"
-#include "cinder/vk/Context.h"
+#include "cinder/vk/platform.h"
 
 namespace cinder { namespace vk {
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// ScopedColor
-ScopedColor::ScopedColor()
-	: mCtx( vk::context() )
-{
-	mColor = mCtx->getCurrentColor();
-}
+class Device;
+using DeviceRef = std::shared_ptr<Device>;
 
-ScopedColor::ScopedColor( const ColorAf &color )
-	: mCtx( vk::context() )
-{
-	mColor = mCtx->getCurrentColor();
-	mCtx->setCurrentColor( color );
-}
+} } // namespace cinder::vk
 
-ScopedColor::ScopedColor( float red, float green, float blue, float alpha )
-	: mCtx( vk::context() )
-{
-	mColor = mCtx->getCurrentColor();
-	mCtx->setCurrentColor( ColorA( red, green, blue, alpha ) );	
-}
+VkResult	vkCreateFence( const ci::vk::Device* device, const VkFenceCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkFence* pFence );
+void		vkDestroyFence( const ci::vk::Device* device, VkFence fence, const VkAllocationCallbacks* pAllocator );
+VkResult	vkResetFences( const ci::vk::Device* device, uint32_t fenceCount, const VkFence* pFences );
+VkResult	vkGetFenceStatus( const ci::vk::Device* device, VkFence fence );
+VkResult	vkWaitForFences( const ci::vk::Device* device, uint32_t fenceCount, const VkFence* pFences, VkBool32 waitAll, uint64_t timeout );
 
-ScopedColor::~ScopedColor()
-{
-	mCtx->setCurrentColor( mColor );
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-// ScopedBlend
-ScopedBlend::ScopedBlend( VkBool32 enable )
-	: mCtx( vk::context() ), mSaveFactors( false )
-{
-	mCtx->pushBoolState( ci::vk::Cap::BLEND, enable );
-}
-
-//! Parallels glBlendFunc(), implicitly enables blending
-ScopedBlend::ScopedBlend( VkBlendFactor sfactor, VkBlendFactor dfactor )
-	: mCtx( vk::context() ), mSaveFactors( true )
-{
-	mCtx->pushBoolState( ci::vk::Cap::BLEND, VK_TRUE );
-	mCtx->pushBlendFuncSeparate( sfactor, dfactor, sfactor, dfactor );
-}
-
-//! Parallels glBlendFuncSeparate(), implicitly enables blending
-ScopedBlend::ScopedBlend( VkBlendFactor srcRGB, VkBlendFactor dstRGB, VkBlendFactor srcAlpha, VkBlendFactor dstAlpha )
-	: mCtx( vk::context() ), mSaveFactors( true )
-{
-	mCtx->pushBoolState( ci::vk::Cap::BLEND, VK_TRUE );
-	mCtx->pushBlendFuncSeparate( srcRGB, dstRGB, srcAlpha, dstAlpha );
-}
-
-ScopedBlend::~ScopedBlend()
-{
-	mCtx->popBoolState( ci::vk::Cap::BLEND );
-	if( mSaveFactors ) {
-		mCtx->popBlendFuncSeparate();
-	}
-}
-
-
-}} // namespace cinder::vk
+VkResult	vkCreateSemaphore( const ci::vk::Device* device, const VkSemaphoreCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore );

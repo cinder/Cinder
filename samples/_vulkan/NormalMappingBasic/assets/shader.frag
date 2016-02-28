@@ -5,7 +5,7 @@
 layout(binding=1) uniform sampler2D uDiffuseMap;
 layout(binding=2) uniform sampler2D uNormalMap;
 
-layout(binding=3) uniform ciBlock1T {
+layout(std140, binding=3) uniform ciBlock1T {
 	uniform vec3 uLightLocViewSpace;
 } ciBlock1;
 

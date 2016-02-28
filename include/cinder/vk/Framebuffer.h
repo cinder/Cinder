@@ -52,7 +52,7 @@ using FramebufferRef = std::shared_ptr<Framebuffer>;
 //! \class Framebuffer
 //!
 //!
-class Framebuffer : public BaseVkObject {
+class Framebuffer : public BaseDeviceObject {
 public:
 
 	class Format;
@@ -100,11 +100,9 @@ public:
 
 	// ------------------------------------------------------------------------------------------------
 
-	Framebuffer();
-	Framebuffer( VkRenderPass renderPass, const ivec2& size, const vk::Framebuffer::Format& format, Context *context );
 	virtual ~Framebuffer();
 
-	static FramebufferRef		create( VkRenderPass renderPass, const ivec2& size, const vk::Framebuffer::Format& format, Context *context = nullptr );
+	static FramebufferRef		create( VkRenderPass renderPass, const ivec2& size, const vk::Framebuffer::Format& format, vk::Device *device = nullptr );
 
 	VkFramebuffer				getFramebuffer() const { return mFramebuffer; }
 
@@ -116,6 +114,8 @@ public:
 	const std::vector<Framebuffer::Attachment>&	getAttachments() const { return mFormat.mAttachments; }
 
 private:
+	Framebuffer( VkRenderPass renderPass, const ivec2& size, const vk::Framebuffer::Format& format, vk::Device *device );
+
 	VkFramebuffer				mFramebuffer = VK_NULL_HANDLE;
 	VkRenderPass				mRenderPass = VK_NULL_HANDLE;
 	uint32_t					mWidth = 0;
@@ -124,7 +124,7 @@ private:
 
 	void initialize( const vk::Framebuffer::Format& format );
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class vk::Device;
 };
 
 }} // namespace cinder::vk

@@ -97,6 +97,7 @@ void ShadowMappingBasic::setup()
 	
 	vk::Texture2d::Format depthFormat;
 	depthFormat.setInternalFormat( VK_FORMAT_D32_SFLOAT );
+	depthFormat.setUsageDepthStencilAttachment();
 	depthFormat.setMagFilter( VK_FILTER_LINEAR );
 	depthFormat.setMinFilter( VK_FILTER_LINEAR );
 	depthFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE );
@@ -223,7 +224,7 @@ void ShadowMappingBasic::generateCommandBuffer( const vk::CommandBufferRef& cmdB
 	{
 		renderDepthFbo();
 
-		vk::context()->getPresenter()->beginRender( cmdBuf );
+		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
 		{
 			vk::setMatrices( mCam );
 
@@ -246,7 +247,7 @@ void ShadowMappingBasic::generateCommandBuffer( const vk::CommandBufferRef& cmdB
 			vk::draw( mShadowMapTex, Rectf( 0, 0, size, size ) );    
 			*/
 		}
-		vk::context()->getPresenter()->endRender();
+		vk::context()->getPresenter()->endRender( vk::context() );
 	}
 	cmdBuf->end();
 }
@@ -269,13 +270,13 @@ void ShadowMappingBasic::draw()
 
     // Submit command buffer for processing
 	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	vk::context()->getQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
+	vk::context()->getGraphicsQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
 
 	// Submit presentation
-	vk::context()->getQueue()->present( renderingCompleteSemaphore, vk::context()->getPresenter() );
+	vk::context()->getGraphicsQueue()->present( renderingCompleteSemaphore, vk::context()->getPresenter() );
 
 	// Wait for work to be done
-	vk::context()->getQueue()->waitIdle();
+	vk::context()->getGraphicsQueue()->waitIdle();
 }
 
 CINDER_APP( ShadowMappingBasic, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_32_BIT ).setExplicitMode() ), ShadowMappingBasic::prepareSettings )

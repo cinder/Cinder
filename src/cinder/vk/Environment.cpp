@@ -37,7 +37,7 @@
 */
 
 #include "cinder/vk/Environment.h"
-#include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/Log.h"
 
@@ -49,8 +49,7 @@ namespace cinder { namespace vk {
 static std::unique_ptr<Environment> sEnvironment;
 
 // Mutexes
-static std::mutex sTrackedObjectCreatedMutex;
-static std::mutex sTrackedObjectDestroyedMutex;
+static std::mutex sTrackedDeviceMutex;
 static vk::DebugReportCallbackFn sDebugReportCallbackFn = nullptr;
 
 VKAPI_ATTR VkBool32 VKAPI_CALL proxyDebugReportCallback(
@@ -74,8 +73,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL proxyDebugReportCallback(
 //! \class Environment
 //!
 //!
-Environment::Environment( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn )
-	: mActiveInstanceLayers( instanceLayers ), mActiveDeviceLayers( deviceLayers )
+Environment::Environment( bool explicitMode, const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn )
+	: mExplicitMode( explicitMode ), mActiveInstanceLayers( instanceLayers ), mActiveDeviceLayers( deviceLayers )
 {
 	sDebugReportCallbackFn = debugReportCallbackFn;
 	create();
@@ -338,41 +337,29 @@ void Environment::destroyInstance()
 
 void Environment::destroy()
 {
-	// Destroy the contexts
-	{
-		std::lock_guard<std::mutex> lock( sTrackedObjectDestroyedMutex );
-
-		if( ! mContexts.empty() ) {
-			bool removeFromeTracking = false;
-			// Secondary first
-			for( auto& ctx : mContexts ) {
-				if( ctx->isSecondary() ) {
-					ctx->destroy( removeFromeTracking );
-				}
-			}
-
-			// Primary last
-			for( auto& ctx : mContexts ) {
-				if( ctx->isPrimary() ) {
-					ctx->destroy( removeFromeTracking );
-				}
-			}
-
-			// Clear all contexts
-			mContexts.clear();
-		}
-	}
-
-	destroyInstance();
-}
-
-void Environment::initializeVulkan( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn )
-{
-	if( sEnvironment ) {
+	if( VK_NULL_HANDLE == mVulkanInstance ) {
 		return;
 	}
 
-	sEnvironment.reset( new Environment( instanceLayers, deviceLayers, debugReportCallbackFn ) );
+	// Devices
+	const bool removeTrackedObjects = false;
+	for( auto& device : mDevices ) {
+		device->destroy( removeTrackedObjects );
+	}
+	mDevices.clear();
+
+	// Instance
+	destroyInstance();
+}
+
+Environment*  Environment::initializeVulkan( bool explicitMode, const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn )
+{
+	if( sEnvironment ) {
+		return sEnvironment.get();
+	}
+
+	sEnvironment.reset( new Environment( explicitMode, instanceLayers, deviceLayers, debugReportCallbackFn ) );
+	return sEnvironment.get();
 }
 
 void Environment::destroyVulkan()
@@ -388,13 +375,10 @@ Environment* Environment::getEnv()
 	return sEnvironment.get();
 }
 
-ContextRef Environment::createContext( void* connection, void* window, bool explicitMode, uint32_t workQueueCount, uint32_t gpuIndex )
+/*
+ContextRef Environment::createContext( const vk::PresenterRef& presenter, vk::Device* device )
 {
-#if defined( CINDER_LINUX )
-#elif defined( CINDER_MSW )
-	// @TODO: Add error checking for gpuIndex referencing mGpus
-	ContextRef result( new Context( static_cast<::HINSTANCE>( connection ), static_cast<::HWND>( window ), explicitMode, workQueueCount, mGpus[gpuIndex], this ) );
-#endif
+	ContextRef result = Context::create( presenter, device, this );
 	return result;
 }
 
@@ -403,48 +387,64 @@ ContextRef Environment::createContextFromExisting( const Context* existingContex
 	ContextRef result( new Context( existingContext, queueIndex ) );
 	return result;
 }
+*/
 
-void Environment::trackedObjectCreated( Context *obj )
+void Environment::trackedDeviceCreated( const vk::DeviceRef& device )
 {
-	std::lock_guard<std::mutex> lock( sTrackedObjectCreatedMutex );
+	std::lock_guard<std::mutex> lock( sTrackedDeviceMutex );
 
-	auto it = std::find( std::begin( mContexts ), std::end( mContexts ), obj );
-	if( it == std::end( mContexts ) ) {
-		mContexts.push_back( obj );
+	auto it = std::find( std::begin( mDevices ), std::end( mDevices ), device );
+	if( it == std::end( mDevices ) ) {
+		mDevices.push_back( device );
 	}
 }
 
-void Environment::trackedObjectDestroyed( Context *obj )
+void Environment::trackedDeviceDestroyed( const vk::DeviceRef& device )
 {
-	std::lock_guard<std::mutex> lock( sTrackedObjectDestroyedMutex );
+	std::lock_guard<std::mutex> lock( sTrackedDeviceMutex );
 
-	auto it = std::find( std::begin( mContexts ), std::end( mContexts ), obj );
-	if( it != std::end( mContexts ) ) {
-		mContexts.erase(
-			std::remove( std::begin( mContexts ), std::end( mContexts ), obj ),
-			std::end( mContexts )
+	auto it = std::find( std::begin( mDevices ), std::end( mDevices ), device );
+	if( it != std::end( mDevices ) ) {
+		mDevices.erase(
+			std::remove( std::begin( mDevices ), std::end( mDevices ), device ),
+			std::end( mDevices )
 		);
 	}
 }
 
-VkResult Environment::vkGetPhysicalDeviceSurfaceSupportKHR( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, VkSurfaceKHR surface, VkBool32* pSupported )
+VkResult Environment::GetPhysicalDeviceSurfaceSupportKHR( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, VkSurfaceKHR surface, VkBool32* pSupported )
 {
 	return this->fpGetPhysicalDeviceSurfaceSupportKHR( physicalDevice, queueFamilyIndex, surface, pSupported );
 }
 
-VkResult Environment::vkGetPhysicalDeviceSurfaceCapabilitiesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceCapabilitiesKHR* pSurfaceCapabilities )
+VkResult Environment::GetPhysicalDeviceSurfaceCapabilitiesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceCapabilitiesKHR* pSurfaceCapabilities )
 {
 	return this->fpGetPhysicalDeviceSurfaceCapabilitiesKHR( physicalDevice, surface, pSurfaceCapabilities );
 }
 
-VkResult Environment::vkGetPhysicalDeviceSurfaceFormatsKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pSurfaceFormatCount, VkSurfaceFormatKHR* pSurfaceFormats )
+VkResult Environment::GetPhysicalDeviceSurfaceFormatsKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pSurfaceFormatCount, VkSurfaceFormatKHR* pSurfaceFormats )
 {
 	return this->fpGetPhysicalDeviceSurfaceFormatsKHR( physicalDevice, surface, pSurfaceFormatCount, pSurfaceFormats );
 }
 
-VkResult Environment::vkGetPhysicalDeviceSurfacePresentModesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pPresentModeCount, VkPresentModeKHR* pPresentModes )
+VkResult Environment::GetPhysicalDeviceSurfacePresentModesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pPresentModeCount, VkPresentModeKHR* pPresentModes )
 {
 	return this->fpGetPhysicalDeviceSurfacePresentModesKHR( physicalDevice, surface, pPresentModeCount, pPresentModes );
+}
+
+VkResult Environment::CreateDebugReportCallbackEXT( VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback)
+{
+	return this->fpCreateDebugReportCallbackEXT( instance, pCreateInfo, pAllocator, pCallback );
+}
+
+void Environment::DestroyDebugReportCallbackEXT( VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator)
+{
+	this->fpDestroyDebugReportCallbackEXT( instance, callback, pAllocator );
+}
+
+void Environment::DebugReportMessageEXT (VkInstance instance, VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage)
+{
+	this->fpDebugReportMessageEXT( instance, flags, objectType, object, location, messageCode, pLayerPrefix, pMessage );
 }
 
 }} // namespace cinder::vk

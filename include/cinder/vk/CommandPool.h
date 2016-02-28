@@ -48,18 +48,18 @@ using CommandPoolRef = std::shared_ptr<CommandPool>;
 //! \class CommandPool
 //!
 //!
-class CommandPool : public BaseVkObject {
+class CommandPool : public BaseContextObject {
 public:
-
-	CommandPool();
-	CommandPool( Context* context );
 	virtual ~CommandPool();
 
-	static CommandPoolRef create( Context *context = nullptr );
+	static CommandPoolRef		create( uint32_t queueFamilyIndex, vk::Context *context = nullptr );
 
 	VkCommandPool				getCommandPool() const { return mCommandPool; }
 
 private:
+	CommandPool( uint32_t queueFamilyIndex, vk::Context *context );
+
+	uint32_t					mQueueFamilyIndex = UINT32_MAX;
 	VkCommandPool				mCommandPool = VK_NULL_HANDLE;
 
 	void initialize();

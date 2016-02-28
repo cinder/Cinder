@@ -57,14 +57,11 @@ using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 //! \class CommandBuffer
 //!
 //!
-class CommandBuffer : public BaseVkObject {
+class CommandBuffer : public BaseContextObject {
 public:
-
-	CommandBuffer();
-	CommandBuffer( VkCommandPool commandPool, Context *context );
 	virtual ~CommandBuffer();
 
-	static CommandBufferRef		create( VkCommandPool commandPool, Context *context = nullptr );
+	static CommandBufferRef		create( VkCommandPool commandPool, vk::Context *context = nullptr );
 
 	VkCommandBuffer				getCommandBuffer() const { return mCommandBuffer; }
 
@@ -120,15 +117,12 @@ public:
 	void bindDescriptorSet( VkPipelineBindPoint pipelineBindPoint, VkPipelineLayout layout, const VkDescriptorSet& pDescriptorSets );
 	void bindIndexBuffer( const IndexBufferRef& indexBuffer, VkDeviceSize offset = 0 );
 
-	/*
-	void addImageMemoryBarrier( const vk::ImageRef& image );
-	void addImageMemoryBarrier( const SwapchainRef& swapchain );
-	*/
-
 	void pipelineBarrierImageMemory( VkImage image, VkImageAspectFlags aspectMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VkPipelineStageFlags dstStages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 	void pipelineBarrierImageMemory( const vk::ImageRef& image, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VkPipelineStageFlags dstStages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 
 private:
+	CommandBuffer( VkCommandPool commandPool, vk::Context *context );
+
 	VkCommandBuffer		mCommandBuffer = VK_NULL_HANDLE;
 	VkCommandPool		mCommandPool = VK_NULL_HANDLE;
 

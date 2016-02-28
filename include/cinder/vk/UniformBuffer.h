@@ -71,11 +71,11 @@ public:
 	// ---------------------------------------------------------------------------------------------
 
 	UniformBuffer();
-	UniformBuffer( const UniformLayout::Block& block, Context *context );
+	UniformBuffer( const UniformLayout::Block& block, Device *device );
 	virtual ~UniformBuffer();
 
 	//! Returns a single uniform buffer corresponding to a block
-	static UniformBufferRef		create( const UniformLayout::Block& block, Context *context = nullptr );
+	static UniformBufferRef		create( const UniformLayout::Block& block, Device *device = nullptr );
 
 	void						uniform( const std::string& name, const float    value );
 	void						uniform( const std::string& name, const int32_t  value );
@@ -111,7 +111,7 @@ private:
 	
 	void initialize( const UniformLayout::Block& block );
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class Device;
 };
 
 }} // namespace cinder::vk

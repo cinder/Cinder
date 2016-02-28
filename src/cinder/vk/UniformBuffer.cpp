@@ -38,6 +38,7 @@
 
 #include "cinder/vk/UniformBuffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/Matrix.h"
 #include "cinder/Utilities.h"
 #include "util/farmhash.h"
@@ -49,13 +50,8 @@ namespace cinder { namespace vk {
 // -------------------------------------------------------------------------------------------------
 // UniformBuffer
 // -------------------------------------------------------------------------------------------------
-UniformBuffer::UniformBuffer()
-	: Buffer()
-{
-}
-
-UniformBuffer::UniformBuffer( const UniformLayout::Block& block, Context *context )
-	: Buffer( false, block.getSizeBytes(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, context )
+UniformBuffer::UniformBuffer( const UniformLayout::Block& block, vk::Device *device )
+	: Buffer( false, block.getSizeBytes(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, device )
 {
 	initialize( block );
 }
@@ -119,7 +115,7 @@ void UniformBuffer::initialize( const UniformLayout::Block& block )
 	std::memcpy( dst, static_cast<const void *>( mValues.data() ), mValues.size() );
 	unmap();
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void UniformBuffer::destroy( bool removeFromTracking )
@@ -129,16 +125,16 @@ void UniformBuffer::destroy( bool removeFromTracking )
 	}
 
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 
 	Buffer::destroy( removeFromTracking );
 }
 
-UniformBufferRef UniformBuffer::create( const UniformLayout::Block& block, Context *context )
+UniformBufferRef UniformBuffer::create( const UniformLayout::Block& block, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	UniformBufferRef result = UniformBufferRef( new UniformBuffer( block, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	UniformBufferRef result = UniformBufferRef( new UniformBuffer( block, device ) );
 	return result;
 }
 
@@ -148,7 +144,7 @@ void UniformBuffer::setValue( const std::string& name, const T& value )
 	UniformBuffer::Uniform *entry = nullptr;
 	size_t arrayIndex = 0;
 
-	uint32_t hash = util::Hash32( name );
+	uint32_t hash = ::util::Hash32( name );
 	auto lutIt = mHashLookup.find( hash );
 	bool cacheEntry = false;
 

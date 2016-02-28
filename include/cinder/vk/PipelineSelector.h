@@ -116,10 +116,10 @@ public:
 
 	// ---------------------------------------------------------------------------------------------
 
-	PipelineSelector( const vk::PipelineCacheRef& pipelineCacheRef, Context *context );
+	PipelineSelector( const vk::PipelineCacheRef& pipelineCacheRef, Device *device );
 	virtual ~PipelineSelector();
 
-	static PipelineSelectorRef	create( const vk::PipelineCacheRef& pipelineCacheRef, Context *context = nullptr );
+	static PipelineSelectorRef	create( const vk::PipelineCacheRef& pipelineCacheRef, Device *device = nullptr );
 
 	void						setRenderPass( const VkRenderPass& renderPass );
 	void						setSubPass( const uint32_t subPass );
@@ -245,8 +245,9 @@ private:
 	HashData<std::vector<VkDynamicState>>							mDynamicStates;
 	HashData<std::vector<VkPipelineColorBlendAttachmentState>>		mColorBlendAttachments;
 
-	vk::Context*													mContext = nullptr;
+	vk::Device*														mDevice = nullptr;
 	vk::PipelineCacheRef											mPipelineCacheRef;
+	mutable std::mutex												mMutex;
 	mutable std::vector<std::pair<HashSet, vk::PipelineRef>>		mPipelines;	
 	mutable HashSet													mSelectedPipelineHash;
 	mutable VkPipeline												mSelectedPipeline = VK_NULL_HANDLE;

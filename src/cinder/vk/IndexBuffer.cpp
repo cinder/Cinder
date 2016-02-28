@@ -38,13 +38,9 @@
 
 #include "cinder/vk/IndexBuffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 
 namespace cinder { namespace vk {
-
-IndexBuffer::IndexBuffer()
-	: Buffer()
-{
-}
 
 static size_t indexTypeSizeBytes( VkIndexType indexType )
 {
@@ -56,8 +52,8 @@ static size_t indexTypeSizeBytes( VkIndexType indexType )
 	return result;
 }
 
-IndexBuffer::IndexBuffer( size_t numIndices, VkIndexType indexType, const void *indices, Context *context )
-	: Buffer( false, numIndices*indexTypeSizeBytes( indexType ) , VK_BUFFER_USAGE_INDEX_BUFFER_BIT, context )
+IndexBuffer::IndexBuffer( size_t numIndices, VkIndexType indexType, const void *indices, vk::Device *device )
+	: Buffer( false, numIndices*indexTypeSizeBytes( indexType ) , VK_BUFFER_USAGE_INDEX_BUFFER_BIT, device )
 {
 	initialize( numIndices, indexType, indices );
 }
@@ -87,7 +83,7 @@ void IndexBuffer::initialize( size_t numIndices, VkIndexType indexType, const vo
 		mIndexType = indexType;
 	}
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void IndexBuffer::destroy( bool removeFromTracking )
@@ -97,16 +93,16 @@ void IndexBuffer::destroy( bool removeFromTracking )
 	}
 
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 
 	Buffer::destroy( removeFromTracking );
 }
 
-IndexBufferRef IndexBuffer::create( size_t numIndices, VkIndexType indexType, const void *indices, Context *context )
+IndexBufferRef IndexBuffer::create( size_t numIndices, VkIndexType indexType, const void *indices, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	IndexBufferRef result = IndexBufferRef( new IndexBuffer( numIndices, indexType, indices, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	IndexBufferRef result = IndexBufferRef( new IndexBuffer( numIndices, indexType, indices, device ) );
 	return result;
 }
 

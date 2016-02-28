@@ -48,14 +48,14 @@ using BufferRef = std::shared_ptr<Buffer>;
 //! \class Buffer
 //!
 //!
-class Buffer : public BaseVkObject {
+class Buffer : public BaseDeviceObject {
 public:
 
 	Buffer();
-	Buffer( VkDeviceSize sizeBytes, VkBufferUsageFlags usage, Context* context );
+	Buffer( VkDeviceSize sizeBytes, VkBufferUsageFlags usage, Device *device );
     virtual ~Buffer();
 
-	static BufferRef 		create( VkDeviceSize size, VkBufferUsageFlags usage, Context* context = nullptr );
+	static BufferRef 		create( VkDeviceSize size, VkBufferUsageFlags usage, Device *device = nullptr );
 
 	VkBuffer				getBuffer() const { return mBuffer; }
 	const VkDescriptorBufferInfo&	getBufferInfo() const { return mBufferInfo; }
@@ -74,7 +74,7 @@ public:
 
 protected:
 	// Derived objects should use this c'tor
-	Buffer( bool selfOwned, VkDeviceSize size, VkBufferUsageFlags usage, Context* context );
+	Buffer( bool selfOwned, VkDeviceSize size, VkBufferUsageFlags usage, Device *device );
 
 	bool 					mSelfOwned = true;
 
@@ -92,7 +92,7 @@ protected:
 
     void initialize();
     void destroy( bool removeFromTracking = true );
-    friend class Context;
+	friend class vk::Device;
 };
 
 }} // namespace cinder::vk

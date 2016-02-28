@@ -41,6 +41,7 @@
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Descriptor.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/PipelineSelector.h"
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/ShaderProg.h"
@@ -91,13 +92,13 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 
 	// Descriptor layout, pool, set
 	const auto& descLayoutBindings = uniformSet->getDescriptorSetlayoutBindings();
-	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDescriptorSetLayoutSelector()->getSelectedLayout( descLayoutBindings );
+	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( descLayoutBindings );
 	vk::DescriptorPoolRef descriptorPool = vk::DescriptorPool::create( descLayoutBindings );
 	vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool->getDescriptorPool(), *uniformSet, descriptorSetLayout );
 	vk::context()->addTransient( descriptorPool );
 	vk::context()->addTransient( descriptorSet );
 	// Pipeline layout
-	VkPipelineLayout pipelineLayout = vk::context()->getPipelineLayoutSelector()->getSelectedLayout( { descriptorSetLayout } );
+	VkPipelineLayout pipelineLayout = vk::context()->getDevice()->getPipelineLayoutSelector()->getSelectedLayout( { descriptorSetLayout } );
 /*
 	// Pipeline
 	vk::PipelineRef pipeline;
@@ -160,7 +161,7 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 		vibd.stride		= 2*sizeof(float) + 4*sizeof(float);
 
 		auto ctx = vk::context();
-		auto& pipelineSelector = ctx->getPipelineSelector();
+		auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
 		pipelineSelector->setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
 		pipelineSelector->setVertexInputAttributeDescriptions( { viad0, viad1 } );
 		pipelineSelector->setVertexInputBindingDescriptions( { vibd }  );
@@ -234,13 +235,13 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 
 	// Descriptor layout, pool, set
 	const auto& descLayoutBindings = uniformSet->getDescriptorSetlayoutBindings();
-	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDescriptorSetLayoutSelector()->getSelectedLayout( descLayoutBindings );
+	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( descLayoutBindings );
 	vk::DescriptorPoolRef descriptorPool = vk::DescriptorPool::create( descLayoutBindings );
 	vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool->getDescriptorPool(), *uniformSet, descriptorSetLayout );
 	vk::context()->addTransient( descriptorPool );
 	vk::context()->addTransient( descriptorSet );
 	// Pipeline layout
-	VkPipelineLayout pipelineLayout = vk::context()->getPipelineLayoutSelector()->getSelectedLayout( { descriptorSetLayout } );
+	VkPipelineLayout pipelineLayout = vk::context()->getDevice()->getPipelineLayoutSelector()->getSelectedLayout( { descriptorSetLayout } );
 
 	// Pipeline
 	VkPipeline pipeline = VK_NULL_HANDLE;
@@ -272,7 +273,7 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 		vibd.stride		= 4*sizeof(float) + 2*sizeof(float) + 4*sizeof(float);
 
 		auto ctx = vk::context();
-		auto& pipelineSelector = ctx->getPipelineSelector();
+		auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
 		pipelineSelector->setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
 		pipelineSelector->setVertexInputAttributeDescriptions( { viad0, viad1, viad2 } );
 		pipelineSelector->setVertexInputBindingDescriptions( { vibd }  );

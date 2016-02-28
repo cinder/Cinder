@@ -39,8 +39,47 @@
 #pragma once
 
 #include "cinder/vk/platform.h"
+#include "cinder/Thread.h"
 
 namespace cinder { namespace vk { namespace util { 
+
+//! \class TrackedObject
+template <typename T> class TrackedObject {
+public:
+	TrackedObject() {}
+	virtual ~TrackedObject() {}
+
+	void objectCreated( T *obj ) {
+		std::lock_guard<std::mutex> lock( mMutex );
+		auto it = std::find( std::begin( mTrackedObjects ), std::end( mTrackedObjects ), obj );
+		if( it == std::end( mTrackedObjects ) ) {
+			mTrackedObjects.push_back( obj );
+		}
+	}
+
+	void objectDestroyed( T *obj ) {
+		std::lock_guard<std::mutex> lock( mMutex );
+		auto it = std::find( std::begin( mTrackedObjects ), std::end( mTrackedObjects ), obj );
+		if( it != std::end( mTrackedObjects ) ) {
+			mTrackedObjects.erase(
+				std::remove( std::begin( mTrackedObjects ), std::end( mTrackedObjects ), obj ),
+				std::end( mTrackedObjects )
+			);
+		}
+	}
+
+	void destroyAll( std::function<void(T*)> destroyFn ) {
+		std::lock_guard<std::mutex> lock( mMutex );
+		for( auto& elem : mTrackedObjects ) {
+			destroyFn( elem );
+		}
+		mTrackedObjects.clear();
+	}
+
+private:
+	std::mutex		mMutex;
+	std::vector<T*>	mTrackedObjects;
+};
 
 template <typename FuncPtrT>
 FuncPtrT getInstanceProc( VkInstance instance, const std::string& fnName )

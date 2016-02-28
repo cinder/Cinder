@@ -56,7 +56,6 @@ using VertexBufferMeshRef = std::shared_ptr<VertexBufferMesh>;
 
 class VertexInputDescription {
 public:
-
 	VertexInputDescription() {}
 	virtual ~VertexInputDescription() {}
 

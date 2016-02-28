@@ -39,6 +39,7 @@
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/wrapper.h"
 
 #include "cinder/ChanTraits.h"
@@ -51,26 +52,21 @@ namespace cinder { namespace vk {
 // -------------------------------------------------------------------------------------------------
 // ImageView
 // -------------------------------------------------------------------------------------------------
-ImageView::ImageView()
-	: BaseVkObject()
-{
-}
-
-ImageView::ImageView( VkImageViewType viewType, VkImageType imageType, int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, VkImage image, Context *context )
-	: BaseVkObject( context )
+ImageView::ImageView( VkImageViewType viewType, VkImageType imageType, int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, VkImage image, vk::Device *device )
+	: BaseDeviceObject( device )
 {
 	initialize( viewType, imageType, width, height, depth, imageOptions, image );
 }
 
-ImageView::ImageView( VkImageViewType viewType, VkImageType imageType, int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, const vk::ImageRef& premadeImage, Context *context )
-	: BaseVkObject( context )
+ImageView::ImageView( VkImageViewType viewType, VkImageType imageType, int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, const vk::ImageRef& premadeImage, vk::Device *device )
+	: BaseDeviceObject( device )
 {
 	initialize( viewType, imageType, width, height, depth, imageOptions, premadeImage );
 }
 
 // selfOwned is generally false
-ImageView::ImageView( bool selfOwned, Context *context )
-	: BaseVkObject( context ),
+ImageView::ImageView( bool selfOwned, vk::Device *device )
+	: BaseDeviceObject( device ),
 	  mSelfOwned( selfOwned )
 {
 	// Derived object will handle init sequence
@@ -90,7 +86,7 @@ void ImageView::initialize( VkImageViewType viewType, VkImageType imageType, int
 	}
 	
 	mViewType = viewType;
-	mImage = vk::Image::create( imageType, width, height, depth, image, imageOptions, mContext );
+	mImage = vk::Image::create( imageType, width, height, depth, image, imageOptions, mDevice );
 	assert( mImage );
 
     VkImageViewCreateInfo imageViewCreateInfo = {};
@@ -118,11 +114,11 @@ void ImageView::initialize( VkImageViewType viewType, VkImageType imageType, int
 		// Do we need anything else for these cases?
 	}
 
-	VkResult res = vkCreateImageView( mContext->getDevice(), &imageViewCreateInfo, nullptr, &mImageView );
+	VkResult res = vkCreateImageView( mDevice->getDevice(), &imageViewCreateInfo, nullptr, &mImageView );
 	assert(res == VK_SUCCESS);
 
 	if( mSelfOwned ) {
-		mContext->trackedObjectCreated( this );
+		mDevice->trackedObjectCreated( this );
 	}
 }
 
@@ -160,11 +156,11 @@ void ImageView::initialize( VkImageViewType viewType, VkImageType imageType, int
 		// Do we need anything else for these cases?
 	}
 
-	VkResult res = vkCreateImageView( mContext->getDevice(), &imageViewCreateInfo, nullptr, &mImageView );
+	VkResult res = vkCreateImageView( mDevice->getDevice(), &imageViewCreateInfo, nullptr, &mImageView );
 	assert(res == VK_SUCCESS);
 
 	if( mSelfOwned ) {
-		mContext->trackedObjectCreated( this );
+		mDevice->trackedObjectCreated( this );
 	}
 }
 
@@ -174,7 +170,7 @@ void ImageView::destroy( bool removeFromTracking )
 		return;
 	}
 
-	vkDestroyImageView( mContext->getDevice(), mImageView, nullptr );
+	vkDestroyImageView( mDevice->getDevice(), mImageView, nullptr );
 	mImageView = VK_NULL_HANDLE;
 
 	if( mImage ) {
@@ -183,94 +179,94 @@ void ImageView::destroy( bool removeFromTracking )
 	}
 
 	if( removeFromTracking && mSelfOwned ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
-ImageViewRef ImageView::create( int32_t width, const Image::Format& imageOptions, Context *context )
+ImageViewRef ImageView::create( int32_t width, const Image::Format& imageOptions, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = ( imageOptions.getArrayLayers() > 1 ) ? VK_IMAGE_VIEW_TYPE_1D_ARRAY : VK_IMAGE_VIEW_TYPE_1D;
 	VkImage nullImage = VK_NULL_HANDLE;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, imageOptions, nullImage, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, imageOptions, nullImage, device ) );
 	return result;
 }
 
-ImageViewRef ImageView::create( int32_t width, int32_t height, const Image::Format& imageOptions, Context *context )
+ImageViewRef ImageView::create( int32_t width, int32_t height, const Image::Format& imageOptions, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = ( imageOptions.getArrayLayers() > 1 ) ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : VK_IMAGE_VIEW_TYPE_2D;
 	VkImage nullImage = VK_NULL_HANDLE;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, imageOptions, nullImage, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, imageOptions, nullImage, device ) );
 	return result;
 }
 
-ImageViewRef ImageView::create( int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, Context *context )
+ImageViewRef ImageView::create( int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_3D;
 	VkImage nullImage = VK_NULL_HANDLE;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, imageOptions, nullImage, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, imageOptions, nullImage, device ) );
 	return result;
 }
 
-ImageViewRef ImageView::create( int32_t width, VkFormat format, VkImage image, Context *context )
+ImageViewRef ImageView::create( int32_t width, VkFormat format, VkImage image, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_1D;
 	Image::Format imageOptions = Image::Format::createUndefined( format );
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, imageOptions, image, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, imageOptions, image, device ) );
 	return result;
 }
 
-ImageViewRef ImageView::create( int32_t width, int32_t height, VkFormat format, VkImage image, Context *context )
+ImageViewRef ImageView::create( int32_t width, int32_t height, VkFormat format, VkImage image, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;
 	Image::Format imageOptions = Image::Format::createUndefined( format );
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, imageOptions, image, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, imageOptions, image, device ) );
 	return result;
 }
 
-ImageViewRef ImageView::create( int32_t width, int32_t height, int32_t depth, VkFormat format, VkImage image, Context *context )
+ImageViewRef ImageView::create( int32_t width, int32_t height, int32_t depth, VkFormat format, VkImage image, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_3D;
 	Image::Format imageOptions = Image::Format::createUndefined( format );
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, imageOptions, image, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, imageOptions, image, device ) );
 	return result;
 }
 
-ImageViewRef ImageView::create( int32_t width, const vk::ImageRef& premadeImage, Context *context )
+ImageViewRef ImageView::create( int32_t width, const vk::ImageRef& premadeImage, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_1D;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, premadeImage->getOptions(), premadeImage, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, premadeImage->getOptions(), premadeImage, device ) );
 	return result;
 }
 
-ImageViewRef ImageView::create( int32_t width, int32_t height, const vk::ImageRef& premadeImage, Context *context )
+ImageViewRef ImageView::create( int32_t width, int32_t height, const vk::ImageRef& premadeImage, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, premadeImage->getOptions(), premadeImage, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, premadeImage->getOptions(), premadeImage, device ) );
 	return result;
 }
 
-ImageViewRef ImageView::create( int32_t width, int32_t height, int32_t depth, const vk::ImageRef& premadeImage, Context *context )
+ImageViewRef ImageView::create( int32_t width, int32_t height, int32_t depth, const vk::ImageRef& premadeImage, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_3D;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, premadeImage->getOptions(), premadeImage, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, premadeImage->getOptions(), premadeImage, device ) );
 	return result;
 }
 
-ImageViewRef ImageView::createCube( int32_t width, int32_t height, const vk::ImageRef& premadeImage, Context *context )
+ImageViewRef ImageView::createCube( int32_t width, int32_t height, const vk::ImageRef& premadeImage, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	// Image view type of CUBE and CUBE_ARRAY requires at least 6 elements in imageOptions.arrayLayers
 	assert( premadeImage && ( premadeImage->getOptions().getArrayLayers() >= 6 ) );	
-	ImageViewRef result = ImageViewRef( new ImageView( VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_TYPE_2D, width, height, 1, premadeImage->getOptions(), premadeImage, context ) );
+	ImageViewRef result = ImageViewRef( new ImageView( VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_TYPE_2D, width, height, 1, premadeImage->getOptions(), premadeImage, device ) );
 	return result;
 }
 

@@ -86,13 +86,13 @@ class RotatingCubeApp : public App {
 	void					workThreadFunc( const ci::vk::ContextRef& ctx );
 	void					generateCommandBuffer( const vk::CommandBufferRef& cmdBuf, uint32_t frameIdx );
 
+	std::shared_ptr<ConcurrentCircularBuffer<uint32_t>>	mCommandBufferQueue;
+
 	vk::PresenterRef		mPresenter;
 };
 
 void RotatingCubeApp::setup()
 {
-	setFrameRate( 5000.0f );
-
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 
 	try {
@@ -155,7 +155,7 @@ void RotatingCubeApp::setup()
 	mPresenter = vk::context()->getPresenter();
 
 	mFrameQueue.reset( new ConcurrentCircularBuffer<uint32_t>( FRAME_LAG ) );
-	mWorkThreadContext = vk::Environment::getEnv()->createContextFromExisting( vk::context(), 1 );
+	mWorkThreadContext = vk::Context::createFromExisting( vk::context(), { { VK_QUEUE_GRAPHICS_BIT, 1 } } );
 	mWorkThreadRunning = true;
 	mWorkThread.reset( new std::thread( &RotatingCubeApp::workThreadFunc, this, mWorkThreadContext ) );
 }
@@ -183,14 +183,14 @@ void RotatingCubeApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf,
 
 	cmdBuf->begin();
 	{
-		mPresenter->beginRender( cmdBuf, ctx );
+		ctx->getPresenter()->beginRender( cmdBuf, ctx );
 		{
 			vk::setMatrices( mCam );
 			vk::ScopedModelMatrix modelScope;
 			vk::multModelMatrix( mCubeRotation );
 			mBatch[frameIdx]->draw();
 		}
-		mPresenter->endRender();
+		ctx->getPresenter()->endRender( ctx );
 	}
 	cmdBuf->end();
 }
@@ -249,10 +249,10 @@ void RotatingCubeApp::draw()
 	// Submit rendering work to the graphics queue
 	//CI_LOG_I( "Submitting command buffer for frame " << frameIdx );
 	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	vk::context()->getQueue()->submit( mCommandBuffers[frameIdx], mImageAcquiredSemaphore[frameIdx], waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore[frameIdx] );
+	vk::context()->getGraphicsQueue()->submit( mCommandBuffers[frameIdx], mImageAcquiredSemaphore[frameIdx], waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore[frameIdx] );
 
 	// Submit present operation to present queue
-	vk::context()->getQueue()->present( mRenderingCompleteSemaphore[frameIdx], vk::context()->getPresenter() );
+	vk::context()->getGraphicsQueue()->present( mRenderingCompleteSemaphore[frameIdx], vk::context()->getPresenter() );
 	//CI_LOG_I( "Queued for presentation: " << frameIdx );
 
 	if( 0 == (getElapsedFrames() % 300)) {

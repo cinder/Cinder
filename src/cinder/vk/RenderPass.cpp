@@ -39,6 +39,7 @@
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/Framebuffer.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/Queue.h"
@@ -121,13 +122,8 @@ RenderPass::Options::Options( VkFormat colorFormat, VkFormat depthStencilFormat,
 // -------------------------------------------------------------------------------------------------
 // RenderPass
 // -------------------------------------------------------------------------------------------------
-RenderPass::RenderPass()
-	: BaseVkObject()
-{
-}
-
-RenderPass::RenderPass( const RenderPass::Options& options, Context *context )
-	: BaseVkObject( context )
+RenderPass::RenderPass( const RenderPass::Options& options, vk::Device *device )
+	: BaseDeviceObject( device )
 {
 	initialize( options );
 }
@@ -255,10 +251,10 @@ void RenderPass::initialize( const RenderPass::Options& options )
 	renderPassCreateInfo.pSubpasses 		= subPassDescs.empty() ? nullptr : subPassDescs.data();
 	renderPassCreateInfo.dependencyCount 	= 0;
 	renderPassCreateInfo.pDependencies 		= nullptr;
-	VkResult res = vkCreateRenderPass( mContext->getDevice(), &renderPassCreateInfo, nullptr, &mRenderPass );
+	VkResult res = vkCreateRenderPass( mDevice->getDevice(), &renderPassCreateInfo, nullptr, &mRenderPass );
     assert( res == VK_SUCCESS );
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void RenderPass::destroy( bool removeFromTracking )
@@ -267,18 +263,18 @@ void RenderPass::destroy( bool removeFromTracking )
 		return;
 	}
 	
-	vkDestroyRenderPass( mContext->getDevice(), mRenderPass, nullptr );
+	vkDestroyRenderPass( mDevice->getDevice(), mRenderPass, nullptr );
 	mRenderPass = VK_NULL_HANDLE;
 
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
-RenderPassRef RenderPass::create( const RenderPass::Options& options, Context *context )
+RenderPassRef RenderPass::create( const RenderPass::Options& options, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	RenderPassRef result = RenderPassRef( new RenderPass( options, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	RenderPassRef result = RenderPassRef( new RenderPass( options, device ) );
 	return result;
 }
 
@@ -376,8 +372,8 @@ void RenderPass::endRender()
 	vk::context()->popCommandBuffer();
 
 	// Process the command buffer
-	vk::context()->getQueue()->submit( mCommandBuffer );
-	vk::context()->getQueue()->waitIdle();
+	vk::context()->getGraphicsQueue()->submit( mCommandBuffer );
+	vk::context()->getGraphicsQueue()->waitIdle();
 
 /*
 	// Process the command buffer

@@ -38,6 +38,7 @@
 
 #include "cinder/vk/Pipeline.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/Descriptor.h"
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/ShaderProg.h"
@@ -49,19 +50,14 @@ namespace cinder { namespace vk {
 // ------------------------------------------------------------------------------------------------ 
 // PipelineLayout
 // ------------------------------------------------------------------------------------------------ 
-PipelineLayout::PipelineLayout()
-	: BaseVkObject()
-{
-}
-
-PipelineLayout::PipelineLayout( const DescriptorSetLayoutRef &descSetLayout, Context *context )
-	: BaseVkObject( context )
+PipelineLayout::PipelineLayout( const DescriptorSetLayoutRef &descSetLayout, vk::Device *device )
+	: BaseDeviceObject( device )
 {
 	initialize( descSetLayout );
 }
 
-PipelineLayout::PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, Context *context )
-	: BaseVkObject( context )
+PipelineLayout::PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, vk::Device *device )
+	: BaseDeviceObject( device )
 {
 	initialize( descriptorSetLayouts );
 }
@@ -71,17 +67,17 @@ PipelineLayout::~PipelineLayout()
 	destroy();
 }
 
-PipelineLayoutRef PipelineLayout::create( const DescriptorSetLayoutRef &descriptorSetLayout, Context *context )
+PipelineLayoutRef PipelineLayout::create( const DescriptorSetLayoutRef &descriptorSetLayout, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	PipelineLayoutRef result = PipelineLayoutRef( new PipelineLayout( descriptorSetLayout, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	PipelineLayoutRef result = PipelineLayoutRef( new PipelineLayout( descriptorSetLayout, device ) );
 	return result;
 }
 
-PipelineLayoutRef PipelineLayout::create( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, Context *context )
+PipelineLayoutRef PipelineLayout::create( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	PipelineLayoutRef result = PipelineLayoutRef( new PipelineLayout( descriptorSetLayouts, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	PipelineLayoutRef result = PipelineLayoutRef( new PipelineLayout( descriptorSetLayouts, device ) );
 	return result;
 }
 
@@ -99,10 +95,10 @@ void PipelineLayout::initialize( const DescriptorSetLayoutRef &descriptorSetLayo
     createInfo.setLayoutCount         = static_cast<uint32_t>( descSetLayouts.size() );
     createInfo.pSetLayouts            = descSetLayouts.data();
 
-    VkResult res = vkCreatePipelineLayout( mContext->getDevice(), &createInfo, NULL, &mPipelineLayout );
+    VkResult res = vkCreatePipelineLayout( mDevice->getDevice(), &createInfo, NULL, &mPipelineLayout );
     assert( res == VK_SUCCESS );
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void PipelineLayout::initialize( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts )
@@ -116,37 +112,37 @@ void PipelineLayout::initialize( const std::vector<VkDescriptorSetLayout>& descr
     createInfo.setLayoutCount         = static_cast<uint32_t>( descriptorSetLayouts.size() );
     createInfo.pSetLayouts            = descriptorSetLayouts.data();
 
-    VkResult res = vkCreatePipelineLayout( mContext->getDevice(), &createInfo, NULL, &mPipelineLayout );
+    VkResult res = vkCreatePipelineLayout( mDevice->getDevice(), &createInfo, NULL, &mPipelineLayout );
     assert( res == VK_SUCCESS );
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
-void PipelineLayout::destroy(bool removeFromTracking)
+void PipelineLayout::destroy( bool removeFromTracking )
 {
 	if( VK_NULL_HANDLE == mPipelineLayout ) {
 		return;
 	}
 
-	vkDestroyPipelineLayout( mContext->getDevice(), mPipelineLayout, nullptr );
+	vkDestroyPipelineLayout( mDevice->getDevice(), mPipelineLayout, nullptr );
 	mPipelineLayout = VK_NULL_HANDLE;
 	
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
 // ------------------------------------------------------------------------------------------------ 
 // PipelineLayoutSelector
 // ------------------------------------------------------------------------------------------------ 
-PipelineLayoutSelector::PipelineLayoutSelector( vk::Context *context )
-	: mContext( context )
+PipelineLayoutSelector::PipelineLayoutSelector( vk::Device *device )
+	: mDevice( device )
 {
 }
 
-PipelineLayoutSelectorRef PipelineLayoutSelector::create( vk::Context *context )
+PipelineLayoutSelectorRef PipelineLayoutSelector::create( vk::Device *device )
 {
-	PipelineLayoutSelectorRef result = PipelineLayoutSelectorRef( new PipelineLayoutSelector( context ) );
+	PipelineLayoutSelectorRef result = PipelineLayoutSelectorRef( new PipelineLayoutSelector( device ) );
 	return result;
 }
 
@@ -157,7 +153,7 @@ VkPipelineLayout PipelineLayoutSelector::getSelectedLayout( const std::vector<Vk
 		// Calculate the hash
 		const char *s = reinterpret_cast<const char*>( descriptorSetLayouts.data() );
 		size_t len = descriptorSetLayouts.size()*sizeof( VkDescriptorSetLayout );
-		uint32_t hash = util::Hash32( s, len );
+		uint32_t hash = ::util::Hash32( s, len );
 		// Look up using hash
 		auto it = std::find_if(
 			std::begin( mPipelineLayouts ),
@@ -172,7 +168,9 @@ VkPipelineLayout PipelineLayoutSelector::getSelectedLayout( const std::vector<Vk
 		}
 		// Otherwise create it
 		else {
-			vk::PipelineLayoutRef dsl = vk::PipelineLayout::create( descriptorSetLayouts, mContext );			
+			std::lock_guard<std::mutex> lock( mMutex );
+
+			vk::PipelineLayoutRef dsl = vk::PipelineLayout::create( descriptorSetLayouts, mDevice );			
 			mPipelineLayouts.push_back( std::make_pair( HashData( descriptorSetLayouts, hash ), dsl ) );
 			result = dsl->getPipelineLayout();
 		}
@@ -183,13 +181,8 @@ VkPipelineLayout PipelineLayoutSelector::getSelectedLayout( const std::vector<Vk
 // ------------------------------------------------------------------------------------------------ 
 // PipelineCache
 // ------------------------------------------------------------------------------------------------ 
-PipelineCache::PipelineCache()
-	: BaseVkObject()
-{
-}
-
-PipelineCache::PipelineCache( Context *context )
-	: BaseVkObject( context )
+PipelineCache::PipelineCache( vk::Device *device )
+	: BaseDeviceObject( device )
 {
 	initialize();
 }
@@ -199,10 +192,10 @@ PipelineCache::~PipelineCache()
 	destroy();
 }
 
-PipelineCacheRef PipelineCache::create( Context *context )
+PipelineCacheRef PipelineCache::create( vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	PipelineCacheRef result = PipelineCacheRef( new PipelineCache( context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	PipelineCacheRef result = PipelineCacheRef( new PipelineCache( device ) );
 	return result;
 }
 
@@ -218,10 +211,10 @@ void PipelineCache::initialize()
     createInfo.initialDataSize	= 0;
     createInfo.pInitialData		= nullptr;
     createInfo.flags			= 0;
-    VkResult res = vkCreatePipelineCache( mContext->getDevice(), &createInfo, NULL, &mPipelineCache );
+    VkResult res = vkCreatePipelineCache( mDevice->getDevice(), &createInfo, NULL, &mPipelineCache );
     assert( res == VK_SUCCESS );
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void PipelineCache::destroy( bool removeFromTracking )
@@ -230,11 +223,11 @@ void PipelineCache::destroy( bool removeFromTracking )
 		return;
 	}
 
-	vkDestroyPipelineCache( mContext->getDevice(), mPipelineCache, nullptr );
+	vkDestroyPipelineCache( mDevice->getDevice(), mPipelineCache, nullptr );
 	mPipelineCache = VK_NULL_HANDLE;
 
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
@@ -292,25 +285,20 @@ Pipeline::Options& Pipeline::Options::addVertexAtrribute( const VkVertexInputAtt
 // ------------------------------------------------------------------------------------------------ 
 // Pipeline
 // ------------------------------------------------------------------------------------------------ 
-Pipeline::Pipeline()
-	: BaseVkObject()
-{
-}
+//Pipeline::Pipeline( VkPipeline pipeline, bool ownsPipeline )
+//	: vk::BaseDeviceObject( device ), mOwnsPipeline( ownsPipeline )
+//{
+//	initialize( pipeline );
+//}
 
-Pipeline::Pipeline( VkPipeline pipeline, bool ownsPipeline )
-	: mOwnsPipeline( ownsPipeline )
-{
-	initialize( pipeline );
-}
-
-Pipeline::Pipeline( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, Context *context )
-	: BaseVkObject( context )
+Pipeline::Pipeline( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device )
+	: vk::BaseDeviceObject( device )
 {
 	initialize( options, pipelineCacheRef );
 }
 
-Pipeline::Pipeline( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef, Context *context )
-	: BaseVkObject( context )
+Pipeline::Pipeline( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device )
+	: BaseDeviceObject( device )
 {
 	initialize( createInfo, pipelineCacheRef );
 }
@@ -320,17 +308,17 @@ Pipeline::~Pipeline()
 	destroy();
 }
 
-PipelineRef Pipeline::create( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, Context *context )
+PipelineRef Pipeline::create( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	PipelineRef result = PipelineRef( new Pipeline( options, pipelineCacheRef, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	PipelineRef result = PipelineRef( new Pipeline( options, pipelineCacheRef, device ) );
 	return result;
 }
 
-PipelineRef Pipeline::create( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef, Context *context )
+PipelineRef Pipeline::create( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	PipelineRef result = PipelineRef( new Pipeline( createInfo, pipelineCacheRef, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	PipelineRef result = PipelineRef( new Pipeline( createInfo, pipelineCacheRef, device ) );
 	return result;
 }
 
@@ -338,7 +326,7 @@ void Pipeline::initialize( VkPipeline pipeline )
 {
 	mPipeline = pipeline;
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef )
@@ -484,19 +472,19 @@ void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineC
 	pipelineCreateInfo.basePipelineIndex				= 0;
 
 	VkPipelineCache pipelineCache = VK_NULL_HANDLE; //( options.mDisablePipleineCache ? VK_NULL_HANDLE : ( pipelineCacheRef ? pipelineCacheRef->getPipelineCache() : mContext->getPipelineCache()->getPipelineCache() ) );
-    res = vkCreateGraphicsPipelines( mContext->getDevice(), pipelineCache, 1, &pipelineCreateInfo, NULL, &mPipeline );
+    res = vkCreateGraphicsPipelines( mDevice->getDevice(), pipelineCache, 1, &pipelineCreateInfo, NULL, &mPipeline );
     assert( res == VK_SUCCESS );
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void Pipeline::initialize( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef )
 {
 	VkPipelineCache pipelineCache = VK_NULL_HANDLE; //( pipelineCacheRef ? pipelineCacheRef->getPipelineCache() : mContext->getPipelineCache()->getPipelineCache() );
-    VkResult res = vkCreateGraphicsPipelines( mContext->getDevice(), pipelineCache, 1, &createInfo, NULL, &mPipeline );
+    VkResult res = vkCreateGraphicsPipelines( mDevice->getDevice(), pipelineCache, 1, &createInfo, NULL, &mPipeline );
     assert( res == VK_SUCCESS );
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void Pipeline::destroy(bool removeFromTracking)
@@ -506,12 +494,12 @@ void Pipeline::destroy(bool removeFromTracking)
 	}
 
 	if( mOwnsPipeline ) {
-		vkDestroyPipeline( mContext->getDevice(), mPipeline, nullptr );
+		vkDestroyPipeline( mDevice->getDevice(), mPipeline, nullptr );
 		mPipeline = VK_NULL_HANDLE;
 	}
 	
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 

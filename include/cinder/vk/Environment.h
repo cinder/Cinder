@@ -38,13 +38,9 @@
 
 #pragma once
 
-#include "cinder/vk/platform.h"
-#include "cinder/vk/Util.h"
+#include "cinder/vk/Device.h"
 
 namespace cinder { namespace vk {
-
-class Context;
-using ContextRef = std::shared_ptr<Context>;
 
 //! \class Environment
 //!
@@ -52,51 +48,52 @@ using ContextRef = std::shared_ptr<Context>;
 class Environment {
 public:
 
-	Environment( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn );
+	Environment( bool explicitMode, const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn );
 	virtual ~Environment();
 
-	static void			initializeVulkan( const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn );
+	static Environment*	initializeVulkan( bool explicitMode, const std::vector<std::string>& instanceLayers, const std::vector<std::string>& deviceLayers, vk::DebugReportCallbackFn debugReportCallbackFn );
 	static void			destroyVulkan();
 	static Environment*	getEnv();
 
 	VkInstance								getVulkanInstance() const { return mVulkanInstance; }
 	std::vector<VkPhysicalDevice>			getGpus() const { return mGpus; }
 
+	bool									isExplicitMode() const { return mExplicitMode; }
+
 	const std::vector<std::string>&			getActiveDeviceLayers() const { return mActiveDeviceLayers; }
 
-	ContextRef								createContext( void* connection, void* window, bool explicitMode,  uint32_t workQueueCount, uint32_t gpuIndex );
-	ContextRef								createContextFromExisting( const Context* existingContext, int queueIndex );
+	void		trackedDeviceCreated( const vk::DeviceRef& device );
+	void		trackedDeviceDestroyed( const vk::DeviceRef& device );
 
-	void		trackedObjectCreated( Context *obj );
-	void		trackedObjectDestroyed( Context *obj );
+	VkResult	GetPhysicalDeviceSurfaceSupportKHR( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, VkSurfaceKHR surface, VkBool32* pSupported );
+	VkResult	GetPhysicalDeviceSurfaceCapabilitiesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceCapabilitiesKHR* pSurfaceCapabilities );
+	VkResult	GetPhysicalDeviceSurfaceFormatsKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pSurfaceFormatCount, VkSurfaceFormatKHR* pSurfaceFormats );
+	VkResult	GetPhysicalDeviceSurfacePresentModesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pPresentModeCount, VkPresentModeKHR* pPresentModes );
 
-	VkResult	vkGetPhysicalDeviceSurfaceSupportKHR( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, VkSurfaceKHR surface, VkBool32* pSupported );
-	VkResult	vkGetPhysicalDeviceSurfaceCapabilitiesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceCapabilitiesKHR* pSurfaceCapabilities );
-	VkResult	vkGetPhysicalDeviceSurfaceFormatsKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pSurfaceFormatCount, VkSurfaceFormatKHR* pSurfaceFormats );
-	VkResult	vkGetPhysicalDeviceSurfacePresentModesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pPresentModeCount, VkPresentModeKHR* pPresentModes );
-
-	VkResult	vkCreateDebugReportCallbackEXT( VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback);
-	void		vkDestroyDebugReportCallbackEXT( VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
-	void		vkDebugReportMessageEXT (VkInstance instance, VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage);
+	VkResult	CreateDebugReportCallbackEXT( VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback);
+	void		DestroyDebugReportCallbackEXT( VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
+	void		DebugReportMessageEXT (VkInstance instance, VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage);
 
 
 private:
-	std::vector<Context*>	mContexts;
+	VkInstance						mVulkanInstance = nullptr;
+    std::vector<VkPhysicalDevice>	mGpus;
+	bool							mExplicitMode = false;
+	
+	// Devices are tracked differently than other objects
+	std::vector<vk::DeviceRef>		mDevices;
 
-	VkInstance								mVulkanInstance = nullptr;
-    std::vector<VkPhysicalDevice>			mGpus;
-
-	std::vector<std::string>				mActiveInstanceLayers;
-	std::vector<std::string>				mActiveDeviceLayers;
-	VkDebugReportCallbackEXT				mDebugReportCallback = VK_NULL_HANDLE;
+	std::vector<std::string>		mActiveInstanceLayers;
+	std::vector<std::string>		mActiveDeviceLayers;
+	VkDebugReportCallbackEXT		mDebugReportCallback = VK_NULL_HANDLE;
 
 	// Instance layers
 	struct InstanceLayer {
 		VkLayerProperties					layer;
 		std::vector<VkExtensionProperties>	extensions;
 	};
-	std::vector<InstanceLayer>				mInstanceLayers;
-	
+	std::vector<InstanceLayer>		mInstanceLayers;
+
 	void create();
 	void destroy();
 
@@ -111,7 +108,7 @@ private:
 
 	void		destroyInstance();
 
-public:
+private:
 	PFN_vkGetPhysicalDeviceSurfaceSupportKHR		fpGetPhysicalDeviceSurfaceSupportKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR	fpGetPhysicalDeviceSurfaceCapabilitiesKHR = nullptr;
 	PFN_vkGetPhysicalDeviceSurfaceFormatsKHR		fpGetPhysicalDeviceSurfaceFormatsKHR = nullptr;

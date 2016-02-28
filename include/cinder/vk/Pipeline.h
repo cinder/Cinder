@@ -40,6 +40,7 @@
 
 #include "cinder/vk/BaseVkObject.h"
 #include "cinder/GeomIo.h"
+#include "cinder/Thread.h"
 
 namespace cinder { namespace vk {
 
@@ -64,26 +65,25 @@ using PipelineRef = std::shared_ptr<Pipeline>;
 //! \class PipelineLayout
 //!
 //!
-class PipelineLayout : public BaseVkObject {
+class PipelineLayout : public BaseDeviceObject {
 public:
-
-	PipelineLayout();
-	PipelineLayout( const DescriptorSetLayoutRef &descriptorSetLayouts, Context *context );
-	PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, Context *context );
 	virtual ~PipelineLayout();
 
-	static PipelineLayoutRef	create( const DescriptorSetLayoutRef &descriptorSetLayouts, Context *context = nullptr );
-	static PipelineLayoutRef	create( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, Context *context = nullptr );
+	static PipelineLayoutRef	create( const DescriptorSetLayoutRef &descriptorSetLayouts, vk::Device *device = nullptr );
+	static PipelineLayoutRef	create( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, vk::Device *device = nullptr );
 
 	VkPipelineLayout			getPipelineLayout() const { return mPipelineLayout; }
 
 private:
+	PipelineLayout( const DescriptorSetLayoutRef &descriptorSetLayouts, vk::Device *device );
+	PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, vk::Device *device );
+
 	VkPipelineLayout			mPipelineLayout = VK_NULL_HANDLE;
 
 	void initialize( const DescriptorSetLayoutRef &descriptorSetLayout );
 	void initialize( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts );
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class vk::Device;
 };
 
 //! \class PipelineLayoutSelector
@@ -91,16 +91,16 @@ private:
 //!
 class PipelineLayoutSelector {
 public:
-
-	PipelineLayoutSelector( vk::Context *context );
 	virtual ~PipelineLayoutSelector() {}
 
-	static PipelineLayoutSelectorRef	create( vk::Context *context );
+	static PipelineLayoutSelectorRef	create( vk::Device *context );
 
 	VkPipelineLayout					getSelectedLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts ) const;
 
 private:
-	vk::Context *mContext = nullptr;
+	PipelineLayoutSelector( vk::Device *context );
+
+	vk::Device *mDevice = nullptr;
 
 	struct HashData {
 		std::vector<VkDescriptorSetLayout>	mData;
@@ -111,35 +111,35 @@ private:
 	};
 	using HashPair = std::pair<PipelineLayoutSelector::HashData, PipelineLayoutRef>;
 
+	mutable std::mutex				mMutex;
 	mutable std::vector<HashPair>	mPipelineLayouts;
 };
 
 //! \class PipelineCache
 //!
 //!
-class PipelineCache : public BaseVkObject {
+class PipelineCache : public BaseDeviceObject {
 public:
-
-	PipelineCache();
-	PipelineCache( Context *context );
 	virtual ~PipelineCache();
 
-	static PipelineCacheRef		create( Context *context = nullptr );
+	static PipelineCacheRef		create( vk::Device *device = nullptr );
 
 	VkPipelineCache				getPipelineCache() const { return mPipelineCache; }
 
 private:
+	PipelineCache( vk::Device *device );
+
 	VkPipelineCache				mPipelineCache = VK_NULL_HANDLE;
 
 	void initialize();
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class vk::Device;
 };
 
 //! \class Pipeline
 //!
 //!
-class Pipeline : public BaseVkObject {
+class Pipeline : public BaseDeviceObject {
 public:
 
 	//! \class Options
@@ -182,18 +182,20 @@ public:
 		friend class Pipeline;
 	};
 
-	Pipeline();
-	Pipeline( VkPipeline pipeline, bool ownsPipeline = true );
-	Pipeline( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, Context *context );
-	Pipeline( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef, Context *context );
+	// ------------------------------------------------------------------------------------------------
+
 	virtual ~Pipeline();
 
-	static PipelineRef			create( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, Context *context = nullptr );
-	static PipelineRef			create( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef, Context *context = nullptr );
+	static PipelineRef			create( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device = nullptr );
+	static PipelineRef			create( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device = nullptr );
 
 	VkPipeline					getPipeline() const { return mPipeline; }
 
 private:
+	//Pipeline( VkPipeline pipeline, bool ownsPipeline = true );
+	Pipeline( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device );
+	Pipeline( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device );
+
 	VkPipeline					mPipeline = VK_NULL_HANDLE;
 	bool						mOwnsPipeline = true;
 
@@ -201,7 +203,7 @@ private:
 	void initialize( const Pipeline::Options& options, const vk::PipelineCacheRef& pipelineCacheRef );
 	void initialize( const VkGraphicsPipelineCreateInfo& createInfo, const vk::PipelineCacheRef& pipelineCacheRef );
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class vk::Device;
 };
 
 }} // namespace cinder::vk

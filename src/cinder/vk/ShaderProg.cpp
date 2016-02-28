@@ -38,6 +38,7 @@
 
 #include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/Utilities.h"
 //
 #include "cinder/vk/gl_types.h"
@@ -223,13 +224,8 @@ ShaderProg::Format& ShaderProg::Format::blockNameTranslateFn( BlockNameTranslate
 // -------------------------------------------------------------------------------------------------
 // ShaderProg
 // -------------------------------------------------------------------------------------------------
-ShaderProg::ShaderProg()
-	: BaseVkObject()
-{
-}
-
-ShaderProg::ShaderProg( const ShaderProg::Format &format, Context* context )
-	: BaseVkObject( context )
+ShaderProg::ShaderProg( const ShaderProg::Format &format, vk::Device *device )
+	: BaseDeviceObject( device )
 {
 	initialize( format );
 }
@@ -786,13 +782,13 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 
 		// Build each stage separate as required by Vulkan
 		for( auto& shader : shaderBuildData ) {
-			compileToSpirv( mContext->getDevice(), &shader );
+			compileToSpirv( mDevice->getDevice(), &shader );
 		}
 
 		sFinializeGlSlang();
 	}
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void ShaderProg::destroy( bool removeFromTracking )
@@ -802,37 +798,37 @@ void ShaderProg::destroy( bool removeFromTracking )
 	}
 
 	for( auto& shaderStage : mShaderStages ) {
-		vkDestroyShaderModule( mContext->getDevice(), shaderStage.module, nullptr );
+		vkDestroyShaderModule( mDevice->getDevice(), shaderStage.module, nullptr );
 		shaderStage.module = VK_NULL_HANDLE;
 	}
 	mShaderStages.clear();
 
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
-ShaderProgRef ShaderProg::create( const ShaderProg::Format &format, Context *context )
+ShaderProgRef ShaderProg::create( const ShaderProg::Format &format, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	ShaderProgRef result = ShaderProgRef( new ShaderProg( format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	ShaderProgRef result = ShaderProgRef( new ShaderProg( format, device ) );
 	return result;
 }
 
-ShaderProgRef ShaderProg::create( DataSourceRef vertexShader, DataSourceRef fragmentShader , Context *context )
+ShaderProgRef ShaderProg::create( DataSourceRef vertexShader, DataSourceRef fragmentShader, vk::Device *device )
 {
 	ShaderProg::Format format = ShaderProg::Format()
 		.vertex( vertexShader )
 		.fragment( fragmentShader );
-	return ShaderProg::create( format, context );
+	return ShaderProg::create( format, device );
 }
 
-ShaderProgRef ShaderProg::create( const std::string &vertexShader, const std::string &fragmentShader, Context *context )
+ShaderProgRef ShaderProg::create( const std::string &vertexShader, const std::string &fragmentShader, vk::Device *device )
 {
 	ShaderProg::Format format = ShaderProg::Format()
 		.vertex( vertexShader )
 		.fragment( fragmentShader );
-	return ShaderProg::create( format, context );
+	return ShaderProg::create( format, device );
 }
 
 void ShaderProg::uniform( const std::string& name, const float value )

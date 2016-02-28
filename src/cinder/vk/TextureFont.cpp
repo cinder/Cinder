@@ -300,7 +300,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 		curOffset += ivec2( glyphExtents.x, 0 );
 		++glyphIt;
 		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
-			Surface tempSurface( channel, SurfaceConstraintsDefault(), true );
+			ci::Surface tempSurface( channel, SurfaceConstraintsDefault(), true );
 			tempSurface.getChannelAlpha().copyFrom( channel, channel.getBounds() );
 			if( ! format.getPremultiply() )
 				ip::unpremultiply( &tempSurface );

@@ -38,6 +38,7 @@
 
 #include "cinder/vk/Framebuffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/wrapper.h"
@@ -76,13 +77,8 @@ Framebuffer::Attachment::Attachment( const vk::ImageViewRef& attachment )
 // -------------------------------------------------------------------------------------------------
 // Framebuffer::Framebuffer
 // -------------------------------------------------------------------------------------------------
-Framebuffer::Framebuffer()
-	: BaseVkObject()
-{
-}
-
-Framebuffer::Framebuffer( VkRenderPass renderPass, const ivec2& size, const vk::Framebuffer::Format& format, Context *context )
-	: BaseVkObject( context ),
+Framebuffer::Framebuffer( VkRenderPass renderPass, const ivec2& size, const vk::Framebuffer::Format& format, vk::Device *device )
+	: BaseDeviceObject( device ),
 	  mRenderPass( renderPass ),
 	  mWidth( size.x ),
 	  mHeight( size.y )
@@ -111,7 +107,7 @@ void Framebuffer::initialize( const vk::Framebuffer::Format& format )
 		}
 
 		VkFormatProperties formatProperties = {};
-		vkGetPhysicalDeviceFormatProperties( mContext->getGpu(), elem.mFormat, &formatProperties );
+		vkGetPhysicalDeviceFormatProperties( mDevice->getGpu(), elem.mFormat, &formatProperties );
 
 		vk::Image::Format imageFormat = vk::Image::Format( elem.mFormat )
 			.setSamples( elem.mSamples )
@@ -130,7 +126,7 @@ void Framebuffer::initialize( const vk::Framebuffer::Format& format )
 		//	imageFormat.setUsageSampled();
 		//}
 		// Create image
-		elem.mAttachment = vk::ImageView::create( mWidth, mHeight, imageFormat, mContext );
+		elem.mAttachment = vk::ImageView::create( mWidth, mHeight, imageFormat, mDevice );
 	}
 
 	// Attachment array for creation
@@ -149,7 +145,7 @@ void Framebuffer::initialize( const vk::Framebuffer::Format& format )
 	createInfo.height 			= mHeight;
 	createInfo.layers 			= 1;
 	createInfo.flags			= 0;
-	VkResult res = vkCreateFramebuffer( mContext->getDevice(), &createInfo, nullptr, &mFramebuffer );
+	VkResult res = vkCreateFramebuffer( mDevice->getDevice(), &createInfo, nullptr, &mFramebuffer );
 	assert( res == VK_SUCCESS );
 
 /*
@@ -168,11 +164,11 @@ void Framebuffer::initialize( const vk::Framebuffer::Format& format )
 	createInfo.height 			= mHeight;
 	createInfo.layers 			= 1;
 	createInfo.flags			= 0;
-	VkResult res = vkCreateFramebuffer( mContext->getDevice(), &createInfo, nullptr, &mFramebuffer );
+	VkResult res = vkCreateFramebuffer( mDevice->getDevice(), &createInfo, nullptr, &mFramebuffer );
 	assert( res == VK_SUCCESS );
 */
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void Framebuffer::destroy( bool removeFromTracking )
@@ -181,18 +177,18 @@ void Framebuffer::destroy( bool removeFromTracking )
 		return;
 	}
 
-	vkDestroyFramebuffer( mContext->getDevice(), mFramebuffer, nullptr );
+	vkDestroyFramebuffer( mDevice->getDevice(), mFramebuffer, nullptr );
 	mFramebuffer = VK_NULL_HANDLE;
 	
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
-FramebufferRef Framebuffer::create( VkRenderPass renderPass, const ivec2& size, const vk::Framebuffer::Format& format, Context *context )
+FramebufferRef Framebuffer::create( VkRenderPass renderPass, const ivec2& size, const vk::Framebuffer::Format& format, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	FramebufferRef result = FramebufferRef( new Framebuffer( renderPass, size, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	FramebufferRef result = FramebufferRef( new Framebuffer( renderPass, size, format, device ) );
 	return result;
 }
 

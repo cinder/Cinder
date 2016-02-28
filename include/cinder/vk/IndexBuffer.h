@@ -50,12 +50,9 @@ using IndexBufferRef = std::shared_ptr<IndexBuffer>;
 //!
 class IndexBuffer : public Buffer {
 public:
-
-	IndexBuffer();
-	IndexBuffer( size_t numIndices, VkIndexType indexType, const void *indices, Context *context );
 	virtual ~IndexBuffer();
 
-	static IndexBufferRef create( size_t numIndices, VkIndexType indexType, const void *indices, Context *context = nullptr );
+	static IndexBufferRef create( size_t numIndices, VkIndexType indexType, const void *indices, vk::Device *device = nullptr );
 
 	VkIndexType					getIndexType() const { return mIndexType; }
 	size_t						getNumIndices() const { return mNumIndices; }
@@ -64,12 +61,14 @@ public:
 	void						bufferIndices( const std::vector<uint32_t> &indices, size_t offset = 0 );
 
 private:
+	IndexBuffer( size_t numIndices, VkIndexType indexType, const void *indices, vk::Device *device );
+
 	VkIndexType					mIndexType = VK_INDEX_TYPE_UINT32;
 	size_t						mNumIndices = 0;
 	
 	void initialize( size_t numIndices, VkIndexType indexType, const void *indices );
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class Device;
 };
 
 }} // namespace cinder::vk

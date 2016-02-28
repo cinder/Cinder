@@ -79,7 +79,7 @@ protected:
 //! \class ShaderProg
 //!
 //!
-class ShaderProg : public BaseVkObject {
+class ShaderProg : public BaseDeviceObject {
 public:
 
 	// Argument can be blockName or blockName.uniformName format
@@ -172,13 +172,12 @@ public:
 		friend class ShaderProg;
 	};
 
-	ShaderProg();
-	ShaderProg( const ShaderProg::Format &format, Context* context );
+	ShaderProg( const ShaderProg::Format &format, vk::Device *device );
 	virtual ~ShaderProg();
 
-	static ShaderProgRef	create( const ShaderProg::Format &format, Context *context = nullptr );
-	static ShaderProgRef	create( DataSourceRef vertexShader, DataSourceRef fragmentShader , Context *context = nullptr );
-	static ShaderProgRef	create( const std::string &vertexShader, const std::string &fragmentShader, Context *context = nullptr );
+	static ShaderProgRef	create( const ShaderProg::Format &format, vk::Device *device = nullptr );
+	static ShaderProgRef	create( DataSourceRef vertexShader, DataSourceRef fragmentShader , vk::Device *device = nullptr );
+	static ShaderProgRef	create( const std::string &vertexShader, const std::string &fragmentShader, vk::Device *device = nullptr );
 
 	const std::vector<VkPipelineShaderStageCreateInfo>&		getShaderStages() const { return mShaderStages; }
 
@@ -220,7 +219,7 @@ private:
 
 	void initialize( const ShaderProg::Format &format );
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class vk::Device;
 };
 
 // -------------------------------------------------------------------------------------------------

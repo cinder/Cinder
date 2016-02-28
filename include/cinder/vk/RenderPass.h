@@ -53,7 +53,7 @@ using RenderPassRef = std::shared_ptr<RenderPass>;
 //! \class RenderPass
 //!
 //!
-class RenderPass : public BaseVkObject, public std::enable_shared_from_this<RenderPass> {
+class RenderPass : public BaseDeviceObject, public std::enable_shared_from_this<RenderPass> {
 public:
 
 	class Attachment;
@@ -157,10 +157,10 @@ public:
 	// ---------------------------------------------------------------------------------------------
 
 	RenderPass();
-	RenderPass( const RenderPass::Options& options, Context *context );
+	RenderPass( const RenderPass::Options& options, Device *device );
 	virtual ~RenderPass();
 
-	static RenderPassRef					create( const RenderPass::Options& options, Context *context = nullptr );
+	static RenderPassRef					create( const RenderPass::Options& options, Device *device = nullptr );
 
 	VkRenderPass							getRenderPass() const { return mRenderPass; }
 
@@ -197,7 +197,7 @@ private:
 
 	void initialize( const RenderPass::Options& options );
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class vk::Device;
 };
 
 }} // namespace cinder::vk

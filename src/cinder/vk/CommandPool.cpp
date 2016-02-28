@@ -38,16 +38,12 @@
 
 #include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 
 namespace cinder { namespace vk {
 
-CommandPool::CommandPool()
-	: BaseVkObject()
-{
-}
-
-CommandPool::CommandPool( Context* context )
-	: BaseVkObject( context )
+CommandPool::CommandPool( uint32_t queueFamilyIndex, vk::Context *context )
+	: vk::BaseContextObject( context ), mQueueFamilyIndex( queueFamilyIndex )
 {
 	initialize();
 }
@@ -59,17 +55,15 @@ CommandPool::~CommandPool()
 
 void CommandPool::initialize()
 {
-	if( VK_NULL_HANDLE != mCommandPool ) {
-		return;
-	}
+	assert( mQueueFamilyIndex != UINT32_MAX );
 
     VkCommandPoolCreateInfo createInfo = {};
     createInfo.sType			= VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     createInfo.pNext			= nullptr;
-    createInfo.queueFamilyIndex	= mContext->getQueueFamilyIndex();
+    createInfo.queueFamilyIndex	= mQueueFamilyIndex;
     createInfo.flags			= 0;
 
-    VkResult res = vkCreateCommandPool( mContext->getDevice(), &createInfo, nullptr, &mCommandPool );
+    VkResult res = vkCreateCommandPool( mContext->getDevice()->getDevice(), &createInfo, nullptr, &mCommandPool );
     assert( res == VK_SUCCESS );
 
 	mContext->trackedObjectCreated( this );
@@ -81,7 +75,7 @@ void CommandPool::destroy( bool removeFromTracking )
 		return;
 	}
 
-	vkDestroyCommandPool( mContext->getDevice(), mCommandPool, nullptr );
+	vkDestroyCommandPool(  mContext->getDevice()->getDevice(), mCommandPool, nullptr );
 	mCommandPool = VK_NULL_HANDLE;
 
 	if( removeFromTracking ) {
@@ -89,10 +83,10 @@ void CommandPool::destroy( bool removeFromTracking )
 	}
 }
 
-CommandPoolRef CommandPool::create( Context *context )
+CommandPoolRef CommandPool::create( uint32_t queueFamilyIndex, vk::Context *context )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	CommandPoolRef result = CommandPoolRef( new CommandPool( context ) );
+	context = ( nullptr != context ) ? context : vk::Context::getCurrent();
+	CommandPoolRef result = CommandPoolRef( new CommandPool( queueFamilyIndex, context ) );
 	return result;
 }
 

@@ -247,7 +247,7 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 
 	// Vulkan pipeline
 	{
-		mCommandPool = vk::CommandPool::create();
+		mCommandPool = vk::CommandPool::create( vk::context()->getDevice()->getGraphicsQueueFamilyIndex() );
 		mCommandBuffer = vk::CommandBuffer::create( mCommandPool->getCommandPool() );
 
 		auto vertexInputDesc = mMesh->getVertexInputDescription();

@@ -673,7 +673,7 @@ void UniformLayout::uniform(const std::string& name, const vk::TextureBaseRef& t
 // -------------------------------------------------------------------------------------------------
 // UniformSet
 // -------------------------------------------------------------------------------------------------
-UniformSet::UniformSet( const UniformLayout& layout, Context* context )
+UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 {
 	// Create bindings
 	const auto& srcBindings = layout.getBindings();
@@ -682,7 +682,7 @@ UniformSet::UniformSet( const UniformLayout& layout, Context* context )
 		const auto& srcBinding = srcBindings[i];
 		mBindings[i] = UniformSet::Binding( srcBinding );
 		if( mBindings[i].isBlock() ) {
-			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), context );
+			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), device );
 			mBindings[i].mUniformBuffer = buffer;
 		}
 	}
@@ -715,10 +715,10 @@ UniformSet::~UniformSet()
 {
 }
 
-UniformSetRef UniformSet::create( const UniformLayout& layout, Context* context )
+UniformSetRef UniformSet::create( const UniformLayout& layout, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	UniformSetRef result = UniformSetRef( new UniformSet( layout, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	UniformSetRef result = UniformSetRef( new UniformSet( layout, device ) );
 	return result;
 }
 
