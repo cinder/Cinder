@@ -49,7 +49,7 @@
 
 namespace cinder { namespace vk {
 
-class Context;
+class Device;
 class TextureBase;
 class UniformBuffer;
 class UniformSet;
@@ -439,10 +439,10 @@ public:
 
 	// ---------------------------------------------------------------------------------------------
 
-	UniformSet( const UniformLayout& layout, Context* context );
+	UniformSet( const UniformLayout& layout, Device *device );
 	virtual ~UniformSet();
 
-	static UniformSetRef			create( const UniformLayout& layout, Context* context = nullptr );
+	static UniformSetRef			create( const UniformLayout& layout, Device *device = nullptr );
 
 	const std::vector<Binding>&		getBindings() const { return mBindings; }
 	const std::vector<VkDescriptorSetLayoutBinding>&	getDescriptorSetlayoutBindings() const { return mDescriptorSetLayoutBindings; } 

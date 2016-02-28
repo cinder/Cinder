@@ -40,8 +40,9 @@
 
 #include "cinder/vk/platform.h"
 #include "cinder/vk/draw.h"
-#include "cinder/vk/wrapper.h"
+#include "cinder/vk/func.h"
 #include "cinder/vk/scoped.h"
+#include "cinder/vk/wrapper.h"
 
 #include "cinder/vk/Batch.h"
 #include "cinder/vk/Buffer.h"

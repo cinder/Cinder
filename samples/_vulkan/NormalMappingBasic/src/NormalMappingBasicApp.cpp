@@ -87,7 +87,7 @@ void NormalMappingBasicApp::setup()
 		mBatch = vk::Batch::create( geom::Cube() >> geom::Transform( scale( vec3( 1.5f ) ) ), mGlsl );
 		mBatch->uniform( "uDiffuseMap", mDiffuseTex );
 		mBatch->uniform( "uNormalMap", mNormalTex );
-		mBatch->uniform( "uLightLocViewSpace", vec3( 0, 0, 1 ) );
+		mBatch->uniform( "ciBlock1.uLightLocViewSpace", vec3( 0, 0, 1 ) );
 	}
 	catch( const std::exception& e ) {
 		console() << "Load Error: " << e.what() << std::endl;
@@ -116,7 +116,7 @@ void NormalMappingBasicApp::draw()
 
 	vk::ScopedModelMatrix modelScope;
 	vk::multModelMatrix( mCubeRotation );
-	mBatch->uniform( "uLightLocViewSpace", vec3( mCam.getViewMatrix() * vec4( mLightPosWorldSpace, 1 )) );
+	mBatch->uniform( "ciBlock1.uLightLocViewSpace", vec3( mCam.getViewMatrix() * vec4( mLightPosWorldSpace, 1 )) );
 	mBatch->draw();
 }
 

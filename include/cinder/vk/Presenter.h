@@ -45,6 +45,10 @@
 
 namespace cinder { namespace vk {
 
+class Device;
+class Surface;
+using SurfaceRef = std::shared_ptr<Surface>;
+
 class Presenter;
 using PresenterRef = std::shared_ptr<Presenter>;
 
@@ -59,16 +63,16 @@ public:
 		Options& explicitMode( bool value ) { mExplicitMode = value; return *this; }
 		Options& presentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
 		Options& samples( VkSampleCountFlagBits value ) { mSamples = value; mMultiSample = mSamples > VK_SAMPLE_COUNT_1_BIT;  return *this; }
-		Options& wsiSurface( VkSurfaceKHR value ) { mWsiSurface = value; return *this; }
-		Options& wsiSurfaceFormat( VkFormat value ) { mWsiSurfaceFormat = value; return *this; }
+		//Options& wsiSurface( VkSurfaceKHR value ) { mWsiSurface = value; return *this; }
+		//Options& wsiSurfaceFormat( VkFormat value ) { mWsiSurfaceFormat = value; return *this; }
 		Options& depthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
 	private:
 		bool							mExplicitMode = false;
 		VkPresentModeKHR				mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 		VkSampleCountFlagBits			mSamples = VK_SAMPLE_COUNT_1_BIT;
 		bool							mMultiSample = false;
-		VkSurfaceKHR					mWsiSurface = VK_NULL_HANDLE;
-		VkFormat						mWsiSurfaceFormat = VK_FORMAT_UNDEFINED;
+		//VkSurfaceKHR					mWsiSurface = VK_NULL_HANDLE;
+		//VkFormat						mWsiSurfaceFormat = VK_FORMAT_UNDEFINED;
 		VkFormat						mDepthStencilFormat = VK_FORMAT_UNDEFINED;
 		friend class Presenter;
 	};
@@ -77,7 +81,9 @@ public:
 
 	virtual ~Presenter();
 
-	static PresenterRef					create( const ivec2& windowSize, uint32_t swapChainImageCount, const Presenter::Options& options, vk::Context *context );
+	static PresenterRef					create( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device );
+
+	vk::Device*							getDevice() const { return mDevice; }
 
 	const vk::SwapchainRef&				getSwapchain() const { return mSwapchain; }
 	uint32_t							getCurrentImageIndex() const { return mCurrentImageIndex; }
@@ -88,17 +94,19 @@ public:
 
 	uint32_t							acquireNextImage( VkFence fence, VkSemaphore signalSemaphore );
 
-	void								beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *context = nullptr );
-	void								endRender( vk::Context *context = nullptr );
+	void								beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *context );
+	void								endRender( vk::Context *context );
 
 private:
-	Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const Presenter::Options& options, vk::Context *context );
+	Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device );
 
-	vk::Context							*mContext = nullptr;
+	vk::Device							*mDevice = nullptr;
 
 	ivec2								mWindowSize = ivec2( 0 );
 	uint32_t							mSwapchainImageCount = 0;
+	vk::SurfaceRef						mSurface;
 	Presenter::Options					mOptions;
+
 	VkSampleCountFlagBits				mActualSamples = VK_SAMPLE_COUNT_1_BIT;
 	VkSampleCountFlagBits				mPreviousSamples = VK_SAMPLE_COUNT_64_BIT;
 

@@ -42,7 +42,8 @@
 
 namespace cinder { namespace vk {
 
-class Context;
+class Surface;
+using SurfaceRef = std::shared_ptr<Surface>;
 
 class Swapchain;
 using SwapchainRef = std::shared_ptr<Swapchain>;
@@ -50,7 +51,7 @@ using SwapchainRef = std::shared_ptr<Swapchain>;
 //! \class Swapchain
 //!
 //!
-class Swapchain {
+class Swapchain : vk::BaseDeviceObject {
 public:
 
 	class Options {
@@ -58,16 +59,12 @@ public:
 		Options() {}
 		virtual ~Options() {}
 
-		Options& surface( VkSurfaceKHR value ) { mSurface = value; return *this; }
 		Options& presentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
-		Options& colorFormat( VkFormat value ) { mColorFormat = value; return *this; }
 		Options& depthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
 		Options& depthStencilSamples( VkSampleCountFlagBits value ) { mDepthStencilSamples = value; return *this; }
 
 	private:
 		VkPresentModeKHR				mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
-		VkSurfaceKHR					mSurface = VK_NULL_HANDLE;
-		VkFormat						mColorFormat = VK_FORMAT_UNDEFINED;
 		VkFormat						mDepthStencilFormat = VK_FORMAT_UNDEFINED;
 		VkSampleCountFlagBits			mDepthStencilSamples = VK_SAMPLE_COUNT_1_BIT;
 		friend class Swapchain;
@@ -75,11 +72,9 @@ public:
 
 	// ---------------------------------------------------------------------------------------------
 	
-	Swapchain();
-	Swapchain( const ivec2& size,  uint32_t imageCount, const Swapchain::Options& options, Context *context );
 	virtual ~Swapchain();
 
-	static SwapchainRef			create( const ivec2& size, uint32_t imageCount, const Swapchain::Options& options, Context *context = nullptr );
+	static SwapchainRef			create( const ivec2& size, uint32_t imageCount, const vk::SurfaceRef& surface, const Swapchain::Options& options, Device *device = nullptr );
 
 	VkSwapchainKHR				getSwapchain() const { return mSwapchain; }
 
@@ -90,20 +85,21 @@ public:
 	uint32_t					getImageCount() const { return mImageCount; }
 
 
-	VkFormat							getColorFormat() const { return mOptions.mColorFormat; }
-	const std::vector<ImageViewRef>&	getColorAttachments() const { return mColorAttachments; }
+	VkFormat							getColorFormat() const;
+	const std::vector<ImageViewRef>&	getColorAttachments() const;
 
-	VkFormat							getDepthStencilFormat() const { return mOptions.mDepthStencilFormat; }
-	const std::vector<ImageViewRef>&	getDepthStencilAttachments() const { return mDepthStencilAttachments; }
+	VkFormat							getDepthStencilFormat() const;
+	const std::vector<ImageViewRef>&	getDepthStencilAttachments() const;
 
 	VkPresentModeKHR			getPresentMode() const { return mOptions.mPresentMode; }
 
 private:
-	Context						*mContext = nullptr;
+	Swapchain( const ivec2& size,  uint32_t imageCount, const vk::SurfaceRef& surface, const Swapchain::Options& options, Device *device );
 
 	VkSwapchainKHR				mSwapchain = VK_NULL_HANDLE;
 	VkExtent2D					mSwapchainExtent;
 	uint32_t					mImageCount = 0;
+	vk::SurfaceRef				mSurface;
 	Swapchain::Options			mOptions;
 
 	std::vector<ImageViewRef>	mColorAttachments;
@@ -111,10 +107,10 @@ private:
 
 	void initialize();
 	void destroy(bool removeFromTracking = true);
-	friend class Context;
+	friend class vk::Device;
 
-	void initColorBuffers();
-	void initDepthStencilBuffers();
+	void initializeColorBuffers();
+	void initializeDepthStencilBuffers();
 };
 
 }} // namespace cinder::vk

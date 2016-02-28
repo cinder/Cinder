@@ -903,6 +903,12 @@
     <ClCompile Include="..\src\cinder\vk\Allocator.cpp">
       <Filter>Source Files\vk</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Surface.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\func.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1884,6 +1890,12 @@
       <Filter>Header Files\vk</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\vk\Allocator.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Surface.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\func.h">
       <Filter>Header Files\vk</Filter>
     </ClInclude>
   </ItemGroup>

@@ -78,8 +78,8 @@ class RendererVk : public Renderer {
 		Options&				setSwapchainImageCount( uint32_t value ) { mSwapchainImageCount = std::max<uint32_t>( 2, value ); return *this; }
 		uint32_t				getSwapchainImageCount() const { return mSwapchainImageCount; }
 
-		Options&				setWorkQueueCount( uint32_t value ) { mWorkQueueCount = value; return *this; }
-		uint32_t				getWorkQueueCount() const { return mWorkQueueCount; }
+		Options&				setWorkQueueCount( uint32_t value ) { mGraphicsQueueCount = value; return *this; }
+		uint32_t				getWorkQueueCount() const { return mGraphicsQueueCount; }
 
 		Options&				setDepthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
 		VkFormat				getDepthStencilFormat() const { return mDepthStencilFormat; }
@@ -98,7 +98,7 @@ class RendererVk : public Renderer {
 
 	private:
 		bool					mExplicitMode = false;
-		uint32_t				mWorkQueueCount = 1;
+		uint32_t				mGraphicsQueueCount = 1;
 		uint32_t				mSwapchainImageCount = 2;
 		VkSampleCountFlagBits	mSamples = VK_SAMPLE_COUNT_1_BIT;
 		VkFormat				mDepthStencilFormat = VK_FORMAT_D16_UNORM;

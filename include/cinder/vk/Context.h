@@ -39,6 +39,7 @@
 #pragma once
 
 #include "cinder/vk/platform.h"
+#include "cinder/vk/Util.h"
 #include "cinder/Color.h"
 #include "cinder/Matrix.h"
 #include "cinder/Vector.h"
@@ -53,6 +54,33 @@ class RendererVk;
 
 namespace cinder { namespace vk {
 
+class CommandBuffer;
+class CommandPool;
+class DescriptorPool;
+class DescriptorSet;
+class Device;
+class Environment;
+class IndexBuffer;
+class Presenter;
+class Queue;
+class RenderPass;
+class ShaderDef;
+class ShaderProg;
+class UniformBuffer;
+class VertexBuffer;
+using CommandBufferRef = std::shared_ptr<CommandBuffer>;
+using CommandPoolRef = std::shared_ptr<CommandPool>;
+using DescriptorPoolRef = std::shared_ptr<DescriptorPool>;
+using DescriptorSetRef = std::shared_ptr<DescriptorSet>;
+using IndexBufferRef =std::shared_ptr<IndexBuffer>;
+using PresenterRef = std::shared_ptr<Presenter>;
+using RenderPassRef = std::shared_ptr<RenderPass>;
+using QueueRef = std::shared_ptr<Queue>;
+using ShaderProgRef = std::shared_ptr<ShaderProg>;
+using UniformBufferRef = std::shared_ptr<UniformBuffer>;
+using VertexBufferRef = std::shared_ptr<VertexBuffer>;
+
+/*
 class Buffer;
 class CommandBuffer;
 class CommandPool;
@@ -60,6 +88,7 @@ class DescriptorPool;
 class DescriptorSet;
 class DescriptorSetLayout;
 class DescriptorSetLayoutSelector;
+class Device;
 class Environment;
 class Framebuffer;
 class Image;
@@ -75,6 +104,7 @@ class Queue;
 class RenderPass;
 class ShaderDef;
 class ShaderProg;
+class Surface;
 class Swapchain;
 class Texture2d;
 class UniformBuffer;
@@ -87,6 +117,7 @@ using DescriptorPoolRef = std::shared_ptr<DescriptorPool>;
 using DescriptorSetRef = std::shared_ptr<DescriptorSet>;
 using DescriptorSetLayoutRef = std::shared_ptr<DescriptorSetLayout>;
 using DescriptorSetLayoutSelectorRef = std::shared_ptr<DescriptorSetLayoutSelector>;
+using DeviceRef = std::shared_ptr<Device>;
 using ImageRef = std::shared_ptr<Image>;
 using ImageViewRef = std::shared_ptr<ImageView>;
 using IndexBufferRef = std::shared_ptr<IndexBuffer>;
@@ -99,10 +130,12 @@ using PresenterRef = std::shared_ptr<Presenter>;
 using QueueRef = std::shared_ptr<Queue>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
 using ShaderProgRef = std::shared_ptr<ShaderProg>;
+using SurfaceRef = std::shared_ptr<Surface>;
 using SwapchainRef = std::shared_ptr<Swapchain>;
 using Texture2dRef = std::shared_ptr<Texture2d>;
 using UniformBufferRef = std::shared_ptr<UniformBuffer>;
 using VertexBufferRef = std::shared_ptr<VertexBuffer>;
+*/
 
 class Context;
 using ContextRef = std::shared_ptr<Context>;
@@ -122,17 +155,12 @@ class Context {
 public:
 	enum class Type { UNDEFINED, PRIMARY, SECONDARY };
 
-	Context();
-#if defined( CINDER_LINUX )
-#elif defined( CINDER_MSW )
-	Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint32_t workQueueCount, VkPhysicalDevice gpu, Environment *env );
-#endif
-	Context( const Context* existingContext, int queueIndex );
 	virtual ~Context();
 
-	static ContextRef						createFromExisting( const vk::Context* existingContext, int queueIndex );
+	static ContextRef						create( const vk::PresenterRef& presenter, vk::Device* device );
+	static ContextRef						createFromExisting( const vk::Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices );
 
-	Environment*							getEnvironment() const { return mEnvironment; }
+	vk::Environment*						getEnvironment() const;
 	Context::Type							getType() const { return mType; }
 	bool									isPrimary() const { return Context::Type::PRIMARY == getType(); }
 	bool									isSecondary() const { return Context::Type::SECONDARY == getType(); }
@@ -140,8 +168,14 @@ public:
 	static Context*							getCurrent();
 	void									makeCurrent();
 
-	bool									isExplicitMode() const { return mExplicitMode; }
-	
+	bool									isExplicitMode() const;
+
+	vk::Device*								getDevice() const { return mDevice; }
+	const vk::QueueRef&						getGraphicsQueue() const { return mGraphicsQueue.queue; }
+	const vk::QueueRef&						getComputeQueue() const { return mComputeQueue.queue; }
+	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
+
+/*
 	VkPhysicalDevice						getGpu() const { return mGpu; }
 	VkDevice								getDevice() const { return mDevice; }
 	const vk::QueueRef&						getQueue() const { return mQueue; }
@@ -153,18 +187,14 @@ public:
 	VkPhysicalDeviceMemoryProperties		getMemoryProperties() const { return mMemoryProperties; }
 
 	uint32_t								getWorkQueueCount() const;
+*/
 
 	bool									findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const;
 
 	const vk::CommandPoolRef&				getDefaultCommandPool() const { return mDefaultCommandPool; }
 	const vk::CommandBufferRef&				getDefaultCommandBuffer() const { return mDefaultCommandBuffer; }
 
-	const vk::PipelineCacheRef&				getPipelineCache() const { return mPipelineCache; }
-
-	const vk::DescriptorSetLayoutSelectorRef&	getDescriptorSetLayoutSelector() const { return mDescriptorSetLayoutSelector; }
-	const vk::PipelineLayoutSelectorRef&		getPipelineLayoutSelector() const { return mPipelineLayoutSelector; }
-	const vk::PipelineSelectorRef&				getPipelineSelector() const { return mPipelineSelector; }
-
+/*
 	VkSurfaceKHR							getWsiSurface() const { return mWsiSurface; }
 	VkFormat								getWsiSurfaceFormat() const { return mWsiSurfaceFormat; }
 	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
@@ -174,6 +204,7 @@ public:
 	VkResult	vkGetSwapchainImagesKHR( VkSwapchainKHR swapchain, uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages );
 	VkResult	vkAcquireNextImageKHR( VkSwapchainKHR swapchain, uint64_t timeout, VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex );
 	VkResult	vkQueuePresentKHR( const VkPresentInfoKHR* pPresentInfo );
+*/
 
 	void									pushRenderPass( const vk::RenderPassRef& renderPass );
 	void									popRenderPass();
@@ -184,6 +215,7 @@ public:
 	void						setSubPass( uint32_t subPass );
 	uint32_t					getSubPass() const;
 
+/*
 	void						pushFramebuffer( const vk::FramebufferRef& framebuffer );
 	void						popFramebuffer();
 	const vk::FramebufferRef&	getFramebuffer() const;
@@ -191,6 +223,7 @@ public:
 	void						pushImage( const vk::ImageRef& image );
 	void						popImage();
 	const vk::ImageRef&			getImage() const;
+*/
 
 	void						pushCommandBuffer( const vk::CommandBufferRef& cmdBuf );
 	void						popCommandBuffer();
@@ -323,11 +356,11 @@ public:
 	VkBool32					getDepthWrite() const { return mDepthWrite; }
 
 private:
-	std::string					generateVertexShader( const ShaderDef &shader );
-	std::string					generateFragmentShader( const ShaderDef &shader );
-	ShaderProgRef				buildShader( const ShaderDef &shader );
+	std::string					generateVertexShader( const vk::ShaderDef &shader );
+	std::string					generateFragmentShader( const vk::ShaderDef &shader );
+	ShaderProgRef				buildShader( const vk::ShaderDef &shader );
 public:
-	ShaderProgRef&				getStockShader( const ShaderDef &shaderDef );
+	ShaderProgRef&				getStockShader( const vk::ShaderDef &shaderDef );
 
 
 protected:
@@ -348,22 +381,38 @@ protected:
 
 	std::vector<vk::RenderPassRef>			mRenderPassStack;
 	std::vector<uint32_t>					mSubPassStack;
+/*
 	std::vector<vk::FramebufferRef>			mFramebufferStack;
 	std::vector<vk::ImageRef>				mImageStack;
+*/
 	std::vector<vk::CommandBufferRef>		mCommandBufferStack;
 	std::vector<vk::ShaderProgRef>			mShaderProgStack;
-private:
-	Environment								*mEnvironment;
-	Context::Type							mType = Context::Type::UNDEFINED;
 
-#if defined( CINDER_LINUX )
+private:
+	Context( const vk::PresenterRef& presenter, vk::Device* device );
+	Context(  const Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices );
+
+	struct Queue {
+		int32_t			index = -1;
+		vk::QueueRef	queue;
+	};
+	
+	Context::Type							mType = Context::Type::UNDEFINED;
+	vk::Device								*mDevice = nullptr;
+	Context::Queue							mGraphicsQueue;
+	Context::Queue							mComputeQueue;
+	vk::PresenterRef						mPresenter;
+
+/*
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
 #elif defined( CINDER_MSW )
 	::HINSTANCE								mConnection = nullptr;
 	::HWND									mWindow = nullptr;
 #endif
+*/
 
-	bool									mExplicitMode = false;
-
+/*
 	VkPhysicalDevice						mGpu = VK_NULL_HANDLE;
 	VkDevice								mDevice = VK_NULL_HANDLE;
 	vk::QueueRef							mQueue;
@@ -381,7 +430,7 @@ private:
 		std::vector<VkExtensionProperties>	extensions;
 	};
 	std::vector<DeviceLayer>				mDeviceLayers;
-
+*/
 
 	// Default graphics variables
 	std::pair<ivec2,ivec2>					mDefaultViewport;
@@ -426,129 +475,53 @@ private:
 
 	vk::CommandPoolRef						mDefaultCommandPool;
 	vk::CommandBufferRef					mDefaultCommandBuffer;
-	vk::PipelineCacheRef					mPipelineCache;
 	
-	vk::DescriptorSetLayoutSelectorRef		mDescriptorSetLayoutSelector;
-	vk::PipelineLayoutSelectorRef			mPipelineLayoutSelector;
-	vk::PipelineSelectorRef					mPipelineSelector;
-	
+/*
 	VkSurfaceKHR							mWsiSurface = VK_NULL_HANDLE;
 	VkFormat								mWsiSurfaceFormat = VK_FORMAT_UNDEFINED;;
 	vk::PresenterRef						mPresenter;
 	void									initializePresentRender( const ivec2& windowSize, uint32_t swapchainImageCount, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode, VkFormat depthStencilFormat );
-
+*/
 
 	void initialize( const Context* existingContext = nullptr );
 	void destroy( bool removeFromTracking = true );
-	friend class Environment;
+	friend class Device;
 	friend class Presenter;
 
-	void		initDeviceLayers();
-	void		initDevice();
-	void		initConnection();
-	void		initSwapchainExtension();
-	void		initDeviceQueue();
-	void		destroyDevice();
+	//void		initDeviceLayers();
+	//void		initDevice();
+	//void		initSwapchainExtension();
+	void		initializeQueues();
+	//void		destroyDevice();
 
 	void		setDefaultViewport( const std::pair<ivec2,ivec2>& viewport ) { mDefaultViewport = viewport; }
 	friend class ci::app::RendererVk;
 
-public:
-    PFN_vkCreateSwapchainKHR	fpCreateSwapchainKHR = nullptr;
-    PFN_vkDestroySwapchainKHR	fpDestroySwapchainKHR = nullptr;
-    PFN_vkGetSwapchainImagesKHR	fpGetSwapchainImagesKHR = nullptr;
-    PFN_vkAcquireNextImageKHR	fpAcquireNextImageKHR = nullptr;
-    PFN_vkQueuePresentKHR		fpQueuePresentKHR = nullptr;
-
 private:
-	std::vector<CommandPool*>				mTrackedCommandPools;
-	std::vector<CommandBuffer*>				mTrackedCommandBuffers;
-	std::vector<Image*>						mTrackedImages;
-	std::vector<ImageView*>					mTrackedImageViews;
-	std::vector<Buffer*>					mTrackedBuffers;
-	std::vector<UniformBuffer*>				mTrackedUniformBuffers;
-	std::vector<IndexBuffer*>				mTrackedIndexBuffers;
-	std::vector<VertexBuffer*>				mTrackedVertexBuffers;
-	std::vector<Framebuffer*>				mTrackedFramebuffers;
-	std::vector<RenderPass*>				mTrackedRenderPasses;
-	std::vector<PipelineLayout*>			mTrackedPipelineLayouts;
-	std::vector<PipelineCache*>				mTrackedPipelineCaches;
-	std::vector<Pipeline*>					mTrackedPipelines;
-	std::vector<DescriptorSetLayout*>		mTrackedDescriptorSetLayouts;
-	std::vector<DescriptorPool*>			mTrackedDescriptorPools;
-	std::vector<DescriptorSet*>				mTrackedDescriptorSets;
-	std::vector<ShaderProg*>				mTrackedShaderProgs;
-	std::vector<Swapchain*>					mTrackedSwapchains;
+	//std::vector<CommandPool*>				mTrackedCommandPools;
+	//std::vector<CommandBuffer*>				mTrackedCommandBuffers;
+	vk::util::TrackedObject<CommandPool>	mTrackedCommandPools;
+	vk::util::TrackedObject<CommandBuffer>	mTrackedCommandBuffers;
 
 public:
 	void trackedObjectCreated(   CommandPool *obj );
 	void trackedObjectDestroyed( CommandPool *obj );
 	void trackedObjectCreated(   CommandBuffer *obj );
 	void trackedObjectDestroyed( CommandBuffer *obj );
-	void trackedObjectCreated(   Image *obj );
-	void trackedObjectDestroyed( Image *obj );
-	void trackedObjectCreated(   ImageView *obj );
-	void trackedObjectDestroyed( ImageView *obj );
-	void trackedObjectCreated(   Buffer *obj );
-	void trackedObjectDestroyed( Buffer *obj );
-	void trackedObjectCreated(   UniformBuffer *obj );
-	void trackedObjectDestroyed( UniformBuffer *obj );
-	void trackedObjectCreated(   IndexBuffer *obj );
-	void trackedObjectDestroyed( IndexBuffer *obj );
-	void trackedObjectCreated(   VertexBuffer *obj );
-	void trackedObjectDestroyed( VertexBuffer *obj );
-	void trackedObjectCreated(   Framebuffer *obj );
-	void trackedObjectDestroyed( Framebuffer *obj );
-	void trackedObjectCreated(   RenderPass *obj );
-	void trackedObjectDestroyed( RenderPass *obj );
-	void trackedObjectCreated(   PipelineLayout *obj );
-	void trackedObjectDestroyed( PipelineLayout *obj );
-	void trackedObjectCreated(   PipelineCache *obj );
-	void trackedObjectDestroyed( PipelineCache *obj );
-	void trackedObjectCreated(   Pipeline *obj );
-	void trackedObjectDestroyed( Pipeline *obj );
-	void trackedObjectCreated(   DescriptorSetLayout *obj );
-	void trackedObjectDestroyed( DescriptorSetLayout *obj );
-	void trackedObjectCreated(   DescriptorPool *obj );
-	void trackedObjectDestroyed( DescriptorPool *obj );
-	void trackedObjectCreated(   DescriptorSet *obj );
-	void trackedObjectDestroyed( DescriptorSet *obj );
-	void trackedObjectCreated(   ShaderProg *obj );
-	void trackedObjectDestroyed( ShaderProg *obj );
-	void trackedObjectCreated(   Swapchain *obj );
-	void trackedObjectDestroyed( Swapchain *obj );
 
-	void transferTrackedObjects( Context* dstCtx );
+	//void transferTrackedObjects( Context* dstCtx );
 
 private:
-	//std::vector<vk::CommandPoolRef>			mTransientCommandPools;
-	//std::vector<vk::CommandBufferRef>			mTransientCommandBuffers;
-	//std::vector<vk::ImageRef>					mTransientImages;
-	//std::vector<vk::ImageViewRef>				mTransientImageViews;
-	std::vector<vk::BufferRef>					mTransientBuffers;
 	std::vector<vk::UniformBufferRef>			mTransientUniformBuffers;
 	std::vector<vk::IndexBufferRef>				mTransientIndexBuffers;
 	std::vector<vk::VertexBufferRef>			mTransientVertexBuffers;
-	//std::vector<vk::FramebufferRef>			mTransientFramebuffers;
-	//std::vector<vk::RenderPassRef>			mTransientRenderPasses;
-	std::vector<vk::PipelineLayoutRef>			mTransientPipelineLayouts;
-	//std::vector<vk::PipelineCacheRef>			mTransientPipelineCaches;
-	std::vector<vk::PipelineRef>				mTransientPipelines;
-	std::vector<vk::DescriptorSetLayoutRef>		mTransientDescriptorSetLayouts;
 	std::vector<vk::DescriptorPoolRef>			mTransientDescriptorPools;
 	std::vector<vk::DescriptorSetRef>			mTransientDescriptorSets;
-	//std::vector<vk::ShaderProgRef>			mTransientShaderProgs;
-	//std::vector<vk::SwapchainRef>				mTransientSwapchains;
-	//std::vector<vk::Texture2dRef>				mTransientTexture2ds;
 
 public:
-	void	addTransient( const vk::BufferRef& obj );
 	void	addTransient( const vk::UniformBufferRef& obj );
 	void	addTransient( const vk::IndexBufferRef& obj );
 	void	addTransient( const vk::VertexBufferRef& obj );
-	void	addTransient( const vk::PipelineLayoutRef& obj );
-	void	addTransient( const vk::PipelineRef& obj );
-	void	addTransient( const vk::DescriptorSetLayoutRef& obj );
 	void	addTransient( const vk::DescriptorPoolRef& obj );
 	void	addTransient( const vk::DescriptorSetRef& obj );
 	void	clearTransients();

@@ -47,7 +47,7 @@ using ImageRef = std::shared_ptr<Image>;
 //! \class Image
 //!
 //!
-class Image : public BaseVkObject {
+class Image : public BaseDeviceObject {
 public:
 
 	//! \class Options
@@ -125,16 +125,16 @@ public:
 	};
 
 	Image();
-	Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t depth, VkImage image, const Image::Format& options, Context *context );
-	Image( uint32_t width, uint32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context );
-	Image( uint32_t width, uint32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context );
-	Image( uint32_t width, uint32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, Context *context );
-	Image( uint32_t width, uint32_t height, const Image::Format& options, Context *context );
+	Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t depth, VkImage image, const Image::Format& options, vk::Device *device );
+	Image( uint32_t width, uint32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device );
+	Image( uint32_t width, uint32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device );
+	Image( uint32_t width, uint32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device );
+	Image( uint32_t width, uint32_t height, const Image::Format& options, Device *device );
 	virtual ~Image();
 
-	static ImageRef			create( uint32_t width, const Image::Format& options = Image::Format(), Context *context = nullptr );
-	static ImageRef			create( uint32_t width, uint32_t height, const Image::Format& options = Image::Format(), Context *context = nullptr );
-	static ImageRef			create( uint32_t width, uint32_t height, uint32_t depth, const Image::Format& options = Image::Format(), Context *context = nullptr );
+	static ImageRef			create( uint32_t width, const Image::Format& options = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( uint32_t width, uint32_t height, const Image::Format& options = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( uint32_t width, uint32_t height, uint32_t depth, const Image::Format& options = Image::Format(), vk::Device *device = nullptr );
 
 	// Defaults:
 	//    - format is derived from the source data
@@ -149,11 +149,11 @@ public:
 	// If samples > 1, tiling will be forced to optimal the resulting image is not mappable (i.e. not host visible).
 	// If tiling is optimal, the resulting image is not mappable (i.e. not host visible).
 	// If usage is transfer source, resulting image will be samples = 1, tilingLinear, and mappable (i.e. host visible).
-	static ImageRef			create( int32_t width, int32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions = Image::Format(), Context *context = nullptr );
-	static ImageRef			create( int32_t width, int32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions = Image::Format(), Context *context = nullptr );
-	static ImageRef			create( int32_t width, int32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions = Image::Format(), Context *context = nullptr );
+	static ImageRef			create( int32_t width, int32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( int32_t width, int32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( int32_t width, int32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions = Image::Format(), vk::Device *device = nullptr );
 
-	static ImageRef			create( VkImageType imageType, int32_t width, int32_t height, int32_t depth, VkImage image, const Image::Format& options, Context *context = nullptr );
+	static ImageRef			create( VkImageType imageType, int32_t width, int32_t height, int32_t depth, VkImage image, const Image::Format& options, Device *device = nullptr );
 
 	VkImage					getImage() const { return mImage; }
 
@@ -180,12 +180,12 @@ public:
 	void					copyData( uint32_t dstLayer, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion );
 	void					copyData( uint32_t dstLayer, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion );
 
-	static void				copy( Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ivec2& srcOffset, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& dstOffset, const ivec2& size );
-	static void				copy( Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& size );
-	static void				copy( Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer );
+	static void				copy( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ivec2& srcOffset, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& dstOffset, const ivec2& size );
+	static void				copy( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& size );
+	static void				copy( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer );
 
-	static void				blit( Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ci::Area& srcArea, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ci::Area& dstArea );
-	static void				blit( Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer );
+	static void				blit( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ci::Area& srcArea, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ci::Area& dstArea );
+	static void				blit( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer );
 
 private:
 	VkImageType				mImageType;
@@ -202,7 +202,7 @@ private:
 
 	void initialize();
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class vk::Device;
 };
 
 }} // namespace cinder::vk

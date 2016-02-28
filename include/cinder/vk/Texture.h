@@ -224,21 +224,21 @@ public:
 	// ---------------------------------------------------------------------------------------------
 
 	Texture2d();
-	Texture2d( int width, int height, const Texture2d::Format &format, vk::Context* context );
-	Texture2d( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Context* context );
-	Texture2d( const Surface8u& surf, const Texture2d::Format &format, vk::Context* context );
-	Texture2d( const Surface16u& surf, const Texture2d::Format &format, vk::Context* context );
-	Texture2d( const Surface32f& surf, const Texture2d::Format &format, vk::Context* context );
-	//Texture2d( const ImageSourceRef& imageSource, const Texture2d::Format &format, vk::Context* context );
+	Texture2d( int width, int height, const Texture2d::Format &format, vk::Device *device );
+	Texture2d( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Device *device );
+	Texture2d( const Surface8u& surf, const Texture2d::Format &format, vk::Device *device );
+	Texture2d( const Surface16u& surf, const Texture2d::Format &format, vk::Device *device );
+	Texture2d( const Surface32f& surf, const Texture2d::Format &format, vk::Device *device );
+	//Texture2d( const ImageSourceRef& imageSource, const Texture2d::Format &format, vk::Device *device );
 	virtual ~Texture2d();
 
 	// Parameter 'format' will override the format in options
-	static Texture2dRef		create( int width, int height, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
-	static Texture2dRef		create( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format = Texture2d::Format(), vk::Context* context = nullptr );
-	static Texture2dRef		create( const Surface8u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
-	static Texture2dRef		create( const Surface16u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
-	static Texture2dRef		create( const Surface32f& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Context* context = nullptr );
-	//static Texture2dRef		create( ImageSourceRef imageSource, const Format &format = Format(), vk::Context* context = nullptr );
+	static Texture2dRef		create( int width, int height, const Texture2d::Format& format = Texture2d::Format(), vk::Device *device = nullptr );
+	static Texture2dRef		create( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format = Texture2d::Format(), vk::Device *device = nullptr );
+	static Texture2dRef		create( const Surface8u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Device *device = nullptr );
+	static Texture2dRef		create( const Surface16u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Device *device = nullptr );
+	static Texture2dRef		create( const Surface32f& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Device *device = nullptr );
+	//static Texture2dRef		create( ImageSourceRef imageSource, const Format &format = Format(), vk::Device *device = nullptr );
 
 	uint32_t					getWidth() const { return mImageView->getWidth(); }
 	uint32_t					getHeight() const { return mImageView->getHeight(); }
@@ -258,12 +258,12 @@ private:
 	uint32_t				mHeight = 0;
 	Texture2d::Format		mFormat;
 
-	void						initializeCommon( vk::Context* context );
-	void						initializeFinal( vk::Context* context );
-	void						initialize( vk::Context* context );
-	void						initialize( const void *data, VkFormat dataFormat, vk::Context* context );
-	template <typename T> void	initialize( const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, vk::Context* context );
-	void						initialize( const ImageSourceRef& imageSource, vk::Context* context );
+	void						initializeCommon( vk::Device *device );
+	void						initializeFinal( vk::Device *device );
+	void						initialize( vk::Device *device );
+	void						initialize( const void *data, VkFormat dataFormat, vk::Device *device );
+	template <typename T> void	initialize( const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, vk::Device *device );
+	void						initialize( const ImageSourceRef& imageSource, vk::Device *device );
 	void						destroy();
 	friend class Context;
 
@@ -278,23 +278,23 @@ class TextureCubeMap : public TextureBase {
 public:
 	virtual ~TextureCubeMap();
 
-	static TextureCubeMapRef	create( int width, int height, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Context* context = nullptr );
-	static TextureCubeMapRef	create( const Surface8u& surf, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Context* context = nullptr );
-	static TextureCubeMapRef	create( const Surface16u& surf, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Context* context = nullptr );
-	static TextureCubeMapRef	create( const Surface32f& surf, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Context* context = nullptr );
-	//static TextureCubeMapRef	create( ImageSourceRef imageSource, const TextureCubeMap::Format &format = TextureCubeMap::Format(), vk::Context* context = nullptr );
+	static TextureCubeMapRef	create( int width, int height, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Device *device = nullptr );
+	static TextureCubeMapRef	create( const Surface8u& surf, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Device *device = nullptr );
+	static TextureCubeMapRef	create( const Surface16u& surf, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Device *device = nullptr );
+	static TextureCubeMapRef	create( const Surface32f& surf, const TextureCubeMap::Format& format = TextureCubeMap::Format(), vk::Device *device = nullptr );
+	//static TextureCubeMapRef	create( ImageSourceRef imageSource, const TextureCubeMap::Format &format = TextureCubeMap::Format(), vk::Device *device = nullptr );
 
 private:
-	TextureCubeMap( int width, int height, TextureCubeMap::Format format, vk::Context* context );
-	TextureCubeMap( const Surface8u& surf, TextureCubeMap::Format format, vk::Context* context );
-	TextureCubeMap( const Surface16u& surf, TextureCubeMap::Format format, vk::Context* context );
-	TextureCubeMap( const Surface32f& surf, TextureCubeMap::Format format, vk::Context* context );
-	//TextureCubeMap( ImageSourceRef imageSource, TextureCubeMap::Format format, vk::Context* context );
+	TextureCubeMap( int width, int height, TextureCubeMap::Format format, vk::Device *device );
+	TextureCubeMap( const Surface8u& surf, TextureCubeMap::Format format, vk::Device *device );
+	TextureCubeMap( const Surface16u& surf, TextureCubeMap::Format format, vk::Device *device );
+	TextureCubeMap( const Surface32f& surf, TextureCubeMap::Format format, vk::Device *device );
+	//TextureCubeMap( ImageSourceRef imageSource, TextureCubeMap::Format format, vk::Device *device );
 
-	void						initializeCommon( const TextureCubeMap::Format& format, vk::Context* context  );
-	void						initializeFinal( vk::Context* context );
-	template <typename T> void	initialize( int width, int height, const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, const TextureCubeMap::Format& format, vk::Context* context );
-	void						initialize( ImageSourceRef imageSource, const TextureCubeMap::Format& format, vk::Context* context );
+	void						initializeCommon( const TextureCubeMap::Format& format, vk::Device *device  );
+	void						initializeFinal( vk::Device *device );
+	template <typename T> void	initialize( int width, int height, const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, const TextureCubeMap::Format& format, vk::Device *device );
+	void						initialize( ImageSourceRef imageSource, const TextureCubeMap::Format& format, vk::Device *device );
     void						destroy();
 	friend class Context;
 };

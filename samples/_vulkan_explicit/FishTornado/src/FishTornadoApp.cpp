@@ -113,7 +113,7 @@ void FishTornadoApp::setup()
 	auto primaryCtx = vk::context();
 
 	// The number of requested work queues are available
-	const uint32_t numWorkQueues = primaryCtx->getWorkQueueCount();
+	const uint32_t numWorkQueues = primaryCtx->getDevice()->getGraphicsQueueCount();
 	CI_LOG_I( "Loading using " << numWorkQueues << " work queues" );
 
 	if( numWorkQueues >= NUM_QUEUES ) {
@@ -125,11 +125,11 @@ void FishTornadoApp::setup()
 		// Light
 		{
 			uint32_t queueIndex = 1;
-			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx,  { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
 			mLightLoadThread = std::shared_ptr<std::thread>( new std::thread( [this, secondaryCtx, primaryCtx]() {
 				secondaryCtx->makeCurrent();
 				this->mLight = Light::create();
-				secondaryCtx->transferTrackedObjects( primaryCtx );
+				//secondaryCtx->transferTrackedObjects( primaryCtx );
 				this->mLightLoaded = true;
 				CI_LOG_I( "Light assets loaded" );
 			} ) );
@@ -138,11 +138,11 @@ void FishTornadoApp::setup()
 		// Ocean
 		{
 			uint32_t queueIndex = 2;
-			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
 			mOceanLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
 				secondaryCtx->makeCurrent();
 				this->mOcean = Ocean::create( this );
-				secondaryCtx->transferTrackedObjects( primaryCtx );
+				//secondaryCtx->transferTrackedObjects( primaryCtx );
 				this->mOceanLoaded = true;
 				CI_LOG_I( "Ocean assets loaded" );
 			} ) );
@@ -151,11 +151,11 @@ void FishTornadoApp::setup()
 		// Shark
 		{
 			uint32_t queueIndex = 3;
-			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
 			mSharkLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
 				secondaryCtx->makeCurrent();
 				this->mShark = Shark::create( this );
-				secondaryCtx->transferTrackedObjects( primaryCtx );
+				//secondaryCtx->transferTrackedObjects( primaryCtx );
 				this->mSharkLoaded = true;
 				CI_LOG_I( "Shark assets loaded" );
 			} ) );
@@ -164,7 +164,7 @@ void FishTornadoApp::setup()
 		// Fishes
 		{
 			uint32_t queueIndex = 4;
-			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
 			mFishLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
 				secondaryCtx->makeCurrent();			
 
@@ -178,7 +178,7 @@ void FishTornadoApp::setup()
 				this->mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
 				CI_LOG_I( "GpuFlocker (lowres) created" );
 
-				secondaryCtx->transferTrackedObjects( primaryCtx );
+				//secondaryCtx->transferTrackedObjects( primaryCtx );
 				this->mFishLoaded = true;
 
 				CI_LOG_I( "Fish assets loaded" );
@@ -192,14 +192,14 @@ void FishTornadoApp::setup()
 		CI_LOG_I( "GpuFlocker created" );
 
 		uint32_t queueIndex = 1;
-		auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, queueIndex );
+		auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
 		mLightLoadThread = std::shared_ptr<std::thread>( new std::thread( [this, secondaryCtx, primaryCtx]() {
 			secondaryCtx->makeCurrent();
 
 			// Light
 			{
 				this->mLight = Light::create();
-				secondaryCtx->transferTrackedObjects( primaryCtx );
+				//secondaryCtx->transferTrackedObjects( primaryCtx );
 				this->mLightLoaded = true;
 				CI_LOG_I( "Light assets loaded" );
 			}
@@ -207,7 +207,7 @@ void FishTornadoApp::setup()
 			// Ocean
 			{
 				this->mOcean = Ocean::create( this );
-				secondaryCtx->transferTrackedObjects( primaryCtx );
+				//secondaryCtx->transferTrackedObjects( primaryCtx );
 				this->mOceanLoaded = true;
 				CI_LOG_I( "Ocean assets loaded" );
 			}
@@ -215,7 +215,7 @@ void FishTornadoApp::setup()
 			// Shark
 			{
 				this->mShark = Shark::create( this );
-				secondaryCtx->transferTrackedObjects( primaryCtx );
+				//secondaryCtx->transferTrackedObjects( primaryCtx );
 				this->mSharkLoaded = true;
 				CI_LOG_I( "Ocean assets loaded" );
 			}
@@ -232,7 +232,7 @@ void FishTornadoApp::setup()
 				this->mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
 				CI_LOG_I( "GpuFlocker (lowres) created" );
 
-				secondaryCtx->transferTrackedObjects( primaryCtx );
+				//secondaryCtx->transferTrackedObjects( primaryCtx );
 				this->mFishLoaded = true;
 
 				CI_LOG_I( "Fish assets loaded" );
@@ -692,7 +692,7 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 		drawToMainFbo( cmdBuf );
 
 		// Present
-		vk::context()->getPresenter()->beginRender( cmdBuf );		
+		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );		
 		{
 			vk::setMatricesWindow( getWindowSize() );
 			mMainBatch->uniform( "uFboTex",					mMainColorTex );
@@ -724,7 +724,7 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 			vk::context()->popCommandBuffer();
 */
 		}
-		vk::context()->getPresenter()->endRender();
+		vk::context()->getPresenter()->endRender( vk::context() );
 	}
 	cmdBuf->end();
 }
@@ -748,13 +748,13 @@ void FishTornadoApp::draw()
 
     // Submit command buffer for processing
 	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	vk::context()->getQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
+	vk::context()->getGraphicsQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
 
 	// Submit presentation
-	vk::context()->getQueue()->present( renderingCompleteSemaphore, presenter );
+	vk::context()->getGraphicsQueue()->present( renderingCompleteSemaphore, presenter );
 
 	// Wait for work to be done
-	vk::context()->getQueue()->waitIdle();
+	vk::context()->getGraphicsQueue()->waitIdle();
 
 	if( 0 == ( getElapsedFrames() % 300 ) ) {
 		console() << "FPS: " << getAverageFps() << std::endl;

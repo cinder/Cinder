@@ -39,7 +39,9 @@
 #pragma once
 
 #include "cinder/vk/platform.h"
+#include "cinder/vk/Util.h"
 #include "cinder/Thread.h"
+#include <map>
 
 namespace cinder { namespace vk {
 
@@ -48,6 +50,8 @@ class Context;
 class DescriptorPool;
 class DescriptorSet;
 class DescriptorSetLayout;
+class DescriptorSetLayoutSelector;
+class Environment;
 class Framebuffer;
 class Image;
 class ImageView;
@@ -55,12 +59,21 @@ class IndexBuffer;
 class Pipeline;
 class PipelineCache;
 class PipelineLayout;
+class PipelineLayoutSelector;
+class PipelineSelector;
+class Presenter;
 class RenderPass;
 class ShaderProg;
+class Surface;
 class Swapchain;
 class UniformBuffer;
 class VertexBuffer;
 using ContextRef = std::shared_ptr<Context>;
+using DescriptorSetLayoutSelectorRef = std::shared_ptr<DescriptorSetLayoutSelector>;
+using PipelineCacheRef = std::shared_ptr<PipelineCache>;
+using PipelineLayoutSelectorRef = std::shared_ptr<PipelineLayoutSelector>;
+using PipelineSelectorRef = std::shared_ptr<PipelineSelector>;
+using PresenterRef = std::shared_ptr<Presenter>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
 
 class Device;
@@ -69,112 +82,158 @@ using DeviceRef = std::shared_ptr<Device>;
 //! \class Device
 //!
 //!
-class Device {
+class Device : public std::enable_shared_from_this<Device> {
 public:
+
+	class Options {
+	public:	
+		Options() {}
+		virtual ~Options() {}
+		Options&			setQueueCount( VkQueueFlagBits queue, uint32_t count ) { mQueueCounts[queue] = count; return *this; }
+		Options&			setGraphicsQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_GRAPHICS_BIT, count ); }
+		Options&			setComputeQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_COMPUTE_BIT , count ); }
+		Options&			setTransferQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_TRANSFER_BIT , count ); }
+		Options&			setSparseBindingQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_SPARSE_BINDING_BIT , count ); }
+	private:
+		// These values will get readjusted during device creation
+		std::map<VkQueueFlagBits, uint32_t>	mQueueCounts;
+		friend class Device;
+	};
+
 	virtual ~Device();
 
-	static DeviceRef						create( VkPhysicalDevice gpu );
+	static DeviceRef						create( VkPhysicalDevice gpu, const Device::Options& options, vk::Environment *env );
 
 	VkDevice								getDevice() const { return mDevice; }
 
-private:
-	Device( VkPhysicalDevice gpu );
+	Environment*							getEnv() const { return mEnvironment; }
+	VkPhysicalDevice						getGpu() const { return mGpu; }
+	const VkPhysicalDeviceProperties&		getGpuProperties() const { return mGpuProperties; }
+	const VkPhysicalDeviceMemoryProperties&	getMemoryProperties() const { return mMemoryProperties; }
+	const VkPhysicalDeviceLimits&			getGpuLimits() const { return mGpuProperties.limits; }
 
-	VkPhysicalDevice						mGpu = VK_NULL_HANDLE;
-	VkDevice								mDevice = VK_NULL_HANDLE;
-    std::vector<VkQueueFamilyProperties>	mQueueFamilyProperties;
-    VkPhysicalDeviceMemoryProperties		mMemoryProperties;
-	uint32_t								mQueueCount = 0;
+	uint32_t									getQueueFamilyCount() const { return static_cast<uint32_t>( mQueueFamilyProperties.size() ); }
+	const std::vector<VkQueueFamilyProperties>&	getQueueFamilyProperties() const  { return mQueueFamilyProperties; }
+
+	bool									isExplicitMode() const;
+
+	int32_t									getGraphicsQueueFamilyIndex() const;
+	int32_t									getComputeQueueFamilyIndex() const;
+	uint32_t								getGraphicsQueueCount() const;
+	uint32_t								getComputeQueueCount() const;
+
+	bool									findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const;
+
+	const vk::DescriptorSetLayoutSelectorRef&	getDescriptorSetLayoutSelector() const { return mDescriptorSetLayoutSelector; }
+	const vk::PipelineCacheRef&					getPipelineCache() const { return mPipelineCache; }
+	const vk::PipelineLayoutSelectorRef&		getPipelineLayoutSelector() const { return mPipelineLayoutSelector; }
+	const vk::PipelineSelectorRef&				getPipelineSelector() const { return mPipelineSelector; }
+
+	VkResult	CreateSwapchainKHR( VkDevice device, const VkSwapchainCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain );
+	void		DestroySwapchainKHR( VkDevice device, VkSwapchainKHR swapchain, const VkAllocationCallbacks* pAllocator );
+	VkResult	GetSwapchainImagesKHR( VkDevice device, VkSwapchainKHR swapchain, uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages );
+	VkResult	AcquireNextImageKHR( VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout, VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex );
+	VkResult	QueuePresentKHR( VkQueue queue, const VkPresentInfoKHR* pPresentInfo );
+
+private:
+	Device( VkPhysicalDevice gpu, const Device::Options& options, vk::Environment *env );
+
+	Environment								*mEnvironment = nullptr;
 	
+	VkPhysicalDevice						mGpu = VK_NULL_HANDLE;
+    VkPhysicalDeviceProperties				mGpuProperties;
+    VkPhysicalDeviceMemoryProperties		mMemoryProperties;
+	std::vector<VkQueueFamilyProperties>				mQueueFamilyProperties;
+    std::map<VkQueueFlagBits, VkQueueFamilyProperties>	mQueueFamilyPropertiesByType;
+	std::map<VkQueueFlagBits, uint32_t>					mQueueFamilyIndicesByType;
+	std::map<VkQueueFlagBits, uint32_t>		mActiveQueueCounts;
+	VkDevice								mDevice = VK_NULL_HANDLE;
+
+	// Device layers
+	struct Layer {
+		VkLayerProperties					layer;
+		std::vector<VkExtensionProperties>	extensions;
+	};
+	std::vector<Layer>						mLayers;
+	std::vector<VkExtensionProperties>		mMiscExtensions;
+
+	vk::PipelineCacheRef					mPipelineCache;	
+	vk::DescriptorSetLayoutSelectorRef		mDescriptorSetLayoutSelector;
+	vk::PipelineLayoutSelectorRef			mPipelineLayoutSelector;
+	vk::PipelineSelectorRef					mPipelineSelector;
+
+	void initializeGpuProperties();
+	void initializeQueueProperties();
+	void initializeLayers();
+	void initializeDevice();	
 	void initialize();
 	void destroy( bool removeFromTracking = true );
+	friend class Environment;
 
 private:
-	//! \class TrackedObject
-	template <typename T> class TrackedObject {
-	public:
-		TrackedObject() {}
-		virtual ~TrackedObject() {}
+    PFN_vkCreateSwapchainKHR	fpCreateSwapchainKHR = nullptr;
+    PFN_vkDestroySwapchainKHR	fpDestroySwapchainKHR = nullptr;
+    PFN_vkGetSwapchainImagesKHR	fpGetSwapchainImagesKHR = nullptr;
+    PFN_vkAcquireNextImageKHR	fpAcquireNextImageKHR = nullptr;
+    PFN_vkQueuePresentKHR		fpQueuePresentKHR = nullptr;
 
-		void objectCreated( T *obj ) {
-			std::lock_guard<std::mutex> lock( mMutex );
-			auto it = std::find( std::begin( mTrackedObjects ), std::end( mTrackedObjects ), obj );
-			if( it == std::end( mTrackedObjects ) ) {
-				mTrackedObjects.push_back( obj );
-			}
-		}
-
-		void objectDestroyed( T *obj ) {
-			std::lock_guard<std::mutex> lock( mMutex );
-			auto it = std::find( std::begin( mTrackedObjects ), std::end( mTrackedObjects ), obj );
-			if( it != std::end( mTrackedObjects ) ) {
-				mTrackedObjects.erase(
-					std::remove( std::begin( mTrackedObjects ), std::end( mTrackedObjects ), obj ),
-					std::end( mTrackedObjects )
-				);
-			}
-		}
-
-	private:
-		std::mutex		mMutex;
-		std::vector<T*>	mTrackedObjects;
-	};
-
-	// Tracked contexts 
-	std::vector<ContextRef>				mTrackedContexts;
-
-	// Tracked Vulkan objects
-	TrackedObject<Image>				mTrackedImages;
-	TrackedObject<ImageView>			mTrackedImageViews;
-	TrackedObject<Buffer>				mTrackedBuffers;
-	TrackedObject<UniformBuffer>		mTrackedUniformBuffers;
-	TrackedObject<IndexBuffer>			mTrackedIndexBuffers;
-	TrackedObject<VertexBuffer>			mTrackedVertexBuffers;
-	TrackedObject<Framebuffer>			mTrackedFramebuffers;
-	TrackedObject<RenderPass>			mTrackedRenderPasses;
-	TrackedObject<PipelineLayout>		mTrackedPipelineLayouts;
-	TrackedObject<PipelineCache>		mTrackedPipelineCaches;
-	TrackedObject<Pipeline>				mTrackedPipelines;
-	TrackedObject<DescriptorSetLayout>	mTrackedDescriptorSetLayouts;
-	TrackedObject<DescriptorPool>		mTrackedDescriptorPools;
-	TrackedObject<DescriptorSet>		mTrackedDescriptorSets;
-	TrackedObject<ShaderProg>			mTrackedShaderProgs;
-	TrackedObject<Swapchain>			mTrackedSwapchains;
+private:
+	vk::util::TrackedObject<vk::Image>					mTrackedImages;
+	vk::util::TrackedObject<vk::ImageView>				mTrackedImageViews;
+	vk::util::TrackedObject<vk::Buffer>					mTrackedBuffers;
+	vk::util::TrackedObject<vk::UniformBuffer>			mTrackedUniformBuffers;
+	vk::util::TrackedObject<vk::IndexBuffer>			mTrackedIndexBuffers;
+	vk::util::TrackedObject<vk::VertexBuffer>			mTrackedVertexBuffers;
+	vk::util::TrackedObject<vk::Framebuffer>			mTrackedFramebuffers;
+	vk::util::TrackedObject<vk::RenderPass>				mTrackedRenderPasses;
+	vk::util::TrackedObject<vk::PipelineLayout>			mTrackedPipelineLayouts;
+	vk::util::TrackedObject<vk::PipelineCache>			mTrackedPipelineCaches;
+	vk::util::TrackedObject<vk::Pipeline>				mTrackedPipelines;
+	vk::util::TrackedObject<vk::DescriptorSetLayout>	mTrackedDescriptorSetLayouts;
+	vk::util::TrackedObject<vk::DescriptorPool>			mTrackedDescriptorPools;
+	vk::util::TrackedObject<vk::DescriptorSet>			mTrackedDescriptorSets;
+	vk::util::TrackedObject<vk::ShaderProg>				mTrackedShaderProgs;
+	vk::util::TrackedObject<vk::Swapchain>				mTrackedSwapchains;
+	vk::util::TrackedObject<vk::Surface>				mTrackedSurfaces;
+	vk::util::TrackedObject<vk::Context>				mTrackedContexts;
 
 public:
-	void trackedObjectCreated(   Image *obj );
-	void trackedObjectDestroyed( Image *obj );
-	void trackedObjectCreated(   ImageView *obj );
-	void trackedObjectDestroyed( ImageView *obj );
-	void trackedObjectCreated(   Buffer *obj );
-	void trackedObjectDestroyed( Buffer *obj );
-	void trackedObjectCreated(   UniformBuffer *obj );
-	void trackedObjectDestroyed( UniformBuffer *obj );
-	void trackedObjectCreated(   IndexBuffer *obj );
-	void trackedObjectDestroyed( IndexBuffer *obj );
-	void trackedObjectCreated(   VertexBuffer *obj );
-	void trackedObjectDestroyed( VertexBuffer *obj );
-	void trackedObjectCreated(   Framebuffer *obj );
-	void trackedObjectDestroyed( Framebuffer *obj );
-	void trackedObjectCreated(   RenderPass *obj );
-	void trackedObjectDestroyed( RenderPass *obj );
-	void trackedObjectCreated(   PipelineLayout *obj );
-	void trackedObjectDestroyed( PipelineLayout *obj );
-	void trackedObjectCreated(   PipelineCache *obj );
-	void trackedObjectDestroyed( PipelineCache *obj );
-	void trackedObjectCreated(   Pipeline *obj );
-	void trackedObjectDestroyed( Pipeline *obj );
-	void trackedObjectCreated(   DescriptorSetLayout *obj );
-	void trackedObjectDestroyed( DescriptorSetLayout *obj );
-	void trackedObjectCreated(   DescriptorPool *obj );
-	void trackedObjectDestroyed( DescriptorPool *obj );
-	void trackedObjectCreated(   DescriptorSet *obj );
-	void trackedObjectDestroyed( DescriptorSet *obj );
-	void trackedObjectCreated(   ShaderProg *obj );
-	void trackedObjectDestroyed( ShaderProg *obj );
-	void trackedObjectCreated(   Swapchain *obj );
-	void trackedObjectDestroyed( Swapchain *obj );
-
+	void trackedObjectCreated(   vk::Image *obj );
+	void trackedObjectDestroyed( vk::Image *obj );
+	void trackedObjectCreated(   vk::ImageView *obj );
+	void trackedObjectDestroyed( vk::ImageView *obj );
+	void trackedObjectCreated(   vk::Buffer *obj );
+	void trackedObjectDestroyed( vk::Buffer *obj );
+	void trackedObjectCreated(   vk::UniformBuffer *obj );
+	void trackedObjectDestroyed( vk::UniformBuffer *obj );
+	void trackedObjectCreated(   vk::IndexBuffer *obj );
+	void trackedObjectDestroyed( vk::IndexBuffer *obj );
+	void trackedObjectCreated(   vk::VertexBuffer *obj );
+	void trackedObjectDestroyed( vk::VertexBuffer *obj );
+	void trackedObjectCreated(   vk::Framebuffer *obj );
+	void trackedObjectDestroyed( vk::Framebuffer *obj );
+	void trackedObjectCreated(   vk::RenderPass *obj );
+	void trackedObjectDestroyed( vk::RenderPass *obj );
+	void trackedObjectCreated(   vk::PipelineLayout *obj );
+	void trackedObjectDestroyed( vk::PipelineLayout *obj );
+	void trackedObjectCreated(   vk::PipelineCache *obj );
+	void trackedObjectDestroyed( vk::PipelineCache *obj );
+	void trackedObjectCreated(   vk::Pipeline *obj );
+	void trackedObjectDestroyed( vk::Pipeline *obj );
+	void trackedObjectCreated(   vk::DescriptorSetLayout *obj );
+	void trackedObjectDestroyed( vk::DescriptorSetLayout *obj );
+	void trackedObjectCreated(   vk::DescriptorPool *obj );
+	void trackedObjectDestroyed( vk::DescriptorPool *obj );
+	void trackedObjectCreated(   vk::DescriptorSet *obj );
+	void trackedObjectDestroyed( vk::DescriptorSet *obj );
+	void trackedObjectCreated(   vk::ShaderProg *obj );
+	void trackedObjectDestroyed( vk::ShaderProg *obj );
+	void trackedObjectCreated(   vk::Swapchain *obj );
+	void trackedObjectDestroyed( vk::Swapchain *obj );
+	void trackedObjectCreated(   vk::Surface *obj );
+	void trackedObjectDestroyed( vk::Surface *obj );
+	void trackedObjectCreated(   vk::Context *obj );
+	void trackedObjectDestroyed( vk::Context *obj );
 };
 
 }} // namespace cinder::vk

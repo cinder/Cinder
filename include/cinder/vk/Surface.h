@@ -36,69 +36,47 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/vk/scoped.h"
-#include "cinder/vk/Context.h"
+#include "cinder/vk/BaseVkObject.h"
 
 namespace cinder { namespace vk {
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// ScopedColor
-ScopedColor::ScopedColor()
-	: mCtx( vk::context() )
-{
-	mColor = mCtx->getCurrentColor();
-}
+class Device;
 
-ScopedColor::ScopedColor( const ColorAf &color )
-	: mCtx( vk::context() )
-{
-	mColor = mCtx->getCurrentColor();
-	mCtx->setCurrentColor( color );
-}
+class Surface;
+using SurfaceRef = std::shared_ptr<Surface>;
 
-ScopedColor::ScopedColor( float red, float green, float blue, float alpha )
-	: mCtx( vk::context() )
-{
-	mColor = mCtx->getCurrentColor();
-	mCtx->setCurrentColor( ColorA( red, green, blue, alpha ) );	
-}
+//! \class Surface
+//!
+//!
+class Surface {
+public:
 
-ScopedColor::~ScopedColor()
-{
-	mCtx->setCurrentColor( mColor );
-}
+	virtual ~Surface();
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// ScopedBlend
-ScopedBlend::ScopedBlend( VkBool32 enable )
-	: mCtx( vk::context() ), mSaveFactors( false )
-{
-	mCtx->pushBoolState( ci::vk::Cap::BLEND, enable );
-}
+	static SurfaceRef			create( ::HINSTANCE connection, ::HWND window, vk::Device *device );
 
-//! Parallels glBlendFunc(), implicitly enables blending
-ScopedBlend::ScopedBlend( VkBlendFactor sfactor, VkBlendFactor dfactor )
-	: mCtx( vk::context() ), mSaveFactors( true )
-{
-	mCtx->pushBoolState( ci::vk::Cap::BLEND, VK_TRUE );
-	mCtx->pushBlendFuncSeparate( sfactor, dfactor, sfactor, dfactor );
-}
+	VkSurfaceKHR				getSurface() const { return mSurface; }
 
-//! Parallels glBlendFuncSeparate(), implicitly enables blending
-ScopedBlend::ScopedBlend( VkBlendFactor srcRGB, VkBlendFactor dstRGB, VkBlendFactor srcAlpha, VkBlendFactor dstAlpha )
-	: mCtx( vk::context() ), mSaveFactors( true )
-{
-	mCtx->pushBoolState( ci::vk::Cap::BLEND, VK_TRUE );
-	mCtx->pushBlendFuncSeparate( srcRGB, dstRGB, srcAlpha, dstAlpha );
-}
+	VkFormat					getFormat() const { return mFormat; }
 
-ScopedBlend::~ScopedBlend()
-{
-	mCtx->popBoolState( ci::vk::Cap::BLEND );
-	if( mSaveFactors ) {
-		mCtx->popBlendFuncSeparate();
-	}
-}
+private:
+	Surface( ::HINSTANCE connection, ::HWND window, vk::Device *device );
 
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+#elif defined( CINDER_MSW )
+	::HINSTANCE					mConnection = nullptr;
+	::HWND						mWindow = nullptr;
+#endif
+
+	vk::Device					*mDevice = nullptr;
+
+	VkSurfaceKHR				mSurface = VK_NULL_HANDLE;
+	VkFormat					mFormat = VK_FORMAT_UNDEFINED;
+
+	void initialize();
+	void destroy( bool removeFromeTracking = true );
+	friend class vk::Device;
+};
 
 }} // namespace cinder::vk

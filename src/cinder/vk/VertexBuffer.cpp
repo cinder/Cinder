@@ -38,19 +38,13 @@
 
 #include "cinder/vk/VertexBuffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 
 namespace cinder { namespace vk {
 
-VertexBuffer::VertexBuffer()
-	: Buffer()
+VertexBuffer::VertexBuffer( const void* data, size_t dataSize, vk::Device *device )
+	: Buffer( false, dataSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, device )
 {
-}
-
-//VertexBuffer::VertexBuffer( const void* data, size_t dataSize, size_t dataStride, Context *context )
-VertexBuffer::VertexBuffer( const void* data, size_t dataSize, Context *context )
-	: Buffer( false, dataSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, context )
-{
-	//initialize( data, dataSize, dataStride );
 	initialize( data, dataSize);
 }
 
@@ -76,25 +70,7 @@ void VertexBuffer::initialize( const void* data, size_t dataSize )
 		unmap();
 	}
 
-	/*
-    mBindingDescription.binding			= 0;
-    mBindingDescription.inputRate		= VK_VERTEX_INPUT_RATE_VERTEX;
-    mBindingDescription.stride			= dataStride;
-
-	mAttributeDescriptions.resize( 2 );
-    
-	mAttributeDescriptions[0].binding	= 0;
-    mAttributeDescriptions[0].location	= 0;
-    mAttributeDescriptions[0].format	= VK_FORMAT_R32G32B32A32_SFLOAT;
-    mAttributeDescriptions[0].offset	= 0;
-
-    mAttributeDescriptions[1].binding	= 0;
-    mAttributeDescriptions[1].location	= 1;
-    mAttributeDescriptions[1].format	= VK_FORMAT_R32G32B32A32_SFLOAT; //useTexture ? VK_FORMAT_R32G32_SFLOAT : VK_FORMAT_R32G32B32A32_SFLOAT;
-    mAttributeDescriptions[1].offset	= 16;
-	*/
-
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void VertexBuffer::destroy( bool removeFromTracking )
@@ -104,18 +80,16 @@ void VertexBuffer::destroy( bool removeFromTracking )
 	}
 
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 
 	Buffer::destroy( removeFromTracking );
 }
 
-//VertexBufferRef VertexBuffer::create( const void* data, size_t dataSize, size_t dataStride, Context *context )
-VertexBufferRef VertexBuffer::create( const void* data, size_t dataSize, Context *context )
+VertexBufferRef VertexBuffer::create( const void* data, size_t dataSize, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	//VertexBufferRef result = VertexBufferRef( new VertexBuffer( data, dataSize, dataStride, context ) );
-	VertexBufferRef result = VertexBufferRef( new VertexBuffer( data, dataSize, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	VertexBufferRef result = VertexBufferRef( new VertexBuffer( data, dataSize, device ) );
 	return result;
 }
 

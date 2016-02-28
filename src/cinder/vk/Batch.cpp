@@ -40,6 +40,7 @@
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Descriptor.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/Pipeline.h"
 #include "cinder/vk/PipelineSelector.h"
 #include "cinder/vk/RenderPass.h"
@@ -325,7 +326,7 @@ void Batch::draw( int32_t first, int32_t count )
 	//auto& pipeline = mPipelines[mPipelineSelection];
 	//vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline() );
 	auto ctx = vk::context();
-	auto& pipelineSelector = ctx->getPipelineSelector();
+	auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
 	pipelineSelector->setTopology( mVboMesh->getPrimitive() );
 	pipelineSelector->setVertexInputBindingDescriptions( mVertexInputDescription.getBindings() );
 	pipelineSelector->setVertexInputAttributeDescriptions( mVertexInputDescription.getAttributes() );
@@ -395,7 +396,7 @@ void Batch::drawInstanced( uint32_t instanceCount )
 
 	//auto& pipeline = mPipelines[mPipelineSelection];
 	//vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline() );
-	auto& pipelineSelector = vk::context()->getPipelineSelector();
+	auto& pipelineSelector = vk::context()->getDevice()->getPipelineSelector();
 	pipelineSelector->setVertexInputBindingDescriptions( mVertexInputDescription.getBindings() );
 	pipelineSelector->setVertexInputAttributeDescriptions( mVertexInputDescription.getAttributes() );
 	pipelineSelector->setShaderStages( mShader->getShaderStages() );

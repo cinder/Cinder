@@ -54,7 +54,7 @@ using ImageViewRef = std::shared_ptr<ImageView>;
 //! \class ImageView
 //!
 //!
-class ImageView : public BaseVkObject {
+class ImageView : public BaseDeviceObject {
 public:
 
 	//! \class Options
@@ -99,24 +99,24 @@ public:
 	// --------------------------------------------------------------------------------------------
 
 	ImageView();
-	explicit ImageView( VkImageViewType viewType, VkImageType imageType, int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, VkImage image, Context *context );
-	explicit ImageView( VkImageViewType viewType, VkImageType imageType, int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, const vk::ImageRef& premadeImage, Context *context );
+	explicit ImageView( VkImageViewType viewType, VkImageType imageType, int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, VkImage image, vk::Device *device );
+	explicit ImageView( VkImageViewType viewType, VkImageType imageType, int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, const vk::ImageRef& premadeImage, vk::Device *device );
 	virtual ~ImageView();
 
 	//! Creates an image view and allocates an image that fits the requested specifications
-	static ImageViewRef		create( int32_t width, const Image::Format& imageOptions = Image::Format(), Context *context = nullptr );
-	static ImageViewRef		create( int32_t width, int32_t height, const Image::Format& imageOptions = Image::Format(), Context *context = nullptr );
-	static ImageViewRef		create( int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions = Image::Format(), Context *context = nullptr );
+	static ImageViewRef		create( int32_t width, const Image::Format& imageOptions = Image::Format(), vk::Device *device = nullptr );
+	static ImageViewRef		create( int32_t width, int32_t height, const Image::Format& imageOptions = Image::Format(), vk::Device *device = nullptr );
+	static ImageViewRef		create( int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions = Image::Format(), vk::Device *device = nullptr );
 	//! Creates an image view and uses and existing Vulkan image
-	static ImageViewRef		create( int32_t width, VkFormat format, VkImage image, Context *context = nullptr );
-	static ImageViewRef		create( int32_t width, int32_t height, VkFormat format, VkImage image, Context *context = nullptr );
-	static ImageViewRef		create( int32_t width, int32_t height, int32_t depth, VkFormat format, VkImage image, Context *context = nullptr );
+	static ImageViewRef		create( int32_t width, VkFormat format, VkImage image, vk::Device *device = nullptr );
+	static ImageViewRef		create( int32_t width, int32_t height, VkFormat format, VkImage image, vk::Device *device = nullptr );
+	static ImageViewRef		create( int32_t width, int32_t height, int32_t depth, VkFormat format, VkImage image, vk::Device *device = nullptr );
 	//! Creates an image view and references and a premade image
-	static ImageViewRef		create( int32_t width, const vk::ImageRef& premadeImage, Context *context = nullptr );
-	static ImageViewRef		create( int32_t width, int32_t height, const vk::ImageRef& premadeImage, Context *context = nullptr );
-	static ImageViewRef		create( int32_t width, int32_t height, int32_t depth, const vk::ImageRef& premadeImage, Context *context = nullptr );
+	static ImageViewRef		create( int32_t width, const vk::ImageRef& premadeImage, vk::Device *device = nullptr );
+	static ImageViewRef		create( int32_t width, int32_t height, const vk::ImageRef& premadeImage, vk::Device *device = nullptr );
+	static ImageViewRef		create( int32_t width, int32_t height, int32_t depth, const vk::ImageRef& premadeImage,vk::Device *device = nullptr );
 	//! Creates an 2D image view using a specific viewType
-	static ImageViewRef		createCube( int32_t width, int32_t height, const vk::ImageRef& premadeImage, Context *context = nullptr );
+	static ImageViewRef		createCube( int32_t width, int32_t height, const vk::ImageRef& premadeImage, vk::Device *device = nullptr );
 
 	VkImageView				getImageView() const { return mImageView; }
 
@@ -134,7 +134,7 @@ public:
 
 protected:
 	// Derived objects should use this c'tor
-	explicit ImageView( bool selfOwned, Context *context );
+	explicit ImageView( bool selfOwned, Device *device );
 
 	bool					mSelfOwned = true;
 
@@ -147,8 +147,8 @@ protected:
 	void initialize( VkImageViewType viewType, VkImageType imageType, int32_t width, int32_t height, int32_t depth, const Image::Format& imageOptions, const vk::ImageRef& premadeImage );
 	void destroy( bool removeFromTracking = true );
 	void destroySelf();
-	friend class Context;
-	friend class Swapchain;
+	friend class vk::Device;
+	friend class vk::Swapchain;
 };
 
 }} // namespace cinder::vk

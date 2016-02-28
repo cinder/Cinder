@@ -37,25 +37,14 @@
 */
 
 #include "cinder/vk/Context.h"
-#include "cinder/vk/Buffer.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
-#include "cinder/vk/Descriptor.h"
-#include "cinder/vk/Environment.h"
-#include "cinder/vk/Framebuffer.h"
-#include "cinder/vk/ImageView.h"
-#include "cinder/vk/IndexBuffer.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/Pipeline.h"
-#include "cinder/vk/PipelineSelector.h"
-#include "cinder/vk/Presenter.h"
 #include "cinder/vk/Queue.h"
 #include "cinder/vk/RenderPass.h"
 #include "cinder/vk/ShaderProg.h"
-#include "cinder/vk/Swapchain.h"
-#include "cinder/vk/Texture.h"
 #include "cinder/vk/UniformBuffer.h"
-#include "cinder/vk/VertexBuffer.h"
-
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
 
@@ -65,16 +54,22 @@ namespace cinder { namespace vk {
 
 #if defined( CINDER_ANDROID )
 #elif defined( CINDER_LINUX )
-	thread_local Context *sThreadSpecificCurrentContext = nullptr;
+	thread_local Context *sThreadSpecificCurrentVkContext = nullptr;
 #elif defined( CINDER_MSW )
-	__declspec(thread) Context *sThreadSpecificCurrentContext = nullptr;
+	__declspec(thread) Context *sThreadSpecificCurrentVkContext = nullptr;
 #endif
 
-Context::Context()
+Context::Context( const vk::PresenterRef& presenter, vk::Device* device )
+	: mType( Context::Type::PRIMARY ), mDevice( device ), mPresenter( presenter )
 {
+	mGraphicsQueue.index = 0;
+	
+	initialize();
+
 	mColor = ColorAf::white();
 }
 
+/*
 #if defined( CINDER_ANDROID )
 #elif defined( CINDER_LINUX )
 #elif defined( CINDER_MSW )
@@ -92,13 +87,28 @@ Context::Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint
 	mColor = ColorAf::white();
 }
 #endif
+*/
 
-Context::Context( const Context* existingContext, int queueIndex )
-	: mType( Context::Type::SECONDARY ), mQueueIndex( queueIndex )
+Context::Context( const Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices )
+	: mType( Context::Type::SECONDARY )
 {
-	mEnvironment = existingContext->getEnvironment();
-	initialize( existingContext );
+	// Graphics queue
+	{
+		auto it = queueIndices.find( VK_QUEUE_GRAPHICS_BIT );
+		if( it != queueIndices.end() ) {
+			mGraphicsQueue.index = static_cast<int32_t>( it->second );
+		}
+	}
 
+	// Compute queue
+	{
+		auto it = queueIndices.find( VK_QUEUE_COMPUTE_BIT );
+		if( it != queueIndices.end() ) {
+			mComputeQueue.index = static_cast<int32_t>( it->second );
+		}
+	}
+
+	initialize( existingContext );
 	mColor = ColorAf::white();
 }
 
@@ -107,13 +117,20 @@ Context::~Context()
 	destroy();
 }
 
-ContextRef Context::createFromExisting( const vk::Context* existingContext, int queueIndex )
+ContextRef Context::create( const vk::PresenterRef& presenter, vk::Device* device )
 {
-	ContextRef result = vk::Environment::getEnv()->createContextFromExisting( existingContext, queueIndex );
+	ContextRef result = ContextRef( new Context( presenter, device ) );
 	return result;
 }
 
-void initDeviceLayerExtensions( VkPhysicalDevice gpu,  const std::string& layerName, std::vector<VkExtensionProperties>& outExtensions )
+ContextRef Context::createFromExisting( const vk::Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices )
+{
+	ContextRef result = ContextRef( new Context( existingContext, queueIndices ) );
+	return result;
+}
+
+/*
+void initializeDeviceLayerExtensions( VkPhysicalDevice gpu, const std::string& layerName, std::vector<VkExtensionProperties>& outExtensions )
 {
 	uint32_t extensionCount = 0;
 	VkResult err = vkEnumerateDeviceExtensionProperties( gpu, layerName.c_str(), &extensionCount, nullptr );
@@ -160,7 +177,7 @@ void Context::initDeviceLayers()
 
 	for( auto& layer : mDeviceLayers ) {
 		const std::string layerName( layer.layer.layerName );
-		initDeviceLayerExtensions( mGpu, layerName, layer.extensions );
+		initializeDeviceLayerExtensions( mGpu, layerName, layer.extensions );
 	}
 }
 
@@ -190,10 +207,9 @@ CI_LOG_I( "queueFamily[" << i << "].queueCount: " << mQueueFamilyProperties[i].q
     assert( found );
     assert( mQueueFamilyPropertyCount >= 1 );
 
-    /* This is as good a place as any to do this */
+	// This is as good a place as any to do this
     vkGetPhysicalDeviceMemoryProperties( mGpu, &mMemoryProperties );
     vkGetPhysicalDeviceProperties( mGpu, &mGpuProperties );
-
 CI_LOG_I( "limits.sampledImageColorSampleCounts: " << mGpuProperties.limits.sampledImageColorSampleCounts );
 CI_LOG_I( "limits.sampledImageDepthSampleCounts: " << mGpuProperties.limits.sampledImageDepthSampleCounts );
 
@@ -240,28 +256,6 @@ CI_LOG_I( "limits.sampledImageDepthSampleCounts: " << mGpuProperties.limits.samp
     assert( res == VK_SUCCESS );
 }
 
-void Context::initConnection()
-{
-#if defined( CINDER_LINUX )
-    const xcb_setup_t *setup;
-    xcb_screen_iterator_t iter;
-    int scr;
-
-    info.connection = xcb_connect(NULL, &scr);
-    if (info.connection == NULL) {
-        std::cout << "Cannot find a compatible Vulkan ICD.\n";
-        exit(-1);
-    }
-
-    setup = xcb_get_setup(info.connection);
-    iter = xcb_setup_roots_iterator(setup);
-    while (scr-- > 0)
-        xcb_screen_next(&iter);
-
-    info.screen = iter.data;
-#endif // defined( CINDER_LINUX )
-}
-
 void Context::initSwapchainExtension()
 {
 	fpCreateSwapchainKHR    = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, CreateSwapchainKHR );
@@ -289,7 +283,7 @@ void Context::initSwapchainExtension()
     // Iterate over each queue to learn whether it supports presenting:
 	std::vector<VkBool32> supportsPresent( mQueueFamilyPropertyCount, VK_FALSE );
     for( uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i ) {
-        mEnvironment->vkGetPhysicalDeviceSurfaceSupportKHR( mGpu, i, mWsiSurface, &supportsPresent[i] );
+        mEnvironment->GetPhysicalDeviceSurfaceSupportKHR( mGpu, i, mWsiSurface, &supportsPresent[i] );
     }
 
     // Search for a graphics queue and a present queue in the array of queue
@@ -328,11 +322,11 @@ void Context::initSwapchainExtension()
 
     // Get the list of VkFormats that are supported:
     uint32_t formatCount;
-    res = mEnvironment->vkGetPhysicalDeviceSurfaceFormatsKHR( mGpu, mWsiSurface, &formatCount, nullptr );
+    res = mEnvironment->GetPhysicalDeviceSurfaceFormatsKHR( mGpu, mWsiSurface, &formatCount, nullptr );
     assert( res == VK_SUCCESS );
 
 	std::vector<VkSurfaceFormatKHR> surfFormats( formatCount );
-    res = mEnvironment->vkGetPhysicalDeviceSurfaceFormatsKHR( mGpu, mWsiSurface, &formatCount, surfFormats.data() );
+    res = mEnvironment->GetPhysicalDeviceSurfaceFormatsKHR( mGpu, mWsiSurface, &formatCount, surfFormats.data() );
     assert( res == VK_SUCCESS );
 
     // If the format list includes just one entry of VK_FORMAT_UNDEFINED,
@@ -346,44 +340,61 @@ void Context::initSwapchainExtension()
         mWsiSurfaceFormat = surfFormats[0].format;
     }
 }
+*/
 
-void Context::initDeviceQueue()
+void Context::initializeQueues()
 {
-	mQueue = vk::Queue::create( mQueueFamilyIndex, mQueueIndex, this );
+	// Graphics queue
+	if( -1 != mGraphicsQueue.index ) {
+		mGraphicsQueue.queue = vk::Queue::create( mDevice->getGraphicsQueueFamilyIndex(), mGraphicsQueue.index, this );
+	}
+
+	// Compute queue
+	if( -1 != mComputeQueue.index ) {
+		mComputeQueue.queue = vk::Queue::create( mDevice->getComputeQueueFamilyIndex(), mComputeQueue.index, this );
+	}
 }
 
 void Context::initialize( const Context* existingContext )
 {
 	if( existingContext ) {
+/*
 		mGpu = existingContext->mGpu;
 		mGpuProperties = existingContext->mGpuProperties;
 		mQueueFamilyProperties = existingContext->mQueueFamilyProperties;
 		mMemoryProperties = existingContext->mMemoryProperties;
+*/
 		mDevice = existingContext->mDevice;
+		mPresenter = existingContext->mPresenter;
+/*
 		mQueueFamilyIndex = existingContext->mQueueFamilyIndex;
 		mQueueFamilyPropertyCount = existingContext->mQueueFamilyPropertyCount;
-		initDeviceQueue();
+*/
+		initializeQueues();
 	}
 	else {
+/*
 		initDeviceLayers();
 		initDevice();
 		initConnection();
 		initSwapchainExtension();
-		initDeviceQueue();
+*/
+		initializeQueues();
 	}
 
     mModelMatrixStack.push_back( mat4() );
     mViewMatrixStack.push_back( mat4() );
 	mProjectionMatrixStack.push_back( mat4( 1, 0, 0, 0,  0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ) );
 
-	mDefaultCommandPool = vk::CommandPool::create( this );
+	mDefaultCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), this );
 	mDefaultCommandBuffer = vk::CommandBuffer::create( mDefaultCommandPool->getCommandPool(), this );
 
-	mPipelineCache = vk::PipelineCache::create( this );
-
-	mDescriptorSetLayoutSelector = vk::DescriptorSetLayoutSelector::create( this );
-	mPipelineLayoutSelector = vk::PipelineLayoutSelector::create( this );
-	mPipelineSelector = vk::PipelineSelector::create( mPipelineCache, this );
+/*
+	mPipelineCache = vk::PipelineCache::create( this->getDevice() );
+	mDescriptorSetLayoutSelector = vk::DescriptorSetLayoutSelector::create( this->getDevice() );
+	mPipelineLayoutSelector = vk::PipelineLayoutSelector::create( this->getDevice() );
+	mPipelineSelector = vk::PipelineSelector::create( mPipelineCache, this->getDevice() );
+*/
 
 	mCachedColorAttachmentBlend.blendEnable			= VK_FALSE;
 	mCachedColorAttachmentBlend.srcColorBlendFactor	= VK_BLEND_FACTOR_SRC_ALPHA;
@@ -394,16 +405,16 @@ void Context::initialize( const Context* existingContext )
 	mCachedColorAttachmentBlend.alphaBlendOp		= VK_BLEND_OP_ADD;
 	mCachedColorAttachmentBlend.colorWriteMask		= 0xf;
 
-	mEnvironment->trackedObjectCreated( this );
+	//mEnvironment->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
+/*
 void Context::destroyDevice()
 {
-	if( VK_NULL_HANDLE != mDevice ) {
-		vkDestroyDevice( mDevice, nullptr );
-		mDevice = VK_NULL_HANDLE;
-	}
+
 }
+*/
 
 void Context::destroy( bool removeFromTracking )
 {
@@ -413,133 +424,37 @@ void Context::destroy( bool removeFromTracking )
 		return;
 	}
 
+	// Destroy tracked objects
 	const bool removeTrackedObjects = false;
-
-	// CommandBuffers
-	for( auto obj : mTrackedCommandBuffers ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedCommandBuffers.clear();
-
-	// CommandPools
-	for( auto obj : mTrackedCommandPools ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedCommandPools.clear();
-
-	// ImageViews
-	for( auto obj : mTrackedImageViews ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedImageViews.clear();
-
-	// Buffers
-	for( auto obj : mTrackedBuffers ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedBuffers.clear();
-
-	// UniformBuffers
-	for( auto obj : mTrackedUniformBuffers ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedUniformBuffers.clear();
-
-	// IndexBuffers
-	for( auto obj : mTrackedIndexBuffers ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedIndexBuffers.clear();
-
-	// VertexBuffers
-	for( auto obj : mTrackedVertexBuffers ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedVertexBuffers.clear();
-
-	// Framebuffers
-	for( auto obj : mTrackedFramebuffers ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedFramebuffers.clear();
-
-	// RenderPasses
-	for( auto obj : mTrackedRenderPasses ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedRenderPasses.clear();
-
-	// PipelineLayouts
-	for( auto obj : mTrackedPipelineLayouts ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedPipelineLayouts.clear();
-
-	// PipelineCaches
-	for( auto obj : mTrackedPipelineCaches ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedPipelineCaches.clear();
-
-	// Pipelines
-	for( auto obj : mTrackedPipelines ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedPipelines.clear();
-
-	// DescriptorSetLayouts
-	for( auto obj : mTrackedDescriptorSetLayouts ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedDescriptorSetLayouts.clear();
-
-	// DescriptorSets
-	for( auto obj : mTrackedDescriptorSets ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedDescriptorSets.clear();
-
-	// DescriptorPools
-	for( auto obj : mTrackedDescriptorPools ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedDescriptorPools.clear();
-
-	// ShaderProgs
-	for( auto obj : mTrackedShaderProgs ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedShaderProgs.clear();
-
-	// Swapchains
-	for( auto obj : mTrackedSwapchains ) {
-		obj->destroy( removeTrackedObjects );
-	}
-	mTrackedSwapchains.clear();
-
-	if( isPrimary() ) {
-		destroyDevice();
-	}
-
+	mTrackedCommandBuffers.destroyAll( [&removeTrackedObjects]( vk::CommandBuffer *obj ) { obj->destroy( removeTrackedObjects ); } );
+	mTrackedCommandPools.destroyAll( [&removeTrackedObjects]( vk::CommandPool *obj ) { obj->destroy( removeTrackedObjects ); } );
+	
 	mType = vk::Context::Type::UNDEFINED;
 
 	if( removeFromTracking ) {
-		mEnvironment->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
 Context* Context::getCurrent()
 {
-	return sThreadSpecificCurrentContext;
+	Context *result = sThreadSpecificCurrentVkContext;
+	return result;
 }
 
 void Context::makeCurrent()
 {
-	if( this != sThreadSpecificCurrentContext ) {
-		sThreadSpecificCurrentContext = this;
+	if( this != sThreadSpecificCurrentVkContext ) {
+		sThreadSpecificCurrentVkContext = this;
 	}
 }
 
+bool Context::isExplicitMode() const
+{
+	return mDevice->isExplicitMode();
+}
+
+/*
 uint32_t Context::getWorkQueueCount() const 
 { 
 	return mWorkQueueCount;
@@ -609,6 +524,7 @@ VkResult Context::vkQueuePresentKHR( const VkPresentInfoKHR* pPresentInfo )
 {
 	return this->fpQueuePresentKHR( mQueue->getQueue(), pPresentInfo );
 }
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Stack management routines
@@ -647,6 +563,7 @@ uint32_t Context::getSubPass() const
 	return mSubPassStack.back();
 }
 
+/*
 void Context::pushFramebuffer( const vk::FramebufferRef& framebuffer )
 {
 	pushStackState( mFramebufferStack, framebuffer );
@@ -676,6 +593,7 @@ const vk::ImageRef& Context::getImage() const
 {
 	return mImageStack.back();
 }
+*/
 
 void Context::pushCommandBuffer( const vk::CommandBufferRef& cmdBuf )
 {
@@ -1430,7 +1348,7 @@ const std::vector<VkPipelineColorBlendAttachmentState>&	Context::getColorBlendAt
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders
-std::string	Context::generateVertexShader( const ShaderDef &shader )
+std::string	Context::generateVertexShader( const vk::ShaderDef &shader )
 {	
 	std::string s;
 	
@@ -1506,7 +1424,7 @@ std::string	Context::generateVertexShader( const ShaderDef &shader )
 	return s;
 }
 
-std::string	Context::generateFragmentShader( const ShaderDef &shader )
+std::string	Context::generateFragmentShader( const vk::ShaderDef &shader )
 {
 	std::string s;
 	
@@ -1570,7 +1488,7 @@ std::string	Context::generateFragmentShader( const ShaderDef &shader )
 }
 
 
-ShaderProgRef Context::buildShader( const ShaderDef &shader )
+ShaderProgRef Context::buildShader( const vk::ShaderDef &shader )
 {
 /*
 		vk::UniformLayout uniformLayout = vk::UniformLayout();
@@ -1606,7 +1524,7 @@ ShaderProgRef Context::buildShader( const ShaderDef &shader )
 	return result;
 }
 
-ShaderProgRef& Context::getStockShader( const ShaderDef &shaderDef )
+ShaderProgRef& Context::getStockShader( const vk::ShaderDef &shaderDef )
 {
 	auto existing = mStockShaders.find( shaderDef );
 
@@ -1651,186 +1569,27 @@ void objectDestroyed(  T* obj, std::vector<T*>& tracker )
 	}
 }
 
-void Context::trackedObjectCreated( CommandPool *obj )
+void Context::trackedObjectCreated( vk::CommandPool *obj )
 {
-	objectCreated( obj, mTrackedCommandPools );
+	mTrackedCommandPools.objectCreated( obj );
 }
 
-void Context::trackedObjectDestroyed( CommandPool *obj )
+void Context::trackedObjectDestroyed( vk::CommandPool *obj )
 {
-	objectDestroyed( obj, mTrackedCommandPools );
+	mTrackedCommandPools.objectDestroyed( obj );
 }
 
-void Context::trackedObjectCreated( CommandBuffer *obj )
+void Context::trackedObjectCreated( vk::CommandBuffer *obj )
 {
-	objectCreated( obj, mTrackedCommandBuffers );
+	mTrackedCommandBuffers.objectCreated( obj );
 }
 
-void Context::trackedObjectDestroyed( CommandBuffer *obj )
+void Context::trackedObjectDestroyed( vk::CommandBuffer *obj )
 {
-	objectDestroyed( obj, mTrackedCommandBuffers );
+	mTrackedCommandBuffers.objectDestroyed( obj );
 }
 
-void Context::trackedObjectCreated( Image *obj )
-{
-	objectCreated( obj, mTrackedImages );
-}
-
-void Context::trackedObjectDestroyed( Image *obj )
-{
-	objectDestroyed( obj, mTrackedImages );
-}
-
-void Context::trackedObjectCreated( ImageView *obj )
-{
-	objectCreated( obj, mTrackedImageViews );
-}
-
-void Context::trackedObjectDestroyed( ImageView *obj )
-{
-	objectDestroyed( obj, mTrackedImageViews );
-}
-
-void Context::trackedObjectCreated( Buffer *obj )
-{
-	objectCreated( obj, mTrackedBuffers );
-}
-
-void Context::trackedObjectDestroyed( Buffer *obj )
-{
-	objectDestroyed( obj, mTrackedBuffers );
-}
-
-void Context::trackedObjectCreated( UniformBuffer *obj )
-{
-	objectCreated( obj, mTrackedUniformBuffers );
-}
-
-void Context::trackedObjectDestroyed( UniformBuffer *obj )
-{
-	objectDestroyed( obj, mTrackedUniformBuffers );
-}
-
-void Context::trackedObjectCreated( IndexBuffer *obj )
-{
-	objectCreated( obj, mTrackedIndexBuffers );
-}
-
-void Context::trackedObjectDestroyed( IndexBuffer *obj )
-{
-	objectDestroyed( obj, mTrackedIndexBuffers );
-}
-
-void Context::trackedObjectCreated( VertexBuffer *obj )
-{
-	objectCreated( obj, mTrackedVertexBuffers );
-}
-
-void Context::trackedObjectDestroyed( VertexBuffer *obj )
-{
-	objectDestroyed( obj, mTrackedVertexBuffers );
-}
-
-void Context::trackedObjectCreated( Framebuffer *obj )
-{
-	objectCreated( obj, mTrackedFramebuffers );
-}
-
-void Context::trackedObjectDestroyed( Framebuffer *obj )
-{
-	objectDestroyed( obj, mTrackedFramebuffers );
-}
-
-void Context::trackedObjectCreated( RenderPass *obj )
-{
-	objectCreated( obj, mTrackedRenderPasses );
-}
-
-void Context::trackedObjectDestroyed( RenderPass *obj )
-{
-	objectDestroyed( obj, mTrackedRenderPasses );
-}
-
-void Context::trackedObjectCreated( PipelineLayout *obj )
-{
-	objectCreated( obj, mTrackedPipelineLayouts );
-}
-
-void Context::trackedObjectDestroyed( PipelineLayout *obj )
-{
-	objectDestroyed( obj, mTrackedPipelineLayouts );
-}
-
-void Context::trackedObjectCreated( PipelineCache *obj )
-{
-	objectCreated( obj, mTrackedPipelineCaches );
-}
-
-void Context::trackedObjectDestroyed( PipelineCache *obj )
-{
-	objectDestroyed( obj, mTrackedPipelineCaches );
-}
-
-void Context::trackedObjectCreated( Pipeline *obj )
-{
-	objectCreated( obj, mTrackedPipelines );
-}
-
-void Context::trackedObjectDestroyed( Pipeline *obj )
-{
-	objectDestroyed( obj, mTrackedPipelines );
-}
-
-void Context::trackedObjectCreated( DescriptorSetLayout *obj )
-{
-	objectCreated( obj, mTrackedDescriptorSetLayouts );
-}
-
-void Context::trackedObjectDestroyed( DescriptorSetLayout *obj )
-{
-	objectDestroyed( obj, mTrackedDescriptorSetLayouts );
-}
-
-void Context::trackedObjectCreated( DescriptorPool *obj )
-{
-	objectCreated( obj, mTrackedDescriptorPools );
-}
-
-void Context::trackedObjectDestroyed( DescriptorPool *obj )
-{
-	objectDestroyed( obj, mTrackedDescriptorPools );
-}
-
-void Context::trackedObjectCreated( DescriptorSet *obj )
-{
-	objectCreated( obj, mTrackedDescriptorSets );
-}
-
-void Context::trackedObjectDestroyed( DescriptorSet *obj )
-{
-	objectDestroyed( obj, mTrackedDescriptorSets );
-}
-
-void Context::trackedObjectCreated( ShaderProg *obj )
-{
-	objectCreated( obj, mTrackedShaderProgs );
-}
-
-void Context::trackedObjectDestroyed( ShaderProg *obj )
-{
-	objectDestroyed( obj, mTrackedShaderProgs );
-}
-
-void Context::trackedObjectCreated( Swapchain *obj )
-{
-	objectCreated( obj, mTrackedSwapchains );
-}
-
-void Context::trackedObjectDestroyed( Swapchain *obj )
-{
-	objectDestroyed( obj, mTrackedSwapchains );
-}
-
+/*
 void Context::transferTrackedObjects( Context* dstCtx )
 {
 	// Do not transfer CommandPools, CommandBuffers, or SwapChains.
@@ -1942,6 +1701,7 @@ void Context::transferTrackedObjects( Context* dstCtx )
 	}
 	mTrackedShaderProgs.clear();
 }
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Transient object routines
@@ -1952,11 +1712,6 @@ void addTransientObject( const T& obj, std::vector<T>& tracker )
 	if( it == std::end( tracker ) ) {
 		tracker.push_back( obj );
 	}
-}
-
-void Context::addTransient( const vk::BufferRef& obj )
-{
-	addTransientObject( obj, mTransientBuffers );
 }
 
 void Context::addTransient( const vk::UniformBufferRef& obj )
@@ -1974,21 +1729,6 @@ void Context::addTransient( const vk::VertexBufferRef& obj )
 	addTransientObject( obj, mTransientVertexBuffers );
 }
 
-void Context::addTransient( const vk::PipelineLayoutRef& obj )
-{
-	addTransientObject( obj, mTransientPipelineLayouts );
-}
-
-void Context::addTransient( const vk::PipelineRef& obj )
-{
-	addTransientObject( obj, mTransientPipelines);
-}
-
-void Context::addTransient( const vk::DescriptorSetLayoutRef& obj )
-{
-	addTransientObject( obj, mTransientDescriptorSetLayouts);
-}
-
 void Context::addTransient( const vk::DescriptorPoolRef& obj )
 {
 	addTransientObject( obj, mTransientDescriptorPools );
@@ -2001,17 +1741,13 @@ void Context::addTransient( const vk::DescriptorSetRef& obj )
 
 void Context::clearTransients()
 {
-	mTransientBuffers.clear();
 	mTransientUniformBuffers.clear();
 	mTransientIndexBuffers.clear();
 	mTransientVertexBuffers.clear();
-	mTransientPipelineLayouts.clear();
-	mTransientPipelines.clear();
 
 	// Sets need to be destroyed before pools
 	mTransientDescriptorSets.clear();
-	mTransientDescriptorSetLayouts.clear();
 	mTransientDescriptorPools.clear();
 }
 
-} } // namespace cinder::vk
+}} // namespace cinder::vk

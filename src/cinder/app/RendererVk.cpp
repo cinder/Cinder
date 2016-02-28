@@ -40,12 +40,14 @@
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/Environment.h"
 #include "cinder/vk/Framebuffer.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/Presenter.h"
 #include "cinder/vk/Queue.h"
 #include "cinder/vk/RenderPass.h"
+#include "cinder/vk/Surface.h"
 #include "cinder/vk/Swapchain.h"
 #include "cinder/vk/wrapper.h"
 #include "cinder/Utilities.h"
@@ -111,19 +113,26 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	::HINSTANCE hInst = ::GetModuleHandle( nullptr );
 
 	mWnd = wnd;
-	
-	vk::Environment::initializeVulkan( mOptions.mInstanceLayers, mOptions.mDeviceLayers, mOptions.mDebugReportCallbackFn );
-	uint32_t gpuIndex = 0;
-	mContext = vk::Environment::getEnv()->createContext( hInst, mWnd, mOptions.mExplicitMode, mOptions.mWorkQueueCount, gpuIndex );
-	mContext->makeCurrent();
 
+	// Get window dimension
 	::RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
 	int width = clientRect.right - clientRect.left;
 	int height = clientRect.bottom - clientRect.top;
+	const ivec2 windowSize = ivec2( width, height );
+	
+	// Initialize environment
+	vk::Environment* env = vk::Environment::initializeVulkan( mOptions.mExplicitMode, mOptions.mInstanceLayers, mOptions.mDeviceLayers, mOptions.mDebugReportCallbackFn );	
+
+	// Create device
+	const uint32_t gpuIndex = 0;
+	VkPhysicalDevice gpu = env->getGpus()[gpuIndex];
+	vk::Device::Options deviceOptions = vk::Device::Options();
+	deviceOptions.setGraphicsQueueCount( mOptions.mGraphicsQueueCount );
+	vk::DeviceRef device = vk::Device::create( gpu, deviceOptions, env );
 
 	// Validate the requested sample count
-	const VkSampleCountFlags supportedSampleCounts = mContext->mGpuProperties.limits.sampledImageColorSampleCounts;		
+	const VkSampleCountFlags supportedSampleCounts = device->getGpuLimits().sampledImageColorSampleCounts;		
 	if( ! ( supportedSampleCounts & mOptions.mSamples ) ) {
 		CI_LOG_I( "Unsupported sample count: " << vk::toStringVkSampleCount( mOptions.mSamples ) );
 		// Find the next highest supported sample count
@@ -142,12 +151,25 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 			mOptions.mSamples = VK_SAMPLE_COUNT_1_BIT;
 		}
 	}
+CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples ) );
 
-	CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples ) );
+	// Create presentable context
+	{
+		// Create surface
+		vk::SurfaceRef surface = vk::Surface::create( hInst, mWnd, device.get() );
 
-	// Initialize the present render
-	const ivec2 windowSize = ivec2( width, height );
-	mContext->initializePresentRender( windowSize, mOptions.mSwapchainImageCount, mOptions.mSamples, mOptions.mPresentMode, mOptions.mDepthStencilFormat );
+		// Create surface and presenter
+		vk::Presenter::Options presenterOptions = vk::Presenter::Options();
+		presenterOptions.explicitMode( mOptions.mExplicitMode );
+		presenterOptions.presentMode( mOptions.mPresentMode );
+		presenterOptions.samples( mOptions.mSamples );
+		presenterOptions.depthStencilFormat( mOptions.mDepthStencilFormat );
+		vk::PresenterRef presenter = vk::Presenter::create( windowSize, mOptions.mSwapchainImageCount, surface, presenterOptions, device.get() );
+	
+		// Create context
+		mContext = vk::Context::create( presenter, device.get() );
+		mContext->makeCurrent();
+	}
 }
 
 void RendererVk::kill()
@@ -169,8 +191,8 @@ void RendererVk::startDraw()
 	if( ! isExplicitMode() ) {
 		// Create semaphores for rendering
 		const VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-		vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
-		vkCreateSemaphore( mContext->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
+		vkCreateSemaphore( mContext->getDevice()->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
+		vkCreateSemaphore( mContext->getDevice()->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
 		
 		const auto& presenter = mContext->getPresenter();
 
@@ -179,7 +201,7 @@ void RendererVk::startDraw()
 		presenter->acquireNextImage( nullFence, mImageAcquiredSemaphore );
 
 		// Begin the renderer. This will also begin the command buffer since this is the non-explicit path.
-		presenter->beginRender( mContext->getDefaultCommandBuffer() );
+		presenter->beginRender( mContext->getDefaultCommandBuffer(), mContext.get() );
 	}
 }
 
@@ -189,10 +211,10 @@ void RendererVk::finishDraw()
 
 	if( ! isExplicitMode() ) {		
 		const auto& presenter = mContext->getPresenter();
-		const auto& queue = mContext->getQueue();
+		const auto& queue = mContext->getGraphicsQueue();
 
 		// End present render. This will also end the command buffer since this is the non-explicit path.
-		presenter->endRender();
+		presenter->endRender( mContext.get() );
 
 		// Submit command buffer for processing
 		const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -203,14 +225,16 @@ void RendererVk::finishDraw()
 		queue->present( mRenderingCompleteSemaphore, presenter );
 
 		// Wait until everything is done
-		mContext->getQueue()->waitIdle();
-		
+		mContext->getGraphicsQueue()->waitIdle();
+
+/*
 		// Clear transient objects
 		mContext->clearTransients();
+*/
 		
 		// Destroy semaphores
-		vkDestroySemaphore( mContext->getDevice(), mImageAcquiredSemaphore, nullptr );
-		vkDestroySemaphore( mContext->getDevice(), mRenderingCompleteSemaphore, nullptr );
+		vkDestroySemaphore( mContext->getDevice()->getDevice(), mImageAcquiredSemaphore, nullptr );
+		vkDestroySemaphore( mContext->getDevice()->getDevice(), mRenderingCompleteSemaphore, nullptr );
 		mImageAcquiredSemaphore = VK_NULL_HANDLE;
 		mRenderingCompleteSemaphore = VK_NULL_HANDLE;
 	}
@@ -241,7 +265,8 @@ void RendererVk::defaultResize()
 	//if( ! isExplicitMode() ) 
 	{
 		const ivec2 windowSize = ivec2( width, height );
-		mContext->initializePresentRender( windowSize, mOptions.mSwapchainImageCount, mOptions.mSamples, mOptions.mPresentMode, mOptions.mDepthStencilFormat );
+		//mContext->initializePresentRender( windowSize, mOptions.mSwapchainImageCount, mOptions.mSamples, mOptions.mPresentMode, mOptions.mDepthStencilFormat );
+		mContext->getPresenter()->resize( windowSize );
 
 		vk::viewport( 0, 0, width, height );
 		vk::setMatricesWindow( width, height );

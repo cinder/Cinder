@@ -43,30 +43,42 @@
 namespace cinder { namespace vk {
 
 class Context;
+class Device;
 
-//! \class BaseVkObject
+//! \class BaseDeviceObject
 //!
 //!
-class BaseVkObject {
+class BaseDeviceObject {
 public:
 
-	BaseVkObject( Context* context = nullptr ) 
-		: mContext( context ) {}
+	BaseDeviceObject( vk::Device *device ) 
+		: mDevice( device ) {}
 
-	virtual ~BaseVkObject() {}
+	virtual ~BaseDeviceObject() {}
 
-	Context*		getContext() { return mContext; }
-	const Context*	getContext() const { return mContext; }
+	vk::Device*			getDevice() { return mDevice; }
+	const vk::Device*	getDevice() const { return mDevice; }
 
 protected:
-	Context			*mContext = nullptr;
+	vk::Device			*mDevice = nullptr;
+};
 
-	// Only used when transferring objects from one context to another.
-	void setContext( Context* newContext ) {
-		mContext = newContext;
-	}
+//! \class BaseContextObject
+//!
+//!
+class BaseContextObject {
+public:
 
-	friend vk::Context; 
+	BaseContextObject( vk::Context *Context ) 
+		: mContext( Context ) {}
+
+	virtual ~BaseContextObject() {}
+
+	vk::Context*		getContext() { return mContext; }
+	const vk::Context*	getContext() const { return mContext; }
+
+protected:
+	vk::Context			*mContext = nullptr;
 };
 
 }} // namespace cinder::vk

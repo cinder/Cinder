@@ -166,7 +166,7 @@ void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
 	auto ctx = ci::vk::context();
-	auto& pipelineSelector = ctx->getPipelineSelector();
+	auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
 	pipelineSelector->setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
 	pipelineSelector->setVertexInputBindingDescriptions( mVertexBindings );
 	pipelineSelector->setVertexInputAttributeDescriptions( mVertexAttributes );

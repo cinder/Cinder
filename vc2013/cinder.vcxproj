@@ -579,6 +579,7 @@
     <ClCompile Include="..\src\cinder\vk\draw.cpp" />
     <ClCompile Include="..\src\cinder\vk\Environment.cpp" />
     <ClCompile Include="..\src\cinder\vk\Framebuffer.cpp" />
+    <ClCompile Include="..\src\cinder\vk\func.cpp" />
     <ClCompile Include="..\src\cinder\vk\glsl_types.cpp" />
     <ClCompile Include="..\src\cinder\vk\Image.cpp" />
     <ClCompile Include="..\src\cinder\vk\ImageView.cpp" />
@@ -592,6 +593,7 @@
     <ClCompile Include="..\src\cinder\vk\scoped.cpp" />
     <ClCompile Include="..\src\cinder\vk\ShaderProg.cpp" />
     <ClCompile Include="..\src\cinder\vk\StateManager.cpp" />
+    <ClCompile Include="..\src\cinder\vk\Surface.cpp" />
     <ClCompile Include="..\src\cinder\vk\Swapchain.cpp" />
     <ClCompile Include="..\src\cinder\vk\Texture.cpp" />
     <ClCompile Include="..\src\cinder\vk\TextureFont.cpp" />
@@ -833,6 +835,7 @@
     <ClInclude Include="..\include\cinder\vk\draw.h" />
     <ClInclude Include="..\include\cinder\vk\Environment.h" />
     <ClInclude Include="..\include\cinder\vk\Framebuffer.h" />
+    <ClInclude Include="..\include\cinder\vk\func.h" />
     <ClInclude Include="..\include\cinder\vk\glsl_types.h" />
     <ClInclude Include="..\include\cinder\vk\gl_types.h" />
     <ClInclude Include="..\include\cinder\vk\Image.h" />
@@ -848,6 +851,7 @@
     <ClInclude Include="..\include\cinder\vk\scoped.h" />
     <ClInclude Include="..\include\cinder\vk\ShaderProg.h" />
     <ClInclude Include="..\include\cinder\vk\StageManager.h" />
+    <ClInclude Include="..\include\cinder\vk\Surface.h" />
     <ClInclude Include="..\include\cinder\vk\Swapchain.h" />
     <ClInclude Include="..\include\cinder\vk\Texture.h" />
     <ClInclude Include="..\include\cinder\vk\TextureFont.h" />

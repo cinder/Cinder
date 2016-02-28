@@ -50,25 +50,23 @@ using VertexBufferRef = std::shared_ptr<VertexBuffer>;
 //!
 class VertexBuffer : public Buffer {
 public:
-
-	VertexBuffer();
-	//VertexBuffer( const void* data, size_t dataSize, size_t dataStride, Context *context );
-	VertexBuffer( const void* data, size_t dataSize, Context *context );
 	virtual ~VertexBuffer();
 
-	//static VertexBufferRef create( const void* data, size_t dataSize, size_t dataStride, Context *context = nullptr );
-	static VertexBufferRef create( const void* data, size_t dataSize, Context *context = nullptr );
+	//static VertexBufferRef create( const void* data, size_t dataSize, size_t dataStride, Device *device = nullptr );
+	static VertexBufferRef create( const void* data, size_t dataSize, Device *device = nullptr );
 
 	//const VkVertexInputBindingDescription&					getBindingDescription() const { return mBindingDescription; }
 	//const std::vector<VkVertexInputAttributeDescription>&	getAttributeDescriptions() const { return mAttributeDescriptions; }
 
 private:
+	VertexBuffer( const void* data, size_t dataSize, Device *device );
+
     //VkVertexInputBindingDescription					mBindingDescription;
     //std::vector<VkVertexInputAttributeDescription>	mAttributeDescriptions;
 	
 	void initialize( const void* data, size_t dataSize );
 	void destroy( bool removeFromTracking = true );
-	friend class Context;
+	friend class vk::Device;
 };
 
 }} // namespace cinder::vk

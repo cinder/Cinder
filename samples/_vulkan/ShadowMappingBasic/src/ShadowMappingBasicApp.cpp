@@ -95,6 +95,7 @@ void ShadowMappingBasic::setup()
 	
 	vk::Texture2d::Format depthFormat;
 	depthFormat.setInternalFormat( VK_FORMAT_D32_SFLOAT );
+	depthFormat.setUsageDepthStencilAttachment();
 	depthFormat.setMagFilter( VK_FILTER_LINEAR );
 	depthFormat.setMinFilter( VK_FILTER_LINEAR );
 	depthFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE );

@@ -48,7 +48,7 @@ namespace util_hash {
 
 uint32_t calculateHash( const char* bytes, size_t size )
 {
-	uint32_t result = util::Hash32( bytes, size );
+	uint32_t result = ::util::Hash32( bytes, size );
 	return result;
 }
 
@@ -57,8 +57,8 @@ uint32_t calculateHash( const char* bytes, size_t size )
 // ------------------------------------------------------------------------------------------------ 
 // PipelineSelector
 // ------------------------------------------------------------------------------------------------ 
-PipelineSelector::PipelineSelector( const vk::PipelineCacheRef& pipelineCacheRef, Context *context )
-	: mPipelineCacheRef( pipelineCacheRef ), mContext( context )
+PipelineSelector::PipelineSelector( const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device )
+	: mPipelineCacheRef( pipelineCacheRef ), mDevice( device )
 {
 	mPipelineParameters = {};
 	mPipelineStates = {};
@@ -70,10 +70,10 @@ PipelineSelector::~PipelineSelector()
 
 }
 
-cinder::vk::PipelineSelectorRef PipelineSelector::create( const vk::PipelineCacheRef& pipelineCacheRef, Context *context )
+PipelineSelectorRef PipelineSelector::create( const vk::PipelineCacheRef& pipelineCacheRef, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	PipelineSelectorRef result = PipelineSelectorRef( new PipelineSelector( pipelineCacheRef, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	PipelineSelectorRef result = PipelineSelectorRef( new PipelineSelector( pipelineCacheRef, device ) );
 	return result;
 }
 
@@ -457,11 +457,15 @@ VkPipeline PipelineSelector::getSelectedPipeline() const
 			}
 		);
 		
+		// If a pipeline s found, select it
 		if( std::end( mPipelines ) != it ) {				
 			mSelectedPipelineHash = it->first;
 			mSelectedPipeline = it->second->getPipeline();
 		}
+		// Otherwise create it
 		else {
+			std::lock_guard<std::mutex> lock( mMutex );
+
 			VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
 			pipelineCreateInfo.sType				= VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 			pipelineCreateInfo.pNext				= NULL;
@@ -482,7 +486,7 @@ VkPipeline PipelineSelector::getSelectedPipeline() const
 			pipelineCreateInfo.subpass				= mPipelineParameters.getData().mSubPass;
 			pipelineCreateInfo.basePipelineHandle	= 0;
 			pipelineCreateInfo.basePipelineIndex	= 0;
-			vk::PipelineRef pipeline = vk::Pipeline::create( pipelineCreateInfo, mPipelineCacheRef, mContext );
+			vk::PipelineRef pipeline = vk::Pipeline::create( pipelineCreateInfo, mPipelineCacheRef, mDevice );
 
 			mPipelines.push_back( std::make_pair( hash, pipeline ) );
 			mSelectedPipelineHash = hash;

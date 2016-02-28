@@ -55,7 +55,7 @@ using QueueRef = std::shared_ptr<Queue>;
 //! \class Queue
 //!
 //!
-class Queue : public BaseVkObject {
+class Queue : public BaseContextObject {
 public:
 
 	virtual ~Queue();

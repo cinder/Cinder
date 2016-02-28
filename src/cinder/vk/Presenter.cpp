@@ -38,13 +38,14 @@
 
 #include "cinder/vk/Presenter.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/PipelineSelector.h"
 
 namespace cinder { namespace vk {
 
-Presenter::Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const Presenter::Options& options, vk::Context *context  )
-	: mContext( context ), mSwapchainImageCount( swapChainImageCount ), mOptions( options )
+Presenter::Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device )
+	: mDevice( device ), mSwapchainImageCount( swapChainImageCount ), mSurface( surface ), mOptions( options )
 {
 	initialize( windowSize );
 }
@@ -63,9 +64,9 @@ void Presenter::destroy( bool removeFromTracking )
 {
 }
 
-PresenterRef Presenter::create( const ivec2& windowSize, uint32_t swapChainImageCount, const Presenter::Options& options, vk::Context *context )
+PresenterRef Presenter::create( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device )
 {
-	PresenterRef result = PresenterRef( new Presenter( windowSize, swapChainImageCount, options, context ) );
+	PresenterRef result = PresenterRef( new Presenter( windowSize, swapChainImageCount, surface, options, device ) );
 	return result;
 }
 
@@ -75,7 +76,7 @@ const vk::RenderPassRef& Presenter::getCurrentRenderPass() const
 	return mRenderPasses[mCurrentImageIndex];
 }
 
-void Presenter::resize(const ivec2& newWindowSize)
+void Presenter::resize( const ivec2& newWindowSize )
 {
 	if( newWindowSize == mWindowSize ) {
 		return;
@@ -94,7 +95,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 	// Readjust the sampling so samples*winSize doesn't exceed limits
 	mActualSamples = mOptions.mSamples;
 	{
-		const uint32_t kMaxImageDimension = mContext->getGpuLimits().maxImageDimension2D;
+		const uint32_t kMaxImageDimension = mDevice->getGpuLimits().maxImageDimension2D;
 		uint32_t samples = static_cast<uint32_t>( mActualSamples );
 		ivec2 imageSize = ivec2( mWindowSize.x*samples, mWindowSize.y*samples );
 		while( ( imageSize.x > kMaxImageDimension ) || ( imageSize.y > kMaxImageDimension ) ) {
@@ -107,7 +108,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 	// If the actual samples are not the same as the previous samples, invalidate all resources 
 	// that are dependent on the sample count.
 	if( mActualSamples != mPreviousSamples ) {
-		mContext->getPipelineSelector()->invalidate();
+		mDevice->getPipelineSelector()->invalidate();
 		mRenderPasses.clear();
 	}
 	mPreviousSamples = mActualSamples;
@@ -116,11 +117,9 @@ void Presenter::resize(const ivec2& newWindowSize)
 	{
 		vk::Swapchain::Options swapChainOptions = vk::Swapchain::Options();
 		swapChainOptions.presentMode( mOptions.mPresentMode );
-		swapChainOptions.surface( mOptions.mWsiSurface );
-		swapChainOptions.colorFormat( mOptions.mWsiSurfaceFormat );
 		swapChainOptions.depthStencilFormat( mOptions.mDepthStencilFormat);
 		swapChainOptions.depthStencilSamples( mActualSamples );
-		mSwapchain = vk::Swapchain::create( mWindowSize, mSwapchainImageCount, swapChainOptions, mContext );
+		mSwapchain = vk::Swapchain::create( mWindowSize, mSwapchainImageCount, mSurface, swapChainOptions, mDevice );
 		mSwapchainImageCount = mSwapchain->getImageCount();
 	}
 
@@ -155,7 +154,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 					.addColorAttachment( 0, 1 ) // 0 - multiple sample attachment, 1 - single sample auto resolve attachment
 					.addDepthStencilAttachment( 2 );
 				options.addSubPass( subPass );
-				mRenderPasses[i] = vk::RenderPass::create( options, mContext );		
+				mRenderPasses[i] = vk::RenderPass::create( options, mDevice );		
 			}
 
 			// Create the multi-sample attachment
@@ -167,7 +166,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 					.setUsageSampled()
 					.setUsageTransferSource()
 					.setMemoryPropertyDeviceLocal();
-				vk::ImageViewRef imageView = vk::ImageView::create( mWindowSize.x, mWindowSize.y, imageFormat, mContext );
+				vk::ImageViewRef imageView = vk::ImageView::create( mWindowSize.x, mWindowSize.y, imageFormat, mDevice );
 				imageView->setImageLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 				mMultiSampleAttachments[i] = imageView;
 			}
@@ -179,7 +178,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 					.addAttachment( mMultiSampleAttachments[i] )
 					.addAttachment( colorAttachments[i] )
 					.addAttachment( depthAttachemnts[i] );
-				vk::FramebufferRef framebuffer = vk::Framebuffer::create( mRenderPasses[i]->getRenderPass(), mWindowSize, format, mContext );
+				vk::FramebufferRef framebuffer = vk::Framebuffer::create( mRenderPasses[i]->getRenderPass(), mWindowSize, format, mDevice );
 				mFramebuffers[i] = framebuffer;
 			}
 		}
@@ -195,7 +194,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 					.addColorAttachment( 0 )
 					.addDepthStencilAttachment( 1 );
 				options.addSubPass( subPass );
-				mRenderPasses[i] = vk::RenderPass::create( options, mContext );		
+				mRenderPasses[i] = vk::RenderPass::create( options, mDevice );		
 			}
 
 			// Create framebuffer 
@@ -204,7 +203,7 @@ void Presenter::resize(const ivec2& newWindowSize)
 				vk::Framebuffer::Format format = vk::Framebuffer::Format()
 					.addAttachment( colorAttachments[i] )
 					.addAttachment( depthAttachemnts[i] );
-				vk::FramebufferRef framebuffer = vk::Framebuffer::create( mRenderPasses[i]->getRenderPass(), mWindowSize, format, mContext );
+				vk::FramebufferRef framebuffer = vk::Framebuffer::create( mRenderPasses[i]->getRenderPass(), mWindowSize, format, mDevice );
 				mFramebuffers[i] = framebuffer;
 			}
 		}
@@ -215,19 +214,18 @@ uint32_t Presenter::acquireNextImage( VkFence fence, VkSemaphore signalSemaphore
 {
 	VkSwapchainKHR swapchain = mSwapchain->getSwapchain();
 	uint64_t timeout = UINT64_MAX;
-	mContext->fpAcquireNextImageKHR( mContext->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
+	//mContext->fpAcquireNextImageKHR( mDevice->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
+	mDevice->AcquireNextImageKHR( mDevice->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
 	return mCurrentImageIndex;
 }
 
-void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *context  )
+void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *context )
 {
-	vk::Context *ctx = ( nullptr != context ) ? context : mContext;
-
 	mCommandBuffer = cmdBuf;
 
-	ctx->pushRenderPass( mRenderPasses[mCurrentImageIndex] );
-	ctx->pushSubPass( 0 );
-	ctx->pushCommandBuffer( mCommandBuffer );
+	context->pushRenderPass( mRenderPasses[mCurrentImageIndex] );
+	context->pushSubPass( 0 );
+	context->pushCommandBuffer( mCommandBuffer );
 
 	// Begin the command buffer if not in explicit mode
 	if( ! mOptions.mExplicitMode ) {
@@ -276,8 +274,6 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 
 void Presenter::endRender( vk::Context *context  )
 {
-	vk::Context *ctx = ( nullptr != context ) ? context : mContext;
-
 	// End render pass
 	{
 		mCommandBuffer->endRenderPass();
@@ -305,9 +301,9 @@ void Presenter::endRender( vk::Context *context  )
 		mCommandBuffer->end();
 	}
 
-	ctx->popCommandBuffer();
-	ctx->popSubPass();
-	ctx->popRenderPass();
+	context->popCommandBuffer();
+	context->popSubPass();
+	context->popRenderPass();
 
 	// Reset command buffer
 	mCommandBuffer.reset();

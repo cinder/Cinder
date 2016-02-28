@@ -38,16 +38,12 @@
 
 #include "cinder/vk/Buffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 
 namespace cinder { namespace vk {
 
-Buffer::Buffer()
-	: BaseVkObject()
-{
-}
-
-Buffer::Buffer( VkDeviceSize size, VkBufferUsageFlags usage, Context* context )
-	: BaseVkObject( context ), mSize( size ), mUsage(usage )
+Buffer::Buffer( VkDeviceSize size, VkBufferUsageFlags usage, vk::Device *device )
+	: BaseDeviceObject( device ), mSize( size ), mUsage(usage )
 {
 	if( mSelfOwned ) {
 		initialize();
@@ -55,8 +51,8 @@ Buffer::Buffer( VkDeviceSize size, VkBufferUsageFlags usage, Context* context )
 }
 
 // selfOwned is generally false
-Buffer::Buffer( bool selfOwned, VkDeviceSize size, VkBufferUsageFlags usage, Context* context )
-	: BaseVkObject( context ), mSize( size ), mUsage(usage ), mSelfOwned( selfOwned )
+Buffer::Buffer( bool selfOwned, VkDeviceSize size, VkBufferUsageFlags usage, vk::Device *device )
+	: BaseDeviceObject( device ), mSize( size ), mUsage(usage ), mSelfOwned( selfOwned )
 {
 	// Derived object will handle init sequence
 }
@@ -76,7 +72,7 @@ void Buffer::initialize()
 
 	createBufferAndAllocate( mSize );
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
 void Buffer::destroy( bool removeFromTracking )
@@ -88,14 +84,14 @@ void Buffer::destroy( bool removeFromTracking )
 	destroyBufferAndFree();
 
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
-BufferRef Buffer::create( VkDeviceSize size, VkBufferUsageFlags usage, Context* context )
+BufferRef Buffer::create( VkDeviceSize size, VkBufferUsageFlags usage, vk::Device *device )
 {
-	context = ( nullptr == context ) ? Context::getCurrent() : context;
-	BufferRef result = BufferRef( new Buffer( size, usage, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	BufferRef result = BufferRef( new Buffer( size, usage, device ) );
 	return result;
 }
 
@@ -114,16 +110,16 @@ void Buffer::createBufferAndAllocate( size_t size )
 	createInfo.sharingMode 				= VK_SHARING_MODE_EXCLUSIVE;
 	createInfo.queueFamilyIndexCount 	= 0;
 	createInfo.pQueueFamilyIndices		= nullptr;
-	res = vkCreateBuffer( mContext->getDevice(), &createInfo, nullptr, &mBuffer );
+	res = vkCreateBuffer( mDevice->getDevice(), &createInfo, nullptr, &mBuffer );
 	assert( res == VK_SUCCESS );
 
 	// Get memory requirements
 	VkMemoryRequirements memoryRequirements;
-	vkGetBufferMemoryRequirements( mContext->getDevice(), mBuffer, &memoryRequirements);
+	vkGetBufferMemoryRequirements( mDevice->getDevice(), mBuffer, &memoryRequirements);
 
 	// Find the memory type index that fits memory requirements
 	uint32_t memoryTypeIndex;
-	if( ! mContext->findMemoryType( memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &memoryTypeIndex ) ) {
+	if( ! mDevice->findMemoryType( memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &memoryTypeIndex ) ) {
 		assert( false );
 	}
 
@@ -134,11 +130,11 @@ void Buffer::createBufferAndAllocate( size_t size )
 	allocInfo.allocationSize  = memoryRequirements.size;
 	allocInfo.memoryTypeIndex = memoryTypeIndex;
 
-	res = vkAllocateMemory( mContext->getDevice(), &allocInfo, nullptr, &mMemory );
+	res = vkAllocateMemory( mDevice->getDevice(), &allocInfo, nullptr, &mMemory );
 	assert( res == VK_SUCCESS );
 
 	// Bind memory
-	res = vkBindBufferMemory( mContext->getDevice(), mBuffer, mMemory, 0 );
+	res = vkBindBufferMemory( mDevice->getDevice(), mBuffer, mMemory, 0 );
 	assert( res == VK_SUCCESS );
 
 	// Assign new size
@@ -153,12 +149,12 @@ void Buffer::createBufferAndAllocate( size_t size )
 void Buffer::destroyBufferAndFree()
 {
 	if( VK_NULL_HANDLE != mMemory ) {
-		vkFreeMemory( mContext->getDevice(), mMemory, nullptr );
+		vkFreeMemory( mDevice->getDevice(), mMemory, nullptr );
 		mMemory = VK_NULL_HANDLE;
 	}
 
 	if( VK_NULL_HANDLE != mBuffer ) {
-		vkDestroyBuffer( mContext->getDevice(), mBuffer, nullptr );
+		vkDestroyBuffer( mDevice->getDevice(), mBuffer, nullptr );
 		mBuffer = VK_NULL_HANDLE;
 	}
 
@@ -169,7 +165,7 @@ void* Buffer::map( VkDeviceSize offset )
 {
 	if( nullptr == mMappedAddress ) {
 		VkMemoryMapFlags flags = 0;
-		VkResult result = vkMapMemory( mContext->getDevice(), mMemory, offset, mSize, flags, &mMappedAddress );
+		VkResult result = vkMapMemory( mDevice->getDevice(), mMemory, offset, mSize, flags, &mMappedAddress );
 		if( VK_SUCCESS != result ) {
 			mMappedAddress = nullptr;
 		}
@@ -180,7 +176,7 @@ void* Buffer::map( VkDeviceSize offset )
 void Buffer::unmap()
 {
 	if( nullptr != mMappedAddress ) {
-		vkUnmapMemory( mContext->getDevice(), mMemory );
+		vkUnmapMemory( mDevice->getDevice(), mMemory );
 		mMappedAddress = nullptr;
 	}
 }

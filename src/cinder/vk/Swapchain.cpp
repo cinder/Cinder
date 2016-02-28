@@ -39,19 +39,18 @@
 #include "cinder/vk/Swapchain.h"
 #include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/Environment.h"
+#include "cinder/vk/Surface.h"
 #include "cinder/Log.h"
 
 namespace cinder { namespace vk {
 
-Swapchain::Swapchain()
-{
-}
-
-Swapchain::Swapchain( const ivec2& size,  uint32_t imageCount, const Swapchain::Options& options, Context *context )
-	: mContext( context ),
+Swapchain::Swapchain( const ivec2& size,  uint32_t imageCount, const vk::SurfaceRef& surface, const Swapchain::Options& options, vk::Device *device )
+	: vk::BaseDeviceObject( device ),
 	  mSwapchainExtent( { static_cast<uint32_t>( size.x ), static_cast<uint32_t>( size.y ) } ),
 	  mImageCount( imageCount ),
+	  mSurface( surface ),
 	  mOptions( options )
 {
 	initialize();
@@ -62,24 +61,22 @@ Swapchain::~Swapchain()
 	destroy();
 }
 
-void Swapchain::initColorBuffers()
+void Swapchain::initializeColorBuffers()
 {
 	VkResult U_ASSERT_ONLY res = VK_NOT_READY;
 
-	auto env = mContext->getEnvironment();
+	auto env = mDevice->getEnv();
 
 	VkSurfaceCapabilitiesKHR surfCapabilities;
-	res = env->vkGetPhysicalDeviceSurfaceCapabilitiesKHR( mContext->getGpu(), mOptions.mSurface, &surfCapabilities );
+	res = env->GetPhysicalDeviceSurfaceCapabilitiesKHR( mDevice->getGpu(), mSurface->getSurface(), &surfCapabilities );
 	assert(res == VK_SUCCESS);
 
 	uint32_t presentModeCount;
-	res = env->vkGetPhysicalDeviceSurfacePresentModesKHR( mContext->getGpu(), mOptions.mSurface, &presentModeCount, nullptr );
+	res = env->GetPhysicalDeviceSurfacePresentModesKHR( mDevice->getGpu(), mSurface->getSurface(), &presentModeCount, nullptr );
 	assert(res == VK_SUCCESS);
 
-	VkPresentModeKHR *presentModes = (VkPresentModeKHR *)malloc( presentModeCount * sizeof(VkPresentModeKHR) );
-	assert(presentModes);
-
-	res = env->vkGetPhysicalDeviceSurfacePresentModesKHR( mContext->getGpu(), mOptions.mSurface, &presentModeCount, presentModes );
+	std::vector<VkPresentModeKHR> presentModes( presentModeCount );
+	res = env->GetPhysicalDeviceSurfacePresentModesKHR( mDevice->getGpu(), mSurface->getSurface(), &presentModeCount, presentModes.data() );
 	assert(res == VK_SUCCESS);
 
 	VkExtent2D swapChainExtent;
@@ -141,9 +138,9 @@ void Swapchain::initColorBuffers()
 	VkSwapchainCreateInfoKHR createInfo ={};
 	createInfo.sType					= VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	createInfo.pNext					= nullptr;
-	createInfo.surface					= mOptions.mSurface;
+	createInfo.surface					= mSurface->getSurface();
 	createInfo.minImageCount			= mImageCount;
-	createInfo.imageFormat				= mOptions.mColorFormat;
+	createInfo.imageFormat				= mSurface->getFormat();
 	createInfo.imageExtent				= mSwapchainExtent;
 	createInfo.preTransform				= preTransform;
 	createInfo.imageArrayLayers			= 1;
@@ -156,18 +153,18 @@ void Swapchain::initColorBuffers()
 	createInfo.queueFamilyIndexCount	= 0;
 	createInfo.pQueueFamilyIndices		= nullptr;
 
-	res = mContext->vkCreateSwapchainKHR( &createInfo, nullptr, &mSwapchain );
+	res = mDevice->CreateSwapchainKHR( mDevice->getDevice(), &createInfo, nullptr, &mSwapchain );
 	assert( res == VK_SUCCESS );
 
-	res = mContext->vkGetSwapchainImagesKHR( mSwapchain, &(mImageCount), NULL );
+	res = mDevice->GetSwapchainImagesKHR( mDevice->getDevice(), mSwapchain, &(mImageCount),  NULL );
 	assert( res == VK_SUCCESS );
 
 	std::vector<VkImage> swapchainImages = std::vector<VkImage>( mImageCount, VK_NULL_HANDLE );
-	res = mContext->vkGetSwapchainImagesKHR( mSwapchain, &(mImageCount), swapchainImages.data() );
+	res = mDevice->GetSwapchainImagesKHR( mDevice->getDevice(), mSwapchain, &(mImageCount), swapchainImages.data() );
 	assert( res == VK_SUCCESS );
 
 	for( uint32_t i = 0; i < mImageCount; ++i ) {
-		ImageViewRef imageView = ImageView::create( swapChainExtent.width, swapChainExtent.height, mOptions.mColorFormat, swapchainImages[i], mContext );
+		ImageViewRef imageView = ImageView::create( swapChainExtent.width, swapChainExtent.height, mSurface->getFormat(), swapchainImages[i], mDevice );
 		imageView->setImageLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 		mColorAttachments.push_back( imageView );
 	}
@@ -176,12 +173,12 @@ void Swapchain::initColorBuffers()
 	CI_LOG_I( "Allocated swapchain image count: " << mImageCount );	
 }
 
-void Swapchain::initDepthStencilBuffers()
+void Swapchain::initializeDepthStencilBuffers()
 {
 	// NOTE: Multiple depth attachments are allocated to account for multiple frames in flight.
 	Image::Format imageOptions = Image::Format( mOptions.mDepthStencilFormat ).setUsageDepthStencilAttachment().setSamples( mOptions.mDepthStencilSamples );
 	for( uint32_t i = 0; i < mImageCount; ++i ) {
-		ImageViewRef imageView = ImageView::create( mSwapchainExtent.width, mSwapchainExtent.height, imageOptions, mContext );
+		ImageViewRef imageView = ImageView::create( mSwapchainExtent.width, mSwapchainExtent.height, imageOptions, mDevice );
 		imageView->setImageLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 		mDepthStencilAttachments.push_back( imageView );
 	}
@@ -189,33 +186,53 @@ void Swapchain::initDepthStencilBuffers()
 
 void Swapchain::initialize()
 {
-	initColorBuffers();
+	initializeColorBuffers();
 	if( VK_FORMAT_UNDEFINED != mOptions.mDepthStencilFormat ) {
-		initDepthStencilBuffers();
+		initializeDepthStencilBuffers();
 	}
 
-	mContext->trackedObjectCreated( this );
+	mDevice->trackedObjectCreated( this );
 }
 
-void Swapchain::destroy(bool removeFromTracking)
+void Swapchain::destroy( bool removeFromTracking )
 {
 	if( VK_NULL_HANDLE == mSwapchain ) {
 		return;
 	}
 
-	mContext->vkDestroySwapchainKHR( mSwapchain, nullptr );
+	mDevice->DestroySwapchainKHR( mDevice->getDevice(), mSwapchain, nullptr );
 	mSwapchain = VK_NULL_HANDLE;
 
 	if( removeFromTracking ) {
-		mContext->trackedObjectDestroyed( this );
+		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
-SwapchainRef Swapchain::create( const ivec2& size,  uint32_t imageCount, const Swapchain::Options& options, Context *context )
+SwapchainRef Swapchain::create( const ivec2& size,  uint32_t imageCount, const vk::SurfaceRef& surface, const Swapchain::Options& options, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	SwapchainRef result = SwapchainRef( new Swapchain( size, imageCount, options, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	SwapchainRef result = SwapchainRef( new Swapchain( size, imageCount, surface, options, device ) );
 	return result;
+}
+
+VkFormat Swapchain::getColorFormat() const
+{
+	return mSurface->getFormat();
+}
+
+const std::vector<ImageViewRef>& Swapchain::getColorAttachments() const
+{
+	return mColorAttachments;
+}
+
+VkFormat Swapchain::getDepthStencilFormat() const
+{
+	return mOptions.mDepthStencilFormat;
+}
+
+const std::vector<ImageViewRef>& Swapchain::getDepthStencilAttachments() const
+{
+	return mDepthStencilAttachments;
 }
 
 }} // namespace cinder::vk

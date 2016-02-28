@@ -362,4 +362,3 @@ class ExceptionUnknownTarget : public Exception {
 };
 
 } } // namespace cinder::gl
-

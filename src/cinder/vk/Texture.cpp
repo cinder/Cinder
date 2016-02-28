@@ -40,6 +40,7 @@
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/wrapper.h"
 
@@ -89,28 +90,28 @@ Texture2d::Texture2d()
 {
 }
 
-Texture2d::Texture2d( int width, int height, const Texture2d::Format &format, vk::Context* context )
+Texture2d::Texture2d( int width, int height, const Texture2d::Format &format, vk::Device *device )
 	: TextureBase(), mWidth( width ), mHeight( height ), mFormat( format )
 {
-	initialize( context );
+	initialize( device );
 }
 
-Texture2d::Texture2d( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Context* context )
+Texture2d::Texture2d( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Device *device )
 	: TextureBase(), mWidth( width ), mHeight( height ), mFormat( format )
 {
 }
 
-Texture2d::Texture2d( const Surface8u& surf, const Texture2d::Format &format, vk::Context* context )
+Texture2d::Texture2d( const Surface8u& surf, const Texture2d::Format &format, vk::Device *device )
 	: TextureBase(), mWidth( surf.getWidth() ), mHeight( surf.getHeight() ), mFormat( format )
 {
 	if( VK_FORMAT_UNDEFINED == mFormat.getInternalFormat() ) {
 		// Force a supported format 
 		mFormat.setInternalFormat( VK_FORMAT_R8G8B8A8_UNORM );
 	}
-	initialize( surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), context );
+	initialize( surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), device );
 }
 
-Texture2d::Texture2d( const Surface16u& surf, const Texture2d::Format &format, vk::Context* context )
+Texture2d::Texture2d( const Surface16u& surf, const Texture2d::Format &format, vk::Device *device )
 	: TextureBase(), mWidth( surf.getWidth() ), mHeight( surf.getHeight() ), mFormat( format )
 {
 
@@ -118,20 +119,20 @@ Texture2d::Texture2d( const Surface16u& surf, const Texture2d::Format &format, v
 		// Force a supported format 
 		mFormat.setInternalFormat( VK_FORMAT_R16G16B16A16_UNORM );
 	}
-	initialize( surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), context );
+	initialize( surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), device );
 }
 
-Texture2d::Texture2d( const Surface32f& surf, const Texture2d::Format &format, vk::Context* context )
+Texture2d::Texture2d( const Surface32f& surf, const Texture2d::Format &format, vk::Device *device )
 	: TextureBase() , mWidth( surf.getWidth() ), mHeight( surf.getHeight() ), mFormat( format )
 {
 	if( VK_FORMAT_UNDEFINED == mFormat.getInternalFormat() ) {
 		// Force a supported format 
 		mFormat.setInternalFormat( VK_FORMAT_R32G32B32A32_SFLOAT );
 	}
-	initialize( surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), context );
+	initialize( surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), device );
 }
 
-//Texture2d::Texture2d( const ImageSourceRef& imageSource,const Texture2d::Format &format, vk::Context* context )
+//Texture2d::Texture2d( const ImageSourceRef& imageSource,const Texture2d::Format &format, vk::Device *device )
 //	: TextureBase(), mWidth( imageSource->getWidth() ), mHeight( imageSource->getHeight() ), mFormat( format )
 //{
 //	VkFormat defaultInternalFormat = VK_FORMAT_UNDEFINED;
@@ -196,10 +197,10 @@ Texture2d::~Texture2d()
 	destroy();
 }
 
-void Texture2d::initializeCommon( vk::Context* context )
+void Texture2d::initializeCommon( vk::Device* device )
 {
 	mFormatProperties = {};
-	vkGetPhysicalDeviceFormatProperties( context->getGpu(), mFormat.getInternalFormat(), &mFormatProperties );
+	vkGetPhysicalDeviceFormatProperties( device->getGpu(), mFormat.getInternalFormat(), &mFormatProperties );
 
 	//mNeedsStaging = ( ! ( mFormatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT ) ) || format.getForceStaging();
 	mHostVisible = mFormat.getHostVisible();
@@ -216,7 +217,7 @@ void Texture2d::initializeCommon( vk::Context* context )
 	}
 }
 
-void Texture2d::initializeFinal( vk::Context* context )
+void Texture2d::initializeFinal( vk::Device *device )
 {
     VkResult U_ASSERT_ONLY res;
 
@@ -247,7 +248,7 @@ void Texture2d::initializeFinal( vk::Context* context )
 		samplerCreateInfo.anisotropyEnable	= VK_FALSE;
 		samplerCreateInfo.compareEnable		= VK_FALSE;
 	}
-    res = vkCreateSampler( context->getDevice(), &samplerCreateInfo, nullptr, &mSampler );
+    res = vkCreateSampler( device->getDevice(), &samplerCreateInfo, nullptr, &mSampler );
     assert(res == VK_SUCCESS);
 	
 	// Descriptor
@@ -256,9 +257,9 @@ void Texture2d::initializeFinal( vk::Context* context )
 	mImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 }
 
-void Texture2d::initialize( vk::Context* context )
+void Texture2d::initialize( vk::Device *device )
 {
-	initializeCommon( context );
+	initializeCommon( device );
 
 	vk::Image::Format imageOptions = vk::Image::Format( mFormat.getInternalFormat() );
 	imageOptions.setSamples( mFormat.getSamples() );
@@ -276,17 +277,17 @@ void Texture2d::initialize( vk::Context* context )
 		imageOptions.setUsage( mFormat.getUsage() );
 		imageOptions.setMemoryPropertyDeviceLocal();
 	}
-	vk::ImageRef preMadeImage = vk::Image::create( mWidth, mHeight, imageOptions, context );
+	vk::ImageRef preMadeImage = vk::Image::create( mWidth, mHeight, imageOptions, device );
 	preMadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );		
 	//ImageView::initialize( VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_TYPE_2D, mWidth, mHeight, 1, imageOptions, preMadeImage );
-	mImageView = vk::ImageView::create( mWidth, mHeight, preMadeImage, context );
+	mImageView = vk::ImageView::create( mWidth, mHeight, preMadeImage, device );
 
-	initializeFinal( context );
+	initializeFinal( device );
 }
 
-void Texture2d::initialize( const void *data, VkFormat dataFormat, vk::Context* context )
+void Texture2d::initialize( const void *data, VkFormat dataFormat, vk::Device *device )
 {
-	initializeCommon( context );	
+	initializeCommon( device );	
 
 	// Create the premade image
 	vk::Image::Format imageOptions = vk::Image::Format( mFormat.getInternalFormat() )
@@ -294,17 +295,17 @@ void Texture2d::initialize( const void *data, VkFormat dataFormat, vk::Context* 
 		.setMipLevels( mMipLevels )
 		.setTilingOptimal()
 		.setMemoryPropertyDeviceLocal();
-	vk::ImageRef premadeImage = vk::Image::create( mWidth, mHeight, imageOptions, context );
+	vk::ImageRef premadeImage = vk::Image::create( mWidth, mHeight, imageOptions, device );
 	premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
-	mImageView = vk::ImageView::create( mWidth, mHeight, premadeImage, context );
+	mImageView = vk::ImageView::create( mWidth, mHeight, premadeImage, device );
 		
-	initializeFinal( context );
+	initializeFinal( device );
 }
 
 template <typename T>
-void Texture2d::initialize( const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, vk::Context* context )
+void Texture2d::initialize( const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, vk::Device *device )
 {
-	initializeCommon( context );
+	initializeCommon( device );
 
 	size_t numChannels = srcPixelBytes / sizeof( T 	);
 	VkFormat srcDataFormat = vk::findBestVkFormat<uint8_t>( numChannels );
@@ -322,9 +323,9 @@ void Texture2d::initialize( const T* srcData, size_t srcRowBytes, size_t srcPixe
 			.setMemoryPropertyHostVisible()
 			.setMipLevels( 1 )
 			.setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
-		vk::ImageRef preMadeImage = vk::Image::create( mWidth, mHeight, srcData, srcRowBytes, srcPixelBytes, Area( 0, 0, mWidth, mHeight ), imageOptions, context );
+		vk::ImageRef preMadeImage = vk::Image::create( mWidth, mHeight, srcData, srcRowBytes, srcPixelBytes, Area( 0, 0, mWidth, mHeight ), imageOptions, device );
 		//ImageView::initialize( VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_TYPE_2D, mWidth, mHeight, 1, preMadeImage->getOptions(), preMadeImage );
-		mImageView = vk::ImageView::create( mWidth, mHeight, preMadeImage, context );
+		mImageView = vk::ImageView::create( mWidth, mHeight, preMadeImage, device );
 	}
 	else {
 		// Create image for texture
@@ -336,19 +337,19 @@ void Texture2d::initialize( const T* srcData, size_t srcRowBytes, size_t srcPixe
 			.setMemoryPropertyDeviceLocal()
 			.setMipLevels( mMipLevels )
 			.setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
-		vk::ImageRef preMadeImage = vk::Image::create( mWidth, mHeight, imageOptions, context );
+		vk::ImageRef preMadeImage = vk::Image::create( mWidth, mHeight, imageOptions, device );
 		//ImageView::initialize( VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_TYPE_2D, mWidth, mHeight, 1, preMadeImage->getOptions(), preMadeImage );
-		mImageView = vk::ImageView::create( mWidth, mHeight, preMadeImage, context );
+		mImageView = vk::ImageView::create( mWidth, mHeight, preMadeImage, device );
 		
 		doUpdate( mWidth, mHeight, srcData, srcRowBytes, srcPixelBytes );
 	}
 
-	initializeFinal( context );
+	initializeFinal( device );
 }
 
-void Texture2d::initialize( const ImageSourceRef& imageSource, vk::Context* context )
+void Texture2d::initialize( const ImageSourceRef& imageSource, vk::Device* device )
 {
-	initializeCommon( context );
+	initializeCommon( device );
 
 	/*
 	// Setup an appropriate dataFormat/ImageTargetTexture based on the image's color space
@@ -376,12 +377,12 @@ void Texture2d::initialize( const ImageSourceRef& imageSource, vk::Context* cont
 		.setMipLevels( mMipLevels )
 		.setTilingLinear()
 		.setMemoryPropertyHostVisible();
-	vk::ImageRef premadeImage = vk::Image::create( mWidth, mHeight, imageOptions, context );
+	vk::ImageRef premadeImage = vk::Image::create( mWidth, mHeight, imageOptions, device );
 	premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 	//ImageView::initialize( VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_TYPE_2D, mWidth, mHeight, 1, premadeImage->getOptions(), premadeImage );
-	mImageView = vk::ImageView::create( mWidth, mHeight, premadeImage, context );
+	mImageView = vk::ImageView::create( mWidth, mHeight, premadeImage, device );
 
-	initializeFinal( context );
+	initializeFinal( device );
 
 	// Load data
 	if( premadeImage ) {
@@ -417,42 +418,42 @@ void Texture2d::destroy()
 	mImageView->~ImageView();
 }
 
-Texture2dRef Texture2d::create( int width, int height, const Texture2d::Format& format, vk::Context* context )
+Texture2dRef Texture2d::create( int width, int height, const Texture2d::Format& format, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	Texture2dRef result = Texture2dRef( new Texture2d( width, height, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	Texture2dRef result = Texture2dRef( new Texture2d( width, height, format, device ) );
 	return result;
 }
 
-Texture2dRef Texture2d::create( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Context* context )
+Texture2dRef Texture2d::create( const void *data, VkFormat dataFormat, int width, int height, const Texture2d::Format &format, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	Texture2dRef result = Texture2dRef( new Texture2d( data, dataFormat, width, height, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	Texture2dRef result = Texture2dRef( new Texture2d( data, dataFormat, width, height, format, device ) );
 	return result;
 }
 
-Texture2dRef Texture2d::create( const Surface8u& surf, const Texture2d::Format& format, vk::Context* context )
+Texture2dRef Texture2d::create( const Surface8u& surf, const Texture2d::Format& format, vk::Device* device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	Texture2dRef result = Texture2dRef( new Texture2d( surf, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	Texture2dRef result = Texture2dRef( new Texture2d( surf, format, device ) );
 	return result;
 }
 
-Texture2dRef Texture2d::create( const Surface16u& surf, const Texture2d::Format& format, vk::Context* context )
+Texture2dRef Texture2d::create( const Surface16u& surf, const Texture2d::Format& format, vk::Device* device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	Texture2dRef result = Texture2dRef( new Texture2d( surf, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	Texture2dRef result = Texture2dRef( new Texture2d( surf, format, device ) );
 	return result;
 }
 
-Texture2dRef Texture2d::create( const Surface32f& surf, const Texture2d::Format& format, vk::Context* context )
+Texture2dRef Texture2d::create( const Surface32f& surf, const Texture2d::Format& format, vk::Device* device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	Texture2dRef result = Texture2dRef( new Texture2d( surf, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	Texture2dRef result = Texture2dRef( new Texture2d( surf, format, device ) );
 	return result;
 }
 
-//Texture2dRef Texture2d::create( ImageSourceRef imageSource, const Format &format, vk::Context* context )
+//Texture2dRef Texture2d::create( ImageSourceRef imageSource, const Format &format, vk::Device *device )
 //{
 //	context = ( nullptr != context ) ? context : Context::getCurrent();
 //	Texture2dRef result = Texture2dRef( new Texture2d( imageSource, format, context ) );
@@ -462,7 +463,7 @@ Texture2dRef Texture2d::create( const Surface32f& surf, const Texture2d::Format&
 template <typename T>
 void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t srcRowBytes, size_t srcPixelBytes )
 {
-	auto context = mImageView->getContext();
+	auto context = vk::context()->getCurrent();
 
 	// Force a 4-channel format since some devices will not accept a 3 channel format. 
 	size_t numChannels = srcPixelBytes / sizeof( T );
@@ -474,7 +475,7 @@ void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t 
 		.setTilingLinear()
 		.setMemoryPropertyHostVisible()
 		.setUsageTransferSource();
-	ImageRef stagingImage = ImageRef( new Image( srcWidth, srcHeight, srcData, srcRowBytes, srcPixelBytes, ci::Area( 0, 0, srcWidth, srcHeight ), stagingOptions, context ) );
+	ImageRef stagingImage = ImageRef( new Image( srcWidth, srcHeight, srcData, srcRowBytes, srcPixelBytes, ci::Area( 0, 0, srcWidth, srcHeight ), stagingOptions, mImageView->getDevice() ) );
 
 	if( mFormat.isUnnormalizedCoordinates() ) {
 		Image::copy( context, stagingImage, 0, 0, mImageView->getImage(), 0, 0, ivec2( srcWidth, srcHeight ) );
@@ -692,34 +693,34 @@ std::vector<CubeMapFaceRegion> calcCubeMapVerticalRegions( const int imageWidth,
 };
 } // anonymous namespace
 
-TextureCubeMap::TextureCubeMap( int width, int height, TextureCubeMap::Format format, vk::Context* context )
+TextureCubeMap::TextureCubeMap( int width, int height, TextureCubeMap::Format format, vk::Device *device )
 	: TextureBase()
 {
-	initialize( width, height, static_cast<const uint8_t*>( nullptr ), 0, 0, format, context );
+	initialize( width, height, static_cast<const uint8_t*>( nullptr ), 0, 0, format, device );
 }
 
-TextureCubeMap::TextureCubeMap( const Surface8u& surf, TextureCubeMap::Format format, vk::Context* context )
+TextureCubeMap::TextureCubeMap( const Surface8u& surf, TextureCubeMap::Format format, vk::Device *device )
 	: TextureBase()
 {
 	format.setInternalFormat( VK_FORMAT_R8G8B8A8_UNORM );
-	initialize( surf.getWidth(), surf.getHeight(), surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), format, context );
+	initialize( surf.getWidth(), surf.getHeight(), surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), format, device );
 }
 
-TextureCubeMap::TextureCubeMap( const Surface16u& surf, TextureCubeMap::Format format, vk::Context* context )
+TextureCubeMap::TextureCubeMap( const Surface16u& surf, TextureCubeMap::Format format, vk::Device *device )
 	: TextureBase()
 {
 	format.setInternalFormat( VK_FORMAT_R16G16B16A16_UNORM );
-	initialize( surf.getWidth(), surf.getHeight(), surf.getData(), surf.getRowBytes(),  surf.getPixelBytes(), format, context );
+	initialize( surf.getWidth(), surf.getHeight(), surf.getData(), surf.getRowBytes(),  surf.getPixelBytes(), format, device );
 }
 
-TextureCubeMap::TextureCubeMap( const Surface32f& surf, TextureCubeMap::Format format, vk::Context* context )
+TextureCubeMap::TextureCubeMap( const Surface32f& surf, TextureCubeMap::Format format, vk::Device *device )
 	: TextureBase()
 {
 	format.setInternalFormat( VK_FORMAT_R32G32B32A32_SFLOAT);
-	initialize( surf.getWidth(), surf.getHeight(),surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), format, context );
+	initialize( surf.getWidth(), surf.getHeight(),surf.getData(), surf.getRowBytes(), surf.getPixelBytes(), format, device );
 }
 
-//TextureCubeMap::TextureCubeMap( ImageSourceRef imageSource, TextureCubeMap::Format format, vk::Context* context )
+//TextureCubeMap::TextureCubeMap( ImageSourceRef imageSource, TextureCubeMap::Format format, vk::Device *device )
 //	: TextureBase()
 //{
 //	initialize( imageSource, format, context );
@@ -730,17 +731,17 @@ TextureCubeMap::~TextureCubeMap()
 	destroy();
 }
 
-void TextureCubeMap::initializeCommon( const TextureCubeMap::Format& format,  vk::Context* context  )
+void TextureCubeMap::initializeCommon( const TextureCubeMap::Format& format, vk::Device *device )
 {
 	mFormatProperties = {};
-	vkGetPhysicalDeviceFormatProperties( context->getGpu(), format.getInternalFormat(), &mFormatProperties );
+	vkGetPhysicalDeviceFormatProperties( device->getGpu(), format.getInternalFormat(), &mFormatProperties );
 
 	// No mipmaps for cube maps
 	mHostVisible = false;
 	mMipLevels = 1;
 }
 
-void TextureCubeMap::initializeFinal( vk::Context* context )
+void TextureCubeMap::initializeFinal( vk::Device *device )
 {
     VkResult U_ASSERT_ONLY res;
 
@@ -760,7 +761,7 @@ void TextureCubeMap::initializeFinal( vk::Context* context )
     samplerCreateInfo.compareEnable				= VK_FALSE;
     samplerCreateInfo.borderColor				= VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 	samplerCreateInfo.unnormalizedCoordinates	= VK_FALSE;
-    res = vkCreateSampler(  context ->getDevice(), &samplerCreateInfo, nullptr, &mSampler );
+    res = vkCreateSampler( device ->getDevice(), &samplerCreateInfo, nullptr, &mSampler );
     assert(res == VK_SUCCESS);
 	
 	// Descriptor
@@ -770,9 +771,9 @@ void TextureCubeMap::initializeFinal( vk::Context* context )
 }
 
 template <typename T>
-void TextureCubeMap::initialize( int width, int height, const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, const TextureCubeMap::Format& format, vk::Context* context )
+void TextureCubeMap::initialize( int width, int height, const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, const TextureCubeMap::Format& format, vk::Device *device )
 {
-	initializeCommon( format, context );
+	initializeCommon( format, device );
 
 	std::vector<CubeMapFaceRegion> faceRegions;
 	// Infer the layout based on image aspect ratio
@@ -797,27 +798,28 @@ void TextureCubeMap::initialize( int width, int height, const T* srcData, size_t
 		.setUsageSampled()
 		.setUsageTransferDestination()
 		.setCreateFlags( VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT );
-	vk::ImageRef premadeImage = vk::Image::create( faceSize.x, faceSize.y, imageOptions, context );
+	vk::ImageRef premadeImage = vk::Image::create( faceSize.x, faceSize.y, imageOptions, device );
 	premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 	//ImageView::initialize( VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_TYPE_2D, premadeImage->getWidth(), premadeImage->getHeight(), 1, premadeImage->getOptions(), premadeImage );
-	mImageView = vk::ImageView::createCube( premadeImage->getWidth(), premadeImage->getHeight(), premadeImage, context );
+	mImageView = vk::ImageView::createCube( premadeImage->getWidth(), premadeImage->getHeight(), premadeImage, device );
 
 	Image::Format stagingOptions = Image::Format( format.getInternalFormat() )
 		.setSamples( VK_SAMPLE_COUNT_1_BIT )
 		.setTilingLinear()
 		.setMemoryPropertyHostVisible()
 		.setUsageTransferSource();
-	ImageRef stagingImage = ImageRef( new Image( faceSize.x, faceSize.y, stagingOptions, context ) );
+	ImageRef stagingImage = ImageRef( new Image( faceSize.x, faceSize.y, stagingOptions, device ) );
 
+	auto context = vk::Context::getCurrent();
 	for( uint32_t face = 0; face < 6; ++face ) {
 		stagingImage->copyData( 0, srcData, srcRowBytes, srcPixelBytes, faceRegions[face].mArea );
 		Image::copy( context, stagingImage, 0, 0, premadeImage, 0, face );
 	}
 
-	initializeFinal( context );
+	initializeFinal( device );
 }
 
-void TextureCubeMap::initialize( ImageSourceRef imageSource, const TextureCubeMap::Format& format, vk::Context* context )
+void TextureCubeMap::initialize( ImageSourceRef imageSource, const TextureCubeMap::Format& format, vk::Device *device )
 {
 }
 
@@ -826,35 +828,35 @@ void TextureCubeMap::destroy()
 	mImageView->~ImageView();
 }
 
-TextureCubeMapRef TextureCubeMap::create( int width, int height, const TextureCubeMap::Format& format, vk::Context* context )
+TextureCubeMapRef TextureCubeMap::create( int width, int height, const TextureCubeMap::Format& format, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( width, height, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( width, height, format, device ) );
 	return result;
 }
 
-TextureCubeMapRef TextureCubeMap::create( const Surface8u& surf, const TextureCubeMap::Format& format, vk::Context* context )
+TextureCubeMapRef TextureCubeMap::create( const Surface8u& surf, const TextureCubeMap::Format& format, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( surf, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( surf, format, device ) );
 	return result;
 }
 
-TextureCubeMapRef TextureCubeMap::create( const Surface16u& surf, const TextureCubeMap::Format& format, vk::Context* context )
+TextureCubeMapRef TextureCubeMap::create( const Surface16u& surf, const TextureCubeMap::Format& format, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( surf, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( surf, format, device ) );
 	return result;
 }
 
-TextureCubeMapRef TextureCubeMap::create( const Surface32f& surf, const TextureCubeMap::Format& format, vk::Context* context )
+TextureCubeMapRef TextureCubeMap::create( const Surface32f& surf, const TextureCubeMap::Format& format, vk::Device *device )
 {
-	context = ( nullptr != context ) ? context : Context::getCurrent();
-	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( surf, format, context ) );
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( surf, format, device ) );
 	return result;
 }
 
-//TextureCubeMapRef TextureCubeMap::create( ImageSourceRef imageSource, const TextureCubeMap::Format &format, vk::Context* context )
+//TextureCubeMapRef TextureCubeMap::create( ImageSourceRef imageSource, const TextureCubeMap::Format &format, vk::Device *device )
 //{
 //	context = ( nullptr != context ) ? context : Context::getCurrent();
 //	TextureCubeMapRef result = TextureCubeMapRef( new TextureCubeMap( imageSource, format, context ) );

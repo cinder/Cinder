@@ -39,13 +39,14 @@
 #include "cinder/vk/Queue.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/Presenter.h"
 #include "cinder/vk/Swapchain.h"
 
 namespace cinder { namespace vk {
 
 Queue::Queue( uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context )
-	: BaseVkObject( context )
+	: BaseContextObject( context )
 {
 	initialize( queueFamilyIndex, queueIndex );
 }
@@ -64,7 +65,7 @@ QueueRef Queue::create( uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Cont
 
 void Queue::initialize( uint32_t queueFamilyIndex, uint32_t queueIndex )
 {
-	vkGetDeviceQueue( mContext->getDevice(), queueFamilyIndex, queueIndex, &mQueue );
+	vkGetDeviceQueue( mContext->getDevice()->getDevice(), queueFamilyIndex, queueIndex, &mQueue );
 }
 
 void Queue::destroy( bool removeFromTracking )
@@ -161,7 +162,7 @@ void Queue::present( const std::vector<VkSemaphore>& waitSemaphores, const std::
     presentInfo.pImageIndices		= imageIndices.data();
     presentInfo.pResults			= nullptr;
 
-	VkResult err = mContext->fpQueuePresentKHR( mQueue, &presentInfo );
+	VkResult err = mContext->getDevice()->QueuePresentKHR( mQueue, &presentInfo );
 	assert( err == VK_SUCCESS );
 }
 

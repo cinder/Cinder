@@ -38,19 +38,15 @@
 
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Device.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/IndexBuffer.h"
 #include "cinder/vk/Swapchain.h"
 
 namespace cinder { namespace vk {
 
-CommandBuffer::CommandBuffer()
-	: BaseVkObject()
-{
-}
-
 CommandBuffer::CommandBuffer( VkCommandPool commandPool, Context *context )
-	: BaseVkObject( context ), 
+	: vk::BaseContextObject( context ), 
 	  mCommandPool( commandPool )
 {
 	initialize();
@@ -76,7 +72,7 @@ void CommandBuffer::initialize()
     cmd.level				= VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     cmd.commandBufferCount	= 1;
 
-    res = vkAllocateCommandBuffers( mContext->getDevice(), &cmd, &mCommandBuffer );
+    res = vkAllocateCommandBuffers( mContext->getDevice()->getDevice(), &cmd, &mCommandBuffer );
     assert(res == VK_SUCCESS);
 
 	mContext->trackedObjectCreated( this );
@@ -89,7 +85,7 @@ void CommandBuffer::destroy( bool removeFromTracking )
 	}
 
 	VkCommandBuffer cmdBufs[1] = { mCommandBuffer };
-	vkFreeCommandBuffers( mContext->getDevice(), mCommandPool, 1, cmdBufs );
+	vkFreeCommandBuffers( mContext->getDevice()->getDevice(), mCommandPool, 1, cmdBufs );
 	mCommandBuffer = VK_NULL_HANDLE;
 	mCommandPool = VK_NULL_HANDLE;
 
