@@ -40,6 +40,7 @@
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Device.h"
 #include "cinder/Utilities.h"
+#include "cinder/Log.h"
 //
 #include "cinder/vk/gl_types.h"
 #include "cinder/vk/glsl_types.h"
@@ -558,8 +559,13 @@ UniformLayout extractUniformlayout( const std::vector<std::pair<VkPipelineShader
 		for( int blockIndex = 0; blockIndex < numLiveBlocks; ++blockIndex ) {
 			std::string name = program.getUniformBlockName( blockIndex );
 			size_t size = program.getUniformBlockSize( blockIndex );
+			// Round up to next multiple of 16			
+			size_t paddedSize = ( size + 15 ) & ( ~15 );
+			if( size != paddedSize ) {
+				CI_LOG_I( "Padded uniform block " << name << " from " << size << " bytes to " << paddedSize << " bytes" );
+			}
 			name = blockNameTranslateFn( name );
-			result.setBlockSizeBytes( name, size );
+			result.setBlockSizeBytes( name, paddedSize );
 		}
 
 		int numUniformVars = program.getNumLiveUniformVariables();
