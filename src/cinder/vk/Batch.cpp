@@ -323,8 +323,7 @@ void Batch::draw( int32_t first, int32_t count )
 	std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
 	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
-	//auto& pipeline = mPipelines[mPipelineSelection];
-	//vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline() );
+	// Get a pipeline
 	auto ctx = vk::context();
 	auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
 	pipelineSelector->setTopology( mVboMesh->getPrimitive() );
@@ -385,23 +384,28 @@ void Batch::drawInstanced( uint32_t instanceCount )
 	}
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
 	
-	//auto& pipeline = mPipelines[mPipelineSelection];
-	//vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline() );
-
 	// Update descriptor set
 	mDescriptorSet->update( *mUniformSet );
 
 	std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
 	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
-	//auto& pipeline = mPipelines[mPipelineSelection];
-	//vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline() );
-	auto& pipelineSelector = vk::context()->getDevice()->getPipelineSelector();
+	// Get a pipeline
+	auto ctx = vk::context();
+	auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
+	pipelineSelector->setTopology( mVboMesh->getPrimitive() );
 	pipelineSelector->setVertexInputBindingDescriptions( mVertexInputDescription.getBindings() );
 	pipelineSelector->setVertexInputAttributeDescriptions( mVertexInputDescription.getAttributes() );
+	pipelineSelector->setCullMode( ctx->getCullMode() );
+	pipelineSelector->setFrontFace( ctx->getFrontFace() );
+	pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
+	pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubPassSampleCount( ctx->getSubPass() ) );
+	pipelineSelector->setDepthTest( ctx->getDepthTest() );
+	pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
+	pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
 	pipelineSelector->setShaderStages( mShader->getShaderStages() );
-	pipelineSelector->setRenderPass( vk::context()->getRenderPass()->getRenderPass() );
-	pipelineSelector->setSubPass( 0 );
+	pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
+	pipelineSelector->setSubPass( ctx->getSubPass() );
 	pipelineSelector->setPipelineLayout( mPipelineLayout->getPipelineLayout() );
 	auto pipeline = pipelineSelector->getSelectedPipeline();
 	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );

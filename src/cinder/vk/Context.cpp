@@ -69,26 +69,6 @@ Context::Context( const vk::PresenterRef& presenter, vk::Device* device )
 	mColor = ColorAf::white();
 }
 
-/*
-#if defined( CINDER_ANDROID )
-#elif defined( CINDER_LINUX )
-#elif defined( CINDER_MSW )
-Context::Context( ::HINSTANCE connection, ::HWND window, bool explicitMode, uint32_t workQueueCount, VkPhysicalDevice gpu, Environment *env )
-	: mType( Context::Type::PRIMARY ), 
-	  mConnection( connection ), 
-	  mWindow( window ), 
-	  mExplicitMode( explicitMode ), 
-	  mWorkQueueCount( workQueueCount),
-	  mGpu( gpu )
-{
-	mEnvironment = ( nullptr != env ) ? env : Environment::getEnv();
-	initialize();
-
-	mColor = ColorAf::white();
-}
-#endif
-*/
-
 Context::Context( const Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices )
 	: mType( Context::Type::SECONDARY )
 {
@@ -129,219 +109,6 @@ ContextRef Context::createFromExisting( const vk::Context* existingContext, cons
 	return result;
 }
 
-/*
-void initializeDeviceLayerExtensions( VkPhysicalDevice gpu, const std::string& layerName, std::vector<VkExtensionProperties>& outExtensions )
-{
-	uint32_t extensionCount = 0;
-	VkResult err = vkEnumerateDeviceExtensionProperties( gpu, layerName.c_str(), &extensionCount, nullptr );
-	assert( err == VK_SUCCESS );
-	
-	if( extensionCount > 0 ) {
-		outExtensions.resize( extensionCount );
-		err = vkEnumerateDeviceExtensionProperties( gpu, layerName.c_str(), &extensionCount, outExtensions.data() );
-		assert( err == VK_SUCCESS );
-	}
-}
-
-void Context::initDeviceLayers()
-{
-	uint32_t layerCount = 0;
-	VkResult err = vkEnumerateDeviceLayerProperties( mGpu, &layerCount, nullptr );
-	assert( err == VK_SUCCESS );
-	
-	if( layerCount > 0 ) {
-		std::vector<VkLayerProperties> layers( layerCount );
-		err = vkEnumerateDeviceLayerProperties( mGpu, &layerCount, layers.data() );
-		assert( err == VK_SUCCESS );
-
-		const auto& activeDeviceLayers = mEnvironment->getActiveDeviceLayers();
-		for( const auto& activeLayerName : activeDeviceLayers ) {
-			auto it = std::find_if( 
-				std::begin( layers ),
-				std::end( layers ),
-				[&activeLayerName]( const VkLayerProperties& elem ) -> bool {
-					return std::string( elem.layerName ) == activeLayerName;
-				} 
-			);
-			if( std::end( layers ) != it ) {
-				Context::DeviceLayer deviceLayer = {};
-				deviceLayer.layer = *it;
-				mDeviceLayers.push_back( deviceLayer );
-				CI_LOG_I( "Queued device layer for loading: " << activeLayerName );
-			}
-			else {
-				CI_LOG_W( "Requested device layer not found: " << activeLayerName );
-			}
-		}
-	}
-
-	for( auto& layer : mDeviceLayers ) {
-		const std::string layerName( layer.layer.layerName );
-		initializeDeviceLayerExtensions( mGpu, layerName, layer.extensions );
-	}
-}
-
-void Context::initDevice()
-{
-    VkResult res;
-    VkDeviceQueueCreateInfo queue_info = {};
-
-    vkGetPhysicalDeviceQueueFamilyProperties( mGpu, &mQueueFamilyPropertyCount, NULL );
-    assert( mQueueFamilyPropertyCount >= 1 );
-
-    mQueueFamilyProperties.resize( mQueueFamilyPropertyCount );
-    vkGetPhysicalDeviceQueueFamilyProperties( mGpu, &mQueueFamilyPropertyCount, mQueueFamilyProperties.data() );
-    assert( mQueueFamilyPropertyCount >= 1 );
-
-CI_LOG_I( "Number of queue families: " << mQueueFamilyPropertyCount );
-
-    bool found = false;
-    for( uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i ) {
-CI_LOG_I( "queueFamily[" << i << "].queueCount: " << mQueueFamilyProperties[i].queueCount );
-        if( mQueueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT ) {
-            queue_info.queueFamilyIndex = i;
-            found = true;
-            break;
-        }
-    }
-    assert( found );
-    assert( mQueueFamilyPropertyCount >= 1 );
-
-	// This is as good a place as any to do this
-    vkGetPhysicalDeviceMemoryProperties( mGpu, &mMemoryProperties );
-    vkGetPhysicalDeviceProperties( mGpu, &mGpuProperties );
-CI_LOG_I( "limits.sampledImageColorSampleCounts: " << mGpuProperties.limits.sampledImageColorSampleCounts );
-CI_LOG_I( "limits.sampledImageDepthSampleCounts: " << mGpuProperties.limits.sampledImageDepthSampleCounts );
-
-	std::vector<float> queuePriorities( mWorkQueueCount );
-	assert( ! queuePriorities.empty() );
-
-	// For now: 1.0 for the first, 0.5 for the rest
-	auto it = queuePriorities.begin();
-	*it = 1.0f;
-	for( ; it != queuePriorities.end(); ++it ) {
-		*it = 0.5f;
-	}
-
-	// @TODO: Find a better way to clamp the max number of work queues. For now just use the queue at index 0.
-	mWorkQueueCount = std::min<uint32_t>( mWorkQueueCount, mQueueFamilyProperties[0].queueCount );
-    queue_info.sType			= VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queue_info.pNext			= nullptr;
-    queue_info.queueCount		= mWorkQueueCount;
-    queue_info.pQueuePriorities	= ( queuePriorities.empty() ? nullptr : queuePriorities.data() );
-
-	std::vector<const char *> deviceLayerNames;
-	std::vector<const char *> deviceExtensionNames;
-	for( auto& elem : mDeviceLayers ) {
-		deviceLayerNames.push_back( elem.layer.layerName );
-		for( const auto& ext : elem.extensions ) {
-			deviceExtensionNames.push_back( ext.extensionName );
-		}
-	}
-
-	deviceExtensionNames.insert( deviceExtensionNames.begin(), VK_KHR_SWAPCHAIN_EXTENSION_NAME );
-
-    VkDeviceCreateInfo createInfo = {};
-    createInfo.sType					= VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    createInfo.pNext					= nullptr;
-    createInfo.queueCreateInfoCount		= 1;
-    createInfo.pQueueCreateInfos		= &queue_info;
-    createInfo.enabledLayerCount		= static_cast<uint32_t>( deviceLayerNames.size() );
-    createInfo.ppEnabledLayerNames		= createInfo.enabledLayerCount ? deviceLayerNames.data() : nullptr;
-    createInfo.enabledExtensionCount	= static_cast<uint32_t>( deviceExtensionNames.size() );
-    createInfo.ppEnabledExtensionNames	= createInfo.enabledExtensionCount ? deviceExtensionNames.data() : nullptr;
-    createInfo.pEnabledFeatures			= nullptr;
-
-    res = vkCreateDevice( mGpu, &createInfo, nullptr, &mDevice );
-    assert( res == VK_SUCCESS );
-}
-
-void Context::initSwapchainExtension()
-{
-	fpCreateSwapchainKHR    = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, CreateSwapchainKHR );
-	fpDestroySwapchainKHR   = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, DestroySwapchainKHR );
-	fpGetSwapchainImagesKHR = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, GetSwapchainImagesKHR );
-	fpAcquireNextImageKHR   = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, AcquireNextImageKHR );
-	fpQueuePresentKHR       = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, QueuePresentKHR );
-
-	VkResult U_ASSERT_ONLY res;
-
-	// Construct the surface description:
-#if defined( CINDER_ANDROID )
-#elif defined( CINDER_LINUX )
-    res = vkCreateXcbSurfaceKHR( mEnvironment->getVulkanInstance(), mConnection, mWindow, nullptr, &info.surface );
-#elif defined( CINDER_MSW )
-    VkWin32SurfaceCreateInfoKHR createInfo = {};
-    createInfo.sType		= VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-    createInfo.pNext		= nullptr;
-    createInfo.hinstance	= mConnection;
-    createInfo.hwnd			= mWindow;
-    res = vkCreateWin32SurfaceKHR( mEnvironment->getVulkanInstance(), &createInfo, nullptr, &mWsiSurface );
-#endif // _WIN32
-    assert(res == VK_SUCCESS);
-
-    // Iterate over each queue to learn whether it supports presenting:
-	std::vector<VkBool32> supportsPresent( mQueueFamilyPropertyCount, VK_FALSE );
-    for( uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i ) {
-        mEnvironment->GetPhysicalDeviceSurfaceSupportKHR( mGpu, i, mWsiSurface, &supportsPresent[i] );
-    }
-
-    // Search for a graphics queue and a present queue in the array of queue
-    // families, try to find one that supports both
-    uint32_t graphicsQueueNodeIndex = UINT32_MAX;
-    uint32_t presentQueueNodeIndex  = UINT32_MAX;
-    for( uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i ) {
-        if( ( mQueueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT ) != 0 ) {
-            if( UINT32_MAX == graphicsQueueNodeIndex ) {
-                graphicsQueueNodeIndex = i;
-            }
-
-            if( VK_TRUE == supportsPresent[i] ) {
-                graphicsQueueNodeIndex = i;
-                presentQueueNodeIndex = i;
-                break;
-            }
-        }
-    }
-    if( UINT32_MAX == presentQueueNodeIndex ) {
-        // If didn't find a queue that supports both graphics and present, then find a separate present queue.
-        for( uint32_t i = 0; i < mQueueFamilyPropertyCount; ++i ) {
-            if( VK_TRUE == supportsPresent[i] ) {
-                presentQueueNodeIndex = i;
-                break;
-            }
-        }
-    }
-
-    // Generate error if could not find both a graphics and a present queue
-    if( ( UINT32_MAX == graphicsQueueNodeIndex ) || ( UINT32_MAX == presentQueueNodeIndex ) ) {
-        throw std::runtime_error( "Could not find a graphics and a present queue\nCould not find a graphics and a present queue" );
-    }
-
-    mQueueFamilyIndex = graphicsQueueNodeIndex;
-
-    // Get the list of VkFormats that are supported:
-    uint32_t formatCount;
-    res = mEnvironment->GetPhysicalDeviceSurfaceFormatsKHR( mGpu, mWsiSurface, &formatCount, nullptr );
-    assert( res == VK_SUCCESS );
-
-	std::vector<VkSurfaceFormatKHR> surfFormats( formatCount );
-    res = mEnvironment->GetPhysicalDeviceSurfaceFormatsKHR( mGpu, mWsiSurface, &formatCount, surfFormats.data() );
-    assert( res == VK_SUCCESS );
-
-    // If the format list includes just one entry of VK_FORMAT_UNDEFINED,
-    // the surface has no preferred format.  Otherwise, at least one
-    // supported format will be returned.
-    if( ( 1 == formatCount ) && ( VK_FORMAT_UNDEFINED == surfFormats[0].format ) ) {
-        mWsiSurfaceFormat = VK_FORMAT_B8G8R8A8_UNORM;
-    }
-    else {
-        assert( formatCount >= 1 );
-        mWsiSurfaceFormat = surfFormats[0].format;
-    }
-}
-*/
-
 void Context::initializeQueues()
 {
 	// Graphics queue
@@ -358,29 +125,10 @@ void Context::initializeQueues()
 void Context::initialize( const Context* existingContext )
 {
 	if( existingContext ) {
-/*
-		mGpu = existingContext->mGpu;
-		mGpuProperties = existingContext->mGpuProperties;
-		mQueueFamilyProperties = existingContext->mQueueFamilyProperties;
-		mMemoryProperties = existingContext->mMemoryProperties;
-*/
 		mDevice = existingContext->mDevice;
 		mPresenter = existingContext->mPresenter;
-/*
-		mQueueFamilyIndex = existingContext->mQueueFamilyIndex;
-		mQueueFamilyPropertyCount = existingContext->mQueueFamilyPropertyCount;
-*/
-		initializeQueues();
 	}
-	else {
-/*
-		initDeviceLayers();
-		initDevice();
-		initConnection();
-		initSwapchainExtension();
-*/
-		initializeQueues();
-	}
+	initializeQueues();
 
     mModelMatrixStack.push_back( mat4() );
     mViewMatrixStack.push_back( mat4() );
@@ -388,13 +136,6 @@ void Context::initialize( const Context* existingContext )
 
 	mDefaultCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), this );
 	mDefaultCommandBuffer = vk::CommandBuffer::create( mDefaultCommandPool->getCommandPool(), this );
-
-/*
-	mPipelineCache = vk::PipelineCache::create( this->getDevice() );
-	mDescriptorSetLayoutSelector = vk::DescriptorSetLayoutSelector::create( this->getDevice() );
-	mPipelineLayoutSelector = vk::PipelineLayoutSelector::create( this->getDevice() );
-	mPipelineSelector = vk::PipelineSelector::create( mPipelineCache, this->getDevice() );
-*/
 
 	mCachedColorAttachmentBlend.blendEnable			= VK_FALSE;
 	mCachedColorAttachmentBlend.srcColorBlendFactor	= VK_BLEND_FACTOR_SRC_ALPHA;
@@ -405,16 +146,8 @@ void Context::initialize( const Context* existingContext )
 	mCachedColorAttachmentBlend.alphaBlendOp		= VK_BLEND_OP_ADD;
 	mCachedColorAttachmentBlend.colorWriteMask		= 0xf;
 
-	//mEnvironment->trackedObjectCreated( this );
 	mDevice->trackedObjectCreated( this );
 }
-
-/*
-void Context::destroyDevice()
-{
-
-}
-*/
 
 void Context::destroy( bool removeFromTracking )
 {
@@ -454,78 +187,6 @@ bool Context::isExplicitMode() const
 	return mDevice->isExplicitMode();
 }
 
-/*
-uint32_t Context::getWorkQueueCount() const 
-{ 
-	return mWorkQueueCount;
-}
-
-bool Context::findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const
-{
-	// Default to type max constant
-	*typeIndex = std::numeric_limits<std::remove_pointer<decltype(typeIndex)>::type>::max();
-
-   	// Search memoryTypes to find first index with those properties
-    for( uint32_t i = 0; i < mMemoryProperties.memoryTypeCount; ++i ) {
-         if( typeBits & 0x00000001 ) {
-             // Type is available, does it match user properties?
-             if( requirementsMask == ( mMemoryProperties.memoryTypes[i].propertyFlags & requirementsMask ) ) {
-                 *typeIndex = i;
-                 return true;
-             }
-         }
-        typeBits >>= 1;
-	}
-
-    // No memory types matched, return failure
-    return false;
-}
-
-void Context::initializePresentRender( const ivec2& windowSize, uint32_t swapchainImageCount, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode, VkFormat depthStencilFormat )
-{
-	if( ! mPresenter ) {
-		Presenter::Options options = Presenter::Options();
-		options.explicitMode( mExplicitMode );
-		options.samples( samples );
-		options.presentMode( presentMode );
-		options.wsiSurface( mWsiSurface );
-		options.wsiSurfaceFormat( mWsiSurfaceFormat );
-		options.depthStencilFormat( depthStencilFormat );
-		mPresenter = Presenter::create( windowSize, swapchainImageCount, options, this );
-	}
-	else {
-		mPresenter->resize( windowSize );
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Device methods
-VkResult Context::vkCreateSwapchainKHR( const VkSwapchainCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain )
-{
-	return this->fpCreateSwapchainKHR( mDevice, pCreateInfo, pAllocator, pSwapchain );
-}
-
-void Context::vkDestroySwapchainKHR( VkSwapchainKHR swapchain, const VkAllocationCallbacks* pAllocator )
-{
-	this->fpDestroySwapchainKHR( mDevice, swapchain, pAllocator );
-}
-
-VkResult Context::vkGetSwapchainImagesKHR( VkSwapchainKHR swapchain, uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages )
-{
-	return this->fpGetSwapchainImagesKHR( mDevice, swapchain, pSwapchainImageCount, pSwapchainImages );
-}
-
-VkResult Context::vkAcquireNextImageKHR( VkSwapchainKHR swapchain, uint64_t timeout, VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex )
-{
-	return this->fpAcquireNextImageKHR( mDevice, swapchain, timeout, semaphore, fence, pImageIndex );
-}
-
-VkResult Context::vkQueuePresentKHR( const VkPresentInfoKHR* pPresentInfo )
-{
-	return this->fpQueuePresentKHR( mQueue->getQueue(), pPresentInfo );
-}
-*/
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Stack management routines
 void Context::pushRenderPass( const vk::RenderPassRef& renderPass )
@@ -562,38 +223,6 @@ uint32_t Context::getSubPass() const
 {
 	return mSubPassStack.back();
 }
-
-/*
-void Context::pushFramebuffer( const vk::FramebufferRef& framebuffer )
-{
-	pushStackState( mFramebufferStack, framebuffer );
-}
-
-void Context::popFramebuffer()
-{
-	popStackState( mFramebufferStack );
-}
-
-const vk::FramebufferRef& Context::getFramebuffer() const
-{
-	return mFramebufferStack.back();
-}
-
-void Context::pushImage( const vk::ImageRef& image )
-{
-	pushStackState( mImageStack, image );
-}
-
-void Context::popImage()
-{
-	popStackState( mImageStack );
-}
-
-const vk::ImageRef& Context::getImage() const
-{
-	return mImageStack.back();
-}
-*/
 
 void Context::pushCommandBuffer( const vk::CommandBufferRef& cmdBuf )
 {
@@ -1588,120 +1217,6 @@ void Context::trackedObjectDestroyed( vk::CommandBuffer *obj )
 {
 	mTrackedCommandBuffers.objectDestroyed( obj );
 }
-
-/*
-void Context::transferTrackedObjects( Context* dstCtx )
-{
-	// Do not transfer CommandPools, CommandBuffers, or SwapChains.
-	// CommandPools and CommandBuffers are specific to a thread.
-	// SwapChains are specific to the main thread currently.
-	
-	// Images
-	for( auto obj : mTrackedImages ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedImages.clear();
-
-	// ImageViews
-	for( auto obj : mTrackedImageViews ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedImageViews.clear();
-
-	// Buffers
-	for( auto obj : mTrackedBuffers ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedBuffers.clear();
-
-	// UniformBuffers
-	for( auto obj : mTrackedUniformBuffers ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedUniformBuffers.clear();
-
-	// IndexBuffers
-	for( auto obj : mTrackedIndexBuffers ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedIndexBuffers.clear();
-
-	// VertexBuffers
-	for( auto obj : mTrackedVertexBuffers ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedVertexBuffers.clear();
-
-	// Framebuffers
-	for( auto obj : mTrackedFramebuffers ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedFramebuffers.clear();
-
-	// RenderPasses
-	for( auto obj : mTrackedRenderPasses ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedRenderPasses.clear();
-
-	// PipelineLayouts
-	for( auto obj : mTrackedPipelineLayouts ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedPipelineLayouts.clear();
-
-	// PipelineCaches
-	for( auto obj : mTrackedPipelineCaches ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedPipelineCaches.clear();
-
-	// Pipelines
-	for( auto obj : mTrackedPipelines ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedPipelines.clear();
-
-	// DescriptorSetLayouts
-	for( auto obj : mTrackedDescriptorSetLayouts ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedDescriptorSetLayouts.clear();
-
-	// DescriptorSets
-	for( auto obj : mTrackedDescriptorSets ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedDescriptorSets.clear();
-
-	// DescriptorPools
-	for( auto obj : mTrackedDescriptorPools ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedDescriptorPools.clear();
-
-	// ShaderProgs
-	for( auto obj : mTrackedShaderProgs ) {
-		obj->setContext( dstCtx );
-		dstCtx->trackedObjectCreated( obj );
-	}
-	mTrackedShaderProgs.clear();
-}
-*/
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Transient object routines

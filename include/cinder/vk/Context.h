@@ -80,63 +80,6 @@ using ShaderProgRef = std::shared_ptr<ShaderProg>;
 using UniformBufferRef = std::shared_ptr<UniformBuffer>;
 using VertexBufferRef = std::shared_ptr<VertexBuffer>;
 
-/*
-class Buffer;
-class CommandBuffer;
-class CommandPool;
-class DescriptorPool;
-class DescriptorSet;
-class DescriptorSetLayout;
-class DescriptorSetLayoutSelector;
-class Device;
-class Environment;
-class Framebuffer;
-class Image;
-class ImageView;
-class IndexBuffer;
-class Pipeline;
-class PipelineCache;
-class PipelineLayout;
-class PipelineLayoutSelector;
-class PipelineSelector;
-class Presenter;
-class Queue;
-class RenderPass;
-class ShaderDef;
-class ShaderProg;
-class Surface;
-class Swapchain;
-class Texture2d;
-class UniformBuffer;
-class VertexBuffer;
-using BufferRef = std::shared_ptr<Buffer>;
-using CommandBufferRef = std::shared_ptr<CommandBuffer>;
-using CommandPoolRef = std::shared_ptr<CommandPool>;
-using FramebufferRef = std::shared_ptr<Framebuffer>;
-using DescriptorPoolRef = std::shared_ptr<DescriptorPool>;
-using DescriptorSetRef = std::shared_ptr<DescriptorSet>;
-using DescriptorSetLayoutRef = std::shared_ptr<DescriptorSetLayout>;
-using DescriptorSetLayoutSelectorRef = std::shared_ptr<DescriptorSetLayoutSelector>;
-using DeviceRef = std::shared_ptr<Device>;
-using ImageRef = std::shared_ptr<Image>;
-using ImageViewRef = std::shared_ptr<ImageView>;
-using IndexBufferRef = std::shared_ptr<IndexBuffer>;
-using PipelineRef = std::shared_ptr<Pipeline>;
-using PipelineCacheRef = std::shared_ptr<PipelineCache>;
-using PipelineLayoutSelectorRef = std::shared_ptr<PipelineLayoutSelector>;
-using PipelineLayoutRef = std::shared_ptr<PipelineLayout>;
-using PipelineSelectorRef = std::shared_ptr<PipelineSelector>;
-using PresenterRef = std::shared_ptr<Presenter>;
-using QueueRef = std::shared_ptr<Queue>;
-using RenderPassRef = std::shared_ptr<RenderPass>;
-using ShaderProgRef = std::shared_ptr<ShaderProg>;
-using SurfaceRef = std::shared_ptr<Surface>;
-using SwapchainRef = std::shared_ptr<Swapchain>;
-using Texture2dRef = std::shared_ptr<Texture2d>;
-using UniformBufferRef = std::shared_ptr<UniformBuffer>;
-using VertexBufferRef = std::shared_ptr<VertexBuffer>;
-*/
-
 class Context;
 using ContextRef = std::shared_ptr<Context>;
 
@@ -175,55 +118,17 @@ public:
 	const vk::QueueRef&						getComputeQueue() const { return mComputeQueue.queue; }
 	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
 
-/*
-	VkPhysicalDevice						getGpu() const { return mGpu; }
-	VkDevice								getDevice() const { return mDevice; }
-	const vk::QueueRef&						getQueue() const { return mQueue; }
-
-	uint32_t								getQueueFamilyIndex() const { return mQueueFamilyIndex; }
-	const VkPhysicalDeviceProperties&		getGpuProperties() const { return mGpuProperties; }
-	const VkPhysicalDeviceLimits&			getGpuLimits() const { return mGpuProperties.limits; }
-	std::vector<VkQueueFamilyProperties>	getQueueProperties() const { return mQueueFamilyProperties; }
-	VkPhysicalDeviceMemoryProperties		getMemoryProperties() const { return mMemoryProperties; }
-
-	uint32_t								getWorkQueueCount() const;
-*/
-
-	bool									findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const;
-
 	const vk::CommandPoolRef&				getDefaultCommandPool() const { return mDefaultCommandPool; }
 	const vk::CommandBufferRef&				getDefaultCommandBuffer() const { return mDefaultCommandBuffer; }
 
-/*
-	VkSurfaceKHR							getWsiSurface() const { return mWsiSurface; }
-	VkFormat								getWsiSurfaceFormat() const { return mWsiSurfaceFormat; }
-	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
-
-	VkResult	vkCreateSwapchainKHR( const VkSwapchainCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain );
-	void		vkDestroySwapchainKHR( VkSwapchainKHR swapchain, const VkAllocationCallbacks* pAllocator );
-	VkResult	vkGetSwapchainImagesKHR( VkSwapchainKHR swapchain, uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages );
-	VkResult	vkAcquireNextImageKHR( VkSwapchainKHR swapchain, uint64_t timeout, VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex );
-	VkResult	vkQueuePresentKHR( const VkPresentInfoKHR* pPresentInfo );
-*/
-
-	void									pushRenderPass( const vk::RenderPassRef& renderPass );
-	void									popRenderPass();
-	const vk::RenderPassRef&				getRenderPass() const;
+	void						pushRenderPass( const vk::RenderPassRef& renderPass );
+	void						popRenderPass();
+	const vk::RenderPassRef&	getRenderPass() const;
 
 	void						pushSubPass( uint32_t subPass );
 	void						popSubPass();
 	void						setSubPass( uint32_t subPass );
 	uint32_t					getSubPass() const;
-
-/*
-	void						pushFramebuffer( const vk::FramebufferRef& framebuffer );
-	void						popFramebuffer();
-	const vk::FramebufferRef&	getFramebuffer() const;
-
-	void						pushImage( const vk::ImageRef& image );
-	void						popImage();
-	const vk::ImageRef&			getImage() const;
-*/
 
 	void						pushCommandBuffer( const vk::CommandBufferRef& cmdBuf );
 	void						popCommandBuffer();
@@ -381,10 +286,6 @@ protected:
 
 	std::vector<vk::RenderPassRef>			mRenderPassStack;
 	std::vector<uint32_t>					mSubPassStack;
-/*
-	std::vector<vk::FramebufferRef>			mFramebufferStack;
-	std::vector<vk::ImageRef>				mImageStack;
-*/
 	std::vector<vk::CommandBufferRef>		mCommandBufferStack;
 	std::vector<vk::ShaderProgRef>			mShaderProgStack;
 
@@ -402,35 +303,6 @@ private:
 	Context::Queue							mGraphicsQueue;
 	Context::Queue							mComputeQueue;
 	vk::PresenterRef						mPresenter;
-
-/*
-#if defined( CINDER_ANDROID )
-#elif defined( CINDER_LINUX )
-#elif defined( CINDER_MSW )
-	::HINSTANCE								mConnection = nullptr;
-	::HWND									mWindow = nullptr;
-#endif
-*/
-
-/*
-	VkPhysicalDevice						mGpu = VK_NULL_HANDLE;
-	VkDevice								mDevice = VK_NULL_HANDLE;
-	vk::QueueRef							mQueue;
-    VkPhysicalDeviceProperties				mGpuProperties;
-    uint32_t								mQueueFamilyIndex = 0;
-    std::vector<VkQueueFamilyProperties>	mQueueFamilyProperties;
-    VkPhysicalDeviceMemoryProperties		mMemoryProperties;
-    uint32_t								mQueueFamilyPropertyCount = 0;
-	uint32_t								mQueueIndex = 0;
-	uint32_t								mWorkQueueCount = 1;
-	
-	// Device layers
-	struct DeviceLayer {
-		VkLayerProperties					layer;
-		std::vector<VkExtensionProperties>	extensions;
-	};
-	std::vector<DeviceLayer>				mDeviceLayers;
-*/
 
 	// Default graphics variables
 	std::pair<ivec2,ivec2>					mDefaultViewport;
@@ -476,30 +348,17 @@ private:
 	vk::CommandPoolRef						mDefaultCommandPool;
 	vk::CommandBufferRef					mDefaultCommandBuffer;
 	
-/*
-	VkSurfaceKHR							mWsiSurface = VK_NULL_HANDLE;
-	VkFormat								mWsiSurfaceFormat = VK_FORMAT_UNDEFINED;;
-	vk::PresenterRef						mPresenter;
-	void									initializePresentRender( const ivec2& windowSize, uint32_t swapchainImageCount, VkSampleCountFlagBits samples, VkPresentModeKHR presentMode, VkFormat depthStencilFormat );
-*/
-
 	void initialize( const Context* existingContext = nullptr );
 	void destroy( bool removeFromTracking = true );
 	friend class Device;
 	friend class Presenter;
 
-	//void		initDeviceLayers();
-	//void		initDevice();
-	//void		initSwapchainExtension();
-	void		initializeQueues();
-	//void		destroyDevice();
+	void initializeQueues();
 
-	void		setDefaultViewport( const std::pair<ivec2,ivec2>& viewport ) { mDefaultViewport = viewport; }
+	void setDefaultViewport( const std::pair<ivec2,ivec2>& viewport ) { mDefaultViewport = viewport; }
 	friend class ci::app::RendererVk;
 
 private:
-	//std::vector<CommandPool*>				mTrackedCommandPools;
-	//std::vector<CommandBuffer*>				mTrackedCommandBuffers;
 	vk::util::TrackedObject<CommandPool>	mTrackedCommandPools;
 	vk::util::TrackedObject<CommandBuffer>	mTrackedCommandBuffers;
 
@@ -508,8 +367,6 @@ public:
 	void trackedObjectDestroyed( CommandPool *obj );
 	void trackedObjectCreated(   CommandBuffer *obj );
 	void trackedObjectDestroyed( CommandBuffer *obj );
-
-	//void transferTrackedObjects( Context* dstCtx );
 
 private:
 	std::vector<vk::UniformBufferRef>			mTransientUniformBuffers;
