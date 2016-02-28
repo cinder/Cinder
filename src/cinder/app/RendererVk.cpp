@@ -131,6 +131,12 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	deviceOptions.setGraphicsQueueCount( mOptions.mGraphicsQueueCount );
 	vk::DeviceRef device = vk::Device::create( gpu, deviceOptions, env );
 
+	// Create surface
+	vk::SurfaceRef surface = vk::Surface::create( hInst, mWnd, device.get() );
+
+	// Find the present queue on the device
+	device->getPresentQueueFamilyIndex( surface->getSurface() );
+
 	// Validate the requested sample count
 	const VkSampleCountFlags supportedSampleCounts = device->getGpuLimits().sampledImageColorSampleCounts;		
 	if( ! ( supportedSampleCounts & mOptions.mSamples ) ) {
@@ -155,9 +161,6 @@ CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples
 
 	// Create presentable context
 	{
-		// Create surface
-		vk::SurfaceRef surface = vk::Surface::create( hInst, mWnd, device.get() );
-
 		// Create surface and presenter
 		vk::Presenter::Options presenterOptions = vk::Presenter::Options();
 		presenterOptions.explicitMode( mOptions.mExplicitMode );

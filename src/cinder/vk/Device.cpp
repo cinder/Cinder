@@ -314,9 +314,9 @@ bool Device::isExplicitMode() const
 	return mEnvironment->isExplicitMode(); 
 }
 
-int32_t Device::getGraphicsQueueFamilyIndex() const
+uint32_t Device::getGraphicsQueueFamilyIndex() const
 {
-	int32_t result = -1;
+	uint32_t result = UINT32_MAX;
 	auto it = mQueueFamilyIndicesByType.find( VK_QUEUE_GRAPHICS_BIT );
 	if( it != mQueueFamilyIndicesByType.end() ) {
 		result = static_cast<int32_t>( it->second );
@@ -324,14 +324,58 @@ int32_t Device::getGraphicsQueueFamilyIndex() const
 	return result;
 }
 
-int32_t Device::getComputeQueueFamilyIndex() const
+uint32_t Device::getComputeQueueFamilyIndex() const
 {
-	int32_t result = -1;
+	uint32_t result = UINT32_MAX;
 	auto it = mQueueFamilyIndicesByType.find( VK_QUEUE_COMPUTE_BIT );
 	if( it != mQueueFamilyIndicesByType.end() ) {
 		result = static_cast<int32_t>( it->second );
 	}
 	return result;
+}
+
+uint32_t Device::getPresentQueueFamilyIndex( VkSurfaceKHR surface ) const
+{
+	// If a surface is present, go and find the queue that supports presentation.
+	// In an ideal world, this is state that is known ahead of time, but since it's 
+	// not possible to find out until there is a valid surface...it has to be
+	// deferred.
+	//
+	// In most cases the present queue family index should be the same as the
+	// graphics queue family index.
+	if( VK_NULL_HANDLE != surface ) {
+		uint32_t queueFamilyCount = getQueueFamilyCount();
+
+		// Iterate over each queue to learn whether it supports presenting:
+		std::vector<VkBool32> supportsPresent( queueFamilyCount, VK_FALSE );
+		for( uint32_t i = 0; i < queueFamilyCount; ++i ) {
+			this->getEnv()->GetPhysicalDeviceSurfaceSupportKHR( getGpu(), i, surface, &supportsPresent[i] );
+		}
+
+		// First look at the graphics queue to see if also supports present
+		uint32_t graphicsQueueFamilyIndex = getGraphicsQueueFamilyIndex();
+		uint32_t presentQueueFamilyIndex = UINT32_MAX;
+		if( UINT32_MAX != graphicsQueueFamilyIndex ) {
+			if( VK_TRUE == supportsPresent[graphicsQueueFamilyIndex] ) {
+				presentQueueFamilyIndex = graphicsQueueFamilyIndex;
+			}
+		}
+
+		// If didn't find a queue that supports both graphics and present, then find a separate present queue.
+		if( UINT32_MAX == presentQueueFamilyIndex ) {
+			for( uint32_t i = 0; i < queueFamilyCount; ++i ) {
+				if( VK_TRUE == supportsPresent[i] ) {
+					presentQueueFamilyIndex = i;
+					break;
+				}
+			}
+		}
+
+		// @TODO Add some error checking code for what happens if a present queue family index is not found
+		mPresentQueueFamilyIndex = presentQueueFamilyIndex;
+	}
+
+	return mPresentQueueFamilyIndex;
 }
 
 uint32_t Device::getGraphicsQueueCount() const

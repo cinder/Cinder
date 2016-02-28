@@ -401,9 +401,11 @@ void NormalMappingApp::draw()
 		vk::draw( mCopyrightMap, r );
 	}
 
+	/*
 	if( 0 == (getElapsedFrames() % 100)) {
 		console() << "FPS: " << getAverageFps() << std::endl;
 	}
+	*/
 }
 
 void NormalMappingApp::keyDown( KeyEvent event )

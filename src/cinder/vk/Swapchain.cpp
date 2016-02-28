@@ -94,6 +94,7 @@ void Swapchain::initializeColorBuffers()
 		// tearing mode.  If not, try IMMEDIATE which will usually be available,
 		// and is fastest (though it tears).  If not, fall back to FIFO which is
 		// always available.
+		mOptions.mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 		for( size_t i = 0; i < presentModeCount; ++i ) {
 			if( VK_PRESENT_MODE_MAILBOX_KHR == presentModes[i] ) {
 				mOptions.mPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
