@@ -102,27 +102,28 @@ public:
 
 	virtual ~Device();
 
-	static DeviceRef						create( VkPhysicalDevice gpu, const Device::Options& options, vk::Environment *env );
+	static DeviceRef							create( VkPhysicalDevice gpu, const Device::Options& options, vk::Environment *env );
 
-	VkDevice								getDevice() const { return mDevice; }
+	VkDevice									getDevice() const { return mDevice; }
 
-	Environment*							getEnv() const { return mEnvironment; }
-	VkPhysicalDevice						getGpu() const { return mGpu; }
-	const VkPhysicalDeviceProperties&		getGpuProperties() const { return mGpuProperties; }
-	const VkPhysicalDeviceMemoryProperties&	getMemoryProperties() const { return mMemoryProperties; }
-	const VkPhysicalDeviceLimits&			getGpuLimits() const { return mGpuProperties.limits; }
+	Environment*								getEnv() const { return mEnvironment; }
+	VkPhysicalDevice							getGpu() const { return mGpu; }
+	const VkPhysicalDeviceProperties&			getGpuProperties() const { return mGpuProperties; }
+	const VkPhysicalDeviceMemoryProperties&		getMemoryProperties() const { return mMemoryProperties; }
+	const VkPhysicalDeviceLimits&				getGpuLimits() const { return mGpuProperties.limits; }
 
 	uint32_t									getQueueFamilyCount() const { return static_cast<uint32_t>( mQueueFamilyProperties.size() ); }
 	const std::vector<VkQueueFamilyProperties>&	getQueueFamilyProperties() const  { return mQueueFamilyProperties; }
 
-	bool									isExplicitMode() const;
+	bool										isExplicitMode() const;
 
-	int32_t									getGraphicsQueueFamilyIndex() const;
-	int32_t									getComputeQueueFamilyIndex() const;
-	uint32_t								getGraphicsQueueCount() const;
-	uint32_t								getComputeQueueCount() const;
+	uint32_t									getGraphicsQueueFamilyIndex() const;
+	uint32_t									getComputeQueueFamilyIndex() const;
+	uint32_t									getPresentQueueFamilyIndex( VkSurfaceKHR surface = VK_NULL_HANDLE ) const;
+	uint32_t									getGraphicsQueueCount() const;
+	uint32_t									getComputeQueueCount() const;
 
-	bool									findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const;
+	bool										findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const;
 
 	const vk::DescriptorSetLayoutSelectorRef&	getDescriptorSetLayoutSelector() const { return mDescriptorSetLayoutSelector; }
 	const vk::PipelineCacheRef&					getPipelineCache() const { return mPipelineCache; }
@@ -140,14 +141,15 @@ private:
 
 	Environment								*mEnvironment = nullptr;
 	
-	VkPhysicalDevice						mGpu = VK_NULL_HANDLE;
-    VkPhysicalDeviceProperties				mGpuProperties;
-    VkPhysicalDeviceMemoryProperties		mMemoryProperties;
+	VkPhysicalDevice									mGpu = VK_NULL_HANDLE;
+    VkPhysicalDeviceProperties							mGpuProperties;
+    VkPhysicalDeviceMemoryProperties					mMemoryProperties;
 	std::vector<VkQueueFamilyProperties>				mQueueFamilyProperties;
     std::map<VkQueueFlagBits, VkQueueFamilyProperties>	mQueueFamilyPropertiesByType;
 	std::map<VkQueueFlagBits, uint32_t>					mQueueFamilyIndicesByType;
-	std::map<VkQueueFlagBits, uint32_t>		mActiveQueueCounts;
-	VkDevice								mDevice = VK_NULL_HANDLE;
+	mutable uint32_t									mPresentQueueFamilyIndex = UINT32_MAX;
+	std::map<VkQueueFlagBits, uint32_t>					mActiveQueueCounts;
+	VkDevice											mDevice = VK_NULL_HANDLE;
 
 	// Device layers
 	struct Layer {
