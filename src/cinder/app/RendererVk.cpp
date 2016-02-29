@@ -230,10 +230,8 @@ void RendererVk::finishDraw()
 		// Wait until everything is done
 		mContext->getGraphicsQueue()->waitIdle();
 
-/*
 		// Clear transient objects
 		mContext->clearTransients();
-*/
 		
 		// Destroy semaphores
 		vkDestroySemaphore( mContext->getDevice()->getDevice(), mImageAcquiredSemaphore, nullptr );

@@ -77,19 +77,6 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 	// Set the texture here so we can create the descriptor set without any grief
 	uniformSet->uniform( "uTex0", texture );
 
-/*
-	// Descriptor layout, pool, set
-	vk::DescriptorSetLayoutRef descriptorSetLayout = vk::DescriptorSetLayout::create( *uniformSet );
-	vk::DescriptorPoolRef descriptorPool = vk::DescriptorPool::create( descriptorSetLayout->getLayoutBindings() );
-	vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool->getDescriptorPool(), *uniformSet, descriptorSetLayout );
-	vk::context()->addTransient( descriptorSetLayout );
-	vk::context()->addTransient( descriptorPool );
-	vk::context()->addTransient( descriptorSet );
-	// Pipeline layout
-	vk::PipelineLayoutRef pipelineLayout = vk::PipelineLayout::create( descriptorSetLayout );
-	vk::context()->addTransient( pipelineLayout );
-*/
-
 	// Descriptor layout, pool, set
 	const auto& descLayoutBindings = uniformSet->getDescriptorSetlayoutBindings();
 	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( descLayoutBindings );
@@ -99,44 +86,6 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 	vk::context()->addTransient( descriptorSet );
 	// Pipeline layout
 	VkPipelineLayout pipelineLayout = vk::context()->getDevice()->getPipelineLayoutSelector()->getSelectedLayout( { descriptorSetLayout } );
-/*
-	// Pipeline
-	vk::PipelineRef pipeline;
-	{
-		vk::Pipeline::Options pipelineOptions;
-		pipelineOptions.setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
-		pipelineOptions.setPipelineLayout( pipelineLayout );
-		pipelineOptions.setRenderPass( vk::context()->getRenderPass() );
-		pipelineOptions.setShaderProg( shader );
-
-		// Vertex input attribute description
-		// Position
-		VkVertexInputAttributeDescription viad = {};
-		viad.binding	= 0;
-		viad.format		= VK_FORMAT_R32G32B32A32_SFLOAT;
-		viad.location	= 0;
-		viad.offset		= 0;
-		pipelineOptions.addVertexAtrribute( viad );
-		// UV
-		viad = {};
-		viad.binding	= 0;
-		viad.format		= VK_FORMAT_R32G32_SFLOAT;
-		viad.location	= 1;
-		viad.offset		= 4*sizeof( float );
-		pipelineOptions.addVertexAtrribute( viad );
-
-		// Vertex input binding description
-		VkVertexInputBindingDescription vibd = {};
-		vibd.binding	= 0;
-		vibd.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
-		vibd.stride		= 6*sizeof( float );
-		pipelineOptions.addVertexBinding( vibd );
-
-		pipeline = vk::Pipeline::create( pipelineOptions, nullptr );
-		vk::context()->addTransient( pipeline );
-	}
-/*/
-
 	// Pipeline
 	VkPipeline pipeline = VK_NULL_HANDLE;
 	{
@@ -179,7 +128,6 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 		pipelineSelector->setPipelineLayout( pipelineLayout );
 		pipeline = pipelineSelector->getSelectedPipeline();
 	}
-//*/
 
 	// This is the separation between the setup and the draw sequence. 
 
