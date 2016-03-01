@@ -85,8 +85,15 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 		auto renderPassOptions = ci::vk::RenderPass::Options()
 			.addAttachment( ci::vk::RenderPass::Attachment( textureFormat ) )	// color attachment 0
 			.addAttachment( ci::vk::RenderPass::Attachment( textureFormat ) )	// color attachment 1
-			.addSubPass( ci::vk::RenderPass::SubPass().addColorAttachment( 0 ) )
-			.addSubPass( ci::vk::RenderPass::SubPass().addColorAttachment( 1 ) );
+			.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 0 ) )
+			.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 1 ) );
+
+		ci::vk::RenderPass::SubpassDependency spd = ci::vk::RenderPass::SubpassDependency( 0, 1 );
+		spd.setSrcStageMask( VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
+		spd.setDstStageMask(VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
+		spd.setSrcAccess( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
+		spd.setDstAccess( VK_ACCESS_COLOR_ATTACHMENT_READ_BIT );
+		renderPassOptions.addSubpassDependency( spd );
 
 		mRenderPasses[i] = ci::vk::RenderPass::create( renderPassOptions );
 

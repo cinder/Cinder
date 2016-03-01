@@ -89,10 +89,27 @@ Light::Light()
 		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mShadowMapTex->getFormat().getInternalFormat() ) );
 		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[0]->getFormat().getInternalFormat() ) );
 		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[1]->getFormat().getInternalFormat() ) );
-		// Sub passes
-		renderPassOptions.addSubPass( ci::vk::RenderPass::SubPass().addDepthStencilAttachment( 0 ) );
-		renderPassOptions.addSubPass( ci::vk::RenderPass::SubPass().addColorAttachment( 1 ) );
-		renderPassOptions.addSubPass( ci::vk::RenderPass::SubPass().addColorAttachment( 2 ) );
+		// Subpasses
+		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addDepthStencilAttachment( 0 ) );
+		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 1 ) );
+		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 2 ) );
+		// Subpass dependencies
+		{
+			ci::vk::RenderPass::SubpassDependency spd1 = ci::vk::RenderPass::SubpassDependency( 0, 1 );
+			spd1.setSrcStageMask( VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
+			spd1.setDstStageMask(VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
+			spd1.setSrcAccess( VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT );
+			spd1.setDstAccess( VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT );
+			renderPassOptions.addSubpassDependency( spd1 );
+
+			ci::vk::RenderPass::SubpassDependency spd2 = ci::vk::RenderPass::SubpassDependency( 0, 1 );
+			spd2.setSrcStageMask( VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
+			spd2.setDstStageMask(VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
+			spd2.setSrcAccess( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
+			spd2.setDstAccess( VK_ACCESS_COLOR_ATTACHMENT_READ_BIT );
+			renderPassOptions.addSubpassDependency( spd2 );
+
+		}
 		// Create render pass
 		mShadowMapRenderPass = ci::vk::RenderPass::create( renderPassOptions );
 		mShadowMapRenderPass->setAttachmentClearValue( 1, { 0.0f, 0.0f, 0.0f, 0.0f } );

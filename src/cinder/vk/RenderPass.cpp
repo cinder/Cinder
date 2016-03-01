@@ -99,11 +99,65 @@ RenderPass::Attachment RenderPass::Attachment::createDepthStencil( VkFormat form
 // -------------------------------------------------------------------------------------------------
 // RenderPass::Options
 // -------------------------------------------------------------------------------------------------
+RenderPass::SubpassDependency::SubpassDependency( uint32_t srcSubpass, uint32_t dstSubpass )
+{
+	mDependency = {};
+	mDependency.srcSubpass = srcSubpass;
+	mDependency.dstSubpass = dstSubpass;
+}
+
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setSrcStageMask( VkPipelineStageFlagBits mask, bool exclusive )
+{
+	if( exclusive ) {
+		mDependency.srcStageMask = mask;
+	}
+	else {
+		mDependency.srcStageMask |= mask;
+	}
+	return *this;
+}
+
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setDstStageMask( VkPipelineStageFlagBits mask, bool exclusive )
+{
+	if( exclusive ) {
+		mDependency.dstStageMask = mask;
+	}
+	else {
+		mDependency.dstStageMask |= mask;
+	}
+	return *this;
+}
+
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setSrcAccess( VkAccessFlagBits mask, bool exclusive )
+{
+	if( exclusive ) {
+		mDependency.srcAccessMask = mask;
+	}
+	else {
+		mDependency.srcAccessMask |= mask;
+	}
+	return *this;
+}
+
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setDstAccess( VkAccessFlagBits mask, bool exclusive )
+{
+	if( exclusive ) {
+		mDependency.dstStageMask = mask;
+	}
+	else {
+		mDependency.dstStageMask |= mask;
+	}
+	return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+// RenderPass::Options
+// -------------------------------------------------------------------------------------------------
 RenderPass::Options::Options( VkFormat colorFormat, VkSampleCountFlagBits samples )
 {
 	addAttachment( RenderPass::Attachment::createColor( colorFormat, samples ) );
 
-	RenderPass::SubPass subPass = RenderPass::SubPass()
+	RenderPass::Subpass subPass = RenderPass::Subpass()
 		.addColorAttachment( 0 );
 	addSubPass( subPass );
 }
@@ -113,7 +167,7 @@ RenderPass::Options::Options( VkFormat colorFormat, VkFormat depthStencilFormat,
 	addAttachment( RenderPass::Attachment::createColor( colorFormat, samples ) );
 	addAttachment( RenderPass::Attachment::createDepthStencil( depthStencilFormat, samples ) );
 
-	RenderPass::SubPass subPass = RenderPass::SubPass()
+	RenderPass::Subpass subPass = RenderPass::Subpass()
 		.addColorAttachment( 0 )
 		.addDepthStencilAttachment( 1 );
 	addSubPass( subPass );
@@ -149,7 +203,7 @@ void RenderPass::initialize( const RenderPass::Options& options )
 	mOptions = options;
 
 	assert( options.mAttachments.size() > 0 );
-	assert( options.mSubPasses.size() > 0 );
+	assert( options.mSubpasses.size() > 0 );
 
 	// Populate attachment descriptors
 	const size_t numAttachmentDesc = options.mAttachments.size();
@@ -161,10 +215,10 @@ void RenderPass::initialize( const RenderPass::Options& options )
 	}
 
 	// Populate attachment references
-	const size_t numSubPasses = options.mSubPasses.size();
+	const size_t numSubPasses = options.mSubpasses.size();
 	std::vector<SubPassAttachReferences> subPassAttachmentRefs( numSubPasses );
 	for( size_t i = 0; i < numSubPasses; ++i ) {
-		const auto& subPass = options.mSubPasses[i];
+		const auto& subPass = options.mSubpasses[i];
 
 		// Color attachments
 		{
@@ -210,35 +264,48 @@ void RenderPass::initialize( const RenderPass::Options& options )
 		const auto& resolveAttachmentRefs = subPassAttachmentRefs[i].resolve;
 		const auto& depthStencilAttachmentRef = subPassAttachmentRefs[i].depth;
 
+		bool noResolves = true;
+		for( const auto& attachRef : resolveAttachmentRefs ) {
+			if( VK_ATTACHMENT_UNUSED != attachRef.attachment ) {
+				noResolves = false;
+				break;
+			}
+		}
+
 		subPassDescs[i] = {};
 		auto& desc = subPassDescs[i];
-		desc.pipelineBindPoint			= options.mSubPasses[i].mPipelineBindPoint;
+		desc.pipelineBindPoint			= options.mSubpasses[i].mPipelineBindPoint;
 		desc.flags 						= 0;
 		desc.inputAttachmentCount 		= 0;
 		desc.pInputAttachments 			= nullptr;
 		desc.colorAttachmentCount 		= static_cast<uint32_t>( colorAttachmentRefs.size() );
 		desc.pColorAttachments 			= colorAttachmentRefs.empty() ? nullptr : colorAttachmentRefs.data();
-		desc.pResolveAttachments 		= resolveAttachmentRefs.empty() ? nullptr : resolveAttachmentRefs.data();;
+		desc.pResolveAttachments 		= ( resolveAttachmentRefs.empty() || noResolves ) ? nullptr : resolveAttachmentRefs.data();
 		desc.pDepthStencilAttachment 	= depthStencilAttachmentRef.empty() ? nullptr : depthStencilAttachmentRef.data();
 		desc.preserveAttachmentCount 	= 0;
 		desc.pPreserveAttachments		= nullptr;
 	}
 
 	// Cache the subpass sample counts
-	for( auto& subPass : mOptions.mSubPasses ) {
+	for( auto& subpass : mOptions.mSubpasses ) {
 		VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
 		// Look at color attachments first..
-		if( ! subPass.mColorAttachments.empty() ) {
-			uint32_t attachmentIndex = subPass.mColorAttachments[0];
+		if( ! subpass.mColorAttachments.empty() ) {
+			uint32_t attachmentIndex = subpass.mColorAttachments[0];
 			sampleCount = mOptions.mAttachments[attachmentIndex].mDescription.samples;
 		}
 		// ..and then look at depth attachments
-		if( ( VK_SAMPLE_COUNT_1_BIT == sampleCount ) && ( ! subPass.mDepthStencilAttachment.empty() ) ) {
-			uint32_t attachmentIndex = subPass.mDepthStencilAttachment[0];
+		if( ( VK_SAMPLE_COUNT_1_BIT == sampleCount ) && ( ! subpass.mDepthStencilAttachment.empty() ) ) {
+			uint32_t attachmentIndex = subpass.mDepthStencilAttachment[0];
 			sampleCount = mOptions.mAttachments[attachmentIndex].mDescription.samples;
 		}
 		// Cache it
 		mSubPassSampleCounts.push_back( sampleCount );
+	}
+
+	std::vector<VkSubpassDependency> dependencies;
+	for( auto& subpassDep : mOptions.mSubpassDependencies ) {
+		dependencies.push_back( subpassDep.mDependency );
 	}
 
 	// Create render pass
@@ -249,8 +316,8 @@ void RenderPass::initialize( const RenderPass::Options& options )
 	renderPassCreateInfo.pAttachments 		= &(mAttachmentDescriptors[0]);
 	renderPassCreateInfo.subpassCount 		= static_cast<uint32_t>( subPassDescs.size() );
 	renderPassCreateInfo.pSubpasses 		= subPassDescs.empty() ? nullptr : subPassDescs.data();
-	renderPassCreateInfo.dependencyCount 	= 0;
-	renderPassCreateInfo.pDependencies 		= nullptr;
+	renderPassCreateInfo.dependencyCount 	= static_cast<uint32_t>( dependencies.size() );
+	renderPassCreateInfo.pDependencies 		= dependencies.empty() ? nullptr : dependencies.data();;
 	VkResult res = vkCreateRenderPass( mDevice->getDevice(), &renderPassCreateInfo, nullptr, &mRenderPass );
     assert( res == VK_SUCCESS );
 
@@ -294,8 +361,8 @@ VkSampleCountFlagBits RenderPass::getSubPassSampleCount( uint32_t subPass ) cons
 uint32_t RenderPass::getSubPassColorAttachmentCount( uint32_t subPass ) const
 {
 	uint32_t result = 0;
-	if( subPass < mOptions.mSubPasses.size() ) {
-		result = static_cast<uint32_t>( mOptions.mSubPasses[subPass].mColorAttachments.size() );
+	if( subPass < mOptions.mSubpasses.size() ) {
+		result = static_cast<uint32_t>( mOptions.mSubpasses[subPass].mColorAttachments.size() );
 	}
 	return result;
 }

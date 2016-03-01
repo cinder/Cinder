@@ -98,9 +98,9 @@ public:
 			// Render pass
 			vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 				.addAttachment( vk::RenderPass::Attachment( mTextureShadowMap->getFormat().getInternalFormat() ) );
-			vk::RenderPass::SubPass subPasses = vk::RenderPass::SubPass()
+			vk::RenderPass::Subpass subpasses = vk::RenderPass::Subpass()
 				.addDepthStencilAttachment( 0 );
-			renderPassOptions.addSubPass( subPasses );
+			renderPassOptions.addSubPass( subpasses );
 			mRenderPass = vk::RenderPass::create( renderPassOptions );
 
 			// Framebuffer
