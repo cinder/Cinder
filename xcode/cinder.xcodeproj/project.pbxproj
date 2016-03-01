@@ -2053,7 +2053,7 @@
 		C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplAvFoundation.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libcinder_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
-		E0A4A28B1C73B46100B7567F /* libcinder_dynamic.dylib */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_dynamic.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		E0A4A28B1C73B46100B7567F /* libcinder_dynamic_d.dylib */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_dynamic_d.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0A4A28C1C73B4B400B7567F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		E0A4A28E1C73B4BB00B7567F /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		E0A4A2901C73B4C100B7567F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -2691,7 +2691,7 @@
 				D2AAC07E0554694100DB518D /* libcinder_d.a */,
 				007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */,
 				00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */,
-				E0A4A28B1C73B46100B7567F /* libcinder_dynamic.dylib */,
+				E0A4A28B1C73B46100B7567F /* libcinder_dynamic_d.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3948,7 +3948,7 @@
 			);
 			name = cinder_dynamic;
 			productName = cinder;
-			productReference = E0A4A28B1C73B46100B7567F /* libcinder_dynamic.dylib */;
+			productReference = E0A4A28B1C73B46100B7567F /* libcinder_dynamic_d.dylib */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -5064,7 +5064,7 @@
 					../lib/macosx/libboost_system.a,
 				);
 				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "$(TARGET_NAME)_d";
 			};
 			name = Debug;
 		};
