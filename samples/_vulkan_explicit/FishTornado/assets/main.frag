@@ -61,7 +61,8 @@ layout(binding = 2) uniform sampler2D uNoiseNormalsTex;
 layout(binding = 3) uniform sampler2D uFboTex;
 
 layout(location = 0) in vec2 TexCoord;
-layout(location = 1) out vec4 FragColor;
+
+layout(location = 0) out vec4 FragColor;
 
 void main( void )
 {
