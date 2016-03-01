@@ -111,26 +111,46 @@ public:
 		friend class RenderPass;
 	};
 
-	//! \class SubPass
+	//! \class Subpass
 	//!  All color and depth attachments in a subpass must have the same sample count.
 	//!
-	class SubPass {
+	class Subpass {
 	public:
-		SubPass( VkPipelineBindPoint pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS )
+		Subpass( VkPipelineBindPoint pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS )
 			: mPipelineBindPoint( pipelineBindPoint ) {}
-		virtual ~SubPass() {}
+		virtual ~Subpass() {}
 
 		const std::vector<uint32_t>&	getColorAttachments() const { return mColorAttachments; }
 		const std::vector<uint32_t>&	getDepthStencilAttachment() const { return mDepthStencilAttachment; }
 
-		SubPass&						addColorAttachment( uint32_t attachmentIndex, uint32_t resolveAttachmentIndex = VK_ATTACHMENT_UNUSED ) { mColorAttachments.push_back( attachmentIndex ); mResolveAttachments.push_back( resolveAttachmentIndex ); return *this; }
-		SubPass&						addDepthStencilAttachment( uint32_t attachmentIndex ) { mDepthStencilAttachment.push_back( attachmentIndex ); return *this; }
+		Subpass&						addColorAttachment( uint32_t attachmentIndex, uint32_t resolveAttachmentIndex = VK_ATTACHMENT_UNUSED ) { mColorAttachments.push_back( attachmentIndex ); mResolveAttachments.push_back( resolveAttachmentIndex ); return *this; }
+		Subpass&						addDepthStencilAttachment( uint32_t attachmentIndex ) { mDepthStencilAttachment.push_back( attachmentIndex ); return *this; }
 
 	private:
 		VkPipelineBindPoint		mPipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 		std::vector<uint32_t>	mColorAttachments;			// 1 or more elements
 		std::vector<uint32_t>	mResolveAttachments;		// 1 or more elements
 		std::vector<uint32_t>	mDepthStencilAttachment;	// 1 element at most
+		friend class RenderPass;
+	};
+
+	//! \class SubpassDependency
+	//!
+	//!
+	class SubpassDependency {
+	public:
+		SubpassDependency( uint32_t srcSubpass, uint32_t dstSubpass );
+		virtual ~SubpassDependency() {}
+
+		SubpassDependency&		setSrcSubpass( uint32_t subpass ) { mDependency.srcSubpass = subpass; return *this; }
+		SubpassDependency&		setDstSubpass( uint32_t subpass ) { mDependency.dstSubpass = subpass; return *this; }
+		SubpassDependency&		setSrcStageMask( VkPipelineStageFlagBits mask, bool exclusive = false );
+		SubpassDependency&		setDstStageMask( VkPipelineStageFlagBits mask, bool exclusive = false );
+		SubpassDependency&		setSrcAccess( VkAccessFlagBits mask, bool exclusive = false );
+		SubpassDependency&		setDstAccess( VkAccessFlagBits mask, bool exclusive = false );
+
+	private:
+		VkSubpassDependency		mDependency;
 		friend class RenderPass;
 	};
 
@@ -146,11 +166,13 @@ public:
 		virtual ~Options() {}
 
 		Options&					addAttachment( const Attachment& value ) { mAttachments.push_back( value ); return *this; }
-		Options&					addSubPass( const SubPass& value ) { mSubPasses.push_back( value ); return *this; }
+		Options&					addSubPass( const Subpass& value ) { mSubpasses.push_back( value ); return *this; }
+		Options&					addSubpassDependency( const SubpassDependency& value ) { mSubpassDependencies.push_back( value ); return *this; }
 
 	private:
-		std::vector<Attachment>	mAttachments;
-		std::vector<SubPass>	mSubPasses;
+		std::vector<Attachment>			mAttachments;
+		std::vector<Subpass>			mSubpasses;
+		std::vector<SubpassDependency>	mSubpassDependencies;
 		friend class RenderPass;
 	};
 

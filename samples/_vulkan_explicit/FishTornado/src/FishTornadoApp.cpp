@@ -317,10 +317,10 @@ void FishTornadoApp::setup()
 			.addAttachment( ci::vk::RenderPass::Attachment( VK_FORMAT_R8G8B8A8_UNORM ).setSamples( sampleCount ) )
 			.addAttachment( ci::vk::RenderPass::Attachment( VK_FORMAT_D16_UNORM ).setSamples( sampleCount ) )
 			.addAttachment( ci::vk::RenderPass::Attachment( VK_FORMAT_R8G8B8A8_UNORM ) );
-		ci::vk::RenderPass::SubPass subPasses = ci::vk::RenderPass::SubPass()
+		ci::vk::RenderPass::Subpass subpasses = ci::vk::RenderPass::Subpass()
 			.addColorAttachment( 0, 2 )
 			.addDepthStencilAttachment( 1 );
-		renderPassOptions.addSubPass( subPasses );
+		renderPassOptions.addSubPass( subpasses );
 		mMainRenderPass = ci::vk::RenderPass::create( renderPassOptions );
 
 		mMainRenderPass->setAttachmentClearValue( 0, { FOG_COLOR.r, FOG_COLOR.g, FOG_COLOR.b, 1.0 }  );

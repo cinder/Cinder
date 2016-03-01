@@ -150,7 +150,7 @@ void Presenter::resize( const ivec2& newWindowSize )
 					.addAttachment( vk::RenderPass::Attachment( colorFormat ).setSamples( mActualSamples ) )
 					.addAttachment( vk::RenderPass::Attachment( colorFormat ) )
 					.addAttachment( vk::RenderPass::Attachment( depthStencilFormat ).setSamples( mActualSamples ) );
-				vk::RenderPass::SubPass subPass = vk::RenderPass::SubPass()
+				vk::RenderPass::Subpass subPass = vk::RenderPass::Subpass()
 					.addColorAttachment( 0, 1 ) // 0 - multiple sample attachment, 1 - single sample auto resolve attachment
 					.addDepthStencilAttachment( 2 );
 				options.addSubPass( subPass );
@@ -190,7 +190,7 @@ void Presenter::resize( const ivec2& newWindowSize )
 				vk::RenderPass::Options options = vk::RenderPass::Options()
 					.addAttachment( vk::RenderPass::Attachment( colorFormat ) )
 					.addAttachment( vk::RenderPass::Attachment( depthStencilFormat ) );
-				vk::RenderPass::SubPass subPass = vk::RenderPass::SubPass()
+				vk::RenderPass::Subpass subPass = vk::RenderPass::Subpass()
 					.addColorAttachment( 0 )
 					.addDepthStencilAttachment( 1 );
 				options.addSubPass( subPass );
