@@ -90,7 +90,7 @@ Message::Message( const std::string& address )
 Message::Message( Message &&message ) NOEXCEPT
 : mAddress( move( message.mAddress ) ), mDataBuffer( move( message.mDataBuffer ) ),
 	mDataViews( move( message.mDataViews ) ), mIsCached( message.mIsCached ),
-	mCache( move( message.mCache ) )
+	mCache( move( message.mCache ) ), mSenderIpAddress( move( message.mSenderIpAddress ) )
 {
 	for( auto & dataView : mDataViews ) {
 		dataView.mOwner = this;
@@ -105,6 +105,7 @@ Message& Message::operator=( Message &&message ) NOEXCEPT
 		mDataViews = move( message.mDataViews );
 		mIsCached = message.mIsCached;
 		mCache = move( message.mCache );
+		mSenderIpAddress = move( message.mSenderIpAddress );
 		for( auto & dataView : mDataViews ) {
 			dataView.mOwner = this;
 		}
@@ -115,7 +116,8 @@ Message& Message::operator=( Message &&message ) NOEXCEPT
 Message::Message( const Message &message )
 : mAddress( message.mAddress ), mDataBuffer( message.mDataBuffer ),
 	mDataViews( message.mDataViews ), mIsCached( message.mIsCached ),
-	mCache( mIsCached ? new ByteBuffer( *(message.mCache) ) : nullptr )
+	mCache( mIsCached ? new ByteBuffer( *(message.mCache) ) : nullptr ),
+	mSenderIpAddress( message.mSenderIpAddress )
 {
 	for( auto & dataView : mDataViews ) {
 		dataView.mOwner = this;
@@ -130,6 +132,7 @@ Message& Message::operator=( const Message &message )
 		mDataViews = message.mDataViews;
 		mIsCached = message.mIsCached;
 		mCache.reset( mIsCached ? new ByteBuffer( *(message.mCache) ) : nullptr );
+		mSenderIpAddress = message.mSenderIpAddress;
 		for( auto & dataView : mDataViews ) {
 			dataView.mOwner = this;
 		}
@@ -859,6 +862,8 @@ void Message::clear()
 std::ostream& operator<<( std::ostream &os, const Message &rhs )
 {
 	os << "Address: " << rhs.getAddress() << std::endl;
+	if( ! rhs.getSenderIpAddress().is_unspecified() )
+		os << "Sender Ip Address: " << rhs.getSenderIpAddress() << std::endl;
 	for( auto &dataView : rhs.mDataViews )
 		os << "\t" << dataView << std::endl;
 	return os;
@@ -1121,7 +1126,7 @@ void ReceiverBase::removeListener( const std::string &address )
 		mListeners.erase( foundListener );
 }
 
-void ReceiverBase::dispatchMethods( uint8_t *data, uint32_t size )
+void ReceiverBase::dispatchMethods( uint8_t *data, uint32_t size, const asio::ip::address &senderIpAddress )
 {
 	std::vector<Message> messages;
 	decodeData( data, size, messages );
@@ -1132,7 +1137,8 @@ void ReceiverBase::dispatchMethods( uint8_t *data, uint32_t size )
 	// iterate through all the messages and find matches with registered methods
 	for( auto & message : messages ) {
 		bool dispatchedOnce = false;
-		auto address = message.getAddress();
+		auto &address = message.getAddress();
+		message.mSenderIpAddress = senderIpAddress;
 		for( auto & listener : mListeners ) {
 			if( patternMatch( address, listener.first ) ) {
 				listener.second( message );
@@ -1347,7 +1353,7 @@ void ReceiverUdp::listenImpl()
 			data[ bytesTransferred ] = 0;
 			istream stream( &mBuffer );
 			stream.read( reinterpret_cast<char*>( data.get() ), bytesTransferred );
-			dispatchMethods( data.get(), bytesTransferred );
+			dispatchMethods( data.get(), bytesTransferred, uniqueEndpoint->address() );
 		}
 		listen();
 	});
@@ -1382,6 +1388,7 @@ void ReceiverUdp::handleError( const asio::error_code &error, const protocol::en
 ReceiverTcp::~ReceiverTcp()
 {
 	ReceiverTcp::closeImpl();
+	
 }
 
 ReceiverTcp::Connection::Connection( TcpSocketRef socket, ReceiverTcp *receiver, uint64_t identifier )
@@ -1462,7 +1469,7 @@ void ReceiverTcp::Connection::read()
 			}
 			{
 				std::lock_guard<std::mutex> lock( mReceiver->mDispatchMutex );
-				receiver->dispatchMethods( dataPtr, dataSize );
+				receiver->dispatchMethods( dataPtr, dataSize, mSocket->remote_endpoint().address() );
 			}
 			read();
 		}
