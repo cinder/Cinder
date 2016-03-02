@@ -31,7 +31,7 @@
 
 	// Note: generic is a reserved word in winrt c++/cx
 	// need to redefine it for freetype.h
-	#define generic GenericFromFreeTypeLibrary/
+	#define generic GenericFromFreeTypeLibrary
 	#include FT_FREETYPE_H
 	#include FT_OUTLINE_H
 	#undef generic

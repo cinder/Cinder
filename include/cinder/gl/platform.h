@@ -30,7 +30,11 @@
 #define CINDER_GL_ES_VERSION_3_1	310
 #define CINDER_GL_ES_VERSION_3_2	320
 
-#if defined( CINDER_GL_ANGLE ) || defined( CINDER_WINRT )
+#if ! defined( CINDER_GL_ANGLE ) && defined( CINDER_WINRT )
+	#define CINDER_GL_ANGLE
+#endif
+
+#if defined( CINDER_GL_ANGLE )
 	#define GL_GLEXT_PROTOTYPES
 	#define CINDER_GL_ES
 	// the default for ANGLE is GL ES 3, but can be overridden with CINDER_GL_ES_2
