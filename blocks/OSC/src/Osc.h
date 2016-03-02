@@ -68,7 +68,7 @@ using ByteBufferRef = std::shared_ptr<ByteBuffer>;
 class Message {
   public:
 	
-	Message() = default;
+	Message();
 	//! Create an OSC message.
 	explicit Message( const std::string& address );
 	Message( const Message & );

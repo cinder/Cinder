@@ -76,6 +76,11 @@ inline double ntohd( int64_t x ) { return (double) ntohll( x ); }
 	
 ////////////////////////////////////////////////////////////////////////////////////////
 //// MESSAGE
+
+Message::Message()
+: mIsCached( false )
+{
+}
 	
 Message::Message( const std::string& address )
 : mAddress( address ), mIsCached( false )
