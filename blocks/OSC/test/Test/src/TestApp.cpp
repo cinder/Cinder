@@ -61,6 +61,7 @@ TestApp::TestApp()
 	mReceiver.setListener( "/app/?",
 	[]( const osc::Message &message ){
 		cout << "Integer: " << message[0].int32() << endl;
+		cout << "Received From: " << message.getSenderIpAddress() << endl;
 	} );
 	mReceiver.setListener( "/app/?",
 	[]( const osc::Message &message ) {
