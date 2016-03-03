@@ -37,6 +37,7 @@
 */
 
 #include "cinder/vk/Image.h"
+#include "cinder/vk/Allocator.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Context.h"
@@ -186,6 +187,20 @@ void Image::initialize()
 		res = vkCreateImage( mDevice->getDevice(), &imageCreateInfo, nullptr, &mImage );
 		assert(res == VK_SUCCESS);
 
+		//mDevice->getAllocator()->lockImage();
+		{
+			bool allocated = mDevice->getAllocator()->allocate( mImage, mOptions.mMemoryProperty, &mMemory, &mAllocationOffset, &mAllocationSize );
+			assert( allocated );
+
+			// Bind memory
+			res = vkBindImageMemory( mDevice->getDevice(), mImage, mMemory, mAllocationOffset );
+			assert(res == VK_SUCCESS);
+		}
+		//mDevice->getAllocator()->unlockImage();
+
+		mOwnsImage = true;
+
+/*
 		// Get memory requirements
 		VkMemoryRequirements memoryRequirements;
 		vkGetImageMemoryRequirements( mDevice->getDevice(), mImage, &memoryRequirements );
@@ -210,6 +225,7 @@ void Image::initialize()
 
 		mOwnsImage = true;
 		mAllocationSize = allocInfo.allocationSize;
+*/
 	}
 
 	// Set the current layout
@@ -231,10 +247,12 @@ void Image::destroy( bool removeFromTracking )
 			mImage = VK_NULL_HANDLE;
 		}
 
+/*
 		if( VK_NULL_HANDLE != mMemory ) {
 			vkFreeMemory( mDevice->getDevice(), mMemory, nullptr );
 			mMemory = VK_NULL_HANDLE;
 		}
+*/
 
 		mOwnsImage = false;
 	}
@@ -458,7 +476,7 @@ void* Image::map( VkDeviceSize offset )
 {
 	if( isMappable() && ( nullptr == mMappedAddress ) ) {
 		VkMemoryMapFlags flags = 0;
-		VkResult result = vkMapMemory( mDevice->getDevice(), mMemory, offset, mAllocationSize, flags, &mMappedAddress );
+		VkResult result = vkMapMemory( mDevice->getDevice(), mMemory, mAllocationOffset + offset, mAllocationSize, flags, &mMappedAddress );
 		if( VK_SUCCESS != result ) {
 			mMappedAddress = nullptr;
 		}

@@ -84,6 +84,8 @@ protected:
     VkBufferUsageFlags  	mUsage = 0;
 	VkDeviceSize			mSize = 0;
 	VkDeviceMemory			mMemory = 0;
+	VkDeviceSize			mAllocationSize = 0;
+	VkDeviceSize			mAllocationOffset = 0;
 
 	void					createBufferAndAllocate( size_t size );
 	void					destroyBufferAndFree();

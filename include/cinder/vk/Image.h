@@ -204,6 +204,7 @@ private:
 	VkImage					mImage = VK_NULL_HANDLE;
 	VkDeviceMemory			mMemory = VK_NULL_HANDLE;
 	VkDeviceSize			mAllocationSize = 0;
+	VkDeviceSize			mAllocationOffset = 0;
 	void*					mMappedAddress = nullptr;
 	VkImageLayout			mCurrentLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 

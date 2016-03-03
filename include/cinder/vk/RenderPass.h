@@ -102,6 +102,7 @@ public:
 
 		Attachment&						setInitialLayout( VkImageLayout value ) { mDescription.initialLayout = value; return *this; }
 		Attachment&						setFinalLayout( VkImageLayout value ) { mDescription.finalLayout = value; return *this; }
+		Attachment&						setInitialAndFinalLayout( VkImageLayout initialLayout, VkImageLayout finalLayout ) { setInitialLayout( initialLayout ); setFinalLayout( finalLayout ); return *this; }
 		Attachment&						setFinalLayoutColorOptimal() { setFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ); return *this; }
 		Attachment&						setFinalLayoutDepthStencilOptimal() { setFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ); return *this; }
 

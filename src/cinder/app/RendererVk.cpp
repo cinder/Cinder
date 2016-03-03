@@ -129,6 +129,8 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	VkPhysicalDevice gpu = env->getGpus()[gpuIndex];
 	vk::Device::Options deviceOptions = vk::Device::Options();
 	deviceOptions.setGraphicsQueueCount( mOptions.mGraphicsQueueCount );
+	deviceOptions.setAllocatorBufferBlockSize( mOptions.mAllocatorBufferBlockSize );
+	deviceOptions.setAllocatorImageBlockSize( mOptions.mAllocatorImageBlockSize );
 	vk::DeviceRef device = vk::Device::create( gpu, deviceOptions, env );
 
 	// Create surface

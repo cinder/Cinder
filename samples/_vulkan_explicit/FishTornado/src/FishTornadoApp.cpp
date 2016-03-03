@@ -803,7 +803,7 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_GOOGLE_unique_objects",
 };
 
-CINDER_APP( FishTornadoApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode().setWorkQueueCount( NUM_QUEUES ).setLayers( gLayers ).setDebugReportCallbackFn( debugReportVk ) ), []( FishTornadoApp::Settings *settings ) {	
+CINDER_APP( FishTornadoApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode().setWorkQueueCount( NUM_QUEUES ).setAllocatorBlockSize( vk::Allocator::_64MB, vk::Allocator::_64MB ).setLayers( gLayers ).setDebugReportCallbackFn( debugReportVk ) ), []( FishTornadoApp::Settings *settings ) {	
 	settings->setWindowSize( 1920, 1080 );
 	settings->setResizable( false );
 } )

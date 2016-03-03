@@ -44,6 +44,7 @@
 #include "cinder/vk/scoped.h"
 #include "cinder/vk/wrapper.h"
 
+#include "cinder/vk/Allocator.h"
 #include "cinder/vk/Batch.h"
 #include "cinder/vk/Buffer.h"
 #include "cinder/vk/CommandBuffer.h"

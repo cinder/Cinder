@@ -45,6 +45,7 @@
 
 namespace cinder { namespace vk {
 
+class Allocator;
 class Buffer;
 class Context;
 class DescriptorPool;
@@ -68,6 +69,7 @@ class Surface;
 class Swapchain;
 class UniformBuffer;
 class VertexBuffer;
+using AllocatorRef = std::shared_ptr<Allocator>;
 using ContextRef = std::shared_ptr<Context>;
 using DescriptorSetLayoutSelectorRef = std::shared_ptr<DescriptorSetLayoutSelector>;
 using PipelineCacheRef = std::shared_ptr<PipelineCache>;
@@ -94,9 +96,13 @@ public:
 		Options&			setComputeQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_COMPUTE_BIT , count ); }
 		Options&			setTransferQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_TRANSFER_BIT , count ); }
 		Options&			setSparseBindingQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_SPARSE_BINDING_BIT , count ); }
+		Options&			setAllocatorBufferBlockSize( VkDeviceSize value ) { mAllocatorBufferBlockSize = value; return *this; }
+		Options&			setAllocatorImageBlockSize( VkDeviceSize value ) { mAllocatorImageBlockSize = value; return *this; }
 	private:
 		// These values will get readjusted during device creation
 		std::map<VkQueueFlagBits, uint32_t>	mQueueCounts;
+		VkDeviceSize		mAllocatorBufferBlockSize = 0;
+		VkDeviceSize		mAllocatorImageBlockSize = 0;
 		friend class Device;
 	};
 
@@ -129,6 +135,8 @@ public:
 	const vk::PipelineCacheRef&					getPipelineCache() const { return mPipelineCache; }
 	const vk::PipelineLayoutSelectorRef&		getPipelineLayoutSelector() const { return mPipelineLayoutSelector; }
 	const vk::PipelineSelectorRef&				getPipelineSelector() const { return mPipelineSelector; }
+
+	const vk::AllocatorRef&						getAllocator() const { return mAllocator; }
 
 	VkResult	CreateSwapchainKHR( VkDevice device, const VkSwapchainCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain );
 	void		DestroySwapchainKHR( VkDevice device, VkSwapchainKHR swapchain, const VkAllocationCallbacks* pAllocator );
@@ -163,6 +171,10 @@ private:
 	vk::DescriptorSetLayoutSelectorRef		mDescriptorSetLayoutSelector;
 	vk::PipelineLayoutSelectorRef			mPipelineLayoutSelector;
 	vk::PipelineSelectorRef					mPipelineSelector;
+
+	VkDeviceSize							mAllocatorBufferBlockSize = 0;
+	VkDeviceSize							mAllocatorImageBlockSize = 0;
+	vk::AllocatorRef						mAllocator;
 
 	void initializeGpuProperties();
 	void initializeQueueProperties();

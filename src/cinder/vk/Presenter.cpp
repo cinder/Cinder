@@ -146,10 +146,19 @@ void Presenter::resize( const ivec2& newWindowSize )
 		for( uint32_t i = 0; i < mSwapchainImageCount; ++i ) {
 			// Create render pass
 			if( ! mRenderPasses[i] ) {
+				// Attachment descriptions
+				vk::RenderPass::Attachment multiSampleAttachment = vk::RenderPass::Attachment( colorFormat ).setSamples( mActualSamples )
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+				vk::RenderPass::Attachment singleSampleAttachment = vk::RenderPass::Attachment( colorFormat )
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR );
+				vk::RenderPass::Attachment depthAttachment = vk::RenderPass::Attachment( depthStencilFormat ).setSamples( mActualSamples )
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+				// Options
 				vk::RenderPass::Options options = vk::RenderPass::Options()
-					.addAttachment( vk::RenderPass::Attachment( colorFormat ).setSamples( mActualSamples ) )
-					.addAttachment( vk::RenderPass::Attachment( colorFormat ) )
-					.addAttachment( vk::RenderPass::Attachment( depthStencilFormat ).setSamples( mActualSamples ) );
+					.addAttachment( multiSampleAttachment )
+					.addAttachment( singleSampleAttachment )
+					.addAttachment( depthAttachment );
+				// Subpasses
 				vk::RenderPass::Subpass subPass = vk::RenderPass::Subpass()
 					.addColorAttachment( 0, 1 ) // 0 - multiple sample attachment, 1 - single sample auto resolve attachment
 					.addDepthStencilAttachment( 2 );
@@ -187,9 +196,16 @@ void Presenter::resize( const ivec2& newWindowSize )
 		for( uint32_t i = 0; i < mSwapchainImageCount; ++i ) {
 			// Create render pass
 			if( ! mRenderPasses[i] ) {
+				// Attachment descriptions
+				vk::RenderPass::Attachment colorAttachment = vk::RenderPass::Attachment( colorFormat )
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR );
+				vk::RenderPass::Attachment depthAttachment = vk::RenderPass::Attachment( depthStencilFormat )			
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+				// Options
 				vk::RenderPass::Options options = vk::RenderPass::Options()
-					.addAttachment( vk::RenderPass::Attachment( colorFormat ) )
-					.addAttachment( vk::RenderPass::Attachment( depthStencilFormat ) );
+					.addAttachment( colorAttachment )
+					.addAttachment( depthAttachment );
+				// Subpasses
 				vk::RenderPass::Subpass subPass = vk::RenderPass::Subpass()
 					.addColorAttachment( 0 )
 					.addDepthStencilAttachment( 1 );

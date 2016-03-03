@@ -177,7 +177,10 @@ void Swapchain::initializeColorBuffers()
 void Swapchain::initializeDepthStencilBuffers()
 {
 	// NOTE: Multiple depth attachments are allocated to account for multiple frames in flight.
-	Image::Format imageOptions = Image::Format( mOptions.mDepthStencilFormat ).setUsageDepthStencilAttachment().setSamples( mOptions.mDepthStencilSamples );
+	Image::Format imageOptions = Image::Format( mOptions.mDepthStencilFormat )
+		.setUsageDepthStencilAttachment()
+		.setSamples( mOptions.mDepthStencilSamples )
+		.setMemoryPropertyDeviceLocal();
 	for( uint32_t i = 0; i < mImageCount; ++i ) {
 		ImageViewRef imageView = ImageView::create( mSwapchainExtent.width, mSwapchainExtent.height, imageOptions, mDevice );
 		//imageView->setImageLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );

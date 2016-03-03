@@ -37,6 +37,7 @@
 */
 
 #include "cinder/vk/Device.h"
+#include "cinder/vk/Allocator.h"
 #include "cinder/vk/Buffer.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
@@ -65,6 +66,8 @@ Device::Device( VkPhysicalDevice gpu, const Device::Options& options, vk::Enviro
 	: mEnvironment( env ), mGpu( gpu )
 {
 	mActiveQueueCounts = options.mQueueCounts;
+	mAllocatorBufferBlockSize = options.mAllocatorBufferBlockSize;
+	mAllocatorImageBlockSize = options.mAllocatorImageBlockSize;
 	initialize();
 }
 
@@ -250,6 +253,9 @@ void Device::initializeDevice()
 	fpGetSwapchainImagesKHR = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, GetSwapchainImagesKHR );
 	fpAcquireNextImageKHR   = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, AcquireNextImageKHR );
 	fpQueuePresentKHR       = CI_VK_GET_DEVICE_PROC_ADDR( mDevice, QueuePresentKHR );
+
+	// Initialize allocator
+	mAllocator = vk::Allocator::create( mAllocatorBufferBlockSize, mAllocatorImageBlockSize, this );
 }
 
 void Device::initialize()
@@ -294,6 +300,13 @@ void Device::destroy( bool removeFromTracking )
 	mTrackedSurfaces.destroyAll( [&removeTrackedObjects]( vk::Surface *obj ) { obj->destroy( removeTrackedObjects ); } );
 	mTrackedContexts.destroyAll( [&removeTrackedObjects]( vk::Context *obj ) { obj->destroy( removeTrackedObjects ); } );
 
+	// Destroy allocator
+	if( mAllocator ) {
+		mAllocator->destroy();
+		mAllocator.reset();
+	}
+
+	// Destroy device
 	vkDestroyDevice( mDevice, nullptr );
 	mDevice = VK_NULL_HANDLE;
 
