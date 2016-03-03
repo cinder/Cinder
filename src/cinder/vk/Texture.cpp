@@ -270,7 +270,6 @@ void Texture2d::initialize( vk::Device *device )
 		imageOptions.setTilingLinear();
 		imageOptions.setUsageSampled();
 		imageOptions.setMemoryPropertyHostVisible();
-		imageOptions.setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 	}
 	else {
 		imageOptions.setTiling( mFormat.getTiling() );
@@ -278,13 +277,14 @@ void Texture2d::initialize( vk::Device *device )
 		imageOptions.setMemoryPropertyDeviceLocal();
 	}
 	vk::ImageRef preMadeImage = vk::Image::create( mWidth, mHeight, imageOptions, device );
-	preMadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );		
+	//preMadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );		
 	//ImageView::initialize( VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_TYPE_2D, mWidth, mHeight, 1, imageOptions, preMadeImage );
 	mImageView = vk::ImageView::create( mWidth, mHeight, preMadeImage, device );
 
 	initializeFinal( device );
 }
 
+/*
 void Texture2d::initialize( const void *data, VkFormat dataFormat, vk::Device *device )
 {
 	initializeCommon( device );	
@@ -296,11 +296,12 @@ void Texture2d::initialize( const void *data, VkFormat dataFormat, vk::Device *d
 		.setTilingOptimal()
 		.setMemoryPropertyDeviceLocal();
 	vk::ImageRef premadeImage = vk::Image::create( mWidth, mHeight, imageOptions, device );
-	premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+	//premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 	mImageView = vk::ImageView::create( mWidth, mHeight, premadeImage, device );
 		
 	initializeFinal( device );
 }
+*/
 
 template <typename T>
 void Texture2d::initialize( const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, vk::Device *device )
@@ -321,8 +322,7 @@ void Texture2d::initialize( const T* srcData, size_t srcRowBytes, size_t srcPixe
 			.setTilingLinear()
 			.setUsageSampled()
 			.setMemoryPropertyHostVisible()
-			.setMipLevels( 1 )
-			.setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+			.setMipLevels( 1 );
 		vk::ImageRef preMadeImage = vk::Image::create( mWidth, mHeight, srcData, srcRowBytes, srcPixelBytes, Area( 0, 0, mWidth, mHeight ), imageOptions, device );
 		//ImageView::initialize( VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_TYPE_2D, mWidth, mHeight, 1, preMadeImage->getOptions(), preMadeImage );
 		mImageView = vk::ImageView::create( mWidth, mHeight, preMadeImage, device );
@@ -335,8 +335,7 @@ void Texture2d::initialize( const T* srcData, size_t srcRowBytes, size_t srcPixe
 			.setUsageSampled()
 			.setUsageTransferDestination()
 			.setMemoryPropertyDeviceLocal()
-			.setMipLevels( mMipLevels )
-			.setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+			.setMipLevels( mMipLevels );
 		vk::ImageRef preMadeImage = vk::Image::create( mWidth, mHeight, imageOptions, device );
 		//ImageView::initialize( VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_TYPE_2D, mWidth, mHeight, 1, preMadeImage->getOptions(), preMadeImage );
 		mImageView = vk::ImageView::create( mWidth, mHeight, preMadeImage, device );
@@ -378,7 +377,7 @@ void Texture2d::initialize( const ImageSourceRef& imageSource, vk::Device* devic
 		.setTilingLinear()
 		.setMemoryPropertyHostVisible();
 	vk::ImageRef premadeImage = vk::Image::create( mWidth, mHeight, imageOptions, device );
-	premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+	//premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 	//ImageView::initialize( VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_TYPE_2D, mWidth, mHeight, 1, premadeImage->getOptions(), premadeImage );
 	mImageView = vk::ImageView::create( mWidth, mHeight, premadeImage, device );
 
@@ -475,7 +474,7 @@ void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t 
 		.setTilingLinear()
 		.setMemoryPropertyHostVisible()
 		.setUsageTransferSource();
-	ImageRef stagingImage = ImageRef( new Image( srcWidth, srcHeight, srcData, srcRowBytes, srcPixelBytes, ci::Area( 0, 0, srcWidth, srcHeight ), stagingOptions, mImageView->getDevice() ) );
+	ImageRef stagingImage = Image::create( srcWidth, srcHeight, srcData, srcRowBytes, srcPixelBytes, ci::Area( 0, 0, srcWidth, srcHeight ), stagingOptions, mImageView->getDevice() );
 
 	if( mFormat.isUnnormalizedCoordinates() ) {
 		Image::copy( context, stagingImage, 0, 0, mImageView->getImage(), 0, 0, ivec2( srcWidth, srcHeight ) );
@@ -797,9 +796,10 @@ void TextureCubeMap::initialize( int width, int height, const T* srcData, size_t
 		.setMemoryPropertyDeviceLocal()
 		.setUsageSampled()
 		.setUsageTransferDestination()
+		.setInitialLayout( VK_IMAGE_LAYOUT_PREINITIALIZED )
 		.setCreateFlags( VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT );
 	vk::ImageRef premadeImage = vk::Image::create( faceSize.x, faceSize.y, imageOptions, device );
-	premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+	//premadeImage->setImageLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 	//ImageView::initialize( VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_TYPE_2D, premadeImage->getWidth(), premadeImage->getHeight(), 1, premadeImage->getOptions(), premadeImage );
 	mImageView = vk::ImageView::createCube( premadeImage->getWidth(), premadeImage->getHeight(), premadeImage, device );
 
@@ -808,7 +808,7 @@ void TextureCubeMap::initialize( int width, int height, const T* srcData, size_t
 		.setTilingLinear()
 		.setMemoryPropertyHostVisible()
 		.setUsageTransferSource();
-	ImageRef stagingImage = ImageRef( new Image( faceSize.x, faceSize.y, stagingOptions, device ) );
+	ImageRef stagingImage = Image::create( faceSize.x, faceSize.y, stagingOptions, device );
 
 	auto context = vk::Context::getCurrent();
 	for( uint32_t face = 0; face < 6; ++face ) {

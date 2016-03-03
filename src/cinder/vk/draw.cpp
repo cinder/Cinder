@@ -117,7 +117,7 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 		pipelineSelector->setCullMode( ctx->getCullMode() );
 		pipelineSelector->setFrontFace( ctx->getFrontFace() );
 		pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
-		pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubPassSampleCount( ctx->getSubPass() ) );
+		pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubPass() ) );
 		pipelineSelector->setDepthTest( ctx->getDepthTest() );
 		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
@@ -228,7 +228,7 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 		pipelineSelector->setCullMode( ctx->getCullMode() );
 		pipelineSelector->setFrontFace( ctx->getFrontFace() );
 		pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
-		pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubPassSampleCount( ctx->getSubPass() ) );
+		pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubPass() ) );
 		pipelineSelector->setDepthTest( ctx->getDepthTest() );
 		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );

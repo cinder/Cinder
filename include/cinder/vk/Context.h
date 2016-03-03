@@ -127,7 +127,7 @@ public:
 
 	void						pushSubPass( uint32_t subPass );
 	void						popSubPass();
-	void						setSubPass( uint32_t subPass );
+	void						setSubpass( uint32_t subPass );
 	uint32_t					getSubPass() const;
 
 	void						pushCommandBuffer( const vk::CommandBufferRef& cmdBuf );

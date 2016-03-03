@@ -82,7 +82,6 @@ RenderPass::Attachment RenderPass::Attachment::createColor( VkFormat format, VkS
 {
 	RenderPass::Attachment result = RenderPass::Attachment( format )
 		.setSamples( samples )
-		.setInitialLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
 		.setFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 	return result;
 }
@@ -91,7 +90,6 @@ RenderPass::Attachment RenderPass::Attachment::createDepthStencil( VkFormat form
 {
 	RenderPass::Attachment result = RenderPass::Attachment( format )
 		.setSamples( samples )
-		.setInitialLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
 		.setFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 	return result;
 }
@@ -300,7 +298,7 @@ void RenderPass::initialize( const RenderPass::Options& options )
 			sampleCount = mOptions.mAttachments[attachmentIndex].mDescription.samples;
 		}
 		// Cache it
-		mSubPassSampleCounts.push_back( sampleCount );
+		mSubpassSampleCounts.push_back( sampleCount );
 	}
 
 	std::vector<VkSubpassDependency> dependencies;
@@ -352,13 +350,13 @@ void RenderPass::setAttachmentClearValue( size_t attachmentIndex,const VkClearVa
 	}
 }
 
-VkSampleCountFlagBits RenderPass::getSubPassSampleCount( uint32_t subPass ) const
+VkSampleCountFlagBits RenderPass::getSubpassSampleCount( uint32_t subPass ) const
 {
-	VkSampleCountFlagBits result = mSubPassSampleCounts[subPass];;
+	VkSampleCountFlagBits result = mSubpassSampleCounts[subPass];;
 	return result;
 }
 
-uint32_t RenderPass::getSubPassColorAttachmentCount( uint32_t subPass ) const
+uint32_t RenderPass::getSubpassColorAttachmentCount( uint32_t subPass ) const
 {
 	uint32_t result = 0;
 	if( subPass < mOptions.mSubpasses.size() ) {
@@ -372,9 +370,9 @@ void RenderPass::beginRender( const vk::CommandBufferRef& cmdBuf,const vk::Frame
 	mCommandBuffer = cmdBuf;
 	mFramebuffer = framebuffer;
 
-	mSubPass = 0;
+	mSubpass = 0;
 	vk::context()->pushRenderPass( this->shared_from_this() );
-	vk::context()->pushSubPass( mSubPass );
+	vk::context()->pushSubPass( mSubpass );
 
 	// Start the command buffer
 	mCommandBuffer->begin();
@@ -387,22 +385,25 @@ void RenderPass::beginRender( const vk::CommandBufferRef& cmdBuf,const vk::Frame
 	mCommandBuffer->setViewport( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
 	mCommandBuffer->setScissor( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
 
+
+/*
 	// Add barriers to make sure all attachments transition from undefined to what they need to be
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
 		const auto& attachment = fbAttach.getAttachment();
-		mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_UNDEFINED, attachment->getImageLayout() );
+		mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_UNDEFINED, attachment->getFinalLayout() );
 	}
 
 	// Add barriers to make sure all attachments transition from what they needed to be to color attachments
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
 		const auto& attachment = fbAttach.getAttachment();
 		if( fbAttach.isColorAttachment() ) {
-			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getImageLayout(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getFinalLayout(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 		}
 		else if( fbAttach.isDepthStencilAttachment() ) {
-			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getImageLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getFinalLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 		}
 	}
+*/
 
 	// Begin the render pass
 	const auto& clearValues = getAttachmentClearValues();
@@ -422,17 +423,19 @@ void RenderPass::endRender()
 	// End render pass
 	mCommandBuffer->endRenderPass();
 
+/*
 	// Barrier
 	// Add barriers to make sure all attachments transition from undefined to what they need to be
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
 		const auto& attachment = fbAttach.getAttachment();
 		if( fbAttach.isColorAttachment() ) {
-			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, attachment->getImageLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, attachment->getFinalLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 		}
 		else if( fbAttach.isDepthStencilAttachment() ) {
-			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, attachment->getImageLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, attachment->getFinalLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 		}
 	}
+*/
 
 	// End the command buffer
 	mCommandBuffer->end();
@@ -441,29 +444,6 @@ void RenderPass::endRender()
 	// Process the command buffer
 	vk::context()->getGraphicsQueue()->submit( mCommandBuffer );
 	vk::context()->getGraphicsQueue()->waitIdle();
-
-/*
-	// Process the command buffer
-	{
-
-		const VkCommandBuffer cmdBufs[] = { mCommandBuffer->getCommandBuffer() };
-		VkSubmitInfo submitInfo[1] = {};
-		submitInfo[0].pNext					= NULL;
-		submitInfo[0].sType					= VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		submitInfo[0].waitSemaphoreCount	= 0;
-		submitInfo[0].pWaitSemaphores		= NULL;
-		submitInfo[0].commandBufferCount	= 1;
-		submitInfo[0].pCommandBuffers		= cmdBufs;
-		submitInfo[0].signalSemaphoreCount	= 0;
-		submitInfo[0].pSignalSemaphores		= NULL;
-		VkFence nullFence = VK_NULL_HANDLE;
-		VkResult res = vkQueueSubmit( vk::context()->getQueue(), 1, submitInfo, nullFence );
-		assert( VK_SUCCESS == res );
-
-		res = vkQueueWaitIdle( vk::context()->getQueue() );
-		assert( VK_SUCCESS == res );
-	}
-*/
 
 	// Pop them
 	vk::context()->popSubPass();
@@ -479,9 +459,9 @@ void RenderPass::beginRenderExplicit( const vk::CommandBufferRef& cmdBuf,const v
 	mCommandBuffer = cmdBuf;
 	mFramebuffer = framebuffer;
 
-	mSubPass = 0;
+	mSubpass = 0;
 	vk::context()->pushRenderPass( this->shared_from_this() );
-	vk::context()->pushSubPass( mSubPass );
+	vk::context()->pushSubPass( mSubpass );
 
 	// Command buffer is not started in explicit mode
 	vk::context()->pushCommandBuffer( mCommandBuffer );
@@ -493,6 +473,13 @@ void RenderPass::beginRenderExplicit( const vk::CommandBufferRef& cmdBuf,const v
 	mCommandBuffer->setViewport( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
 	mCommandBuffer->setScissor( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
 
+	// Transition attachments' initial layout to 'attachment' layout
+	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
+		const auto& attachment = fbAttach.getAttachment();
+		
+	}
+
+/*
 	// Add barriers to make sure all attachments transition from undefined to what they need to be
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
 		const auto& attachment = fbAttach.getAttachment();
@@ -509,6 +496,7 @@ void RenderPass::beginRenderExplicit( const vk::CommandBufferRef& cmdBuf,const v
 			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getImageLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 		}
 	}
+*/
 
 	// Begin the render pass
 	const auto& clearValues = getAttachmentClearValues();
@@ -528,6 +516,7 @@ void RenderPass::endRenderExplicit()
 	// End render pass
 	mCommandBuffer->endRenderPass();
 
+/*
 	// Barrier
 	// Add barriers to make sure all attachments transition from undefined to what they need to be
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
@@ -539,6 +528,7 @@ void RenderPass::endRenderExplicit()
 			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, attachment->getImageLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 		}
 	}
+*/
 
 	// Command buffer is not ended in explicit mode
 	vk::context()->popCommandBuffer();
@@ -558,8 +548,8 @@ void RenderPass::endRenderExplicit()
 void RenderPass::nextSubpass()
 {
 	mCommandBuffer->nextSubpass( VK_SUBPASS_CONTENTS_INLINE );
-	++mSubPass;
-	vk::context()->setSubPass( mSubPass );
+	++mSubpass;
+	vk::context()->setSubpass( mSubpass );
 }
 
 }} // namespace cinder::vk

@@ -193,8 +193,8 @@ public:
 	const vk::CommandBufferRef&				getCommandBuffer() const { return mCommandBuffer; }
 	uint32_t								getColorAttachmentCount() const { return static_cast<uint32_t>( mAttachmentDescriptors.size() ); }
 
-	VkSampleCountFlagBits					getSubPassSampleCount( uint32_t subPass ) const;
-	uint32_t								getSubPassColorAttachmentCount( uint32_t subPass ) const;
+	VkSampleCountFlagBits					getSubpassSampleCount( uint32_t subPass ) const;
+	uint32_t								getSubpassColorAttachmentCount( uint32_t subPass ) const;
 
 	void									beginRender( const vk::CommandBufferRef& cmdBuf, const vk::FramebufferRef& framebuffer );
 	void									endRender();
@@ -208,8 +208,9 @@ private:
 	RenderPass::Options						mOptions;
 
 	VkRenderPass							mRenderPass = VK_NULL_HANDLE;
-	uint32_t								mSubPass = 0;
-	std::vector<VkSampleCountFlagBits>		mSubPassSampleCounts;
+	uint32_t								mSubpass = 0;
+	std::vector<VkSampleCountFlagBits>		mSubpassSampleCounts;
+	std::vector<uint32_t>					mBarrieredAttachmentIndices;
 
 	std::vector<VkAttachmentDescription>	mAttachmentDescriptors;
 	std::vector<VkClearValue>				mAttachmentClearValues;

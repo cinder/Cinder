@@ -56,6 +56,7 @@ Image::Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t d
 	  mOptions( options ),
 	  mImage( image )
 {
+	mOptions.setInitialLayout( VK_IMAGE_LAYOUT_PREINITIALIZED );
 	initialize();
 }
 
@@ -66,6 +67,7 @@ Image::Image( uint32_t width, uint32_t height, const uint8_t *srcData, size_t sr
 	  mOptions( options ),
 	  mImage( VK_NULL_HANDLE )
 {
+	mOptions.setInitialLayout( nullptr != srcData ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED );
 	initialize();
 	if( nullptr != srcData ) {
 		copyData( 0, srcData, srcRowBytes, srcPixelBytes, srcRegion );
@@ -79,6 +81,7 @@ Image::Image( uint32_t width, uint32_t height, const uint16_t *srcData, size_t s
 	  mOptions( options ),
 	  mImage( VK_NULL_HANDLE )
 {
+	mOptions.setInitialLayout( nullptr != srcData ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED );
 	initialize();
 	if( nullptr != srcData ) {
 		copyData( 0, srcData, srcRowBytes, srcPixelBytes, srcRegion );
@@ -92,6 +95,7 @@ Image::Image( uint32_t width, uint32_t height, const float *srcData, size_t srcR
 	  mOptions( options ),
 	  mImage( VK_NULL_HANDLE )
 {
+	mOptions.setInitialLayout( nullptr != srcData ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED );
 	initialize();
 	if( nullptr != srcData ) {
 		copyData( 0, srcData, srcRowBytes, srcPixelBytes, srcRegion );
@@ -178,7 +182,7 @@ void Image::initialize()
 		imageCreateInfo.sharingMode 			= VK_SHARING_MODE_EXCLUSIVE;
 		imageCreateInfo.queueFamilyIndexCount 	= 0;
 		imageCreateInfo.pQueueFamilyIndices		= nullptr;
-		imageCreateInfo.initialLayout			= mOptions.mImageLayout;// VK_IMAGE_LAYOUT_UNDEFINED;
+		imageCreateInfo.initialLayout			= mOptions.mInitialLayout;
 		res = vkCreateImage( mDevice->getDevice(), &imageCreateInfo, nullptr, &mImage );
 		assert(res == VK_SUCCESS);
 
@@ -208,6 +212,10 @@ void Image::initialize()
 		mAllocationSize = allocInfo.allocationSize;
 	}
 
+	// Set the current layout
+	mCurrentLayout = mOptions.mInitialLayout;
+
+	// Track this object
 	mDevice->trackedObjectCreated( this );
 }
 
@@ -313,25 +321,47 @@ ImageRef Image::create( int32_t width, int32_t height, const uint16_t *srcData, 
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 
-	Image::Format options = Image::Format( initialOptions.getInternalFormat() )
-		.setSamples( initialOptions.getSamples() )
-		.setTiling( initialOptions.getTiling() );
-
 	ImageRef result;
-	if( options.isTilingOptimal() || ( VK_SAMPLE_COUNT_1_BIT != options.getSamples() ) ) {
+	if( initialOptions.isUsageTransferSource() ) {
+		Image::Format options = Image::Format( initialOptions.getInternalFormat() )
+			.setSamples( VK_SAMPLE_COUNT_1_BIT )
+			.setTilingLinear()
+			.setMemoryPropertyHostVisible();
+		result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, options, device ) );
 	}
 	else {
-		Image::Format options = Image::Format( options.getInternalFormat() )
-			.setMemoryPropertyHostVisible()
-			.setUsage( hasLinearTilingSampledImage( device, options.getInternalFormat() ) ? VK_IMAGE_USAGE_SAMPLED_BIT : VK_IMAGE_USAGE_TRANSFER_SRC_BIT );
-		result = ImageRef( new Image( width, height, srcData, srcRowBytes,srcRowBytes, srcRegion, options, device ) );
+		// Using a staging image to the source data into the final image
+		if( initialOptions.isTilingOptimal() || ( VK_SAMPLE_COUNT_1_BIT != initialOptions.getSamples() ) ) {
+			Image::Format stagingOptions = Image::Format( initialOptions.getInternalFormat() )
+				.setSamples( VK_SAMPLE_COUNT_1_BIT )
+				.setTilingLinear()
+				.setMemoryPropertyHostVisible();
+			ImageRef stagingImage = ImageRef( new Image( width, height, srcData, srcRowBytes,  srcPixelBytes, srcRegion, stagingOptions, device ) );
+
+			Image::Format resultOptions = Image::Format( initialOptions.getInternalFormat() )
+				.setSamples( initialOptions.getSamples() )
+				.setTiling( initialOptions.getTiling() )
+				.setUsageSampled()
+				.setUsageTransferDestination()
+				.setMemoryPropertyDeviceLocal( true );
+			result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, resultOptions, device ) );
+
+			auto context = vk::Context::getCurrent();
+			Image::blit( context, stagingImage, 0, 0, result, 0, 0 );
+		}
+		else {
+			Image::Format resultOptions = Image::Format( initialOptions.getInternalFormat() )
+				.setSamples( VK_SAMPLE_COUNT_1_BIT )
+				.setTilingLinear()
+				.setMemoryPropertyHostVisible()
+				.setUsage( hasLinearTilingSampledImage( device, initialOptions.getInternalFormat() ) ? VK_IMAGE_USAGE_SAMPLED_BIT : VK_IMAGE_USAGE_TRANSFER_SRC_BIT );
+			result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, resultOptions, device ) );
+		}
 	}
 
 	return result;
-}
 
-ImageRef Image::create( int32_t width, int32_t height, const float *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions, vk::Device *device )
-{
+/*
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 
 	Image::Format options = Image::Format( initialOptions.getInternalFormat() )
@@ -349,6 +379,72 @@ ImageRef Image::create( int32_t width, int32_t height, const float *srcData, siz
 	}
 
 	return result;
+*/
+}
+
+ImageRef Image::create( int32_t width, int32_t height, const float *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions, vk::Device *device )
+{
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+
+	ImageRef result;
+	if( initialOptions.isUsageTransferSource() ) {
+		Image::Format options = Image::Format( initialOptions.getInternalFormat() )
+			.setSamples( VK_SAMPLE_COUNT_1_BIT )
+			.setTilingLinear()
+			.setMemoryPropertyHostVisible();
+		result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, options, device ) );
+	}
+	else {
+		// Using a staging image to the source data into the final image
+		if( initialOptions.isTilingOptimal() || ( VK_SAMPLE_COUNT_1_BIT != initialOptions.getSamples() ) ) {
+			Image::Format stagingOptions = Image::Format( initialOptions.getInternalFormat() )
+				.setSamples( VK_SAMPLE_COUNT_1_BIT )
+				.setTilingLinear()
+				.setMemoryPropertyHostVisible();
+			ImageRef stagingImage = ImageRef( new Image( width, height, srcData, srcRowBytes,  srcPixelBytes, srcRegion, stagingOptions, device ) );
+
+			Image::Format resultOptions = Image::Format( initialOptions.getInternalFormat() )
+				.setSamples( initialOptions.getSamples() )
+				.setTiling( initialOptions.getTiling() )
+				.setUsageSampled()
+				.setUsageTransferDestination()
+				.setMemoryPropertyDeviceLocal( true );
+			result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, resultOptions, device ) );
+
+			auto context = vk::Context::getCurrent();
+			Image::blit( context, stagingImage, 0, 0, result, 0, 0 );
+		}
+		else {
+			Image::Format resultOptions = Image::Format( initialOptions.getInternalFormat() )
+				.setSamples( VK_SAMPLE_COUNT_1_BIT )
+				.setTilingLinear()
+				.setMemoryPropertyHostVisible()
+				.setUsage( hasLinearTilingSampledImage( device, initialOptions.getInternalFormat() ) ? VK_IMAGE_USAGE_SAMPLED_BIT : VK_IMAGE_USAGE_TRANSFER_SRC_BIT );
+			result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, resultOptions, device ) );
+		}
+	}
+
+	return result;
+
+/*
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+
+	Image::Format options = Image::Format( initialOptions.getInternalFormat() )
+		.setSamples( initialOptions.getSamples() )
+		.setTiling( initialOptions.getTiling() );
+
+	ImageRef result;
+	if( options.isTilingOptimal() || ( VK_SAMPLE_COUNT_1_BIT != options.getSamples() ) ) {
+	}
+	else {
+		Image::Format options = Image::Format( options.getInternalFormat() )
+			.setMemoryPropertyHostVisible()
+			.setUsage( hasLinearTilingSampledImage( device, options.getInternalFormat() ) ? VK_IMAGE_USAGE_SAMPLED_BIT : VK_IMAGE_USAGE_TRANSFER_SRC_BIT );
+		result = ImageRef( new Image( width, height, srcData, srcRowBytes,srcRowBytes, srcRegion, options, device ) );
+	}
+
+	return result;
+*/
 }
 
 ImageRef Image::create( VkImageType imageType, int32_t width, int32_t height, int32_t depth, VkImage image, const Image::Format& options, vk::Device *device )
@@ -652,11 +748,8 @@ void Image::copy( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 
 	cmdBuf->begin();
 	{
-		cmdBuf->pipelineBarrierImageMemory( srcImage, VK_IMAGE_LAYOUT_UNDEFINED, srcImage->getImageLayout() );
-		cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_UNDEFINED, dstImage->getImageLayout() );
-
-		cmdBuf->pipelineBarrierImageMemory( srcImage, srcImage->getImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL );
-		cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+		cmdBuf->pipelineBarrierImageMemory( srcImage, srcImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL );
+		cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
 
 		VkImageCopy region;
 		region.srcSubresource.aspectMask		= srcImage->getAspectMask();
@@ -671,9 +764,10 @@ void Image::copy( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 		region.dstOffset						= { dstOffset.x, dstOffset.y, 0 };
 		region.extent							= { static_cast<uint32_t>( srcImage->getWidth() ), static_cast<uint32_t>( srcImage->getHeight() ), 1 };
 
-		cmdBuf->copyImage( srcImage->getImage(), srcImage->getImageLayout(), dstImage->getImage(), dstImage->getImageLayout(), 1, &region );
+		cmdBuf->copyImage( srcImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region );
 
-		cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, dstImage->getImageLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		//cmdBuf->pipelineBarrierImageMemory( srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, srcImage->getFinalLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		//cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, dstImage->getFinalLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 	}
 	cmdBuf->end();
 
@@ -721,11 +815,8 @@ void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 
 	cmdBuf->begin();
 	{
-		cmdBuf->pipelineBarrierImageMemory( srcImage, VK_IMAGE_LAYOUT_UNDEFINED, srcImage->getImageLayout() );
-		cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_UNDEFINED, dstImage->getImageLayout() );
-
-		cmdBuf->pipelineBarrierImageMemory( srcImage, srcImage->getImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL );
-		cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getImageLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+		cmdBuf->pipelineBarrierImageMemory( srcImage, srcImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL );
+		cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
 
 		VkImageBlit region;
 		region.srcSubresource.aspectMask		= srcImage->getAspectMask();
@@ -741,9 +832,10 @@ void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 		region.dstOffsets[0]					= { dstArea.x1, dstArea.y1, 0 };
 		region.dstOffsets[1]					= { dstArea.x2, dstArea.y2, 1 };
 
-		cmdBuf->blitImage( srcImage->getImage(), srcImage->getImageLayout(), dstImage->getImage(), dstImage->getImageLayout(), 1, &region, VK_FILTER_LINEAR );
+		cmdBuf->blitImage( srcImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region, VK_FILTER_LINEAR );
 
-		cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, dstImage->getImageLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		//cmdBuf->pipelineBarrierImageMemory( srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, srcImage->getFinalLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		//cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, dstImage->getFinalLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 	}
 	cmdBuf->end();
 

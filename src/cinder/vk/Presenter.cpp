@@ -160,14 +160,14 @@ void Presenter::resize( const ivec2& newWindowSize )
 			// Create the multi-sample attachment
 			{
 				vk::Image::Format imageFormat = vk::Image::Format( colorFormat )
-					.setSamples( mActualSamples )
+					.setSamples( mActualSamples ) 
 					.setTilingOptimal()
 					.setUsageColorAttachment()
 					.setUsageSampled()
 					.setUsageTransferSource()
 					.setMemoryPropertyDeviceLocal();
 				vk::ImageViewRef imageView = vk::ImageView::create( mWindowSize.x, mWindowSize.y, imageFormat, mDevice );
-				imageView->setImageLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+				//imageView->setImageLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 				mMultiSampleAttachments[i] = imageView;
 			}
 

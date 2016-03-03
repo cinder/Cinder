@@ -46,7 +46,9 @@
 
 namespace cinder { namespace vk {
 
+class CommandBuffer;
 class ImageView;
+using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 using ImageViewRef = std::shared_ptr<ImageView>;
 
 class Texture2d;
@@ -261,7 +263,7 @@ private:
 	void						initializeCommon( vk::Device *device );
 	void						initializeFinal( vk::Device *device );
 	void						initialize( vk::Device *device );
-	void						initialize( const void *data, VkFormat dataFormat, vk::Device *device );
+	//void						initialize( const void *data, VkFormat dataFormat, vk::Device *device );
 	template <typename T> void	initialize( const T* srcData, size_t srcRowBytes, size_t srcPixelBytes, vk::Device *device );
 	void						initialize( const ImageSourceRef& imageSource, vk::Device *device );
 	void						destroy();

@@ -60,6 +60,7 @@ public:
 			: mInternalFormat( format ), mSamples( samples ), mTiling( tiling ), mUsage( usage ) {}
 		virtual ~Format() {}
 
+		// Create an image that is considered "undefined" (mUsage = 0) that is to be filled out by calling code.
 		static Format			createUndefined( VkFormat format = VK_FORMAT_UNDEFINED ) { return Format( format, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_LINEAR, 0 ); }
 
 		Format&					setInternalFormat( VkFormat value ) { mInternalFormat = value; return *this; }
@@ -102,8 +103,8 @@ public:
 		Format&					setArrayLayers( uint32_t value ) { mArrayLayers = value; return *this; }
 		uint32_t				getArrayLayers() const { return mArrayLayers; }
 
-		Format&					setImageLayout( VkImageLayout imageLayout ) { mImageLayout  = imageLayout; return *this; }
-		VkImageLayout			getImageLayout() const { return mImageLayout; }
+		Format&					setInitialLayout( VkImageLayout imageLayout ) { mInitialLayout  = imageLayout; return *this; }
+		VkImageLayout			getInitialLayout() const { return mInitialLayout; }
 
 		Format&					setCreateFlags( VkImageCreateFlagBits value ) { mCreateFlags |= value; return *this; }
 		VkImageCreateFlags		getCreateFlags() const { return mCreateFlags; }
@@ -114,7 +115,7 @@ public:
 		VkImageTiling			mTiling  = VK_IMAGE_TILING_LINEAR;
 		VkImageUsageFlags		mUsage   = VK_IMAGE_USAGE_SAMPLED_BIT;
 		VkMemoryPropertyFlags	mMemoryProperty = 0;
-		VkImageLayout			mImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		VkImageLayout			mInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 		uint32_t				mMipLevels = 1;
 		uint32_t				mArrayLayers = 1;
@@ -124,12 +125,8 @@ public:
 		friend class Image;
 	};
 
-	Image();
-	Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t depth, VkImage image, const Image::Format& options, vk::Device *device );
-	Image( uint32_t width, uint32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device );
-	Image( uint32_t width, uint32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device );
-	Image( uint32_t width, uint32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device );
-	Image( uint32_t width, uint32_t height, const Image::Format& options, Device *device );
+	// ---------------------------------------------------------------------------------------------
+
 	virtual ~Image();
 
 	static ImageRef			create( uint32_t width, const Image::Format& options = Image::Format(), vk::Device *device = nullptr );
@@ -169,8 +166,10 @@ public:
 	uint32_t				getMipLevels() const { return mOptions.mMipLevels; }
 	uint32_t				getArrayLayers() const { return mOptions.mArrayLayers; }
 
-	VkImageLayout			getImageLayout() const { return mOptions.mImageLayout; }
-	void					setImageLayout( const VkImageLayout targetLayout ) { mOptions.mImageLayout = targetLayout; }
+	VkImageLayout			getInitialLayout() const { return mOptions.mInitialLayout; }
+
+	VkImageLayout			getCurrentLayout() const { return mCurrentLayout; }
+	void					setCurrentLayout( VkImageLayout layout ) { mCurrentLayout = layout; }
 
 	bool					isMappable() const { return 0 != ( mOptions.mMemoryProperty & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ); }
 	void*					map( VkDeviceSize offset = 0 );
@@ -188,6 +187,12 @@ public:
 	static void				blit( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer );
 
 private:
+	Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t depth, VkImage image, const Image::Format& options, vk::Device *device );
+	Image( uint32_t width, uint32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device );
+	Image( uint32_t width, uint32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device );
+	Image( uint32_t width, uint32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device );
+	Image( uint32_t width, uint32_t height, const Image::Format& options, Device *device );
+
 	VkImageType				mImageType;
 	VkExtent3D				mExtent;
 	Image::Format			mOptions;
@@ -199,6 +204,7 @@ private:
 	VkDeviceMemory			mMemory = VK_NULL_HANDLE;
 	VkDeviceSize			mAllocationSize = 0;
 	void*					mMappedAddress = nullptr;
+	VkImageLayout			mCurrentLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 	void initialize();
 	void destroy( bool removeFromTracking = true );

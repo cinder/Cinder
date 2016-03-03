@@ -34,7 +34,7 @@ DrawStateDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
 DrawStateReportFlags = debug,info,error,warn,perf
 DrawStateDetailed = TRUE
 DrawStateFile = FALSE
-DrawStateLogFilename = vk_device_limits_log.txt 
+DrawStateLogFilename = vk_drawstate_log.txt 
 DrawStateFlush = FALSE
 
 # VK_LAYER_LUNARG_param_checker
@@ -50,7 +50,7 @@ SwapchainDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
 SwapchainReportFlags = debug,info,error,warn,perf
 SwapchainDetailed = TRUE
 SwapchainFile = FALSE
-SwapchainLogFilename = vk_device_limits_log.txt 
+SwapchainLogFilename = vk_swapchain_log.txt 
 SwapchainFlush = FALSE
 
 # VK_LAYER_LUNARG_device_limits
@@ -66,6 +66,6 @@ ImageDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
 ImageReportFlags = debug,info,error,warn,perf
 ImageDetailed = TRUE
 ImageFile = FALSE
-ImageLogFilename = vk_device_limits_log.txt 
+ImageLogFilename = vk_image_log.txt 
 ImageFlush = FALSE
 
