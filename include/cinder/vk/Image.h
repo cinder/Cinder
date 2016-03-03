@@ -168,6 +168,7 @@ public:
 
 	VkImageLayout			getInitialLayout() const { return mOptions.mInitialLayout; }
 
+	//! Reflects the current and pending image layout. The image layout is considered pending if underlying VkImage object is in a operation (e.g. render pass) that hasn'te executed yet.
 	VkImageLayout			getCurrentLayout() const { return mCurrentLayout; }
 	void					setCurrentLayout( VkImageLayout layout ) { mCurrentLayout = layout; }
 
@@ -179,12 +180,12 @@ public:
 	void					copyData( uint32_t dstLayer, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion );
 	void					copyData( uint32_t dstLayer, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion );
 
-	static void				copy( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ivec2& srcOffset, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& dstOffset, const ivec2& size );
-	static void				copy( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& size );
-	static void				copy( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer );
+	static void				copy( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ivec2& srcOffset, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& dstOffset, const ivec2& size );
+	static void				copy( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& size );
+	static void				copy( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer );
 
-	static void				blit( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ci::Area& srcArea, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ci::Area& dstArea );
-	static void				blit( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer );
+	static void				blit( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ci::Area& srcArea, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer, const ci::Area& dstArea );
+	static void				blit( vk::Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer );
 
 private:
 	Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t depth, VkImage image, const Image::Format& options, vk::Device *device );

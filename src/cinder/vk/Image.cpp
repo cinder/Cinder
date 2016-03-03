@@ -302,7 +302,7 @@ ImageRef Image::create( int32_t width, int32_t height, const uint8_t *srcData, s
 			result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, resultOptions, device ) );
 
 			auto context = vk::Context::getCurrent();
-			Image::blit( context, stagingImage, 0, 0, result, 0, 0 );
+			Image::blit( context, stagingImage, 0, 0, result, VK_IMAGE_LAYOUT_PREINITIALIZED, 0, 0 );
 		}
 		else {
 			Image::Format resultOptions = Image::Format( initialOptions.getInternalFormat() )
@@ -347,7 +347,7 @@ ImageRef Image::create( int32_t width, int32_t height, const uint16_t *srcData, 
 			result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, resultOptions, device ) );
 
 			auto context = vk::Context::getCurrent();
-			Image::blit( context, stagingImage, 0, 0, result, 0, 0 );
+			Image::blit( context, stagingImage, 0, 0, result,VK_IMAGE_LAYOUT_PREINITIALIZED, 0, 0 );
 		}
 		else {
 			Image::Format resultOptions = Image::Format( initialOptions.getInternalFormat() )
@@ -412,7 +412,7 @@ ImageRef Image::create( int32_t width, int32_t height, const float *srcData, siz
 			result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, resultOptions, device ) );
 
 			auto context = vk::Context::getCurrent();
-			Image::blit( context, stagingImage, 0, 0, result, 0, 0 );
+			Image::blit( context, stagingImage, 0, 0, result, VK_IMAGE_LAYOUT_PREINITIALIZED, 0, 0 );
 		}
 		else {
 			Image::Format resultOptions = Image::Format( initialOptions.getInternalFormat() )
@@ -741,7 +741,7 @@ void Image::copyData( uint32_t dstLayer, const float *srcData, size_t srcRowByte
 	}
 }
 
-void Image::copy( vk::Context *context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ivec2& srcOffset, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& dstOffset, const ivec2& size )
+void Image::copy( vk::Context *context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ivec2& srcOffset, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& dstOffset, const ivec2& size )
 {
 	auto& cmdPool = vk::context()->getDefaultCommandPool();
 	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool->getCommandPool(), context );
@@ -765,6 +765,9 @@ void Image::copy( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 		region.extent							= { static_cast<uint32_t>( srcImage->getWidth() ), static_cast<uint32_t>( srcImage->getHeight() ), 1 };
 
 		cmdBuf->copyImage( srcImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region );
+
+		cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, dstFinalLayout );
+		dstImage->setCurrentLayout( dstFinalLayout );
 
 		//cmdBuf->pipelineBarrierImageMemory( srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, srcImage->getFinalLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 		//cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, dstImage->getFinalLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
@@ -794,21 +797,21 @@ void Image::copy( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 */
 }
 
-void Image::copy( vk::Context *context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& size )
+void Image::copy( vk::Context *context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& size )
 {
-	Image::copy( context, srcImage, srcMipLevel, srcLayer, ivec2( 0, 0 ), dstImage, dstMipLevel, dstLayer, ivec2( 0, 0 ), size );
+	Image::copy( context, srcImage, srcMipLevel, srcLayer, ivec2( 0, 0 ), dstImage, dstFinalLayout, dstMipLevel, dstLayer, ivec2( 0, 0 ), size );
 }
 
-void Image::copy(  Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer )
+void Image::copy(  Context* context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer )
 {
 	if( ( srcImage->getWidth() != dstImage->getWidth() ) || ( srcImage->getHeight() != dstImage->getHeight() ) ) {
 		return;
 	}
 
-	Image::copy( context, srcImage, srcMipLevel, srcLayer, dstImage, dstMipLevel, dstLayer, ivec2( srcImage->getWidth(), srcImage->getHeight() ) );
+	Image::copy( context, srcImage, srcMipLevel, srcLayer, dstImage, dstFinalLayout, dstMipLevel, dstLayer, ivec2( srcImage->getWidth(), srcImage->getHeight() ) );
 }
 
-void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ci::Area& srcArea, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer, const ci::Area& dstArea )
+void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ci::Area& srcArea, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer, const ci::Area& dstArea )
 {
 	VkCommandPool cmdPool = context->getDefaultCommandPool()->getCommandPool();
 	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool, context );
@@ -834,6 +837,9 @@ void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 
 		cmdBuf->blitImage( srcImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region, VK_FILTER_LINEAR );
 
+		cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, dstFinalLayout );
+		dstImage->setCurrentLayout( dstFinalLayout );
+
 		//cmdBuf->pipelineBarrierImageMemory( srcImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, srcImage->getFinalLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 		//cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, dstImage->getFinalLayout(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 	}
@@ -862,11 +868,11 @@ void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 */
 }
 
-void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, uint32_t dstMipLevel, uint32_t dstLayer )
+void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer )
 {
 	ci::Area srcArea = ci::Area( 0, 0, srcImage->getWidth(), srcImage->getHeight() );
 	ci::Area dstArea = ci::Area( 0, 0, dstImage->getWidth(), dstImage->getHeight() );
-	Image::blit( context, srcImage, srcMipLevel, srcLayer, srcArea, dstImage, dstMipLevel, dstLayer, dstArea );
+	Image::blit( context, srcImage, srcMipLevel, srcLayer, srcArea, dstImage, dstFinalLayout, dstMipLevel, dstLayer, dstArea );
 }
 
 }} // namespace cinder::vk

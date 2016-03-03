@@ -477,7 +477,7 @@ void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t 
 	ImageRef stagingImage = Image::create( srcWidth, srcHeight, srcData, srcRowBytes, srcPixelBytes, ci::Area( 0, 0, srcWidth, srcHeight ), stagingOptions, mImageView->getDevice() );
 
 	if( mFormat.isUnnormalizedCoordinates() ) {
-		Image::copy( context, stagingImage, 0, 0, mImageView->getImage(), 0, 0, ivec2( srcWidth, srcHeight ) );
+		Image::copy( context, stagingImage, 0, 0, mImageView->getImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, 0, ivec2( srcWidth, srcHeight ) );
 	}
 	else {
 		// Use blit to generate mipmaps for each level
@@ -485,7 +485,7 @@ void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t 
 		for( uint32_t mipLevel = 0; mipLevel < mMipLevels; ++mipLevel ) {
 			ci::Area srcArea = ci::Area( 0, 0, srcWidth, srcHeight );
 			ci::Area dstArea = ci::Area( 0, 0, dstSize.x, dstSize.y );
-			Image::blit( context, stagingImage, 0, 0, srcArea, mImageView->getImage(), mipLevel, 0, dstArea );
+			Image::blit( context, stagingImage, 0, 0, srcArea, mImageView->getImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevel, 0, dstArea );
 			dstSize /= 2;
 		}
 	}
@@ -813,7 +813,7 @@ void TextureCubeMap::initialize( int width, int height, const T* srcData, size_t
 	auto context = vk::Context::getCurrent();
 	for( uint32_t face = 0; face < 6; ++face ) {
 		stagingImage->copyData( 0, srcData, srcRowBytes, srcPixelBytes, faceRegions[face].mArea );
-		Image::copy( context, stagingImage, 0, 0, premadeImage, 0, face );
+		Image::copy( context, stagingImage, 0, 0, premadeImage, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, face );
 	}
 
 	initializeFinal( device );

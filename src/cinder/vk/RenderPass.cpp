@@ -405,6 +405,13 @@ void RenderPass::beginRender( const vk::CommandBufferRef& cmdBuf,const vk::Frame
 	}
 */
 
+	// Update the attachment's image layout
+	const auto& fbAttachments = mFramebuffer->getAttachments();
+	for( size_t i = 0; i < mOptions.mAttachments.size(); ++i ) {
+		VkImageLayout currentLayout = mOptions.mAttachments[i].mDescription.initialLayout;
+		fbAttachments[i].getAttachment()->getImage()->setCurrentLayout( currentLayout );
+	}
+
 	// Begin the render pass
 	const auto& clearValues = getAttachmentClearValues();
 	VkRenderPassBeginInfo renderPassBegin;
@@ -436,6 +443,13 @@ void RenderPass::endRender()
 		}
 	}
 */
+
+	// Update the attachment's image layout
+	const auto& fbAttachments = mFramebuffer->getAttachments();
+	for( size_t i = 0; i < mOptions.mAttachments.size(); ++i ) {
+		VkImageLayout currentLayout = mOptions.mAttachments[i].mDescription.finalLayout;
+		fbAttachments[i].getAttachment()->getImage()->setCurrentLayout( currentLayout );
+	}
 
 	// End the command buffer
 	mCommandBuffer->end();
@@ -498,6 +512,13 @@ void RenderPass::beginRenderExplicit( const vk::CommandBufferRef& cmdBuf,const v
 	}
 */
 
+	// Update the attachment's image layout
+	const auto& fbAttachments = mFramebuffer->getAttachments();
+	for( size_t i = 0; i < mOptions.mAttachments.size(); ++i ) {
+		VkImageLayout currentLayout = mOptions.mAttachments[i].mDescription.initialLayout;
+		fbAttachments[i].getAttachment()->getImage()->setCurrentLayout( currentLayout );
+	}
+
 	// Begin the render pass
 	const auto& clearValues = getAttachmentClearValues();
 	VkRenderPassBeginInfo renderPassBegin;
@@ -529,6 +550,13 @@ void RenderPass::endRenderExplicit()
 		}
 	}
 */
+
+	// Update the attachment's image layout
+	const auto& fbAttachments = mFramebuffer->getAttachments();
+	for( size_t i = 0; i < mOptions.mAttachments.size(); ++i ) {
+		VkImageLayout currentLayout = mOptions.mAttachments[i].mDescription.finalLayout;
+		fbAttachments[i].getAttachment()->getImage()->setCurrentLayout( currentLayout );
+	}
 
 	// Command buffer is not ended in explicit mode
 	vk::context()->popCommandBuffer();
