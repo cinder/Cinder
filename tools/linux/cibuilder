@@ -16,7 +16,7 @@ if (( $# == 0 )); then
 	echo -e "\t-es3     Build for OpenGL ES 3.0 instead of Desktop OpenGL"
 	echo -e "\t-es31    Build for OpenGL ES 3.1 instead of Desktop OpenGL"
 	echo -e "\t-es32    Build for OpenGL ES 3.2 instead of Desktop OpenGL"
-	echo -e "\t-vk      Build for Vulkan (in addition to Desktop OpenGL"
+	echo -e "\t-vk      Build for Vulkan instead of Desktop OpenGL"
     echo -e "\t-rpi2    Build for Raspberry Pi 2 (must be on platform)"
     echo -e "\t-r       Rebuild instead of full build"
     echo -e "\t-v       Turns on verbose mode"
