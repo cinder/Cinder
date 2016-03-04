@@ -487,12 +487,6 @@ void RenderPass::beginRenderExplicit( const vk::CommandBufferRef& cmdBuf,const v
 	mCommandBuffer->setViewport( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
 	mCommandBuffer->setScissor( ra.offset.x, ra.offset.y, ra.extent.width, ra.extent.height );
 
-	// Transition attachments' initial layout to 'attachment' layout
-	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
-		const auto& attachment = fbAttach.getAttachment();
-		
-	}
-
 /*
 	// Add barriers to make sure all attachments transition from undefined to what they need to be
 	for( const auto& fbAttach : mFramebuffer->getAttachments() ) {
