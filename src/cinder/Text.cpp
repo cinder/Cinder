@@ -712,22 +712,11 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	delete offscreenBitmap;
 	delete offscreenGraphics;
 #elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	Channel channel( pixelWidth, pixelHeight );
-	ip::fill<uint8_t>( &channel, 0 );
-	FT_Face face = font.getFreetypeFace();
-	int offset = 0;
-	for(string::const_iterator strIt = str.begin(); strIt != str.end(); ++strIt)
-	{
-		FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
-		uint8_t *pBuff = face->glyph->bitmap.buffer;
-		FT_Glyph_Metrics &metrics = face->glyph->metrics;
-		int32_t alignedRowBytes = face->glyph->bitmap.pitch;
-		Channel glyphChannel( face->glyph->bitmap.width, face->glyph->bitmap.rows, alignedRowBytes, 1, pBuff );
-		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), ivec2(offset + (metrics.horiBearingX >> 6), (face->ascender + face->descender - metrics.horiBearingY) >> 6) );
-		offset += metrics.horiAdvance >> 6;
-	}
-	Surface result(channel, SurfaceConstraintsDefault(), true);
-	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
+	Surface result = Surface( pixelWidth, pixelHeight, true, SurfaceConstraintsDefault() );
+	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
+
+	float currentY = line.mAscent + line.mLeadingOffset;
+	line.render( result, currentY, (float)0, (float)pixelWidth );	
 #endif	
 
 	if( baselineOffset )
