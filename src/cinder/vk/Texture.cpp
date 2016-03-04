@@ -780,7 +780,7 @@ void TextureCubeMap::initialize( int width, int height, const T* srcData, size_t
 	float minDim = (float)std::min( imageSize.x, imageSize.y );
 	float maxDim = (float)std::max( imageSize.x, imageSize.y );
 	float aspect = minDim / maxDim;
-	if( abs( aspect - 1 / 6.0f ) < abs( aspect - 3 / 4.0f ) ) { // closer to 1:6 than to 4:3, so row or column
+	if( fabs( aspect - 1 / 6.0f ) < fabs( aspect - 3 / 4.0f ) ) { // closer to 1:6 than to 4:3, so row or column
 		faceRegions = ( imageSize.x > imageSize.y ) ? calcCubeMapHorizontalRegions( width, height ) : calcCubeMapVerticalRegions( width, height );
 	}
 	else { // else, horizontal or vertical cross

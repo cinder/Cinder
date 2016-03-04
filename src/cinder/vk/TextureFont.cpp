@@ -66,7 +66,7 @@ using std::unordered_map;
 
 using namespace std;
 
-//#if 0
+#if 0
 namespace cinder { namespace vk {
 
 #if defined( CINDER_COCOA )
@@ -808,4 +808,4 @@ vector<pair<Font::Glyph,vec2> > TextureFont::getGlyphPlacementsWrapped( const st
 }
 
 } } // namespace cinder::vk
-//#endif
+#endif

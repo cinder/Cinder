@@ -93,11 +93,6 @@ void UniformBuffer::initialize( const UniformLayout::Block& block )
 		size_t dstColumnStrideBytes = glslUniformDataTypeColumnSizeBytesStd140( dataType );
 		size_t srcColumnStrideBytes = glslUniformDataTypeColumnSizeBytes( dataType );
 
-		size_t endOfWrite = startOffset + arrayStride*arraySize;
-		if( endOfWrite > mValues.size() ) {
-			int stopMe = 1;
-		}
-
 		for( size_t arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex ) {
 			size_t arrayOffset = arrayIndex*arrayStride;
 			uint8_t* dst = mValues.data() + startOffset + arrayOffset;
@@ -153,8 +148,8 @@ void UniformBuffer::setValue( const std::string& name, const T& value )
 		size_t leftPos = name.find( "[" );
 		size_t rightPos = name.find( "]" );
 		// All or nothing for brackets
-		if( ( std::string::npos != leftPos ) && ( std::string::npos == rightPos ) ||
-			( std::string::npos == leftPos ) && ( std::string::npos != rightPos ) 
+		if( ( ( std::string::npos != leftPos ) && ( std::string::npos == rightPos ) ) ||
+			( ( std::string::npos == leftPos ) && ( std::string::npos != rightPos ) )
 		) {
 			std::string msg = "Missing bracket in name: " + name;
 			throw std::runtime_error( msg );

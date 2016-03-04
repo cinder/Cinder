@@ -41,6 +41,8 @@
 #include "cinder/vk/platform.h"
 #include "cinder/Thread.h"
 
+#include <algorithm>
+
 namespace cinder { namespace vk { namespace util { 
 
 //! \class TrackedObject

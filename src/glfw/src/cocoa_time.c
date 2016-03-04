@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 OS X - www.glfw.org
+// GLFW 3.2 OS X - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
@@ -43,7 +43,7 @@ static uint64_t getRawTime(void)
 
 // Initialise timer
 //
-void _glfwInitTimer(void)
+void _glfwInitTimerNS(void)
 {
     mach_timebase_info_data_t info;
     mach_timebase_info(&info);

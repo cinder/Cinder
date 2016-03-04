@@ -53,6 +53,10 @@
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 
+#if defined( CINDER_LINUX )
+	#include "glfw/glfw3.h" 
+#endif
+
 #include <boost/algorithm/string.hpp>
 
 namespace cinder { namespace app {
@@ -96,6 +100,7 @@ RendererVk::RendererVk( const RendererVk &renderer )
 {
 #if defined( CINDER_ANDROID )
 #elif defined( CINDER_LINUX )
+	mWindow = renderer.mWindow;
 #elif defined( CINDER_MSW )
 	mWnd = renderer.mWnd;
 #endif
@@ -105,24 +110,25 @@ RendererVk::~RendererVk()
 {
 }
 
-#if defined( CINDER_ANDROID )
-#elif defined( CINDER_LINUX )
-#elif defined( CINDER_MSW )
-void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
+vk::SurfaceRef RendererVk::allocateSurface( const vk::DeviceRef& device )
 {
+	vk::SurfaceRef result;
+#if defined( CINDER_ANDROID )
+	result = vk::Surface::create( mWindow, device.get() );
+#elif defined( CINDER_LINUX )
+	result = vk::Surface::create( mWindow, device.get() );
+#elif defined( CINDER_MSW )
 	::HINSTANCE hInst = ::GetModuleHandle( nullptr );
+	result = vk::Surface::create( hInst, mWnd, device.get() );
+#endif
+	return result;
+}
 
-	mWnd = wnd;
-
-	// Get window dimension
-	::RECT clientRect;
-	::GetClientRect( mWnd, &clientRect );
-	int width = clientRect.right - clientRect.left;
-	int height = clientRect.bottom - clientRect.top;
-	const ivec2 windowSize = ivec2( width, height );
-	
+void RendererVk::setupVulkan( const ivec2& windowSize )
+{
 	// Initialize environment
 	vk::Environment* env = vk::Environment::initializeVulkan( mOptions.mExplicitMode, mOptions.mInstanceLayers, mOptions.mDeviceLayers, mOptions.mDebugReportCallbackFn );	
+CI_LOG_I( "vk::Environment initialized" );
 
 	// Create device
 	const uint32_t gpuIndex = 0;
@@ -132,12 +138,15 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	deviceOptions.setAllocatorBufferBlockSize( mOptions.mAllocatorBufferBlockSize );
 	deviceOptions.setAllocatorImageBlockSize( mOptions.mAllocatorImageBlockSize );
 	vk::DeviceRef device = vk::Device::create( gpu, deviceOptions, env );
+CI_LOG_I( "vk::Device initialized" );
 
 	// Create surface
-	vk::SurfaceRef surface = vk::Surface::create( hInst, mWnd, device.get() );
+	vk::SurfaceRef surface = allocateSurface( device );
+CI_LOG_I( "vk::Surface initialized" );
 
 	// Find the present queue on the device
 	device->getPresentQueueFamilyIndex( surface->getSurface() );
+CI_LOG_I( "Present queue family index found: " << device->getPresentQueueFamilyIndex() );
 
 	// Validate the requested sample count
 	const VkSampleCountFlags supportedSampleCounts = device->getGpuLimits().sampledImageColorSampleCounts;		
@@ -159,6 +168,13 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 			mOptions.mSamples = VK_SAMPLE_COUNT_1_BIT;
 		}
 	}
+
+// Android/x86 is more than likely an IMG chip - force the sample count to VK_SAMPLE_COUNT_1_BIT.
+// IMG chips are incorrectly reporting that it supports more than VK_SAMPLE_COUNT_1_BIT.
+#if defined( CINDER_ANDROID ) && defined( __i386__ )
+	mOptions.mSamples = VK_SAMPLE_COUNT_1_BIT;
+#endif	
+
 CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples ) );
 
 	// Create presentable context
@@ -174,7 +190,42 @@ CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples
 		// Create context
 		mContext = vk::Context::create( presenter, device.get() );
 		mContext->makeCurrent();
+
+		// Create semaphores for rendering
+		const VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+		vkCreateSemaphore( mContext->getDevice()->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
+		vkCreateSemaphore( mContext->getDevice()->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );		
 	}
+}
+
+#if defined( CINDER_ANDROID )
+#elif defined( CINDER_LINUX )
+void RendererVk::setup( void* window, RendererRef sharedRenderer )
+{
+	mWindow = reinterpret_cast<GLFWwindow*>( window );	
+
+	int width = 0;
+	int height = 0;
+	glfwGetFramebufferSize( mWindow, &width, &height );	
+	const ivec2 windowSize = ivec2( width, height );
+
+	setupVulkan( windowSize );	
+}
+#elif defined( CINDER_MSW )
+void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
+{
+	::HINSTANCE hInst = ::GetModuleHandle( nullptr );
+
+	mWnd = wnd;
+
+	// Get window dimension
+	::RECT clientRect;
+	::GetClientRect( mWnd, &clientRect );
+	int width = clientRect.right - clientRect.left;
+	int height = clientRect.bottom - clientRect.top;
+	const ivec2 windowSize = ivec2( width, height );
+	
+	setupVulkan( windowSize );
 }
 
 void RendererVk::kill()
@@ -257,7 +308,12 @@ void RendererVk::defaultResize()
 	makeCurrentContext();
 
 #if defined( CINDER_ANDROID )
+	int width = ANativeWindow_getWidth( mWindow );
+	int height = ANativeWindow_getHeight( mWindow );	
 #elif defined( CINDER_LINUX )
+	int width = 0;
+	int height = 0;
+	glfwGetFramebufferSize( mWindow, &width, &height );	
 #elif defined( CINDER_MSW )
 	::RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
@@ -268,7 +324,6 @@ void RendererVk::defaultResize()
 	//if( ! isExplicitMode() ) 
 	{
 		const ivec2 windowSize = ivec2( width, height );
-		//mContext->initializePresentRender( windowSize, mOptions.mSwapchainImageCount, mOptions.mSamples, mOptions.mPresentMode, mOptions.mDepthStencilFormat );
 		mContext->getPresenter()->resize( windowSize );
 
 		vk::viewport( 0, 0, width, height );

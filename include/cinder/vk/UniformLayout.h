@@ -275,7 +275,7 @@ public:
 		vk::TextureBaseRef					mTexture;
 
 		// These functions force their type since in most cases mBinding is set before it's know what the binding is needed.
-		void setBinding( int32_t binding ) { mBinding = binding; Binding::Type::BLOCK; }
+		void setBinding( int32_t binding ) { mBinding = binding; }
 		void setBlockSizeBytes( size_t sizeBytes ) { mBlock.setSizeBytes( sizeBytes ); }
 		void setTexture( const vk::TextureBaseRef& texture ) { mTexture = texture; mType = Binding::Type::SAMPLER; }
 		friend class UniformLayout;

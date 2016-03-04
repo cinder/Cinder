@@ -55,7 +55,7 @@ namespace cinder { namespace vk {
 void draw( const Texture2dRef &texture, const Rectf &dstRect )
 {
 	vec2 uv0 = vec2( 0.0f, 0.0f );
-	vec2 uv1 = texture->getFormat().isUnnormalizedCoordinates() ? texture->getSize() : vec2( 1.0f, 1.0f );
+	vec2 uv1 = texture->getFormat().isUnnormalizedCoordinates() ? vec2( texture->getSize() ) : vec2( 1.0f, 1.0f );
 
 	// Triangle strip
 	std::vector<float> data = {

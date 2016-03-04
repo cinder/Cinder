@@ -41,17 +41,25 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/vk/platform.h"
 
+#if defined( CINDER_LINUX )
+	typedef struct GLFWwindow GLFWwindow;
+#endif 
+
 namespace cinder { namespace vk {
 
 class CommandBuffer;
 class Context;
+class Device;
 class Framebuffer;
 class RenderPass;
+class Surface;
 class Swapchain;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 using ContextRef = std::shared_ptr<Context>;
+using DeviceRef = std::shared_ptr<Device>;
 using FramebufferRef = std::shared_ptr<Framebuffer>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
+using SurfaceRef = std::shared_ptr<Surface>;
 using SwapchainRef = std::shared_ptr<Swapchain>;
 
 }} // namespace cinder::vk
@@ -123,6 +131,7 @@ class RendererVk : public Renderer {
 
 #if defined( CINDER_ANDROID )
 #elif defined( CINDER_LINUX )
+	virtual void		setup( void* window, RendererRef sharedRenderer ) override;	
 #elif defined( CINDER_MSW )
 	virtual HWND		getHwnd() override { return mWnd; }
 	virtual void		setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
@@ -144,9 +153,12 @@ class RendererVk : public Renderer {
 	RendererVk( const RendererVk &renderer );
 
   private:
+	vk::SurfaceRef		allocateSurface( const vk::DeviceRef& device );
+  	void 				setupVulkan( const ivec2& windowSize );
 
 #if defined( CINDER_ANDROID )
 #elif defined( CINDER_LINUX )
+	GLFWwindow			*mWindow = nullptr;  	
 #elif defined( CINDER_MSW )
 	HWND				mWnd = nullptr;
 #endif

@@ -37,13 +37,23 @@
 */
 
 #include "cinder/vk/Surface.h"
+#include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Device.h"
 #include "cinder/vk/Environment.h"
+#include "cinder/Log.h"
+
+#if defined( CINDER_LINUX )
+	#include "glfw/glfw3.h" 
+#endif
 
 namespace cinder { namespace vk {
 
 #if defined( CINDER_ANDROID )
+Surface::Surface( ANativeWindow *nativeWindow, vk::Device *device )
+	: mWindow( nativeWindow ), mDevice( device )
 #elif defined( CINDER_LINUX )
+Surface::Surface( GLFWwindow *window, vk::Device *device )
+	: mWindow( window ), mDevice( device )	
 #elif defined( CINDER_MSW )
 Surface::Surface( ::HINSTANCE connection, ::HWND window, vk::Device *device )
 	: mConnection( connection ), mWindow( window ), mDevice( device )
@@ -59,12 +69,16 @@ Surface::~Surface()
 
 void Surface::initialize()
 {
-	VkResult U_ASSERT_ONLY res;
+	VkResult U_ASSERT_ONLY res = VK_NOT_READY;
 
-	// Construct the surface description:
 #if defined( CINDER_ANDROID )
+	VkAndroidSurfaceCreateInfoKHR createInfo = {};
+ 	createInfo.sType		= VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+	createInfo.pNext		= nullptr;
+	createInfo.window		= mWindow;	
+	res = mDevice->getEnv()->CreateAndroidSurfaceKHR( mDevice->getEnv()->getVulkanInstance(), &createInfo, nullptr, &mSurface );
 #elif defined( CINDER_LINUX )
-    res = vkCreateXcbSurfaceKHR( mEnvironment->getVulkanInstance(), mConnection, mWindow, nullptr, &info.surface );
+	res = glfwCreateWindowSurface( mDevice->getEnv()->getVulkanInstance(), mWindow, NULL, &mSurface );
 #elif defined( CINDER_MSW )
     VkWin32SurfaceCreateInfoKHR createInfo = {};
     createInfo.sType		= VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
@@ -138,6 +152,7 @@ void Surface::initialize()
         assert( formatCount >= 1 );
         mFormat = surfFormats[0].format;
     }
+CI_LOG_I( "Surface format: " << toStringVkFormat( mFormat ) );
 
 	mDevice->trackedObjectCreated( this );
 }
@@ -156,10 +171,24 @@ void Surface::destroy( bool removeFromTracking )
 	}
 }
 
+#if defined( CINDER_ANDROID )
+SurfaceRef Surface::create( ANativeWindow *nativeWindow, vk::Device *device )
+{
+	SurfaceRef result = SurfaceRef( new Surface( nativeWindow, device ) );
+	return result;	
+}
+#elif defined( CINDER_LINUX )
+SurfaceRef Surface::create( GLFWwindow *window, vk::Device *device )
+{
+	SurfaceRef result = SurfaceRef( new Surface( window, device ) );
+	return result;
+}
+#elif defined( CINDER_MSW )
 SurfaceRef Surface::create( ::HINSTANCE connection, ::HWND window, vk::Device *device )
 {
 	SurfaceRef result = SurfaceRef( new Surface( connection, window, device ) );
 	return result;
 }
+#endif
 
 }} // namespace cinder::vk

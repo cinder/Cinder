@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.1 POSIX - www.glfw.org
+// GLFW 3.2 POSIX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
@@ -59,14 +59,14 @@ static uint64_t getRawTime(void)
 
 // Initialise timer
 //
-void _glfwInitTimer(void)
+void _glfwInitTimerPOSIX(void)
 {
 #if defined(CLOCK_MONOTONIC)
     struct timespec ts;
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
     {
-        _glfw.posix_time.monotonic = GL_TRUE;
+        _glfw.posix_time.monotonic = GLFW_TRUE;
         _glfw.posix_time.resolution = 1e-9;
     }
     else

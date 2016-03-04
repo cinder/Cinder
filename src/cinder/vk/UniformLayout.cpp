@@ -347,8 +347,8 @@ void UniformLayout::setUniformValue( GlslUniformDataType dataType, const std::st
 	size_t leftPos = name.find( "[" );
 	size_t rightPos = name.find( "]" );
 	// All or nothing for brackets
-	if( ( std::string::npos != leftPos ) && ( std::string::npos == rightPos ) ||
-		( std::string::npos == leftPos ) && ( std::string::npos != rightPos ) 
+	if( ( ( std::string::npos != leftPos ) && ( std::string::npos == rightPos ) ) ||
+		( ( std::string::npos == leftPos ) && ( std::string::npos != rightPos ) )
 	) {
 		std::string msg = "Missing bracket in name: " + name;
 		throw std::runtime_error( msg );
@@ -395,11 +395,11 @@ void UniformLayout::setUniformValue( GlslUniformDataType dataType, const std::st
 		return;
 	}
 
-	size_t arrayStride = glslUniformDataTypeSizeBytesStd140( dataType );
+	// UNUSED: size_t arrayStride = glslUniformDataTypeSizeBytesStd140( dataType );
 	size_t columnCount = glslUniformDataTypeColumnCount( dataType );
 	size_t dstColumnStrideBytes = glslUniformDataTypeColumnSizeBytesStd140( dataType );
 	size_t srcColumnStrideBytes = glslUniformDataTypeColumnSizeBytes( dataType );
-	size_t startOffset = uniform.getOffset();
+	// UNUSED: size_t startOffset = uniform.getOffset();
 
 	if( -1 != arrayIndex ) {
 		// Update specific element
