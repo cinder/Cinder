@@ -42,6 +42,14 @@
 
 namespace cinder { namespace vk {
 
+VkDeviceSize calcAlignedOffset( VkDeviceSize offset, VkDeviceSize align )
+{
+	VkDeviceSize n = offset / align;
+	VkDeviceSize r = offset % align;
+	VkDeviceSize result = ( n + ( r > 0 ? 1 : 0 ) ) * align;
+	return result;
+}
+
 // -------------------------------------------------------------------------------------------------
 // Allocator::Block
 // -------------------------------------------------------------------------------------------------
@@ -56,11 +64,11 @@ VkDeviceSize Allocator::Block::getRemaining() const
 	return result;
 }
 
-bool Allocator::Block::hasAvailable( VkDeviceSize amount ) const
+bool Allocator::Block::hasAvailable( VkMemoryRequirements memReqs ) const
 {
-	VkDeviceSize remaining = getRemaining();
-	bool result = amount <= remaining;
-	return result;
+	VkDeviceSize alignedOffst = calcAlignedOffset( mOffset, memReqs.alignment );
+	VkDeviceSize remaining = mSize - std::min( alignedOffst, mSize );
+	return memReqs.size < remaining;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -126,40 +134,40 @@ AllocatorRef Allocator::create( size_t bufferBlockSize, size_t imageBlockSize, v
 }
 
 template <typename VkObjectT>
-bool Allocator::allocateObject( Allocations<VkObjectT>* allocations, vk::Device* device, VkObjectT object, bool transient, VkMemoryRequirements memoryRequirements, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
+bool Allocator::allocateObject( Allocations<VkObjectT>* allocations, vk::Device* device, VkObjectT object, bool transient, VkMemoryRequirements memReqs, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
 {
 	// Find the memory type index that fits memory requirements
 	uint32_t memoryTypeIndex = 0;
-	bool foundMemory = device->findMemoryType( memoryRequirements.memoryTypeBits, memoryProperty, &memoryTypeIndex );
+	bool foundMemory = device->findMemoryType( memReqs.memoryTypeBits, memoryProperty, &memoryTypeIndex );
 	assert( foundMemory );
-
-	VkDeviceSize n = memoryRequirements.size / memoryRequirements.alignment;
-	VkDeviceSize r = memoryRequirements.size % memoryRequirements.alignment;
-	VkDeviceSize alignedSize = ( n + ( r > 0 ? 1 : 0 ) ) * memoryRequirements.alignment;
 
 	const VkDeviceSize blockSize = allocations->mBlockSize;
 	std::vector<BlockRef>& blocks = allocations->mBlocks;
 	std::map<VkObjectT, BlockRef>& transientBlocks = allocations->mTransientBlocks;
 
 	// Check to see if a block has available memory
-	if( ( alignedSize < blockSize ) && ( ! transient ) ) {
+	if( ( memReqs.size < blockSize ) && ( ! transient ) ) {
 		auto it = std::find_if(
 			std::begin( blocks ),
 			std::end( blocks ),
-			[memoryTypeIndex, memoryRequirements]( const Allocator::BlockRef& elem ) -> bool {
+			[memoryTypeIndex, memReqs]( const Allocator::BlockRef& elem ) -> bool {
 				bool isMemoryType = ( elem->mMemoryTypeIndex == memoryTypeIndex);
-				bool hasSpace = elem->hasAvailable( memoryRequirements.size );
+				bool hasSpace = elem->hasAvailable( memReqs );
 				return isMemoryType && hasSpace;
 			}
 		);
 
 		if( std::end( blocks ) != it ) {
+			auto& block = *it;
+			const VkDeviceSize initialOffset = block->mOffset; 
+			const VkDeviceSize alignedOffset = calcAlignedOffset( initialOffset, memReqs.alignment );
+			const VkDeviceSize allocatedSize = memReqs.size;
 			// Update result
-			*outMemory = (*it)->mMemory;
-			*outOffset = (*it)->mOffset;
-			*outAllocatedSize = alignedSize;
+			*outMemory = block->mMemory;
+			*outOffset = alignedOffset;
+			*outAllocatedSize = allocatedSize;
 			// Move offset
-			(*it)->mOffset += alignedSize;
+			block->mOffset += ( alignedOffset + allocatedSize );
 			return true;
 		}
 	}
@@ -168,16 +176,16 @@ bool Allocator::allocateObject( Allocations<VkObjectT>* allocations, vk::Device*
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.pNext           = nullptr;
-	allocInfo.allocationSize  = ( transient ? alignedSize : std::max<VkDeviceSize>( blockSize, alignedSize ) );
+	allocInfo.allocationSize  = ( transient ? memReqs.size : std::max<VkDeviceSize>( blockSize, memReqs.size ) );
 	allocInfo.memoryTypeIndex = memoryTypeIndex;
 	VkResult res = vkAllocateMemory( device->getDevice(), &allocInfo, nullptr, outMemory );
 	if( VK_SUCCESS == res ) {
 		BlockRef newBlock = BlockRef( new Block( memoryTypeIndex, *outMemory, blockSize ) );
 		// Update result
 		*outOffset = 0;
-		*outAllocatedSize = alignedSize;
+		*outAllocatedSize = memReqs.size;
 		// Move offset
-		newBlock->mOffset += alignedSize;
+		newBlock->mOffset += memReqs.size;
 		// Store block
 		if( transient ) {
 			transientBlocks[object] = std::move( newBlock );

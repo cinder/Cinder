@@ -90,7 +90,7 @@ private:
 		virtual ~Block() {}
 	
 		VkDeviceSize	getRemaining() const;
-		bool			hasAvailable( VkDeviceSize amount ) const;
+		bool			hasAvailable( VkMemoryRequirements ) const;
 	};
 	//
 	using BlockRef = std::unique_ptr<Block>;
