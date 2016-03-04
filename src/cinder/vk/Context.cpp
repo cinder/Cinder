@@ -214,7 +214,7 @@ void Context::popSubPass()
 	popStackState( mSubPassStack );
 }
 
-void Context::setSubPass( uint32_t subPass )
+void Context::setSubpass( uint32_t subPass )
 {
 	setStackState( mSubPassStack, subPass );
 }
@@ -960,7 +960,7 @@ const std::vector<VkPipelineColorBlendAttachmentState>&	Context::getColorBlendAt
 	uint32_t minSize = 0;
 	if( this->getRenderPass() ) {
 		uint32_t subPass = this->getSubPass();
-		uint32_t count = this->getRenderPass()->getSubPassColorAttachmentCount( subPass );
+		uint32_t count = this->getRenderPass()->getSubpassColorAttachmentCount( subPass );
 		minSize = std::max( minSize, count );
 	}
 

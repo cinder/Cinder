@@ -33,6 +33,7 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
 
+
 #if defined( CINDER_GL_ES )
 	::glfwDefaultWindowHints();
 	::glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
@@ -55,6 +56,10 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
   #endif
 
 #else // Desktop
+  #if defined( CINDER_VULKAN )
+	::glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	std::cout << "Rendering with Vulkan" << std::endl;
+  #else 	
 	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
 	int32_t majorVersion = options.getVersion().first;
 	int32_t minorVersion = options.getVersion().second;
@@ -67,6 +72,7 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	else {
 		std::cout << "Rendering with OpenGL " << majorVersion << "." << minorVersion << std::endl;		
 	}
+  #endif	
 #endif
 
 	auto windowSize = format.getSize();

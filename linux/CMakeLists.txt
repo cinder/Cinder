@@ -61,6 +61,10 @@ if( CINDER_GL_ES_2 OR CINDER_GL_ES_3 OR CINDER_GL_ES_3_1 OR CINDER_GL_ES_3_2 )
 	endif()
 endif() # For Desktop we keep the defaults.
 
+if( CINDER_VULKAN )
+	list( APPEND CINDER_DEFINITIONS "-DCINDER_VULKAN" )
+endif()
+
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
@@ -181,6 +185,17 @@ include(${CMAKE_MODULE_PATH}/CinderSources.cmake)
 # Required defaults
 list( APPEND CINDER_LIBS_DEPENDS dl )
 list( APPEND CINDER_LIBS_DEPENDS pthread )
+
+# Vulkan
+if( CINDER_VULKAN )
+    list( APPEND CINDER_LIBS_DEPENDS 	
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libvulkan.so"
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libglslang.a"
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libOGLCompiler.a"
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libOSDependent.a"
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libSPIRV.a"
+	)	
+endif()
 
 ### If this is set then we should be on Desktop.
 if( CINDER_USE_SYSTEM_GL_HEADERS )

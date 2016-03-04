@@ -41,17 +41,25 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/vk/platform.h"
 
+#if defined( CINDER_LINUX )
+	typedef struct GLFWwindow GLFWwindow;
+#endif 
+
 namespace cinder { namespace vk {
 
 class CommandBuffer;
 class Context;
+class Device;
 class Framebuffer;
 class RenderPass;
+class Surface;
 class Swapchain;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 using ContextRef = std::shared_ptr<Context>;
+using DeviceRef = std::shared_ptr<Device>;
 using FramebufferRef = std::shared_ptr<Framebuffer>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
+using SurfaceRef = std::shared_ptr<Surface>;
 using SwapchainRef = std::shared_ptr<Swapchain>;
 
 }} // namespace cinder::vk
@@ -69,23 +77,23 @@ class RendererVk : public Renderer {
 		Options() {}
 		virtual ~Options() {}
 
-		Options&				setExplicitMode( bool value = true ) { mExplicitMode = value; return *this; }
-		bool					getExplicitMode() const { return mExplicitMode; }
+		Options&						setExplicitMode( bool value = true ) { mExplicitMode = value; return *this; }
+		bool							getExplicitMode() const { return mExplicitMode; }
 
-		Options&				setSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
-		VkSampleCountFlagBits	getSamples() const { return mSamples; }
+		Options&						setSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
+		VkSampleCountFlagBits			getSamples() const { return mSamples; }
 
-		Options&				setSwapchainImageCount( uint32_t value ) { mSwapchainImageCount = std::max<uint32_t>( 2, value ); return *this; }
-		uint32_t				getSwapchainImageCount() const { return mSwapchainImageCount; }
+		Options&						setSwapchainImageCount( uint32_t value ) { mSwapchainImageCount = std::max<uint32_t>( 2, value ); return *this; }
+		uint32_t						getSwapchainImageCount() const { return mSwapchainImageCount; }
 
-		Options&				setWorkQueueCount( uint32_t value ) { mGraphicsQueueCount = value; return *this; }
-		uint32_t				getWorkQueueCount() const { return mGraphicsQueueCount; }
+		Options&						setWorkQueueCount( uint32_t value ) { mGraphicsQueueCount = value; return *this; }
+		uint32_t						getWorkQueueCount() const { return mGraphicsQueueCount; }
 
-		Options&				setDepthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
-		VkFormat				getDepthStencilFormat() const { return mDepthStencilFormat; }
+		Options&						setDepthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
+		VkFormat						getDepthStencilFormat() const { return mDepthStencilFormat; }
 
-		Options&				setPresentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
-		VkPresentModeKHR		getPresentMode() const { return mPresentMode; }
+		Options&						setPresentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
+		VkPresentModeKHR				getPresentMode() const { return mPresentMode; }
 
 		//! Param 'layers' should be a semicolon delimited list of layer names
 		Options&						setLayers( const std::string& layers );
@@ -96,16 +104,21 @@ class RendererVk : public Renderer {
 		Options&						setDebugReportCallbackFn( vk::DebugReportCallbackFn fn ) { mDebugReportCallbackFn = fn; return *this; }
 		vk::DebugReportCallbackFn		getDebugReportCallbackfn() const { return mDebugReportCallbackFn; }
 
+		Options&						setAllocatorBufferBlockSize( VkDeviceSize value ) { mAllocatorBufferBlockSize = value; return *this; }
+		Options&						setAllocatorImageBlockSize( VkDeviceSize value ) { mAllocatorImageBlockSize = value; return *this; }
+		Options&						setAllocatorBlockSize( VkDeviceSize bufferBlockSize, VkDeviceSize imageBlockSize ) { mAllocatorBufferBlockSize = bufferBlockSize; mAllocatorImageBlockSize = imageBlockSize; return *this; }
 	private:
-		bool					mExplicitMode = false;
-		uint32_t				mGraphicsQueueCount = 1;
-		uint32_t				mSwapchainImageCount = 2;
-		VkSampleCountFlagBits	mSamples = VK_SAMPLE_COUNT_1_BIT;
-		VkFormat				mDepthStencilFormat = VK_FORMAT_D16_UNORM;
-		VkPresentModeKHR		mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
+		bool						mExplicitMode = false;
+		uint32_t					mGraphicsQueueCount = 1;
+		uint32_t					mSwapchainImageCount = 2;
+		VkSampleCountFlagBits		mSamples = VK_SAMPLE_COUNT_1_BIT;
+		VkFormat					mDepthStencilFormat = VK_FORMAT_D16_UNORM;
+		VkPresentModeKHR			mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
 		std::vector<std::string>	mInstanceLayers;
 		std::vector<std::string>	mDeviceLayers;
 		vk::DebugReportCallbackFn	mDebugReportCallbackFn = nullptr;
+		VkDeviceSize				mAllocatorBufferBlockSize = 0; //64*1024*1024;
+		VkDeviceSize				mAllocatorImageBlockSize = 0; //64*1024*1024;
 		friend class RendererVk;
 	};
 	
@@ -118,6 +131,7 @@ class RendererVk : public Renderer {
 
 #if defined( CINDER_ANDROID )
 #elif defined( CINDER_LINUX )
+	virtual void		setup( void* window, RendererRef sharedRenderer ) override;	
 #elif defined( CINDER_MSW )
 	virtual HWND		getHwnd() override { return mWnd; }
 	virtual void		setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
@@ -139,9 +153,12 @@ class RendererVk : public Renderer {
 	RendererVk( const RendererVk &renderer );
 
   private:
+	vk::SurfaceRef		allocateSurface( const vk::DeviceRef& device );
+  	void 				setupVulkan( const ivec2& windowSize );
 
 #if defined( CINDER_ANDROID )
 #elif defined( CINDER_LINUX )
+	GLFWwindow			*mWindow = nullptr;  	
 #elif defined( CINDER_MSW )
 	HWND				mWnd = nullptr;
 #endif

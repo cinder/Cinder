@@ -37,6 +37,7 @@
 */
 
 #include "cinder/vk/Buffer.h"
+#include "cinder/vk/Allocator.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Device.h"
 
@@ -113,6 +114,18 @@ void Buffer::createBufferAndAllocate( size_t size )
 	res = vkCreateBuffer( mDevice->getDevice(), &createInfo, nullptr, &mBuffer );
 	assert( res == VK_SUCCESS );
 
+	//mDevice->getAllocator()->lockBuffer();
+	{
+		bool allocated = mDevice->getAllocator()->allocate( mBuffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &mMemory, &mAllocationOffset, &mAllocationSize );
+		assert( allocated );
+
+		// Bind memory
+		res = vkBindBufferMemory( mDevice->getDevice(), mBuffer, mMemory, mAllocationOffset );
+		assert( res == VK_SUCCESS );
+	}
+	//mDevice->getAllocator()->unlockBuffer();
+
+/*
 	// Get memory requirements
 	VkMemoryRequirements memoryRequirements;
 	vkGetBufferMemoryRequirements( mDevice->getDevice(), mBuffer, &memoryRequirements);
@@ -137,6 +150,9 @@ void Buffer::createBufferAndAllocate( size_t size )
 	res = vkBindBufferMemory( mDevice->getDevice(), mBuffer, mMemory, 0 );
 	assert( res == VK_SUCCESS );
 
+	mAllocationSize = allocInfo.allocationSize;
+*/
+
 	// Assign new size
 	mSize = size;
 
@@ -148,15 +164,17 @@ void Buffer::createBufferAndAllocate( size_t size )
 
 void Buffer::destroyBufferAndFree()
 {
-	if( VK_NULL_HANDLE != mMemory ) {
-		vkFreeMemory( mDevice->getDevice(), mMemory, nullptr );
-		mMemory = VK_NULL_HANDLE;
-	}
-
 	if( VK_NULL_HANDLE != mBuffer ) {
 		vkDestroyBuffer( mDevice->getDevice(), mBuffer, nullptr );
 		mBuffer = VK_NULL_HANDLE;
 	}
+
+/*
+	if( VK_NULL_HANDLE != mMemory ) {
+		vkFreeMemory( mDevice->getDevice(), mMemory, nullptr );
+		mMemory = VK_NULL_HANDLE;
+	}
+*/
 
 	mSize = 0;
 }
@@ -165,7 +183,7 @@ void* Buffer::map( VkDeviceSize offset )
 {
 	if( nullptr == mMappedAddress ) {
 		VkMemoryMapFlags flags = 0;
-		VkResult result = vkMapMemory( mDevice->getDevice(), mMemory, offset, mSize, flags, &mMappedAddress );
+		VkResult result = vkMapMemory( mDevice->getDevice(), mMemory, mAllocationOffset + offset, mSize, flags, &mMappedAddress );
 		if( VK_SUCCESS != result ) {
 			mMappedAddress = nullptr;
 		}

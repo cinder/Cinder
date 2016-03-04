@@ -219,7 +219,7 @@ ImageViewRef ImageView::create( int32_t width, VkFormat format, VkImage image, v
 	return result;
 }
 
-ImageViewRef ImageView::create( int32_t width, int32_t height, VkFormat format, VkImage image, vk::Device *device )
+ImageViewRef ImageView::create( int32_t width, int32_t height, VkFormat format, VkImage image,vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;

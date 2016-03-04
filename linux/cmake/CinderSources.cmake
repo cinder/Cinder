@@ -26,6 +26,12 @@ if( NOT CINDER_LINUX_EGL_RPI2 )
 			${CINDER_SRC_DIR}/glload/gl_load.c
 			${CINDER_SRC_DIR}/glload/glx_load.c
 		)
+
+		if( CINDER_VULKAN )
+			list( APPEND CINDER_C_SRC_FILES
+				${CINDER_SRC_DIR}/glfw/src/vulkan.c
+			) 
+		endif()
 	endif()
 endif()
 
@@ -269,4 +275,47 @@ if( NOT CINDER_GL_ES )
 		${CINDER_SRC_DIR}/AntTweakBar/TwOpenGLCore.cpp
 		${CINDER_SRC_DIR}/AntTweakBar/TwMgr.cpp
 	)
+
+	if( CINDER_VULKAN )
+		list( APPEND CINDER_CXX_SRC_FILES
+			${CINDER_SRC_DIR}/cinder/app/RendererVk.cpp
+
+			${CINDER_SRC_DIR}/cinder/vk/Allocator.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Batch.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Buffer.cpp
+			${CINDER_SRC_DIR}/cinder/vk/CommandBuffer.cpp
+			${CINDER_SRC_DIR}/cinder/vk/CommandPool.cpp
+			${CINDER_SRC_DIR}/cinder/vk/ConstantConversion.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Context.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Descriptor.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Device.cpp
+			${CINDER_SRC_DIR}/cinder/vk/draw.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Environment.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Framebuffer.cpp
+			${CINDER_SRC_DIR}/cinder/vk/func.cpp
+			${CINDER_SRC_DIR}/cinder/vk/glsl_types.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Image.cpp
+			${CINDER_SRC_DIR}/cinder/vk/ImageView.cpp
+			${CINDER_SRC_DIR}/cinder/vk/IndexBuffer.cpp
+			${CINDER_SRC_DIR}/cinder/vk/ObjectTracker.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Pipeline.cpp
+			${CINDER_SRC_DIR}/cinder/vk/PipelineSelector.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Presenter.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Queue.cpp
+			${CINDER_SRC_DIR}/cinder/vk/RenderPass.cpp
+			${CINDER_SRC_DIR}/cinder/vk/scoped.cpp
+			${CINDER_SRC_DIR}/cinder/vk/ShaderProg.cpp
+			${CINDER_SRC_DIR}/cinder/vk/StateManager.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Surface.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Swapchain.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Texture.cpp
+			${CINDER_SRC_DIR}/cinder/vk/TextureFont.cpp
+			${CINDER_SRC_DIR}/cinder/vk/UniformBuffer.cpp
+			${CINDER_SRC_DIR}/cinder/vk/UniformLayout.cpp
+			${CINDER_SRC_DIR}/cinder/vk/VertexBuffer.cpp
+			${CINDER_SRC_DIR}/cinder/vk/VertexBufferMesh.cpp
+			${CINDER_SRC_DIR}/cinder/vk/wrapper.cpp
+			${CINDER_SRC_DIR}/cinder/vk/util/farmhash.cc
+		)
+	endif()
 endif()

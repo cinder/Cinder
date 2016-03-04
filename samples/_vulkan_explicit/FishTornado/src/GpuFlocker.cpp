@@ -82,17 +82,23 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	mVelocityTextures[1] = vk::Texture2d::create( FBO_RES, FBO_RES, texFormat );
 
 	for( size_t i = 0; i < 2; ++i ) {
+		ci::vk::RenderPass::Attachment attachment0 = ci::vk::RenderPass::Attachment( textureFormat )
+			.setInitialLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
+			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+		ci::vk::RenderPass::Attachment attachment1 = ci::vk::RenderPass::Attachment( textureFormat )
+			.setInitialLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
+			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 		auto renderPassOptions = ci::vk::RenderPass::Options()
-			.addAttachment( ci::vk::RenderPass::Attachment( textureFormat ) )	// color attachment 0
-			.addAttachment( ci::vk::RenderPass::Attachment( textureFormat ) )	// color attachment 1
+			.addAttachment( attachment0 )	// color attachment 0
+			.addAttachment( attachment1 )	// color attachment 1
 			.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 0 ) )
 			.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 1 ) );
 
 		ci::vk::RenderPass::SubpassDependency spd = ci::vk::RenderPass::SubpassDependency( 0, 1 );
 		spd.setSrcStageMask( VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
-		spd.setDstStageMask(VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
+		spd.setDstStageMask(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT  );
 		spd.setSrcAccess( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
-		spd.setDstAccess( VK_ACCESS_COLOR_ATTACHMENT_READ_BIT );
+		spd.setDstAccess( VK_ACCESS_SHADER_READ_BIT );
 		renderPassOptions.addSubpassDependency( spd );
 
 		mRenderPasses[i] = ci::vk::RenderPass::create( renderPassOptions );

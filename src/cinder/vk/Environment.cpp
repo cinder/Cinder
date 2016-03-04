@@ -37,6 +37,7 @@
 */
 
 #include "cinder/vk/Environment.h"
+#include "cinder/vk/ConstantConversion.h" 
 #include "cinder/vk/Device.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/Log.h"
@@ -259,18 +260,21 @@ void Environment::initInstance()
 #endif
 	instanceExtensionNames.insert( instanceExtensionNames.begin(), VK_KHR_SURFACE_EXTENSION_NAME );
 
-    VkInstanceCreateInfo createInfo = {};
-    createInfo.sType					= VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    createInfo.pNext					= nullptr;
-    createInfo.flags					= 0;
-    createInfo.pApplicationInfo			= &appInfo;
-    createInfo.enabledLayerCount		= static_cast<uint32_t>( instanceLayerNames.size() );
-    createInfo.ppEnabledLayerNames		= instanceLayerNames.empty() ? nullptr : instanceLayerNames.data();
-    createInfo.enabledExtensionCount	= static_cast<uint32_t>( instanceExtensionNames.size() );
-    createInfo.ppEnabledExtensionNames	= instanceExtensionNames.empty() ?  nullptr : instanceExtensionNames.data();
+	VkInstanceCreateInfo createInfo = {};
+	createInfo.sType					= VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	createInfo.pNext					= nullptr;
+	createInfo.flags					= 0;
+	createInfo.pApplicationInfo			= &appInfo;
+	createInfo.enabledLayerCount		= static_cast<uint32_t>( instanceLayerNames.size() );
+	createInfo.ppEnabledLayerNames		= instanceLayerNames.empty() ? nullptr : instanceLayerNames.data();
+	createInfo.enabledExtensionCount	= static_cast<uint32_t>( instanceExtensionNames.size() );
+	createInfo.ppEnabledExtensionNames	= instanceExtensionNames.empty() ?  nullptr : instanceExtensionNames.data();
 
-    VkResult res = vkCreateInstance( &createInfo, nullptr, &mVulkanInstance );
-    assert( res == VK_SUCCESS );
+	VkResult res = vkCreateInstance( &createInfo, nullptr, &mVulkanInstance );
+	if( VK_SUCCESS != res ) {
+		CI_LOG_E( "vkCreateInstance failed: " << toStringVkResult( res ) );
+	}
+	assert( res == VK_SUCCESS );
 }
 
 void Environment::initEnumerateDevice()

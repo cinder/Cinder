@@ -129,8 +129,7 @@ public:
 	VkFormat				getFormat() const { return mImage->getFormat(); }
 	VkImageAspectFlags		getAspectMask() const { return mImage->getAspectMask(); }
 
-	VkImageLayout			getImageLayout() const { return mImage->getImageLayout(); }
-	void					setImageLayout( const VkImageLayout targetLayout ) { mImage->setImageLayout( targetLayout ); }
+	VkImageLayout			getInitialLayout() const { return mImage->getInitialLayout(); }
 
 protected:
 	// Derived objects should use this c'tor

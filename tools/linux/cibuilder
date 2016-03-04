@@ -16,6 +16,7 @@ if (( $# == 0 )); then
 	echo -e "\t-es3     Build for OpenGL ES 3.0 instead of Desktop OpenGL"
 	echo -e "\t-es31    Build for OpenGL ES 3.1 instead of Desktop OpenGL"
 	echo -e "\t-es32    Build for OpenGL ES 3.2 instead of Desktop OpenGL"
+	echo -e "\t-vk      Build for Vulkan instead of Desktop OpenGL"
     echo -e "\t-rpi2    Build for Raspberry Pi 2 (must be on platform)"
     echo -e "\t-r       Rebuild instead of full build"
     echo -e "\t-v       Turns on verbose mode"
@@ -30,7 +31,7 @@ CLEAN=false
 BUILD_TYPES=(Debug)
 NUMPROCS=$( nproc )
 GLES=
-OPENGL_PLAT="ogl"
+GRFX_PLAT="ogl"
 CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=ogl"
 CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING="
 FULLBUILD=true
@@ -46,7 +47,7 @@ if [ "$DISTRIBUTION_ID" == "Raspbian" ]; then
     GLES="-DCINDER_GL_ES_2=1"
     CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es2-rpi2"
     CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es2"
-    OPENGL_PLAT="es2-rpi2"
+    GRFX_PLAT="es2-rpi2"
 fi
 
 _CORE_COUNT=$(getconf _NPROCESSORS_CONF)
@@ -115,7 +116,7 @@ do
         # OpenGL ES 2.0
         -es2)
             GLES="-DCINDER_GL_ES_2=1"
-			OPENGL_PLAT="es2"
+			GRFX_PLAT="es2"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es2"
             CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es2"
 			shift 1
@@ -124,7 +125,7 @@ do
         # OpenGL ES 3.0
         -es3)
             GLES="-DCINDER_GL_ES_3=1"
-			OPENGL_PLAT="es3"
+			GRFX_PLAT="es3"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es3"
             CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es3"
 			shift 1
@@ -133,7 +134,7 @@ do
         # OpenGL ES 3.1
         -es31)
             GLES="-DCINDER_GL_ES_3_1=1"
-			OPENGL_PLAT="es31"
+			GRFX_PLAT="es31"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es31"
             CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es31"
 			shift 1
@@ -142,11 +143,20 @@ do
         # OpenGL ES 3.2
         -es32)
             GLES="-DCINDER_GL_ES_3_2=1"
-			OPENGL_PLAT="es32"
+			GRFX_PLAT="es32"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es32"
             CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es32"
 			shift 1
         ;;
+
+		# Vulkan
+		-vk)
+            VULKAN="-DCINDER_VULKAN=1"
+			GRFX_PLAT="vk"
+            CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=vk"
+            CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-vk"
+			shift 1			
+		;;
 
 		# Raspberry Pi 2
 		-rpi2)
@@ -154,7 +164,7 @@ do
 			GLES="-DCINDER_GL_ES_2=1"
             CINDER_OUT_DIR_PREFIX="-DCINDER_OUT_DIR_PREFIX:STRING=es2-rpi2"
             CINDER_LIB_SUFFIX="-DCINDER_LIB_SUFFIX:STRING=-es2"
-			OPENGL_PLAT="es2-rpi2"
+			GRFX_PLAT="es2-rpi2"
 			shift 1
 		;;
 
@@ -204,12 +214,12 @@ fi
 
 for build in ${BUILD_TYPES[@]}; do
 	build_type=${build}
-	build_dir=$(pwd)/${build}/${OPENGL_PLAT}
+	build_dir=$(pwd)/${build}/${GRFX_PLAT}
 
 	if [ ${APP_BUILD} == true ]; then
-		build_dir=$(pwd)/${build}/${OPENGL_PLAT}
+		build_dir=$(pwd)/${build}/${GRFX_PLAT}
 	else
-		build_dir=${SCRIPT_DIR}/../../linux/${build}/${OPENGL_PLAT}
+		build_dir=${SCRIPT_DIR}/../../linux/${build}/${GRFX_PLAT}
 	fi
 
 	# Clean
@@ -247,8 +257,8 @@ for build in ${BUILD_TYPES[@]}; do
 
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
-		echo "CMAKE COMMAND: cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}"
-		cmake ../.. --no-warn-unused-cli -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}
+		echo "CMAKE COMMAND: cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${VULKAN} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}"
+		cmake ../.. --no-warn-unused-cli -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${VULKAN} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}
 	fi
 	make -j ${NUMPROCS} ${VERBOSE}
 

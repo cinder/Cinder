@@ -10,6 +10,12 @@ else()
     list( APPEND CINDER_INCLUDE_DIRS
 		${CINDER_INC_DIR}/glfw
 	)
+
+	if( CINDER_VULKAN )
+		list( APPEND CINDER_INCLUDE_DIRS
+			${CINDER_DIR}/tools/vulkan/include
+		)		
+	endif()
 endif()
 
 list( APPEND CINDER_INCLUDE_DIRS

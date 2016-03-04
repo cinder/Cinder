@@ -332,7 +332,7 @@ void Batch::draw( int32_t first, int32_t count )
 	pipelineSelector->setCullMode( ctx->getCullMode() );
 	pipelineSelector->setFrontFace( ctx->getFrontFace() );
 	pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
-	pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubPassSampleCount( ctx->getSubPass() ) );
+	pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubPass() ) );
 	pipelineSelector->setDepthTest( ctx->getDepthTest() );
 	pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 	pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
@@ -399,7 +399,7 @@ void Batch::drawInstanced( uint32_t instanceCount )
 	pipelineSelector->setCullMode( ctx->getCullMode() );
 	pipelineSelector->setFrontFace( ctx->getFrontFace() );
 	pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
-	pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubPassSampleCount( ctx->getSubPass() ) );
+	pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubPass() ) );
 	pipelineSelector->setDepthTest( ctx->getDepthTest() );
 	pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 	pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );

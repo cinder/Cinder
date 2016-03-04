@@ -95,8 +95,11 @@ public:
 
 		try {	
 			// Render pass
+			vk::RenderPass::Attachment attachment = vk::RenderPass::Attachment( mTextureShadowMap->getFormat().getInternalFormat() )
+				.setInitialLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
+				.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 			vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
-				.addAttachment( vk::RenderPass::Attachment( mTextureShadowMap->getFormat().getInternalFormat() ) );
+				.addAttachment( attachment );
 			vk::RenderPass::Subpass subpasses = vk::RenderPass::Subpass()
 				.addDepthStencilAttachment( 0 );
 			renderPassOptions.addSubPass( subpasses );

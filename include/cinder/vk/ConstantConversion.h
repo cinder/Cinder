@@ -42,6 +42,8 @@
 
 namespace cinder { namespace vk {
 
+std::string toStringVkResult( VkResult v );	
+
 std::string toStringVkPresentMode( VkPresentModeKHR v );
 std::string toStringVkFormat( VkFormat v );
 std::string toStringVkCullMode( VkCullModeFlagBits v );
