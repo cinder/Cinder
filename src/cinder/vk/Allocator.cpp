@@ -67,10 +67,12 @@ bool Allocator::Block::hasAvailable( VkDeviceSize amount ) const
 // Allocator
 // -------------------------------------------------------------------------------------------------
 Allocator::Allocator( size_t bufferBlockSize, size_t imageBlockSize, vk::Device* device )
-	: vk::BaseDeviceObject( device ), mBufferBlockSize( bufferBlockSize ), mImageBlockSize( imageBlockSize )
+	: vk::BaseDeviceObject( device )
 {
-	CI_LOG_I( "vk::Allocator::mBufferBlockSize: " << mBufferBlockSize );
-	CI_LOG_I( "vk::Allocator::mImageBlockSize: " << mImageBlockSize );
+	mBufferAllocations.mBlockSize = bufferBlockSize;
+	mImageAllocations.mBlockSize = imageBlockSize;
+	CI_LOG_I( "vk::Allocator::mBufferAllocations.mBlockSize: " << mBufferAllocations.mBlockSize );
+	CI_LOG_I( "vk::Allocator::mImageAllocations.mBlockSize: " << mImageAllocations.mBlockSize );
 
 	//mBufferLock = std::unique_lock<std::mutex>( mBufferMutex );
 	//mImageLock = std::unique_lock<std::mutex>( mImageMutex );
@@ -88,18 +90,32 @@ void Allocator::initialize()
 void Allocator::destroy()
 {
 	{
-		std::lock_guard<std::mutex> bufferLock( mBufferMutex );
-		std::lock_guard<std::mutex> imageLock( mImageMutex );
+		std::lock_guard<std::mutex> bufferLock( mBufferAllocations.mMutex );
+		std::lock_guard<std::mutex> imageLock( mImageAllocations.mMutex );
 
-		for( auto& block : mBufferBlocks ) {
+		// Buffers
+		for( auto& block : mBufferAllocations.mBlocks ) {
 			vkFreeMemory( mDevice->getDevice(), block->mMemory, nullptr );
 		}
-		mBufferBlocks.clear();
+		mBufferAllocations.mBlocks.clear();
 
-		for( auto& block : mImageBlocks ) {
+		for( auto& it : mBufferAllocations.mTransientBlocks ) {
+			auto& block = it.second;
 			vkFreeMemory( mDevice->getDevice(), block->mMemory, nullptr );
 		}
-		mImageBlocks.clear();
+		mBufferAllocations.mTransientBlocks.clear();
+
+		// Images
+		for( auto& block : mImageAllocations.mBlocks ) {
+			vkFreeMemory( mDevice->getDevice(), block->mMemory, nullptr );
+		}
+		mImageAllocations.mBlocks.clear();
+
+		for( auto& it : mImageAllocations.mTransientBlocks ) {
+			auto& block = it.second;
+			vkFreeMemory( mDevice->getDevice(), block->mMemory, nullptr );
+		}
+		mImageAllocations.mTransientBlocks.clear();
 	}
 }
 
@@ -109,30 +125,8 @@ AllocatorRef Allocator::create( size_t bufferBlockSize, size_t imageBlockSize, v
 	return result;
 }
 
-/*
-void Allocator::lockBuffer()
-{
-	mBufferLock.lock();
-}
-
-void Allocator::unlockBuffer()
-{
-	mBufferLock.unlock();
-}
-
-void Allocator::lockImage()
-{
-	mImageLock.lock();
-}
-
-void Allocator::unlockImage()
-{
-	mImageLock.unlock();
-}
-*/
-
 template <typename VkObjectT>
-bool Allocator::allocateObject( vk::Device* device, std::vector<Allocator::BlockRef>* blocks, const VkDeviceSize blockSize, VkMemoryRequirements memoryRequirements, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
+bool Allocator::allocateObject( Allocations<VkObjectT>* allocations, vk::Device* device, VkObjectT object, bool transient, VkMemoryRequirements memoryRequirements, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
 {
 	// Find the memory type index that fits memory requirements
 	uint32_t memoryTypeIndex = 0;
@@ -143,11 +137,15 @@ bool Allocator::allocateObject( vk::Device* device, std::vector<Allocator::Block
 	VkDeviceSize r = memoryRequirements.size % memoryRequirements.alignment;
 	VkDeviceSize alignedSize = ( n + ( r > 0 ? 1 : 0 ) ) * memoryRequirements.alignment;
 
+	const VkDeviceSize blockSize = allocations->mBlockSize;
+	std::vector<BlockRef>& blocks = allocations->mBlocks;
+	std::map<VkObjectT, BlockRef>& transientBlocks = allocations->mTransientBlocks;
+
 	// Check to see if a block has available memory
-	if( alignedSize < blockSize ) {
+	if( ( alignedSize < blockSize ) && ( ! transient ) ) {
 		auto it = std::find_if(
-			std::begin( *blocks ),
-			std::end( *blocks ),
+			std::begin( blocks ),
+			std::end( blocks ),
 			[memoryTypeIndex, memoryRequirements]( const Allocator::BlockRef& elem ) -> bool {
 				bool isMemoryType = ( elem->mMemoryTypeIndex == memoryTypeIndex);
 				bool hasSpace = elem->hasAvailable( memoryRequirements.size );
@@ -155,7 +153,7 @@ bool Allocator::allocateObject( vk::Device* device, std::vector<Allocator::Block
 			}
 		);
 
-		if( std::end( *blocks ) != it ) {
+		if( std::end( blocks ) != it ) {
 			// Update result
 			*outMemory = (*it)->mMemory;
 			*outOffset = (*it)->mOffset;
@@ -170,7 +168,7 @@ bool Allocator::allocateObject( vk::Device* device, std::vector<Allocator::Block
 	VkMemoryAllocateInfo allocInfo = {};
 	allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.pNext           = nullptr;
-	allocInfo.allocationSize  = std::max<VkDeviceSize>( blockSize, alignedSize );
+	allocInfo.allocationSize  = ( transient ? alignedSize : std::max<VkDeviceSize>( blockSize, alignedSize ) );
 	allocInfo.memoryTypeIndex = memoryTypeIndex;
 	VkResult res = vkAllocateMemory( device->getDevice(), &allocInfo, nullptr, outMemory );
 	if( VK_SUCCESS == res ) {
@@ -181,7 +179,12 @@ bool Allocator::allocateObject( vk::Device* device, std::vector<Allocator::Block
 		// Move offset
 		newBlock->mOffset += alignedSize;
 		// Store block
-		blocks->push_back( std::move( newBlock ) );
+		if( transient ) {
+			transientBlocks[object] = std::move( newBlock );
+		}
+		else {
+			blocks.push_back( std::move( newBlock ) );
+		}
 
 		return true;
 	}
@@ -189,9 +192,9 @@ bool Allocator::allocateObject( vk::Device* device, std::vector<Allocator::Block
 	return false;
 }
 
-bool Allocator::allocate( VkBuffer buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
+bool Allocator::allocateBuffer( VkBuffer buffer, bool transient, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
 {
-	std::lock_guard<std::mutex> lock( mBufferMutex );
+	std::lock_guard<std::mutex> lock( mBufferAllocations.mMutex );
 	*outMemory = VK_NULL_HANDLE;
 	*outOffset = 0;
 
@@ -199,13 +202,13 @@ bool Allocator::allocate( VkBuffer buffer, VkMemoryPropertyFlags memoryProperty,
 	VkMemoryRequirements memoryRequirements;
 	vkGetBufferMemoryRequirements( mDevice->getDevice(), buffer, &memoryRequirements);
 
-	bool result = allocateObject<VkBuffer>( mDevice, &mBufferBlocks, mBufferBlockSize, memoryRequirements, memoryProperty, outMemory, outOffset, outAllocatedSize );
+	bool result = allocateObject<VkBuffer>( &mBufferAllocations, mDevice, buffer, transient, memoryRequirements, memoryProperty, outMemory, outOffset, outAllocatedSize );
 	return result;
 }
 
-bool Allocator::allocate( VkImage image, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
+bool Allocator::allocateImage( VkImage image, bool transient, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
 {
-	std::lock_guard<std::mutex> lock( mImageMutex );
+	std::lock_guard<std::mutex> lock( mImageAllocations.mMutex );
 	*outMemory = VK_NULL_HANDLE;
 	*outOffset = 0;
 
@@ -213,8 +216,38 @@ bool Allocator::allocate( VkImage image, VkMemoryPropertyFlags memoryProperty, V
 	VkMemoryRequirements memoryRequirements;
 	vkGetImageMemoryRequirements( mDevice->getDevice(), image, &memoryRequirements );
 
-	bool result = allocateObject<VkImage>( mDevice, &mBufferBlocks, mImageBlockSize, memoryRequirements, memoryProperty, outMemory, outOffset, outAllocatedSize );
+	bool result = allocateObject<VkImage>( &mImageAllocations, mDevice, image, transient, memoryRequirements, memoryProperty, outMemory, outOffset, outAllocatedSize );
 	return result;
+}
+
+void Allocator::freeTransientBuffer( VkBuffer buffer )
+{
+	std::lock_guard<std::mutex> lock( mBufferAllocations.mMutex );
+
+	auto it = mBufferAllocations.mTransientBlocks.find( buffer );
+	if( it != mBufferAllocations.mTransientBlocks.end() ) {
+		// Free memory
+		auto& block = it->second;
+		vkFreeMemory( mDevice->getDevice(), block->mMemory, nullptr );
+		block->mMemory = VK_NULL_HANDLE;
+		// Erase object from map
+		mBufferAllocations.mTransientBlocks.erase( buffer );
+	}
+}
+
+void Allocator::freeTransientImage( VkImage image )
+{
+	std::lock_guard<std::mutex> lock( mImageAllocations.mMutex );
+
+	auto it = mImageAllocations.mTransientBlocks.find( image );
+	if( it != mImageAllocations.mTransientBlocks.end() ) {
+		// Free memory
+		auto& block = it->second;
+		vkFreeMemory( mDevice->getDevice(), block->mMemory, nullptr );
+		block->mMemory = VK_NULL_HANDLE;
+		// Erase object from map
+		mImageAllocations.mTransientBlocks.erase( image );
+	}
 }
 
 }} // namespace cinder::vk

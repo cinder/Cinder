@@ -109,6 +109,9 @@ public:
 		Format&					setCreateFlags( VkImageCreateFlagBits value ) { mCreateFlags |= value; return *this; }
 		VkImageCreateFlags		getCreateFlags() const { return mCreateFlags; }
 
+		Format&					setTransientAllocation( bool value = true ) { mTransientAllocation = value; return *this; }
+		bool					getTransientAllocation() const { return mTransientAllocation; }
+
 	private:
 		VkFormat				mInternalFormat  = VK_FORMAT_UNDEFINED;
 		VkSampleCountFlagBits	mSamples = VK_SAMPLE_COUNT_1_BIT;
@@ -121,6 +124,8 @@ public:
 		uint32_t				mArrayLayers = 1;
 
 		VkImageCreateFlags		mCreateFlags = 0;
+
+		bool					mTransientAllocation = false;
 
 		friend class Image;
 	};

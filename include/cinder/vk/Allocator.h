@@ -39,6 +39,8 @@
 #include "cinder/vk/BaseVkObject.h"
 #include "cinder/Thread.h"
 
+#include <map>
+
 namespace cinder { namespace vk {
 
 class Device;
@@ -69,21 +71,14 @@ public:
 
 	static AllocatorRef create( size_t bufferBlockSize, size_t imageBlockSize, vk::Device* device );
 	
-/*
-	void	lockBuffer();
-	void	unlockBuffer();
-	void	lockImage();
-	void	unlockImage();
-*/
+	bool	allocateBuffer( VkBuffer buffer, bool transient, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize );
+	bool	allocateImage( VkImage image, bool transient, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize );
 
-	bool	allocate( VkBuffer buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize );
-	bool	allocate( VkImage image, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize );
+	void	freeTransientBuffer( VkBuffer buffer );
+	void	freeTransientImage( VkImage image );
 
 private:
 	Allocator( size_t bufferBlockSize, size_t imageBlockSize, vk::Device* device );
-
-	size_t	mBufferBlockSize = 0;
-	size_t	mImageBlockSize = 0;
 
 	struct Block {
 		uint32_t		mMemoryTypeIndex = UINT32_MAX;
@@ -100,20 +95,33 @@ private:
 	//
 	using BlockRef = std::unique_ptr<Block>;
 
+	template <typename VkObjectT>
+	struct Allocations {
+		size_t							mBlockSize;
+		std::mutex						mMutex;
+		std::vector<BlockRef>			mBlocks;
+		std::map<VkObjectT, BlockRef>	mTransientBlocks;
+	};
+
+	Allocations<VkBuffer>			mBufferAllocations;
+	Allocations<VkImage>			mImageAllocations;
+
+/*
 	std::mutex						mBufferMutex;
-	//std::unique_lock<std::mutex>	mBufferLock;
 	std::vector<BlockRef>			mBufferBlocks;
+	std::map<VkBuffer, BlockRef>	mBufferTransientBlocks;
 
 	std::mutex						mImageMutex;
-	//std::unique_lock<std::mutex>	mImageLock;
 	std::vector<BlockRef>			mImageBlocks;
+	std::map<VkImage, BlockRef>		mImageTransientBlocks;
+*/
 
 	void initialize();
 	void destroy();
 	friend class Device;
 
 	template <typename VkObjectT>
-	bool allocateObject( vk::Device* device, std::vector<BlockRef>* blocks, const VkDeviceSize blockSize, VkMemoryRequirements memoryRequirements, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize );
+	bool allocateObject( Allocations<VkObjectT>* allocations, vk::Device* device, VkObjectT object, bool transient, VkMemoryRequirements memoryRequirements, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize );
 };
 
 }} // namespace cinder::vk

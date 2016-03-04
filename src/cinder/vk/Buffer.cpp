@@ -114,16 +114,13 @@ void Buffer::createBufferAndAllocate( size_t size )
 	res = vkCreateBuffer( mDevice->getDevice(), &createInfo, nullptr, &mBuffer );
 	assert( res == VK_SUCCESS );
 
-	//mDevice->getAllocator()->lockBuffer();
-	{
-		bool allocated = mDevice->getAllocator()->allocate( mBuffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &mMemory, &mAllocationOffset, &mAllocationSize );
-		assert( allocated );
+	// Allocate memory
+	bool allocated = mDevice->getAllocator()->allocateBuffer( mBuffer, false, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &mMemory, &mAllocationOffset, &mAllocationSize );
+	assert( allocated );
 
-		// Bind memory
-		res = vkBindBufferMemory( mDevice->getDevice(), mBuffer, mMemory, mAllocationOffset );
-		assert( res == VK_SUCCESS );
-	}
-	//mDevice->getAllocator()->unlockBuffer();
+	// Bind memory
+	res = vkBindBufferMemory( mDevice->getDevice(), mBuffer, mMemory, mAllocationOffset );
+	assert( res == VK_SUCCESS );
 
 /*
 	// Get memory requirements

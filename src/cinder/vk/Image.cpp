@@ -187,16 +187,13 @@ void Image::initialize()
 		res = vkCreateImage( mDevice->getDevice(), &imageCreateInfo, nullptr, &mImage );
 		assert(res == VK_SUCCESS);
 
-		//mDevice->getAllocator()->lockImage();
-		{
-			bool allocated = mDevice->getAllocator()->allocate( mImage, mOptions.mMemoryProperty, &mMemory, &mAllocationOffset, &mAllocationSize );
-			assert( allocated );
+		// Allocate memory
+		bool allocated = mDevice->getAllocator()->allocateImage( mImage, mOptions.mTransientAllocation, mOptions.mMemoryProperty, &mMemory, &mAllocationOffset, &mAllocationSize );
+		assert( allocated );
 
-			// Bind memory
-			res = vkBindImageMemory( mDevice->getDevice(), mImage, mMemory, mAllocationOffset );
-			assert(res == VK_SUCCESS);
-		}
-		//mDevice->getAllocator()->unlockImage();
+		// Bind memory
+		res = vkBindImageMemory( mDevice->getDevice(), mImage, mMemory, mAllocationOffset );
+		assert(res == VK_SUCCESS);
 
 		mOwnsImage = true;
 
@@ -243,7 +240,11 @@ void Image::destroy( bool removeFromTracking )
 
 	if( mOwnsImage ) {
 		if( VK_NULL_HANDLE != mImage ) {
+			// Destroy
 			vkDestroyImage( mDevice->getDevice(), mImage, nullptr );
+			// Remove from transient - allocator will check this
+			mDevice->getAllocator()->freeTransientImage( mImage );
+			// Null out image
 			mImage = VK_NULL_HANDLE;
 		}
 

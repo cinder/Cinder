@@ -473,7 +473,8 @@ void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t 
 		.setSamples( VK_SAMPLE_COUNT_1_BIT )
 		.setTilingLinear()
 		.setMemoryPropertyHostVisible()
-		.setUsageTransferSource();
+		.setUsageTransferSource()
+		.setTransientAllocation();
 	ImageRef stagingImage = Image::create( srcWidth, srcHeight, srcData, srcRowBytes, srcPixelBytes, ci::Area( 0, 0, srcWidth, srcHeight ), stagingOptions, mImageView->getDevice() );
 
 	if( mFormat.isUnnormalizedCoordinates() ) {
@@ -807,7 +808,8 @@ void TextureCubeMap::initialize( int width, int height, const T* srcData, size_t
 		.setSamples( VK_SAMPLE_COUNT_1_BIT )
 		.setTilingLinear()
 		.setMemoryPropertyHostVisible()
-		.setUsageTransferSource();
+		.setUsageTransferSource()
+		.setTransientAllocation();
 	ImageRef stagingImage = Image::create( faceSize.x, faceSize.y, stagingOptions, device );
 
 	auto context = vk::Context::getCurrent();
