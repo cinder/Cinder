@@ -108,6 +108,11 @@ void FishTornadoApp::setup()
 	mTimeMulti			= 6.0f;
 	
 #if defined( THREADED_LOAD )
+	mLightLoaded	= false;
+	mOceanLoaded	= false;
+	mSharkLoaded	= false;
+	mFishLoaded		= false;
+
 	// The goal here is to demonstrate the flexibility of multi-threaded resources
 	// loading in Vulkan not the most efficient way to do it. 
 	auto primaryCtx = vk::context();

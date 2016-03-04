@@ -188,7 +188,13 @@ list( APPEND CINDER_LIBS_DEPENDS pthread )
 
 # Vulkan
 if( CINDER_VULKAN )
-    list( APPEND CINDER_LIBS_DEPENDS 	"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libvulkan.so" )	
+    list( APPEND CINDER_LIBS_DEPENDS 	
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libvulkan.so"
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libglslang.a"
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libOGLCompiler.a"
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libOSDependent.a"
+		"${CINDER_DIR}/tools/vulkan/lib/linux/x86_64/libSPIRV.a"
+	)	
 endif()
 
 ### If this is set then we should be on Desktop.

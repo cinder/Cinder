@@ -104,10 +104,10 @@ private:
 	std::shared_ptr<std::thread>	mOceanLoadThread;
 	std::shared_ptr<std::thread>	mSharkLoadThread;
 	std::shared_ptr<std::thread>	mFishLoadThread;
-	std::atomic<bool>				mLightLoaded	= false;
-	std::atomic<bool>				mOceanLoaded	= false;
-	std::atomic<bool>				mSharkLoaded	= false;
-	std::atomic<bool>				mFishLoaded		= false;
+	std::atomic<bool>				mLightLoaded;
+	std::atomic<bool>				mOceanLoaded;
+	std::atomic<bool>				mSharkLoaded;
+	std::atomic<bool>				mFishLoaded;
 	bool							mCanAnimate		= false;
 #else 
 	std::atomic<bool>		mLightLoaded = true;
