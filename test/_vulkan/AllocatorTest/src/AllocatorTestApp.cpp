@@ -7,10 +7,10 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-/** \class BasicApp
+/** \class AllocatorTestApp
  *
  */
-class BasicApp : public App {
+class AllocatorTestApp : public App {
 public:
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
@@ -23,20 +23,20 @@ private:
 	void drawBlendingTests();
 };
 
-void BasicApp::setup()
+void AllocatorTestApp::setup()
 {
 	mTex = vk::Texture::create( *Surface::create( loadImage( getAssetPath( "bloom.jpg" 	) ) ) );
 }
 
-void BasicApp::mouseDown( MouseEvent event )
+void AllocatorTestApp::mouseDown( MouseEvent event )
 {
 }
 
-void BasicApp::update()
+void AllocatorTestApp::update()
 {
 }
 
-void BasicApp::drawBlendingTests()
+void AllocatorTestApp::drawBlendingTests()
 {
 	vk::enableAlphaBlending();
 	{
@@ -71,7 +71,7 @@ void BasicApp::drawBlendingTests()
 	}
 }
 
-void BasicApp::draw()
+void AllocatorTestApp::draw()
 {
 	vk::cullMode( VK_CULL_MODE_BACK_BIT );
 	vk::disableBlending();
@@ -80,4 +80,4 @@ void BasicApp::draw()
 	drawBlendingTests();
 }
 
-CINDER_APP( BasicApp, RendererVk )
+CINDER_APP( AllocatorTestApp, RendererVk )
