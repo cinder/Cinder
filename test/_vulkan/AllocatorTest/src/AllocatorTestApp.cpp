@@ -3,6 +3,8 @@
 #include "cinder/vk/vk.h"
 #include "cinder/GeomIo.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Rand.h"
+#include "cinder/Log.h"
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -18,14 +20,33 @@ public:
 	void draw() override;
 
 private:
-	vk::TextureRef	mTex;
-
-	void drawBlendingTests();
 };
 
 void AllocatorTestApp::setup()
 {
-	mTex = vk::Texture::create( *Surface::create( loadImage( getAssetPath( "bloom.jpg" 	) ) ) );
+	std::vector<ivec2> imageSizes = {
+		ivec2(  1,  1 ),
+		ivec2( 32, 32 ),
+		ivec2( 31, 65 ),
+		ivec2( 127, 65 ),
+		ivec2( 257, 513 ),
+		ivec2( 571, 1873 ),
+	};
+
+	ci::randSeed( 0xDEADBEEF );
+	
+	for( size_t i = 0; i < 100; ++i ) {
+		int width = ci::randInt( 1, 2000 ); //vk::context()->getDevice()->getGpuLimits().maxImageDimension2D );
+		int height = ci::randInt( 1, 2000 ); //vk::context()->getDevice()->getGpuLimits().maxImageDimension2D );
+		imageSizes.push_back( ivec2( width, height ) );
+	}
+
+	for( const auto& imageSize : imageSizes ) {
+		ci::Surface surf( imageSize.x, imageSize.y, true );
+		vk::TextureRef tex = vk::Texture::create( surf );
+		CI_LOG_I( "Successfully created texture for size: " << imageSize );
+	}
+	CI_LOG_I( "Image test successful" );
 }
 
 void AllocatorTestApp::mouseDown( MouseEvent event )
@@ -36,48 +57,8 @@ void AllocatorTestApp::update()
 {
 }
 
-void AllocatorTestApp::drawBlendingTests()
-{
-	vk::enableAlphaBlending();
-	{
-		vk::ScopedColor color( ColorA( 1, 0, 0, 0.5f ) );
-		vk::drawSolidRect( Rectf( 50, 50, 250, 250 ) );
-	}
-
-	{
-		vk::ScopedColor color( ColorA( 0, 1, 0, 0.5f ) );
-		vk::drawSolidRect( Rectf( 50, 50, 250, 250 ) + vec2( 50, 50 ) );
-	}
-
-	{
-		vk::ScopedColor color( ColorA( 0, 0, 1, 0.5f ) );
-		vk::drawSolidRect( Rectf( 50, 50, 250, 250 ) + vec2( 100, 100 ) );
-	}
-
-	vk::enableAdditiveBlending();
-	{
-		vk::ScopedColor color( ColorA( 1, 0, 0, 0.5f ) );
-		vk::drawSolidRect( Rectf( 350, 50, 550, 250 ) );
-	}
-
-	{
-		vk::ScopedColor color( ColorA( 0, 1, 0, 0.5f ) );
-		vk::drawSolidRect( Rectf( 350, 50, 550, 250 ) + vec2( 50, 50 ) );
-	}
-
-	{
-		vk::ScopedColor color( ColorA( 0, 0, 1, 0.5f ) );
-		vk::drawSolidRect( Rectf( 350, 50, 550, 250 ) + vec2( 100, 100 ) );
-	}
-}
-
 void AllocatorTestApp::draw()
 {
-	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-	vk::disableBlending();
-	vk::draw( mTex, getWindowBounds() );
-
-	drawBlendingTests();
 }
 
-CINDER_APP( AllocatorTestApp, RendererVk )
+CINDER_APP( AllocatorTestApp, RendererVk( RendererVk::Options().setAllocatorBlockSize( vk::Allocator::_64MB, vk::Allocator::_64MB ) ) )

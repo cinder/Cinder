@@ -103,9 +103,8 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\AllocatorTest.cpp" />
+    <ClCompile Include="..\src\AllocatorTestApp.cpp" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>

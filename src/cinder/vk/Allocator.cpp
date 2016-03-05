@@ -162,6 +162,8 @@ bool Allocator::allocateObject( Allocations<VkObjectT>* allocations, vk::Device*
 			const VkDeviceSize initialOffset = block->mOffset; 
 			const VkDeviceSize alignedOffset = calcAlignedOffset( initialOffset, memReqs.alignment );
 			const VkDeviceSize allocatedSize = memReqs.size;
+			// Make sure the offset is aligned
+			assert( 0 == ( alignedOffset % memReqs.alignment ) );
 			// Update result
 			*outMemory = block->mMemory;
 			*outOffset = alignedOffset;
