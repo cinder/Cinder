@@ -115,8 +115,11 @@ void Buffer::createBufferAndAllocate( size_t size )
 	assert( res == VK_SUCCESS );
 
 	// Allocate memory
-	bool allocated = mDevice->getAllocator()->allocateBuffer( mBuffer, false, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &mMemory, &mAllocationOffset, &mAllocationSize );
-	assert( allocated );
+	Allocator::Allocation alloc = mDevice->getAllocator()->allocateBuffer( mBuffer, false, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+	assert( VK_NULL_HANDLE != alloc.getMemory() );
+	mMemory				= alloc.getMemory();
+	mAllocationOffset	= alloc.getOffset();
+	mAllocationSize		= alloc.getSize();
 
 	// Bind memory
 	res = vkBindBufferMemory( mDevice->getDevice(), mBuffer, mMemory, mAllocationOffset );

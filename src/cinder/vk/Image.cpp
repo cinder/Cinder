@@ -188,8 +188,11 @@ void Image::initialize()
 		assert(res == VK_SUCCESS);
 
 		// Allocate memory
-		bool allocated = mDevice->getAllocator()->allocateImage( mImage, mOptions.mTransientAllocation, mOptions.mMemoryProperty, &mMemory, &mAllocationOffset, &mAllocationSize );
-		assert( allocated );
+		Allocator::Allocation alloc = mDevice->getAllocator()->allocateImage( mImage, mOptions.mTransientAllocation, mOptions.mMemoryProperty );
+		assert( VK_NULL_HANDLE != alloc.getMemory() );
+		mMemory				= alloc.getMemory();
+		mAllocationOffset	= alloc.getOffset();
+		mAllocationSize		= alloc.getSize();
 
 		// Bind memory
 		res = vkBindImageMemory( mDevice->getDevice(), mImage, mMemory, mAllocationOffset );
@@ -309,7 +312,8 @@ ImageRef Image::create( int32_t width, int32_t height, const uint8_t *srcData, s
 			Image::Format stagingOptions = Image::Format( initialOptions.getInternalFormat() )
 				.setSamples( VK_SAMPLE_COUNT_1_BIT )
 				.setTilingLinear()
-				.setMemoryPropertyHostVisible();
+				.setMemoryPropertyHostVisible()
+				.setTransientAllocation();
 			ImageRef stagingImage = ImageRef( new Image( width, height, srcData, srcRowBytes,  srcPixelBytes, srcRegion, stagingOptions, device ) );
 
 			Image::Format resultOptions = Image::Format( initialOptions.getInternalFormat() )
@@ -328,7 +332,8 @@ ImageRef Image::create( int32_t width, int32_t height, const uint8_t *srcData, s
 				.setSamples( VK_SAMPLE_COUNT_1_BIT )
 				.setTilingLinear()
 				.setMemoryPropertyHostVisible()
-				.setUsage( hasLinearTilingSampledImage( device, initialOptions.getInternalFormat() ) ? VK_IMAGE_USAGE_SAMPLED_BIT : VK_IMAGE_USAGE_TRANSFER_SRC_BIT );
+				.setUsage( hasLinearTilingSampledImage( device, initialOptions.getInternalFormat() ) ? VK_IMAGE_USAGE_SAMPLED_BIT : VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
+				.setTransientAllocation( initialOptions.getTransientAllocation() );
 			result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, resultOptions, device ) );
 		}
 	}
