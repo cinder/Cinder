@@ -152,6 +152,8 @@ public:
 	const vk::ImageViewRef&			getImageView() const { return mImageView; }
 	const VkDescriptorImageInfo&	getImageInfo() const { return mImageInfo; }
 
+	uint32_t						getMipLevels() const { return mMipLevels; }
+
 protected:
 	vk::ImageViewRef				mImageView;
 

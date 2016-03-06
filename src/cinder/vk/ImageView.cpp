@@ -93,7 +93,7 @@ void ImageView::initialize( VkImageViewType viewType, VkImageType imageType, int
     imageViewCreateInfo.sType							= VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     imageViewCreateInfo.pNext							= nullptr;
     imageViewCreateInfo.viewType						= mViewType;
-    imageViewCreateInfo.format							= mImage->getFormat();
+    imageViewCreateInfo.format							= mImage->getInternalFormat();
     imageViewCreateInfo.flags							= 0;
 	imageViewCreateInfo.image							= mImage->getImage();
 	imageViewCreateInfo.subresourceRange.baseMipLevel   = 0;
@@ -135,7 +135,7 @@ void ImageView::initialize( VkImageViewType viewType, VkImageType imageType, int
     imageViewCreateInfo.sType							= VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     imageViewCreateInfo.pNext							= nullptr;
     imageViewCreateInfo.viewType						= mViewType;
-    imageViewCreateInfo.format							= mImage->getFormat();
+    imageViewCreateInfo.format							= mImage->getInternalFormat();
     imageViewCreateInfo.flags							= 0;
 	imageViewCreateInfo.image							= mImage->getImage();
 	imageViewCreateInfo.subresourceRange.baseMipLevel   = 0;
@@ -241,7 +241,7 @@ ImageViewRef ImageView::create( int32_t width, const vk::ImageRef& premadeImage,
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_1D;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, premadeImage->getOptions(), premadeImage, device ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_1D, width, 1, 1, premadeImage->getFormat(), premadeImage, device ) );
 	return result;
 }
 
@@ -249,7 +249,7 @@ ImageViewRef ImageView::create( int32_t width, int32_t height, const vk::ImageRe
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, premadeImage->getOptions(), premadeImage, device ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_2D, width, height, 1, premadeImage->getFormat(), premadeImage, device ) );
 	return result;
 }
 
@@ -257,7 +257,7 @@ ImageViewRef ImageView::create( int32_t width, int32_t height, int32_t depth, co
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_3D;
-	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, premadeImage->getOptions(), premadeImage, device ) );
+	ImageViewRef result = ImageViewRef( new ImageView( viewType, VK_IMAGE_TYPE_3D, width, height, depth, premadeImage->getFormat(), premadeImage, device ) );
 	return result;
 }
 
@@ -265,8 +265,8 @@ ImageViewRef ImageView::createCube( int32_t width, int32_t height, const vk::Ima
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	// Image view type of CUBE and CUBE_ARRAY requires at least 6 elements in imageOptions.arrayLayers
-	assert( premadeImage && ( premadeImage->getOptions().getArrayLayers() >= 6 ) );	
-	ImageViewRef result = ImageViewRef( new ImageView( VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_TYPE_2D, width, height, 1, premadeImage->getOptions(), premadeImage, device ) );
+	assert( premadeImage && ( premadeImage->getFormat().getArrayLayers() >= 6 ) );	
+	ImageViewRef result = ImageViewRef( new ImageView( VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_TYPE_2D, width, height, 1, premadeImage->getFormat(), premadeImage, device ) );
 	return result;
 }
 

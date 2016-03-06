@@ -87,7 +87,7 @@ public:
 		Format&					setUsageDepthStencilAttachment( bool exclusive = false ) { setUsage( VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, exclusive ); setTilingOptimal(); return *this; }
 		Format&					setUsageTransientAttachment( bool exclusive = false )    { setUsage( VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT, exclusive ); return *this; }
 		Format&					setUsageInputAttachment( bool exclusive = false )        { setUsage( VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, exclusive ); return *this; }
-		bool					isUsageTransferSource() const { return VK_IMAGE_USAGE_TRANSFER_SRC_BIT == mUsage; }
+		bool					hasUsageTransferSource() const { return ( VK_IMAGE_USAGE_TRANSFER_SRC_BIT == ( mUsage & VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) ); }
 
 		Format&					setMemoryProperty( VkMemoryPropertyFlags value, bool exclusive = false ) { if( exclusive ) { mMemoryProperty = value; } else { mMemoryProperty |= value; } return *this; }
 		VkMemoryPropertyFlags	getMemoryProperty() const { return mMemoryProperty; }
@@ -96,6 +96,7 @@ public:
 		Format&					setMemoryPropertyHostCoherent( bool exclusive = false )    { setMemoryProperty( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, exclusive ); return *this; }
 		Format&					setMemoryPropertyHostCached( bool exclusive = false )      { setMemoryProperty( VK_MEMORY_PROPERTY_HOST_CACHED_BIT, exclusive ); return *this; }
 		Format&					setMemoryPropertyLazilyAllocated( bool exclusive = false ) { setMemoryProperty( VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT, exclusive ); return *this; }
+		bool					hasMemoryPropertyHostVisible() const { return ( VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT == ( mMemoryProperty & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) ); }
 
 		Format&					setMipLevels( uint32_t value ) { mMipLevels = value; if( mMipLevels > 1 ) { mTiling = VK_IMAGE_TILING_OPTIMAL; } return *this; }
 		uint32_t				setMipLevels() const { return mMipLevels; }
@@ -134,9 +135,9 @@ public:
 
 	virtual ~Image();
 
-	static ImageRef			create( uint32_t width, const Image::Format& options = Image::Format(), vk::Device *device = nullptr );
-	static ImageRef			create( uint32_t width, uint32_t height, const Image::Format& options = Image::Format(), vk::Device *device = nullptr );
-	static ImageRef			create( uint32_t width, uint32_t height, uint32_t depth, const Image::Format& options = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( uint32_t width, const Image::Format& format = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( uint32_t width, uint32_t height, const Image::Format& format = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( uint32_t width, uint32_t height, uint32_t depth, const Image::Format& format = Image::Format(), vk::Device *device = nullptr );
 
 	// Defaults:
 	//    - format is derived from the source data
@@ -151,9 +152,9 @@ public:
 	// If samples > 1, tiling will be forced to optimal the resulting image is not mappable (i.e. not host visible).
 	// If tiling is optimal, the resulting image is not mappable (i.e. not host visible).
 	// If usage is transfer source, resulting image will be samples = 1, tilingLinear, and mappable (i.e. host visible).
-	static ImageRef			create( int32_t width, int32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions = Image::Format(), vk::Device *device = nullptr );
-	static ImageRef			create( int32_t width, int32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions = Image::Format(), vk::Device *device = nullptr );
-	static ImageRef			create( int32_t width, int32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( int32_t width, int32_t height, const uint8_t  *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialFormat = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( int32_t width, int32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialFormat = Image::Format(), vk::Device *device = nullptr );
+	static ImageRef			create( int32_t width, int32_t height, const float    *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialFormat = Image::Format(), vk::Device *device = nullptr );
 
 	static ImageRef			create( VkImageType imageType, int32_t width, int32_t height, int32_t depth, VkImage image, const Image::Format& options, Device *device = nullptr );
 
@@ -164,20 +165,25 @@ public:
 	int32_t					getDepth()  const { return mExtent.depth; }
 	const VkExtent3D&		getExtent() const { return mExtent; }
 
-	const Image::Format&	getOptions() const { return mOptions; }
-	VkFormat				getFormat() const  { return mOptions.mInternalFormat; }
+	const Image::Format&	getFormat() const { return mFormat; }
+	VkFormat				getInternalFormat() const  { return mFormat.mInternalFormat; }
+	VkSampleCountFlagBits	getSamples() const { return mFormat.mSamples; }
+	VkImageTiling			getTiling() const { return mFormat.mTiling; }
+	VkImageUsageFlags		getUsage() const { return mFormat.mUsage; }
+	VkMemoryPropertyFlags	getMemoryProperty() const { mFormat.mMemoryProperty; }
+
 	VkImageAspectFlags		getAspectMask() const { return mAspectMask; }
 
-	uint32_t				getMipLevels() const { return mOptions.mMipLevels; }
-	uint32_t				getArrayLayers() const { return mOptions.mArrayLayers; }
+	uint32_t				getMipLevels() const { return mFormat.mMipLevels; }
+	uint32_t				getArrayLayers() const { return mFormat.mArrayLayers; }
 
-	VkImageLayout			getInitialLayout() const { return mOptions.mInitialLayout; }
+	VkImageLayout			getInitialLayout() const { return mFormat.mInitialLayout; }
 
 	//! Reflects the current and pending image layout. The image layout is considered pending if underlying VkImage object is in a operation (e.g. render pass) that hasn'te executed yet.
 	VkImageLayout			getCurrentLayout() const { return mCurrentLayout; }
 	void					setCurrentLayout( VkImageLayout layout ) { mCurrentLayout = layout; }
 
-	bool					isMappable() const { return 0 != ( mOptions.mMemoryProperty & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ); }
+	bool					isMappable() const { return 0 != ( mFormat.mMemoryProperty & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ); }
 	void*					map( VkDeviceSize offset = 0 );
 	void					unmap();
 
@@ -201,7 +207,7 @@ private:
 
 	VkImageType				mImageType;
 	VkExtent3D				mExtent;
-	Image::Format			mOptions;
+	Image::Format			mFormat;
 	VkFormatProperties		mFormatProperties;
 	VkImageAspectFlags		mAspectMask = 0;
 

@@ -50,53 +50,53 @@ namespace cinder { namespace vk {
 // -------------------------------------------------------------------------------------------------
 // Image
 // -------------------------------------------------------------------------------------------------
-Image::Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t depth, VkImage image, const Image::Format& options, vk::Device *device )
+Image::Image( VkImageType imageType, uint32_t width, uint32_t height, uint32_t depth, VkImage image, const Image::Format& format, vk::Device *device )
 	: BaseDeviceObject( device ),
 	  mImageType( imageType ),
 	  mExtent( { width, height, depth } ),
-	  mOptions( options ),
+	  mFormat( format ),
 	  mImage( image )
 {
-	mOptions.setInitialLayout( VK_IMAGE_LAYOUT_PREINITIALIZED );
+	mFormat.setInitialLayout( VK_IMAGE_LAYOUT_PREINITIALIZED );
 	initialize();
 }
 
-Image::Image( uint32_t width, uint32_t height, const uint8_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device )
+Image::Image( uint32_t width, uint32_t height, const uint8_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& format, vk::Device *device )
 	: BaseDeviceObject( device ),
 	  mImageType( VK_IMAGE_TYPE_2D ),
 	  mExtent( { width, height, 1 } ),
-	  mOptions( options ),
+	  mFormat( format ),
 	  mImage( VK_NULL_HANDLE )
 {
-	mOptions.setInitialLayout( nullptr != srcData ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED );
-	initialize();
-	if( nullptr != srcData ) {
-		copyData( 0, srcData, srcRowBytes, srcPixelBytes, srcRegion );
-	}
-}
-
-Image::Image( uint32_t width, uint32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device )
-	: BaseDeviceObject( device ),
-	  mImageType( VK_IMAGE_TYPE_2D ),
-	  mExtent( { width, height, 1 } ),
-	  mOptions( options ),
-	  mImage( VK_NULL_HANDLE )
-{
-	mOptions.setInitialLayout( nullptr != srcData ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED );
+	mFormat.setInitialLayout( nullptr != srcData ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED );
 	initialize();
 	if( nullptr != srcData ) {
 		copyData( 0, srcData, srcRowBytes, srcPixelBytes, srcRegion );
 	}
 }
 
-Image::Image( uint32_t width, uint32_t height, const float *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& options, vk::Device *device )
+Image::Image( uint32_t width, uint32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& format, vk::Device *device )
 	: BaseDeviceObject( device ),
 	  mImageType( VK_IMAGE_TYPE_2D ),
 	  mExtent( { width, height, 1 } ),
-	  mOptions( options ),
+	  mFormat( format ),
 	  mImage( VK_NULL_HANDLE )
 {
-	mOptions.setInitialLayout( nullptr != srcData ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED );
+	mFormat.setInitialLayout( nullptr != srcData ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED );
+	initialize();
+	if( nullptr != srcData ) {
+		copyData( 0, srcData, srcRowBytes, srcPixelBytes, srcRegion );
+	}
+}
+
+Image::Image( uint32_t width, uint32_t height, const float *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& format, vk::Device *device )
+	: BaseDeviceObject( device ),
+	  mImageType( VK_IMAGE_TYPE_2D ),
+	  mExtent( { width, height, 1 } ),
+	  mFormat( format ),
+	  mImage( VK_NULL_HANDLE )
+{
+	mFormat.setInitialLayout( nullptr != srcData ? VK_IMAGE_LAYOUT_PREINITIALIZED : VK_IMAGE_LAYOUT_UNDEFINED );
 	initialize();
 	if( nullptr != srcData ) {
 		copyData( 0, srcData, srcRowBytes, srcPixelBytes, srcRegion );
@@ -147,7 +147,7 @@ VkImageUsageFlags determineAttachmentUsage( VkFormat format )
 void Image::initialize()
 {
 	// Set these here so we don't forget
-	mAspectMask = vk::determineAspectMask( mOptions.mInternalFormat );
+	mAspectMask = vk::determineAspectMask( mFormat.mInternalFormat );
 	assert( 0 != mAspectMask );
 
 	if( VK_NULL_HANDLE == mImage ) {
@@ -155,15 +155,15 @@ void Image::initialize()
 
 		// Get format properties
 		mFormatProperties = {};
-		vkGetPhysicalDeviceFormatProperties( mDevice->getGpu(), mOptions.mInternalFormat, &mFormatProperties );
+		vkGetPhysicalDeviceFormatProperties( mDevice->getGpu(), mFormat.mInternalFormat, &mFormatProperties );
 
 		// If this assert fires, the device doesn't support an image of the requested format in mOptions.mFormat.
 		// This should probably be an exception, assert seems to break at the wrong place.
 		assert( ( mFormatProperties.linearTilingFeatures > 0 ) || ( mFormatProperties.optimalTilingFeatures > 0 ) );
 
-		if( mOptions.mMipLevels > 1 ) {
+		if( mFormat.mMipLevels > 1 ) {
 			// @TODO: Add some checks here to make sure the options are compatible with mipmaps.
-			if( ! mOptions.isTilingOptimal() ) {
+			if( ! mFormat.isTilingOptimal() ) {
 				// @TODO: Throw exception?
 			}
 		}
@@ -172,23 +172,23 @@ void Image::initialize()
 		imageCreateInfo.sType 					= VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		imageCreateInfo.pNext 					= nullptr;
 		imageCreateInfo.imageType 				= mImageType;
-		imageCreateInfo.format 					= mOptions.mInternalFormat;
+		imageCreateInfo.format 					= mFormat.mInternalFormat;
 		imageCreateInfo.extent 					= mExtent;
-		imageCreateInfo.mipLevels 				= mOptions.mMipLevels;
-		imageCreateInfo.arrayLayers				= mOptions.mArrayLayers;
-		imageCreateInfo.samples 				= mOptions.mSamples;
-		imageCreateInfo.tiling 					= mOptions.mTiling;
-		imageCreateInfo.usage 					= mOptions.mUsage;
-		imageCreateInfo.flags 					= mOptions.mCreateFlags;
+		imageCreateInfo.mipLevels 				= mFormat.mMipLevels;
+		imageCreateInfo.arrayLayers				= mFormat.mArrayLayers;
+		imageCreateInfo.samples 				= mFormat.mSamples;
+		imageCreateInfo.tiling 					= mFormat.mTiling;
+		imageCreateInfo.usage 					= mFormat.mUsage;
+		imageCreateInfo.flags 					= mFormat.mCreateFlags;
 		imageCreateInfo.sharingMode 			= VK_SHARING_MODE_EXCLUSIVE;
 		imageCreateInfo.queueFamilyIndexCount 	= 0;
 		imageCreateInfo.pQueueFamilyIndices		= nullptr;
-		imageCreateInfo.initialLayout			= mOptions.mInitialLayout;
+		imageCreateInfo.initialLayout			= mFormat.mInitialLayout;
 		res = vkCreateImage( mDevice->getDevice(), &imageCreateInfo, nullptr, &mImage );
 		assert(res == VK_SUCCESS);
 
 		// Allocate memory
-		Allocator::Allocation alloc = mDevice->getAllocator()->allocateImage( mImage, mOptions.mTransientAllocation, mOptions.mMemoryProperty );
+		Allocator::Allocation alloc = mDevice->getAllocator()->allocateImage( mImage, mFormat.mTransientAllocation, mFormat.mMemoryProperty );
 		assert( VK_NULL_HANDLE != alloc.getMemory() );
 		mMemory				= alloc.getMemory();
 		mAllocationOffset	= alloc.getOffset();
@@ -229,7 +229,7 @@ void Image::initialize()
 	}
 
 	// Set the current layout
-	mCurrentLayout = mOptions.mInitialLayout;
+	mCurrentLayout = mFormat.mInitialLayout;
 
 	// Track this object
 	mDevice->trackedObjectCreated( this );
@@ -291,19 +291,50 @@ bool hasLinearTilingSampledImage( vk::Device *device, VkFormat format )
 {
 	VkFormatProperties formatProperties = {};
 	vkGetPhysicalDeviceFormatProperties( device->getGpu(), format, &formatProperties );
-	return  0 != ( formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT );
+	return  ( VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT == ( formatProperties.linearTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT ) );
 }
 
-ImageRef Image::create( int32_t width, int32_t height, const uint8_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions, vk::Device *device )
+ImageRef Image::create( int32_t width, int32_t height, const uint8_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialFormat, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	
+	if( VK_SAMPLE_COUNT_1_BIT != initialFormat.getSamples() ) {
+		throw std::runtime_error( "Images initialized with data must be single sample" );
+	}
 
 	ImageRef result;
-	if( initialOptions.isUsageTransferSource() ) {
+	// Make sure the options fit the bill for loading without staging
+	if( initialFormat.isTilingLinear() && initialFormat.hasMemoryPropertyHostVisible() && hasLinearTilingSampledImage( device, initialFormat.getInternalFormat() ) ) {
+		result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, initialFormat, device ) );
+	}
+	// ...will need staging to load
+	else {
+		Image::Format stagingFormat = Image::Format( VK_FORMAT_R8G8B8A8_UNORM )
+			.setSamples( VK_SAMPLE_COUNT_1_BIT )
+			.setTilingLinear()
+			.setUsageTransferSource()
+			.setMemoryPropertyHostVisible()
+			.setTransientAllocation();
+		ImageRef stagingImage = ImageRef( new Image( width, height, srcData, srcRowBytes,  srcPixelBytes, srcRegion, stagingFormat, device ) );
+
+		Image::Format resultFormat = initialFormat;
+		result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, resultFormat, device ) );
+
+		auto ctx = vk::Context::getCurrent();
+		Image::blit( ctx, stagingImage, 0, 0, result, VK_IMAGE_LAYOUT_PREINITIALIZED, 0, 0 );
+	}
+	
+	return result;
+
+/*
+	ImageRef result;
+	if( initialOptions.hasUsageTransferSource() ) {
 		Image::Format options = Image::Format( initialOptions.getInternalFormat() )
 			.setSamples( VK_SAMPLE_COUNT_1_BIT )
 			.setTilingLinear()
-			.setMemoryPropertyHostVisible();
+			.setUsage( initialOptions.getUsage() )
+			.setMemoryPropertyHostVisible()
+			.setTransientAllocation( initialOptions.getTransientAllocation() );
 		result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, options, device ) );
 	}
 	else {
@@ -332,25 +363,57 @@ ImageRef Image::create( int32_t width, int32_t height, const uint8_t *srcData, s
 				.setSamples( VK_SAMPLE_COUNT_1_BIT )
 				.setTilingLinear()
 				.setMemoryPropertyHostVisible()
-				.setUsage( hasLinearTilingSampledImage( device, initialOptions.getInternalFormat() ) ? VK_IMAGE_USAGE_SAMPLED_BIT : VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
+				//.setUsage( hasLinearTilingSampledImage( device, initialOptions.getInternalFormat() ) ? VK_IMAGE_USAGE_SAMPLED_BIT : VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
 				.setTransientAllocation( initialOptions.getTransientAllocation() );
 			result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, resultOptions, device ) );
 		}
 	}
 
 	return result;
+*/
 }
 
-ImageRef Image::create( int32_t width, int32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions, vk::Device *device )
+ImageRef Image::create( int32_t width, int32_t height, const uint16_t *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialFormat, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	
+	if( VK_SAMPLE_COUNT_1_BIT != initialFormat.getSamples() ) {
+		throw std::runtime_error( "Images initialized with data must be single sample" );
+	}
 
 	ImageRef result;
-	if( initialOptions.isUsageTransferSource() ) {
+	// Make sure the options fit the bill for loading without staging
+	if( initialFormat.isTilingLinear() && initialFormat.hasMemoryPropertyHostVisible() && hasLinearTilingSampledImage( device, initialFormat.getInternalFormat() ) ) {
+		result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, initialFormat, device ) );
+	}
+	// ...will need staging to load
+	else {
+		Image::Format stagingFormat = Image::Format( VK_FORMAT_R16G16B16A16_UNORM )
+			.setSamples( VK_SAMPLE_COUNT_1_BIT )
+			.setTilingLinear()
+			.setUsageTransferSource()
+			.setMemoryPropertyHostVisible()
+			.setTransientAllocation();
+		ImageRef stagingImage = ImageRef( new Image( width, height, srcData, srcRowBytes,  srcPixelBytes, srcRegion, stagingFormat, device ) );
+
+		Image::Format resultFormat = initialFormat;
+		result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, resultFormat, device ) );
+
+		auto ctx = vk::Context::getCurrent();
+		Image::blit( ctx, stagingImage, 0, 0, result, VK_IMAGE_LAYOUT_PREINITIALIZED, 0, 0 );
+	}
+	
+	return result;
+
+/*
+	ImageRef result;
+	if( initialOptions.hasUsageTransferSource() ) {
 		Image::Format options = Image::Format( initialOptions.getInternalFormat() )
 			.setSamples( VK_SAMPLE_COUNT_1_BIT )
 			.setTilingLinear()
-			.setMemoryPropertyHostVisible();
+			.setUsage( initialOptions.getUsage() )
+			.setMemoryPropertyHostVisible()
+			.setTransientAllocation( initialOptions.getTransientAllocation() );
 		result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, options, device ) );
 	}
 	else {
@@ -384,6 +447,7 @@ ImageRef Image::create( int32_t width, int32_t height, const uint16_t *srcData, 
 	}
 
 	return result;
+*/
 
 /*
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
@@ -406,15 +470,48 @@ ImageRef Image::create( int32_t width, int32_t height, const uint16_t *srcData, 
 */
 }
 
-ImageRef Image::create( int32_t width, int32_t height, const float *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialOptions, vk::Device *device )
+ImageRef Image::create( int32_t width, int32_t height, const float *srcData, size_t srcRowBytes, size_t srcPixelBytes, const ci::Area& srcRegion, const Image::Format& initialFormat, vk::Device *device )
 {
+
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	
+	if( VK_SAMPLE_COUNT_1_BIT != initialFormat.getSamples() ) {
+		throw std::runtime_error( "Images initialized with data must be single sample" );
+	}
+
+	ImageRef result;
+	// Make sure the options fit the bill for loading without staging
+	if( initialFormat.isTilingLinear() && initialFormat.hasMemoryPropertyHostVisible() && hasLinearTilingSampledImage( device, initialFormat.getInternalFormat() ) ) {
+		result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, initialFormat, device ) );
+	}
+	// ...will need staging to load
+	else {
+		Image::Format stagingFormat = Image::Format( VK_FORMAT_R32G32B32A32_SFLOAT )
+			.setSamples( VK_SAMPLE_COUNT_1_BIT )
+			.setTilingLinear()
+			.setUsageTransferSource()
+			.setMemoryPropertyHostVisible()
+			.setTransientAllocation();
+		ImageRef stagingImage = ImageRef( new Image( width, height, srcData, srcRowBytes,  srcPixelBytes, srcRegion, stagingFormat, device ) );
+
+		Image::Format resultFormat = initialFormat;
+		result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, resultFormat, device ) );
+
+		auto ctx = vk::Context::getCurrent();
+		Image::blit( ctx, stagingImage, 0, 0, result, VK_IMAGE_LAYOUT_PREINITIALIZED, 0, 0 );
+	}
+	
+	return result;
+
+/*
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 
 	ImageRef result;
-	if( initialOptions.isUsageTransferSource() ) {
+	if( initialOptions.hasUsageTransferSource() ) {
 		Image::Format options = Image::Format( initialOptions.getInternalFormat() )
 			.setSamples( VK_SAMPLE_COUNT_1_BIT )
 			.setTilingLinear()
+			.setUsage( initialOptions.getUsage() )
 			.setMemoryPropertyHostVisible();
 		result = ImageRef( new Image( width, height, srcData, srcRowBytes, srcPixelBytes, srcRegion, options, device ) );
 	}
@@ -449,6 +546,7 @@ ImageRef Image::create( int32_t width, int32_t height, const float *srcData, siz
 	}
 
 	return result;
+*/
 
 /*
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
@@ -715,7 +813,7 @@ void Image::copyData( uint32_t dstLayer, const uint8_t *srcData, size_t srcRowBy
 		size_t dstRowBytes = static_cast<size_t>( layout.rowPitch );
 
 		VkFormat srcFormat = vk::findBestVkFormat<uint8_t>( static_cast<size_t>( srcPixelBytes / sizeof( uint8_t ) ) );
-		VkFormat dstFormat = mOptions.mInternalFormat;
+		VkFormat dstFormat = mFormat.mInternalFormat;
 		size_t dstPixelBytes = formatSizeBytes( dstFormat );
 		copyPixelsSelect( srcFormat, srcData, srcRowBytes, srcPixelBytes, dstFormat, dstData, dstRowBytes, dstPixelBytes, srcRegion );
 		unmap();
@@ -736,7 +834,7 @@ void Image::copyData( uint32_t dstLayer, const uint16_t *srcData, size_t srcRowB
 		size_t dstRowBytes = static_cast<size_t>( layout.rowPitch );
 
 		VkFormat srcFormat = vk::findBestVkFormat<uint16_t>( static_cast<size_t>( srcPixelBytes / sizeof( uint16_t ) ) );
-		VkFormat dstFormat = mOptions.mInternalFormat;
+		VkFormat dstFormat = mFormat.mInternalFormat;
 		//size_t srcPixelBytes = formatSizeBytes( srcFormat );
 		size_t dstPixelBytes = formatSizeBytes( dstFormat );
 		copyPixelsSelect( srcFormat, srcData, srcRowBytes, srcPixelBytes, dstFormat, dstData, dstRowBytes, dstPixelBytes, srcRegion );
@@ -758,7 +856,7 @@ void Image::copyData( uint32_t dstLayer, const float *srcData, size_t srcRowByte
 		size_t dstRowBytes = static_cast<size_t>( layout.rowPitch );
 
 		VkFormat srcFormat = vk::findBestVkFormat<float>( static_cast<size_t>( srcPixelBytes / sizeof( float ) ) );
-		VkFormat dstFormat = mOptions.mInternalFormat;
+		VkFormat dstFormat = mFormat.mInternalFormat;
 		size_t dstPixelBytes = formatSizeBytes( dstFormat );
 		copyPixelsSelect( srcFormat, srcData, srcRowBytes, srcPixelBytes, dstFormat, dstData, dstRowBytes, dstPixelBytes, srcRegion );
 		unmap();
@@ -839,6 +937,9 @@ void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 {
 	VkCommandPool cmdPool = context->getDefaultCommandPool()->getCommandPool();
 	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool, context );
+
+	assert( VK_IMAGE_USAGE_TRANSFER_SRC_BIT == ( srcImage->getUsage() & VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) );
+	assert( VK_IMAGE_USAGE_TRANSFER_DST_BIT == ( dstImage->getUsage() & VK_IMAGE_USAGE_TRANSFER_DST_BIT ) );
 
 	cmdBuf->begin();
 	{

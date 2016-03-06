@@ -61,6 +61,7 @@ Ocean::Ocean( FishTornadoApp *app )
 	// Textures
 	vk::Texture::Format format;
 	format.setWrap( VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT );
+	format.mipmap();
 	
 	try {
 		mFloorDiffuseTex	= vk::Texture::create( *ci::Surface::create( loadImage( app::loadAsset( "ocean/floorDiffuseMap.png" ) ) ), format );

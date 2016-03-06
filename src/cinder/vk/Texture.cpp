@@ -263,6 +263,7 @@ void Texture2d::initialize( vk::Device *device )
 
 	vk::Image::Format imageOptions = vk::Image::Format( mFormat.getInternalFormat() );
 	imageOptions.setSamples( mFormat.getSamples() );
+	imageOptions.setMipLevels( mMipLevels );
 	if( mHostVisible ) {
 		// NOTE: If the device doesn't support linear tiled images with sampling or 
 		//       a memory type can't be found for these properties - an error will
