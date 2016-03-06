@@ -8,6 +8,62 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+
+
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT			0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT			0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT			0x83F3
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT				0x83F0
+
+#define GL_COMPRESSED_SRGB_EXT						0x8C48
+#define GL_COMPRESSED_SRGB_ALPHA_EXT				0x8C49
+#define GL_COMPRESSED_SLUMINANCE_EXT				0x8C4A
+#define GL_COMPRESSED_SLUMINANCE_ALPHA_EXT			0x8C4B
+#define GL_COMPRESSED_SRGB_S3TC_DXT1_EXT			0x8C4C   
+#define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT		0x8C4D
+#define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT		0x8C4E
+#define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT		0x8C4F
+
+#define GL_COMPRESSED_RED_RGTC1						0x8DBB
+#define GL_COMPRESSED_RG_RGTC2						0x8DBD
+#define GL_COMPRESSED_SIGNED_RED_RGTC1				0x8DBC
+#define GL_COMPRESSED_SIGNED_RG_RGTC2				0x8DBE     
+
+#define GL_COMPRESSED_RGBA_BPTC_UNORM_ARB			0x8E8C
+#define GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB		0x8E8D  
+#define GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB		0x8E8E
+#define GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB	0x8E8F
+
+#define GL_COMPRESSED_RGBA_ASTC_4x4_KHR				0x93B0
+#define GL_COMPRESSED_RGBA_ASTC_5x4_KHR				0x93B1
+#define GL_COMPRESSED_RGBA_ASTC_5x5_KHR				0x93B2
+#define GL_COMPRESSED_RGBA_ASTC_6x5_KHR				0x93B3
+#define GL_COMPRESSED_RGBA_ASTC_6x6_KHR				0x93B4
+#define GL_COMPRESSED_RGBA_ASTC_8x5_KHR				0x93B5
+#define GL_COMPRESSED_RGBA_ASTC_8x6_KHR				0x93B6
+#define GL_COMPRESSED_RGBA_ASTC_8x8_KHR				0x93B7
+#define GL_COMPRESSED_RGBA_ASTC_10x5_KHR			0x93B8
+#define GL_COMPRESSED_RGBA_ASTC_10x6_KHR			0x93B9
+#define GL_COMPRESSED_RGBA_ASTC_10x8_KHR			0x93BA
+#define GL_COMPRESSED_RGBA_ASTC_10x10_KHR			0x93BB
+#define GL_COMPRESSED_RGBA_ASTC_12x10_KHR			0x93BC
+#define GL_COMPRESSED_RGBA_ASTC_12x12_KHR			0x93BD
+
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR		0x93D0
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR		0x93D1
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR		0x93D2
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR		0x93D3
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR		0x93D4
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR		0x93D5
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR		0x93D6
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR		0x93D
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR	0x93D8
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR	0x93D9
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR	0x93DA
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR	0x93DB
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR	0x93DC
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR	0x93DD
+
 /** \class BasicApp
  *
  */
@@ -25,15 +81,18 @@ private:
 
 void BasicApp::setup()
 {
-	gl::TextureData ktxData;
-	gl::parseDds( loadFile( getAssetPath( "bloom.DDS" ) ), &ktxData ); 
+	gl::TextureData texData;
+	gl::parseDds( loadFile( getAssetPath( "bloom.DDS" ) ), &texData ); 
 
+	mTex1 = vk::Texture::create( texData );
+
+#if 0
 	//auto surf = Surface::create( loadImage( getAssetPath( "bloom.png" ) ) );
 	{
 		vk::Texture::Format format = vk::Texture::Format( VK_FORMAT_BC3_UNORM_BLOCK );
 		format.setUsageTransferSource();
 		format.mipmap();
-		mTex1 = vk::Texture::create( ktxData.getWidth(), ktxData.getHeight(), format );
+		mTex1 = vk::Texture::create( texData.getWidth(), texData.getHeight(), format );
 	}
 
 	/*
@@ -53,8 +112,8 @@ void BasicApp::setup()
 		auto& srcImage = mTex1->getImageView()->getImage();
 		//auto& dstImage = mTex2->getImageView()->getImage();
 
-		vk::BufferRef buf = vk::Buffer::create( ktxData.getDataStoreSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT );
-		buf->bufferData( ktxData.getDataStoreSize(), ktxData.getDataStorePtr( 0 ) );
+		vk::BufferRef buf = vk::Buffer::create( texData.getDataStoreSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT );
+		buf->bufferData( texData.getDataStoreSize(), texData.getDataStorePtr( 0 ) );
 
 		auto srcArea = mTex1->getBounds();
 		//auto dstArea = mTex2->getBounds();
@@ -64,8 +123,8 @@ void BasicApp::setup()
 			cmdBuf->pipelineBarrierImageMemory( srcImage, srcImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
 
 			int offset = 0;
-			int w = ktxData.getWidth();
-			int h = ktxData.getHeight();
+			int w = texData.getWidth();
+			int h = texData.getHeight();
 
 			std::vector<VkBufferImageCopy> regions;
 			for( size_t i = 0; i < mTex1->getMipLevels(); ++i ) {
@@ -185,6 +244,7 @@ void BasicApp::setup()
 		ctx->getGraphicsQueue()->submit( cmdBuf );
 		ctx->getGraphicsQueue()->waitIdle();
 	}
+#endif
 }
 
 void BasicApp::draw()

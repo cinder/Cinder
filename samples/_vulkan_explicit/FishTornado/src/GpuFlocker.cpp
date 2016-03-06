@@ -43,14 +43,17 @@
 #include "cinder/Rand.h"
 #include "cinder/ImageIo.h"
 
+#include "cinder/gl/TextureFormatParsers.h"
+
 #include "FishTornadoApp.h"
 #include "Globals.h"
 #include "Light.h"
 #include "Ocean.h"
 
-int FBO_RES = 100;	// squared = number of fish
+int FBO_RES = 96;	// squared = number of fish
 
 using namespace ci;
+using namespace ci::app;
 using namespace std;
 
 GpuFlocker::GpuFlocker( FishTornadoApp *app )
@@ -120,10 +123,30 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	setFboPositions( mPositionTextures[mThisFbo], mPositionTextures[mPrevFbo], velSurf );
 	
 	// textures	
+#if defined( COMPRESSED_TEXTURES )
+	{
+		gl::TextureData texData;
+		gl::parseDds( loadFile( getAssetPath( "flocking/trevallieDiffuse.dds" ) ), &texData ); 
+		mDiffuseTex = vk::Texture::create( texData );
+	}
+
+	{
+		gl::TextureData texData;
+		gl::parseDds( loadFile( getAssetPath( "flocking/trevallieNormal.dds" ) ), &texData ); 
+		mNormalsTex = vk::Texture::create( texData );
+	}
+
+	{
+		gl::TextureData texData;
+		gl::parseDds( loadFile( getAssetPath( "flocking/trevallieSpecular.dds" ) ), &texData ); 
+		mSpecularTex = vk::Texture::create( texData );
+	}
+#else 
 	vk::Texture::Format texFmt = vk::Texture::Format().mipmap();
 	mDiffuseTex		= vk::Texture::create( *Surface::create( loadImage( app::loadAsset( "flocking/trevallieDiffuse.png"  ) ) ), texFmt );
 	mNormalsTex		= vk::Texture::create( *Surface::create( loadImage( app::loadAsset( "flocking/trevallieNormal.png"   ) ) ), texFmt );
 	mSpecularTex	= vk::Texture::create( *Surface::create( loadImage( app::loadAsset( "flocking/trevallieSpecular.png" ) ) ), texFmt );
+#endif
 }
 
 GpuFlockerRef GpuFlocker::create( FishTornadoApp *app )

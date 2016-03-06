@@ -37,11 +37,13 @@
 */
 
 #include "cinder/vk/Texture.h"
+#include "cinder/vk/Buffer.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Device.h"
 #include "cinder/vk/ImageView.h"
+#include "cinder/vk/Queue.h"
 #include "cinder/vk/wrapper.h"
 
 namespace cinder { namespace vk {
@@ -207,10 +209,8 @@ void Texture2d::initializeCommon( vk::Device* device )
 
 	// Calculate mipmap levels
 	if( mFormat.getMipmapEnabled() ) {
-		const float mipCountBias = 0.0001f;
-		const float logWidth = log2( static_cast<float>( mWidth ) );
-		const float logHeight = log2( static_cast<float>( mHeight ) );
-		mMipLevels = static_cast<int>( std::min( logWidth, logHeight ) + mipCountBias );
+		float maxDim = static_cast<float>( std::max( mWidth, mHeight ) );
+		mMipLevels = static_cast<int>( log2( maxDim ) ) + 1;
 		if( mFormat.getMaxMipmapLevels() > 0 ) {
 			mMipLevels = std::min<uint32_t>( mMipLevels, mFormat.getMaxMipmapLevels() );
 		}
@@ -459,6 +459,65 @@ Texture2dRef Texture2d::create( const Surface32f& surf, const Texture2d::Format&
 //	Texture2dRef result = Texture2dRef( new Texture2d( imageSource, format, context ) );
 //	return result;
 //}
+
+Texture2dRef Texture2d::create( const gl::TextureData& textureData, const Texture2d::Format& initialFormat, vk::Device *device )
+{
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+
+	Texture2dRef result;
+	VkFormat internalFormat = determineCompressedFormat( textureData.getInternalFormat() );
+	if( VK_FORMAT_UNDEFINED != internalFormat ) {
+		vk::BufferRef buf = vk::Buffer::create( textureData.getDataStoreSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT );
+		buf->bufferData( textureData.getDataStoreSize(), textureData.getDataStorePtr( 0 ) );
+
+		uint32_t width = textureData.getWidth();
+		uint32_t height = textureData.getHeight();
+
+		vk::Texture::Format format = initialFormat;
+		format.setInternalFormat( internalFormat );
+		format.setUsageTransferDestination();
+		format.mipmap();
+		result = vk::Texture::create( width, height, format );
+
+		auto ctx = vk::context();
+		VkCommandPool cmdPool = ctx->getDefaultCommandPool()->getCommandPool();
+		vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool, ctx );
+
+		auto& dstImage = result->getImageView()->getImage();
+		cmdBuf->begin();
+		{
+			cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+
+			VkDeviceSize offset = 0;
+			std::vector<VkBufferImageCopy> regions;
+			for( size_t mipLevel = 0; mipLevel < result->getMipLevels(); ++mipLevel ) {
+				VkBufferImageCopy copyRegion = {};
+				copyRegion.bufferOffset						= offset;
+				copyRegion.bufferRowLength					= width;
+				copyRegion.bufferImageHeight				= height;
+				copyRegion.imageSubresource.aspectMask		= dstImage->getAspectMask();
+				copyRegion.imageSubresource.mipLevel		= static_cast<uint32_t>( mipLevel );
+				copyRegion.imageSubresource.baseArrayLayer	= 0;
+				copyRegion.imageSubresource.layerCount		= 1;
+				copyRegion.imageOffset						= { 0, 0, 0 };
+				copyRegion.imageExtent						= { width, height, 1 };
+				regions.push_back( copyRegion );
+
+				offset += 16*(width/4 * height/4);
+				width /= 2;
+				height /= 2;
+			}
+			cmdBuf->copyBufferToImage( buf->getBuffer(), dstImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>( regions.size() ), regions.data() );
+
+			cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+		}
+		cmdBuf->end();
+
+		ctx->getGraphicsQueue()->submit( cmdBuf );
+		ctx->getGraphicsQueue()->waitIdle();
+	}
+	return result;
+}
 
 template <typename T>
 void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t srcRowBytes, size_t srcPixelBytes )

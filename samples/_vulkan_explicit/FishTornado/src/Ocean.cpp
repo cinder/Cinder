@@ -64,9 +64,29 @@ Ocean::Ocean( FishTornadoApp *app )
 	format.mipmap();
 	
 	try {
+#if defined( COMPRESSED_TEXTURES )
+	{
+		gl::TextureData texData;
+		gl::parseDds( loadFile( getAssetPath( "ocean/floorDiffuseMap.dds" ) ), &texData ); 
+		mFloorDiffuseTex = vk::Texture::create( texData, format );
+	}
+
+	{
+		gl::TextureData texData;
+		gl::parseDds( loadFile( getAssetPath( "ocean/floorNormalMap.dds" ) ), &texData ); 
+		mFloorNormalsTex = vk::Texture::create( texData, format );
+	}
+
+	{
+		gl::TextureData texData;
+		gl::parseDds( loadFile( getAssetPath( "ocean/surfaceNormal.dds" ) ), &texData ); 
+		mSurfaceNormalsTex = vk::Texture::create( texData, format );
+	}
+#else
 		mFloorDiffuseTex	= vk::Texture::create( *ci::Surface::create( loadImage( app::loadAsset( "ocean/floorDiffuseMap.png" ) ) ), format );
 		mFloorNormalsTex	= vk::Texture::create( *ci::Surface::create( loadImage( app::loadAsset( "ocean/floorNormalMap.png" ) ) ), format );
 		mSurfaceNormalsTex	= vk::Texture::create( *ci::Surface::create( loadImage( app::loadAsset( "ocean/surfaceNormal.png" ) ) ), format );
+#endif
 		CI_LOG_I( "Ocean textures loaded" );
 	}
 	catch( const std::exception& e ) {

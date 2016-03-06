@@ -67,6 +67,7 @@ geom::Primitive		toGeomPrimitive( VkPrimitiveTopology prim );
 VkFormat			toVkFormat( const geom::AttribInfo& info );
 
 VkImageAspectFlags	determineAspectMask( VkFormat format );
+VkFormat			determineCompressedFormat( int glFormatConstant );
 bool				isCompressedFormat( VkFormat format );
 
 size_t				dataTypeSizeBytes( vk::DataType dataType );

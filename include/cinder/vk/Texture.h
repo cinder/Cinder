@@ -44,6 +44,8 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Surface.h"
 
+#include "cinder/gl/TextureFormatParsers.h"
+
 namespace cinder { namespace vk {
 
 class CommandBuffer;
@@ -243,6 +245,7 @@ public:
 	static Texture2dRef		create( const Surface16u& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Device *device = nullptr );
 	static Texture2dRef		create( const Surface32f& surf, const Texture2d::Format& format = Texture2d::Format(), vk::Device *device = nullptr );
 	//static Texture2dRef		create( ImageSourceRef imageSource, const Format &format = Format(), vk::Device *device = nullptr );
+	static Texture2dRef		create( const gl::TextureData& textureData, const Texture2d::Format& initialFormat = Texture2d::Format(), vk::Device *device = nullptr );
 
 	uint32_t					getWidth() const { return mImageView->getWidth(); }
 	uint32_t					getHeight() const { return mImageView->getHeight(); }
