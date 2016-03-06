@@ -67,19 +67,19 @@ Ocean::Ocean( FishTornadoApp *app )
 #if defined( COMPRESSED_TEXTURES )
 	{
 		gl::TextureData texData;
-		gl::parseDds( loadFile( getAssetPath( "ocean/floorDiffuseMap.dds" ) ), &texData ); 
+		gl::parseDds( loadFile( getAssetPath( "ocean/bc3/floorDiffuseMap.dds" ) ), &texData ); 
 		mFloorDiffuseTex = vk::Texture::create( texData, format );
 	}
 
 	{
 		gl::TextureData texData;
-		gl::parseDds( loadFile( getAssetPath( "ocean/floorNormalMap.dds" ) ), &texData ); 
+		gl::parseDds( loadFile( getAssetPath( "ocean/bc3/floorNormalMap.dds" ) ), &texData ); 
 		mFloorNormalsTex = vk::Texture::create( texData, format );
 	}
 
 	{
 		gl::TextureData texData;
-		gl::parseDds( loadFile( getAssetPath( "ocean/surfaceNormal.dds" ) ), &texData ); 
+		gl::parseDds( loadFile( getAssetPath( "ocean/bc3/surfaceNormal.dds" ) ), &texData ); 
 		mSurfaceNormalsTex = vk::Texture::create( texData, format );
 	}
 #else

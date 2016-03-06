@@ -126,19 +126,19 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 #if defined( COMPRESSED_TEXTURES )
 	{
 		gl::TextureData texData;
-		gl::parseDds( loadFile( getAssetPath( "flocking/trevallieDiffuse.dds" ) ), &texData ); 
+		gl::parseDds( loadFile( getAssetPath( "flocking/bc3/trevallieDiffuse.dds" ) ), &texData ); 
 		mDiffuseTex = vk::Texture::create( texData );
 	}
 
 	{
 		gl::TextureData texData;
-		gl::parseDds( loadFile( getAssetPath( "flocking/trevallieNormal.dds" ) ), &texData ); 
+		gl::parseDds( loadFile( getAssetPath( "flocking/bc3/trevallieNormal.dds" ) ), &texData ); 
 		mNormalsTex = vk::Texture::create( texData );
 	}
 
 	{
 		gl::TextureData texData;
-		gl::parseDds( loadFile( getAssetPath( "flocking/trevallieSpecular.dds" ) ), &texData ); 
+		gl::parseDds( loadFile( getAssetPath( "flocking/bc3/trevallieSpecular.dds" ) ), &texData ); 
 		mSpecularTex = vk::Texture::create( texData );
 	}
 #else 
