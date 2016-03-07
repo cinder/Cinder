@@ -101,9 +101,9 @@ public:
 				.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 			vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 				.addAttachment( attachment );
-			vk::RenderPass::Subpass subpasses = vk::RenderPass::Subpass()
+			vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()
 				.addDepthStencilAttachment( 0 );
-			renderPassOptions.addSubPass( subpasses );
+			renderPassOptions.addSubPass( subpass );
 			mRenderPass = vk::RenderPass::create( renderPassOptions );
 
 			// Framebuffer

@@ -85,9 +85,11 @@ void main()
 	float threshDelta1	= 1.0 - ciBlock1.uMaxThresh;
 
 	// APPLY THE ATTRACTIVE, ALIGNING, AND REPULSIVE FORCES
-	for( int y = 0; y < FBO_RES; ++y )
+	//for( int y = 0; y < FBO_RES; ++y )
+	for( float y = 0.0; y < FBO_RES; y += 1.0 )
 	{
-		for( int x = 0; x < FBO_RES; ++x )
+		//for( int x = 0; x < FBO_RES; ++x )
+		for( float x = 0.0; x < FBO_RES; x += 1.0 )
 		{
 			float s 		= abs( x - myX ) + abs( y - myY );			
 			vec2 tc			= vec2( x, y );

@@ -100,9 +100,9 @@ public:
 				.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 			vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 				.addAttachment( attachment );
-			vk::RenderPass::Subpass subpasses = vk::RenderPass::Subpass()
+			vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()
 				.addDepthStencilAttachment( 0 );
-			renderPassOptions.addSubPass( subpasses );
+			renderPassOptions.addSubPass( subpass );
 			mRenderPass = vk::RenderPass::create( renderPassOptions );
 
 			mRenderPass->setAttachmentClearValue( 0, { 1.0f, 0.0f, 0.0f, 1.0f } );
@@ -400,6 +400,9 @@ void ShadowMappingApp::draw()
 
 	// Wait for work to be done
 	vk::context()->getGraphicsQueue()->waitIdle();
+
+	vkDestroySemaphore( vk::context()->getDevice(), imageAcquiredSemaphore, nullptr );
+	vkDestroySemaphore( vk::context()->getDevice(), renderingCompleteSemaphore, nullptr );
 }
 
 void ShadowMappingApp::keyDown( KeyEvent event )

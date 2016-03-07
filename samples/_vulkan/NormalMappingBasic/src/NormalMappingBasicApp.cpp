@@ -114,6 +114,8 @@ void NormalMappingBasicApp::draw()
 {
 	vk::setMatrices( mCam );
 
+	vk::clear();
+
 	vk::ScopedModelMatrix modelScope;
 	vk::multModelMatrix( mCubeRotation );
 	mBatch->uniform( "ciBlock1.uLightLocViewSpace", vec3( mCam.getViewMatrix() * vec4( mLightPosWorldSpace, 1 )) );

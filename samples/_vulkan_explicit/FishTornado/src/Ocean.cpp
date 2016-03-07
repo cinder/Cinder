@@ -61,11 +61,32 @@ Ocean::Ocean( FishTornadoApp *app )
 	// Textures
 	vk::Texture::Format format;
 	format.setWrap( VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT );
+	format.mipmap();
 	
 	try {
+#if defined( COMPRESSED_TEXTURES )
+	{
+		gl::TextureData texData;
+		gl::parseDds( loadFile( getAssetPath( "ocean/bc3/floorDiffuseMap.dds" ) ), &texData ); 
+		mFloorDiffuseTex = vk::Texture::create( texData, format );
+	}
+
+	{
+		gl::TextureData texData;
+		gl::parseDds( loadFile( getAssetPath( "ocean/bc3/floorNormalMap.dds" ) ), &texData ); 
+		mFloorNormalsTex = vk::Texture::create( texData, format );
+	}
+
+	{
+		gl::TextureData texData;
+		gl::parseDds( loadFile( getAssetPath( "ocean/bc3/surfaceNormal.dds" ) ), &texData ); 
+		mSurfaceNormalsTex = vk::Texture::create( texData, format );
+	}
+#else
 		mFloorDiffuseTex	= vk::Texture::create( *ci::Surface::create( loadImage( app::loadAsset( "ocean/floorDiffuseMap.png" ) ) ), format );
 		mFloorNormalsTex	= vk::Texture::create( *ci::Surface::create( loadImage( app::loadAsset( "ocean/floorNormalMap.png" ) ) ), format );
 		mSurfaceNormalsTex	= vk::Texture::create( *ci::Surface::create( loadImage( app::loadAsset( "ocean/surfaceNormal.png" ) ) ), format );
+#endif
 		CI_LOG_I( "Ocean textures loaded" );
 	}
 	catch( const std::exception& e ) {

@@ -40,37 +40,244 @@
 #include "cinder/vk/Device.h"
 #include "cinder/Log.h"
 
+#include <iomanip>
+
 namespace cinder { namespace vk {
 
+VkDeviceSize calcAlignedOffset( VkDeviceSize offset, VkDeviceSize align )
+{
+	VkDeviceSize n = offset / align;
+	VkDeviceSize r = offset % align;
+	VkDeviceSize result = ( n + ( r > 0 ? 1 : 0 ) ) * align;
+	return result;
+}
+
 // -------------------------------------------------------------------------------------------------
-// Allocator::Block
+// Allocator::PoolManager::Pool
 // -------------------------------------------------------------------------------------------------
-Allocator::Block::Block( uint32_t memoryTypeIndex, VkDeviceMemory memory, VkDeviceSize size )
+template <typename VkObjectT>
+Allocator::PoolManager<VkObjectT>::Pool::Pool( uint32_t memoryTypeIndex, VkDeviceMemory memory, VkDeviceSize size )
 	: mMemoryTypeIndex( memoryTypeIndex ), mMemory( memory ), mSize( size )
 {
 }
 
-VkDeviceSize Allocator::Block::getRemaining() const
+template <typename VkObjectT>
+typename Allocator::PoolManager<VkObjectT>::PoolRef Allocator::PoolManager<VkObjectT>::Pool::create( VkDevice device, const VkDeviceSize poolSize, const typename PoolManager<VkObjectT>::ObjectDescriptor& objDesc )
 {
-	VkDeviceSize result = mSize - std::min( mSize, mOffset );
+	Allocator::PoolManager<VkObjectT>::PoolRef result;
+
+	const uint32_t memoryTypeIndex	= objDesc.memoryTypeIndex;
+
+	VkMemoryAllocateInfo allocInfo = {};
+	allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	allocInfo.pNext           = nullptr;
+	allocInfo.allocationSize  = poolSize;
+	allocInfo.memoryTypeIndex = memoryTypeIndex;
+
+	VkDeviceMemory memory = VK_NULL_HANDLE;
+	VkResult res = vkAllocateMemory( device, &allocInfo, nullptr, &memory );	
+	if( VK_SUCCESS == res ) {
+		result = Allocator::PoolManager<VkObjectT>::PoolRef( new Allocator::PoolManager<VkObjectT>::Pool( memoryTypeIndex, memory, poolSize ) );
+	}
+
 	return result;
 }
 
-bool Allocator::Block::hasAvailable( VkDeviceSize amount ) const
+template <typename VkObjectT>
+typename Allocator::PoolManager<VkObjectT>::PoolRef Allocator::PoolManager<VkObjectT>::Pool::createTransient( VkDevice device, const typename PoolManager<VkObjectT>::ObjectDescriptor& objDesc )
 {
-	VkDeviceSize remaining = getRemaining();
-	bool result = amount <= remaining;
+	Allocator::PoolManager<VkObjectT>::PoolRef result;
+
+	const VkDeviceSize size			= objDesc.memoryRequirements.size;
+	const uint32_t memoryTypeIndex	= objDesc.memoryTypeIndex;
+
+	VkMemoryAllocateInfo allocInfo = {};
+	allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	allocInfo.pNext           = nullptr;
+	allocInfo.allocationSize  = size;
+	allocInfo.memoryTypeIndex = memoryTypeIndex;
+
+	VkDeviceMemory memory = VK_NULL_HANDLE;
+	VkResult res = vkAllocateMemory( device, &allocInfo, nullptr, &memory );	
+	if( VK_SUCCESS == res ) {
+		result = Allocator::PoolManager<VkObjectT>::PoolRef( new Allocator::PoolManager<VkObjectT>::Pool( memoryTypeIndex, memory, size ) );
+	}
+
 	return result;
+}
+	
+template <typename VkObjectT>
+bool Allocator::PoolManager<VkObjectT>::Pool::hasAvailable( VkMemoryRequirements memReqs ) const
+{
+	VkDeviceSize alignedOffst = calcAlignedOffset( mOffset, memReqs.alignment );
+	VkDeviceSize remaining = mSize - std::min( alignedOffst, mSize );
+	return memReqs.size <= remaining;
+}
+
+template <typename VkObjectT>
+Allocator::Allocation Allocator::PoolManager<VkObjectT>::Pool::allocate( const typename PoolManager<VkObjectT>::ObjectDescriptor& objDesc )
+{
+	Allocator::Allocation result = {};
+
+	const VkMemoryRequirements& memReqs = objDesc.memoryRequirements;
+
+	if( hasAvailable( memReqs ) ) {
+		// Calculate offsets
+		const VkDeviceSize initialOffset = mOffset; 
+		const VkDeviceSize alignedOffset = calcAlignedOffset( initialOffset, memReqs.alignment );
+		const VkDeviceSize allocatedSize = memReqs.size;
+
+		// Assign result values
+		result = Allocator::Allocation( mMemory, alignedOffset, allocatedSize );
+		mAllocations.push_back( result );
+
+		// Move offset
+		mOffset += allocatedSize;
+	}
+
+	return result;
+}
+
+// -------------------------------------------------------------------------------------------------
+// Allocator::PoolManager
+// -------------------------------------------------------------------------------------------------
+template <typename VkObjectT>
+Allocator::PoolManager<VkObjectT>::PoolManager( VkDevice device, VkDeviceSize poolSize )
+	: mDevice( device ), mPoolSize( poolSize )
+{
+
+}
+
+template <typename VkObjectT>
+Allocator::PoolManager<VkObjectT>::~PoolManager()
+{
+	destroy();
+}
+
+template <typename VkObjectT>
+void Allocator::PoolManager<VkObjectT>::destroy()
+{
+	std::lock_guard<std::mutex> lock( mMutex );
+
+	// Pools
+	for( auto& pool : mPools ) {
+		vkFreeMemory( mDevice, pool->mMemory, nullptr );
+	}
+	mPools.clear();
+
+	// Transients
+	for( auto& it : mTransients ) {
+		auto& pool = it.second;
+		vkFreeMemory( mDevice, pool->mMemory, nullptr );
+	}
+	mTransients.clear();
+}
+
+template <typename VkObjectT>
+Allocator::Allocation Allocator::PoolManager<VkObjectT>::allocate( const typename PoolManager<VkObjectT>::ObjectDescriptor& objDesc )
+{
+	std::lock_guard<std::mutex> lock( mMutex );
+
+	Allocator::Allocation result;
+
+	if( objDesc.transient ) {
+		auto transientPool = Allocator::PoolManager<VkObjectT>::Pool::createTransient( mDevice, objDesc );
+		if( transientPool ) {
+			result = transientPool->allocate( objDesc );
+			mTransients[objDesc.object] = std::move( transientPool );
+		}
+	}
+	else {
+		// If the required size is larger than the pool size - allocate a separate pool for it
+		if( objDesc.memoryRequirements.size > mPoolSize ) {
+			auto pool = Allocator::PoolManager<VkObjectT>::Pool::create( mDevice, objDesc.memoryRequirements.size, objDesc );
+			if( pool ) {
+				result = pool->allocate( objDesc );
+				mPools.push_back( std::move( pool ) );
+			}
+		}
+		else {
+			// Look to see if there's a pool that fits the requirements...
+			auto it = std::find_if(
+				std::begin( mPools ),
+				std::end( mPools ),
+				[objDesc]( const Allocator::PoolManager<VkObjectT>::PoolRef& elem ) -> bool {
+					bool isMemoryType = ( elem->getMemoryTypeIndex() == objDesc.memoryTypeIndex);
+					bool hasSpace = elem->hasAvailable( objDesc.memoryRequirements );
+					return isMemoryType && hasSpace;
+				}
+			);
+
+			// ...if there is allocate from the available pool
+			if( std::end( mPools ) != it ) {
+				auto& pool = *it;
+				result = pool->allocate( objDesc );
+			}
+			// ...otherwise create a new pool and allocate from it
+			else {
+				auto pool = Allocator::PoolManager<VkObjectT>::Pool::create( mDevice, mPoolSize, objDesc );
+				if( pool ) {
+					result = pool->allocate( objDesc );
+					mPools.push_back( std::move( pool ) );
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+template <typename VkObjectT>
+void Allocator::PoolManager<VkObjectT>::freeTransient( VkObjectT object )
+{
+	std::lock_guard<std::mutex> lock( mMutex );
+
+	auto it = mTransients.find( object );
+	if( it != mTransients.end() ) {
+		// Free memory
+		auto& pool = it->second;
+		vkFreeMemory( mDevice, pool->mMemory, nullptr );
+		pool->mMemory = VK_NULL_HANDLE;
+		// Erase object from map
+		mTransients.erase( object );
+	}
+}
+
+
+template <typename VkObjectT>
+std::string cinder::vk::Allocator::PoolManager<VkObjectT>::getAllocationsReport( const std::string& indent ) const
+{
+	std::stringstream ss;
+	size_t poolIndex = 1;
+	for( const auto& pool : mPools ) {
+		const auto& allocations = pool->getAllocations();
+		VkDeviceSize usage = 0;
+		for( const auto& alloc : allocations ) {
+			usage += alloc.getSize();
+		}
+
+		float percent = 100.0f*static_cast<float>( usage )/static_cast<float>( pool->getSize() );
+
+		ss << indent << "Pool " << poolIndex << "/" << mPools.size() << "\n";
+		ss << indent << indent << "Num allocations: " << allocations.size() << "\n";
+		ss << indent << indent << "Usage: " << std::setprecision( 5 ) << percent <<  "% " << "(" << usage << "/" << pool->getSize() << " bytes" << ")" << "\n";
+		++poolIndex;
+	}
+	return ss.str();
 }
 
 // -------------------------------------------------------------------------------------------------
 // Allocator
 // -------------------------------------------------------------------------------------------------
 Allocator::Allocator( size_t bufferBlockSize, size_t imageBlockSize, vk::Device* device )
-	: vk::BaseDeviceObject( device ), mBufferBlockSize( bufferBlockSize ), mImageBlockSize( imageBlockSize )
+	: vk::BaseDeviceObject( device ),
+	  mBufferAllocations( device->getDevice(), bufferBlockSize ),
+	  mImageAllocations( device->getDevice(), bufferBlockSize )
 {
-	CI_LOG_I( "vk::Allocator::mBufferBlockSize: " << mBufferBlockSize );
-	CI_LOG_I( "vk::Allocator::mImageBlockSize: " << mImageBlockSize );
+	mBufferAllocations.mPoolSize = bufferBlockSize;
+	mImageAllocations.mPoolSize = imageBlockSize;
+	CI_LOG_I( "vk::Allocator::mBufferAllocations.getBlockSize(): " << mBufferAllocations.getBlockSize() );
+	CI_LOG_I( "vk::Allocator::mImageAllocations.getBlockSize(): " << mImageAllocations.getBlockSize() );
 
 	//mBufferLock = std::unique_lock<std::mutex>( mBufferMutex );
 	//mImageLock = std::unique_lock<std::mutex>( mImageMutex );
@@ -87,20 +294,8 @@ void Allocator::initialize()
 
 void Allocator::destroy()
 {
-	{
-		std::lock_guard<std::mutex> bufferLock( mBufferMutex );
-		std::lock_guard<std::mutex> imageLock( mImageMutex );
-
-		for( auto& block : mBufferBlocks ) {
-			vkFreeMemory( mDevice->getDevice(), block->mMemory, nullptr );
-		}
-		mBufferBlocks.clear();
-
-		for( auto& block : mImageBlocks ) {
-			vkFreeMemory( mDevice->getDevice(), block->mMemory, nullptr );
-		}
-		mImageBlocks.clear();
-	}
+	mBufferAllocations.destroy();
+	mImageAllocations.destroy();
 }
 
 AllocatorRef Allocator::create( size_t bufferBlockSize, size_t imageBlockSize, vk::Device* device )
@@ -109,112 +304,78 @@ AllocatorRef Allocator::create( size_t bufferBlockSize, size_t imageBlockSize, v
 	return result;
 }
 
-/*
-void Allocator::lockBuffer()
+Allocator::Allocation Allocator::allocateBuffer( VkBuffer buffer, bool transient, VkMemoryPropertyFlags memoryProperty )
 {
-	mBufferLock.lock();
-}
-
-void Allocator::unlockBuffer()
-{
-	mBufferLock.unlock();
-}
-
-void Allocator::lockImage()
-{
-	mImageLock.lock();
-}
-
-void Allocator::unlockImage()
-{
-	mImageLock.unlock();
-}
-*/
-
-template <typename VkObjectT>
-bool Allocator::allocateObject( vk::Device* device, std::vector<Allocator::BlockRef>* blocks, const VkDeviceSize blockSize, VkMemoryRequirements memoryRequirements, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
-{
-	// Find the memory type index that fits memory requirements
-	uint32_t memoryTypeIndex = 0;
-	bool foundMemory = device->findMemoryType( memoryRequirements.memoryTypeBits, memoryProperty, &memoryTypeIndex );
-	assert( foundMemory );
-
-	VkDeviceSize n = memoryRequirements.size / memoryRequirements.alignment;
-	VkDeviceSize r = memoryRequirements.size % memoryRequirements.alignment;
-	VkDeviceSize alignedSize = ( n + ( r > 0 ? 1 : 0 ) ) * memoryRequirements.alignment;
-
-	// Check to see if a block has available memory
-	if( alignedSize < blockSize ) {
-		auto it = std::find_if(
-			std::begin( *blocks ),
-			std::end( *blocks ),
-			[memoryTypeIndex, memoryRequirements]( const Allocator::BlockRef& elem ) -> bool {
-				bool isMemoryType = ( elem->mMemoryTypeIndex == memoryTypeIndex);
-				bool hasSpace = elem->hasAvailable( memoryRequirements.size );
-				return isMemoryType && hasSpace;
-			}
-		);
-
-		if( std::end( *blocks ) != it ) {
-			// Update result
-			*outMemory = (*it)->mMemory;
-			*outOffset = (*it)->mOffset;
-			*outAllocatedSize = alignedSize;
-			// Move offset
-			(*it)->mOffset += alignedSize;
-			return true;
-		}
-	}
-
-	// Allocate a new block using blockSize or alignedSize if it's bigger than blockSize.
-	VkMemoryAllocateInfo allocInfo = {};
-	allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocInfo.pNext           = nullptr;
-	allocInfo.allocationSize  = std::max<VkDeviceSize>( blockSize, alignedSize );
-	allocInfo.memoryTypeIndex = memoryTypeIndex;
-	VkResult res = vkAllocateMemory( device->getDevice(), &allocInfo, nullptr, outMemory );
-	if( VK_SUCCESS == res ) {
-		BlockRef newBlock = BlockRef( new Block( memoryTypeIndex, *outMemory, blockSize ) );
-		// Update result
-		*outOffset = 0;
-		*outAllocatedSize = alignedSize;
-		// Move offset
-		newBlock->mOffset += alignedSize;
-		// Store block
-		blocks->push_back( std::move( newBlock ) );
-
-		return true;
-	}
-	
-	return false;
-}
-
-bool Allocator::allocate( VkBuffer buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
-{
-	std::lock_guard<std::mutex> lock( mBufferMutex );
-	*outMemory = VK_NULL_HANDLE;
-	*outOffset = 0;
-
 	// Get memory requirements
-	VkMemoryRequirements memoryRequirements;
+	VkMemoryRequirements memoryRequirements = {};
 	vkGetBufferMemoryRequirements( mDevice->getDevice(), buffer, &memoryRequirements);
 
-	bool result = allocateObject<VkBuffer>( mDevice, &mBufferBlocks, mBufferBlockSize, memoryRequirements, memoryProperty, outMemory, outOffset, outAllocatedSize );
+	// Find the memory type index that fits memory requirements
+	uint32_t memoryTypeIndex = 0;
+	bool foundMemory = mDevice->findMemoryType( memoryRequirements.memoryTypeBits, memoryProperty, &memoryTypeIndex );
+	assert( foundMemory );
+
+	// Create object descriptor
+	PoolManager<VkBuffer>::ObjectDescriptor objDesc = {};
+	objDesc.object				= buffer;
+	objDesc.transient			= transient;
+	objDesc.memoryTypeIndex		= memoryTypeIndex;
+	objDesc.memoryProperty		= memoryProperty;
+	objDesc.memoryRequirements	= memoryRequirements;
+
+	// Allocate memory for object
+	Allocator::Allocation result = mBufferAllocations.allocate( objDesc );
 	return result;
 }
 
-bool Allocator::allocate( VkImage image, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize )
+Allocator::Allocation Allocator::allocateImage( VkImage image, bool transient, VkMemoryPropertyFlags memoryProperty )
 {
-	std::lock_guard<std::mutex> lock( mImageMutex );
-	*outMemory = VK_NULL_HANDLE;
-	*outOffset = 0;
-
 	// Get memory requirements
-	VkMemoryRequirements memoryRequirements;
-	vkGetImageMemoryRequirements( mDevice->getDevice(), image, &memoryRequirements );
+	VkMemoryRequirements memoryRequirements = {};
+	vkGetImageMemoryRequirements( mDevice->getDevice(), image, &memoryRequirements);
 
-	bool result = allocateObject<VkImage>( mDevice, &mBufferBlocks, mImageBlockSize, memoryRequirements, memoryProperty, outMemory, outOffset, outAllocatedSize );
+	// Find the memory type index that fits memory requirements
+	uint32_t memoryTypeIndex = 0;
+	bool foundMemory = mDevice->findMemoryType( memoryRequirements.memoryTypeBits, memoryProperty, &memoryTypeIndex );
+	assert( foundMemory );
+
+	// Create object descriptor
+	PoolManager<VkImage>::ObjectDescriptor objDesc = {};
+	objDesc.object				= image;
+	objDesc.transient			= transient;
+	objDesc.memoryTypeIndex		= memoryTypeIndex;
+	objDesc.memoryProperty		= memoryProperty;
+	objDesc.memoryRequirements	= memoryRequirements;
+
+	// Allocate memory for object
+	Allocator::Allocation result = mImageAllocations.allocate( objDesc );
 	return result;
+}
+
+void Allocator::freeTransientBuffer( VkBuffer buffer )
+{
+	mBufferAllocations.freeTransient( buffer );
+}
+
+void Allocator::freeTransientImage( VkImage image )
+{
+	mImageAllocations.freeTransient( image );
+}
+
+std::string Allocator::getBufferAllocationsReport() const
+{
+	std::stringstream ss;
+	ss << "Buffer Allocations: " << "\n";
+	ss << mBufferAllocations.getAllocationsReport( "\t" );
+	return ss.str();
+}
+
+std::string Allocator::getImageAllocationsReport() const
+{
+	std::stringstream ss;
+	ss << "Image Allocations: " << "\n";
+	ss << mImageAllocations.getAllocationsReport( "\t" );
+	return ss.str();
 }
 
 }} // namespace cinder::vk

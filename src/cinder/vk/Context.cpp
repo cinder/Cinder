@@ -219,7 +219,7 @@ void Context::setSubpass( uint32_t subPass )
 	setStackState( mSubPassStack, subPass );
 }
 
-uint32_t Context::getSubPass() const
+uint32_t Context::getSubpass() const
 {
 	return mSubPassStack.back();
 }
@@ -959,8 +959,8 @@ const std::vector<VkPipelineColorBlendAttachmentState>&	Context::getColorBlendAt
 	// If a subpass is depth/stencil only, mColorAttachmentBlends should be empty.
 	uint32_t minSize = 0;
 	if( this->getRenderPass() ) {
-		uint32_t subPass = this->getSubPass();
-		uint32_t count = this->getRenderPass()->getSubpassColorAttachmentCount( subPass );
+		uint32_t subpass = this->getSubpass();
+		uint32_t count = this->getRenderPass()->getSubpassColorAttachmentCount( subpass );
 		minSize = std::max( minSize, count );
 	}
 
@@ -973,6 +973,31 @@ const std::vector<VkPipelineColorBlendAttachmentState>&	Context::getColorBlendAt
 	}
 
 	return mColorAttachmentBlends; 
+}
+
+void Context::clearAttachments( bool color, bool depthStencil )
+{
+	auto& renderPass = this->getRenderPass();
+	auto& cmdBuf = this->getCommandBuffer();
+	if( renderPass && cmdBuf ) {
+		uint32_t subpass = this->getSubpass();
+		// Clear attachments
+		auto subpassClearAttachs = renderPass->getClearAttachments( subpass );
+		// Clear rects
+		std::vector<VkClearRect> clearRects;
+		for( size_t i = 0; i < subpassClearAttachs.size(); ++i ) {
+			// @TODO: Determine if we need to support more than one layer
+			auto viewport = this->getViewport();
+			VkClearRect cr = {};
+			cr.rect.offset		= { viewport.first.x, viewport.first.y };
+			cr.rect.extent		= { viewport.second.x, viewport.second.y };
+			cr.baseArrayLayer	= 0;
+			cr.layerCount		= 1;
+			clearRects.push_back( cr );
+		}
+		// Record to command buffer
+		cmdBuf->clearAttachments( static_cast<uint32_t>( subpassClearAttachs.size() ), subpassClearAttachs.data(), static_cast<uint32_t>( clearRects.size() ), clearRects.data() );
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

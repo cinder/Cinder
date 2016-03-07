@@ -67,6 +67,8 @@ geom::Primitive		toGeomPrimitive( VkPrimitiveTopology prim );
 VkFormat			toVkFormat( const geom::AttribInfo& info );
 
 VkImageAspectFlags	determineAspectMask( VkFormat format );
+VkFormat			determineCompressedFormat( int glFormatConstant );
+bool				isCompressedFormat( VkFormat format );
 
 size_t				dataTypeSizeBytes( vk::DataType dataType );
 size_t				formatNumChannels( VkFormat format );
@@ -123,6 +125,8 @@ inline VkFormat findBestVkFormat<float>( size_t numComponents )
 class Context* context();
 
 ShaderProgRef& getStockShader( const class ShaderDef &shader );
+
+void clear( bool color = true, bool depthStencil = true );
 
 //! Viewport
 std::pair<ivec2, ivec2> getViewport();

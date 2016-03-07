@@ -39,6 +39,8 @@
 #include "cinder/vk/BaseVkObject.h"
 #include "cinder/Thread.h"
 
+#include <map>
+
 namespace cinder { namespace vk {
 
 class Device;
@@ -51,69 +53,139 @@ using AllocatorRef = std::shared_ptr<Allocator>;
 //!
 class Allocator : public vk::BaseDeviceObject {
 public:
-	static const VkDeviceSize	_1MB	= 1048576;
-	static const VkDeviceSize	_2MB	= 2*_1MB;
-	static const VkDeviceSize	_4MB	= 4*_1MB;
-	static const VkDeviceSize	_8MB	= 8*_1MB;
-	static const VkDeviceSize	_16MB	= 16*_1MB;
-	static const VkDeviceSize	_32MB	= 32*_1MB;
-	static const VkDeviceSize	_64MB	= 64*_1MB;
-	static const VkDeviceSize	_128MB	= 128*_1MB;
-	static const VkDeviceSize	_256MB	= 256*_1MB;
-	static const VkDeviceSize	_512MB	= 512*_1MB;
-	static const VkDeviceSize	_1024MB	= 1024*_1MB;
-	static const VkDeviceSize	_2048MB	= 2048*_1MB;
+	// Size constants
+	static const VkDeviceSize	_1MB		= 1048576;
+	static const VkDeviceSize	_2MB		= 2*_1MB;
+	static const VkDeviceSize	_4MB		= 4*_1MB;
+	static const VkDeviceSize	_8MB		= 8*_1MB;
+	static const VkDeviceSize	_16MB		= 16*_1MB;
+	static const VkDeviceSize	_32MB		= 32*_1MB;
+	static const VkDeviceSize	_64MB		= 64*_1MB;
+	static const VkDeviceSize	_128MB		= 128*_1MB;
+	static const VkDeviceSize	_256MB		= 256*_1MB;
+	static const VkDeviceSize	_512MB		= 512*_1MB;
+	static const VkDeviceSize	_1024MB		= 1024*_1MB;
+	static const VkDeviceSize	_2048MB		= 2048*_1MB;
+	static const VkDeviceSize	_4096MB		= 4096*_1MB;
+	static const VkDeviceSize	_8192MB		= 8192*_1MB;
+	static const VkDeviceSize	_16384MB	= 16384*_1MB;
+	static const VkDeviceSize	_32768MB	= 32768*_1MB;
+	static const VkDeviceSize	_65536MB	= 65536*_1MB;
+	static const VkDeviceSize	_1GB		= 1048576;
+	static const VkDeviceSize	_2GB		= _1024MB;
+	static const VkDeviceSize	_4GB		= 4*_1GB;
+	static const VkDeviceSize	_8GB		= 8*_1GB;
+	static const VkDeviceSize	_1GMB		= 16*_1GB;
+	static const VkDeviceSize	_3GMB		= 32*_1GB;
+	static const VkDeviceSize	_6GMB		= 64*_1GB;
 
+	//! \class Allocation
+	class Allocation {
+	public:
+		Allocation() {}
+		Allocation( VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size )
+			: mMemory( memory ), mOffset( offset ), mSize( size ) {}
+		Allocation( const Allocation& obj ) 
+			: mMemory( obj.mMemory ), mOffset( obj.mOffset ), mSize( obj.mSize ) {}
+		virtual ~Allocation() {}
+		Allocation&	operator=( const Allocation& rhs ) {
+			if( &rhs != this ) {
+				mMemory = rhs.mMemory;
+				mOffset = rhs.mOffset;
+				mSize = rhs.mSize;
+			}
+			return *this;
+		}
+		VkDeviceMemory	getMemory() const { return mMemory; }
+		VkDeviceSize	getOffset() const { return mOffset; }
+		VkDeviceSize	getSize() const { return mSize; }
+	private:
+		VkDeviceMemory	mMemory = VK_NULL_HANDLE;
+		VkDeviceSize	mOffset = 0;
+		VkDeviceSize	mSize = 0;
+	};
+	
+	// ---------------------------------------------------------------------------------------------
 
 	virtual ~Allocator();
 
 	static AllocatorRef create( size_t bufferBlockSize, size_t imageBlockSize, vk::Device* device );
 	
-/*
-	void	lockBuffer();
-	void	unlockBuffer();
-	void	lockImage();
-	void	unlockImage();
-*/
+	Allocator::Allocation	allocateBuffer( VkBuffer buffer, bool transient, VkMemoryPropertyFlags memoryProperty );
+	Allocator::Allocation	allocateImage( VkImage image, bool transient, VkMemoryPropertyFlags memoryProperty );
+	void					freeTransientBuffer( VkBuffer buffer );
+	void					freeTransientImage( VkImage image );
 
-	bool	allocate( VkBuffer buffer, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize );
-	bool	allocate( VkImage image, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize );
+	std::string				getBufferAllocationsReport() const;
+	std::string				getImageAllocationsReport() const;
 
 private:
 	Allocator( size_t bufferBlockSize, size_t imageBlockSize, vk::Device* device );
 
-	size_t	mBufferBlockSize = 0;
-	size_t	mImageBlockSize = 0;
+	//! \class PoolManager
+	template <typename VkObjectT>
+	class PoolManager {
+	public:	
+		//! \class ObjectDescriptor
+		struct ObjectDescriptor {
+			VkObjectT				object;
+			bool					transient;
+			uint32_t				memoryTypeIndex;
+			VkMemoryPropertyFlags	memoryProperty;
+			VkMemoryRequirements	memoryRequirements;
+		};
 
-	struct Block {
-		uint32_t		mMemoryTypeIndex = UINT32_MAX;
-		VkDeviceMemory	mMemory = VK_NULL_HANDLE;
-		VkDeviceSize	mSize = 0;
-		VkDeviceSize	mOffset = 0;
-
-		Block( uint32_t memoryTypeIndex, VkDeviceMemory memory, VkDeviceSize size );
-		virtual ~Block() {}
+		//! \class Pool
+		class Pool {
+		public:
+			virtual ~Pool() {}
 	
-		VkDeviceSize	getRemaining() const;
-		bool			hasAvailable( VkDeviceSize amount ) const;
+			static std::unique_ptr<Pool> create( VkDevice device, const VkDeviceSize poolSize, const typename PoolManager<VkObjectT>::ObjectDescriptor& objDesc );
+			static std::unique_ptr<Pool> createTransient( VkDevice device, const typename PoolManager<VkObjectT>::ObjectDescriptor& objDesc );
+			
+			uint32_t				getMemoryTypeIndex() const { return mMemoryTypeIndex; }
+			VkDeviceSize			getSize() const { return mSize; }
+			bool					hasAvailable( VkMemoryRequirements memReqs ) const;
+			Allocator::Allocation	allocate( const typename PoolManager<VkObjectT>::ObjectDescriptor& objDesc );
+			const std::vector<Allocator::Allocation>&	getAllocations() const { return mAllocations; }
+		private:
+			Pool( uint32_t memoryTypeIndex, VkDeviceMemory memory, VkDeviceSize size );
+
+			uint32_t				mMemoryTypeIndex = UINT32_MAX;
+			VkDeviceMemory			mMemory = VK_NULL_HANDLE;
+			VkDeviceSize			mSize = 0;
+			VkDeviceSize			mOffset = 0;
+			std::vector<Allocator::Allocation>	mAllocations;
+			friend class PoolManager<VkObjectT>;
+		};
+		using PoolRef = std::unique_ptr<Pool>;
+
+		// -----------------------------------------------------------------------------------------
+
+		PoolManager( VkDevice device, VkDeviceSize poolSize );
+		virtual ~PoolManager();
+
+		void							destroy();
+		Allocator::Allocation			allocate( const typename PoolManager<VkObjectT>::ObjectDescriptor& objDesc );
+		void							freeTransient( VkObjectT object );
+		VkDeviceSize					getBlockSize() const { return mPoolSize; }
+		std::string						getAllocationsReport( const std::string& indent = "" ) const;
+	private:
+		VkDevice						mDevice = VK_NULL_HANDLE;
+		size_t							mPoolSize = 0;
+		std::mutex						mMutex;
+		std::vector<PoolRef>			mPools;
+		std::map<VkObjectT, PoolRef>	mTransients;
+		friend class Allocator;
 	};
-	//
-	using BlockRef = std::unique_ptr<Block>;
 
-	std::mutex						mBufferMutex;
-	//std::unique_lock<std::mutex>	mBufferLock;
-	std::vector<BlockRef>			mBufferBlocks;
-
-	std::mutex						mImageMutex;
-	//std::unique_lock<std::mutex>	mImageLock;
-	std::vector<BlockRef>			mImageBlocks;
+	// Allocation Stores
+	PoolManager<VkBuffer>				mBufferAllocations;
+	PoolManager<VkImage>				mImageAllocations;
 
 	void initialize();
 	void destroy();
 	friend class Device;
-
-	template <typename VkObjectT>
-	bool allocateObject( vk::Device* device, std::vector<BlockRef>* blocks, const VkDeviceSize blockSize, VkMemoryRequirements memoryRequirements, VkMemoryPropertyFlags memoryProperty, VkDeviceMemory* outMemory, VkDeviceSize* outOffset, VkDeviceSize* outAllocatedSize );
 };
 
 }} // namespace cinder::vk

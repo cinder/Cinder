@@ -41,6 +41,7 @@
 #include "cinder/Vector.h"
 
 #define THREADED_LOAD
+#define COMPRESSED_TEXTURES
 
 extern float		DEFAULT_CAM_DIST;
 extern float		CAM_DIST_MIN;

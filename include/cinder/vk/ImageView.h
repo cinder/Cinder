@@ -126,7 +126,7 @@ public:
 	int32_t					getHeight() const { return mImage->getHeight(); }
 	int32_t					getDepth()  const { return mImage->getDepth(); }
 
-	VkFormat				getFormat() const { return mImage->getFormat(); }
+	VkFormat				getFormat() const { return mImage->getInternalFormat(); }
 	VkImageAspectFlags		getAspectMask() const { return mImage->getAspectMask(); }
 
 	VkImageLayout			getInitialLayout() const { return mImage->getInitialLayout(); }

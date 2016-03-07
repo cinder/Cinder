@@ -113,9 +113,9 @@ void ShadowMappingBasic::setup()
 			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 			.addAttachment( attachment );
-		vk::RenderPass::Subpass subpasses = vk::RenderPass::Subpass()
+		vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()
 			.addDepthStencilAttachment( 0 );
-		renderPassOptions.addSubPass( subpasses );
+		renderPassOptions.addSubPass( subpass );
 		mRenderPass = vk::RenderPass::create( renderPassOptions );
 
 		// Framebuffer
@@ -280,6 +280,9 @@ void ShadowMappingBasic::draw()
 
 	// Wait for work to be done
 	vk::context()->getGraphicsQueue()->waitIdle();
+
+	vkDestroySemaphore( vk::context()->getDevice(), imageAcquiredSemaphore, nullptr );
+	vkDestroySemaphore( vk::context()->getDevice(), renderingCompleteSemaphore, nullptr );
 }
 
 CINDER_APP( ShadowMappingBasic, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_32_BIT ).setExplicitMode() ), ShadowMappingBasic::prepareSettings )

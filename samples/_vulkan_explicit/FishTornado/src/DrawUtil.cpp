@@ -177,7 +177,7 @@ void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 	pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
 	pipelineSelector->setShaderStages( mShader->getShaderStages() );
 	pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
-	pipelineSelector->setSubPass( ctx->getSubPass() );
+	pipelineSelector->setSubPass( ctx->getSubpass() );
 	pipelineSelector->setPipelineLayout( mPipelineLayout->getPipelineLayout() );
 	auto pipeline = pipelineSelector->getSelectedPipeline();
 	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );
