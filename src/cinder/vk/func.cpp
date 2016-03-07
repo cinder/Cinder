@@ -68,3 +68,8 @@ VkResult vkCreateSemaphore( const ci::vk::Device* device, const VkSemaphoreCreat
 {
 	return vkCreateSemaphore( device->getDevice(), pCreateInfo, pAllocator, pSemaphore );
 }
+
+void vkDestroySemaphore( const ci::vk::Device* device, VkSemaphore semaphore, const VkAllocationCallbacks* pAllocator )
+{
+	vkDestroySemaphore( device->getDevice(), semaphore, pAllocator );
+}

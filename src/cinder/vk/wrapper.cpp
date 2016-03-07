@@ -495,6 +495,11 @@ ShaderProgRef& getStockShader( const class ShaderDef &shader )
 	return vk::context()->getStockShader( shader );
 }
 
+void clear( bool color, bool depthStencil )
+{
+	vk::context()->clearAttachments( color, depthStencil );
+}
+
 void viewport( const std::pair<ivec2, ivec2> positionAndSize )
 {
 	auto ctx = vk::context();

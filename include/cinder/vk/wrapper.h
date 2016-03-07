@@ -126,6 +126,8 @@ class Context* context();
 
 ShaderProgRef& getStockShader( const class ShaderDef &shader );
 
+void clear( bool color = true, bool depthStencil = true );
+
 //! Viewport
 std::pair<ivec2, ivec2> getViewport();
 void viewport( const std::pair<ivec2, ivec2> positionAndSize );

@@ -124,8 +124,8 @@ public:
 		const std::vector<uint32_t>&	getColorAttachments() const { return mColorAttachments; }
 		const std::vector<uint32_t>&	getDepthStencilAttachment() const { return mDepthStencilAttachment; }
 
-		Subpass&						addColorAttachment( uint32_t attachmentIndex, uint32_t resolveAttachmentIndex = VK_ATTACHMENT_UNUSED ) { mColorAttachments.push_back( attachmentIndex ); mResolveAttachments.push_back( resolveAttachmentIndex ); return *this; }
-		Subpass&						addDepthStencilAttachment( uint32_t attachmentIndex ) { mDepthStencilAttachment.push_back( attachmentIndex ); return *this; }
+		Subpass&				addColorAttachment( uint32_t attachmentIndex, uint32_t resolveAttachmentIndex = VK_ATTACHMENT_UNUSED ) { mColorAttachments.push_back( attachmentIndex ); mResolveAttachments.push_back( resolveAttachmentIndex ); return *this; }
+		Subpass&				addDepthStencilAttachment( uint32_t attachmentIndex ) { mDepthStencilAttachment.push_back( attachmentIndex ); return *this; }
 
 	private:
 		VkPipelineBindPoint		mPipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -194,8 +194,10 @@ public:
 	const vk::CommandBufferRef&				getCommandBuffer() const { return mCommandBuffer; }
 	uint32_t								getColorAttachmentCount() const { return static_cast<uint32_t>( mAttachmentDescriptors.size() ); }
 
-	VkSampleCountFlagBits					getSubpassSampleCount( uint32_t subPass ) const;
-	uint32_t								getSubpassColorAttachmentCount( uint32_t subPass ) const;
+	VkSampleCountFlagBits					getSubpassSampleCount( uint32_t subpass ) const;
+	uint32_t								getSubpassColorAttachmentCount( uint32_t subpass ) const;
+
+	std::vector<VkClearAttachment>			getClearAttachments( uint32_t subpass, bool color = true, bool depthStencil = true ) const;
 
 	void									beginRender( const vk::CommandBufferRef& cmdBuf, const vk::FramebufferRef& framebuffer );
 	void									endRender();

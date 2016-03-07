@@ -148,11 +148,17 @@ void Presenter::resize( const ivec2& newWindowSize )
 			if( ! mRenderPasses[i] ) {
 				// Attachment descriptions
 				vk::RenderPass::Attachment multiSampleAttachment = vk::RenderPass::Attachment( colorFormat ).setSamples( mActualSamples )
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
+					.setLoadOpClear()
+					.setStoreOpStore();
 				vk::RenderPass::Attachment singleSampleAttachment = vk::RenderPass::Attachment( colorFormat )
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR );
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
+					.setLoadOpLoad()
+					.setStoreOpStore();
 				vk::RenderPass::Attachment depthAttachment = vk::RenderPass::Attachment( depthStencilFormat ).setSamples( mActualSamples )
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
+					.setStencilLoadOpClear()
+					.setStencilStoreOpStore();
 				// Options
 				vk::RenderPass::Options options = vk::RenderPass::Options()
 					.addAttachment( multiSampleAttachment )
@@ -198,9 +204,13 @@ void Presenter::resize( const ivec2& newWindowSize )
 			if( ! mRenderPasses[i] ) {
 				// Attachment descriptions
 				vk::RenderPass::Attachment colorAttachment = vk::RenderPass::Attachment( colorFormat )
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR );
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
+					.setLoadOpLoad()
+					.setStoreOpStore();
 				vk::RenderPass::Attachment depthAttachment = vk::RenderPass::Attachment( depthStencilFormat )			
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
+					.setStencilLoadOpClear()
+					.setStencilStoreOpStore();
 				// Options
 				vk::RenderPass::Options options = vk::RenderPass::Options()
 					.addAttachment( colorAttachment )

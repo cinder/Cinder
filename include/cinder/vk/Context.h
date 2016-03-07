@@ -128,7 +128,7 @@ public:
 	void						pushSubPass( uint32_t subPass );
 	void						popSubPass();
 	void						setSubpass( uint32_t subPass );
-	uint32_t					getSubPass() const;
+	uint32_t					getSubpass() const;
 
 	void						pushCommandBuffer( const vk::CommandBufferRef& cmdBuf );
 	void						popCommandBuffer();
@@ -259,6 +259,9 @@ public:
 	VkBool32					getDepthTest() const { return mDepthTest; }
 	void						setDepthWrite( VkBool32 value ) { mDepthWrite = value; }
 	VkBool32					getDepthWrite() const { return mDepthWrite; }
+
+	//! Clears the attachments in the current subpass
+	void						clearAttachments( bool color = true, bool depthStencil = true );
 
 private:
 	std::string					generateVertexShader( const vk::ShaderDef &shader );

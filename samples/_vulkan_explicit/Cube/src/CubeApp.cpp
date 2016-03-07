@@ -225,8 +225,6 @@ void RotatingCubeApp::workThreadFunc( const ci::vk::ContextRef& ctx )
 
 void RotatingCubeApp::draw()
 {
-
-
 	uint32_t frame = getElapsedFrames() - 1;
 	uint32_t frameIdx = frame % FRAME_LAG;
 	//CI_LOG_I( "Frame: " << frame );

@@ -350,17 +350,46 @@ void RenderPass::setAttachmentClearValue( size_t attachmentIndex,const VkClearVa
 	}
 }
 
-VkSampleCountFlagBits RenderPass::getSubpassSampleCount( uint32_t subPass ) const
+VkSampleCountFlagBits RenderPass::getSubpassSampleCount( uint32_t subpass ) const
 {
-	VkSampleCountFlagBits result = mSubpassSampleCounts[subPass];;
+	VkSampleCountFlagBits result = mSubpassSampleCounts[subpass];;
 	return result;
 }
 
-uint32_t RenderPass::getSubpassColorAttachmentCount( uint32_t subPass ) const
+uint32_t RenderPass::getSubpassColorAttachmentCount( uint32_t subpass ) const
 {
 	uint32_t result = 0;
-	if( subPass < mOptions.mSubpasses.size() ) {
-		result = static_cast<uint32_t>( mOptions.mSubpasses[subPass].mColorAttachments.size() );
+	if( subpass < mOptions.mSubpasses.size() ) {
+		result = static_cast<uint32_t>( mOptions.mSubpasses[subpass].mColorAttachments.size() );
+	}
+	return result;
+}
+
+std::vector<VkClearAttachment> RenderPass::getClearAttachments( uint32_t subpass, bool color, bool depthStencil ) const
+{
+	std::vector<VkClearAttachment> result;
+	if( subpass < mOptions.mSubpasses.size() ) {
+		auto& subpassDescs = mOptions.mSubpasses[subpass];
+		// Color attachments
+		if( color && ( ! subpassDescs.mColorAttachments.empty() ) ) {
+			for( const auto& attachmentIndex : subpassDescs.mColorAttachments ) {
+				VkClearAttachment ca = {};
+				ca.aspectMask		= VK_IMAGE_ASPECT_COLOR_BIT;
+				ca.colorAttachment	= attachmentIndex;
+				ca.clearValue		= mAttachmentClearValues[attachmentIndex];
+				result.push_back( ca );
+			}
+		}
+		// Depth stencil attachments
+		if( depthStencil && ( ! subpassDescs.mDepthStencilAttachment.empty() ) ) {
+			for( const auto& attachmentIndex : subpassDescs.mDepthStencilAttachment ) {
+				VkClearAttachment ca = {};
+				ca.aspectMask		= VK_IMAGE_ASPECT_DEPTH_BIT;
+				ca.colorAttachment	= 0;
+				ca.clearValue		= mAttachmentClearValues[attachmentIndex];
+				result.push_back( ca );
+			}
+		}
 	}
 	return result;
 }
