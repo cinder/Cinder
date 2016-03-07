@@ -99,6 +99,11 @@ using std::uint64_t;
 	#error "Cinder requires libc++ on Mac OS X and iOS"
 #endif
 
+// CINDER_POSIX
+#if defined( CINDER_LINUX ) || defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+	#define CINDER_POSIX
+#endif
+
 #include <memory>
 #include "cinder/CinderFwd.h"
 
