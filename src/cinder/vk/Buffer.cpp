@@ -223,7 +223,8 @@ void Buffer::bufferData( VkDeviceSize size, const void *data )
 		bufferDataImpl( size, data );
 	}
 	else {
-		vk::BufferRef stagingBuffer = vk::Buffer::create( size, vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) );
+		vk::Buffer::Format stagingFormat = vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ).setTransientAllocation();
+		vk::BufferRef stagingBuffer = vk::Buffer::create( size, stagingFormat );
 		if( stagingBuffer ) {
 			// Buffer data to staging
 			stagingBuffer->bufferDataImpl( size, data );
@@ -249,7 +250,8 @@ void Buffer::bufferSubData( VkDeviceSize offset, VkDeviceSize size, const void *
 		bufferSubDataImpl( offset, size, data );
 	}
 	else {
-		vk::BufferRef stagingBuffer = vk::Buffer::create( size, vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) );
+		vk::Buffer::Format stagingFormat = vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ).setTransientAllocation();
+		vk::BufferRef stagingBuffer = vk::Buffer::create( size, stagingFormat );
 		if( stagingBuffer ) {
 			// Buffer data to staging
 			stagingBuffer->bufferDataImpl( size, data );
