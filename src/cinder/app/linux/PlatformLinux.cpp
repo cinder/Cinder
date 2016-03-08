@@ -171,9 +171,16 @@ struct DialogHelper {
 						value += static_cast<const char *>( buffer.data() );
 					}
 				}
-				if( ! value.empty() ) {
+                if( ! value.empty() ) {
+                    // Zenity seems to add a new line character at the end of the path, so remove it if present.
+                    const auto newLineCharacterPos = std::strcspn( value.c_str(), "\n" );
+
+                    if( newLineCharacterPos !=  value.size() ) {
+                        value[ newLineCharacterPos ] = 0;
+                    }
+
 					result = value;
-				}
+                }
 			}
 			pclose(pipe);			
 		}
