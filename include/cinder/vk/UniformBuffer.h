@@ -53,6 +53,18 @@ using UniformBufferRef = std::shared_ptr<UniformBuffer>;
 class UniformBuffer : public Buffer {
 public:
 
+	class Format : public vk::Buffer::Format {
+	public:
+		Format( VkMemoryPropertyFlags memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+			: vk::Buffer::Format( VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, memoryProperty ) {}
+		virtual ~Format() {}
+
+	private:
+		friend class VertexBuffer;
+	};
+
+	// ---------------------------------------------------------------------------------------------
+
 	//! \class Uniform
 	class Uniform : public UniformLayout::Uniform {
 	public:
@@ -71,11 +83,11 @@ public:
 	// ---------------------------------------------------------------------------------------------
 
 	UniformBuffer();
-	UniformBuffer( const UniformLayout::Block& block, Device *device );
+	UniformBuffer( const UniformLayout::Block& block, const vk::UniformBuffer::Format& format, vk::Device *device );
 	virtual ~UniformBuffer();
 
 	//! Returns a single uniform buffer corresponding to a block
-	static UniformBufferRef		create( const UniformLayout::Block& block, Device *device = nullptr );
+	static UniformBufferRef		create( const UniformLayout::Block& block, const vk::UniformBuffer::Format& format, vk::Device *device = nullptr );
 
 	void						uniform( const std::string& name, const float    value );
 	void						uniform( const std::string& name, const int32_t  value );

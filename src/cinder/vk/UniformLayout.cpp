@@ -682,7 +682,7 @@ UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 		const auto& srcBinding = srcBindings[i];
 		mBindings[i] = UniformSet::Binding( srcBinding );
 		if( mBindings[i].isBlock() ) {
-			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), device );
+			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), vk::UniformBuffer::Format(), device );
 			mBindings[i].mUniformBuffer = buffer;
 		}
 	}

@@ -50,20 +50,26 @@ using VertexBufferRef = std::shared_ptr<VertexBuffer>;
 //!
 class VertexBuffer : public Buffer {
 public:
+
+	class Format : public vk::Buffer::Format {
+	public:
+		Format( VkMemoryPropertyFlags memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+			: vk::Buffer::Format( VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, memoryProperty ) {}
+		virtual ~Format() {}
+
+	private:
+		friend class VertexBuffer;
+	};
+
+	// ---------------------------------------------------------------------------------------------
+
 	virtual ~VertexBuffer();
 
-	//static VertexBufferRef create( const void* data, size_t dataSize, size_t dataStride, Device *device = nullptr );
-	static VertexBufferRef create( const void* data, size_t dataSize, Device *device = nullptr );
-
-	//const VkVertexInputBindingDescription&					getBindingDescription() const { return mBindingDescription; }
-	//const std::vector<VkVertexInputAttributeDescription>&	getAttributeDescriptions() const { return mAttributeDescriptions; }
+	static VertexBufferRef create( const void* data, size_t dataSize, const vk::VertexBuffer::Format& format, vk::Device *device = nullptr );
 
 private:
-	VertexBuffer( const void* data, size_t dataSize, Device *device );
+	VertexBuffer( const void* data, size_t dataSize, const vk::VertexBuffer::Format& format, vk::Device *device );
 
-    //VkVertexInputBindingDescription					mBindingDescription;
-    //std::vector<VkVertexInputAttributeDescription>	mAttributeDescriptions;
-	
 	void initialize( const void* data, size_t dataSize );
 	void destroy( bool removeFromTracking = true );
 	friend class vk::Device;

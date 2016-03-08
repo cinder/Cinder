@@ -66,7 +66,7 @@ void SolidRect::initialize()
 	};
 
 	// Vertex buffer
-	mVertexBuffer = ci::vk::VertexBuffer::create( static_cast<const void*>( mData.data() ), mData.size()*sizeof( float ) );
+	mVertexBuffer = ci::vk::VertexBuffer::create( static_cast<const void*>( mData.data() ), mData.size()*sizeof( float ), ci::vk::VertexBuffer::Format( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) );
 
 	// Uniform layout, uniform set
 	const ci::vk::UniformLayout& uniformLayout = mShader->getUniformLayout();

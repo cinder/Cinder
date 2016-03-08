@@ -65,7 +65,7 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 		dstRect.x2, dstRect.y2, 0.0f, 1.0f, uv1.x, uv1.y
 	};
 
-	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ) );
+	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ), vk::VertexBuffer::Format() );
 	vk::context()->addTransient( vertexBuffer );
 
 	auto shader = vk::context()->hasShaderProg() ? vk::context()->getShaderProg() : vk::context()->getStockShader( vk::ShaderDef().texture() );
@@ -172,7 +172,7 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 		r.x2, r.y2, 0.0f, 1.0f, uv1.x, uv1.y, color.r, color.g, color.b, color.a
 	};
 
-	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ) );
+	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ), vk::VertexBuffer::Format() );
 	vk::context()->addTransient( vertexBuffer );
 
 	auto shader = vk::context()->hasShaderProg() ? vk::context()->getShaderProg() : vk::context()->getStockShader( vk::ShaderDef().color() );

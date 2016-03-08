@@ -50,9 +50,22 @@ using IndexBufferRef = std::shared_ptr<IndexBuffer>;
 //!
 class IndexBuffer : public Buffer {
 public:
+
+	class Format : public vk::Buffer::Format {
+	public:
+		Format( VkMemoryPropertyFlags memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+			: vk::Buffer::Format( VK_BUFFER_USAGE_INDEX_BUFFER_BIT, memoryProperty ) {}
+		virtual ~Format() {}
+
+	private:
+		friend class VertexBuffer;
+	};
+
+	// ---------------------------------------------------------------------------------------------
+
 	virtual ~IndexBuffer();
 
-	static IndexBufferRef create( size_t numIndices, VkIndexType indexType, const void *indices, vk::Device *device = nullptr );
+	static IndexBufferRef create( size_t numIndices, VkIndexType indexType, const void *indices, const vk::IndexBuffer::Format& format, vk::Device *device = nullptr );
 
 	VkIndexType					getIndexType() const { return mIndexType; }
 	size_t						getNumIndices() const { return mNumIndices; }
@@ -61,7 +74,7 @@ public:
 	void						bufferIndices( const std::vector<uint32_t> &indices, size_t offset = 0 );
 
 private:
-	IndexBuffer( size_t numIndices, VkIndexType indexType, const void *indices, vk::Device *device );
+	IndexBuffer( size_t numIndices, VkIndexType indexType, const void *indices, const vk::IndexBuffer::Format& format, vk::Device *device );
 
 	VkIndexType					mIndexType = VK_INDEX_TYPE_UINT32;
 	size_t						mNumIndices = 0;

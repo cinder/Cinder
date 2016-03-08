@@ -51,11 +51,49 @@ using BufferRef = std::shared_ptr<Buffer>;
 class Buffer : public BaseDeviceObject {
 public:
 
-	Buffer();
-	Buffer( VkDeviceSize sizeBytes, VkBufferUsageFlags usage, Device *device );
+	class Format {
+	public:
+		Format( VkBufferUsageFlags usage, VkMemoryPropertyFlags memoryProperty )
+			: mUsage( usage ), mMemoryProperty( memoryProperty ) {}
+		virtual ~Format() {}
+
+		Format&					setUsage( VkBufferUsageFlags value, bool exclusive = false ) { if( exclusive ) { mUsage = value; } else { mUsage |= value; } return *this; }
+		VkImageUsageFlags		getUsage() const { return mUsage; }
+		Format&					setUsageTransferSource() { setUsage( VK_BUFFER_USAGE_TRANSFER_SRC_BIT ); return *this; }
+		Format&					setUsageTransferDestination() { setUsage( VK_BUFFER_USAGE_TRANSFER_DST_BIT ); return *this; }
+		Format&					setUsageUniformTexelBuffer() { setUsage( VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT ); return *this; }
+		Format&					setUsageStorageTexelBuffer() { setUsage( VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT ); return *this; }
+		Format&					setUsageUniformBuffer() { setUsage( VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ); return *this; }
+		Format&					setUsageStorageBuffer() { setUsage( VK_BUFFER_USAGE_STORAGE_BUFFER_BIT ); return *this; }
+		Format&					setUsageIndexBuffer() { setUsage( VK_BUFFER_USAGE_INDEX_BUFFER_BIT ); return *this; }
+		Format&					setUsageVertexBuffer() { setUsage( VK_BUFFER_USAGE_VERTEX_BUFFER_BIT ); return *this; }
+		Format&					setUsageIndirectBuffer() { setUsage( VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT ); return *this; }
+
+	public:
+		Format&					setMemoryProperty( VkMemoryPropertyFlags value, bool exclusive = false ) { if( exclusive ) { mMemoryProperty = value; } else { mMemoryProperty |= value; } return *this; }
+		VkMemoryPropertyFlags	getMemoryProperty() const { return mMemoryProperty; }
+		Format&					setMemoryPropertyDeviceLocal( bool exclusive = false )     { setMemoryProperty( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, exclusive ); return *this; }
+		Format&					setMemoryPropertyHostVisible( bool exclusive = false )     { setMemoryProperty( VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, exclusive ); return *this; }
+		Format&					setMemoryPropertyHostCoherent( bool exclusive = false )    { setMemoryProperty( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, exclusive ); return *this; }
+		Format&					setMemoryPropertyHostCached( bool exclusive = false )      { setMemoryProperty( VK_MEMORY_PROPERTY_HOST_CACHED_BIT, exclusive ); return *this; }
+		Format&					setMemoryPropertyLazilyAllocated( bool exclusive = false ) { setMemoryProperty( VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT, exclusive ); return *this; }
+		bool					hasMemoryPropertyHostVisible() const { return ( VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT == ( mMemoryProperty & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) ); }
+
+		Format&					setTransientAllocation( bool value = true ) { mTransientAllocation = value; return *this; }
+		bool					getTransientAllocation() const { return mTransientAllocation; }
+
+	private:
+		VkBufferUsageFlags		mUsage = 0;
+		VkMemoryPropertyFlags	mMemoryProperty = 0;
+		bool					mTransientAllocation = false;
+		friend class Buffer;
+	};
+
+	// ---------------------------------------------------------------------------------------------
+
     virtual ~Buffer();
 
-	static BufferRef 		create( VkDeviceSize size, VkBufferUsageFlags usage, Device *device = nullptr );
+	static BufferRef 		create( VkDeviceSize size, const vk::Buffer::Format& format, vk::Device *device = nullptr );
 
 	VkBuffer				getBuffer() const { return mBuffer; }
 	const VkDescriptorBufferInfo&	getBufferInfo() const { return mBufferInfo; }
@@ -72,16 +110,20 @@ public:
 	//! Reallocates the buffer if its size is smaller than \a minimumSize. This destroys the contents of the buffer if it must be reallocated.
 	void					ensureMinimumSize( size_t minimumSize );
 
-protected:
-	// Derived objects should use this c'tor
-	Buffer( bool selfOwned, VkDeviceSize size, VkBufferUsageFlags usage, Device *device );
+	static void				copy( vk::Context* context, VkBuffer srcBuffer, VkDeviceSize srcOffset, VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize size );
 
+protected:
+	// Regular instantiation should use this c'tor
+	explicit Buffer( VkDeviceSize sizeBytes, const vk::Buffer::Format& format, vk::Device *device );
+	// Derived objects should use this c'tor
+	explicit Buffer( bool selfOwned, VkDeviceSize size, const vk::Buffer::Format& format, vk::Device *device );
+
+	vk::Buffer::Format		mFormat;
 	bool 					mSelfOwned = true;
 
 	VkBuffer				mBuffer = VK_NULL_HANDLE;
 	VkDescriptorBufferInfo	mBufferInfo;
 
-    VkBufferUsageFlags  	mUsage = 0;
 	VkDeviceSize			mSize = 0;
 	VkDeviceMemory			mMemory = 0;
 	VkDeviceSize			mAllocationSize = 0;
@@ -89,6 +131,9 @@ protected:
 
 	void					createBufferAndAllocate( size_t size );
 	void					destroyBufferAndFree();
+
+	void					bufferDataImpl( VkDeviceSize size, const void *data  );
+	void					bufferSubDataImpl( VkDeviceSize offset, VkDeviceSize size, const void *data );
 
 	void*					mMappedAddress = nullptr;
 

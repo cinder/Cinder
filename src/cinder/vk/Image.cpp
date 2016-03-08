@@ -865,7 +865,7 @@ void Image::copyData( uint32_t dstLayer, const float *srcData, size_t srcRowByte
 
 void Image::copy( vk::Context *context, const vk::ImageRef& srcImage, uint32_t srcMipLevel, uint32_t srcLayer, const ivec2& srcOffset, const vk::ImageRef& dstImage, VkImageLayout dstFinalLayout, uint32_t dstMipLevel, uint32_t dstLayer, const ivec2& dstOffset, const ivec2& size )
 {
-	auto& cmdPool = vk::context()->getDefaultCommandPool();
+	auto& cmdPool = context->getDefaultCommandPool();
 	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool->getCommandPool(), context );
 
 	cmdBuf->begin();

@@ -38,13 +38,17 @@
 
 #include "cinder/vk/Buffer.h"
 #include "cinder/vk/Allocator.h"
+#include "cinder/vk/CommandBuffer.h"
+#include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Device.h"
+#include "cinder/vk/Queue.h"
+#include "cinder/vk/wrapper.h"
 
 namespace cinder { namespace vk {
 
-Buffer::Buffer( VkDeviceSize size, VkBufferUsageFlags usage, vk::Device *device )
-	: BaseDeviceObject( device ), mSize( size ), mUsage(usage )
+Buffer::Buffer( VkDeviceSize size, const vk::Buffer::Format& format, vk::Device *device )
+	: BaseDeviceObject( device ), mFormat( format ), mSize( size )
 {
 	if( mSelfOwned ) {
 		initialize();
@@ -52,8 +56,8 @@ Buffer::Buffer( VkDeviceSize size, VkBufferUsageFlags usage, vk::Device *device 
 }
 
 // selfOwned is generally false
-Buffer::Buffer( bool selfOwned, VkDeviceSize size, VkBufferUsageFlags usage, vk::Device *device )
-	: BaseDeviceObject( device ), mSize( size ), mUsage(usage ), mSelfOwned( selfOwned )
+Buffer::Buffer( bool selfOwned, VkDeviceSize size, const vk::Buffer::Format& format, vk::Device *device )
+	: BaseDeviceObject( device ), mFormat( format ), mSelfOwned( selfOwned ), mSize( size )
 {
 	// Derived object will handle init sequence
 }
@@ -82,23 +86,26 @@ void Buffer::destroy( bool removeFromTracking )
 		return;
 	}
 
+	// Destroy
 	destroyBufferAndFree();
+	// Remove from transient - allocator will check this
+	mDevice->getAllocator()->freeTransientBuffer( mBuffer );
 
 	if( removeFromTracking ) {
 		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
-BufferRef Buffer::create( VkDeviceSize size, VkBufferUsageFlags usage, vk::Device *device )
+BufferRef Buffer::create( VkDeviceSize size, const vk::Buffer::Format& format, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	BufferRef result = BufferRef( new Buffer( size, usage, device ) );
+	BufferRef result = BufferRef( new Buffer( size, format, device ) );
 	return result;
 }
 
 void Buffer::createBufferAndAllocate( size_t size )
 {
-	assert( size > 0 );
+	assert( ( size > 0 ) && ( 0 != mFormat.mUsage ) );
 
 	VkResult res = VK_NOT_READY;
 
@@ -106,7 +113,7 @@ void Buffer::createBufferAndAllocate( size_t size )
 	createInfo.sType 					= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 	createInfo.pNext 					= nullptr;
 	createInfo.size 					= size;
-	createInfo.usage 					= mUsage;
+	createInfo.usage 					= mFormat.mUsage;
 	createInfo.flags 					= 0;
 	createInfo.sharingMode 				= VK_SHARING_MODE_EXCLUSIVE;
 	createInfo.queueFamilyIndexCount 	= 0;
@@ -115,7 +122,7 @@ void Buffer::createBufferAndAllocate( size_t size )
 	assert( res == VK_SUCCESS );
 
 	// Allocate memory
-	Allocator::Allocation alloc = mDevice->getAllocator()->allocateBuffer( mBuffer, false, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+	Allocator::Allocation alloc = mDevice->getAllocator()->allocateBuffer( mBuffer, mFormat.mTransientAllocation, mFormat.mMemoryProperty );
 	assert( VK_NULL_HANDLE != alloc.getMemory() );
 	mMemory				= alloc.getMemory();
 	mAllocationOffset	= alloc.getOffset();
@@ -181,7 +188,7 @@ void Buffer::destroyBufferAndFree()
 
 void* Buffer::map( VkDeviceSize offset )
 {
-	if( nullptr == mMappedAddress ) {
+	if( ( nullptr == mMappedAddress ) && mFormat.hasMemoryPropertyHostVisible() ) {
 		VkMemoryMapFlags flags = 0;
 		VkResult result = vkMapMemory( mDevice->getDevice(), mMemory, mAllocationOffset + offset, mSize, flags, &mMappedAddress );
 		if( VK_SUCCESS != result ) {
@@ -199,20 +206,56 @@ void Buffer::unmap()
 	}
 }
 
+void Buffer::bufferDataImpl(  VkDeviceSize size, const void *data  )
+{
+	if( nullptr != data ) {
+		VkDeviceSize offset = 0;
+		void* dst = map( offset );
+		if( nullptr != dst ) {
+			std::memcpy( dst, data, size );
+		}
+	}
+}
+
 void Buffer::bufferData( VkDeviceSize size, const void *data )
 {
-	VkDeviceSize offset = 0;
-	void* dst = map( offset );
-	if( nullptr != dst ) {
-		std::memcpy( dst, data, size );
+	if( mFormat.hasMemoryPropertyHostVisible() ) {
+		bufferDataImpl( size, data );
+	}
+	else {
+		vk::BufferRef stagingBuffer = vk::Buffer::create( size, vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) );
+		if( stagingBuffer ) {
+			// Buffer data to staging
+			stagingBuffer->bufferDataImpl( size, data );
+			// Copy to current buffer
+			vk::Buffer::copy( vk::context(), stagingBuffer->getBuffer(), 0, mBuffer, 0, size );
+		}
+	}
+}
+
+void Buffer::bufferSubDataImpl( VkDeviceSize offset, VkDeviceSize size, const void *data )
+{
+	if( nullptr != data ) {
+		void* dst = map( offset );
+		if( nullptr != dst ) {
+			std::memcpy( dst, data, size );
+		}
 	}
 }
 
 void Buffer::bufferSubData( VkDeviceSize offset, VkDeviceSize size, const void *data )
 {
-	void* dst = map( offset );
-	if( nullptr != dst ) {
-		std::memcpy( dst, data, size );
+	if( mFormat.hasMemoryPropertyHostVisible() ) {
+		bufferSubDataImpl( offset, size, data );
+	}
+	else {
+		vk::BufferRef stagingBuffer = vk::Buffer::create( size, vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) );
+		if( stagingBuffer ) {
+			// Buffer data to staging
+			stagingBuffer->bufferDataImpl( size, data );
+			// Copy to current buffer
+			vk::Buffer::copy( vk::context(), stagingBuffer->getBuffer(), 0, mBuffer, offset, size );
+		}
 	}
 }
 
@@ -222,6 +265,25 @@ void Buffer::ensureMinimumSize( size_t minimumSize )
 		destroyBufferAndFree();
 		createBufferAndAllocate( minimumSize );
 	}
+}
+
+void Buffer::copy( vk::Context* context, VkBuffer srcBuffer, VkDeviceSize srcOffset, VkBuffer dstBuffer, VkDeviceSize dstOffset, VkDeviceSize size )
+{
+	auto& cmdPool = context->getDefaultCommandPool();
+	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool->getCommandPool(), context );
+
+	cmdBuf->begin();
+	{
+		VkBufferCopy region = {};
+		region.srcOffset	= srcOffset;
+		region.dstOffset	= dstOffset;
+		region.size			= size;
+		cmdBuf->copyBuffer( srcBuffer, dstBuffer, 1, &region );
+	}
+	cmdBuf->end();
+
+	context->getGraphicsQueue()->submit( cmdBuf );
+	context->getGraphicsQueue()->waitIdle();
 }
 
 }} // namespace cinder::vk
