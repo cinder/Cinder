@@ -346,8 +346,8 @@ fs::path PlatformLinux::expandPath( const fs::path &path )
 	fs::path filename = path.filename();
 
 	char actualPath[PATH_MAX];
-	if( realpath( path.parent_path().c_str(), actualPath ) ) { 
-		fs::path expandedPath = fs::path(std::string(actualPath));
+	if( ::realpath( path.parent_path().c_str(), actualPath ) ) { 
+		fs::path expandedPath = fs::path( std::string( actualPath ) );
 		expandedPath /= filename;
 		return expandedPath;	
 	}   
