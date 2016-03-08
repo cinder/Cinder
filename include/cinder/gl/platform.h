@@ -121,15 +121,15 @@
 	#endif
 #else // iOS
 	#define CINDER_GL_ES
-	// the default for iOS is GL ES 2, but can be overridden with CINDER_GL_ES_3
-	#if defined( CINDER_GL_ES_3 )
+	// the default for iOS is GL ES 3, but can be overridden with CINDER_GL_ES_2
+	#if ! defined( CINDER_GL_ES_2 )
 		#include <OpenGLES/ES3/gl.h>
 		#include <OpenGLES/ES3/glext.h>
+		#define CINDER_GL_ES_3
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
 	#else
 		#include <OpenGLES/ES2/gl.h>
 		#include <OpenGLES/ES2/glext.h>
-		#define CINDER_GL_ES_2
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2		
 	#endif
 #endif
