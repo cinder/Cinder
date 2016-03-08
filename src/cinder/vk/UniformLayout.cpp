@@ -565,11 +565,11 @@ UniformLayout& UniformLayout::addUniform( const std::string& name, const vk::Tex
 	return *this;
 }
 
-UniformLayout& UniformLayout::setBinding(const std::string& name, int32_t binding)
+UniformLayout& UniformLayout::setBinding( const std::string& name, int32_t binding, ChangeFrequency changeFrequency )
 {
 	auto bindingRef = findBindingObject( name, Binding::Type::ANY, true );
 	if( bindingRef ) {
-		bindingRef->setBinding( binding );
+		bindingRef->setBinding( binding, changeFrequency );
 	}
 	return *this;
 }

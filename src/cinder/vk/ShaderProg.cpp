@@ -197,9 +197,12 @@ ShaderProg::Format& ShaderProg::Format::compute( const std::string &text )
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::binding( const std::string& bindingName, uint32_t bindingNumber )
+ShaderProg::Format& ShaderProg::Format::binding( const std::string& bindingName, uint32_t bindingNumber, ChangeFrequency changeFrequency )
 {
-	mBindings[bindingName] = bindingNumber;
+	ShaderProg::Format::Binding binding = {};
+	binding.bindingNumber	= bindingNumber;
+	binding.changeFrequency	= changeFrequency;
+	mBindings[bindingName] = binding;
 	return *this;
 }
 
@@ -783,7 +786,8 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 			if( it == format.mBindings.end() ) {
 				continue;
 			}
-			mUniformLayout.setBinding( bindingElem.getName(), it->second );
+			const auto& binding = it->second;
+			mUniformLayout.setBinding( bindingElem.getName(), binding.bindingNumber, binding.changeFrequency );
 		}
 
 		// Build each stage separate as required by Vulkan

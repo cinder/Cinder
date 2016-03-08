@@ -138,7 +138,7 @@ public:
 		Format&			compute( const DataSourceRef &dataSource );
 		Format&			compute( const std::string &text );
 
-		Format&			binding( const std::string& bindingName, uint32_t bindingNumber );
+		Format&			binding( const std::string& bindingName, uint32_t bindingNumber, ChangeFrequency changeFrequency = ChangeFrequency::FREQUENT );
 		Format&			attribute( geom::Attrib semantic, int32_t location, int32_t binding, GlslAttributeDataType type );
 		Format&			uniformLayout( const UniformLayout& layout );
 		bool			userDefinedUniformLayout() const { return mUserDefinedUniformLayout; }
@@ -160,7 +160,12 @@ public:
 		fs::path					mTessellationEvalShaderPath;
 		fs::path					mComputeShaderPath;
 
-		std::map<std::string, uint32_t>	mBindings;
+		struct Binding {
+			uint32_t			bindingNumber;
+			ChangeFrequency		changeFrequency = ChangeFrequency::FREQUENT;
+		};
+
+		std::map<std::string, Binding>	mBindings;
 		std::vector<Attribute>			mAttributes;
 		UniformLayout					mUniformLayout;
 		bool							mUserDefinedUniformLayout = false;

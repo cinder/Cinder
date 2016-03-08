@@ -60,19 +60,20 @@ class DescriptorSetLayout : public BaseDeviceObject {
 public:
 	virtual ~DescriptorSetLayout();
 
-	static DescriptorSetLayoutRef	create( const UniformSet &uniformSet, Device *device = nullptr );
-	static DescriptorSetLayoutRef	create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device = nullptr );
+	static DescriptorSetLayoutRef	create( const UniformSet &uniformSet, ChangeFrequency changeFreqencyMask, vk::Device *device = nullptr );
+	static DescriptorSetLayoutRef	create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, ChangeFrequency changeFreqencyMask, vk::Device *device = nullptr );
 
 	VkDescriptorSetLayout			getDescriptorSetLayout() const { return mDescriptorSetLayout; }
 
 	const std::vector<VkDescriptorSetLayoutBinding>&	getLayoutBindings() const { return mLayoutBindings; }
 
 private:
-	DescriptorSetLayout( const UniformSet &uniformSet, vk::Device *device );
-	DescriptorSetLayout( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device );
+	DescriptorSetLayout( const UniformSet &uniformSet, ChangeFrequency changeFreqencyMask, vk::Device *device );
+	DescriptorSetLayout( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, ChangeFrequency changeFreqencyMask, vk::Device *device );
 
 	VkDescriptorSetLayout						mDescriptorSetLayout = VK_NULL_HANDLE;
 	std::vector<VkDescriptorSetLayoutBinding>	mLayoutBindings;
+	ChangeFrequency								mChangeFreqencyMask = ChangeFrequency::ALL;
 
 	void initialize( const UniformSet &uniformSet );
 	void initialize( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings );

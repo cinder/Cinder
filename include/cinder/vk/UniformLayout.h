@@ -79,94 +79,18 @@ enum UniformSemantic {
 	UNIFORM_USER_DEFINED
 };
 
+enum ChangeFrequency {
+	SELDOM		= 0x00000001, // Once or twice after initial write
+	REGULAR		= 0x00000002, // On state changes
+	FREQUENT	= 0x00000004, // Every frame or every few frames
+	ALL			= 0x0000000F
+};
+
 //! \class UniformLayout
 //!
 //!
 class UniformLayout {
 public:
-
-/*
-	//! \class Uniform
-	//!
-	//!
-	class Variable {
-	public:
-
-		Variable() {}
-		Variable( const std::string& name, GlslUniformDataType dataType, size_t arraySize, size_t offset );
-		virtual ~Variable() {}
-
-		GlslUniformDataType		getDataType() const { return mDataType; }
-		const std::string&		getName() const { return mName; }
-		size_t					getSize() const { return mTypeSize; }
-		size_t					getArraySize() const { return mArraySize; }
-		size_t					getSizeBytes() const { return mSizeBytes; }
-		size_t					getOffset() const  { return mOffset; }
-		
-		UniformSemantic			getUniformSemantic() const { return mSemantic; }
-
-	protected:
-		std::string				mName;
-		GlslUniformDataType		mDataType	= glsl_unknown;
-		size_t					mTypeSize	= 0;
-		size_t					mArraySize	= 1;
-		size_t					mSizeBytes	= 0;
-		size_t					mOffset		= 0;
-		UniformSemantic			mSemantic	= UniformSemantic::UNIFORM_USER_DEFINED;
-		friend class UniformLayout;
-		friend class UniformBuffer;
-	};
-
-	//! \class Binding
-	//!
-	//!
-	class Uniform {
-	public:
-		enum class Type { UNDEFINED, BLOCK, SAMPLER2D, SAMPLER2DRECT, SAMPLER2DSHADOW, SAMPLERCUBE };
-		enum class BlockLayout { NONE, STD140 };
-
-		Uniform( uint32_t binding, const std::string& name, Type type ) : mBinding( binding ), mName( name ), mType( type ) {}
-		virtual ~Uniform() {}
-
-		bool										isBlock() const { return Type::BLOCK == mType; }
-		bool										isStd140() const { return BlockLayout::STD140 == mBlockLayout; }
-
-		uint32_t									getBinding() const { return mBinding; }
-		const std::string&							getName() const { return mName; }
-		Uniform::Type								getType() const { return mType; }
-
-		// If type is BLOCK, returns array of one or more variables - else returns array of one variable.
-		const std::vector<UniformLayout::Variable>&	getBlockVariables() const { return mBlockVariableDescriptors; }
-		// If type is BLOCK, returns values in byte arrays - else returns empty.
-		const std::vector<std::vector<uint8_t>>&	getBlockValues() const { return mBlockVariableValues; }
-		// If type is BLOCK, returns values in aligned byte arrays - else returns empty.
-		size_t										getBlockSizeBytes() const;
-
-		// Sampler
-		const TextureBaseRef&						getSamplerTexture() const { return mSamplerTexture; }
-
-	protected:
-		uint32_t		mBinding;
-		std::string		mName;
-		Uniform::Type	mType;
-
-		// Data for interface blocks
-		Uniform::BlockLayout					mBlockLayout = Uniform::BlockLayout::STD140;
-		std::vector<UniformLayout::Variable>	mBlockVariableDescriptors;
-		std::vector<std::vector<uint8_t>>		mBlockVariableValues;		
-		//! Adds uniform block variable
-		void addBlockVariable( const std::string& name, GlslUniformDataType dataType, const uint8_t* data, size_t dataSizeBytes, size_t arraySize, size_t elemStride, int32_t offset );
-		void updateBlockVariable( const std::string& name, const uint8_t* data, size_t dataSizeBytes, size_t arraySize, size_t elemStride );
-
-		// Data for Sampler 
-		vk::TextureBaseRef	mSamplerTexture;
-		void setSamplerTexture( const vk::TextureBaseRef& value ) { mSamplerTexture = value; }
-
-		friend class UniformLayout;
-	};
-
-	using UniformRef = std::shared_ptr<Uniform>;
-*/
 
 	union Value {
 		float		f;
@@ -242,6 +166,7 @@ public:
 	//
 	class Binding {
 	public:
+
 		enum class Type { 
 			UNDEFINED	= 0, 
 			BLOCK		= 1, 
@@ -256,6 +181,7 @@ public:
 		int32_t								getBinding() const { return mBinding; }
 		Binding::Type						getType() const { return mType; }
 		const std::string&					getName() const { return mName; } 
+		vk::ChangeFrequency					getChangeFrequency() const { return mChangeFrequency; }
 		bool								isBlock() const { return Binding::Type::BLOCK == mType; }
 		bool								isSampler() const { return Binding::Type::SAMPLER == mType; }
 
@@ -268,6 +194,7 @@ public:
 		int32_t								mBinding = -1;
 		Binding::Type						mType = Binding::Type::UNDEFINED;
 		std::string							mName;
+		vk::ChangeFrequency					mChangeFrequency = ChangeFrequency::FREQUENT;
 
 		// Uniform data
 		Block								mBlock;
@@ -275,7 +202,7 @@ public:
 		vk::TextureBaseRef					mTexture;
 
 		// These functions force their type since in most cases mBinding is set before it's know what the binding is needed.
-		void setBinding( int32_t binding ) { mBinding = binding; }
+		void setBinding( int32_t binding, ChangeFrequency changeFrequency ) { mBinding = binding; mChangeFrequency = changeFrequency; }
 		void setBlockSizeBytes( size_t sizeBytes ) { mBlock.setSizeBytes( sizeBytes ); }
 		void setTexture( const vk::TextureBaseRef& texture ) { mTexture = texture; mType = Binding::Type::SAMPLER; }
 		friend class UniformLayout;
@@ -299,7 +226,7 @@ public:
 	UniformLayout&						addUniform( const std::string& name, const mat4&  value, uint32_t offset, uint32_t arraySize = 1 );
 	UniformLayout&						addUniform( const std::string& name, const vk::TextureBaseRef& texture );
 
-	UniformLayout&						setBinding( const std::string& name, int32_t binding );
+	UniformLayout&						setBinding( const std::string& name, int32_t binding, ChangeFrequency changeFrequency );
 
 	void								setBlockSizeBytes( const std::string& name, size_t sizeBytes );
 	void								sortUniformsByOffset();
@@ -331,88 +258,6 @@ private:
 
 	template <typename T>
 	void setUniformValue( GlslUniformDataType dataType, const std::string& name, const std::vector<T>& values );
-
-/*
-	const std::vector<UniformRef>&		getUniforms() const { return mUniforms; }
-
-	UniformLayout&						blockBegin( uint32_t binding, const std::string& name );
-	UniformLayout&						blockEnd();
-
-	UniformLayout&						uniform( const std::string& name, const float    value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const int32_t  value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const uint32_t value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const bool     value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const vec2&    value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const vec3&    value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const vec4&    value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const ivec2&   value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const ivec3&   value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const ivec4&   value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const uvec2&   value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const uvec3&   value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const uvec4&   value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const mat2&    value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const mat3&    value, size_t arraySize = 1, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, const mat4&    value, size_t arraySize = 1, int32_t offset = -1 );
-
-	UniformLayout&						uniform( const std::string& name, std::vector<float>&    value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<int>&      value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<uint32_t>& value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<bool>&     value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<vec2>&     value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<vec3>&     value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<vec4>&     value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<ivec2>&    value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<ivec3>&    value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<ivec4>&    value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<uvec2>&    value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<uvec3>&    value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<uvec4>&    value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<mat2>&     value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<mat3>&     value, int32_t offset = -1 );
-	UniformLayout&						uniform( const std::string& name, std::vector<mat4>&     value, int32_t offset = -1 );
-
-	UniformLayout&						sampler2D( uint32_t binding, const std::string& name, const vk::TextureBaseRef& texture = nullptr );
-	UniformRef&							sampler2D( const std::string& name );
-	UniformLayout&						sampler2D( const std::string& name, const vk::TextureBaseRef& texture );
-	UniformLayout&						sampler2DRect( uint32_t binding, const std::string& name, const vk::TextureBaseRef& texture = nullptr );
-	UniformRef&							sampler2DRect( const std::string& name );
-	UniformLayout&						sampler2DRect( const std::string& name, const vk::TextureBaseRef& texture );
-	UniformLayout&						samplerCube( uint32_t binding, const std::string& name, const vk::TextureBaseRef& texture = nullptr );
-	UniformRef&							samplerCube( const std::string& name );
-	UniformLayout&						samplerCube( const std::string& name, const vk::TextureBaseRef& texture );
-	UniformLayout&						sampler2DShadow( uint32_t binding, const std::string& name, const vk::TextureBaseRef& texture = nullptr );
-	UniformRef&							sampler2DShadow( const std::string& name );
-	UniformLayout&						sampler2DShadow( const std::string& name, const vk::TextureBaseRef& texture );
-*/
-
-/*
-private:
-
-	std::vector<UniformRef>				mUniforms;
-	std::map<std::string, UniformRef>	mNameToUniform;
-*/
-
-
-/*
-	UniformRef							mCurrentVariablesBlock;
-	UniformRef&							getCurrentVariablesBlock();
-
-	void updateDefaulVariableValueImpl( const std::string& name, const uint8_t* data, const size_t dataSizeBytes, const size_t arraySize, const size_t elemStride );
-
-	template <typename T>
-	void updateDefaultVariableValue( const std::string& name, const T& value ) {
-		const uint8_t* data        = reinterpret_cast<const uint8_t*>( &value );
-		const size_t dataSizeBytes = sizeof( T );
-		const size_t arraySize     = 1;
-		const size_t elemStride    = dataSizeBytes;
-		updateDefaulVariableValueImpl( name, data, dataSizeBytes, arraySize, elemStride );
-	}
-
-	void updateDefaultSamplerTexture( const std::string& name, const vk::TextureBaseRef& texture );
-
-	friend class ShaderProg;
-*/
 };
 
 //! \class UniformSet

@@ -48,14 +48,14 @@ namespace cinder { namespace vk {
 // ------------------------------------------------------------------------------------------------ 
 // DescriptorSetLayout
 // ------------------------------------------------------------------------------------------------ 
-DescriptorSetLayout::DescriptorSetLayout( const UniformSet &uniformSet, vk::Device *device )
-	: BaseDeviceObject( device )
+DescriptorSetLayout::DescriptorSetLayout( const UniformSet &uniformSet, ChangeFrequency changeFreqencyMask, vk::Device *device )
+	: BaseDeviceObject( device ), mChangeFreqencyMask( changeFreqencyMask )
 {
 	initialize( uniformSet );
 }
 
-DescriptorSetLayout::DescriptorSetLayout( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device )
-	: BaseDeviceObject( device )
+DescriptorSetLayout::DescriptorSetLayout( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, ChangeFrequency changeFreqencyMask, vk::Device *device )
+	: BaseDeviceObject( device ), mChangeFreqencyMask( changeFreqencyMask )
 {
 	initialize( layoutBindings );
 }
@@ -65,14 +65,14 @@ DescriptorSetLayout::~DescriptorSetLayout()
 	destroy();
 }
 
-DescriptorSetLayoutRef DescriptorSetLayout::create( const UniformSet &uniformSet, vk::Device *device )
+DescriptorSetLayoutRef DescriptorSetLayout::create( const UniformSet &uniformSet, ChangeFrequency changeFreqencyMask, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	DescriptorSetLayoutRef result = DescriptorSetLayoutRef( new DescriptorSetLayout( uniformSet, device ) );
 	return result;
 }
 
-DescriptorSetLayoutRef DescriptorSetLayout::create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device )
+DescriptorSetLayoutRef DescriptorSetLayout::create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, ChangeFrequency changeFreqencyMask, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	DescriptorSetLayoutRef result = DescriptorSetLayoutRef( new DescriptorSetLayout( layoutBindings, device ) );
