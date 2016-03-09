@@ -397,6 +397,7 @@ ImageRef Image::create( int32_t width, int32_t height, const uint16_t *srcData, 
 		ImageRef stagingImage = ImageRef( new Image( width, height, srcData, srcRowBytes,  srcPixelBytes, srcRegion, stagingFormat, device ) );
 
 		Image::Format resultFormat = initialFormat;
+		resultFormat.setUsageTransferDestination();
 		result = ImageRef( new Image( VK_IMAGE_TYPE_2D, width, height, 1, VK_NULL_HANDLE, resultFormat, device ) );
 
 		auto ctx = vk::Context::getCurrent();
