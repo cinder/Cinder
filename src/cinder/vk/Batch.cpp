@@ -116,13 +116,14 @@ void Batch::initPipeline( const AttributeMapping &attributeMapping )
 	// Uniform buffer
 	mUniformSet = vk::UniformSet::create( mShader->getUniformLayout() );
 
-	// Descriptor layout, pool, set
-	mDescriptorSetLayout = vk::DescriptorSetLayout::create( *mUniformSet );
-	mDescriptorPool = vk::DescriptorPool::create( mDescriptorSetLayout->getLayoutBindings() );
+	// Descriptor layouts, pool, set
+	mDescriptorSetView = vk::DescriptorSetView::create( mUniformSet );
+	//mDescriptorSetLayout = vk::DescriptorSetLayout::create( *mUniformSet );
+	//mDescriptorPool = vk::DescriptorPool::create( mDescriptorSetLayout->getLayoutBindings() );
 	//mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), mUniformLayout, mDescriptorSetLayout );
 
 	// Pipeline layout
-	mPipelineLayout = vk::PipelineLayout::create( mDescriptorSetLayout );
+	mPipelineLayout = vk::PipelineLayout::create( mDescriptorSetView->getCachedDescriptorSetLayouts() );
 
 /*
 	// Pipeline
@@ -179,20 +180,24 @@ void Batch::destroyPipeline()
 		mPipelineLayout.reset();
 	}
 
-	if( mDescriptorSet ) {
-		mDescriptorSet->~DescriptorSet();
-		mDescriptorSet.reset();
+	if( mDescriptorSetView ) {
+		mDescriptorSetView.reset();
 	}
+	
+	//if( mDescriptorSet ) {
+	//	mDescriptorSet->~DescriptorSet();
+	//	mDescriptorSet.reset();
+	//}
 
-	if( mDescriptorPool ) {
-		mDescriptorPool->~DescriptorPool();
-		mDescriptorPool.reset();
-	}
+	//if( mDescriptorPool ) {
+	//	mDescriptorPool->~DescriptorPool();
+	//	mDescriptorPool.reset();
+	//}
 
-	if( mDescriptorSetLayout ) {
-		mDescriptorSetLayout->~DescriptorSetLayout();
-		mDescriptorSetLayout.reset();
-	}
+	//if( mDescriptorSetLayout ) {
+	//	mDescriptorSetLayout->~DescriptorSetLayout();
+	//	mDescriptorSetLayout.reset();
+	//}
 }
 
 void Batch::replaceGlslProg( const vk::ShaderProgRef& shader )
@@ -283,17 +288,22 @@ void Batch::samplerCube( const std::string& name, const TextureBaseRef& texture 
 
 void Batch::draw( int32_t first, int32_t count )
 {
-	if( ! mDescriptorSet ) {
-		// The descriptor set is created here to give users a chance to set uniforms in 
-		// mUniformSet before the first draw call.
-		mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), *mUniformSet, mDescriptorSetLayout );
+	if( ! mDescriptorSetView->hasDescriptorSets() ) {
+		mDescriptorSetView->allocateDescriptorSets();
 	}
+	//if( ! mDescriptorSet ) {
+	//	// The descriptor set is created here to give users a chance to set uniforms in 
+	//	// mUniformSet before the first draw call.
+	//	mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), *mUniformSet, mDescriptorSetLayout );
+	//}
 
-	for( auto& binding : mUniformSet->getBindings() ) {
-		if( ! binding.isBlock() ) {
-			continue;
+	for( auto& set : mUniformSet->getSets() ) {
+		for( auto& binding : set->getBindings() ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
 		}
-		vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
 	}
 	mUniformSet->bufferPending();
 
@@ -318,10 +328,19 @@ void Batch::draw( int32_t first, int32_t count )
 	//vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline() );
 
 	// Update descriptor set
-	mDescriptorSet->update( *mUniformSet );
+	mDescriptorSetView->updateDescriptorSets();
+	//mDescriptorSet->update( *mUniformSet );
 
-	std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
-	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+	// Bind descriptor sets
+	const auto& descriptorSets = mDescriptorSetView->getDescriptorSets();
+	//for( const auto& ds : descriptorSets ) {
+	for( uint32_t i = 0; i < descriptorSets.size(); ++i ) {
+		const auto& ds = descriptorSets[i];
+		std::vector<VkDescriptorSet> descSets = { ds->getDescriptorSet() };
+		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), i, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+	}
+	//std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
+	//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
 	// Get a pipeline
 	auto ctx = vk::context();
@@ -355,15 +374,20 @@ void Batch::draw( int32_t first, int32_t count )
 
 void Batch::drawInstanced( uint32_t instanceCount )
 {
-	if( ! mDescriptorSet ) {
-		mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), *mUniformSet, mDescriptorSetLayout );
+	if( ! mDescriptorSetView->hasDescriptorSets() ) {
+		mDescriptorSetView->allocateDescriptorSets();
 	}
+	//if( ! mDescriptorSet ) {
+	//	mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), *mUniformSet, mDescriptorSetLayout );
+	//}
 
-	for( auto& binding : mUniformSet->getBindings() ) {
-		if( ! binding.isBlock() ) {
-			continue;
+	for( auto& set : mUniformSet->getSets() ) {
+		for( auto& binding : set->getBindings() ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
 		}
-		vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
 	}
 	mUniformSet->bufferPending();
 
@@ -385,10 +409,16 @@ void Batch::drawInstanced( uint32_t instanceCount )
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
 	
 	// Update descriptor set
-	mDescriptorSet->update( *mUniformSet );
+	mDescriptorSetView->updateDescriptorSets();
 
-	std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
-	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+	// Bind descriptor sets
+	const auto& descriptorSets = mDescriptorSetView->getDescriptorSets();
+	for( const auto& ds : descriptorSets ) {
+		std::vector<VkDescriptorSet> descSets = { ds->getDescriptorSet() };
+		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+	}
+	//std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
+	//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
 	// Get a pipeline
 	auto ctx = vk::context();

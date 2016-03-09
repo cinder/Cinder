@@ -52,6 +52,7 @@
 
 namespace cinder { namespace vk {
 
+/*
 void draw( const Texture2dRef &texture, const Rectf &dstRect )
 {
 	vec2 uv0 = vec2( 0.0f, 0.0f );
@@ -267,5 +268,6 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 	uint32_t numVertices = 4;
 	vkCmdDraw( cmdBuf, numVertices, 1, 0, 0 );
 }
+*/
 
 }} // namespace cinder::vk

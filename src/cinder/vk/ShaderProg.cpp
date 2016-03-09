@@ -197,12 +197,16 @@ ShaderProg::Format& ShaderProg::Format::compute( const std::string &text )
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::binding( const std::string& bindingName, uint32_t bindingNumber, ChangeFrequency changeFrequency )
+ShaderProg::Format& ShaderProg::Format::binding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber  )
 {
-	ShaderProg::Format::Binding binding = {};
-	binding.bindingNumber	= bindingNumber;
-	binding.changeFrequency	= changeFrequency;
+	ShaderProg::Format::Binding binding = ShaderProg::Format::Binding( bindingNumber, setNumber );
 	mBindings[bindingName] = binding;
+	return *this;
+}
+
+ShaderProg::Format& ShaderProg::Format::set( uint32_t setNumber, uint32_t changeFrequency )
+{
+	mSets[setNumber] = changeFrequency;
 	return *this;
 }
 
@@ -693,8 +697,6 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 		}
 	}
 
-
-
 	// Preallocate the shader stages because we're paranoid
 	size_t numShaderStages = 0;
 	numShaderStages += ( ! vertexShader.empty()           ) ? 1 : 0;
@@ -774,8 +776,7 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 			mUniformLayout = format.mUniformLayout;
 		}
 		else {
-			// @TODO: Add some checking for uniform block bindings so that block merges are 
-			//        properly identified.
+			// @TODO: Add some checking for uniform block bindings so that block merges are properly identified.
 			auto blockNameTranslateFn = format.mBlockNameTranslateFn ? format.mBlockNameTranslateFn : ShaderProg::defaultBlockNameTranslate;
 			mUniformLayout = extractUniformlayout( shaderBuildData, blockNameTranslateFn );
 		}
@@ -787,7 +788,20 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 				continue;
 			}
 			const auto& binding = it->second;
-			mUniformLayout.setBinding( bindingElem.getName(), binding.bindingNumber, binding.changeFrequency );
+			mUniformLayout.setBinding( bindingElem.getName(), binding.bindingNumber, binding.setNumber );
+		}
+
+		// Process sets
+		{	
+			// Add sets from bindings - in case they're sparsely populated
+			for( auto& binding : format.mBindings ) {
+				mUniformLayout.setSet( binding.second.setNumber, CHANGES_DONTCARE );
+			}
+
+			// Update sets from ... sets
+			for( const auto& it : format.mSets ) {
+				mUniformLayout.setSet( it.first, it.second );
+			}
 		}
 
 		// Build each stage separate as required by Vulkan

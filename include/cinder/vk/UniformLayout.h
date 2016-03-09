@@ -55,7 +55,7 @@ class UniformBuffer;
 class UniformSet;
 using TextureBaseRef = std::shared_ptr<TextureBase>;
 using UniformBufferRef = std::shared_ptr<UniformBuffer>;
-using UniformSetRef = std::unique_ptr<UniformSet>;
+using UniformSetRef = std::shared_ptr<UniformSet>;
 
 // Uniform semantics
 enum UniformSemantic {
@@ -79,11 +79,16 @@ enum UniformSemantic {
 	UNIFORM_USER_DEFINED
 };
 
-enum ChangeFrequency {
-	SELDOM		= 0x00000001, // Once or twice after initial write
-	REGULAR		= 0x00000002, // On state changes
-	FREQUENT	= 0x00000004, // Every frame or every few frames
-	ALL			= 0x0000000F
+enum {
+	INVALID_BINDING	= 0xFFFFFFFF,
+	DEFAULT_SET		= 0xFFFFFFFF,
+};
+
+enum {
+	CHANGES_DONTCARE	= 0x00000000, // Don't care how often writes happen
+	CHANGES_SELDOM		= 0x00000001, // Once or twice after initial write
+	CHANGES_REGULAR		= 0x00000002, // On state changes
+	CHANGES_FREQUENT	= 0x00000004, // Every frame or every few frames
 };
 
 //! \class UniformLayout
@@ -175,13 +180,13 @@ public:
 		};
 
 		Binding() {}
-		Binding( const std::string& name, Binding::Type type );
+		Binding( const std::string& name, Binding::Type type, uint32_t set = DEFAULT_SET );
 		virtual ~Binding() {}
 
-		int32_t								getBinding() const { return mBinding; }
+		uint32_t							getSet() const { return mSet; }
+		uint32_t							getBinding() const { return mBinding; }
 		Binding::Type						getType() const { return mType; }
 		const std::string&					getName() const { return mName; } 
-		vk::ChangeFrequency					getChangeFrequency() const { return mChangeFrequency; }
 		bool								isBlock() const { return Binding::Type::BLOCK == mType; }
 		bool								isSampler() const { return Binding::Type::SAMPLER == mType; }
 
@@ -191,10 +196,10 @@ public:
 		void								sortUniformsByOffset();
 
 	private:
-		int32_t								mBinding = -1;
+		uint32_t							mSet = DEFAULT_SET;
+		uint32_t							mBinding = INVALID_BINDING;
 		Binding::Type						mType = Binding::Type::UNDEFINED;
 		std::string							mName;
-		vk::ChangeFrequency					mChangeFrequency = ChangeFrequency::FREQUENT;
 
 		// Uniform data
 		Block								mBlock;
@@ -202,11 +207,32 @@ public:
 		vk::TextureBaseRef					mTexture;
 
 		// These functions force their type since in most cases mBinding is set before it's know what the binding is needed.
-		void setBinding( int32_t binding, ChangeFrequency changeFrequency ) { mBinding = binding; mChangeFrequency = changeFrequency; }
+		void setBinding( uint32_t binding, uint32_t set ) { mBinding = binding; mSet = set; }
 		void setBlockSizeBytes( size_t sizeBytes ) { mBlock.setSizeBytes( sizeBytes ); }
 		void setTexture( const vk::TextureBaseRef& texture ) { mTexture = texture; mType = Binding::Type::SAMPLER; }
 		friend class UniformLayout;
 		friend class UniformSet;
+	};
+
+
+	// ---------------------------------------------------------------------------------------------
+
+	//! \class Set
+	//
+	//
+	class Set {
+	public:
+		Set( uint32_t set, uint32_t changeFrequency )
+			: mSet( set ), mChangeFrequency( changeFrequency ) {}
+		virtual ~Set() {}
+
+		uint32_t	getSet() const { return mSet; }
+		uint32_t	getChangeFrequency() const { return mChangeFrequency; }
+	private:
+		uint32_t	mSet = DEFAULT_SET;
+		// The higher the value the more frequently the descriptor set is expected to change.
+		uint32_t	mChangeFrequency = CHANGES_DONTCARE;
+		friend class UniformLayout;
 	};
 
 	// ---------------------------------------------------------------------------------------------
@@ -215,6 +241,7 @@ public:
 	virtual ~UniformLayout();
 
 	const std::vector<Binding>&			getBindings() const { return mBindings; }
+	const std::vector<Set>&				getSets() const { return mSets; }
 
 	UniformLayout&						addUniform( const std::string& name, GlslUniformDataType dataType, uint32_t offset, uint32_t arraySize = 1 );
 	UniformLayout&						addUniform( const std::string& name, const float& value, uint32_t offset, uint32_t arraySize = 1 );
@@ -226,7 +253,8 @@ public:
 	UniformLayout&						addUniform( const std::string& name, const mat4&  value, uint32_t offset, uint32_t arraySize = 1 );
 	UniformLayout&						addUniform( const std::string& name, const vk::TextureBaseRef& texture );
 
-	UniformLayout&						setBinding( const std::string& name, int32_t binding, ChangeFrequency changeFrequency );
+	UniformLayout&						setBinding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber );
+	UniformLayout&						setSet( uint32_t setNumber, uint32_t changeFrequency );
 
 	void								setBlockSizeBytes( const std::string& name, size_t sizeBytes );
 	void								sortUniformsByOffset();
@@ -252,6 +280,7 @@ public:
 
 private:
 	std::vector<Binding>				mBindings;
+	std::vector<Set>					mSets;
 
 	Binding*							findBindingObject( const std::string& name, Binding::Type bindingType, bool addIfNotExits = false );
 	void								addUniformImpl( GlslUniformDataType dataType, const std::string& name, uint32_t offset, uint32_t arraySize );
@@ -282,6 +311,30 @@ public:
 		friend class UniformSet;
 	};
 
+	//! \class Set
+	//!
+	//!
+	class Set {
+	public:
+
+		Set( uint32_t set, uint32_t changeFrequency ) : mSet( set ), mChangeFrequency( changeFrequency ) {}
+		virtual ~Set() {}
+
+		uint32_t											getSet() const { return mSet; }
+		uint32_t											getChangeFrequency() const { return mChangeFrequency; }
+		const std::vector<Binding>&							getBindings() const { return mBindings; }
+		const std::vector<VkDescriptorSetLayoutBinding>&	getDescriptorSetlayoutBindings() const { return mDescriptorSetLayoutBindings; } 
+
+	private:
+		uint32_t									mSet = DEFAULT_SET;
+		uint32_t									mChangeFrequency = CHANGES_DONTCARE;
+		std::vector<Binding>						mBindings;
+		std::vector<VkDescriptorSetLayoutBinding>	mDescriptorSetLayoutBindings;
+		friend class UniformSet;
+	};
+	
+	using SetRef = std::shared_ptr<UniformSet::Set>;
+
 	// ---------------------------------------------------------------------------------------------
 
 	UniformSet( const UniformLayout& layout, Device *device );
@@ -289,8 +342,14 @@ public:
 
 	static UniformSetRef			create( const UniformLayout& layout, Device *device = nullptr );
 
+/*
 	const std::vector<Binding>&		getBindings() const { return mBindings; }
 	const std::vector<VkDescriptorSetLayoutBinding>&	getDescriptorSetlayoutBindings() const { return mDescriptorSetLayoutBindings; } 
+*/
+
+	const std::vector<UniformSet::SetRef>							getSets() const { return mSets; }
+	const std::vector<std::vector<UniformSet::Binding>>&			getCachedBindings() const { return mCachedUniformBindings; }
+	const std::vector<std::vector<VkDescriptorSetLayoutBinding>>&	getCachedDescriptorSetLayoutBindings() const { return mCachedDescriptorSetLayoutBindings; }
 
 	void							uniform( const std::string& name, const float    value );
 	void							uniform( const std::string& name, const int32_t  value );
@@ -315,9 +374,15 @@ public:
 	void							echoValues( std::ostream& os );
 
 private:
+/*
 	std::vector<Binding>						mBindings;
 	// Since the bindings are immutable, create the VkDescriptorSetLayoutBinding to be used by caches.
 	std::vector<VkDescriptorSetLayoutBinding>	mDescriptorSetLayoutBindings;
+*/
+
+	std::vector<UniformSet::SetRef>							mSets;
+	std::vector<std::vector<UniformSet::Binding>>			mCachedUniformBindings;
+	std::vector<std::vector<VkDescriptorSetLayoutBinding>>	mCachedDescriptorSetLayoutBindings;
 
 	Binding*						findBindingObject( const std::string& name, Binding::Type bindingType );
 

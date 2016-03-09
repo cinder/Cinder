@@ -239,8 +239,8 @@ UniformLayout::Block::UniformStore* UniformLayout::Block::findUniformObject( con
 // -------------------------------------------------------------------------------------------------
 // UniformLayout::Binding
 // -------------------------------------------------------------------------------------------------
-UniformLayout::Binding::Binding( const std::string& name, Binding::Type type )
-	: mName( name ), mType( type )
+UniformLayout::Binding::Binding( const std::string& name, Binding::Type type, uint32_t set )
+	: mName( name ), mType( type ), mSet( set )
 {
 }
 
@@ -410,7 +410,7 @@ void UniformLayout::setUniformValue( GlslUniformDataType dataType, const std::st
 	else {
 		// If no array index specified, then update array from values
 		uint32_t arraySize = uniform.getArraySize();
-		int32_t n = std::min<int32_t>( arraySize, srcValues.size() );
+		int32_t n = std::min<int32_t>( static_cast<int32_t>( arraySize ), static_cast<int32_t>( srcValues.size() ) );
 		for( arrayIndex = 0; arrayIndex < n; ++arrayIndex ) {
 			uint8_t* dstData = reinterpret_cast<uint8_t*>( dstValues[arrayIndex].data() );
 			const uint8_t* srcData = reinterpret_cast<const uint8_t*>( &(srcValues[arrayIndex]) );
@@ -565,12 +565,41 @@ UniformLayout& UniformLayout::addUniform( const std::string& name, const vk::Tex
 	return *this;
 }
 
-UniformLayout& UniformLayout::setBinding( const std::string& name, int32_t binding, ChangeFrequency changeFrequency )
+UniformLayout& UniformLayout::setBinding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber )
 {
-	auto bindingRef = findBindingObject( name, Binding::Type::ANY, true );
+	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY, true );
 	if( bindingRef ) {
-		bindingRef->setBinding( binding, changeFrequency );
+		bindingRef->setBinding( bindingNumber, setNumber );
 	}
+	return *this;
+}
+
+UniformLayout& UniformLayout::setSet( uint32_t setNumber, uint32_t changeFrequency )
+{
+	auto it = std::find_if(
+		std::begin( mSets ),
+		std::end( mSets ),
+		[setNumber]( const UniformLayout::Set& elem ) -> bool {
+			return elem.getSet() == setNumber;
+		}
+	);
+
+	if( std::end( mSets ) != it ) {
+		auto& set = *it;
+		set.mChangeFrequency = changeFrequency;
+	}
+	else {
+		mSets.push_back( UniformLayout::Set( setNumber, changeFrequency ) );
+	}
+
+	std::sort( 
+		std::begin( mSets ),
+		std::end( mSets ),
+		[]( const UniformLayout::Set& a, const UniformLayout::Set& b ) -> bool {
+			return a.getChangeFrequency() < b.getChangeFrequency();
+		}
+	);
+
 	return *this;
 }
 
@@ -675,6 +704,88 @@ void UniformLayout::uniform(const std::string& name, const vk::TextureBaseRef& t
 // -------------------------------------------------------------------------------------------------
 UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 {
+	// Copy sets
+	for( const auto& srcSet : layout.getSets() ) {
+		UniformSet::SetRef set( new UniformSet::Set( srcSet.getSet(), srcSet.getChangeFrequency() ) );
+		mSets.push_back( set ); 
+	}
+
+	// Copy bindings
+	const auto& srcBindings = layout.getBindings();
+	for( const auto& srcBinding : srcBindings ) {
+		auto it = std::find_if(
+			std::begin( mSets ),
+			std::end( mSets ),
+			[srcBinding]( const UniformSet::SetRef& elem ) -> bool {
+				return srcBinding.getSet() == elem->getSet();
+			}
+		);
+
+		// There should never be a case in which a binding exists without a known set
+		assert( std::end( mSets ) != it );
+
+		// Create binding
+		UniformSet::Binding binding = UniformSet::Binding( srcBinding );
+		if( binding.isBlock() ) {
+			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), vk::UniformBuffer::Format(), device );
+			binding.mUniformBuffer = buffer;
+		}
+		// Get set
+		auto& set = *it;
+		// Add binding to set
+		set->mBindings.push_back( binding );
+	}
+
+	// Sort set by change frequency
+	std::sort(
+		std::begin( mSets ),
+		std::end( mSets ),
+		[]( const UniformSet::SetRef& a, const UniformSet::SetRef& b ) -> bool {
+			return a->getChangeFrequency() < b->getChangeFrequency();
+		}
+	);
+
+	// Create DescriptorSetLayoutBindings
+	for( auto& set : mSets ) {
+		for( const auto& binding : set->mBindings ) {
+			VkDescriptorSetLayoutBinding layoutBinding = {};
+			layoutBinding.binding            = binding.getBinding();
+			layoutBinding.descriptorCount    = 1;
+			layoutBinding.pImmutableSamplers = nullptr;
+			switch( binding.getType() ) {
+				case UniformLayout::Binding::Type::BLOCK: {
+					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+				}
+				break;
+
+				case UniformLayout::Binding::Type::SAMPLER: {
+					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+				}
+				break;		
+			}
+
+			set->mDescriptorSetLayoutBindings.push_back( layoutBinding );
+		}
+	}
+
+	// Cache
+	for( auto& set : mSets ) {
+		std::vector<UniformSet::Binding> uniformBindings;
+		for( const auto& obj : set->mBindings ) {
+			uniformBindings.push_back( obj );
+		}
+		mCachedUniformBindings.push_back( uniformBindings );
+
+		std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
+		for( const auto& obj : set->mDescriptorSetLayoutBindings ) {
+			descriptorSetLayoutBindings.push_back( obj );
+		}
+		mCachedDescriptorSetLayoutBindings.push_back( descriptorSetLayoutBindings );
+	}
+
+/*
 	// Create bindings
 	const auto& srcBindings = layout.getBindings();
 	mBindings.resize( srcBindings.size() );
@@ -709,6 +820,7 @@ UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 
 		mDescriptorSetLayoutBindings.push_back( layoutBinding );
 	}
+*/
 }
 
 UniformSet::~UniformSet()
@@ -726,20 +838,26 @@ UniformSet::Binding* UniformSet::findBindingObject( const std::string& name, Bin
 {
 	UniformSet::Binding* result = nullptr;
 
-	auto it = std::find_if(
-		std::begin( mBindings ),
-		std::end( mBindings ),
-		[&name]( const UniformSet::Binding& elem ) -> bool {
-			return ( elem.getName() == name );
-		}
-	);
+	for( const auto& set : mSets ) {
+		auto it = std::find_if(
+			std::begin( set->mBindings ),
+			std::end( set->mBindings ),
+			[&name]( const UniformSet::Binding& elem ) -> bool {
+				return ( elem.getName() == name );
+			}
+		);
 
-	if( it != std::end( mBindings ) ) {
-		// Only return if the found object's type is defined with in the requested's mask. 
-		uint32_t bits = static_cast<uint32_t>( it->getType() );
-		uint32_t mask = static_cast<uint32_t>( bindingType );
-		if(  bits & mask ) {
-			result = &(*it);
+		if( it != std::end( set->mBindings ) ) {
+			// Only return if the found object's type is defined with in the requested's mask. 
+			uint32_t bits = static_cast<uint32_t>( it->getType() );
+			uint32_t mask = static_cast<uint32_t>( bindingType );
+			if(  bits & mask ) {
+				result = &(*it);
+			}
+		}
+
+		if( nullptr != result ) {
+			break;
 		}
 	}
 
@@ -749,12 +867,30 @@ UniformSet::Binding* UniformSet::findBindingObject( const std::string& name, Bin
 template <typename T>
 void UniformSet::updateUniform( const std::string& name, const T& value )
 {
+	// Parse out binding name
+	std::vector<std::string> tokens = ci::split( name, "." );
+	if( 2 != tokens.size() ) {
+		std::string msg = "Invalid uniform name: " + name + ", must be in block.variable format";
+		throw std::runtime_error( msg );
+	}
+
+	// Binding name
+	const std::string& bindingName = tokens[0];
+
+	// Find binding and update
+	UniformSet::Binding* binding = this->findBindingObject( bindingName, Binding::Type::ANY );
+	if( ( nullptr != binding ) && binding->isBlock() ) {
+		binding->mUniformBuffer->uniform( name, value );
+	}
+
+/*
 	for( auto& binding : mBindings ) {
 		if( ! binding.isBlock() ) {
 			continue;
 		}
 		binding.mUniformBuffer->uniform( name, value );
 	}
+*/
 }
 
 void UniformSet::uniform( const std::string& name, const float value )
@@ -847,11 +983,13 @@ void UniformSet::uniform( const std::string& name, const TextureBaseRef& texture
 
 void UniformSet::bufferPending()
 {
-	for( auto& binding : mBindings ) {
-		if( ! binding.isBlock() ) {
-			continue;
+	for( auto& set : mSets ) {
+		for( auto& binding : set->mBindings ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			binding.getUniformBuffer()->bufferPending();
 		}
-		binding.getUniformBuffer()->bufferPending();
 	}
 }
 

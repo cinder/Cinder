@@ -47,6 +47,7 @@ class Context;
 class DescriptorSetLayout;
 class DescriptorPool;
 class DescriptorSet;
+class DescriptorSetView;
 class PipelineLayout;
 class PipelineCache;
 class Pipeline;
@@ -55,6 +56,7 @@ class UniformBuffer;
 using DescriptorSetLayoutRef = std::shared_ptr<DescriptorSetLayout>;
 using DescriptorPoolRef = std::shared_ptr<DescriptorPool>;
 using DescriptorSetRef = std::shared_ptr<DescriptorSet>;
+using DescriptorSetViewRef = std::shared_ptr<DescriptorSetView>;
 using PipelineLayoutRef = std::shared_ptr<PipelineLayout>;
 using PipelineCacheRef = std::shared_ptr<PipelineCache>;
 using PipelineRef = std::shared_ptr<Pipeline>;
@@ -151,11 +153,12 @@ class Batch {
 	VertexInputDescription		mVertexInputDescription;
 
 	// Not the most efficient way, placeholder for now.
-	vk::UniformSetRef			mUniformSet;
-	vk::DescriptorSetLayoutRef	mDescriptorSetLayout;
-	vk::PipelineLayoutRef		mPipelineLayout;
-	vk::DescriptorPoolRef		mDescriptorPool;
-	vk::DescriptorSetRef		mDescriptorSet;
+	vk::UniformSetRef							mUniformSet;
+	//std::vector<vk::DescriptorSetLayoutRef>		mDescriptorSetLayouts;
+	//vk::DescriptorPoolRef						mDescriptorPool;
+	//std::vector<vk::DescriptorSetRef>			mDescriptorSets;
+	vk::DescriptorSetViewRef					mDescriptorSetView;
+	vk::PipelineLayoutRef						mPipelineLayout;
 
 	//// Temporary solution for back/front face culling
 	//VkCullModeFlagBits								mPipelineSelection = VK_CULL_MODE_NONE;
