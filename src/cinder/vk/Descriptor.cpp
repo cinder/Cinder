@@ -466,6 +466,7 @@ void DescriptorSetView::allocateDescriptorSets()
 	if( mDescriptorSets.empty() ) {
 		mDescriptorSets = vk::DescriptorSet::create( mDescriptorPool, mDescriptorSetLayouts, mDevice ); 
 
+
 		std::sort(
 			std::begin( mDescriptorSets ),
 			std::end( mDescriptorSets ),

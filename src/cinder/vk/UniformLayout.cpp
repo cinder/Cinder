@@ -592,6 +592,7 @@ UniformLayout& UniformLayout::setSet( uint32_t setNumber, uint32_t changeFrequen
 		mSets.push_back( UniformLayout::Set( setNumber, changeFrequency ) );
 	}
 
+/*
 	std::sort( 
 		std::begin( mSets ),
 		std::end( mSets ),
@@ -599,6 +600,7 @@ UniformLayout& UniformLayout::setSet( uint32_t setNumber, uint32_t changeFrequen
 			return a.getChangeFrequency() < b.getChangeFrequency();
 		}
 	);
+*/
 
 	return *this;
 }
@@ -736,6 +738,7 @@ UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 		set->mBindings.push_back( binding );
 	}
 
+/*
 	// Sort set by change frequency
 	std::sort(
 		std::begin( mSets ),
@@ -744,6 +747,7 @@ UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 			return a->getChangeFrequency() < b->getChangeFrequency();
 		}
 	);
+*/
 
 	// Create DescriptorSetLayoutBindings
 	for( auto& set : mSets ) {

@@ -333,11 +333,11 @@ void Batch::draw( int32_t first, int32_t count )
 
 	// Bind descriptor sets
 	const auto& descriptorSets = mDescriptorSetView->getDescriptorSets();
-	//for( const auto& ds : descriptorSets ) {
-	for( uint32_t i = 0; i < descriptorSets.size(); ++i ) {
-		const auto& ds = descriptorSets[i];
+	for( const auto& ds : descriptorSets ) {
+	//for( uint32_t i = 0; i < descriptorSets.size(); ++i ) {
+		//const auto& ds = descriptorSets[i];
 		std::vector<VkDescriptorSet> descSets = { ds->getDescriptorSet() };
-		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), i, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), ds->getSet()->getSet(), static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 	}
 	//std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
 	//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
