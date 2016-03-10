@@ -46,7 +46,7 @@ using namespace std;
 
 namespace cinder { namespace gl {
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	static pthread_key_t sThreadSpecificCurrentContextKey;
 	static bool sThreadSpecificCurrentContextInitialized = false;
 #elif defined( _MSC_VER )
@@ -156,7 +156,7 @@ Context::~Context()
 	if( getCurrent() == this ) {
 		env()->makeContextCurrent( nullptr );
 
-	#if defined( CINDER_COCOA )
+	#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 		pthread_setspecific( sThreadSpecificCurrentContextKey, NULL );
 	#else
 		sThreadSpecificCurrentContext = (Context*)( nullptr );
@@ -180,7 +180,7 @@ ContextRef Context::createFromExisting( const std::shared_ptr<PlatformData> &pla
 
 void Context::makeCurrent( bool force ) const
 {
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	if( ! sThreadSpecificCurrentContextInitialized ) {
 		pthread_key_create( &sThreadSpecificCurrentContextKey, NULL );
 		sThreadSpecificCurrentContextInitialized = true;
@@ -199,7 +199,7 @@ void Context::makeCurrent( bool force ) const
 
 Context* Context::getCurrent()
 {
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	if( ! sThreadSpecificCurrentContextInitialized ) {
 		return nullptr;
 	}
@@ -211,7 +211,7 @@ Context* Context::getCurrent()
 
 void Context::reflectCurrent( Context *context )
 {
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	if( ! sThreadSpecificCurrentContextInitialized ) {
 		pthread_key_create( &sThreadSpecificCurrentContextKey, NULL );
 		sThreadSpecificCurrentContextInitialized = true;

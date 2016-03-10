@@ -21,10 +21,12 @@ void prepareSettings( App::Settings* settings );
 
 class GeometryApp : public App {
 public:
-	enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, PLANE, RECT, ROUNDEDRECT, CIRCLE, RING };
+	GeometryApp();
+
+	enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, TORUSKNOT, PLANE, RECT, ROUNDEDRECT, CIRCLE, RING, PRIMITIVE_COUNT };
 	enum Quality { LOW, DEFAULT, HIGH };
 	enum ViewMode { SHADED, WIREFRAME };
-	enum TexturingMode { NONE, PROCEDURAL, SAMPLER, TRANSPARENT };
+	enum TexturingMode { NONE, PROCEDURAL, SAMPLER };
 
 	void setup() override;
 	void resize() override;
@@ -45,17 +47,14 @@ private:
 	void createGeometry();
 	void loadGeomSource( const geom::Source &source, const geom::Source &sourceWire );
 	void createParams();
+	void updateParams();
 
 	Primitive			mPrimitiveSelected;
 	Primitive			mPrimitiveCurrent;
 	Quality				mQualitySelected;
 	Quality				mQualityCurrent;
 	ViewMode			mViewMode;
-
-	int					mSubdivision;
 	int					mTexturingMode;
-
-	int					mSubdivA, mSubdivB, mSubdivC;
 
 	bool				mShowColors;
 	bool				mShowNormals, mShowTangents;
@@ -67,7 +66,7 @@ private:
 	CameraPersp			mCamera;
 	CameraUi			mCamUi;
 	bool				mRecenterCamera;
-	vec3				mCameraTarget, mCameraLerpTarget;
+	vec3				mCameraTarget, mCameraLerpTarget, mCameraViewDirection;
 	double				mLastMouseDownTime;
 
 	gl::VertBatchRef	mGrid;
@@ -83,8 +82,34 @@ private:
 
 	gl::TextureRef		mTexture;
 
+	float				mCapsuleRadius;
+	float				mCapsuleLength;
+
+	float				mConeRatio;
+
+	float				mHelixRatio;
+	unsigned			mHelixTwist;
+	float				mHelixOffset;
+	float				mHelixCoils;
+
+	float				mRingWidth;
+
+	float				mRoundedRectRadius;
+
+	unsigned			mTorusTwist;
+	float				mTorusOffset;
+	float				mTorusRatio;
+
+	int					mTorusKnotP;
+	int					mTorusKnotQ;
+	float				mTorusKnotRadius;
+	vec3				mTorusKnotScale;
+
 #if ! defined( CINDER_GL_ES )
 	params::InterfaceGlRef	mParams;
+
+	typedef std::vector<params::InterfaceGl::OptionsBase> ParamGroup;
+	std::vector<ParamGroup>	mPrimitiveParams;
 #endif
 };
 
@@ -93,12 +118,26 @@ void prepareSettings( App::Settings* settings )
 	settings->setWindowSize( 1024, 768 );
 	settings->setHighDensityDisplayEnabled();
 	settings->setMultiTouchEnabled( false );
+	settings->disableFrameRate();
+}
+
+GeometryApp::GeometryApp()
+	: mCapsuleRadius( 0.5f ), mCapsuleLength( 1 )
+	, mConeRatio( 0.5f )
+	, mHelixRatio( 0.25f ), mHelixTwist( 0 ), mHelixOffset( 0 ), mHelixCoils( 3 )
+	, mRingWidth( 0.25f )
+	, mRoundedRectRadius( 0.2f )
+	, mTorusTwist( 0 ), mTorusOffset( 0 ), mTorusRatio( 0.25 )
+	, mTorusKnotP( 2 ), mTorusKnotQ( 5 ), mTorusKnotRadius( 0.15f ), mTorusKnotScale( 1, 0.2, 1 )
+{
 }
 
 void GeometryApp::setup()
 {
+	gl::enableVerticalSync( true );
+
 	// Initialize variables.
-	mPrimitiveSelected = mPrimitiveCurrent = TORUS;
+	mPrimitiveSelected = mPrimitiveCurrent = TEAPOT;
 	mQualitySelected = mQualityCurrent = HIGH;
 	mTexturingMode = PROCEDURAL;
 	mViewMode = SHADED;
@@ -110,13 +149,6 @@ void GeometryApp::setup()
 	mShowSolidPrimitive = true;
 	mShowWirePrimitive = false;
 	mEnableFaceFulling = false;
-
-	mSubdivision = 1;
-
-	// Subdivision settings for wire primitives.
-	mSubdivA = 4;
-	mSubdivB = 8;
-	mSubdivC = 72;
 
 	// Load the textures.
 	gl::Texture::Format fmt;
@@ -145,7 +177,6 @@ void GeometryApp::update()
 {
 	// If another primitive or quality was selected, reset the subdivision and recreate the primitive.
 	if( mPrimitiveCurrent != mPrimitiveSelected || mQualitySelected != mQualityCurrent ) {
-		mSubdivision = 1;
 		mPrimitiveCurrent = mPrimitiveSelected;
 		mQualityCurrent = mQualitySelected;
 		createGeometry();
@@ -153,8 +184,8 @@ void GeometryApp::update()
 
 	// After creating a new primitive, gradually move the camera to get a good view.
 	if( mRecenterCamera ) {
-		float distance = glm::distance( mCamera.getEyePoint(), mCameraTarget );
-		vec3 eye = mCameraLerpTarget - lerp( distance, 5.0f, 0.1f ) * mCamera.getViewDirection();
+		float distance = glm::distance( mCamera.getEyePoint(), mCameraLerpTarget );
+		vec3 eye = mCameraLerpTarget - lerp( distance, 5.0f, 0.25f ) * mCameraViewDirection;
 		mCameraTarget = lerp( mCameraTarget, mCameraLerpTarget, 0.25f );
 		mCamera.lookAt( eye, mCameraTarget );
 	}
@@ -173,6 +204,7 @@ void GeometryApp::draw()
 	if( mPrimitive ) {
 		gl::ScopedTextureBind scopedTextureBind( mTexture );
 		mPhongShader->uniform( "uTexturingMode", mTexturingMode );
+		mPhongShader->uniform( "uFreq", ( mPrimitiveCurrent == TORUSKNOT ) ? ivec2( 100, 10 ) : ivec2( 20 ) );
 
 		// Rotate it slowly around the y-axis.
 		gl::ScopedModelMatrix matScope;
@@ -193,7 +225,8 @@ void GeometryApp::draw()
 		// Draw the wire primitive.
 		if( mShowWirePrimitive && mPrimitiveWire ) {
 			gl::ScopedColor color( Color( 1, 1, 1 ) );
-			gl::ScopedLineWidth linewidth( 1.5f );
+			gl::ScopedLineWidth linewidth( 2.5f );
+
 			mPrimitiveWire->draw();
 		}
 
@@ -214,18 +247,6 @@ void GeometryApp::draw()
 
 				mWireframeShader->uniform( "uBrightness", 1.0f );
 				mPrimitiveWireframe->draw();
-			}
-			else if( mTexturingMode == TRANSPARENT ) {
-				// We're using alpha blending, so render the back side first.
-				gl::ScopedBlendAlpha blendScope;
-				gl::ScopedFaceCulling cullScope( true, GL_FRONT );
-
-				mPrimitive->draw();
-
-				// Now render the front side.
-				gl::cullFace( GL_BACK );
-
-				mPrimitive->draw();
 			}
 			else {
 				gl::ScopedFaceCulling cullScope( mEnableFaceFulling, GL_BACK );
@@ -251,10 +272,11 @@ void GeometryApp::draw()
 	// Disable the depth buffer.
 	gl::disableDepthRead();
 
-	// Render the parameter window.
+	// Render the parameter windows.
 #if ! defined( CINDER_GL_ES )
-	if( mParams )
+	if( mParams ) {
 		mParams->draw();
+	}
 #endif
 }
 
@@ -265,7 +287,7 @@ void GeometryApp::mouseDown( MouseEvent event )
 	mCamUi.mouseDown( event );
 
 	if( getElapsedSeconds() - mLastMouseDownTime < 0.2f ) {
-		mPrimitiveSelected = static_cast<Primitive>( static_cast<int>(mPrimitiveSelected) +1 );
+		mPrimitiveSelected = static_cast<Primitive>( static_cast<int>( mPrimitiveSelected ) + 1 );
 		createGeometry();
 	}
 
@@ -288,39 +310,40 @@ void GeometryApp::resize()
 void GeometryApp::keyDown( KeyEvent event )
 {
 	switch( event.getCode() ) {
-	case KeyEvent::KEY_SPACE:
-		mPrimitiveSelected = static_cast<Primitive>( static_cast<int>(mPrimitiveSelected) +1 );
-		createGeometry();
-		break;
-	case KeyEvent::KEY_c:
-		mShowColors = !mShowColors;
-		createGeometry();
-		break;
-	case KeyEvent::KEY_n:
-		mShowNormals = !mShowNormals;
-		break;
-	case KeyEvent::KEY_g:
-		mShowGrid = !mShowGrid;
-		break;
-	case KeyEvent::KEY_q:
-		mQualitySelected = Quality( (int) ( mQualitySelected + 1 ) % 3 );
-		break;
+		case KeyEvent::KEY_SPACE:
+			mPrimitiveSelected = static_cast<Primitive>( ( static_cast<int>( mPrimitiveSelected ) + 1 ) % PRIMITIVE_COUNT );
+			createGeometry();
+			updateParams();
+			break;
+		case KeyEvent::KEY_c:
+			mShowColors = !mShowColors;
+			createGeometry();
+			break;
+		case KeyEvent::KEY_n:
+			mShowNormals = !mShowNormals;
+			break;
+		case KeyEvent::KEY_g:
+			mShowGrid = !mShowGrid;
+			break;
+		case KeyEvent::KEY_q:
+			mQualitySelected = Quality( (int)( mQualitySelected + 1 ) % 3 );
+			break;
 #if ! defined( CINDER_GL_ES )
-	case KeyEvent::KEY_v:
-		if( mViewMode == WIREFRAME )
-			mViewMode = SHADED;
-		else
-			mViewMode = WIREFRAME;
-		break;
+		case KeyEvent::KEY_v:
+			if( mViewMode == WIREFRAME )
+				mViewMode = SHADED;
+			else
+				mViewMode = WIREFRAME;
+			break;
 #endif 
-	case KeyEvent::KEY_w:
-		mShowWirePrimitive = !mShowWirePrimitive;
-		break;
-	case KeyEvent::KEY_RETURN:
-		CI_LOG_V( "reload" );
-		createPhongShader();
-		createGeometry();
-		break;
+		case KeyEvent::KEY_w:
+			mShowWirePrimitive = !mShowWirePrimitive;
+			break;
+		case KeyEvent::KEY_RETURN:
+			CI_LOG_V( "reload" );
+			createPhongShader();
+			createGeometry();
+			break;
 	}
 }
 
@@ -340,30 +363,18 @@ void GeometryApp::fileDrop( FileDropEvent event )
 void GeometryApp::createParams()
 {
 #if ! defined( CINDER_GL_ES )
-	vector<string> primitives = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Plane", "Rectangle", "Rounded Rectangle", "Circle", "Ring" };
+	vector<string> primitives = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Torus Knot", "Plane", "Rectangle", "Rounded Rectangle", "Circle", "Ring" };
 	vector<string> qualities = { "Low", "Default", "High" };
 	vector<string> viewModes = { "Shaded", "Wireframe" };
-	vector<string> texturingModes = { "None", "Procedural", "Sampler", "Transparent" };
+	vector<string> texturingModes = { "None", "Procedural", "Sampler" };
 
-	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", toPixels( ivec2( 300, 340 ) ) );
+	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", toPixels( ivec2( 300, 400 ) ) );
 	mParams->setOptions( "", "valueswidth=100 refresh=0.1" );
 
-	mParams->addParam( "Primitive", primitives, (int*) &mPrimitiveSelected );
-	mParams->addParam( "Quality", qualities, (int*) &mQualitySelected );
-	mParams->addParam( "Viewing Mode", viewModes, (int*) &mViewMode );
-	mParams->addParam( "Texturing Mode", texturingModes, (int*) &mTexturingMode );
-
-	mParams->addSeparator();
-
-	mParams->addParam( "Show Solid Primitive", &mShowSolidPrimitive );
-	mParams->addParam( "Subdivision", &mSubdivision ).min( 1 ).max( 5 ).updateFn( [this] { createGeometry(); } );
-
-	mParams->addSeparator();
-
-	mParams->addParam( "Show Wire Primitive", &mShowWirePrimitive );
-	mParams->addParam( "Subdivision A", &mSubdivA ).min( 1 ).max( 1000 ).updateFn( [this] { createGeometry(); } );
-	mParams->addParam( "Subdivision B", &mSubdivB ).min( 1 ).max( 1000 ).updateFn( [this] { createGeometry(); } );
-	mParams->addParam( "Subdivision C", &mSubdivC ).min( 1 ).max( 1000 ).updateFn( [this] { createGeometry(); } );
+	mParams->addParam( "Primitive", primitives, (int*)&mPrimitiveSelected ).updateFn( std::bind( &GeometryApp::updateParams, this ) );
+	mParams->addParam( "Quality", qualities, (int*)&mQualitySelected );
+	mParams->addParam( "Viewing Mode", viewModes, (int*)&mViewMode );
+	mParams->addParam( "Texturing Mode", texturingModes, (int*)&mTexturingMode );
 
 	mParams->addSeparator();
 
@@ -372,6 +383,61 @@ void GeometryApp::createParams()
 	mParams->addParam( "Show Tangents", &mShowTangents );
 	mParams->addParam( "Show Colors", &mShowColors ).updateFn( [this] { createGeometry(); } );
 	mParams->addParam( "Face Culling", &mEnableFaceFulling ).updateFn( [this] { gl::enableFaceCulling( mEnableFaceFulling ); } );
+
+	mParams->addSeparator();
+
+	mParams->addParam( "Show Wire Primitive", &mShowWirePrimitive );
+	mParams->addParam( "Show Solid Primitive", &mShowSolidPrimitive );
+
+	mParams->addSeparator();
+
+	//
+	mPrimitiveParams.resize( PRIMITIVE_COUNT );
+
+	// Capsule
+	mPrimitiveParams[CAPSULE].push_back( mParams->addParam( "Capsule: Radius", &mCapsuleRadius ).step( 0.01f ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[CAPSULE].push_back( mParams->addParam( "Capsule: Length", &mCapsuleLength ).step( 0.05f ).updateFn( [this] { createGeometry(); } ) );
+
+	// Cone
+	mPrimitiveParams[CONE].push_back( mParams->addParam( "Cone: Ratio", &mConeRatio ).step( 0.01f ).updateFn( [this] { createGeometry(); } ) );
+
+	// Helix
+	mPrimitiveParams[HELIX].push_back( mParams->addParam( "Helix: Ratio", &mHelixRatio ).step( 0.01f ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[HELIX].push_back( mParams->addParam( "Helix: Coils", &mHelixCoils ).step( 0.1f ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[HELIX].push_back( mParams->addParam( "Helix: Twist", &mHelixTwist ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[HELIX].push_back( mParams->addParam( "Helix: Twist Offset", &mHelixOffset ).step( 0.05f ).updateFn( [this] { createGeometry(); } ) );
+
+	// Ring
+	mPrimitiveParams[RING].push_back( mParams->addParam( "Ring: Width", &mRingWidth ).step( 0.01f ).updateFn( [this] { createGeometry(); } ) );
+
+	// Rounded Rect
+	mPrimitiveParams[ROUNDEDRECT].push_back( mParams->addParam( "Corner Radius", &mRoundedRectRadius ).step( 0.01f ).updateFn( [this] { createGeometry(); } ) );
+
+	// Torus
+	mPrimitiveParams[TORUS].push_back( mParams->addParam( "Torus: Ratio", &mTorusRatio ).step( 0.01f ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[TORUS].push_back( mParams->addParam( "Torus: Twist", &mTorusTwist ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[TORUS].push_back( mParams->addParam( "Torus: Twist Offset", &mTorusOffset ).step( 0.05f ).updateFn( [this] { createGeometry(); } ) );
+
+	// Torus Knot
+	mPrimitiveParams[TORUSKNOT].push_back( mParams->addParam( "Torus Knot: Parameter P", &mTorusKnotP ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[TORUSKNOT].push_back( mParams->addParam( "Torus Knot: Parameter Q", &mTorusKnotQ ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[TORUSKNOT].push_back( mParams->addParam( "Torus Knot: Scale X", &mTorusKnotScale.x ).step( 0.1f ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[TORUSKNOT].push_back( mParams->addParam( "Torus Knot: Scale Y", &mTorusKnotScale.y ).step( 0.1f ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[TORUSKNOT].push_back( mParams->addParam( "Torus Knot: Scale Z", &mTorusKnotScale.z ).step( 0.1f ).updateFn( [this] { createGeometry(); } ) );
+	mPrimitiveParams[TORUSKNOT].push_back( mParams->addParam( "Torus Knot: Radius", &mTorusKnotRadius ).step( 0.05f ).updateFn( [this] { createGeometry(); } ) );
+
+	updateParams();
+#endif
+}
+
+void GeometryApp::updateParams()
+{
+#if ! defined( CINDER_GL_ES )
+	for( int i = 0; i < mPrimitiveParams.size(); ++i ) {
+		for( auto &param : mPrimitiveParams[i] ) {
+			param.setVisible( i == mPrimitiveSelected );
+		}
+	}
 #endif
 }
 
@@ -398,106 +464,113 @@ void GeometryApp::createGeometry()
 	geom::SourceRef primitive;
 
 	switch( mPrimitiveCurrent ) {
-	default:
-		mPrimitiveSelected = CAPSULE;
-	case CAPSULE:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Capsule(), geom::WireCapsule().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case LOW:		loadGeomSource( geom::Capsule().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ), geom::WireCapsule().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case HIGH:		loadGeomSource( geom::Capsule().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ), geom::WireCapsule().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		}
-		break;
-	case CONE:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Cone(), geom::WireCone().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case LOW:		loadGeomSource( geom::Cone().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ), geom::WireCone().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case HIGH:		loadGeomSource( geom::Cone().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ), geom::WireCone().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		}
-		break;
-	case CUBE:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Cube(), geom::WireCube().subdivisionsX( mSubdivA ).subdivisionsY( mSubdivB ).subdivisionsZ( mSubdivC ) ); break;
-		case LOW:		loadGeomSource( geom::Cube().subdivisions( 1 ), geom::WireCube().subdivisionsX( mSubdivA ).subdivisionsY( mSubdivB ).subdivisionsZ( mSubdivC ) ); break;
-		case HIGH:		loadGeomSource( geom::Cube().subdivisions( 10 ), geom::WireCube().subdivisionsX( mSubdivA ).subdivisionsY( mSubdivB ).subdivisionsZ( mSubdivC ) ); break;
-		}
-		break;
-	case CYLINDER:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Cylinder(), geom::WireCylinder().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case LOW:		loadGeomSource( geom::Cylinder().subdivisionsAxis( 6 ), geom::WireCylinder().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case HIGH:		loadGeomSource( geom::Cylinder().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ), geom::WireCylinder().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		}
-		break;
-	case HELIX:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Helix(), geom::WireCube() ); break;
-		case LOW:		loadGeomSource( geom::Helix().subdivisionsAxis( 12 ).subdivisionsHeight( 6 ), geom::WireCube() ); break;
-		case HIGH:		loadGeomSource( geom::Helix().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ), geom::WireCube() ); break;
-		}
-		break;
-	case ICOSAHEDRON:
-		loadGeomSource( geom::Icosahedron(), geom::WireIcosahedron() );
-		break;
-	case ICOSPHERE:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Icosphere(), geom::WireSphere().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case LOW:		loadGeomSource( geom::Icosphere().subdivisions( 1 ), geom::WireSphere().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case HIGH:		loadGeomSource( geom::Icosphere().subdivisions( 5 ), geom::WireSphere().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		}
-		break;
-	case SPHERE:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Sphere(), geom::WireSphere().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case LOW:		loadGeomSource( geom::Sphere().subdivisions( 6 ), geom::WireSphere().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case HIGH:		loadGeomSource( geom::Sphere().subdivisions( 60 ), geom::WireSphere().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		}
-		break;
-	case TEAPOT:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Teapot(), geom::WireCube() ); break;
-		case LOW:		loadGeomSource( geom::Teapot().subdivisions( 2 ), geom::WireCube() ); break;
-		case HIGH:		loadGeomSource( geom::Teapot().subdivisions( 12 ), geom::WireCube() ); break;
-		}
-		break;
-	case TORUS:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Torus(), geom::WireTorus().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case LOW:		loadGeomSource( geom::Torus().subdivisionsAxis( 12 ).subdivisionsHeight( 6 ), geom::WireTorus().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		case HIGH:		loadGeomSource( geom::Torus().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ), geom::WireTorus().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
-		}
-		break;
-	case PLANE:
-		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Plane().subdivisions( ivec2( 10, 10 ) ), geom::WirePlane().subdivisions( ivec2( 10, 10 ) ) ); break;
-		case LOW:		loadGeomSource( geom::Plane().subdivisions( ivec2( 2, 2 ) ), geom::WirePlane().subdivisions( ivec2( 2, 2 ) ) ); break;
-		case HIGH:		loadGeomSource( geom::Plane().subdivisions( ivec2( 100, 100 ) ), geom::WirePlane().subdivisions( ivec2( 100, 100 ) ) ); break;
-		}
-		break;
+		default:
+			mPrimitiveSelected = CAPSULE;
+		case CAPSULE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Capsule().radius( mCapsuleRadius ).length( mCapsuleLength ), geom::WireCapsule().radius( mCapsuleRadius ).length( mCapsuleLength ) ); break;
+				case LOW:		loadGeomSource( geom::Capsule().radius( mCapsuleRadius ).length( mCapsuleLength ).subdivisionsAxis( 6 ).subdivisionsHeight( 1 ), geom::WireCapsule().radius( mCapsuleRadius ).length( mCapsuleLength ) ); break;
+				case HIGH:		loadGeomSource( geom::Capsule().radius( mCapsuleRadius ).length( mCapsuleLength ).subdivisionsAxis( 60 ).subdivisionsHeight( 20 ), geom::WireCapsule().radius( mCapsuleRadius ).length( mCapsuleLength ) ); break;
+			}
+			break;
+		case CONE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Cone().ratio( mConeRatio ), geom::WireCone() ); break;
+				case LOW:		loadGeomSource( geom::Cone().ratio( mConeRatio ).subdivisionsAxis( 6 ).subdivisionsHeight( 1 ), geom::WireCone() ); break;
+				case HIGH:		loadGeomSource( geom::Cone().ratio( mConeRatio ).subdivisionsAxis( 60 ).subdivisionsHeight( 60 ), geom::WireCone() ); break;
+			}
+			break;
+		case CUBE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Cube(), geom::WireCube() ); break;
+				case LOW:		loadGeomSource( geom::Cube().subdivisions( 1 ), geom::WireCube() ); break;
+				case HIGH:		loadGeomSource( geom::Cube().subdivisions( 10 ), geom::WireCube() ); break;
+			}
+			break;
+		case CYLINDER:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Cylinder(), geom::WireCylinder() ); break;
+				case LOW:		loadGeomSource( geom::Cylinder().subdivisionsAxis( 6 ).subdivisionsCap( 1 ), geom::WireCylinder() ); break;
+				case HIGH:		loadGeomSource( geom::Cylinder().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ).subdivisionsCap( 10 ), geom::WireCylinder() ); break;
+			}
+			break;
+		case HELIX:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Helix().ratio( mHelixRatio ).coils( mHelixCoils ).twist( mHelixTwist, mHelixOffset ), geom::WireCube() ); break;
+				case LOW:		loadGeomSource( geom::Helix().ratio( mHelixRatio ).coils( mHelixCoils ).twist( mHelixTwist, mHelixOffset ).subdivisionsAxis( 12 ).subdivisionsHeight( 6 ), geom::WireCube() ); break;
+				case HIGH:		loadGeomSource( geom::Helix().ratio( mHelixRatio ).coils( mHelixCoils ).twist( mHelixTwist, mHelixOffset ).subdivisionsAxis( 60 ).subdivisionsHeight( 60 ), geom::WireCube() ); break;
+			}
+			break;
+		case ICOSAHEDRON:
+			loadGeomSource( geom::Icosahedron(), geom::WireIcosahedron() );
+			break;
+		case ICOSPHERE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Icosphere(), geom::WireSphere() ); break;
+				case LOW:		loadGeomSource( geom::Icosphere().subdivisions( 1 ), geom::WireSphere() ); break;
+				case HIGH:		loadGeomSource( geom::Icosphere().subdivisions( 5 ), geom::WireSphere() ); break;
+			}
+			break;
+		case SPHERE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Sphere(), geom::WireSphere() ); break;
+				case LOW:		loadGeomSource( geom::Sphere().subdivisions( 6 ), geom::WireSphere() ); break;
+				case HIGH:		loadGeomSource( geom::Sphere().subdivisions( 60 ), geom::WireSphere() ); break;
+			}
+			break;
+		case TEAPOT:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Teapot(), geom::WireCube() ); break;
+				case LOW:		loadGeomSource( geom::Teapot().subdivisions( 2 ), geom::WireCube() ); break;
+				case HIGH:		loadGeomSource( geom::Teapot().subdivisions( 12 ), geom::WireCube() ); break;
+			}
+			break;
+		case TORUS:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Torus().twist( mTorusTwist, mTorusOffset ).ratio( mTorusRatio ), geom::WireTorus().ratio( mTorusRatio ) ); break;
+				case LOW:		loadGeomSource( geom::Torus().twist( mTorusTwist, mTorusOffset ).ratio( mTorusRatio ).subdivisionsAxis( 12 ).subdivisionsHeight( 6 ), geom::WireTorus().ratio( mTorusRatio ) ); break;
+				case HIGH:		loadGeomSource( geom::Torus().twist( mTorusTwist, mTorusOffset ).ratio( mTorusRatio ).subdivisionsAxis( 60 ).subdivisionsHeight( 60 ), geom::WireTorus().ratio( mTorusRatio ) ); break;
+			}
+			break;
+		case TORUSKNOT:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::TorusKnot().parameters( mTorusKnotP, mTorusKnotQ ).radius( mTorusKnotRadius ).scale( mTorusKnotScale ), geom::WireCube() ); break;
+				case LOW:		loadGeomSource( geom::TorusKnot().parameters( mTorusKnotP, mTorusKnotQ ).radius( mTorusKnotRadius ).scale( mTorusKnotScale ).subdivisionsAxis( 6 ).subdivisionsHeight( 64 ), geom::WireCube() ); break;
+				case HIGH:		loadGeomSource( geom::TorusKnot().parameters( mTorusKnotP, mTorusKnotQ ).radius( mTorusKnotRadius ).scale( mTorusKnotScale ).subdivisionsAxis( 32 ).subdivisionsHeight( 1024 ), geom::WireCube() ); break;
+			}
+			break;
+		case PLANE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Plane().subdivisions( ivec2( 10, 10 ) ), geom::WirePlane().subdivisions( ivec2( 10, 10 ) ) ); break;
+				case LOW:		loadGeomSource( geom::Plane().subdivisions( ivec2( 2, 2 ) ), geom::WirePlane().subdivisions( ivec2( 2, 2 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Plane().subdivisions( ivec2( 100, 100 ) ), geom::WirePlane().subdivisions( ivec2( 100, 100 ) ) ); break;
+			}
+			break;
 
-	case RECT:
+		case RECT:
 			loadGeomSource( geom::Rect(), geom::WirePlane() ); break;
-		break;
-	case ROUNDEDRECT:
-		switch( mQualityCurrent ) {
-			case DEFAULT:	loadGeomSource( geom::RoundedRect().cornerSubdivisions( 3 ), geom::WireRoundedRect().cornerSubdivisions( 3 ) ); break;
-			case LOW:		loadGeomSource( geom::RoundedRect().cornerSubdivisions( 1 ), geom::WireRoundedRect().cornerSubdivisions( 1 ) ); break;
-			case HIGH:		loadGeomSource( geom::RoundedRect().cornerSubdivisions( 9 ), geom::WireRoundedRect().cornerSubdivisions( 9 ) ); break;
-		}
-		break;
-	case CIRCLE:
-		switch( mQualityCurrent ) {
-			case DEFAULT:	loadGeomSource( geom::Circle().subdivisions( 24 ), geom::WireCircle().subdivisions( 24 ) ); break;
-			case LOW:		loadGeomSource( geom::Circle().subdivisions( 8 ), geom::WireCircle().subdivisions( 8 ) ); break;
-			case HIGH:		loadGeomSource( geom::Circle().subdivisions( 120 ), geom::WireCircle().subdivisions( 120 ) ); break;
-		}
-		break;
-	case RING:
-		switch( mQualityCurrent ) {
-			case DEFAULT:	loadGeomSource( geom::Ring().subdivisions( 24 ), geom::WireCircle().subdivisions( 24 ).radius( 1.25f ) ); break;
-			case LOW:		loadGeomSource( geom::Ring().subdivisions( 8 ), geom::WireCircle().subdivisions( 8 ).radius( 1.25f ) ); break;
-			case HIGH:		loadGeomSource( geom::Ring().subdivisions( 120 ), geom::WireCircle().subdivisions( 120 ).radius( 1.25f ) ); break;
-		}
-		break;
+			break;
+		case ROUNDEDRECT:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::RoundedRect().cornerRadius( mRoundedRectRadius ).cornerSubdivisions( 3 ), geom::WireRoundedRect().cornerRadius( mRoundedRectRadius ).cornerSubdivisions( 3 ) ); break;
+				case LOW:		loadGeomSource( geom::RoundedRect().cornerRadius( mRoundedRectRadius ).cornerSubdivisions( 1 ), geom::WireRoundedRect().cornerRadius( mRoundedRectRadius ).cornerSubdivisions( 1 ) ); break;
+				case HIGH:		loadGeomSource( geom::RoundedRect().cornerRadius( mRoundedRectRadius ).cornerSubdivisions( 9 ), geom::WireRoundedRect().cornerRadius( mRoundedRectRadius ).cornerSubdivisions( 9 ) ); break;
+			}
+			break;
+		case CIRCLE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Circle().subdivisions( 24 ), geom::WireCircle().subdivisions( 24 ) ); break;
+				case LOW:		loadGeomSource( geom::Circle().subdivisions( 8 ), geom::WireCircle().subdivisions( 8 ) ); break;
+				case HIGH:		loadGeomSource( geom::Circle().subdivisions( 120 ), geom::WireCircle().subdivisions( 120 ) ); break;
+			}
+			break;
+		case RING:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Ring().width( mRingWidth ).subdivisions( 24 ), geom::WireCircle().subdivisions( 24 ).radius( 1 + 0.5f * mRingWidth ) ); break;
+				case LOW:		loadGeomSource( geom::Ring().width( mRingWidth ).subdivisions( 8 ), geom::WireCircle().subdivisions( 8 ).radius( 1 + 0.5f * mRingWidth ) ); break;
+				case HIGH:		loadGeomSource( geom::Ring().width( mRingWidth ).subdivisions( 120 ), geom::WireCircle().subdivisions( 120 ).radius( 1 + 0.5f * mRingWidth ) ); break;
+			}
+			break;
 	}
 }
 
@@ -511,10 +584,8 @@ void GeometryApp::loadGeomSource( const geom::Source &source, const geom::Source
 	TriMesh mesh( source, fmt );
 	AxisAlignedBox bbox = mesh.calcBoundingBox();
 	mCameraLerpTarget = mesh.calcBoundingBox().getCenter();
+	mCameraViewDirection = mCamera.getViewDirection();
 	mRecenterCamera = true;
-
-	if( mSubdivision > 1 )
-		mesh.subdivide( mSubdivision );
 
 	if( mPhongShader )
 		mPrimitive = gl::Batch::create( mesh, mPhongShader );
@@ -544,7 +615,7 @@ void GeometryApp::createPhongShader()
 #else
 		mPhongShader = gl::GlslProg::create( loadAsset( "phong.vert" ), loadAsset( "phong.frag" ) );
 #endif
-}
+	}
 	catch( Exception &exc ) {
 		CI_LOG_E( "error loading phong shader: " << exc.what() );
 	}

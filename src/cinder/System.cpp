@@ -626,7 +626,8 @@ int32_t System::getMaxMultiTouchPoints()
 
 string System::demangleTypeName( const char *mangledName )
 {
-#if defined( CINDER_MSW )
+	// not supported on MSW or WinRT
+#if defined( CINDER_MSW ) || defined( CINDER_WINRT )
 	return mangledName;
 #else
 	int status = 0;

@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
+cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE on )
 
 # Module path
@@ -318,12 +318,6 @@ add_library( cinder${CINDER_LIB_SUFFIX} STATIC ${CINDER_C_SRC_FILES} ${CINDER_CX
 
 # Compile definitions
 target_compile_definitions( cinder${CINDER_LIB_SUFFIX} PUBLIC ${CINDER_DEFINITIONS} )
-
-### There is a conflict between boost/regex.h and /usr/include/regex.h when building the examples
-### so avoid propagating the boost dirs across the compilation of samples.
-if( NOT CINDER_USE_SYSTEM_LIBS )
-    target_include_directories( cinder${CINDER_LIB_SUFFIX} PRIVATE ${CINDER_INC_DIR}/boost> )
-endif()
 
 # Include directories.
 target_include_directories( cinder${CINDER_LIB_SUFFIX} PUBLIC "$<BUILD_INTERFACE:${CINDER_INCLUDE_DIRS};${CINDER_INCLUDE_DEPENDS}>" )

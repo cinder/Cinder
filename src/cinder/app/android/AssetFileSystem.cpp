@@ -82,7 +82,7 @@ size_t AssetFileSystem_fread( void * ptr, size_t size, size_t count, AssetFileSy
 int AssetFileSystem_feof( AssetFileSystem_FILE * stream )
 {
 	int n = AAsset_getRemainingLength( stream );
-	return (0 == n) ? 0 : -1;
+	return (0 == n) ? 1 : 0;
 }
 
 long int AssetFileSystem_flength( AssetFileSystem_FILE * stream )

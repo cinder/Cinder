@@ -159,6 +159,11 @@ void ObjLoader::parseMaterial( std::shared_ptr<IStreamCinder> material )
         if( line.empty() || line[0] == '#' )
             continue;
 
+		while( line.back() == '\\' && ! material->isEof() ) {
+			auto next = material->readLine();
+			line = line.substr( 0, line.size() - 1 ) + next;
+		}
+
         string tag;
         stringstream ss( line );
         ss >> tag;
@@ -196,7 +201,12 @@ void ObjLoader::parse( bool includeNormals, bool includeTexCoords )
 		string line = mStream->readLine(), tag;
         if( line.empty() || line[0] == '#' )
             continue;
-        
+
+		while( line.back() == '\\' && ! mStream->isEof() ) {
+			auto next = mStream->readLine();
+			line = line.substr( 0, line.size() - 1 ) + next;
+		}
+
 		stringstream ss( line );
 		ss >> tag;
 		if( tag == "v" ) { // vertex

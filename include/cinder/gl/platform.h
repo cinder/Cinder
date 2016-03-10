@@ -30,7 +30,11 @@
 #define CINDER_GL_ES_VERSION_3_1	310
 #define CINDER_GL_ES_VERSION_3_2	320
 
-#if defined( CINDER_GL_ANGLE ) || defined( CINDER_WINRT )
+#if ! defined( CINDER_GL_ANGLE ) && defined( CINDER_WINRT )
+	#define CINDER_GL_ANGLE
+#endif
+
+#if defined( CINDER_GL_ANGLE )
 	#define GL_GLEXT_PROTOTYPES
 	#define CINDER_GL_ES
 	// the default for ANGLE is GL ES 3, but can be overridden with CINDER_GL_ES_2
@@ -223,9 +227,11 @@
 #if defined( CINDER_GL_ES )
 	#if defined( GL_KHR_debug ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_3_1 )
 		#define CINDER_GL_HAS_KHR_DEBUG
-		#define GL_BUFFER 		GL_BUFFER_KHR
-		#define GL_SHADER 		GL_SHADER_KHR
-		#define GL_PROGRAM 		GL_PROGRAM_KHR
+		#if ! defined( CINDER_GL_ANGLE )
+			#define GL_BUFFER 		GL_BUFFER_KHR
+			#define GL_SHADER 		GL_SHADER_KHR
+			#define GL_PROGRAM 		GL_PROGRAM_KHR
+		#endif
 	#endif
 #else
 	#define CINDER_GL_HAS_KHR_DEBUG

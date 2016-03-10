@@ -11,7 +11,7 @@ set( SNDFILE_FOUND false )
 set( SNDFILE_INCLUDE_DIRS /opt/local/include /usr/local/include /usr/include )
 set( SNDFILE_LIBRARY_DIRS /opt/local/lib /usr/local/lib /usr/lib )
 
-set( SNDFILE_LIB_SUFFIXES lib x86_64-linux-gnu arm-linux-gnueabihf )
+set( SNDFILE_LIB_SUFFIXES lib x86_64-linux-gnu arm-linux-gnueabihf aarch64-linux-gnu )
 
 find_path( SNDFILE_INCLUDE_DIR NAMES "sndfile.h" PATHS ${SNDFILE_INCLUDE_DIRS} PATH_SUFFIXES include NO_DEFAULT_PATH )
 find_library( SNDFILE_LIBRARY  NAMES "sndfile"   PATHS ${SNDFILE_LIBRARY_DIRS} PATH_SUFFIXES ${SNDFILE_LIB_SUFFIXES} NO_DEFAULT_PATH )

@@ -11,7 +11,7 @@ set( MPG123_FOUND false )
 set( MPG123_INCLUDE_DIRS /opt/local/include /usr/local/include /usr/include )
 set( MPG123_LIBRARY_DIRS /opt/local/lib /usr/local/lib /usr/lib )
 
-set( MPG123_LIB_SUFFIXES lib x86_64-linux-gnu arm-linux-gnueabihf )
+set( MPG123_LIB_SUFFIXES lib x86_64-linux-gnu arm-linux-gnueabihf aarch64-linux-gnu )
 
 find_path( MPG123_INCLUDE_DIR NAMES "mpg123.h" PATHS ${MPG123_INCLUDE_DIRS} PATH_SUFFIXES include NO_DEFAULT_PATH )
 find_library( MPG123_LIBRARY  NAMES "mpg123"   PATHS ${MPG123_LIBRARY_DIRS} PATH_SUFFIXES ${MPG123_LIB_SUFFIXES} NO_DEFAULT_PATH )
