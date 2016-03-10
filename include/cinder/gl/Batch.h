@@ -196,7 +196,6 @@ class VertBatch : public geom::Source {
 	std::vector<vec4>		mTexCoords0, mTexCoords1;
 	
 	bool					mOwnsBuffers;
-	bool					mForceUpdate;
 	Vao*					mVao;
 	VaoRef					mVaoStorage;
 	VboRef					mVbo;
