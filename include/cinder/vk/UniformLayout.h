@@ -81,7 +81,7 @@ enum UniformSemantic {
 
 enum {
 	INVALID_BINDING	= 0xFFFFFFFF,
-	DEFAULT_SET		= 0xFFFFFFFF,
+	DEFAULT_SET		= 0x0,
 };
 
 enum {

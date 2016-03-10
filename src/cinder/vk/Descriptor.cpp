@@ -305,6 +305,13 @@ DescriptorSet::DescriptorSet( VkDescriptorPool descriptorPool, const vk::Uniform
 	initialize( descriptorSetLayout );
 }
 
+DescriptorSet::DescriptorSet( VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device )
+	: BaseDeviceObject( device ),
+	  mDescriptorPool( descriptorPool )
+{
+	initialize( descriptorSetLayout );
+}
+
 DescriptorSet::~DescriptorSet()
 {
 	destroy();
@@ -313,14 +320,21 @@ DescriptorSet::~DescriptorSet()
 DescriptorSetRef DescriptorSet::create( VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, const vk::DescriptorSetLayoutRef &descriptorSetLayout, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	DescriptorSetRef result = DescriptorSetRef( new DescriptorSet( descriptorPool, set, descriptorSetLayout, device ) );
+	vk::DescriptorSetRef result = vk::DescriptorSetRef( new vk::DescriptorSet( descriptorPool, set, descriptorSetLayout, device ) );
 	return result;
 }
 
 vk::DescriptorSetRef DescriptorSet::create(VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	DescriptorSetRef result = DescriptorSetRef( new DescriptorSet( descriptorPool, set, descriptorSetLayout, device ) );
+	vk::DescriptorSetRef result = vk::DescriptorSetRef( new vk::DescriptorSet( descriptorPool, set, descriptorSetLayout, device ) );
+	return result;
+}
+
+vk::DescriptorSetRef DescriptorSet::create( VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device )
+{
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	vk::DescriptorSetRef result = vk::DescriptorSetRef( new vk::DescriptorSet( descriptorPool, descriptorSetLayout, device ) );
 	return result;
 }
 
@@ -391,6 +405,10 @@ void DescriptorSet::destroy( bool removeFromTracking )
 
 void DescriptorSet::update( )
 {
+	if( ! mSet ) {
+		return;
+	}
+
 	std::vector<VkWriteDescriptorSet> writes;
 	const auto& bindings = mSet->getBindings();
 	for( const auto& binding : bindings ) {

@@ -121,7 +121,7 @@ public:
 	virtual ~DescriptorPool();
 
 	static DescriptorPoolRef		create( const vk::UniformSetRef& uniformSet, vk::Device *device = nullptr );
-	static DescriptorPoolRef		create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device = nullptr );
+	static DescriptorPoolRef		create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, bool individualSets, vk::Device *device = nullptr );
 
 	VkDescriptorPool				getDescriptorPool() const { return mDescriptorPool; }
 
@@ -146,6 +146,7 @@ public:
 
 	static DescriptorSetRef					create( VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, const DescriptorSetLayoutRef &descriptorSetLayout, vk::Device *device = nullptr );
 	static DescriptorSetRef					create( VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device = nullptr );
+	static DescriptorSetRef					create( VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device = nullptr );
 	static std::vector<DescriptorSetRef>	create( const vk::DescriptorPoolRef& descriptorPool, const std::vector<vk::DescriptorSetLayoutRef>& descriptorSetLayouts, vk::Device *device = nullptr );
 
 	VkDescriptorSet							getDescriptorSet() const { return mDescriptorSet; }
@@ -157,6 +158,7 @@ public:
 private:
 	DescriptorSet( VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, const DescriptorSetLayoutRef &descriptorSetLayout, vk::Device *device );
 	DescriptorSet( VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device );
+	DescriptorSet( VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device );
 
 	VkDescriptorSet					mDescriptorSet = VK_NULL_HANDLE;
 	VkDescriptorPool				mDescriptorPool = VK_NULL_HANDLE;
