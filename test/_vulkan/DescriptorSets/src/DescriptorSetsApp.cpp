@@ -98,16 +98,6 @@ void DescriptorSetsApp::setup()
 	
 	// Descriptors
 	{
-		//// DescriptorSetLayoutBindings
-		//for( size_t i = 0; i < mTextures.size(); ++i ) {
-		//	VkDescriptorSetLayoutBinding binding = {};
-		//	binding.binding			= i % 4;
-		//	binding.descriptorType	= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		//	binding.descriptorCount	= 1;
-		//	binding.stageFlags		= VK_SHADER_STAGE_FRAGMENT_BIT;
-		//	mDescriptorSetLayoutBindings.push_back( binding );
-		//}
-
 		// DescriptorSetLayouts
 		{
 			// UBO
