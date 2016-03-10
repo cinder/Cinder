@@ -35,7 +35,8 @@ else()
 	message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has neither C++11 or C++14 support. Please use a different C++ compiler.")
 endif()
 
-target_compile_options( cinder PUBLIC ${CINDER_COMPILER_FLAGS} )
+set( CMAKE_CXX_FLAGS ${CINDER_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS} )
+target_compile_options( cinder INTERFACE ${CINDER_COMPILER_FLAGS} )
 
 # This file will contain all dependencies, includes, definition, compiler flags and so on..
 export( TARGETS cinder FILE ${PROJECT_BINARY_DIR}/cinderTargets.cmake )
