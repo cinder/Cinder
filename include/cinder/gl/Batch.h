@@ -47,7 +47,7 @@ class Batch {
 	static BatchRef		create( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping = AttributeMapping() );
 	//! Builds a Batch from a geom::Source and a GlslProg. Attributes defined in \a attributeMapping override the default mapping
 	static BatchRef		create( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping = AttributeMapping() );
-	
+
 	//! Draws the Batch. Optionally specify a \a first vertex/element and a \a count. Otherwise the entire geometry will be drawn.
 	void			draw( GLint first = 0, GLsizei count = -1 );
 #if defined( CINDER_GL_HAS_DRAW_INSTANCED )
@@ -83,12 +83,12 @@ class Batch {
 
 	void	init( const geom::Source &source, const gl::GlslProgRef &glsl );
 	void	initVao( const AttributeMapping &attributeMapping = AttributeMapping() );
-		
+
 	VboMeshRef				mVboMesh;
 	VaoRef					mVao;
 	GlslProgRef				mGlsl;
 	AttributeMapping		mAttribMapping;
-	
+
 	friend class BatchGeomTarget;
 };
 
@@ -161,16 +161,16 @@ class VertBatch : public geom::Source {
 	void	begin( GLenum type );
 	//! No-op. Present for parity with legacy immediate mode.
 	void	end() {}
-	
+
 	//! Clears all vertices recorded by the VertBatch
 	void	clear();
 
 	//! Returns \c true if no vertices have been added to the VertBatch.
 	bool	empty() const { return mVertices.empty(); }
-	
+
 	//! Draws the VertBatch using the gl::Context's currently active shader. For multiple draws consider constructing a gl::Batch using the VertBatch instead.
 	void	draw();
-	
+
   protected:
 	void	addVertex( const vec4 &v );
 	void	setupBuffers();
@@ -185,17 +185,18 @@ class VertBatch : public geom::Source {
 	VertBatch*		clone() const override { return new VertBatch( *this ); }
 
 	geom::AttribSet	getAvailableAttribs() const override;
-	
+
 
 	GLenum					mPrimType;
 
 	std::vector<vec4>		mVertices;
-	
+
 	std::vector<vec3>		mNormals;
 	std::vector<ColorAf>	mColors;
 	std::vector<vec4>		mTexCoords0, mTexCoords1;
-	
+
 	bool					mOwnsBuffers;
+	bool					mForceUpdate;
 	Vao*					mVao;
 	VaoRef					mVaoStorage;
 	VboRef					mVbo;
