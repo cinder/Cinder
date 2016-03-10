@@ -147,7 +147,7 @@ VertBatch::VertBatch( GLenum primType, bool useContextDefaultBuffers )
 	else {
 		mVaoStorage = gl::Vao::create();
 		mVao = mVaoStorage.get();
-        mVbo = gl::Vbo::create( GL_ARRAY_BUFFER, 0 );
+		mVbo = gl::Vbo::create( GL_ARRAY_BUFFER, 0 );
 		mOwnsBuffers = true;
 	}
 }
@@ -267,8 +267,7 @@ void VertBatch::setupBuffers()
 	ScopedBuffer scopedVbo( mVbo );
 
 	// if this VBO was freshly made, or we don't own the buffer because we use the context defaults
-    if( ( ! mVertices.empty() ) && ( mForceUpdate || ( ! mOwnsBuffers ) ) ) {
-
+	if( ( ! mVertices.empty() ) && ( mForceUpdate || ( ! mOwnsBuffers ) ) ) {
 		mForceUpdate = false;
 		mVbo->ensureMinimumSize( totalSizeBytes );
 		
