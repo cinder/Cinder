@@ -3,7 +3,7 @@ cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
 set( CINDER_PLATFORM "Posix" )
-message( " PATH : " ${CMAKE_MODULE_PATH} )
+
 # Find architecture name.
 execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
 
@@ -77,30 +77,29 @@ list( APPEND CINDER_SRC_FILES
 )
 
 # Relevant libs and include dirs depending on target platform and target GL.
-if( NOT CINDER_GL_ES )
+if( NOT CINDER_GL_ES ) # desktop
 	find_package( OpenGL REQUIRED )
 	list( APPEND CINDER_LIBS_DEPENDS ${OPENGL_LIBRARIES} )
 	list( APPEND CINDER_INCLUDE_SYSTEM ${OPENGL_INCLUDE_DIR} )
-else()
-	# No X for the RPi2.
-	if( NOT CINDER_GL_ES_2_RPI )
-		find_package( X11 REQUIRED )
-		list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
-		list( APPEND CINDER_INCLUDE_SYSTEM ${X11_INCLUDE_DIR} )
-	else()
-		list( APPEND CINDER_INCLUDE_SYSTEM 
-			/opt/vc/include
-			/opt/vc/include/interface/vcos/pthreads
-		)
-		list( APPEND CINDER_LIBS_DEPENDS 
-			/opt/vc/lib/libEGL.so
-			/opt/vc/lib/libGLESv2.so
-			/opt/vc/lib/libbcm_host.so
-		)
-	endif()
+	find_package( X11 REQUIRED )
+	list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
+	list( APPEND CINDER_INCLUDE_SYSTEM ${X11_INCLUDE_DIR} )
+elseif( CINDER_GL_ES AND NOT CINDER_GL_ES_2_RPI ) # No X for the rpi.
+	find_package( X11 REQUIRED )
+	list( APPEND CINDER_LIBS_DEPENDS ${X11_LIBRARIES} Xcursor Xinerama Xrandr Xi )
+	list( APPEND CINDER_INCLUDE_SYSTEM ${X11_INCLUDE_DIR} )
+	list( APPEND CINDER_LIBS_DEPENDS EGL GLESv2 )
+else() # rpi specific
+	list( APPEND CINDER_INCLUDE_SYSTEM 
+		/opt/vc/include
+		/opt/vc/include/interface/vcos/pthreads
+	)
+	list( APPEND CINDER_LIBS_DEPENDS 
+		/opt/vc/lib/libEGL.so
+		/opt/vc/lib/libGLESv2.so
+		/opt/vc/lib/libbcm_host.so
+	)
 endif()
-
-# Where Find*.cmake are located. 
 
 # Common libs for Linux.
 # ZLib
@@ -112,7 +111,6 @@ find_package( CURL REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${CURL_LIBRARIES} )
 list( APPEND CINDER_INCLUDE_SYSTEM ${CURL_INCLUDE_DIR} )
 # FontConfig
-message( " MODULE PATH " ${CMAKE_MODULE_PATH} )
 find_package( FontConfig REQUIRED )
 list( APPEND CINDER_LIBS_DEPENDS ${FONTCONFIG_LIBRARIES} )
 list( APPEND CINDER_INCLUDE_SYSTEM ${FONTGONFIG_INCLUDE_DIRS} )
@@ -152,6 +150,19 @@ if( GSTREAMER_GL_INCLUDE_DIRS AND GSTREAMER_GL_LIBRARIES )
 	list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_GL_LIBRARIES} )
 	list( APPEND CINDER_INCLUDE_SYSTEM ${GSTREAMER_GL_INCLUDE_DIRS} )
 endif()
+
+# Boost
+if( CINDER_BOOST_USE_SYSTEM )
+	find_package( Boost 1.54 REQUIRED COMPONENTS system filesystem )
+	list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
+	list( APPEND CINDER_INCLUDE_SYSTEM ${Boost_INCLUDE_DIRS} )
+else()
+	list( APPEND CINDER_LIBS_DEPENDS 
+		${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_system.a 
+		${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_filesystem.a 
+	)
+endif()
+
 # Defaults... dl and pthread
 list(  APPEND CINDER_LIBS_DEPENDS dl pthread )
 
@@ -168,17 +179,23 @@ if( CINDER_GL_ES AND NOT CINDER_GL_ES_2_RPI ) # es2, es3, es31, es32
 	list( APPEND GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_EGL -D_GLFW_USE_GLESV2" )
 	if( CINDER_GL_ES_2 )
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" )
+		set( CINDER_TARGET_GL_SUBFOLDER "es2" )
 	elseif( CINDER_GL_ES_3 )
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3" )
+		set( CINDER_TARGET_GL_SUBFOLDER "es3" )
 	elseif( CINDER_GL_ES_3_1 )
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_1" )
+		set( CINDER_TARGET_GL_SUBFOLDER "es31" )
 	elseif( CINDER_GL_ES_3_2 )
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_2" )
+		set( CINDER_TARGET_GL_SUBFOLDER "es32" )
 	endif()
 elseif( NOT CINDER_GL_ES ) # Core Profile
 	list( APPEND GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_GLX -D_GLFW_USE_OPENGL" )
+	set( CINDER_TARGET_GL_SUBFOLDER "ogl" )
 else() # Rpi
 	list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" "-DCINDER_LINUX_EGL_ONLY" )
+	set( CINDER_TARGET_GL_SUBFOLDER "es2-rpi" )
 endif()
 
 list( APPEND CINDER_DEFINES "-D_UNIX ${GLFW_FLAGS}"  )

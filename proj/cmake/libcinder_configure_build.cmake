@@ -5,7 +5,6 @@ message( "Building Cinder for ${CINDER_TARGET}" )
 set( CINDER_SRC_DIR 	"${CINDER_ROOT}/src" )
 set( CINDER_INC_DIR		"${CINDER_ROOT}/include" )
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14" )
 add_definitions( -Wfatal-errors )
 
 list( APPEND CMAKE_MODULE_PATH ${CINDER_CMAKE_DIR} ${CMAKE_CURRENT_LIST_DIR}/modules )

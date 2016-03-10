@@ -1,10 +1,11 @@
-cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
 project( cinder )
 
+
 set( CINDER_TARGET "" CACHE STRING "Target platform to build for." )
-set( CINDER_TARGET_GL "" CACHE STRING "Target GL for the system. Valid options : ogl, es2, es3, es2-rpi" )
+set( CINDER_TARGET_GL "" CACHE STRING "Target GL for the system. Valid options : ogl, es2, es3, es31, es32, es2-rpi" )
 option( CINDER_BUILD_SAMPLES "Build Samples" OFF )
 option( CINDER_FREETYPE_USE_SYSTEM "Use system-detected freetype2 rather than the one that ships with cinder" OFF )
 
