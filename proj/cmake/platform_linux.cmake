@@ -11,7 +11,7 @@ set( CINDER_TARGET_SUBFOLDER "linux/${CINDER_ARCH}" )
 include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
 include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
 
-list( APPEND SRC_SET_CINDER_LINUX
+list( APPEND SRC_SET_GLFW 
 	${CINDER_SRC_DIR}/glfw/src/context.c
 	${CINDER_SRC_DIR}/glfw/src/init.c
 	${CINDER_SRC_DIR}/glfw/src/input.c
@@ -28,13 +28,45 @@ list( APPEND SRC_SET_CINDER_LINUX
 	${CINDER_SRC_DIR}/glfw/src/posix_tls.c
 )
 
-list( APPEND SRC_SET_CINDER_APP_LINUX
-	${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
+list( APPEND SRC_SET_CINDER_APP_LINUX 
 	${CINDER_SRC_DIR}/cinder/app/linux/AppLinux.cpp
 	${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
-	${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
-	${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
 )
+	
+if( NOT CINDER_GL_ES2_RPI )
+	if( CINDER_GL_ES )
+		list( APPEND SRC_SET_GLFW 
+			${CINDER_SRC_DIR}/glfw/src/egl_context.c
+		)
+		list( APPEND SRC_SET_CINDER_LINUX
+			${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
+		)
+	else()
+		list( APPEND SRC_SET_GLFW 
+			${CINDER_SRC_DIR}/glfw/src/glx_context.c
+		)
+		list( APPEND SRC_SET_CINDER_LINUX
+			${CINDER_SRC_DIR}/glload/gl_load.c
+			${CINDER_SRC_DIR}/glload/glx_load.c
+		)
+	endif()
+		
+	list( APPEND SRC_SET_CINDER_LINUX
+		${SRC_SET_GLFW}
+	)
+
+	list( APPEND SRC_SET_CINDER_APP_LINUX
+		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxGlfw.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxGlfw.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxGlfw.cpp
+	)
+else()
+	list( APPEND SRC_SET_CINDER_LINUX
+		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxEgl.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxEgl.cpp
+		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxEgl.cpp
+	)
+endif()
 
 list( APPEND CINDER_SRC_FILES
 	${SRC_SET_CINDER_LINUX}
