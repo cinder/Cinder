@@ -336,15 +336,20 @@ void DescriptorSetsApp::draw()
 			mIndex += 1;
 		}
 		
-		uint32_t index1 = ( mIndex + 0 ) % mTextures.size();
-		uint32_t index2 = ( mIndex + 1 ) % mTextures.size();
-		uint32_t index3 = ( mIndex + 2 ) % mTextures.size();
+		// Bind descriptor sets - single sets
+		//uint32_t index1 = ( mIndex + 0 ) % mTextures.size();
+		//uint32_t index2 = ( mIndex + 1 ) % mTextures.size();
+		//uint32_t index3 = ( mIndex + 2 ) % mTextures.size();
+		//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, 1, &(mDescriptorSets[0]), 0, nullptr );
+		//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 1, 1, &(mDescriptorSets[index1 + 1]), 0, nullptr );
+		//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 2, 1, &(mDescriptorSets[index2 + 1]), 0, nullptr );
+		//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 3, 1, &(mDescriptorSets[index3 + 1]), 0, nullptr );
 
-		// Bind descriptor sets
+		// Bind descriptor sets - multiple sets at once
+		uint32_t index1 = ( mIndex + 0 ) % (mTextures.size() - 3);
 		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, 1, &(mDescriptorSets[0]), 0, nullptr );
-		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 1, 1, &(mDescriptorSets[index1 + 1]), 0, nullptr );
-		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 2, 1, &(mDescriptorSets[index2 + 1]), 0, nullptr );
-		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 3, 1, &(mDescriptorSets[index3 + 1]), 0, nullptr );
+		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 1, 3, &(mDescriptorSets[index1 + 1]), 0, nullptr );
+
 
 		uint32_t numVertices = 4;
 		vkCmdDraw( cmdBuf, numVertices, 1, 0, 0 );
