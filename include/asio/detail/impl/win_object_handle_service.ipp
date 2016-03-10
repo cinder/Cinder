@@ -429,9 +429,8 @@ void win_object_handle_service::wait_callback(PVOID param, BOOLEAN)
       }
     }
 
-    io_service_impl& ios = impl->owner_->io_service_;
     lock.unlock();
-    ios.post_deferred_completions(completed_ops);
+    impl->owner_->io_service_.post_deferred_completions(completed_ops);
   }
 }
 

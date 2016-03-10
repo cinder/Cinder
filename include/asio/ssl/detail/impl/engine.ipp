@@ -17,21 +17,17 @@
 
 #include "asio/detail/config.hpp"
 
-#if !defined(ASIO_ENABLE_OLD_SSL)
-# include "asio/detail/throw_error.hpp"
-# include "asio/error.hpp"
-# include "asio/ssl/detail/engine.hpp"
-# include "asio/ssl/error.hpp"
-# include "asio/ssl/verify_context.hpp"
-#endif // !defined(ASIO_ENABLE_OLD_SSL)
+#include "asio/detail/throw_error.hpp"
+#include "asio/error.hpp"
+#include "asio/ssl/detail/engine.hpp"
+#include "asio/ssl/error.hpp"
+#include "asio/ssl/verify_context.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace ssl {
 namespace detail {
-
-#if !defined(ASIO_ENABLE_OLD_SSL)
 
 engine::engine(SSL_CTX* context)
   : ssl_(::SSL_new(context))
@@ -210,7 +206,7 @@ const asio::error_code& engine::map_error_code(
 
   // SSL v2 doesn't provide a protocol-level shutdown, so an eof on the
   // underlying transport is passed through.
-  if (ssl_->version == SSL2_VERSION)
+  if (ssl_ && ssl_->version == SSL2_VERSION)
     return ec;
 
   // Otherwise, the peer should have negotiated a proper shutdown.
@@ -315,8 +311,6 @@ int engine::do_write(void* data, std::size_t length)
   return ::SSL_write(ssl_, data,
       length < INT_MAX ? static_cast<int>(length) : INT_MAX);
 }
-
-#endif // !defined(ASIO_ENABLE_OLD_SSL)
 
 } // namespace detail
 } // namespace ssl

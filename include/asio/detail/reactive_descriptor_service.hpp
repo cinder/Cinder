@@ -23,16 +23,18 @@
 
 #include "asio/buffer.hpp"
 #include "asio/io_service.hpp"
-#include "asio/detail/addressof.hpp"
 #include "asio/detail/bind_handler.hpp"
 #include "asio/detail/buffer_sequence_adapter.hpp"
 #include "asio/detail/descriptor_ops.hpp"
 #include "asio/detail/descriptor_read_op.hpp"
 #include "asio/detail/descriptor_write_op.hpp"
 #include "asio/detail/fenced_block.hpp"
+#include "asio/detail/memory.hpp"
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/reactive_null_buffers_op.hpp"
+#include "asio/detail/reactive_wait_op.hpp"
 #include "asio/detail/reactor.hpp"
+#include "asio/posix/descriptor_base.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -161,6 +163,70 @@ public:
     return ec;
   }
 
+  // Wait for the descriptor to become ready to read, ready to write, or to have
+  // pending error conditions.
+  asio::error_code wait(implementation_type& impl,
+      posix::descriptor_base::wait_type w, asio::error_code& ec)
+  {
+    switch (w)
+    {
+    case posix::descriptor_base::wait_read:
+      descriptor_ops::poll_read(impl.descriptor_, impl.state_, ec);
+      break;
+    case posix::descriptor_base::wait_write:
+      descriptor_ops::poll_write(impl.descriptor_, impl.state_, ec);
+      break;
+    case posix::descriptor_base::wait_error:
+      descriptor_ops::poll_error(impl.descriptor_, impl.state_, ec);
+      break;
+    default:
+      ec = asio::error::invalid_argument;
+      break;
+    }
+
+    return ec;
+  }
+
+  // Asynchronously wait for the descriptor to become ready to read, ready to
+  // write, or to have pending error conditions.
+  template <typename Handler>
+  void async_wait(implementation_type& impl,
+      posix::descriptor_base::wait_type w, Handler& handler)
+  {
+    bool is_continuation =
+      asio_handler_cont_helpers::is_continuation(handler);
+
+    // Allocate and construct an operation to wrap the handler.
+    typedef reactive_wait_op<Handler> op;
+    typename op::ptr p = { asio::detail::addressof(handler),
+      op::ptr::allocate(handler), 0 };
+    p.p = new (p.v) op(handler);
+
+    ASIO_HANDLER_CREATION((p.p, "descriptor", &impl, "async_wait"));
+
+    int op_type;
+    switch (w)
+    {
+    case posix::descriptor_base::wait_read:
+        op_type = reactor::read_op;
+        break;
+    case posix::descriptor_base::wait_write:
+        op_type = reactor::write_op;
+        break;
+    case posix::descriptor_base::wait_error:
+        op_type = reactor::except_op;
+        break;
+      default:
+        p.p->ec_ = asio::error::invalid_argument;
+        reactor_.post_immediate_completion(p.p, is_continuation);
+        p.v = p.p = 0;
+        return;
+    }
+
+    start_op(impl, op_type, p.p, is_continuation, false, false);
+    p.v = p.p = 0;
+  }
+
   // Write some data to the descriptor.
   template <typename ConstBufferSequence>
   size_t write_some(implementation_type& impl,
@@ -195,8 +261,7 @@ public:
     // Allocate and construct an operation to wrap the handler.
     typedef descriptor_write_op<ConstBufferSequence, Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
-      asio_handler_alloc_helpers::allocate(
-        sizeof(op), handler), 0 };
+      op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.descriptor_, buffers, handler);
 
     ASIO_HANDLER_CREATION((p.p, "descriptor", &impl, "async_write_some"));
@@ -218,8 +283,7 @@ public:
     // Allocate and construct an operation to wrap the handler.
     typedef reactive_null_buffers_op<Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
-      asio_handler_alloc_helpers::allocate(
-        sizeof(op), handler), 0 };
+      op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(handler);
 
     ASIO_HANDLER_CREATION((p.p, "descriptor",
@@ -263,8 +327,7 @@ public:
     // Allocate and construct an operation to wrap the handler.
     typedef descriptor_read_op<MutableBufferSequence, Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
-      asio_handler_alloc_helpers::allocate(
-        sizeof(op), handler), 0 };
+      op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.descriptor_, buffers, handler);
 
     ASIO_HANDLER_CREATION((p.p, "descriptor", &impl, "async_read_some"));
@@ -286,8 +349,7 @@ public:
     // Allocate and construct an operation to wrap the handler.
     typedef reactive_null_buffers_op<Handler> op;
     typename op::ptr p = { asio::detail::addressof(handler),
-      asio_handler_alloc_helpers::allocate(
-        sizeof(op), handler), 0 };
+      op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(handler);
 
     ASIO_HANDLER_CREATION((p.p, "descriptor",
