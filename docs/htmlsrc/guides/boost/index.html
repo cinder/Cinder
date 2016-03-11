@@ -29,7 +29,7 @@
       <section>
          <h2>Introduction</h2>
       
-         <p>The <a href="http://boost.org">Boost libraries</a> are a collection of peer-reviewed open source C++ libraries. Cinder primarily relies on Boost.filesystem, and it in turn requires Boost.system (and on VC 2013, Boost.date_time). Also note that VC 2015 does not depend on any Boost binaries.</p>
+         <p>The <a href="http://boost.org">Boost libraries</a> are a collection of peer-reviewed open source C++ libraries. Cinder primarily relies on Boost.filesystem, and it in turn requires Boost.system. Also note that VC 2015 does not depend on any Boost binaries.</p>
       </section>
 
       <section>
@@ -90,7 +90,7 @@ cp stage/lib/*.a ../lib/ios-sim
 <pre><code class="language-bash">C: Files (x86) Visual Studio 12.0.bat:
 cd cinder\boost
 bootstrap
-b2 runtime-link=static debug-symbols=off optimization=space --with-filesystem --with-date_time --with-system --with-thread
+b2 runtime-link=static debug-symbols=off optimization=space --with-filesystem --with-system
 </code></pre>
             
          <h3>Visual C++ 2013 x64:</h3>
@@ -98,7 +98,7 @@ b2 runtime-link=static debug-symbols=off optimization=space --with-filesystem --
 <pre><code class="language-bash">C: Files (x86) Visual Studio 12.0.bat x86_amd64:
 cd cinder\boost
 bootstrap
-b2 runtime-link=static address-model=64 debug-symbols=off optimization=space --with-filesystem --with-date_time --with-system --with-thread
+b2 runtime-link=static address-model=64 debug-symbols=off optimization=space --with-filesystem --with-system
 </code></pre>
          
          <h3>Visual C++ 2015:</h3>
