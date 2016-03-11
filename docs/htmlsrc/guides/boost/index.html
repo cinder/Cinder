@@ -103,6 +103,12 @@ b2 runtime-link=static address-model=64 debug-symbols=off optimization=space --w
          
          <h3>Visual C++ 2015:</h3>
          <p>Cinder does not have any binary dependencies when using VC 2015.</p>
+
+         <h3>Android:</h3>
+         <p>You'll need to copy <em>tools/android/scripts/user-config.jam</em> to your home directory, and also ensure that <code>$NDK_ROOT</code> is set properly. From the Terminal:</p>
+<pre><code class="language-bash">cd tools/android/scripts
+./build-boost.sh
+</code></pre>
          
       </section>
       <!-- END CONTENT -->
