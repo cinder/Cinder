@@ -34,6 +34,12 @@ SolidRect::~SolidRect()
 		mUniformSet.reset();
 	}
 
+	if( mDescriptorSetView ) {
+		mDescriptorSetView->~DescriptorSetView();
+		mDescriptorSetView.reset();
+	}
+
+/*
 	if( mDescriptorSetLayout ) {
 		mDescriptorSetLayout->~DescriptorSetLayout();
 		mDescriptorSetLayout.reset();
@@ -48,6 +54,7 @@ SolidRect::~SolidRect()
 		mDescriptorPool->~DescriptorPool();
 		mDescriptorPool.reset();
 	}
+*/
 
 	if( mPipelineLayout ) {
 		mPipelineLayout->~PipelineLayout();
@@ -70,14 +77,15 @@ void SolidRect::initialize()
 
 	// Uniform layout, uniform set
 	const ci::vk::UniformLayout& uniformLayout = mShader->getUniformLayout();
-	mUniformSet = ci::vk::UniformSet::create( uniformLayout );
+	mUniformSet = ci::vk::UniformSet::create( uniformLayout, ci::vk::context()->getDevice() );
 
 	// Descriptor layout, pool, set
-	mDescriptorSetLayout = ci::vk::DescriptorSetLayout::create( *mUniformSet );
-	mDescriptorPool = ci::vk::DescriptorPool::create( mDescriptorSetLayout->getLayoutBindings() );
+	mDescriptorSetView = ci::vk::DescriptorSetView::create( mUniformSet );
+	//mDescriptorSetLayout = ci::vk::DescriptorSetLayout::create( *mUniformSet );
+	//mDescriptorPool = ci::vk::DescriptorPool::create( mDescriptorSetLayout->getLayoutBindings() );
 
 	// Pipeline layout
-	mPipelineLayout = ci::vk::PipelineLayout::create( mDescriptorSetLayout );
+	mPipelineLayout = ci::vk::PipelineLayout::create( mDescriptorSetView->getCachedDescriptorSetLayouts() );
 
 	// Look for the semantics that we want
 	int32_t posLoc = -1;
@@ -141,15 +149,17 @@ void SolidRect::set( const ci::Rectf& rect )
 void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 {
 
-	if( ! mDescriptorSet ) {
-		mDescriptorSet = ci::vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), *mUniformSet, mDescriptorSetLayout );
+	if( ! mDescriptorSetView->hasDescriptorSets() ) {
+		mDescriptorSetView->allocateDescriptorSets();
 	}
 
-	for( auto& binding : mUniformSet->getBindings() ) {
-		if( ! binding.isBlock() ) {
-			continue;
+	for( auto& set : mUniformSet->getSets() ) {
+		for( auto& binding : set->getBindings() ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			ci::vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
 		}
-		ci::vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
 	}
 	mUniformSet->bufferPending();
 
@@ -160,10 +170,15 @@ void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
 	
 	// Update descriptor set
-	mDescriptorSet->update( *mUniformSet );
+	mDescriptorSetView->updateDescriptorSets();
 
-	std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
-	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+	// Bind descriptor sets
+	const auto& descriptorSets = mDescriptorSetView->getDescriptorSets();
+	for( uint32_t i = 0; i < descriptorSets.size(); ++i ) {
+		const auto& ds = descriptorSets[i];
+		std::vector<VkDescriptorSet> descSets = { ds->vkObject() };
+		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), i, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+	}
 
 	auto ctx = ci::vk::context();
 	auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();

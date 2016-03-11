@@ -776,12 +776,6 @@ UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 
 	// Cache
 	for( auto& set : mSets ) {
-		std::vector<UniformSet::Binding> uniformBindings;
-		for( const auto& obj : set->mBindings ) {
-			uniformBindings.push_back( obj );
-		}
-		mCachedUniformBindings.push_back( uniformBindings );
-
 		std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
 		for( const auto& obj : set->mDescriptorSetLayoutBindings ) {
 			descriptorSetLayoutBindings.push_back( obj );
@@ -886,15 +880,6 @@ void UniformSet::updateUniform( const std::string& name, const T& value )
 	if( ( nullptr != binding ) && binding->isBlock() ) {
 		binding->mUniformBuffer->uniform( name, value );
 	}
-
-/*
-	for( auto& binding : mBindings ) {
-		if( ! binding.isBlock() ) {
-			continue;
-		}
-		binding.mUniformBuffer->uniform( name, value );
-	}
-*/
 }
 
 void UniformSet::uniform( const std::string& name, const float value )

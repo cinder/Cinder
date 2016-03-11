@@ -307,7 +307,7 @@ public:
 
 		const UniformBufferRef&		getUniformBuffer() const { return mUniformBuffer; }
 	private:
-		UniformBufferRef			mUniformBuffer;
+		UniformBufferRef			mUniformBuffer; 
 		friend class UniformSet;
 	};
 
@@ -342,14 +342,10 @@ public:
 
 	static UniformSetRef			create( const UniformLayout& layout, Device *device = nullptr );
 
-/*
-	const std::vector<Binding>&		getBindings() const { return mBindings; }
-	const std::vector<VkDescriptorSetLayoutBinding>&	getDescriptorSetlayoutBindings() const { return mDescriptorSetLayoutBindings; } 
-*/
-
 	const std::vector<UniformSet::SetRef>							getSets() const { return mSets; }
-	const std::vector<std::vector<UniformSet::Binding>>&			getCachedBindings() const { return mCachedUniformBindings; }
 	const std::vector<std::vector<VkDescriptorSetLayoutBinding>>&	getCachedDescriptorSetLayoutBindings() const { return mCachedDescriptorSetLayoutBindings; }
+
+	std::vector<VkWriteDescriptorSet>								getDescriptorSetUpdates() const;
 
 	void							uniform( const std::string& name, const float    value );
 	void							uniform( const std::string& name, const int32_t  value );
@@ -374,14 +370,7 @@ public:
 	void							echoValues( std::ostream& os );
 
 private:
-/*
-	std::vector<Binding>						mBindings;
-	// Since the bindings are immutable, create the VkDescriptorSetLayoutBinding to be used by caches.
-	std::vector<VkDescriptorSetLayoutBinding>	mDescriptorSetLayoutBindings;
-*/
-
 	std::vector<UniformSet::SetRef>							mSets;
-	std::vector<std::vector<UniformSet::Binding>>			mCachedUniformBindings;
 	std::vector<std::vector<VkDescriptorSetLayoutBinding>>	mCachedDescriptorSetLayoutBindings;
 
 	Binding*						findBindingObject( const std::string& name, Binding::Type bindingType );

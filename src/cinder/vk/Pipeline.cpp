@@ -84,7 +84,7 @@ PipelineLayoutRef PipelineLayout::create( const std::vector<VkDescriptorSetLayou
 void PipelineLayout::initialize( const DescriptorSetLayoutRef &descriptorSetLayout )
 {
 	std::vector<VkDescriptorSetLayout> descSetLayouts;
-	descSetLayouts.push_back( descriptorSetLayout->getDescriptorSetLayout() );
+	descSetLayouts.push_back( descriptorSetLayout->vkObject() );
 
     // Now use the descriptor layout to create a pipeline layout
     VkPipelineLayoutCreateInfo createInfo = {};

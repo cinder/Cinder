@@ -62,23 +62,16 @@ class DescriptorSetLayout : public BaseDeviceObject {
 public:
 	virtual ~DescriptorSetLayout();
 
-	static DescriptorSetLayoutRef						create( const vk::UniformSet::SetRef& set, vk::Device *device = nullptr );
-	static DescriptorSetLayoutRef						create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device = nullptr );
-	static std::vector<vk::DescriptorSetLayoutRef>		create( const vk::UniformSetRef& uniformSet, vk::Device *device = nullptr );
+	static DescriptorSetLayoutRef				create( const std::vector<VkDescriptorSetLayoutBinding>& bindings, vk::Device *device = nullptr );
+	static std::vector<DescriptorSetLayoutRef>	create( const std::vector<std::vector<VkDescriptorSetLayoutBinding>>& setOfBindings, vk::Device *device = nullptr );
 
-	VkDescriptorSetLayout								getDescriptorSetLayout() const { return mDescriptorSetLayout; }
-	const vk::UniformSet::SetRef&						getSet() const { return mSet; }
-	const std::vector<VkDescriptorSetLayoutBinding>&	getLayoutBindings() const { return mLayoutBindings; }
+	VkDescriptorSetLayout					vkObject() const { return mDescriptorSetLayout; }
 
 private:
-	DescriptorSetLayout( const vk::UniformSet::SetRef& set, vk::Device *device );
-	DescriptorSetLayout( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device );
+	DescriptorSetLayout( const std::vector<VkDescriptorSetLayoutBinding>& bindings, vk::Device *device );
 
-	VkDescriptorSetLayout						mDescriptorSetLayout = VK_NULL_HANDLE;
-	vk::UniformSet::SetRef						mSet;
-	std::vector<VkDescriptorSetLayoutBinding>	mLayoutBindings;
+	VkDescriptorSetLayout					mDescriptorSetLayout = VK_NULL_HANDLE;
 
-	void initialize( const vk::UniformSet::SetRef& set );
 	void initialize( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings );
 	void destroy( bool removeFromTracking = true );
 	friend class vk::Device;
@@ -93,7 +86,7 @@ public:
 
 	static DescriptorSetLayoutSelectorRef	create( vk::Device *device );
 
-	VkDescriptorSetLayout					getSelectedLayout( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings ) const;
+	VkDescriptorSetLayout					getSelectedLayout( const std::vector<VkDescriptorSetLayoutBinding>& bindings ) const;
 
 private:
 	DescriptorSetLayoutSelector( vk::Device *device );
@@ -109,8 +102,8 @@ private:
 	};
 	using HashPair = std::pair<DescriptorSetLayoutSelector::HashData, DescriptorSetLayoutRef>;
 
-	mutable std::mutex				mMutex;
-	mutable std::vector<HashPair>	mDescriptorSetLayouts;
+	mutable std::mutex						mMutex;
+	mutable std::vector<HashPair>			mDescriptorSetLayouts;
 };
 
 //! \class DescriptorPool
@@ -120,19 +113,17 @@ class DescriptorPool : public BaseDeviceObject {
 public:
 	virtual ~DescriptorPool();
 
-	static DescriptorPoolRef		create( const vk::UniformSetRef& uniformSet, vk::Device *device = nullptr );
-	static DescriptorPoolRef		create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, bool individualSets, vk::Device *device = nullptr );
+	static DescriptorPoolRef				create( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings, vk::Device *device = nullptr );
+	static DescriptorPoolRef				create( const std::vector<std::vector<VkDescriptorSetLayoutBinding>>& setOfBindings, vk::Device *device = nullptr );
 
-	VkDescriptorPool				getDescriptorPool() const { return mDescriptorPool; }
+	VkDescriptorPool						vkObject() const { return mDescriptorPool; }
 
 private:
-	DescriptorPool( const vk::UniformSetRef& uniformSet, vk::Device *device );
-	DescriptorPool( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device );
+	DescriptorPool( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings, vk::Device *device );
 
-	VkDescriptorPool				mDescriptorPool = VK_NULL_HANDLE;
-	vk::UniformSetRef				mUniformSet;
+	VkDescriptorPool						mDescriptorPool = VK_NULL_HANDLE;
 
-	void initialize( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings );
+	void initialize( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings );
 	void destroy( bool removeFromTracking = true );
 	friend class vk::Device;
 };
@@ -144,31 +135,24 @@ class DescriptorSet : public BaseDeviceObject {
 public:
 	virtual ~DescriptorSet();
 
-	static DescriptorSetRef					create( VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, const DescriptorSetLayoutRef &descriptorSetLayout, vk::Device *device = nullptr );
-	static DescriptorSetRef					create( VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device = nullptr );
-	static DescriptorSetRef					create( VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device = nullptr );
-	static std::vector<DescriptorSetRef>	create( const vk::DescriptorPoolRef& descriptorPool, const std::vector<vk::DescriptorSetLayoutRef>& descriptorSetLayouts, vk::Device *device = nullptr );
+	static DescriptorSetRef					create( VkDescriptorPool descriptorPool, VkDescriptorSetLayout layout, vk::Device *device = nullptr );
+	static std::vector<DescriptorSetRef>	create( VkDescriptorPool descriptorPool, const std::vector<VkDescriptorSetLayout>& layouts, vk::Device *device = nullptr );
 
-	VkDescriptorSet							getDescriptorSet() const { return mDescriptorSet; }
+	VkDescriptorSet							vkObject() const { return mDescriptorSet; }
 	
-	const vk::UniformSet::SetRef&			getSet() const { return mSet; }
-
-	void									update();
+	void									update( const vk::UniformSet::SetRef& uniformSet );
 
 private:
-	DescriptorSet( VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, const DescriptorSetLayoutRef &descriptorSetLayout, vk::Device *device );
-	DescriptorSet( VkDescriptorPool descriptorPool, const vk::UniformSet::SetRef& set, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device );
-	DescriptorSet( VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device );
+	DescriptorSet( VkDescriptorPool descriptorPool, VkDescriptorSetLayout layout, vk::Device *device );
 
-	VkDescriptorSet					mDescriptorSet = VK_NULL_HANDLE;
-	VkDescriptorPool				mDescriptorPool = VK_NULL_HANDLE;
-	vk::UniformSet::SetRef			mSet;
+	VkDescriptorSet							mDescriptorSet = VK_NULL_HANDLE;
+	VkDescriptorPool						mDescriptorPool = VK_NULL_HANDLE;
 
-	void initialize( const DescriptorSetLayoutRef &descriptorSetLayout );
-	void initialize( VkDescriptorSetLayout descriptorSetLayout );
+	void initialize( VkDescriptorSetLayout layout );
 	void destroy( bool removeFromTracking = true );
 	friend class vk::Device;
 };
+
 
 //! \class DescriptorSetView
 //!
@@ -196,5 +180,6 @@ private:
 	std::vector<vk::DescriptorSetRef>			mDescriptorSets;
 	std::vector<VkDescriptorSetLayout>			mCachedDescriptorSetLayouts;
 };
+
 
 }} // namespace cinder::vk
