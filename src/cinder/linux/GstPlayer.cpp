@@ -177,8 +177,10 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 				gst_message_parse_state_changed( message, &old, &current, &pending );
 				
 				data.mCurrentState = current;
-				
 				g_print( "Pipeline state changed from : %s to %s\n", gst_element_state_get_name( old ), gst_element_state_get_name ( current ) );
+
+				if( current > GST_STATE_NULL && current <= GST_STATE_PLAYING ) data.mIsDone = false;
+
 				switch ( current ) {
 					case GST_STATE_PAUSED: {
 						data.mIsPrerolled = true;
@@ -202,7 +204,6 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 						// else if we are reloading reset only the necessary parts.
 						data.mIsPrerolled = false;
 						data.mVideoHasChanged = true;
-						data.mIsDone = false;
 						data.mPosition = 0;
 						data.mRate = 1.0f;
 					}
