@@ -751,6 +751,34 @@ void GstPlayer::load( const std::string& path )
 	
 	// and preroll async.
 	gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );
+	// NOTE : Disabling async loading for now until we discuss what is the best strategy for this.
+	// In the case of GStreamer async loading means that we have to wait until isLoaded() is true 
+	// in order to successfully query video info and so on.
+	// Since this happens async its not guaranteed that at the end of this function call you will have the video info.
+	// It seems that some blocks though expect this to be the case.
+	// i.e 
+	//
+	// void setup() {
+	// 	 movie = load();
+	//	 w = movie.getWidth();
+	//	 h = movie.getHeight();
+	// }
+	//
+	// will not work. Instead this is how it should be done :
+	//
+	// void setup() {
+	// 	 movie = load();
+	// }
+	//
+	// void update() {
+	// 	 if( movie.isLoaded() ) {
+	// 		w = movie.getWidth();
+	// 		h = movie.getHeight();
+	// 	 }
+	// }
+	//
+	// This will block until the pipeline is prerolled -- Essentialy disabling async loading.
+	gst_element_get_state( mGstPipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE ); 
 }
 
 void GstPlayer::unlinkAudioBranch() 
