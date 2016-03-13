@@ -59,7 +59,7 @@ struct GstData {
 	std::atomic<bool> 			mPaused;
 	std::atomic<bool> 			mIsBuffering; // Streaming..
 	std::atomic<bool> 			mIsLive; // We disable buffering if on live sources ( webcams, etc. )
-	std::atomic<gint64> 		mPosition;
+	std::atomic<gint64>			mPosition;
 	std::atomic<int> 			mWidth;
 	std::atomic<int>			mHeight;
 	std::atomic<bool> 			mVideoHasChanged; // did we load a new video ?
@@ -67,11 +67,11 @@ struct GstData {
 	std::atomic<bool> 			mAsyncStateChangePending;
 	std::atomic<GstState>		mTargetState, mCurrentState;
 	std::atomic<bool> 			mIsPrerolled;
-	std::atomic<gint64> 		mDuration;
+	std::atomic<gint64>			mDuration;
 	std::atomic<bool> 			mIsDone;
 	std::atomic<bool> 			mIsLoaded;
 	std::atomic<bool> 			mIsPlayable;
-	std::atomic<gint64> 		mRequestedSeekTime;
+	std::atomic<gint64>			mRequestedSeekTime;
 	std::atomic<bool> 			mRequestedSeek;
 	std::atomic<bool> 			mLoop;
 	std::atomic<bool> 			mPalindrome;
@@ -81,18 +81,18 @@ struct GstData {
 	std::atomic<float> 			mFrameRate;
 
 #if defined( CINDER_GST_HAS_GL )
-	GstGLContext* mCinderContext = nullptr;
-	GstGLDisplay* mCinderDisplay = nullptr;
+	GstGLContext* mCinderContext	= nullptr;
+	GstGLDisplay* mCinderDisplay	= nullptr;
 #endif
 
-	GstElement* mUriDecode 		= nullptr;
-	GstElement* mGLupload 		= nullptr;
-	GstElement* mGLcolorconvert = nullptr;
-	GstElement* mVideoconvert   = nullptr;
-	GstElement* mAudioconvert 	= nullptr;
-	GstElement* mAudiosink 		= nullptr;
-	GstElement* mAudioQueue 	= nullptr;
-	GstElement* mVideoQueue 	= nullptr;
+	GstElement* mUriDecode			= nullptr;
+	GstElement* mGLupload			= nullptr;
+	GstElement* mGLcolorconvert		= nullptr;
+	GstElement* mVideoconvert		= nullptr;
+	GstElement* mAudioconvert		= nullptr;
+	GstElement* mAudiosink			= nullptr;
+	GstElement* mAudioQueue			= nullptr;
+	GstElement* mVideoQueue			= nullptr;
 };
 
 class GstPlayer {
@@ -134,16 +134,16 @@ class GstPlayer {
 	float 					getPositionSeconds();
 	gint64 					getDurationNanos();
 	float 					getDurationSeconds();
-	float                   getFramerate() const;
+	float					getFramerate() const;
 	
-	bool                    hasAudio() const;
+	bool					hasAudio() const;
 
 	void 					setVolume( float targetVolume );
 	float 					getVolume();
 	
 	bool 					isDone() const;
 	
-	GstElement* 			getPipeline();
+	GstElement*				getPipeline();
 	
 	void 					seekToTime( float seconds );
 	
@@ -157,16 +157,16 @@ class GstPlayer {
   private:		
 	bool 					initializeGStreamer();
 
-	void 					constructGLPipeline();
-	void                    constructPipeline();
+	void					constructGLPipeline();
+	void					constructPipeline();
 
 	void 					startGMainLoopThread();
 	void 					startGMainLoop( GMainLoop* loop );
 	
 	// Fired from appsink..
-	static void 			onGstEos( GstAppSink* sink, gpointer userData );
-	static GstFlowReturn	onGstPreroll( GstAppSink* sink, gpointer userData );
-	static GstFlowReturn 	onGstSample( GstAppSink* sink, gpointer userData );
+	static void				onGstEos( GstAppSink* sink, gpointer userData );
+	static GstFlowReturn    onGstPreroll( GstAppSink* sink, gpointer userData );
+	static GstFlowReturn    onGstSample( GstAppSink* sink, gpointer userData );
 	// ..and forwarded to the following.
 	void 					eos();
 	void 					sample( GstSample* sample, GstAppSink* sink );
@@ -203,17 +203,17 @@ class GstPlayer {
 	int  					mBusId; // Save the id of the bus for releasing when not needed.
 	std::thread	 			mGMainLoopThread; // Seperate thread for GMainLoop.
 	
-	GstMapInfo 				mMemoryMapInfo; // Memory map that holds the Gst_GL texture ID.
-	GstVideoInfo 			mVideoInfo; // For retrieving video info.
-	GstElement* 			mGstPipeline; // Our pipeline.
-	GstElement* 			mGstAppSink; // Raw buffer destination and eos.
+	GstMapInfo				mMemoryMapInfo; // Memory map that holds the Gst_GL texture ID.
+	GstVideoInfo			mVideoInfo; // For retrieving video info.
+	GstElement*				mGstPipeline; // Our pipeline.
+	GstElement*				mGstAppSink; // Raw buffer destination and eos.
 	
 	std::mutex 				mMutex; // Protect  since the appsink callbacks are executed from the streaming thread internally from GStreamer.
 	
 	bool 					mUsingCustomPipeline;
 	GstData 				mGstData; // Data that describe the current state of the pipeline.
 	
-	std::atomic<bool> 		mNewFrame;
+	std::atomic<bool>		mNewFrame;
 
 	ci::gl::Texture2dRef	mVideoTexture;
 	GLint 					mGstTextureID;
