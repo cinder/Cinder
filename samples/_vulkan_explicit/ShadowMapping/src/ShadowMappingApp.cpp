@@ -349,6 +349,11 @@ void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf
 
 		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
 		{
+			// Clear if single sample, multi sample is cleared on attachment load
+			if( ! vk::context()->getPresenter()->isMultiSample() ) {
+				vk::context()->clearAttachments();
+			}
+
 			// Render shadowed scene
 			vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
 			{
