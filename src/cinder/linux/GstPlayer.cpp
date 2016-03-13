@@ -27,29 +27,29 @@ static bool sUseGstGl = false;
 
 GstData::GstData()
 	: mPaused( false ),
-	  mIsBuffering( false ),
-	  mIsLive( false ),
-	  mPosition( -1 ),
-	  mWidth( -1 ),
-	  mHeight( -1 ),
-	  mVideoHasChanged( false ),
-	  mVideoFormat( GST_VIDEO_FORMAT_RGBA ),
-	  mAsyncStateChangePending( false ),
-	  mCurrentState( GST_STATE_NULL ),
-	  mTargetState( GST_STATE_NULL ),
-	  mIsPrerolled( false ),
-	  mDuration( -1 ),
-	  mIsDone( false ),
-	  mIsLoaded( false ),
-	  mIsPlayable( false ),
-	  mRequestedSeekTime( -1 ),
-	  mRequestedSeek( false ),
-	  mLoop( false ),
-	  mPalindrome( false ),
-	  mRate( 1.0f ),
-	  mIsStream( false ),
-	  mHasAudio( false ),
-      mFrameRate(-1.0f)
+	mIsBuffering( false ),
+	mIsLive( false ),
+	mPosition( -1 ),
+	mWidth( -1 ),
+	mHeight( -1 ),
+	mVideoHasChanged( false ),
+	mVideoFormat( GST_VIDEO_FORMAT_RGBA ),
+	mAsyncStateChangePending( false ),
+	mCurrentState( GST_STATE_NULL ),
+	mTargetState( GST_STATE_NULL ),
+	mIsPrerolled( false ),
+	mDuration( -1 ),
+	mIsDone( false ),
+	mIsLoaded( false ),
+	mIsPlayable( false ),
+	mRequestedSeekTime( -1 ),
+	mRequestedSeek( false ),
+	mLoop( false ),
+	mPalindrome( false ),
+	mRate( 1.0f ),
+	mIsStream( false ),
+	mHasAudio( false ),
+	mFrameRate(-1.0f)
 {
 }
 
@@ -138,21 +138,23 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 #endif
 
 		case GST_MESSAGE_BUFFERING: {
-			if( data.mIsLive ) break; ///> No buffering for live sources.
+			if( data.mIsLive ) 
+				break; ///> No buffering for live sources.
+
 			gint percent = 0;
 			gst_message_parse_buffering( message, &percent );
-			g_print ("Buffering (%3d%%)\r", percent);
+			g_print( "Buffering (%3d%%)\r", percent );
 			if( percent == 100 ) {
 				data.mIsBuffering = false;
 				if( data.mTargetState == GST_STATE_PLAYING ) {
-					g_print( " BUFFERRING COMPLETE ! \n" );
+					g_print(" BUFFERRING COMPLETE ! \n" );
 					gst_element_set_state( player->getPipeline(), GST_STATE_PLAYING );
 				}
 			}
 			else {
-				if( !data.mIsBuffering && data.mTargetState == GST_STATE_PLAYING ) {
+				if( ! data.mIsBuffering && data.mTargetState == GST_STATE_PLAYING ) {  
 					gst_element_set_state( player->getPipeline(), GST_STATE_PAUSED );
-					g_print(  " BUFFERRING IN PROGRESS...\n" );
+					g_print(" BUFFERRING IN PROGRESS...\n" );
 				}
 				data.mIsBuffering = true;
 			}
@@ -161,8 +163,6 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 
 		// Possible due to network connection error when streaming..
 		case GST_MESSAGE_CLOCK_LOST: {
-						
-
 			// Get a new clock
 			gst_element_set_state (player->getPipeline(), GST_STATE_PAUSED);
 			gst_element_set_state (player->getPipeline(), GST_STATE_PLAYING);
@@ -179,7 +179,8 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 				data.mCurrentState = current;
 				g_print( "Pipeline state changed from : %s to %s\n", gst_element_state_get_name( old ), gst_element_state_get_name ( current ) );
 
-				if( current > GST_STATE_NULL && current <= GST_STATE_PLAYING ) data.mIsDone = false;
+				if( current > GST_STATE_NULL && current <= GST_STATE_PLAYING )
+					data.mIsDone = false;
 
 				switch ( current ) {
 					case GST_STATE_PAUSED: {
@@ -209,13 +210,13 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 					}
 					break;
 
-					case GST_STATE_NULL:
-					{
+					case GST_STATE_NULL: {
 						data.reset();
 					}
 					break;
 
-					default: break;
+					default: 
+						break;
 				}
 			}
 		}
@@ -248,12 +249,12 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 					 }
 					 gst_query_unref (query);*/
 					
-					if( data.mRequestedSeek && !data.mIsBuffering ) {
+					if( data.mRequestedSeek && ! data.mIsBuffering ) {
 						GstEvent* seekEvent;
 						GstSeekFlags seekFlags = GstSeekFlags( GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE );
 						seekEvent = gst_event_new_seek( data.mRate, GST_FORMAT_TIME, seekFlags, GST_SEEK_TYPE_SET, data.mRequestedSeekTime, GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE );
-						gboolean successSeek = gst_element_send_event( player->getPipeline(), seekEvent);
-						if( !successSeek ) {
+						gboolean successSeek = gst_element_send_event( player->getPipeline(), seekEvent );
+						if( ! successSeek ) {
 							g_warning("seek failed");
 						}
 						data.mRequestedSeek = false;
@@ -273,7 +274,6 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 				default:
 					break;
 			}
-
 			data.mAsyncStateChangePending = false;
 		}
 		break;
@@ -288,22 +288,22 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 				else {
 					// If playing back on reverse start the loop from the
 					// end of the file
-					if( data.mRate < 0 ){
+					if( data.mRate < 0 ) {
 						player->seekToTime(player->getDurationNanos());
 					}
-					else{
+					else {
 						// otherwise restart from beginning.
 						player->seekToTime(0);
 					}
 				}
 			}
-
 			data.mVideoHasChanged = false;
 			data.mIsDone = true;
 		}
 		break;
 
-		default: break;
+		default: 
+			break;
 	}
 
 	return TRUE; 
@@ -328,7 +328,7 @@ static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
 	if( g_str_has_prefix( new_pad_type, "audio/x-raw" ) ) {
 		// Add and link the audio branch to our pipeline.
 		gst_bin_add_many( GST_BIN( player->getPipeline() ), data.mAudioQueue, data.mAudioconvert, data.mAudiosink, NULL );
-		if( !gst_element_link_many( data.mAudioQueue, data.mAudioconvert, data.mAudiosink, nullptr ) ) {
+		if( ! gst_element_link_many( data.mAudioQueue, data.mAudioconvert, data.mAudiosink, nullptr ) ) {
 			g_printerr( " FAILED to LINK AUDIO elements.\n" );
 		}
 		data.mHasAudio = true;
@@ -340,7 +340,7 @@ static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
 	}
 
 	GstPadLinkReturn ret;
-	g_print ("Received new pad '%s' from '%s'\n", GST_PAD_NAME (newPad), GST_ELEMENT_NAME (src));
+	g_print( "Received new pad '%s' from '%s'\n", GST_PAD_NAME( newPad ), GST_ELEMENT_NAME( src ) );
 	if( gst_pad_is_linked( sinkPad ) ) {
 		g_print( "Pad already linked! Nothing to do...\n");
 		return;
@@ -348,11 +348,11 @@ static void cb_new_pad( GstElement* src, GstPad* newPad, GstPlayer* player )
    
 	// Here the actual linking of the uridecodebin pad aka newPad with our relevant sinkPad ( audio or video ) is happening.
 	ret = gst_pad_link( newPad, sinkPad );
-	if (GST_PAD_LINK_FAILED (ret)) {
-		g_print ("  Type is '%s' but link failed.\n", new_pad_type);
+	if( GST_PAD_LINK_FAILED( ret ) ) {
+		g_print(" Type is '%s' but link failed.\n", new_pad_type );
 	} 
 	else {
-		g_print ("  Link succeeded (type '%s').\n", new_pad_type);
+		g_print(" Link succeeded (type '%s').\n", new_pad_type );
 	}
 
 	if( data.mHasAudio ) {
@@ -433,7 +433,7 @@ bool GstPlayer::initializeGStreamer()
 		
 		GError* err;
 		/// If we havent already initialized GStreamer do this.
-		if( !gst_init_check( nullptr, nullptr, &err ) ) {
+		if( ! gst_init_check( nullptr, nullptr, &err ) ) {
 			if( err->message ) {
 				g_error( "FAILED to initialize GStreamer : %s\n", err->message );
 			}
@@ -532,7 +532,7 @@ void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
 	if( mGstPipeline ) {
 		// Currently assumes that the pipeline has an appsink named 'videosink'.
 		// This is just for testing and it has to be more generic.
-		mGstAppSink = gst_bin_get_by_name (GST_BIN (mGstPipeline), "videosink");
+		mGstAppSink = gst_bin_get_by_name( GST_BIN( mGstPipeline ), "videosink" );
 	}
 	
 	addBusWatch( mGstPipeline );
@@ -648,7 +648,7 @@ void GstPlayer::constructPipeline()
     if( sUseGstGl ) {
         mGstData.mGLupload = gst_element_factory_make( "glupload", "upload" );
         mGstData.mGLcolorconvert = gst_element_factory_make( "glcolorconvert", "convert" );
-		if( !mGstData.mGLupload || !mGstData.mGLcolorconvert ) {
+		if( ! mGstData.mGLupload || ! mGstData.mGLcolorconvert ) {
 			g_printerr( "Not all GL elements could be created !\n" );
 		}
         gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mGLupload, mGstData.mGLcolorconvert, NULL );
@@ -658,7 +658,7 @@ void GstPlayer::constructPipeline()
     }
     else {
         mGstData.mVideoconvert = gst_element_factory_make( "videoconvert", "convert" );
-		if( !mGstData.mVideoconvert ) {
+		if( ! mGstData.mVideoconvert ) {
 			g_printerr( "Could not create videoconvert element !\n" );
 		}
         gst_bin_add( GST_BIN( mGstPipeline ), mGstData.mVideoconvert );
@@ -683,8 +683,8 @@ void GstPlayer::constructPipeline()
     
         gst_app_sink_set_callbacks( GST_APP_SINK( mGstAppSink ), &appSinkCallbacks, this, 0 );
         GstCaps* caps = gst_caps_from_string( capsDescr.c_str() );
-        gst_app_sink_set_caps( GST_APP_SINK( mGstAppSink), caps);
-        gst_caps_unref(caps);
+        gst_app_sink_set_caps( GST_APP_SINK( mGstAppSink ), caps );
+        gst_caps_unref( caps );
     }
 }
 
@@ -696,7 +696,7 @@ void GstPlayer::load( const std::string& path )
 	}
 
     // Construct and link the elements of our pipeline if this is our first run..
-    if( !mGstPipeline ) {
+    if( ! mGstPipeline ) {
         constructPipeline();
     }
 	
@@ -720,11 +720,11 @@ void GstPlayer::load( const std::string& path )
 	
 	// Create the queues that hold the incoming appsink buffers if on the GL path.
 	if( sUseGstGl ) {
-		if( !mInputVideoBuffers ) {
+		if( ! mInputVideoBuffers ) {
 			mInputVideoBuffers = g_async_queue_new();
 			g_object_set_data( G_OBJECT( mGstAppSink ), "queue_input_buf", mInputVideoBuffers );
 		}
-		if( !mOutputVideoBuffers ) {
+		if( ! mOutputVideoBuffers ) {
 			mOutputVideoBuffers = g_async_queue_new();
 			g_object_set_data( G_OBJECT( mGstAppSink ), "queue_output_buf", mOutputVideoBuffers );
 		}
@@ -747,7 +747,7 @@ void GstPlayer::load( const std::string& path )
 
 	// set the new movie path
 	const gchar* uri = ( ! uriPath.empty() ) ? uriPath.c_str() : path.c_str();
-    g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "uridecode" ) ), "uri", uri, nullptr );
+    g_object_set( G_OBJECT( gst_bin_get_by_name( GST_BIN( mGstPipeline ), "uridecode" ) ), "uri", uri, nullptr );
 	
 	// and preroll async.
 	gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );
@@ -870,11 +870,12 @@ bool GstPlayer::hasAudio() const
 
 gint64 GstPlayer::getDurationNanos()
 {
-	if( !mGstPipeline ) return -1;
+	if( ! mGstPipeline ) 
+		return -1;
 	
 	gint64 duration;
 	if( isPrerolled() ) {
-		if( !gst_element_query_duration( mGstPipeline, GST_FORMAT_TIME, &duration)) {
+		if( ! gst_element_query_duration( mGstPipeline, GST_FORMAT_TIME, &duration ) ) {
 			g_warning( " Cannot query duration. ");
 			return -1.0;
 		}
@@ -895,12 +896,13 @@ float GstPlayer::getDurationSeconds()
 
 gint64 GstPlayer::getPositionNanos()
 {
-	if( !mGstPipeline ) return -1;
+	if( ! mGstPipeline ) 
+		return -1;
 	
 	gint64 pos = 0;
 	if( isPrerolled() ) {
-		if( !gst_element_query_position( mGstPipeline, GST_FORMAT_TIME, &pos ) ) {
-			g_warning("Cannot query position ! ");
+		if( ! gst_element_query_position( mGstPipeline, GST_FORMAT_TIME, &pos ) ) {
+			g_warning( "Cannot query position ! " );
 			return -1.0;
 		}
 		mGstData.mPosition = pos;
@@ -920,13 +922,17 @@ float GstPlayer::getPositionSeconds()
 
 void GstPlayer::setVolume( float targetVolume )
 {
-	if( !mGstPipeline ) return;
-	g_object_set( G_OBJECT(mGstPipeline), "volume", (gdouble)targetVolume, nullptr );
+	if( ! mGstPipeline ) 
+		return;
+
+	g_object_set( G_OBJECT( mGstPipeline ), "volume", (gdouble)targetVolume, nullptr );
 }
 
 float GstPlayer::getVolume()
 {
-	if( !mGstPipeline ) return -1;
+	if( ! mGstPipeline )
+		return -1;
+
 	float currentVolume;
 	g_object_get( mGstPipeline, "volume", &currentVolume, nullptr );
 	return currentVolume;
@@ -939,7 +945,9 @@ bool GstPlayer::isDone() const
 
 void GstPlayer::seekToTime( float seconds )
 {
-	if( !mGstPipeline || seconds == getDurationSeconds() ) return;
+	if( ! mGstPipeline || seconds == getDurationSeconds() ) 
+		return;
+
 	// When doing flushing seeks the pipeline will pre-roll
 	// which means that we might be in a GST_STATE_CHANGE_ASYNC when we request the seek ( ..when fast-seeking ).
 	// If thats the case then we should wait for GST_MESSAGE_ASYNC_DONE before executing the
@@ -962,11 +970,12 @@ void GstPlayer::setLoop( bool loop, bool palindrome )
 
 bool GstPlayer::setRate( float rate )
 {
-	if( rate == getRate() ) return true; // Avoid unnecessary rate change;
+	if( rate == getRate() )
+		return true; // Avoid unnecessary rate change;
+
 	// A rate equal to 0 is not valid and has to be handled by pausing the pipeline.
-	if( rate == 0 ){
+	if( rate == 0 )
 		return setPipelineState(GST_STATE_PAUSED);
-	}
 	
 	if( rate < 0 && isStream() ) {
 		g_print( "No reverse playback supported for streams!\n " );
@@ -1001,15 +1010,15 @@ bool GstPlayer::sendSeekEvent( gint64 seekTime )
 	GstSeekFlags seekFlags = GstSeekFlags( GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE );
 	
 	if( getRate() > 0.0 ){
-		seekEvent = gst_event_new_seek( getRate(), GST_FORMAT_TIME, seekFlags, GST_SEEK_TYPE_SET, seekTime, GST_SEEK_TYPE_SET, GST_CLOCK_TIME_NONE);
+		seekEvent = gst_event_new_seek( getRate(), GST_FORMAT_TIME, seekFlags, GST_SEEK_TYPE_SET, seekTime, GST_SEEK_TYPE_SET, GST_CLOCK_TIME_NONE );
 	}
 	else {
 		seekEvent = gst_event_new_seek( getRate(), GST_FORMAT_TIME, seekFlags, GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_SET, seekTime );
 	}
 	
-	gboolean successSeek = gst_element_send_event( mGstPipeline, seekEvent);
+	gboolean successSeek = gst_element_send_event( mGstPipeline, seekEvent );
 	
-	if( !successSeek ){
+	if( ! successSeek ){
 		g_warning("seek failed");
 		return false;
 	}
@@ -1046,7 +1055,8 @@ GstStateChangeReturn GstPlayer::getStateChange()
 
 bool GstPlayer::setPipelineState( GstState targetState )
 {
-	if( !mGstPipeline ) return false;
+	if( ! mGstPipeline ) 
+		return false;
 	
 	GstState current, pending;
 	gst_element_get_state( mGstPipeline, &current, &pending, 0 );
@@ -1061,7 +1071,8 @@ bool GstPlayer::setPipelineState( GstState targetState )
 		mGstData.mIsBuffering = false;
 	}
 	
-	if( current == targetState || pending == targetState ) return true;
+	if( current == targetState || pending == targetState ) 
+		return true;
 	
 	GstStateChangeReturn stateChangeResult = gst_element_set_state( mGstPipeline, targetState );
 	
@@ -1113,8 +1124,9 @@ void GstPlayer::createTextureFromMemory()
 	mMutex.unlock();
 
 	if( mFrontVBuffer ) {
-		videoTexture = ci::gl::Texture::create( mFrontVBuffer, GL_RGBA, width(), height() );
-		if( videoTexture ) videoTexture->setTopDown();
+		mVideoTexture = ci::gl::Texture::create( mFrontVBuffer, GL_RGBA, width(), height() );
+		if( mVideoTexture )
+			mVideoTexture->setTopDown();
 	}
 }
 
@@ -1122,7 +1134,7 @@ void GstPlayer::createTextureFromID()
 {
 	// Pop any old buffers.
 	GAsyncQueue *mOutputVideoBuffers = nullptr;
-	mOutputVideoBuffers = (GAsyncQueue*)g_object_get_data( G_OBJECT(mGstAppSink), "queue_output_buf" );
+	mOutputVideoBuffers = (GAsyncQueue*)g_object_get_data( G_OBJECT( mGstAppSink ), "queue_output_buf" );
 	GstBuffer* old = nullptr;
 	if( g_async_queue_length( mOutputVideoBuffers ) > 0 ) {
 		old = (GstBuffer*)g_async_queue_pop( mOutputVideoBuffers );
@@ -1138,9 +1150,9 @@ void GstPlayer::createTextureFromID()
 	currentTextureID = mGstTextureID;
 	mMutex.unlock();
 
-	videoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, currentTextureID, width(), height(), true, deleter );
-	if( videoTexture ) {
-		videoTexture->setTopDown();
+	mVideoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, currentTextureID, width(), height(), true, deleter );
+	if( mVideoTexture ) {
+		mVideoTexture->setTopDown();
 	}
 }
 
@@ -1155,7 +1167,7 @@ ci::gl::Texture2dRef GstPlayer::getVideoTexture()
 		}
 		mNewFrame = false;
 	}
-	return videoTexture;
+	return mVideoTexture;
 }
 
 void GstPlayer::resetVideoBuffers()
@@ -1270,11 +1282,11 @@ void GstPlayer::sample( GstSample* sample, GstAppSink* sink )
 				 std::cout << " STRIDE PLANE 3 : " << mVideoInfo.stride[2] << std::endl;*/
 			}
 
-			if( !mFrontVBuffer ) {
+			if( ! mFrontVBuffer ) {
 				mFrontVBuffer = new unsigned char[ mMemoryMapInfo.size ];
 			}
 			
-			if( !mBackVBuffer ) {
+			if( ! mBackVBuffer ) {
 				mBackVBuffer = new unsigned char[ mMemoryMapInfo.size ];
 			}
 			
