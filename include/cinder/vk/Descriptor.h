@@ -111,17 +111,40 @@ private:
 //!
 class DescriptorPool : public BaseDeviceObject {
 public:
+
+	class Options {
+	public:
+		Options() {}
+		virtual ~Options() {}
+		Options&							setCreateFlags( VkDescriptorPoolCreateFlagBits value, bool exclusive = false ) { if( exclusive ) { mCreateFlags = value; } else { mCreateFlags |= value; } return *this; }
+		VkDescriptorPoolCreateFlags			getCreateFlags() const { return mCreateFlags; }
+		bool								hasCreateFlag( VkDescriptorPoolCreateFlagBits value ) const { return ( value == ( mCreateFlags & value ) ); }
+		bool								hasFreeDescriptorSetFlag() const { return hasCreateFlag( VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ); }
+
+		Options&							setResetFlags( VkDescriptorPoolCreateFlagBits value, bool exclusive = false ) { if( exclusive ) { mResetFlags = value; } else { mResetFlags |= value; } return *this; }
+		VkDescriptorPoolCreateFlags			getResetFlags() const { return mCreateFlags; }
+	private:
+		VkDescriptorPoolCreateFlags			mCreateFlags = 0;
+		VkDescriptorPoolResetFlags			mResetFlags = 0;
+		friend class DescriptorPool;
+	};
+
+	// ---------------------------------------------------------------------------------------------
+
 	virtual ~DescriptorPool();
 
-	static DescriptorPoolRef				create( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings, vk::Device *device = nullptr );
-	static DescriptorPoolRef				create( const std::vector<std::vector<VkDescriptorSetLayoutBinding>>& setOfBindings, vk::Device *device = nullptr );
+	static DescriptorPoolRef				create( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings, const DescriptorPool::Options& options = DescriptorPool::Options(), vk::Device *device = nullptr );
+	static DescriptorPoolRef				create( const std::vector<std::vector<VkDescriptorSetLayoutBinding>>& setOfBindings, const DescriptorPool::Options& options = DescriptorPool::Options(), vk::Device *device = nullptr );
 
 	VkDescriptorPool						vkObject() const { return mDescriptorPool; }
 
+	const DescriptorPool::Options&			getOptions() const { return mOptions; }
+
 private:
-	DescriptorPool( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings, vk::Device *device );
+	DescriptorPool( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings, const DescriptorPool::Options& options, vk::Device *device );
 
 	VkDescriptorPool						mDescriptorPool = VK_NULL_HANDLE;
+	DescriptorPool::Options					mOptions;
 
 	void initialize( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings );
 	void destroy( bool removeFromTracking = true );
@@ -135,18 +158,18 @@ class DescriptorSet : public BaseDeviceObject {
 public:
 	virtual ~DescriptorSet();
 
-	static DescriptorSetRef					create( VkDescriptorPool descriptorPool, VkDescriptorSetLayout layout, vk::Device *device = nullptr );
-	static std::vector<DescriptorSetRef>	create( VkDescriptorPool descriptorPool, const std::vector<VkDescriptorSetLayout>& layouts, vk::Device *device = nullptr );
-
+	static DescriptorSetRef					create( vk::DescriptorPool *descriptorPool, VkDescriptorSetLayout layout, vk::Device *device = nullptr );
+	static std::vector<DescriptorSetRef>	create( vk::DescriptorPool *descriptorPool, const std::vector<VkDescriptorSetLayout>& layouts, vk::Device *device = nullptr );
+	
 	VkDescriptorSet							vkObject() const { return mDescriptorSet; }
 	
-	void									update( const vk::UniformSet::SetRef& uniformSet );
+	void									update( const std::vector<VkWriteDescriptorSet>& writes );
 
 private:
-	DescriptorSet( VkDescriptorPool descriptorPool, VkDescriptorSetLayout layout, vk::Device *device );
+	DescriptorSet( vk::DescriptorPool *descriptorPool, VkDescriptorSetLayout layout, vk::Device *device );
 
 	VkDescriptorSet							mDescriptorSet = VK_NULL_HANDLE;
-	VkDescriptorPool						mDescriptorPool = VK_NULL_HANDLE;
+	vk::DescriptorPool						*mDescriptorPool = nullptr;
 
 	void initialize( VkDescriptorSetLayout layout );
 	void destroy( bool removeFromTracking = true );

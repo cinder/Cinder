@@ -38,6 +38,7 @@
 
 #include "cinder/vk/UniformLayout.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Texture.h"
 #include "cinder/vk/UniformBuffer.h"
 #include "cinder/Utilities.h"
 
@@ -242,6 +243,13 @@ UniformLayout::Block::UniformStore* UniformLayout::Block::findUniformObject( con
 UniformLayout::Binding::Binding( const std::string& name, Binding::Type type, uint32_t set )
 	: mName( name ), mType( type ), mSet( set )
 {
+}
+
+void UniformLayout::Binding::setTexture( const vk::TextureBaseRef& texture )
+{
+	mTexture = texture; 
+	mType = Binding::Type::SAMPLER;
+	setDirty();
 }
 
 void UniformLayout::Binding::sortUniformsByOffset()
@@ -702,9 +710,66 @@ void UniformLayout::uniform(const std::string& name, const vk::TextureBaseRef& t
 }
 
 // -------------------------------------------------------------------------------------------------
+// UniformSet::Binding
+// -------------------------------------------------------------------------------------------------
+void UniformSet::Binding::setUniformBuffer( const UniformBufferRef& buffer )
+{
+	mUniformBuffer = buffer;
+	setDirty();
+}
+
+// -------------------------------------------------------------------------------------------------
+// UniformSet::Set
+// -------------------------------------------------------------------------------------------------
+std::vector<VkWriteDescriptorSet> UniformSet::Set::getBindingUpdates( VkDescriptorSet parentDescriptorSet )
+{
+	std::vector<VkWriteDescriptorSet> result;
+	for( auto& binding : mBindings ) {
+		if( ! binding.isDirty() ) {
+			continue;
+		}
+
+		bool addEntry = false;
+		VkWriteDescriptorSet entry = {};
+		entry.sType				= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		entry.pNext				= NULL;
+		entry.dstSet			= parentDescriptorSet;
+		entry.descriptorCount	= 1;
+		entry.dstArrayElement	= 0;
+		entry.dstBinding		= binding.getBinding();
+		switch( binding.getType() ) {
+			case UniformLayout::Binding::Type::BLOCK: {
+				if( binding.getUniformBuffer() ) {
+					entry.descriptorType	= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					entry.pBufferInfo		= &(binding.getUniformBuffer()->getBufferInfo());
+					addEntry = true;
+				}
+			}
+			break;
+
+			case UniformLayout::Binding::Type::SAMPLER: {
+				if( binding.getTexture() ) {
+					entry.descriptorType	= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					entry.pImageInfo		= &(binding.getTexture()->getImageInfo());
+					addEntry = true;
+				}
+			}
+			break;
+		}
+
+		if( addEntry ) {
+			result.push_back( entry );
+			binding.clearDirty();
+		}
+	}
+	return result;
+}
+
+// -------------------------------------------------------------------------------------------------
 // UniformSet
 // -------------------------------------------------------------------------------------------------
-UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
+UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& options, vk::Device *device )
+	: mOptions( options )
 {
 	// Copy sets
 	for( const auto& srcSet : layout.getSets() ) {
@@ -729,8 +794,10 @@ UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 		// Create binding
 		UniformSet::Binding binding = UniformSet::Binding( srcBinding );
 		if( binding.isBlock() ) {
-			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), vk::UniformBuffer::Format(), device );
-			binding.mUniformBuffer = buffer;
+			vk::UniformBuffer::Format uniformBufferFormat = vk::UniformBuffer::Format();
+			uniformBufferFormat.setTransientAllocation( mOptions.getTransientAllocation() );
+			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), uniformBufferFormat, device );
+			binding.setUniformBuffer( buffer );
 		}
 		// Get set
 		auto& set = *it;
@@ -825,10 +892,10 @@ UniformSet::~UniformSet()
 {
 }
 
-UniformSetRef UniformSet::create( const UniformLayout& layout, vk::Device *device )
+UniformSetRef UniformSet::create( const UniformLayout& layout, const UniformSet::Options& options, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	UniformSetRef result = UniformSetRef( new UniformSet( layout, device ) );
+	UniformSetRef result = UniformSetRef( new UniformSet( layout, options, device ) );
 	return result;
 }
 
@@ -878,7 +945,7 @@ void UniformSet::updateUniform( const std::string& name, const T& value )
 	// Find binding and update
 	UniformSet::Binding* binding = this->findBindingObject( bindingName, Binding::Type::ANY );
 	if( ( nullptr != binding ) && binding->isBlock() ) {
-		binding->mUniformBuffer->uniform( name, value );
+		binding->getUniformBuffer()->uniform( name, value );
 	}
 }
 
@@ -967,6 +1034,18 @@ void UniformSet::uniform( const std::string& name, const TextureBaseRef& texture
 	auto bindingRef = findBindingObject( name, Binding::Type::SAMPLER );
 	if( bindingRef ) {
 		bindingRef->setTexture( texture );
+	}
+}
+
+void UniformSet::setDefaultUniformVars( vk::Context *context )
+{
+	for( auto& set : mSets ) {
+		for( auto& binding : set->getBindings() ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			context->setDefaultUniformVars( binding.getUniformBuffer() );
+		}
 	}
 }
 

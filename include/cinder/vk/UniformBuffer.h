@@ -58,9 +58,9 @@ public:
 		Format( VkMemoryPropertyFlags memoryProperty = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 			: vk::Buffer::Format( VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, memoryProperty ) {}
 		virtual ~Format() {}
-
+		Format&					setTransientAllocation( bool value = true ) { vk::Buffer::Format::setTransientAllocation( value ); return *this; }
 	private:
-		friend class VertexBuffer;
+		friend class UniformBuffer;
 	};
 
 	// ---------------------------------------------------------------------------------------------

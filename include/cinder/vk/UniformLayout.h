@@ -49,6 +49,7 @@
 
 namespace cinder { namespace vk {
 
+class Context;
 class Device;
 class TextureBase;
 class UniformBuffer;
@@ -183,6 +184,10 @@ public:
 		Binding( const std::string& name, Binding::Type type, uint32_t set = DEFAULT_SET );
 		virtual ~Binding() {}
 
+		bool								isDirty() const { return mDirty; }
+		void								setDirty( bool value = true ) { mDirty = value; }
+		void								clearDirty() { setDirty( false ); }
+
 		uint32_t							getSet() const { return mSet; }
 		uint32_t							getBinding() const { return mBinding; }
 		Binding::Type						getType() const { return mType; }
@@ -191,11 +196,15 @@ public:
 		bool								isSampler() const { return Binding::Type::SAMPLER == mType; }
 
 		const Block&						getBlock() const { return mBlock; }
+		
 		const vk::TextureBaseRef&			getTexture() const { return mTexture; }
+		void								setTexture( const vk::TextureBaseRef& texture );
 
 		void								sortUniformsByOffset();
 
 	private:
+		bool								mDirty = false;
+
 		uint32_t							mSet = DEFAULT_SET;
 		uint32_t							mBinding = INVALID_BINDING;
 		Binding::Type						mType = Binding::Type::UNDEFINED;
@@ -209,9 +218,7 @@ public:
 		// These functions force their type since in most cases mBinding is set before it's know what the binding is needed.
 		void setBinding( uint32_t binding, uint32_t set ) { mBinding = binding; mSet = set; }
 		void setBlockSizeBytes( size_t sizeBytes ) { mBlock.setSizeBytes( sizeBytes ); }
-		void setTexture( const vk::TextureBaseRef& texture ) { mTexture = texture; mType = Binding::Type::SAMPLER; }
 		friend class UniformLayout;
-		friend class UniformSet;
 	};
 
 
@@ -306,9 +313,10 @@ public:
 		virtual ~Binding() {}
 
 		const UniformBufferRef&		getUniformBuffer() const { return mUniformBuffer; }
+		void						setUniformBuffer( const UniformBufferRef& buffer );
+
 	private:
 		UniformBufferRef			mUniformBuffer; 
-		friend class UniformSet;
 	};
 
 	//! \class Set
@@ -325,11 +333,13 @@ public:
 		const std::vector<Binding>&							getBindings() const { return mBindings; }
 		const std::vector<VkDescriptorSetLayoutBinding>&	getDescriptorSetlayoutBindings() const { return mDescriptorSetLayoutBindings; } 
 
+		std::vector<VkWriteDescriptorSet>					getBindingUpdates( VkDescriptorSet parentDescriptorSet );
+
 	private:
-		uint32_t									mSet = DEFAULT_SET;
-		uint32_t									mChangeFrequency = CHANGES_DONTCARE;
-		std::vector<Binding>						mBindings;
-		std::vector<VkDescriptorSetLayoutBinding>	mDescriptorSetLayoutBindings;
+		uint32_t											mSet = DEFAULT_SET;
+		uint32_t											mChangeFrequency = CHANGES_DONTCARE;
+		std::vector<Binding>								mBindings;
+		std::vector<VkDescriptorSetLayoutBinding>			mDescriptorSetLayoutBindings;
 		friend class UniformSet;
 	};
 	
@@ -337,15 +347,29 @@ public:
 
 	// ---------------------------------------------------------------------------------------------
 
-	UniformSet( const UniformLayout& layout, Device *device );
+	//! \class Binding
+	//!
+	//!
+	class Options {
+	public:
+		Options() {}
+		virtual ~Options() {}
+		Options&	setTransientAllocation( bool value = true ) { mTransientAllocation = value; return *this; }
+		bool		getTransientAllocation() const { return mTransientAllocation; }
+	private:
+		bool		mTransientAllocation = false;
+		friend class UniformSet;
+	};
+
+	// ---------------------------------------------------------------------------------------------
+
+	UniformSet( const UniformLayout& layout, const UniformSet::Options& options, vk::Device *device );
 	virtual ~UniformSet();
 
-	static UniformSetRef			create( const UniformLayout& layout, Device *device = nullptr );
+	static UniformSetRef			create( const UniformLayout& layout, const UniformSet::Options& options = UniformSet::Options(), vk::Device *device = nullptr );
 
-	const std::vector<UniformSet::SetRef>							getSets() const { return mSets; }
+	const std::vector<UniformSet::SetRef>&							getSets() const { return mSets; }
 	const std::vector<std::vector<VkDescriptorSetLayoutBinding>>&	getCachedDescriptorSetLayoutBindings() const { return mCachedDescriptorSetLayoutBindings; }
-
-	std::vector<VkWriteDescriptorSet>								getDescriptorSetUpdates() const;
 
 	void							uniform( const std::string& name, const float    value );
 	void							uniform( const std::string& name, const int32_t  value );
@@ -365,11 +389,14 @@ public:
 	void							uniform( const std::string& name, const mat4&    value );
 	void							uniform( const std::string& name, const TextureBaseRef& texture );
 
+	void							setDefaultUniformVars( vk::Context *context );
 	void							bufferPending();
 
 	void							echoValues( std::ostream& os );
 
 private:
+	UniformSet::Options				mOptions;
+
 	std::vector<UniformSet::SetRef>							mSets;
 	std::vector<std::vector<VkDescriptorSetLayoutBinding>>	mCachedDescriptorSetLayoutBindings;
 

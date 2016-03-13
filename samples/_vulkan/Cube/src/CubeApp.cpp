@@ -40,6 +40,7 @@
 #include "cinder/app/RendererVk.h"
 #include "cinder/vk/vk.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;

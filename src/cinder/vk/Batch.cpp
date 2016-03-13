@@ -288,27 +288,22 @@ void Batch::samplerCube( const std::string& name, const TextureBaseRef& texture 
 
 void Batch::draw( int32_t first, int32_t count )
 {
+	// Allocate descriptor set here in case uniforms get set before first draw
 	if( ! mDescriptorSetView->hasDescriptorSets() ) {
 		mDescriptorSetView->allocateDescriptorSets();
 	}
-	//if( ! mDescriptorSet ) {
-	//	// The descriptor set is created here to give users a chance to set uniforms in 
-	//	// mUniformSet before the first draw call.
-	//	mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), *mUniformSet, mDescriptorSetLayout );
-	//}
 
-	for( auto& set : mUniformSet->getSets() ) {
-		for( auto& binding : set->getBindings() ) {
-			if( ! binding.isBlock() ) {
-				continue;
-			}
-			vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
-		}
-	}
+	// Fill out uniform vars
+	mUniformSet->setDefaultUniformVars( vk::context() );
 	mUniformSet->bufferPending();
 
+	// Update descriptor set
+	mDescriptorSetView->updateDescriptorSets();
+
+	// Get current command buffer
 	auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
 
+	// Bind index buffer
 	bool useIndexBuffer = mVboMesh->getIndexVbo() ? true : false;
 	if(  useIndexBuffer) {
 		auto indexBuffer = mVboMesh->getIndexVbo()->getBuffer();
@@ -316,6 +311,7 @@ void Batch::draw( int32_t first, int32_t count )
 		vkCmdBindIndexBuffer( cmdBuf, indexBuffer, 0,indexType );
 	}
 
+	// Bind vertex buffer
 	std::vector<VkBuffer> vertexBuffers;
 	std::vector<VkDeviceSize> offsets;
 	for( const auto& vb : mVboMesh->getVertexArrayVbos() ) {
@@ -324,13 +320,6 @@ void Batch::draw( int32_t first, int32_t count )
 	}
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
 	
-	//auto& pipeline = mPipelines[mPipelineSelection];
-	//vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline() );
-
-	// Update descriptor set
-	mDescriptorSetView->updateDescriptorSets();
-	//mDescriptorSet->update( *mUniformSet );
-
 	// Bind descriptor sets
 	const auto& descriptorSets = mDescriptorSetView->getDescriptorSets();
 	for( uint32_t i = 0; i < descriptorSets.size(); ++i ) {
@@ -338,8 +327,6 @@ void Batch::draw( int32_t first, int32_t count )
 		std::vector<VkDescriptorSet> descSets = { ds->vkObject() };
 		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), i, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 	}
-	//std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
-	//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
 	// Get a pipeline
 	auto ctx = vk::context();
@@ -361,6 +348,7 @@ void Batch::draw( int32_t first, int32_t count )
 	auto pipeline = pipelineSelector->getSelectedPipeline();
 	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );
 
+	// Draw geometry
 	if( useIndexBuffer ) {
 		int32_t indexCount = mVboMesh->getNumIndices();
 		vkCmdDrawIndexed( cmdBuf, count < 0 ? indexCount : count, 1, 0, 0, 0 );	
@@ -373,25 +361,22 @@ void Batch::draw( int32_t first, int32_t count )
 
 void Batch::drawInstanced( uint32_t instanceCount )
 {
+	// Allocate descriptor set here in case uniforms get set before first draw
 	if( ! mDescriptorSetView->hasDescriptorSets() ) {
 		mDescriptorSetView->allocateDescriptorSets();
 	}
-	//if( ! mDescriptorSet ) {
-	//	mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), *mUniformSet, mDescriptorSetLayout );
-	//}
 
-	for( auto& set : mUniformSet->getSets() ) {
-		for( auto& binding : set->getBindings() ) {
-			if( ! binding.isBlock() ) {
-				continue;
-			}
-			vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
-		}
-	}
+	// Fill out uniform vars
+	mUniformSet->setDefaultUniformVars( vk::context() );
 	mUniformSet->bufferPending();
 
+	// Update descriptor set
+	mDescriptorSetView->updateDescriptorSets();
+
+	// Get current command buffer
 	auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
 
+	// Bind index buffer
 	bool useIndexBuffer = mVboMesh->getIndexVbo() ? true : false;
 	if(  useIndexBuffer) {
 		auto indexBuffer = mVboMesh->getIndexVbo()->getBuffer();
@@ -399,6 +384,7 @@ void Batch::drawInstanced( uint32_t instanceCount )
 		vkCmdBindIndexBuffer( cmdBuf, indexBuffer, 0,indexType );
 	}
 
+	// Bind vertex buffer
 	std::vector<VkBuffer> vertexBuffers;
 	std::vector<VkDeviceSize> offsets;
 	for( const auto& vb : mVboMesh->getVertexArrayVbos() ) {
@@ -407,9 +393,6 @@ void Batch::drawInstanced( uint32_t instanceCount )
 	}
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
 	
-	// Update descriptor set
-	mDescriptorSetView->updateDescriptorSets();
-
 	// Bind descriptor sets
 	const auto& descriptorSets = mDescriptorSetView->getDescriptorSets();
 	for( uint32_t i = 0; i < descriptorSets.size(); ++i ) {
@@ -417,8 +400,6 @@ void Batch::drawInstanced( uint32_t instanceCount )
 		std::vector<VkDescriptorSet> descSets = { ds->vkObject() };
 		vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), i, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 	}
-	//std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
-	//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
 	// Get a pipeline
 	auto ctx = vk::context();
@@ -440,6 +421,7 @@ void Batch::drawInstanced( uint32_t instanceCount )
 	auto pipeline = pipelineSelector->getSelectedPipeline();
 	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );
 
+	// Draw geometry
 	if( useIndexBuffer ) {
 		int32_t indexCount = mVboMesh->getNumIndices();
 		vkCmdDrawIndexed( cmdBuf, indexCount, instanceCount, 0, 0, 0 );	

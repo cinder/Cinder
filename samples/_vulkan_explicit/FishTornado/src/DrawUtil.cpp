@@ -77,7 +77,7 @@ void SolidRect::initialize()
 
 	// Uniform layout, uniform set
 	const ci::vk::UniformLayout& uniformLayout = mShader->getUniformLayout();
-	mUniformSet = ci::vk::UniformSet::create( uniformLayout, ci::vk::context()->getDevice() );
+	mUniformSet = ci::vk::UniformSet::create( uniformLayout, ci::vk::UniformSet::Options(), ci::vk::context()->getDevice() );
 
 	// Descriptor layout, pool, set
 	mDescriptorSetView = ci::vk::DescriptorSetView::create( mUniformSet );

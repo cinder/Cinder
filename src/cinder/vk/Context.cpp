@@ -1279,6 +1279,16 @@ void Context::addTransient( const vk::DescriptorSetRef& obj )
 	addTransientObject( obj, mTransientDescriptorSets );
 }
 
+void Context::addTransient( const vk::DescriptorLayoutRef& obj )
+{
+	addTransientObject( obj, mTransientDescriptorLayouts );
+}
+
+void Context::addTransient( const vk::UniformSetRef& obj )
+{
+	addTransientObject( obj, mTransientUniformSets );
+}
+
 void Context::clearTransients()
 {
 	mTransientUniformBuffers.clear();
@@ -1288,6 +1298,9 @@ void Context::clearTransients()
 	// Sets need to be destroyed before pools
 	mTransientDescriptorSets.clear();
 	mTransientDescriptorPools.clear();
+	mTransientDescriptorLayouts.clear();
+
+	mTransientUniformSets.clear();
 }
 
 }} // namespace cinder::vk

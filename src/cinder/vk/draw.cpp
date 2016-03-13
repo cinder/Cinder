@@ -52,7 +52,6 @@
 
 namespace cinder { namespace vk {
 
-/*
 void draw( const Texture2dRef &texture, const Rectf &dstRect )
 {
 	vec2 uv0 = vec2( 0.0f, 0.0f );
@@ -66,27 +65,31 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 		dstRect.x2, dstRect.y2, 0.0f, 1.0f, uv1.x, uv1.y
 	};
 
-	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ), vk::VertexBuffer::Format() );
+	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ), vk::VertexBuffer::Format().setTransientAllocation() );
 	vk::context()->addTransient( vertexBuffer );
 
 	auto shader = vk::context()->hasShaderProg() ? vk::context()->getShaderProg() : vk::context()->getStockShader( vk::ShaderDef().texture() );
 
 	// Uniform layout, uniform set
 	const vk::UniformLayout& uniformLayout = shader->getUniformLayout();
-	vk::UniformSetRef uniformSet = vk::UniformSet::create( uniformLayout );
+	vk::UniformSet::Options uniformSetOptions = vk::UniformSet::Options().setTransientAllocation();
+	vk::UniformSetRef uniformSet = vk::UniformSet::create( uniformLayout, uniformSetOptions );
+	vk::context()->addTransient( uniformSet );
 
 	// Set the texture here so we can create the descriptor set without any grief
 	uniformSet->uniform( "uTex0", texture );
 
 	// Descriptor layout, pool, set
-	const auto& descLayoutBindings = uniformSet->getDescriptorSetlayoutBindings();
-	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( descLayoutBindings );
-	vk::DescriptorPoolRef descriptorPool = vk::DescriptorPool::create( descLayoutBindings );
-	vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool->getDescriptorPool(), *uniformSet, descriptorSetLayout );
+	const auto& layoutBindings = uniformSet->getCachedDescriptorSetLayoutBindings()[0];
+	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( layoutBindings );
+	vk::DescriptorPoolRef descriptorPool = vk::DescriptorPool::create( uniformSet->getCachedDescriptorSetLayoutBindings() );
+	vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool.get(), descriptorSetLayout );
 	vk::context()->addTransient( descriptorPool );
 	vk::context()->addTransient( descriptorSet );
+
 	// Pipeline layout
 	VkPipelineLayout pipelineLayout = vk::context()->getDevice()->getPipelineLayoutSelector()->getSelectedLayout( { descriptorSetLayout } );
+
 	// Pipeline
 	VkPipeline pipeline = VK_NULL_HANDLE;
 	{
@@ -125,7 +128,6 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 		pipelineSelector->setShaderStages( shader->getShaderStages() );
 		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 		pipelineSelector->setSubPass( ctx->getSubpass() );
-		//pipelineSelector->setPipelineLayout( pipelineLayout->getPipelineLayout() );
 		pipelineSelector->setPipelineLayout( pipelineLayout );
 		pipeline = pipelineSelector->getSelectedPipeline();
 	}
@@ -133,13 +135,12 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 	// This is the separation between the setup and the draw sequence. 
 
 	// Fill out uniform vars
-	for( auto& binding : uniformSet->getBindings() ) {
-		if( ! binding.isBlock() ) {
-			continue;
-		}
-		vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
-	}
+	uniformSet->setDefaultUniformVars( vk::context() );
 	uniformSet->bufferPending();
+
+	// Update descriptor set
+	auto descriptorSetWrites = uniformSet->getSets()[0]->getBindingUpdates( descriptorSet->vkObject() );
+	descriptorSet->update( descriptorSetWrites );
 
 	// Get current command buffer
 	auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
@@ -148,13 +149,15 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 	std::vector<VkBuffer> vertexBuffers = { vertexBuffer->getBuffer() };
 	std::vector<VkDeviceSize> offsets = { 0 };
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
+
 	// Bind pipeline
 	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );
 
-	std::vector<VkDescriptorSet> descSets = { descriptorSet->getDescriptorSet() };
-	//vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+	// Bind descriptor sets
+	std::vector<VkDescriptorSet> descSets = { descriptorSet->vkObject() };
 	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
+	// Draw geometry
 	uint32_t numVertices = 4;
 	vkCmdDraw( cmdBuf, numVertices, 1, 0, 0 );
 }
@@ -173,22 +176,25 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 		r.x2, r.y2, 0.0f, 1.0f, uv1.x, uv1.y, color.r, color.g, color.b, color.a
 	};
 
-	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ), vk::VertexBuffer::Format() );
+	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ), vk::VertexBuffer::Format().setTransientAllocation() );
 	vk::context()->addTransient( vertexBuffer );
 
 	auto shader = vk::context()->hasShaderProg() ? vk::context()->getShaderProg() : vk::context()->getStockShader( vk::ShaderDef().color() );
 
 	// Uniform layout, uniform set
 	const vk::UniformLayout& uniformLayout = shader->getUniformLayout();
-	vk::UniformSetRef uniformSet = vk::UniformSet::create( uniformLayout );
+	vk::UniformSet::Options uniformSetOptions = vk::UniformSet::Options().setTransientAllocation();
+	vk::UniformSetRef uniformSet = vk::UniformSet::create( uniformLayout, uniformSetOptions );
+	vk::context()->addTransient( uniformSet );
 
 	// Descriptor layout, pool, set
-	const auto& descLayoutBindings = uniformSet->getDescriptorSetlayoutBindings();
-	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( descLayoutBindings );
-	vk::DescriptorPoolRef descriptorPool = vk::DescriptorPool::create( descLayoutBindings );
-	vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool->getDescriptorPool(), *uniformSet, descriptorSetLayout );
+	const auto& layoutBindings = uniformSet->getCachedDescriptorSetLayoutBindings()[0];
+	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( layoutBindings );
+	vk::DescriptorPoolRef descriptorPool = vk::DescriptorPool::create( uniformSet->getCachedDescriptorSetLayoutBindings() );
+	vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool.get(), descriptorSetLayout );
 	vk::context()->addTransient( descriptorPool );
 	vk::context()->addTransient( descriptorSet );
+
 	// Pipeline layout
 	VkPipelineLayout pipelineLayout = vk::context()->getDevice()->getPipelineLayoutSelector()->getSelectedLayout( { descriptorSetLayout } );
 
@@ -236,7 +242,6 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 		pipelineSelector->setShaderStages( shader->getShaderStages() );
 		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 		pipelineSelector->setSubPass( ctx->getSubpass() );
-		//pipelineSelector->setPipelineLayout( pipelineLayout->getPipelineLayout() );
 		pipelineSelector->setPipelineLayout( pipelineLayout );
 		pipeline = pipelineSelector->getSelectedPipeline();
 	}
@@ -244,13 +249,12 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 	// This is the separation between the setup and the draw sequence. 
 
 	// Fill out uniform vars
-	for( auto& binding : uniformSet->getBindings() ) {
-		if( ! binding.isBlock() ) {
-			continue;
-		}
-		vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
-	}
+	uniformSet->setDefaultUniformVars( vk::context() );
 	uniformSet->bufferPending();
+
+	// Update descriptor set
+	auto descriptorSetWrites = uniformSet->getSets()[0]->getBindingUpdates( descriptorSet->vkObject() );
+	descriptorSet->update( descriptorSetWrites );
 
 	// Get current command buffer
 	auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
@@ -259,15 +263,17 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 	std::vector<VkBuffer> vertexBuffers = { vertexBuffer->getBuffer() };
 	std::vector<VkDeviceSize> offsets = { 0 };
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
+
 	// Bind pipeline
 	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );
 
-	std::vector<VkDescriptorSet> descSets = { descriptorSet->getDescriptorSet() };
+	// Bind descriptor sets
+	std::vector<VkDescriptorSet> descSets = { descriptorSet->vkObject() };
 	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
+	// Draw geometry
 	uint32_t numVertices = 4;
 	vkCmdDraw( cmdBuf, numVertices, 1, 0, 0 );
 }
-*/
 
 }} // namespace cinder::vk
