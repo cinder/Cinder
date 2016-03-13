@@ -229,6 +229,11 @@ void ShadowMappingBasic::generateCommandBuffer( const vk::CommandBufferRef& cmdB
 
 		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
 		{
+			// Clear if single sample, multi sample is cleared on attachment load
+			if( ! vk::context()->getPresenter()->isMultiSample() ) {
+				vk::context()->clearAttachments();
+			}
+
 			vk::setMatrices( mCam );
 
 			vec4 mvLightPos	= vk::getModelView() * vec4( mLightPos, 1.0f );
