@@ -56,6 +56,7 @@ namespace cinder { namespace vk {
 
 class CommandBuffer;
 class CommandPool;
+class DescriptorLayout;
 class DescriptorPool;
 class DescriptorSet;
 class Device;
@@ -67,9 +68,11 @@ class RenderPass;
 class ShaderDef;
 class ShaderProg;
 class UniformBuffer;
+class UniformSet;
 class VertexBuffer;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 using CommandPoolRef = std::shared_ptr<CommandPool>;
+using DescriptorLayoutRef = std::shared_ptr<DescriptorLayout>;
 using DescriptorPoolRef = std::shared_ptr<DescriptorPool>;
 using DescriptorSetRef = std::shared_ptr<DescriptorSet>;
 using IndexBufferRef =std::shared_ptr<IndexBuffer>;
@@ -78,6 +81,7 @@ using RenderPassRef = std::shared_ptr<RenderPass>;
 using QueueRef = std::shared_ptr<Queue>;
 using ShaderProgRef = std::shared_ptr<ShaderProg>;
 using UniformBufferRef = std::shared_ptr<UniformBuffer>;
+using UniformSetRef = std::shared_ptr<UniformSet>;
 using VertexBufferRef = std::shared_ptr<VertexBuffer>;
 
 class Context;
@@ -375,8 +379,10 @@ private:
 	std::vector<vk::UniformBufferRef>			mTransientUniformBuffers;
 	std::vector<vk::IndexBufferRef>				mTransientIndexBuffers;
 	std::vector<vk::VertexBufferRef>			mTransientVertexBuffers;
-	std::vector<vk::DescriptorPoolRef>			mTransientDescriptorPools;
 	std::vector<vk::DescriptorSetRef>			mTransientDescriptorSets;
+	std::vector<vk::DescriptorPoolRef>			mTransientDescriptorPools;
+	std::vector<vk::DescriptorLayoutRef>		mTransientDescriptorLayouts;
+	std::vector<vk::UniformSetRef>				mTransientUniformSets;
 
 public:
 	void	addTransient( const vk::UniformBufferRef& obj );
@@ -384,6 +390,8 @@ public:
 	void	addTransient( const vk::VertexBufferRef& obj );
 	void	addTransient( const vk::DescriptorPoolRef& obj );
 	void	addTransient( const vk::DescriptorSetRef& obj );
+	void	addTransient( const vk::DescriptorLayoutRef& obj );
+	void	addTransient( const vk::UniformSetRef& obj );
 	void	clearTransients();
 };
 

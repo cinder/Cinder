@@ -52,8 +52,8 @@ static size_t indexTypeSizeBytes( VkIndexType indexType )
 	return result;
 }
 
-IndexBuffer::IndexBuffer( size_t numIndices, VkIndexType indexType, const void *indices, vk::Device *device )
-	: Buffer( false, numIndices*indexTypeSizeBytes( indexType ) , VK_BUFFER_USAGE_INDEX_BUFFER_BIT, device )
+IndexBuffer::IndexBuffer( size_t numIndices, VkIndexType indexType, const void *indices, const vk::IndexBuffer::Format& format, vk::Device *device )
+	: Buffer( false, numIndices*indexTypeSizeBytes( indexType ) , format, device )
 {
 	initialize( numIndices, indexType, indices );
 }
@@ -72,7 +72,12 @@ void IndexBuffer::initialize( size_t numIndices, VkIndexType indexType, const vo
 	}
 
 	Buffer::initialize();
+	bufferData( numIndices*indexTypeSizeBytes( indexType ), indices );
 
+	mNumIndices = numIndices;
+	mIndexType = indexType;
+
+/*
 	if( nullptr != indices ) {
 		void* dst = map();
 		size_t nbytes = numIndices*indexTypeSizeBytes( indexType );
@@ -82,6 +87,7 @@ void IndexBuffer::initialize( size_t numIndices, VkIndexType indexType, const vo
 		mNumIndices = numIndices;
 		mIndexType = indexType;
 	}
+*/
 
 	mDevice->trackedObjectCreated( this );
 }
@@ -99,10 +105,10 @@ void IndexBuffer::destroy( bool removeFromTracking )
 	Buffer::destroy( removeFromTracking );
 }
 
-IndexBufferRef IndexBuffer::create( size_t numIndices, VkIndexType indexType, const void *indices, vk::Device *device )
+IndexBufferRef IndexBuffer::create( size_t numIndices, VkIndexType indexType, const void *indices, const vk::IndexBuffer::Format& format, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	IndexBufferRef result = IndexBufferRef( new IndexBuffer( numIndices, indexType, indices, device ) );
+	IndexBufferRef result = IndexBufferRef( new IndexBuffer( numIndices, indexType, indices, format, device ) );
 	return result;
 }
 

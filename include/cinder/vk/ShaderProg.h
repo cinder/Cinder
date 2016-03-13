@@ -138,7 +138,8 @@ public:
 		Format&			compute( const DataSourceRef &dataSource );
 		Format&			compute( const std::string &text );
 
-		Format&			binding( const std::string& bindingName, uint32_t bindingNumber );
+		Format&			binding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber = DEFAULT_SET );
+		Format&			set( uint32_t setNumber, uint32_t changeFrequency = CHANGES_DONTCARE );
 		Format&			attribute( geom::Attrib semantic, int32_t location, int32_t binding, GlslAttributeDataType type );
 		Format&			uniformLayout( const UniformLayout& layout );
 		bool			userDefinedUniformLayout() const { return mUserDefinedUniformLayout; }
@@ -160,7 +161,16 @@ public:
 		fs::path					mTessellationEvalShaderPath;
 		fs::path					mComputeShaderPath;
 
-		std::map<std::string, uint32_t>	mBindings;
+		struct Binding {
+			uint32_t bindingNumber	= INVALID_BINDING;
+			uint32_t setNumber		= DEFAULT_SET;
+			Binding() {}
+			Binding( uint32_t aBindingNumber, uint32_t aSetNumber ) : bindingNumber( aBindingNumber ), setNumber( aSetNumber ) {}
+			virtual ~Binding() {}
+		};
+
+		std::map<std::string, Binding>	mBindings;		// bindingName = binding
+		std::map<uint32_t, uint32_t>	mSets;			// setNumber = changeFrequency
 		std::vector<Attribute>			mAttributes;
 		UniformLayout					mUniformLayout;
 		bool							mUserDefinedUniformLayout = false;

@@ -28,3 +28,11 @@ DeviceLimitsDetailed = TRUE
 DeviceLimitsFile = TRUE
 DeviceLimitsLogFilename = vk_device_limits_log.txt 
 DeviceLimitsFlush = FALSE
+
+# VK_LAYER_LUNARG_draw_state
+DrawStateDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+DrawStateReportFlags = debug,info,error,warn,perf
+DrawStateDetailed = TRUE
+DrawStateFile = FALSE
+DrawStateLogFilename = vk_drawstate_log.txt 
+DrawStateFlush = FALSE

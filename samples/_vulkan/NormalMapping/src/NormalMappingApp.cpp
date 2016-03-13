@@ -266,8 +266,9 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 		mUniformSet->uniform( "ciBlock2.lightSource1_specular", mLightAmbient.specular );
 
 		// Descriptor layout, pool, set
-		mDescriptorSetLayout = vk::DescriptorSetLayout::create( *mUniformSet );
-		mDescriptorPool = vk::DescriptorPool::create( mDescriptorSetLayout->getLayoutBindings() );
+		mDescriptorPool = vk::DescriptorPool::create( mUniformSet->getCachedDescriptorSetLayoutBindings() );
+		mDescriptorSetLayout = vk::DescriptorSetLayout::create( mUniformSet->getCachedDescriptorSetLayoutBindings()[0] );
+		//mDescriptorPool = vk::DescriptorPool::create( mDescriptorSetLayout->getLayoutBindings() );
 		//mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), mUniformLayout, mDescriptorSetLayout );
 
 		// Pipeline layout
@@ -357,23 +358,26 @@ void NormalMappingApp::draw()
 			vk::multModelMatrix( mMeshTransform );
 			{
 				if( ! mDescriptorSet ) {
-					mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool->getDescriptorPool(), *mUniformSet, mDescriptorSetLayout );
+					mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool.get(), mDescriptorSetLayout->vkObject() );
 				}
 
-				for( auto& bindings : mUniformSet->getBindings() ) {
-					if( ! bindings.isBlock() ) {
-						continue;
-					}
-					vk::context()->setDefaultUniformVars( bindings.getUniformBuffer() );
-				}
+				// Fill out uniform vars
+				mUniformSet->setDefaultUniformVars( vk::context() );
 				mUniformSet->bufferPending();
 
+				// Update descriptor set
+				auto descriptorSetWrites = mUniformSet->getSets()[0]->getBindingUpdates( mDescriptorSet->vkObject() );
+				mDescriptorSet->update( descriptorSetWrites );
+
+				// Get current command buffer
 				auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
 
+				// Bind index buffer
 				auto indexBuffer = mMesh->getIndexVbo()->getBuffer();
 				auto indexType = mMesh->getIndexVbo()->getIndexType();
 				vkCmdBindIndexBuffer( cmdBuf, indexBuffer, 0,indexType );
 
+				// Bind vertex buffer
 				std::vector<VkBuffer> vertexBuffers;
 				std::vector<VkDeviceSize> offsets;
 				for( const auto& vb : mMesh->getVertexArrayVbos() ) {
@@ -382,11 +386,14 @@ void NormalMappingApp::draw()
 				}
 				vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
 	
+				// Binding pipeline
 				vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline->getPipeline() );
-
-				std::vector<VkDescriptorSet> descSets = { mDescriptorSet->getDescriptorSet() };
+			
+				// Bind descriptor sets
+				std::vector<VkDescriptorSet> descSets = { mDescriptorSet->vkObject() };
 				vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipelineLayout->getPipelineLayout(), 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
 
+				// Draw geometry
 				int32_t numIndices = mMesh->getNumIndices();
 				vkCmdDrawIndexed( cmdBuf, numIndices, 1, 0, 0, 0 );	
 			}				
@@ -467,8 +474,37 @@ vk::VboMeshRef NormalMappingApp::createDebugMesh( const TriMesh& mesh )
 	return result;
 }
 
+VkBool32 debugReportVk(
+    VkDebugReportFlagsEXT      flags,
+    VkDebugReportObjectTypeEXT objectType,
+    uint64_t                   object,
+    size_t                     location,
+    int32_t                    messageCode,
+    const char*                pLayerPrefix,
+    const char*                pMessage,
+    void*                      pUserData
+)
+{
+	if( flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) {
+		CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_WARNING_BIT_EXT ) {
+		CI_LOG_W( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) {
+		CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_ERROR_BIT_EXT ) {
+		CI_LOG_E( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT ) {
+		CI_LOG_D( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	return VK_FALSE;
+}
+
 const std::vector<std::string> gLayers = {
-	//"VK_LAYER_LUNARG_api_dump",
+	"VK_LAYER_LUNARG_api_dump",
 	//"VK_LAYER_LUNARG_threading",
 	//"VK_LAYER_LUNARG_mem_tracker",
 	//"VK_LAYER_LUNARG_object_tracker",
@@ -480,4 +516,13 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_GOOGLE_unique_objects",
 };
 
-CINDER_APP( NormalMappingApp, RendererVk(  RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setLayers( gLayers ) ), prepareSettings )
+CINDER_APP( 
+	NormalMappingApp, 
+	RendererVk(  
+		RendererVk::Options()
+			.setSamples( VK_SAMPLE_COUNT_8_BIT )
+			.setLayers( gLayers )
+			.setDebugReportCallbackFn( debugReportVk )
+	), 
+	prepareSettings 
+)

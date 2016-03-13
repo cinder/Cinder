@@ -38,6 +38,7 @@
 
 #include "cinder/vk/UniformLayout.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Texture.h"
 #include "cinder/vk/UniformBuffer.h"
 #include "cinder/Utilities.h"
 
@@ -239,9 +240,16 @@ UniformLayout::Block::UniformStore* UniformLayout::Block::findUniformObject( con
 // -------------------------------------------------------------------------------------------------
 // UniformLayout::Binding
 // -------------------------------------------------------------------------------------------------
-UniformLayout::Binding::Binding( const std::string& name, Binding::Type type )
-	: mName( name ), mType( type )
+UniformLayout::Binding::Binding( const std::string& name, Binding::Type type, uint32_t set )
+	: mName( name ), mType( type ), mSet( set )
 {
+}
+
+void UniformLayout::Binding::setTexture( const vk::TextureBaseRef& texture )
+{
+	mTexture = texture; 
+	mType = Binding::Type::SAMPLER;
+	setDirty();
 }
 
 void UniformLayout::Binding::sortUniformsByOffset()
@@ -410,7 +418,7 @@ void UniformLayout::setUniformValue( GlslUniformDataType dataType, const std::st
 	else {
 		// If no array index specified, then update array from values
 		uint32_t arraySize = uniform.getArraySize();
-		int32_t n = std::min<int32_t>( arraySize, srcValues.size() );
+		int32_t n = std::min<int32_t>( static_cast<int32_t>( arraySize ), static_cast<int32_t>( srcValues.size() ) );
 		for( arrayIndex = 0; arrayIndex < n; ++arrayIndex ) {
 			uint8_t* dstData = reinterpret_cast<uint8_t*>( dstValues[arrayIndex].data() );
 			const uint8_t* srcData = reinterpret_cast<const uint8_t*>( &(srcValues[arrayIndex]) );
@@ -565,12 +573,43 @@ UniformLayout& UniformLayout::addUniform( const std::string& name, const vk::Tex
 	return *this;
 }
 
-UniformLayout& UniformLayout::setBinding(const std::string& name, int32_t binding)
+UniformLayout& UniformLayout::setBinding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber )
 {
-	auto bindingRef = findBindingObject( name, Binding::Type::ANY, true );
+	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY, true );
 	if( bindingRef ) {
-		bindingRef->setBinding( binding );
+		bindingRef->setBinding( bindingNumber, setNumber );
 	}
+	return *this;
+}
+
+UniformLayout& UniformLayout::setSet( uint32_t setNumber, uint32_t changeFrequency )
+{
+	auto it = std::find_if(
+		std::begin( mSets ),
+		std::end( mSets ),
+		[setNumber]( const UniformLayout::Set& elem ) -> bool {
+			return elem.getSet() == setNumber;
+		}
+	);
+
+	if( std::end( mSets ) != it ) {
+		auto& set = *it;
+		set.mChangeFrequency = changeFrequency;
+	}
+	else {
+		mSets.push_back( UniformLayout::Set( setNumber, changeFrequency ) );
+	}
+
+/*
+	std::sort( 
+		std::begin( mSets ),
+		std::end( mSets ),
+		[]( const UniformLayout::Set& a, const UniformLayout::Set& b ) -> bool {
+			return a.getChangeFrequency() < b.getChangeFrequency();
+		}
+	);
+*/
+
 	return *this;
 }
 
@@ -671,10 +710,150 @@ void UniformLayout::uniform(const std::string& name, const vk::TextureBaseRef& t
 }
 
 // -------------------------------------------------------------------------------------------------
+// UniformSet::Binding
+// -------------------------------------------------------------------------------------------------
+void UniformSet::Binding::setUniformBuffer( const UniformBufferRef& buffer )
+{
+	mUniformBuffer = buffer;
+	setDirty();
+}
+
+// -------------------------------------------------------------------------------------------------
+// UniformSet::Set
+// -------------------------------------------------------------------------------------------------
+std::vector<VkWriteDescriptorSet> UniformSet::Set::getBindingUpdates( VkDescriptorSet parentDescriptorSet )
+{
+	std::vector<VkWriteDescriptorSet> result;
+
+	for( auto& binding : mBindings ) {
+		if( ! binding.isDirty() ) {
+			continue;
+		}
+
+		VkWriteDescriptorSet entry = {};
+		entry.sType				= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		entry.pNext				= NULL;
+		entry.dstSet			= parentDescriptorSet;
+		entry.descriptorCount	= 1;
+		entry.dstArrayElement	= 0;
+		entry.dstBinding		= binding.getBinding();
+		switch( binding.getType() ) {
+			case UniformLayout::Binding::Type::BLOCK: {
+				if( binding.getUniformBuffer() ) {
+					entry.descriptorType	= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					entry.pBufferInfo		= &(binding.getUniformBuffer()->getBufferInfo());
+				}
+			}
+			break;
+
+			case UniformLayout::Binding::Type::SAMPLER: {
+				if( binding.getTexture() ) {
+					entry.descriptorType	= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					entry.pImageInfo		= &(binding.getTexture()->getImageInfo());
+				}
+			}
+			break;
+
+			default: {
+				// Probably means a new descriptor type got added and needs handling code.
+				assert( false );
+			}
+			break;
+		}
+
+		result.push_back( entry );
+		binding.clearDirty();
+	}
+
+	return result;
+}
+
+// -------------------------------------------------------------------------------------------------
 // UniformSet
 // -------------------------------------------------------------------------------------------------
-UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
+UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& options, vk::Device *device )
+	: mOptions( options )
 {
+	// Copy sets
+	for( const auto& srcSet : layout.getSets() ) {
+		UniformSet::SetRef set( new UniformSet::Set( srcSet.getSet(), srcSet.getChangeFrequency() ) );
+		mSets.push_back( set ); 
+	}
+
+	// Copy bindings
+	const auto& srcBindings = layout.getBindings();
+	for( const auto& srcBinding : srcBindings ) {
+		auto it = std::find_if(
+			std::begin( mSets ),
+			std::end( mSets ),
+			[srcBinding]( const UniformSet::SetRef& elem ) -> bool {
+				return srcBinding.getSet() == elem->getSet();
+			}
+		);
+
+		// There should never be a case in which a binding exists without a known set
+		assert( std::end( mSets ) != it );
+
+		// Create binding
+		UniformSet::Binding binding = UniformSet::Binding( srcBinding );
+		if( binding.isBlock() ) {
+			vk::UniformBuffer::Format uniformBufferFormat = vk::UniformBuffer::Format();
+			uniformBufferFormat.setTransientAllocation( mOptions.getTransientAllocation() );
+			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), uniformBufferFormat, device );
+			binding.setUniformBuffer( buffer );
+		}
+		// Get set
+		auto& set = *it;
+		// Add binding to set
+		set->mBindings.push_back( binding );
+	}
+
+/*
+	// Sort set by change frequency
+	std::sort(
+		std::begin( mSets ),
+		std::end( mSets ),
+		[]( const UniformSet::SetRef& a, const UniformSet::SetRef& b ) -> bool {
+			return a->getChangeFrequency() < b->getChangeFrequency();
+		}
+	);
+*/
+
+	// Create DescriptorSetLayoutBindings
+	for( auto& set : mSets ) {
+		for( const auto& binding : set->mBindings ) {
+			VkDescriptorSetLayoutBinding layoutBinding = {};
+			layoutBinding.binding            = binding.getBinding();
+			layoutBinding.descriptorCount    = 1;
+			layoutBinding.pImmutableSamplers = nullptr;
+			switch( binding.getType() ) {
+				case UniformLayout::Binding::Type::BLOCK: {
+					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+				}
+				break;
+
+				case UniformLayout::Binding::Type::SAMPLER: {
+					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+				}
+				break;		
+			}
+
+			set->mDescriptorSetLayoutBindings.push_back( layoutBinding );
+		}
+	}
+
+	// Cache
+	for( auto& set : mSets ) {
+		std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
+		for( const auto& obj : set->mDescriptorSetLayoutBindings ) {
+			descriptorSetLayoutBindings.push_back( obj );
+		}
+		mCachedDescriptorSetLayoutBindings.push_back( descriptorSetLayoutBindings );
+	}
+
+/*
 	// Create bindings
 	const auto& srcBindings = layout.getBindings();
 	mBindings.resize( srcBindings.size() );
@@ -682,7 +861,7 @@ UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 		const auto& srcBinding = srcBindings[i];
 		mBindings[i] = UniformSet::Binding( srcBinding );
 		if( mBindings[i].isBlock() ) {
-			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), device );
+			UniformBufferRef buffer = UniformBuffer::create( srcBinding.getBlock(), vk::UniformBuffer::Format(), device );
 			mBindings[i].mUniformBuffer = buffer;
 		}
 	}
@@ -709,16 +888,17 @@ UniformSet::UniformSet( const UniformLayout& layout, vk::Device *device )
 
 		mDescriptorSetLayoutBindings.push_back( layoutBinding );
 	}
+*/
 }
 
 UniformSet::~UniformSet()
 {
 }
 
-UniformSetRef UniformSet::create( const UniformLayout& layout, vk::Device *device )
+UniformSetRef UniformSet::create( const UniformLayout& layout, const UniformSet::Options& options, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	UniformSetRef result = UniformSetRef( new UniformSet( layout, device ) );
+	UniformSetRef result = UniformSetRef( new UniformSet( layout, options, device ) );
 	return result;
 }
 
@@ -726,20 +906,26 @@ UniformSet::Binding* UniformSet::findBindingObject( const std::string& name, Bin
 {
 	UniformSet::Binding* result = nullptr;
 
-	auto it = std::find_if(
-		std::begin( mBindings ),
-		std::end( mBindings ),
-		[&name]( const UniformSet::Binding& elem ) -> bool {
-			return ( elem.getName() == name );
-		}
-	);
+	for( const auto& set : mSets ) {
+		auto it = std::find_if(
+			std::begin( set->mBindings ),
+			std::end( set->mBindings ),
+			[&name]( const UniformSet::Binding& elem ) -> bool {
+				return ( elem.getName() == name );
+			}
+		);
 
-	if( it != std::end( mBindings ) ) {
-		// Only return if the found object's type is defined with in the requested's mask. 
-		uint32_t bits = static_cast<uint32_t>( it->getType() );
-		uint32_t mask = static_cast<uint32_t>( bindingType );
-		if(  bits & mask ) {
-			result = &(*it);
+		if( it != std::end( set->mBindings ) ) {
+			// Only return if the found object's type is defined with in the requested's mask. 
+			uint32_t bits = static_cast<uint32_t>( it->getType() );
+			uint32_t mask = static_cast<uint32_t>( bindingType );
+			if(  bits & mask ) {
+				result = &(*it);
+			}
+		}
+
+		if( nullptr != result ) {
+			break;
 		}
 	}
 
@@ -749,11 +935,20 @@ UniformSet::Binding* UniformSet::findBindingObject( const std::string& name, Bin
 template <typename T>
 void UniformSet::updateUniform( const std::string& name, const T& value )
 {
-	for( auto& binding : mBindings ) {
-		if( ! binding.isBlock() ) {
-			continue;
-		}
-		binding.mUniformBuffer->uniform( name, value );
+	// Parse out binding name
+	std::vector<std::string> tokens = ci::split( name, "." );
+	if( 2 != tokens.size() ) {
+		std::string msg = "Invalid uniform name: " + name + ", must be in block.variable format";
+		throw std::runtime_error( msg );
+	}
+
+	// Binding name
+	const std::string& bindingName = tokens[0];
+
+	// Find binding and update
+	UniformSet::Binding* binding = this->findBindingObject( bindingName, Binding::Type::ANY );
+	if( ( nullptr != binding ) && binding->isBlock() ) {
+		binding->getUniformBuffer()->uniform( name, value );
 	}
 }
 
@@ -845,13 +1040,27 @@ void UniformSet::uniform( const std::string& name, const TextureBaseRef& texture
 	}
 }
 
+void UniformSet::setDefaultUniformVars( vk::Context *context )
+{
+	for( auto& set : mSets ) {
+		for( auto& binding : set->getBindings() ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			context->setDefaultUniformVars( binding.getUniformBuffer() );
+		}
+	}
+}
+
 void UniformSet::bufferPending()
 {
-	for( auto& binding : mBindings ) {
-		if( ! binding.isBlock() ) {
-			continue;
+	for( auto& set : mSets ) {
+		for( auto& binding : set->mBindings ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			binding.getUniformBuffer()->bufferPending();
 		}
-		binding.getUniformBuffer()->bufferPending();
 	}
 }
 

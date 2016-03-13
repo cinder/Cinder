@@ -37,9 +37,10 @@ public:
 protected:
 	ci::vk::VertexBufferRef							mVertexBuffer;
 	ci::vk::UniformSetRef							mUniformSet;
-	ci::vk::DescriptorSetLayoutRef					mDescriptorSetLayout;
-	ci::vk::DescriptorPoolRef						mDescriptorPool;
-	ci::vk::DescriptorSetRef						mDescriptorSet;
+	ci::vk::DescriptorSetViewRef					mDescriptorSetView;
+	//ci::vk::DescriptorSetLayoutRef				mDescriptorSetLayout;
+	//ci::vk::DescriptorPoolRef						mDescriptorPool;
+	//ci::vk::DescriptorSetRef						mDescriptorSet;
 	ci::vk::PipelineLayoutRef						mPipelineLayout;
 	std::vector<VkVertexInputBindingDescription>	mVertexBindings;
 	std::vector<VkVertexInputAttributeDescription>	mVertexAttributes;

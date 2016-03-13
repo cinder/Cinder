@@ -291,7 +291,7 @@ void VertexBufferMeshGeomTarget::copyIndices( geom::Primitive primitive, const u
 		std::unique_ptr<uint16_t[]> indices( new uint16_t[numIndices] );
 		copyIndexData( source, numIndices, indices.get() );
 		if( ! mVertexBufferMesh->mIndices ) {
-			mVertexBufferMesh->mIndices = IndexBuffer::create( numIndices, mVertexBufferMesh->mIndexType, indices.get() );
+			mVertexBufferMesh->mIndices = IndexBuffer::create( numIndices, mVertexBufferMesh->mIndexType, indices.get(), vk::IndexBuffer::Format( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) );
 		}
 		else {
 			mVertexBufferMesh->mIndices->bufferData( numIndices * sizeof(uint16_t), indices.get() );
@@ -302,7 +302,7 @@ void VertexBufferMeshGeomTarget::copyIndices( geom::Primitive primitive, const u
 		std::unique_ptr<uint32_t[]> indices( new uint32_t[numIndices] );
 		copyIndexData( source, numIndices, indices.get() );
 		if( ! mVertexBufferMesh->mIndices ) {			
-			mVertexBufferMesh->mIndices = IndexBuffer::create( numIndices, mVertexBufferMesh->mIndexType, indices.get() );
+			mVertexBufferMesh->mIndices = IndexBuffer::create( numIndices, mVertexBufferMesh->mIndexType, indices.get(), vk::IndexBuffer::Format( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) );
 		}
 		else {
 			mVertexBufferMesh->mIndices->bufferData( numIndices * sizeof(uint32_t), indices.get() );
@@ -407,7 +407,7 @@ void VertexBufferMesh::Layout::allocate( size_t numVertices,geom::BufferLayout *
 		}
 		else { // else allocate 
 			//*resultVbo = Vbo::create( GL_ARRAY_BUFFER, totalDataBytes, nullptr, mUsage );
-			*resultVbo = VertexBuffer::create( nullptr, totalDataBytes );
+			*resultVbo = VertexBuffer::create( nullptr, totalDataBytes, vk::VertexBuffer::Format( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) );
 		}
 	}
 }
@@ -539,7 +539,7 @@ void VertexBufferMesh::allocateIndexVbo()
 	else
 		throw geom::ExcIllegalIndexType();
 		
-	mIndices = vk::IndexBuffer::create( mNumIndices, mIndexType, nullptr );
+	mIndices = vk::IndexBuffer::create( mNumIndices, mIndexType, nullptr, vk::IndexBuffer::Format( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) );
 }
 
 /*

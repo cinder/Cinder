@@ -40,6 +40,7 @@
 #include "cinder/app/RendererVk.h"
 #include "cinder/vk/vk.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -77,8 +78,10 @@ void RotatingCubeApp::setup()
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset("shader.vert") )
 			.fragment( loadAsset("shader.frag") )
-			.binding( "ciBlock0", 0 )
-			.binding( "uTex0", 1 )
+			.binding( "ciBlock0", 0, 0 )
+			.binding( "uTex0", 0, 1 )
+			.set( 0, ci::vk::CHANGES_FREQUENT )
+			.set( 1, ci::vk::CHANGES_SELDOM )
 			.attribute( geom::Attrib::POSITION,    0, 0, vk::glsl_attr_vec4 )
 			.attribute( geom::Attrib::TEX_COORD_0, 1, 0, vk::glsl_attr_vec2 )
 			.attribute( geom::Attrib::NORMAL,      2, 0, vk::glsl_attr_vec3 )

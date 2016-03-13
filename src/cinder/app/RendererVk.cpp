@@ -258,6 +258,10 @@ void RendererVk::startDraw()
 
 		// Begin the renderer. This will also begin the command buffer since this is the non-explicit path.
 		presenter->beginRender( mContext->getDefaultCommandBuffer(), mContext.get() );
+
+		if( ! presenter->isMultiSample() ) {
+			mContext->clearAttachments();
+		}
 	}
 }
 

@@ -42,8 +42,8 @@
 
 namespace cinder { namespace vk {
 
-VertexBuffer::VertexBuffer( const void* data, size_t dataSize, vk::Device *device )
-	: Buffer( false, dataSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, device )
+VertexBuffer::VertexBuffer( const void* data, size_t dataSize, const vk::VertexBuffer::Format& format, vk::Device *device )
+	: vk::Buffer( false, dataSize, format, device )
 {
 	initialize( data, dataSize);
 }
@@ -63,12 +63,14 @@ void VertexBuffer::initialize( const void* data, size_t dataSize )
 	}
 
 	Buffer::initialize();
-
-	if( nullptr != data ) {
+	bufferData( dataSize, data );
+/*
+	if( mFormat.hasMemoryPropertyHostVisible() ) {
 		void *dst = map();
 		std::memcpy( dst, static_cast<const void*>( data ), dataSize );
 		unmap();
 	}
+*/
 
 	mDevice->trackedObjectCreated( this );
 }
@@ -86,10 +88,10 @@ void VertexBuffer::destroy( bool removeFromTracking )
 	Buffer::destroy( removeFromTracking );
 }
 
-VertexBufferRef VertexBuffer::create( const void* data, size_t dataSize, vk::Device *device )
+VertexBufferRef VertexBuffer::create( const void* data, size_t dataSize, const vk::VertexBuffer::Format& format, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	VertexBufferRef result = VertexBufferRef( new VertexBuffer( data, dataSize, device ) );
+	VertexBufferRef result = VertexBufferRef( new VertexBuffer( data, dataSize, format, device ) );
 	return result;
 }
 

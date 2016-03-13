@@ -85,6 +85,8 @@ public:
 
 	vk::Device*							getDevice() const { return mDevice; }
 
+	bool								isMultiSample() const { return mOptions.mMultiSample; }
+
 	const vk::SwapchainRef&				getSwapchain() const { return mSwapchain; }
 	uint32_t							getCurrentImageIndex() const { return mCurrentImageIndex; }
 

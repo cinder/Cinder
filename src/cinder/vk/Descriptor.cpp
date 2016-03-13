@@ -48,16 +48,10 @@ namespace cinder { namespace vk {
 // ------------------------------------------------------------------------------------------------ 
 // DescriptorSetLayout
 // ------------------------------------------------------------------------------------------------ 
-DescriptorSetLayout::DescriptorSetLayout( const UniformSet &uniformSet, vk::Device *device )
+DescriptorSetLayout::DescriptorSetLayout( const std::vector<VkDescriptorSetLayoutBinding>& bindings, vk::Device *device )
 	: BaseDeviceObject( device )
 {
-	initialize( uniformSet );
-}
-
-DescriptorSetLayout::DescriptorSetLayout( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device )
-	: BaseDeviceObject( device )
-{
-	initialize( layoutBindings );
+	initialize( bindings );
 }
 
 DescriptorSetLayout::~DescriptorSetLayout()
@@ -65,54 +59,33 @@ DescriptorSetLayout::~DescriptorSetLayout()
 	destroy();
 }
 
-DescriptorSetLayoutRef DescriptorSetLayout::create( const UniformSet &uniformSet, vk::Device *device )
+DescriptorSetLayoutRef DescriptorSetLayout::create( const std::vector<VkDescriptorSetLayoutBinding>& bindings, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	DescriptorSetLayoutRef result = DescriptorSetLayoutRef( new DescriptorSetLayout( uniformSet, device ) );
+	DescriptorSetLayoutRef result = DescriptorSetLayoutRef( new DescriptorSetLayout( bindings, device ) );
 	return result;
 }
 
-DescriptorSetLayoutRef DescriptorSetLayout::create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device )
+std::vector<vk::DescriptorSetLayoutRef> DescriptorSetLayout::create( const std::vector<std::vector<VkDescriptorSetLayoutBinding>>& setOfBindings, vk::Device *device )
 {
-	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	DescriptorSetLayoutRef result = DescriptorSetLayoutRef( new DescriptorSetLayout( layoutBindings, device ) );
-	return result;
-}
-
-void DescriptorSetLayout::initialize(const UniformSet &uniformSet)
-{
-	//const bool useTexture = false;
-
-	if( VK_NULL_HANDLE != mDescriptorSetLayout ) {
-		return;
+	std::vector<vk::DescriptorSetLayoutRef> result;
+	for( const auto& bindings : setOfBindings ) {
+		vk::DescriptorSetLayoutRef layout = vk::DescriptorSetLayout::create( bindings, device );
+		result.push_back( layout );
 	}
-
-	mLayoutBindings = uniformSet.getDescriptorSetlayoutBindings();
-
-    VkDescriptorSetLayoutCreateInfo descriptorLayout = {};
-    descriptorLayout.sType			= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    descriptorLayout.pNext			= nullptr;
-    descriptorLayout.bindingCount	= static_cast<uint32_t>( mLayoutBindings.size() );
-    descriptorLayout.pBindings		= mLayoutBindings.empty() ? nullptr : mLayoutBindings.data();
-
-    VkResult res = vkCreateDescriptorSetLayout( mDevice->getDevice(), &descriptorLayout, nullptr, &mDescriptorSetLayout );
-    assert(res == VK_SUCCESS);
-
-	mDevice->trackedObjectCreated( this );
+	return result;
 }
 
-void DescriptorSetLayout::initialize( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings )
+void DescriptorSetLayout::initialize( const std::vector<VkDescriptorSetLayoutBinding>& bindings )
 {
-	mLayoutBindings = layoutBindings;
+    VkDescriptorSetLayoutCreateInfo createInfo = {};
+    createInfo.sType		= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    createInfo.pNext		= nullptr;
+    createInfo.bindingCount	= static_cast<uint32_t>( bindings.size() );
+    createInfo.pBindings	= bindings.empty() ? nullptr : bindings.data();
 
-    VkDescriptorSetLayoutCreateInfo descriptorLayout = {};
-    descriptorLayout.sType			= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    descriptorLayout.pNext			= nullptr;
-    descriptorLayout.bindingCount	= static_cast<uint32_t>( mLayoutBindings.size() );
-    descriptorLayout.pBindings		= mLayoutBindings.empty() ? nullptr : mLayoutBindings.data();
-
-    VkResult res = vkCreateDescriptorSetLayout( mDevice->getDevice(), &descriptorLayout, nullptr, &mDescriptorSetLayout );
-    assert(res == VK_SUCCESS);
+    VkResult res = vkCreateDescriptorSetLayout( mDevice->getDevice(), &createInfo, nullptr, &mDescriptorSetLayout );
+    assert( VK_SUCCESS == res );
 
 	mDevice->trackedObjectCreated( this );
 }
@@ -145,13 +118,13 @@ DescriptorSetLayoutSelectorRef DescriptorSetLayoutSelector::create( vk::Device *
 	return result;
 }
 
-VkDescriptorSetLayout DescriptorSetLayoutSelector::getSelectedLayout( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings ) const
+VkDescriptorSetLayout DescriptorSetLayoutSelector::getSelectedLayout( const std::vector<VkDescriptorSetLayoutBinding>& bindings ) const
 {
 	VkDescriptorSetLayout result = VK_NULL_HANDLE;
-	if( ! layoutBindings.empty() ) {
+	if( ! bindings.empty() ) {
 		// Calculate the hash
-		const char *s = reinterpret_cast<const char*>( layoutBindings.data() );
-		size_t len = layoutBindings.size()*sizeof( VkDescriptorSetLayoutBinding );
+		const char *s = reinterpret_cast<const char*>( bindings.data() );
+		size_t len = bindings.size()*sizeof( VkDescriptorSetLayoutBinding );
 		uint32_t hash = ::util::Hash32( s, len );
 		// Look up using hash
 		auto it = std::find_if(
@@ -163,28 +136,27 @@ VkDescriptorSetLayout DescriptorSetLayoutSelector::getSelectedLayout( const std:
 		);
 		// If a descriptor set layout is found, select it
 		if( it != std::end( mDescriptorSetLayouts ) ) {
-			result = it->second->getDescriptorSetLayout();
+			result = it->second->vkObject();
 		}
 		// Otherwise create it
 		else {
 			std::lock_guard<std::mutex> lock( mMutex );
 
-			vk::DescriptorSetLayoutRef dsl = vk::DescriptorSetLayout::create( layoutBindings, mDevice );			
-			mDescriptorSetLayouts.push_back( std::make_pair( HashData( layoutBindings, hash ), dsl ) );
-			result = dsl->getDescriptorSetLayout();
+			vk::DescriptorSetLayoutRef dsl = vk::DescriptorSetLayout::create( bindings, mDevice );			
+			mDescriptorSetLayouts.push_back( std::make_pair( HashData( bindings, hash ), dsl ) );
+			result = dsl->vkObject();
 		}
 	}
 	return result;
 }
 
-
 // ------------------------------------------------------------------------------------------------ 
 // DescriptorPool
 // ------------------------------------------------------------------------------------------------ 
-DescriptorPool::DescriptorPool( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device )
-	: BaseDeviceObject( device )
+DescriptorPool::DescriptorPool( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings, const DescriptorPool::Options& options, vk::Device *device )
+	: BaseDeviceObject( device ), mOptions( options )
 {
-	initialize( layoutBindings );
+	initialize( maxSets, bindings );
 }
 
 DescriptorPool::~DescriptorPool()
@@ -192,22 +164,35 @@ DescriptorPool::~DescriptorPool()
 	destroy();
 }
 
-DescriptorPoolRef DescriptorPool::create( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings, vk::Device *device )
+DescriptorPoolRef DescriptorPool::create( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings, const DescriptorPool::Options& options, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	DescriptorPoolRef result = DescriptorPoolRef( new DescriptorPool( layoutBindings, device ) );
+	DescriptorPoolRef result = DescriptorPoolRef( new DescriptorPool( maxSets, bindings, options, device ) );
 	return result;
 }
 
-void DescriptorPool::initialize( const std::vector<VkDescriptorSetLayoutBinding>& layoutBindings )
+DescriptorPoolRef DescriptorPool::create( const std::vector<std::vector<VkDescriptorSetLayoutBinding>>& setOfBindings, const DescriptorPool::Options& options, vk::Device *device )
 {
-	if( VK_NULL_HANDLE != mDescriptorPool ) {
-		return;
+	uint32_t maxSets = static_cast<uint32_t>( setOfBindings.size() );
+	std::vector<VkDescriptorSetLayoutBinding> bindings;
+
+	for( const auto& srcBindings : setOfBindings ) {
+		std::copy( std::begin( srcBindings ), std::end( srcBindings ), std::back_inserter( bindings ) );
 	}
 
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	DescriptorPoolRef result = DescriptorPoolRef( new DescriptorPool( maxSets, bindings, options, device ) );
+	return result;
+}
+
+void DescriptorPool::initialize( uint32_t maxSets, const std::vector<VkDescriptorSetLayoutBinding>& bindings )
+{
+	// @TODO: Find optimization to minimize maxSets and descriptor type counts so the pool
+	//        is sized appropriate for amount of resources needed.
+
 	std::map<VkDescriptorType, uint32_t> mappedCounts;
-	for( const auto& layoutBinding : layoutBindings ) {
-		VkDescriptorType descType = layoutBinding.descriptorType;
+	for( const auto& binding : bindings ) {
+		VkDescriptorType descType = binding.descriptorType;
 		auto it = mappedCounts.find( descType );
 		if( it != mappedCounts.end() ) {
 			++mappedCounts[descType];
@@ -225,20 +210,11 @@ void DescriptorPool::initialize( const std::vector<VkDescriptorSetLayoutBinding>
 		typeCounts.push_back( entry );
 	}
 
-	/*
-	std::vector<VkDescriptorPoolSize> typeCounts;
-	for( const auto& layoutBinding : layoutBindings ) {
-		VkDescriptorPoolSize entry = {};
-		entry.type            = layoutBinding.descriptorType;
-		entry.descriptorCount = 1;
-		typeCounts.push_back( entry );
-	}
-	*/
-
 	VkDescriptorPoolCreateInfo createInfo = {};
 	createInfo.sType			= VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	createInfo.pNext			= nullptr;
-	createInfo.maxSets			= 1;
+	createInfo.flags			= mOptions.mCreateFlags;
+	createInfo.maxSets			= maxSets;
 	createInfo.poolSizeCount	= static_cast<uint32_t>( typeCounts.size() );
 	createInfo.pPoolSizes		= typeCounts.empty() ? nullptr : typeCounts.data();
 
@@ -265,97 +241,84 @@ void DescriptorPool::destroy( bool removeFromTracking )
 // ------------------------------------------------------------------------------------------------ 
 // DescriptorSet
 // ------------------------------------------------------------------------------------------------ 
-DescriptorSet::DescriptorSet( VkDescriptorPool descriptorPool, const UniformSet& uniformSet, const DescriptorSetLayoutRef &descriptorSetLayout, vk::Device *device )
+DescriptorSet::DescriptorSet( vk::DescriptorPool *descriptorPool, VkDescriptorSetLayout layout, vk::Device *device )
 	: BaseDeviceObject( device ),
 	  mDescriptorPool( descriptorPool )
 {
-	initialize( uniformSet, descriptorSetLayout );
+	initialize( layout );
 }
 
-DescriptorSet::DescriptorSet( VkDescriptorPool descriptorPool, const UniformSet &uniformSet, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device )
-	: BaseDeviceObject( device ),
-	  mDescriptorPool( descriptorPool )
-{
-	initialize( uniformSet, descriptorSetLayout );
-}
 
 DescriptorSet::~DescriptorSet()
 {
 	destroy();
 }
 
-DescriptorSetRef DescriptorSet::create( VkDescriptorPool descriptorPool, const UniformSet& uniformSet, const DescriptorSetLayoutRef &descriptorSetLayout, vk::Device *device )
+DescriptorSetRef DescriptorSet::create( vk::DescriptorPool *descriptorPool, VkDescriptorSetLayout layout, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	DescriptorSetRef result = DescriptorSetRef( new DescriptorSet( descriptorPool, uniformSet, descriptorSetLayout, device ) );
+	vk::DescriptorSetRef result = vk::DescriptorSetRef( new vk::DescriptorSet( descriptorPool, layout, device ) );
 	return result;
 }
 
-cinder::vk::DescriptorSetRef DescriptorSet::create(VkDescriptorPool descriptorPool, const UniformSet &uniformSet, VkDescriptorSetLayout descriptorSetLayout, vk::Device *device )
+std::vector<vk::DescriptorSetRef> DescriptorSet::create( vk::DescriptorPool *descriptorPool, const std::vector<VkDescriptorSetLayout>& layouts, vk::Device *device )
 {
-	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	DescriptorSetRef result = DescriptorSetRef( new DescriptorSet( descriptorPool, uniformSet, descriptorSetLayout, device ) );
+	std::vector<vk::DescriptorSetRef> result;
+	for( const auto& layout : layouts ) {
+		vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool, layout, device );
+		result.push_back( descriptorSet );
+	}
 	return result;
 }
 
-void DescriptorSet::initialize( const UniformSet &uniformSet, const DescriptorSetLayoutRef &descriptorSetLayout )
+void DescriptorSet::initialize( VkDescriptorSetLayout layout )
 {
-	std::vector<VkDescriptorSetLayout> descSetLayouts;
-	descSetLayouts.push_back( descriptorSetLayout->getDescriptorSetLayout() );
+	std::vector<VkDescriptorSetLayout> layouts = { layout };
 
-	VkDescriptorSetAllocateInfo allocInfo[1];
-	allocInfo[0].sType				= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo[0].pNext				= nullptr;
-	allocInfo[0].descriptorPool		= mDescriptorPool;
-	allocInfo[0].descriptorSetCount	= static_cast<uint32_t>( descSetLayouts.size() );
-	allocInfo[0].pSetLayouts		= descSetLayouts.empty() ? nullptr : descSetLayouts.data();
+	VkDescriptorSetAllocateInfo allocInfo = {};
+	allocInfo.sType					= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocInfo.pNext					= nullptr;
+	allocInfo.descriptorPool		= mDescriptorPool->vkObject();
+	allocInfo.descriptorSetCount	= static_cast<uint32_t>( layouts.size() );
+	allocInfo.pSetLayouts			= layouts.empty() ? nullptr : layouts.data();
 
-	VkResult res = vkAllocateDescriptorSets( mDevice->getDevice(), allocInfo, &mDescriptorSet );
-	assert( res == VK_SUCCESS );
-
-	update( uniformSet );
+	VkResult res = vkAllocateDescriptorSets( mDevice->getDevice(), &allocInfo, &mDescriptorSet );
+	assert( VK_SUCCESS == res );
 
 	mDevice->trackedObjectCreated( this );
 }
 
-void DescriptorSet::initialize( const UniformSet &uniformSet, VkDescriptorSetLayout descriptorSetLayout )
-{
-	VkDescriptorSetAllocateInfo allocInfo[1];
-	allocInfo[0].sType				= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo[0].pNext				= nullptr;
-	allocInfo[0].descriptorPool		= mDescriptorPool;
-	allocInfo[0].descriptorSetCount	= 1;
-	allocInfo[0].pSetLayouts		= &descriptorSetLayout;
-
-	VkResult res = vkAllocateDescriptorSets( mDevice->getDevice(), allocInfo, &mDescriptorSet );
-	assert( res == VK_SUCCESS );
-
-	update( uniformSet );
-
-	mDevice->trackedObjectCreated( this );
-}
-
-void DescriptorSet::destroy(bool removeFromTracking)
+void DescriptorSet::destroy( bool removeFromTracking )
 {
 	if( VK_NULL_HANDLE == mDescriptorSet ) {
 		return;
 	}
 
-	VkDescriptorSet descSets[1] = { mDescriptorSet };
-	vkFreeDescriptorSets( mDevice->getDevice(), mDescriptorPool, 1, descSets );
+	if( nullptr != mDescriptorPool ) {
+		const auto& options = mDescriptorPool->getOptions();
+		if( options.hasFreeDescriptorSetFlag() ) {
+			VkDescriptorSet descSets[1] = { mDescriptorSet };
+			vkFreeDescriptorSets( mDevice->getDevice(), mDescriptorPool->vkObject(), 1, descSets );
+		}
+	}
 	mDescriptorSet = VK_NULL_HANDLE;
-	mDescriptorPool = VK_NULL_HANDLE;
+	mDescriptorPool = nullptr;
 	
 	if( removeFromTracking ) {
 		mDevice->trackedObjectDestroyed( this );
 	}
 }
 
-void DescriptorSet::update( const UniformSet& uniformSet )
+/*
+void DescriptorSet::update( const vk::UniformSet::SetRef& uniformSet )
 {
 	std::vector<VkWriteDescriptorSet> writes;
-	const auto& bindings = uniformSet.getBindings();
+	const auto& bindings = uniformSet->getBindings();
 	for( const auto& binding : bindings ) {
+		if( ! binding.isDirty() ) {
+			return;
+		}
+
 		bool addEntry = false;
 		VkWriteDescriptorSet entry = {};
 		entry.sType				= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -387,11 +350,91 @@ void DescriptorSet::update( const UniformSet& uniformSet )
 		if( addEntry ) {
 			writes.push_back( entry );
 		}
+
+		binding.clearDirty();
 	}
 
 	if( ! writes.empty() ) {
 		vkUpdateDescriptorSets( mDevice->getDevice(), static_cast<uint32_t>( writes.size() ), writes.data(), 0, nullptr );
 	}
+}
+*/
+
+void DescriptorSet::update( const std::vector<VkWriteDescriptorSet>& writes )
+{
+	if( writes.empty() ) {
+		return;
+	}
+
+	vkUpdateDescriptorSets( mDevice->getDevice(), static_cast<uint32_t>( writes.size() ), writes.data(), 0, nullptr );
+}
+
+// ------------------------------------------------------------------------------------------------ 
+// DescriptorSetView
+// ------------------------------------------------------------------------------------------------ 
+DescriptorSetView::DescriptorSetView( const vk::UniformSetRef& uniformSet, vk::Device *device )
+	: mDevice( device ), mUniformSet( uniformSet )
+{
+	mDescriptorPool = vk::DescriptorPool::create( mUniformSet->getCachedDescriptorSetLayoutBindings(), vk::DescriptorPool::Options(), mDevice );
+	mDescriptorSetLayouts = vk::DescriptorSetLayout::create( mUniformSet->getCachedDescriptorSetLayoutBindings(), mDevice );
+
+	for( const auto& dsl : mDescriptorSetLayouts ) {
+		mCachedDescriptorSetLayouts.push_back( dsl->vkObject() );
+	}
+}
+
+DescriptorSetView::~DescriptorSetView()
+{
+	mDevice = nullptr;
+	mUniformSet.reset();
+	mDescriptorSetLayouts.clear();
+	mDescriptorPool.reset();
+	mDescriptorSets.clear();
+}
+
+vk::DescriptorSetViewRef DescriptorSetView::create( const vk::UniformSetRef& uniformSet, vk::Device *device )
+{
+	vk::DescriptorSetViewRef result = vk::DescriptorSetViewRef( new vk::DescriptorSetView( uniformSet, device ) );
+	return result;
+}
+
+void DescriptorSetView::allocateDescriptorSets()
+{
+	if( mDescriptorSets.empty() ) {
+		std::vector<VkDescriptorSetLayout> layouts;
+		for( const auto& layoutRef : mDescriptorSetLayouts ) {
+			layouts.push_back( layoutRef->vkObject() );
+		}
+
+		mDescriptorSets = vk::DescriptorSet::create( mDescriptorPool.get(), layouts, mDevice ); 
+
+/*
+		std::sort(
+			std::begin( mDescriptorSets ),
+			std::end( mDescriptorSets ),
+			[]( const vk::DescriptorSetRef& a, const vk::DescriptorSetRef& b ) -> bool {
+				uint32_t changeFreqA = a->getSet()->getChangeFrequency();
+				uint32_t changeFreqB = b->getSet()->getChangeFrequency();
+				return changeFreqA < changeFreqB;
+			}
+		);
+*/
+	}
+}
+
+void DescriptorSetView::updateDescriptorSets()
+{
+	auto& uniformSets = mUniformSet->getSets();
+	for( size_t i = 0; i < mDescriptorSets.size(); ++i ) {
+		auto writes = uniformSets[i]->getBindingUpdates( mDescriptorSets[i]->vkObject() );
+		mDescriptorSets[i]->update( writes );
+	}
+
+/*
+	for( const auto& ds : mDescriptorSets ) {
+		ds->update();
+	}
+*/
 }
 
 }} // namespace cinder::vk

@@ -50,8 +50,8 @@ namespace cinder { namespace vk {
 // -------------------------------------------------------------------------------------------------
 // UniformBuffer
 // -------------------------------------------------------------------------------------------------
-UniformBuffer::UniformBuffer( const UniformLayout::Block& block, vk::Device *device )
-	: Buffer( false, block.getSizeBytes(), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, device )
+UniformBuffer::UniformBuffer( const UniformLayout::Block& block, const vk::UniformBuffer::Format& format, vk::Device *device )
+	: Buffer( false, block.getSizeBytes(), format, device )
 {
 	initialize( block );
 }
@@ -126,10 +126,10 @@ void UniformBuffer::destroy( bool removeFromTracking )
 	Buffer::destroy( removeFromTracking );
 }
 
-UniformBufferRef UniformBuffer::create( const UniformLayout::Block& block, vk::Device *device )
+UniformBufferRef UniformBuffer::create( const UniformLayout::Block& block, const vk::UniformBuffer::Format& format, vk::Device *device )
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
-	UniformBufferRef result = UniformBufferRef( new UniformBuffer( block, device ) );
+	UniformBufferRef result = UniformBufferRef( new UniformBuffer( block, format, device ) );
 	return result;
 }
 

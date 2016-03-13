@@ -45,8 +45,8 @@ layout(std140, binding = 1) uniform ciBlock1T {
 	uniform float			uTimeDelta;
 } ciBlock1;
 
-layout(binding = 2) uniform sampler2DRect	uPosition;
-layout(binding = 3) uniform sampler2DRect	uVelocity;
+layout(binding = 2) uniform sampler2D	uPosition;
+layout(binding = 3) uniform sampler2D	uVelocity;
 
 layout(location = 1) in vec2	vTexCoord;
 
@@ -54,8 +54,8 @@ layout(location = 0) out vec4	FragColor;
 
 void main()
 {	
-	vec4 Pos		= texture( uPosition, vTexCoord * vec2( ciBlock1.uFboRes ) );
-	vec4 Vel		= texture( uVelocity, vTexCoord * vec2( ciBlock1.uFboRes ) );
+	vec4 Pos		= textureLod( uPosition, vTexCoord * vec2( ciBlock1.uFboRes ), 0 );
+	vec4 Vel		= textureLod( uVelocity, vTexCoord * vec2( ciBlock1.uFboRes ), 0 );
 	
 	vec3 newPos	= Pos.xyz + ( ( Vel.xyz ) * ( Vel.a * 0.1 ) * ciBlock1.uTimeDelta );
 

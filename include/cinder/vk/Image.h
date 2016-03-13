@@ -120,14 +120,10 @@ public:
 		VkImageUsageFlags		mUsage   = VK_IMAGE_USAGE_SAMPLED_BIT;
 		VkMemoryPropertyFlags	mMemoryProperty = 0;
 		VkImageLayout			mInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-
 		uint32_t				mMipLevels = 1;
 		uint32_t				mArrayLayers = 1;
-
 		VkImageCreateFlags		mCreateFlags = 0;
-
 		bool					mTransientAllocation = false;
-
 		friend class Image;
 	};
 

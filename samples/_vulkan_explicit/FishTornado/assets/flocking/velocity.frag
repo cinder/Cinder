@@ -55,8 +55,8 @@ layout(std140, binding = 1) uniform ciBlock1T {
 	uniform float	uZoneRadius;
 } ciBlock1;
 
-layout(binding = 2) uniform sampler2DRect uPosition;
-layout(binding = 3) uniform sampler2DRect uVelocity;
+layout(binding = 2) uniform sampler2D uPosition;
+layout(binding = 3) uniform sampler2D uVelocity;
 
 layout(location = 1) in vec2 vTexCoord;
 
@@ -64,12 +64,12 @@ layout(location = 0) out vec4 FragColor;
 
 void main()
 {	
-	vec4 vPos			= texture( uPosition, vTexCoord * vec2( FBO_RES ) );
+	vec4 vPos			= textureLod( uPosition, vTexCoord * vec2( FBO_RES ), 0 );
 	vec3 myPos			= vPos.xyz;
 	float leadership	= vPos.a;
 	float accMulti		= leadership * ciBlock1.uTimeDelta * 0.5;
 	
-	vec4 vVel			= texture( uVelocity, vTexCoord * vec2( FBO_RES ) );
+	vec4 vVel			= textureLod( uVelocity, vTexCoord * vec2( FBO_RES ), 0 );
 	vec3 myVel			= vVel.xyz;
 	float myCrowd		= vVel.a;
 	
@@ -93,8 +93,8 @@ void main()
 		{
 			float s 		= abs( x - myX ) + abs( y - myY );			
 			vec2 tc			= vec2( x, y );
-			vec3 pos		= texture( uPosition, tc ).xyz;
-			vec3 vel 		= texture( uVelocity, tc ).xyz;
+			vec3 pos		= textureLod( uPosition, tc, 0 ).xyz;
+			vec3 vel 		= textureLod( uVelocity, tc, 0 ).xyz;			
 			vec3 dir		= myPos - pos;
 			float distSqrd	= dot( dir, dir );			
 						

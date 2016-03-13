@@ -467,7 +467,7 @@ Texture2dRef Texture2d::create( const gl::TextureData& textureData, const Textur
 	Texture2dRef result;
 	VkFormat internalFormat = determineCompressedFormat( textureData.getInternalFormat() );
 	if( VK_FORMAT_UNDEFINED != internalFormat ) {
-		vk::BufferRef buf = vk::Buffer::create( textureData.getDataStoreSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT );
+		vk::BufferRef buf = vk::Buffer::create( textureData.getDataStoreSize(), vk::Buffer::Format( VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) );
 		buf->bufferData( textureData.getDataStoreSize(), textureData.getDataStorePtr( 0 ) );
 
 		uint32_t width = textureData.getWidth();
