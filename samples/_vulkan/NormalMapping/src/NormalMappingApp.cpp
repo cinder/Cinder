@@ -361,16 +361,17 @@ void NormalMappingApp::draw()
 					mDescriptorSet = vk::DescriptorSet::create( mDescriptorPool.get(), mDescriptorSetLayout->vkObject() );
 				}
 
+				// Get current command buffer
+				auto cmdBufRef = vk::context()->getCommandBuffer();
+				auto cmdBuf = cmdBufRef->getCommandBuffer();
+
 				// Fill out uniform vars
 				mUniformSet->setDefaultUniformVars( vk::context() );
-				mUniformSet->bufferPending();
+				mUniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 				// Update descriptor set
 				auto descriptorSetWrites = mUniformSet->getSets()[0]->getBindingUpdates( mDescriptorSet->vkObject() );
 				mDescriptorSet->update( descriptorSetWrites );
-
-				// Get current command buffer
-				auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
 
 				// Bind index buffer
 				auto indexBuffer = mMesh->getIndexVbo()->getBuffer();
