@@ -724,12 +724,12 @@ void UniformSet::Binding::setUniformBuffer( const UniformBufferRef& buffer )
 std::vector<VkWriteDescriptorSet> UniformSet::Set::getBindingUpdates( VkDescriptorSet parentDescriptorSet )
 {
 	std::vector<VkWriteDescriptorSet> result;
+
 	for( auto& binding : mBindings ) {
 		if( ! binding.isDirty() ) {
 			continue;
 		}
 
-		bool addEntry = false;
 		VkWriteDescriptorSet entry = {};
 		entry.sType				= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		entry.pNext				= NULL;
@@ -742,7 +742,6 @@ std::vector<VkWriteDescriptorSet> UniformSet::Set::getBindingUpdates( VkDescript
 				if( binding.getUniformBuffer() ) {
 					entry.descriptorType	= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 					entry.pBufferInfo		= &(binding.getUniformBuffer()->getBufferInfo());
-					addEntry = true;
 				}
 			}
 			break;
@@ -751,17 +750,21 @@ std::vector<VkWriteDescriptorSet> UniformSet::Set::getBindingUpdates( VkDescript
 				if( binding.getTexture() ) {
 					entry.descriptorType	= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					entry.pImageInfo		= &(binding.getTexture()->getImageInfo());
-					addEntry = true;
 				}
+			}
+			break;
+
+			default: {
+				// Probably means a new descriptor type got added and needs handling code.
+				assert( false );
 			}
 			break;
 		}
 
-		if( addEntry ) {
-			result.push_back( entry );
-			binding.clearDirty();
-		}
+		result.push_back( entry );
+		binding.clearDirty();
 	}
+
 	return result;
 }
 
