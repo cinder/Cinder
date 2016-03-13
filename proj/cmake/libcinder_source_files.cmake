@@ -137,6 +137,7 @@ list( APPEND SRC_SET_CINDER_GL
 	${CINDER_SRC_DIR}/cinder/gl/draw.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Environment.cpp
 	${CINDER_SRC_DIR}/cinder/gl/EnvironmentCore.cpp
+	${CINDER_SRC_DIR}/cinder/gl/EnvironmentEs.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Fbo.cpp
 	${CINDER_SRC_DIR}/cinder/gl/GlslProg.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Pbo.cpp
@@ -152,6 +153,8 @@ list( APPEND SRC_SET_CINDER_GL
 	${CINDER_SRC_DIR}/cinder/gl/Ubo.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Vao.cpp
 	${CINDER_SRC_DIR}/cinder/gl/VaoImplCore.cpp
+	${CINDER_SRC_DIR}/cinder/gl/VaoImplEs.cpp
+	${CINDER_SRC_DIR}/cinder/gl/VaoImplSoftware.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
 	${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 	${CINDER_SRC_DIR}/cinder/gl/wrapper.cpp
