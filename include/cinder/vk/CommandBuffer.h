@@ -42,14 +42,20 @@
 
 namespace cinder { namespace vk {
 
+class Buffer;
 class Image;
 class ImageView;
 class IndexBuffer;
 class Swapchain;
+class UniformBuffer;
+class VertexBuffer;
+using BufferRef = std::shared_ptr<Buffer>;
 using ImageRef = std::shared_ptr<Image>;
 using ImageViewRef = std::shared_ptr<ImageView>;
 using IndexBufferRef = std::shared_ptr<IndexBuffer>;
 using SwapchainRef = std::shared_ptr<Swapchain>;
+using UniformBufferRef = std::shared_ptr<UniformBuffer>;
+using VertexBufferRef = std::shared_ptr<VertexBuffer>;
 
 class CommandBuffer;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
@@ -117,8 +123,11 @@ public:
 	void bindDescriptorSet( VkPipelineBindPoint pipelineBindPoint, VkPipelineLayout layout, const VkDescriptorSet& pDescriptorSets );
 	void bindIndexBuffer( const IndexBufferRef& indexBuffer, VkDeviceSize offset = 0 );
 
-	void pipelineBarrierImageMemory( VkImage image, VkImageAspectFlags aspectMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VkPipelineStageFlags dstStages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
-	void pipelineBarrierImageMemory( const vk::ImageRef& image, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VkPipelineStageFlags dstStages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+	void pipelineBarrierMemory( VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStages, VkPipelineStageFlags dstStages );
+	void pipelineBarrierMemory( const vk::BufferRef& buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStages, VkPipelineStageFlags dstStages );
+
+	void pipelineBarrierImageMemory( VkImage image, VkImageAspectFlags aspectMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStages, VkPipelineStageFlags dstStages );
+	void pipelineBarrierImageMemory( const vk::ImageRef& image, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStages, VkPipelineStageFlags dstStages );
 
 private:
 	CommandBuffer( VkCommandPool commandPool, vk::Context *context );

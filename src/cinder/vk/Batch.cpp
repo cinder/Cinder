@@ -293,15 +293,16 @@ void Batch::draw( int32_t first, int32_t count )
 		mDescriptorSetView->allocateDescriptorSets();
 	}
 
+	// Get current command buffer
+	auto cmdBufRef = vk::context()->getCommandBuffer();
+	auto cmdBuf = cmdBufRef->getCommandBuffer();
+
 	// Fill out uniform vars
 	mUniformSet->setDefaultUniformVars( vk::context() );
-	mUniformSet->bufferPending();
+	mUniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 	// Update descriptor set
 	mDescriptorSetView->updateDescriptorSets();
-
-	// Get current command buffer
-	auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
 
 	// Bind index buffer
 	bool useIndexBuffer = mVboMesh->getIndexVbo() ? true : false;
@@ -366,15 +367,16 @@ void Batch::drawInstanced( uint32_t instanceCount )
 		mDescriptorSetView->allocateDescriptorSets();
 	}
 
+	// Get current command buffer
+	auto cmdBufRef = vk::context()->getCommandBuffer();
+	auto cmdBuf = cmdBufRef->getCommandBuffer();
+
 	// Fill out uniform vars
 	mUniformSet->setDefaultUniformVars( vk::context() );
-	mUniformSet->bufferPending();
+	mUniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 	// Update descriptor set
 	mDescriptorSetView->updateDescriptorSets();
-
-	// Get current command buffer
-	auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
 
 	// Bind index buffer
 	bool useIndexBuffer = mVboMesh->getIndexVbo() ? true : false;

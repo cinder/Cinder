@@ -37,6 +37,7 @@
 */
 
 #include "cinder/vk/UniformLayout.h"
+#include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Texture.h"
 #include "cinder/vk/UniformBuffer.h"
@@ -1052,7 +1053,7 @@ void UniformSet::setDefaultUniformVars( vk::Context *context )
 	}
 }
 
-void UniformSet::bufferPending()
+void UniformSet::bufferPending( const vk::CommandBufferRef& cmdBuf, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
 {
 	for( auto& set : mSets ) {
 		for( auto& binding : set->mBindings ) {
@@ -1060,6 +1061,7 @@ void UniformSet::bufferPending()
 				continue;
 			}
 			binding.getUniformBuffer()->bufferPending();
+			cmdBuf->pipelineBarrierMemory( binding.getUniformBuffer(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
 		}
 	}
 }

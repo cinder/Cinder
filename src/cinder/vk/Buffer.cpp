@@ -71,10 +71,6 @@ Buffer::~Buffer()
 
 void Buffer::initialize()
 {
-	if( VK_NULL_HANDLE != mBuffer ) {
-		return;
-	}
-
 	createBufferAndAllocate( mSize );
 
 	mDevice->trackedObjectCreated( this );
@@ -123,7 +119,20 @@ void Buffer::createBufferAndAllocate( size_t size )
 
 	// Allocate memory
 	Allocator::Allocation alloc = mDevice->getAllocator()->allocateBuffer( mBuffer, mFormat.mTransientAllocation, mFormat.mMemoryProperty );
+	
+	// If allocation fails for a uniform buffer with VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, try again with it cleared.
+	bool isFailedAlloc   = ( VK_NULL_HANDLE == alloc.getMemory() );
+	bool isUniformBuffer = ( VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT == mFormat.mUsage );
+	bool isHostCoherent  = ( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT == ( mFormat.mMemoryProperty & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) );
+	if( isFailedAlloc && isUniformBuffer && isHostCoherent ) {
+		mFormat.clearMemoryProperty( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT );
+		alloc = mDevice->getAllocator()->allocateBuffer( mBuffer, mFormat.mTransientAllocation, mFormat.mMemoryProperty );
+	}
+
+	// Assert if memory allocation fails for now	
 	assert( VK_NULL_HANDLE != alloc.getMemory() );
+
+	// Update allocation fields
 	mMemory				= alloc.getMemory();
 	mAllocationOffset	= alloc.getOffset();
 	mAllocationSize		= alloc.getSize();

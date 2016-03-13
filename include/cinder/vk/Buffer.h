@@ -69,8 +69,8 @@ public:
 		Format&					setUsageVertexBuffer() { setUsage( VK_BUFFER_USAGE_VERTEX_BUFFER_BIT ); return *this; }
 		Format&					setUsageIndirectBuffer() { setUsage( VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT ); return *this; }
 
-	public:
 		Format&					setMemoryProperty( VkMemoryPropertyFlags value, bool exclusive = false ) { if( exclusive ) { mMemoryProperty = value; } else { mMemoryProperty |= value; } return *this; }
+		Format&					clearMemoryProperty( VkMemoryPropertyFlagBits value ) { mMemoryProperty &= ~value; return *this; }
 		VkMemoryPropertyFlags	getMemoryProperty() const { return mMemoryProperty; }
 		Format&					setMemoryPropertyDeviceLocal( bool exclusive = false )     { setMemoryProperty( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, exclusive ); return *this; }
 		Format&					setMemoryPropertyHostVisible( bool exclusive = false )     { setMemoryProperty( VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, exclusive ); return *this; }
@@ -78,6 +78,7 @@ public:
 		Format&					setMemoryPropertyHostCached( bool exclusive = false )      { setMemoryProperty( VK_MEMORY_PROPERTY_HOST_CACHED_BIT, exclusive ); return *this; }
 		Format&					setMemoryPropertyLazilyAllocated( bool exclusive = false ) { setMemoryProperty( VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT, exclusive ); return *this; }
 		bool					hasMemoryPropertyHostVisible() const { return ( VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT == ( mMemoryProperty & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) ); }
+		bool					hasMemoryPropertyHostCoherent() const { return ( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT == ( mMemoryProperty & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) ); }
 
 		Format&					setTransientAllocation( bool value = true ) { mTransientAllocation = value; return *this; }
 		bool					getTransientAllocation() const { return mTransientAllocation; }
@@ -98,7 +99,9 @@ public:
 	VkBuffer				getBuffer() const { return mBuffer; }
 	const VkDescriptorBufferInfo&	getBufferInfo() const { return mBufferInfo; }
 
-	size_t					getSize() const { return static_cast<size_t>( mSize ); }
+	//VkDeviceSize			getSize() const { return static_cast<size_t>( mSize ); }
+	VkDeviceSize			getAllocationOffset() const { return mAllocationOffset; }
+	VkDeviceSize			getAllocationSize() const { return mAllocationSize; }
 
 	void*					map( VkDeviceSize offset = 0 );
 	void					unmap();
@@ -126,8 +129,8 @@ protected:
 
 	VkDeviceSize			mSize = 0;
 	VkDeviceMemory			mMemory = 0;
-	VkDeviceSize			mAllocationSize = 0;
 	VkDeviceSize			mAllocationOffset = 0;
+	VkDeviceSize			mAllocationSize = 0;
 
 	void					createBufferAndAllocate( size_t size );
 	void					destroyBufferAndFree();

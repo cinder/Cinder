@@ -56,12 +56,6 @@ VertexBuffer::~VertexBuffer()
 //void VertexBuffer::initialize( const void* data, size_t dataSize, size_t dataStride )
 void VertexBuffer::initialize( const void* data, size_t dataSize )
 {
-	//const bool useTexture = false;
-
-	if( VK_NULL_HANDLE != mBuffer ) {
-		return;
-	}
-
 	Buffer::initialize();
 	bufferData( dataSize, data );
 /*
