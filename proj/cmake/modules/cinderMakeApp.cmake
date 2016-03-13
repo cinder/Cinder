@@ -10,12 +10,6 @@ function( ci_make_app )
 		set( ARG_APP_NAME "${PROJECT_NAME}" )
 	endif()
 
-	if( CINDER_BUILD_VERBOSE )
-		message( STATUS "APP_NAME: ${ARG_APP_NAME}" )
-		message( STATUS "SOURCES: ${ARG_SOURCES}" )
-		message( STATUS "CINDER_PATH: ${ARG_CINDER_PATH}" )
-	endif()
-
 	if( ARG_UNPARSED_ARGUMENTS )
 		message( WARNING "unhandled arguments: ${ARG_UNPARSED_ARGUMENTS}" )
 	endif()
@@ -29,7 +23,15 @@ function( ci_make_app )
 	endif()
 
 	# place the final app in a folder based on the build type.
-	set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
+	set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
+
+	if( CINDER_BUILD_VERBOSE )
+		message( STATUS "APP_NAME: ${ARG_APP_NAME}" )
+		message( STATUS "SOURCES: ${ARG_SOURCES}" )
+		message( STATUS "CINDER_PATH: ${ARG_CINDER_PATH}" )
+		message( STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+	endif()
+
 
 	# TODO: how can we keep these variabels in sync with how they're defined in main CMakeLists.txt?
 	if( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
