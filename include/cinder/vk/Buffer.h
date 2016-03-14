@@ -99,7 +99,7 @@ public:
 	VkBuffer				getBuffer() const { return mBuffer; }
 	const VkDescriptorBufferInfo&	getBufferInfo() const { return mBufferInfo; }
 
-	//VkDeviceSize			getSize() const { return static_cast<size_t>( mSize ); }
+	VkDeviceSize			getSize() const { return mSize; }
 	VkDeviceSize			getAllocationOffset() const { return mAllocationOffset; }
 	VkDeviceSize			getAllocationSize() const { return mAllocationSize; }
 

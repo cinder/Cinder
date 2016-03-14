@@ -944,7 +944,7 @@ void Image::blit( vk::Context *context, const vk::ImageRef& srcImage, uint32_t s
 
 	cmdBuf->begin();
 	{
-		cmdBuf->pipelineBarrierImageMemory( srcImage, srcImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT );
+		//cmdBuf->pipelineBarrierImageMemory( srcImage, srcImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT );
 		cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT );
 
 		VkImageBlit region;

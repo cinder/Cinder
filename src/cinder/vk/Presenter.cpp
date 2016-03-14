@@ -204,7 +204,7 @@ void Presenter::resize( const ivec2& newWindowSize )
 			if( ! mRenderPasses[i] ) {
 				// Attachment descriptions
 				vk::RenderPass::Attachment colorAttachment = vk::RenderPass::Attachment( colorFormat )
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
 					.setLoadOpLoad()
 					.setStoreOpStore();
 				vk::RenderPass::Attachment depthAttachment = vk::RenderPass::Attachment( depthStencilFormat )			
@@ -272,13 +272,14 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 			mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 
 			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
-			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 
 			const auto& depthStencilImage = swapChainDepthStencilAttachments[mCurrentImageIndex]->getImage();
 			mCommandBuffer->pipelineBarrierImageMemory( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 		}
 		else {
 			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			//mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 
 			const auto& depthStencilImage = swapChainDepthStencilAttachments[mCurrentImageIndex]->getImage();
@@ -307,12 +308,12 @@ void Presenter::endRender( vk::Context *context  )
 		const auto& swapChainColorAttachments = mSwapchain->getColorAttachments();
 
 		if( mOptions.mMultiSample ) {
-			const auto& multiSampleImage = mMultiSampleAttachments[mCurrentImageIndex]->getImage();
-			mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
+			//const auto& multiSampleImage = mMultiSampleAttachments[mCurrentImageIndex]->getImage();
+			//mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
 			//mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
 
-			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
-			mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
+			//const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			//mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
 			//mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
 		}
 		else {

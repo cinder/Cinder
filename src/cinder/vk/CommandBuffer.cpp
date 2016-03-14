@@ -448,7 +448,7 @@ void CommandBuffer::pipelineBarrierMemory( VkBuffer buffer, VkDeviceSize offset,
 
 void CommandBuffer::pipelineBarrierMemory( const vk::BufferRef& buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
 {
-	pipelineBarrierMemory( buffer->getBuffer(), buffer->getAllocationOffset(), buffer->getAllocationSize(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
+	pipelineBarrierMemory( buffer->getBuffer(), buffer->getAllocationOffset(), buffer->getSize(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
 }
 
 void CommandBuffer::pipelineBarrierImageMemory( VkImage image, VkImageAspectFlags aspectMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
@@ -466,8 +466,68 @@ void CommandBuffer::pipelineBarrierImageMemory( VkImage image, VkImageAspectFlag
     barrier.subresourceRange.levelCount		= 1;
     barrier.subresourceRange.layerCount		= 1;
 
+	switch( oldImageLayout ) {
+		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: {
+			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: {
+			barrier.srcAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT | VK_ACCESS_SHADER_READ_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: {
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:  {
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_PREINITIALIZED: {
+			barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+		}
+		break;
+	}
+
+	// newImageLayout
+	switch( newImageLayout ) {
+		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT | VK_ACCESS_SHADER_READ_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		}
+
+		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
+		}
+	}
+
+
+/*
 	// oldImageLayout
 	switch( oldImageLayout ) {
+		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: {
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		}
+		break;
+
 		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: {
 			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		}
@@ -476,29 +536,37 @@ void CommandBuffer::pipelineBarrierImageMemory( VkImage image, VkImageAspectFlag
 
 	// newImageLayout
 	switch( newImageLayout ) {
-		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: {
-			// Make sure anything that was copying from this image has completed
-			barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		}
-		break;
-
 		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: {
-			// Make sure any Copy or CPU writes to image are flushed 
 			barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 		}
 		break;
 
 		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: {
-			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		}
 		break;
 
 		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL: {
-			barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		}
+
+		case VK_IMAGE_LAYOUT_PREINITIALIZED: {
+			barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
 		}
 		break;
 	}
+*/
 
 	pipelineBarrier( srcStageMask, dstStageMask, 0, 0, nullptr, 0, nullptr, 1, &barrier );
 }
