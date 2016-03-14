@@ -134,16 +134,17 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 
 	// This is the separation between the setup and the draw sequence. 
 
+	// Get current command buffer
+	auto cmdBufRef = vk::context()->getCommandBuffer();
+	auto cmdBuf = cmdBufRef->getCommandBuffer();
+
 	// Fill out uniform vars
 	uniformSet->setDefaultUniformVars( vk::context() );
-	uniformSet->bufferPending();
+	uniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 	// Update descriptor set
 	auto descriptorSetWrites = uniformSet->getSets()[0]->getBindingUpdates( descriptorSet->vkObject() );
 	descriptorSet->update( descriptorSetWrites );
-
-	// Get current command buffer
-	auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
 
 	// Bind vertex buffer
 	std::vector<VkBuffer> vertexBuffers = { vertexBuffer->getBuffer() };
@@ -248,16 +249,17 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 
 	// This is the separation between the setup and the draw sequence. 
 
+	// Get current command buffer
+	auto cmdBufRef = vk::context()->getCommandBuffer();
+	auto cmdBuf = cmdBufRef->getCommandBuffer();
+
 	// Fill out uniform vars
 	uniformSet->setDefaultUniformVars( vk::context() );
-	uniformSet->bufferPending();
+	uniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 	// Update descriptor set
 	auto descriptorSetWrites = uniformSet->getSets()[0]->getBindingUpdates( descriptorSet->vkObject() );
 	descriptorSet->update( descriptorSetWrites );
-
-	// Get current command buffer
-	auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
 
 	// Bind vertex buffer
 	std::vector<VkBuffer> vertexBuffers = { vertexBuffer->getBuffer() };

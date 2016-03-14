@@ -153,6 +153,8 @@ void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 		mDescriptorSetView->allocateDescriptorSets();
 	}
 
+	auto cmdBuf = commandBuffer->getCommandBuffer();
+
 	for( auto& set : mUniformSet->getSets() ) {
 		for( auto& binding : set->getBindings() ) {
 			if( ! binding.isBlock() ) {
@@ -161,9 +163,7 @@ void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 			ci::vk::context()->setDefaultUniformVars( binding.getUniformBuffer() );
 		}
 	}
-	mUniformSet->bufferPending();
-
-	auto cmdBuf = commandBuffer->getCommandBuffer();
+	mUniformSet->bufferPending( commandBuffer, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 	std::vector<VkBuffer> vertexBuffers = { mVertexBuffer->getBuffer() };
 	std::vector<VkDeviceSize> offsets = { 0 };

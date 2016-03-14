@@ -61,7 +61,7 @@ void CommandPool::initialize()
     createInfo.sType			= VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     createInfo.pNext			= nullptr;
     createInfo.queueFamilyIndex	= mQueueFamilyIndex;
-    createInfo.flags			= 0;
+    createInfo.flags			= VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     VkResult res = vkCreateCommandPool( mContext->getDevice()->getDevice(), &createInfo, nullptr, &mCommandPool );
     assert( res == VK_SUCCESS );

@@ -49,11 +49,13 @@
 
 namespace cinder { namespace vk {
 
+class CommandBuffer;
 class Context;
 class Device;
 class TextureBase;
 class UniformBuffer;
 class UniformSet;
+using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 using TextureBaseRef = std::shared_ptr<TextureBase>;
 using UniformBufferRef = std::shared_ptr<UniformBuffer>;
 using UniformSetRef = std::shared_ptr<UniformSet>;
@@ -390,7 +392,7 @@ public:
 	void							uniform( const std::string& name, const TextureBaseRef& texture );
 
 	void							setDefaultUniformVars( vk::Context *context );
-	void							bufferPending();
+	void							bufferPending( const vk::CommandBufferRef& cmdBuf, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask );
 
 	void							echoValues( std::ostream& os );
 

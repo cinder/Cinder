@@ -71,10 +71,6 @@ Buffer::~Buffer()
 
 void Buffer::initialize()
 {
-	if( VK_NULL_HANDLE != mBuffer ) {
-		return;
-	}
-
 	createBufferAndAllocate( mSize );
 
 	mDevice->trackedObjectCreated( this );
@@ -88,8 +84,6 @@ void Buffer::destroy( bool removeFromTracking )
 
 	// Destroy
 	destroyBufferAndFree();
-	// Remove from transient - allocator will check this
-	mDevice->getAllocator()->freeTransientBuffer( mBuffer );
 
 	if( removeFromTracking ) {
 		mDevice->trackedObjectDestroyed( this );
@@ -123,7 +117,20 @@ void Buffer::createBufferAndAllocate( size_t size )
 
 	// Allocate memory
 	Allocator::Allocation alloc = mDevice->getAllocator()->allocateBuffer( mBuffer, mFormat.mTransientAllocation, mFormat.mMemoryProperty );
+	
+	// If allocation fails for a uniform buffer with VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, try again with it cleared.
+	bool isFailedAlloc   = ( VK_NULL_HANDLE == alloc.getMemory() );
+	bool isUniformBuffer = ( VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT == mFormat.mUsage );
+	bool isHostCoherent  = ( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT == ( mFormat.mMemoryProperty & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) );
+	if( isFailedAlloc && isUniformBuffer && isHostCoherent ) {
+		mFormat.clearMemoryProperty( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT );
+		alloc = mDevice->getAllocator()->allocateBuffer( mBuffer, mFormat.mTransientAllocation, mFormat.mMemoryProperty );
+	}
+
+	// Assert if memory allocation fails for now	
 	assert( VK_NULL_HANDLE != alloc.getMemory() );
+
+	// Update allocation fields
 	mMemory				= alloc.getMemory();
 	mAllocationOffset	= alloc.getOffset();
 	mAllocationSize		= alloc.getSize();
@@ -172,7 +179,11 @@ void Buffer::createBufferAndAllocate( size_t size )
 void Buffer::destroyBufferAndFree()
 {
 	if( VK_NULL_HANDLE != mBuffer ) {
+		// Destroy
 		vkDestroyBuffer( mDevice->getDevice(), mBuffer, nullptr );
+		// Remove from transient - allocator will check this
+		mDevice->getAllocator()->freeTransientBuffer( mBuffer );
+		// Null out buffer
 		mBuffer = VK_NULL_HANDLE;
 	}
 
@@ -213,6 +224,21 @@ void Buffer::bufferDataImpl(  VkDeviceSize size, const void *data  )
 		void* dst = map( offset );
 		if( nullptr != dst ) {
 			std::memcpy( dst, data, size );
+			unmap();
+
+			// @TODO: FIX
+			/*
+			if( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT != ( mFormat.getMemoryProperty() & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) ) {
+				VkMappedMemoryRange range = {};
+				range.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+				range.pNext  = nullptr;
+				range.memory = mMemory;
+				range.offset = mAllocationOffset;
+				range.size   = mSize;
+				VkResult res = vkFlushMappedMemoryRanges( mDevice->getDevice(), 1, &range );
+				assert( VK_SUCCESS == res );
+			}
+			*/
 		}
 	}
 }
@@ -223,7 +249,9 @@ void Buffer::bufferData( VkDeviceSize size, const void *data )
 		bufferDataImpl( size, data );
 	}
 	else {
-		vk::Buffer::Format stagingFormat = vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ).setTransientAllocation();
+		vk::Buffer::Format stagingFormat = vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+			.setUsageTransferSource()
+			.setTransientAllocation();
 		vk::BufferRef stagingBuffer = vk::Buffer::create( size, stagingFormat );
 		if( stagingBuffer ) {
 			// Buffer data to staging
@@ -240,6 +268,21 @@ void Buffer::bufferSubDataImpl( VkDeviceSize offset, VkDeviceSize size, const vo
 		void* dst = map( offset );
 		if( nullptr != dst ) {
 			std::memcpy( dst, data, size );
+			unmap();
+
+			// @TODO: FIX
+			/*
+			if( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT != ( mFormat.getMemoryProperty() & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) ) {
+				VkMappedMemoryRange range = {};
+				range.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+				range.pNext  = nullptr;
+				range.memory = mMemory;
+				range.offset = mAllocationOffset;
+				range.size   = mSize;
+				VkResult res = vkFlushMappedMemoryRanges( mDevice->getDevice(), 1, &range );
+				assert( VK_SUCCESS == res );
+			}
+			*/
 		}
 	}
 }

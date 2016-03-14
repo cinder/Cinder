@@ -486,7 +486,7 @@ Texture2dRef Texture2d::create( const gl::TextureData& textureData, const Textur
 		auto& dstImage = result->getImageView()->getImage();
 		cmdBuf->begin();
 		{
-			cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+			cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT );
 
 			VkDeviceSize offset = 0;
 			std::vector<VkBufferImageCopy> regions;
@@ -509,7 +509,7 @@ Texture2dRef Texture2d::create( const gl::TextureData& textureData, const Textur
 			}
 			cmdBuf->copyBufferToImage( buf->getBuffer(), dstImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>( regions.size() ), regions.data() );
 
-			cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+			cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 		}
 		cmdBuf->end();
 

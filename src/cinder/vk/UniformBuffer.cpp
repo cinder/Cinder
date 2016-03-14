@@ -63,10 +63,6 @@ UniformBuffer::~UniformBuffer()
 
 void UniformBuffer::initialize( const UniformLayout::Block& block )
 {
-	if( VK_NULL_HANDLE != mBuffer ) {
-		return;
-	}
-
 	Buffer::initialize();
 
 	// Copy uniforms
@@ -323,13 +319,27 @@ void UniformBuffer::bufferPending()
 {
 	if( mDirty ) {
 		void* dst = map();
-		size_t sizeBytes = mValues.size();
-		std::memcpy( dst, static_cast<const void *>( mValues.data() ), sizeBytes );
-		unmap();
-		mDirty = false;
+		if( nullptr != dst ) {
+			size_t sizeBytes = mValues.size();
+			std::memcpy( dst, static_cast<const void *>( mValues.data() ), sizeBytes );
+			unmap();
 
-		for( auto& uniform : mUniforms ) {
-			uniform.mDirty = false;
+			if( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT != ( mFormat.getMemoryProperty() & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) ) {
+				VkMappedMemoryRange range = {};
+				range.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+				range.pNext  = nullptr;
+				range.memory = mMemory;
+				range.offset = mAllocationOffset;
+				range.size   = mSize;
+				VkResult res = vkFlushMappedMemoryRanges( mDevice->getDevice(), 1, &range );
+				assert( VK_SUCCESS == res );
+			}
+
+			// Clear dirty
+			mDirty = false;
+			for( auto& uniform : mUniforms ) {
+				uniform.mDirty = false;
+			}
 		}
 	}
 }
