@@ -52,6 +52,5 @@ else()
 endif()
 
 if( CINDER_BUILD_SAMPLES )
-	set( CINDER_SAMPLES TRUE )
 	add_subdirectory( ${CINDER_ROOT}/samples/BasicApp/proj/cmake )
 endif()
