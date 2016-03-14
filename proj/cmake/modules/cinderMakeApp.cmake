@@ -40,6 +40,7 @@ function( ci_make_app )
 	elseif( CMAKE_SYSTEM_NAME MATCHES "Linux" )
 		set( CINDER_TARGET "linux" )
 		set( CINDER_LINUX TRUE )
+		execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
 	elseif( CMAKE_SYSTEM_NAME MATCHES "Windows" )
 		set( CINDER_TARGET "msw" )
 		set( CINDER_MSW TRUE )
@@ -48,8 +49,11 @@ function( ci_make_app )
 	endif()
 
 	# pull in cinder's exported configuration
-	if( NOT CINDER_SAMPLES )
-		include( "${ARG_CINDER_PATH}/lib/macosx/${CMAKE_BUILD_TYPE}/cinderConfig.cmake" )
+	if( NOT TARGET cinder )
+		find_package( cinder REQUIRED
+				PATHS "${ARG_CINDER_PATH}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}" 
+				"$ENV{Cinder_Dir}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}" 
+		)
 	endif()
 
 	if( CINDER_MAC )
