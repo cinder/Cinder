@@ -22,14 +22,21 @@ function( ci_make_app )
 			)
 	endif()
 
-	# place the final app in a folder based on the build type.
-	set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
+	# CLion specific: If we can detect that the output binary app is going to be placed in clion's cache,
+	# reroute it to be within the user app's project. This is necessary for cinder's assets systemt o work.
+	if( ${CMAKE_BINARY_DIR} MATCHES "Caches/CLion" )
+		set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
+		if( CINDER_BUILD_VERBOSE )
+			message( WARNING "detected Clion output to cache, rerouted to sample directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+		endif()
+	endif()
 
 	if( CINDER_BUILD_VERBOSE )
 		message( STATUS "APP_NAME: ${ARG_APP_NAME}" )
 		message( STATUS "SOURCES: ${ARG_SOURCES}" )
 		message( STATUS "CINDER_PATH: ${ARG_CINDER_PATH}" )
 		message( STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+		message( STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}" )
 	endif()
 
 
