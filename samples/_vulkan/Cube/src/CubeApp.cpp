@@ -169,7 +169,7 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_threading",
 	//"VK_LAYER_LUNARG_mem_tracker",
 	//"VK_LAYER_LUNARG_object_tracker",
-	"VK_LAYER_LUNARG_draw_state",
+	//"VK_LAYER_LUNARG_draw_state",
 	//"VK_LAYER_LUNARG_param_checker",
 	//"VK_LAYER_LUNARG_swapchain",
 	//"VK_LAYER_LUNARG_device_limits"
