@@ -48,8 +48,8 @@ layout(std140, binding = 1) uniform ciBlock1T {
 	uniform float	uMaxThresh;
 	uniform float	uMinSpeed;
 	uniform float	uMaxSpeed;
-	uniform vec3	uPredPos;
-	uniform vec3	uCamPos;
+	uniform vec4	uPredPos;
+	uniform vec4	uCamPos;
 	uniform float	uTimeDelta;
 	uniform float	uTime;
 	uniform float	uZoneRadius;
@@ -64,6 +64,9 @@ layout(location = 0) out vec4 FragColor;
 
 void main()
 {	
+	vec3 uPredPos = ciBlock1.uPredPos.xyz;
+	vec3 uCamPos  = ciBlock1.uCamPos.xyz;
+
 	vec4 vPos			= textureLod( uPosition, vTexCoord * vec2( FBO_RES ), 0 );
 	vec3 myPos			= vPos.xyz;
 	float leadership	= vPos.a;
@@ -138,14 +141,14 @@ void main()
 
 
 	// avoid predator
-	vec3 dirToPred			= myPos - ciBlock1.uPredPos;
+	vec3 dirToPred			= myPos - uPredPos;
 	float distToPred		= length( dirToPred );
 	float distPredPer		= max( 1.0 - ( distToPred/200.0 ), 0.0 );
 	crowded					+= distPredPer * 10.0;
 	acc						+= ( normalize( dirToPred ) * vec3( 1.0, 0.25, 1.0 ) ) * distPredPer * ciBlock1.uTimeDelta * 25.0;
 
 	// avoid camera
-	vec3 dirToCam			= myPos - ciBlock1.uCamPos;
+	vec3 dirToCam			= myPos - uCamPos;
 	float distToCam			= length( dirToCam );
 	float distCamPer		= max( 1.0 - ( distToCam/60.0 ), 0.0 );
 	crowded					+= distCamPer * 50.0;
