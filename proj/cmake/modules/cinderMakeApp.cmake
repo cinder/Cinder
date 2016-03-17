@@ -2,7 +2,7 @@ include( CMakeParseArguments )
 
 function( ci_make_app )
 	set( oneValueArgs APP_NAME CINDER_PATH )
-	set( multiValueArgs SOURCES )
+	set( multiValueArgs SOURCES INCLUDES )
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
@@ -34,6 +34,7 @@ function( ci_make_app )
 	if( CINDER_BUILD_VERBOSE )
 		message( STATUS "APP_NAME: ${ARG_APP_NAME}" )
 		message( STATUS "SOURCES: ${ARG_SOURCES}" )
+		message( STATUS "INCLUDES: ${ARG_INCLUDES}" )
 		message( STATUS "CINDER_PATH: ${ARG_CINDER_PATH}" )
 		message( STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
 		message( STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}" )
@@ -73,6 +74,8 @@ function( ci_make_app )
 	endif()
 
 	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} )
+
+	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
 
 	target_link_libraries( ${ARG_APP_NAME} cinder )
 
