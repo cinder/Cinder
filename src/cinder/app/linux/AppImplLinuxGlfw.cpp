@@ -359,7 +359,9 @@ WindowRef AppImplLinux::createWindow( Window::Format format )
 
 void AppImplLinux::quit()
 {
-	::glfwTerminate();
+	for( auto &window : mWindows ) {
+		::glfwSetWindowShouldClose( window->getNative(), true );	
+	}
 }
 
 float AppImplLinux::getFrameRate() const 
