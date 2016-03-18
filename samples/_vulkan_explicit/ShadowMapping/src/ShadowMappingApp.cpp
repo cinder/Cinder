@@ -149,6 +149,7 @@ class ShadowMappingApp : public App {
 	
 	void keyDown( KeyEvent event ) override;
   private:
+	void updateScene( float spinAngle, const vk::GlslProgRef& glsl = nullptr );
 	void drawScene( float spinAngle, const vk::GlslProgRef& glsl = nullptr );
 
 	float						mSpinAngle = 0.0f;
@@ -296,17 +297,19 @@ void ShadowMappingApp::update()
 	mFrameRate = getAverageFps();
 }
 
-void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadowGlsl )
+void ShadowMappingApp::updateScene( float spinAngle, const vk::GlslProgRef& shadowGlsl )
 {
 	{
 		vk::ScopedModelMatrix push;
 		vk::scale( vec3(4) );
 		
 		if( shadowGlsl ) {
-			mSphereShadowed->draw();
+			mSphereShadowed->setDefaultUniformVars( vk::context() );
+			vk::context()->addPendingUniformVars( mSphereShadowed );
 		}
 		else {
-			mSphere->draw();
+			mSphere->setDefaultUniformVars( vk::context() );
+			vk::context()->addPendingUniformVars( mSphere );
 		}
 	}
 	
@@ -314,22 +317,55 @@ void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadow
 		for( auto& teapot : mTeapots ) {
 			vk::ScopedModelMatrix push;
 			vk::scale( vec3(0.25) );
-			vk::multModelMatrix( rotate( spinAngle, teapot.mAxis ) * teapot.mTransform );
+			vk::multModelMatrix( rotate( mSpinAngle, teapot.mAxis ) * teapot.mTransform );
+				
 			if( shadowGlsl ) {
-				teapot.mShadowed->draw();
+				teapot.mShadowed->setDefaultUniformVars( vk::context() );
+				vk::context()->addPendingUniformVars( teapot.mShadowed );
 			}
 			else {
-				teapot.mPlain->draw();
+				teapot.mPlain->setDefaultUniformVars( vk::context() );
+				vk::context()->addPendingUniformVars( teapot.mPlain );
 			}
 		}
 	}
+}
 
+void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadowGlsl )
+{
+	if( shadowGlsl ) {
+		mSphereShadowed->draw();
+	}
+	else {
+		mSphere->draw();
+	}
+	
+	for( auto& teapot : mTeapots ) {
+		if( shadowGlsl ) {
+			teapot.mShadowed->draw();
+		}
+		else {
+			teapot.mPlain->draw();
+		}
+	}
 }
 
 void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf )
 {
 	cmdBuf->begin();
 	{
+		// Update uniforms for shadow map render
+		{
+			vk::ScopedMatrices push;
+
+			// Update uniforms for shadow map render
+			vk::setMatrices( mLight.camera );
+
+			updateScene( mSpinAngle );
+
+			vk::context()->transferPendingUniformBuffer( cmdBuf );
+		}
+
 		// Render the shadow map
 		mShadowMap->getRenderPass()->beginRenderExplicit( cmdBuf, mShadowMap->getFramebuffer() );
 		{
@@ -337,9 +373,6 @@ void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf
 			vk::enablePolygonOffsetFill();
 			vk::polygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
 
-			vk::ScopedMatrices push;
-
-			vk::setMatrices( mLight.camera );
 			drawScene( mSpinAngle );
 
 			// Disable polygon offset
@@ -347,14 +380,10 @@ void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf
 		}
 		mShadowMap->getRenderPass()->endRenderExplicit();
 
-		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
+		// Update uniforms for shadowed render
 		{
-			// Clear if single sample, multi sample is cleared on attachment load
-			if( ! vk::context()->getPresenter()->isMultiSample() ) {
-				vk::context()->clearAttachments();
-			}
+			vk::ScopedMatrices push;
 
-			// Render shadowed scene
 			vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
 			{
 				const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
@@ -371,9 +400,14 @@ void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf
 					batch->uniform( "ciBlock1.uEnableNormSlopeOffset", mEnableNormSlopeOffset );
 					batch->uniform( "ciBlock1.uLightPos", lightPos );
 				}
-
-				drawScene( mSpinAngle, mShadowShader );
+				updateScene( mSpinAngle, mShadowShader );
 			}
+		}
+
+		// Rendered shadowed pass
+		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
+		{
+			drawScene( mSpinAngle, mShadowShader );
 		}
 		vk::context()->getPresenter()->endRender( vk::context() );
 	}
@@ -417,6 +451,57 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP( ShadowMappingApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode() ), []( App::Settings *settings ) {
-	settings->setWindowSize( 900, 900 );
-} )
+VkBool32 debugReportVk(
+    VkDebugReportFlagsEXT      flags,
+    VkDebugReportObjectTypeEXT objectType,
+    uint64_t                   object,
+    size_t                     location,
+    int32_t                    messageCode,
+    const char*                pLayerPrefix,
+    const char*                pMessage,
+    void*                      pUserData
+)
+{
+	if( flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) {
+		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_WARNING_BIT_EXT ) {
+		//CI_LOG_W( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) {
+		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_ERROR_BIT_EXT ) {
+		CI_LOG_E( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT ) {
+		//CI_LOG_D( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	return VK_FALSE;
+}
+
+const std::vector<std::string> gLayers = {
+	//"VK_LAYER_LUNARG_api_dump",
+	//"VK_LAYER_LUNARG_threading",
+	//"VK_LAYER_LUNARG_mem_tracker",
+	//"VK_LAYER_LUNARG_object_tracker",
+	"VK_LAYER_LUNARG_draw_state",
+	//"VK_LAYER_LUNARG_param_checker",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_LUNARG_device_limits"
+	//"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_GOOGLE_unique_objects",
+};
+
+CINDER_APP( 
+	ShadowMappingApp, 
+	RendererVk( RendererVk::Options()
+		.setSamples( VK_SAMPLE_COUNT_8_BIT )
+		.setExplicitMode() 
+		.setLayers( gLayers )
+		.setDebugReportCallbackFn( debugReportVk ) 
+	), 
+	[]( App::Settings *settings ) {
+		settings->setWindowSize( 900, 900 );
+	} 
+)

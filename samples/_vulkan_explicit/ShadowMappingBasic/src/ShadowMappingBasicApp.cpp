@@ -61,8 +61,8 @@ class ShadowMappingBasic : public App {
 	void update() override;
 	void draw() override;
 	
+	void updateScene( bool shadowMap );
 	void drawScene( bool shadowMap );
-	void renderDepthFbo();
 	
   private:
 	vk::RenderPassRef	mRenderPass;
@@ -166,26 +166,40 @@ void ShadowMappingBasic::resize()
 	mCam.setAspectRatio( getWindowAspectRatio() );
 }
 
-void ShadowMappingBasic::renderDepthFbo()
+void ShadowMappingBasic::update()
 {
-	// Set polygon offset to battle shadow acne
-	vk::enablePolygonOffsetFill();
-	vk::polygonOffset( 2.0f, 2.0f );
+	// Store time so each render pass uses the same value
+	mTime = getElapsedSeconds();
+	mCam.lookAt( vec3( sin( mTime ) * 5.0f, sin( mTime ) * 2.5f + 2, 5.0f ), vec3( 0.0f ) );
+}
 
-	//// Render scene to fbo from the view of the light
-	mRenderPass->beginRenderExplicit( vk::context()->getDefaultCommandBuffer(), mFbo );
-	{
-		vk::pushMatrices();
+void ShadowMappingBasic::updateScene( bool shadowMap )
+{
+	vk::pushModelMatrix();
+	vk::rotate( mTime * 2.0f, 1.0f, 1.0f, 1.0f );
 
-		vk::setMatrices( mLightCam );
-		drawScene( true );
-
-		vk::popMatrices();
+	if( shadowMap ) {
+		mTeapotBatch->setDefaultUniformVars( vk::context() );
+		vk::context()->addPendingUniformVars( mTeapotBatch );
 	}
-	mRenderPass->endRenderExplicit();
+	else {
+		mTeapotShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.4f, 0.6f, 0.9f ) );		
+		mTeapotShadowedBatch->setDefaultUniformVars( vk::context() );
+		vk::context()->addPendingUniformVars( mTeapotShadowedBatch );
+	}
+	vk::popModelMatrix();
 	
-	// Disable polygon offset for final render
-	vk::disablePolygonOffsetFill();
+	vk::translate( 0.0f, -2.0f, 0.0f );
+	if( shadowMap ) {
+		mFloorBatch->setDefaultUniformVars( vk::context() );
+		vk::context()->addPendingUniformVars( mFloorBatch );
+	
+	}
+	else {
+		mFloorShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.7f, 0.7f, 0.7f ) );
+		mFloorShadowedBatch->setDefaultUniformVars( vk::context() );
+		vk::context()->addPendingUniformVars( mFloorShadowedBatch );
+	}
 }
 
 void ShadowMappingBasic::drawScene( bool shadowMap )
@@ -214,26 +228,39 @@ void ShadowMappingBasic::drawScene( bool shadowMap )
 	}
 }
 
-void ShadowMappingBasic::update()
-{
-	// Store time so each render pass uses the same value
-	mTime = getElapsedSeconds();
-	mCam.lookAt( vec3( sin( mTime ) * 5.0f, sin( mTime ) * 2.5f + 2, 5.0f ), vec3( 0.0f ) );
-}
-
 void ShadowMappingBasic::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf )
 {
 	cmdBuf->begin();
 	{
-		renderDepthFbo();
-
-		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
+		// Update for shadow map render
 		{
-			// Clear if single sample, multi sample is cleared on attachment load
-			if( ! vk::context()->getPresenter()->isMultiSample() ) {
-				vk::context()->clearAttachments();
-			}
+			vk::pushMatrices();
 
+			vk::setMatrices( mLightCam );
+			updateScene( true );
+
+			vk::popMatrices();
+
+			// Transfer data to 
+			vk::context()->transferPendingUniformBuffer( cmdBuf );
+		}
+
+		// Render shadow map
+		mRenderPass->beginRenderExplicit( vk::context()->getDefaultCommandBuffer(), mFbo );
+		{
+			// Set polygon offset to battle shadow acne
+			vk::enablePolygonOffsetFill();
+			vk::polygonOffset( 2.0f, 2.0f );
+
+			drawScene( true );
+
+			// Disable polygon offset for final render
+			vk::disablePolygonOffsetFill();
+		}
+		mRenderPass->endRenderExplicit();
+
+		// Update for shadowed render
+		{
 			vk::setMatrices( mCam );
 
 			vec4 mvLightPos	= vk::getModelView() * vec4( mLightPos, 1.0f );
@@ -244,6 +271,19 @@ void ShadowMappingBasic::generateCommandBuffer( const vk::CommandBufferRef& cmdB
 			mTeapotShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
 			mFloorShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
 			mFloorShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
+
+			updateScene( false );
+
+			vk::context()->transferPendingUniformBuffer( cmdBuf );
+		}
+
+		// Render shadowed pass
+		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
+		{
+			// Clear if single sample, multi sample is cleared on attachment load
+			if( ! vk::context()->getPresenter()->isMultiSample() ) {
+				vk::context()->clearAttachments();
+			}
 
 			drawScene( false ); 
 

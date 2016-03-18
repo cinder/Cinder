@@ -169,16 +169,19 @@ public:
 		Options& setCullModeBack() { return setCullMode( VK_CULL_MODE_BACK_BIT ); }
 		Options& setCullModeFrontAndBack() { return setCullMode( VK_CULL_MODE_FRONT_AND_BACK ); }
 
+		Options& setSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
+
 	private:
 		VkPrimitiveTopology								mTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		VkPipelineLayout								mPipelineLayout;
 		std::vector<VkVertexInputBindingDescription>	mVertexBindings;
 		std::vector<VkVertexInputAttributeDescription>	mVertexAttributes;
 		VkRenderPass									mRenderPass = VK_NULL_HANDLE;
-		uint32_t										mSubPass = 0;
+		uint32_t										mSubpass = 0;
 		std::vector<VkPipelineShaderStageCreateInfo>	mShaderStages;
 		bool											mDisablePipleineCache = false;
 		VkCullModeFlagBits								mCullMode = VK_CULL_MODE_NONE;
+		VkSampleCountFlagBits							mSamples = VK_SAMPLE_COUNT_1_BIT;
 		friend class Pipeline;
 	};
 

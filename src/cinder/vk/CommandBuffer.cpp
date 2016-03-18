@@ -430,10 +430,10 @@ void CommandBuffer::addImageMemoryBarrier( const SwapchainRef& swapchain )
 }
 */
 
-void CommandBuffer::pipelineBarrierMemory( VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
+void CommandBuffer::pipelineBarrierBufferMemory( VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
 {
 	VkBufferMemoryBarrier barrier = {};
-    barrier.sType					= VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+    barrier.sType					= VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
 	barrier.pNext					= nullptr;
     barrier.srcAccessMask			= srcAccessMask;
     barrier.dstAccessMask			= dstAccessMask;
@@ -446,9 +446,9 @@ void CommandBuffer::pipelineBarrierMemory( VkBuffer buffer, VkDeviceSize offset,
 	pipelineBarrier( srcStageMask, dstStageMask, 0, 0, nullptr, 1, &barrier, 0, nullptr );
 }
 
-void CommandBuffer::pipelineBarrierMemory( const vk::BufferRef& buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
+void CommandBuffer::pipelineBarrierBufferMemory( const vk::BufferRef& buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
 {
-	pipelineBarrierMemory( buffer->getBuffer(), buffer->getAllocationOffset(), buffer->getSize(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
+	pipelineBarrierBufferMemory( buffer->getBuffer(), buffer->getAllocationOffset(), buffer->getSize(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
 }
 
 void CommandBuffer::pipelineBarrierImageMemory( VkImage image, VkImageAspectFlags aspectMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )

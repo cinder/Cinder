@@ -37,6 +37,7 @@
 */
 
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Batch.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Device.h"
@@ -1194,6 +1195,54 @@ ShaderProgRef& Context::getStockShader( const vk::ShaderDef &shaderDef )
 	}
 
 	return existing->second;
+}
+
+
+void Context::addPendingUniformVars( const ci::vk::UniformBufferRef& buffer )
+{
+	auto it = std::find_if(
+		std::begin( mPendingUniformBuffers ),
+		std::end( mPendingUniformBuffers ),
+		[buffer]( const vk::UniformBufferRef& elem ) -> bool {
+			return buffer == elem;
+		}
+	);
+
+	if( std::end( mPendingUniformBuffers ) == it ) {
+		mPendingUniformBuffers.push_back( buffer );
+	}
+}
+
+void Context::addPendingUniformVars( const vk::UniformSetRef& uniformSetRef )
+{
+	const auto& sets = uniformSetRef->getSets();
+	for( auto& set : sets ) {
+		for( auto& binding : set->getBindings() ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			this->addPendingUniformVars( binding.getUniformBuffer() );
+		}
+	}
+}
+
+void Context::addPendingUniformVars( const vk::BatchRef& batch )
+{
+	this->addPendingUniformVars( batch->getUniformSet() );
+}
+
+void Context::transferPendingUniformBuffer( const vk::CommandBufferRef& cmdBuf, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
+{
+	for( const auto& uniformBuffer : mPendingUniformBuffers ) {
+		if( ! uniformBuffer->isDirty() ) {
+			continue;
+		}
+
+		uniformBuffer->transferPending();
+		cmdBuf->pipelineBarrierBufferMemory( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
+	}
+
+	mPendingUniformBuffers.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

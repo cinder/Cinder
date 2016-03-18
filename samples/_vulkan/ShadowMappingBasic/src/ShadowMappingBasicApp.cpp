@@ -61,6 +61,7 @@ class ShadowMappingBasic : public App {
 	void update() override;
 	void draw() override;
 	
+	void updateScene( bool shadowMap );
 	void drawScene( bool shadowMap );
 	void renderDepthFbo();
 	
@@ -164,63 +165,57 @@ void ShadowMappingBasic::resize()
 	mCam.setAspectRatio( getWindowAspectRatio() );
 }
 
-void ShadowMappingBasic::renderDepthFbo()
+void ShadowMappingBasic::updateScene( bool shadowMap )
 {
-	//// Set polygon offset to battle shadow acne
-	//vk::enable( GL_POLYGON_OFFSET_FILL );
-	//glPolygonOffset( 2.0f, 2.0f );
-	vk::enablePolygonOffsetFill();
-	vk::polygonOffset( 2.0f, 2.0f );
+	vk::pushModelMatrix();
+	vk::rotate( mTime * 2.0f, 1.0f, 1.0f, 1.0f );
 
-	//// Render scene to fbo from the view of the light
-	//vk::ScopedFramebuffer fbo( mFbo );
-	//vk::ScopedViewport viewport( vec2( 0.0f ), mFbo->getSize() );
-	//vk::clear( Color::black() );
-	//vk::color( Color::white() );
-	//vk::setMatrices( mLightCam );
-
-	mRenderPass->beginRender( vk::context()->getDefaultCommandBuffer(), mFbo );
-
-	vk::pushMatrices();
-
-	vk::setMatrices( mLightCam );
-	drawScene( true );
-
-	vk::popMatrices();
-
-	mRenderPass->endRender();
+	if( shadowMap ) {
+		mTeapotBatch->setDefaultUniformVars( vk::context() );
+		vk::context()->addPendingUniformVars( mTeapotBatch );
+	}
+	else {
+		mTeapotShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.4f, 0.6f, 0.9f ) );		
+		mTeapotShadowedBatch->setDefaultUniformVars( vk::context() );
+		vk::context()->addPendingUniformVars( mTeapotShadowedBatch );
+	}
+	vk::popModelMatrix();
 	
-	//// Disable polygon offset for final render
-	//vk::disable( GL_POLYGON_OFFSET_FILL );
-	vk::disablePolygonOffsetFill();
+	vk::translate( 0.0f, -2.0f, 0.0f );
+	if( shadowMap ) {
+		mFloorBatch->setDefaultUniformVars( vk::context() );
+		vk::context()->addPendingUniformVars( mFloorBatch );
+	
+	}
+	else {
+		mFloorShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.7f, 0.7f, 0.7f ) );
+		mFloorShadowedBatch->setDefaultUniformVars( vk::context() );
+		vk::context()->addPendingUniformVars( mFloorShadowedBatch );
+	}
 }
 
 void ShadowMappingBasic::drawScene( bool shadowMap )
 {
-	vk::pushModelMatrix();
-	//vk::color( Color( 0.4f, 0.6f, 0.9f ) );
-	vk::rotate( mTime * 2.0f, 1.0f, 1.0f, 1.0f );
-
 	if( shadowMap ) {
 		mTeapotBatch->draw();
-	}
-	else {
-		mTeapotShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.4f, 0.6f, 0.9f ) );
-		mTeapotShadowedBatch->draw();
-	}
-
-	vk::popModelMatrix();
-	
-	//vk::color( Color( 0.7f, 0.7f, 0.7f ) );
-	vk::translate( 0.0f, -2.0f, 0.0f );
-	
-	if( shadowMap ) {
 		mFloorBatch->draw();
 	}
 	else {
-		mFloorShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.7f, 0.7f, 0.7f ) );
+		mTeapotShadowedBatch->draw();
 		mFloorShadowedBatch->draw();
 	}
+}
+
+void ShadowMappingBasic::renderDepthFbo()
+{
+	vk::enablePolygonOffsetFill();
+	vk::polygonOffset( 2.0f, 2.0f );
+
+	mRenderPass->beginRender( vk::context()->getDefaultCommandBuffer(), mFbo );
+	drawScene( true );
+	mRenderPass->endRender();
+
+	vk::disablePolygonOffsetFill();
 }
 
 void ShadowMappingBasic::update()
@@ -229,23 +224,37 @@ void ShadowMappingBasic::update()
 	mTime = getElapsedSeconds();
 	mCam.lookAt( vec3( sin( mTime ) * 5.0f, sin( mTime ) * 2.5f + 2, 5.0f ), vec3( 0.0f ) );
 
+	// Update uniforms for shadow map render
+	{
+		vk::pushMatrices();
+		vk::setMatrices( mLightCam );
+		updateScene( true );
+		vk::popMatrices();
+	}
+
+	// Render shadow map
 	renderDepthFbo();
+
+	// Update uniforms for shadowed render
+	{
+		vk::setMatrices( mCam );
+
+		vec4 mvLightPos	= vk::getModelView() * vec4( mLightPos, 1.0f );
+		const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
+		mat4 shadowMatrix = flipY*mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
+
+		mTeapotShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
+		mTeapotShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
+		mFloorShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
+		mFloorShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
+
+		updateScene( false );
+	}
 }
 
 void ShadowMappingBasic::draw()
 {
-	vk::setMatrices( mCam );
-
-	vec4 mvLightPos	= vk::getModelView() * vec4( mLightPos, 1.0f );
-	const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
-	mat4 shadowMatrix = flipY*mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
-
-	mTeapotShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
-	mTeapotShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
-	mFloorShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
-	mFloorShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
-
-	drawScene( false ); 
+	drawScene( false );
 
     // Uncomment for debug
 /*    
@@ -256,12 +265,41 @@ void ShadowMappingBasic::draw()
 */
 }
 
+VkBool32 debugReportVk(
+    VkDebugReportFlagsEXT      flags,
+    VkDebugReportObjectTypeEXT objectType,
+    uint64_t                   object,
+    size_t                     location,
+    int32_t                    messageCode,
+    const char*                pLayerPrefix,
+    const char*                pMessage,
+    void*                      pUserData
+)
+{
+	if( flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) {
+		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_WARNING_BIT_EXT ) {
+		//CI_LOG_W( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) {
+		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_ERROR_BIT_EXT ) {
+		CI_LOG_E( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT ) {
+		//CI_LOG_D( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	return VK_FALSE;
+}
+
 const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_api_dump",
 	//"VK_LAYER_LUNARG_threading",
 	//"VK_LAYER_LUNARG_mem_tracker",
 	//"VK_LAYER_LUNARG_object_tracker",
-	//"VK_LAYER_LUNARG_draw_state",
+	"VK_LAYER_LUNARG_draw_state",
 	//"VK_LAYER_LUNARG_param_checker",
 	//"VK_LAYER_LUNARG_swapchain",
 	//"VK_LAYER_LUNARG_device_limits"
@@ -269,4 +307,12 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_GOOGLE_unique_objects",
 };
 
-CINDER_APP( ShadowMappingBasic, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setLayers( gLayers ) ), ShadowMappingBasic::prepareSettings )
+CINDER_APP( 
+	ShadowMappingBasic, 
+	RendererVk( RendererVk::Options()
+		.setSamples( VK_SAMPLE_COUNT_8_BIT )
+		.setLayers( gLayers )
+		.setDebugReportCallbackFn( debugReportVk ) 
+	), 
+	ShadowMappingBasic::prepareSettings 
+)

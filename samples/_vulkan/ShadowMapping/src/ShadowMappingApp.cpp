@@ -147,6 +147,7 @@ class ShadowMappingApp : public App {
 	
 	void keyDown( KeyEvent event ) override;
   private:
+	void updateScene( float spinAngle, const vk::GlslProgRef& glsl = nullptr );
 	void drawScene( float spinAngle, const vk::GlslProgRef& glsl = nullptr );
 
 	float						mSpinAngle = 0.0f;
@@ -287,38 +288,68 @@ void ShadowMappingApp::update()
 	mLight.camera.lookAt( mLight.viewpoint, mLight.target );
 	mFrameRate = getAverageFps();
 
-
-	// Render the shadow map
+	// Update uniforms for shadow map render
 	{
 		vk::ScopedMatrices push;
 
+		// Update uniforms for shadow map render
+		vk::setMatrices( mLight.camera );
+		updateScene( mSpinAngle );
+	}
+
+	// Render the shadow map
+	{
 		// Offset to help combat surface acne (self-shadowing)
 		vk::enablePolygonOffsetFill();
 		vk::polygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
 
 		mShadowMap->getRenderPass()->beginRender( vk::context()->getDefaultCommandBuffer(), mShadowMap->getFramebuffer() );
 
-		vk::setMatrices( mLight.camera );
 		drawScene( mSpinAngle );
 
 		mShadowMap->getRenderPass()->endRender();
 
 		vk::disablePolygonOffsetFill();
 	}
+
+	// Update uniforms for shadowed render
+	{
+		vk::ScopedMatrices push;
+
+		vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
+		{
+			const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
+			mat4 shadowMatrix = flipY*mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix();
+			vec4 lightPos = vk::getModelView() * vec4( mLight.viewpoint, 1.0 );
+			auto& batches = mShaderGrouping[mShadowShader];
+			for( auto& batch : batches ) {
+				batch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
+				batch->uniform( "ciBlock1.uShadowTechnique", mShadowTechnique );
+				batch->uniform( "ciBlock1.uDepthBias", mDepthBias );
+				batch->uniform( "ciBlock1.uOnlyShadowmap", mOnlyShadowmap );
+				batch->uniform( "ciBlock1.uRandomOffset", mRandomOffset );
+				batch->uniform( "ciBlock1.uNumRandomSamples", mNumRandomSamples );
+				batch->uniform( "ciBlock1.uEnableNormSlopeOffset", mEnableNormSlopeOffset );
+				batch->uniform( "ciBlock1.uLightPos", lightPos );
+			}
+			updateScene( mSpinAngle, mShadowShader );
+		}
+	}
 }
 
-void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadowGlsl )
+void ShadowMappingApp::updateScene( float spinAngle, const vk::GlslProgRef& shadowGlsl )
 {
-
 	{
 		vk::ScopedModelMatrix push;
 		vk::scale( vec3(4) );
 		
 		if( shadowGlsl ) {
-			mSphereShadowed->draw();
+			mSphereShadowed->setDefaultUniformVars( vk::context() );
+			vk::context()->addPendingUniformVars( mSphereShadowed );
 		}
 		else {
-			mSphere->draw();
+			mSphere->setDefaultUniformVars( vk::context() );
+			vk::context()->addPendingUniformVars( mSphere );
 		}
 	}
 	
@@ -326,41 +357,43 @@ void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadow
 		for( auto& teapot : mTeapots ) {
 			vk::ScopedModelMatrix push;
 			vk::scale( vec3(0.25) );
-			vk::multModelMatrix( rotate( spinAngle, teapot.mAxis ) * teapot.mTransform );
+			vk::multModelMatrix( rotate( mSpinAngle, teapot.mAxis ) * teapot.mTransform );
+				
 			if( shadowGlsl ) {
-				teapot.mShadowed->draw();
+				teapot.mShadowed->setDefaultUniformVars( vk::context() );
+				vk::context()->addPendingUniformVars( teapot.mShadowed );
 			}
 			else {
-				teapot.mPlain->draw();
+				teapot.mPlain->setDefaultUniformVars( vk::context() );
+				vk::context()->addPendingUniformVars( teapot.mPlain );
 			}
 		}
 	}
+}
 
+void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadowGlsl )
+{
+	if( shadowGlsl ) {
+		mSphereShadowed->draw();
+	}
+	else {
+		mSphere->draw();
+	}
+	
+	for( auto& teapot : mTeapots ) {
+		if( shadowGlsl ) {
+			teapot.mShadowed->draw();
+		}
+		else {
+			teapot.mPlain->draw();
+		}
+	}
 }
 
 void ShadowMappingApp::draw()
 {
 	// Render shadowed scene
-	vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
-	vk::viewport( toPixels( getWindowSize() ) );
-	{
-		const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
-		mat4 shadowMatrix = flipY*mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix();
-		vec4 lightPos = vk::getModelView() * vec4( mLight.viewpoint, 1.0 );
-		auto& batches = mShaderGrouping[mShadowShader];
-		for( auto& batch : batches ) {
-			batch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
-			batch->uniform( "ciBlock1.uShadowTechnique", mShadowTechnique );
-			batch->uniform( "ciBlock1.uDepthBias", mDepthBias );
-			batch->uniform( "ciBlock1.uOnlyShadowmap", mOnlyShadowmap );
-			batch->uniform( "ciBlock1.uRandomOffset", mRandomOffset );
-			batch->uniform( "ciBlock1.uNumRandomSamples", mNumRandomSamples );
-			batch->uniform( "ciBlock1.uEnableNormSlopeOffset", mEnableNormSlopeOffset );
-			batch->uniform( "ciBlock1.uLightPos", lightPos );
-		}
-
-		drawScene( mSpinAngle, mShadowShader );
-	}
+	drawScene( mSpinAngle, mShadowShader );
 }
 
 void ShadowMappingApp::keyDown( KeyEvent event )
@@ -370,6 +403,56 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP( ShadowMappingApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ), []( App::Settings *settings ) {
-	settings->setWindowSize( 900, 900 );
-} )
+VkBool32 debugReportVk(
+    VkDebugReportFlagsEXT      flags,
+    VkDebugReportObjectTypeEXT objectType,
+    uint64_t                   object,
+    size_t                     location,
+    int32_t                    messageCode,
+    const char*                pLayerPrefix,
+    const char*                pMessage,
+    void*                      pUserData
+)
+{
+	if( flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) {
+		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_WARNING_BIT_EXT ) {
+		//CI_LOG_W( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) {
+		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_ERROR_BIT_EXT ) {
+		CI_LOG_E( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	else if( flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT ) {
+		//CI_LOG_D( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+	}
+	return VK_FALSE;
+}
+
+const std::vector<std::string> gLayers = {
+	//"VK_LAYER_LUNARG_api_dump",
+	//"VK_LAYER_LUNARG_threading",
+	//"VK_LAYER_LUNARG_mem_tracker",
+	//"VK_LAYER_LUNARG_object_tracker",
+	"VK_LAYER_LUNARG_draw_state",
+	//"VK_LAYER_LUNARG_param_checker",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_LUNARG_device_limits"
+	//"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_GOOGLE_unique_objects",
+};
+
+CINDER_APP( 
+	ShadowMappingApp, 
+	RendererVk( RendererVk::Options()
+		.setSamples( VK_SAMPLE_COUNT_8_BIT ) 
+		.setLayers( gLayers )
+		.setDebugReportCallbackFn( debugReportVk ) 
+	), 
+	[]( App::Settings *settings ) {
+		settings->setWindowSize( 900, 900 );
+	}
+)

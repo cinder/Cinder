@@ -89,6 +89,8 @@ public:
 	//! Returns a single uniform buffer corresponding to a block
 	static UniformBufferRef		create( const UniformLayout::Block& block, const vk::UniformBuffer::Format& format, vk::Device *device = nullptr );
 
+	bool						isDirty() const { return mDirty; }
+
 	void						uniform( const std::string& name, const float    value );
 	void						uniform( const std::string& name, const int32_t  value );
 	void						uniform( const std::string& name, const uint32_t value );
@@ -108,7 +110,8 @@ public:
 
 	const std::vector<UniformBuffer::Uniform>&	getActiveUniforms() const { return mUniforms; }
 	
-	void						bufferPending();
+	//! Copies the data from host to GPU. This requires a separate barrier transition afterwards.
+	void						transferPending();
 
 	void						echoValues( std::ostream& os );
 

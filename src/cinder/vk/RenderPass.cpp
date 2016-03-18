@@ -104,7 +104,7 @@ RenderPass::SubpassDependency::SubpassDependency( uint32_t srcSubpass, uint32_t 
 	mDependency.dstSubpass = dstSubpass;
 }
 
-RenderPass::SubpassDependency& RenderPass::SubpassDependency::setSrcStageMask( VkPipelineStageFlagBits mask, bool exclusive )
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setSrcStageMask( VkPipelineStageFlags mask, bool exclusive )
 {
 	if( exclusive ) {
 		mDependency.srcStageMask = mask;
@@ -115,7 +115,7 @@ RenderPass::SubpassDependency& RenderPass::SubpassDependency::setSrcStageMask( V
 	return *this;
 }
 
-RenderPass::SubpassDependency& RenderPass::SubpassDependency::setDstStageMask( VkPipelineStageFlagBits mask, bool exclusive )
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setDstStageMask( VkPipelineStageFlags mask, bool exclusive )
 {
 	if( exclusive ) {
 		mDependency.dstStageMask = mask;
@@ -126,7 +126,14 @@ RenderPass::SubpassDependency& RenderPass::SubpassDependency::setDstStageMask( V
 	return *this;
 }
 
-RenderPass::SubpassDependency& RenderPass::SubpassDependency::setSrcAccess( VkAccessFlagBits mask, bool exclusive )
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setStageMasks( VkPipelineStageFlags srcMask, VkPipelineStageFlags dstMask, bool exclusive )
+{
+	setSrcStageMask( srcMask );
+	setDstStageMask( dstMask );
+	return *this;
+}
+
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setSrcAccessMask( VkAccessFlags mask, bool exclusive )
 {
 	if( exclusive ) {
 		mDependency.srcAccessMask = mask;
@@ -137,14 +144,21 @@ RenderPass::SubpassDependency& RenderPass::SubpassDependency::setSrcAccess( VkAc
 	return *this;
 }
 
-RenderPass::SubpassDependency& RenderPass::SubpassDependency::setDstAccess( VkAccessFlagBits mask, bool exclusive )
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setDstAccessMask( VkAccessFlags mask, bool exclusive )
 {
 	if( exclusive ) {
-		mDependency.dstStageMask = mask;
+		mDependency.dstAccessMask = mask;
 	}
 	else {
-		mDependency.dstStageMask |= mask;
+		mDependency.dstAccessMask |= mask;
 	}
+	return *this;
+}
+
+RenderPass::SubpassDependency& RenderPass::SubpassDependency::setAccessMasks( VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, bool exclusive )
+{
+	setSrcAccessMask( srcAccessMask );
+	setDstAccessMask( dstAccessMask );
 	return *this;
 }
 
@@ -407,6 +421,9 @@ void RenderPass::beginRender( const vk::CommandBufferRef& cmdBuf,const vk::Frame
 	mCommandBuffer->begin();
 	vk::context()->pushCommandBuffer( mCommandBuffer );
 
+	// Tranmsfer uniform data
+	vk::context()->transferPendingUniformBuffer( mCommandBuffer, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+
 	// Viewport, scissor
 	VkRect2D ra;
 	ra.offset = { 0, 0 };
@@ -432,7 +449,6 @@ void RenderPass::beginRender( const vk::CommandBufferRef& cmdBuf,const vk::Frame
 			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), attachment->getFinalLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 		}
 	}
-*/
 
 	// Update the attachment's image layout
 	const auto& fbAttachments = mFramebuffer->getAttachments();
@@ -440,6 +456,7 @@ void RenderPass::beginRender( const vk::CommandBufferRef& cmdBuf,const vk::Frame
 		VkImageLayout currentLayout = mOptions.mAttachments[i].mDescription.initialLayout;
 		fbAttachments[i].getAttachment()->getImage()->setCurrentLayout( currentLayout );
 	}
+*/
 
 	// Begin the render pass
 	const auto& clearValues = getAttachmentClearValues();
@@ -471,7 +488,6 @@ void RenderPass::endRender()
 			mCommandBuffer->pipelineBarrierImageMemory( attachment->getImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, attachment->getFinalLayout(), VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 		}
 	}
-*/
 
 	// Update the attachment's image layout
 	const auto& fbAttachments = mFramebuffer->getAttachments();
@@ -479,6 +495,7 @@ void RenderPass::endRender()
 		VkImageLayout currentLayout = mOptions.mAttachments[i].mDescription.finalLayout;
 		fbAttachments[i].getAttachment()->getImage()->setCurrentLayout( currentLayout );
 	}
+*/
 
 	// End the command buffer
 	mCommandBuffer->end();

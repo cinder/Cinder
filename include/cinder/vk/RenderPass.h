@@ -145,10 +145,12 @@ public:
 
 		SubpassDependency&		setSrcSubpass( uint32_t subpass ) { mDependency.srcSubpass = subpass; return *this; }
 		SubpassDependency&		setDstSubpass( uint32_t subpass ) { mDependency.dstSubpass = subpass; return *this; }
-		SubpassDependency&		setSrcStageMask( VkPipelineStageFlagBits mask, bool exclusive = false );
-		SubpassDependency&		setDstStageMask( VkPipelineStageFlagBits mask, bool exclusive = false );
-		SubpassDependency&		setSrcAccess( VkAccessFlagBits mask, bool exclusive = false );
-		SubpassDependency&		setDstAccess( VkAccessFlagBits mask, bool exclusive = false );
+		SubpassDependency&		setSrcStageMask( VkPipelineStageFlags mask, bool exclusive = false );
+		SubpassDependency&		setDstStageMask( VkPipelineStageFlags mask, bool exclusive = false );
+		SubpassDependency&		setStageMasks( VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, bool exclusive = false );
+		SubpassDependency&		setSrcAccessMask( VkAccessFlags mask, bool exclusive = false );
+		SubpassDependency&		setDstAccessMask( VkAccessFlags mask, bool exclusive = false );
+		SubpassDependency&		setAccessMasks( VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, bool exclusive = false );
 
 	private:
 		VkSubpassDependency		mDependency;
