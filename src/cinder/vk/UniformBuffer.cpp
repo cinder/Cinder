@@ -315,7 +315,7 @@ void UniformBuffer::uniform( const std::string& name, const mat4& value )
 	setValue( name, value );
 }
 
-void UniformBuffer::bufferPending()
+void UniformBuffer::transferPending()
 {
 	if( mDirty ) {
 		void* dst = map();

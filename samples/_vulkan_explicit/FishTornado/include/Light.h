@@ -56,7 +56,7 @@ public:
 	static LightRef					create();
 
 	void							update( float time, float dt );
-	void							draw();
+	//void							draw();
 	void							prepareDraw( const ci::vk::CommandBufferRef& cmdBuf );
 	void							finishDraw();
 	void							toggleW(){ mPos.w = ( 1.0f - mPos.w ); };

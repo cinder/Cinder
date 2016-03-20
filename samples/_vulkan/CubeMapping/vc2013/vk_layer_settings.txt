@@ -1,6 +1,4 @@
 # VK_LAYER_LUNARG_api_dump
-ApiDumpDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-ApiDumpReportFlags = debug,info,error,warn,perf
 ApiDumpDetailed = TRUE
 ApiDumpNoAddr = FALSE
 ApiDumpFile = TRUE
@@ -23,14 +21,6 @@ MemTrackerFile = TRUE
 MemTrackerLogFilename = vk_mem_tracker_log.txt 
 MemTrackerFlush = FALSE
 
-# VK_LAYER_LUNARG_draw_state
-DrawStateDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-DrawStateReportFlags = debug,info,error,warn,perf
-DrawStateDetailed = TRUE
-DrawStateFile = FALSE
-DrawStateLogFilename = vk_drawstate_log.txt 
-DrawStateFlush = FALSE
-
 # VK_LAYER_LUNARG_device_limits
 DeviceLimitsDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
 DeviceLimitsReportFlags = debug,info,error,warn,perf
@@ -39,10 +29,11 @@ DeviceLimitsFile = TRUE
 DeviceLimitsLogFilename = vk_device_limits_log.txt 
 DeviceLimitsFlush = FALSE
 
-# VK_LAYER_LUNARG_image
-ImageDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-ImageReportFlags = debug,info,error,warn,perf
-ImageDetailed = TRUE
-ImageFile = FALSE
-ImageLogFilename = vk_image_log.txt 
-ImageFlush = FALSE
+
+# VK_LAYER_LUNARG_draw_state
+DrawStateDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+DrawStateReportFlags = debug,info,error,warn,perf
+DrawStateDetailed = TRUE
+DrawStateFile = TRUE
+DrawStateLogFilename = vk_drawstate_log.txt 
+DrawStateFlush = FALSE

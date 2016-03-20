@@ -183,11 +183,17 @@ void RotatingCubeApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf,
 
 	cmdBuf->begin();
 	{
+		vk::ScopedMatrices pushMatrices;
+
+		vk::setMatrices( mCam );
+		vk::multModelMatrix( mCubeRotation );
+	
+		vk::context()->setDefaultUniformVars( mBatch[frameIdx] );
+		vk::context()->addPendingUniformVars( mBatch[frameIdx] );
+		vk::context()->transferPendingUniformBuffer( cmdBuf );
+
 		ctx->getPresenter()->beginRender( cmdBuf, ctx );
 		{
-			vk::setMatrices( mCam );
-			vk::ScopedModelMatrix modelScope;
-			vk::multModelMatrix( mCubeRotation );
 			mBatch[frameIdx]->draw();
 		}
 		ctx->getPresenter()->endRender( ctx );

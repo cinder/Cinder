@@ -155,6 +155,7 @@ void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 
 	auto cmdBuf = commandBuffer->getCommandBuffer();
 
+/*
 	for( auto& set : mUniformSet->getSets() ) {
 		for( auto& binding : set->getBindings() ) {
 			if( ! binding.isBlock() ) {
@@ -164,6 +165,7 @@ void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 		}
 	}
 	mUniformSet->bufferPending( commandBuffer, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+*/
 
 	std::vector<VkBuffer> vertexBuffers = { mVertexBuffer->getBuffer() };
 	std::vector<VkDeviceSize> offsets = { 0 };
@@ -187,6 +189,8 @@ void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 	pipelineSelector->setVertexInputAttributeDescriptions( mVertexAttributes );
 	pipelineSelector->setCullMode( ctx->getCullMode() );
 	pipelineSelector->setFrontFace( ctx->getFrontFace() );
+	pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
+	pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubpass() ) );
 	pipelineSelector->setDepthTest( ctx->getDepthTest() );
 	pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 	pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );

@@ -82,6 +82,7 @@ void Device::initializeGpuProperties()
     vkGetPhysicalDeviceMemoryProperties( mGpu, &mMemoryProperties );
     vkGetPhysicalDeviceProperties( mGpu, &mGpuProperties );
 CI_LOG_I( "limits.maxBoundDescriptorSets        : " << mGpuProperties.limits.maxBoundDescriptorSets );
+CI_LOG_I( "limits.maxPushConstantsSize          : " << mGpuProperties.limits.maxPushConstantsSize );
 CI_LOG_I( "limits.sampledImageColorSampleCounts : " << mGpuProperties.limits.sampledImageColorSampleCounts );
 CI_LOG_I( "limits.sampledImageDepthSampleCounts : " << mGpuProperties.limits.sampledImageDepthSampleCounts );
 }

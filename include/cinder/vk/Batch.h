@@ -134,6 +134,7 @@ class Batch {
 */
 
 	const vk::UniformSetRef&	getUniformSet() const { return mUniformSet; }
+	void						setDefaultUniformVars( vk::Context *context );
 
 	//void						setCullMode( VkCullModeFlagBits cullMode ) { mPipelineSelection = cullMode; }
 	//void						setCullModeNone() { setCullMode( VK_CULL_MODE_NONE ); }

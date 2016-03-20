@@ -37,6 +37,7 @@
 */
 
 #include "cinder/vk/Context.h"
+#include "cinder/vk/Batch.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Device.h"
@@ -134,7 +135,8 @@ void Context::initialize( const Context* existingContext )
     mViewMatrixStack.push_back( mat4() );
 	mProjectionMatrixStack.push_back( mat4( 1, 0, 0, 0,  0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ) );
 
-	mDefaultCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), this );
+	mDefaultCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), false, this );
+	mDefaultTransientCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), true, this );
 	mDefaultCommandBuffer = vk::CommandBuffer::create( mDefaultCommandPool->getCommandPool(), this );
 
 	mCachedColorAttachmentBlend.blendEnable			= VK_FALSE;
@@ -954,6 +956,24 @@ void Context::setDefaultUniformVars( const UniformBufferRef& uniformBuffer )
 	}
 }
 
+void Context::setDefaultUniformVars( const vk::UniformSetRef& uniformSet )
+{
+	const auto& sets = uniformSet->getSets();
+	for( auto& set : sets ) {
+		for( auto& binding : set->getBindings() ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			this->setDefaultUniformVars( binding.getUniformBuffer() );
+		}
+	}
+}
+
+void Context::setDefaultUniformVars( const vk::BatchRef& batch )
+{
+	this->setDefaultUniformVars( batch->getUniformSet() );
+}
+
 const std::vector<VkPipelineColorBlendAttachmentState>&	Context::getColorBlendAttachments() const 
 { 
 	// If a subpass is depth/stencil only, mColorAttachmentBlends should be empty.
@@ -1194,6 +1214,55 @@ ShaderProgRef& Context::getStockShader( const vk::ShaderDef &shaderDef )
 	}
 
 	return existing->second;
+}
+
+
+void Context::addPendingUniformVars( const ci::vk::UniformBufferRef& buffer )
+{
+	auto it = std::find_if(
+		std::begin( mPendingUniformBuffers ),
+		std::end( mPendingUniformBuffers ),
+		[buffer]( const vk::UniformBufferRef& elem ) -> bool {
+			return buffer == elem;
+		}
+	);
+
+	if( std::end( mPendingUniformBuffers ) == it ) {
+		mPendingUniformBuffers.push_back( buffer );
+	}
+}
+
+void Context::addPendingUniformVars( const vk::UniformSetRef& uniformSetRef )
+{
+	const auto& sets = uniformSetRef->getSets();
+	for( auto& set : sets ) {
+		for( auto& binding : set->getBindings() ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			this->addPendingUniformVars( binding.getUniformBuffer() );
+		}
+	}
+}
+
+void Context::addPendingUniformVars( const vk::BatchRef& batch )
+{
+	this->addPendingUniformVars( batch->getUniformSet() );
+}
+
+void Context::transferPendingUniformBuffer( const vk::CommandBufferRef& cmdBuf, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
+{
+	for( const auto& uniformBuffer : mPendingUniformBuffers ) {
+		if( ! uniformBuffer->isDirty() ) {
+			continue;
+		}
+
+		uniformBuffer->transferPending();
+		//cmdBuf->pipelineBarrierBufferMemory( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
+		cmdBuf->pipelineBarrierBufferMemory( vk::BufferMemoryBarrierParams( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
+	}
+
+	mPendingUniformBuffers.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

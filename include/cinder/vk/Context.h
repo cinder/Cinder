@@ -54,6 +54,7 @@ class RendererVk;
 
 namespace cinder { namespace vk {
 
+class Batch;
 class CommandBuffer;
 class CommandPool;
 class DescriptorLayout;
@@ -70,6 +71,7 @@ class ShaderProg;
 class UniformBuffer;
 class UniformSet;
 class VertexBuffer;
+using BatchRef = std::shared_ptr<Batch>;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 using CommandPoolRef = std::shared_ptr<CommandPool>;
 using DescriptorLayoutRef = std::shared_ptr<DescriptorLayout>;
@@ -123,6 +125,7 @@ public:
 	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
 
 	const vk::CommandPoolRef&				getDefaultCommandPool() const { return mDefaultCommandPool; }
+	const vk::CommandPoolRef&				getDefaultTransientCommandPool() const { return mDefaultCommandPool; }
 	const vk::CommandBufferRef&				getDefaultCommandBuffer() const { return mDefaultCommandBuffer; }
 
 	void						pushRenderPass( const vk::RenderPassRef& renderPass );
@@ -250,7 +253,9 @@ public:
 	float						getLineWidth();
 	
 
-	void						setDefaultUniformVars( const UniformBufferRef& uniformBuffer );
+	void						setDefaultUniformVars( const vk::UniformBufferRef& uniformBuffer );
+	void						setDefaultUniformVars( const vk::UniformSetRef& uniformSet );
+	void						setDefaultUniformVars( const vk::BatchRef& batch );
 
 	const ColorAf&				getCurrentColor() const { return mColor; }
 	void						setCurrentColor( const ColorAf &color ) { mColor = color; }
@@ -274,6 +279,10 @@ private:
 public:
 	ShaderProgRef&				getStockShader( const vk::ShaderDef &shaderDef );
 
+	void						addPendingUniformVars( const vk::UniformBufferRef& buffer );
+	void						addPendingUniformVars( const vk::UniformSetRef& uniformSetRef );
+	void						addPendingUniformVars( const vk::BatchRef& batch );
+	void						transferPendingUniformBuffer( const vk::CommandBufferRef& cmdBuf, VkAccessFlags srcAccessMask = VK_ACCESS_HOST_WRITE_BIT, VkAccessFlags dstAccessMask = VK_ACCESS_UNIFORM_READ_BIT, VkPipelineStageFlags srcStageMask = VK_PIPELINE_STAGE_HOST_BIT, VkPipelineStageFlags dstStageMask = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 protected:
 	//! Returns \c true if \a value is different from the previous top of the stack
@@ -322,6 +331,8 @@ private:
 	std::vector<VkCullModeFlagBits>			mCullFaceStack;
 	std::vector<VkFrontFace>				mFrontFaceStack;
 
+	std::vector<vk::UniformBufferRef>		mPendingUniformBuffers;
+
 	struct DepthBiasInfo {
 		bool enable = false;
 		float slopeFactor = 0.0f;
@@ -353,6 +364,7 @@ private:
 	std::vector<float>						mLineWidthStack;
 
 	vk::CommandPoolRef						mDefaultCommandPool;
+	vk::CommandPoolRef						mDefaultTransientCommandPool;
 	vk::CommandBufferRef					mDefaultCommandBuffer;
 	
 	void initialize( const Context* existingContext = nullptr );

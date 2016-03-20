@@ -599,6 +599,7 @@
     <ClCompile Include="..\src\cinder\vk\TextureFont.cpp" />
     <ClCompile Include="..\src\cinder\vk\UniformBuffer.cpp" />
     <ClCompile Include="..\src\cinder\vk\UniformLayout.cpp" />
+    <ClCompile Include="..\src\cinder\vk\Util.cpp" />
     <ClCompile Include="..\src\cinder\vk\util\farmhash.cc" />
     <ClCompile Include="..\src\cinder\vk\VertexBuffer.cpp" />
     <ClCompile Include="..\src\cinder\vk\VertexBufferMesh.cpp" />

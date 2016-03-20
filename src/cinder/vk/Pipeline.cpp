@@ -444,7 +444,7 @@ void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineC
 	ms.pNext											= NULL;
 	ms.flags											= 0;
 	ms.pSampleMask										= NULL;
-	ms.rasterizationSamples								= VK_SAMPLE_COUNT_1_BIT;
+	ms.rasterizationSamples								= options.mSamples;
 	ms.sampleShadingEnable								= VK_FALSE;
 	ms.alphaToCoverageEnable							= VK_FALSE;
 	ms.alphaToOneEnable									= VK_FALSE;
@@ -467,7 +467,7 @@ void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineC
 	pipelineCreateInfo.pDynamicState					= &ds;
 	pipelineCreateInfo.layout							= options.mPipelineLayout;
 	pipelineCreateInfo.renderPass						= options.mRenderPass;
-	pipelineCreateInfo.subpass							= options.mSubPass;
+	pipelineCreateInfo.subpass							= options.mSubpass;
 	pipelineCreateInfo.basePipelineHandle				= 0;
 	pipelineCreateInfo.basePipelineIndex				= 0;
 

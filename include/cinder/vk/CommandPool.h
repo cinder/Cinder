@@ -52,15 +52,16 @@ class CommandPool : public BaseContextObject {
 public:
 	virtual ~CommandPool();
 
-	static CommandPoolRef		create( uint32_t queueFamilyIndex, vk::Context *context = nullptr );
+	static CommandPoolRef		create( uint32_t queueFamilyIndex, bool transient, vk::Context *context );
 
 	VkCommandPool				getCommandPool() const { return mCommandPool; }
 
 private:
-	CommandPool( uint32_t queueFamilyIndex, vk::Context *context );
+	CommandPool( uint32_t queueFamilyIndex, bool transient, vk::Context *context );
 
-	uint32_t					mQueueFamilyIndex = UINT32_MAX;
 	VkCommandPool				mCommandPool = VK_NULL_HANDLE;
+	uint32_t					mQueueFamilyIndex = UINT32_MAX;
+	bool						mTransient = false;
 
 	void initialize();
 	void destroy( bool removeFromTracking = true );

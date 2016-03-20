@@ -85,6 +85,7 @@ public:
 
 	vk::Device*							getDevice() const { return mDevice; }
 
+	VkSampleCountFlagBits				getSamples() const { return mActualSamples; }
 	bool								isMultiSample() const { return mOptions.mMultiSample; }
 
 	const vk::SwapchainRef&				getSwapchain() const { return mSwapchain; }

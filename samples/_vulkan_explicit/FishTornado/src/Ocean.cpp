@@ -189,7 +189,8 @@ Ocean::Ocean( FishTornadoApp *app )
 	{
 		try {
 			ObjLoader loader = ObjLoader( loadAsset( "ocean/beams.obj" ), ObjLoader::Options().flipV() );
-			mBeamsBatch = vk::Batch::create( loader, mBeamShader );
+			mBeamsBatch1 = vk::Batch::create( loader, mBeamShader );
+			mBeamsBatch2 = vk::Batch::create( loader, mBeamShader );
 			CI_LOG_I( "BeamsBatch created" );
 		}
 		catch( const std::exception& e ) {
@@ -207,80 +208,108 @@ void Ocean::update( float time, float dt )
 {
 	mTime = time;
 	
-	if( app::getElapsedFrames() % 2 == 0 )
+	if( app::getElapsedFrames() % 2 == 0 ) {
 		mCausticsIndex = ( mCausticsIndex + 1 ) % 32;
+	}
 }
 
-void Ocean::draw()
+void Ocean::updateForMainFbo()
 {
-	drawSurface();
-	drawFloor();
+	auto light = mApp->getLight();
+	if( light ) {
+		// Surface
+		{
+			const float scale = 1000.0f;
+	
+			vk::cullMode( VK_CULL_MODE_FRONT_BIT );
+	
+			mSurfaceBatch->uniform( "uNormalsTex",				mSurfaceNormalsTex );
+	
+			mSurfaceBatch->uniform( "ciBlock0.uScale",			scale );
+			mSurfaceBatch->uniform( "ciBlock0.uHeight",			OCEAN_DEPTH/2.0f );
+			mSurfaceBatch->uniform( "ciBlock0.uTime",			mTime * 0.1f );
+			mSurfaceBatch->uniform( "ciBlock0.uLightPos",		light->getPos() );
+			mSurfaceBatch->uniform( "ciBlock0.uFogColor",		FOG_COLOR );
+			mSurfaceBatch->uniform( "ciBlock0.uFogNearDist",	FOG_NEAR_DIST );
+			mSurfaceBatch->uniform( "ciBlock0.uFogFarDist",		FOG_FAR_DIST);
+			mSurfaceBatch->uniform( "ciBlock0.uFogPower",		FOG_POWER );
+
+			mSurfaceBatch->uniform( "ciBlock1.uLightPos",		light->getPos() );
+			mSurfaceBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
+			mSurfaceBatch->uniform( "ciBlock1.uTime",			mTime * 0.1f );
+
+			vk::context()->setDefaultUniformVars( mSurfaceBatch );
+			vk::context()->addPendingUniformVars( mSurfaceBatch );
+		}
+
+		// Floor
+		{
+			mFloorBatch->uniform( "ciBlock0.uShadowMvp",	light->getBiasedViewProjection() );
+			mFloorBatch->uniform( "ciBlock0.uTime",			mTime * 0.4f );
+			mFloorBatch->uniform( "ciBlock0.uFogNearDist",	FOG_NEAR_DIST );
+			mFloorBatch->uniform( "ciBlock0.uFogFarDist",	FOG_FAR_DIST );
+			mFloorBatch->uniform( "ciBlock0.uFogPower",		FOG_POWER );
+
+			mFloorBatch->uniform( "uDiffuseTex",			mFloorDiffuseTex );
+			mFloorBatch->uniform( "uNormalsTex",			mFloorNormalsTex );
+			mFloorBatch->uniform( "uCausticsTex",			getCausticsTex() );
+			mFloorBatch->uniform( "uShadowMap",				light->getBlurredTexture() );
+
+			mFloorBatch->uniform( "ciBlock1.uTime",			mTime * 0.4f );
+			mFloorBatch->uniform( "ciBlock1.uDepthBias",	light->getDepthBias() );
+			mFloorBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
+
+			vk::context()->setDefaultUniformVars( mFloorBatch );
+			vk::context()->addPendingUniformVars( mFloorBatch );
+		}
+
+		// Beams
+		{
+			vk::ScopedMatrices pushMatrices;
+
+			vk::rotate( mTime * 0.01f, vec3( 0.0f, 1.0f, 0.0f ) );
+			mBeamsBatch1->uniform( "ciBlock1.uOceanCol", FOG_COLOR );
+			vk::context()->setDefaultUniformVars( mBeamsBatch1 );
+			vk::context()->addPendingUniformVars( mBeamsBatch1 );
+	
+			vk::rotate( mTime * -0.022f, vec3( 0.0f, 1.0f, 0.0f ) );
+			mBeamsBatch2->uniform( "ciBlock1.uOceanCol", FOG_COLOR );
+			vk::context()->setDefaultUniformVars( mBeamsBatch2 );
+			vk::context()->addPendingUniformVars( mBeamsBatch2 );
+		}
+
+		mCanDraw = true;
+	}
 }
 
 void Ocean::drawSurface()
 {
-	auto light = mApp->getLight();
-	if( ! light ) {
+	if( ! mCanDraw ) {
 		return;
 	}
 
-	const float scale = 1000.0f;
-	
 	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
-	
-	mSurfaceBatch->uniform( "uNormalsTex",				mSurfaceNormalsTex );
-	
-	mSurfaceBatch->uniform( "ciBlock0.uScale",			scale );
-	mSurfaceBatch->uniform( "ciBlock0.uHeight",			OCEAN_DEPTH/2.0f );
-	mSurfaceBatch->uniform( "ciBlock0.uTime",			mTime * 0.1f );
-	mSurfaceBatch->uniform( "ciBlock0.uLightPos",		light->getPos() );
-	mSurfaceBatch->uniform( "ciBlock0.uFogColor",		FOG_COLOR );
-	mSurfaceBatch->uniform( "ciBlock0.uFogNearDist",	FOG_NEAR_DIST );
-	mSurfaceBatch->uniform( "ciBlock0.uFogFarDist",		FOG_FAR_DIST);
-	mSurfaceBatch->uniform( "ciBlock0.uFogPower",		FOG_POWER );
-
-	mSurfaceBatch->uniform( "ciBlock1.uLightPos",		light->getPos() );
-	mSurfaceBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
-	mSurfaceBatch->uniform( "ciBlock1.uTime",			mTime * 0.1f );
-
 	mSurfaceBatch->draw();
 }
 
 void Ocean::drawFloor()
 {
-	auto light = mApp->getLight();
-	if( ! light ) {
+	if( ! mCanDraw ) {
 		return;
 	}
 
 	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-	
-	mFloorBatch->uniform( "ciBlock0.uShadowMvp",	light->getBiasedViewProjection() );
-	mFloorBatch->uniform( "ciBlock0.uTime",			mTime * 0.4f );
-	mFloorBatch->uniform( "ciBlock0.uFogNearDist",	FOG_NEAR_DIST );
-	mFloorBatch->uniform( "ciBlock0.uFogFarDist",	FOG_FAR_DIST );
-	mFloorBatch->uniform( "ciBlock0.uFogPower",		FOG_POWER );
-
-	mFloorBatch->uniform( "uDiffuseTex",			mFloorDiffuseTex );
-	mFloorBatch->uniform( "uNormalsTex",			mFloorNormalsTex );
-	mFloorBatch->uniform( "uCausticsTex",			getCausticsTex() );
-	mFloorBatch->uniform( "uShadowMap",				light->getBlurredTexture() );
-
-	mFloorBatch->uniform( "ciBlock1.uTime",			mTime * 0.4f );
-	mFloorBatch->uniform( "ciBlock1.uDepthBias",	light->getDepthBias() );
-	mFloorBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
-
 	mFloorBatch->draw();
 }
 
 void Ocean::drawBeams()
 {
-	vk::rotate( mTime * 0.01f, vec3( 0.0f, 1.0f, 0.0f ) );
-	mBeamsBatch->uniform( "ciBlock1.uOceanCol",	FOG_COLOR );
-	mBeamsBatch->draw();
-	
-	vk::rotate( mTime * -0.022f, vec3( 0.0f, 1.0f, 0.0f ) );
-	mBeamsBatch->draw();
+	if( ! mCanDraw ) {
+		return;
+	}
+
+	mBeamsBatch1->draw();
+	mBeamsBatch2->draw();
 }
 
 const vk::TextureRef& Ocean::getCausticsTex() const

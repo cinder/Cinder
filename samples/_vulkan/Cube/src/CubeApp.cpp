@@ -119,14 +119,24 @@ void RotatingCubeApp::update()
 {
 	// Rotate the cube by 0.2 degrees around the y-axis
 	mCubeRotation *= rotate( toRadians( 0.2f ), normalize( vec3( 0, 1, 0 ) ) );
+
+	// Update uniforms
+	{
+		vk::setMatrices( mCam );
+		
+		vk::ScopedModelMatrix modelScope;
+		vk::multModelMatrix( mCubeRotation );
+
+		mBatch->setDefaultUniformVars( vk::context() );
+		vk::context()->addPendingUniformVars( mBatch );
+	}
 }
 
 void RotatingCubeApp::draw()
 {
-	vk::setMatrices( mCam );
-
-	vk::ScopedModelMatrix modelScope;
-	vk::multModelMatrix( mCubeRotation );
+	//vk::setMatrices( mCam );
+	//vk::ScopedModelMatrix modelScope;
+	//vk::multModelMatrix( mCubeRotation );
 
 	mBatch->draw();
 

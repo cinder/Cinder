@@ -41,6 +41,7 @@
 #include "cinder/vk/Device.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/RenderPass.h"
+#include "cinder/vk/Util.h"
 #include "cinder/vk/wrapper.h"
 
 namespace cinder { namespace vk {
@@ -121,12 +122,16 @@ void Framebuffer::initialize( const vk::Framebuffer::Format& format )
 		else if( formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT ) {
 			imageFormat.setUsageDepthStencilAttachment();
 		}
-		//// Sampled image
-		//if( formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT ) {
-		//	imageFormat.setUsageSampled();
-		//}
 		// Create image
 		elem.mAttachment = vk::ImageView::create( mWidth, mHeight, imageFormat, mDevice );
+
+		// Transition to first use
+		if( elem.isColorAttachment() ) {
+			vk::transitionToFirstUse( elem.mAttachment, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vk::context() );
+		}
+		else if( elem.isDepthStencilAttachment() ) {
+			vk::transitionToFirstUse( elem.mAttachment, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vk::context() );
+		}
 	}
 
 	// Attachment array for creation

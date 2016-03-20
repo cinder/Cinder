@@ -1060,8 +1060,9 @@ void UniformSet::bufferPending( const vk::CommandBufferRef& cmdBuf, VkAccessFlag
 			if( ! binding.isBlock() ) {
 				continue;
 			}
-			binding.getUniformBuffer()->bufferPending();
-			cmdBuf->pipelineBarrierMemory( binding.getUniformBuffer(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
+			binding.getUniformBuffer()->transferPending();
+			//cmdBuf->pipelineBarrierBufferMemory( binding.getUniformBuffer(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
+			cmdBuf->pipelineBarrierBufferMemory( vk::BufferMemoryBarrierParams( binding.getUniformBuffer(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
 		}
 	}
 }

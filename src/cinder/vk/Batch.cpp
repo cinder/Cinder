@@ -286,6 +286,11 @@ void Batch::samplerCube( const std::string& name, const TextureBaseRef& texture 
 }
 */
 
+void Batch::setDefaultUniformVars( vk::Context *context )
+{
+	mUniformSet->setDefaultUniformVars( vk::context() );
+}
+
 void Batch::draw( int32_t first, int32_t count )
 {
 	// Allocate descriptor set here in case uniforms get set before first draw
@@ -297,9 +302,9 @@ void Batch::draw( int32_t first, int32_t count )
 	auto cmdBufRef = vk::context()->getCommandBuffer();
 	auto cmdBuf = cmdBufRef->getCommandBuffer();
 
-	// Fill out uniform vars
-	mUniformSet->setDefaultUniformVars( vk::context() );
-	mUniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+	//// Fill out uniform vars
+	//mUniformSet->setDefaultUniformVars( vk::context() );
+	//mUniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 	// Update descriptor set
 	mDescriptorSetView->updateDescriptorSets();
@@ -371,9 +376,9 @@ void Batch::drawInstanced( uint32_t instanceCount )
 	auto cmdBufRef = vk::context()->getCommandBuffer();
 	auto cmdBuf = cmdBufRef->getCommandBuffer();
 
-	// Fill out uniform vars
-	mUniformSet->setDefaultUniformVars( vk::context() );
-	mUniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+	//// Fill out uniform vars
+	//mUniformSet->setDefaultUniformVars( vk::context() );
+	//mUniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 	// Update descriptor set
 	mDescriptorSetView->updateDescriptorSets();

@@ -179,13 +179,13 @@ void main()
 	
 	vec3 ambientFinal	= A * ciBlock1.uFishColor;
 	vec3 diffuseFinal	= vec3( 0.9*D * ciBlock1.uFishColor * shadow );//D * shadow;
-	float specularFinal	= S * 0.4;
+	float specularFinal	= S * 0.5;
 	//vec3 alphaGlowFinal	= ( specularVal ) * ciBlock1.uFogColor * 2.0 * vCrowd;
 	vec3 alphaGlowFinal	= 0.75 * vec3( 1.25*specularVal*S + 0.2*vCrowd )*ciBlock1.uFogColor ;
 	vec3 causticsFinal	= caustics * shadow;
 	//vec3 floorReflect	= ciBlock1.uFloorColor * ( downAmt ) * pow( max( 1.0 - depthDarkness, 0.0 ), 6.0 ) * vCrowd * 3.0;
-	vec3 floorReflect	= 1.25 * ciBlock1.uFloorColor * ( downAmt ) * 0.75*pow( 15.0, -1.1*depthDarkness ) * 3.0 * vCrowd + 0.15*specularRgb;
-	vec3 surfaceReflect	= ciBlock1.uFogColor * ( upAmt ) * vCrowd * depthDarkness * 2.0;
+	vec3 floorReflect	= 1.25 * ciBlock1.uFloorColor * ( downAmt ) * 0.75*pow( 15.0, -1.1*depthDarkness ) * 3.0 * vCrowd + 0.35*specularRgb;
+	vec3 surfaceReflect	= ciBlock1.uFogColor * ( upAmt ) * vCrowd * depthDarkness * 2.1;
 	vec3 eyeDiffFinal	= ciBlock1.uFishColor * eyeDiff * FogPer * 0.5;
 
 	vec3 finalColor		= vec3( ( ambientFinal + 0.25*diffuseFinal + specularFinal ) + floorReflect + surfaceReflect + causticsFinal + eyeDiffFinal ) * diffuseRgb + alphaGlowFinal;
