@@ -50,5 +50,5 @@ float FOG_FAR_DIST			= 900.0f;
 float FOG_POWER				= 1.0f;
 
 Color FOG_COLOR				= Color( 15.0f, 86.0f, 107.0f )/255.0f;
-Color FISH_COLOR			= Color( 70.0f, 153.0f, 195.0f )/255.0f;
+Color FISH_COLOR			= Color( 67.0f, 145.0f, 195.0f )/255.0f;
 Color FLOOR_COLOR			= Color( 145.0f, 189.0f, 155.0f )/255.0f;
