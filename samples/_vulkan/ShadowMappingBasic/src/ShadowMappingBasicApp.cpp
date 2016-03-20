@@ -102,14 +102,15 @@ void ShadowMappingBasic::setup()
 	depthFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE );
 	depthFormat.setCompareMode( VK_COMPARE_OP_LESS_OR_EQUAL );
 	mShadowMapTex = vk::Texture2d::create( FBO_WIDTH, FBO_HEIGHT, depthFormat );
-
+	mShadowMapTex->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+	
 	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.5f, 500.0f );
 	
 	try {	
 		// Render pass
 		vk::RenderPass::Attachment attachment = vk::RenderPass::Attachment( mShadowMapTex->getFormat().getInternalFormat() )
 			.setInitialLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
-			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			.setFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 		vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 			.addAttachment( attachment );
 		vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()
@@ -232,6 +233,20 @@ void ShadowMappingBasic::update()
 		vk::popMatrices();
 	}
 
+/*
+	{
+		auto& cmdBuf = vk::context()->getDefaultCommandBuffer();
+		cmdBuf->begin();
+		{
+ 			cmdBuf->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( mShadowMapTex->getImageView()->getImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
+		}
+		cmdBuf->end();
+
+		vk::context()->getGraphicsQueue()->submit( cmdBuf );
+		vk::context()->getGraphicsQueue()->waitIdle();
+	}
+*/
+
 	// Render shadow map
 	renderDepthFbo();
 
@@ -310,7 +325,7 @@ const std::vector<std::string> gLayers = {
 CINDER_APP( 
 	ShadowMappingBasic, 
 	RendererVk( RendererVk::Options()
-		.setSamples( VK_SAMPLE_COUNT_8_BIT )
+		.setSamples( VK_SAMPLE_COUNT_1_BIT )
 		.setLayers( gLayers )
 		.setDebugReportCallbackFn( debugReportVk ) 
 	), 

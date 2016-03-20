@@ -52,16 +52,20 @@ public:
 
 	void						setFboPositions( const ci::vk::TextureRef& curTex, const ci::vk::TextureRef& prevTex, ci::Surface32f& velSurf );
 	void						setFboVelocities( const ci::vk::TextureRef& curTex, const ci::vk::TextureRef& prevTex, ci::Surface32f& outSurf );
-	void						update( float time, float dt );
-	void						drawIntoVelocityFbo( const ci::vk::GlslProgRef& shader, const ci::vec3 &eyePos, const ci::vec3 &predPos );
-	void						drawIntoPositionFbo( const ci::vk::GlslProgRef& shader );
-	void						draw( const ci::vk::GlslProgRef& shader, const ci::vk::BatchRef& batch );
-	void						drawToDepthFbo( const ci::vk::GlslProgRef& shader, const ci::vk::BatchRef& batch );
-	void						swapFbos();
+	void						update( float time, float dt, const ci::vec3& camPos, const ci::vec3& predPos );
+	void						updateForDepthFbo();
+	void						updateForMainFbo();
+	void						drawIntoVelocityFbo();
+	void						drawIntoPositionFbo();
+	void						drawToDepthFbo();
+	void						drawToMainFbo();
 	
+	void						swapFbos();	
 	void						beginSimRender( const ci::vk::CommandBufferRef& cmdBuf );
 	void						nextSimPass();
 	void						endSimRender();
+
+	void						processSimulation( const ci::vk::CommandBufferRef& cmdBuf );
 
 	int							getNumFlockers();
 	
@@ -75,11 +79,7 @@ public:
 	int							mThisFbo, mPrevFbo;
 	ci::vk::TextureRef			mPositionTextures[2];
 	ci::vk::TextureRef			mVelocityTextures[2];
-	//ci::vk::RenderPassRef		mPositionRenderPasses[2];
-	//ci::vk::RenderPassRef		mVelocityRenderPasses[2];
 	ci::vk::RenderPassRef		mRenderPasses[2];
-	//ci::vk::FramebufferRef		mPositionFbos[2];
-	//ci::vk::FramebufferRef		mVelocityFbos[2];
 	ci::vk::FramebufferRef		mFbos[2];
 
 private:
@@ -87,16 +87,25 @@ private:
 
 	ci::vec2					mFboSize;
 	ci::Area					mFboBounds;
-	//int						mThisFbo, mPrevFbo;
-	//ci::vk::FramebufferRef	mPositionFbos[2];
-	//ci::vk::FramebufferRef	mVelocityFbos[2];
 	
 	ci::vk::TextureRef			mDiffuseTex;
 	ci::vk::TextureRef			mNormalsTex;
 	ci::vk::TextureRef			mSpecularTex;
 
+	ci::vk::GlslProgRef			mPositionShader;
+	ci::vk::GlslProgRef			mVelocityShader;
+	ci::vk::GlslProgRef			mRenderShader;
+	ci::vk::GlslProgRef			mDepthShader;
+	
+	ci::vk::BatchRef			mHiResFishBatch;
+	ci::vk::BatchRef			mLoResFishBatch;
+	bool						mCanDrawFishDepth = false;
+	bool						mCanDrawFishMain = false;
+
 	ci::vk::BatchRef			mPositionRects[2];
 	ci::vk::BatchRef			mVelocityRects[2];
+	bool						mCanDrawPosition[2];
+	bool						mCanDrawVelocity[2];
 
 	ci::vk::CommandBufferRef	mCommandBuffer;
 };

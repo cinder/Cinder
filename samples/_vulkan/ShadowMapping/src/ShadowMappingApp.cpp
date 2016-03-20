@@ -92,13 +92,14 @@ public:
 		depthFormat.setMinFilter( VK_FILTER_LINEAR );
 		depthFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE );
 		depthFormat.setCompareMode( VK_COMPARE_OP_LESS_OR_EQUAL );
-		mTextureShadowMap = vk::Texture2d::create( size, size, depthFormat );		
+		mTextureShadowMap = vk::Texture2d::create( size, size, depthFormat );
+		mTextureShadowMap->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 
 		try {	
 			// Render pass
 			vk::RenderPass::Attachment attachment = vk::RenderPass::Attachment( mTextureShadowMap->getFormat().getInternalFormat() )
 				.setInitialLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
-				.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+				.setFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 			vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 				.addAttachment( attachment );
 			vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()

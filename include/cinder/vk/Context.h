@@ -125,6 +125,7 @@ public:
 	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
 
 	const vk::CommandPoolRef&				getDefaultCommandPool() const { return mDefaultCommandPool; }
+	const vk::CommandPoolRef&				getDefaultTransientCommandPool() const { return mDefaultCommandPool; }
 	const vk::CommandBufferRef&				getDefaultCommandBuffer() const { return mDefaultCommandBuffer; }
 
 	void						pushRenderPass( const vk::RenderPassRef& renderPass );
@@ -252,7 +253,9 @@ public:
 	float						getLineWidth();
 	
 
-	void						setDefaultUniformVars( const UniformBufferRef& uniformBuffer );
+	void						setDefaultUniformVars( const vk::UniformBufferRef& uniformBuffer );
+	void						setDefaultUniformVars( const vk::UniformSetRef& uniformSet );
+	void						setDefaultUniformVars( const vk::BatchRef& batch );
 
 	const ColorAf&				getCurrentColor() const { return mColor; }
 	void						setCurrentColor( const ColorAf &color ) { mColor = color; }
@@ -361,6 +364,7 @@ private:
 	std::vector<float>						mLineWidthStack;
 
 	vk::CommandPoolRef						mDefaultCommandPool;
+	vk::CommandPoolRef						mDefaultTransientCommandPool;
 	vk::CommandBufferRef					mDefaultCommandBuffer;
 	
 	void initialize( const Context* existingContext = nullptr );

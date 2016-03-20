@@ -64,7 +64,8 @@ void main()
 	vNormal			= normalize( ciBlock0.ciNormalMatrix * ciNormal );
 	vPosition		= ciPosition;
 	vWorldPos		= ciBlock0.ciModelView * vPosition;
-	vDistPer		= 0.5; //1.0 - clamp( length( -vWorldPos.xyz )/1000.0, 0.0, 1.0 );
+	//vDistPer		= 0.5; //1.0 - clamp( length( -vWorldPos.xyz )/1000.0, 0.0, 1.0 );
+	vDistPer		= pow( 1.0 - clamp( length( -vWorldPos.xyz )/1000.0, 0.0, 1.0 ), 0.25 );
 	
 	gl_Position		= ciBlock0.ciModelViewProjection * vPosition;
 }

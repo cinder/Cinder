@@ -42,8 +42,8 @@
 
 namespace cinder { namespace vk {
 
-CommandPool::CommandPool( uint32_t queueFamilyIndex, vk::Context *context )
-	: vk::BaseContextObject( context ), mQueueFamilyIndex( queueFamilyIndex )
+CommandPool::CommandPool( uint32_t queueFamilyIndex, bool transient, vk::Context *context )
+	: vk::BaseContextObject( context ), mQueueFamilyIndex( queueFamilyIndex ), mTransient( transient )
 {
 	initialize();
 }
@@ -55,13 +55,17 @@ CommandPool::~CommandPool()
 
 void CommandPool::initialize()
 {
-	assert( mQueueFamilyIndex != UINT32_MAX );
+	assert( mQueueFamilyIndex < mContext->getDevice()->getQueueFamilyCount() );
 
     VkCommandPoolCreateInfo createInfo = {};
     createInfo.sType			= VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     createInfo.pNext			= nullptr;
     createInfo.queueFamilyIndex	= mQueueFamilyIndex;
     createInfo.flags			= VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	
+	if( mTransient ) {
+		createInfo.flags |= VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
+	}
 
     VkResult res = vkCreateCommandPool( mContext->getDevice()->getDevice(), &createInfo, nullptr, &mCommandPool );
     assert( res == VK_SUCCESS );
@@ -83,10 +87,10 @@ void CommandPool::destroy( bool removeFromTracking )
 	}
 }
 
-CommandPoolRef CommandPool::create( uint32_t queueFamilyIndex, vk::Context *context )
+CommandPoolRef CommandPool::create( uint32_t queueFamilyIndex, bool transient, vk::Context *context )
 {
 	context = ( nullptr != context ) ? context : vk::Context::getCurrent();
-	CommandPoolRef result = CommandPoolRef( new CommandPool( queueFamilyIndex, context ) );
+	CommandPoolRef result = CommandPoolRef( new CommandPool( queueFamilyIndex, transient, context ) );
 	return result;
 }
 

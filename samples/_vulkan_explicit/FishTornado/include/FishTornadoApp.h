@@ -69,9 +69,10 @@ public:
 	virtual void			update() override;
 	virtual void			draw() override;
 	
-
-	const Light*			getLight() const { return mCachedLightPtr; }
-	const Ocean*			getOcean() const { return mCachedOceanPtr; }
+	const ci::vk::FramebufferRef&	getMainFbo() const { return mMainFbo; }
+	const ci::CameraPersp&			getCam() const { return mCamera; }
+	const Light*					getLight() const { return mCachedLightPtr; }
+	const Ocean*					getOcean() const { return mCachedOceanPtr; }
 
 private:
 	void					loadShaders();
@@ -93,28 +94,22 @@ private:
 	// Light source
 	LightRef				mLight;
 	ci::vk::GlslProgRef		mShadowsGlsl;
-	
-	ci::vk::GlslProgRef		mPositionShader;
-	ci::vk::GlslProgRef		mVelocityShader;
-	ci::vk::GlslProgRef		mRenderShader;
-	ci::vk::GlslProgRef		mDepthShader;
-	
+
 #if defined( THREADED_LOAD )
 	std::shared_ptr<std::thread>	mLightLoadThread;
 	std::shared_ptr<std::thread>	mOceanLoadThread;
 	std::shared_ptr<std::thread>	mSharkLoadThread;
-	std::shared_ptr<std::thread>	mFishLoadThread;
 	std::atomic<bool>				mLightLoaded;
 	std::atomic<bool>				mOceanLoaded;
 	std::atomic<bool>				mSharkLoaded;
 	std::atomic<bool>				mFishLoaded;
-	bool							mCanAnimate		= false;
 #else 
-	std::atomic<bool>		mLightLoaded = true;
-	std::atomic<bool>		mOceanLoaded = true;
-	std::atomic<bool>		mSharkLoaded = true;
-	std::atomic<bool>		mFishLoaded = true;
+	std::atomic<bool>				mLightLoaded;
+	std::atomic<bool>				mOceanLoaded;
+	std::atomic<bool>				mSharkLoaded;
+	std::atomic<bool>				mFishLoaded;
 #endif
+	bool							mCanAnimate = false;
 
 	Ocean*					mCachedOceanPtr		= nullptr;
 	Light*					mCachedLightPtr		= nullptr;
@@ -122,8 +117,6 @@ private:
 	OceanRef				mOcean;
 	SharkRef				mShark;
 	GpuFlockerRef			mGpuFlocker;
-	ci::vk::BatchRef		mHiResFishBatch;
-	ci::vk::BatchRef		mLoResFishBatch;
 	
 	ci::vk::TextureRef		mMainColorTex;
 	ci::vk::TextureRef		mMainDepthTex;
@@ -141,4 +134,6 @@ private:
 	bool					mDrawParams;
 	bool					mDrawShark;
 	bool					mDrawOcean;
+
+	ci::vk::CommandBufferRef	mCommandBuffers[2];
 };

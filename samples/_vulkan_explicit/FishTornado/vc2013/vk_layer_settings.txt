@@ -1,4 +1,6 @@
 # VK_LAYER_LUNARG_api_dump
+ApiDumpDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+ApiDumpReportFlags = debug,info,error,warn,perf
 ApiDumpDetailed = TRUE
 ApiDumpNoAddr = FALSE
 ApiDumpFile = TRUE

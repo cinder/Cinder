@@ -135,7 +135,8 @@ void Context::initialize( const Context* existingContext )
     mViewMatrixStack.push_back( mat4() );
 	mProjectionMatrixStack.push_back( mat4( 1, 0, 0, 0,  0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ) );
 
-	mDefaultCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), this );
+	mDefaultCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), false, this );
+	mDefaultTransientCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), true, this );
 	mDefaultCommandBuffer = vk::CommandBuffer::create( mDefaultCommandPool->getCommandPool(), this );
 
 	mCachedColorAttachmentBlend.blendEnable			= VK_FALSE;
@@ -955,6 +956,24 @@ void Context::setDefaultUniformVars( const UniformBufferRef& uniformBuffer )
 	}
 }
 
+void Context::setDefaultUniformVars( const vk::UniformSetRef& uniformSet )
+{
+	const auto& sets = uniformSet->getSets();
+	for( auto& set : sets ) {
+		for( auto& binding : set->getBindings() ) {
+			if( ! binding.isBlock() ) {
+				continue;
+			}
+			this->setDefaultUniformVars( binding.getUniformBuffer() );
+		}
+	}
+}
+
+void Context::setDefaultUniformVars( const vk::BatchRef& batch )
+{
+	this->setDefaultUniformVars( batch->getUniformSet() );
+}
+
 const std::vector<VkPipelineColorBlendAttachmentState>&	Context::getColorBlendAttachments() const 
 { 
 	// If a subpass is depth/stencil only, mColorAttachmentBlends should be empty.
@@ -1239,7 +1258,8 @@ void Context::transferPendingUniformBuffer( const vk::CommandBufferRef& cmdBuf, 
 		}
 
 		uniformBuffer->transferPending();
-		cmdBuf->pipelineBarrierBufferMemory( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
+		//cmdBuf->pipelineBarrierBufferMemory( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
+		cmdBuf->pipelineBarrierBufferMemory( vk::BufferMemoryBarrierParams( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
 	}
 
 	mPendingUniformBuffers.clear();

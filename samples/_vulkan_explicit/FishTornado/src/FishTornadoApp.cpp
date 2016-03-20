@@ -42,7 +42,7 @@
 #include "cinder/Log.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
-#include "cinder/Utilities.h"
+//#include "cinder/Utilities.h"
 
 #include "Light.h"
 #include "Ocean.h"
@@ -50,14 +50,13 @@
 #include "GpuFlocker.h"
 #include "Globals.h"
 
-#include <boost/algorithm/string.hpp>
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
 // The number of queues to request. May not get what's requested.
 #if defined( THREADED_LOAD )
-	#define NUM_QUEUES 5
+	#define NUM_QUEUES 4
 #else 
 	#define NUM_QUEUES 1
 #endif
@@ -82,11 +81,6 @@ FishTornadoApp::~FishTornadoApp()
 	if( mSharkLoadThread ) {
 		mSharkLoadThread->join();
 		mSharkLoadThread.reset();
-	}
-
-	if( mFishLoadThread ) {
-		mFishLoadThread->join();
-		mFishLoadThread.reset();
 	}
 #endif
 }
@@ -124,8 +118,8 @@ void FishTornadoApp::setup()
 	if( numWorkQueues >= NUM_QUEUES ) {
 		// GpuFlocker
 		mGpuFlocker = GpuFlocker::create( this );
+		this->mFishLoaded = true;
 		CI_LOG_I( "GpuFlocker created" );
-
 
 		// Light
 		{
@@ -165,35 +159,12 @@ void FishTornadoApp::setup()
 				CI_LOG_I( "Shark assets loaded" );
 			} ) );
 		}
-
-		// Fishes
-		{
-			uint32_t queueIndex = 4;
-			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
-			mFishLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
-				secondaryCtx->makeCurrent();			
-
-				// High res
-				ObjLoader loader = ObjLoader( loadFile( getAssetPath( "flocking/trevallie.obj" ) ),  ObjLoader::Options().flipV() );
-				this->mHiResFishBatch = vk::Batch::create( loader, mRenderShader );
-				CI_LOG_I( "GpuFlocker (hires) created" );
-
-				// Low res
-				loader = loadFile( getAssetPath( "flocking/trevallie_lowRes.obj" ) );
-				this->mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
-				CI_LOG_I( "GpuFlocker (lowres) created" );
-
-				//secondaryCtx->transferTrackedObjects( primaryCtx );
-				this->mFishLoaded = true;
-
-				CI_LOG_I( "Fish assets loaded" );
-			} ) );
-		}
 	}
 	// There's at least 2 work queues but less than the number requested
 	else if( numWorkQueues >= 2 ) {
 		// GpuFlocker
 		mGpuFlocker = GpuFlocker::create( this );
+		this->mFishLoaded = true;
 		CI_LOG_I( "GpuFlocker created" );
 
 		uint32_t queueIndex = 1;
@@ -224,24 +195,6 @@ void FishTornadoApp::setup()
 				this->mSharkLoaded = true;
 				CI_LOG_I( "Ocean assets loaded" );
 			}
-
-			// GpuFlocker
-			{
-				// High res
-				ObjLoader loader = ObjLoader( loadFile( getAssetPath( "flocking/trevallie.obj" ) ),  ObjLoader::Options().flipV() );
-				this->mHiResFishBatch = vk::Batch::create( loader, mRenderShader );
-				CI_LOG_I( "GpuFlocker (hires) created" );
-
-				// Low res
-				loader = loadFile( getAssetPath( "flocking/trevallie_lowRes.obj" ) );
-				this->mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
-				CI_LOG_I( "GpuFlocker (lowres) created" );
-
-				//secondaryCtx->transferTrackedObjects( primaryCtx );
-				this->mFishLoaded = true;
-
-				CI_LOG_I( "Fish assets loaded" );
-			}
 		} ) );
 	}
 	// Only 1 work queue
@@ -264,15 +217,17 @@ void FishTornadoApp::setup()
 		mGpuFlocker = GpuFlocker::create( this );
 		CI_LOG_I( "GpuFlocker created" );
 	
+		/*
 		// High res
 		ObjLoader loader = ObjLoader( loadFile( getAssetPath( "flocking/trevallie.obj" ) ),  ObjLoader::Options().flipV() );
 		mHiResFishBatch	= vk::Batch::create( loader, mRenderShader );
-		CI_LOG_I( "Fish (hires) created" );
+		CI_LOG_I( "Trevallie (hires) created" );
 
 		// Low res
 		loader = loadFile( getAssetPath( "flocking/trevallie_lowRes.obj" ) );
 		mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
-		CI_LOG_I( "Fish (lowres) created" );
+		CI_LOG_I( "Trevallie (lowres) created" );
+		*/
 
 		mLightLoaded = true;
 		mOceanLoaded = true;
@@ -280,6 +235,11 @@ void FishTornadoApp::setup()
 		mFishLoaded  = true;
 	}
 #else
+	mLightLoaded	= true;
+	mOceanLoaded	= true;
+	mSharkLoaded	= true;
+	mFishLoaded		= true;
+
 	// Light source
 	mLight = Light::create();
 	CI_LOG_I( "Light created" );
@@ -297,7 +257,8 @@ void FishTornadoApp::setup()
 	// GpuFlocker
 	mGpuFlocker = GpuFlocker::create( this );
 	CI_LOG_I( "GpuFlocker created" );
-	
+
+	/*
 	// High res
 	ObjLoader loader = ObjLoader( loadFile( getAssetPath( "flocking/trevallie.obj" ) ),  ObjLoader::Options().flipV() );
 	mHiResFishBatch	= vk::Batch::create( loader, mRenderShader );
@@ -307,6 +268,7 @@ void FishTornadoApp::setup()
 	loader = loadFile( getAssetPath( "flocking/trevallie_lowRes.obj" ) );
 	mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
 	CI_LOG_I( "Fish (lowres) created" );
+	*/
 #endif
 
 	try {
@@ -350,10 +312,6 @@ void FishTornadoApp::setup()
 	texFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT );
 	mNoiseNormalsTex = vk::Texture::create( *ci::Surface::create( loadImage( loadAsset( "noiseNormals.png" ) ) ), texFormat );
 	CI_LOG_I( "NoiseNormals texture created" );
-
-	//mFrameRate		= 0.0f;
-	//mFullScreen		= isFullScreen();
-	//mNumFlockers		= mGpuFlocker->getNumFlockers();
 	
 	mBlend				= 0.9f;
 	mContrast			= 0.85f;
@@ -364,6 +322,9 @@ void FishTornadoApp::setup()
 	mDrawOcean			= true;
 	mDrawShark			= true;
 	mDrawParams			= true;
+
+	mCommandBuffers[0] = vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
+	mCommandBuffers[1] = vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
 }
 
 void FishTornadoApp::resize()
@@ -376,94 +337,6 @@ void FishTornadoApp::resize()
 
 void FishTornadoApp::loadShaders()
 {
-	DataSourceRef passThrough	= loadAsset( "flocking/passThru.vert" );
-	
-	// mVelocityShader
-	try {
-		// Not the most ideal solution
-		std::string fragShader = loadString( loadAsset( "flocking/velocity.frag" ) );
-		boost::replace_all( fragShader, "//<FISH_CONSTANT>",  "#define FBO_RES " + ci::toString( FBO_RES ) );
-
-		vk::ShaderProg::Format format = vk::ShaderProg::Format()
-			.vertex( passThrough )
-			.fragment( fragShader )
-			.binding( "ciBlock0", 0 )
-			.binding( "ciBlock1", 1 )
-			.binding( "uPosition", 2 )
-			.binding( "uVelocity", 3 )
-			.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
-
-		mVelocityShader = vk::GlslProg::create( format );
-	}
-	catch( const std::exception& e ) {
-		CI_LOG_I( "Shader Error (mVelocityShader): " << e.what() );
-	}
-
-	// mPositionShader
-	try {
-		vk::ShaderProg::Format format = vk::ShaderProg::Format()
-			.vertex( passThrough )
-			.fragment( loadAsset( "flocking/position.frag" ) )
-			.binding( "ciBlock0", 0 )
-			.binding( "ciBlock1", 1 )
-			.binding( "uPosition", 2 )
-			.binding( "uVelocity", 3 )
-			.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
-
-		mPositionShader = vk::GlslProg::create( format );
-	}
-	catch( const std::exception& e ) {
-		CI_LOG_I( "Shader Error (mPositionShader): " << e.what() );
-	}
-
-	// mRenderShader
-	try {
-		vk::ShaderProg::Format format = vk::ShaderProg::Format()
-			.vertex( loadAsset( "flocking/render.vert" ) )
-			.fragment( loadAsset( "flocking/render.frag" ) )
-			.binding( "ciBlock0",     0 )
-			.binding( "uPrevPosTex",  1 )
-			.binding( "uCurrPosTex",  2 )
-			.binding( "uCurrVelTex",  3 )
-			.binding( "ciBlock1",     4 )
-			.binding( "uDiffuseTex",  5 )
-			.binding( "uNormalsTex",  6 )
-			.binding( "uSpecularTex", 7 )
-			.binding( "uCausticsTex", 8 )
-			.binding( "uShadowMap",   9 )
-			.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
-			.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 );
-
-		mRenderShader = vk::GlslProg::create( format );
-	}
-	catch( const std::exception& e ) {
-		CI_LOG_I( "Shader Error (mRenderShader): " << e.what() );
-	}
-
-	// mDepthShader
-	try {
-		vk::ShaderProg::Format format = vk::ShaderProg::Format()
-			.vertex( loadAsset( "flocking/depth.vert" ) )
-			.fragment( loadAsset( "flocking/depth.frag" ) )
-			.binding( "ciBlock0", 0 )
-			.binding( "uPrevPosTex", 1 )
-			.binding( "uCurrPosTex", 2 )
-			.binding( "uCurrVelTex", 3 )
-			.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
-			.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 )
-			.attribute( geom::Attrib::USER_DEFINED, 3, 0, vk::glsl_attr_vec3 );
-			//.uniformLayout( uniformLayout );
-
-		mDepthShader = vk::GlslProg::create( format );
-	}
-	catch( const std::exception& e ) {
-		CI_LOG_I( "Shader Error (mDepthShader): " << e.what() );
-	}
-
 	// mMainShader
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
@@ -530,11 +403,12 @@ void FishTornadoApp::updateTime()
 
 void FishTornadoApp::update()
 {
-#if defined( THREADED_LOAD )
+	// Cache light pointer
 	if( ( ! mCachedLightPtr ) && mLightLoaded ) {
 		mCachedLightPtr = mLight.get();
 	}
 
+	// Cache ocean pointer
 	if( ( ! mCachedOceanPtr ) && mOceanLoaded ) {
 		mCachedOceanPtr = mOcean.get();
 	}
@@ -547,75 +421,76 @@ void FishTornadoApp::update()
 		updateTime();
 		timeline().stepTo( mTimeElapsed );
 	
-//	float angle = mTimeElapsed * 0.005f + M_PI * 0.5f;
-//	vec3 pos = vec3( cos( angle ), 0.0f, sin( angle ) ) * 300.0f;
-//	pos.y = 150.0f;
-//	mCamera.lookAt( pos, vec3( 0.0f, 110.0f, 0.0f ) );
+		// Update time step
+		{
+			vk::ScopedMatrices pushMatrices;
+
+			if( mLightLoaded ) {
+				mLight->update( mTimeElapsed, mTimeDelta );
+			}
 	
-//	vec3 center = vec3( sin( angle ), 0.0f, cos( angle ) ) * 100.0f;
-//	center.y += 130.0f + sin( mTimeElapsed * 0.05f ) * 30.0f;
-//	mCamera.lookAt( vec3( 3.323f,  379.511f, -110.737f ), center );
-//	vec3 sPos = mShark->getPos();
-//	vec3 sDir = mShark->getDir();
-//	mCamera.lookAt( sPos + vec3( 0.0f, 100.0f, 0.0f ) + sDir * 70.0f + vec3( sDir.z, sDir.y, -sDir.x ) * 35.0f, sPos - sDir * 10.0f );
+			if( mOceanLoaded && mDrawOcean ) {
+				mOcean->update( mTimeElapsed, mTimeDelta );
+			}
 	
-//	mCamera.setEyePoint( vec3( 0.0f, 83.707f, -244.394f ) );// for big swim-in
+			if( mSharkLoaded && mDrawShark ) {
+				mShark->update( mTimeElapsed, mTimeDelta );
+			}
 	
-		if( mLightLoaded ) {
-			mLight->update( mTimeElapsed, mTimeDelta );
+			if( mFishLoaded && mSharkLoaded ) {
+				mGpuFlocker->update( mTimeElapsed, mTimeDelta, mCamera.getEyePoint(), mShark->getPos() );
+			}
 		}
-	
-		if( mOceanLoaded && mDrawOcean ) {
-			mOcean->update( mTimeElapsed, mTimeDelta );
+
+		// Update uniforms for depth render
+		{
+			vk::ScopedMatrices pushMatrices;
+			vk::setMatrices( mLight->getCam() );
+
+			if( mSharkLoaded && mDrawShark ) {
+				mShark->updateForDepthFbo();
+			}
+
+			if( mFishLoaded && mSharkLoaded ) {
+				mGpuFlocker->updateForDepthFbo();
+			}
 		}
-	
-		if( mSharkLoaded && mDrawShark ) {
-			mShark->update( mTimeElapsed, mTimeDelta );
+
+		// Update uniforms for main render
+		{
+			vk::ScopedMatrices pushMatrices;
+			vk::setMatrices( mCamera );
+
+			if( mOceanLoaded && mDrawOcean ) {
+				mOcean->updateForMainFbo();
+			}
+
+			if( mSharkLoaded && mDrawShark ) {
+				mShark->updateForMainFbo();
+			}
+
+			if( mFishLoaded && mSharkLoaded ) {
+				mGpuFlocker->updateForMainFbo();
+			}
 		}
-	
-		if( mFishLoaded ) {
-			mGpuFlocker->update( mTimeElapsed, mTimeDelta );
-		}
 	}
-#else 
-	//mFrameRate = getAverageFps();
-	//if ( mFullScreen != isFullScreen() ) {
-	//	setFullScreen( mFullScreen );
-	//}
-	
-	updateTime();
-	timeline().stepTo( mTimeElapsed );
-	
-//	float angle = mTimeElapsed * 0.005f + M_PI * 0.5f;
-//	vec3 pos = vec3( cos( angle ), 0.0f, sin( angle ) ) * 300.0f;
-//	pos.y = 150.0f;
-//	mCamera.lookAt( pos, vec3( 0.0f, 110.0f, 0.0f ) );
-	
-//	vec3 center = vec3( sin( angle ), 0.0f, cos( angle ) ) * 100.0f;
-//	center.y += 130.0f + sin( mTimeElapsed * 0.05f ) * 30.0f;
-//	mCamera.lookAt( vec3( 3.323f,  379.511f, -110.737f ), center );
-//	vec3 sPos = mShark->getPos();
-//	vec3 sDir = mShark->getDir();
-//	mCamera.lookAt( sPos + vec3( 0.0f, 100.0f, 0.0f ) + sDir * 70.0f + vec3( sDir.z, sDir.y, -sDir.x ) * 35.0f, sPos - sDir * 10.0f );
-	
-//	mCamera.setEyePoint( vec3( 0.0f, 83.707f, -244.394f ) );// for big swim-in
-	
-	if( mLightLoaded ) {
-		mLight->update( mTimeElapsed, mTimeDelta );
+
+	// Update uniforms for present render
+	{
+		vk::ScopedMatrices pushMatrices;
+		vk::setMatricesWindow( getWindowSize() );
+		mMainBatch->uniform( "uFboTex",					mMainColorTex );
+		mMainBatch->uniform( "uNoiseNormalsTex",		mNoiseNormalsTex );
+		mMainBatch->uniform( "ciBlock1.uTime",			mTimeElapsed );
+		mMainBatch->uniform( "ciBlock1.uContrast",		mContrast );
+		mMainBatch->uniform( "ciBlock1.uExposure",		mExposure );
+		mMainBatch->uniform( "ciBlock1.uBrightness",	mBrightness );
+		mMainBatch->uniform( "ciBlock1.uBlend",			mBlend );
+		mMainBatch->uniform( "ciBlock1.uDistort",		mDistortion );
+		mMainBatch->uniform( "ciBlock1.uResolution",	vec2( getWindowWidth(), getWindowHeight() ) );
+		vk::context()->setDefaultUniformVars( mMainBatch->getUniformSet() );
+		vk::context()->addPendingUniformVars( mMainBatch );
 	}
-	
-	if( mOceanLoaded && mDrawOcean ) {
-		mOcean->update( mTimeElapsed, mTimeDelta );
-	}
-	
-	if( mSharkLoaded && mDrawShark ) {
-		mShark->update( mTimeElapsed, mTimeDelta );
-	}
-	
-	if( mFishLoaded ) {
-		mGpuFlocker->update( mTimeElapsed, mTimeDelta );
-	}
-#endif
 }
 
 void FishTornadoApp::drawToDepthFbo( const ci::vk::CommandBufferRef& cmdBuf )
@@ -627,12 +502,14 @@ void FishTornadoApp::drawToDepthFbo( const ci::vk::CommandBufferRef& cmdBuf )
 
 	mLight->prepareDraw( cmdBuf );
 
-	if( mSharkLoaded && mDrawShark && mLightLoaded && mOceanLoaded ) {
-		mShark->drawDepth();	
-	}
+	if( mCanAnimate ) {
+		if( mSharkLoaded && mDrawShark && mLightLoaded && mOceanLoaded ) {
+			mShark->drawToDepthFbo();	
+		}
 	
-	if( mFishLoaded && mLightLoaded && mOceanLoaded ) {
-		mGpuFlocker->drawToDepthFbo( mDepthShader, mLoResFishBatch );
+		if( mFishLoaded && mLightLoaded && mOceanLoaded ) {
+			mGpuFlocker->drawToDepthFbo();
+		}
 	}
 	
 	mLight->finishDraw();
@@ -640,23 +517,26 @@ void FishTornadoApp::drawToDepthFbo( const ci::vk::CommandBufferRef& cmdBuf )
 
 void FishTornadoApp::drawToMainFbo( const ci::vk::CommandBufferRef& cmdBuf )
 {
-	mMainRenderPass->beginRenderExplicit( vk::context()->getDefaultCommandBuffer(), mMainFbo );
+	mMainRenderPass->beginRenderExplicit( cmdBuf, mMainFbo );
 	{
-		vk::setMatrices( mCamera );
+		//vk::setMatrices( mCamera );
 		
 		vk::enableDepthRead();
 		vk::enableDepthWrite();
 		vk::enableAlphaBlending();
 		if( mOceanLoaded && mDrawOcean ) {
-			mOcean->draw();
+			mOcean->drawFloor();
+			mOcean->drawSurface();
 		}
 
-		if( mFishLoaded && mLightLoaded && mOceanLoaded ) {
-			mGpuFlocker->draw( mRenderShader, mHiResFishBatch );
-		}
+		if( mCanAnimate ) {
+			if( mFishLoaded && mLightLoaded && mOceanLoaded ) {
+				mGpuFlocker->drawToMainFbo();
+			}
 
-		if( mSharkLoaded && mDrawShark && mLightLoaded && mOceanLoaded ) {
-			mShark->draw();
+			if( mSharkLoaded && mDrawShark && mLightLoaded && mOceanLoaded ) {
+				mShark->draw();
+			}
 		}
 
 		if( mOceanLoaded && mDrawOcean ){
@@ -677,17 +557,16 @@ void FishTornadoApp::drawToMainFbo( const ci::vk::CommandBufferRef& cmdBuf )
 
 void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdBuf )
 {
+
 	cmdBuf->begin();
 	{
-		if( mSharkLoaded ) {
-			vk::disableAlphaBlending();
-			mGpuFlocker->swapFbos();
-			mGpuFlocker->beginSimRender( cmdBuf );
-			mGpuFlocker->drawIntoVelocityFbo( mVelocityShader, mCamera.getEyePoint(), mShark->getPos() );
-			mGpuFlocker->nextSimPass();
-			mGpuFlocker->drawIntoPositionFbo( mPositionShader );
-			mGpuFlocker->endSimRender();
-			vk::enableAlphaBlending();
+		// Copy uniform vars to GPU
+		vk::context()->transferPendingUniformBuffer( cmdBuf );
+
+		if( mCanAnimate ) {
+			if( mFishLoaded && mSharkLoaded ) {
+				mGpuFlocker->processSimulation( cmdBuf );
+			}
 		}
 
 		// Draw depth
@@ -699,18 +578,7 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 		// Present
 		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );		
 		{
-			vk::setMatricesWindow( getWindowSize() );
-			mMainBatch->uniform( "uFboTex",					mMainColorTex );
-			mMainBatch->uniform( "uNoiseNormalsTex",		mNoiseNormalsTex );
-			mMainBatch->uniform( "ciBlock1.uTime",			mTimeElapsed );
-			mMainBatch->uniform( "ciBlock1.uContrast",		mContrast );
-			mMainBatch->uniform( "ciBlock1.uExposure",		mExposure );
-			mMainBatch->uniform( "ciBlock1.uBrightness",	mBrightness );
-			mMainBatch->uniform( "ciBlock1.uBlend",			mBlend );
-			mMainBatch->uniform( "ciBlock1.uDistort",		mDistortion );
-			mMainBatch->uniform( "ciBlock1.uResolution",	vec2( getWindowWidth(), getWindowHeight() ) );
 			mMainBatch->draw();
-
 /*
 			vk::setMatricesWindow( getWindowSize() );
 			//vk::color( Color( 1, 1, 1 ) );
@@ -721,12 +589,13 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 */
 
 /*
-			vk::context()->pushCommandBuffer( vk::context()->getDefaultCommandBuffer() );
-			vk::setMatricesWindow( getWindowSize() );
-			//vk::color( 1.0f, 1.0f, 1.0f );
-			float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
-			vk::draw( mLight->getBlurredTexture(), Rectf( 0, 0, size, size ) ); 
-			vk::context()->popCommandBuffer();
+			if( mLightLoaded ) {
+				vk::setMatricesWindow( getWindowSize() );
+				//vk::color( 1.0f, 1.0f, 1.0f );
+				float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
+				vk::draw( mLight->getTexture(), Rectf( 0, 0, size, size ) ); 
+				vk::draw( mLight->getBlurredTexture(), Rectf( 0, 0, size, size ) + vec2( size + 10, 0 ) ); 
+			}
 */
 		}
 		vk::context()->getPresenter()->endRender( vk::context() );
@@ -748,7 +617,8 @@ void FishTornadoApp::draw()
 	uint32_t imageIndex = presenter->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
 
 	// Build command buffer
-	const auto& cmdBuf = vk::context()->getDefaultCommandBuffer();
+	uint32_t frameIndex = (getElapsedFrames() + 1) % 2;
+	const auto& cmdBuf = mCommandBuffers[frameIndex]; //vk::context()->getDefaultCommandBuffer();
 	generateCommandBuffer( cmdBuf );
 
     // Submit command buffer for processing
@@ -778,19 +648,19 @@ VkBool32 debugReportVk(
 )
 {
 	if( flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) {
-		CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	else if( flags & VK_DEBUG_REPORT_WARNING_BIT_EXT ) {
-		CI_LOG_W( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+		//CI_LOG_W( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	else if( flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) {
-		CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	else if( flags & VK_DEBUG_REPORT_ERROR_BIT_EXT ) {
 		CI_LOG_E( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	else if( flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT ) {
-		CI_LOG_D( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+		//CI_LOG_D( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	return VK_FALSE;
 }
@@ -800,7 +670,7 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_threading",
 	//"VK_LAYER_LUNARG_mem_tracker",
 	//"VK_LAYER_LUNARG_object_tracker",
-	//"VK_LAYER_LUNARG_draw_state",
+	"VK_LAYER_LUNARG_draw_state",
 	//"VK_LAYER_LUNARG_param_checker",
 	//"VK_LAYER_LUNARG_swapchain",
 	//"VK_LAYER_LUNARG_device_limits"
@@ -808,7 +678,18 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_GOOGLE_unique_objects",
 };
 
-CINDER_APP( FishTornadoApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ).setExplicitMode().setWorkQueueCount( NUM_QUEUES ).setAllocatorBlockSize( vk::Allocator::_64MB, vk::Allocator::_64MB ).setLayers( gLayers ).setDebugReportCallbackFn( debugReportVk ) ), []( FishTornadoApp::Settings *settings ) {	
-	settings->setWindowSize( 1920, 1080 );
-	settings->setResizable( false );
-} )
+CINDER_APP( 
+	FishTornadoApp, 
+	RendererVk( RendererVk::Options()
+		.setSamples( VK_SAMPLE_COUNT_8_BIT )
+		.setExplicitMode()
+		.setWorkQueueCount( NUM_QUEUES )
+		.setAllocatorBlockSize( vk::Allocator::_64MB, vk::Allocator::_64MB )
+		.setLayers( gLayers )
+		.setDebugReportCallbackFn( debugReportVk ) 
+	), 
+	[]( FishTornadoApp::Settings *settings ) {	
+		settings->setWindowSize( 1920, 1080 );
+		settings->setResizable( false );
+	} 
+)

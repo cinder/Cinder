@@ -104,7 +104,7 @@ public:
 		Format&					setArrayLayers( uint32_t value ) { mArrayLayers = value; return *this; }
 		uint32_t				getArrayLayers() const { return mArrayLayers; }
 
-		Format&					setInitialLayout( VkImageLayout imageLayout ) { mInitialLayout  = imageLayout; return *this; }
+		Format&					setInitialLayout( VkImageLayout value ) { mInitialLayout  = value; return *this; }
 		VkImageLayout			getInitialLayout() const { return mInitialLayout; }
 
 		Format&					setCreateFlags( VkImageCreateFlagBits value ) { mCreateFlags |= value; return *this; }
@@ -120,6 +120,7 @@ public:
 		VkImageUsageFlags		mUsage   = VK_IMAGE_USAGE_SAMPLED_BIT;
 		VkMemoryPropertyFlags	mMemoryProperty = 0;
 		VkImageLayout			mInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		VkImageLayout			mFirstUseLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		uint32_t				mMipLevels = 1;
 		uint32_t				mArrayLayers = 1;
 		VkImageCreateFlags		mCreateFlags = 0;

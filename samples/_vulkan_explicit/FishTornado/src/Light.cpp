@@ -97,16 +97,16 @@ Light::Light()
 		{
 			ci::vk::RenderPass::SubpassDependency spd1 = ci::vk::RenderPass::SubpassDependency( 0, 1 );
 			spd1.setSrcStageMask( VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
-			spd1.setDstStageMask(VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
-			spd1.setSrcAccess( VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT );
-			spd1.setDstAccess( VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT );
+			spd1.setDstStageMask( VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
+			spd1.setSrcAccessMask( VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT );
+			spd1.setDstAccessMask( VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT );
 			renderPassOptions.addSubpassDependency( spd1 );
 
-			ci::vk::RenderPass::SubpassDependency spd2 = ci::vk::RenderPass::SubpassDependency( 0, 1 );
+			ci::vk::RenderPass::SubpassDependency spd2 = ci::vk::RenderPass::SubpassDependency( 1, 2 );
 			spd2.setSrcStageMask( VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
-			spd2.setDstStageMask(VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
-			spd2.setSrcAccess( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
-			spd2.setDstAccess( VK_ACCESS_COLOR_ATTACHMENT_READ_BIT );
+			spd2.setDstStageMask( VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
+			spd2.setSrcAccessMask( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
+			spd2.setDstAccessMask( VK_ACCESS_COLOR_ATTACHMENT_READ_BIT );
 			renderPassOptions.addSubpassDependency( spd2 );
 
 		}
@@ -200,40 +200,58 @@ const ci::vk::RenderPassRef& Light::getRenderPass()
 void Light::update(float time, float dt)
 {
 	mCam.lookAt( vec3( mPos ), mCenter );
+
+	// Update uniforms
+	{
+		vk::ScopedMatrices pushMatrices;
+
+		vk::setMatricesWindow( mBlurredShadowMapTex[0]->getSize() );
+
+		//mBlurRect[0]->getUniformSet()->uniform( "ciBlock1.pass0", 1.0f );
+		//mBlurRect[0]->getUniformSet()->uniform( "ciBlock1.pass1", 0.0f );
+		//mBlurRect[0]->getUniformSet()->uniform( "uTex", mShadowMapTex );
+		vk::context()->setDefaultUniformVars( mBlurRect[0]->getUniformSet() );
+		vk::context()->addPendingUniformVars( mBlurRect[0]->getUniformSet() );
+
+		vk::context()->setDefaultUniformVars( mBlurRect[1]->getUniformSet() );
+		vk::context()->addPendingUniformVars( mBlurRect[1]->getUniformSet() );
+	}
 }
 
-void Light::draw()
-{
-	vk::pushModelMatrix();
-	vk::translate( vec3( mPos ) );
-	mBatch->draw();
-	vk::popModelMatrix();
-}
+//void Light::draw()
+//{
+//	vk::pushModelMatrix();
+//	vk::translate( vec3( mPos ) );
+//	mBatch->draw();
+//	vk::popModelMatrix();
+//}
 
 void Light::prepareDraw( const ci::vk::CommandBufferRef& cmdBuf )
 {	
 	mShadowMapRenderPass->beginRenderExplicit( cmdBuf, mShadowMapFbo );
-	vk::setMatrices( mCam );
+	//vk::setMatrices( mCam );
 }
 
 void Light::finishDraw()
 {
+	/*
 	// Start off with depth texture as source for mBlurRect[0]
 	mBlurRect[0]->getUniformSet()->uniform( "ciBlock1.pass0", 1.0f );
 	mBlurRect[0]->getUniformSet()->uniform( "ciBlock1.pass1", 0.0f );
 	mBlurRect[0]->getUniformSet()->uniform( "uTex", mShadowMapTex );
+	*/
 
 	// Vertical pass of blur
 	mShadowMapRenderPass->nextSubpass();
 	{
-		vk::setMatricesWindow( mBlurredShadowMapTex[0]->getSize() );
+		//vk::setMatricesWindow( mBlurredShadowMapTex[0]->getSize() );
 		mBlurRect[0]->draw( mShadowMapRenderPass->getCommandBuffer() );
 	}
 
 	// Horizontal pass of blur
 	mShadowMapRenderPass->nextSubpass();
 	{
-		vk::setMatricesWindow( mBlurredShadowMapTex[1]->getSize() );
+		//vk::setMatricesWindow( mBlurredShadowMapTex[1]->getSize() );
 		mBlurRect[1]->draw( mShadowMapRenderPass->getCommandBuffer() );
 	}
 

@@ -57,7 +57,9 @@ public:
 	static SharkRef			create( FishTornadoApp *app );
 
 	void					update( float time, float dt );
-	void					drawDepth();
+	void					updateForDepthFbo();
+	void					updateForMainFbo();
+	void					drawToDepthFbo();
 	void					draw();
 	const ci::vec3&			getPos() const { return mPos; }
 	const ci::vec3&			getDir() const { return mDir; }
@@ -69,6 +71,7 @@ private:
 	
 	ci::vk::BatchRef		mHiResBatch;
 	ci::vk::BatchRef		mLoResBatch;
+	bool					mCanDraw = false;
 	
 	ci::vk::GlslProgRef		mShader;
 	ci::vk::TextureRef		mDiffuseTex;

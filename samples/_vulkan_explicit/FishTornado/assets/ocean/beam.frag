@@ -57,12 +57,12 @@ void main ()
 //	vec4 beamCol		= texture( uBeamTex, vTexCoord );
 	// Eye
 	
-	float camDistPer	= clamp( length( vWorldPos.xyz ) / 400.0, 0.0, 1.0 );
+	float camDistPer	= clamp( length( vWorldPos.xyz ) / 600.0, 0.0, 1.0 );
 	
-	float falloff		= sin( ( 1.0 - vTexCoord.y ) * 3.14159 ) * 0.1;
+	float falloff		= sin( ( 1.0 - vTexCoord.y ) * 3.14159 ) * 0.15;
 	float eyeDiff		= abs( dot( vNormal, normalize( vWorldPos.xyz ) ) );
 	
-	FragColor.rgb		= pow( eyeDiff, 1.0 ) * ciBlock1.uOceanCol;
+	FragColor.rgb		= pow( eyeDiff, 0.98 ) * ciBlock1.uOceanCol;
 	FragColor.a			= camDistPer * falloff * vDistPer;
 }
 

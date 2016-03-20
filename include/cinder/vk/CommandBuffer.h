@@ -60,6 +60,59 @@ using VertexBufferRef = std::shared_ptr<VertexBuffer>;
 class CommandBuffer;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 
+//! \class BufferMemoryBarrierParams
+//!
+//!
+class BufferMemoryBarrierParams {
+public:
+	BufferMemoryBarrierParams( VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask = 0, VkPipelineStageFlags dstStageMask = 0  );
+	BufferMemoryBarrierParams( const vk::BufferRef& buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask = 0, VkPipelineStageFlags dstStageMask = 0 );
+	virtual ~BufferMemoryBarrierParams() {}
+	BufferMemoryBarrierParams&		setSrcAccessMask( VkAccessFlags value, bool exclusive = false ) { if( exclusive ) { mBarrier.srcAccessMask = value; } else { mBarrier.srcAccessMask |= value; } return *this; }
+	BufferMemoryBarrierParams&		setDstAccessMask( VkAccessFlags value, bool exclusive = false ) { if( exclusive ) { mBarrier.dstAccessMask = value; } else { mBarrier.dstAccessMask |= value; } return *this; }
+	BufferMemoryBarrierParams&		setSrcQueueFamilyIndex( VkAccessFlags value ) { mBarrier.srcQueueFamilyIndex = value; return *this; }
+	BufferMemoryBarrierParams&		setDstQueueFamilyIndex( VkAccessFlags value ) { mBarrier.dstQueueFamilyIndex = value; return *this; }
+	BufferMemoryBarrierParams&		setOffset( VkDeviceSize value ) { mBarrier.offset = value; return *this; }
+	BufferMemoryBarrierParams&		setSize( VkDeviceSize value ) { mBarrier.size = value; return *this; }
+	BufferMemoryBarrierParams&		setSrcStageMask( VkPipelineStageFlags value, bool exclusive = false ) { if( exclusive ) { mSrcStageMask = value; } else { mSrcStageMask |= value; } return *this; }
+	BufferMemoryBarrierParams&		setDstStageMask( VkPipelineStageFlags value, bool exclusive = false ) { if( exclusive ) { mDstStageMask = value; } else { mDstStageMask |= value; } return *this; }
+private:
+	BufferMemoryBarrierParams();
+	VkBufferMemoryBarrier mBarrier;
+	VkPipelineStageFlags mSrcStageMask = 0;
+	VkPipelineStageFlags mDstStageMask = 0;
+	friend class CommandBuffer;
+};
+
+//! \class ImageMemoryBarrierParams
+//!
+//!
+class ImageMemoryBarrierParams {
+public:
+	ImageMemoryBarrierParams( VkImage image, VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED, VkImageLayout newLayout = VK_IMAGE_LAYOUT_UNDEFINED, VkPipelineStageFlags srcStageMask = 0, VkPipelineStageFlags dstStageMask = 0  );
+	ImageMemoryBarrierParams( const vk::ImageRef& image, VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED, VkImageLayout newLayout = VK_IMAGE_LAYOUT_UNDEFINED, VkPipelineStageFlags srcStageMask = 0, VkPipelineStageFlags dstStageMask = 0 );
+	virtual ~ImageMemoryBarrierParams() {}
+	ImageMemoryBarrierParams&		setSrcAccessMask( VkAccessFlags value, bool exclusive = false ) { if( exclusive ) { mBarrier.srcAccessMask = value; } else { mBarrier.srcAccessMask |= value; } return *this; }
+	ImageMemoryBarrierParams&		setDstAccessMask( VkAccessFlags value, bool exclusive = false ) { if( exclusive ) { mBarrier.dstAccessMask = value; } else { mBarrier.dstAccessMask |= value; } return *this; }
+	ImageMemoryBarrierParams&		setOldLayout( VkImageLayout value ) { mBarrier.oldLayout = value; return *this; }
+	ImageMemoryBarrierParams&		setNewLayout( VkImageLayout value ) { mBarrier.newLayout = value; return *this; }
+	ImageMemoryBarrierParams&		setSrcQueueFamilyIndex( VkAccessFlags value ) { mBarrier.srcQueueFamilyIndex = value; return *this; }
+	ImageMemoryBarrierParams&		setDstQueueFamilyIndex( VkAccessFlags value ) { mBarrier.dstQueueFamilyIndex = value; return *this; }
+	ImageMemoryBarrierParams&		setAspectMask( VkImageAspectFlags value, bool exclusive = false ) { if( exclusive ) { mBarrier.subresourceRange.aspectMask = value; } else { mBarrier.subresourceRange.aspectMask |= value; } return *this; }
+	ImageMemoryBarrierParams&		setBaseMipLevel( uint32_t value ) { mBarrier.subresourceRange.baseMipLevel = value; return *this; }
+	ImageMemoryBarrierParams&		setMipLevelCount( uint32_t value ) { mBarrier.subresourceRange.levelCount = value; return *this; }
+	ImageMemoryBarrierParams&		setBaseArrayLayer( uint32_t value ) { mBarrier.subresourceRange.baseArrayLayer = value; return *this; }
+	ImageMemoryBarrierParams&		setLayerCount( uint32_t value ) { mBarrier.subresourceRange.layerCount = value; return *this; }
+	ImageMemoryBarrierParams&		setSrcStageMask( VkPipelineStageFlags value, bool exclusive = false ) { if( exclusive ) { mSrcStageMask = value; } else { mSrcStageMask |= value; } return *this; }
+	ImageMemoryBarrierParams&		setDstStageMask( VkPipelineStageFlags value, bool exclusive = false ) { if( exclusive ) { mDstStageMask = value; } else { mDstStageMask |= value; } return *this; }
+private:
+	ImageMemoryBarrierParams();
+	VkImageMemoryBarrier mBarrier;
+	VkPipelineStageFlags mSrcStageMask = 0;
+	VkPipelineStageFlags mDstStageMask = 0;
+	friend class CommandBuffer;
+};
+
 //! \class CommandBuffer
 //!
 //!
@@ -123,11 +176,17 @@ public:
 	void bindDescriptorSet( VkPipelineBindPoint pipelineBindPoint, VkPipelineLayout layout, const VkDescriptorSet& pDescriptorSets );
 	void bindIndexBuffer( const IndexBufferRef& indexBuffer, VkDeviceSize offset = 0 );
 
+
+	void pipelineBarrierBufferMemory( const vk::BufferMemoryBarrierParams& params );
+	void pipelineBarrierImageMemory( const vk::ImageMemoryBarrierParams& params );
+
+/*
 	void pipelineBarrierBufferMemory( VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStages, VkPipelineStageFlags dstStages );
 	void pipelineBarrierBufferMemory( const vk::BufferRef& buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStages, VkPipelineStageFlags dstStages );
 
 	void pipelineBarrierImageMemory( VkImage image, VkImageAspectFlags aspectMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStages, VkPipelineStageFlags dstStages );
 	void pipelineBarrierImageMemory( const vk::ImageRef& image, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStages, VkPipelineStageFlags dstStages );
+*/
 
 private:
 	CommandBuffer( VkCommandPool commandPool, vk::Context *context );

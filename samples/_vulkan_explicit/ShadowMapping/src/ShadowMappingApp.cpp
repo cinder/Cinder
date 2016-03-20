@@ -91,13 +91,14 @@ public:
 		depthFormat.setMinFilter( VK_FILTER_LINEAR );
 		depthFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE );
 		depthFormat.setCompareMode( VK_COMPARE_OP_LESS_OR_EQUAL );
-		mTextureShadowMap = vk::Texture2d::create( size, size, depthFormat );		
+		mTextureShadowMap = vk::Texture2d::create( size, size, depthFormat );
+		mTextureShadowMap->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 
 		try {	
 			// Render pass
 			vk::RenderPass::Attachment attachment = vk::RenderPass::Attachment( mTextureShadowMap->getFormat().getInternalFormat() )
 				.setInitialLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
-				.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+				.setFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 			vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 				.addAttachment( attachment );
 			vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()
@@ -120,7 +121,6 @@ public:
 	const vk::RenderPassRef&	getRenderPass() const { return mRenderPass; }
 	const vk::FramebufferRef&	getFramebuffer() const { return mFramebuffer; }
 	const vk::Texture2dRef&		getTexture() const { return mTextureShadowMap; }
-	const vk::Texture2dRef&		getColorTexture() const { return mColorTexture; }
 	
 	float						getAspectRatio() const { return mFramebuffer->getAspectRatio(); }
 	ivec2						getSize() const { return mFramebuffer->getSize(); }
@@ -129,7 +129,6 @@ private:
 	vk::RenderPassRef			mRenderPass;
 	vk::FramebufferRef			mFramebuffer;
 	vk::Texture2dRef			mTextureShadowMap;
-	vk::Texture2dRef			mColorTexture;
 };
 
 struct LightData {
@@ -388,7 +387,7 @@ void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf
 			{
 				const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
 				mat4 shadowMatrix = flipY*mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix();
-				vec4 lightPos = vk::getModelView() * vec4( mLight.viewpoint, 1.0 );
+				vec4 lightPos = vk::getModelView() * vec4( mLight.viewpoint, 1.0 ); 
 				auto& batches = mShaderGrouping[mShadowShader];
 				for( auto& batch : batches ) {
 					batch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
@@ -401,6 +400,8 @@ void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf
 					batch->uniform( "ciBlock1.uLightPos", lightPos );
 				}
 				updateScene( mSpinAngle, mShadowShader );
+
+				vk::context()->transferPendingUniformBuffer( cmdBuf );
 			}
 		}
 
@@ -485,7 +486,7 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_threading",
 	//"VK_LAYER_LUNARG_mem_tracker",
 	//"VK_LAYER_LUNARG_object_tracker",
-	"VK_LAYER_LUNARG_draw_state",
+	//"VK_LAYER_LUNARG_draw_state",
 	//"VK_LAYER_LUNARG_param_checker",
 	//"VK_LAYER_LUNARG_swapchain",
 	//"VK_LAYER_LUNARG_device_limits"
@@ -497,7 +498,7 @@ CINDER_APP(
 	ShadowMappingApp, 
 	RendererVk( RendererVk::Options()
 		.setSamples( VK_SAMPLE_COUNT_8_BIT )
-		.setExplicitMode() 
+		.setExplicitMode()
 		.setLayers( gLayers )
 		.setDebugReportCallbackFn( debugReportVk ) 
 	), 

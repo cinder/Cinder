@@ -42,6 +42,8 @@
 #include "cinder/vk/vk.h"
 #include "cinder/Rand.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Log.h"
+#include "cinder/Utilities.h"
 
 #include "cinder/gl/TextureFormatParsers.h"
 
@@ -49,6 +51,8 @@
 #include "Globals.h"
 #include "Light.h"
 #include "Ocean.h"
+
+#include <boost/algorithm/string.hpp>
 
 int FBO_RES = 96;	// squared = number of fish
 
@@ -69,6 +73,11 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	mFboSize			= vec2( FBO_RES, FBO_RES );
 	mFboBounds			= Area( 0, 0, FBO_RES, FBO_RES );
 
+	mCanDrawVelocity[0] = false;
+	mCanDrawVelocity[1] = false;
+	mCanDrawPosition[0] = false;
+	mCanDrawPosition[1] = false;
+
 	VkFormat textureFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 
 	vk::Texture2d::Format texFormat;
@@ -83,14 +92,18 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	mPositionTextures[1] = vk::Texture2d::create( FBO_RES, FBO_RES, texFormat );
 	mVelocityTextures[0] = vk::Texture2d::create( FBO_RES, FBO_RES, texFormat );
 	mVelocityTextures[1] = vk::Texture2d::create( FBO_RES, FBO_RES, texFormat );
+	mPositionTextures[0]->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+	mPositionTextures[1]->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+	mVelocityTextures[0]->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+	mVelocityTextures[1]->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 
 	for( size_t i = 0; i < 2; ++i ) {
 		ci::vk::RenderPass::Attachment attachment0 = ci::vk::RenderPass::Attachment( textureFormat )
 			.setInitialLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
-			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+			.setFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 		ci::vk::RenderPass::Attachment attachment1 = ci::vk::RenderPass::Attachment( textureFormat )
 			.setInitialLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
-			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+			.setFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 		auto renderPassOptions = ci::vk::RenderPass::Options()
 			.addAttachment( attachment0 )	// color attachment 0
 			.addAttachment( attachment1 )	// color attachment 1
@@ -100,8 +113,8 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 		ci::vk::RenderPass::SubpassDependency spd = ci::vk::RenderPass::SubpassDependency( 0, 1 );
 		spd.setSrcStageMask( VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
 		spd.setDstStageMask(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT  );
-		spd.setSrcAccess( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
-		spd.setDstAccess( VK_ACCESS_SHADER_READ_BIT );
+		spd.setSrcAccessMask( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
+		spd.setDstAccessMask( VK_ACCESS_SHADER_READ_BIT );
 		renderPassOptions.addSubpassDependency( spd );
 
 		mRenderPasses[i] = ci::vk::RenderPass::create( renderPassOptions );
@@ -122,7 +135,7 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	setFboVelocities( mVelocityTextures[mThisFbo], mVelocityTextures[mPrevFbo], velSurf );
 	setFboPositions( mPositionTextures[mThisFbo], mPositionTextures[mPrevFbo], velSurf );
 	
-	// textures	
+	// Textures	
 #if defined( COMPRESSED_TEXTURES )
 	{
 		gl::TextureData texData;
@@ -147,6 +160,121 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	mNormalsTex		= vk::Texture::create( *Surface::create( loadImage( app::loadAsset( "flocking/trevallieNormal.png"   ) ) ), texFmt );
 	mSpecularTex	= vk::Texture::create( *Surface::create( loadImage( app::loadAsset( "flocking/trevallieSpecular.png" ) ) ), texFmt );
 #endif
+
+	// Shaders
+	{
+		DataSourceRef passThrough = loadAsset( "flocking/passThru.vert" );
+		
+		// mVelocityShader
+		try {
+			// Not the most ideal solution
+			std::string fragShader = loadString( loadAsset( "flocking/velocity.frag" ) );
+			boost::replace_all( fragShader, "//<FISH_CONSTANT>",  "#define FBO_RES " + ci::toString( FBO_RES ) );
+
+			vk::ShaderProg::Format format = vk::ShaderProg::Format()
+				.vertex( passThrough )
+				.fragment( fragShader )
+				.binding( "ciBlock0", 0 )
+				.binding( "ciBlock1", 1 )
+				.binding( "uPosition", 2 )
+				.binding( "uVelocity", 3 )
+				.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+				.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
+
+			mVelocityShader = vk::GlslProg::create( format );
+		}
+		catch( const std::exception& e ) {
+			CI_LOG_I( "Shader Error (mVelocityShader): " << e.what() );
+		}
+
+		// mPositionShader
+		try {
+			vk::ShaderProg::Format format = vk::ShaderProg::Format()
+				.vertex( passThrough )
+				.fragment( loadAsset( "flocking/position.frag" ) )
+				.binding( "ciBlock0", 0 )
+				.binding( "ciBlock1", 1 )
+				.binding( "uPosition", 2 )
+				.binding( "uVelocity", 3 )
+				.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+				.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
+
+			mPositionShader = vk::GlslProg::create( format );
+		}
+		catch( const std::exception& e ) {
+			CI_LOG_I( "Shader Error (mPositionShader): " << e.what() );
+		}
+
+		// mRenderShader
+		try {
+			vk::ShaderProg::Format format = vk::ShaderProg::Format()
+				.vertex( loadAsset( "flocking/render.vert" ) )
+				.fragment( loadAsset( "flocking/render.frag" ) )
+				.binding( "ciBlock0",     0 )
+				.binding( "uPrevPosTex",  1 )
+				.binding( "uCurrPosTex",  2 )
+				.binding( "uCurrVelTex",  3 )
+				.binding( "ciBlock1",     4 )
+				.binding( "uDiffuseTex",  5 )
+				.binding( "uNormalsTex",  6 )
+				.binding( "uSpecularTex", 7 )
+				.binding( "uCausticsTex", 8 )
+				.binding( "uShadowMap",   9 )
+				.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+				.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
+				.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 );
+
+			mRenderShader = vk::GlslProg::create( format );
+		}
+		catch( const std::exception& e ) {
+			CI_LOG_I( "Shader Error (mRenderShader): " << e.what() );
+		}
+
+		// mDepthShader
+		try {
+			vk::ShaderProg::Format format = vk::ShaderProg::Format()
+				.vertex( loadAsset( "flocking/depth.vert" ) )
+				.fragment( loadAsset( "flocking/depth.frag" ) )
+				.binding( "ciBlock0", 0 )
+				.binding( "uPrevPosTex", 1 )
+				.binding( "uCurrPosTex", 2 )
+				.binding( "uCurrVelTex", 3 )
+				.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+				.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
+				.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 )
+				.attribute( geom::Attrib::USER_DEFINED, 3, 0, vk::glsl_attr_vec3 );
+				//.uniformLayout( uniformLayout );
+
+			mDepthShader = vk::GlslProg::create( format );
+		}
+		catch( const std::exception& e ) {
+			CI_LOG_I( "Shader Error (mDepthShader): " << e.what() );
+		}
+	}
+	
+	// Models
+	{
+		// High res
+		ObjLoader loader = ObjLoader( loadFile( getAssetPath( "flocking/trevallie.obj" ) ),  ObjLoader::Options().flipV() );
+		this->mHiResFishBatch = vk::Batch::create( loader, mRenderShader );
+		CI_LOG_I( "Trevallie (hires) created" );
+
+		// Low res
+		loader = loadFile( getAssetPath( "flocking/trevallie_lowRes.obj" ) );
+		this->mLoResFishBatch = vk::Batch::create( loader, mDepthShader );
+		CI_LOG_I( "Trevallie (lowres) created" );
+
+		CI_LOG_I( "Fish assets loaded" );
+	}
+
+	// Sim render geo
+	{
+		geom::Rect rect = geom::Rect( mFboBounds ).texCoords( vec2( 0, 0 ), vec2( 1, 0 ), vec2( 1, 1 ), vec2( 0, 1 ) );
+		mVelocityRects[0] = vk::Batch::create( rect, mVelocityShader );
+		mVelocityRects[1] = vk::Batch::create( rect, mVelocityShader );
+		mPositionRects[0] = vk::Batch::create( rect, mPositionShader );
+		mPositionRects[1] = vk::Batch::create( rect, mPositionShader );
+	}
 }
 
 GpuFlockerRef GpuFlocker::create( FishTornadoApp *app )
@@ -216,109 +344,138 @@ void GpuFlocker::setFboVelocities( const ci::vk::TextureRef& curTex, const ci::v
 	prevTex->update( surf );
 }
 
-void GpuFlocker::update( float time, float dt )
+void GpuFlocker::update( float time, float dt, const ci::vec3& camPos, const ci::vec3& predPos )
 {	
 	mTime		= time;
 	mTimeDelta	= dt;
-}
 
-void GpuFlocker::drawIntoVelocityFbo( const vk::GlslProgRef& shader, const vec3 &camPos, const vec3 &predPos )
-{	
-	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
-	vk::setMatricesWindow( mFboSize, true );
+	// Velocity
+	{
+		vk::ScopedMatrices pushMatrices;
 
-	if( ! mVelocityRects[mThisFbo] ) {
-		geom::Rect rect = geom::Rect( mFboBounds ).texCoords( vec2( 0, 0 ), vec2( 1, 0 ), vec2( 1, 1 ), vec2( 0, 1 ) );
-		mVelocityRects[mThisFbo] = vk::Batch::create( rect, shader );
+		vk::setMatricesWindow( mFboSize, true );
+
+		mVelocityRects[mThisFbo]->uniform( "uPosition",				mPositionTextures[mPrevFbo] );
+		mVelocityRects[mThisFbo]->uniform( "uVelocity",				mVelocityTextures[mPrevFbo] );
+		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMinThresh",	mMinThresh );
+		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMaxThresh",	mMaxThresh );
+		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uZoneRadius",	mZoneRadius );
+		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMinSpeed",	mMinSpeed );
+		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMaxSpeed",	mMaxSpeed );
+		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uTimeDelta",	mTimeDelta );
+		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uTime",		mTime );
+		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uPredPos",		predPos );
+		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uCamPos",		camPos );
+
+		vk::context()->setDefaultUniformVars( mVelocityRects[mThisFbo] );
+		vk::context()->addPendingUniformVars( mVelocityRects[mThisFbo] );
+
+		mCanDrawVelocity[mThisFbo] = true;
 	}
 
-	mVelocityRects[mThisFbo]->uniform( "uPosition",				mPositionTextures[mPrevFbo] );
-	mVelocityRects[mThisFbo]->uniform( "uVelocity",				mVelocityTextures[mPrevFbo] );
-	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMinThresh",	mMinThresh );
-	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMaxThresh",	mMaxThresh );
-	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uZoneRadius",	mZoneRadius );
-	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMinSpeed",	mMinSpeed );
-	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMaxSpeed",	mMaxSpeed );
-	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uTimeDelta",	mTimeDelta );
-	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uTime",		mTime );
-	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uPredPos",		predPos );
-	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uCamPos",		camPos );
+	// Position
+	{
+		vk::ScopedMatrices pushMatrices;
+
+		vk::setMatricesWindow( mFboSize );
+
+		mPositionRects[mThisFbo]->uniform( "uPosition",				mPositionTextures[mPrevFbo] );
+		mPositionRects[mThisFbo]->uniform( "uVelocity",				mVelocityTextures[mThisFbo] );
+		mPositionRects[mThisFbo]->uniform( "ciBlock1.uFboRes",		FBO_RES );
+		mPositionRects[mThisFbo]->uniform( "ciBlock1.uTimeDelta",	mTimeDelta );
+
+		vk::context()->setDefaultUniformVars( mPositionRects[mThisFbo] );
+		vk::context()->addPendingUniformVars( mPositionRects[mThisFbo] );
+
+		mCanDrawPosition[mThisFbo] = true;
+	}
+}
+
+void GpuFlocker::updateForDepthFbo()
+{
+	auto light = mApp->getLight();
+	auto ocean = mApp->getOcean();
+
+	if( light && ocean ) {
+		mLoResFishBatch->uniform( "uPrevPosTex",		mPositionTextures[mPrevFbo] );
+		mLoResFishBatch->uniform( "uCurrPosTex",		mPositionTextures[mThisFbo] );
+		mLoResFishBatch->uniform( "uCurrVelTex",		mVelocityTextures[mThisFbo] );
+		mLoResFishBatch->uniform( "ciBlock0.uTime",		mTime );
+		mLoResFishBatch->uniform( "ciBlock0.uFboRes",	FBO_RES );
+
+		vk::context()->setDefaultUniformVars( mLoResFishBatch );
+		vk::context()->addPendingUniformVars( mLoResFishBatch );
+
+		mCanDrawFishDepth = true;
+	}
+}
+
+void GpuFlocker::updateForMainFbo()
+{
+	auto light = mApp->getLight();
+	auto ocean = mApp->getOcean();
+	if( light && ocean ) {
+		mHiResFishBatch->uniform( "uPrevPosTex",				mPositionTextures[mPrevFbo] );
+		mHiResFishBatch->uniform( "uCurrPosTex",				mPositionTextures[mThisFbo] );
+		mHiResFishBatch->uniform( "uCurrVelTex",				mVelocityTextures[mThisFbo] );
+		mHiResFishBatch->uniform( "uDiffuseTex",				mDiffuseTex );
+		mHiResFishBatch->uniform( "uNormalsTex",				mNormalsTex );
+		mHiResFishBatch->uniform( "uSpecularTex",				mSpecularTex );
+		mHiResFishBatch->uniform( "uCausticsTex",				ocean->getCausticsTex() );
+		mHiResFishBatch->uniform( "uShadowMap",					light->getTexture() );
+
+		mHiResFishBatch->uniform( "ciBlock0.uShadowMvp",		light->getBiasedViewProjection() );
+		mHiResFishBatch->uniform( "ciBlock0.uLightPos",			light->getPos() );
+		mHiResFishBatch->uniform( "ciBlock0.uTime",				mTime );
+		mHiResFishBatch->uniform( "ciBlock0.uFogNearDist",		FOG_NEAR_DIST );
+		mHiResFishBatch->uniform( "ciBlock0.uFogFarDist",		FOG_FAR_DIST );
+		mHiResFishBatch->uniform( "ciBlock0.uFogPower",			FOG_POWER );
+		mHiResFishBatch->uniform( "ciBlock0.uFboRes",			FBO_RES );
+
+
+		mHiResFishBatch->uniform( "ciBlock1.uFogColor",			FOG_COLOR );
+		mHiResFishBatch->uniform( "ciBlock1.uFishColor",		FISH_COLOR );
+		mHiResFishBatch->uniform( "ciBlock1.uFloorColor",		FLOOR_COLOR );
+		mHiResFishBatch->uniform( "ciBlock1.uTime",				mTime );
+		mHiResFishBatch->uniform( "ciBlock1.uDepthBias",		light->getDepthBias() );
+
+		vk::context()->setDefaultUniformVars( mHiResFishBatch );
+		vk::context()->addPendingUniformVars( mHiResFishBatch );
+
+		mCanDrawFishMain = true;
+	}
+}
+
+void GpuFlocker::drawIntoVelocityFbo()
+{	
+	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
 	mVelocityRects[mThisFbo]->draw();
-
 }
 
-void GpuFlocker::drawIntoPositionFbo( const vk::GlslProgRef& shader )
+void GpuFlocker::drawIntoPositionFbo()
 {	
 	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
-	vk::setMatricesWindow( mFboSize );
-	
-	if( ! mPositionRects[mThisFbo] ) {
-		geom::Rect rect = geom::Rect( mFboBounds ).texCoords( vec2( 0, 0 ), vec2( 1, 0 ), vec2( 1, 1 ), vec2( 0, 1 ) );
-		mPositionRects[mThisFbo] = vk::Batch::create( rect, shader );
-	}
-
-	mPositionRects[mThisFbo]->uniform( "uPosition",				mPositionTextures[mPrevFbo] );
-	mPositionRects[mThisFbo]->uniform( "uVelocity",				mVelocityTextures[mThisFbo] );
-	mPositionRects[mThisFbo]->uniform( "ciBlock1.uFboRes",		FBO_RES );
-	mPositionRects[mThisFbo]->uniform( "ciBlock1.uTimeDelta",	mTimeDelta );
 	mPositionRects[mThisFbo]->draw();
 }
 
-void GpuFlocker::drawToDepthFbo( const vk::GlslProgRef& shader, const vk::BatchRef& batch )
+void GpuFlocker::drawToDepthFbo()
 {	
-	auto light = mApp->getLight();
-	if( ! light ) {
+	if( ! mCanDrawFishDepth ) {
 		return;
 	}
 
 	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-
-	float nearClip = light->getCam().getNearClip();
-	float farClip = light->getCam().getFarClip();
-
-	batch->uniform( "uPrevPosTex",				mPositionTextures[mPrevFbo] );
-	batch->uniform( "uCurrPosTex",				mPositionTextures[mThisFbo] );
-	batch->uniform( "uCurrVelTex",				mVelocityTextures[mThisFbo] );
-	batch->uniform( "ciBlock0.uTime",			mTime );
-	batch->uniform( "ciBlock0.uFboRes",			FBO_RES );
-	batch->drawInstanced( FBO_RES * FBO_RES );
+	mLoResFishBatch->drawInstanced( FBO_RES * FBO_RES );
 }
 
-void GpuFlocker::draw( const vk::GlslProgRef& shader, const vk::BatchRef& batch )
+void GpuFlocker::drawToMainFbo()
 {	
-	auto light = mApp->getLight();
-	auto ocean = mApp->getOcean();
-	if( ! ( light && ocean ) ) {
+	if( !  mCanDrawFishMain ) {
 		return;
 	}
 
 	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-
-	batch->uniform( "uPrevPosTex",				mPositionTextures[mPrevFbo] );
-	batch->uniform( "uCurrPosTex",				mPositionTextures[mThisFbo] );
-	batch->uniform( "uCurrVelTex",				mVelocityTextures[mThisFbo] );
-	batch->uniform( "uDiffuseTex",				mDiffuseTex );
-	batch->uniform( "uNormalsTex",				mNormalsTex );
-	batch->uniform( "uSpecularTex",				mSpecularTex );
-	batch->uniform( "uCausticsTex",				ocean->getCausticsTex() );
-	batch->uniform( "uShadowMap",				light->getTexture() );
-
-	batch->uniform( "ciBlock0.uShadowMvp",		light->getBiasedViewProjection() );
-	batch->uniform( "ciBlock0.uLightPos",		light->getPos() );
-	batch->uniform( "ciBlock0.uTime",			mTime );
-	batch->uniform( "ciBlock0.uFogNearDist",	FOG_NEAR_DIST );
-	batch->uniform( "ciBlock0.uFogFarDist",		FOG_FAR_DIST );
-	batch->uniform( "ciBlock0.uFogPower",		FOG_POWER );
-	batch->uniform( "ciBlock0.uFboRes",			FBO_RES );
-
-
-	batch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
-	batch->uniform( "ciBlock1.uFishColor",		FISH_COLOR );
-	batch->uniform( "ciBlock1.uFloorColor",		FLOOR_COLOR );
-	batch->uniform( "ciBlock1.uTime",			mTime );
-	batch->uniform( "ciBlock1.uDepthBias",		light->getDepthBias() );
-
-	batch->drawInstanced( FBO_RES * FBO_RES );
+	mHiResFishBatch->drawInstanced( FBO_RES * FBO_RES );
 }
 
 void GpuFlocker::swapFbos()
@@ -341,4 +498,16 @@ void GpuFlocker::endSimRender()
 {
 	mRenderPasses[mThisFbo]->endRenderExplicit();
 	mCommandBuffer.reset();
+}
+
+void GpuFlocker::processSimulation( const ci::vk::CommandBufferRef& cmdBuf )
+{
+	vk::disableAlphaBlending();
+
+	beginSimRender( cmdBuf );
+	drawIntoVelocityFbo();
+	nextSimPass();
+	drawIntoPositionFbo();
+	endSimRender();
+	swapFbos();
 }

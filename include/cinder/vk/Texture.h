@@ -156,6 +156,8 @@ public:
 
 	uint32_t						getMipLevels() const { return mMipLevels; }
 
+	void							transitionToFirstUse( vk::Context *context, VkImageLayout firstUseLayout );
+
 protected:
 	vk::ImageViewRef				mImageView;
 

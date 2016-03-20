@@ -42,9 +42,94 @@
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/IndexBuffer.h"
 #include "cinder/vk/Swapchain.h"
+#include "cinder/vk/UniformBuffer.h"
 
 namespace cinder { namespace vk {
 
+// -------------------------------------------------------------------------------------------------
+// BufferMemoryBarrier
+// -------------------------------------------------------------------------------------------------
+BufferMemoryBarrierParams::BufferMemoryBarrierParams()
+{
+	mBarrier = {};
+	mBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+	mBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	mBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+}
+
+BufferMemoryBarrierParams::BufferMemoryBarrierParams( VkBuffer buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
+	: BufferMemoryBarrierParams()
+{
+	mBarrier.buffer			= buffer;
+	mBarrier.srcAccessMask	= srcAccessMask;
+	mBarrier.dstAccessMask	= srcAccessMask;
+
+	mSrcStageMask = srcStageMask;
+	mDstStageMask = dstStageMask;
+}
+
+BufferMemoryBarrierParams::BufferMemoryBarrierParams( const vk::BufferRef& buffer, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
+	: BufferMemoryBarrierParams()
+{
+	mBarrier.sType					= VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+	mBarrier.pNext					= nullptr;
+	mBarrier.srcAccessMask			= srcAccessMask;
+	mBarrier.dstAccessMask			= srcAccessMask;
+	mBarrier.srcQueueFamilyIndex	= 0;
+	mBarrier.dstQueueFamilyIndex	= 0;
+	mBarrier.buffer					= buffer->getBuffer();
+	mBarrier.offset					= buffer->getAllocationOffset();
+	mBarrier.size					= VK_WHOLE_SIZE;
+
+	mSrcStageMask = srcStageMask;
+	mDstStageMask = dstStageMask;
+}
+
+// -------------------------------------------------------------------------------------------------
+// ImageMemoryBarrier
+// -------------------------------------------------------------------------------------------------
+ImageMemoryBarrierParams::ImageMemoryBarrierParams()
+{
+	mBarrier = {};
+	mBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	mBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	mBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+}
+
+ImageMemoryBarrierParams::ImageMemoryBarrierParams( VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask  )
+	: ImageMemoryBarrierParams()
+{
+	mBarrier.image		= image;
+	mBarrier.oldLayout	= oldLayout;
+    mBarrier.newLayout	= newLayout;
+
+	mSrcStageMask = srcStageMask;
+	mDstStageMask = dstStageMask;
+}
+
+ImageMemoryBarrierParams::ImageMemoryBarrierParams( const vk::ImageRef& image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
+	: ImageMemoryBarrierParams()
+{
+    mBarrier.srcAccessMask						= 0;
+    mBarrier.dstAccessMask						= 0;
+	mBarrier.oldLayout							= oldLayout;
+    mBarrier.newLayout							= newLayout;
+    mBarrier.srcQueueFamilyIndex				= 0;
+    mBarrier.dstQueueFamilyIndex				= 0;
+    mBarrier.image								= image->getImage();
+	mBarrier.subresourceRange.aspectMask		= image->getAspectMask();
+	mBarrier.subresourceRange.baseMipLevel		= 0;
+	mBarrier.subresourceRange.levelCount		= image->getMipLevels();
+	mBarrier.subresourceRange.baseArrayLayer	= 0;
+	mBarrier.subresourceRange.layerCount		= image->getArrayLayers();
+
+	mSrcStageMask = srcStageMask;
+	mDstStageMask = dstStageMask;
+}
+
+// -------------------------------------------------------------------------------------------------
+// CommandBuffer
+// -------------------------------------------------------------------------------------------------
 CommandBuffer::CommandBuffer( VkCommandPool commandPool, Context *context )
 	: vk::BaseContextObject( context ), 
 	  mCommandPool( commandPool )
@@ -63,17 +148,15 @@ void CommandBuffer::initialize()
 		return;
 	}
 
-    VkResult U_ASSERT_ONLY res;
+	VkCommandBufferAllocateInfo  allocInfo = {};
+	allocInfo.sType				= VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.pNext				= NULL;
+	allocInfo.commandPool			= mCommandPool;
+	allocInfo.level				= VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount	= 1;
 
-    VkCommandBufferAllocateInfo cmd = {};
-    cmd.sType				= VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    cmd.pNext				= NULL;
-    cmd.commandPool			= mCommandPool;
-    cmd.level				= VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmd.commandBufferCount	= 1;
-
-    res = vkAllocateCommandBuffers( mContext->getDevice()->getDevice(), &cmd, &mCommandBuffer );
-    assert(res == VK_SUCCESS);
+	VkResult res = vkAllocateCommandBuffers( mContext->getDevice()->getDevice(), & allocInfo, &mCommandBuffer );
+	assert(res == VK_SUCCESS);
 
 	mContext->trackedObjectCreated( this );
 }
@@ -372,64 +455,79 @@ void CommandBuffer::bindIndexBuffer( const IndexBufferRef& indexBuffer, VkDevice
 	bindIndexBuffer( indexBuffer->getBuffer(), offset, indexBuffer->getIndexType() );
 }
 
-/*
-void CommandBuffer::addImageMemoryBarrier( const vk::ImageRef& image )
+void CommandBuffer::pipelineBarrierBufferMemory( const vk::BufferMemoryBarrierParams& params )
 {
-	VkImageLayout oldImageLayout = image->getInitialLayout();
-	VkImageLayout newImageLayout = image->getTargetLayout();
-
-    VkImageMemoryBarrier imageMemoryBarrier = {};
-    imageMemoryBarrier.sType							= VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    imageMemoryBarrier.pNext							= nullptr;
-    imageMemoryBarrier.srcAccessMask					= 0;
-    imageMemoryBarrier.dstAccessMask					= 0;
-    imageMemoryBarrier.oldLayout						= oldImageLayout;
-    imageMemoryBarrier.newLayout						= newImageLayout;
-    imageMemoryBarrier.image							= image->getImage();
-    imageMemoryBarrier.subresourceRange.aspectMask		= image->getAspectMask();
-    imageMemoryBarrier.subresourceRange.baseMipLevel	= 0;
-    imageMemoryBarrier.subresourceRange.levelCount		= 1;
-    imageMemoryBarrier.subresourceRange.layerCount		= 1;
-
-    if( oldImageLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) {
-        imageMemoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-    }
-
-    if( newImageLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) {
-        // Make sure anything that was copying from this image has completed
-        imageMemoryBarrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-    }
-
-    if( newImageLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ) {
-        // Make sure any Copy or CPU writes to image are flushed 
-        imageMemoryBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
-        imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    }
-
-    if( newImageLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) {
-        imageMemoryBarrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
-    }
-
-    if( newImageLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ) {
-        imageMemoryBarrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-    }
-
-    VkImageMemoryBarrier *pMemoryBarrier = &imageMemoryBarrier;
-
-    VkPipelineStageFlags src_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-    VkPipelineStageFlags dest_stages = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-
-	pipelineBarrier( src_stages, dest_stages, 0, 1, (const void * const*)&pMemoryBarrier );
+	VkBufferMemoryBarrier barrier = params.mBarrier;
+	pipelineBarrier( params.mSrcStageMask, params.mDstStageMask, 0, 0, nullptr, 1, &barrier, 0, nullptr );
 }
 
-void CommandBuffer::addImageMemoryBarrier( const SwapchainRef& swapchain )
+void CommandBuffer::pipelineBarrierImageMemory( const vk::ImageMemoryBarrierParams& params )
 {
-	for( auto& iv : swapchain->getColorAttachments() ) {
-		addImageMemoryBarrier( iv->getImage() );
+    VkImageMemoryBarrier barrier = params.mBarrier;
+
+	// oldLayout
+	switch( params.mBarrier.oldLayout ) {
+		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: {
+			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL: {
+			barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: {
+			barrier.srcAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT | VK_ACCESS_SHADER_READ_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: {
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:  {
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_PREINITIALIZED: {
+			barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
+		}
+		break;
 	}
-}
-*/
 
+	// newImageLayout
+	switch( params.mBarrier.newLayout ) {
+		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT | VK_ACCESS_SHADER_READ_BIT;
+		}
+		break;
+
+		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		}
+
+		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: {
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
+		}
+	}
+
+	pipelineBarrier( params.mSrcStageMask, params.mDstStageMask, 0, 0, nullptr, 0, nullptr, 1, &barrier );
+}
+
+/*
 void CommandBuffer::pipelineBarrierBufferMemory( VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
 {
 	VkBufferMemoryBarrier barrier = {};
@@ -464,6 +562,7 @@ void CommandBuffer::pipelineBarrierImageMemory( VkImage image, VkImageAspectFlag
     barrier.subresourceRange.aspectMask		= aspectMask;
     barrier.subresourceRange.baseMipLevel	= 0;
     barrier.subresourceRange.levelCount		= 1;
+	barrier.subresourceRange.baseArrayLayer	= 0;
     barrier.subresourceRange.layerCount		= 1;
 
 	switch( oldImageLayout ) {
@@ -519,55 +618,6 @@ void CommandBuffer::pipelineBarrierImageMemory( VkImage image, VkImageAspectFlag
 		}
 	}
 
-
-/*
-	// oldImageLayout
-	switch( oldImageLayout ) {
-		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: {
-			barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-		}
-		break;
-
-		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: {
-			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		}
-		break;
-	}
-
-	// newImageLayout
-	switch( newImageLayout ) {
-		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: {
-			barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT | VK_ACCESS_TRANSFER_WRITE_BIT;
-			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		}
-		break;
-
-		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: {
-			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		}
-		break;
-
-		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL: {
-			barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-		}
-		break;
-
-		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: {
-			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-		}
-		break;
-
-		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: {
-			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-		}
-
-		case VK_IMAGE_LAYOUT_PREINITIALIZED: {
-			barrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
-		}
-		break;
-	}
-*/
-
 	pipelineBarrier( srcStageMask, dstStageMask, 0, 0, nullptr, 0, nullptr, 1, &barrier );
 }
 
@@ -575,5 +625,6 @@ void CommandBuffer::pipelineBarrierImageMemory( const vk::ImageRef& image, VkIma
 {
 	pipelineBarrierImageMemory( image->getImage(), image->getAspectMask(), oldImageLayout, newImageLayout, srcStages, dstStages );
 }
+*/
 
 }} // namespace cinder::vk

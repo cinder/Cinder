@@ -136,76 +136,97 @@ void Shark::update( float time, float dt )
 	mMatrix			= mat4();
 	mMatrix			= translate( mMatrix, mPos );
 	mMatrix			= mMatrix * rotMat;
-
 }
 
-void Shark::drawDepth()
+void Shark::updateForDepthFbo()
 {
 	auto light = mApp->getLight();
 	auto ocean = mApp->getOcean();
-	if( ! ( light && ocean ) ) {
+	if( light && ocean ) {
+		// LoResBatch
+		{
+			mLoResBatch->uniform( "ciBlock0.uShadowMvp",	light->getBiasedViewProjection() );
+			mLoResBatch->uniform( "ciBlock0.uTime",			mTime );
+			mLoResBatch->uniform( "ciBlock0.uLightPos",		light->getPos() );
+			mLoResBatch->uniform( "ciBlock0.uFogNearDist",	FOG_NEAR_DIST );
+			mLoResBatch->uniform( "ciBlock0.uFogFarDist",	FOG_FAR_DIST );
+			mLoResBatch->uniform( "ciBlock0.uFogPower",		FOG_POWER );
+
+			mLoResBatch->uniform( "uDiffuseTex",			mDiffuseTex );
+			mLoResBatch->uniform( "uNormalsTex",			mNormalsTex );
+			mLoResBatch->uniform( "uCausticsTex",			ocean->getCausticsTex() );
+			mLoResBatch->uniform( "uShadowMap",				light->getTexture() );
+
+			mLoResBatch->uniform( "ciBlock1.uTime",			mTime );
+			mLoResBatch->uniform( "ciBlock1.uLightPos",		light->getPos() );
+			mLoResBatch->uniform( "ciBlock1.uDepthBias",	light->getDepthBias() );
+			mLoResBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
+			mLoResBatch->uniform( "ciBlock1.uFishColor",	FISH_COLOR );
+			mLoResBatch->uniform( "ciBlock1.uFloorColor",	FLOOR_COLOR );
+
+			vk::pushModelView();
+			vk::multModelMatrix( mMatrix );
+			vk::context()->setDefaultUniformVars( mLoResBatch );
+			vk::context()->addPendingUniformVars( mLoResBatch );
+			vk::popModelView();
+		}
+	}
+}
+
+void Shark::updateForMainFbo()
+{
+	auto light = mApp->getLight();
+	auto ocean = mApp->getOcean();
+	if( light && ocean ) {
+		// HiResBatch
+		{
+			mHiResBatch->uniform( "ciBlock0.uShadowMvp",	light->getBiasedViewProjection() );
+			mHiResBatch->uniform( "ciBlock0.uTime",			mTime );
+			mHiResBatch->uniform( "ciBlock0.uLightPos",		light->getPos() );
+			mHiResBatch->uniform( "ciBlock0.uFogNearDist",	FOG_NEAR_DIST );
+			mHiResBatch->uniform( "ciBlock0.uFogFarDist",	FOG_FAR_DIST );
+			mHiResBatch->uniform( "ciBlock0.uFogPower",		FOG_POWER );
+
+			mHiResBatch->uniform( "uDiffuseTex",			mDiffuseTex );
+			mHiResBatch->uniform( "uNormalsTex",			mNormalsTex );
+			mHiResBatch->uniform( "uCausticsTex",			ocean->getCausticsTex() );
+			mHiResBatch->uniform( "uShadowMap",				light->getTexture() );
+
+			mHiResBatch->uniform( "ciBlock1.uTime",			mTime );
+			mHiResBatch->uniform( "ciBlock1.uLightPos",		light->getPos() );
+			mHiResBatch->uniform( "ciBlock1.uDepthBias",	light->getDepthBias() );
+			mHiResBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
+			mHiResBatch->uniform( "ciBlock1.uFishColor",	FISH_COLOR );
+			mHiResBatch->uniform( "ciBlock1.uFloorColor",	FLOOR_COLOR );
+
+			vk::pushModelView();
+			vk::multModelMatrix( mMatrix );
+			vk::context()->setDefaultUniformVars( mHiResBatch );
+			vk::context()->addPendingUniformVars( mHiResBatch );
+			vk::popModelView();
+		}
+
+		mCanDraw = true;
+	}
+}
+
+void Shark::drawToDepthFbo()
+{
+	if( ! mCanDraw ) {
 		return;
 	}
 
-	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-
-	mLoResBatch->uniform( "ciBlock0.uShadowMvp",	light->getBiasedViewProjection() );
-	mLoResBatch->uniform( "ciBlock0.uTime",			mTime );
-	mLoResBatch->uniform( "ciBlock0.uLightPos",		light->getPos() );
-	mLoResBatch->uniform( "ciBlock0.uFogNearDist",	FOG_NEAR_DIST );
-	mLoResBatch->uniform( "ciBlock0.uFogFarDist",	FOG_FAR_DIST );
-	mLoResBatch->uniform( "ciBlock0.uFogPower",		FOG_POWER );
-
-	mLoResBatch->uniform( "uDiffuseTex",			mDiffuseTex );
-	mLoResBatch->uniform( "uNormalsTex",			mNormalsTex );
-	mLoResBatch->uniform( "uCausticsTex",			ocean->getCausticsTex() );
-	mLoResBatch->uniform( "uShadowMap",				light->getTexture() );
-
-	mLoResBatch->uniform( "ciBlock1.uTime",			mTime );
-	mLoResBatch->uniform( "ciBlock1.uLightPos",		light->getPos() );
-	mLoResBatch->uniform( "ciBlock1.uDepthBias",	light->getDepthBias() );
-	mLoResBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
-	mLoResBatch->uniform( "ciBlock1.uFishColor",	FISH_COLOR );
-	mLoResBatch->uniform( "ciBlock1.uFloorColor",	FLOOR_COLOR );
-
-	vk::pushModelView();
-	vk::multModelMatrix( mMatrix );
+	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
 	mLoResBatch->draw();
-	vk::popModelView();
 }
 
 void Shark::draw()
 {
-	auto light = mApp->getLight();
-	auto ocean = mApp->getOcean();
-	if( ! ( light && ocean ) ) {
+	if( ! mCanDraw ) {
 		return;
 	}
 
 	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-
-	mHiResBatch->uniform( "ciBlock0.uShadowMvp",	light->getBiasedViewProjection() );
-	mHiResBatch->uniform( "ciBlock0.uTime",			mTime );
-	mHiResBatch->uniform( "ciBlock0.uLightPos",		light->getPos() );
-	mHiResBatch->uniform( "ciBlock0.uFogNearDist",	FOG_NEAR_DIST );
-	mHiResBatch->uniform( "ciBlock0.uFogFarDist",	FOG_FAR_DIST );
-	mHiResBatch->uniform( "ciBlock0.uFogPower",		FOG_POWER );
-
-	mHiResBatch->uniform( "uDiffuseTex",			mDiffuseTex );
-	mHiResBatch->uniform( "uNormalsTex",			mNormalsTex );
-	mHiResBatch->uniform( "uCausticsTex",			ocean->getCausticsTex() );
-	mHiResBatch->uniform( "uShadowMap",				light->getTexture() );
-
-	mHiResBatch->uniform( "ciBlock1.uTime",			mTime );
-	mHiResBatch->uniform( "ciBlock1.uLightPos",		light->getPos() );
-	mHiResBatch->uniform( "ciBlock1.uDepthBias",	light->getDepthBias() );
-	mHiResBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
-	mHiResBatch->uniform( "ciBlock1.uFishColor",	FISH_COLOR );
-	mHiResBatch->uniform( "ciBlock1.uFloorColor",	FLOOR_COLOR );
-
-	vk::pushModelView();
-	vk::multModelMatrix( mMatrix );
 	mHiResBatch->draw();
-	vk::popModelView();
 }
 

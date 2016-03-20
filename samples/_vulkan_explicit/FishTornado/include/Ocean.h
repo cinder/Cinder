@@ -56,7 +56,7 @@ public:
 
 	void					initVbos();
 	void					update( float time, float dt );
-	void					draw();
+	void					updateForMainFbo();
 	void					drawFloor();
 	void					drawSurface();
 	void					drawBeams();
@@ -82,8 +82,10 @@ private:
 	
 	ci::vk::GlslProgRef		mBeamShader;
 	ci::vk::TextureRef		mBeamTex;
-	ci::vk::BatchRef		mBeamsBatch;
-	
+	ci::vk::BatchRef		mBeamsBatch1;
+	ci::vk::BatchRef		mBeamsBatch2;
+	bool					mCanDraw = false;
+
 	// caustics
 	ci::vk::TextureRef		mCausticsTexs[32];
 	int						mCausticsIndex;

@@ -84,6 +84,25 @@ TextureBase::~TextureBase()
 {
 }
 
+void TextureBase::transitionToFirstUse( vk::Context *context, VkImageLayout firstUseLayout )
+{
+	auto& cmdPool = context->getDefaultTransientCommandPool();
+	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool->getCommandPool(), context );
+
+	cmdBuf->begin();
+	{
+		auto& image = mImageView->getImage();
+		VkImageLayout oldLayout = image->getInitialLayout();
+		VkImageLayout newLayout = firstUseLayout;
+		vk::ImageMemoryBarrierParams params = vk::ImageMemoryBarrierParams( image, oldLayout, newLayout, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+		cmdBuf->pipelineBarrierImageMemory( params );
+	}
+	cmdBuf->end();
+
+	context->getGraphicsQueue()->submit( cmdBuf );
+	context->getGraphicsQueue()->waitIdle();
+}
+
 // -------------------------------------------------------------------------------------------------
 // Texture2d
 // -------------------------------------------------------------------------------------------------
@@ -486,7 +505,8 @@ Texture2dRef Texture2d::create( const gl::TextureData& textureData, const Textur
 		auto& dstImage = result->getImageView()->getImage();
 		cmdBuf->begin();
 		{
-			cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT );
+			//cmdBuf->pipelineBarrierImageMemory( dstImage, dstImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT );
+			cmdBuf->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( dstImage, dstImage->getCurrentLayout(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT ) );
 
 			VkDeviceSize offset = 0;
 			std::vector<VkBufferImageCopy> regions;
@@ -509,7 +529,8 @@ Texture2dRef Texture2d::create( const gl::TextureData& textureData, const Textur
 			}
 			cmdBuf->copyBufferToImage( buf->getBuffer(), dstImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>( regions.size() ), regions.data() );
 
-			cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+			//cmdBuf->pipelineBarrierImageMemory( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+			cmdBuf->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( dstImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT ) );
 		}
 		cmdBuf->end();
 
@@ -534,7 +555,8 @@ void Texture2d::doUpdate( int srcWidth, int srcHeight, const T *srcData, size_t 
 		.setTilingLinear()
 		.setMemoryPropertyHostVisible()
 		.setUsageTransferSource()
-		.setTransientAllocation();
+		.setTransientAllocation()
+		.setInitialLayout( VK_IMAGE_LAYOUT_PREINITIALIZED );
 	ImageRef stagingImage = Image::create( srcWidth, srcHeight, srcData, srcRowBytes, srcPixelBytes, ci::Area( 0, 0, srcWidth, srcHeight ), stagingOptions, mImageView->getDevice() );
 
 	if( mFormat.isUnnormalizedCoordinates() ) {
