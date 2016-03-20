@@ -124,14 +124,17 @@ public:
 		const std::vector<uint32_t>&	getColorAttachments() const { return mColorAttachments; }
 		const std::vector<uint32_t>&	getDepthStencilAttachment() const { return mDepthStencilAttachment; }
 
-		Subpass&				addColorAttachment( uint32_t attachmentIndex, uint32_t resolveAttachmentIndex = VK_ATTACHMENT_UNUSED ) { mColorAttachments.push_back( attachmentIndex ); mResolveAttachments.push_back( resolveAttachmentIndex ); return *this; }
-		Subpass&				addDepthStencilAttachment( uint32_t attachmentIndex ) { mDepthStencilAttachment.push_back( attachmentIndex ); return *this; }
+		Subpass&						addColorAttachment( uint32_t attachmentIndex, uint32_t resolveAttachmentIndex = VK_ATTACHMENT_UNUSED );
+		Subpass&						addDepthStencilAttachment( uint32_t attachmentIndex );
+		Subpass&						addPreserveAttachment( uint32_t attachmentIndex );
+		Subpass&						addPreserveAttachments( const std::vector<uint32_t>& attachmentIndices );
 
 	private:
 		VkPipelineBindPoint		mPipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 		std::vector<uint32_t>	mColorAttachments;			// 1 or more elements
 		std::vector<uint32_t>	mResolveAttachments;		// 1 or more elements
 		std::vector<uint32_t>	mDepthStencilAttachment;	// 1 element at most
+		std::vector<uint32_t>	mPreserveAttachments;		// 0 or more elements
 		friend class RenderPass;
 	};
 

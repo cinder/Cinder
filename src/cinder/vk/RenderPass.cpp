@@ -95,6 +95,34 @@ RenderPass::Attachment RenderPass::Attachment::createDepthStencil( VkFormat form
 }
 
 // -------------------------------------------------------------------------------------------------
+// RenderPass::Subpass
+// -------------------------------------------------------------------------------------------------
+RenderPass::Subpass& RenderPass::Subpass::addColorAttachment( uint32_t attachmentIndex, uint32_t resolveAttachmentIndex )
+{
+	mColorAttachments.push_back(attachmentIndex); 
+	mResolveAttachments.push_back(resolveAttachmentIndex); 
+	return *this;
+}
+
+RenderPass::Subpass& RenderPass::Subpass::addDepthStencilAttachment( uint32_t attachmentIndex )
+{
+	mDepthStencilAttachment.push_back(attachmentIndex); 
+	return *this;
+}
+
+RenderPass::Subpass& RenderPass::Subpass::addPreserveAttachment( uint32_t attachmentIndex )
+{
+	mPreserveAttachments.push_back(attachmentIndex); 
+	return *this;
+}
+
+RenderPass::Subpass& RenderPass::Subpass::addPreserveAttachments( const std::vector<uint32_t>& attachmentIndices )
+{
+	std::copy( std::begin( attachmentIndices ), std::end( attachmentIndices ), std::back_inserter( mPreserveAttachments ) ); 
+	return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
 // RenderPass::Options
 // -------------------------------------------------------------------------------------------------
 RenderPass::SubpassDependency::SubpassDependency( uint32_t srcSubpass, uint32_t dstSubpass )
@@ -205,6 +233,7 @@ void RenderPass::initialize( const RenderPass::Options& options )
 		std::vector<VkAttachmentReference>	color;
 		std::vector<VkAttachmentReference>	resolve;
 		std::vector<VkAttachmentReference>	depth;
+		std::vector<uint32_t>				preserve;
 	};
 
 	if( VK_NULL_HANDLE != mRenderPass ) {
@@ -267,6 +296,11 @@ void RenderPass::initialize( const RenderPass::Options& options )
 			subPassAttachmentRefs[i].depth[0].attachment = attachmentIndex;
 			subPassAttachmentRefs[i].depth[0].layout = mAttachmentDescriptors[attachmentIndex].finalLayout;
 		}
+
+		// Preserve attachments
+		if( ! subPass.mPreserveAttachments.empty() ) {
+			subPassAttachmentRefs[i].preserve = subPass.mPreserveAttachments;
+		}
 	}
 
 	// Populate sub passes
@@ -275,6 +309,7 @@ void RenderPass::initialize( const RenderPass::Options& options )
 		const auto& colorAttachmentRefs = subPassAttachmentRefs[i].color;
 		const auto& resolveAttachmentRefs = subPassAttachmentRefs[i].resolve;
 		const auto& depthStencilAttachmentRef = subPassAttachmentRefs[i].depth;
+		const auto& preserveAttachmentRefs = subPassAttachmentRefs[i].preserve;
 
 		bool noResolves = true;
 		for( const auto& attachRef : resolveAttachmentRefs ) {
@@ -294,8 +329,8 @@ void RenderPass::initialize( const RenderPass::Options& options )
 		desc.pColorAttachments 			= colorAttachmentRefs.empty() ? nullptr : colorAttachmentRefs.data();
 		desc.pResolveAttachments 		= ( resolveAttachmentRefs.empty() || noResolves ) ? nullptr : resolveAttachmentRefs.data();
 		desc.pDepthStencilAttachment 	= depthStencilAttachmentRef.empty() ? nullptr : depthStencilAttachmentRef.data();
-		desc.preserveAttachmentCount 	= 0;
-		desc.pPreserveAttachments		= nullptr;
+		desc.preserveAttachmentCount 	= static_cast<uint32_t>( preserveAttachmentRefs.size() );
+		desc.pPreserveAttachments		= preserveAttachmentRefs.empty() ? nullptr : preserveAttachmentRefs.data();
 	}
 
 	// Cache the subpass sample counts

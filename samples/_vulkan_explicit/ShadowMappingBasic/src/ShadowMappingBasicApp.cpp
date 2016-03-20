@@ -103,7 +103,7 @@ void ShadowMappingBasic::setup()
 	depthFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE );
 	depthFormat.setCompareMode( VK_COMPARE_OP_LESS_OR_EQUAL );
 	mShadowMapTex = vk::Texture2d::create( FBO_WIDTH, FBO_HEIGHT, depthFormat );
-	mShadowMapTex->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+	vk::transitionToFirstUse( mShadowMapTex, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vk::context() );
 
 	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.5f, 500.0f );
 	

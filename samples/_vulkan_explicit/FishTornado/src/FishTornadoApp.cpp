@@ -278,12 +278,13 @@ void FishTornadoApp::setup()
 		vk::Texture::Format texFormat = vk::Texture::Format( VK_FORMAT_R8G8B8A8_UNORM );
 		texFormat.setUsageColorAttachment();
 		mMainColorTex = vk::Texture::create( getWindowWidth(), getWindowHeight(), texFormat );
+		vk::transitionToFirstUse( mMainColorTex, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vk::context() );
 
 		// Render pass
 		ci::vk::RenderPass::Options renderPassOptions = ci::vk::RenderPass::Options()
-			.addAttachment( ci::vk::RenderPass::Attachment( VK_FORMAT_R8G8B8A8_UNORM ).setSamples( sampleCount ) )
-			.addAttachment( ci::vk::RenderPass::Attachment( VK_FORMAT_D16_UNORM ).setSamples( sampleCount ) )
-			.addAttachment( ci::vk::RenderPass::Attachment( VK_FORMAT_R8G8B8A8_UNORM ) );
+			.addAttachment( ci::vk::RenderPass::Attachment( VK_FORMAT_R8G8B8A8_UNORM ).setSamples( sampleCount ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) )
+			.addAttachment( ci::vk::RenderPass::Attachment( VK_FORMAT_D16_UNORM ).setSamples( sampleCount ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ) )
+			.addAttachment( ci::vk::RenderPass::Attachment( VK_FORMAT_R8G8B8A8_UNORM ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) );
 		ci::vk::RenderPass::Subpass subpasses = ci::vk::RenderPass::Subpass()
 			.addColorAttachment( 0, 2 )
 			.addDepthStencilAttachment( 1 );
@@ -588,7 +589,7 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 			vk::draw( mGpuFlocker->mPositionTextures[1], Rectf( 0, 0, 400, 400 ) + vec2( 410, 410 ) );
 */
 
-/*
+
 			if( mLightLoaded ) {
 				vk::setMatricesWindow( getWindowSize() );
 				//vk::color( 1.0f, 1.0f, 1.0f );
@@ -596,7 +597,7 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 				vk::draw( mLight->getTexture(), Rectf( 0, 0, size, size ) ); 
 				vk::draw( mLight->getBlurredTexture(), Rectf( 0, 0, size, size ) + vec2( size + 10, 0 ) ); 
 			}
-*/
+
 		}
 		vk::context()->getPresenter()->endRender( vk::context() );
 	}
@@ -618,7 +619,8 @@ void FishTornadoApp::draw()
 
 	// Build command buffer
 	uint32_t frameIndex = (getElapsedFrames() + 1) % 2;
-	const auto& cmdBuf = mCommandBuffers[frameIndex]; //vk::context()->getDefaultCommandBuffer();
+	const auto& cmdBuf = mCommandBuffers[frameIndex];
+	//const auto& cmdBuf = vk::context()->getDefaultCommandBuffer();
 	generateCommandBuffer( cmdBuf );
 
     // Submit command buffer for processing
@@ -657,7 +659,7 @@ VkBool32 debugReportVk(
 		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	else if( flags & VK_DEBUG_REPORT_ERROR_BIT_EXT ) {
-		CI_LOG_E( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+		//CI_LOG_E( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	else if( flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT ) {
 		//CI_LOG_D( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );

@@ -36,6 +36,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
+
 #include "cinder/vk/BaseVkObject.h"
 #include "cinder/Area.h"
 

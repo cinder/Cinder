@@ -75,20 +75,24 @@ Light::Light()
 	depthFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE );
 	depthFormat.setCompareMode( VK_COMPARE_OP_LESS_OR_EQUAL );
 	mShadowMapTex = vk::Texture2d::create( shadowMapSize, shadowMapSize, depthFormat );
+	ci::vk::transitionToFirstUse( mShadowMapTex, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vk::context() );
 
-	depthFormat.setInternalFormat( VK_FORMAT_R16_SFLOAT );
+	VkFormat blurredInternalFormat = VK_FORMAT_R16_SFLOAT;
+	depthFormat.setInternalFormat( blurredInternalFormat );
 	depthFormat.setUsageSampled( true );
 	depthFormat.setUsageColorAttachment();
 	mBlurredShadowMapTex[0] = vk::Texture2d::create( shadowMapSize, shadowMapSize, depthFormat );
 	mBlurredShadowMapTex[1] = vk::Texture2d::create( shadowMapSize, shadowMapSize, depthFormat );
+	ci::vk::transitionToFirstUse( mBlurredShadowMapTex[0], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vk::context() );
+	ci::vk::transitionToFirstUse( mBlurredShadowMapTex[1], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vk::context() );
 	
 	// Render pass
 	try {			
 		ci::vk::RenderPass::Options renderPassOptions = ci::vk::RenderPass::Options();
 		// Attachments
-		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mShadowMapTex->getFormat().getInternalFormat() ) );
-		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[0]->getFormat().getInternalFormat() ) );
-		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[1]->getFormat().getInternalFormat() ) );
+		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mShadowMapTex->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ) );
+		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[0]->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) );
+		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[1]->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) );
 		// Subpasses
 		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addDepthStencilAttachment( 0 ) );
 		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 1 ) );

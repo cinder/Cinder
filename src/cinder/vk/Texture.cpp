@@ -84,6 +84,7 @@ TextureBase::~TextureBase()
 {
 }
 
+/*
 void TextureBase::transitionToFirstUse( vk::Context *context, VkImageLayout firstUseLayout )
 {
 	auto& cmdPool = context->getDefaultTransientCommandPool();
@@ -102,6 +103,7 @@ void TextureBase::transitionToFirstUse( vk::Context *context, VkImageLayout firs
 	context->getGraphicsQueue()->submit( cmdBuf );
 	context->getGraphicsQueue()->waitIdle();
 }
+*/
 
 // -------------------------------------------------------------------------------------------------
 // Texture2d

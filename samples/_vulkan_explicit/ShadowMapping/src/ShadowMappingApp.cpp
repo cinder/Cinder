@@ -92,7 +92,7 @@ public:
 		depthFormat.setWrap( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE );
 		depthFormat.setCompareMode( VK_COMPARE_OP_LESS_OR_EQUAL );
 		mTextureShadowMap = vk::Texture2d::create( size, size, depthFormat );
-		mTextureShadowMap->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+		vk::transitionToFirstUse( mTextureShadowMap, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vk::context() );
 
 		try {	
 			// Render pass

@@ -92,10 +92,10 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	mPositionTextures[1] = vk::Texture2d::create( FBO_RES, FBO_RES, texFormat );
 	mVelocityTextures[0] = vk::Texture2d::create( FBO_RES, FBO_RES, texFormat );
 	mVelocityTextures[1] = vk::Texture2d::create( FBO_RES, FBO_RES, texFormat );
-	mPositionTextures[0]->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
-	mPositionTextures[1]->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
-	mVelocityTextures[0]->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
-	mVelocityTextures[1]->transitionToFirstUse( vk::context(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+	ci::vk::transitionToFirstUse( mPositionTextures[0], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, ci::vk::context() );
+	ci::vk::transitionToFirstUse( mPositionTextures[1], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, ci::vk::context() );
+	ci::vk::transitionToFirstUse( mVelocityTextures[0], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, ci::vk::context() );
+	ci::vk::transitionToFirstUse( mVelocityTextures[1], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, ci::vk::context() );
 
 	for( size_t i = 0; i < 2; ++i ) {
 		ci::vk::RenderPass::Attachment attachment0 = ci::vk::RenderPass::Attachment( textureFormat )
@@ -108,10 +108,10 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 			.addAttachment( attachment0 )	// color attachment 0
 			.addAttachment( attachment1 )	// color attachment 1
 			.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 0 ) )
-			.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 1 ) );
+			.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 1 ).addPreserveAttachment( 0 ) );
 
 		ci::vk::RenderPass::SubpassDependency spd = ci::vk::RenderPass::SubpassDependency( 0, 1 );
-		spd.setSrcStageMask( VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
+		spd.setSrcStageMask( VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
 		spd.setDstStageMask(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT  );
 		spd.setSrcAccessMask( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
 		spd.setDstAccessMask( VK_ACCESS_SHADER_READ_BIT );

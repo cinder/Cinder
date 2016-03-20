@@ -112,3 +112,19 @@ FuncPtrT getDeviceProcAddr( VkDevice device, const std::string& fnName )
 	cinder::vk::util::getDeviceProcAddr<PFN_vk##entryPoint>( device, "vk"#entryPoint )
 
 }}} // namespace cinder::vk::util
+
+namespace cinder { namespace vk {
+
+class Context;
+class Image;
+class ImageView;
+class TextureBase;
+using ImageRef = std::shared_ptr<Image>;
+using ImageViewRef = std::shared_ptr<ImageView>;
+using TextureBaseRef = std::shared_ptr<TextureBase>;
+
+void transitionToFirstUse( const vk::ImageRef& image, VkImageLayout firstUseLayout, vk::Context *context );
+void transitionToFirstUse( const vk::ImageViewRef& imageView, VkImageLayout firstUseLayout, vk::Context *context );
+void transitionToFirstUse( const vk::TextureBaseRef& texture, VkImageLayout firstUseLayout, vk::Context *context );
+
+}} // namespace cinder::vk
