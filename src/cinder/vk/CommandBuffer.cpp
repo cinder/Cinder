@@ -78,7 +78,11 @@ BufferMemoryBarrierParams::BufferMemoryBarrierParams( const vk::BufferRef& buffe
 	mBarrier.srcQueueFamilyIndex	= 0;
 	mBarrier.dstQueueFamilyIndex	= 0;
 	mBarrier.buffer					= buffer->getBuffer();
-	mBarrier.offset					= buffer->getAllocationOffset();
+	// Offset and size are relative to the buffer's allocation. 
+	// So offset should be 0 unless there is a specific need.
+	// If the buffer is sub-allocated from a pool, offset does not
+	// refer to buffer's allocation offset within the pool.
+	mBarrier.offset					= 0;
 	mBarrier.size					= VK_WHOLE_SIZE;
 
 	mSrcStageMask = srcStageMask;
