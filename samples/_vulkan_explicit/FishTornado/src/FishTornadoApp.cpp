@@ -589,7 +589,7 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 			vk::draw( mGpuFlocker->mPositionTextures[1], Rectf( 0, 0, 400, 400 ) + vec2( 410, 410 ) );
 */
 
-
+/*
 			if( mLightLoaded ) {
 				vk::setMatricesWindow( getWindowSize() );
 				//vk::color( 1.0f, 1.0f, 1.0f );
@@ -597,7 +597,7 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 				vk::draw( mLight->getTexture(), Rectf( 0, 0, size, size ) ); 
 				vk::draw( mLight->getBlurredTexture(), Rectf( 0, 0, size, size ) + vec2( size + 10, 0 ) ); 
 			}
-
+*/
 		}
 		vk::context()->getPresenter()->endRender( vk::context() );
 	}
