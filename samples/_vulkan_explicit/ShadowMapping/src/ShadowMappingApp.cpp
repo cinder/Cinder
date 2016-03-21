@@ -98,7 +98,7 @@ public:
 			// Render pass
 			vk::RenderPass::Attachment attachment = vk::RenderPass::Attachment( mTextureShadowMap->getFormat().getInternalFormat() )
 				.setInitialLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
-				.setFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+				.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 			vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 				.addAttachment( attachment );
 			vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()
@@ -408,6 +408,11 @@ void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf
 		// Rendered shadowed pass
 		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
 		{
+			// Clear if single sample, multi sample is cleared on attachment load
+			if( ! vk::context()->getPresenter()->isMultiSample() ) {
+				vk::context()->clearAttachments();
+			}
+
 			drawScene( mSpinAngle, mShadowShader );
 		}
 		vk::context()->getPresenter()->endRender( vk::context() );
