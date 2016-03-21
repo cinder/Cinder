@@ -95,8 +95,8 @@ Light::Light()
 		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[1]->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) );
 		// Subpasses
 		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addDepthStencilAttachment( 0 ) );
-		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 1 ) );
-		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 2 ) );
+		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 1 ).addPreserveAttachment( 0 ) );
+		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 2 ).addPreserveAttachment( 1 ) );
 		// Subpass dependencies
 		{
 			ci::vk::RenderPass::SubpassDependency spd1 = ci::vk::RenderPass::SubpassDependency( 0, 1 );

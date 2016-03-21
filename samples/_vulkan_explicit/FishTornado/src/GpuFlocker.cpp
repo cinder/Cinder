@@ -112,7 +112,7 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 
 		ci::vk::RenderPass::SubpassDependency spd = ci::vk::RenderPass::SubpassDependency( 0, 1 );
 		spd.setSrcStageMask( VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
-		spd.setDstStageMask(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT  );
+		spd.setDstStageMask( VK_PIPELINE_STAGE_VERTEX_INPUT_BIT  );
 		spd.setSrcAccessMask( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
 		spd.setDstAccessMask( VK_ACCESS_SHADER_READ_BIT );
 		renderPassOptions.addSubpassDependency( spd );
