@@ -592,6 +592,9 @@
     <ClCompile Include="..\src\cinder\vk\RenderPass.cpp" />
     <ClCompile Include="..\src\cinder\vk\scoped.cpp" />
     <ClCompile Include="..\src\cinder\vk\ShaderProg.cpp" />
+    <ClCompile Include="..\src\cinder\vk\spir2cross\spir2cpp.cpp" />
+    <ClCompile Include="..\src\cinder\vk\spir2cross\spir2cross.cpp" />
+    <ClCompile Include="..\src\cinder\vk\spir2cross\spir2glsl.cpp" />
     <ClCompile Include="..\src\cinder\vk\StateManager.cpp" />
     <ClCompile Include="..\src\cinder\vk\Surface.cpp" />
     <ClCompile Include="..\src\cinder\vk\Swapchain.cpp" />
@@ -948,6 +951,12 @@
     <ClInclude Include="..\include\cinder\msw\OutputDebugStringStream.h" />
     <ClInclude Include="..\include\cinder\params\Params.h" />
     <ClInclude Include="..\include\msw\videoInput\videoInput.h" />
+    <ClInclude Include="..\src\cinder\vk\spir2cross\GLSL.std.450.h" />
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2common.hpp" />
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2cpp.hpp" />
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2cross.hpp" />
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2glsl.hpp" />
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spirv.hpp" />
     <ClInclude Include="..\src\cinder\vk\util\farmhash.h" />
     <ClInclude Include="..\src\libtess2\bucketalloc.h" />
     <ClInclude Include="..\src\libtess2\dict.h" />

@@ -39,16 +39,14 @@
 #include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Device.h"
-#include "cinder/Utilities.h"
-#include "cinder/Log.h"
-//
 #include "cinder/vk/gl_types.h"
 #include "cinder/vk/glsl_types.h"
+#include "cinder/Utilities.h"
+#include "cinder/Log.h"
 
 #include "SPIRV/GlslangToSpv.h"
 
-#include "cinder/app/App.h"
-using ci::app::console;
+#include "./spir2cross/spir2cpp.hpp"
 
 #include <algorithm>
 
@@ -369,7 +367,7 @@ EShLanguage findLanguage(const VkShaderStageFlagBits shader_type)
 // Compile a given string containing GLSL into SPV for use by VK
 // Return value of false means an error was encountered.
 //
-static bool glslToSpv( const VkShaderStageFlagBits shader_type, const char *pshader, std::vector<unsigned int> &spirv )
+static bool glslToSpv( const VkShaderStageFlagBits shader_type, const char *pshader, std::vector<uint32_t> &spirv )
 {
     glslang::TProgram& program = *new glslang::TProgram;
     const char *shaderStrings[1];
@@ -640,6 +638,62 @@ UniformLayout extractUniformlayout( const std::vector<std::pair<VkPipelineShader
 	return result;
 }
 
+void printResource( const std::string& prefix, const spir2cross::Compiler& compiler, const spir2cross::Resource& res )
+{
+	uint64_t mask = compiler.get_decoration_mask( res.id );
+	auto& type = compiler.get_type( res.type_id );
+
+	// Push constant
+	bool isPushConstant = ( spv::StorageClassPushConstant == compiler.get_storage_class( res.id ) );
+	// Block
+	bool isBlock = ( 0 != ( compiler.get_decoration_mask( type.self ) & ( ( 1ULL << spv::DecorationBlock ) | ( 1ULL << spv::DecorationBufferBlock ) ) ) );
+	// Fallback Id
+	uint32_t fallbackId = ( ( ! isPushConstant ) && isBlock ) ? res.type_id : res.id;
+	// Name
+	std::string name = ( ! res.name.empty() ) ? res.name : compiler.get_fallback_name( fallbackId );
+
+	CI_LOG_I( "(" << prefix << ") : " << name );
+}
+
+void compileToSpirv( VkDevice device, std::pair<VkPipelineShaderStageCreateInfo*, const std::string*>* inOutShader )
+{
+	auto shaderStage = inOutShader->first->stage;
+	const char *glslText = inOutShader->second->c_str();
+
+	std::vector<uint32_t> spirv;
+	bool retVal = glslToSpv( shaderStage, glslText, spirv );
+
+	if( retVal ) {
+		auto backCompiler = std::unique_ptr<spir2cross::CompilerGLSL>( new spir2cross::CompilerGLSL( spirv ) );
+		if( backCompiler ) {
+			spir2cross::CompilerGLSL::Options opts = backCompiler->get_options();
+			backCompiler->set_options( opts );
+
+			for( auto& res : backCompiler->get_shader_resources().stage_inputs ) {
+				printResource( "attr", *backCompiler, res );
+			}
+			
+			for( auto& res : backCompiler->get_shader_resources().uniform_buffers ) {
+				printResource( "ubo", *backCompiler, res );
+			}
+
+			for( auto& res : backCompiler->get_shader_resources().sampled_images ) {
+				printResource( "samp", *backCompiler, res );
+			}
+		}
+	}
+	
+	VkShaderModuleCreateInfo moduleCreateInfo;
+	moduleCreateInfo.sType		= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	moduleCreateInfo.pNext		= nullptr;
+	moduleCreateInfo.flags		= 0;
+	moduleCreateInfo.codeSize	= spirv.size() * sizeof(unsigned int);
+	moduleCreateInfo.pCode		= spirv.data();
+	VkResult res = vkCreateShaderModule( device, &moduleCreateInfo, nullptr, &(inOutShader->first->module) );
+	assert( VK_SUCCESS == res );
+}
+
+/*
 void compileToSpirv( VkDevice device, std::pair<VkPipelineShaderStageCreateInfo*, const std::string*>* inOutShader )
 {
 	auto shaderStage = inOutShader->first->stage;
@@ -657,6 +711,7 @@ void compileToSpirv( VkDevice device, std::pair<VkPipelineShaderStageCreateInfo*
 	VkResult U_ASSERT_ONLY res = vkCreateShaderModule( device, &moduleCreateInfo, nullptr, &(inOutShader->first->module) );
 	assert(res == VK_SUCCESS);
 }
+*/
 
 std::string loadShaderSource( const std::string& source, const fs::path& path )
 {
