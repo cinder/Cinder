@@ -143,14 +143,14 @@ void Swapchain::initializeColorBuffers()
 	createInfo.minImageCount			= mImageCount;
 	createInfo.imageFormat				= mSurface->getFormat();
 	createInfo.imageExtent				= mSwapchainExtent;
-	createInfo.compositeAlpha			= VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	createInfo.compositeAlpha			= VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
 	createInfo.preTransform				= preTransform;
 	createInfo.imageArrayLayers			= 1;
 	createInfo.presentMode				= mOptions.mPresentMode;
 	createInfo.oldSwapchain				= VK_NULL_HANDLE;
 	createInfo.clipped					= true;
 	createInfo.imageColorSpace			= VK_COLORSPACE_SRGB_NONLINEAR_KHR;
-	createInfo.imageUsage				= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+	createInfo.imageUsage				= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	createInfo.imageSharingMode			= VK_SHARING_MODE_EXCLUSIVE;
 	createInfo.queueFamilyIndexCount	= 0;
 	createInfo.pQueueFamilyIndices		= nullptr;
