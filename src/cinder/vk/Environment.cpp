@@ -238,7 +238,7 @@ void Environment::initInstance()
     appInfo.applicationVersion	= 1;
     appInfo.pEngineName			= appName.c_str();
     appInfo.engineVersion		= 1;
-    appInfo.apiVersion			= VK_API_VERSION;
+    appInfo.apiVersion			= VK_MAKE_VERSION( 1, 0, 3 );
 
 	std::vector<const char *> instanceLayerNames;
 	std::vector<const char *> instanceExtensionNames;

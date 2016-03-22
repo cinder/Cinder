@@ -143,6 +143,7 @@ void Swapchain::initializeColorBuffers()
 	createInfo.minImageCount			= mImageCount;
 	createInfo.imageFormat				= mSurface->getFormat();
 	createInfo.imageExtent				= mSwapchainExtent;
+	createInfo.compositeAlpha			= VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	createInfo.preTransform				= preTransform;
 	createInfo.imageArrayLayers			= 1;
 	createInfo.presentMode				= mOptions.mPresentMode;

@@ -73,11 +73,16 @@ PresenterRef Presenter::create( const ivec2& windowSize, uint32_t swapChainImage
 	return result;
 }
 
-
-const vk::RenderPassRef& Presenter::getCurrentRenderPass() const
+/*
+const vk::RenderPass* Presenter::getCurrentRenderPass() const
 {
-	return mRenderPasses[mCurrentImageIndex];
+	const vk::RenderPass* result = nullptr;
+	if( UINT32_MAX != mCurrentImageIndex ) {
+		result = mRenderPasses[mCurrentImageIndex].get();
+	}
+	return result;
 }
+*/
 
 void Presenter::resize( const ivec2& newWindowSize )
 {
@@ -94,6 +99,7 @@ void Presenter::resize( const ivec2& newWindowSize )
 	mSwapchain.reset();
 	mMultiSampleAttachments.clear();
 	mFramebuffers.clear();
+	mCurrentImageIndex = UINT32_MAX;
 
 	// Readjust the sampling so samples*winSize doesn't exceed limits
 	mActualSamples = mOptions.mSamples;
@@ -213,11 +219,11 @@ void Presenter::resize( const ivec2& newWindowSize )
 			if( ! mRenderPasses[i] ) {
 				// Attachment descriptions
 				vk::RenderPass::Attachment colorAttachment = vk::RenderPass::Attachment( colorFormat )
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
 					.setLoadOpLoad()
 					.setStoreOpStore();
 				vk::RenderPass::Attachment depthAttachment = vk::RenderPass::Attachment( depthStencilFormat )			
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
 					.setStencilLoadOpClear()
 					.setStencilStoreOpStore();
 				// Options
@@ -292,13 +298,15 @@ uint32_t Presenter::acquireNextImage( VkFence fence, VkSemaphore signalSemaphore
 {
 	VkSwapchainKHR swapchain = mSwapchain->getSwapchain();
 	uint64_t timeout = UINT64_MAX;
-	//mContext->fpAcquireNextImageKHR( mDevice->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
-	mDevice->AcquireNextImageKHR( mDevice->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
+	VkResult res = mDevice->AcquireNextImageKHR( mDevice->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
+	assert( VK_SUCCESS == res );
 	return mCurrentImageIndex;
 }
 
 void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *context )
 {
+	assert( UINT32_MAX != mCurrentImageIndex );
+
 	mCommandBuffer = cmdBuf;
 
 	context->pushRenderPass( mRenderPasses[mCurrentImageIndex] );
@@ -368,6 +376,8 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 
 void Presenter::endRender( vk::Context *context  )
 {
+	assert( UINT32_MAX != mCurrentImageIndex );
+
 	// End render pass
 	{
 		mCommandBuffer->endRenderPass();

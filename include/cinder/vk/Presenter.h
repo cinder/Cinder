@@ -91,7 +91,7 @@ public:
 	const vk::SwapchainRef&				getSwapchain() const { return mSwapchain; }
 	uint32_t							getCurrentImageIndex() const { return mCurrentImageIndex; }
 
-	const vk::RenderPassRef&			getCurrentRenderPass() const;
+	//const vk::RenderPass*				getCurrentRenderPass() const;
 
 	void								resize( const ivec2& newWindowSize );
 	void								transitionToFirstUse( vk::Context *context );
@@ -120,7 +120,7 @@ private:
 	std::vector<vk::FramebufferRef>		mFramebuffers;
 	std::vector<vk::ImageViewRef>		mMultiSampleAttachments;
 
-	uint32_t							mCurrentImageIndex = 0;
+	uint32_t							mCurrentImageIndex = UINT32_MAX;
 
 	vk::CommandBufferRef				mCommandBuffer;
 
