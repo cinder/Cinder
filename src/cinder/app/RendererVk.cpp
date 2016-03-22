@@ -140,14 +140,6 @@ CI_LOG_I( "vk::Environment initialized" );
 	vk::DeviceRef device = vk::Device::create( gpu, deviceOptions, env );
 CI_LOG_I( "vk::Device initialized" );
 
-	// Create surface
-	vk::SurfaceRef surface = allocateSurface( device );
-CI_LOG_I( "vk::Surface initialized" );
-
-	// Find the present queue on the device
-	device->getPresentQueueFamilyIndex( surface->getSurface() );
-CI_LOG_I( "Present queue family index found: " << device->getPresentQueueFamilyIndex() );
-
 	// Validate the requested sample count
 	const VkSampleCountFlags supportedSampleCounts = device->getGpuLimits().sampledImageColorSampleCounts;		
 	if( ! ( supportedSampleCounts & mOptions.mSamples ) ) {
@@ -179,7 +171,15 @@ CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples
 
 	// Create presentable context
 	{
-		// Create surface and presenter
+		// Create surface
+		vk::SurfaceRef surface = allocateSurface( device );
+CI_LOG_I( "vk::Surface initialized" );
+
+		// Find the present queue on the device
+		device->getPresentQueueFamilyIndex( surface->getSurface() );
+CI_LOG_I( "Present queue family index found: " << device->getPresentQueueFamilyIndex() );
+
+		// Create presenter
 		vk::Presenter::Options presenterOptions = vk::Presenter::Options();
 		presenterOptions.explicitMode( mOptions.mExplicitMode );
 		presenterOptions.presentMode( mOptions.mPresentMode );
@@ -329,6 +329,7 @@ void RendererVk::defaultResize()
 	{
 		const ivec2 windowSize = ivec2( width, height );
 		mContext->getPresenter()->resize( windowSize );
+		mContext->getPresenter()->transitionToFirstUse( mContext.get() );
 
 		vk::viewport( 0, 0, width, height );
 		vk::setMatricesWindow( width, height );

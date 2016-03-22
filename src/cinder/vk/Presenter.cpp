@@ -37,10 +37,13 @@
 */
 
 #include "cinder/vk/Presenter.h"
+#include "cinder/vk/CommandBuffer.h"
+#include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Device.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/PipelineSelector.h"
+#include "cinder/vk/Queue.h"
 
 namespace cinder { namespace vk {
 
@@ -214,7 +217,7 @@ void Presenter::resize( const ivec2& newWindowSize )
 					.setLoadOpLoad()
 					.setStoreOpStore();
 				vk::RenderPass::Attachment depthAttachment = vk::RenderPass::Attachment( depthStencilFormat )			
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
 					.setStencilLoadOpClear()
 					.setStencilStoreOpStore();
 				// Options
@@ -246,6 +249,43 @@ void Presenter::resize( const ivec2& newWindowSize )
 			}
 		}
 	}
+}
+
+void Presenter::transitionToFirstUse( vk::Context *context )
+{
+	auto& cmdPool = context->getDefaultTransientCommandPool();
+	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool->getCommandPool(), context );
+
+	cmdBuf->begin();
+	{
+		for( auto& framebuffer : mFramebuffers ) {
+			if( mOptions.mMultiSample ) {
+				auto& attachments = framebuffer->getAttachments();
+				auto& image0 = attachments[0].getAttachment()->getImage();
+				auto& image1 = attachments[1].getAttachment()->getImage();
+				auto& image2 = attachments[2].getAttachment()->getImage();
+				auto params0 = vk::ImageMemoryBarrierParams( image0, image0->getInitialLayout(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				auto params1 = vk::ImageMemoryBarrierParams( image1, image1->getInitialLayout(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				auto params2 = vk::ImageMemoryBarrierParams( image2, image2->getInitialLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				cmdBuf->pipelineBarrierImageMemory( params0 );
+				cmdBuf->pipelineBarrierImageMemory( params1 );
+				cmdBuf->pipelineBarrierImageMemory( params2 );
+			}
+			else {
+				auto& attachments = framebuffer->getAttachments();
+				auto& image0 = attachments[0].getAttachment()->getImage();
+				auto& image1 = attachments[1].getAttachment()->getImage();
+				auto params0 = vk::ImageMemoryBarrierParams( image0, image0->getInitialLayout(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				auto params1 = vk::ImageMemoryBarrierParams( image1, image1->getInitialLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				cmdBuf->pipelineBarrierImageMemory( params0 );
+				cmdBuf->pipelineBarrierImageMemory( params1 );
+			}
+		}
+	}
+	cmdBuf->end();
+
+	context->getGraphicsQueue()->submit( cmdBuf );
+	context->getGraphicsQueue()->waitIdle();
 }
 
 uint32_t Presenter::acquireNextImage( VkFence fence, VkSemaphore signalSemaphore )
@@ -284,6 +324,7 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 		const auto& swapChainDepthStencilAttachments = mSwapchain->getDepthStencilAttachments();
 
 		if( mOptions.mMultiSample ) {
+			/*
 			const auto& multiSampleImage = mMultiSampleAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( multiSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
@@ -295,8 +336,13 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 			const auto& depthStencilImage = swapChainDepthStencilAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
+			*/
 		}
 		else {
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
+
+			/*
 			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
@@ -304,6 +350,7 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 			const auto& depthStencilImage = swapChainDepthStencilAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
+			*/
 		}
 
 		const auto& clearValues = mRenderPasses[mCurrentImageIndex]->getAttachmentClearValues();
@@ -338,8 +385,14 @@ void Presenter::endRender( vk::Context *context  )
 		}
 		else {
 			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT ) );
+
+
+			/*
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT ) );
+			*/
 		}
 	}
 
