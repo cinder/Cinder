@@ -110,21 +110,7 @@ RendererVk::~RendererVk()
 {
 }
 
-vk::SurfaceRef RendererVk::allocateSurface( const vk::DeviceRef& device )
-{
-	vk::SurfaceRef result;
-#if defined( CINDER_ANDROID )
-	result = vk::Surface::create( mWindow, device.get() );
-#elif defined( CINDER_LINUX )
-	result = vk::Surface::create( mWindow, device.get() );
-#elif defined( CINDER_MSW )
-	::HINSTANCE hInst = ::GetModuleHandle( nullptr );
-	result = vk::Surface::create( hInst, mWnd, device.get() );
-#endif
-	return result;
-}
-
-void RendererVk::setupVulkan( const ivec2& windowSize )
+void RendererVk::setupVulkan( const ivec2& windowSize, const vk::PlatformWindow& platformWindow )
 {
 	// Initialize environment
 	vk::Environment* env = vk::Environment::initializeVulkan( mOptions.mExplicitMode, mOptions.mInstanceLayers, mOptions.mDeviceLayers, mOptions.mDebugReportCallbackFn );	
@@ -171,22 +157,17 @@ CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples
 
 	// Create presentable context
 	{
-		// Create surface
-		vk::SurfaceRef surface = allocateSurface( device );
-CI_LOG_I( "vk::Surface initialized" );
-
-		// Find the present queue on the device
-		device->getPresentQueueFamilyIndex( surface->getSurface() );
-CI_LOG_I( "Present queue family index found: " << device->getPresentQueueFamilyIndex() );
-
 		// Create presenter
 		vk::Presenter::Options presenterOptions = vk::Presenter::Options();
 		presenterOptions.explicitMode( mOptions.mExplicitMode );
 		presenterOptions.presentMode( mOptions.mPresentMode );
 		presenterOptions.samples( mOptions.mSamples );
 		presenterOptions.depthStencilFormat( mOptions.mDepthStencilFormat );
-		vk::PresenterRef presenter = vk::Presenter::create( windowSize, mOptions.mSwapchainImageCount, surface, presenterOptions, device.get() );
-	
+		vk::PresenterRef presenter = vk::Presenter::create( windowSize, mOptions.mSwapchainImageCount, platformWindow, presenterOptions, device.get() );
+
+		device->getPresentQueueFamilyIndex( presenter->getSurface()->getSurface() );
+CI_LOG_I( "Present queue family index found: " << device->getPresentQueueFamilyIndex() );
+
 		// Create context
 		mContext = vk::Context::create( presenter, device.get() );
 		mContext->makeCurrent();
@@ -209,7 +190,9 @@ void RendererVk::setup( void* window, RendererRef sharedRenderer )
 	glfwGetFramebufferSize( mWindow, &width, &height );	
 	const ivec2 windowSize = ivec2( width, height );
 
-	setupVulkan( windowSize );	
+	vk::PlatformWindow platformWindow = {};
+	platformWindow.window = mWindow;
+	setupVulkan( windowSize, platformWindow );	
 }
 #elif defined( CINDER_MSW )
 void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
@@ -225,11 +208,20 @@ void RendererVk::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	int height = clientRect.bottom - clientRect.top;
 	const ivec2 windowSize = ivec2( width, height );
 	
-	setupVulkan( windowSize );
+	vk::PlatformWindow platformWindow = {};
+	platformWindow.connection = hInst;
+	platformWindow.window = mWnd;
+	setupVulkan( windowSize, platformWindow );
 }
 
 void RendererVk::kill()
 {
+	// Destroy semaphores
+	vkDestroySemaphore( mContext->getDevice()->getDevice(), mImageAcquiredSemaphore, nullptr );
+	vkDestroySemaphore( mContext->getDevice()->getDevice(), mRenderingCompleteSemaphore, nullptr );
+	mImageAcquiredSemaphore = VK_NULL_HANDLE;
+	mRenderingCompleteSemaphore = VK_NULL_HANDLE;
+
 	vk::Environment::destroyVulkan();
 }
 #endif
@@ -245,10 +237,12 @@ void RendererVk::startDraw()
 	makeCurrentContext();
 
 	if( ! isExplicitMode() ) {
+		/*
 		// Create semaphores for rendering
 		const VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
 		vkCreateSemaphore( mContext->getDevice()->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
 		vkCreateSemaphore( mContext->getDevice()->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
+		*/
 		
 		const auto& presenter = mContext->getPresenter();
 
@@ -290,11 +284,13 @@ void RendererVk::finishDraw()
 		// Clear transient objects
 		mContext->clearTransients();
 		
+		/*
 		// Destroy semaphores
 		vkDestroySemaphore( mContext->getDevice()->getDevice(), mImageAcquiredSemaphore, nullptr );
 		vkDestroySemaphore( mContext->getDevice()->getDevice(), mRenderingCompleteSemaphore, nullptr );
 		mImageAcquiredSemaphore = VK_NULL_HANDLE;
 		mRenderingCompleteSemaphore = VK_NULL_HANDLE;
+		*/
 	}
 }
 

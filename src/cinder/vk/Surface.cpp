@@ -48,16 +48,8 @@
 
 namespace cinder { namespace vk {
 
-#if defined( CINDER_ANDROID )
-Surface::Surface( ANativeWindow *nativeWindow, vk::Device *device )
-	: mWindow( nativeWindow ), mDevice( device )
-#elif defined( CINDER_LINUX )
-Surface::Surface( GLFWwindow *window, vk::Device *device )
-	: mWindow( window ), mDevice( device )	
-#elif defined( CINDER_MSW )
-Surface::Surface( ::HINSTANCE connection, ::HWND window, vk::Device *device )
-	: mConnection( connection ), mWindow( window ), mDevice( device )
-#endif
+Surface::Surface( const vk::PlatformWindow& platformWindow, vk::Device *device )
+	: mDevice( device ), mPlatformWindow( platformWindow )
 {
 	initialize();
 }
@@ -75,16 +67,16 @@ void Surface::initialize()
 	VkAndroidSurfaceCreateInfoKHR createInfo = {};
  	createInfo.sType		= VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
 	createInfo.pNext		= nullptr;
-	createInfo.window		= mWindow;	
+	createInfo.window		= mPlatformWindow.window;	
 	res = mDevice->getEnv()->CreateAndroidSurfaceKHR( mDevice->getEnv()->getVulkanInstance(), &createInfo, nullptr, &mSurface );
 #elif defined( CINDER_LINUX )
-	res = glfwCreateWindowSurface( mDevice->getEnv()->getVulkanInstance(), mWindow, NULL, &mSurface );
+	res = glfwCreateWindowSurface( mDevice->getEnv()->getVulkanInstance(), mPlatformWindow.window, NULL, &mSurface );
 #elif defined( CINDER_MSW )
     VkWin32SurfaceCreateInfoKHR createInfo = {};
     createInfo.sType		= VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
     createInfo.pNext		= nullptr;
-    createInfo.hinstance	= mConnection;
-    createInfo.hwnd			= mWindow;
+    createInfo.hinstance	= mPlatformWindow.connection;
+    createInfo.hwnd			= mPlatformWindow.window;
     res = vkCreateWin32SurfaceKHR( mDevice->getEnv()->getVulkanInstance(), &createInfo, nullptr, &mSurface );
 #endif // _WIN32
     assert( res == VK_SUCCESS );
@@ -171,6 +163,13 @@ void Surface::destroy( bool removeFromTracking )
 	}
 }
 
+SurfaceRef Surface::create( const vk::PlatformWindow& platformWindow, vk::Device *device )
+{
+	SurfaceRef result = SurfaceRef( new Surface( platformWindow, device ) );
+	return result;	
+}
+
+/*
 #if defined( CINDER_ANDROID )
 SurfaceRef Surface::create( ANativeWindow *nativeWindow, vk::Device *device )
 {
@@ -190,5 +189,6 @@ SurfaceRef Surface::create( ::HINSTANCE connection, ::HWND window, vk::Device *d
 	return result;
 }
 #endif
+*/
 
 }} // namespace cinder::vk

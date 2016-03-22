@@ -81,9 +81,10 @@ public:
 
 	virtual ~Presenter();
 
-	static PresenterRef					create( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device );
+	static PresenterRef					create( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::PlatformWindow& platformWindow, const Presenter::Options& options, vk::Device *device );
 
 	vk::Device*							getDevice() const { return mDevice; }
+	const vk::SurfaceRef&				getSurface() const { return mSurface; }
 
 	VkSampleCountFlagBits				getSamples() const { return mActualSamples; }
 	bool								isMultiSample() const { return mOptions.mMultiSample; }
@@ -102,12 +103,13 @@ public:
 	void								endRender( vk::Context *context );
 
 private:
-	Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device );
+	Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::PlatformWindow& platformWindow, const Presenter::Options& options, vk::Device *device );
 
 	vk::Device							*mDevice = nullptr;
 
 	ivec2								mWindowSize = ivec2( 0 );
 	uint32_t							mSwapchainImageCount = 0;
+	vk::PlatformWindow					mPlatformWindow;
 	vk::SurfaceRef						mSurface;
 	Presenter::Options					mOptions;
 

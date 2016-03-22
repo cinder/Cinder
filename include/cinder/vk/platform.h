@@ -62,6 +62,25 @@
 
 namespace cinder { namespace vk {
 
+#if defined( CINDER_ANDROID )
+struct PlatformWindow {
+	ANativeWindow *window = nullptr;
+	PlatformWindow() {}
+};
+#elif defined( CINDER_LINUX )
+struct PlatformWindow {
+	GLFWwindow *window = nullptr;  	
+	PlatformWindow() {}
+};
+#elif defined( CINDER_MSW )
+struct PlatformWindow {
+	::HINSTANCE connection = nullptr;
+	::HWND window = nullptr;
+	PlatformWindow() {}
+};
+#endif
+
+
 using DebugReportCallbackFn = std::function<VkBool32(VkDebugReportFlagsEXT, VkDebugReportObjectTypeEXT, uint64_t, size_t, int32_t, const char*, const char*, void*)>;
 
 const VkPipelineStageFlags PipelineStageGraphicsBits = 
@@ -79,4 +98,4 @@ const VkPipelineStageFlags PipelineStageGraphicsBits =
     VK_PIPELINE_STAGE_TRANSFER_BIT |
     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
     
-}} // namespace ci::vk
+} } // namespace ci::vk

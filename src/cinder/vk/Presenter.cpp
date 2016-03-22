@@ -44,11 +44,12 @@
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/PipelineSelector.h"
 #include "cinder/vk/Queue.h"
+#include "cinder/vk/Surface.h"
 
 namespace cinder { namespace vk {
 
-Presenter::Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device )
-	: mDevice( device ), mSwapchainImageCount( swapChainImageCount ), mSurface( surface ), mOptions( options )
+Presenter::Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::PlatformWindow& platformWindow, const Presenter::Options& options, vk::Device *device )
+	: mDevice( device ), mSwapchainImageCount( swapChainImageCount ), mPlatformWindow( platformWindow ), mOptions( options )
 {
 	initialize( windowSize );
 }
@@ -67,9 +68,9 @@ void Presenter::destroy( bool removeFromTracking )
 {
 }
 
-PresenterRef Presenter::create( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device )
+PresenterRef Presenter::create( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::PlatformWindow& platformWindow, const Presenter::Options& options, vk::Device *device )
 {
-	PresenterRef result = PresenterRef( new Presenter( windowSize, swapChainImageCount, surface, options, device ) );
+	PresenterRef result = PresenterRef( new Presenter( windowSize, swapChainImageCount, platformWindow, options, device ) );
 	return result;
 }
 
@@ -96,6 +97,7 @@ void Presenter::resize( const ivec2& newWindowSize )
 	mRenderAreea.extent = { static_cast<uint32_t>( mWindowSize.x ), static_cast<uint32_t>( mWindowSize.y ) };
 	
 	// Reset all the resources that are affected by window size change
+	mSurface.reset();
 	mSwapchain.reset();
 	mMultiSampleAttachments.clear();
 	mFramebuffers.clear();
@@ -121,6 +123,11 @@ void Presenter::resize( const ivec2& newWindowSize )
 		mRenderPasses.clear();
 	}
 	mPreviousSamples = mActualSamples;
+
+	// Create the platform surface
+	{
+		mSurface = vk::Surface::create( mPlatformWindow, mDevice );
+	}
 	
 	// Create swapchain and update image count in case the image count was adjusted
 	{
