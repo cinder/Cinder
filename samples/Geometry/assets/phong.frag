@@ -2,6 +2,7 @@
 
 uniform sampler2D	uTex0;
 uniform int			uTexturingMode;
+uniform ivec2       uFreq;
 
 in VertexData	{
 	vec4 position;
@@ -13,7 +14,7 @@ in VertexData	{
 out vec4 oFragColor;
 
 // Based on OpenGL Programming Guide (8th edition), p 457-459.
-float checkered( in vec2 uv, in int freq )
+float checkered( in vec2 uv, in ivec2 freq )
 {
 	vec2 checker = fract( uv * freq );
 	vec2 edge = fwidth( uv ) * freq;
@@ -53,7 +54,7 @@ void main()
 
 	if( uTexturingMode == 1 ) {
 		diffuse *= vec3( 0.7, 0.5, 0.3 );
-		diffuse *= 0.5 + 0.5 * checkered( vVertexIn.texCoord, 20 );
+		diffuse *= 0.5 + 0.5 * checkered( vVertexIn.texCoord, uFreq );
 	}
 	else if ( uTexturingMode == 2 )
 		diffuse *= texture( uTex0, vVertexIn.texCoord.st ).rgb;

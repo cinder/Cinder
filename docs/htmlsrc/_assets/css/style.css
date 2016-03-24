@@ -574,7 +574,7 @@ body.classes img.header-icon {
 #container .reference-lists section > ul > li:nth-child(odd) {
   background: #f8f8f8;
 }
-#container .reference-lists section > ul > li:nth-child(odd).expandable:hover {
+#container .reference-lists section > ul > li:nth-child(odd).expandable:not(.hidden):hover {
   -webkit-animation: fade-odd 1.5s;
   -moz-animation: fade-odd 1.5s;
   -o-animation: fade-odd 1.5s;

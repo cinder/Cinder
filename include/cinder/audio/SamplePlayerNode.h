@@ -111,9 +111,9 @@ class BufferPlayerNode : public SamplePlayerNode {
 
 	void seek( size_t readPositionFrames ) override;
 
-	//! Loads and stores a reference to a Buffer created from the entire contents of \a sourceFile.
+	//! Loads and stores a reference to a Buffer created from the entire contents of \a sourceFile. Resets the loop points to 0:getNumFrames()).
 	void loadBuffer( const SourceFileRef &sourceFile );
-	//! Sets the current Buffer. Safe to do while enabled.
+	//! Sets the current Buffer. Safe to do while enabled. Resets the loop points to 0:getNumFrames()).
 	void setBuffer( const BufferRef &buffer );
 	//! returns a shared_ptr to the current Buffer.
 	const BufferRef& getBuffer() const	{ return mBuffer; }
@@ -140,7 +140,7 @@ class FilePlayerNode : public SamplePlayerNode {
 	//! Returns whether reading occurs asynchronously (default is false). If true, file reading is done from an internal thread, if false it is done directly on the audio thread.
 	bool isReadAsync() const	{ return mIsReadAsync; }
 
-	//! \note \a sourceFile's samplerate is forced to match this Node's Context.
+	//! \note \a sourceFile's samplerate is forced to match this Node's Context. Resets the loop points to 0:getNumFrames()).
 	void setSourceFile( const SourceFileRef &sourceFile );
 	const SourceFileRef& getSourceFile() const	{ return mSourceFile; }
 

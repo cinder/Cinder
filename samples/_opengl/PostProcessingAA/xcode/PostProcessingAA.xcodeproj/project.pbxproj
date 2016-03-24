@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
-		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		006D720419952D00008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720219952D00008149E2 /* AVFoundation.framework */; };
 		006D720519952D00008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720319952D00008149E2 /* CoreMedia.framework */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
@@ -16,6 +14,10 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
+		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
+		11A00A701C0B788700DCA5A7 /* smaa.frag in Resources */ = {isa = PBXBuildFile; fileRef = 11A00A6E1C0B788700DCA5A7 /* smaa.frag */; };
+		11A00A711C0B788700DCA5A7 /* smaa.vert in Resources */ = {isa = PBXBuildFile; fileRef = 11A00A6F1C0B788700DCA5A7 /* smaa.vert */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -25,18 +27,10 @@
 		ACE6014B19AE1CA3003965A3 /* Pistons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE6014919AE1CA3003965A3 /* Pistons.cpp */; };
 		ACE6015E19AE1CF0003965A3 /* fxaa.frag in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015419AE1CF0003965A3 /* fxaa.frag */; };
 		ACE6015F19AE1CF0003965A3 /* fxaa.vert in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015519AE1CF0003965A3 /* fxaa.vert */; };
-		ACE6016019AE1CF0003965A3 /* smaa1.frag in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015819AE1CF0003965A3 /* smaa1.frag */; };
-		ACE6016119AE1CF0003965A3 /* smaa1.vert in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015919AE1CF0003965A3 /* smaa1.vert */; };
-		ACE6016219AE1CF0003965A3 /* smaa2.frag in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015A19AE1CF0003965A3 /* smaa2.frag */; };
-		ACE6016319AE1CF0003965A3 /* smaa2.vert in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015B19AE1CF0003965A3 /* smaa2.vert */; };
-		ACE6016419AE1CF0003965A3 /* smaa3.frag in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015C19AE1CF0003965A3 /* smaa3.frag */; };
-		ACE6016519AE1CF0003965A3 /* smaa3.vert in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015D19AE1CF0003965A3 /* smaa3.vert */; };
 		C7CCFF26421A4AC289A0742F /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = F1A8A31170B245B88850050A /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
-		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		006D720219952D00008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		006D720319952D00008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -44,8 +38,12 @@
 		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		110DC3D01ABA49190028C512 /* Pistons.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Pistons.h; path = ../src/Pistons.h; sourceTree = "<group>"; };
+		11A00A6E1C0B788700DCA5A7 /* smaa.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa.frag; path = ../assets/smaa.frag; sourceTree = "<group>"; };
+		11A00A6F1C0B788700DCA5A7 /* smaa.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa.vert; path = ../assets/smaa.vert; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
@@ -62,12 +60,6 @@
 		ACE6015519AE1CF0003965A3 /* fxaa.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = fxaa.vert; path = ../assets/fxaa.vert; sourceTree = "<group>"; };
 		ACE6015619AE1CF0003965A3 /* FXAA3_11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FXAA3_11.h; path = ../assets/FXAA3_11.h; sourceTree = "<group>"; };
 		ACE6015719AE1CF0003965A3 /* SMAA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMAA.h; path = ../assets/SMAA.h; sourceTree = "<group>"; };
-		ACE6015819AE1CF0003965A3 /* smaa1.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa1.frag; path = ../assets/smaa1.frag; sourceTree = "<group>"; };
-		ACE6015919AE1CF0003965A3 /* smaa1.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa1.vert; path = ../assets/smaa1.vert; sourceTree = "<group>"; };
-		ACE6015A19AE1CF0003965A3 /* smaa2.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa2.frag; path = ../assets/smaa2.frag; sourceTree = "<group>"; };
-		ACE6015B19AE1CF0003965A3 /* smaa2.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa2.vert; path = ../assets/smaa2.vert; sourceTree = "<group>"; };
-		ACE6015C19AE1CF0003965A3 /* smaa3.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa3.frag; path = ../assets/smaa3.frag; sourceTree = "<group>"; };
-		ACE6015D19AE1CF0003965A3 /* smaa3.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa3.vert; path = ../assets/smaa3.vert; sourceTree = "<group>"; };
 		B2EB576F724D473ABEEEEF32 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B41539A3E51D44279F98677F /* PostProcessingAA_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = PostProcessingAA_Prefix.pch; sourceTree = "<group>"; };
 		DAD21F759B924066BE850668 /* PostProcessingAAApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = PostProcessingAAApp.cpp; path = ../src/PostProcessingAAApp.cpp; sourceTree = "<group>"; };
@@ -197,13 +189,9 @@
 		AC4EA0D119B4FED6008DC602 /* SMAA */ = {
 			isa = PBXGroup;
 			children = (
+				11A00A6E1C0B788700DCA5A7 /* smaa.frag */,
+				11A00A6F1C0B788700DCA5A7 /* smaa.vert */,
 				ACE6015719AE1CF0003965A3 /* SMAA.h */,
-				ACE6015819AE1CF0003965A3 /* smaa1.frag */,
-				ACE6015919AE1CF0003965A3 /* smaa1.vert */,
-				ACE6015A19AE1CF0003965A3 /* smaa2.frag */,
-				ACE6015B19AE1CF0003965A3 /* smaa2.vert */,
-				ACE6015C19AE1CF0003965A3 /* smaa3.frag */,
-				ACE6015D19AE1CF0003965A3 /* smaa3.vert */,
 			);
 			name = SMAA;
 			sourceTree = "<group>";
@@ -290,15 +278,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ACE6016119AE1CF0003965A3 /* smaa1.vert in Resources */,
 				ACE6015F19AE1CF0003965A3 /* fxaa.vert in Resources */,
-				ACE6016219AE1CF0003965A3 /* smaa2.frag in Resources */,
-				ACE6016019AE1CF0003965A3 /* smaa1.frag in Resources */,
+				11A00A711C0B788700DCA5A7 /* smaa.vert in Resources */,
+				11A00A701C0B788700DCA5A7 /* smaa.frag in Resources */,
 				C7CCFF26421A4AC289A0742F /* CinderApp.icns in Resources */,
-				ACE6016319AE1CF0003965A3 /* smaa2.vert in Resources */,
 				ACE6015E19AE1CF0003965A3 /* fxaa.frag in Resources */,
-				ACE6016419AE1CF0003965A3 /* smaa3.frag in Resources */,
-				ACE6016519AE1CF0003965A3 /* smaa3.vert in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -24,6 +24,7 @@ class DebugTestApp : public App {
 	void testAsserts();
 	void testPerformance();
 	void testBreakOnLog();
+	void testMakeOrGet();
 
 	void keyDown( KeyEvent event );
 
@@ -32,14 +33,16 @@ class DebugTestApp : public App {
 void DebugTestApp::setup()
 {
 	
-	testLevels();
-	testFileLogging();
-	testSystemLogging();
+	//testLevels();
+	//testFileLogging();
+	//testSystemLogging();
 
-	testAsserts();
+	//testAsserts();
 	
-	testFindLoggers();
-	testAddRemove();
+	//testFindLoggers();
+	//testAddRemove();
+	
+	testMakeOrGet();
 	
 	// WARNING: don't run these two unless you have 500 MB free disk space
 	//testThreadSafety();
@@ -304,6 +307,22 @@ void DebugTestApp::testBreakOnLog()
 	CI_LOG_W( "bang" );
 	CI_LOG_E( "bang" );
 	CI_LOG_F( "bang" );
+}
+
+void DebugTestApp::testMakeOrGet()
+{
+	auto consoleLoggers = log::manager()->getLoggers<log::LoggerConsole>();
+	for( auto i : consoleLoggers ) {
+		log::manager()->removeLogger( i );
+	}
+	
+	CI_ASSERT( 0 == log::manager()->getLoggers<log::LoggerConsole>().size() );
+	log::makeOrGetLogger<log::LoggerConsole>();
+	CI_ASSERT( 1 == log::manager()->getLoggers<log::LoggerConsole>().size() );
+	log::makeOrGetLogger<log::LoggerConsole>();
+	CI_ASSERT( 1 == log::manager()->getLoggers<log::LoggerConsole>().size() );
+	
+	CI_LOG_D( "makeOrGet is functioning." );
 }
 
 void DebugTestApp::keyDown( KeyEvent event )
