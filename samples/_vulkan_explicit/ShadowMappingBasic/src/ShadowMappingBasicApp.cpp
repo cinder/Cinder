@@ -111,7 +111,7 @@ void ShadowMappingBasic::setup()
 		// Render pass
 		vk::RenderPass::Attachment attachment = vk::RenderPass::Attachment( mShadowMapTex->getFormat().getInternalFormat() )
 			.setInitialLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
-			.setFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 		vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 			.addAttachment( attachment );
 		vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()
@@ -365,7 +365,7 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_threading",
 	//"VK_LAYER_LUNARG_mem_tracker",
 	//"VK_LAYER_LUNARG_object_tracker",
-	"VK_LAYER_LUNARG_draw_state",
+	//"VK_LAYER_LUNARG_draw_state",
 	//"VK_LAYER_LUNARG_param_checker",
 	//"VK_LAYER_LUNARG_swapchain",
 	//"VK_LAYER_LUNARG_device_limits"

@@ -100,10 +100,10 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	for( size_t i = 0; i < 2; ++i ) {
 		ci::vk::RenderPass::Attachment attachment0 = ci::vk::RenderPass::Attachment( textureFormat )
 			.setInitialLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
-			.setFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 		ci::vk::RenderPass::Attachment attachment1 = ci::vk::RenderPass::Attachment( textureFormat )
 			.setInitialLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
-			.setFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 		auto renderPassOptions = ci::vk::RenderPass::Options()
 			.addAttachment( attachment0 )	// color attachment 0
 			.addAttachment( attachment1 )	// color attachment 1

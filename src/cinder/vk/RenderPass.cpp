@@ -272,7 +272,7 @@ void RenderPass::initialize( const RenderPass::Options& options )
 			for( size_t j = 0; j < numColorAttachments; ++j ) {
 				// color
 				uint32_t colorAttachmentIndex = subPass.mColorAttachments[j];
-				VkImageLayout colorImageLayout = mAttachmentDescriptors[colorAttachmentIndex].finalLayout;;
+				VkImageLayout colorImageLayout = mAttachmentDescriptors[colorAttachmentIndex].initialLayout;;
 				subPassAttachmentRefs[i].color[j] = {};
 				subPassAttachmentRefs[i].color[j].attachment = colorAttachmentIndex;
 				subPassAttachmentRefs[i].color[j].layout = colorImageLayout;
@@ -294,7 +294,7 @@ void RenderPass::initialize( const RenderPass::Options& options )
 			uint32_t attachmentIndex = subPass.mDepthStencilAttachment[0];
 			subPassAttachmentRefs[i].depth[0] = {};
 			subPassAttachmentRefs[i].depth[0].attachment = attachmentIndex;
-			subPassAttachmentRefs[i].depth[0].layout = mAttachmentDescriptors[attachmentIndex].finalLayout;
+			subPassAttachmentRefs[i].depth[0].layout = mAttachmentDescriptors[attachmentIndex].initialLayout;
 		}
 
 		// Preserve attachments

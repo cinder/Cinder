@@ -226,19 +226,16 @@ void Buffer::bufferDataImpl(  VkDeviceSize size, const void *data  )
 			std::memcpy( dst, data, size );
 			unmap();
 
-			// @TODO: FIX
-			/*
 			if( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT != ( mFormat.getMemoryProperty() & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) ) {
 				VkMappedMemoryRange range = {};
 				range.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 				range.pNext  = nullptr;
 				range.memory = mMemory;
-				range.offset = mAllocationOffset;
-				range.size   = mSize;
+				range.offset = 0;
+				range.size   = VK_WHOLE_SIZE;
 				VkResult res = vkFlushMappedMemoryRanges( mDevice->getDevice(), 1, &range );
 				assert( VK_SUCCESS == res );
 			}
-			*/
 		}
 	}
 }
@@ -270,19 +267,16 @@ void Buffer::bufferSubDataImpl( VkDeviceSize offset, VkDeviceSize size, const vo
 			std::memcpy( dst, data, size );
 			unmap();
 
-			// @TODO: FIX
-			/*
 			if( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT != ( mFormat.getMemoryProperty() & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) ) {
 				VkMappedMemoryRange range = {};
 				range.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 				range.pNext  = nullptr;
 				range.memory = mMemory;
-				range.offset = mAllocationOffset;
-				range.size   = mSize;
+				range.offset = 0;
+				range.size   = VK_WHOLE_SIZE;
 				VkResult res = vkFlushMappedMemoryRanges( mDevice->getDevice(), 1, &range );
 				assert( VK_SUCCESS == res );
 			}
-			*/
 		}
 	}
 }
