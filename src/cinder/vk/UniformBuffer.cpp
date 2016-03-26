@@ -330,7 +330,7 @@ void UniformBuffer::transferPending()
 				range.pNext  = nullptr;
 				range.memory = mMemory;
 				range.offset = mAllocationOffset;
-				range.size   = mSize;
+				range.size   = mAllocationSize;
 				VkResult res = vkFlushMappedMemoryRanges( mDevice->getDevice(), 1, &range );
 				assert( VK_SUCCESS == res );
 			}

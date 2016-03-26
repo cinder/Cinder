@@ -349,7 +349,7 @@ uint32_t Device::getComputeQueueFamilyIndex() const
 	return result;
 }
 
-uint32_t Device::getPresentQueueFamilyIndex( VkSurfaceKHR surface ) const
+void Device::setPresentQueueFamilyIndex( VkSurfaceKHR surface )
 {
 	// If a surface is present, go and find the queue that supports presentation.
 	// In an ideal world, this is state that is known ahead of time, but since it's 
@@ -358,7 +358,7 @@ uint32_t Device::getPresentQueueFamilyIndex( VkSurfaceKHR surface ) const
 	//
 	// In most cases the present queue family index should be the same as the
 	// graphics queue family index.
-	if( VK_NULL_HANDLE != surface ) {
+	if( ( UINT32_MAX == mPresentQueueFamilyIndex ) && ( VK_NULL_HANDLE != surface ) ) {
 		uint32_t queueFamilyCount = getQueueFamilyCount();
 
 		// Iterate over each queue to learn whether it supports presenting:
@@ -389,7 +389,10 @@ uint32_t Device::getPresentQueueFamilyIndex( VkSurfaceKHR surface ) const
 		// @TODO Add some error checking code for what happens if a present queue family index is not found
 		mPresentQueueFamilyIndex = presentQueueFamilyIndex;
 	}
+}
 
+uint32_t Device::getPresentQueueFamilyIndex() const
+{
 	return mPresentQueueFamilyIndex;
 }
 

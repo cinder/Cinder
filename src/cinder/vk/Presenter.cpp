@@ -45,6 +45,7 @@
 #include "cinder/vk/PipelineSelector.h"
 #include "cinder/vk/Queue.h"
 #include "cinder/vk/Surface.h"
+#include "cinder/Log.h"
 
 namespace cinder { namespace vk {
 
@@ -127,6 +128,9 @@ void Presenter::resize( const ivec2& newWindowSize )
 	// Create the platform surface
 	{
 		mSurface = vk::Surface::create( mPlatformWindow, mDevice );
+
+		mDevice->setPresentQueueFamilyIndex( mSurface->getSurface() );
+		CI_LOG_I( "Present queue family index: " << mDevice->getPresentQueueFamilyIndex() );
 	}
 	
 	// Create swapchain and update image count in case the image count was adjusted

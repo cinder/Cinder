@@ -231,8 +231,8 @@ void Buffer::bufferDataImpl(  VkDeviceSize size, const void *data  )
 				range.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 				range.pNext  = nullptr;
 				range.memory = mMemory;
-				range.offset = 0;
-				range.size   = VK_WHOLE_SIZE;
+				range.offset = mAllocationOffset;
+				range.size   = mAllocationSize;
 				VkResult res = vkFlushMappedMemoryRanges( mDevice->getDevice(), 1, &range );
 				assert( VK_SUCCESS == res );
 			}
@@ -272,8 +272,8 @@ void Buffer::bufferSubDataImpl( VkDeviceSize offset, VkDeviceSize size, const vo
 				range.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 				range.pNext  = nullptr;
 				range.memory = mMemory;
-				range.offset = 0;
-				range.size   = VK_WHOLE_SIZE;
+				range.offset = mAllocationOffset;
+				range.size   = mAllocationSize;
 				VkResult res = vkFlushMappedMemoryRanges( mDevice->getDevice(), 1, &range );
 				assert( VK_SUCCESS == res );
 			}

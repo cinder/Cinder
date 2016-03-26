@@ -165,9 +165,6 @@ CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples
 		presenterOptions.depthStencilFormat( mOptions.mDepthStencilFormat );
 		vk::PresenterRef presenter = vk::Presenter::create( windowSize, mOptions.mSwapchainImageCount, platformWindow, presenterOptions, device.get() );
 
-		device->getPresentQueueFamilyIndex( presenter->getSurface()->getSurface() );
-CI_LOG_I( "Present queue family index found: " << device->getPresentQueueFamilyIndex() );
-
 		// Create context
 		mContext = vk::Context::create( presenter, device.get() );
 		mContext->makeCurrent();
