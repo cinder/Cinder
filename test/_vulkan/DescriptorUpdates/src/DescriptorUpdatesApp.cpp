@@ -29,7 +29,7 @@ private:
 
 void DescriptorUpdatesApp::setup()
 {
-	//mTest3.disable();
+	//mTest1.disable();
 	//mTest2.disable();
 	//mTest3.disable();
 

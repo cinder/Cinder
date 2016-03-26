@@ -57,19 +57,25 @@ void Test2::setup()
 	
 	// Descriptor Bindings
 	{
-		std::vector<VkDescriptorSetLayoutBinding> bindings( 2 );
+		std::vector<VkDescriptorSetLayoutBinding> bindings( 3 );
 
 		bindings[0] = {};
 		bindings[0].binding				= 0;
 		bindings[0].descriptorType		= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		bindings[0].descriptorCount		= 1;
 		bindings[0].stageFlags			= VK_SHADER_STAGE_VERTEX_BIT;
-
+		/*
 		bindings[1] = {};
-		bindings[1].binding				= 2;
-		bindings[1].descriptorType		= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		bindings[1].binding				= 1;
+		bindings[1].descriptorType		= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		bindings[1].descriptorCount		= 1;
-		bindings[1].stageFlags			= VK_SHADER_STAGE_FRAGMENT_BIT;
+		bindings[1].stageFlags			= VK_SHADER_STAGE_VERTEX_BIT;
+		*/
+		bindings[2] = {};
+		bindings[2].binding				= 2;
+		bindings[2].descriptorType		= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		bindings[2].descriptorCount		= 1;
+		bindings[2].stageFlags			= VK_SHADER_STAGE_FRAGMENT_BIT;
 
 		VkDescriptorSetLayoutCreateInfo createInfo = {};
 		createInfo.sType				= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -85,7 +91,7 @@ void Test2::setup()
 	{
 		VkDescriptorPoolSize poolSizes[2];
 		poolSizes[0].type				= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[0].descriptorCount	= 1;
+		poolSizes[0].descriptorCount	= 2;
 		poolSizes[1].type				= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		poolSizes[1].descriptorCount	= 1;
 
