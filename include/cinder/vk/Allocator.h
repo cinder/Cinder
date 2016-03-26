@@ -83,16 +83,17 @@ public:
 	class Allocation {
 	public:
 		Allocation() {}
-		Allocation( VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size )
-			: mMemory( memory ), mOffset( offset ), mSize( size ) {}
+		Allocation( VkDeviceMemory memory, VkDeviceSize offset, VkDeviceSize size, VkMemoryPropertyFlags properties )
+			: mMemory( memory ), mOffset( offset ), mSize( size ), mProperties( properties ) {}
 		Allocation( const Allocation& obj ) 
-			: mMemory( obj.mMemory ), mOffset( obj.mOffset ), mSize( obj.mSize ) {}
+			: mMemory( obj.mMemory ), mOffset( obj.mOffset ), mSize( obj.mSize ), mProperties( obj.mProperties ) {}
 		virtual ~Allocation() {}
 		Allocation&	operator=( const Allocation& rhs ) {
 			if( &rhs != this ) {
 				mMemory = rhs.mMemory;
 				mOffset = rhs.mOffset;
 				mSize = rhs.mSize;
+				mProperties = rhs.mProperties;
 			}
 			return *this;
 		}
@@ -100,9 +101,10 @@ public:
 		VkDeviceSize	getOffset() const { return mOffset; }
 		VkDeviceSize	getSize() const { return mSize; }
 	private:
-		VkDeviceMemory	mMemory = VK_NULL_HANDLE;
-		VkDeviceSize	mOffset = 0;
-		VkDeviceSize	mSize = 0;
+		VkDeviceMemory			mMemory = VK_NULL_HANDLE;
+		VkDeviceSize			mOffset = 0;
+		VkDeviceSize			mSize = 0;
+		VkMemoryPropertyFlags	mProperties = 0;
 	};
 	
 	// ---------------------------------------------------------------------------------------------

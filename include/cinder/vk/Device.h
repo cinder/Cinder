@@ -129,7 +129,8 @@ public:
 	uint32_t									getGraphicsQueueCount() const;
 	uint32_t									getComputeQueueCount() const;
 
-	bool										findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const;
+	bool 										isMemoryPropertySupported( uint32_t typeBits, VkMemoryPropertyFlagBits memoryPropertyBit ) const;
+	bool										findMemoryType( uint32_t typeBits, VkMemoryPropertyFlags requirementsMask, uint32_t *typeIndex ) const;
 
 	const vk::DescriptorSetLayoutSelectorRef&	getDescriptorSetLayoutSelector() const { return mDescriptorSetLayoutSelector; }
 	const vk::PipelineCacheRef&					getPipelineCache() const { return mPipelineCache; }

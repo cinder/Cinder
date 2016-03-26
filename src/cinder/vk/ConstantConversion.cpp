@@ -38,6 +38,9 @@
 
 #include "cinder/vk/ConstantConversion.h"
 
+#include <sstream>
+#include <string>
+
 namespace cinder { namespace vk {
 
 std::string toStringVkResult( VkResult v )
@@ -70,6 +73,48 @@ std::string toStringVkResult( VkResult v )
 	}
 	return result;
 }
+
+std::string toStringVkMemoryPropertyFlagBits( VkMemoryPropertyFlagBits v )
+{
+	std::string result = "<UNKNOWN>";
+	switch( v ) {
+		case VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT		: result = "VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT"; break;
+		case VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT		: result = "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT"; break;
+		case VK_MEMORY_PROPERTY_HOST_COHERENT_BIT		: result = "VK_MEMORY_PROPERTY_HOST_COHERENT_BIT"; break;
+		case VK_MEMORY_PROPERTY_HOST_CACHED_BIT			: result = "VK_MEMORY_PROPERTY_HOST_CACHED_BIT"; break;
+		case VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT	: result = "VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT"; break;
+		default: break;
+	}
+	return result;	
+}
+
+std::string toStringVkMemoryPropertyFlags( VkMemoryPropertyFlags v )
+{
+	std::stringstream ss;
+	
+	if( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT == ( v & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) ) {
+		ss << "VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT";
+	}
+	
+	if( VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT == ( v & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT";
+	}
+	
+	if( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT == ( v & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_MEMORY_PROPERTY_HOST_COHERENT_BIT";
+	}
+	
+	if( VK_MEMORY_PROPERTY_HOST_CACHED_BIT == ( v & VK_MEMORY_PROPERTY_HOST_CACHED_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_MEMORY_PROPERTY_HOST_CACHED_BIT";
+	}
+
+	if( VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT == ( v & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT";
+	}
+
+	return ss.str();
+}
+
 
 std::string toStringVkPresentMode( VkPresentModeKHR v )
 {

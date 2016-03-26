@@ -60,6 +60,10 @@
 #include <functional>
 #include <vector>
 
+#if defined( CINDER_LINUX )
+struct GLFWwindow; 
+#endif
+
 namespace cinder { namespace vk {
 
 #if defined( CINDER_ANDROID )
@@ -81,7 +85,11 @@ struct PlatformWindow {
 #endif
 
 
-using DebugReportCallbackFn = std::function<VkBool32(VkDebugReportFlagsEXT, VkDebugReportObjectTypeEXT, uint64_t, size_t, int32_t, const char*, const char*, void*)>;
+#if defined( VK_EXT_debug_report )
+	using DebugReportCallbackFn = std::function<VkBool32(VkDebugReportFlagsEXT, VkDebugReportObjectTypeEXT, uint64_t, size_t, int32_t, const char*, const char*, void*)>;
+#else
+	using DebugReportCallbackFn = std::function<void()>;
+#endif // defined( VK_EXT_debug_report )
 
 const VkPipelineStageFlags PipelineStageGraphicsBits = 
     VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT |
