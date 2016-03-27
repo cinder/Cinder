@@ -42,11 +42,15 @@
 
 namespace cinder { namespace vk {
 
-std::string toStringVkResult( VkResult v );	
+std::string toStringVkResult( VkResult v );
+
+std::string toStringVkMemoryPropertyFlagBits( VkMemoryPropertyFlagBits v );
+std::string toStringVkMemoryPropertyFlags( VkMemoryPropertyFlags v );
 
 std::string toStringVkPresentMode( VkPresentModeKHR v );
 std::string toStringVkFormat( VkFormat v );
 std::string toStringVkCullMode( VkCullModeFlagBits v );
 std::string toStringVkSampleCount( VkSampleCountFlagBits v );
+
 
 }} // namespace cinder::vk

@@ -857,6 +857,11 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 			for( const auto& it : format.mSets ) {
 				mUniformLayout.setSet( it.first, it.second );
 			}
+
+			// If no sets by now, add a default set with set number 0.
+			if( mUniformLayout.getSets().empty() ) {
+				mUniformLayout.setSet( 0, CHANGES_DONTCARE );
+			}
 		}
 
 		// Build each stage separate as required by Vulkan

@@ -54,40 +54,18 @@ using SurfaceRef = std::shared_ptr<Surface>;
 //!
 class Surface {
 public:
-
 	virtual ~Surface();
 
-#if defined( CINDER_ANDROID )
-	static SurfaceRef			create( ANativeWindow *nativeWindow, vk::Device *device );
-#elif defined( CINDER_LINUX )
-	static SurfaceRef			create( GLFWwindow *window, vk::Device *device );
-#elif defined( CINDER_MSW )
-	static SurfaceRef			create( ::HINSTANCE connection, ::HWND window, vk::Device *device );
-#endif
+	static SurfaceRef			create( const vk::PlatformWindow& platformWindow, vk::Device *device );
 
 	VkSurfaceKHR				getSurface() const { return mSurface; }
-
 	VkFormat					getFormat() const { return mFormat; }
 
 private:
-#if defined( CINDER_ANDROID )
-	Surface( ANativeWindow *nativeWindow, vk::Device *device );
-#elif defined( CINDER_LINUX )
-	Surface( GLFWwindow *window, vk::Device *device );
-#elif defined( CINDER_MSW )
-	Surface( ::HINSTANCE connection, ::HWND window, vk::Device *device );
-#endif	
-
-#if defined( CINDER_ANDROID )
-	ANativeWindow				*mWindow = nullptr;
-#elif defined( CINDER_LINUX )
-	GLFWwindow					*mWindow = nullptr;  	
-#elif defined( CINDER_MSW )
-	::HINSTANCE					mConnection = nullptr;
-	::HWND						mWindow = nullptr;
-#endif
+	Surface( const vk::PlatformWindow& platformWindow, vk::Device *device );
 
 	vk::Device					*mDevice = nullptr;
+	vk::PlatformWindow			mPlatformWindow;
 
 	VkSurfaceKHR				mSurface = VK_NULL_HANDLE;
 	VkFormat					mFormat = VK_FORMAT_UNDEFINED;

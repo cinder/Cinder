@@ -520,8 +520,6 @@ void FishTornadoApp::drawToMainFbo( const ci::vk::CommandBufferRef& cmdBuf )
 {
 	mMainRenderPass->beginRenderExplicit( cmdBuf, mMainFbo );
 	{
-		//vk::setMatrices( mCamera );
-		
 		vk::enableDepthRead();
 		vk::enableDepthWrite();
 		vk::enableAlphaBlending();

@@ -52,14 +52,14 @@ class Context;
 class Device;
 class Framebuffer;
 class RenderPass;
-class Surface;
+//class Surface;
 class Swapchain;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 using ContextRef = std::shared_ptr<Context>;
 using DeviceRef = std::shared_ptr<Device>;
 using FramebufferRef = std::shared_ptr<Framebuffer>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
-using SurfaceRef = std::shared_ptr<Surface>;
+//using SurfaceRef = std::shared_ptr<Surface>;
 using SwapchainRef = std::shared_ptr<Swapchain>;
 
 }} // namespace cinder::vk
@@ -153,8 +153,7 @@ class RendererVk : public Renderer {
 	RendererVk( const RendererVk &renderer );
 
   private:
-	vk::SurfaceRef		allocateSurface( const vk::DeviceRef& device );
-  	void 				setupVulkan( const ivec2& windowSize );
+  	void 				setupVulkan( const ivec2& windowSize, const vk::PlatformWindow& platformWindow );
 
 #if defined( CINDER_ANDROID )
 #elif defined( CINDER_LINUX )

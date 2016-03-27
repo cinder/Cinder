@@ -54,10 +54,12 @@
 namespace cinder { namespace vk {
 
 #if defined( CINDER_ANDROID )
+	static pthread_key_t sThreadSpecificCurrentContextKey;
+	static bool sThreadSpecificCurrentContextInitialized = false;
 #elif defined( CINDER_LINUX )
-	thread_local Context *sThreadSpecificCurrentVkContext = nullptr;
+	thread_local Context *sThreadSpecificCurrentContext = nullptr;
 #elif defined( CINDER_MSW )
-	__declspec(thread) Context *sThreadSpecificCurrentVkContext = nullptr;
+	__declspec(thread) Context *sThreadSpecificCurrentContext = nullptr;
 #endif
 
 Context::Context( const vk::PresenterRef& presenter, vk::Device* device )
@@ -173,15 +175,32 @@ void Context::destroy( bool removeFromTracking )
 
 Context* Context::getCurrent()
 {
-	Context *result = sThreadSpecificCurrentVkContext;
+	Context *result = nullptr;
+#if defined( CINDER_ANDROID )
+	if( sThreadSpecificCurrentContextInitialized ) {
+		result = reinterpret_cast<Context*>( pthread_getspecific( sThreadSpecificCurrentContextKey ) );
+	}
+#elif defined( CINDER_LINUX ) || defined( CINDER_MSW )
+	result = sThreadSpecificCurrentContext;
+#endif
 	return result;
 }
 
 void Context::makeCurrent()
 {
-	if( this != sThreadSpecificCurrentVkContext ) {
-		sThreadSpecificCurrentVkContext = this;
+	#if defined( CINDER_ANDROID )
+	if( ! sThreadSpecificCurrentContextInitialized ) {
+		pthread_key_create( &sThreadSpecificCurrentContextKey, NULL );
+		sThreadSpecificCurrentContextInitialized = true;
 	}
+	if( ( pthread_getspecific( sThreadSpecificCurrentContextKey ) != this ) ) {
+		pthread_setspecific( sThreadSpecificCurrentContextKey, this );
+	}
+#elif defined( CINDER_LINUX ) || defined( CINDER_MSW )
+	if( this != sThreadSpecificCurrentContext ) {
+		sThreadSpecificCurrentContext = this;
+	}
+#endif	
 }
 
 bool Context::isExplicitMode() const
@@ -1009,8 +1028,8 @@ void Context::clearAttachments( bool color, bool depthStencil )
 			// @TODO: Determine if we need to support more than one layer
 			auto viewport = this->getViewport();
 			VkClearRect cr = {};
-			cr.rect.offset		= { viewport.first.x, viewport.first.y };
-			cr.rect.extent		= { viewport.second.x, viewport.second.y };
+			cr.rect.offset		= { static_cast<int32_t>( viewport.first.x ), static_cast<int32_t>( viewport.first.y ) };
+			cr.rect.extent		= { static_cast<uint32_t>( viewport.second.x ), static_cast<uint32_t>( viewport.second.y ) };
 			cr.baseArrayLayer	= 0;
 			cr.layerCount		= 1;
 			clearRects.push_back( cr );

@@ -37,6 +37,7 @@
 */
 
 #include "cinder/vk/Allocator.h"
+#include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Device.h"
 #include "cinder/Log.h"
 
@@ -128,7 +129,7 @@ Allocator::Allocation Allocator::PoolManager<VkObjectT>::Pool::allocate( const t
 		const VkDeviceSize allocatedSize = memReqs.size;
 
 		// Assign result values
-		result = Allocator::Allocation( mMemory, alignedOffset, allocatedSize );
+		result = Allocator::Allocation( mMemory, alignedOffset, allocatedSize, objDesc.memoryProperty );
 		mAllocations.push_back( result );
 
 		// Move offset
@@ -310,6 +311,18 @@ Allocator::Allocation Allocator::allocateBuffer( VkBuffer buffer, bool transient
 	VkMemoryRequirements memoryRequirements = {};
 	vkGetBufferMemoryRequirements( mDevice->getDevice(), buffer, &memoryRequirements);
 
+CI_LOG_I( "memoryRequirements.memoryTypeBits: " << memoryRequirements.memoryTypeBits );
+CI_LOG_I( "memoryProperty(0): " << vk::toStringVkMemoryPropertyFlags( memoryProperty ) );
+
+	// If the device doesn't support VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, fall back to VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+	bool requestedDeviceLocal = ( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT == ( memoryProperty & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) );
+	bool supportsDeviceLocal =  mDevice->isMemoryPropertySupported( memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+	if( requestedDeviceLocal && ( ! supportsDeviceLocal  ) ) {
+		memoryProperty &= ~VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+		memoryProperty |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+	}
+CI_LOG_I( "memoryProperty(1): " << vk::toStringVkMemoryPropertyFlags( memoryProperty ) );
+
 	// Find the memory type index that fits memory requirements
 	uint32_t memoryTypeIndex = 0;
 	bool foundMemory = mDevice->findMemoryType( memoryRequirements.memoryTypeBits, memoryProperty, &memoryTypeIndex );
@@ -334,7 +347,19 @@ Allocator::Allocation Allocator::allocateImage( VkImage image, bool transient, V
 	VkMemoryRequirements memoryRequirements = {};
 	vkGetImageMemoryRequirements( mDevice->getDevice(), image, &memoryRequirements);
 
-	// Find the memory type index that fits memory requirements
+CI_LOG_I( "memoryRequirements.memoryTypeBits: " << memoryRequirements.memoryTypeBits );
+CI_LOG_I( "memoryProperty(0): " << vk::toStringVkMemoryPropertyFlags( memoryProperty ) );
+
+	// If the device doesn't support VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, fall back to VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+	bool requestedDeviceLocal = ( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT == ( memoryProperty & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) );
+	bool supportsDeviceLocal =  mDevice->isMemoryPropertySupported( memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+	if( requestedDeviceLocal && ( ! supportsDeviceLocal  ) ) {
+		memoryProperty &= ~VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+		memoryProperty |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+	}
+CI_LOG_I( "memoryProperty(1): " << vk::toStringVkMemoryPropertyFlags( memoryProperty ) );	
+
+	// Find the memory type index that fits memory requirements. 
 	uint32_t memoryTypeIndex = 0;
 	bool foundMemory = mDevice->findMemoryType( memoryRequirements.memoryTypeBits, memoryProperty, &memoryTypeIndex );
 	assert( foundMemory );

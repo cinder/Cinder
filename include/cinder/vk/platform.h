@@ -60,9 +60,36 @@
 #include <functional>
 #include <vector>
 
+#if defined( CINDER_LINUX )
+struct GLFWwindow; 
+#endif
+
 namespace cinder { namespace vk {
 
-using DebugReportCallbackFn = std::function<VkBool32(VkDebugReportFlagsEXT, VkDebugReportObjectTypeEXT, uint64_t, size_t, int32_t, const char*, const char*, void*)>;
+#if defined( CINDER_ANDROID )
+struct PlatformWindow {
+	ANativeWindow *window = nullptr;
+	PlatformWindow() {}
+};
+#elif defined( CINDER_LINUX )
+struct PlatformWindow {
+	GLFWwindow *window = nullptr;  	
+	PlatformWindow() {}
+};
+#elif defined( CINDER_MSW )
+struct PlatformWindow {
+	::HINSTANCE connection = nullptr;
+	::HWND window = nullptr;
+	PlatformWindow() {}
+};
+#endif
+
+
+#if defined( VK_EXT_debug_report )
+	using DebugReportCallbackFn = std::function<VkBool32(VkDebugReportFlagsEXT, VkDebugReportObjectTypeEXT, uint64_t, size_t, int32_t, const char*, const char*, void*)>;
+#else
+	using DebugReportCallbackFn = std::function<void()>;
+#endif // defined( VK_EXT_debug_report )
 
 const VkPipelineStageFlags PipelineStageGraphicsBits = 
     VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT |
@@ -79,4 +106,4 @@ const VkPipelineStageFlags PipelineStageGraphicsBits =
     VK_PIPELINE_STAGE_TRANSFER_BIT |
     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
     
-}} // namespace ci::vk
+} } // namespace ci::vk
