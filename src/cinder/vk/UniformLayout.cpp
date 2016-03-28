@@ -868,13 +868,67 @@ UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& 
 		}
 	}
 
-	// Cache
+	// Cache - not as straight forward as it should be. To work around the implementation
+	// differences, bindings *should* be densely populated and grouped by type. 
 	for( auto& set : mSets ) {
-		std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
-		for( const auto& obj : set->mDescriptorSetLayoutBindings ) {
-			descriptorSetLayoutBindings.push_back( obj );
+		//std::vector<VkDescriptorSetLayoutBinding> descriptorSetLayoutBindings;
+		//for( const auto& obj : set->mDescriptorSetLayoutBindings ) {
+		//	descriptorSetLayoutBindings.push_back( obj );
+		//}
+
+		const auto& srcBindings = set->mDescriptorSetLayoutBindings;
+		
+		// Find the max binding number
+		uint32_t maxBindingNumber = 0;
+		for( const auto& srcBinding : srcBindings ) {
+			maxBindingNumber = std::max<uint32_t>( maxBindingNumber, srcBinding.binding );
 		}
-		mCachedDescriptorSetLayoutBindings.push_back( descriptorSetLayoutBindings );
+
+		// Allocate descriptors
+		const uint32_t bindingCount = maxBindingNumber + 1;
+		std::vector<VkDescriptorSetLayoutBinding> dstBindings( bindingCount );
+
+		// Populate the binding numbers
+		for( uint32_t bindingNumber = 0; bindingNumber < bindingCount; ++bindingNumber ) {
+			dstBindings[bindingNumber].binding = bindingNumber;
+			dstBindings[bindingNumber].descriptorType = VK_DESCRIPTOR_TYPE_MAX_ENUM;
+		}
+
+		// Copy the descriptor information
+		for( auto& dstBinding : dstBindings ) {
+			auto it = std::find_if( 
+				std::begin( srcBindings ), std::end( srcBindings ),
+				[dstBinding]( const VkDescriptorSetLayoutBinding& elem ) -> bool {
+					return elem.binding == dstBinding.binding;
+				}
+			);
+
+			if( std::end( srcBindings ) != it ) {
+				const auto& srcBinding = *it;
+				dstBinding.descriptorType     = srcBinding.descriptorType;
+				dstBinding.descriptorCount    = srcBinding.descriptorCount;
+				dstBinding.stageFlags         = srcBinding.stageFlags;
+				dstBinding.pImmutableSamplers = srcBinding.pImmutableSamplers;
+			}
+		}
+
+		// Sort by type so the entries are grouped by type
+		std::sort( 
+			std::begin( dstBindings ), std::end( dstBindings ),
+			[]( const VkDescriptorSetLayoutBinding& a, const VkDescriptorSetLayoutBinding& b ) -> bool {
+				return a.descriptorType < b.descriptorType;
+			}
+		);
+
+		// If entry N doesn't have a type use N-1's type...if N > 0
+		for( size_t i = 1; i < dstBindings.size(); ++i ) {
+			if( VK_DESCRIPTOR_TYPE_MAX_ENUM == dstBindings[i].descriptorType ) {
+				dstBindings[i].descriptorType = dstBindings[i - 1].descriptorType;
+			}
+		}
+
+		// Finally cache it
+		mCachedDescriptorSetLayoutBindings.push_back( dstBindings );
 	}
 
 /*
