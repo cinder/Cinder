@@ -912,6 +912,7 @@ UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& 
 			}
 		}
 
+/*
 		// Sort by type so the entries are grouped by type
 		std::sort( 
 			std::begin( dstBindings ), std::end( dstBindings ),
@@ -919,6 +920,7 @@ UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& 
 				return a.descriptorType < b.descriptorType;
 			}
 		);
+*/
 
 		// If entry N doesn't have a type use N-1's type...if N > 0
 		for( size_t i = 1; i < dstBindings.size(); ++i ) {
