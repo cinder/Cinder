@@ -106,6 +106,16 @@ const vk::UniformSemanticMap& getDefaultUniformNameToSemanticMap()
 	return sDefaultUniformNameToSemanticMap;
 }
 
+UniformSemantic uniformNameToSemantic( const std::string& name )
+{
+	UniformSemantic result = UNIFORM_USER_DEFINED;
+	auto it = getDefaultUniformNameToSemanticMap().find( name );
+	if( getDefaultUniformNameToSemanticMap().end() != it ) {
+		result = it->second;
+	}
+	return result;
+}
+
 const vk::AttribSemanticMap& getDefaultAttribNameToSemanticMap()
 {
 	static bool initialized = false;
@@ -127,11 +137,11 @@ const vk::AttribSemanticMap& getDefaultAttribNameToSemanticMap()
 	return sDefaultAttribNameToSemanticMap;
 }
 
-UniformSemantic uniformNameToSemantic( const std::string& name )
+geom::Attrib attributeNameToSemantic( const std::string& name )
 {
-	UniformSemantic result = UNIFORM_USER_DEFINED;
-	auto it = getDefaultUniformNameToSemanticMap().find( name );
-	if( getDefaultUniformNameToSemanticMap().end() != it ) {
+	geom::Attrib result = geom::Attrib::USER_DEFINED;
+	auto it = getDefaultAttribNameToSemanticMap().find( name );
+	if( getDefaultAttribNameToSemanticMap().end() != it ) {
 		result = it->second;
 	}
 	return result;
@@ -574,6 +584,29 @@ UniformLayout& UniformLayout::addUniform( const std::string& name, const vk::Tex
 	return *this;
 }
 
+void UniformLayout::addBinding( vk::UniformLayout::Binding::Type bindingType,  const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber )
+{
+	auto bindingRef = findBindingObject( bindingName, bindingType, true );
+	if( bindingRef ) {
+		bindingRef->setBinding( bindingNumber, setNumber );
+	}
+}
+
+void UniformLayout::addSet( uint32_t setNumber, uint32_t changeFrequency )
+{
+	auto it = std::find_if(
+		std::begin( mSets ),
+		std::end( mSets ),
+		[setNumber]( const UniformLayout::Set& elem ) -> bool {
+			return elem.getSet() == setNumber;
+		}
+	);
+
+	if( std::end( mSets ) == it ) {
+		mSets.push_back( UniformLayout::Set( setNumber, changeFrequency ) );
+	}
+}
+
 UniformLayout& UniformLayout::setBinding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber )
 {
 	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY, true );
@@ -600,16 +633,6 @@ UniformLayout& UniformLayout::setSet( uint32_t setNumber, uint32_t changeFrequen
 	else {
 		mSets.push_back( UniformLayout::Set( setNumber, changeFrequency ) );
 	}
-
-/*
-	std::sort( 
-		std::begin( mSets ),
-		std::end( mSets ),
-		[]( const UniformLayout::Set& a, const UniformLayout::Set& b ) -> bool {
-			return a.getChangeFrequency() < b.getChangeFrequency();
-		}
-	);
-*/
 
 	return *this;
 }

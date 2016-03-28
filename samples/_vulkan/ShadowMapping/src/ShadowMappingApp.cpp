@@ -215,13 +215,7 @@ void ShadowMappingApp::setup()
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset("shadow_mapping.vert") )
-			.fragment( loadAsset("shadow_mapping.frag") )
-			.binding( "ciBlock0", 0 )
-			.binding( "ciBlock1", 1 )
-			.binding( "uShadowMap", 2 )
-			.attribute( geom::Attrib::POSITION,    0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::NORMAL,      1, 0, vk::glsl_attr_vec3 )
-			.attribute( geom::Attrib::COLOR,       2, 0, vk::glsl_attr_vec4 );
+			.fragment( loadAsset("shadow_mapping.frag") );
 
 		mShadowShader = vk::GlslProg::create( format );
 		mShadowShader->uniform( "uShadowMap", mShadowMap->getTexture() );

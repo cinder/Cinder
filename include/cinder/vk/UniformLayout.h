@@ -296,6 +296,10 @@ private:
 
 	template <typename T>
 	void setUniformValue( GlslUniformDataType dataType, const std::string& name, const std::vector<T>& values );
+
+	void								addBinding( vk::UniformLayout::Binding::Type bindingType,  const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber );
+	void								addSet( uint32_t setNumber, uint32_t changeFrequency );
+	friend class ShaderProg;
 };
 
 //! \class UniformSet
@@ -418,9 +422,11 @@ using AttribSemanticMap = std::map<std::string, geom::Attrib>;
 std::string uniformSemanticToString( UniformSemantic uniformSemantic );
 //! Default mapping from uniform name to semantic. Can be modified via the reference. Not thread-safe.
 const vk::UniformSemanticMap& getDefaultUniformNameToSemanticMap();
+//! Returns semantic for default name
+UniformSemantic uniformNameToSemantic( const std::string& name );
 //! Default mapping from attribute name to semantic. Can be modified via the reference. Not thread-safe.
 const vk::AttribSemanticMap& getDefaultAttribNameToSemanticMap();
 //! Returns semantic for default name
-UniformSemantic uniformNameToSemantic( const std::string& name );
+geom::Attrib attributeNameToSemantic( const std::string& name );
 
 }} // namespace cinder::vk

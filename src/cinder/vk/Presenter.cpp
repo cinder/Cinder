@@ -75,16 +75,12 @@ PresenterRef Presenter::create( const ivec2& windowSize, uint32_t swapChainImage
 	return result;
 }
 
-/*
-const vk::RenderPass* Presenter::getCurrentRenderPass() const
+const vk::RenderPassRef& Presenter::getCurrentRenderPass() const
 {
-	const vk::RenderPass* result = nullptr;
-	if( UINT32_MAX != mCurrentImageIndex ) {
-		result = mRenderPasses[mCurrentImageIndex].get();
-	}
-	return result;
+	assert( UINT32_MAX != mCurrentImageIndex );
+
+	return mRenderPasses[mCurrentImageIndex];
 }
-*/
 
 void Presenter::resize( const ivec2& newWindowSize )
 {

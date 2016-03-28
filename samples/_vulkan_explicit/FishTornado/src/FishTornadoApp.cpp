@@ -342,13 +342,13 @@ void FishTornadoApp::loadShaders()
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "main.vert" ) )
-			.fragment( loadAsset( "main.frag" ) )
-			.binding( "ciBlock0", 0 )
-			.binding( "ciBlock1", 1 )
-			.binding( "uNoiseNormalsTex", 2 )
-			.binding( "uFboTex", 3 )
-			.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
+			.fragment( loadAsset( "main.frag" ) );
+			//.binding( "ciBlock0", 0 )
+			//.binding( "ciBlock1", 1 )
+			//.binding( "uNoiseNormalsTex", 2 )
+			//.binding( "uFboTex", 3 )
+			//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+			//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
 
 		mMainShader = vk::GlslProg::create( format );
 	}

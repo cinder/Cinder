@@ -144,11 +144,6 @@ void VertexInputDescription::setAttributeLocationsAndBindings(const ShaderProgRe
 {
 	for( const auto& shaderAttr : shader->getActiveAttributes() ) {
 		auto semantic = shaderAttr.getSemantic();
-		//auto desc = getAttribute( shaderAttr.getSemantic() );
-		//if( nullptr != desc ) {
-		//	desc->location = shaderAttr.getLocation();
-		//	desc->binding  = shaderAttr.getBinding();
-		//}
 
 		auto it = std::find_if(
 			std::begin( mSemanticAttributes ),

@@ -109,13 +109,7 @@ void RotatingCubeApp::setup()
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset("shader.vert") )
-			.fragment( loadAsset("shader.frag") )
-			.binding( "ciBlock0", 0 )
-			.binding( "uTex0", 1 )
-			.attribute( geom::Attrib::POSITION,    0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::TEX_COORD_0, 1, 0, vk::glsl_attr_vec2 )
-			.attribute( geom::Attrib::NORMAL,      2, 0, vk::glsl_attr_vec3 )
-			.attribute( geom::Attrib::COLOR,       3, 0, vk::glsl_attr_vec4 );
+			.fragment( loadAsset("shader.frag") );
 
 		mGlsl = vk::GlslProg::create( format );
 		mGlsl->uniform( "uTex0", mTexture );

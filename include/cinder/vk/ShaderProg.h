@@ -91,29 +91,30 @@ public:
 
 		Attribute( geom::Attrib semantic, int32_t location, int32_t binding, GlslAttributeDataType type ) 
 			: mSemantic( semantic ), mLocation( location ), mBinding( binding ), mType( type ) {}
+		Attribute( const std::string& name, geom::Attrib semantic, int32_t location, int32_t binding, GlslAttributeDataType type ) 
+			: mName( name ), mSemantic( semantic ), mLocation( location ), mBinding( binding ), mType( type ) {}
 		virtual ~Attribute() {}
 
 		//! Returns a const reference of the name as defined in the Vertex Shader.
-		const std::string&	getName() const { return mName; }
-		//! Returns the number of attributes expected by the Vertex Shader. mCount will be
-		//! 1 unless this attribute is an array.
-		int32_t				getCount() const { return mCount; }
-		//! Returns the Vertex Shader generated or user defined binding of this attribute.
-		int32_t				getLocation() const { return mLocation; }
+		const std::string&		getName() const { return mName; }
+		//! Returns the number of attributes expected by the Vertex Shader. mCount will be 1 unless this attribute is an array.
+		int32_t					getCount() const { return mCount; }
+		//! Returns the Vertex Shader generated or user defined location of this attribute.
+		int32_t					getLocation() const { return mLocation; }
 		//! Returns the GLenum representation of the type of this attribute (for example, \c GL_FLOAT_VEC3)
-		int32_t				getBinding() const { return mBinding; }
+		int32_t					getBinding() const { return mBinding; }
 		//! Returns the Vertex Shader generated or user defined location of this attribute.
 		GlslAttributeDataType	getType() const { return mType; }
 		//! Returns the defined geom::Attrib semantic.
-		geom::Attrib		getSemantic() const { return mSemantic; }
+		geom::Attrib			getSemantic() const { return mSemantic; }
 
 	  private:
-		std::string			mName;
-		int32_t				mCount = 0;
-		int32_t				mLocation = -1;
-		int32_t				mBinding = -1;
+		std::string				mName;
+		int32_t					mCount = 0;
+		int32_t					mLocation = -1;
+		int32_t					mBinding = -1;
 		GlslAttributeDataType	mType = glsl_attr_unknown;
-		geom::Attrib		mSemantic = geom::Attrib::USER_DEFINED;
+		geom::Attrib			mSemantic = geom::Attrib::USER_DEFINED;
 
 		friend class ShaderProg;
 	};
@@ -213,12 +214,6 @@ public:
 	void								uniform( const std::string& name, const mat4&    value );
 	void								uniform( const std::string& name, const TextureBaseRef& texture );
 
-/*
-	void								sampler2D( const std::string& name, const TextureBaseRef& texture );
-	void								sampler2DRect( const std::string& name, const TextureBaseRef& texture );
-	void								sampler2DShadow( const std::string& name, const TextureBaseRef& texture );
-	void								samplerCube( const std::string& name, const TextureBaseRef& texture );
-*/
 	static std::string					defaultBlockNameTranslate( const std::string& name );
 
 private:

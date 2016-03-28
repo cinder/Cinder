@@ -92,7 +92,7 @@ public:
 	const vk::SwapchainRef&				getSwapchain() const { return mSwapchain; }
 	uint32_t							getCurrentImageIndex() const { return mCurrentImageIndex; }
 
-	//const vk::RenderPass*				getCurrentRenderPass() const;
+	const vk::RenderPassRef&			getCurrentRenderPass() const;
 
 	void								resize( const ivec2& newWindowSize );
 	void								transitionToFirstUse( vk::Context *context );

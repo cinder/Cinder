@@ -133,12 +133,12 @@ Light::Light()
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "blur.vert" ) )
-			.fragment( loadAsset( "blur.frag" ) )
-			.binding( "ciBlock0", 0 )
-			.binding( "ciBlock1", 1 )
-			.binding( "uTex", 2 )
-			.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
+			.fragment( loadAsset( "blur.frag" ) );
+			//.binding( "ciBlock0", 0 )
+			//.binding( "ciBlock1", 1 )
+			//.binding( "uTex", 2 )
+			//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+			//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
 
 		mBlurShader = vk::GlslProg::create( format );
 	}
