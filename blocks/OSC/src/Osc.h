@@ -617,7 +617,7 @@ class SenderTcp : public SenderBase {
 	asio::ip::tcp::endpoint mLocalEndpoint, mRemoteEndpoint;
 	OnConnectFn				mOnConnectFn;
 	std::mutex				mOnConnectFnMutex;
-	std::atomic_bool		mIsConnected;
+	std::atomic<bool>		mIsConnected;
 	
   public:
 	//! Non-copyable.
@@ -833,7 +833,7 @@ class ReceiverTcp : public ReceiverBase {
 		TcpSocketRef			mSocket;
 		ReceiverTcp*			mReceiver;
 		asio::streambuf			mBuffer;
-		std::atomic_bool		mIsConnected;
+		std::atomic<bool>		mIsConnected;
 		
 		const uint64_t			mIdentifier;
 		
@@ -879,7 +879,7 @@ class ReceiverTcp : public ReceiverBase {
 	using UniqueConnection = std::unique_ptr<Connection>;
 	std::vector<UniqueConnection>		mConnections;
 	uint64_t							mConnectionIdentifiers;
-	std::atomic_bool					mIsShuttingDown;
+	std::atomic<bool>					mIsShuttingDown;
 
 	friend struct Connection;
   public:
