@@ -163,6 +163,9 @@
     <Filter Include="Source Files\vk\util">
       <UniqueIdentifier>{f48b2797-855c-49c0-9250-fbd2d8c7a0bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\vk\spir2cross">
+      <UniqueIdentifier>{cd964705-b875-43be-a8a4-19d6642fa5a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -911,6 +914,15 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\vk\Util.cpp">
       <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\spir2cross\spir2cpp.cpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\spir2cross\spir2cross.cpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\spir2cross\spir2glsl.cpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1900,6 +1912,24 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\vk\func.h">
       <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\GLSL.std.450.h">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2common.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2cpp.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2cross.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2glsl.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spirv.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

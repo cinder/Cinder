@@ -75,10 +75,7 @@ void CubeMappingApp::setup()
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "sky_box.vert" ) )
-			.fragment( loadAsset( "sky_box.frag" ) )
-			.binding( "ciBlock0", 0 )
-			.binding( "uCubeMapTex", 1 )
-			.attribute( geom::Attrib::POSITION, 0, 0, vk::glsl_attr_vec4 );
+			.fragment( loadAsset( "sky_box.frag" ) );
 		
 		auto skyBoxGlsl = vk::GlslProg::create( format );
 		skyBoxGlsl->uniform( "uCubeMapTex", mCubeMap );
@@ -92,11 +89,7 @@ void CubeMappingApp::setup()
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "env_map.vert" ) )
-			.fragment( loadAsset( "env_map.frag" ) )
-			.binding( "ciBlock0", 0 )
-			.binding( "uCubeMapTex", 1 )
-			.attribute( geom::Attrib::POSITION, 0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::NORMAL,   1, 0, vk::glsl_attr_vec3 );
+			.fragment( loadAsset( "env_map.frag" ) );
 
 		auto envMapGlsl = vk::GlslProg::create( format );
 		envMapGlsl->uniform( "uCubeMapTex", mCubeMap );
@@ -147,21 +140,6 @@ void CubeMappingApp::draw()
 {
 	mTeapotBatch->draw();
 	mSkyBoxBatch->draw();
-
-/*
-	vk::setMatrices( mCam );
-
-	vk::pushMatrices();
-		vk::multModelMatrix( mObjectRotation );
-		vk::scale( vec3( 4 ) );
-		mTeapotBatch->draw();
-	vk::popMatrices();
-
-	vk::pushMatrices();
-		vk::scale( SKY_BOX_SIZE, SKY_BOX_SIZE, SKY_BOX_SIZE );
-		mSkyBoxBatch->draw();
-	vk::popMatrices();
-*/
 }
 
 VkBool32 debugReportVk(

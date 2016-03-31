@@ -18,6 +18,7 @@ if (( $# == 0 )); then
 	echo -e "\t-es32    Build for OpenGL ES 3.2 instead of Desktop OpenGL"
 	echo -e "\t-vk      Build for Vulkan instead of Desktop OpenGL"
     echo -e "\t-rpi2    Build for Raspberry Pi 2 (must be on platform)"
+	echo -e "\t-ninja   Use ninja instead of make for building"
     echo -e "\t-r       Rebuild instead of full build"
     echo -e "\t-v       Turns on verbose mode"
     #echo -e ""
@@ -40,6 +41,8 @@ VERBOSE=
 APP_BUILD=false
 SAMPLES=
 GCC=
+GENERATOR=
+NINJA=false
 
 if [ "$DISTRIBUTION_ID" == "Raspbian" ]; then
     echo "Building for Rasbian....."
@@ -198,6 +201,13 @@ do
 			GCC="-DCINDER_TOOLCHAIN_GCC=1"
 			shift
 		;;
+	
+		# Ninja
+		-ninja)
+			GENERATOR="-G Ninja"
+			NINJA=true
+			shift
+		;;
 
 		?*)
 			echo "Unknown parameter: ${arg}"
@@ -257,10 +267,19 @@ for build in ${BUILD_TYPES[@]}; do
 
 	cd ${build_dir}
 	if [ ${FULLBUILD} == true ] || [ ! -f "${build_dir}/CMakeCache.txt" ]; then
-		echo "CMAKE COMMAND: cmake ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${VULKAN} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}"
-		cmake ../.. --no-warn-unused-cli -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${VULKAN} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}
+		echo "CMAKE COMMAND: cmake ${GENERATOR} ../.. -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${VULKAN} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}"
+		cmake ${GENERATOR} ../.. --no-warn-unused-cli -DCMAKE_BUILD_TYPE=${build_type} ${GCC} ${GLES} ${VULKAN} ${RPI2} ${SAMPLES} ${CINDER_OUT_DIR_PREFIX} ${CINDER_LIB_SUFFIX}
 	fi
-	make -j ${NUMPROCS} ${VERBOSE}
+
+	# make/ninja
+	if [ $NINJA == true ]; then
+		if [ ! -z "${VERBOSE}" ]; then
+			VERBOSE="-v"
+		fi
+		ninja -j ${NUMPROCS} ${VERBOSE}
+	else
+		make -j ${NUMPROCS} ${VERBOSE}
+	fi	
 
 	echo -e ""
 done

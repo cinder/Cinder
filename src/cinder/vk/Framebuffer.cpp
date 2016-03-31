@@ -65,6 +65,7 @@ Framebuffer::Attachment::Attachment( const vk::ImageViewRef& attachment )
 {
 	mAttachment = attachment;
 	mFormat = mAttachment->getFormat();
+	mSamples = mAttachment->getImage()->getSamples();
 
 	VkImageAspectFlags aspectMask = determineAspectMask( mFormat );
 	if( VK_IMAGE_ASPECT_COLOR_BIT == aspectMask ) {

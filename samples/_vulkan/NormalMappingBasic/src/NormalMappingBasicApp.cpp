@@ -73,15 +73,7 @@ void NormalMappingBasicApp::setup()
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset("shader.vert") )
-			.fragment( loadAsset("shader.frag") )
-			.binding( "ciBlock0", 0 )
-			.binding( "uDiffuseMap", 1 )
-			.binding( "uNormalMap", 2 )
-			.binding( "ciBlock1", 3 )
-			.attribute( geom::Attrib::POSITION,    0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::NORMAL,      1, 0, vk::glsl_attr_vec3 )
-			.attribute( geom::Attrib::TANGENT,     2, 0, vk::glsl_attr_vec3 )
-			.attribute( geom::Attrib::TEX_COORD_0, 3, 0, vk::glsl_attr_vec2 );
+			.fragment( loadAsset("shader.frag") );
 
 		mGlsl = vk::GlslProg::create( format );
 

@@ -65,16 +65,16 @@ Shark::Shark( FishTornadoApp *app )
 	try{
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "shark/shark.vert" ) )
-			.fragment( loadAsset( "shark/shark.frag" ) )
-			.binding( "ciBlock0",     0 )
-			.binding( "ciBlock1",     1 )
-			.binding( "uDiffuseTex",  2 )
-			.binding( "uNormalsTex",  3 )
-			.binding( "uCausticsTex", 4 )
-			.binding( "uShadowMap",   5 )
-			.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::NORMAL,       1, 0, vk::glsl_attr_vec3 )
-			.attribute( geom::Attrib::TEX_COORD_0,  2, 0, vk::glsl_attr_vec2 );
+			.fragment( loadAsset( "shark/shark.frag" ) );
+			//.binding( "ciBlock0",     0 )
+			//.binding( "ciBlock1",     1 )
+			//.binding( "uDiffuseTex",  2 )
+			//.binding( "uNormalsTex",  3 )
+			//.binding( "uCausticsTex", 4 )
+			//.binding( "uShadowMap",   5 )
+			//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+			//.attribute( geom::Attrib::NORMAL,       1, 0, vk::glsl_attr_vec3 )
+			//.attribute( geom::Attrib::TEX_COORD_0,  2, 0, vk::glsl_attr_vec2 );
 
 		mShader = vk::GlslProg::create( format );
 	} 

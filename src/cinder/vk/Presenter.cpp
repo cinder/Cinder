@@ -37,15 +37,20 @@
 */
 
 #include "cinder/vk/Presenter.h"
+#include "cinder/vk/CommandBuffer.h"
+#include "cinder/vk/CommandPool.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Device.h"
 #include "cinder/vk/ImageView.h"
 #include "cinder/vk/PipelineSelector.h"
+#include "cinder/vk/Queue.h"
+#include "cinder/vk/Surface.h"
+#include "cinder/Log.h"
 
 namespace cinder { namespace vk {
 
-Presenter::Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device )
-	: mDevice( device ), mSwapchainImageCount( swapChainImageCount ), mSurface( surface ), mOptions( options )
+Presenter::Presenter( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::PlatformWindow& platformWindow, const Presenter::Options& options, vk::Device *device )
+	: mDevice( device ), mSwapchainImageCount( swapChainImageCount ), mPlatformWindow( platformWindow ), mOptions( options )
 {
 	initialize( windowSize );
 }
@@ -64,15 +69,16 @@ void Presenter::destroy( bool removeFromTracking )
 {
 }
 
-PresenterRef Presenter::create( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::SurfaceRef& surface, const Presenter::Options& options, vk::Device *device )
+PresenterRef Presenter::create( const ivec2& windowSize, uint32_t swapChainImageCount, const vk::PlatformWindow& platformWindow, const Presenter::Options& options, vk::Device *device )
 {
-	PresenterRef result = PresenterRef( new Presenter( windowSize, swapChainImageCount, surface, options, device ) );
+	PresenterRef result = PresenterRef( new Presenter( windowSize, swapChainImageCount, platformWindow, options, device ) );
 	return result;
 }
 
-
 const vk::RenderPassRef& Presenter::getCurrentRenderPass() const
 {
+	assert( UINT32_MAX != mCurrentImageIndex );
+
 	return mRenderPasses[mCurrentImageIndex];
 }
 
@@ -88,9 +94,11 @@ void Presenter::resize( const ivec2& newWindowSize )
 	mRenderAreea.extent = { static_cast<uint32_t>( mWindowSize.x ), static_cast<uint32_t>( mWindowSize.y ) };
 	
 	// Reset all the resources that are affected by window size change
+	mSurface.reset();
 	mSwapchain.reset();
 	mMultiSampleAttachments.clear();
 	mFramebuffers.clear();
+	mCurrentImageIndex = UINT32_MAX;
 
 	// Readjust the sampling so samples*winSize doesn't exceed limits
 	mActualSamples = mOptions.mSamples;
@@ -112,6 +120,14 @@ void Presenter::resize( const ivec2& newWindowSize )
 		mRenderPasses.clear();
 	}
 	mPreviousSamples = mActualSamples;
+
+	// Create the platform surface
+	{
+		mSurface = vk::Surface::create( mPlatformWindow, mDevice );
+
+		mDevice->setPresentQueueFamilyIndex( mSurface->getSurface() );
+		CI_LOG_I( "Present queue family index: " << mDevice->getPresentQueueFamilyIndex() );
+	}
 	
 	// Create swapchain and update image count in case the image count was adjusted
 	{
@@ -152,7 +168,7 @@ void Presenter::resize( const ivec2& newWindowSize )
 					.setLoadOpClear()
 					.setStoreOpStore();
 				vk::RenderPass::Attachment singleSampleAttachment = vk::RenderPass::Attachment( colorFormat )
-					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR )
+					.setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
 					.setLoadOpLoad()
 					.setStoreOpStore();
 				vk::RenderPass::Attachment depthAttachment = vk::RenderPass::Attachment( depthStencilFormat ).setSamples( mActualSamples )
@@ -248,17 +264,56 @@ void Presenter::resize( const ivec2& newWindowSize )
 	}
 }
 
+void Presenter::transitionToFirstUse( vk::Context *context )
+{
+	auto& cmdPool = context->getDefaultTransientCommandPool();
+	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( cmdPool->getCommandPool(), context );
+
+	cmdBuf->begin();
+	{
+		for( auto& framebuffer : mFramebuffers ) {
+			if( mOptions.mMultiSample ) {
+				auto& attachments = framebuffer->getAttachments();
+				auto& image0 = attachments[0].getAttachment()->getImage();
+				auto& image1 = attachments[1].getAttachment()->getImage();
+				auto& image2 = attachments[2].getAttachment()->getImage();
+				auto params0 = vk::ImageMemoryBarrierParams( image0, image0->getInitialLayout(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				auto params1 = vk::ImageMemoryBarrierParams( image1, image1->getInitialLayout(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				auto params2 = vk::ImageMemoryBarrierParams( image2, image2->getInitialLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				cmdBuf->pipelineBarrierImageMemory( params0 );
+				cmdBuf->pipelineBarrierImageMemory( params1 );
+				cmdBuf->pipelineBarrierImageMemory( params2 );
+			}
+			else {
+				auto& attachments = framebuffer->getAttachments();
+				auto& image0 = attachments[0].getAttachment()->getImage();
+				auto& image1 = attachments[1].getAttachment()->getImage();
+				auto params0 = vk::ImageMemoryBarrierParams( image0, image0->getInitialLayout(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				auto params1 = vk::ImageMemoryBarrierParams( image1, image1->getInitialLayout(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+				cmdBuf->pipelineBarrierImageMemory( params0 );
+				cmdBuf->pipelineBarrierImageMemory( params1 );
+			}
+		}
+	}
+	cmdBuf->end();
+
+	context->getGraphicsQueue()->submit( cmdBuf );
+	context->getGraphicsQueue()->waitIdle();
+}
+
 uint32_t Presenter::acquireNextImage( VkFence fence, VkSemaphore signalSemaphore )
 {
 	VkSwapchainKHR swapchain = mSwapchain->getSwapchain();
 	uint64_t timeout = UINT64_MAX;
-	//mContext->fpAcquireNextImageKHR( mDevice->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
-	mDevice->AcquireNextImageKHR( mDevice->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
+	VkResult res = mDevice->AcquireNextImageKHR( mDevice->getDevice(), swapchain, timeout, signalSemaphore, fence, &mCurrentImageIndex );
+	assert( VK_SUCCESS == res );
 	return mCurrentImageIndex;
 }
 
 void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *context )
 {
+	assert( UINT32_MAX != mCurrentImageIndex );
+
 	mCommandBuffer = cmdBuf;
 
 	context->pushRenderPass( mRenderPasses[mCurrentImageIndex] );
@@ -284,6 +339,11 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 		const auto& swapChainDepthStencilAttachments = mSwapchain->getDepthStencilAttachments();
 
 		if( mOptions.mMultiSample ) {
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			//mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
+
+			/*
 			const auto& multiSampleImage = mMultiSampleAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( multiSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
@@ -295,8 +355,13 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 			const auto& depthStencilImage = swapChainDepthStencilAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
+			*/
 		}
 		else {
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
+
+			/*
 			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
@@ -304,6 +369,7 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 			const auto& depthStencilImage = swapChainDepthStencilAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( depthStencilImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) );
+			*/
 		}
 
 		const auto& clearValues = mRenderPasses[mCurrentImageIndex]->getAttachmentClearValues();
@@ -321,6 +387,8 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 
 void Presenter::endRender( vk::Context *context  )
 {
+	assert( UINT32_MAX != mCurrentImageIndex );
+
 	// End render pass
 	{
 		mCommandBuffer->endRenderPass();
@@ -328,6 +396,9 @@ void Presenter::endRender( vk::Context *context  )
 		const auto& swapChainColorAttachments = mSwapchain->getColorAttachments();
 
 		if( mOptions.mMultiSample ) {
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT ) );
+
 			//const auto& multiSampleImage = mMultiSampleAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
 			//mCommandBuffer->pipelineBarrierImageMemory( multiSampleImage, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
@@ -338,8 +409,14 @@ void Presenter::endRender( vk::Context *context  )
 		}
 		else {
 			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
+			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT ) );
+
+
+			/*
+			const auto& singleSampleImage = swapChainColorAttachments[mCurrentImageIndex]->getImage();
 			//mCommandBuffer->pipelineBarrierImageMemory( singleSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
 			mCommandBuffer->pipelineBarrierImageMemory( vk::ImageMemoryBarrierParams( singleSampleImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT ) );
+			*/
 		}
 	}
 

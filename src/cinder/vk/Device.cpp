@@ -41,6 +41,7 @@
 #include "cinder/vk/Buffer.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
+#include "cinder/vk/ConstantConversion.h" 
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Descriptor.h"
 #include "cinder/vk/Environment.h"
@@ -78,13 +79,23 @@ Device::~Device()
 
 void Device::initializeGpuProperties()
 {
-	// Retrieve properties
-    vkGetPhysicalDeviceMemoryProperties( mGpu, &mMemoryProperties );
     vkGetPhysicalDeviceProperties( mGpu, &mGpuProperties );
+int32_t major = ( mGpuProperties.apiVersion >> 22 ) & 0xFF;
+int32_t minor = ( mGpuProperties.apiVersion >> 12 ) & 0xFF;
+int32_t patch = ( mGpuProperties.apiVersion >>  0 ) & 0xFF;
+CI_LOG_I( "Vulkan API Version: " << major << "." << minor << "." << patch );
 CI_LOG_I( "limits.maxBoundDescriptorSets        : " << mGpuProperties.limits.maxBoundDescriptorSets );
 CI_LOG_I( "limits.maxPushConstantsSize          : " << mGpuProperties.limits.maxPushConstantsSize );
 CI_LOG_I( "limits.sampledImageColorSampleCounts : " << mGpuProperties.limits.sampledImageColorSampleCounts );
 CI_LOG_I( "limits.sampledImageDepthSampleCounts : " << mGpuProperties.limits.sampledImageDepthSampleCounts );
+
+	// Retrieve memory properties
+	vkGetPhysicalDeviceMemoryProperties( mGpu, &mMemoryProperties );
+
+	// Print memory properties
+	for( uint32_t i = 0; i < mMemoryProperties.memoryTypeCount; ++i ) {
+		CI_LOG_I( "memoryTypes[" << i << "]: " << vk::toStringVkMemoryPropertyFlags( mMemoryProperties.memoryTypes[i].propertyFlags ) );
+	}
 }
 
 void Device::initializeQueueProperties()
@@ -246,7 +257,17 @@ void Device::initializeDevice()
     createInfo.enabledExtensionCount	= static_cast<uint32_t>( layerExtensionNames.size() );
     createInfo.ppEnabledExtensionNames	= createInfo.enabledExtensionCount ? layerExtensionNames.data() : nullptr;
     createInfo.pEnabledFeatures			= nullptr;
+for( auto& name : layerNames ) {
+	CI_LOG_I( "Layer loaded: " << name );
+}
+for( auto& name : layerExtensionNames ) {
+	CI_LOG_I( "Layer ext loaded: " << name );
+}
+
     VkResult res = vkCreateDevice( mGpu, &createInfo, nullptr, &mDevice );
+	if( VK_SUCCESS != res ) {
+		CI_LOG_E( "vkCreateDevice failed: " << toStringVkResult( res ) );
+	}    
     assert( res == VK_SUCCESS );
 
 	// Initialize function pointers
@@ -349,7 +370,7 @@ uint32_t Device::getComputeQueueFamilyIndex() const
 	return result;
 }
 
-uint32_t Device::getPresentQueueFamilyIndex( VkSurfaceKHR surface ) const
+void Device::setPresentQueueFamilyIndex( VkSurfaceKHR surface )
 {
 	// If a surface is present, go and find the queue that supports presentation.
 	// In an ideal world, this is state that is known ahead of time, but since it's 
@@ -358,7 +379,7 @@ uint32_t Device::getPresentQueueFamilyIndex( VkSurfaceKHR surface ) const
 	//
 	// In most cases the present queue family index should be the same as the
 	// graphics queue family index.
-	if( VK_NULL_HANDLE != surface ) {
+	if( ( UINT32_MAX == mPresentQueueFamilyIndex ) && ( VK_NULL_HANDLE != surface ) ) {
 		uint32_t queueFamilyCount = getQueueFamilyCount();
 
 		// Iterate over each queue to learn whether it supports presenting:
@@ -389,7 +410,10 @@ uint32_t Device::getPresentQueueFamilyIndex( VkSurfaceKHR surface ) const
 		// @TODO Add some error checking code for what happens if a present queue family index is not found
 		mPresentQueueFamilyIndex = presentQueueFamilyIndex;
 	}
+}
 
+uint32_t Device::getPresentQueueFamilyIndex() const
+{
 	return mPresentQueueFamilyIndex;
 }
 
@@ -413,25 +437,41 @@ uint32_t Device::getComputeQueueCount() const
 	return result;
 }
 
-bool Device::findMemoryType( uint32_t typeBits, VkFlags requirementsMask, uint32_t *typeIndex ) const
+bool Device::isMemoryPropertySupported( uint32_t typeBits, VkMemoryPropertyFlagBits memoryPropertyBit ) const
 {
+	bool result = false;
+	// Search memoryTypes to find first index with those properties
+	for( uint32_t i = 0; i < mMemoryProperties.memoryTypeCount; ++i ) {
+		if( typeBits & 0x00000001 ) {
+			// Type is available, does it match user properties?
+			if( memoryPropertyBit == ( mMemoryProperties.memoryTypes[i].propertyFlags & memoryPropertyBit ) ) {
+				result = true;
+				break;
+			}
+		}
+		typeBits >>= 1;
+	}
+    return result;
+}
+
+bool Device::findMemoryType( uint32_t typeBits, VkMemoryPropertyFlags requirementsMask, uint32_t *typeIndex ) const
+{
+	bool result = false;
 	// Default to type max constant
 	*typeIndex = std::numeric_limits<std::remove_pointer<decltype(typeIndex)>::type>::max();
-
-   	// Search memoryTypes to find first index with those properties
-    for( uint32_t i = 0; i < mMemoryProperties.memoryTypeCount; ++i ) {
-         if( typeBits & 0x00000001 ) {
-             // Type is available, does it match user properties?
-             if( requirementsMask == ( mMemoryProperties.memoryTypes[i].propertyFlags & requirementsMask ) ) {
-                 *typeIndex = i;
-                 return true;
-             }
-         }
-        typeBits >>= 1;
+	// Search memoryTypes to find first index with those properties
+	for( uint32_t i = 0; i < mMemoryProperties.memoryTypeCount; ++i ) {
+		if( typeBits & 0x00000001 ) {
+			// Type is available, does it match user properties?
+			if( requirementsMask == ( mMemoryProperties.memoryTypes[i].propertyFlags & requirementsMask ) ) {
+				*typeIndex = i;
+				result = true;
+				break;
+			}
+		}
+		typeBits >>= 1;
 	}
-
-    // No memory types matched, return failure
-    return false;
+    return result;
 }
 
 VkResult Device::CreateSwapchainKHR( VkDevice device, const VkSwapchainCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain )

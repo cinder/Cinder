@@ -192,18 +192,7 @@ void NormalMappingApp::setup()
 		// load our shaders and set the non-varying uniforms
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset("normal_mapping_vert.glsl") )
-			.fragment( loadAsset("normal_mapping_frag.glsl") )
-			.binding( "ciBlock0",     0 )
-			.binding( "uDiffuseMap",  1 )
-			.binding( "uSpecularMap", 2 )
-			.binding( "uNormalMap" ,  3 )
-			.binding( "uEmmisiveMap", 4 )
-			.binding( "ciBlock1",     5 )
-			.binding( "ciBlock2",     6 )
-			.attribute( geom::Attrib::POSITION,    0, 0, vk::glsl_attr_vec4 )
-			.attribute( geom::Attrib::NORMAL,      1, 0, vk::glsl_attr_vec3 )
-			.attribute( geom::Attrib::TANGENT,     2, 0, vk::glsl_attr_vec3 )
-			.attribute( geom::Attrib::TEX_COORD_0, 3, 0, vk::glsl_attr_vec2 );
+			.fragment( loadAsset("normal_mapping_frag.glsl") );
 
 		mShaderNormalMapping = vk::GlslProg::create( format );
 
@@ -250,9 +239,6 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 		mCommandPool = vk::CommandPool::create( vk::context()->getDevice()->getGraphicsQueueFamilyIndex(), false, vk::context() );
 		mCommandBuffer = vk::CommandBuffer::create( mCommandPool->getCommandPool() );
 
-		auto vertexInputDesc = mMesh->getVertexInputDescription();
-		vertexInputDesc.setAttributeLocationsAndBindings( mShaderNormalMapping );
-
 		// Uniform buffer
 		mUniformSet = vk::UniformSet::create( mShaderNormalMapping->getUniformLayout() );
 		mUniformSet->uniform( "uDiffuseMap",  mDiffuseMap  );
@@ -273,27 +259,6 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 
 		// Pipeline layout
 		mPipelineLayout = vk::PipelineLayout::create( mDescriptorSetLayout );
-
-		// Pipeline
-		vk::Pipeline::Options pipelineOptions;
-		pipelineOptions.setTopology( mMesh->getPrimitive() );
-		pipelineOptions.setPipelineLayout( mPipelineLayout );
-		pipelineOptions.setRenderPass( vk::context()->getPresenter()->getCurrentRenderPass() );
-		pipelineOptions.setShaderProg( mShaderNormalMapping );
-		pipelineOptions.setCullModeBack();
-		pipelineOptions.setSamples( vk::context()->getPresenter()->getSamples() );
-		{
-			auto bindings = vertexInputDesc.getBindings();
-			for( const auto& binding : bindings ) {
-				pipelineOptions.addVertexBinding( binding );
-			}
-			//
-			auto attributes = vertexInputDesc.getAttributes();
-			for( const auto& attr : attributes ) {
-				pipelineOptions.addVertexAtrribute( attr );
-			}
-		}
-		mPipeline = vk::Pipeline::create( pipelineOptions, nullptr );
 
 		mClearValues[0].color.float32[0]		= 0.0f;
 		mClearValues[0].color.float32[1]		= 0.0f;
@@ -363,6 +328,32 @@ void NormalMappingApp::update()
 void NormalMappingApp::draw()
 {
 	if( isInitialized() ) {
+		if( ! mPipeline ) {
+			auto vertexInputDesc = mMesh->getVertexInputDescription();
+			vertexInputDesc.setAttributeLocationsAndBindings( mShaderNormalMapping );
+
+			// Pipeline
+			vk::Pipeline::Options pipelineOptions;
+			pipelineOptions.setTopology( mMesh->getPrimitive() );
+			pipelineOptions.setPipelineLayout( mPipelineLayout );
+			pipelineOptions.setRenderPass( vk::context()->getPresenter()->getCurrentRenderPass() );
+			pipelineOptions.setShaderProg( mShaderNormalMapping );
+			pipelineOptions.setCullModeBack();
+			pipelineOptions.setSamples( vk::context()->getPresenter()->getSamples() );
+			{
+				auto bindings = vertexInputDesc.getBindings();
+				for( const auto& binding : bindings ) {
+					pipelineOptions.addVertexBinding( binding );
+				}
+				//
+				auto attributes = vertexInputDesc.getAttributes();
+				for( const auto& attr : attributes ) {
+					pipelineOptions.addVertexAtrribute( attr );
+				}
+			}
+			mPipeline = vk::Pipeline::create( pipelineOptions, nullptr );
+		}
+
 		vk::disableAlphaBlending();
 
 		if( ! mDescriptorSet ) {

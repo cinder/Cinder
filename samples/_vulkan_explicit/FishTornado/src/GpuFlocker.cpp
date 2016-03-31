@@ -173,13 +173,13 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( passThrough )
-				.fragment( fragShader )
-				.binding( "ciBlock0", 0 )
-				.binding( "ciBlock1", 1 )
-				.binding( "uPosition", 2 )
-				.binding( "uVelocity", 3 )
-				.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-				.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
+				.fragment( fragShader );
+				//.binding( "ciBlock0", 0 )
+				//.binding( "ciBlock1", 1 )
+				//.binding( "uPosition", 2 )
+				//.binding( "uVelocity", 3 )
+				//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+				//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
 
 			mVelocityShader = vk::GlslProg::create( format );
 		}
@@ -191,13 +191,13 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 		try {
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( passThrough )
-				.fragment( loadAsset( "flocking/position.frag" ) )
-				.binding( "ciBlock0", 0 )
-				.binding( "ciBlock1", 1 )
-				.binding( "uPosition", 2 )
-				.binding( "uVelocity", 3 )
-				.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-				.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
+				.fragment( loadAsset( "flocking/position.frag" ) );
+				//.binding( "ciBlock0", 0 )
+				//.binding( "ciBlock1", 1 )
+				//.binding( "uPosition", 2 )
+				//.binding( "uVelocity", 3 )
+				//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+				//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
 
 			mPositionShader = vk::GlslProg::create( format );
 		}
@@ -209,20 +209,20 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 		try {
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( loadAsset( "flocking/render.vert" ) )
-				.fragment( loadAsset( "flocking/render.frag" ) )
-				.binding( "ciBlock0",     0 )
-				.binding( "uPrevPosTex",  1 )
-				.binding( "uCurrPosTex",  2 )
-				.binding( "uCurrVelTex",  3 )
-				.binding( "ciBlock1",     4 )
-				.binding( "uDiffuseTex",  5 )
-				.binding( "uNormalsTex",  6 )
-				.binding( "uSpecularTex", 7 )
-				.binding( "uCausticsTex", 8 )
-				.binding( "uShadowMap",   9 )
-				.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-				.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
-				.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 );
+				.fragment( loadAsset( "flocking/render.frag" ) );
+				//.binding( "ciBlock0",     0 )
+				//.binding( "uPrevPosTex",  1 )
+				//.binding( "uCurrPosTex",  2 )
+				//.binding( "uCurrVelTex",  3 )
+				//.binding( "ciBlock1",     4 )
+				//.binding( "uDiffuseTex",  5 )
+				//.binding( "uNormalsTex",  6 )
+				//.binding( "uSpecularTex", 7 )
+				//.binding( "uCausticsTex", 8 )
+				//.binding( "uShadowMap",   9 )
+				//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+				//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
+				//.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 );
 
 			mRenderShader = vk::GlslProg::create( format );
 		}
@@ -234,15 +234,15 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 		try {
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( loadAsset( "flocking/depth.vert" ) )
-				.fragment( loadAsset( "flocking/depth.frag" ) )
-				.binding( "ciBlock0", 0 )
-				.binding( "uPrevPosTex", 1 )
-				.binding( "uCurrPosTex", 2 )
-				.binding( "uCurrVelTex", 3 )
-				.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-				.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
-				.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 )
-				.attribute( geom::Attrib::USER_DEFINED, 3, 0, vk::glsl_attr_vec3 );
+				.fragment( loadAsset( "flocking/depth.frag" ) );
+				//.binding( "ciBlock0", 0 )
+				//.binding( "uPrevPosTex", 1 )
+				//.binding( "uCurrPosTex", 2 )
+				//.binding( "uCurrVelTex", 3 )
+				//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
+				//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
+				//.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 )
+				//.attribute( geom::Attrib::USER_DEFINED, 3, 0, vk::glsl_attr_vec3 );
 				//.uniformLayout( uniformLayout );
 
 			mDepthShader = vk::GlslProg::create( format );

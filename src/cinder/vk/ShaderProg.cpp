@@ -39,16 +39,14 @@
 #include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Device.h"
-#include "cinder/Utilities.h"
-#include "cinder/Log.h"
-//
 #include "cinder/vk/gl_types.h"
 #include "cinder/vk/glsl_types.h"
+#include "cinder/Utilities.h"
+#include "cinder/Log.h"
 
 #include "SPIRV/GlslangToSpv.h"
 
-#include "cinder/app/App.h"
-using ci::app::console;
+#include "./spir2cross/spir2cpp.hpp"
 
 #include <algorithm>
 
@@ -369,7 +367,7 @@ EShLanguage findLanguage(const VkShaderStageFlagBits shader_type)
 // Compile a given string containing GLSL into SPV for use by VK
 // Return value of false means an error was encountered.
 //
-static bool glslToSpv( const VkShaderStageFlagBits shader_type, const char *pshader, std::vector<unsigned int> &spirv )
+static bool glslToSpv( const VkShaderStageFlagBits shader_type, const char *pshader, std::vector<uint32_t> &spirv )
 {
     glslang::TProgram& program = *new glslang::TProgram;
     const char *shaderStrings[1];
@@ -430,76 +428,6 @@ static void sFinializeGlSlang()
 	}
 }
 
-//void compileToSpirv( VkDevice device, VkShaderStageFlagBits shaderStage, const std::string &glslText, VkPipelineShaderStageCreateInfo* outShaderStageInfo )
-//{
-//	outShaderStageInfo->sType				= VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-//	outShaderStageInfo->pNext				= nullptr;
-//	outShaderStageInfo->pSpecializationInfo	= nullptr;
-//	outShaderStageInfo->flags				= 0;
-//	outShaderStageInfo->stage				= shaderStage;
-//	outShaderStageInfo->pName				= "main";
-//
-//	std::vector<unsigned int> spirv;
-//	bool U_ASSERT_ONLY retVal = glslToSpv( shaderStage, glslText.c_str(), spirv );
-//
-//	VkShaderModuleCreateInfo moduleCreateInfo;
-//	moduleCreateInfo.sType		= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-//	moduleCreateInfo.pNext		= nullptr;
-//	moduleCreateInfo.flags		= 0;
-//	moduleCreateInfo.codeSize	= spirv.size() * sizeof(unsigned int);
-//	moduleCreateInfo.pCode		= spirv.data();
-//	VkResult U_ASSERT_ONLY res = vkCreateShaderModule( device, &moduleCreateInfo, nullptr, &(outShaderStageInfo->module) );
-//	assert(res == VK_SUCCESS);
-//}
-
-/*
-struct UniformBufferInfo {
-	struct Uniform {
-		int				index;
-		std::string		name;
-		GlslUniformDataType	type;
-		int				offset;
-		int				size;
-	};
-
-	struct Block {
-		int						index;
-		std::string				name;
-		int						size;
-		std::vector<Uniform>	uniforms;
-	};
-
-	std::vector<Block> blocks;
-
-	friend std::ostream& operator<<( std::ostream& os, const UniformBufferInfo& obj ) {
-		os << "Uniform buffer info (" << obj.blocks.size() << " blocks)" << "\n";
-		for( size_t bi = 0; bi < obj.blocks.size(); ++bi ) {
-			auto& block = obj.blocks[bi];
-			os << "  " << "Block " << block.name << " (" << (bi+1) << "/" << obj.blocks.size() << ")" << "\n";
-			os << "  " <<  "  " << "size     : " << block.size << " bytes \n";
-			os << "  " <<  "  " << "uniforms : " << block.uniforms.size() << "\n";
-			for( size_t ui = 0; ui < block.uniforms.size(); ++ui ) {
-				auto& uniform = block.uniforms[ui];
-				os << "  " << "  " << "  " << "Uniform " << uniform.name << " (" << (ui+1) << "/" << block.uniforms.size() << ")" << "\n";
-				os << "  " << "  " << "  " << "  " << "type       : " << glslUniformDataTypeStr( uniform.type ) << "\n";
-				os << "  " << "  " << "  " << "  " << "offset     : " << uniform.offset << "\n";
-				os << "  " << "  " << "  " << "  " << "array size : " << uniform.size << "\n";
-			}
-		}
-		return os;
-	}
-};
-*/
-
-//void replaceAll( std::string& subject, const std::string& search, const std::string& replace ) \
-//{
-//	size_t pos = 0;
-//	while((pos = subject.find( search, pos )) != std::string::npos ) {
-//		subject.replace( pos, search.length(), replace );
-//		pos += replace.length();
-//	}
-//}
-
 void removeComments( std::string& glslText )
 {
 	std::vector<std::string> lines = ci::split( glslText, "\n\r" );
@@ -519,143 +447,47 @@ void removeComments( std::string& glslText )
 	}
 }
 
-UniformLayout extractUniformlayout( const std::vector<std::pair<VkPipelineShaderStageCreateInfo*, const std::string*>> shaderBuildData, std::function<std::string(const std::string&)> blockNameTranslateFn )
+void printResource( const std::string& prefix, const spir2cross::Compiler& compiler, const spir2cross::Resource& res )
 {
-	UniformLayout result;
+	uint64_t mask = compiler.get_decoration_mask( res.id );
+	auto& type = compiler.get_type( res.type_id );
 
-    glslang::TProgram& program = *new glslang::TProgram;
-    const char *shaderStrings[1];
-    TBuiltInResource Resources;
-    initResources(Resources);
+	// Push constant
+	bool isPushConstant = ( spv::StorageClassPushConstant == compiler.get_storage_class( res.id ) );
+	// Block
+	bool isBlock = ( 0 != ( compiler.get_decoration_mask( type.self ) & ( ( 1ULL << spv::DecorationBlock ) | ( 1ULL << spv::DecorationBufferBlock ) ) ) );
+	// Fallback Id
+	uint32_t fallbackId = ( ( ! isPushConstant ) && isBlock ) ? res.type_id : res.id;
+	// Name
+	std::string name = ( ! res.name.empty() ) ? res.name : compiler.get_fallback_name( fallbackId );
 
-    // Enable SPIR-V and Vulkan rules when parsing GLSL
-    EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
-
-	for( auto& shaderData : shaderBuildData ) {
-		auto shaderType = shaderData.first->stage;
-		EShLanguage stage = findLanguage(shaderType);
-		glslang::TShader* shader = new glslang::TShader(stage);
-
-		shaderStrings[0] = shaderData.second->c_str();
-		shader->setStrings(shaderStrings, 1);
-
-		if (! shader->parse(&Resources, 100, false, messages)) {
-			puts(shader->getInfoLog());
-			puts(shader->getInfoDebugLog());
-			std::string msg = shader->getInfoLog();
-			throw std::runtime_error( msg );
-		}
-
-		program.addShader(shader);
-	}
-
-    //
-    // Program-level processing...
-    //
-
-    if (! program.link(messages)) {
-        puts(program.getInfoLog());
-        puts(program.getInfoDebugLog());
-		std::string msg = program.getInfoLog();
-		throw std::runtime_error( msg );
-    }
-
-	if( program.buildReflection() ) {
-		std::vector<std::string> blockNames;
-		int numLiveBlocks = program.getNumLiveUniformBlocks();
-		for( int blockIndex = 0; blockIndex < numLiveBlocks; ++blockIndex ) {
-			std::string name = program.getUniformBlockName( blockIndex );
-			size_t size = program.getUniformBlockSize( blockIndex );
-			// Round up to next multiple of 16			
-			size_t paddedSize = ( size + 15 ) & ( ~15 );
-			if( size != paddedSize ) {
-				CI_LOG_I( "Padded uniform block " << name << " from " << size << " bytes to " << paddedSize << " bytes" );
-			}
-			name = blockNameTranslateFn( name );
-			result.setBlockSizeBytes( name, paddedSize );
-		}
-
-		int numUniformVars = program.getNumLiveUniformVariables();
-		for( int index = 0; index < numUniformVars; ++index ) {
-			std::string	name				= program.getUniformName( index );
-			GlslUniformDataType dataType	= glslUniformDataTypeFromConstant( program.getUniformType( index ) );
-			uint32_t offset					= program.getUniformBufferOffset( index );
-			uint32_t arraySize				= program.getUniformArraySize( index );
-			// Translate the name since glslang parses the type name instead of the instance name for blocks.
-			if( glslUniformDataTypeIsMathType( dataType ) ) {
-				name = blockNameTranslateFn( name );
-			}
-			result.addUniform( name, dataType, offset, arraySize );
-		}
-	}
-
-	result.sortUniformsByOffset();
-
-/*
-	// Extract uniforms
-	if( program.buildReflection() ) {
-		result.blocks.resize( program.getNumLiveUniformBlocks() );
-
-		for( int blockIndex = 0; blockIndex < static_cast<int>( result.blocks.size() ); ++blockIndex ) {
-			auto& block = result.blocks[blockIndex];
-			block.index = blockIndex;
-			block.name  = program.getUniformBlockName( blockIndex );
-			block.size  = program.getUniformBlockSize( blockIndex );
-		}
-
-		int numUniformVars = program.getNumLiveUniformVariables();
-		for( int index = 0; index < numUniformVars; ++index ) {
-			UniformBufferInfo::Uniform uniform;
-			uniform.index  = index;
-			uniform.name   = program.getUniformName( index );
-			uniform.type   = glslUniformDataTypeFromConstant( program.getUniformType( index ) );
-			uniform.offset = program.getUniformBufferOffset( index );
-			uniform.size   = program.getUniformArraySize( index );
-
-			// Uniform block variables (float, vec3, mat4, etc) will return a dim > 0, samplers, images, etc will return 0.
-			if( ! glslUniformDataTypeDim( uniform.type ) ) {
-				continue;
-			}
-
-			size_t blockIndex = program.getUniformBlockIndex( index );
-			result.blocks[blockIndex].uniforms.push_back( uniform );
-		}
-
-		for( auto& block : result.blocks ) {
-			if( block.uniforms.empty() ) {
-				continue;
-			}
-
-			std::sort(
-				std::begin( block.uniforms ),
-				std::end( block.uniforms ),
-				[]( const UniformBufferInfo::Uniform& a, const UniformBufferInfo::Uniform& b ) -> bool {
-					return a.offset < b.offset;
-				}
-			);
-		}
-	}
-*/
-
-	return result;
+	CI_LOG_I( "(" << prefix << ") : " << name );
 }
 
-void compileToSpirv( VkDevice device, std::pair<VkPipelineShaderStageCreateInfo*, const std::string*>* inOutShader )
+bool compileGlslToSpirv( VkDevice device, std::pair<VkPipelineShaderStageCreateInfo*, const std::string*>* inOutShader, std::vector<uint32_t>* outSpirv )
 {
 	auto shaderStage = inOutShader->first->stage;
 	const char *glslText = inOutShader->second->c_str();
 
-	std::vector<unsigned int> spirv;
-	bool U_ASSERT_ONLY retVal = glslToSpv( shaderStage, glslText, spirv );
+	std::vector<uint32_t> spirv;
+	bool retVal = glslToSpv( shaderStage, glslText, spirv );
 
-	VkShaderModuleCreateInfo moduleCreateInfo;
-	moduleCreateInfo.sType		= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	moduleCreateInfo.pNext		= nullptr;
-	moduleCreateInfo.flags		= 0;
-	moduleCreateInfo.codeSize	= spirv.size() * sizeof(unsigned int);
-	moduleCreateInfo.pCode		= spirv.data();
-	VkResult U_ASSERT_ONLY res = vkCreateShaderModule( device, &moduleCreateInfo, nullptr, &(inOutShader->first->module) );
-	assert(res == VK_SUCCESS);
+	if( retVal ) {
+		VkShaderModuleCreateInfo moduleCreateInfo;
+		moduleCreateInfo.sType		= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		moduleCreateInfo.pNext		= nullptr;
+		moduleCreateInfo.flags		= 0;
+		moduleCreateInfo.codeSize	= spirv.size() * sizeof(unsigned int);
+		moduleCreateInfo.pCode		= spirv.data();
+		VkResult res = vkCreateShaderModule( device, &moduleCreateInfo, nullptr, &(inOutShader->first->module) );
+		assert( VK_SUCCESS == res );
+
+		if( nullptr != outSpirv ) {
+			*outSpirv = spirv;
+		}
+	}
+
+	return retVal;
 }
 
 std::string loadShaderSource( const std::string& source, const fs::path& path )
@@ -667,6 +499,132 @@ std::string loadShaderSource( const std::string& source, const fs::path& path )
 			ci::Buffer buffer( dataSource );
 			result = std::string( static_cast<const char*>( buffer.getData() ), buffer.getSize() );
 		}
+	}
+	return result;
+}
+
+GlslAttributeDataType spirTypeToGlslAttributeDataType( const spir2cross::SPIRType& spirType )
+{
+	GlslAttributeDataType result = vk::glsl_attr_unknown;
+	switch( spirType.basetype ) {
+		case spir2cross::SPIRType::Bool: {
+			switch( spirType.vecsize ) {
+				case 1: result = glsl_attr_bool; break;
+				case 2: result = glsl_attr_bvec2; break;
+				case 3: result = glsl_attr_bvec3; break;
+				case 4: result = glsl_attr_bvec4; break;
+			}
+		}
+		break;
+
+		case spir2cross::SPIRType::Int: {
+			switch( spirType.vecsize ) {
+				case 1: result = glsl_attr_int; break;
+				case 2: result = glsl_attr_ivec2; break;
+				case 3: result = glsl_attr_ivec3; break;
+				case 4: result = glsl_attr_ivec4; break;
+			}
+		}
+		break;
+
+		case spir2cross::SPIRType::UInt: {
+			switch( spirType.vecsize ) {
+				case 1: result = glsl_attr_unsigned_int; break;
+				case 2: result = glsl_attr_uvec2; break;
+				case 3: result = glsl_attr_uvec3; break;
+				case 4: result = glsl_attr_uvec4; break;
+			}
+		}
+		break;
+
+		case spir2cross::SPIRType::Float: {
+			switch( spirType.vecsize ) {
+				case 1: result = glsl_attr_float; break;
+				case 2: result = glsl_attr_vec2; break;
+				case 3: result = glsl_attr_vec3; break;
+				case 4: result = glsl_attr_vec4; break;
+			}
+		}
+		break;
+	}
+	return result;
+}
+
+GlslUniformDataType spirTypeToGlslUniformDataType( const spir2cross::SPIRType& spirType )
+{
+	GlslUniformDataType result = vk::glsl_unknown;
+	switch( spirType.basetype ) {
+		case spir2cross::SPIRType::Bool: {
+			switch( spirType.vecsize ) {
+				case 1: result = glsl_bool; break;
+				case 2: result = glsl_bvec2; break;
+				case 3: result = glsl_bvec3; break;
+				case 4: result = glsl_bvec4; break;
+			}
+		}
+		break;
+
+		case spir2cross::SPIRType::Int: {
+			switch( spirType.vecsize ) {
+				case 1: result = glsl_int; break;
+				case 2: result = glsl_ivec2; break;
+				case 3: result = glsl_ivec3; break;
+				case 4: result = glsl_ivec4; break;
+			}
+		}
+		break;
+
+		case spir2cross::SPIRType::UInt: {
+			switch( spirType.vecsize ) {
+				case 1: result = glsl_unsigned_int; break;
+				case 2: result = glsl_uvec2; break;
+				case 3: result = glsl_uvec3; break;
+				case 4: result = glsl_uvec4; break;
+			}
+		}
+		break;
+
+		case spir2cross::SPIRType::Float: {
+			switch( spirType.columns ) {
+				case 1: {
+					switch( spirType.vecsize ) {
+						case 1: result = glsl_float; break;
+						case 2: result = glsl_vec2; break;
+						case 3: result = glsl_vec3; break;
+						case 4: result = glsl_vec4; break;
+					}
+				}
+				break;
+
+				case 2: {
+					switch( spirType.vecsize ) {
+						case 2: result = glsl_mat2; break;
+						case 3: result = glsl_mat2x3; break;
+						case 4: result = glsl_mat2x4; break;
+					}
+				}
+				break;
+
+				case 3: {
+					switch( spirType.vecsize ) {
+						case 2: result = glsl_mat3x2; break;
+						case 3: result = glsl_mat3; break;
+						case 4: result = glsl_mat3x4; break;
+					}
+				}
+				break;
+
+				case 4: {
+					switch( spirType.vecsize ) {
+						case 2: result = glsl_mat4x2; break;
+						case 3: result = glsl_mat4x3; break;
+						case 4: result = glsl_mat4; break;
+					}
+				}
+				break;
+			}
+		}
+		break;
 	}
 	return result;
 }
@@ -688,14 +646,6 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 
 	// Copy attributes
 	mAttributes = format.mAttributes;	
-	// Build a preferred vertex layout
-	for( const auto &attrib : mAttributes ) {
-		geom::Attrib semantic = attrib.getSemantic();
-		uint8_t dim = glslAttributeTypeDim( attrib.getType() );
-		if( dim ) {
-			mVertexLayout.attrib( semantic, dim );
-		}
-	}
 
 	// Preallocate the shader stages because we're paranoid
 	size_t numShaderStages = 0;
@@ -771,24 +721,113 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 
 		sInitializeGlSlang();
 
-		// Copy if we have them, otherwise extract from the shader
-		if( format.userDefinedUniformLayout() ) {
-			mUniformLayout = format.mUniformLayout;
-		}
-		else {
-			// @TODO: Add some checking for uniform block bindings so that block merges are properly identified.
-			auto blockNameTranslateFn = format.mBlockNameTranslateFn ? format.mBlockNameTranslateFn : ShaderProg::defaultBlockNameTranslate;
-			mUniformLayout = extractUniformlayout( shaderBuildData, blockNameTranslateFn );
-		}
+		// Build each stage separate as required by Vulkan
+		for( auto& shader : shaderBuildData ) {
+			std::vector<uint32_t> spirv;
+			bool isCompileSuccessful = compileGlslToSpirv( mDevice->getDevice(), &shader, &spirv );
+			if( isCompileSuccessful ) {
+				auto backCompiler = std::unique_ptr<spir2cross::CompilerGLSL>( new spir2cross::CompilerGLSL( spirv ) );
+				if( backCompiler ) {
+					VkPipelineShaderStageCreateInfo* shaderStageInfo = shader.first;
 
-		// Match up bindings name and number
-		for( auto& bindingElem : mUniformLayout.getBindings() ) {
-			auto it = format.mBindings.find( bindingElem.getName() );
-			if( it == format.mBindings.end() ) {
-				continue;
+					// Extract attributes from vertex shader stage
+					if( VK_SHADER_STAGE_VERTEX_BIT == shaderStageInfo->stage ) {
+						for( auto& res : backCompiler->get_shader_resources().stage_inputs ) {
+							spir2cross::SPIRType  spirType     = backCompiler->get_type( res.type_id );
+							std::string           attrName     = res.name;
+							uint32_t              attrLocation = backCompiler->get_decoration( res.id, spv::DecorationLocation );
+							uint32_t              attrBinding  = 0;
+							GlslAttributeDataType attrDataType = spirTypeToGlslAttributeDataType( spirType );
+							geom::Attrib          attrSemantic = attributeNameToSemantic( res.name );
+
+							if( glsl_attr_unknown == attrDataType ) {
+								CI_LOG_W( "Unable to determine data type for vertex shader attr " << attrName );
+								continue;
+							}
+
+							auto it = std::find_if(
+								std::begin( mAttributes ), std::end( mAttributes ),
+								[attrName]( const ShaderProg::Attribute& elem ) -> bool {
+									return elem.getName() == attrName;
+								}
+							);
+
+							// Update
+							if( std::end( mAttributes ) != it ) {
+								ShaderProg::Attribute& attr = *it;
+								attr.mLocation = attrLocation;
+								attr.mBinding  = attrBinding;
+								attr.mType     = attrDataType;
+								attr.mSemantic = attrSemantic;
+							}
+							// Add
+							else {
+								ShaderProg::Attribute attr = ShaderProg::Attribute( attrName, attrSemantic, static_cast<int32_t>( attrLocation ), static_cast<int32_t>( attrBinding ), attrDataType );
+								mAttributes.push_back( attr );
+							}
+						}
+
+						std::sort( 
+							std::begin( mAttributes ), std::end( mAttributes ),
+							[]( const ShaderProg::Attribute& a, const ShaderProg::Attribute& b ) -> bool {
+								return a.getLocation() < b.getLocation();
+							}
+						);
+					}
+
+					if( ! format.userDefinedUniformLayout() ) {
+						// Extract uniform blocks from all shader stages
+						for( auto& res : backCompiler->get_shader_resources().uniform_buffers ) {
+							const uint64_t kBlockMask = ( 1ULL << spv::DecorationBlock ) | ( 1ULL << spv::DecorationBufferBlock );
+
+							auto&    typeInfo       = backCompiler->get_type( res.type_id );
+							bool     isPushConstant = ( spv::StorageClassPushConstant == backCompiler->get_storage_class( res.id ) );
+							bool     isBlock        = ( 0 != ( backCompiler->get_decoration_mask( typeInfo.self ) & kBlockMask  ) );
+							uint32_t typeId         = ( ( ! isPushConstant && isBlock ) ? res.type_id : res.id );
+
+							std::string bindingName   = backCompiler->get_name( res.id );
+							uint32_t    bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+							uint32_t    bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+
+							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::BLOCK, bindingName, bindingNumber, bindingSet );
+							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
+
+							for( uint32_t index = 0; index < typeInfo.member_types.size(); ++index ) {
+								std::string         memberName     = backCompiler->get_member_name( res.type_id, index );								
+								uint32_t            memberId       = typeInfo.member_types[index];
+								auto&               memberTypeInfo = backCompiler->get_type( memberId );
+								uint32_t            memberOffset   = backCompiler->get_member_decoration( res.type_id, index, spv::DecorationOffset );
+								GlslUniformDataType memberDataType = spirTypeToGlslUniformDataType( memberTypeInfo );
+
+								std::string uniformName = bindingName + "." + memberName;
+								mUniformLayout.addUniform( uniformName, memberDataType, memberOffset );
+							}
+
+							// Block size
+							size_t blockSize = backCompiler->get_declared_struct_size( typeInfo );
+
+							// Round up to next multiple of 16			
+							size_t paddedSize = ( blockSize + 15 ) & ( ~15 );
+							if( blockSize != paddedSize ) {
+								CI_LOG_I( "Padded uniform block " << bindingName << " from " << blockSize << " bytes to " << paddedSize << " bytes" );
+							}
+
+							mUniformLayout.setBlockSizeBytes( bindingName, paddedSize );
+							mUniformLayout.sortUniformsByOffset();
+						}
+
+						// Extract samplers from all shader stages
+						for( auto& res : backCompiler->get_shader_resources().sampled_images ) {
+							std::string bindingName   = backCompiler->get_name( res.id );
+							uint32_t    bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+							uint32_t    bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+							
+							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::SAMPLER, bindingName, bindingNumber, bindingSet );
+							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
+						}
+					}
+				}
 			}
-			const auto& binding = it->second;
-			mUniformLayout.setBinding( bindingElem.getName(), binding.bindingNumber, binding.setNumber );
 		}
 
 		// Process sets
@@ -802,14 +841,23 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 			for( const auto& it : format.mSets ) {
 				mUniformLayout.setSet( it.first, it.second );
 			}
-		}
 
-		// Build each stage separate as required by Vulkan
-		for( auto& shader : shaderBuildData ) {
-			compileToSpirv( mDevice->getDevice(), &shader );
+			// If no sets by now, add a default set with set number 0.
+			if( mUniformLayout.getSets().empty() ) {
+				mUniformLayout.setSet( 0, CHANGES_DONTCARE );
+			}
 		}
 
 		sFinializeGlSlang();
+	}
+
+	// Build a preferred vertex layout
+	for( const auto &attrib : mAttributes ) {
+		geom::Attrib semantic = attrib.getSemantic();
+		uint8_t dim = glslAttributeTypeDim( attrib.getType() );
+		if( dim ) {
+			mVertexLayout.attrib( semantic, dim );
+		}
 	}
 
 	mDevice->trackedObjectCreated( this );
@@ -939,28 +987,6 @@ void ShaderProg::uniform( const std::string& name, const TextureBaseRef& texture
 {
 	mUniformLayout.uniform( name, texture );
 }
-
-/*
-void ShaderProg::sampler2D(const std::string& name, const TextureBaseRef& texture)
-{
-	//mUniformLayout.updateDefaultSamplerTexture( name, texture );
-}
-
-void ShaderProg::sampler2DRect( const std::string& name, const TextureBaseRef& texture )
-{
-	//mUniformLayout.updateDefaultSamplerTexture( name, texture );
-}
-
-void ShaderProg::sampler2DShadow( const std::string& name, const TextureBaseRef& texture )
-{
-	//mUniformLayout.updateDefaultSamplerTexture( name, texture );
-}
-
-void ShaderProg::samplerCube( const std::string& name, const TextureBaseRef& texture )
-{
-	//mUniformLayout.updateDefaultSamplerTexture( name, texture );
-}
-*/
 
 std::string ShaderProg::defaultBlockNameTranslate( const std::string& name )
 {

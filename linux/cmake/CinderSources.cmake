@@ -312,10 +312,14 @@ if( NOT CINDER_GL_ES )
 			${CINDER_SRC_DIR}/cinder/vk/TextureFont.cpp
 			${CINDER_SRC_DIR}/cinder/vk/UniformBuffer.cpp
 			${CINDER_SRC_DIR}/cinder/vk/UniformLayout.cpp
+			${CINDER_SRC_DIR}/cinder/vk/Util.cpp
 			${CINDER_SRC_DIR}/cinder/vk/VertexBuffer.cpp
 			${CINDER_SRC_DIR}/cinder/vk/VertexBufferMesh.cpp
 			${CINDER_SRC_DIR}/cinder/vk/wrapper.cpp
 			${CINDER_SRC_DIR}/cinder/vk/util/farmhash.cc
+			${CINDER_SRC_DIR}/cinder/vk/spir2cross/spir2cpp.cpp
+			${CINDER_SRC_DIR}/cinder/vk/spir2cross/spir2cross.cpp
+			${CINDER_SRC_DIR}/cinder/vk/spir2cross/spir2glsl.cpp
 		)
 	endif()
 endif()
