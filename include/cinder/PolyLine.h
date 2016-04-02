@@ -51,6 +51,11 @@ class PolyLineT {
 	void				setClosed( bool aClosed = true ) { mClosed = aClosed; }
 	bool				isClosed() const { return mClosed; }
 
+	//! Returns \c true if PolyLine is clockwise-oriented. If \a isColinear is non-null, it receives \c true if all points are colinear
+	bool  isClockwise( bool *isColinear = nullptr ) const;
+	//! Returns \c true if PolyLine is counterclockwise-oriented. If \a isColinear is non-null, it receives \c true if all points are colinear
+	bool  isCounterClockwise( bool *isColinear = nullptr ) const;
+
 	T			getPosition( float t ) const;
 	T			getDerivative( float t ) const;
 

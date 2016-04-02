@@ -29,6 +29,51 @@
 
 namespace cinder {
 
+
+template<typename T>
+bool PolyLineT<T>::isClockwise( bool *isColinear ) const
+{
+	if( mPoints.size() < 3 ) {
+		if( isColinear != nullptr ) *isColinear = true;
+		return false;
+	}
+
+	size_t last = mPoints.size() - 1;
+	// If the first and last point are the same (on a closed polygon), ignore one.
+	if( mPoints.front() == mPoints.back() ) --last;
+
+	// Find an extreme point since we know it will be on the hull...
+	size_t smallest = 0;
+	for( size_t i = 1; i <= last; ++i ) {
+		if( mPoints[i].x < mPoints[smallest].x ) {
+			smallest = i;
+		} else if( mPoints[i].x == mPoints[smallest].x && mPoints[i].y < mPoints[smallest].y ) {
+			smallest = i;
+		}
+	};
+	// ...then get the next and previous point
+	size_t prev = ( smallest == 0 )    ? last : ( smallest - 1 );
+	size_t next = ( smallest == last ) ? 0    : ( smallest + 1 );
+	vec2 a = mPoints[next], b = mPoints[smallest], c = mPoints[prev];
+
+	// The sign of the determinate indicates the orientation:
+	//   positive is clockwise
+	//   zero is colinear
+	//   negative is counterclockwise
+	double determinate = ( b.x - a.x ) * ( c.y - a.y ) - ( c.x - a.x ) * ( b.y - a.y );
+	if( isColinear != nullptr ) *isColinear = determinate == 0.0;
+	return determinate > 0.0;
+}
+
+template<typename T>
+bool PolyLineT<T>::isCounterClockwise( bool *isColinear ) const
+{
+	bool colinear;
+	bool clockwise = this->isClockwise( &colinear );
+	if( isColinear != nullptr ) *isColinear = colinear;
+	return colinear ? false : !clockwise;
+}
+
 template<typename T>
 T PolyLineT<T>::getPosition( float t ) const
 {
