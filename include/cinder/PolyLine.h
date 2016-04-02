@@ -31,7 +31,7 @@ template<typename T>
 class PolyLineT {
   public:
 	PolyLineT() : mClosed( false ) {}
-	PolyLineT( const std::vector<T> &aPoints ) : mPoints( aPoints ), mClosed( false ) {}
+	PolyLineT( const std::vector<T> &aPoints, bool closed = false ) : mPoints( aPoints ), mClosed( closed ) {}
 	
 	const std::vector<T>&	getPoints() const { return mPoints; }
 	std::vector<T>&			getPoints() { return mPoints; }
