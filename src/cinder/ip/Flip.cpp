@@ -31,7 +31,7 @@ namespace cinder { namespace ip {
 template<typename T>
 void flipVertical( SurfaceT<T> *surface )
 {
-	const int32_t rowBytes = surface->getRowBytes();
+	const size_t rowBytes = surface->getRowBytes();
 	unique_ptr<uint8_t[]> buffer( new uint8_t[rowBytes] );
 	
 	const int32_t lastRow = surface->getHeight() - 1;
@@ -47,7 +47,7 @@ namespace { // anonymous
 template<typename T>
 void flipVerticalRawSameChannelOrder( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface, const ivec2 &size )
 {
-	const int32_t srcPixelInc = srcSurface.getPixelInc();
+	const size_t srcPixelInc = srcSurface.getPixelInc();
 	const size_t copyBytes = size.x * srcPixelInc * sizeof(T);
 	for( int32_t y = 0; y < size.y; ++y ) {
 		const T *srcPtr = srcSurface.getData( ivec2( 0, y ) );
@@ -159,7 +159,7 @@ void flipVertical( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel )
 	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), destChannel->getBounds(), destChannel->getBounds(), ivec2(0,0) );
 	
 	if( srcChannel.isPlanar() && destChannel->isPlanar() ) { // both channels are planar, so do a series of memcpy()'s
-		const int32_t srcPixelInc = srcChannel.getIncrement();
+		const size_t srcPixelInc = srcChannel.getIncrement();
 		const size_t copyBytes = srcDst.first.getWidth() * srcPixelInc * sizeof(T);
 		for( int32_t y = 0; y < srcDst.first.getHeight(); ++y ) {
 			const T *srcPtr = srcChannel.getData( ivec2( 0, y ) );

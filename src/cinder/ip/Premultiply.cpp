@@ -39,8 +39,8 @@ void premultiply( SurfaceT<T> *surface )
 
 	surface->setPremultiplied( true );
 
-	int32_t rowBytes = surface->getRowBytes();
-	uint8_t pixelInc = surface->getPixelInc();
+	size_t rowBytes = surface->getRowBytes();
+	size_t pixelInc = surface->getPixelInc();
 	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset(), alphaOffset = surface->getAlphaOffset();
 	for( int32_t y = clippedArea.getY1(); y < clippedArea.getY2(); ++y ) {
 		T *dstPtr = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( surface->getData() + clippedArea.getX1() * pixelInc ) + y * rowBytes );
@@ -67,8 +67,8 @@ void unpremultiply<uint8_t>( SurfaceT<uint8_t> *surface )
 
 	surface->setPremultiplied( false );
 
-	int32_t rowBytes = surface->getRowBytes();
-	uint8_t pixelInc = surface->getPixelInc();
+	size_t rowBytes = surface->getRowBytes();
+	size_t pixelInc = surface->getPixelInc();
 	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset(), alphaOffset = surface->getAlphaOffset();
 	for( int32_t y = clippedArea.getY1(); y < clippedArea.getY2(); ++y ) {
 		uint8_t *dstPtr = reinterpret_cast<uint8_t*>( surface->getData() + clippedArea.getX1() * pixelInc ) + y * rowBytes;
@@ -96,8 +96,8 @@ void unpremultiply<float>( SurfaceT<float> *surface )
 
 	surface->setPremultiplied( false );
 
-	int32_t rowBytes = surface->getRowBytes();
-	uint8_t pixelInc = surface->getPixelInc();
+	size_t rowBytes = surface->getRowBytes();
+	size_t pixelInc = surface->getPixelInc();
 	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset(), alphaOffset = surface->getAlphaOffset();
 	for( int32_t y = clippedArea.getY1(); y < clippedArea.getY2(); ++y ) {
 		float *dstPtr = reinterpret_cast<float*>( reinterpret_cast<uint8_t*>( surface->getData() + clippedArea.getX1() * pixelInc ) + y * rowBytes );

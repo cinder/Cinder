@@ -30,8 +30,8 @@ void checkerboard_impl( SurfaceT<T> *surface, const Area &area, int32_t tileSize
 {
 	const Area clippedArea = area.getClipBy( surface->getBounds() );
 
-	int32_t rowBytes = surface->getRowBytes();
-	uint8_t pixelInc = surface->getPixelInc();
+	size_t rowBytes = surface->getRowBytes();
+	size_t pixelInc = surface->getPixelInc();
 	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset();
 	for( int32_t y = clippedArea.getY1(); y < clippedArea.getY2(); ++y ) {
 		T *dstPtr = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( surface->getData() + clippedArea.getX1() * pixelInc ) + y * rowBytes );
@@ -57,8 +57,8 @@ void checkerboard_impl( SurfaceT<T> *surface, const Area &area, int32_t tileSize
 	
 	const Area clippedArea = area.getClipBy( surface->getBounds() );
 
-	int32_t rowBytes = surface->getRowBytes();
-	uint8_t pixelInc = surface->getPixelInc();
+	size_t rowBytes = surface->getRowBytes();
+	size_t pixelInc = surface->getPixelInc();
 	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset(), alphaOffset = surface->getAlphaOffset();
 	for( int32_t y = clippedArea.getY1(); y < clippedArea.getY2(); ++y ) {
 		T *dstPtr = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( surface->getData() + clippedArea.getX1() * pixelInc ) + y * rowBytes );
