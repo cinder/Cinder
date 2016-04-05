@@ -5,7 +5,7 @@
 /*    ANSI-specific library and header configuration file (specification   */
 /*    only).                                                               */
 /*                                                                         */
-/*  Copyright 2002-2007, 2009, 2011-2012 by                                */
+/*  Copyright 2002-2015 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -106,8 +106,6 @@
 #define ft_fread    fread
 #define ft_fseek    fseek
 #define ft_ftell    ftell
-
-#pragma warning( disable : 4996 )
 #define ft_sprintf  sprintf
 
 
@@ -143,8 +141,7 @@
   /**********************************************************************/
 
 
-#define ft_atol   atol
-#define ft_labs   labs
+#define ft_atol  atol
 
 
   /**********************************************************************/

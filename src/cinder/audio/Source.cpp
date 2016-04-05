@@ -31,6 +31,8 @@
 	#include "cinder/audio/cocoa/FileCoreAudio.h"
 #elif defined( CINDER_MSW )
 	#include "cinder/audio/msw/FileMediaFoundation.h"
+#elif defined( CINDER_LINUX )
+ 	#include "cinder/audio/linux/FileAudioLoader.h"
 #endif
 
 using namespace std;
@@ -55,6 +57,8 @@ unique_ptr<SourceFile> SourceFile::create( const DataSourceRef &dataSource, size
 		result.reset( new cocoa::SourceFileCoreAudio( dataSource, sampleRate ) );
 #elif defined( CINDER_MSW )
 		result.reset( new msw::SourceFileMediaFoundation( dataSource, sampleRate ) );
+#elif defined( CINDER_LINUX )
+		result.reset( new linux::SourceFileAudioLoader( dataSource, sampleRate ) );		
 #endif
 	}
 
@@ -71,6 +75,8 @@ vector<std::string> SourceFile::getSupportedExtensions()
 	vector<string> result = cocoa::SourceFileCoreAudio::getSupportedExtensions();
 #elif defined( CINDER_MSW )
 	vector<string> result = msw::SourceFileMediaFoundation::getSupportedExtensions();
+#elif defined( CINDER_LINUX )	
+	vector<string> result = linux::SourceFileAudioLoader::getSupportedExtensions();
 #else
 	vector<string> result;
 #endif

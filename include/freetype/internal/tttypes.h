@@ -5,7 +5,7 @@
 /*    Basic SFNT/TrueType type definitions and interface (specification    */
 /*    only).                                                               */
 /*                                                                         */
-/*  Copyright 1996-2002, 2004-2008, 2012 by                                */
+/*  Copyright 1996-2015 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -135,6 +135,75 @@ FT_BEGIN_HEADER
     FT_ULong  Length;     /*      table length */
 
   } TT_TableRec, *TT_Table;
+
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Struct>                                                              */
+  /*    WOFF_HeaderRec                                                     */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    WOFF file format header.                                           */
+  /*                                                                       */
+  /* <Fields>                                                              */
+  /*    See                                                                */
+  /*                                                                       */
+  /*      http://www.w3.org/TR/WOFF/#WOFFHeader                            */
+  /*                                                                       */
+  typedef struct  WOFF_HeaderRec_
+  {
+    FT_ULong   signature;
+    FT_ULong   flavor;
+    FT_ULong   length;
+    FT_UShort  num_tables;
+    FT_UShort  reserved;
+    FT_ULong   totalSfntSize;
+    FT_UShort  majorVersion;
+    FT_UShort  minorVersion;
+    FT_ULong   metaOffset;
+    FT_ULong   metaLength;
+    FT_ULong   metaOrigLength;
+    FT_ULong   privOffset;
+    FT_ULong   privLength;
+
+  } WOFF_HeaderRec, *WOFF_Header;
+
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Struct>                                                              */
+  /*    WOFF_TableRec                                                      */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    This structure describes a given table of a WOFF font.             */
+  /*                                                                       */
+  /* <Fields>                                                              */
+  /*    Tag        :: A four-bytes tag describing the table.               */
+  /*                                                                       */
+  /*    Offset     :: The offset of the table from the start of the WOFF   */
+  /*                  font in its resource.                                */
+  /*                                                                       */
+  /*    CompLength :: Compressed table length (in bytes).                  */
+  /*                                                                       */
+  /*    OrigLength :: Unompressed table length (in bytes).                 */
+  /*                                                                       */
+  /*    CheckSum   :: The table checksum.  This value can be ignored.      */
+  /*                                                                       */
+  /*    OrigOffset :: The uncompressed table file offset.  This value gets */
+  /*                  computed while constructing the (uncompressed) SFNT  */
+  /*                  header.  It is not contained in the WOFF file.       */
+  /*                                                                       */
+  typedef struct  WOFF_TableRec_
+  {
+    FT_ULong  Tag;           /* table ID                  */
+    FT_ULong  Offset;        /* table file offset         */
+    FT_ULong  CompLength;    /* compressed table length   */
+    FT_ULong  OrigLength;    /* uncompressed table length */
+    FT_ULong  CheckSum;      /* uncompressed checksum     */
+
+    FT_ULong  OrigOffset;    /* uncompressed table file offset */
+                             /* (not in the WOFF file)         */
+  } WOFF_TableRec, *WOFF_Table;
 
 
   /*************************************************************************/
@@ -311,87 +380,6 @@ FT_BEGIN_HEADER
   } TT_GaspRec;
 
 
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Struct>                                                              */
-  /*    TT_HdmxEntryRec                                                    */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    A small structure used to model the pre-computed widths of a given */
-  /*    size.  They are found in the `hdmx' table.                         */
-  /*                                                                       */
-  /* <Fields>                                                              */
-  /*    ppem      :: The pixels per EM value at which these metrics apply. */
-  /*                                                                       */
-  /*    max_width :: The maximum advance width for this metric.            */
-  /*                                                                       */
-  /*    widths    :: An array of widths.  Note: These are 8-bit bytes.     */
-  /*                                                                       */
-  typedef struct  TT_HdmxEntryRec_
-  {
-    FT_Byte   ppem;
-    FT_Byte   max_width;
-    FT_Byte*  widths;
-
-  } TT_HdmxEntryRec, *TT_HdmxEntry;
-
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Struct>                                                              */
-  /*    TT_HdmxRec                                                         */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    A structure used to model the `hdmx' table, which contains         */
-  /*    pre-computed widths for a set of given sizes/dimensions.           */
-  /*                                                                       */
-  /* <Fields>                                                              */
-  /*    version     :: The version number.                                 */
-  /*                                                                       */
-  /*    num_records :: The number of hdmx records.                         */
-  /*                                                                       */
-  /*    records     :: An array of hdmx records.                           */
-  /*                                                                       */
-  typedef struct  TT_HdmxRec_
-  {
-    FT_UShort     version;
-    FT_Short      num_records;
-    TT_HdmxEntry  records;
-
-  } TT_HdmxRec, *TT_Hdmx;
-
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Struct>                                                              */
-  /*    TT_Kern0_PairRec                                                   */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    A structure used to model a kerning pair for the kerning table     */
-  /*    format 0.  The engine now loads this table if it finds one in the  */
-  /*    font file.                                                         */
-  /*                                                                       */
-  /* <Fields>                                                              */
-  /*    left  :: The index of the left glyph in pair.                      */
-  /*                                                                       */
-  /*    right :: The index of the right glyph in pair.                     */
-  /*                                                                       */
-  /*    value :: The kerning distance.  A positive value spaces the        */
-  /*             glyphs, a negative one makes them closer.                 */
-  /*                                                                       */
-  typedef struct  TT_Kern0_PairRec_
-  {
-    FT_UShort  left;   /* index of left  glyph in pair */
-    FT_UShort  right;  /* index of right glyph in pair */
-    FT_FWord   value;  /* kerning value                */
-
-  } TT_Kern0_PairRec, *TT_Kern0_Pair;
-
-#endif /* FT_CONFIG_OPTION_OLD_INTERNALS */
-
-
   /*************************************************************************/
   /*************************************************************************/
   /*************************************************************************/
@@ -434,16 +422,16 @@ FT_BEGIN_HEADER
   /*                                                                       */
   typedef struct  TT_SBit_MetricsRec_
   {
-    FT_Byte  height;
-    FT_Byte  width;
+    FT_UShort  height;
+    FT_UShort  width;
 
-    FT_Char  horiBearingX;
-    FT_Char  horiBearingY;
-    FT_Byte  horiAdvance;
+    FT_Short   horiBearingX;
+    FT_Short   horiBearingY;
+    FT_UShort  horiAdvance;
 
-    FT_Char  vertBearingX;
-    FT_Char  vertBearingY;
-    FT_Byte  vertAdvance;
+    FT_Short   vertBearingX;
+    FT_Short   vertBearingY;
+    FT_UShort  vertAdvance;
 
   } TT_SBit_MetricsRec, *TT_SBit_Metrics;
 
@@ -626,8 +614,7 @@ FT_BEGIN_HEADER
   /*                       in use by other platforms (e.g. Newton).        */
   /*                       For details, please see                         */
   /*                                                                       */
-  /*                         http://fonts.apple.com/                       */
-  /*                                TTRefMan/RM06/Chap6bloc.html           */
+  /*                         https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6bloc.html */
   /*                                                                       */
   /*   hori             :: The line metrics for horizontal layouts.        */
   /*                                                                       */
@@ -647,8 +634,7 @@ FT_BEGIN_HEADER
   /*   flags            :: Is this a vertical or horizontal strike?  For   */
   /*                       details, please see                             */
   /*                                                                       */
-  /*                         http://fonts.apple.com/                       */
-  /*                                TTRefMan/RM06/Chap6bloc.html           */
+  /*                         https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6bloc.html */
   /*                                                                       */
   typedef struct  TT_SBit_StrikeRec_
   {
@@ -1060,6 +1046,20 @@ FT_BEGIN_HEADER
   (*TT_Loader_EndGlyphFunc)( TT_Loader  loader );
 
 
+  typedef enum TT_SbitTableType_
+  {
+    TT_SBIT_TABLE_TYPE_NONE = 0,
+    TT_SBIT_TABLE_TYPE_EBLC, /* `EBLC' (Microsoft), */
+                             /* `bloc' (Apple)      */
+    TT_SBIT_TABLE_TYPE_CBLC, /* `CBLC' (Google)     */
+    TT_SBIT_TABLE_TYPE_SBIX, /* `sbix' (Apple)      */
+
+    /* do not remove */
+    TT_SBIT_TABLE_TYPE_MAX
+
+  } TT_SbitTableType;
+
+
   /*************************************************************************/
   /*                                                                       */
   /*                         TrueType Face Type                            */
@@ -1111,7 +1111,7 @@ FT_BEGIN_HEADER
   /*                            This field also contains the associated    */
   /*                            vertical metrics table (`vmtx'), if found. */
   /*                            IMPORTANT: The contents of this field is   */
-  /*                            undefined if the `verticalInfo' field is   */
+  /*                            undefined if the `vertical_info' field is  */
   /*                            unset.                                     */
   /*                                                                       */
   /*    num_names            :: The number of name records within this     */
@@ -1170,13 +1170,6 @@ FT_BEGIN_HEADER
   /*                            TrueType/OpenType fonts.                   */
   /*                                                                       */
   /*    pclt                 :: The `pclt' SFNT table.                     */
-  /*                                                                       */
-  /*    num_sbit_strikes     :: The number of sbit strikes, i.e., bitmap   */
-  /*                            sizes, embedded in this font.              */
-  /*                                                                       */
-  /*    sbit_strikes         :: An array of sbit strikes embedded in this  */
-  /*                            font.  This table is optional in a         */
-  /*                            TrueType/OpenType font.                    */
   /*                                                                       */
   /*    num_sbit_scales      :: The number of sbit scales for this font.   */
   /*                                                                       */
@@ -1269,9 +1262,6 @@ FT_BEGIN_HEADER
     TT_HoriHeader         horizontal;   /* TrueType horizontal header     */
 
     TT_MaxProfile         max_profile;
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-    FT_ULong              max_components;  /* stubbed to 0 */
-#endif
 
     FT_Bool               vertical_info;
     TT_VertHeader         vertical;     /* TT Vertical header, if present */
@@ -1308,11 +1298,6 @@ FT_BEGIN_HEADER
     /*                                                                     */
     /***********************************************************************/
 
-    /* horizontal device metrics */
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-    TT_HdmxRec            hdmx;
-#endif
-
     /* grid-fitting and scaling table */
     TT_GaspRec            gasp;                 /* the `gasp' table */
 
@@ -1320,11 +1305,6 @@ FT_BEGIN_HEADER
     TT_PCLT               pclt;
 
     /* embedded bitmaps support */
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-    FT_ULong              num_sbit_strikes;
-    TT_SBit_Strike        sbit_strikes;
-#endif
-
     FT_ULong              num_sbit_scales;
     TT_SBit_Scale         sbit_scales;
 
@@ -1338,12 +1318,6 @@ FT_BEGIN_HEADER
     /*                                                                     */
     /***********************************************************************/
 
-    /* the glyph locations */
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-    FT_UShort             num_locations_stub;
-    FT_Long*              glyph_locations_stub;
-#endif
-
     /* the font program, if any */
     FT_ULong              font_program_size;
     FT_Byte*              font_program;
@@ -1355,13 +1329,6 @@ FT_BEGIN_HEADER
     /* the original, unscaled, control value table */
     FT_ULong              cvt_size;
     FT_Short*             cvt;
-
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-    /* the format 0 kerning table, if any */
-    FT_Int                num_kern_pairs;
-    FT_Int                kern_table_index;
-    TT_Kern0_Pair         kern_pairs;
-#endif
 
     /* A pointer to the bytecode interpreter to use.  This is also */
     /* used to hook the debugger for the `ttdebug' utility.        */
@@ -1383,11 +1350,8 @@ FT_BEGIN_HEADER
 
     const char*           postscript_name;
 
-    /* since version 2.1.8, but was originally placed after */
-    /* `glyph_locations_stub'                               */
     FT_ULong              glyf_len;
 
-    /* since version 2.1.8, but was originally placed before `extra' */
 #ifdef TT_CONFIG_OPTION_GX_VAR_SUPPORT
     FT_Bool               doblend;
     GX_Blend              blend;
@@ -1412,6 +1376,7 @@ FT_BEGIN_HEADER
 
     FT_Byte*              sbit_table;
     FT_ULong              sbit_table_size;
+    TT_SbitTableType      sbit_table_type;
     FT_UInt               sbit_num_strikes;
 
     FT_Byte*              kern_table;
@@ -1427,6 +1392,13 @@ FT_BEGIN_HEADER
     /* since 2.3.0 */
     FT_ULong              horz_metrics_offset;
     FT_ULong              vert_metrics_offset;
+
+#ifdef TT_CONFIG_OPTION_SUBPIXEL_HINTING
+    /* since 2.4.12 */
+    FT_ULong              sph_found_func_flags; /* special functions found */
+                                                /* for this face           */
+    FT_Bool               sph_compatibility_mode;
+#endif /* TT_CONFIG_OPTION_SUBPIXEL_HINTING */
 
   } TT_FaceRec;
 
@@ -1466,7 +1438,7 @@ FT_BEGIN_HEADER
   {
     FT_Memory   memory;
     FT_UShort   max_points;
-    FT_UShort   max_contours;
+    FT_Short    max_contours;
     FT_UShort   n_points;    /* number of points in zone    */
     FT_Short    n_contours;  /* number of contours          */
 
@@ -1505,7 +1477,6 @@ FT_BEGIN_HEADER
     FT_Int           advance;
     FT_Int           linear;
     FT_Bool          linear_def;
-    FT_Bool          preserve_pps;
     FT_Vector        pp1;
     FT_Vector        pp2;
 

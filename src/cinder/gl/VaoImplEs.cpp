@@ -26,7 +26,7 @@
 
 #include "cinder/gl/platform.h"
 
-#if defined( CINDER_GL_ES_2 ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_ES ) && ! defined( CINDER_GL_ANGLE )
 
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
@@ -67,12 +67,12 @@ VaoImplEs::VaoImplEs()
 {
 	mId	= 0;
 
-	glGenVertexArraysOES( 1, &mId );
+	glGenVertexArrays( 1, &mId );
 }
 
 VaoImplEs::~VaoImplEs()
 {
-	glDeleteVertexArraysOES( 1, &mId );
+	glDeleteVertexArrays( 1, &mId );
 }
 
 void VaoImplEs::bindImpl( Context *context )
@@ -82,7 +82,7 @@ void VaoImplEs::bindImpl( Context *context )
 		reassignImpl( context );
 	}
 
-	glBindVertexArrayOES( mId );
+	glBindVertexArray( mId );	
 
 	if( context ) {
 		context->reflectBufferBinding( GL_ELEMENT_ARRAY_BUFFER, mLayout.mElementArrayBufferBinding );
@@ -103,11 +103,11 @@ void VaoImplEs::reassignImpl( Context *newContext )
 	mCtx = newContext;
 
 	// generate
-	glGenVertexArraysOES( 1, &mId );
-	
+	glGenVertexArrays( 1, &mId );
+
 	// assign
-	glBindVertexArrayOES( mId );
-	
+	glBindVertexArray( mId );
+
 	// instantiate the VAO using the layout
 	auto oldBuffer = mCtx->getBufferBinding( GL_ARRAY_BUFFER );
 
@@ -130,8 +130,8 @@ void VaoImplEs::reassignImpl( Context *newContext )
 
 void VaoImplEs::unbindImpl( Context *context )
 {
-	glBindVertexArrayOES( 0 );
-	
+	glBindVertexArray( 0 );
+
 	mCtx->invalidateBufferBindingCache( GL_ELEMENT_ARRAY_BUFFER );
 }
 
@@ -174,7 +174,7 @@ void VaoImplEs::vertexAttribIPointerImpl( GLuint index, GLint size, GLenum type,
 void VaoImplEs::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 {
 	mLayout.vertexAttribDivisor( index, divisor );
-	glVertexAttribDivisorEXT( index, divisor );
+	glVertexAttribDivisor( index, divisor );
 }
 
 void VaoImplEs::reflectBindBufferImpl( GLenum target, GLuint buffer )

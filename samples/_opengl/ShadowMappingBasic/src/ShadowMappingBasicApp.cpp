@@ -56,6 +56,26 @@ void ShadowMappingBasic::setup()
 {
 	mLightPos = vec3( 0.0f, 5.0f, 1.0f );
 	
+/*
+	try {
+		gl::Texture2d::Format depthFormat;
+		depthFormat.setInternalFormat( GL_DEPTH_COMPONENT16 );
+		depthFormat.setDataType( GL_UNSIGNED_INT );
+		depthFormat.setMagFilter( GL_NEAREST );
+		depthFormat.setMinFilter( GL_NEAREST );
+		auto tex = gl::Texture2d::create( 100, 100, depthFormat );
+		std::cout << std::endl;
+
+		gl::Fbo::Format fmt;
+		fmt.attachment( GL_DEPTH_ATTACHMENT, tex);
+		auto fbo = gl::Fbo::create( 100, 100, fmt );
+	}
+	catch( const std::exception& e ) {
+		console() << "ERROR: " << e.what() << std::endl;
+	}
+	std::cout << std::endl;
+*/
+
 	gl::Texture2d::Format depthFormat;
 	
 #if defined( CINDER_GL_ES )
@@ -75,10 +95,15 @@ void ShadowMappingBasic::setup()
 	mShadowMapTex = gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT, depthFormat );
 
 	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.5f, 500.0f );
-		
-	gl::Fbo::Format fboFormat;
-	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowMapTex );
-	mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormat );
+	
+	try {	
+		gl::Fbo::Format fboFormat;
+		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowMapTex );
+		mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormat );
+	}
+	catch( const std::exception& e ) {
+		console() << "FBO ERROR: " << e.what() << std::endl;
+	}
 	
 	// Set up camera from the light's viewpoint
 	mLightCam.setPerspective( 100.0f, mFbo->getAspectRatio(), 0.5f, 10.0f );
@@ -143,7 +168,7 @@ void ShadowMappingBasic::drawScene( bool shadowMap )
 {
 	gl::pushModelMatrix();
 	gl::color( Color( 0.4f, 0.6f, 0.9f ) );
-	gl::rotate( mTime * 2.0f, 1.0f, 1.0f, 1.0f );
+	//gl::rotate( mTime * 2.0f, 1.0f, 1.0f, 1.0f );
 
 	if( shadowMap )
 		mTeapotBatch->draw();
@@ -170,14 +195,26 @@ void ShadowMappingBasic::draw()
 
 	gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );
 
+
 	vec3 mvLightPos	= vec3( gl::getModelView() * vec4( mLightPos, 1.0f ) ) ;
 	mat4 shadowMatrix = mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
-
+	if( getElapsedFrames() < 10 ) {
+		console () << gl::getModelView() << "\n" << mLightPos << "\n" << mvLightPos << "\n" << std::endl;
+	}
+	
 	mGlsl->uniform( "uShadowMap", 0 );
 	mGlsl->uniform( "uLightPos", mvLightPos );
 	mGlsl->uniform( "uShadowMatrix", shadowMatrix );
 	
 	drawScene( false );
+    
+    // Uncomment for debug
+
+    gl::setMatricesWindow( getWindowSize() );
+    gl::color( 0.0f, 1.0f, 1.0f );
+    float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
+    gl::draw( mShadowMapTex, Rectf( 0, 0, size, size ) );
+	
 }
 
 CINDER_APP( ShadowMappingBasic, RendererGl, ShadowMappingBasic::prepareSettings )

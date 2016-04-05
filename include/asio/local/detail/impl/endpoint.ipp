@@ -2,7 +2,7 @@
 // local/detail/impl/endpoint.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Derived from a public domain implementation written by Daniel Casimiro.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -62,7 +62,11 @@ void endpoint::resize(std::size_t new_size)
   else
   {
     path_length_ = new_size
+#if defined( CINDER_ASIO_CLANG_BUILTIN_OFFSETOF )
+      - __builtin_offsetof(asio::detail::sockaddr_un_type, sun_path);
+#else
       - offsetof(asio::detail::sockaddr_un_type, sun_path);
+#endif
 
     // The path returned by the operating system may be NUL-terminated.
     if (path_length_ > 0 && data_.local.sun_path[path_length_ - 1] == 0)

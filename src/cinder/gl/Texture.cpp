@@ -36,6 +36,59 @@
 #include <memory>
 #include <type_traits>
 
+// Figure out if we need std::Log2
+#if defined(CINDER_ANDROID ) && ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 9))
+    #if defined(__arm__) 
+        #define _IS_ARM32
+    #endif
+
+   	#if defined(__aarch64__)
+        #define _IS_ARM64
+    #endif
+
+ 	#if defined(i386) || defined(__i386) || defined(__i386__)
+ 		#define _IS_X86_32
+ 	#endif
+
+    #if defined(__x86_64) || defined(__amd64) || defined(__x86_64__) || defined(__amd64__)
+        #define _IS_X86_64
+    #endif
+
+ 	#if (defined(mips) || defined(_mips) || defined(__mips__) || defined(__mips)) && ! defined(__mips64)
+ 		#define _IS_MIPS32
+ 	#endif
+
+ 	#if defined(__mips64)
+ 		#define _IS_MIPS64 
+ 	#endif
+    
+    #if defined(_IS_ARM32) || defined(_IS_X86_32) || defined(_IS_MIPS32)
+        #define NEEDS_STD_LOG2
+    #endif
+
+    #undef _IS_ARM32
+ 	#undef _IS_ARM64
+    #undef _IS_X86_32
+    #undef _IS_X86_64
+ 	#undef _IS_MIPS32
+ 	#undef _IS_MIPS64
+#endif
+
+#if defined(NEEDS_STD_LOG2)
+namespace std {
+
+double log2( double x ) {
+#if __ANDROID_API__ < 18
+    return ::log( x ) / ::log( 2.0 ); 
+#else
+    return ::log2( x );
+#endif
+}
+
+} // namespace std
+#endif
+#undef NEEDS_STD_LOG2
+
 using namespace std;
 
 namespace cinder { namespace gl {
@@ -109,11 +162,12 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 	// default is GL_REPEAT
 	if( format.mWrapT != GL_REPEAT )
 		glTexParameteri( mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
-#if ! defined( CINDER_GL_ES_2 )
+
+#if defined( CINDER_GL_HAS_WRAP_R )
 	// default is GL_REPEAT
 	if( format.mWrapR != GL_REPEAT )
 		glTexParameteri( mTarget, GL_TEXTURE_WRAP_R, format.mWrapR );
-#endif // ! defined( CINDER_GL_ES )
+#endif
 
 	if( format.mMipmapping && ! format.mMinFilterSpecified )
 		format.mMinFilter = GL_LINEAR_MIPMAP_LINEAR;
@@ -128,13 +182,27 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 	if( format.mMaxAnisotropy > 1.0f )
 		glTexParameterf( mTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, format.mMaxAnisotropy );
 
-	if( format.mInternalFormat == -1 )
+	if( format.mInternalFormat == -1 ) {
 		mInternalFormat = defaultInternalFormat;
-	else
+	}
+	else {
 		mInternalFormat = format.mInternalFormat;
+	}
 
-	if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) )
+	//if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) )
+	//	format.mDataType = defaultDataType;
+
+	// Try to find a matching data type based on the internal format, use the 
+	// defaultDataType if a match isn't found.
+	GLenum dataFormatFromInternal = GL_INVALID_ENUM;
+	GLenum dataTypeFromInternal = GL_INVALID_ENUM;
+	TextureBase::getInternalFormatInfo( mInternalFormat, &dataFormatFromInternal, &dataTypeFromInternal );
+	if( -1 == format.mDataType && ( GL_INVALID_ENUM != dataTypeFromInternal ) ) {
+		format.mDataType = dataTypeFromInternal;
+	}
+	else if( ( format.mDataType == -1 ) && ( defaultDataType > 0 ) ) {
 		format.mDataType = defaultDataType;
+	}
 
 	// Swizzle mask
 #if ! defined( CINDER_GL_ES )
@@ -152,18 +220,14 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 	if( format.mSwizzleMask[3] != GL_ALPHA )
 		glTexParameteri( mTarget, GL_TEXTURE_SWIZZLE_A, format.mSwizzleMask[3] );
 #endif
-// Compare Mode and Func for Depth Texture
-#if ! defined( CINDER_GL_ES_2 )
-	if( format.mCompareMode > -1 ) {
-		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, format.mCompareMode );
-	}
-	if( format.mCompareFunc > -1 ) {
-		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, format.mCompareFunc );
-	}
-#else
+	mSwizzleMask = format.mSwizzleMask;	
+
+	// Compare Mode and Func for Depth Texture
+#if defined( CINDER_GL_ES_2 )
+  #if defined( CINDER_GL_HAS_SHADOW_SAMPLERS )
 	if( format.mCompareMode > -1 ) {
 		if( supportsShadowSampler() ) {
-			glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE_EXT, format.mCompareMode );
+			glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, format.mCompareMode );
 		}
 		else {
 			CI_LOG_E("This device doesn't support GL_TEXTURE_COMPARE_MODE from EXT_shadow_samplers");
@@ -171,14 +235,21 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat, GLint
 	}
 	if( format.mCompareFunc > -1 ) {
 		if( supportsShadowSampler() ) {
-			glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC_EXT, format.mCompareFunc );
+			glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, format.mCompareFunc );
 		}
 		else {
 			CI_LOG_E("This device doesn't support GL_TEXTURE_COMPARE_FUNC from EXT_shadow_samplers");
 		}
 	}
+  #endif
+#else 
+	if( format.mCompareMode > -1 ) {
+		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, format.mCompareMode );
+	}
+	if( format.mCompareFunc > -1 ) {
+		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, format.mCompareFunc );
+	}	
 #endif
-	mSwizzleMask = format.mSwizzleMask;
 	
 	mMipmapping = format.mMipmapping;
 	if( mMipmapping ) {
@@ -222,7 +293,32 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 	GLenum dataType;
 
 	switch( internalFormat ) {
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_ES_2 )
+		case GL_RGB8_OES:				dataFormat = GL_RGB;				dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_RGBA8_OES:				dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
+	#if defined( CINDER_GL_HAS_TEXTURE_STORAGE )
+		case GL_ALPHA8_EXT:				dataFormat = GL_ALPHA;				dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_LUMINANCE8_EXT:			dataFormat = GL_LUMINANCE;			dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_LUMINANCE8_ALPHA8_EXT:	dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_RGBA32F_EXT:			dataFormat = GL_RGBA;				dataType = GL_FLOAT;					break;
+		case GL_RGB32F_EXT:				dataFormat = GL_RGB;				dataType = GL_FLOAT;					break;
+		case GL_ALPHA32F_EXT:			dataFormat = GL_ALPHA;				dataType = GL_FLOAT;					break;
+		case GL_LUMINANCE32F_EXT:		dataFormat = GL_LUMINANCE;			dataType = GL_FLOAT;					break;
+		case GL_LUMINANCE_ALPHA32F_EXT:	dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_FLOAT;					break;
+		case GL_ALPHA16F_EXT:			dataFormat = GL_ALPHA;				dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_LUMINANCE16F_EXT:		dataFormat = GL_LUMINANCE;			dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_LUMINANCE_ALPHA16F_EXT:	dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_BGRA8_EXT:				dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_R32F_EXT:				dataFormat = GL_RED;				dataType = GL_FLOAT;					break;
+	#endif
+
+	#if defined( CINDER_GL_HAS_COLOR_BUFFER_HALF_FLOAT )
+		case GL_RGBA16F_EXT:			dataFormat = GL_RGBA;				dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_RGB16F_EXT:				dataFormat = GL_RGB;				dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_RG16F_EXT:				dataFormat = GL_RG;					dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_R16F_EXT:				dataFormat = GL_RED;				dataType = GL_HALF_FLOAT_OES;			break;
+	#endif	
+#else
 		case GL_R8:				dataFormat = GL_RED;			dataType = GL_UNSIGNED_BYTE;					break;
 		case GL_R8_SNORM:		dataFormat = GL_RED;			dataType = GL_BYTE;								break;
 		case GL_R16F:			dataFormat = GL_RED;			dataType = GL_HALF_FLOAT;						break;
@@ -269,26 +365,8 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 		case GL_RGBA16I:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_SHORT;							break;
 		case GL_RGBA32I:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_INT;								break;
 		case GL_RGBA32UI:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_UNSIGNED_INT;						break;
-#else
-		case GL_RGB8_OES:				dataFormat = GL_RGB;				dataType = GL_UNSIGNED_BYTE;			break;
-		case GL_RGBA8_OES:				dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
-		case GL_ALPHA8_EXT:				dataFormat = GL_ALPHA;				dataType = GL_UNSIGNED_BYTE;			break;
-		case GL_LUMINANCE8_EXT:			dataFormat = GL_LUMINANCE;			dataType = GL_UNSIGNED_BYTE;			break;
-		case GL_LUMINANCE8_ALPHA8_EXT:	dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_UNSIGNED_BYTE;			break;
-		case GL_RGBA32F_EXT:			dataFormat = GL_RGBA;				dataType = GL_FLOAT;					break;
-		case GL_RGB32F_EXT:				dataFormat = GL_RGB;				dataType = GL_FLOAT;					break;
-		case GL_ALPHA32F_EXT:			dataFormat = GL_ALPHA;				dataType = GL_FLOAT;					break;
-		case GL_LUMINANCE32F_EXT:		dataFormat = GL_LUMINANCE;			dataType = GL_FLOAT;					break;
-		case GL_LUMINANCE_ALPHA32F_EXT:	dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_FLOAT;					break;
-		case GL_RGBA16F_EXT:			dataFormat = GL_RGBA;				dataType = GL_HALF_FLOAT_OES;			break;
-		case GL_RGB16F_EXT:				dataFormat = GL_RGB;				dataType = GL_HALF_FLOAT_OES;			break;
-		case GL_ALPHA16F_EXT:			dataFormat = GL_ALPHA;				dataType = GL_HALF_FLOAT_OES;			break;
-		case GL_LUMINANCE16F_EXT:		dataFormat = GL_LUMINANCE;			dataType = GL_HALF_FLOAT_OES;			break;
-		case GL_LUMINANCE_ALPHA16F_EXT:	dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_HALF_FLOAT_OES;			break;
-		case GL_BGRA8_EXT:				dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_HALF_FLOAT_OES;			break;
-		case GL_R32F_EXT:				dataFormat = GL_RED;				dataType = GL_FLOAT;					break;
-		case GL_R16F_EXT:				dataFormat = GL_RED;				dataType = GL_HALF_FLOAT_OES;			break;
 #endif
+
 		case GL_RGB5_A1:				dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
 		case GL_RGBA4:					dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
 		case GL_RGB565:					dataFormat = GL_RGB;				dataType = GL_UNSIGNED_BYTE;			break;
@@ -296,11 +374,14 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 		// UNSIZED FORMATS
 		case GL_RGB:					dataFormat = GL_RGB;				dataType = GL_UNSIGNED_BYTE;			break;
 		case GL_RGBA:					dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
+
 #if defined( CINDER_GL_ES )
 		case GL_LUMINANCE_ALPHA:		dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_UNSIGNED_BYTE;			break;
 		case GL_LUMINANCE:				dataFormat = GL_LUMINANCE;			dataType = GL_UNSIGNED_BYTE;			break;
 #endif // ! CINDER_GL_ES
+
 		case GL_ALPHA:					dataFormat = GL_ALPHA;				dataType = GL_UNSIGNED_BYTE;			break;
+
 #if ! defined( CINDER_GL_ES )
 		case GL_DEPTH_COMPONENT:		dataFormat = GL_DEPTH_COMPONENT;	dataType = GL_UNSIGNED_INT;				break;
 		case GL_DEPTH_STENCIL:			dataFormat = GL_DEPTH_STENCIL;		dataType = GL_UNSIGNED_INT_24_8;		break;
@@ -329,12 +410,14 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:				dataFormat = GL_RGBA;	dataType = 0;					break;
 		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:				dataFormat = GL_RGBA;	dataType = 0;					break;
 #endif
+
 #if defined( CINDER_GL_ES ) && ! defined( CINDER_GL_ANGLE )
 		case GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG:			dataFormat = GL_RGB;	dataType = 0;					break;
 		case GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG:			dataFormat = GL_RGB;	dataType = 0;					break;
 		case GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG:			dataFormat = GL_RGBA;	dataType = 0;					break;
 		case GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG:			dataFormat = GL_RGBA;	dataType = 0;					break;
 #endif
+
 #if ! defined( CINDER_GL_ES_2 )
 		case GL_COMPRESSED_RGB8_ETC2:						dataFormat = GL_RGB;	dataType = 0;					break;
 		case GL_COMPRESSED_SRGB8_ETC2:						dataFormat = GL_RGB;	dataType = 0; sRgb = true;		break;
@@ -348,10 +431,14 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 		case GL_COMPRESSED_SIGNED_RG11_EAC:					dataFormat = GL_RG;		dataType = 0;					break;
 #endif
 
-		default:
+		default: 		
 			CI_LOG_W( "Unknown internalFormat:" << gl::constantToString( internalFormat ) );
-			dataFormat = GL_RGBA;
-			dataType = GL_UNSIGNED_BYTE;
+			// Defaulting to GL_RGBA and GL_UNSIGNED_BYTE can cause the wrong texture storage
+			// allocation to happen for the wrong data type. This leads to FBOs having 
+			// incomplete attachments on Android and Linux.
+			dataFormat = GL_INVALID_ENUM; //GL_RGBA;
+			dataType = GL_INVALID_ENUM; //GL_UNSIGNED_BYTE;
+			break;
 	}
 	
 	if( outAlpha )
@@ -475,33 +562,37 @@ void TextureBase::setMaxAnisotropy( GLfloat maxAnisotropy )
 
 void TextureBase::setCompareMode( GLenum compareMode )
 {
-#if ! defined( CINDER_GL_ES_2 )
-	ScopedTextureBind tbs( mTarget, mTextureId );
-	glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, compareMode );
-#else
+#if defined( CINDER_GL_ES_2 )
+  #if defined( CINDER_GL_HAS_SHADOW_SAMPLERS )
 	if( supportsShadowSampler() ) {
 		ScopedTextureBind tbs( mTarget, mTextureId );
-		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE_EXT, compareMode );
+		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, compareMode );
 	}
 	else {
 		CI_LOG_E("This device doesn't support GL_TEXTURE_COMPARE_MODE from EXT_shadow_samplers");
 	}
+  #endif
+#else
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, compareMode );	
 #endif
 }
 	
 void TextureBase::setCompareFunc( GLenum compareFunc )
 {
-#if ! defined( CINDER_GL_ES_2 )
-	ScopedTextureBind tbs( mTarget, mTextureId );
-	glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, compareFunc );
-#else
+#if defined( CINDER_GL_ES_2 )
+  #if defined( CINDER_GL_HAS_SHADOW_SAMPLERS )
 	if( supportsShadowSampler() ) {
 		ScopedTextureBind tbs( mTarget, mTextureId );
-		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC_EXT, compareFunc );
+		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, compareFunc );
 	}
 	else {
 		CI_LOG_E("This device doesn't support GL_TEXTURE_COMPARE_FUNC from EXT_shadow_samplers");
 	}
+  #endif	
+#else
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, compareFunc );	
 #endif
 }
 
@@ -619,14 +710,16 @@ GLfloat TextureBase::getMaxAnisotropyMax()
 
 bool TextureBase::supportsHardwareSwizzle()
 {
-	#if defined( CINDER_GL_ES_2 )
-		return false;
-	#elif defined( CINDER_GL_ES_3 )
-		return true;
-	#else
-		static bool supported = ( ( gl::isExtensionAvailable( "GL_EXT_texture_swizzle" ) || gl::getVersion() >= make_pair( 3, 3 ) ) );
-		return supported;
-	#endif
+#if defined( CINDER_GL_ES)
+  #if CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3
+	return true;
+  #else
+	return false;
+  #endif
+#else
+	static bool supported = ( ( gl::isExtensionAvailable( "GL_EXT_texture_swizzle" ) || gl::getVersion() >= make_pair( 3, 3 ) ) );
+	return supported;
+#endif
 }
 
 #if defined( CINDER_GL_ES_2 )
@@ -894,7 +987,7 @@ Texture2d::Texture2d( int width, int height, Format format )
 	initParams( format, GL_RGBA, GL_UNSIGNED_BYTE );
 #endif
 
-	initMaxMipmapLevel();
+	//initMaxMipmapLevel();
 	env()->allocateTexStorage2d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, width, height, format.isImmutableStorage(), format.getDataType() );
 }
 
@@ -1387,6 +1480,8 @@ Rectf Texture2d::getAreaTexCoords( const Area &area ) const
 	if( mTarget == GL_TEXTURE_2D
 #if ! defined( CINDER_GL_ES )
 		|| mTarget == GL_TEXTURE_2D_MULTISAMPLE 
+#elif defined( CINDER_ANDROID )
+		|| mTarget == GL_TEXTURE_EXTERNAL_OES		
 #endif
 	   ) { // normalized 0-1.0 coordinates
 		result.x1 = (mCleanBounds.x1 + area.x1) / (float)mActualSize.x;

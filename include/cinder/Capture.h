@@ -26,6 +26,10 @@
 #include "cinder/Surface.h"
 #include "cinder/Exception.h"
 
+#if defined( CINDER_ANDROID )
+  #include "cinder/gl/Texture.h"
+#endif 
+
 #if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
 	#if defined( __OBJC__ )
 		@class CaptureImplAvFoundation;
@@ -42,6 +46,10 @@
 	namespace cinder {
 		class CaptureImplDirectShow;
 	}
+#elif defined( CINDER_ANDROID )
+	namespace cinder {
+		class CaptureImplJni;
+	}	
 #endif
 
 #include <map>
@@ -83,6 +91,11 @@ class Capture {
 	
 	//! Returns a SurfaceRef representing the current captured frame.
 	Surface8uRef	getSurface() const;
+
+#if defined( CINDER_ANDROID )
+	gl::Texture2dRef	getTexture() const;
+#endif
+
 	//! Returns the associated Device for this instace of Capture
 	const Capture::DeviceRef getDevice() const;
 
@@ -93,7 +106,7 @@ class Capture {
 	//! Finds the first device whose name contains the string \a nameFragment
 	static DeviceRef findDeviceByNameContains( const std::string &nameFragment );
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_ANDROID )
 	typedef std::string DeviceIdentifier;
 #else
 	typedef int DeviceIdentifier;
@@ -115,7 +128,7 @@ class Capture {
 #if defined( CINDER_COCOA )
 		virtual void*		getNative() const = 0;
 #endif
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 		//! Returns whether device is front-facing. False implies rear-facing.
 		virtual bool		isFrontFacing() const = 0;
 #endif
@@ -133,6 +146,8 @@ class Capture {
 	CaptureImplCocoaDummy			*mImpl;
 #elif defined( CINDER_MSW )
 	CaptureImplDirectShow			*mImpl;
+#elif defined( CINDER_ANDROID )
+	CaptureImplJni					*mImpl;		
 #endif
 };
 

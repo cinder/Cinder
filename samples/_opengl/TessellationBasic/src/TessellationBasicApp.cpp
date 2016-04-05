@@ -1,25 +1,39 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#if ! defined( CINDER_GL_ES )
 #include "cinder/params/Params.h"
+#endif
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
 // Reference article: http://antongerdelan.net/opengl/tessellation.html
+//
+// Android Notes
+//   - Requires OpenGL ES 3.2 or 3.1 and Android Extensions Pack
+//   - Since gl::enableWireFrame doesn't work on OpenGL ES, geometry
+//     shader is used to generate line stripes.
+//
 
 class TessellationShaderApp : public App {
   public:
 	void setup() override;
+#if defined( CINDER_GL_ES )
+	void mouseDown( MouseEvent event ) override;
+#endif
 	void draw() override;
 
   private:
 	gl::GlslProgRef			mGlsl;
 	float					mRadius;
-	params::InterfaceGlRef	mParams;
 	gl::VertBatchRef		mBatch;
-	
+
+#if ! defined( CINDER_GL_ES )
+	params::InterfaceGlRef	mParams;
+#endif
+
 	int mTessLevelInner;
 	int mTessLevelOuter;
 };
@@ -30,25 +44,37 @@ void TessellationShaderApp::setup()
 	int maxPatchVertices = 0;
 	glGetIntegerv( GL_MAX_PATCH_VERTICES, &maxPatchVertices );
 	app::console() << "Max supported patch vertices " << maxPatchVertices << std::endl;
-	
-	mParams = params::InterfaceGl::create( "Settings", ivec2( 200, 200 ) );
+
+
+
+#if ! defined( CINDER_GL_ES )
+	fs::path glDir = "ogl";
 	mRadius = 200.0f;
+
+	mParams = params::InterfaceGl::create( "Settings", ivec2( 200, 200 ) );
 	mParams->addParam( "Radius", &mRadius, "step=1.0" );
 	mParams->addParam( "Tess level inner", &mTessLevelInner, "min=0" );
 	mParams->addParam( "Tess level outer", &mTessLevelOuter, "min=0" );
-		
+#else
+	fs::path glDir = "es31a";
+	mRadius = 400.0f;
+#endif
+	
 	try {
 		mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
-									 .vertex( loadAsset( "0_vert.glsl" ) )
-									 .tessellationCtrl( loadAsset( "1_tess_ctrl.glsl" ) )
-									 .tessellationEval( loadAsset( "2_tess_eval.glsl" ) )
-									 .fragment( loadAsset( "3_frag.glsl" ) ) );
+									 .vertex( loadAsset( glDir / "0_vert.glsl" ) )
+									 .tessellationCtrl( loadAsset( glDir / "1_tess_ctrl.glsl" ) )
+									 .tessellationEval( loadAsset( glDir / "2_tess_eval.glsl" ) )
+#if defined( CINDER_GL_ES )
+									 .geometry( loadAsset( glDir / "x_geom.glsl" ) )
+#endif
+									 .fragment( loadAsset( glDir / "3_frag.glsl" ) ) );
 	}
-	catch( const gl::GlslProgCompileExc &ex ) {
-		cout << ex.what() << endl;
-		quit();
+	catch( const std::exception &ex ) {
+		console() << ex.what() << endl;
+		//quit();
 	}
-	
+
 	mBatch = gl::VertBatch::create( GL_PATCHES );
 	mBatch->color( 1.0f, 0.0f, 0.0f );
 	mBatch->vertex( vec2( 1, -1 ) );
@@ -60,10 +86,27 @@ void TessellationShaderApp::setup()
 	gl::patchParameteri( GL_PATCH_VERTICES, 3 );
 }
 
+#if defined( CINDER_GL_ES )
+void TessellationShaderApp::mouseDown( MouseEvent event )
+{
+	ivec2 pos = event.getPos();
+	if( pos.y < (getWindowHeight()/2) ) {
+		++mTessLevelInner;
+		mTessLevelInner %= 16;
+	}
+	else {
+		++mTessLevelOuter;
+		mTessLevelOuter %= 16;
+	}
+}
+#endif
+
 void TessellationShaderApp::draw()
 {
 	gl::clear();
+#if ! defined( CINDER_GL_ES )
 	gl::enableWireframe();
+#endif
 	
 	gl::setMatricesWindow( getWindowSize() );
 	gl::translate( getWindowCenter() );
@@ -74,9 +117,17 @@ void TessellationShaderApp::draw()
 	mGlsl->uniform( "uRadius", mRadius );	
 	
 	mBatch->draw();
-	
+
+#if ! defined( CINDER_GL_ES )
 	gl::disableWireframe();
 	mParams->draw();
+#endif
 }
 
-CINDER_APP( TessellationShaderApp, RendererGl( RendererGl::Options().version( 4, 0 ) ) )
+#if defined( CINDER_GL_ES )
+	CINDER_APP( TessellationShaderApp, RendererGl(), []( TessellationShaderApp::Settings* settings ) {
+		settings->setMultiTouchEnabled( false );
+	})
+#else
+	CINDER_APP( TessellationShaderApp, RendererGl( RendererGl::Options().version( 4, 0 ) ) )
+#endif

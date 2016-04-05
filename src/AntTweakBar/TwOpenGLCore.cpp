@@ -19,7 +19,11 @@
 #   include <OpenGL/gl3.h>
 #   define ANT_OGL_HEADER_INCLUDED
 #else
-#	include <gl/GL.h>
+#   if defined ANT_UNIX
+#       include <GL/gl.h>    
+#   else
+#	    include <gl/GL.h>
+#   endif
 #endif
 #include "LoadOGLCore.h"
 #include "TwOpenGLCore.h"

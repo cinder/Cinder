@@ -24,6 +24,7 @@
 #include "cinder/ImageTargetFileStbImage.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_STATIC
 #include "stb/stb_image_write.h"
 
 namespace cinder {

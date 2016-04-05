@@ -109,11 +109,11 @@ void AppMsw::main( const RendererRef &defaultRenderer, const char *title, const 
 	AppBase::cleanupLaunch();
 }
 
-#define CINDER_APP_MSW( APP, RENDERER, ... )													\
+#define CINDER_APP_MSW( APP, RENDERER, ... )														\
 int __stdcall WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )\
 {																									\
 	cinder::app::RendererRef renderer( new RENDERER );												\
-	cinder::app::AppMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );							\
+	cinder::app::AppMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );								\
 	return 0;																						\
 }
 

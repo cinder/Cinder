@@ -30,10 +30,16 @@
 #include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 #include "cinder/Noncopyable.h"
+#include "cinder/Utilities.h"
 
 #include "glm/gtc/type_ptr.hpp"
 
 #include <type_traits>
+
+// For stoi and std:;to_string
+#if defined( CINDER_ANDROID )
+	#include "cinder/android/CinderAndroid.h"
+#endif
 
 // uncomment this in order to prevent uniform value caching
 //#define DISABLE_UNIFORM_CACHING
@@ -677,6 +683,16 @@ void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPat
 	glGetShaderiv( (GLuint) handle, GL_COMPILE_STATUS, &status );
 	if( status != GL_TRUE ) {
 		std::string log = getShaderLog( (GLuint)handle );
+#if defined( CINDER_ANDROID ) | defined( CINDER_LINUX )
+		std::vector<std::string> lines = ci::split( shaderSource, "\r\n" );
+		if( ! lines.empty() ) {
+			std::stringstream ss;
+			for( size_t i = 0; i < lines.size(); ++i ) {
+				ss << std::setw( (int)std::log( lines.size() ) ) << (i + 1) << ": " << lines[i] << "\n"; 
+			}
+			log += "\n" + ss.str();
+		}
+#endif		
 		throw GlslProgCompileExc( log, shaderType );
 	}
 	glAttachShader( mHandle, handle );
@@ -960,12 +976,18 @@ void GlslProg::logUniformWrongType( const std::string &name, GLenum uniformType,
 void GlslProg::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_GL_ES )
-#if ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+  #if defined( CINDER_GL_HAS_DEBUG_LABEL )
 	env()->objectLabel( GL_PROGRAM_OBJECT_EXT, mHandle, (GLsizei)label.size(), label.c_str() );
-#endif
-#else
+  #endif
+#else 
+  #if defined( CINDER_GL_ES )
+    #if ! defined( CINDER_GL_ANGLE )
+	env()->objectLabel( GL_PROGRAM_OBJECT_EXT, mHandle, (GLsizei)label.size(), label.c_str() );
+ 	 #endif
+  #else
 	env()->objectLabel( GL_PROGRAM, mHandle, (GLsizei)label.size(), label.c_str() );
+  #endif
 #endif
 }
 
@@ -1320,7 +1342,7 @@ template<typename T>
 inline bool GlslProg::validateUniform( const Uniform &uniform, int uniformLocation, const T *val, int count ) const
 {
 	if( ! checkUniformType<T>( uniform.mType ) ) {
-		logUniformWrongType( uniform.mName, uniform.mType, cppTypeToGlslTypeName<T>() + "[" + to_string( count ) + "]" );
+		logUniformWrongType( uniform.mName, uniform.mType, cppTypeToGlslTypeName<T>() + "[" + std::to_string( count ) + "]" );
 		return false;
 	}
 	else {
@@ -1373,6 +1395,9 @@ bool GlslProg::checkUniformType( GLenum uniformType ) const
 		case GL_INT_VEC3: return std::is_same<T,glm::ivec3>::value;
 		case GL_INT_VEC4: return std::is_same<T,glm::ivec4>::value;
 		case GL_SAMPLER_2D: return std::is_same<T,int32_t>::value;
+#if defined( CINDER_ANDROID )
+		case GL_SAMPLER_EXTERNAL_OES: return std::is_same<T,int32_t>::value;		
+#endif		
 		// unigned int
 		case GL_UNSIGNED_INT: return std::is_same<T,uint32_t>::value;
 #if ! defined( CINDER_GL_ES )
@@ -1401,7 +1426,13 @@ bool GlslProg::checkUniformType( GLenum uniformType ) const
 		case GL_UNSIGNED_INT_SAMPLER_CUBE:		return std::is_same<T,int32_t>::value;		
 		case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:	return std::is_same<T,int32_t>::value;
 #else
+	#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	  #if defined( CINDER_GL_HAS_SHADOW_SAMPLERS )
 		case GL_SAMPLER_2D_SHADOW_EXT: return std::is_same<T,int32_t>::value;
+	  #endif
+	#else
+		case GL_SAMPLER_2D_SHADOW_EXT: return std::is_same<T,int32_t>::value;
+	#endif
 #endif
 		case GL_SAMPLER_CUBE: return std::is_same<T,int32_t>::value;
 		// float

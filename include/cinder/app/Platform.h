@@ -55,9 +55,9 @@ class Platform {
 
 	// Assets
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
-	DataSourceRef			loadAsset( const fs::path &relativePath );
+	virtual DataSourceRef	loadAsset( const fs::path &relativePath );
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
-	fs::path				getAssetPath( const fs::path &relativePath ) const;
+	virtual fs::path		getAssetPath( const fs::path &relativePath ) const;
 	//! Adds an absolute path to the list of directories which are searched for assets.
 	//! \note Not thread-safe, e.g. you should not call this when loadAsset() or getAssetPath() can occur from a different thread.
 	void					addAssetDirectory( const fs::path &directory );
@@ -141,8 +141,8 @@ class Platform {
 	virtual void	findAndAddDefaultAssetPath();
 
   private:
-	void		initialize();
-	void		initAssetDirectories();
+	void			initialize();
+	void			initAssetDirectories();
 
 	std::vector<fs::path>		mAssetDirectories;
 	mutable fs::path			mExecutablePath; // lazily defaulted if none exists

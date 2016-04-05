@@ -33,6 +33,10 @@
 #include "cinder/Sphere.h"
 #include <algorithm>
 
+#if defined( CINDER_ANDROID )
+  #include "cinder/app/App.h"
+#endif
+
 using namespace std;
 
 namespace cinder { namespace geom {
@@ -587,20 +591,29 @@ Primitive Target::determineCombinedPrimitive( Primitive a, Primitive b )
 const float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
 const float Rect::sTangents[4*3] = {0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0 };
 
-Rect::Rect()
-	: mHasColors( false )
+Rect::Rect( bool upperLeftOrigin )
+	: mUpperLeftOrigin( upperLeftOrigin ), mHasColors( false )
 {
-	// upper-left, upper-right, lower-left, lower-right
-	mPositions[0] = vec2( -0.5f, -0.5f );
-	mPositions[1] = vec2( 0.5f, -0.5f );
-	mPositions[2] = vec2( -0.5f, 0.5f );
-	mPositions[3] = vec2( 0.5f, 0.5f );
+	if( mUpperLeftOrigin ) {
+		// upper-left, lower-left,upper-right,  lower-right
+		mPositions[0] = vec2( -0.5f, -0.5f );
+		mPositions[2] = vec2( -0.5f, 0.5f );
+		mPositions[1] = vec2( 0.5f, -0.5f );
+		mPositions[3] = vec2( 0.5f, 0.5f );
+	}
+	else {
+		// upper-left, upper-right, lower-left, lower-right
+		mPositions[0] = vec2( -0.5f, -0.5f );
+		mPositions[1] = vec2( 0.5f, -0.5f );
+		mPositions[2] = vec2( -0.5f, 0.5f );
+		mPositions[3] = vec2( 0.5f, 0.5f );
+	}
 	setDefaultColors();
 	setDefaultTexCoords();
 }
 
-Rect::Rect( const Rectf &r )
-	: mHasColors( false )
+Rect::Rect( const Rectf &r,  bool upperLeftOrigin  )
+	: mUpperLeftOrigin( upperLeftOrigin ), mHasColors( false )
 {
 	rect( r );
 	setDefaultColors();
@@ -609,29 +622,53 @@ Rect::Rect( const Rectf &r )
 
 Rect& Rect::rect( const Rectf &r )
 {
-	mPositions[0] = r.getUpperLeft();
-	mPositions[1] = r.getUpperRight();
-	mPositions[2] = r.getLowerLeft();
-	mPositions[3] = r.getLowerRight();
+	if( mUpperLeftOrigin ) {
+		mPositions[0] = r.getUpperLeft();
+		mPositions[1] = r.getLowerLeft();
+		mPositions[2] = r.getUpperRight();
+		mPositions[3] = r.getLowerRight();
+	}
+	else {
+		mPositions[0] = r.getUpperLeft();
+		mPositions[1] = r.getUpperRight();
+		mPositions[2] = r.getLowerLeft();
+		mPositions[3] = r.getLowerRight();
+	}
 	return *this;
 }
 
 Rect& Rect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
 {
 	mHasColors = true;
-	mColors[0] = upperLeft;
-	mColors[1] = upperRight;
-	mColors[2] = lowerLeft;
-	mColors[3] = lowerRight;
+	if( mUpperLeftOrigin ) {
+		mColors[0] = upperLeft;
+		mColors[1] = lowerLeft;
+		mColors[2] = upperRight;
+		mColors[3] = lowerRight;
+	}
+	else {
+		mColors[0] = upperLeft;
+		mColors[1] = upperRight;
+		mColors[2] = lowerLeft;
+		mColors[3] = lowerRight;
+	}
 	return *this;
 }
 
 Rect& Rect::texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft )
 {
-	mTexCoords[0] = upperLeft;
-	mTexCoords[1] = upperRight;
-	mTexCoords[2] = lowerLeft;
-	mTexCoords[3] = lowerRight;
+	if( mUpperLeftOrigin ) {
+		mTexCoords[0] = upperLeft;
+		mTexCoords[1] = lowerLeft;
+		mTexCoords[2] = upperRight;
+		mTexCoords[3] = lowerRight;
+	}
+	else {
+		mTexCoords[0] = upperLeft;
+		mTexCoords[1] = upperRight;
+		mTexCoords[2] = lowerLeft;
+		mTexCoords[3] = lowerRight;
+	}
 	return *this;
 }
 
@@ -1825,12 +1862,12 @@ void Ring::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 // Sphere
 
 Sphere::Sphere()
-	: mSubdivisions( 18 ), mCenter( 0, 0, 0 ), mRadius( 1.0f ), mHasColors( false )
+	: mSubdivisions( 18 ), mCenter( 0, 0, 0 ), mRadius( 1.0f ), mHasColors( false ), mTexCoordsUpperLeft( false )
 {
 }
 
 Sphere::Sphere( const ci::Sphere &sphere )
-	: mSubdivisions( 18 ), mCenter( sphere.getCenter() ), mRadius( sphere.getRadius() ), mHasColors( false )
+	: mSubdivisions( 18 ), mCenter( sphere.getCenter() ), mRadius( sphere.getRadius() ), mHasColors( false ), mTexCoordsUpperLeft( false )
 {
 }
 
@@ -1912,7 +1949,7 @@ void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 			*vertIt++ = vec3( x * radius + mCenter.x, y * radius + mCenter.y, z * radius + mCenter.z );
 
 			*normIt++ = vec3( x, y, z );
-			*texIt++ = vec2( u, v );
+			*texIt++ = vec2( u, mTexCoordsUpperLeft ? 1.0f - v : v );
 			*colorIt++ = vec3( x * 0.5f + 0.5f, y * 0.5f + 0.5f, z * 0.5f + 0.5f );
 		}
 	}

@@ -30,6 +30,10 @@
 	#include "cinder/app/msw/PlatformMsw.h"
 #elif defined( CINDER_WINRT )
 	#include "cinder/app/winrt/PlatformWinRt.h"
+#elif defined( CINDER_ANDROID )
+	#include "cinder/app/android/PlatformAndroid.h"
+#elif defined( CINDER_LINUX )
+	#include "cinder/app/linux/PlatformLinux.h"
 #endif
 
 using namespace std;
@@ -54,6 +58,10 @@ Platform* Platform::get()
 		sInstance = new PlatformMsw;
 #elif defined( CINDER_WINRT )
 		sInstance = new PlatformWinRt;
+#elif defined( CINDER_ANDROID )
+		sInstance = new PlatformAndroid;
+#elif defined( CINDER_LINUX )
+		sInstance = new PlatformLinux;
 #endif
 
 		sInstance->initialize();
@@ -112,7 +120,10 @@ fs::path Platform::getAssetPath( const fs::path &relativePath ) const
 
 void Platform::addAssetDirectory( const fs::path &directory )
 {
+	// Relax this check on Android since it will always be false.
+#if ! defined( CINDER_ANDROID )	
 	CI_ASSERT( fs::is_directory( directory ) );
+#endif
 
 	auto it = find( mAssetDirectories.begin(), mAssetDirectories.end(), directory );
 	if( it == mAssetDirectories.end() )

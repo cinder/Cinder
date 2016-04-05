@@ -8,11 +8,10 @@
 /*  be used to parse compressed PCF fonts, as found with many X11 server   */
 /*  distributions.                                                         */
 /*                                                                         */
-/*  Copyright 2004-2006, 2009, 2010, 2012 by                               */
+/*  Copyright 2004-2015 by                                                 */
 /*  Albert Chin-A-Young.                                                   */
 /*                                                                         */
-/*  Based on code in src/gzip/ftgzip.c, Copyright 2004 by                  */
-/*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
+/*  based on code in `src/gzip/ftgzip.c'                                   */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
 /*  modified, and distributed under the terms of the FreeType project      */
@@ -96,9 +95,9 @@
       goto Exit;
 
     /* head[0] && head[1] are the magic numbers */
-    if ( head[0] != 0x1f ||
-         head[1] != 0x9d )
-      error = LZW_Err_Invalid_File_Format;
+    if ( head[0] != 0x1F ||
+         head[1] != 0x9D )
+      error = FT_THROW( Invalid_File_Format );
 
   Exit:
     return error;
@@ -111,7 +110,7 @@
                     FT_Stream   source )
   {
     FT_LzwState  lzw   = &zip->lzw;
-    FT_Error     error = LZW_Err_Ok;
+    FT_Error     error;
 
 
     zip->stream = stream;
@@ -172,7 +171,7 @@
   {
     FT_LzwState  lzw = &zip->lzw;
     FT_ULong     count;
-    FT_Error     error = LZW_Err_Ok;
+    FT_Error     error = FT_Err_Ok;
 
 
     zip->cursor = zip->buffer;
@@ -182,7 +181,7 @@
     zip->limit = zip->cursor + count;
 
     if ( count == 0 )
-      error = LZW_Err_Invalid_Stream_Operation;
+      error = FT_THROW( Invalid_Stream_Operation );
 
     return error;
   }
@@ -193,7 +192,7 @@
   ft_lzw_file_skip_output( FT_LZWFile  zip,
                            FT_ULong    count )
   {
-    FT_Error  error = LZW_Err_Ok;
+    FT_Error  error = FT_Err_Ok;
 
 
     /* first, we skip what we can from the output buffer */
@@ -224,7 +223,7 @@
       if ( numread < delta )
       {
         /* not enough bytes */
-        error = LZW_Err_Invalid_Stream_Operation;
+        error = FT_THROW( Invalid_Stream_Operation );
         break;
       }
 
@@ -349,9 +348,17 @@
                      FT_Stream  source )
   {
     FT_Error    error;
-    FT_Memory   memory = source->memory;
+    FT_Memory   memory;
     FT_LZWFile  zip = NULL;
 
+
+    if ( !stream || !source )
+    {
+      error = FT_THROW( Invalid_Stream_Handle );
+      goto Exit;
+    }
+
+    memory = source->memory;
 
     /*
      *  Check the header right now; this prevents allocation of a huge
@@ -403,7 +410,7 @@
     FT_UNUSED( stream );
     FT_UNUSED( source );
 
-    return LZW_Err_Unimplemented_Feature;
+    return FT_THROW( Unimplemented_Feature );
   }
 
 

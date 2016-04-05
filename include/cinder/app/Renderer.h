@@ -58,6 +58,10 @@
 		class RendererImpl2dCocoaTouchQuartz;
 		class UIView;
 	#endif
+#elif defined( CINDER_ANDROID )
+	struct ANativeWindow;
+#elif defined( CINDER_LINUX )
+	typedef struct GLFWwindow 	GLFWwindow;	
 #endif
 
 
@@ -97,8 +101,12 @@ class Renderer {
 
 	virtual HWND				getHwnd() = 0;
 	virtual HDC					getDc() { return NULL; }
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_WINRT)
 	virtual void setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
+#elif defined( CINDER_ANDROID )
+	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;	
+#elif defined( CINDER_LINUX )
+	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) = 0;
 #endif
 
 	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;
@@ -181,6 +189,18 @@ class Renderer2d : public Renderer {
 	bool			mDoubleBuffer, mPaintEvents;
 	HWND			mWnd;
 	HDC				mDC;
+};
+
+#elif defined( CINDER_ANDROID )
+
+class Renderer2d : public Renderer {
+ public:
+    Renderer2d();
+
+ protected:
+	Renderer2d( const Renderer2d &renderer );
+    
+    class ApplImplAndroidRenderer2d *mImpl;
 };
 
 #endif

@@ -1,0 +1,125 @@
+{
+	"folders":
+	[
+		{
+			"name": "linux",
+			"path": "../../../linux",
+		},
+		{
+			"name": "include",
+			"path": "../../../include",
+		},
+		{
+			"name": "src",
+			"path": "../../../src",
+		}
+	],
+
+	"build_systems": [
+		{
+			"name": "Cinder for Linux | Desktop",
+			"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v", "-r"],
+			"working_dir": "${project_path:${folder}}",
+			"variants": 
+			[
+				{
+					"name": "Full Rebuild",
+				"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v"],
+				},
+
+				{
+					"name": "Clean",
+					"cmd": ["../../../linux/build", "clean"],
+				}
+			],
+
+			"target": "ansi_color_build",
+			"syntax": "Packages/ANSIescape/ANSI.tmLanguage"
+		},
+
+		{
+			"name": "Cinder for Linux | OpenGL ES 2",
+			"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v", "-r", "-es2"],
+			"working_dir": "${project_path:${folder}}",
+			"variants": 
+			[
+				{
+					"name": "Full Rebuild",
+				"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v", "-es2"],
+				},
+
+				{
+					"name": "Clean",
+					"cmd": ["../../../linux/build", "clean", "-es2"],
+				}
+			],
+
+			"target": "ansi_color_build",
+			"syntax": "Packages/ANSIescape/ANSI.tmLanguage"
+		},
+
+		{
+			"name": "Cinder for Linux | OpenGL ES 3",
+			"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v", "-r", "-es3"],
+			"working_dir": "${project_path:${folder}}",
+			"variants": 
+			[
+				{
+					"name": "Full Rebuild",
+				"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v", "-es3"],
+				},
+
+				{
+					"name": "Clean",
+					"cmd": ["../../../linux/build", "clean", "-es3"],
+				}
+			],
+
+			"target": "ansi_color_build",
+			"syntax": "Packages/ANSIescape/ANSI.tmLanguage"
+		},
+
+		{
+			"name": "Cinder for Linux | OpenGL ES 3.1",
+			"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v", "-r", "-es31"],
+			"working_dir": "${project_path:${folder}}",
+			"variants": 
+			[
+				{
+					"name": "Full Rebuild",
+				"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v", "-es31"],
+				},
+
+				{
+					"name": "Clean",
+					"cmd": ["../../../linux/build", "clean", "-es31"],
+				}
+			],
+
+			"target": "ansi_color_build",
+			"syntax": "Packages/ANSIescape/ANSI.tmLanguage"
+		},
+
+		{
+			"name": "Cinder for Linux | OpenGL ES 3.2",
+			"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v", "-r", "-es32"],
+			"working_dir": "${project_path:${folder}}",
+			"variants": 
+			[
+				{
+					"name": "Full Rebuild",
+				"cmd": ["../../../linux/build", "-j", "8", "-b", "Debug", "-v", "-es32"],
+				},
+
+				{
+					"name": "Clean",
+					"cmd": ["../../../linux/build", "clean", "-es32"],
+				}
+			],
+
+			"target": "ansi_color_build",
+			"syntax": "Packages/ANSIescape/ANSI.tmLanguage"
+		},
+	],
+
+}

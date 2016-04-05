@@ -1,0 +1,8 @@
+#!/bin/bash
+sh es2-fullbuild-armeabi
+sh es2-fullbuild-armeabi-v7a
+sh es2-fullbuild-x86
+sh es2-fullbuild-mips
+sh es2-fullbuild-arm64-v8a
+sh es2-fullbuild-x86_64
+sh es2-fullbuild-mips64

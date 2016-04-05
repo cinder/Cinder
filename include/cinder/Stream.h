@@ -27,6 +27,9 @@
 #include "cinder/Exception.h"
 #include "cinder/Filesystem.h"
 #include "cinder/Noncopyable.h"
+#if defined( CINDER_ANDROID )
+  #include "cinder/app/android/AssetFileSystem.h"
+#endif
 
 #include <string>
 
@@ -181,6 +184,43 @@ class IStreamFile : public IStreamCinder {
 };
 
 
+#if defined( CINDER_ANDROID )
+typedef std::shared_ptr<class IStreamAndroidAsset>	IStreamAndroidAssetRef;
+
+class IStreamAndroidAsset : public IStreamCinder {
+ public:
+	static IStreamAndroidAssetRef create( AAsset *asset, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
+	~IStreamAndroidAsset();
+
+	size_t		readDataAvailable( void *dest, size_t maxSize );
+	
+	void		seekAbsolute( off_t absoluteOffset );
+	void		seekRelative( off_t relativeOffset );
+	off_t		tell() const;
+	off_t		size() const;
+	
+	bool		isEof() const;
+	
+	AAsset*		getAAsset() { return mAsset; }
+
+ protected:
+	IStreamAndroidAsset( AAsset *aFile, bool aOwnsFile = true, int32_t aDefaultBufferSize = 2048 );
+
+	virtual void		IORead( void *t, size_t size );
+	size_t				readDataImpl( void *dest, size_t maxSize );
+ 
+	AAsset						*mAsset;
+	bool						mOwnsFile;
+	size_t						mBufferSize, mDefaultBufferSize;
+	std::shared_ptr<uint8_t>	mBuffer;
+	off_t						mBufferOffset; // actual offset to do IO from; incremented by IO
+	off_t						mBufferFileOffset; // beginning of the buffer in the file
+	mutable off_t				mSize;
+	mutable bool				mSizeCached;
+};
+#endif
+
+
 typedef std::shared_ptr<class OStreamFile>	OStreamFileRef;
 
 class OStreamFile : public OStream {
@@ -241,7 +281,6 @@ class IoStreamFile : public IoStream {
 	mutable off_t				mSize;
 	mutable bool				mSizeCached;
 };
-
 
 typedef std::shared_ptr<class IStreamMem>	IStreamMemRef;
 class IStreamMem : public IStreamCinder {
@@ -328,8 +367,20 @@ void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size
 BufferRef loadStreamBuffer( IStreamRef is );
 
 
+#if defined( CINDER_ANDROID )
+//! Opens the file lcoated at \a path for read access as a stream.
+IStreamAndroidAssetRef	loadAndroidAssetStream( const fs::path &path );
+#endif // defined( CINDER_ANDROID )
+
+
 // Stream exception
 class StreamExc : public Exception {
+  public:
+	StreamExc() throw() {}
+	StreamExc( const std::string &fontName ) throw();
+	virtual const char* what() const throw() { return mMessage; }	
+  private:
+	char mMessage[2048];		
 };
 
 class StreamExcOutOfMemory : public StreamExc {

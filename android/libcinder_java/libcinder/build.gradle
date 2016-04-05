@@ -1,0 +1,72 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.0"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDir "${projectDir}/../../../src/cinder/java"
+            }
+        }
+    }
+
+    project.gradle.buildFinished { buildResult ->
+        def taskNames = buildResult.getGradle().getStartParameter().getTaskNames()
+        def srcFilePath = null
+
+        if(taskNames.contains("assembleDebug")) {
+            srcFilePath = "${buildDir}/outputs/aar/libcinder-debug.aar"
+        }
+        else if(taskNames.contains("assembleRelease")) {
+            srcFilePath = "${buildDir}/outputs/aar/libcinder-release.aar"
+        }
+
+        if(null != srcFilePath) {
+            def srcFile = new File( srcFilePath );
+            def dstFile = new File( "${projectDir}/../../../lib/android/" + srcFile.getName() )
+
+            def srcInputStream = srcFile.newDataInputStream()
+            def srcOutputStream = dstFile.newDataOutputStream()
+            srcOutputStream << srcInputStream
+
+            srcInputStream.close()
+            srcOutputStream.close()
+
+            println "Copied ${srcFile.getCanonicalPath()} to ${dstFile.getCanonicalPath()}"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:22.0.0'
+}
+
+
+/*
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories {
+        flatDir {
+            dirs "../../"
+        }
+    }
+}
+*/

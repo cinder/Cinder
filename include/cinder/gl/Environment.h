@@ -44,6 +44,20 @@
 	#include "cinder/msw/CinderWindowsFwd.h"
 	struct HGLRC__;
 	typedef HGLRC__* HGLRC;
+#elif defined( CINDER_ANDROID )
+	typedef void*		EGLContext;
+	typedef void*		EGLDisplay;
+	typedef void*		EGLSurface;
+	typedef void*		EGLConfig;
+#elif defined( CINDER_LINUX )
+	#if defined( CINDER_LINUX_EGL_ONLY )
+		typedef void*		EGLContext;
+		typedef void*		EGLDisplay;
+		typedef void*		EGLSurface;
+		typedef void*		EGLConfig;	
+	#else
+		typedef struct GLFWwindow 	GLFWwindow;
+	#endif
 #endif
 
 namespace cinder { namespace gl {
@@ -62,10 +76,17 @@ class Environment {
 	//! NULL for \a context deactivates the current context
 	void					makeContextCurrent( const Context *context );
 
-	virtual bool			isExtensionAvailable( const std::string &extName ) = 0;
-	virtual bool			supportsHardwareVao() = 0;
-	//! Returns whether this platform supports Texture Level-of-Detail. \c true everywhere but ES 2, which requires \c GL_EXT_shader_texture_lod
+	virtual bool			isExtensionAvailable( const std::string &extName ) const = 0;
+
+	virtual bool 			supportsFboMultiSample() const = 0;
+	virtual bool 			supportsCoverageSample() const = 0;
+	virtual bool			supportsHardwareVao() const = 0;
+	virtual bool 			supportsInstancedArrays() const = 0;
 	virtual bool			supportsTextureLod() const = 0;
+	virtual bool 			supportsGeometryShader() const = 0;
+	virtual bool 			supportsTessellationShader() const = 0;
+
+	virtual GLenum			getPreferredIndexType() const  = 0;
 
 	virtual void			allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) = 0;
 	virtual void			allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) = 0;
@@ -128,6 +149,38 @@ struct PlatformDataMsw : public Context::PlatformData {
 	HGLRC	mGlrc;
 	HDC		mDc;
 };
+#elif defined( CINDER_ANDROID )
+struct PlatformDataAndroid : public Context::PlatformData {
+	PlatformDataAndroid( EGLContext context, EGLDisplay display, EGLSurface surface, EGLConfig eglConfig )
+		: mContext( context ), mDisplay( display ), mSurface( surface ), mConfig( eglConfig )
+	{}
+
+	EGLContext		mContext;
+	EGLDisplay		mDisplay;
+	EGLSurface		mSurface;
+	EGLConfig		mConfig;
+};
+#elif defined( CINDER_LINUX )
+  #if defined( CINDER_LINUX_EGL_ONLY )
+	struct PlatformDataLinux : public Context::PlatformData {
+		PlatformDataLinux( EGLContext context, EGLDisplay display, EGLSurface surface, EGLConfig eglConfig )
+			: mContext( context ), mDisplay( display ), mSurface( surface ), mConfig( eglConfig )
+		{}
+
+		EGLContext		mContext;
+		EGLDisplay		mDisplay;
+		EGLSurface		mSurface;
+		EGLConfig		mConfig;
+	};
+  #else
+	struct PlatformDataLinux : public Context::PlatformData {
+		PlatformDataLinux( GLFWwindow *context )
+			: mContext( context )
+		{}
+
+		GLFWwindow 		*mContext = nullptr;
+	};
+  #endif
 #endif
 
 } } // namespace cinder::gl

@@ -51,7 +51,7 @@ using namespace std;
 namespace cinder { namespace gl {
 
 // defined in VaoImplEs
-#if defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_ES ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_2 )
 extern VaoRef createVaoImplEs();
 #else
 extern VaoRef createVaoImplCore();
@@ -60,16 +60,18 @@ extern VaoRef createVaoImplSoftware();
 
 VaoRef Vao::create()
 {
-#if defined( CINDER_GL_ES ) && ! defined( CINDER_GL_ES_3 )
+#if defined( CINDER_GL_ES ) && ( CINDER_GL_ES_VERSION <= CINDER_GL_ES_VERSION_2 )
 	#if defined( CINDER_COCOA_TOUCH )
 		return createVaoImplEs();
 	#elif defined( CINDER_GL_ANGLE )
 		return createVaoImplSoftware();
 	#else
-		if( env()->supportsHardwareVao() )
+		if( env()->supportsHardwareVao() ) {
 			return createVaoImplEs();
-		else
+		}
+		else {
 			return createVaoImplSoftware();
+		}
 	#endif
 #else
 	return createVaoImplCore();
@@ -154,11 +156,19 @@ void Vao::replacementBindEnd()
 void Vao::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DEBUG_LABEL )
+	env()->objectLabel( GL_VERTEX_ARRAY_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
+#elif defined( CINDER_HAS_KHR_DEBUG )
+	env()->objectLabel( GL_VERTEX_ARRAY, mId, (GLsizei)label.size(), label.c_str() );
+#endif
+	
+/*	
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 	env()->objectLabel( GL_VERTEX_ARRAY_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
 #elif ! defined( CINDER_GL_ANGLE )
 	env()->objectLabel( GL_VERTEX_ARRAY, mId, (GLsizei)label.size(), label.c_str() );
 #endif
+*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

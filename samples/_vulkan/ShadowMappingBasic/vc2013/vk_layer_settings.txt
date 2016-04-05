@@ -1,0 +1,30 @@
+# VK_LAYER_LUNARG_api_dump
+ApiDumpDetailed = TRUE
+ApiDumpNoAddr = FALSE
+ApiDumpFile = TRUE
+ApiDumpLogFilename = vk_api_dump_log.txt 
+ApiDumpFlush = FALSE
+
+# VK_LAYER_LUNARG_param_checker
+ParamCheckerDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+ParamCheckerReportFlags = debug,info,error,warn,perf
+ParamCheckerDetailed = TRUE
+ParamCheckerFile = TRUE
+ParamCheckerLogFilename = vk_param_checker_log.txt 
+ParamCheckerFlush = FALSE
+
+# VK_LAYER_LUNARG_mem_tracker
+MemTrackerDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+MemTrackerReportFlags = debug,info,error,warn,perf
+MemTrackerDetailed = TRUE
+MemTrackerFile = TRUE
+MemTrackerLogFilename = vk_mem_tracker_log.txt 
+MemTrackerFlush = FALSE
+
+# VK_LAYER_LUNARG_device_limits
+DeviceLimitsDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
+DeviceLimitsReportFlags = debug,info,error,warn,perf
+DeviceLimitsDetailed = TRUE
+DeviceLimitsFile = TRUE
+DeviceLimitsLogFilename = vk_device_limits_log.txt 
+DeviceLimitsFlush = FALSE

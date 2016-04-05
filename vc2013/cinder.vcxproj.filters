@@ -154,6 +154,18 @@
     <Filter Include="Header Files\tinyexr">
       <UniqueIdentifier>{7db91fc3-293a-46f9-a07c-f55c2de26b5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\vk">
+      <UniqueIdentifier>{7143c378-04ef-46d9-8e20-2fba80535f8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vk">
+      <UniqueIdentifier>{55259b0d-30f8-4316-8c0a-2b48b87a8ecb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vk\util">
+      <UniqueIdentifier>{f48b2797-855c-49c0-9250-fbd2d8c7a0bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vk\spir2cross">
+      <UniqueIdentifier>{cd964705-b875-43be-a8a4-19d6642fa5a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -788,6 +800,129 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\ImageFileTinyExr.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Batch.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Buffer.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\CommandBuffer.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\CommandPool.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\ConstantConversion.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Context.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Descriptor.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Environment.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Framebuffer.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\glsl_types.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\ImageView.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\IndexBuffer.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Pipeline.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\RenderPass.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\scoped.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\ShaderProg.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Swapchain.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Texture.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\UniformBuffer.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\UniformLayout.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\VertexBuffer.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\VertexBufferMesh.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\wrapper.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\RendererVk.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\draw.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Image.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\util\farmhash.cc">
+      <Filter>Source Files\vk\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\PipelineSelector.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\TextureFont.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Presenter.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Queue.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\ObjectTracker.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\StateManager.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Device.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Allocator.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Surface.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\func.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\Util.cpp">
+      <Filter>Source Files\vk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\spir2cross\spir2cpp.cpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\spir2cross\spir2cross.cpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\vk\spir2cross\spir2glsl.cpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1651,6 +1786,150 @@
     </ClInclude>
     <ClInclude Include="..\include\tinyexr\tinyexr.h">
       <Filter>Header Files\tinyexr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\BaseVkObject.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Batch.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Buffer.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\CommandBuffer.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\CommandPool.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\ConstantConversion.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Context.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Descriptor.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Environment.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Framebuffer.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\gl_types.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\glsl_types.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\ImageView.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\IndexBuffer.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Pipeline.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\platform.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\RenderPass.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\scoped.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\ShaderProg.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Swapchain.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Texture.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\UniformBuffer.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\UniformLayout.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Util.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\VertexBuffer.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\VertexBufferMesh.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\wrapper.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\RendererVk.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\vk.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\draw.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Image.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\util\farmhash.h">
+      <Filter>Source Files\vk\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\PipelineSelector.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\TextureFont.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\ObjectTracker.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Queue.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Presenter.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\StageManager.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Device.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Allocator.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\Surface.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\vk\func.h">
+      <Filter>Header Files\vk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\GLSL.std.450.h">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2common.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2cpp.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2cross.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spir2glsl.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cinder\vk\spir2cross\spirv.hpp">
+      <Filter>Source Files\vk\spir2cross</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

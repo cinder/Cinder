@@ -1,0 +1,17 @@
+apply plugin: 'groovy'
+
+group 'org.libcinder.gradle'
+version '1.0'
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+}
+
+uploadArchives {
+    repositories {
+        flatDir {
+            dirs "../repo"
+        }
+    }
+}

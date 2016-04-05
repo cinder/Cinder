@@ -46,6 +46,8 @@
 		class RendererImplGlCocoaTouch;
 		class EAGLContext;
 	#endif
+#elif defined( CINDER_LINUX )
+	typedef struct GLFWwindow 	GLFWwindow;
 #endif
 
 namespace cinder { namespace gl {
@@ -171,16 +173,20 @@ class RendererGl : public Renderer {
 	#endif
 	void	setFrameSize( int width, int height ) override;
 #elif defined( CINDER_MSW )
-	void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
-	void	kill() override;
-	HWND	getHwnd() override { return mWnd; }
-	HDC		getDc() override;
-	void	prepareToggleFullScreen();
-	void	finishToggleFullScreen();
+	virtual void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void	kill();
+	virtual HWND	getHwnd() override { return mWnd; }
+	virtual HDC		getDc() override;
+	virtual void	prepareToggleFullScreen();
+	virtual void	finishToggleFullScreen();
 #elif defined( CINDER_WINRT )
-	void	setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
-	void	prepareToggleFullScreen();
-	void	finishToggleFullScreen();
+	void			setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
+	void			prepareToggleFullScreen();
+	void			finishToggleFullScreen();	
+#elif defined( CINDER_ANDROID )
+	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) override;
+#elif defined( CINDER_LINUX )
+	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) override;
 #endif
 
 	const Options&	getOptions() const { return mOptions; }
@@ -218,6 +224,14 @@ protected:
 	class RendererImplGlAngle	*mImpl;
 	friend class				RendererImplGlAngle;
 	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
+#elif defined( CINDER_ANDROID )
+	class RendererGlAndroid  	*mImpl;
+	RendererGlAndroid         *getImpl() { return mImpl; }
+	friend class WindowImplAndroid;
+#elif defined( CINDER_LINUX )
+	class RendererGlLinux  	*mImpl;
+	RendererGlLinux         *getImpl() { return mImpl; }
+	friend class WindowImplLinux;
 #endif
 
 	std::function<void( Renderer* )> mStartDrawFn;

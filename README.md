@@ -1,3 +1,11 @@
+<p align="center">
+  <img src="https://libcinder.org/static/images/notes/vulkan/Vulkan_Mar15.svg" alt="Vulkan Logo" width="256" height="auto"/>
+</p>
+
+Welcome to the experimental Vulkan implementation in Cinder.
+
+To get started, please refer to [this forum post](https://forum.libcinder.org/#Topic/23286000002614007).
+
 ### Cinder 0.9.1dev: [libcinder.org](http://libcinder.org)
 
 <p align="center">

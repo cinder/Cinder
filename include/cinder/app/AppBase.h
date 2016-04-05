@@ -52,7 +52,23 @@ class io_service;
 
 namespace cinder { namespace app {
 
-typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>				EventSignalShouldQuit;
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+enum InterfaceOrientation {
+	Unknown					= 0,
+	Portrait				= 1 << 0,
+	PortraitUpsideDown		= 1 << 1,
+	LandscapeLeft			= 1 << 2,
+	LandscapeRight			= 1 << 3,
+	PortraitAll				= (Portrait | PortraitUpsideDown),
+	LandscapeAll			= (LandscapeLeft | LandscapeRight),
+	All						= (PortraitAll | LandscapeAll)
+};
+
+//! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
+typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t>>		EventSignalSupportedOrientations;	
+#endif
+
+typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>						EventSignalShouldQuit;
 
 //! Base class that all apps derive from.
 class AppBase {
@@ -86,7 +102,7 @@ class AppBase {
 		bool	isQuitOnLastWindowCloseEnabled() const					{ return mQuitOnLastWindowClose; }
 
 		//! Returns whether the default window is fullscreen
-		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
+		bool	isFullScreen() const { return mDefaultWindowFormat.isFullScreen(); }
 		//! Sets whether the default window is fullscreen at startup with FullScreenOptions \a options. Kiosk Mode is enabled by default.
 		void	setFullScreen( bool fullScreen = true, const FullScreenOptions &options = FullScreenOptions() ) { mDefaultWindowFormat.setFullScreen( fullScreen, options ); }
 
@@ -414,6 +430,8 @@ class AppBase {
 	//! Returns a pointer to the active App
 	static AppBase*			get() { return sInstance; }
 
+	const std::string&		getName() const { return mName; }
+
   protected:
 	AppBase();
 
@@ -429,6 +447,9 @@ class AppBase {
 	//! \endcond
 
   private:
+
+	//! Set from window title from app instantiation. Immutable.
+	std::string				mName;
 
 	Timer					mTimer;
 	uint32_t				mFrameCount;
