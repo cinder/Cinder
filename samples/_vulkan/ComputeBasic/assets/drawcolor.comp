@@ -1,0 +1,15 @@
+#version 430
+#extension GL_ARB_separate_shader_objects : enable
+#extension GL_ARB_shading_language_420pack : enable
+
+layout (std140, binding = 0) uniform ciBlock0T {
+	uniform vec2 pos;
+} ciBlock0;
+
+layout (rgba8, binding = 1) uniform writeonly image2D uDestTex;
+
+layout (local_size_x=16, local_size_y=16) in;
+
+void main() {
+	imageStore( uDestTex, ivec2(gl_GlobalInvocationID.xy), vec4( vec2( gl_GlobalInvocationID.xy ) / vec2( 512.0 ) + ciBlock0.pos, 0.0, 1.0 ) );
+}
