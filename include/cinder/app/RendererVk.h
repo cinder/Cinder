@@ -86,8 +86,11 @@ class RendererVk : public Renderer {
 		Options&						setSwapchainImageCount( uint32_t value ) { mSwapchainImageCount = std::max<uint32_t>( 2, value ); return *this; }
 		uint32_t						getSwapchainImageCount() const { return mSwapchainImageCount; }
 
-		Options&						setWorkQueueCount( uint32_t value ) { mGraphicsQueueCount = value; return *this; }
-		uint32_t						getWorkQueueCount() const { return mGraphicsQueueCount; }
+		Options&						setGraphicsQueueCount( uint32_t value ) { mGraphicsQueueCount = value; return *this; }
+		uint32_t						getGraphicsQueueCount() const { return mGraphicsQueueCount; }
+
+		Options&						setComputeQueueCount( uint32_t value ) { mComputeQueueCount = value; return *this; }
+		uint32_t						getComputeQueueCount() const { return mComputeQueueCount; }
 
 		Options&						setDepthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
 		VkFormat						getDepthStencilFormat() const { return mDepthStencilFormat; }
@@ -110,6 +113,7 @@ class RendererVk : public Renderer {
 	private:
 		bool						mExplicitMode = false;
 		uint32_t					mGraphicsQueueCount = 1;
+		uint32_t					mComputeQueueCount = 1;
 		uint32_t					mSwapchainImageCount = 2;
 		VkSampleCountFlagBits		mSamples = VK_SAMPLE_COUNT_1_BIT;
 		VkFormat					mDepthStencilFormat = VK_FORMAT_D16_UNORM;
@@ -139,7 +143,8 @@ class RendererVk : public Renderer {
 #endif
 
 	bool				isExplicitMode() const { return mOptions.getExplicitMode(); }
-	uint32_t			workQueueCount() const { return mOptions.getWorkQueueCount(); }
+	uint32_t			getGraphicsQueueCount() const { return mOptions.getGraphicsQueueCount(); }
+	uint32_t			getComputeQueueCount() const { return mOptions.getComputeQueueCount(); }
 
 	Surface8u			copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
 

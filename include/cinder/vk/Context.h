@@ -308,7 +308,7 @@ protected:
 
 private:
 	Context( const vk::PresenterRef& presenter, vk::Device* device );
-	Context(  const Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices );
+	Context( const Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices );
 
 	struct Queue {
 		int32_t			index = -1;

@@ -117,12 +117,12 @@ void Context::initializeQueues()
 {
 	// Graphics queue
 	if( -1 != mGraphicsQueue.index ) {
-		mGraphicsQueue.queue = vk::Queue::create( mDevice->getGraphicsQueueFamilyIndex(), mGraphicsQueue.index, this );
+		mGraphicsQueue.queue = vk::Queue::create( mDevice->getFirstGraphicsQueueFamilyIndex(), mGraphicsQueue.index, this );
 	}
 
 	// Compute queue
 	if( -1 != mComputeQueue.index ) {
-		mComputeQueue.queue = vk::Queue::create( mDevice->getComputeQueueFamilyIndex(), mComputeQueue.index, this );
+		mComputeQueue.queue = vk::Queue::create( mDevice->getFirstComputeQueueFamilyIndex(), mComputeQueue.index, this );
 	}
 }
 
@@ -138,8 +138,8 @@ void Context::initialize( const Context* existingContext )
     mViewMatrixStack.push_back( mat4() );
 	mProjectionMatrixStack.push_back( mat4( 1, 0, 0, 0,  0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ) );
 
-	mDefaultCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), false, this );
-	mDefaultTransientCommandPool = vk::CommandPool::create( mDevice->getGraphicsQueueFamilyIndex(), true, this );
+	mDefaultCommandPool = vk::CommandPool::create( mDevice->getFirstGraphicsQueueFamilyIndex(), false, this );
+	mDefaultTransientCommandPool = vk::CommandPool::create( mDevice->getFirstGraphicsQueueFamilyIndex(), true, this );
 	mDefaultCommandBuffer = vk::CommandBuffer::create( mDefaultCommandPool->getCommandPool(), this );
 
 	mCachedColorAttachmentBlend.blendEnable			= VK_FALSE;

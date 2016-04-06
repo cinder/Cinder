@@ -121,6 +121,7 @@ CI_LOG_I( "vk::Environment initialized" );
 	VkPhysicalDevice gpu = env->getGpus()[gpuIndex];
 	vk::Device::Options deviceOptions = vk::Device::Options();
 	deviceOptions.setGraphicsQueueCount( mOptions.mGraphicsQueueCount );
+	deviceOptions.setComputeQueueCount( mOptions.mComputeQueueCount );
 	deviceOptions.setAllocatorBufferBlockSize( mOptions.mAllocatorBufferBlockSize );
 	deviceOptions.setAllocatorImageBlockSize( mOptions.mAllocatorImageBlockSize );
 	vk::DeviceRef device = vk::Device::create( gpu, deviceOptions, env );

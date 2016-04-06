@@ -78,11 +78,23 @@ std::string toStringPhysicalDeviceType( VkPhysicalDeviceType v )
 {
 	std::string result = "<UNKNOWN>";
 	switch( v ) {
-		case VK_PHYSICAL_DEVICE_TYPE_OTHER			: result = "VK_PHYSICAL_DEVICE_TYPE_OTHER" ; break;
-		case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU" ; break;
-		case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU" ; break;
-		case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU" ; break;
-		case VK_PHYSICAL_DEVICE_TYPE_CPU			: result = "VK_PHYSICAL_DEVICE_TYPE_CPU" ; break;
+		case VK_PHYSICAL_DEVICE_TYPE_OTHER			: result = "VK_PHYSICAL_DEVICE_TYPE_OTHER"; break;
+		case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU"; break;
+		case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU"; break;
+		case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU"; break;
+		case VK_PHYSICAL_DEVICE_TYPE_CPU			: result = "VK_PHYSICAL_DEVICE_TYPE_CPU"; break;
+	}
+	return result;
+}
+
+std::string toStringQueueFlagBits( VkQueueFlagBits v )
+{
+	std::string result = "<UNKNOWN>";
+	switch( v ) {
+		case VK_QUEUE_GRAPHICS_BIT			: result = "VK_QUEUE_GRAPHICS_BIT"; break;
+		case VK_QUEUE_COMPUTE_BIT			: result = "VK_QUEUE_COMPUTE_BIT"; break;
+		case VK_QUEUE_TRANSFER_BIT			: result = "VK_QUEUE_TRANSFER_BIT"; break;
+		case VK_QUEUE_SPARSE_BINDING_BIT	: result = "VK_QUEUE_SPARSE_BINDING_BIT"; break;
 	}
 	return result;
 }

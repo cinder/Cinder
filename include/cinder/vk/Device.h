@@ -123,8 +123,8 @@ public:
 
 	bool										isExplicitMode() const;
 
-	uint32_t									getGraphicsQueueFamilyIndex() const;
-	uint32_t									getComputeQueueFamilyIndex() const;
+	uint32_t									getFirstGraphicsQueueFamilyIndex() const;
+	uint32_t									getFirstComputeQueueFamilyIndex() const;
 	void										setPresentQueueFamilyIndex( VkSurfaceKHR surface );
 	uint32_t									getPresentQueueFamilyIndex() const;
 	uint32_t									getGraphicsQueueCount() const;
@@ -156,7 +156,7 @@ private:
     VkPhysicalDeviceMemoryProperties					mMemoryProperties;
 	std::vector<VkQueueFamilyProperties>				mQueueFamilyProperties;
     std::map<VkQueueFlagBits, VkQueueFamilyProperties>	mQueueFamilyPropertiesByType;
-	std::map<VkQueueFlagBits, uint32_t>					mQueueFamilyIndicesByType;
+	std::map<VkQueueFlagBits, std::vector<uint32_t>>	mQueueFamilyIndicesByType;
 	uint32_t											mPresentQueueFamilyIndex = UINT32_MAX;
 	std::map<VkQueueFlagBits, uint32_t>					mActiveQueueCounts;
 	VkDevice											mDevice = VK_NULL_HANDLE;

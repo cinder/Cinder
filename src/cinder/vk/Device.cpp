@@ -122,10 +122,11 @@ void Device::initializeQueueProperties()
 		const auto& properties = mQueueFamilyProperties[index];
 
 		// Figure out what queue family
-		for( auto& queueFlagBit : queueFlagBits ) {
-			if( properties.queueFlags & queueFlagBit ) {
+		for( const auto& queueFlagBit : queueFlagBits ) {
+			if( queueFlagBit == ( properties.queueFlags & queueFlagBit ) ) {
 				mQueueFamilyPropertiesByType[queueFlagBit]  = properties;
-				mQueueFamilyIndicesByType[queueFlagBit]  = index;
+				mQueueFamilyIndicesByType[queueFlagBit].push_back( index );
+				CI_LOG_I( "Queue family index for " << toStringQueueFlagBits( queueFlagBit ) << ": " << index );
 			}
 		}
 		
@@ -215,16 +216,32 @@ void Device::initializeLayers()
 
 void Device::initializeDevice()
 {
-	// Clamp the queue counts
-	for( auto& aqc : mActiveQueueCounts ) {
-		const auto& props = mQueueFamilyPropertiesByType[aqc.first];
-		aqc.second = std::min( aqc.second, props.queueCount );
+	// Clamp the queue counts - this will rebuild mActiveQueueCounts
+	{
+		// Make a copy of the request
+		auto initialActiveQueueCount = mActiveQueueCounts;
+		// Clear requests
+		mActiveQueueCounts.clear();
+		// Rebuild
+		for( auto aqc : initialActiveQueueCount ) {
+			// Skip if not able to locate queue family by type
+			auto it = mQueueFamilyPropertiesByType.find( aqc.first );
+			if( mQueueFamilyPropertiesByType.end() == it ) {
+				continue;
+			}
+			// Clamp the queue count
+			const auto& props = it->second;
+			aqc.second = std::min( aqc.second, props.queueCount );
+			// Add requested queue back in
+			mActiveQueueCounts[aqc.first] = aqc.second;
+		}
 	}
 
 	// Queue create info
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	for( const auto& aqc : mActiveQueueCounts ) {
 		const uint32_t queueCount = aqc.second;
+
 		// Queue priorities
 		std::vector<float> queuePriorities( queueCount );
 		assert( ! queuePriorities.empty() );
@@ -238,11 +255,13 @@ void Device::initializeDevice()
 			}
 		}
 
+		// Queue create info
 		VkDeviceQueueCreateInfo queueCreateInfo = {};
 		queueCreateInfo.sType				= VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queueCreateInfo.pNext				= nullptr;
 		queueCreateInfo.queueCount			= queueCount;
 		queueCreateInfo.pQueuePriorities	= ( queuePriorities.empty() ? nullptr : queuePriorities.data() );
+		// Put it into array
 		queueCreateInfos.push_back( queueCreateInfo );
 	}
 
@@ -368,22 +387,22 @@ bool Device::isExplicitMode() const
 	return mEnvironment->isExplicitMode(); 
 }
 
-uint32_t Device::getGraphicsQueueFamilyIndex() const
+uint32_t Device::getFirstGraphicsQueueFamilyIndex() const
 {
 	uint32_t result = UINT32_MAX;
 	auto it = mQueueFamilyIndicesByType.find( VK_QUEUE_GRAPHICS_BIT );
-	if( it != mQueueFamilyIndicesByType.end() ) {
-		result = static_cast<int32_t>( it->second );
+	if( ( it != mQueueFamilyIndicesByType.end() ) && ( ! it->second.empty() ) ) {
+		result = static_cast<int32_t>( it->second.front() );
 	}
 	return result;
 }
 
-uint32_t Device::getComputeQueueFamilyIndex() const
+uint32_t Device::getFirstComputeQueueFamilyIndex() const
 {
 	uint32_t result = UINT32_MAX;
 	auto it = mQueueFamilyIndicesByType.find( VK_QUEUE_COMPUTE_BIT );
-	if( it != mQueueFamilyIndicesByType.end() ) {
-		result = static_cast<int32_t>( it->second );
+	if( ( it != mQueueFamilyIndicesByType.end() ) && ( ! it->second.empty() ) ) {
+		result = static_cast<int32_t>( it->second.front() );
 	}
 	return result;
 }
@@ -407,7 +426,7 @@ void Device::setPresentQueueFamilyIndex( VkSurfaceKHR surface )
 		}
 
 		// First look at the graphics queue to see if also supports present
-		uint32_t graphicsQueueFamilyIndex = getGraphicsQueueFamilyIndex();
+		uint32_t graphicsQueueFamilyIndex = getFirstGraphicsQueueFamilyIndex();
 		uint32_t presentQueueFamilyIndex = UINT32_MAX;
 		if( UINT32_MAX != graphicsQueueFamilyIndex ) {
 			if( VK_TRUE == supportsPresent[graphicsQueueFamilyIndex] ) {
