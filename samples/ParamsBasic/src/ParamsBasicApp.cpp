@@ -29,11 +29,20 @@ class TweakBarApp : public App {
 	ColorA					mColor;
 	string					mString;
 	bool					mPrintFps;
-	
+
 	void					setLightDirection( vec3 direction );
 	vec3					getLightDirection() { return mLightDirection; }
 	vec3					mLightDirection;
 	uint32_t				mSomeValue;
+
+	float					getSpeed() const { return 55.5f; };
+
+	pair<int, string>			mStatus[2];
+	const pair<int, string>&	getStatus(bool bSomeOption) const { return mStatus[bSomeOption ? 0 : 1]; };
+
+	bool					mLoop;
+	bool					isLoopingEnabled() const { return mLoop; };
+	void					enableLooping(bool bLoop) { mLoop = bLoop; };
 
 	vector<string>			mEnumNames;
 	int						mEnumSelection;
@@ -52,6 +61,8 @@ void TweakBarApp::setup()
 	mColor = ColorA( 0.25f, 0.5f, 1, 1 );
 	mSomeValue = 2;
 	mPrintFps = false;
+	mStatus[0] = { 1, "good" };
+	mStatus[1] = { 2, "bad" };
 
 	// Setup our default camera, looking down the z-axis.
 	mCam.lookAt( vec3( -20, 0, 0 ), vec3( 0 ) );
@@ -75,6 +86,18 @@ void TweakBarApp::setup()
 	function<void( vec3 )> setter	= bind( &TweakBarApp::setLightDirection, this, placeholders::_1 );
 	function<vec3 ()> getter		= bind( &TweakBarApp::getLightDirection, this );
 	mParams->addParam( "Light Direction", setter, getter );
+
+	// Or alternatively provide just a getter function for "read-only" values;
+	mParams->addParam<float>( "Speed m/s", bind( &TweakBarApp::getSpeed, this ) );
+
+	// Lambda closures - (think anonymous functions defined 'in-place') - are also possible.
+	// This allows morec complex use of getter/setter functions without having to define wrapper methods.
+	// For example, transforming a value for display...
+	mParams->addParam<float>( "Speed km/h", [&]() -> float { return getSpeed() * (3600 / 1000); } );
+	// Or toggling a value..
+	mParams->addParam<bool>( "Loop?", [&](bool value) -> void { enableLooping(!isLoopingEnabled()); }, [&]() -> bool { return isLoopingEnabled(); } );
+	// Or binding getters/setters that don't easily fit the expected template
+	mParams->addParam<string>( "Status", [&]() -> const string& { return getStatus(isLoopingEnabled()).second; } );
 
 	// Other types of controls that can be added to the interface.
 	mParams->addButton( "Button!", bind( &TweakBarApp::button, this ) );
