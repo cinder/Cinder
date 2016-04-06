@@ -394,6 +394,7 @@ DescriptorSetView::~DescriptorSetView()
 
 vk::DescriptorSetViewRef DescriptorSetView::create( const vk::UniformSetRef& uniformSet, vk::Device *device )
 {
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	vk::DescriptorSetViewRef result = vk::DescriptorSetViewRef( new vk::DescriptorSetView( uniformSet, device ) );
 	return result;
 }

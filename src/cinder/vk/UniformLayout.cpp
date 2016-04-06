@@ -584,11 +584,12 @@ UniformLayout& UniformLayout::addUniform( const std::string& name, const vk::Tex
 	return *this;
 }
 
-void UniformLayout::addBinding( vk::UniformLayout::Binding::Type bindingType,  const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber )
+void UniformLayout::addBinding( vk::UniformLayout::Binding::Type bindingType, const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber )
 {
 	auto bindingRef = findBindingObject( bindingName, bindingType, true );
 	if( bindingRef ) {
 		bindingRef->setBinding( bindingNumber, setNumber );
+		bindingRef->setStages( bindingStages );
 	}
 }
 
@@ -607,11 +608,12 @@ void UniformLayout::addSet( uint32_t setNumber, uint32_t changeFrequency )
 	}
 }
 
-UniformLayout& UniformLayout::setBinding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber )
+UniformLayout& UniformLayout::setBinding( const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber )
 {
 	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY, true );
 	if( bindingRef ) {
 		bindingRef->setBinding( bindingNumber, setNumber );
+		bindingRef->setStages( bindingStages );
 	}
 	return *this;
 }
@@ -725,9 +727,11 @@ void UniformLayout::uniform( const std::string& name, const mat4& value )
 	setUniformValue( glsl_mat4, name, std::vector<mat4>( { value } ) );
 }
 
-void UniformLayout::uniform(const std::string& name, const vk::TextureBaseRef& texture)
+void UniformLayout::uniform( const std::string& name, const vk::TextureBaseRef& texture )
 {
-	auto bindingRef = findBindingObject( name, Binding::Type::SAMPLER, false );
+	Binding::Type bindingType = Binding::Type::ANY_IMAGE;
+
+	auto bindingRef = findBindingObject( name, bindingType, false );
 	if( bindingRef ) {
 		bindingRef->setTexture( texture );
 	}
@@ -764,16 +768,24 @@ std::vector<VkWriteDescriptorSet> UniformSet::Set::getBindingUpdates( VkDescript
 		switch( binding.getType() ) {
 			case UniformLayout::Binding::Type::BLOCK: {
 				if( binding.getUniformBuffer() ) {
-					entry.descriptorType	= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-					entry.pBufferInfo		= &(binding.getUniformBuffer()->getBufferInfo());
+					entry.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					entry.pBufferInfo    = &(binding.getUniformBuffer()->getBufferInfo());
 				}
 			}
 			break;
 
 			case UniformLayout::Binding::Type::SAMPLER: {
 				if( binding.getTexture() ) {
-					entry.descriptorType	= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-					entry.pImageInfo		= &(binding.getTexture()->getImageInfo());
+					entry.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					entry.pImageInfo     = &(binding.getTexture()->getImageInfo());
+				}
+			}
+			break;
+
+			case UniformLayout::Binding::Type::STORAGE_IMAGE: {
+				if( binding.getTexture() ) {
+					entry.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+					entry.pImageInfo     = &(binding.getTexture()->getImageInfo());
 				}
 			}
 			break;
@@ -847,21 +859,34 @@ UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& 
 	for( auto& set : mSets ) {
 		for( const auto& binding : set->mBindings ) {
 			VkDescriptorSetLayoutBinding layoutBinding = {};
-			layoutBinding.binding            = binding.getBinding();
-			layoutBinding.descriptorCount    = 1;
+			layoutBinding.binding			= binding.getBinding();
+			layoutBinding.descriptorCount	= 1;
+			layoutBinding.stageFlags		= binding.getStages();
 			layoutBinding.pImmutableSamplers = nullptr;
 			switch( binding.getType() ) {
 				case UniformLayout::Binding::Type::BLOCK: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-					layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
 				break;
 
 				case UniformLayout::Binding::Type::SAMPLER: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-					layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
-				break;		
+				break;
+
+				case UniformLayout::Binding::Type::STORAGE_IMAGE: {
+					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+				}
+				break;
+
+				case UniformLayout::Binding::Type::STORAGE_BUFFER: {
+					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+				}
+				break;
 			}
 
 			set->mDescriptorSetLayoutBindings.push_back( layoutBinding );

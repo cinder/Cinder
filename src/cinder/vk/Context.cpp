@@ -66,6 +66,7 @@ Context::Context( const vk::PresenterRef& presenter, vk::Device* device )
 	: mType( Context::Type::PRIMARY ), mDevice( device ), mPresenter( presenter )
 {
 	mGraphicsQueue.index = 0;
+	mComputeQueue.index = 0;
 	
 	initialize();
 
@@ -206,6 +207,24 @@ void Context::makeCurrent()
 bool Context::isExplicitMode() const
 {
 	return mDevice->isExplicitMode();
+}
+
+void Context::addPresentWaitSemaphore( VkSemaphore semaphore, VkPipelineStageFlagBits waitDstStageMask )
+{
+	auto it = std::find_if(
+		std::begin( mPresentWaitSemaphores ),
+		std::end( mPresentWaitSemaphores ),
+		[semaphore]( const std::pair<VkSemaphore, VkPipelineStageFlagBits>& elem ) -> bool {
+			return elem.first == semaphore;
+		}
+	);
+
+	if( std::end( mPresentWaitSemaphores ) != it ) {
+		it->second = waitDstStageMask;
+	}
+	else {
+		mPresentWaitSemaphores.push_back( std::make_pair( semaphore, waitDstStageMask ) );
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

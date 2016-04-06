@@ -84,6 +84,11 @@ int32_t major = ( mGpuProperties.apiVersion >> 22 ) & 0xFF;
 int32_t minor = ( mGpuProperties.apiVersion >> 12 ) & 0xFF;
 int32_t patch = ( mGpuProperties.apiVersion >>  0 ) & 0xFF;
 CI_LOG_I( "Vulkan API Version: " << major << "." << minor << "." << patch );
+CI_LOG_I( "Device Name: " << mGpuProperties.deviceName );
+CI_LOG_I( "Device Type: " << toStringPhysicalDeviceType( mGpuProperties.deviceType ) );
+CI_LOG_I( "Device ID: " << mGpuProperties.deviceID );
+CI_LOG_I( "Vendor ID: " << mGpuProperties.vendorID );
+CI_LOG_I( "Driver Version: " << mGpuProperties.driverVersion );
 CI_LOG_I( "limits.maxBoundDescriptorSets        : " << mGpuProperties.limits.maxBoundDescriptorSets );
 CI_LOG_I( "limits.maxPushConstantsSize          : " << mGpuProperties.limits.maxPushConstantsSize );
 CI_LOG_I( "limits.sampledImageColorSampleCounts : " << mGpuProperties.limits.sampledImageColorSampleCounts );
@@ -111,9 +116,21 @@ void Device::initializeQueueProperties()
 		assert( mQueueFamilyProperties.size() >= 1 );
 	}
 
+	const std::vector<VkQueueFlagBits> queueFlagBits = {  VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT };
+
 	for( uint32_t index = 0; index < mQueueFamilyProperties.size(); ++index ) {
 		const auto& properties = mQueueFamilyProperties[index];
 
+		// Figure out what queue family
+		for( auto& queueFlagBit : queueFlagBits ) {
+			if( properties.queueFlags & queueFlagBit ) {
+				mQueueFamilyPropertiesByType[queueFlagBit]  = properties;
+				mQueueFamilyIndicesByType[queueFlagBit]  = index;
+			}
+		}
+		
+
+		/*
 		// Figure out what queue family
 		int32_t queueFamilyId = -1;
 		if( properties.queueFlags & VK_QUEUE_GRAPHICS_BIT ) {
@@ -134,6 +151,7 @@ void Device::initializeQueueProperties()
 			mQueueFamilyPropertiesByType[queueFamily]  = properties;
 			mQueueFamilyIndicesByType[queueFamily]  = index;
 		}
+		*/
 	}
 }
 

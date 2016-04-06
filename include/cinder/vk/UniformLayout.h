@@ -176,10 +176,13 @@ public:
 	public:
 
 		enum class Type { 
-			UNDEFINED	= 0, 
-			BLOCK		= 1, 
-			SAMPLER		= 2,
-			ANY			= SAMPLER | BLOCK
+			UNDEFINED		= 0, 
+			BLOCK			= 0x000000001, 
+			SAMPLER			= 0x000000002,
+			STORAGE_IMAGE	= 0x000000004,
+			STORAGE_BUFFER	= 0x000000008,
+			ANY_IMAGE		= SAMPLER | STORAGE_IMAGE,
+			ANY				= BLOCK | SAMPLER | STORAGE_IMAGE | STORAGE_BUFFER
 		};
 
 		Binding() {}
@@ -192,10 +195,13 @@ public:
 
 		uint32_t							getSet() const { return mSet; }
 		uint32_t							getBinding() const { return mBinding; }
+		VkShaderStageFlags					getStages() const { return mStages; }
 		Binding::Type						getType() const { return mType; }
 		const std::string&					getName() const { return mName; } 
 		bool								isBlock() const { return Binding::Type::BLOCK == mType; }
 		bool								isSampler() const { return Binding::Type::SAMPLER == mType; }
+		bool								isStorageImage() const { return Binding::Type::STORAGE_IMAGE == mType; }
+		bool								isStorageBuffer() const { return Binding::Type::STORAGE_BUFFER == mType; }
 
 		const Block&						getBlock() const { return mBlock; }
 		
@@ -209,6 +215,7 @@ public:
 
 		uint32_t							mSet = DEFAULT_SET;
 		uint32_t							mBinding = INVALID_BINDING;
+		VkShaderStageFlags					mStages = 0;
 		Binding::Type						mType = Binding::Type::UNDEFINED;
 		std::string							mName;
 
@@ -220,6 +227,7 @@ public:
 		// These functions force their type since in most cases mBinding is set before it's know what the binding is needed.
 		void setBinding( uint32_t binding, uint32_t set ) { mBinding = binding; mSet = set; }
 		void setBlockSizeBytes( size_t sizeBytes ) { mBlock.setSizeBytes( sizeBytes ); }
+		void setStages( VkShaderStageFlags stages, bool exclusive = false ) { if( exclusive ) { mStages = stages; } else { mStages |= stages; } }
 		friend class UniformLayout;
 	};
 
@@ -262,7 +270,7 @@ public:
 	UniformLayout&						addUniform( const std::string& name, const mat4&  value, uint32_t offset, uint32_t arraySize = 1 );
 	UniformLayout&						addUniform( const std::string& name, const vk::TextureBaseRef& texture );
 
-	UniformLayout&						setBinding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber );
+	UniformLayout&						setBinding( const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber );
 	UniformLayout&						setSet( uint32_t setNumber, uint32_t changeFrequency );
 
 	void								setBlockSizeBytes( const std::string& name, size_t sizeBytes );
@@ -297,7 +305,7 @@ private:
 	template <typename T>
 	void setUniformValue( GlslUniformDataType dataType, const std::string& name, const std::vector<T>& values );
 
-	void								addBinding( vk::UniformLayout::Binding::Type bindingType,  const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber );
+	void								addBinding( vk::UniformLayout::Binding::Type bindingType, const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber );
 	void								addSet( uint32_t setNumber, uint32_t changeFrequency );
 	friend class ShaderProg;
 };

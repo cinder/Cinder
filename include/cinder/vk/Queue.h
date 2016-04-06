@@ -65,10 +65,12 @@ public:
 	VkQueue			getQueue() const { return mQueue; }
 
 	void			submit( const std::vector<VkSubmitInfo>& submitInfos, VkFence fence );
-	void			submit( const std::vector<VkCommandBuffer>& cmdBufs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence, const std::vector<VkSemaphore>& signalSemaphores = std::vector<VkSemaphore>() );
-	void			submit( const std::vector<vk::CommandBufferRef>& cmdBufRefs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence, const std::vector<VkSemaphore>& signalSemaphores = std::vector<VkSemaphore>() );
-	void			submit( VkCommandBuffer cmdBuf, VkSemaphore waitSemaphoree = VK_NULL_HANDLE, VkPipelineStageFlags waitStageMaske = VK_NULL_HANDLE, VkFence fencee = VK_NULL_HANDLE, VkSemaphore signalSemaphore = VK_NULL_HANDLE );
-	void			submit( const vk::CommandBufferRef& cmdBufRef, VkSemaphore waitSemaphorese = VK_NULL_HANDLE, VkPipelineStageFlags waitStageMaske = VK_NULL_HANDLE, VkFence fencee = VK_NULL_HANDLE, VkSemaphore signalSemaphore = VK_NULL_HANDLE );
+	// Multiple command buffer, multiple waitSemaphore/waitStageMask, multiple signalSemaphore
+	void			submit( const std::vector<VkCommandBuffer>& cmdBufs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence = VK_NULL_HANDLE, const std::vector<VkSemaphore>& signalSemaphores = std::vector<VkSemaphore>() );
+	void			submit( const std::vector<vk::CommandBufferRef>& cmdBufRefs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence = VK_NULL_HANDLE, const std::vector<VkSemaphore>& signalSemaphores = std::vector<VkSemaphore>() );
+	// Single command buffer, single waitSemaphore/waitStageMask, single signalSemaphore
+	void			submit( VkCommandBuffer cmdBuf, VkSemaphore waitSemaphore = VK_NULL_HANDLE, VkPipelineStageFlags waitStageMask = VK_NULL_HANDLE, VkFence fence = VK_NULL_HANDLE, VkSemaphore signalSemaphore = VK_NULL_HANDLE );
+	void			submit( const vk::CommandBufferRef& cmdBufRef, VkSemaphore waitSemaphore = VK_NULL_HANDLE, VkPipelineStageFlags waitStageMask = VK_NULL_HANDLE, VkFence fence = VK_NULL_HANDLE, VkSemaphore signalSemaphore = VK_NULL_HANDLE );
 
 	void			present( const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkSwapchainKHR>& swapChains, const std::vector<uint32_t>& imageIndices );
 	void			present( VkSemaphore waitSemaphore, VkSwapchainKHR swapChain, uint32_t imageIndex );

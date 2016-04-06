@@ -43,6 +43,7 @@
 namespace cinder { namespace vk {
 
 std::string toStringVkResult( VkResult v );
+std::string toStringPhysicalDeviceType( VkPhysicalDeviceType v );
 
 std::string toStringVkMemoryPropertyFlagBits( VkMemoryPropertyFlagBits v );
 std::string toStringVkMemoryPropertyFlags( VkMemoryPropertyFlags v );

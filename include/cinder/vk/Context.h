@@ -123,6 +123,7 @@ public:
 	const vk::QueueRef&						getGraphicsQueue() const { return mGraphicsQueue.queue; }
 	const vk::QueueRef&						getComputeQueue() const { return mComputeQueue.queue; }
 	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
+	void									addPresentWaitSemaphore( VkSemaphore semaphore, VkPipelineStageFlagBits waitDstStageMask );
 
 	const vk::CommandPoolRef&				getDefaultCommandPool() const { return mDefaultCommandPool; }
 	const vk::CommandPoolRef&				getDefaultTransientCommandPool() const { return mDefaultCommandPool; }
@@ -314,11 +315,12 @@ private:
 		vk::QueueRef	queue;
 	};
 	
-	Context::Type							mType = Context::Type::UNDEFINED;
-	vk::Device								*mDevice = nullptr;
-	Context::Queue							mGraphicsQueue;
-	Context::Queue							mComputeQueue;
-	vk::PresenterRef						mPresenter;
+	Context::Type													mType = Context::Type::UNDEFINED;
+	vk::Device														*mDevice = nullptr;
+	Context::Queue													mGraphicsQueue;
+	Context::Queue													mComputeQueue;
+	vk::PresenterRef												mPresenter;
+	std::vector<std::pair<VkSemaphore, VkPipelineStageFlagBits>>	mPresentWaitSemaphores; 
 
 	// Default graphics variables
 	std::pair<ivec2,ivec2>					mDefaultViewport;

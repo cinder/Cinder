@@ -785,11 +785,12 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 							bool     isBlock        = ( 0 != ( backCompiler->get_decoration_mask( typeInfo.self ) & kBlockMask  ) );
 							uint32_t typeId         = ( ( ! isPushConstant && isBlock ) ? res.type_id : res.id );
 
-							std::string bindingName   = backCompiler->get_name( res.id );
-							uint32_t    bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
-							uint32_t    bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+							std::string           bindingName   = backCompiler->get_name( res.id );
+							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+							VkShaderStageFlagBits bindingStage = shaderStageInfo->stage;
 
-							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::BLOCK, bindingName, bindingNumber, bindingSet );
+							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::BLOCK, bindingName, bindingNumber, bindingStage, bindingSet );
 							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
 
 							for( uint32_t index = 0; index < typeInfo.member_types.size(); ++index ) {
@@ -818,11 +819,34 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 
 						// Extract samplers from all shader stages
 						for( auto& res : backCompiler->get_shader_resources().sampled_images ) {
-							std::string bindingName   = backCompiler->get_name( res.id );
-							uint32_t    bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
-							uint32_t    bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+							std::string           bindingName   = backCompiler->get_name( res.id );
+							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+							VkShaderStageFlagBits bindingStage = shaderStageInfo->stage;
 							
-							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::SAMPLER, bindingName, bindingNumber, bindingSet );
+							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::SAMPLER, bindingName, bindingNumber, bindingStage, bindingSet );
+							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
+						}
+
+						// Extract storage images from all shader stages - but probably only just compute
+						for( auto& res : backCompiler->get_shader_resources().storage_images ) {
+							std::string           bindingName   = backCompiler->get_name( res.id );
+							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+							VkShaderStageFlagBits bindingStage = shaderStageInfo->stage;
+							
+							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::STORAGE_IMAGE, bindingName, bindingNumber, bindingStage, bindingSet );
+							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
+						}
+
+						// Extract storage buffers from all shader stages - but probably only just compute
+						for( auto& res : backCompiler->get_shader_resources().storage_buffers) {
+							std::string           bindingName   = backCompiler->get_name( res.id );
+							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+							VkShaderStageFlagBits bindingStage = shaderStageInfo->stage;
+
+							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::STORAGE_BUFFER, bindingName, bindingNumber, bindingStage, bindingSet );
 							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
 						}
 					}
@@ -901,6 +925,12 @@ ShaderProgRef ShaderProg::create( const std::string &vertexShader, const std::st
 		.vertex( vertexShader )
 		.fragment( fragmentShader );
 	return ShaderProg::create( format, device );
+}
+
+bool ShaderProg::isCompute() const
+{
+	bool result = ( 1 == mShaderStages.size() ) && ( VK_SHADER_STAGE_COMPUTE_BIT == mShaderStages[0].stage );
+	return result;
 }
 
 void ShaderProg::uniform( const std::string& name, const float value )
