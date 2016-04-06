@@ -65,7 +65,9 @@ QueueRef Queue::create( uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Cont
 
 void Queue::initialize( uint32_t queueFamilyIndex, uint32_t queueIndex )
 {
-	vkGetDeviceQueue( mContext->getDevice()->getDevice(), queueFamilyIndex, queueIndex, &mQueue );
+	mQueueFamilyIndex = queueFamilyIndex;
+	mQueueIndex = queueIndex;
+	vkGetDeviceQueue( mContext->getDevice()->getDevice(), mQueueFamilyIndex, mQueueIndex, &mQueue );
 }
 
 void Queue::destroy( bool removeFromTracking )

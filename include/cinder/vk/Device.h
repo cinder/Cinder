@@ -123,8 +123,11 @@ public:
 
 	bool										isExplicitMode() const;
 
+/*
 	uint32_t									getFirstGraphicsQueueFamilyIndex() const;
 	uint32_t									getFirstComputeQueueFamilyIndex() const;
+*/
+	bool										acquireQueueDescriptor( VkQueueFlagBits queueType, uint32_t *queueFamilyIndex, uint32_t *queueIndex );
 	void										setPresentQueueFamilyIndex( VkSurfaceKHR surface );
 	uint32_t									getPresentQueueFamilyIndex() const;
 	uint32_t									getGraphicsQueueCount() const;
@@ -149,8 +152,18 @@ public:
 private:
 	Device( VkPhysicalDevice gpu, const Device::Options& options, vk::Environment *env );
 
+	struct QueueDescriptor {
+		uint32_t			queueFamilyIndex = UINT32_MAX;
+		uint32_t			queueIndex = UINT32_MAX;
+		VkQueueFlags		supportedQueueTypes = 0;
+		VkQueueFlags		assignedQueueType = 0;
+		bool				inUse = false;
+		// C'tor to ensure that in-line initialization works everywhere.
+		QueueDescriptor() {} 
+	};
+
 	Environment								*mEnvironment = nullptr;
-	
+
 	VkPhysicalDevice									mGpu = VK_NULL_HANDLE;
     VkPhysicalDeviceProperties							mGpuProperties;
     VkPhysicalDeviceMemoryProperties					mMemoryProperties;
@@ -158,7 +171,7 @@ private:
     std::map<VkQueueFlagBits, VkQueueFamilyProperties>	mQueueFamilyPropertiesByType;
 	std::map<VkQueueFlagBits, std::vector<uint32_t>>	mQueueFamilyIndicesByType;
 	uint32_t											mPresentQueueFamilyIndex = UINT32_MAX;
-	std::map<VkQueueFlagBits, uint32_t>					mActiveQueueCounts;
+	std::vector<QueueDescriptor>						mQueueDescriptors;
 	VkDevice											mDevice = VK_NULL_HANDLE;
 
 	// Device layers
@@ -181,8 +194,8 @@ private:
 	void initializeGpuProperties();
 	void initializeQueueProperties();
 	void initializeLayers();
-	void initializeDevice();	
-	void initialize();
+	void initializeDevice( const std::map<VkQueueFlagBits, uint32_t>& requestedQueueCounts );	
+	void initialize( const Device::Options& options );
 	void destroy( bool removeFromTracking = true );
 	friend class Environment;
 

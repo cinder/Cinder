@@ -66,10 +66,9 @@ namespace cinder { namespace vk {
 Device::Device( VkPhysicalDevice gpu, const Device::Options& options, vk::Environment *env )
 	: mEnvironment( env ), mGpu( gpu )
 {
-	mActiveQueueCounts = options.mQueueCounts;
 	mAllocatorBufferBlockSize = options.mAllocatorBufferBlockSize;
 	mAllocatorImageBlockSize = options.mAllocatorImageBlockSize;
-	initialize();
+	initialize( options );
 }
 
 Device::~Device()
@@ -110,49 +109,44 @@ void Device::initializeQueueProperties()
 		uint32_t queueFamilyPropertiesCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties( mGpu, &queueFamilyPropertiesCount, nullptr );
 		assert( queueFamilyPropertiesCount >= 1 );
+		CI_LOG_I( "queueFamilyPropertiesCount: " << queueFamilyPropertiesCount );
 
 		mQueueFamilyProperties.resize( queueFamilyPropertiesCount );
 		vkGetPhysicalDeviceQueueFamilyProperties( mGpu, &queueFamilyPropertiesCount, mQueueFamilyProperties.data() );
 		assert( mQueueFamilyProperties.size() >= 1 );
 	}
 
-	const std::vector<VkQueueFlagBits> queueFlagBits = {  VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT };
+	const std::vector<VkQueueFlagBits> kQueueFlagBits = {  VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT };
 
-	for( uint32_t index = 0; index < mQueueFamilyProperties.size(); ++index ) {
-		const auto& properties = mQueueFamilyProperties[index];
+	for( uint32_t queueFamilyIndex = 0; queueFamilyIndex < mQueueFamilyProperties.size(); ++queueFamilyIndex ) {
+		const auto& properties = mQueueFamilyProperties[queueFamilyIndex];
+		CI_LOG_I( "Queue family index: " << queueFamilyIndex );
+		CI_LOG_I( "...queueCount: " << properties.queueCount );
 
-		// Figure out what queue family
-		for( const auto& queueFlagBit : queueFlagBits ) {
+		VkQueueFlags supportedQueueTypes = 0;
+		std::string supportedQueueTypesStr;
+		for( const auto& queueFlagBit : kQueueFlagBits ) {
 			if( queueFlagBit == ( properties.queueFlags & queueFlagBit ) ) {
 				mQueueFamilyPropertiesByType[queueFlagBit]  = properties;
-				mQueueFamilyIndicesByType[queueFlagBit].push_back( index );
-				CI_LOG_I( "Queue family index for " << toStringQueueFlagBits( queueFlagBit ) << ": " << index );
+				mQueueFamilyIndicesByType[queueFlagBit].push_back( queueFamilyIndex );
+				supportedQueueTypes |= queueFlagBit;			
+				if( ! supportedQueueTypesStr.empty() ) {
+					supportedQueueTypesStr += ( "|" + toStringQueueFlagBits( queueFlagBit ) );
+				}
+				else {
+					supportedQueueTypesStr = toStringQueueFlagBits( queueFlagBit );
+				}
 			}
 		}
-		
+		CI_LOG_I( "...supported queueTypes: " << supportedQueueTypesStr );
 
-		/*
-		// Figure out what queue family
-		int32_t queueFamilyId = -1;
-		if( properties.queueFlags & VK_QUEUE_GRAPHICS_BIT ) {
-			queueFamilyId = static_cast<int32_t>( VK_QUEUE_GRAPHICS_BIT );
+		for( uint32_t queueIndex = 0; queueIndex < properties.queueCount; ++queueIndex ) {
+			Device::QueueDescriptor queueDesc = Device::QueueDescriptor();
+			queueDesc.queueFamilyIndex = queueFamilyIndex;
+			queueDesc.queueIndex = queueIndex;
+			queueDesc.supportedQueueTypes = supportedQueueTypes;
+			mQueueDescriptors.push_back( queueDesc );
 		}
-		else if( properties.queueFlags & VK_QUEUE_COMPUTE_BIT ) {
-			queueFamilyId = static_cast<int32_t>( VK_QUEUE_COMPUTE_BIT );
-		}
-		else if( properties.queueFlags & VK_QUEUE_TRANSFER_BIT ) {
-			queueFamilyId = static_cast<int32_t>( VK_QUEUE_TRANSFER_BIT );
-		}
-		else if( properties.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT ) {
-			queueFamilyId = static_cast<int32_t>( VK_QUEUE_SPARSE_BINDING_BIT );
-		}
-		// Copy properties and index if it's a known queue family 
-		if( -1 != queueFamilyId ) {
-			VkQueueFlagBits queueFamily = static_cast<VkQueueFlagBits>( queueFamilyId );
-			mQueueFamilyPropertiesByType[queueFamily]  = properties;
-			mQueueFamilyIndicesByType[queueFamily]  = index;
-		}
-		*/
 	}
 }
 
@@ -214,8 +208,67 @@ void Device::initializeLayers()
 	}
 }
 
-void Device::initializeDevice()
+void Device::initializeDevice( const std::map<VkQueueFlagBits, uint32_t>& requestedQueueCounts )
 {
+	// Force the order how queues are assigned
+	const std::vector<VkQueueFlagBits> kQueueFlagBits = {  VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT };
+	for( const auto& queueFlagBit : kQueueFlagBits ) {
+		auto it = requestedQueueCounts.find( queueFlagBit );
+		if( requestedQueueCounts.end() == it ) {
+			continue;
+		}
+
+		uint32_t queueCount = it->second;
+		for( uint32_t i = 0; i < queueCount; ++i ) {
+			for( auto& queueDesc : mQueueDescriptors ) {
+				if( ( queueFlagBit == ( queueDesc.supportedQueueTypes & queueFlagBit ) ) && ( 0 == queueDesc.assignedQueueType ) ) {
+					queueDesc.assignedQueueType = queueFlagBit;
+					break;
+				}
+			}
+		}
+	}
+
+	// Queue create info
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+	for( const auto& queueDesc : mQueueDescriptors ) {
+		// Skip unassigned queues
+		if( 0 == queueDesc.assignedQueueType ) {
+			continue;;
+		}
+
+		auto it = std::find_if( std::begin( queueCreateInfos ), std::end( queueCreateInfos ),
+			[queueDesc]( const VkDeviceQueueCreateInfo& elem ) -> bool {
+				return elem.queueFamilyIndex == queueDesc.queueFamilyIndex;
+			}
+		);
+
+		if( std::end( queueCreateInfos ) != it ) {
+			it->queueCount += 1;
+		}
+		else {
+			// Queue create info
+			VkDeviceQueueCreateInfo createInfo = {};
+			createInfo.sType			= VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			createInfo.pNext			= nullptr;
+			createInfo.flags			= 0;
+			createInfo.queueFamilyIndex	= queueDesc.queueFamilyIndex;
+			createInfo.queueCount		= 1;
+			createInfo.pQueuePriorities	= nullptr;
+			// Add
+			queueCreateInfos.push_back( createInfo );
+		}
+	}
+
+	// Queue priorities - make all 1.0 for now
+	std::vector<std::vector<float>> queuePriorities;
+	for( auto& qci : queueCreateInfos ) {
+		std::vector<float> priorities( qci.queueCount, 1.0f );
+		queuePriorities.push_back( priorities );
+		qci.pQueuePriorities = queuePriorities.back().data();
+	}
+	
+/*
 	// Clamp the queue counts - this will rebuild mActiveQueueCounts
 	{
 		// Make a copy of the request
@@ -264,6 +317,7 @@ void Device::initializeDevice()
 		// Put it into array
 		queueCreateInfos.push_back( queueCreateInfo );
 	}
+*/
 
 	// Layers and extensions
 	std::vector<const char *> layerNames;
@@ -318,12 +372,12 @@ for( auto& name : layerExtensionNames ) {
 	mAllocator = vk::Allocator::create( mAllocatorBufferBlockSize, mAllocatorImageBlockSize, this );
 }
 
-void Device::initialize()
+void Device::initialize( const Device::Options& options )
 {
 	initializeGpuProperties();
 	initializeQueueProperties();
 	initializeLayers();
-	initializeDevice();
+	initializeDevice( options.mQueueCounts );
 
 	mPipelineCache = vk::PipelineCache::create( this );
 	mDescriptorSetLayoutSelector = vk::DescriptorSetLayoutSelector::create( this );
@@ -387,6 +441,7 @@ bool Device::isExplicitMode() const
 	return mEnvironment->isExplicitMode(); 
 }
 
+/*
 uint32_t Device::getFirstGraphicsQueueFamilyIndex() const
 {
 	uint32_t result = UINT32_MAX;
@@ -406,6 +461,7 @@ uint32_t Device::getFirstComputeQueueFamilyIndex() const
 	}
 	return result;
 }
+*/
 
 void Device::setPresentQueueFamilyIndex( VkSurfaceKHR surface )
 {
@@ -426,7 +482,13 @@ void Device::setPresentQueueFamilyIndex( VkSurfaceKHR surface )
 		}
 
 		// First look at the graphics queue to see if also supports present
-		uint32_t graphicsQueueFamilyIndex = getFirstGraphicsQueueFamilyIndex();
+		uint32_t graphicsQueueFamilyIndex = UINT32_MAX;
+		for( uint32_t i = 0; i < mQueueFamilyProperties.size(); ++i ) {
+			if( VK_QUEUE_GRAPHICS_BIT == ( mQueueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT ) ) {
+				graphicsQueueFamilyIndex = i;
+				break;
+			}
+		}
 		uint32_t presentQueueFamilyIndex = UINT32_MAX;
 		if( UINT32_MAX != graphicsQueueFamilyIndex ) {
 			if( VK_TRUE == supportsPresent[graphicsQueueFamilyIndex] ) {
@@ -449,6 +511,25 @@ void Device::setPresentQueueFamilyIndex( VkSurfaceKHR surface )
 	}
 }
 
+bool Device::acquireQueueDescriptor( VkQueueFlagBits queueType, uint32_t *queueFamilyIndex, uint32_t *queueIndex )
+{
+	bool result = false;
+	*queueFamilyIndex = UINT32_MAX;
+	*queueIndex = UINT32_MAX;
+
+	for( auto& queueDesc : mQueueDescriptors ) {
+		if( ( queueType == queueDesc.assignedQueueType ) && ( ! queueDesc.inUse ) ) {
+			*queueFamilyIndex = queueDesc.queueFamilyIndex;
+			*queueIndex = queueDesc.queueIndex;
+			queueDesc.inUse = true;
+			result = true;
+			break;
+		}
+	}
+
+	return result;
+}
+
 uint32_t Device::getPresentQueueFamilyIndex() const
 {
 	return mPresentQueueFamilyIndex;
@@ -457,20 +538,35 @@ uint32_t Device::getPresentQueueFamilyIndex() const
 uint32_t Device::getGraphicsQueueCount() const
 {
 	uint32_t result = 0;
-	auto it = mActiveQueueCounts.find( VK_QUEUE_GRAPHICS_BIT );
-	if( it != mActiveQueueCounts.end() ) {
-		result = it->second;
+	for( const auto& queueDesc : mQueueDescriptors ) {
+		if( VK_QUEUE_GRAPHICS_BIT == queueDesc.assignedQueueType ) {
+			++result;
+		}
 	}
+
+/*
+	auto it = mQueueDescriptors.find( VK_QUEUE_GRAPHICS_BIT );
+	if( it != mQueueDescriptors.end() ) {
+		result = (*it).second.size();
+	}
+*/
 	return result;
 }
 
 uint32_t Device::getComputeQueueCount() const
 {
 	uint32_t result = 0;
-	auto it = mActiveQueueCounts.find( VK_QUEUE_COMPUTE_BIT );
-	if( it != mActiveQueueCounts.end() ) {
-		result = it->second;
+	for( const auto& queueDesc : mQueueDescriptors ) {
+		if( VK_QUEUE_COMPUTE_BIT == queueDesc.assignedQueueType ) {
+			++result;
+		}
 	}
+/*
+	auto it = mQueueDescriptors.find( VK_QUEUE_COMPUTE_BIT );
+	if( it != mQueueDescriptors.end() ) {
+		result = (*it).second.size();
+	}
+*/
 	return result;
 }
 

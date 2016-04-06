@@ -236,7 +236,7 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 
 	// Vulkan pipeline
 	{
-		mCommandPool = vk::CommandPool::create( vk::context()->getDevice()->getGraphicsQueueFamilyIndex(), false, vk::context() );
+		mCommandPool = vk::CommandPool::create( vk::context()->getGraphicsQueue()->getQueueFamilyIndex(), false, vk::context() );
 		mCommandBuffer = vk::CommandBuffer::create( mCommandPool->getCommandPool() );
 
 		// Uniform buffer

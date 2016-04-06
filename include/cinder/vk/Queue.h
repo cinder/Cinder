@@ -64,6 +64,8 @@ public:
 
 	VkQueue			getQueue() const { return mQueue; }
 
+	uint32_t		getQueueFamilyIndex() const { return mQueueFamilyIndex; }
+
 	void			submit( const std::vector<VkSubmitInfo>& submitInfos, VkFence fence );
 	// Multiple command buffer, multiple waitSemaphore/waitStageMask, multiple signalSemaphore
 	void			submit( const std::vector<VkCommandBuffer>& cmdBufs, const std::vector<VkSemaphore>& waitSemaphores, const std::vector<VkPipelineStageFlags>& waitStageMasks, VkFence fence = VK_NULL_HANDLE, const std::vector<VkSemaphore>& signalSemaphores = std::vector<VkSemaphore>() );
@@ -81,9 +83,11 @@ public:
 	void			waitIdle();
 
 private:
-	Queue(  uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context );
+	Queue( uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context );
 
 	VkQueue			mQueue = VK_NULL_HANDLE;
+	uint32_t		mQueueFamilyIndex = UINT32_MAX;
+	uint32_t		mQueueIndex = UINT32_MAX;
 
 	void			initialize( uint32_t queueFamilyIndex, uint32_t queueIndex );
 	void			destroy( bool removeFromTracking = true );

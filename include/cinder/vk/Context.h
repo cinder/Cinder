@@ -107,7 +107,8 @@ public:
 	virtual ~Context();
 
 	static ContextRef						create( const vk::PresenterRef& presenter, vk::Device* device );
-	static ContextRef						createFromExisting( const vk::Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices );
+	//static ContextRef						createFromExisting( const vk::Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices );
+	static ContextRef						createFromExisting( const vk::Context* existingContext, VkQueueFlags queueTypes );
 
 	vk::Environment*						getEnvironment() const;
 	Context::Type							getType() const { return mType; }
@@ -308,7 +309,8 @@ protected:
 
 private:
 	Context( const vk::PresenterRef& presenter, vk::Device* device );
-	Context( const Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices );
+	//Context( const Context* existingContext, const std::map<VkQueueFlagBits, uint32_t> queueIndices );
+	Context( const Context* existingContext, VkQueueFlags queueTypes );
 
 	struct Queue {
 		int32_t			index = -1;
@@ -369,12 +371,12 @@ private:
 	vk::CommandPoolRef						mDefaultTransientCommandPool;
 	vk::CommandBufferRef					mDefaultCommandBuffer;
 	
-	void initialize( const Context* existingContext = nullptr );
+	void initialize( const Context* existingContext, VkQueueFlags queueTypes );
 	void destroy( bool removeFromTracking = true );
 	friend class Device;
 	friend class Presenter;
 
-	void initializeQueues();
+	void initializeQueues( VkQueueFlags queueTypes );
 
 	void setDefaultViewport( const std::pair<ivec2,ivec2>& viewport ) { mDefaultViewport = viewport; }
 	friend class ci::app::RendererVk;

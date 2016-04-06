@@ -124,7 +124,8 @@ void FishTornadoApp::setup()
 		// Light
 		{
 			uint32_t queueIndex = 1;
-			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx,  { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
+			//auto secondaryCtx = vk::Context::createFromExisting( primaryCtx,  { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, VK_QUEUE_GRAPHICS_BIT );
 			mLightLoadThread = std::shared_ptr<std::thread>( new std::thread( [this, secondaryCtx, primaryCtx]() {
 				secondaryCtx->makeCurrent();
 				this->mLight = Light::create();
@@ -137,7 +138,8 @@ void FishTornadoApp::setup()
 		// Ocean
 		{
 			uint32_t queueIndex = 2;
-			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
+			//auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, VK_QUEUE_GRAPHICS_BIT );
 			mOceanLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
 				secondaryCtx->makeCurrent();
 				this->mOcean = Ocean::create( this );
@@ -150,7 +152,8 @@ void FishTornadoApp::setup()
 		// Shark
 		{
 			uint32_t queueIndex = 3;
-			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
+			//auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
+			auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, VK_QUEUE_GRAPHICS_BIT );
 			mSharkLoadThread = std::shared_ptr<std::thread>( new std::thread( [this,  secondaryCtx, primaryCtx]() {
 				secondaryCtx->makeCurrent();
 				this->mShark = Shark::create( this );
@@ -168,7 +171,8 @@ void FishTornadoApp::setup()
 		CI_LOG_I( "GpuFlocker created" );
 
 		uint32_t queueIndex = 1;
-		auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
+		//auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, { { VK_QUEUE_GRAPHICS_BIT, queueIndex } } );
+		auto secondaryCtx = vk::Context::createFromExisting( primaryCtx, VK_QUEUE_GRAPHICS_BIT );
 		mLightLoadThread = std::shared_ptr<std::thread>( new std::thread( [this, secondaryCtx, primaryCtx]() {
 			secondaryCtx->makeCurrent();
 
@@ -683,7 +687,7 @@ CINDER_APP(
 	RendererVk( RendererVk::Options()
 		.setSamples( VK_SAMPLE_COUNT_8_BIT )
 		.setExplicitMode()
-		.setWorkQueueCount( NUM_QUEUES )
+		.setGraphicsQueueCount( NUM_QUEUES )
 		.setAllocatorBlockSize( vk::Allocator::_64MB, vk::Allocator::_64MB )
 		.setLayers( gLayers )
 		.setDebugReportCallbackFn( debugReportVk ) 
