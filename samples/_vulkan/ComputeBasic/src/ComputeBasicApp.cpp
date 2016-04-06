@@ -55,6 +55,7 @@ private:
 	vk::BatchRef				mBatch;
 	vk::TextureRef				mTexture;
 
+	vk::CommandPoolRef			mComputeCommandPool;
 	vk::CommandBufferRef		mComputeCmdBuf;
 	vk::DescriptorSetViewRef	mComputeDescriptorView;
 	vk::UniformSetRef			mComputeUniformSet;
@@ -84,7 +85,9 @@ void ComputeBasicApp::setup()
 	}
 
 	{
-		mComputeCmdBuf = vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
+		mComputeCommandPool = vk::CommandPool::create( vk::context()->getComputeQueue()->getQueueFamilyIndex(), false, vk::context() );
+
+		mComputeCmdBuf = vk::CommandBuffer::create( mComputeCommandPool->getCommandPool() );
 
 		mComputeUniformSet = vk::UniformSet::create( mComputeShader->getUniformLayout() );
 		mComputeDescriptorView = vk::DescriptorSetView::create( mComputeUniformSet );
@@ -175,7 +178,7 @@ VkBool32 debugReportVk(
 		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	else if( flags & VK_DEBUG_REPORT_WARNING_BIT_EXT ) {
-		//CI_LOG_W( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+		CI_LOG_W( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	else if( flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) {
 		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
