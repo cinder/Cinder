@@ -190,6 +190,8 @@ public:
 	static ShaderProgRef	create( DataSourceRef vertexShader, DataSourceRef fragmentShader , vk::Device *device = nullptr );
 	static ShaderProgRef	create( const std::string &vertexShader, const std::string &fragmentShader, vk::Device *device = nullptr );
 
+	bool								isCompute() const;
+
 	const std::vector<VkPipelineShaderStageCreateInfo>&		getShaderStages() const { return mShaderStages; }
 
 	const std::vector<Attribute>&		getActiveAttributes() const { return mAttributes; }

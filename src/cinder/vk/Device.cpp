@@ -116,9 +116,21 @@ void Device::initializeQueueProperties()
 		assert( mQueueFamilyProperties.size() >= 1 );
 	}
 
+	const std::vector<VkQueueFlagBits> queueFlagBits = {  VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT };
+
 	for( uint32_t index = 0; index < mQueueFamilyProperties.size(); ++index ) {
 		const auto& properties = mQueueFamilyProperties[index];
 
+		// Figure out what queue family
+		for( auto& queueFlagBit : queueFlagBits ) {
+			if( properties.queueFlags & queueFlagBit ) {
+				mQueueFamilyPropertiesByType[queueFlagBit]  = properties;
+				mQueueFamilyIndicesByType[queueFlagBit]  = index;
+			}
+		}
+		
+
+		/*
 		// Figure out what queue family
 		int32_t queueFamilyId = -1;
 		if( properties.queueFlags & VK_QUEUE_GRAPHICS_BIT ) {
@@ -139,6 +151,7 @@ void Device::initializeQueueProperties()
 			mQueueFamilyPropertiesByType[queueFamily]  = properties;
 			mQueueFamilyIndicesByType[queueFamily]  = index;
 		}
+		*/
 	}
 }
 
