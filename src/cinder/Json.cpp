@@ -709,7 +709,7 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 
 JsonTree::ExcChildNotFound::ExcChildNotFound( const JsonTree &node, const string &childPath ) throw()
 {
-#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	sprintf_s( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
 #else
 	sprintf( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
@@ -718,7 +718,7 @@ JsonTree::ExcChildNotFound::ExcChildNotFound( const JsonTree &node, const string
 
 JsonTree::ExcNonConvertible::ExcNonConvertible( const JsonTree &node ) throw()
 {
-#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	sprintf_s( mMessage, "Unable to convert value for node: %s", node.getPath().c_str() );
 #else
 	sprintf( mMessage, "Unable to convert value for node: %s", node.getPath().c_str() );
@@ -727,7 +727,7 @@ JsonTree::ExcNonConvertible::ExcNonConvertible( const JsonTree &node ) throw()
 
 JsonTree::ExcJsonParserError::ExcJsonParserError( const string &errorMessage ) throw()
 {
-#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	sprintf_s( mMessage, "Unable to parse JSON\n: %s", errorMessage.c_str() );
 #else
 	sprintf( mMessage, "Unable to parse JSON\n: %s", errorMessage.c_str() );

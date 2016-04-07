@@ -41,6 +41,8 @@
 	#endif
 #elif defined( CINDER_MSW )
 	#include <Windows.h>
+	#undef min
+	#undef max
 #elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	#include "cinder/linux/FreeTypeUtil.h" 
 #endif
@@ -152,7 +154,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 	::CGContextRelease( cgContext );
 }
 
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 
 set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedChars )
 {

@@ -58,7 +58,7 @@ std::string loadString( const DataSourceRef &dataSource );
 void sleep( float milliseconds );
 
 //! Returns the path separator for the host operating system's file system, \c '\' on Windows and \c '/' on Mac OS
-#if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 inline char getPathSeparator() { return '\\'; }
 #else
 inline char getPathSeparator() { return '/'; }

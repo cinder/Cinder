@@ -30,7 +30,7 @@
 #define CINDER_GL_ES_VERSION_3_1	310
 #define CINDER_GL_ES_VERSION_3_2	320
 
-#if ! defined( CINDER_GL_ANGLE ) && defined( CINDER_WINRT )
+#if ! defined( CINDER_GL_ANGLE ) && defined( CINDER_UWP )
 	#define CINDER_GL_ANGLE
 #endif
 
@@ -203,7 +203,7 @@
  	#endif
 #endif
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	#if ! defined( CINDER_GL_ANGLE ) // MSW Desktop Only
 		#define CINDER_GL_HAS_COMPUTE_SHADER
 		#define CINDER_GL_HAS_DEBUG_OUTPUT
@@ -218,7 +218,7 @@
 		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
 		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleANGLE
 	#endif
-#endif // defined( CINDER_MSW )
+#endif // defined( CINDER_MSW_DESKTOP )
 
 #if defined( GL_EXT_debug_label )
 	#define CINDER_GL_HAS_DEBUG_LABEL 
