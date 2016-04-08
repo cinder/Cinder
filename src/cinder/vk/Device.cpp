@@ -230,27 +230,6 @@ void Device::initializeDevice( const std::vector<std::pair<VkQueueFlags, uint32_
 		}
 	}
 
-/*
-	// Force the order how queues are assigned
-	const std::vector<VkQueueFlagBits> kQueueFlagBits = {  VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT };
-	for( const auto& queueFlagBit : kQueueFlagBits ) {
-		auto it = requestedQueueCounts.find( queueFlagBit );
-		if( requestedQueueCounts.end() == it ) {
-			continue;
-		}
-
-		uint32_t queueCount = it->second;
-		for( uint32_t i = 0; i < queueCount; ++i ) {
-			for( auto& queueDesc : mQueueDescriptors ) {
-				if( ( queueFlagBit == ( queueDesc.supportedQueueTypes & queueFlagBit ) ) && ( 0 == queueDesc.assignedQueueTypes ) ) {
-					queueDesc.assignedQueueTypes = queueFlagBit;
-					break;
-				}
-			}
-		}
-	}
-*/
-
 	// Queue create info
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	for( const auto& queueDesc : mQueueDescriptors ) {
@@ -290,57 +269,6 @@ void Device::initializeDevice( const std::vector<std::pair<VkQueueFlags, uint32_
 		qci.pQueuePriorities = queuePriorities.back().data();
 	}
 	
-/*
-	// Clamp the queue counts - this will rebuild mActiveQueueCounts
-	{
-		// Make a copy of the request
-		auto initialActiveQueueCount = mActiveQueueCounts;
-		// Clear requests
-		mActiveQueueCounts.clear();
-		// Rebuild
-		for( auto aqc : initialActiveQueueCount ) {
-			// Skip if not able to locate queue family by type
-			auto it = mQueueFamilyPropertiesByType.find( aqc.first );
-			if( mQueueFamilyPropertiesByType.end() == it ) {
-				continue;
-			}
-			// Clamp the queue count
-			const auto& props = it->second;
-			aqc.second = std::min( aqc.second, props.queueCount );
-			// Add requested queue back in
-			mActiveQueueCounts[aqc.first] = aqc.second;
-		}
-	}
-
-	// Queue create info
-	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	for( const auto& aqc : mActiveQueueCounts ) {
-		const uint32_t queueCount = aqc.second;
-
-		// Queue priorities
-		std::vector<float> queuePriorities( queueCount );
-		assert( ! queuePriorities.empty() );
-		{
-			// For now: 1.0 for the first, 0.5 for the rest
-			auto it = queuePriorities.begin();
-			*it = 1.0f; 
-			++it;
-			for( ; it != queuePriorities.end(); ++it ) {
-				*it = 0.5f;
-			}
-		}
-
-		// Queue create info
-		VkDeviceQueueCreateInfo queueCreateInfo = {};
-		queueCreateInfo.sType				= VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queueCreateInfo.pNext				= nullptr;
-		queueCreateInfo.queueCount			= queueCount;
-		queueCreateInfo.pQueuePriorities	= ( queuePriorities.empty() ? nullptr : queuePriorities.data() );
-		// Put it into array
-		queueCreateInfos.push_back( queueCreateInfo );
-	}
-*/
-
 	// Layers and extensions
 	std::vector<const char *> layerNames;
 	std::vector<const char *> layerExtensionNames;

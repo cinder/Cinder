@@ -71,6 +71,7 @@ void ComputeBasicApp::setup()
 	texFmt.setUsageSampled();
 	texFmt.setUsageStorage();
 	mTexture = vk::Texture::create( 512, 512, texFmt );
+	vk::transitionToFirstUse( mTexture, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, vk::context() );
 
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
