@@ -40,6 +40,7 @@
 #include "cinder/vk/Batch.h"
 #include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/CommandPool.h"
+#include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Device.h"
 #include "cinder/vk/Pipeline.h"
 #include "cinder/vk/Queue.h"
@@ -62,10 +63,10 @@ namespace cinder { namespace vk {
 	__declspec(thread) Context *sThreadSpecificCurrentContext = nullptr;
 #endif
 
-Context::Context( const vk::PresenterRef& presenter, vk::Device* device )
+Context::Context( VkQueueFlags queueTypes, const vk::PresenterRef& presenter, vk::Device* device )
 	: mType( Context::Type::PRIMARY ), mDevice( device ), mPresenter( presenter )
 {
-	initialize( nullptr, VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT );
+	initialize( nullptr, queueTypes );
 
 	mColor = ColorAf::white();
 }
@@ -102,9 +103,9 @@ Context::~Context()
 	destroy();
 }
 
-ContextRef Context::create( const vk::PresenterRef& presenter, vk::Device* device )
+ContextRef Context::create( VkQueueFlags queueTypes, const vk::PresenterRef& presenter, vk::Device* device )
 {
-	ContextRef result = ContextRef( new Context( presenter, device ) );
+	ContextRef result = ContextRef( new Context( queueTypes, presenter, device ) );
 	return result;
 }
 
@@ -118,6 +119,21 @@ ContextRef Context::createFromExisting( const vk::Context* existingContext, VkQu
 
 void Context::initializeQueues( VkQueueFlags queueTypes )
 {
+	uint32_t queueFamilyIndex = UINT32_MAX;
+	uint32_t queueIndex = UINT32_MAX;
+	// Try to find a queue that supports all the requested types...
+	if( mDevice->acquireQueueDescriptor( queueTypes, &queueFamilyIndex, &queueIndex ) ) {
+		mGraphicsQueue = vk::Queue::create( queueTypes, queueFamilyIndex, queueIndex, this );
+		mComputeQueue = mGraphicsQueue;
+		CI_LOG_I( "Queue created (queueTypes=" << toStringQueueFlags( queueTypes ) << ", queueFamilyIndex=" << queueFamilyIndex << ", queueIndex=" << queueIndex << ")" );
+	}
+	// ...use multiple queues otherwise
+	else {
+
+	}
+	
+
+/*
 	// Graphics queue
 	if( VK_QUEUE_GRAPHICS_BIT == ( queueTypes & VK_QUEUE_GRAPHICS_BIT ) ) {
 		uint32_t queueFamilyIndex;
@@ -137,6 +153,7 @@ void Context::initializeQueues( VkQueueFlags queueTypes )
 			mComputeQueue.queue = vk::Queue::create( queueFamilyIndex, queueIndex, this );
 		}
 	}
+*/
 
 /*
 	// Graphics queue
@@ -164,7 +181,7 @@ void Context::initialize( const Context* existingContext, VkQueueFlags queueType
     mViewMatrixStack.push_back( mat4() );
 	mProjectionMatrixStack.push_back( mat4( 1, 0, 0, 0,  0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ) );
 
-	const uint32_t graphicsQueueFamilyIndex = mGraphicsQueue.queue->getQueueFamilyIndex();
+	const uint32_t graphicsQueueFamilyIndex = mGraphicsQueue->getQueueFamilyIndex();
 	mDefaultCommandPool = vk::CommandPool::create( graphicsQueueFamilyIndex, false, this );
 	mDefaultTransientCommandPool = vk::CommandPool::create( graphicsQueueFamilyIndex, true, this );
 	mDefaultCommandBuffer = vk::CommandBuffer::create( mDefaultCommandPool->getCommandPool(), this );

@@ -60,11 +60,13 @@ public:
 
 	virtual ~Queue();
 
-	static QueueRef	create( uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context = nullptr );
+	static QueueRef	create( VkQueueFlags queueTypes, uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context = nullptr );
 
 	VkQueue			getQueue() const { return mQueue; }
 
+	VkQueueFlags	getQueueTypes() const { return mQueueTypes; }
 	uint32_t		getQueueFamilyIndex() const { return mQueueFamilyIndex; }
+	uint32_t		getQueueIndex() const { return mQueueIndex; }
 
 	void			submit( const std::vector<VkSubmitInfo>& submitInfos, VkFence fence );
 	// Multiple command buffer, multiple waitSemaphore/waitStageMask, multiple signalSemaphore
@@ -83,9 +85,10 @@ public:
 	void			waitIdle();
 
 private:
-	Queue( uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context );
+	Queue( VkQueueFlags queueTypes, uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context );
 
 	VkQueue			mQueue = VK_NULL_HANDLE;
+	VkQueueFlags	mQueueTypes = 0;
 	uint32_t		mQueueFamilyIndex = UINT32_MAX;
 	uint32_t		mQueueIndex = UINT32_MAX;
 

@@ -208,8 +208,29 @@ void Device::initializeLayers()
 	}
 }
 
-void Device::initializeDevice( const std::map<VkQueueFlagBits, uint32_t>& requestedQueueCounts )
+void Device::initializeDevice( const std::vector<std::pair<VkQueueFlags, uint32_t>>& requestedQueueCounts )
 {
+	std::vector<std::pair<VkQueueFlags, uint32_t>> queueCounts = requestedQueueCounts;
+	for( auto& qc : queueCounts ) {
+		while( qc.second ) {
+			auto it = std::find_if( std::begin( mQueueDescriptors ), std::end( mQueueDescriptors ),
+				[qc]( const Device::QueueDescriptor& elem ) -> bool {
+					return ( qc.first == ( elem.supportedQueueTypes & qc.first ) ) && ( 0 == elem.assignedQueueTypes );
+				}
+			);
+
+			if( std::end( mQueueDescriptors ) != it ) {
+				it->assignedQueueTypes = qc.first;
+				--(qc.second);
+			}
+			// Bail if no more queues of this type are available
+			else {
+				break;
+			}
+		}
+	}
+
+/*
 	// Force the order how queues are assigned
 	const std::vector<VkQueueFlagBits> kQueueFlagBits = {  VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT };
 	for( const auto& queueFlagBit : kQueueFlagBits ) {
@@ -221,20 +242,21 @@ void Device::initializeDevice( const std::map<VkQueueFlagBits, uint32_t>& reques
 		uint32_t queueCount = it->second;
 		for( uint32_t i = 0; i < queueCount; ++i ) {
 			for( auto& queueDesc : mQueueDescriptors ) {
-				if( ( queueFlagBit == ( queueDesc.supportedQueueTypes & queueFlagBit ) ) && ( 0 == queueDesc.assignedQueueType ) ) {
-					queueDesc.assignedQueueType = queueFlagBit;
+				if( ( queueFlagBit == ( queueDesc.supportedQueueTypes & queueFlagBit ) ) && ( 0 == queueDesc.assignedQueueTypes ) ) {
+					queueDesc.assignedQueueTypes = queueFlagBit;
 					break;
 				}
 			}
 		}
 	}
+*/
 
 	// Queue create info
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	for( const auto& queueDesc : mQueueDescriptors ) {
 		// Skip unassigned queues
-		if( 0 == queueDesc.assignedQueueType ) {
-			continue;;
+		if( 0 == queueDesc.assignedQueueTypes ) {
+			continue;
 		}
 
 		auto it = std::find_if( std::begin( queueCreateInfos ), std::end( queueCreateInfos ),
@@ -511,14 +533,14 @@ void Device::setPresentQueueFamilyIndex( VkSurfaceKHR surface )
 	}
 }
 
-bool Device::acquireQueueDescriptor( VkQueueFlagBits queueType, uint32_t *queueFamilyIndex, uint32_t *queueIndex )
+bool Device::acquireQueueDescriptor( const VkQueueFlags& queueTypes, uint32_t *queueFamilyIndex, uint32_t *queueIndex )
 {
 	bool result = false;
 	*queueFamilyIndex = UINT32_MAX;
 	*queueIndex = UINT32_MAX;
 
 	for( auto& queueDesc : mQueueDescriptors ) {
-		if( ( queueType == queueDesc.assignedQueueType ) && ( ! queueDesc.inUse ) ) {
+		if( ( queueTypes == queueDesc.assignedQueueTypes ) && ( ! queueDesc.inUse ) ) {
 			*queueFamilyIndex = queueDesc.queueFamilyIndex;
 			*queueIndex = queueDesc.queueIndex;
 			queueDesc.inUse = true;
@@ -539,7 +561,7 @@ uint32_t Device::getGraphicsQueueCount() const
 {
 	uint32_t result = 0;
 	for( const auto& queueDesc : mQueueDescriptors ) {
-		if( VK_QUEUE_GRAPHICS_BIT == queueDesc.assignedQueueType ) {
+		if( VK_QUEUE_GRAPHICS_BIT == ( queueDesc.assignedQueueTypes & VK_QUEUE_GRAPHICS_BIT ) ) {
 			++result;
 		}
 	}
@@ -557,7 +579,7 @@ uint32_t Device::getComputeQueueCount() const
 {
 	uint32_t result = 0;
 	for( const auto& queueDesc : mQueueDescriptors ) {
-		if( VK_QUEUE_COMPUTE_BIT == queueDesc.assignedQueueType ) {
+		if( VK_QUEUE_COMPUTE_BIT == ( queueDesc.assignedQueueTypes & VK_QUEUE_COMPUTE_BIT ) ) {
 			++result;
 		}
 	}

@@ -74,55 +74,55 @@ class RendererVk : public Renderer {
 	class Options {
 	public:
 
-		Options() {}
+		Options();
+
 		virtual ~Options() {}
 
-		Options&						setExplicitMode( bool value = true ) { mExplicitMode = value; return *this; }
-		bool							getExplicitMode() const { return mExplicitMode; }
+		Options&							setExplicitMode( bool value = true ) { mExplicitMode = value; return *this; }
+		bool								getExplicitMode() const { return mExplicitMode; }
 
-		Options&						setSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
-		VkSampleCountFlagBits			getSamples() const { return mSamples; }
+		Options&							setSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
+		VkSampleCountFlagBits				getSamples() const { return mSamples; }
 
-		Options&						setSwapchainImageCount( uint32_t value ) { mSwapchainImageCount = std::max<uint32_t>( 2, value ); return *this; }
-		uint32_t						getSwapchainImageCount() const { return mSwapchainImageCount; }
+		Options&							setSwapchainImageCount( uint32_t value ) { mSwapchainImageCount = std::max<uint32_t>( 2, value ); return *this; }
+		uint32_t							getSwapchainImageCount() const { return mSwapchainImageCount; }
 
-		Options&						setGraphicsQueueCount( uint32_t value ) { mGraphicsQueueCount = value; return *this; }
-		uint32_t						getGraphicsQueueCount() const { return mGraphicsQueueCount; }
+		Options&												setPrimaryQueueTypes( VkQueueFlags queueTypes );
+		VkQueueFlags											getPrimaryQueueTypes() const;
+		Options&												setSecondaryQueueTypes( VkQueueFlags queueTypes, uint32_t queueCounts );
+		Options&												setSecondaryQueueTypes( const std::vector<std::pair<VkQueueFlags, uint32_t>>& queueCounts );
+		const std::vector<std::pair<VkQueueFlags, uint32_t>>&	getSecondaryQueueTypes() const { return mQueueTypesAndCounts; }
 
-		Options&						setComputeQueueCount( uint32_t value ) { mComputeQueueCount = value; return *this; }
-		uint32_t						getComputeQueueCount() const { return mComputeQueueCount; }
+		Options&							setDepthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
+		VkFormat							getDepthStencilFormat() const { return mDepthStencilFormat; }
 
-		Options&						setDepthStencilFormat( VkFormat value ) { mDepthStencilFormat = value; return *this; }
-		VkFormat						getDepthStencilFormat() const { return mDepthStencilFormat; }
-
-		Options&						setPresentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
-		VkPresentModeKHR				getPresentMode() const { return mPresentMode; }
+		Options&							setPresentMode( VkPresentModeKHR value ) { mPresentMode = value; return *this; }
+		VkPresentModeKHR					getPresentMode() const { return mPresentMode; }
 
 		//! Param 'layers' should be a semicolon delimited list of layer names
-		Options&						setLayers( const std::string& layers );
-		Options&						setLayers( const std::vector<std::string>& layers );
-		const std::vector<std::string>&	getInstanceLayers() const { return mInstanceLayers; }
-		const std::vector<std::string>&	getDeviceLayers() const { return mDeviceLayers; }
+		Options&							setLayers( const std::string& layers );
+		Options&							setLayers( const std::vector<std::string>& layers );
+		const std::vector<std::string>&		getInstanceLayers() const { return mInstanceLayers; }
+		const std::vector<std::string>&		getDeviceLayers() const { return mDeviceLayers; }
 
-		Options&						setDebugReportCallbackFn( vk::DebugReportCallbackFn fn ) { mDebugReportCallbackFn = fn; return *this; }
-		vk::DebugReportCallbackFn		getDebugReportCallbackfn() const { return mDebugReportCallbackFn; }
+		Options&							setDebugReportCallbackFn( vk::DebugReportCallbackFn fn ) { mDebugReportCallbackFn = fn; return *this; }
+		vk::DebugReportCallbackFn			getDebugReportCallbackfn() const { return mDebugReportCallbackFn; }
 
-		Options&						setAllocatorBufferBlockSize( VkDeviceSize value ) { mAllocatorBufferBlockSize = value; return *this; }
-		Options&						setAllocatorImageBlockSize( VkDeviceSize value ) { mAllocatorImageBlockSize = value; return *this; }
-		Options&						setAllocatorBlockSize( VkDeviceSize bufferBlockSize, VkDeviceSize imageBlockSize ) { mAllocatorBufferBlockSize = bufferBlockSize; mAllocatorImageBlockSize = imageBlockSize; return *this; }
+		Options&							setAllocatorBufferBlockSize( VkDeviceSize value ) { mAllocatorBufferBlockSize = value; return *this; }
+		Options&							setAllocatorImageBlockSize( VkDeviceSize value ) { mAllocatorImageBlockSize = value; return *this; }
+		Options&							setAllocatorBlockSize( VkDeviceSize bufferBlockSize, VkDeviceSize imageBlockSize ) { mAllocatorBufferBlockSize = bufferBlockSize; mAllocatorImageBlockSize = imageBlockSize; return *this; }
 	private:
-		bool						mExplicitMode = false;
-		uint32_t					mGraphicsQueueCount = 1;
-		uint32_t					mComputeQueueCount = 1;
-		uint32_t					mSwapchainImageCount = 2;
-		VkSampleCountFlagBits		mSamples = VK_SAMPLE_COUNT_1_BIT;
-		VkFormat					mDepthStencilFormat = VK_FORMAT_D16_UNORM;
-		VkPresentModeKHR			mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
-		std::vector<std::string>	mInstanceLayers;
-		std::vector<std::string>	mDeviceLayers;
-		vk::DebugReportCallbackFn	mDebugReportCallbackFn = nullptr;
-		VkDeviceSize				mAllocatorBufferBlockSize = 0; //64*1024*1024;
-		VkDeviceSize				mAllocatorImageBlockSize = 0; //64*1024*1024;
+		bool								mExplicitMode = false;
+		std::vector<std::pair<VkQueueFlags, uint32_t>>	mQueueTypesAndCounts;
+		uint32_t							mSwapchainImageCount = 2;
+		VkSampleCountFlagBits				mSamples = VK_SAMPLE_COUNT_1_BIT;
+		VkFormat							mDepthStencilFormat = VK_FORMAT_D16_UNORM;
+		VkPresentModeKHR					mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
+		std::vector<std::string>			mInstanceLayers;
+		std::vector<std::string>			mDeviceLayers;
+		vk::DebugReportCallbackFn			mDebugReportCallbackFn = nullptr;
+		VkDeviceSize						mAllocatorBufferBlockSize = 0; //64*1024*1024;
+		VkDeviceSize						mAllocatorImageBlockSize = 0; //64*1024*1024;
 		friend class RendererVk;
 	};
 	
@@ -143,8 +143,6 @@ class RendererVk : public Renderer {
 #endif
 
 	bool				isExplicitMode() const { return mOptions.getExplicitMode(); }
-	uint32_t			getGraphicsQueueCount() const { return mOptions.getGraphicsQueueCount(); }
-	uint32_t			getComputeQueueCount() const { return mOptions.getComputeQueueCount(); }
 
 	Surface8u			copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
 

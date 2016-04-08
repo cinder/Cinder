@@ -99,6 +99,29 @@ std::string toStringQueueFlagBits( VkQueueFlagBits v )
 	return result;
 }
 
+std::string toStringQueueFlags( VkQueueFlags v )
+{
+	std::stringstream ss;
+
+	if( VK_QUEUE_GRAPHICS_BIT == ( v & VK_QUEUE_GRAPHICS_BIT ) ) {
+		ss << "VK_QUEUE_GRAPHICS_BIT";
+	}
+	
+	if( VK_QUEUE_COMPUTE_BIT == ( v & VK_QUEUE_COMPUTE_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_QUEUE_COMPUTE_BIT";
+	}
+	
+	if( VK_QUEUE_TRANSFER_BIT == ( v & VK_QUEUE_TRANSFER_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_QUEUE_TRANSFER_BIT";
+	}
+	
+	if( VK_QUEUE_SPARSE_BINDING_BIT == ( v & VK_QUEUE_SPARSE_BINDING_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_QUEUE_SPARSE_BINDING_BIT";
+	}
+
+	return ss.str();
+}
+
 std::string toStringVkMemoryPropertyFlagBits( VkMemoryPropertyFlagBits v )
 {
 	std::string result = "<UNKNOWN>";

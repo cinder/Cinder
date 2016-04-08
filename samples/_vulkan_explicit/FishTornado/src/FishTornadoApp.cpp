@@ -56,9 +56,9 @@ using namespace std;
 
 // The number of queues to request. May not get what's requested.
 #if defined( THREADED_LOAD )
-	#define NUM_QUEUES 4
+	#define NUM_ADDITIONAL_QUEUES 3
 #else 
-	#define NUM_QUEUES 1
+	#define NUM_ADDITIONAL_QUEUES 1
 #endif
 
 FishTornadoApp::FishTornadoApp()
@@ -115,7 +115,7 @@ void FishTornadoApp::setup()
 	const uint32_t numWorkQueues = primaryCtx->getDevice()->getGraphicsQueueCount();
 	CI_LOG_I( "Loading using " << numWorkQueues << " work queues" );
 
-	if( numWorkQueues >= NUM_QUEUES ) {
+	if( numWorkQueues >= NUM_ADDITIONAL_QUEUES ) {
 		// GpuFlocker
 		mGpuFlocker = GpuFlocker::create( this );
 		this->mFishLoaded = true;
@@ -677,7 +677,7 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_draw_state",
 	//"VK_LAYER_LUNARG_param_checker",
 	//"VK_LAYER_LUNARG_swapchain",
-	//"VK_LAYER_LUNARG_device_limits"
+	//"VK_LAYER_LUNARG_device_limits",
 	//"VK_LAYER_LUNARG_image",
 	//"VK_LAYER_GOOGLE_unique_objects",
 };
@@ -687,7 +687,7 @@ CINDER_APP(
 	RendererVk( RendererVk::Options()
 		.setSamples( VK_SAMPLE_COUNT_8_BIT )
 		.setExplicitMode()
-		.setGraphicsQueueCount( NUM_QUEUES )
+		.setSecondaryQueueTypes( VK_QUEUE_GRAPHICS_BIT, NUM_ADDITIONAL_QUEUES )
 		.setAllocatorBlockSize( vk::Allocator::_64MB, vk::Allocator::_64MB )
 		.setLayers( gLayers )
 		.setDebugReportCallbackFn( debugReportVk ) 

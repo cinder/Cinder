@@ -64,6 +64,56 @@ namespace cinder { namespace app {
 // -------------------------------------------------------------------------------------------------
 // RendererVk::Options
 // -------------------------------------------------------------------------------------------------
+RendererVk::Options::Options()
+{
+	VkQueueFlags queueTypes = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT;
+	uint32_t queueCount = 1;
+	mQueueTypesAndCounts.push_back( std::make_pair( queueTypes, queueCount ) );
+}
+
+RendererVk::Options& RendererVk::Options::setPrimaryQueueTypes( VkQueueFlags queueTypes )
+{
+	mQueueTypesAndCounts.front().first = queueTypes;
+	return *this;
+}
+
+VkQueueFlags RendererVk::Options::getPrimaryQueueTypes() const
+{
+	return mQueueTypesAndCounts.front().first;
+}
+
+RendererVk::Options& RendererVk::Options::setSecondaryQueueTypes( VkQueueFlags queueTypes, uint32_t queueCounts )
+{
+	CI_LOG_W( "Requested empty queues, queueTypes=" << vk::toStringQueueFlags( queueTypes ) << ", queueCounts=" << queueCounts );
+
+	auto itBegin = std::begin( mQueueTypesAndCounts );
+	auto itEnd = std::end( mQueueTypesAndCounts );
+	// Skip the first element
+	++itBegin;
+	auto it = std::find_if( itBegin, itEnd,
+		[queueTypes]( const std::pair<VkQueueFlags, uint32_t>& elem ) -> bool {
+			return ( elem.first == queueTypes );
+		}
+	);
+
+	if( std::end( mQueueTypesAndCounts ) != it ) {
+		it->second = queueCounts;
+	}
+	else {
+		mQueueTypesAndCounts.push_back( std::make_pair( queueTypes, queueCounts ) );
+	}
+
+	return *this;
+}
+
+RendererVk::Options& RendererVk::Options::setSecondaryQueueTypes( const std::vector<std::pair<VkQueueFlags, uint32_t>>& queueCounts )
+{
+	for( const auto& it : mQueueTypesAndCounts ) {
+		this->setSecondaryQueueTypes( it.first, it.second );
+	}
+	return *this;
+}
+
 RendererVk::Options& RendererVk::Options::setLayers(const std::string& layers)
 {
 	std::vector<std::string> tokens = ci::split( layers, ";" );
@@ -120,8 +170,11 @@ CI_LOG_I( "vk::Environment initialized" );
 	const uint32_t gpuIndex = 0;
 	VkPhysicalDevice gpu = env->getGpus()[gpuIndex];
 	vk::Device::Options deviceOptions = vk::Device::Options();
+/*
 	deviceOptions.setGraphicsQueueCount( mOptions.mGraphicsQueueCount );
 	deviceOptions.setComputeQueueCount( mOptions.mComputeQueueCount );
+*/
+	deviceOptions.setQueueCounts( mOptions.mQueueTypesAndCounts );
 	deviceOptions.setAllocatorBufferBlockSize( mOptions.mAllocatorBufferBlockSize );
 	deviceOptions.setAllocatorImageBlockSize( mOptions.mAllocatorImageBlockSize );
 	vk::DeviceRef device = vk::Device::create( gpu, deviceOptions, env );
@@ -167,7 +220,8 @@ CI_LOG_I( "Using sample count: " << vk::toStringVkSampleCount( mOptions.mSamples
 		vk::PresenterRef presenter = vk::Presenter::create( windowSize, mOptions.mSwapchainImageCount, platformWindow, presenterOptions, device.get() );
 
 		// Create context
-		mContext = vk::Context::create( presenter, device.get() );
+		VkQueueFlags primaryQueueTypes = mOptions.mQueueTypesAndCounts.front().first; 
+		mContext = vk::Context::create( primaryQueueTypes, presenter, device.get() );
 		mContext->makeCurrent();
 
 		// Create semaphores for rendering
