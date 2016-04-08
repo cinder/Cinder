@@ -382,13 +382,18 @@ void FishTornadoApp::mouseUp( MouseEvent event )
 
 void FishTornadoApp::keyDown( KeyEvent event )
 {
-	switch( event.getChar() )
-	{
-		case 'o' : mDrawOcean = ! mDrawOcean;	break;
-		case 's' : mDrawShark = ! mDrawShark;	break;
-		case 'p' : mDrawParams = ! mDrawParams; break;
-		case 'c' : std::cout << mCamera.getEyePoint() << std::endl; break;
-		default : break;
+	if( KeyEvent::KEY_ESCAPE == event.getCode() ) {
+		quit();
+	}
+	else {
+		switch( event.getChar() )
+		{
+			case 'o' : mDrawOcean = ! mDrawOcean;	break;
+			case 's' : mDrawShark = ! mDrawShark;	break;
+			case 'p' : mDrawParams = ! mDrawParams; break;
+			case 'c' : std::cout << mCamera.getEyePoint() << std::endl; break;
+			default : break;
+		}
 	}
 }
 
