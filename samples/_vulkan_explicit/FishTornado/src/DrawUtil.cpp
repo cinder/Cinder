@@ -194,7 +194,7 @@ void SolidRect::draw( const ci::vk::CommandBufferRef& commandBuffer )
 	pipelineSelector->setDepthTest( ctx->getDepthTest() );
 	pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 	pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-	pipelineSelector->setShaderStages( mShader->getShaderStages() );
+	pipelineSelector->setShaderStages( mShader->getPipelineShaderStages() );
 	pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 	pipelineSelector->setSubPass( ctx->getSubpass() );
 	pipelineSelector->setPipelineLayout( mPipelineLayout->getPipelineLayout() );

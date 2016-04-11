@@ -125,7 +125,7 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 		pipelineSelector->setDepthTest( ctx->getDepthTest() );
 		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-		pipelineSelector->setShaderStages( shader->getShaderStages() );
+		pipelineSelector->setShaderStages( shader->getPipelineShaderStages() );
 		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 		pipelineSelector->setSubPass( ctx->getSubpass() );
 		pipelineSelector->setPipelineLayout( pipelineLayout );
@@ -240,7 +240,7 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 		pipelineSelector->setDepthTest( ctx->getDepthTest() );
 		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-		pipelineSelector->setShaderStages( shader->getShaderStages() );
+		pipelineSelector->setShaderStages( shader->getPipelineShaderStages() );
 		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 		pipelineSelector->setSubPass( ctx->getSubpass() );
 		pipelineSelector->setPipelineLayout( pipelineLayout );

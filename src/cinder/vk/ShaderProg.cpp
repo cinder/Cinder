@@ -37,6 +37,7 @@
 */
 
 #include "cinder/vk/ShaderProg.h"
+#include "cinder/vk/ConstantConversion.h"
 #include "cinder/vk/Context.h"
 #include "cinder/vk/Device.h"
 #include "cinder/vk/gl_types.h"
@@ -98,100 +99,216 @@ bool ShaderDef::operator<( const ShaderDef &rhs ) const
 	return false;
 }
 
+
+// -------------------------------------------------------------------------------------------------
+// ShaderProg::Format::ShaderData
+// -------------------------------------------------------------------------------------------------
+void ShaderProg::Format::ShaderData::loadShader()
+{
+	if( ! mDataSource ) {
+		return;
+	}
+
+	ci::Buffer buffer;
+	if( mDataSource->isFilePath() ) {
+		auto path = mDataSource->getFilePath();
+		if( ! path.empty() ) {
+			DataSourceRef dataSource = loadFile( path );
+			if( dataSource ) {
+				buffer = ci::Buffer( dataSource );				
+			}
+		}
+	}
+	else {
+		buffer = ci::Buffer( mDataSource );
+	}
+
+	if( buffer.getAllocatedSize() > 0 ) {
+		// SPIR-V binary
+		if( ( buffer.getSize() > 4 ) && ( spv::MagicNumber == *(reinterpret_cast<unsigned int*>( buffer.getData() ) ) ) ) {
+			// Copy
+			size_t n = buffer.getSize() / sizeof(uint32_t);
+			mSpirvBinary.resize( n );
+			std::memcpy( static_cast<void*>( mSpirvBinary.data() ), buffer.getData(), n*sizeof(uint32_t) );
+			// Set
+			mSourceText.clear();
+			mDataType = Format::ShaderData::Type::SPIRV;
+		}
+		// GLSL source
+		else {
+			// Copy
+			mSourceText.resize( buffer.getSize() + 1 );
+			std::memcpy( (void*)mSourceText.data(), buffer.getData(), buffer.getSize() );
+			mSourceText[buffer.getSize()] = 0;
+			// Set
+			mSpirvBinary.clear();
+			mDataType = Format::ShaderData::Type::GLSL;
+		}
+	}
+
+	mDataSource.reset();
+}
+
+void ShaderProg::Format::ShaderData::setShaderData( const DataSourceRef &dataSource, const std::string &entryPoint )
+{
+	// Clear
+	mSourceText.clear();
+	mSpirvBinary.clear();
+	// Set
+	mInitialized = true;
+	mDataSource = dataSource;
+	setEntryPoint( entryPoint );
+}
+
+void ShaderProg::Format::ShaderData::setShaderData( const std::string &sourceText, const std::string &entryPoint )
+{
+	// Clear
+	mDataSource.reset();
+	mSpirvBinary.clear();
+	// Set
+	mInitialized = true;
+	mSourceText = sourceText;
+	mDataType = Format::ShaderData::Type::GLSL;
+	setEntryPoint( entryPoint );
+}
+
+void ShaderProg::Format::ShaderData::setShaderData( const std::vector<uint32_t> &spirvBinary, const std::string &entryPoint )
+{
+	// Clear
+	mDataSource.reset();
+	mSourceText.clear();
+	// Set
+	mInitialized = true;
+	mSpirvBinary = spirvBinary;
+	mDataType = Format::ShaderData::Type::SPIRV;
+	setEntryPoint( entryPoint );
+}
+
+void ShaderProg::Format::ShaderData::setEntryPoint( const std::string &entryPoint )
+{
+	if( ! entryPoint.empty() ) {
+		mEntryPoint = entryPoint;
+	}
+}
+
 // -------------------------------------------------------------------------------------------------
 // ShaderProg::Format
 // -------------------------------------------------------------------------------------------------
 ShaderProg::Format::Format()
 {
+	mShaderData[VK_SHADER_STAGE_VERTEX_BIT] = Format::ShaderData();
+	mShaderData[VK_SHADER_STAGE_FRAGMENT_BIT] = Format::ShaderData();
+	mShaderData[VK_SHADER_STAGE_GEOMETRY_BIT] = Format::ShaderData();
+	mShaderData[VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT] = Format::ShaderData();
+	mShaderData[VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT] = Format::ShaderData();
+	mShaderData[VK_SHADER_STAGE_COMPUTE_BIT] = Format::ShaderData();
 }
 
-void ShaderProg::Format::setShaderSource( const DataSourceRef &dataSource, std::string *shaderSourceDest, fs::path *shaderPathDest )
+ShaderProg::Format& ShaderProg::Format::vertex( const DataSourceRef &dataSource, const std::string &entryPoint )
 {
-	if( dataSource ) {
-		ci::Buffer buffer( dataSource );
-		shaderSourceDest->resize( buffer.getSize() + 1 );
-		std::memcpy( (void *)shaderSourceDest->data(), buffer.getData(), buffer.getSize() );
-		(*shaderSourceDest)[buffer.getSize()] = 0;
-		if( dataSource->isFilePath() )
-			*shaderPathDest = dataSource->getFilePath();
-		else
-			shaderPathDest->clear();
-	}
-	else {
-		shaderSourceDest->clear();
-		shaderPathDest->clear();
-	}
-}
-
-ShaderProg::Format& ShaderProg::Format::vertex( const DataSourceRef &dataSource )
-{
-	setShaderSource( dataSource, &mVertexShader, &mVertexShaderPath );
+	mShaderData[VK_SHADER_STAGE_VERTEX_BIT].setShaderData( dataSource, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::vertex( const std::string &text )
+ShaderProg::Format& ShaderProg::Format::vertex( const std::string &souceText, const std::string &entryPoint )
 {
-	mVertexShader = text;
+	mShaderData[VK_SHADER_STAGE_VERTEX_BIT].setShaderData( souceText, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::fragment( const DataSourceRef &dataSource )
+ShaderProg::Format& ShaderProg::Format::vertex( const std::vector<uint32_t> &spirvBinary, const std::string &entryPoint )
 {
-	setShaderSource( dataSource, &mFragmentShader, &mFragmentShaderPath );
+	mShaderData[VK_SHADER_STAGE_VERTEX_BIT].setShaderData( spirvBinary, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::fragment( const std::string &text )
+ShaderProg::Format& ShaderProg::Format::fragment( const DataSourceRef &dataSource, const std::string &entryPoint )
 {
-	mFragmentShader = text;
+	mShaderData[VK_SHADER_STAGE_FRAGMENT_BIT].setShaderData( dataSource, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::geometry( const DataSourceRef &dataSource )
+ShaderProg::Format& ShaderProg::Format::fragment( const std::string &souceText, const std::string &entryPoint )
 {
-	setShaderSource( dataSource, &mGeometryShader, &mGeometryShaderPath );
+	mShaderData[VK_SHADER_STAGE_FRAGMENT_BIT].setShaderData( souceText, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::geometry( const std::string &text )
+ShaderProg::Format& ShaderProg::Format::fragment( const std::vector<uint32_t> &spirvBinary, const std::string &entryPoint )
 {
-	mGeometryShader = text;
+	mShaderData[VK_SHADER_STAGE_FRAGMENT_BIT].setShaderData( spirvBinary, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::tessellationCtrl( const DataSourceRef &dataSource )
+ShaderProg::Format& ShaderProg::Format::geometry( const DataSourceRef &dataSource, const std::string &entryPoint )
 {
-	setShaderSource( dataSource, &mTessellationCtrlShader, &mTessellationCtrlShaderPath );
+	mShaderData[VK_SHADER_STAGE_GEOMETRY_BIT].setShaderData( dataSource, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::tessellationCtrl( const std::string &text )
+ShaderProg::Format& ShaderProg::Format::geometry( const std::string &sourceText, const std::string &entryPoint )
 {
-	mTessellationCtrlShader = text;
+	mShaderData[VK_SHADER_STAGE_GEOMETRY_BIT].setShaderData( sourceText, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::tessellationEval( const DataSourceRef &dataSource )
+ShaderProg::Format& ShaderProg::Format::geometry( const std::vector<uint32_t> &spirvBinary, const std::string &entryPoint )
 {
-	setShaderSource( dataSource, &mTessellationEvalShader, &mTessellationEvalShaderPath );
+	mShaderData[VK_SHADER_STAGE_GEOMETRY_BIT].setShaderData( spirvBinary, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::tessellationEval( const std::string &text )
+ShaderProg::Format& ShaderProg::Format::tessellationCtrl( const DataSourceRef &dataSource, const std::string &entryPoint )
 {
-	mTessellationEvalShader = text;
+	mShaderData[VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT].setShaderData( dataSource, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::compute( const DataSourceRef &dataSource )
+ShaderProg::Format& ShaderProg::Format::tessellationCtrl( const std::string &souceText, const std::string &entryPoint )
 {
-	setShaderSource( dataSource, &mComputeShader, &mComputeShaderPath );
+	mShaderData[VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT].setShaderData( souceText, entryPoint );
 	return *this;
 }
 
-ShaderProg::Format& ShaderProg::Format::compute( const std::string &text )
+ShaderProg::Format& ShaderProg::Format::tessellationCtrl( const std::vector<uint32_t> &spirvBinary, const std::string &entryPoint )
 {
-	mComputeShader = text;
+	mShaderData[VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT].setShaderData( spirvBinary, entryPoint );
+	return *this;
+}
+
+ShaderProg::Format& ShaderProg::Format::tessellationEval( const DataSourceRef &dataSource, const std::string &entryPoint )
+{
+	mShaderData[VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT].setShaderData( dataSource, entryPoint );
+	return *this;
+}
+
+ShaderProg::Format& ShaderProg::Format::tessellationEval( const std::string &souceText, const std::string &entryPoint )
+{
+	mShaderData[VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT].setShaderData( souceText, entryPoint );
+	return *this;
+}
+
+ShaderProg::Format& ShaderProg::Format::tessellationEval( const std::vector<uint32_t> &spirvBinary, const std::string &entryPoint )
+{
+	mShaderData[VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT].setShaderData( spirvBinary, entryPoint );
+	return *this;
+}
+
+ShaderProg::Format& ShaderProg::Format::compute( const DataSourceRef &dataSource, const std::string &entryPoint )
+{
+	mShaderData[VK_SHADER_STAGE_COMPUTE_BIT].setShaderData( dataSource, entryPoint );
+	return *this;
+}
+
+ShaderProg::Format& ShaderProg::Format::compute( const std::string &souceText, const std::string &entryPoint )
+{
+	mShaderData[VK_SHADER_STAGE_COMPUTE_BIT].setShaderData( souceText, entryPoint );
+	return *this;
+}
+
+ShaderProg::Format& ShaderProg::Format::compute( const std::vector<uint32_t> &spirvBinary, const std::string &entryPoint )
+{
+	mShaderData[VK_SHADER_STAGE_COMPUTE_BIT].setShaderData( spirvBinary, entryPoint );
 	return *this;
 }
 
@@ -464,43 +581,22 @@ void printResource( const std::string& prefix, const spir2cross::Compiler& compi
 	CI_LOG_I( "(" << prefix << ") : " << name );
 }
 
-bool compileGlslToSpirv( VkDevice device, std::pair<VkPipelineShaderStageCreateInfo*, const std::string*>* inOutShader, std::vector<uint32_t>* outSpirv )
-{
-	auto shaderStage = inOutShader->first->stage;
-	const char *glslText = inOutShader->second->c_str();
+struct CompileData {
+	VkPipelineShaderStageCreateInfo*	shaderStage = nullptr;
+	const std::string*					glslText = nullptr;
+	std::vector<uint32_t>*				spirv = nullptr;
+};
 
+bool compileGlslToSpirv( VkDevice device, VkShaderStageFlagBits shaderStage, const std::string& glslText, std::vector<uint32_t>* outSpirv )
+{
 	std::vector<uint32_t> spirv;
-	bool retVal = glslToSpv( shaderStage, glslText, spirv );
+	bool retVal = glslToSpv( shaderStage, glslText.c_str(), spirv );
 
 	if( retVal ) {
-		VkShaderModuleCreateInfo moduleCreateInfo;
-		moduleCreateInfo.sType		= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		moduleCreateInfo.pNext		= nullptr;
-		moduleCreateInfo.flags		= 0;
-		moduleCreateInfo.codeSize	= spirv.size() * sizeof(unsigned int);
-		moduleCreateInfo.pCode		= spirv.data();
-		VkResult res = vkCreateShaderModule( device, &moduleCreateInfo, nullptr, &(inOutShader->first->module) );
-		assert( VK_SUCCESS == res );
-
-		if( nullptr != outSpirv ) {
-			*outSpirv = spirv;
-		}
+		*outSpirv = spirv;
 	}
 
 	return retVal;
-}
-
-std::string loadShaderSource( const std::string& source, const fs::path& path )
-{
-	std::string result = source;
-	if( result.empty() && ( ! path.empty() ) ) {
-		DataSourceRef dataSource = loadFile( path );
-		if( dataSource ) {
-			ci::Buffer buffer( dataSource );
-			result = std::string( static_cast<const char*>( buffer.getData() ), buffer.getSize() );
-		}
-	}
-	return result;
 }
 
 GlslAttributeDataType spirTypeToGlslAttributeDataType( const spir2cross::SPIRType& spirType )
@@ -631,91 +727,91 @@ GlslUniformDataType spirTypeToGlslUniformDataType( const spir2cross::SPIRType& s
 
 static std::mutex sGlSlangMutex;
 
+struct ShaderBuildData {
+	VkShaderStageFlagBits			stage;
+	uint32_t						stageIndex = UINT32_MAX;
+	std::string						sourceText;
+	std::vector<uint32_t>			spirvBinary;
+	std::string						entryPoint;
+	bool							needsCompile;
+};
+
 void ShaderProg::initialize( const ShaderProg::Format &format )
 {
-	if( ! mShaderStages.empty() ) {
-		return;
-	}
-
-	const std::string vertexShader = loadShaderSource( format.mVertexShader, format.mVertexShaderPath );
-	const std::string fragmentShader = loadShaderSource( format.mFragmentShader, format.mFragmentShaderPath );
-	const std::string geometryShader = loadShaderSource( format.mGeometryShader, format.mGeometryShaderPath );
-	const std::string tessellationCtrlShader = loadShaderSource( format.mTessellationCtrlShader, format.mTessellationCtrlShaderPath );
-	const std::string tessellationEvalShader = loadShaderSource( format.mTessellationEvalShader, format.mTessellationEvalShaderPath );
-	const std::string computeShader = loadShaderSource( format.mComputeShader, format.mComputeShaderPath );
-
 	// Copy attributes
 	mAttributes = format.mAttributes;	
 
-	// Preallocate the shader stages because we're paranoid
-	size_t numShaderStages = 0;
-	numShaderStages += ( ! vertexShader.empty()           ) ? 1 : 0;
-	numShaderStages += ( ! fragmentShader.empty()         ) ? 1 : 0;
-	numShaderStages += ( ! geometryShader.empty()         ) ? 1 : 0;
-	numShaderStages += ( ! tessellationCtrlShader.empty() ) ? 1 : 0;
-	numShaderStages += ( ! tessellationEvalShader.empty() ) ? 1 : 0;
-	numShaderStages += ( ! computeShader.empty()          ) ? 1 : 0;
-	mShaderStages.resize( numShaderStages );
+	// Copy shader data
+	std::map<VkShaderStageFlagBits, Format::ShaderData>	shaderData;
+	for( const auto& elem : format.mShaderData ) {
+		if( ! elem.second.isInitialized() ) {
+			continue;
+		}
 
-	assert( mShaderStages.size() > 0 );
-
-	// Zero out shader stage info
-	std::memset( static_cast<void*>( mShaderStages.data() ), 0, mShaderStages.size()*sizeof( VkPipelineShaderStageCreateInfo ) );
-
-	// Set initial fields
-	for( auto& shaderStage : mShaderStages ) {
-		shaderStage.sType				= VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		shaderStage.pNext				= nullptr;
-		shaderStage.pSpecializationInfo	= nullptr;
-		shaderStage.flags				= 0;
-		shaderStage.pName				= "main";
+		shaderData[elem.first] = elem.second;
+	}
+	// Throw if there aren't any shader stages present
+	if( shaderData.empty() ) {
+		throw std::runtime_error( "Cannot build shader without any stages defined" );
 	}
 
-	// Prepare build
-	std::vector<std::pair<VkPipelineShaderStageCreateInfo*, const std::string*>> shaderBuildData;
-	size_t shaderStageIndex = 0;
-	// Vertex
-	if( ! format.mVertexShader.empty() ) {
-		mShaderStages[shaderStageIndex].stage = VK_SHADER_STAGE_VERTEX_BIT;
-		shaderBuildData.push_back( std::make_pair( &mShaderStages[shaderStageIndex], &(vertexShader ) ) );
-		++shaderStageIndex;
+	// --------------------------------- //
+	// @ TODO: Add preprocessor for GLSL //
+	// --------------------------------- //
+
+	// Load any pending data
+	for( auto& elem : shaderData ) {
+		elem.second.loadShader();
 	}
 
-	// Fragment
-	if( ! format.mFragmentShader.empty() ) {
-		mShaderStages[shaderStageIndex].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		shaderBuildData.push_back( std::make_pair( &mShaderStages[shaderStageIndex], &(fragmentShader ) ) );
-		++shaderStageIndex;
+	// Allocate shader build data
+	std::vector<ShaderBuildData> shaderBuildData = std::vector<ShaderBuildData>( shaderData.size() );
+
+	// Set shader build data
+	{
+		const std::vector<VkShaderStageFlagBits> kOrderedShaderStageBits = { 
+			VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_GEOMETRY_BIT, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, VK_SHADER_STAGE_COMPUTE_BIT 
+		};
+
+		uint32_t shaderStageIndex = 0;
+		for( const auto& shaderStageBit : kOrderedShaderStageBits ) {
+			auto it = shaderData.find( shaderStageBit );
+			if( shaderData.end() == it ) {
+				continue;
+			}
+
+			const auto& shaderData = it->second;
+			shaderBuildData[shaderStageIndex].stage			= shaderStageBit;
+			shaderBuildData[shaderStageIndex].stageIndex	= shaderStageIndex;
+			shaderBuildData[shaderStageIndex].sourceText	= shaderData.getSourceText();
+			shaderBuildData[shaderStageIndex].spirvBinary	= shaderData.getSpirvBinary();
+			shaderBuildData[shaderStageIndex].entryPoint	= shaderData.getEntryPoint();
+			shaderBuildData[shaderStageIndex].needsCompile	= ( ShaderProg::Format::ShaderData::Type::GLSL == shaderData.getDataType() ) ? true : false;
+
+			++shaderStageIndex;
+		}
 	}
 
-	// Geometry
-	if( ! format.mGeometryShader.empty() ) {
-		mShaderStages[shaderStageIndex].stage = VK_SHADER_STAGE_GEOMETRY_BIT;
-		shaderBuildData.push_back( std::make_pair( &mShaderStages[shaderStageIndex], &(geometryShader ) ) );
-		++shaderStageIndex;
-	}
+	// Initialize entry points and pipeline shader stages
+	{
+		mEntryPoints.resize( shaderBuildData.size() );
+		mPipelineShaderStages.resize( shaderBuildData.size() );
 
-	// Tessellation Control
-	if( ! format.mTessellationCtrlShader.empty() ) {
-		mShaderStages[shaderStageIndex].stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-		shaderBuildData.push_back( std::make_pair( &mShaderStages[shaderStageIndex], &(tessellationCtrlShader ) ) );
-		++shaderStageIndex;
+		// Set member initial values
+		for( size_t i = 0; i < mPipelineShaderStages.size(); ++i ) {
+			mEntryPoints[i] = shaderBuildData[i].entryPoint;
+			// 
+			mPipelineShaderStages[i].sType					= VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			mPipelineShaderStages[i].pNext					= nullptr;
+			mPipelineShaderStages[i].flags					= 0;
+			mPipelineShaderStages[i].stage					= shaderBuildData[i].stage;
+			mPipelineShaderStages[i].module					= VK_NULL_HANDLE;
+			mPipelineShaderStages[i].pName					= mEntryPoints[i].c_str();
+			mPipelineShaderStages[i].pSpecializationInfo	= nullptr;
+		}
 	}
-
-	// Tessellation Evaluation
-	if( ! format.mTessellationEvalShader.empty() ) {
-		mShaderStages[shaderStageIndex].stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-		shaderBuildData.push_back( std::make_pair( &mShaderStages[shaderStageIndex], &(tessellationEvalShader ) ) );
-		++shaderStageIndex;
-	}
-
-	// Compute
-	if( ! format.mComputeShader.empty() ) {
-		mShaderStages[shaderStageIndex].stage = VK_SHADER_STAGE_COMPUTE_BIT;
-		shaderBuildData.push_back( std::make_pair( &mShaderStages[shaderStageIndex], &(computeShader ) ) );
-		++shaderStageIndex;
-	}
-
+	
+	// Compile and build shader
 	{
 		std::lock_guard<std::mutex> glslangLock( sGlSlangMutex );
 
@@ -723,15 +819,43 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 
 		// Build each stage separate as required by Vulkan
 		for( auto& shader : shaderBuildData ) {
-			std::vector<uint32_t> spirv;
-			bool isCompileSuccessful = compileGlslToSpirv( mDevice->getDevice(), &shader, &spirv );
-			if( isCompileSuccessful ) {
-				auto backCompiler = std::unique_ptr<spir2cross::CompilerGLSL>( new spir2cross::CompilerGLSL( spirv ) );
+			// Compile shader if needed
+			if( shader.needsCompile ) {
+				if( ! compileGlslToSpirv( mDevice->getDevice(), shader.stage, shader.sourceText, &(shader.spirvBinary) ) ) {
+					std::string msg = "GLSL compile failed for shader stage " + toStringVkShaderStageFlagBits( shader.stage );
+					throw std::runtime_error(  msg );
+				}
+			}
+
+			// Throw if SPIR-V isn't available
+			if( shader.spirvBinary.empty() ) {
+				std::string msg = "No SPIR-V data found for shader stage " + toStringVkShaderStageFlagBits( shader.stage );
+				throw std::runtime_error(  msg );
+			}
+
+			// Build shader module for this stage
+			{
+				VkShaderModuleCreateInfo moduleCreateInfo = {};
+				moduleCreateInfo.sType		= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+				moduleCreateInfo.pNext		= nullptr;
+				moduleCreateInfo.flags		= 0;
+				moduleCreateInfo.codeSize	= shader.spirvBinary.size() * sizeof(uint32_t);
+				moduleCreateInfo.pCode		= shader.spirvBinary.data();
+				VkResult res = vkCreateShaderModule( mDevice->getDevice(), &moduleCreateInfo, nullptr, &(mPipelineShaderStages[shader.stageIndex].module) );
+				if( VK_SUCCESS != res ) {
+					std::string msg = "Failed to create shader module for shader stage " + toStringVkShaderStageFlagBits( shader.stage );
+					throw std::runtime_error(  msg );
+				}
+			}
+
+			// Extract attributes, uniforms, bindings, sets, etc.
+			{
+				auto backCompiler = std::unique_ptr<spir2cross::CompilerGLSL>( new spir2cross::CompilerGLSL( shader.spirvBinary ) );
 				if( backCompiler ) {
-					VkPipelineShaderStageCreateInfo* shaderStageInfo = shader.first;
+					
 
 					// Extract attributes from vertex shader stage
-					if( VK_SHADER_STAGE_VERTEX_BIT == shaderStageInfo->stage ) {
+					if( VK_SHADER_STAGE_VERTEX_BIT == shader.stage ) {
 						for( auto& res : backCompiler->get_shader_resources().stage_inputs ) {
 							spir2cross::SPIRType  spirType     = backCompiler->get_type( res.type_id );
 							std::string           attrName     = res.name;
@@ -788,7 +912,7 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 							std::string           bindingName   = backCompiler->get_name( res.id );
 							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
 							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
-							VkShaderStageFlagBits bindingStage = shaderStageInfo->stage;
+							VkShaderStageFlagBits bindingStage  = shader.stage;
 
 							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::BLOCK, bindingName, bindingNumber, bindingStage, bindingSet );
 							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
@@ -822,7 +946,7 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 							std::string           bindingName   = backCompiler->get_name( res.id );
 							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
 							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
-							VkShaderStageFlagBits bindingStage = shaderStageInfo->stage;
+							VkShaderStageFlagBits bindingStage  = shader.stage;
 							
 							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::SAMPLER, bindingName, bindingNumber, bindingStage, bindingSet );
 							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
@@ -833,7 +957,7 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 							std::string           bindingName   = backCompiler->get_name( res.id );
 							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
 							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
-							VkShaderStageFlagBits bindingStage = shaderStageInfo->stage;
+							VkShaderStageFlagBits bindingStage  = shader.stage;
 							
 							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::STORAGE_IMAGE, bindingName, bindingNumber, bindingStage, bindingSet );
 							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
@@ -844,7 +968,7 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 							std::string           bindingName   = backCompiler->get_name( res.id );
 							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
 							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
-							VkShaderStageFlagBits bindingStage = shaderStageInfo->stage;
+							VkShaderStageFlagBits bindingStage  = shader.stage;
 
 							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::STORAGE_BUFFER, bindingName, bindingNumber, bindingStage, bindingSet );
 							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
@@ -889,15 +1013,15 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 
 void ShaderProg::destroy( bool removeFromTracking )
 {
-	if( mShaderStages.empty() ) {
+	if( mPipelineShaderStages.empty() ) {
 		return;
 	}
 
-	for( auto& shaderStage : mShaderStages ) {
+	for( auto& shaderStage : mPipelineShaderStages ) {
 		vkDestroyShaderModule( mDevice->getDevice(), shaderStage.module, nullptr );
 		shaderStage.module = VK_NULL_HANDLE;
 	}
-	mShaderStages.clear();
+	mPipelineShaderStages.clear();
 
 	if( removeFromTracking ) {
 		mDevice->trackedObjectDestroyed( this );
@@ -929,7 +1053,7 @@ ShaderProgRef ShaderProg::create( const std::string &vertexShader, const std::st
 
 bool ShaderProg::isCompute() const
 {
-	bool result = ( 1 == mShaderStages.size() ) && ( VK_SHADER_STAGE_COMPUTE_BIT == mShaderStages[0].stage );
+	bool result = ( 1 == mPipelineShaderStages.size() ) && ( VK_SHADER_STAGE_COMPUTE_BIT == mPipelineShaderStages[0].stage );
 	return result;
 }
 

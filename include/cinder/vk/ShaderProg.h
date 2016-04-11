@@ -124,20 +124,92 @@ public:
 	//!
 	class Format {
 	public:
-		Format();
 
-		Format&			vertex( const DataSourceRef &dataSource );
-		Format&			vertex( const std::string &text );
-		Format&			fragment( const DataSourceRef &dataSource );
-		Format&			fragment( const std::string &text );
-		Format&			geometry( const DataSourceRef &dataSource );
-		Format&			geometry( const std::string &text );
-		Format&			tessellationCtrl( const DataSourceRef &dataSource );
-		Format&			tessellationCtrl( const std::string &text );
-		Format&			tessellationEval( const DataSourceRef &dataSource );
-		Format&			tessellationEval( const std::string &text );
-		Format&			compute( const DataSourceRef &dataSource );
-		Format&			compute( const std::string &text );
+		class ShaderData {
+		public:
+			enum class Type { UNKNOWN, GLSL, SPIRV };
+
+			ShaderData() {}
+			virtual ~ShaderData() {}
+
+			bool							isInitialized() const { return mInitialized; }
+			ShaderData::Type				getDataType() const { return mDataType; }
+			const std::string&				getSourceText() const { return mSourceText; }
+			const std::vector<uint32_t>&	getSpirvBinary() const { return mSpirvBinary; }
+			const std::string&				getEntryPoint() const { return mEntryPoint; }
+
+		private:
+			bool					mInitialized = false;
+			ShaderData::Type		mDataType = ShaderData::Type::UNKNOWN;
+			DataSourceRef			mDataSource;
+			std::string				mSourceText;
+			std::vector<uint32_t>	mSpirvBinary;
+			std::string				mEntryPoint = "main";
+
+			void					setShaderData( const DataSourceRef &dataSource, const std::string& entryPoint );
+			void					setShaderData( const std::string &sourceText, const std::string& entryPoint );
+			void					setShaderData( const std::vector<uint32_t> &spirvBinary, const std::string& entryPoint );
+			void					setEntryPoint( const std::string& entryPoint );
+			void					loadShader();
+
+			friend class ShaderProg::Format;
+			friend class ShaderProg;
+		};
+
+		// -----------------------------------------------------------------------------------------
+
+		Format();
+		virtual ~Format() {}
+
+		Format&			vertex( const DataSourceRef &dataSource, const std::string& entryPoint = "" );
+		Format&			vertex( const std::string &souceText, const std::string& entryPoint = "" );
+		Format&			vertex( const std::vector<uint32_t> &spirvBinary, const std::string& entryPoint = "" );
+		Format&			fragment( const DataSourceRef &dataSource, const std::string& entryPoint = "" );
+		Format&			fragment( const std::string &souceText, const std::string& entryPoint = "" );
+		Format&			fragment( const std::vector<uint32_t> &spirvBinary, const std::string& entryPoint = "" );
+		Format&			geometry( const DataSourceRef &dataSource, const std::string& entryPoint = "" );
+		Format&			geometry( const std::string &souceText, const std::string& entryPoint = "" );
+		Format&			geometry( const std::vector<uint32_t> &spirvBinary, const std::string& entryPoint = "" );
+		Format&			tessellationCtrl( const DataSourceRef &dataSource, const std::string& entryPoint = "" );
+		Format&			tessellationCtrl( const std::string &souceText, const std::string& entryPoint = "" );
+		Format&			tessellationCtrl( const std::vector<uint32_t> &spirvBinary, const std::string& entryPoint = "" );
+		Format&			tessellationEval( const DataSourceRef &dataSource, const std::string& entryPoint = "" );
+		Format&			tessellationEval( const std::string &souceText, const std::string& entryPoint = "" );
+		Format&			tessellationEval( const std::vector<uint32_t> &spirvBinary, const std::string& entryPoint = "" );
+		Format&			compute( const DataSourceRef &dataSource, const std::string& entryPoint = "" );
+		Format&			compute( const std::string &souceText, const std::string& entryPoint = "" );
+		Format&			compute( const std::vector<uint32_t> &spirvBinary, const std::string& entryPoint = "" );
+
+/*
+		const Format::ShaderData&	getVertexShaderData() const;
+		const Format::ShaderData&	getFragmentShaderData() const;
+		const Format::ShaderData&	getGeometryShaderData() const;
+		const Format::ShaderData&	getTessellationCtrlShaderData() const;
+		const Format::ShaderData&	getTessellationEvalShaderData() const;
+		const Format::ShaderData&	getComputeShaderData() const;
+
+
+		const std::string&				getVertexSource() const { return mVertexSource; }
+		const std::string&				getFragmentSource() const { return mFragmentSource; }
+		const std::string&				getGeometrySource() const { return mGeometrySource; }
+		const std::string&				getTessellationCtrlSource() const { return mTessellationCtrlSource; }
+		const std::string&				getTessellationEvalSource() const { return mTessellationEvalSource; }
+		const std::string&				getComputeSource() const { return mComputeSource; }
+
+		const std::vector<uint32_t>&	getVertexSpirv() const { return mVertexSpirv; }
+		const std::vector<uint32_t>&	getFragmentSpirv() const { return mFragmentSpirv; }
+		const std::vector<uint32_t>&	getGeometrySpirv() const { return mGeometrySpirv; }
+		const std::vector<uint32_t>&	getTessellationCtrlSpirv() const { return mTessellationCtrlSpirv; }
+		const std::vector<uint32_t>&	getTessellationEvalSpirv() const { return mTessellationEvalSpirv; }
+		const std::vector<uint32_t>&	getComputeSpirv() const { return mComputeSpirv; }
+
+		bool			hasVertex()           const { return ( ( ! mVertexSpirv.empty() )           || ( ! mVertexSource.empty()          ) ); }
+		bool			hasFragment()         const { return ( ( ! mFragmentSpirv.empty() )         || ( ! mFragmentSpirv.empty()         ) ); }
+		bool			hasGeometry()         const { return ( ( ! mGeometrySpirv.empty() )         || ( ! mGeometrySpirv.empty()         ) ); }
+		bool			hasTessellationCtrl() const { return ( ( ! mTessellationCtrlSpirv.empty() ) || ( ! mTessellationCtrlSpirv.empty() ) ); }
+		bool			hasTessellationEval() const { return ( ( ! mTessellationEvalSpirv.empty() ) || ( ! mTessellationEvalSpirv.empty() ) ); }
+		bool			hasCompute()          const { return ( ( ! mComputeSpirv.empty() )          || ( ! mComputeSpirv.empty()          ) ); }
+*/
 
 		Format&			binding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber = DEFAULT_SET );
 		Format&			set( uint32_t setNumber, uint32_t changeFrequency = CHANGES_DONTCARE );
@@ -148,19 +220,8 @@ public:
 		Format&			blockNameTranslateFn( BlockNameTranslateFn fn );
 
 	private:
-		std::string					mVertexShader;
-		std::string					mFragmentShader;
-		std::string					mGeometryShader;
-		std::string					mTessellationCtrlShader;
-		std::string					mTessellationEvalShader;
-		std::string					mComputeShader;
 
-		fs::path					mVertexShaderPath;
-		fs::path					mFragmentShaderPath;
-		fs::path					mGeometryShaderPath;
-		fs::path					mTessellationCtrlShaderPath;
-		fs::path					mTessellationEvalShaderPath;
-		fs::path					mComputeShaderPath;
+		std::map<VkShaderStageFlagBits, Format::ShaderData>	mShaderData;
 
 		struct Binding {
 			uint32_t bindingNumber	= INVALID_BINDING;
@@ -176,9 +237,10 @@ public:
 		UniformLayout					mUniformLayout;
 		bool							mUserDefinedUniformLayout = false;
 
-		BlockNameTranslateFn		mBlockNameTranslateFn;
+		BlockNameTranslateFn			mBlockNameTranslateFn;
 
-		void			setShaderSource( const DataSourceRef &dataSource, std::string *shaderSourceDest, fs::path *shaderPathDest );
+		///const Format::ShaderDataRef& getAllocatedShaderData( VkShaderStageFlagBits shaderStage );	
+		//void setShaderData( const DataSourceRef &dataSource, std::string *shaderSourceDest, fs::path *shaderPathDest, std::vector<uint32_t> *shaderSpirvDest, ShaderDataType *shaderDataType );
 
 		friend class ShaderProg;
 	};
@@ -192,7 +254,7 @@ public:
 
 	bool								isCompute() const;
 
-	const std::vector<VkPipelineShaderStageCreateInfo>&		getShaderStages() const { return mShaderStages; }
+	const std::vector<VkPipelineShaderStageCreateInfo>&		getPipelineShaderStages() const { return mPipelineShaderStages; }
 
 	const std::vector<Attribute>&		getActiveAttributes() const { return mAttributes; }
 	const vk::VertexBufferMesh::Layout&	getVertexLayout() const { return mVertexLayout; }
@@ -219,7 +281,9 @@ public:
 	static std::string					defaultBlockNameTranslate( const std::string& name );
 
 private:
-	std::vector<VkPipelineShaderStageCreateInfo>	mShaderStages;
+	std::vector<std::string>						mEntryPoints;
+	std::vector<VkPipelineShaderStageCreateInfo>	mPipelineShaderStages;
+	
 	std::vector<Attribute>							mAttributes;
 	vk::VertexBufferMesh::Layout					mVertexLayout;
 	UniformLayout									mUniformLayout;

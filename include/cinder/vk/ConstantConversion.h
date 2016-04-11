@@ -55,5 +55,7 @@ std::string toStringVkFormat( VkFormat v );
 std::string toStringVkCullMode( VkCullModeFlagBits v );
 std::string toStringVkSampleCount( VkSampleCountFlagBits v );
 
+std::string toStringVkShaderStageFlagBits( VkShaderStageFlagBits v );
+
 
 }} // namespace cinder::vk

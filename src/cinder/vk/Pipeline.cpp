@@ -266,7 +266,7 @@ Pipeline::Options& Pipeline::Options::setRenderPass( const VkRenderPass &renderP
 
 Pipeline::Options& Pipeline::Options::setShaderProg( const ShaderProgRef &prog )
 {
-	mShaderStages = prog->getShaderStages(); 
+	mShaderStages = prog->getPipelineShaderStages(); 
 	return *this;
 }
 

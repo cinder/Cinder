@@ -45,6 +45,8 @@
 using namespace ci;
 using namespace ci::app;
 
+#define USE_SPIRV
+
 class RotatingCubeApp : public App {
   public:	
 	void	setup() override;
@@ -76,8 +78,13 @@ void RotatingCubeApp::setup()
 
 	try {
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
-			.vertex( loadAsset("shader.vert") )
-			.fragment( loadAsset("shader.frag") );
+#if defined( USE_SPIRV )
+			.vertex( loadAsset( "shader.vert.spirv" ) )
+			.fragment( loadAsset( "shader.frag.spirv" ) );
+#else
+			.vertex( loadAsset( "shader.vert" ) )
+			.fragment( loadAsset( "shader.frag" ) );
+#endif
 
 		mGlsl = vk::GlslProg::create( format );
 		mGlsl->uniform( "uTex0", mTexture );
@@ -174,7 +181,7 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_draw_state",
 	//"VK_LAYER_LUNARG_param_checker",
 	//"VK_LAYER_LUNARG_swapchain",
-	//"VK_LAYER_LUNARG_device_limits"
+	//"VK_LAYER_LUNARG_device_limits",
 	//"VK_LAYER_LUNARG_image",
 	//"VK_LAYER_GOOGLE_unique_objects",
 };
