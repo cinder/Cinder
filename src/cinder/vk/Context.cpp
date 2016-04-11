@@ -1246,35 +1246,9 @@ std::string	Context::generateFragmentShader( const vk::ShaderDef &shader )
 
 ShaderProgRef Context::buildShader( const vk::ShaderDef &shader )
 {
-/*
-		vk::UniformLayout uniformLayout = vk::UniformLayout();
-		uniformLayout.blockBegin( 0, "ciBlock0" );
-			uniformLayout.uniform( "ciModelViewProjection", mat4() );
-		if( shader.mLambert ) {
-			uniformLayout.uniform( "ciNormalMatrix", mat4() );
-		}
-		if( shader.mTextureMapping ) {
-			uniformLayout.sampler2D( 1, "uTex0" );
-		}
-*/
-
-		vk::ShaderProg::Format format = vk::ShaderProg::Format()
-			.vertex( generateVertexShader( shader ) )
-			.fragment( generateFragmentShader( shader ) )
-			.binding( "ciBlock0", 0 )
-			.attribute( geom::Attrib::POSITION, 0, 0, vk::glsl_attr_vec4 );
-		if( shader.mTextureMapping ) {
-			format.binding( "uTex0", 1 );
-			format.attribute( geom::Attrib::TEX_COORD_0, 1, 0, vk::glsl_attr_vec2 );
-		}
-		if( shader.mColor ) {
-			format.attribute( geom::Attrib::COLOR, 2, 0, vk::glsl_attr_vec4 );
-		}
-		if( shader.mLambert ) {
-			format.attribute( geom::Attrib::NORMAL, 3, 0, vk::glsl_attr_vec3 );
-		}
-
-		//format.uniformLayout( uniformLayout );
+	vk::ShaderProg::Format format = vk::ShaderProg::Format()
+		.vertex( generateVertexShader( shader ) )
+		.fragment( generateFragmentShader( shader ) );
 
 	vk::ShaderProgRef result = vk::GlslProg::create( format );
 	return result;

@@ -97,22 +97,38 @@ public:
 
 		//! Returns a const reference of the name as defined in the Vertex Shader.
 		const std::string&		getName() const { return mName; }
-		//! Returns the number of attributes expected by the Vertex Shader. mCount will be 1 unless this attribute is an array.
-		int32_t					getCount() const { return mCount; }
-		//! Returns the Vertex Shader generated or user defined location of this attribute.
-		int32_t					getLocation() const { return mLocation; }
-		//! Returns the GLenum representation of the type of this attribute (for example, \c GL_FLOAT_VEC3)
-		int32_t					getBinding() const { return mBinding; }
-		//! Returns the Vertex Shader generated or user defined location of this attribute.
+
+
+		//! Sets the array size of this attribute. Should be 1 or greater.
+		void					setCount( uint32_t value ) { mCount = std::max<uint32_t>( 1, value ); }
+		//! Returns the array size of this attribute. Should be 1 or greater.
+		uint32_t				getCount() const { return mCount; }
+
+		//! Sets the vertex shader generated or user defined location of this attribute.
+		void					setLocation( uint32_t value ) { mLocation = value; }
+		//! Returns the vertex shader generated or user defined location of this attribute.
+		uint32_t				getLocation() const { return mLocation; }
+
+		//! Sets the binding number for this attribute.
+		void					setBinding( uint32_t value ) { mBinding = value; }
+		//! Returns the binding number for this attribute.
+		uint32_t				getBinding() const { return mBinding; }
+
+		//! Sets the data type for this attribute.
+		void					setType( GlslAttributeDataType value ) { mType = value; }
+		//! Returns the data type for this attribute.
 		GlslAttributeDataType	getType() const { return mType; }
-		//! Returns the defined geom::Attrib semantic.
+
+		//! Sets the semantic that's to be associated with tis attribute.
+		void					setSemantic( geom::Attrib value ) { mSemantic = value; }
+		//! Returns the semantic associated with this attribute.
 		geom::Attrib			getSemantic() const { return mSemantic; }
 
 	  private:
 		std::string				mName;
-		int32_t					mCount = 0;
-		int32_t					mLocation = -1;
-		int32_t					mBinding = -1;
+		uint32_t				mCount = 0;
+		uint32_t				mLocation = UINT32_MAX;
+		uint32_t				mBinding = UINT32_MAX;
 		GlslAttributeDataType	mType = glsl_attr_unknown;
 		geom::Attrib			mSemantic = geom::Attrib::USER_DEFINED;
 
@@ -255,7 +271,7 @@ private:
 	
 	std::vector<Attribute>							mAttributes;
 	vk::VertexBufferMesh::Layout					mVertexLayout;
-	UniformLayout									mUniformLayout;
+	vk::UniformLayout								mUniformLayout;
 
 	void initialize( const ShaderProg::Format &format );
 	void destroy( bool removeFromTracking = true );

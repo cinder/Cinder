@@ -581,12 +581,6 @@ void printResource( const std::string& prefix, const spir2cross::Compiler& compi
 	CI_LOG_I( "(" << prefix << ") : " << name );
 }
 
-struct CompileData {
-	VkPipelineShaderStageCreateInfo*	shaderStage = nullptr;
-	const std::string*					glslText = nullptr;
-	std::vector<uint32_t>*				spirv = nullptr;
-};
-
 bool compileGlslToSpirv( VkDevice device, VkShaderStageFlagBits shaderStage, const std::string& glslText, std::vector<uint32_t>* outSpirv )
 {
 	std::vector<uint32_t> spirv;
@@ -736,6 +730,148 @@ struct ShaderBuildData {
 	bool							needsCompile;
 };
 
+bool buildShaderModule( VkDevice device, const std::vector<uint32_t> &spirvBinary, VkShaderModule *shaderModule )
+{
+	VkShaderModuleCreateInfo createInfo = {};
+	createInfo.sType	= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	createInfo.pNext	= nullptr;
+	createInfo.flags	= 0;
+	createInfo.codeSize	= spirvBinary.size() * sizeof(uint32_t);
+	createInfo.pCode	= spirvBinary.data();
+	VkResult res = vkCreateShaderModule( device, &createInfo, nullptr, shaderModule );
+	return ( VK_SUCCESS == res );
+}
+
+void extractAttributeData( const std::unique_ptr<spir2cross::CompilerGLSL>& backCompiler, std::vector<ShaderProg::Attribute> *outShaderAttributes )
+{
+	if( ! backCompiler ) {
+		return;
+	}
+
+	for( auto& res : backCompiler->get_shader_resources().stage_inputs ) {
+		spir2cross::SPIRType  spirType     = backCompiler->get_type( res.type_id );
+		std::string           attrName     = res.name;
+		uint32_t              attrLocation = backCompiler->get_decoration( res.id, spv::DecorationLocation );
+		uint32_t              attrBinding  = 0;
+		GlslAttributeDataType attrDataType = spirTypeToGlslAttributeDataType( spirType );
+		geom::Attrib          attrSemantic = attributeNameToSemantic( res.name );
+
+		if( glsl_attr_unknown == attrDataType ) {
+			CI_LOG_W( "Unable to determine data type for vertex shader attr " << attrName );
+			continue;
+		}
+
+		auto it = std::find_if(
+			std::begin( *outShaderAttributes ), std::end( *outShaderAttributes ),
+			[attrName]( const ShaderProg::Attribute& elem ) -> bool {
+				return elem.getName() == attrName;
+			}
+		);
+
+		// Update
+		if( std::end( *outShaderAttributes ) != it ) {
+			ShaderProg::Attribute& attr = *it;
+			attr.setLocation( attrLocation );
+			attr.setBinding( attrBinding );
+			attr.setType( attrDataType );
+			attr.setSemantic( attrSemantic );
+		}
+		// Add
+		else {
+			ShaderProg::Attribute attr = ShaderProg::Attribute( attrName, attrSemantic, static_cast<int32_t>( attrLocation ), static_cast<int32_t>( attrBinding ), attrDataType );
+			outShaderAttributes->push_back( attr );
+		}
+	}
+
+	std::sort( 
+		std::begin( *outShaderAttributes ), std::end( *outShaderAttributes ),
+		[]( const ShaderProg::Attribute& a, const ShaderProg::Attribute& b ) -> bool {
+			return a.getLocation() < b.getLocation();
+		}
+	);
+}
+
+void extractUniformData( VkShaderStageFlagBits shaderStage, const std::unique_ptr<spir2cross::CompilerGLSL>& backCompiler, vk::UniformLayout *outUniformLayout )
+{
+	if( ! backCompiler ) {
+		return;
+	}
+
+	// Extract uniform blocks from all shader stages
+	for( auto& res : backCompiler->get_shader_resources().uniform_buffers ) {
+		const uint64_t kBlockMask = ( 1ULL << spv::DecorationBlock ) | ( 1ULL << spv::DecorationBufferBlock );
+
+		auto&    typeInfo       = backCompiler->get_type( res.type_id );
+		bool     isPushConstant = ( spv::StorageClassPushConstant == backCompiler->get_storage_class( res.id ) );
+		bool     isBlock        = ( 0 != ( backCompiler->get_decoration_mask( typeInfo.self ) & kBlockMask  ) );
+		uint32_t typeId         = ( ( ! isPushConstant && isBlock ) ? res.type_id : res.id );
+
+		std::string           bindingName   = backCompiler->get_name( res.id );
+		uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+		uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+		VkShaderStageFlagBits bindingStage  = shaderStage;
+
+		outUniformLayout->addBinding( vk::UniformLayout::Binding::Type::BLOCK, bindingName, bindingNumber, bindingStage, bindingSet );
+		outUniformLayout->addSet( bindingSet, CHANGES_DONTCARE );
+
+		for( uint32_t index = 0; index < typeInfo.member_types.size(); ++index ) {
+			std::string         memberName     = backCompiler->get_member_name( res.type_id, index );								
+			uint32_t            memberId       = typeInfo.member_types[index];
+			auto&               memberTypeInfo = backCompiler->get_type( memberId );
+			uint32_t            memberOffset   = backCompiler->get_member_decoration( res.type_id, index, spv::DecorationOffset );
+			GlslUniformDataType memberDataType = spirTypeToGlslUniformDataType( memberTypeInfo );
+
+			std::string uniformName = bindingName + "." + memberName;
+			outUniformLayout->addUniform( uniformName, memberDataType, memberOffset );
+		}
+
+		// Block size
+		size_t blockSize = backCompiler->get_declared_struct_size( typeInfo );
+
+		// Round up to next multiple of 16			
+		size_t paddedSize = ( blockSize + 15 ) & ( ~15 );
+		if( blockSize != paddedSize ) {
+			CI_LOG_I( "Padded uniform block " << bindingName << " from " << blockSize << " bytes to " << paddedSize << " bytes" );
+		}
+
+		outUniformLayout->setBlockSizeBytes( bindingName, paddedSize );
+		outUniformLayout->sortUniformsByOffset();
+	}
+
+	// Extract samplers from all shader stages
+	for( auto& res : backCompiler->get_shader_resources().sampled_images ) {
+		std::string           bindingName   = backCompiler->get_name( res.id );
+		uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+		uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+		VkShaderStageFlagBits bindingStage  = shaderStage;
+							
+		outUniformLayout->addBinding( vk::UniformLayout::Binding::Type::SAMPLER, bindingName, bindingNumber, bindingStage, bindingSet );
+		outUniformLayout->addSet( bindingSet, CHANGES_DONTCARE );
+	}
+
+	// Extract storage images from all shader stages - but probably only just compute
+	for( auto& res : backCompiler->get_shader_resources().storage_images ) {
+		std::string           bindingName   = backCompiler->get_name( res.id );
+		uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+		uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+		VkShaderStageFlagBits bindingStage  = shaderStage;
+							
+		outUniformLayout->addBinding( vk::UniformLayout::Binding::Type::STORAGE_IMAGE, bindingName, bindingNumber, bindingStage, bindingSet );
+		outUniformLayout->addSet( bindingSet, CHANGES_DONTCARE );
+	}
+
+	// Extract storage buffers from all shader stages - but probably only just compute
+	for( auto& res : backCompiler->get_shader_resources().storage_buffers) {
+		std::string           bindingName   = backCompiler->get_name( res.id );
+		uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+		uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+		VkShaderStageFlagBits bindingStage  = shaderStage;
+
+		outUniformLayout->addBinding( vk::UniformLayout::Binding::Type::STORAGE_BUFFER, bindingName, bindingNumber, bindingStage, bindingSet );
+		outUniformLayout->addSet( bindingSet, CHANGES_DONTCARE );
+	}
+}
+
 void ShaderProg::initialize( const ShaderProg::Format &format )
 {
 	// Copy attributes
@@ -834,146 +970,27 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 			}
 
 			// Build shader module for this stage
-			{
-				VkShaderModuleCreateInfo moduleCreateInfo = {};
-				moduleCreateInfo.sType		= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-				moduleCreateInfo.pNext		= nullptr;
-				moduleCreateInfo.flags		= 0;
-				moduleCreateInfo.codeSize	= shader.spirvBinary.size() * sizeof(uint32_t);
-				moduleCreateInfo.pCode		= shader.spirvBinary.data();
-				VkResult res = vkCreateShaderModule( mDevice->getDevice(), &moduleCreateInfo, nullptr, &(mPipelineShaderStages[shader.stageIndex].module) );
-				if( VK_SUCCESS != res ) {
-					std::string msg = "Failed to create shader module for shader stage " + toStringVkShaderStageFlagBits( shader.stage );
-					throw std::runtime_error(  msg );
-				}
+			if( ! buildShaderModule( mDevice->getDevice(), shader.spirvBinary, &(mPipelineShaderStages[shader.stageIndex].module) ) ) {
+				std::string msg = "Couldn't create module for shader stage " + toStringVkShaderStageFlagBits( shader.stage );
+				throw std::runtime_error(  msg );
 			}
 
-			// Extract attributes, uniforms, bindings, sets, etc.
+			// Extract attributes and uniforms
 			{
 				auto backCompiler = std::unique_ptr<spir2cross::CompilerGLSL>( new spir2cross::CompilerGLSL( shader.spirvBinary ) );
-				if( backCompiler ) {
-					
+				if( ! backCompiler ) {
+					std::string msg = "Couldn't back compile SPIR-V for shader stage " + toStringVkShaderStageFlagBits( shader.stage );
+					throw std::runtime_error(  msg );
+				}
 
-					// Extract attributes from vertex shader stage
-					if( VK_SHADER_STAGE_VERTEX_BIT == shader.stage ) {
-						for( auto& res : backCompiler->get_shader_resources().stage_inputs ) {
-							spir2cross::SPIRType  spirType     = backCompiler->get_type( res.type_id );
-							std::string           attrName     = res.name;
-							uint32_t              attrLocation = backCompiler->get_decoration( res.id, spv::DecorationLocation );
-							uint32_t              attrBinding  = 0;
-							GlslAttributeDataType attrDataType = spirTypeToGlslAttributeDataType( spirType );
-							geom::Attrib          attrSemantic = attributeNameToSemantic( res.name );
+				// Extract shader attributes
+				if( VK_SHADER_STAGE_VERTEX_BIT == shader.stage ) {
+					extractAttributeData( backCompiler, &mAttributes );
+				}
 
-							if( glsl_attr_unknown == attrDataType ) {
-								CI_LOG_W( "Unable to determine data type for vertex shader attr " << attrName );
-								continue;
-							}
-
-							auto it = std::find_if(
-								std::begin( mAttributes ), std::end( mAttributes ),
-								[attrName]( const ShaderProg::Attribute& elem ) -> bool {
-									return elem.getName() == attrName;
-								}
-							);
-
-							// Update
-							if( std::end( mAttributes ) != it ) {
-								ShaderProg::Attribute& attr = *it;
-								attr.mLocation = attrLocation;
-								attr.mBinding  = attrBinding;
-								attr.mType     = attrDataType;
-								attr.mSemantic = attrSemantic;
-							}
-							// Add
-							else {
-								ShaderProg::Attribute attr = ShaderProg::Attribute( attrName, attrSemantic, static_cast<int32_t>( attrLocation ), static_cast<int32_t>( attrBinding ), attrDataType );
-								mAttributes.push_back( attr );
-							}
-						}
-
-						std::sort( 
-							std::begin( mAttributes ), std::end( mAttributes ),
-							[]( const ShaderProg::Attribute& a, const ShaderProg::Attribute& b ) -> bool {
-								return a.getLocation() < b.getLocation();
-							}
-						);
-					}
-
-					if( ! format.userDefinedUniformLayout() ) {
-						// Extract uniform blocks from all shader stages
-						for( auto& res : backCompiler->get_shader_resources().uniform_buffers ) {
-							const uint64_t kBlockMask = ( 1ULL << spv::DecorationBlock ) | ( 1ULL << spv::DecorationBufferBlock );
-
-							auto&    typeInfo       = backCompiler->get_type( res.type_id );
-							bool     isPushConstant = ( spv::StorageClassPushConstant == backCompiler->get_storage_class( res.id ) );
-							bool     isBlock        = ( 0 != ( backCompiler->get_decoration_mask( typeInfo.self ) & kBlockMask  ) );
-							uint32_t typeId         = ( ( ! isPushConstant && isBlock ) ? res.type_id : res.id );
-
-							std::string           bindingName   = backCompiler->get_name( res.id );
-							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
-							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
-							VkShaderStageFlagBits bindingStage  = shader.stage;
-
-							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::BLOCK, bindingName, bindingNumber, bindingStage, bindingSet );
-							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
-
-							for( uint32_t index = 0; index < typeInfo.member_types.size(); ++index ) {
-								std::string         memberName     = backCompiler->get_member_name( res.type_id, index );								
-								uint32_t            memberId       = typeInfo.member_types[index];
-								auto&               memberTypeInfo = backCompiler->get_type( memberId );
-								uint32_t            memberOffset   = backCompiler->get_member_decoration( res.type_id, index, spv::DecorationOffset );
-								GlslUniformDataType memberDataType = spirTypeToGlslUniformDataType( memberTypeInfo );
-
-								std::string uniformName = bindingName + "." + memberName;
-								mUniformLayout.addUniform( uniformName, memberDataType, memberOffset );
-							}
-
-							// Block size
-							size_t blockSize = backCompiler->get_declared_struct_size( typeInfo );
-
-							// Round up to next multiple of 16			
-							size_t paddedSize = ( blockSize + 15 ) & ( ~15 );
-							if( blockSize != paddedSize ) {
-								CI_LOG_I( "Padded uniform block " << bindingName << " from " << blockSize << " bytes to " << paddedSize << " bytes" );
-							}
-
-							mUniformLayout.setBlockSizeBytes( bindingName, paddedSize );
-							mUniformLayout.sortUniformsByOffset();
-						}
-
-						// Extract samplers from all shader stages
-						for( auto& res : backCompiler->get_shader_resources().sampled_images ) {
-							std::string           bindingName   = backCompiler->get_name( res.id );
-							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
-							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
-							VkShaderStageFlagBits bindingStage  = shader.stage;
-							
-							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::SAMPLER, bindingName, bindingNumber, bindingStage, bindingSet );
-							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
-						}
-
-						// Extract storage images from all shader stages - but probably only just compute
-						for( auto& res : backCompiler->get_shader_resources().storage_images ) {
-							std::string           bindingName   = backCompiler->get_name( res.id );
-							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
-							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
-							VkShaderStageFlagBits bindingStage  = shader.stage;
-							
-							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::STORAGE_IMAGE, bindingName, bindingNumber, bindingStage, bindingSet );
-							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
-						}
-
-						// Extract storage buffers from all shader stages - but probably only just compute
-						for( auto& res : backCompiler->get_shader_resources().storage_buffers) {
-							std::string           bindingName   = backCompiler->get_name( res.id );
-							uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
-							uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
-							VkShaderStageFlagBits bindingStage  = shader.stage;
-
-							mUniformLayout.addBinding( vk::UniformLayout::Binding::Type::STORAGE_BUFFER, bindingName, bindingNumber, bindingStage, bindingSet );
-							mUniformLayout.addSet( bindingSet, CHANGES_DONTCARE );
-						}
-					}
+				// Extract uniform data
+				if( ! format.userDefinedUniformLayout() ) {
+					extractUniformData( shader.stage, backCompiler, &mUniformLayout );
 				}
 			}
 		}
