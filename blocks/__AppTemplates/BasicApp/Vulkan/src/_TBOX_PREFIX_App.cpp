@@ -39,16 +39,19 @@ void _TBOX_PREFIX_AppApp::update()
 {
 	// Rotate the cube by 0.2 degrees around the y-axis
 	mCubeRotation *= rotate( toRadians( 0.2f ), normalize( vec3( 0, 1, 0 ) ) );
-}
 
-void _TBOX_PREFIX_AppApp::draw()
-{
 	vk::setMatrices( mCam );
 
 	vk::ScopedModelMatrix modelScope;
 	vk::multModelMatrix( mCubeRotation );
 
+	vk::context()->setDefaultUniformVars( mBatch );
+	vk::context()->addPendingUniformVars( mBatch );
+}
+
+void _TBOX_PREFIX_AppApp::draw()
+{
 	mBatch->draw();
 }
 
-CINDER_APP( _TBOX_PREFIX_AppApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_8_BIT ) ) )
+CINDER_APP( _TBOX_PREFIX_AppApp, RendererVk( RendererVk::Options().setSamples( VK_SAMPLE_COUNT_1_BIT ) ) )
