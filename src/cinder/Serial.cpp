@@ -368,7 +368,7 @@ size_t Serial::getNumBytesAvailable() const
 	::COMSTAT status;
 	::DWORD error;
 	if( ! ::ClearCommError( mImpl->mDeviceHandle, &error, &status ) )
-		throw SerialExc( "Serial failuture upon attempt to retreive information on device handle" );
+		throw SerialExc( "Serial failure upon attempt to retrieve information on device handle" );
 	else
 		result = status.cbInQue;
 #endif
