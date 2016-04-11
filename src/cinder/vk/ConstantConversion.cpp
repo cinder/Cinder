@@ -78,13 +78,48 @@ std::string toStringPhysicalDeviceType( VkPhysicalDeviceType v )
 {
 	std::string result = "<UNKNOWN>";
 	switch( v ) {
-		case VK_PHYSICAL_DEVICE_TYPE_OTHER			: result = "VK_PHYSICAL_DEVICE_TYPE_OTHER" ; break;
-		case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU" ; break;
-		case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU" ; break;
-		case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU" ; break;
-		case VK_PHYSICAL_DEVICE_TYPE_CPU			: result = "VK_PHYSICAL_DEVICE_TYPE_CPU" ; break;
+		case VK_PHYSICAL_DEVICE_TYPE_OTHER			: result = "VK_PHYSICAL_DEVICE_TYPE_OTHER"; break;
+		case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU"; break;
+		case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU"; break;
+		case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU	: result = "VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU"; break;
+		case VK_PHYSICAL_DEVICE_TYPE_CPU			: result = "VK_PHYSICAL_DEVICE_TYPE_CPU"; break;
 	}
 	return result;
+}
+
+std::string toStringQueueFlagBits( VkQueueFlagBits v )
+{
+	std::string result = "<UNKNOWN>";
+	switch( v ) {
+		case VK_QUEUE_GRAPHICS_BIT			: result = "VK_QUEUE_GRAPHICS_BIT"; break;
+		case VK_QUEUE_COMPUTE_BIT			: result = "VK_QUEUE_COMPUTE_BIT"; break;
+		case VK_QUEUE_TRANSFER_BIT			: result = "VK_QUEUE_TRANSFER_BIT"; break;
+		case VK_QUEUE_SPARSE_BINDING_BIT	: result = "VK_QUEUE_SPARSE_BINDING_BIT"; break;
+	}
+	return result;
+}
+
+std::string toStringQueueFlags( VkQueueFlags v )
+{
+	std::stringstream ss;
+
+	if( VK_QUEUE_GRAPHICS_BIT == ( v & VK_QUEUE_GRAPHICS_BIT ) ) {
+		ss << "VK_QUEUE_GRAPHICS_BIT";
+	}
+	
+	if( VK_QUEUE_COMPUTE_BIT == ( v & VK_QUEUE_COMPUTE_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_QUEUE_COMPUTE_BIT";
+	}
+	
+	if( VK_QUEUE_TRANSFER_BIT == ( v & VK_QUEUE_TRANSFER_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_QUEUE_TRANSFER_BIT";
+	}
+	
+	if( VK_QUEUE_SPARSE_BINDING_BIT == ( v & VK_QUEUE_SPARSE_BINDING_BIT ) ) {
+		ss << ( ss.str().empty() ? "" : "|" ) << "VK_QUEUE_SPARSE_BINDING_BIT";
+	}
+
+	return ss.str();
 }
 
 std::string toStringVkMemoryPropertyFlagBits( VkMemoryPropertyFlagBits v )
@@ -359,6 +394,21 @@ std::string toStringVkSampleCount( VkSampleCountFlagBits v )
 		case VK_SAMPLE_COUNT_16_BIT : result = "VK_SAMPLE_COUNT_16_BIT"; break;
 		case VK_SAMPLE_COUNT_32_BIT : result = "VK_SAMPLE_COUNT_32_BIT"; break;
 		case VK_SAMPLE_COUNT_64_BIT : result = "VK_SAMPLE_COUNT_64_BIT"; break;
+		default: break;
+	}
+	return result;
+}
+
+std::string toStringVkShaderStageFlagBits( VkShaderStageFlagBits v )
+{
+	std::string result = "<UNKNOWN>";
+	switch( v ) {
+		case VK_SHADER_STAGE_VERTEX_BIT                  : result = "VK_SHADER_STAGE_VERTEX_BIT"; break;
+		case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT    : result = "VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT"; break;
+		case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT : result = "VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT"; break;
+		case VK_SHADER_STAGE_GEOMETRY_BIT                : result = "VK_SHADER_STAGE_GEOMETRY_BIT"; break;
+		case VK_SHADER_STAGE_FRAGMENT_BIT                : result = "VK_SHADER_STAGE_FRAGMENT_BIT"; break;
+		case VK_SHADER_STAGE_COMPUTE_BIT                 : result = "VK_SHADER_STAGE_COMPUTE_BIT"; break;
 		default: break;
 	}
 	return result;

@@ -232,6 +232,9 @@ void Light::update(float time, float dt)
 
 void Light::prepareDraw( const ci::vk::CommandBufferRef& cmdBuf )
 {	
+	vk::ImageMemoryBarrierParams barrierParams = vk::ImageMemoryBarrierParams( mShadowMapTex->getImageView()->getImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
+	cmdBuf->pipelineBarrierImageMemory( barrierParams );
+
 	mShadowMapRenderPass->beginRenderExplicit( cmdBuf, mShadowMapFbo );
 	//vk::setMatrices( mCam );
 }
@@ -245,18 +248,35 @@ void Light::finishDraw()
 	mBlurRect[0]->getUniformSet()->uniform( "uTex", mShadowMapTex );
 	*/
 
+	auto& cmdBuf = mShadowMapRenderPass->getCommandBuffer();
+
 	// Vertical pass of blur
 	mShadowMapRenderPass->nextSubpass();
 	{
+		vk::ImageMemoryBarrierParams barrierParams = vk::ImageMemoryBarrierParams( mShadowMapTex->getImageView()->getImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+		cmdBuf->pipelineBarrierImageMemory( barrierParams );
+
+		barrierParams = vk::ImageMemoryBarrierParams( mBlurredShadowMapTex[0]->getImageView()->getImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
+		cmdBuf->pipelineBarrierImageMemory( barrierParams );
+
 		//vk::setMatricesWindow( mBlurredShadowMapTex[0]->getSize() );
-		mBlurRect[0]->draw( mShadowMapRenderPass->getCommandBuffer() );
+		mBlurRect[0]->draw( cmdBuf );
 	}
 
 	// Horizontal pass of blur
 	mShadowMapRenderPass->nextSubpass();
 	{
+		vk::ImageMemoryBarrierParams barrierParams = vk::ImageMemoryBarrierParams( mBlurredShadowMapTex[0]->getImageView()->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+		cmdBuf->pipelineBarrierImageMemory( barrierParams );
+
+		barrierParams = vk::ImageMemoryBarrierParams( mBlurredShadowMapTex[1]->getImageView()->getImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
+		cmdBuf->pipelineBarrierImageMemory( barrierParams );
+
 		//vk::setMatricesWindow( mBlurredShadowMapTex[1]->getSize() );
-		mBlurRect[1]->draw( mShadowMapRenderPass->getCommandBuffer() );
+		mBlurRect[1]->draw( cmdBuf );
+
+		barrierParams = vk::ImageMemoryBarrierParams( mBlurredShadowMapTex[1]->getImageView()->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
+		cmdBuf->pipelineBarrierImageMemory( barrierParams );
 	}
 
 	mShadowMapRenderPass->endRenderExplicit();

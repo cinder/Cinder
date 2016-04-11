@@ -45,8 +45,8 @@
 
 namespace cinder { namespace vk {
 
-Queue::Queue( uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context )
-	: BaseContextObject( context )
+Queue::Queue( VkQueueFlags queueTypes, uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context )
+	: BaseContextObject( context ), mQueueTypes( queueTypes )
 {
 	initialize( queueFamilyIndex, queueIndex );
 }
@@ -56,16 +56,18 @@ Queue::~Queue()
 	destroy();
 }
 
-QueueRef Queue::create( uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context )
+QueueRef Queue::create( VkQueueFlags queueTypes, uint32_t queueFamilyIndex, uint32_t queueIndex, vk::Context *context )
 {
 	context = ( nullptr != context ) ? context : Context::getCurrent();
-	QueueRef result = QueueRef( new Queue( queueFamilyIndex, queueIndex, context ) );
+	QueueRef result = QueueRef( new Queue( queueTypes, queueFamilyIndex, queueIndex, context ) );
 	return result;
 }
 
 void Queue::initialize( uint32_t queueFamilyIndex, uint32_t queueIndex )
 {
-	vkGetDeviceQueue( mContext->getDevice()->getDevice(), queueFamilyIndex, queueIndex, &mQueue );
+	mQueueFamilyIndex = queueFamilyIndex;
+	mQueueIndex = queueIndex;
+	vkGetDeviceQueue( mContext->getDevice()->getDevice(), mQueueFamilyIndex, mQueueIndex, &mQueue );
 }
 
 void Queue::destroy( bool removeFromTracking )

@@ -44,6 +44,8 @@ namespace cinder { namespace vk {
 
 std::string toStringVkResult( VkResult v );
 std::string toStringPhysicalDeviceType( VkPhysicalDeviceType v );
+std::string toStringQueueFlagBits( VkQueueFlagBits v );
+std::string toStringQueueFlags( VkQueueFlags v );
 
 std::string toStringVkMemoryPropertyFlagBits( VkMemoryPropertyFlagBits v );
 std::string toStringVkMemoryPropertyFlags( VkMemoryPropertyFlags v );
@@ -52,6 +54,8 @@ std::string toStringVkPresentMode( VkPresentModeKHR v );
 std::string toStringVkFormat( VkFormat v );
 std::string toStringVkCullMode( VkCullModeFlagBits v );
 std::string toStringVkSampleCount( VkSampleCountFlagBits v );
+
+std::string toStringVkShaderStageFlagBits( VkShaderStageFlagBits v );
 
 
 }} // namespace cinder::vk

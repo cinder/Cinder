@@ -93,6 +93,10 @@ Ocean::Ocean( FishTornadoApp *app )
 		CI_LOG_E( "Failed loading ocean floor and surface textures: " << e.what() );
 	}
 
+	vk::transitionToFirstUse( mFloorDiffuseTex, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, vk::context() );
+	vk::transitionToFirstUse( mFloorNormalsTex, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, vk::context() );
+	vk::transitionToFirstUse( mSurfaceNormalsTex, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, vk::context() );
+
 	// Caustics
 	try {
 		mCausticsIndex = 0;
@@ -101,6 +105,7 @@ Ocean::Ocean( FishTornadoApp *app )
 			std::string num = toString( i );
 			if( num.length() == 1 ) num = "0" + num;
 			mCausticsTexs[i] = vk::Texture::create( *ci::Surface::create( loadImage( app::loadAsset( "ocean/caustics/save." + num + ".png" ) ) ), format );
+			vk::transitionToFirstUse( mCausticsTexs[i], VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, vk::context() );
 		}
 		CI_LOG_I( "Caustic textures loaded" );
 	}
@@ -113,15 +118,6 @@ Ocean::Ocean( FishTornadoApp *app )
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "ocean/floor.vert" ) )
 			.fragment( loadAsset( "ocean/floor.frag" ) );
-			//.binding( "ciBlock0",          0 )
-			//.binding( "ciBlock1",          1 )
-			//.binding( "uDiffuseTex",       2 )
-			//.binding( "uNormalsTex",       3 )
-			//.binding( "uCausticsTex",      4 )
-			//.binding( "uShadowMap",        5 )
-			//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			//.attribute( geom::Attrib::NORMAL,       1, 0, vk::glsl_attr_vec3 )
-			//.attribute( geom::Attrib::TEX_COORD_0,  2, 0, vk::glsl_attr_vec2 );
 
 		mFloorShader = vk::GlslProg::create( format );
 		CI_LOG_I( "FloorShader loaded" );
@@ -135,12 +131,6 @@ Ocean::Ocean( FishTornadoApp *app )
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "ocean/surface.vert" ) )
 			.fragment( loadAsset( "ocean/surface.frag" ) );
-			//.binding( "ciBlock0", 0 )
-			//.binding( "ciBlock1", 1 )
-			//.binding( "uNormalsTex", 2 )
-			//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			//.attribute( geom::Attrib::NORMAL,       1, 0, vk::glsl_attr_vec3 )
-			//.attribute( geom::Attrib::TEX_COORD_0,  2, 0, vk::glsl_attr_vec2 );
 
 		mSurfaceShader = vk::GlslProg::create( format );
 		CI_LOG_I( "SurfaceShader loaded" );
@@ -154,11 +144,6 @@ Ocean::Ocean( FishTornadoApp *app )
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "ocean/beam.vert" ) )
 			.fragment( loadAsset( "ocean/beam.frag" ) );
-			//.binding( "ciBlock0", 0 )
-			//.binding( "ciBlock1", 1 )
-			//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			//.attribute( geom::Attrib::NORMAL,       1, 0, vk::glsl_attr_vec3 )
-			//.attribute( geom::Attrib::TEX_COORD_0,  2, 0, vk::glsl_attr_vec2 );
 
 		mBeamShader = vk::GlslProg::create( format );
 		CI_LOG_I(  "BeamShader loaded" );

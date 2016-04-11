@@ -91,18 +91,21 @@ public:
 	public:	
 		Options() {}
 		virtual ~Options() {}
+/*
 		Options&			setQueueCount( VkQueueFlagBits queue, uint32_t count ) { mQueueCounts[queue] = count; return *this; }
 		Options&			setGraphicsQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_GRAPHICS_BIT, count ); }
 		Options&			setComputeQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_COMPUTE_BIT , count ); }
 		Options&			setTransferQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_TRANSFER_BIT , count ); }
 		Options&			setSparseBindingQueueCount( uint32_t count ) { return setQueueCount( VK_QUEUE_SPARSE_BINDING_BIT , count ); }
+*/
+		Options&			setQueueCounts( const std::vector<std::pair<VkQueueFlags, uint32_t>>& queueCounts ) { mQueueCounts = queueCounts; return *this; }
 		Options&			setAllocatorBufferBlockSize( VkDeviceSize value ) { mAllocatorBufferBlockSize = value; return *this; }
 		Options&			setAllocatorImageBlockSize( VkDeviceSize value ) { mAllocatorImageBlockSize = value; return *this; }
 	private:
 		// These values will get readjusted during device creation
-		std::map<VkQueueFlagBits, uint32_t>	mQueueCounts;
-		VkDeviceSize		mAllocatorBufferBlockSize = 0;
-		VkDeviceSize		mAllocatorImageBlockSize = 0;
+		std::vector<std::pair<VkQueueFlags, uint32_t>>	mQueueCounts;
+		VkDeviceSize									mAllocatorBufferBlockSize = 0;
+		VkDeviceSize									mAllocatorImageBlockSize = 0;
 		friend class Device;
 	};
 
@@ -123,8 +126,11 @@ public:
 
 	bool										isExplicitMode() const;
 
-	uint32_t									getGraphicsQueueFamilyIndex() const;
-	uint32_t									getComputeQueueFamilyIndex() const;
+/*
+	uint32_t									getFirstGraphicsQueueFamilyIndex() const;
+	uint32_t									getFirstComputeQueueFamilyIndex() const;
+*/
+	bool										acquireQueueDescriptor( const VkQueueFlags& queueTypes, uint32_t *queueFamilyIndex, uint32_t *queueIndex );
 	void										setPresentQueueFamilyIndex( VkSurfaceKHR surface );
 	uint32_t									getPresentQueueFamilyIndex() const;
 	uint32_t									getGraphicsQueueCount() const;
@@ -149,16 +155,26 @@ public:
 private:
 	Device( VkPhysicalDevice gpu, const Device::Options& options, vk::Environment *env );
 
+	struct QueueDescriptor {
+		uint32_t			queueFamilyIndex = UINT32_MAX;
+		uint32_t			queueIndex = UINT32_MAX;
+		VkQueueFlags		supportedQueueTypes = 0;
+		VkQueueFlags		assignedQueueTypes = 0;
+		bool				inUse = false;
+		// C'tor to ensure that in-line initialization works everywhere.
+		QueueDescriptor() {} 
+	};
+
 	Environment								*mEnvironment = nullptr;
-	
+
 	VkPhysicalDevice									mGpu = VK_NULL_HANDLE;
     VkPhysicalDeviceProperties							mGpuProperties;
     VkPhysicalDeviceMemoryProperties					mMemoryProperties;
 	std::vector<VkQueueFamilyProperties>				mQueueFamilyProperties;
     std::map<VkQueueFlagBits, VkQueueFamilyProperties>	mQueueFamilyPropertiesByType;
-	std::map<VkQueueFlagBits, uint32_t>					mQueueFamilyIndicesByType;
+	std::map<VkQueueFlagBits, std::vector<uint32_t>>	mQueueFamilyIndicesByType;
 	uint32_t											mPresentQueueFamilyIndex = UINT32_MAX;
-	std::map<VkQueueFlagBits, uint32_t>					mActiveQueueCounts;
+	std::vector<QueueDescriptor>						mQueueDescriptors;
 	VkDevice											mDevice = VK_NULL_HANDLE;
 
 	// Device layers
@@ -181,8 +197,8 @@ private:
 	void initializeGpuProperties();
 	void initializeQueueProperties();
 	void initializeLayers();
-	void initializeDevice();	
-	void initialize();
+	void initializeDevice( const std::vector<std::pair<VkQueueFlags, uint32_t>>& restquedQueueCounts );	
+	void initialize( const Device::Options& options );
 	void destroy( bool removeFromTracking = true );
 	friend class Environment;
 

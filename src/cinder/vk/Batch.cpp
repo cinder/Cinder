@@ -347,7 +347,7 @@ void Batch::draw( int32_t first, int32_t count )
 	pipelineSelector->setDepthTest( ctx->getDepthTest() );
 	pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 	pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-	pipelineSelector->setShaderStages( mShader->getShaderStages() );
+	pipelineSelector->setShaderStages( mShader->getPipelineShaderStages() );
 	pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 	pipelineSelector->setSubPass( ctx->getSubpass() );
 	pipelineSelector->setPipelineLayout( mPipelineLayout->getPipelineLayout() );
@@ -421,7 +421,7 @@ void Batch::drawInstanced( uint32_t instanceCount )
 	pipelineSelector->setDepthTest( ctx->getDepthTest() );
 	pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 	pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-	pipelineSelector->setShaderStages( mShader->getShaderStages() );
+	pipelineSelector->setShaderStages( mShader->getPipelineShaderStages() );
 	pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 	pipelineSelector->setSubPass( ctx->getSubpass() );
 	pipelineSelector->setPipelineLayout( mPipelineLayout->getPipelineLayout() );

@@ -97,7 +97,7 @@ void ComputeBasicApp::setup()
 
 		mComputePipelineLayout = vk::PipelineLayout::create( mComputeDescriptorView->getCachedDescriptorSetLayouts() );
 
-		const std::vector<VkPipelineShaderStageCreateInfo>&	shaderStages = mComputeShader->getShaderStages();
+		const std::vector<VkPipelineShaderStageCreateInfo>&	shaderStages = mComputeShader->getPipelineShaderStages();
 		VkComputePipelineCreateInfo createInfo = {};
 		createInfo.sType				= VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
 		createInfo.pNext				= nullptr;
