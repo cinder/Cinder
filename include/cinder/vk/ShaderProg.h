@@ -180,37 +180,6 @@ public:
 		Format&			compute( const std::string &souceText, const std::string& entryPoint = "" );
 		Format&			compute( const std::vector<uint32_t> &spirvBinary, const std::string& entryPoint = "" );
 
-/*
-		const Format::ShaderData&	getVertexShaderData() const;
-		const Format::ShaderData&	getFragmentShaderData() const;
-		const Format::ShaderData&	getGeometryShaderData() const;
-		const Format::ShaderData&	getTessellationCtrlShaderData() const;
-		const Format::ShaderData&	getTessellationEvalShaderData() const;
-		const Format::ShaderData&	getComputeShaderData() const;
-
-
-		const std::string&				getVertexSource() const { return mVertexSource; }
-		const std::string&				getFragmentSource() const { return mFragmentSource; }
-		const std::string&				getGeometrySource() const { return mGeometrySource; }
-		const std::string&				getTessellationCtrlSource() const { return mTessellationCtrlSource; }
-		const std::string&				getTessellationEvalSource() const { return mTessellationEvalSource; }
-		const std::string&				getComputeSource() const { return mComputeSource; }
-
-		const std::vector<uint32_t>&	getVertexSpirv() const { return mVertexSpirv; }
-		const std::vector<uint32_t>&	getFragmentSpirv() const { return mFragmentSpirv; }
-		const std::vector<uint32_t>&	getGeometrySpirv() const { return mGeometrySpirv; }
-		const std::vector<uint32_t>&	getTessellationCtrlSpirv() const { return mTessellationCtrlSpirv; }
-		const std::vector<uint32_t>&	getTessellationEvalSpirv() const { return mTessellationEvalSpirv; }
-		const std::vector<uint32_t>&	getComputeSpirv() const { return mComputeSpirv; }
-
-		bool			hasVertex()           const { return ( ( ! mVertexSpirv.empty() )           || ( ! mVertexSource.empty()          ) ); }
-		bool			hasFragment()         const { return ( ( ! mFragmentSpirv.empty() )         || ( ! mFragmentSpirv.empty()         ) ); }
-		bool			hasGeometry()         const { return ( ( ! mGeometrySpirv.empty() )         || ( ! mGeometrySpirv.empty()         ) ); }
-		bool			hasTessellationCtrl() const { return ( ( ! mTessellationCtrlSpirv.empty() ) || ( ! mTessellationCtrlSpirv.empty() ) ); }
-		bool			hasTessellationEval() const { return ( ( ! mTessellationEvalSpirv.empty() ) || ( ! mTessellationEvalSpirv.empty() ) ); }
-		bool			hasCompute()          const { return ( ( ! mComputeSpirv.empty() )          || ( ! mComputeSpirv.empty()          ) ); }
-*/
-
 		Format&			binding( const std::string& bindingName, uint32_t bindingNumber, uint32_t setNumber = DEFAULT_SET );
 		Format&			set( uint32_t setNumber, uint32_t changeFrequency = CHANGES_DONTCARE );
 		Format&			attribute( geom::Attrib semantic, int32_t location, int32_t binding, GlslAttributeDataType type );
