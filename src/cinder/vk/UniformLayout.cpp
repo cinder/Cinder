@@ -446,6 +446,61 @@ void UniformLayout::setBlockSizeBytes( const std::string& name, size_t sizeBytes
 	}
 }
 
+void UniformLayout::addBinding( vk::UniformLayout::Binding::Type bindingType, const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber )
+{
+	auto bindingRef = findBindingObject( bindingName, bindingType, true );
+	if( bindingRef ) {
+		bindingRef->setBinding( bindingNumber, setNumber );
+		bindingRef->setStages( bindingStages );
+	}
+}
+
+UniformLayout& UniformLayout::setBinding( const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber )
+{
+	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY, true );
+	if( bindingRef ) {
+		bindingRef->setBinding( bindingNumber, setNumber );
+		bindingRef->setStages( bindingStages );
+	}
+	return *this;
+}
+
+void UniformLayout::addSet( uint32_t setNumber, uint32_t changeFrequency )
+{
+	auto it = std::find_if(
+		std::begin( mSets ),
+		std::end( mSets ),
+		[setNumber]( const UniformLayout::Set& elem ) -> bool {
+			return elem.getSet() == setNumber;
+		}
+	);
+
+	if( std::end( mSets ) == it ) {
+		mSets.push_back( UniformLayout::Set( setNumber, changeFrequency ) );
+	}
+}
+
+UniformLayout& UniformLayout::setSet( uint32_t setNumber, uint32_t changeFrequency )
+{
+	auto it = std::find_if(
+		std::begin( mSets ),
+		std::end( mSets ),
+		[setNumber]( const UniformLayout::Set& elem ) -> bool {
+			return elem.getSet() == setNumber;
+		}
+	);
+
+	if( std::end( mSets ) != it ) {
+		auto& set = *it;
+		set.mChangeFrequency = changeFrequency;
+	}
+	else {
+		mSets.push_back( UniformLayout::Set( setNumber, changeFrequency ) );
+	}
+
+	return *this;
+}
+
 UniformLayout& UniformLayout::addUniform(const std::string& name, GlslUniformDataType dataType, uint32_t offset, uint32_t arraySize)
 {
 	// Uniform block variables (float, vec3, mat4, etc) will return a dim > 0, samplers, images, etc will return 0.
@@ -581,61 +636,6 @@ UniformLayout& UniformLayout::addUniform( const std::string& name, const vk::Tex
 		bindingRef->setTexture( texture );
 
 	}
-	return *this;
-}
-
-void UniformLayout::addBinding( vk::UniformLayout::Binding::Type bindingType, const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber )
-{
-	auto bindingRef = findBindingObject( bindingName, bindingType, true );
-	if( bindingRef ) {
-		bindingRef->setBinding( bindingNumber, setNumber );
-		bindingRef->setStages( bindingStages );
-	}
-}
-
-void UniformLayout::addSet( uint32_t setNumber, uint32_t changeFrequency )
-{
-	auto it = std::find_if(
-		std::begin( mSets ),
-		std::end( mSets ),
-		[setNumber]( const UniformLayout::Set& elem ) -> bool {
-			return elem.getSet() == setNumber;
-		}
-	);
-
-	if( std::end( mSets ) == it ) {
-		mSets.push_back( UniformLayout::Set( setNumber, changeFrequency ) );
-	}
-}
-
-UniformLayout& UniformLayout::setBinding( const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber )
-{
-	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY, true );
-	if( bindingRef ) {
-		bindingRef->setBinding( bindingNumber, setNumber );
-		bindingRef->setStages( bindingStages );
-	}
-	return *this;
-}
-
-UniformLayout& UniformLayout::setSet( uint32_t setNumber, uint32_t changeFrequency )
-{
-	auto it = std::find_if(
-		std::begin( mSets ),
-		std::end( mSets ),
-		[setNumber]( const UniformLayout::Set& elem ) -> bool {
-			return elem.getSet() == setNumber;
-		}
-	);
-
-	if( std::end( mSets ) != it ) {
-		auto& set = *it;
-		set.mChangeFrequency = changeFrequency;
-	}
-	else {
-		mSets.push_back( UniformLayout::Set( setNumber, changeFrequency ) );
-	}
-
 	return *this;
 }
 

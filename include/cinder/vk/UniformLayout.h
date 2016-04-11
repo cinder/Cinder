@@ -257,7 +257,13 @@ public:
 	UniformLayout();
 	virtual ~UniformLayout();
 
+
+	void								addBinding( vk::UniformLayout::Binding::Type bindingType, const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber );
+	UniformLayout&						setBinding( const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber );
 	const std::vector<Binding>&			getBindings() const { return mBindings; }
+
+	void								addSet( uint32_t setNumber, uint32_t changeFrequency );
+	UniformLayout&						setSet( uint32_t setNumber, uint32_t changeFrequency );
 	const std::vector<Set>&				getSets() const { return mSets; }
 
 	UniformLayout&						addUniform( const std::string& name, GlslUniformDataType dataType, uint32_t offset, uint32_t arraySize = 1 );
@@ -269,9 +275,6 @@ public:
 	UniformLayout&						addUniform( const std::string& name, const mat3&  value, uint32_t offset, uint32_t arraySize = 1 );
 	UniformLayout&						addUniform( const std::string& name, const mat4&  value, uint32_t offset, uint32_t arraySize = 1 );
 	UniformLayout&						addUniform( const std::string& name, const vk::TextureBaseRef& texture );
-
-	UniformLayout&						setBinding( const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber );
-	UniformLayout&						setSet( uint32_t setNumber, uint32_t changeFrequency );
 
 	void								setBlockSizeBytes( const std::string& name, size_t sizeBytes );
 	void								sortUniformsByOffset();
@@ -304,9 +307,6 @@ private:
 
 	template <typename T>
 	void setUniformValue( GlslUniformDataType dataType, const std::string& name, const std::vector<T>& values );
-
-	void								addBinding( vk::UniformLayout::Binding::Type bindingType, const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber );
-	void								addSet( uint32_t setNumber, uint32_t changeFrequency );
 	friend class ShaderProg;
 };
 
