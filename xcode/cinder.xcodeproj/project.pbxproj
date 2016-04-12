@@ -2269,8 +2269,8 @@
 		43F78EF11516DAB700EB63B5 /* Json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Json.cpp; sourceTree = "<group>"; };
 		43F78EF51516DAE200EB63B5 /* Json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Json.h; sourceTree = "<group>"; };
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
-		9C383DAC1C4EC23F001420D8 /* libcinder_tvos_sim.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_tvos_sim.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		9C7259F51C46C23700BD9BD5 /* libcinder_tvos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_tvos.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C383DAC1C4EC23F001420D8 /* libcinder_tvos_sim_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_tvos_sim_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C7259F51C46C23700BD9BD5 /* libcinder_tvos_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_tvos_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0245F5819BEDF3200BC878D /* Query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Query.h; path = gl/Query.h; sourceTree = "<group>"; };
 		B06DE70219C74935008B9E1B /* Query.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Query.cpp; path = gl/Query.cpp; sourceTree = "<group>"; };
 		B31987EA1ACB9D8B00DEB9EF /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = draw.cpp; path = gl/draw.cpp; sourceTree = "<group>"; };
@@ -2932,8 +2932,8 @@
 				D2AAC07E0554694100DB518D /* libcinder_d.a */,
 				007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */,
 				00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */,
-				9C7259F51C46C23700BD9BD5 /* libcinder_tvos.a */,
-				9C383DAC1C4EC23F001420D8 /* libcinder_tvos_sim.a */,
+				9C7259F51C46C23700BD9BD5 /* libcinder_tvos_d.a */,
+				9C383DAC1C4EC23F001420D8 /* libcinder_tvos_sim_d.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -4244,7 +4244,7 @@
 			);
 			name = cinder_tvos_sim;
 			productName = cinder;
-			productReference = 9C383DAC1C4EC23F001420D8 /* libcinder_tvos_sim.a */;
+			productReference = 9C383DAC1C4EC23F001420D8 /* libcinder_tvos_sim_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		9C72589E1C46C23700BD9BD5 /* cinder_tvos */ = {
@@ -4261,7 +4261,7 @@
 			);
 			name = cinder_tvos;
 			productName = cinder;
-			productReference = 9C7259F51C46C23700BD9BD5 /* libcinder_tvos.a */;
+			productReference = 9C7259F51C46C23700BD9BD5 /* libcinder_tvos_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D2AAC07D0554694100DB518D /* cinder */ = {
@@ -5557,7 +5557,7 @@
 					"../lib/ios-sim/libboost_filesystem.a",
 				);
 				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "$(TARGET_NAME)_d";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
 				VALID_ARCHS = "arm64, x86_64";
@@ -5616,7 +5616,7 @@
 					../lib/ios/libboost_filesystem.a,
 				);
 				PRELINK_LIBS = "../lib/ios/libboost_system.a ../lib/ios/libboost_filesystem.a";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "$(TARGET_NAME)_d";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
 			};
