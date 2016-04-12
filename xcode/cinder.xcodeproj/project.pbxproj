@@ -5608,14 +5608,14 @@
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1";
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					../lib/ios/libboost_system.a,
-					../lib/ios/libboost_filesystem.a,
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(inherited)",
+					"-fPIC",
+					"-fembed-bitcode",
+					"-fvisibility-inlines-hidden",
+					"-mtvos-version-min=9.0",
 				);
-				PRELINK_LIBS = "../lib/ios/libboost_system.a ../lib/ios/libboost_filesystem.a";
 				PRODUCT_NAME = "$(TARGET_NAME)_d";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -5637,15 +5637,15 @@
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "NDEBUG=1";
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
-				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					../lib/ios/libboost_system.a,
-					../lib/ios/libboost_filesystem.a,
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(inherited)",
+					"-fPIC",
+					"-fembed-bitcode",
+					"-fvisibility-inlines-hidden",
+					"-mtvos-version-min=9.0",
 				);
-				PRELINK_LIBS = "../lib/ios/libboost_system.a ../lib/ios/libboost_filesystem.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
