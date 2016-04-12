@@ -409,8 +409,10 @@ using namespace cinder::app;
 - (void)dealloc
 {
 	if( mKeyboardTextView ) {
+#ifndef CINDER_TVOS
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+#endif
 		[mKeyboardTextView release];
 	}
 
@@ -546,9 +548,10 @@ using namespace cinder::app;
 		mKeyboardTextView.autocorrectionType = UITextAutocorrectionTypeNo;
 
 		[mCinderView addSubview:mKeyboardTextView];
-
+#if ! defined(CINDER_TVOS)
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+#endif
 	}
 
 	return mKeyboardTextView;
