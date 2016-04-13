@@ -191,10 +191,10 @@ void BufferRecorderNode::process( Buffer *buffer )
 	if( numWriteFrames < buffer->getNumFrames() )
 		mLastOverrun = getContext()->getNumProcessedFrames();
 
-    const size_t writePosNew = writePos + numWriteFrames;
+	const size_t writePosNew = writePos + numWriteFrames;
 
-    // only update mWritePos if it hasn't been reset by start() in the meanwhile
-    mWritePos.compare_exchange_strong( writePos, writePosNew );
+	// only update mWritePos if it hasn't been reset by start() in the meanwhile
+	mWritePos.compare_exchange_strong( writePos, writePosNew );
 }
 
 } } // namespace cinder::audio
