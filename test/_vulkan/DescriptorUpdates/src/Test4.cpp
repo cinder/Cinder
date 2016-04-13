@@ -57,8 +57,8 @@ void Test4::setup()
 	
 	// Descriptor Bindings
 	{
-		//std::vector<VkDescriptorSetLayoutBinding> bindings( 2 );
-		std::vector<VkDescriptorSetLayoutBinding> bindings( 16 );
+		std::vector<VkDescriptorSetLayoutBinding> bindings( 2 );
+		//std::vector<VkDescriptorSetLayoutBinding> bindings( 16 );
 
 		bindings[0] = {};
 		bindings[0].binding				= 0;
@@ -72,6 +72,7 @@ void Test4::setup()
 		bindings[1].descriptorCount		= 1;
 		bindings[1].stageFlags			= VK_SHADER_STAGE_FRAGMENT_BIT;
 
+		/*
 		for( uint32_t i = 1; i < 15; ++i ) {
 			bindings[i+1] = {};
 			bindings[i+1].binding			= i;
@@ -79,6 +80,7 @@ void Test4::setup()
 			bindings[i+1].descriptorCount	= 1;
 			bindings[i+1].stageFlags		= VK_SHADER_STAGE_VERTEX_BIT;
 		}
+		*/
 
 		/*
 		// Qualcomm needs the consecutive bindings to be the same.
