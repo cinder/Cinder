@@ -61,8 +61,6 @@ void Texture3dApp::setup()
 	// GL_TEXTURE_2D_ARRAY
 	auto fmt = gl::Texture3d::Format();
 	fmt.setTarget( GL_TEXTURE_2D_ARRAY );
-	fmt.setMinFilter( GL_LINEAR_MIPMAP_LINEAR );
-	fmt.setMagFilter( GL_LINEAR_MIPMAP_LINEAR );
 	fmt.enableMipmapping();
 	mTex2dArray = gl::Texture3d::create( 256, 256, 2, fmt );
 	mTex2dArray->update( createRandomLines( mTex3d->getWidth(), mTex3d->getHeight() ), 0 );
