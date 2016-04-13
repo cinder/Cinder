@@ -2,6 +2,7 @@
 #include "cinder/app/RendererVk.h"
 #include "cinder/vk/vk.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -16,13 +17,27 @@ class PushConstantsAppApp : public App {
 	CameraPersp			mCam;
 	vk::BatchRef		mBatch;
 	mat4				mCubeRotation;
+
+	vk::ShaderProgRef	mShader;
 };
 
 void PushConstantsAppApp::setup()
 {
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 
-	mBatch = vk::Batch::create( geom::Cube(), vk::getStockShader( vk::ShaderDef().color() ) );
+	try {
+		vk::ShaderProg::Format format = vk::ShaderProg::Format()
+			.vertex( loadAsset( "shader.vert" ) )
+			.fragment( loadAsset( "shader.frag" ) );
+
+		mShader = vk::ShaderProg::create( format );
+	}
+	catch( const std::exception& e ) {
+		CI_LOG_E( "Shader failed: " << e.what() );
+	}
+
+	mBatch = vk::Batch::create( geom::Cube(), mShader );
+	mBatch->uniform( "ciPush0.offset", vec4( 1.5f, 0.0f, 0.0f, 0.0f ) );
 
 	vk::enableDepthWrite();
 	vk::enableDepthRead();

@@ -1,9 +1,9 @@
-#include "Test3.h"
+#include "Test4.h"
 
 #include "cinder/app/App.h"
 using namespace ci::app;
 
-void Test3::setup()
+void Test4::setup()
 {
 	if( ! mEnabled ) {
 		return;
@@ -19,7 +19,7 @@ void Test3::setup()
 
 	// Geometry
 	{
-		Rectf rect = Rectf( getWindowBounds() ).scaled( 0.5f ) + vec2( 0.0f, getWindowHeight() / 2.0f );
+		Rectf rect = Rectf( getWindowBounds() ).scaled( 0.5f ) + vec2( getWindowWidth()/2.0f, getWindowHeight()/2.0f );
 
 		vec2 uv0 = vec2( 0.0f, 0.0f );
 		vec2 uv1 = vec2( 1.0f, 1.0f );
@@ -39,8 +39,10 @@ void Test3::setup()
 	{
 		try {
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
-				.vertex( loadAsset("shader_3.vert") )
-				.fragment( loadAsset("shader_3.frag") );
+				.vertex( loadAsset("shader_4.vert") )
+				.fragment( loadAsset("shader_4.frag") )
+				.attribute( geom::Attrib::POSITION,    0, 0, vk::glsl_attr_vec4 )
+				.attribute( geom::Attrib::TEX_COORD_0, 1, 0, vk::glsl_attr_vec2 );
 
 			mShader = vk::GlslProg::create( format );
 			mShader->uniform( "uTex0", mTexture );
@@ -55,25 +57,46 @@ void Test3::setup()
 	
 	// Descriptor Bindings
 	{
-		std::vector<VkDescriptorSetLayoutBinding> bindings( 3 );
-		/*
+		//std::vector<VkDescriptorSetLayoutBinding> bindings( 2 );
+		std::vector<VkDescriptorSetLayoutBinding> bindings( 16 );
+
 		bindings[0] = {};
 		bindings[0].binding				= 0;
 		bindings[0].descriptorType		= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		bindings[0].descriptorCount		= 1;
 		bindings[0].stageFlags			= VK_SHADER_STAGE_VERTEX_BIT;
-		*/
-		bindings[1] = {};
-		bindings[1].binding				= 1;
-		bindings[1].descriptorType		= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		bindings[1].descriptorCount		= 1;
-		bindings[1].stageFlags			= VK_SHADER_STAGE_VERTEX_BIT;
 
-		bindings[2] = {};
-		bindings[2].binding				= 2;
-		bindings[2].descriptorType		= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		bindings[2].descriptorCount		= 1;
-		bindings[2].stageFlags			= VK_SHADER_STAGE_FRAGMENT_BIT;
+		bindings[1] = {};
+		bindings[1].binding				= 15;
+		bindings[1].descriptorType		= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		bindings[1].descriptorCount		= 1;
+		bindings[1].stageFlags			= VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		for( uint32_t i = 1; i < 15; ++i ) {
+			bindings[i+1] = {};
+			bindings[i+1].binding			= i;
+			bindings[i+1].descriptorType	= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			bindings[i+1].descriptorCount	= 1;
+			bindings[i+1].stageFlags		= VK_SHADER_STAGE_VERTEX_BIT;
+		}
+
+		/*
+		// Qualcomm needs the consecutive bindings to be the same.
+		for( uint32_t i = 1; i < 15; ++i ) {
+			bindings[i] = {};
+			bindings[i].binding			= i;
+			bindings[i].descriptorType	= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			bindings[i].descriptorCount	= 1;
+			bindings[i].stageFlags		= VK_SHADER_STAGE_VERTEX_BIT;
+		}
+
+		bindings[15] = {};
+		bindings[15].binding			= 15;
+		bindings[15].descriptorType		= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		bindings[15].descriptorCount	= 1;
+		bindings[15].stageFlags			= VK_SHADER_STAGE_FRAGMENT_BIT;
+		*/
+
 
 		VkDescriptorSetLayoutCreateInfo createInfo = {};
 		createInfo.sType				= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -89,7 +112,7 @@ void Test3::setup()
 	{
 		VkDescriptorPoolSize poolSizes[2];
 		poolSizes[0].type				= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[0].descriptorCount	= 2;
+		poolSizes[0].descriptorCount	= 15;
 		poolSizes[1].type				= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		poolSizes[1].descriptorCount	= 1;
 
@@ -132,7 +155,7 @@ void Test3::setup()
 		writes[0].sType				= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		writes[0].pNext				= NULL;
 		writes[0].dstSet			= mDescriptorSet;
-		writes[0].dstBinding		= 1;
+		writes[0].dstBinding		= 0;
 		writes[0].dstArrayElement	= 0;
 		writes[0].descriptorCount	= 1;
 		writes[0].descriptorType	= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -142,7 +165,7 @@ void Test3::setup()
 		writes[1].sType				= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		writes[1].pNext				= NULL;
 		writes[1].dstSet			= mDescriptorSet;
-		writes[1].dstBinding		= 2;
+		writes[1].dstBinding		= 15;
 		writes[1].dstArrayElement	= 0;
 		writes[1].descriptorCount	= 1;
 		writes[1].descriptorType	= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -153,7 +176,7 @@ void Test3::setup()
 	}
 }
 
-void Test3::update()
+void Test4::update()
 {
 	if( ! mEnabled ) {
 		return;
@@ -180,7 +203,7 @@ void Test3::update()
 	}
 }
 
-void Test3::draw()
+void Test4::draw()
 {
 	if( ! mEnabled ) {
 		return;
