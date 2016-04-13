@@ -471,9 +471,9 @@ TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataT
 
 TargetFileMediaFoundation::~TargetFileMediaFoundation()
 {
-	if( mSinkWriter ) {
+	if( mSinkWriter && mSamplesWritten ) {
 		HRESULT hr = mSinkWriter->Finalize();
-		CI_ASSERT( hr == S_OK );
+		CI_VERIFY( hr == S_OK );
 	}
 }
 
@@ -545,6 +545,8 @@ void TargetFileMediaFoundation::performWrite( const Buffer *buffer, size_t numFr
 
 	hr = mSinkWriter->WriteSample( mStreamIndex, mediaSample );
 	CI_ASSERT( hr == S_OK );
+
+	mSamplesWritten = true;
 }
 
 // ----------------------------------------------------------------------------------------------------
