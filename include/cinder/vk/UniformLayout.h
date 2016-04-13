@@ -149,11 +149,6 @@ public:
 		virtual ~Block() {}
 
 		const std::vector<UniformStore>&	getUniforms() const { return mUniforms; }
-
-		// NOTE: The std140 layout rules are a bit complex and will take sometime to implement.
-		//       For now, the size will just be from the glslang reflection data.
-		//size_t							getSizeBytes() const;
-		//size_t							getSizeBytesStd140() const;
 		size_t								getSizeBytes() const { return mSizeBytes; }
 
 		void								sortUniformsByOffset();
@@ -181,8 +176,9 @@ public:
 			SAMPLER			= 0x000000002,
 			STORAGE_IMAGE	= 0x000000004,
 			STORAGE_BUFFER	= 0x000000008,
+			PUSH_CONSTANTS	= 0x000000010,
 			ANY_IMAGE		= SAMPLER | STORAGE_IMAGE,
-			ANY				= BLOCK | SAMPLER | STORAGE_IMAGE | STORAGE_BUFFER
+			ANY				= BLOCK | SAMPLER | STORAGE_IMAGE | STORAGE_BUFFER | PUSH_CONSTANTS
 		};
 
 		Binding() {}
@@ -202,13 +198,14 @@ public:
 		bool								isSampler() const { return Binding::Type::SAMPLER == mType; }
 		bool								isStorageImage() const { return Binding::Type::STORAGE_IMAGE == mType; }
 		bool								isStorageBuffer() const { return Binding::Type::STORAGE_BUFFER == mType; }
+		bool								isPushConstants() const { return Binding::Type::PUSH_CONSTANTS == mType; }
 
 		const Block&						getBlock() const { return mBlock; }
 		
 		const vk::TextureBaseRef&			getTexture() const { return mTexture; }
 		void								setTexture( const vk::TextureBaseRef& texture );
 
-		void								sortUniformsByOffset();
+		void								sortByOffset();
 
 	private:
 		bool								mDirty = false;
@@ -277,7 +274,7 @@ public:
 	UniformLayout&						addUniform( const std::string& name, const vk::TextureBaseRef& texture );
 
 	void								setBlockSizeBytes( const std::string& name, size_t sizeBytes );
-	void								sortUniformsByOffset();
+	void								sortByOffset();
 
 	// Update uniform variables
 	void								uniform( const std::string& name, const float    value );

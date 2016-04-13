@@ -263,7 +263,7 @@ void UniformLayout::Binding::setTexture( const vk::TextureBaseRef& texture )
 	setDirty();
 }
 
-void UniformLayout::Binding::sortUniformsByOffset()
+void UniformLayout::Binding::sortByOffset()
 {
 	mBlock.sortUniformsByOffset();
 }
@@ -639,10 +639,10 @@ UniformLayout& UniformLayout::addUniform( const std::string& name, const vk::Tex
 	return *this;
 }
 
-void UniformLayout::sortUniformsByOffset()
+void UniformLayout::sortByOffset()
 {
 	for( auto& binding : mBindings ) {
-		binding.sortUniformsByOffset();
+		binding.sortByOffset();
 	}
 }
 
