@@ -1640,9 +1640,9 @@ Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
-
+	initMaxMipmapLevel();
 	ScopedTextureBind tbs( mTarget, mTextureId );
-	env()->allocateTexStorage3d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage() );
+	env()->allocateTexStorage3d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage() );
 }
 
 Texture3d::Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format )
@@ -1652,7 +1652,7 @@ Texture3d::Texture3d( const void *data, GLenum dataFormat, int width, int height
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
-
+	initMaxMipmapLevel();
 	glTexImage3D( mTarget, 0, mInternalFormat, mWidth, mHeight, mDepth, 0, dataFormat, format.getDataType(), data );
 }
 
@@ -1673,6 +1673,19 @@ void Texture3d::update( const void *data, GLenum dataFormat, GLenum dataType, in
 {
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	glTexSubImage3D( mTarget, mipLevel, xOffset, yOffset, zOffset, width, height, depth, dataFormat, dataType, data );
+
+	if( mMipmapping && mipLevel == 0 )
+		glGenerateMipmap( mTarget );
+}
+
+void Texture3d::initMaxMipmapLevel()
+{
+	if( mMaxMipmapLevel == -1 ) {
+		mMaxMipmapLevel = requiredMipLevels( mWidth, mHeight, mDepth ) - 1;
+#if ! defined( CINDER_GL_ES_2 )
+		glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );
+#endif
+	}
 }
 
 void Texture3d::printDims( std::ostream &os ) const

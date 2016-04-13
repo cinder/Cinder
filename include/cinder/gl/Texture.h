@@ -690,6 +690,7 @@ class Texture3d : public TextureBase {
   	Texture3d( GLint width, GLint height, GLint depth, Format format );
 	Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format );
 
+	void	initMaxMipmapLevel();
 	void	printDims( std::ostream &os ) const override;
 
 	GLint		mWidth, mHeight, mDepth;
