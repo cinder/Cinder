@@ -61,6 +61,9 @@ DeviceRef DeviceManagerWasapi::getDefaultOutput()
 
 	::IMMDevice *device;
 	hr = enumerator->GetDefaultAudioEndpoint( eRender, eConsole, &device );
+	if( hr == E_NOTFOUND ) {
+		return nullptr; // no device available
+	}
 	CI_ASSERT( hr == S_OK );
 
 	auto devicePtr = ci::msw::makeComUnique( device );
@@ -83,6 +86,9 @@ DeviceRef DeviceManagerWasapi::getDefaultInput()
 
 	::IMMDevice *device;
 	hr = enumerator->GetDefaultAudioEndpoint( eCapture, eConsole, &device );
+	if( hr == E_NOTFOUND ) {
+		return nullptr; // no device available
+	}
 	CI_ASSERT( hr == S_OK );
 
 	auto devicePtr = ci::msw::makeComUnique( device );

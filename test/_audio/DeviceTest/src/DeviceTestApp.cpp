@@ -92,19 +92,23 @@ void DeviceTestApp::setup()
 	mRecorder->setEnabled( false );
 	mGain >> mRecorder;
 
+	setupUI();
+	setupTest( mTestSelector.currentSection() );
 
 //	setupInputPulled();
 //	setupIOClean();
 
 	PRINT_GRAPH( ctx );
-
-	setupUI();
-
 	CI_LOG_V( "Context samplerate: " << ctx->getSampleRate() );
 }
 
 void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numChannels )
 {
+	if( ! device ) {
+		CI_LOG_E( "Empty DeviceRef" );
+		return;
+	}
+
 	auto ctx = audio::master();
 
 	ctx->uninitializeAllNodes();
@@ -143,6 +147,11 @@ void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numC
 
 void DeviceTestApp::setInputDevice( const audio::DeviceRef &device, size_t numChannels  )
 {
+	if( ! device ) {
+		CI_LOG_E( "Empty DeviceRef" );
+		return;
+	}
+
 	audio::ScopedEnableNode enableNodeScope( mInputDeviceNode, false );
 
 	if( mInputDeviceNode )
@@ -153,8 +162,6 @@ void DeviceTestApp::setInputDevice( const audio::DeviceRef &device, size_t numCh
 		format.channels( numChannels );
 
 	mInputDeviceNode = audio::master()->createInputDeviceNode( device, format );
-
-	setupTest( mTestSelector.currentSection() );
 
 	CI_LOG_V( "InputDeviceNode device properties: " );
 	printDeviceDetails( device );
@@ -483,6 +490,7 @@ void DeviceTestApp::processTap( ivec2 pos )
 		CI_LOG_V( "selected output device named: " << dev->getName() << ", key: " << dev->getKey() );
 
 		setOutputDevice( dev );
+		// Don't need to reset test as the Device will be updated on the Context's OutputDeviceNode and the change will propagate through the graph
 		return;
 	}
 
@@ -492,6 +500,7 @@ void DeviceTestApp::processTap( ivec2 pos )
 		CI_LOG_V( "selected input named: " << dev->getName() << ", key: " << dev->getKey() );
 
 		setInputDevice( dev );
+		setupTest( mTestSelector.currentSection() ); // need to reset the test so that we construct the InputDeviceNode with the proper Device
 		return;
 	}
 }
@@ -664,5 +673,5 @@ void DeviceTestApp::draw()
 
 CINDER_APP( DeviceTestApp, RendererGl, []( App::Settings *settings ) {
 	settings->setWindowSize( 800, 600 );
-	settings->setWindowPos( 10, 10 );
+	settings->setWindowPos( 6, 30 );
 } )
