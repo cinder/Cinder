@@ -5616,6 +5616,11 @@
 					"-fvisibility-inlines-hidden",
 					"-mtvos-version-min=9.0",
 				);
+				OTHER_LDFLAGS = (
+					../lib/tvos/libboost_filesystem.a,
+					../lib/tvos/libboost_system.a,
+				);
+				PRELINK_LIBS = "../lib/tvos/libboost_filesystem.a ../lib/tvos/libboost_system.a";
 				PRODUCT_NAME = "$(TARGET_NAME)_d";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -5646,6 +5651,11 @@
 					"-fvisibility-inlines-hidden",
 					"-mtvos-version-min=9.0",
 				);
+				OTHER_LDFLAGS = (
+					../lib/tvos/libboost_filesystem.a,
+					../lib/tvos/libboost_system.a,
+				);
+				PRELINK_LIBS = "../lib/tvos/libboost_filesystem.a ../lib/tvos/libboost_system.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
