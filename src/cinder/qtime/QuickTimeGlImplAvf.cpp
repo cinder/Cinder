@@ -22,7 +22,7 @@
  */
 
 #include "cinder/Cinder.h"
-#include "cinder/gl/Scoped.h"
+#include "cinder/gl/scoped.h"
 
 // This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for >=Mac OS 10.8
 #if ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) ) || defined( CINDER_COCOA_TOUCH )
