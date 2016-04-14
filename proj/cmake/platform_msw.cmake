@@ -39,4 +39,10 @@ list( APPEND CINDER_SRC_FILES
 source_group( "cinder\\msw"       FILES ${SRC_SET_MSW} )
 source_group( "cinder\\app\\msw"  FILES ${SRC_SET_APP_MSW} )
 
+list( APPEND CINDER_INCLUDE_SYSTEM
+    ${CINDER_INC_DIR}/msw/zlib
+)
+
+list( APPEND CINDER_DEFINES "_LIB UNICODE _UNICODE NOMINMAX _WIN32_WINNT=0x0601 _CRT_SECURE_NO_WARNINGS _SCL_SECURE_NO_WARNINGS" )
+
 include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )
