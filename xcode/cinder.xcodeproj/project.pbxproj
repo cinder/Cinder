@@ -5553,10 +5553,10 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
-					"../lib/ios-sim/libboost_system.a",
-					"../lib/ios-sim/libboost_filesystem.a",
+					"../lib/tvos-sim/libboost_system.a",
+					"../lib/tvos-sim/libboost_filesystem.a",
 				);
-				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a";
+				PRELINK_LIBS = "../lib/tvos-sim/libboost_system.a ../lib/tvos-sim/libboost_filesystem.a";
 				PRODUCT_NAME = "$(TARGET_NAME)_d";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
@@ -5584,10 +5584,10 @@
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
-					"../lib/ios-sim/libboost_system.a",
-					"../lib/ios-sim/libboost_filesystem.a",
+					"../lib/tvos-sim/libboost_system.a",
+					"../lib/tvos-sim/libboost_filesystem.a",
 				);
-				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a";
+				PRELINK_LIBS = "../lib/tvos-sim/libboost_system.a ../lib/tvos-sim/libboost_filesystem.a";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
