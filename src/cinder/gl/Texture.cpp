@@ -1652,7 +1652,6 @@ Texture3d::Texture3d( const void *data, GLenum dataFormat, int width, int height
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
-	initMaxMipmapLevel();
 	glTexImage3D( mTarget, 0, mInternalFormat, mWidth, mHeight, mDepth, 0, dataFormat, format.getDataType(), data );
 }
 
@@ -1674,8 +1673,9 @@ void Texture3d::update( const void *data, GLenum dataFormat, GLenum dataType, in
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	glTexSubImage3D( mTarget, mipLevel, xOffset, yOffset, zOffset, width, height, depth, dataFormat, dataType, data );
 
-	if( mMipmapping && mipLevel == 0 )
+	if( mMipmapping && mipLevel == 0 ) {
 		glGenerateMipmap( mTarget );
+	}
 }
 
 void Texture3d::initMaxMipmapLevel()
