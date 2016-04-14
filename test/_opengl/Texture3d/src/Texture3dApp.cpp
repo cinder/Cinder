@@ -34,16 +34,16 @@ Surface createSolid( int width, int height, Color8u c )
 	return result;
 }
 
-Surface createRandomLines( int width, int height )
+Surface createRandomLines( int width, int height, Color8u c )
 {
 	Surface result( width, height, false );
 	Surface::Iter it = result.getIter();
 	while( it.line() ) {
 		float r = ci::randFloat();
 		while( it.pixel() ) {
-			it.r() = 255 * r;
-			it.g() = 255 * r;
-			it.b() = 255 * r;
+			it.r() = c.r * r;
+			it.g() = c.g * r;
+			it.b() = c.b * r;
 		}
 	}
 	return result;
@@ -62,10 +62,13 @@ void Texture3dApp::setup()
 	auto fmt = gl::Texture3d::Format();
 	fmt.setTarget( GL_TEXTURE_2D_ARRAY );
 	fmt.enableMipmapping();
-	mTex2dArray = gl::Texture3d::create( 256, 256, 2, fmt );
-	mTex2dArray->update( createRandomLines( mTex3d->getWidth(), mTex3d->getHeight() ), 0 );
-	mTex2dArray->update( createRandomLines( mTex3d->getWidth(), mTex3d->getHeight() ), 1 );
-	
+	fmt.setMinFilter( GL_LINEAR );
+	fmt.setMagFilter( GL_LINEAR );
+	mTex2dArray = gl::Texture3d::create( 256, 256, 3, fmt );
+	mTex2dArray->update( createRandomLines( mTex3d->getWidth(), mTex3d->getHeight(), Color8u(255,0,0) ), 0 );
+	mTex2dArray->update( createRandomLines( mTex3d->getWidth(), mTex3d->getHeight(), Color8u(0,255,0) ), 1 );
+	mTex2dArray->update( createRandomLines( mTex3d->getWidth(), mTex3d->getHeight(), Color8u(0,0,255) ), 2 );
+
 	mShader3d = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader_3d.frag" ) );
 	mShader3d->uniform( "uTex0", 0 );
 	mShader2dArray = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader_2d_array.frag" ) );
@@ -92,6 +95,8 @@ void Texture3dApp::draw()
 		mTex2dArrayBatch->getGlslProg()->uniform( "uDepth", glm::mod( float( getElapsedSeconds() / 2 ), float( mTex2dArray->getDepth() ) ) );
 		mTex2dArrayBatch->draw();
 	}
+
+	CI_CHECK_GL();
 }
 
 CINDER_APP( Texture3dApp, RendererGl )
