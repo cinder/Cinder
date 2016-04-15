@@ -100,5 +100,17 @@ ScopedBlend::~ScopedBlend()
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedBlend
+ScopedShaderProg::ScopedShaderProg( const ShaderProgRef &prog )
+	: mCtx( vk::context() )
+{
+	mCtx->pushShaderProg( prog );
+}
+
+ScopedShaderProg::~ScopedShaderProg()
+{
+	mCtx->popShaderProg();
+}
 
 }} // namespace cinder::vk

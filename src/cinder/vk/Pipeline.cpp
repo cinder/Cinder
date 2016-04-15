@@ -110,7 +110,7 @@ void PipelineLayout::initialize( const std::vector<VkDescriptorSetLayout>& descr
     createInfo.pushConstantRangeCount = 0;
     createInfo.pPushConstantRanges    = NULL;
     createInfo.setLayoutCount         = static_cast<uint32_t>( descriptorSetLayouts.size() );
-    createInfo.pSetLayouts            = descriptorSetLayouts.data();
+    createInfo.pSetLayouts            = descriptorSetLayouts.empty() ? nullptr : descriptorSetLayouts.data();
 
     VkResult res = vkCreatePipelineLayout( mDevice->getDevice(), &createInfo, NULL, &mPipelineLayout );
     assert( res == VK_SUCCESS );

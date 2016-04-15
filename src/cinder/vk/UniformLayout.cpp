@@ -268,6 +268,22 @@ void UniformLayout::Binding::sortByOffset()
 	mBlock.sortUniformsByOffset();
 }
 
+std::vector<VkPushConstantRange> UniformLayout::Binding::getPushConstantRanges() const
+{
+	std::vector<VkPushConstantRange> result;
+	if( isPushConstants() ) {
+		const auto& uniforms = mBlock.getUniforms();
+		for( const auto& uniformStore : uniforms ) {
+			VkPushConstantRange range = {};
+			range.stageFlags = getStages();
+			range.offset = static_cast<uint32_t>( uniformStore.first.getOffset() );
+			range.size = static_cast<uint32_t>( uniformStore.first.getArraySize()*glslUniformDataTypeSizeBytes( uniformStore.first.getDataType() ) );
+			result.push_back( range );
+		}
+	}
+	return result;
+}
+
 // -------------------------------------------------------------------------------------------------
 // UniformLayout
 // -------------------------------------------------------------------------------------------------
@@ -320,7 +336,7 @@ void UniformLayout::addUniformImpl( GlslUniformDataType dataType, const std::str
 
 	std::string bindingName = tokens[0];
 
-	auto bindingRef = findBindingObject( bindingName, Binding::Type::BLOCK, true );
+	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY_BLOCK, true );
 	if( bindingRef ) {
 		// NOTE: Use the full name (in block.uniform format) for the uniform name
 		auto uniformRef = bindingRef->mBlock.findUniformObject( name, dataType, true );
@@ -357,7 +373,7 @@ void UniformLayout::setUniformValue( GlslUniformDataType dataType, const std::st
 
 	// Find the binding that contains the block we need
 	std::string bindingName = tokens[0];
-	auto bindingRef = findBindingObject( bindingName, Binding::Type::BLOCK, false );
+	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY_BLOCK, false );
 	if( ! bindingRef ) {
 		return;
 	}
@@ -463,6 +479,16 @@ UniformLayout& UniformLayout::setBinding( const std::string& bindingName, uint32
 		bindingRef->setStages( bindingStages );
 	}
 	return *this;
+}
+
+std::vector<VkPushConstantRange> UniformLayout::getPushConstantRanges() const
+{
+	std::vector<VkPushConstantRange> result;
+	for( const auto& binding : mBindings ) {
+		auto ranges = binding.getPushConstantRanges();
+		std::copy( std::begin( ranges ), std::end( ranges ), std::back_inserter( result ) );
+	}
+	return result;
 }
 
 void UniformLayout::addSet( uint32_t setNumber, uint32_t changeFrequency )
@@ -858,6 +884,11 @@ UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& 
 	// Create DescriptorSetLayoutBindings
 	for( auto& set : mSets ) {
 		for( const auto& binding : set->mBindings ) {
+			// Skip push constants
+			if( UniformLayout::Binding::Type::PUSH_CONSTANTS == binding.getType() ) {
+				continue;
+			}
+			// Proceed with the rest
 			VkDescriptorSetLayoutBinding layoutBinding = {};
 			layoutBinding.binding			= binding.getBinding();
 			layoutBinding.descriptorCount	= 1;
@@ -866,25 +897,21 @@ UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& 
 			switch( binding.getType() ) {
 				case UniformLayout::Binding::Type::BLOCK: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
 				break;
 
 				case UniformLayout::Binding::Type::SAMPLER: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
 				break;
 
 				case UniformLayout::Binding::Type::STORAGE_IMAGE: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
 				break;
 
 				case UniformLayout::Binding::Type::STORAGE_BUFFER: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
 				break;
 			}
@@ -902,6 +929,9 @@ UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& 
 		//}
 
 		const auto& srcBindings = set->mDescriptorSetLayoutBindings;
+		if( srcBindings.empty() ) {
+			continue;
+		}
 		
 		// Find the max binding number
 		uint32_t maxBindingNumber = 0;
@@ -1004,6 +1034,18 @@ UniformSetRef UniformSet::create( const UniformLayout& layout, const UniformSet:
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	UniformSetRef result = UniformSetRef( new UniformSet( layout, options, device ) );
+	return result;
+}
+
+std::vector<VkPushConstantRange> UniformSet::getPushConstantRanges() const
+{
+	std::vector<VkPushConstantRange> result;
+	for( const auto& set : mSets ) {
+		for( const auto& binding : set->mBindings ) {
+			auto ranges = binding.getPushConstantRanges();
+			std::copy( std::begin( ranges ), std::end( ranges ), std::back_inserter( result ) );
+		}
+	}
 	return result;
 }
 

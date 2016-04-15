@@ -810,14 +810,15 @@ void extractBlock( VkShaderStageFlagBits shaderStage, const spir2cross::Resource
 	outUniformLayout->addSet( bindingSet, CHANGES_DONTCARE );
 
 	for( uint32_t index = 0; index < typeInfo.member_types.size(); ++index ) {
-		std::string         memberName     = backCompiler->get_member_name( res.type_id, index );								
-		uint32_t            memberId       = typeInfo.member_types[index];
-		auto&               memberTypeInfo = backCompiler->get_type( memberId );
-		uint32_t            memberOffset   = backCompiler->get_member_decoration( res.type_id, index, spv::DecorationOffset );
+		std::string         memberName      = backCompiler->get_member_name( res.type_id, index );								
+		uint32_t            memberId        = typeInfo.member_types[index];
+		auto&               memberTypeInfo  = backCompiler->get_type( memberId );
+		uint32_t            memberOffset    = backCompiler->get_member_decoration( res.type_id, index, spv::DecorationOffset );
+		uint32_t            memberArraySize = memberTypeInfo.array.empty() ? 1 : memberTypeInfo.array[0];
 		GlslUniformDataType memberDataType = spirTypeToGlslUniformDataType( memberTypeInfo );
 
 		std::string uniformName = bindingName + "." + memberName;
-		outUniformLayout->addUniform( uniformName, memberDataType, memberOffset );
+		outUniformLayout->addUniform( uniformName, memberDataType, memberOffset, memberArraySize );
 	}
 
 	// Block size

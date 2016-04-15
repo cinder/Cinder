@@ -177,6 +177,7 @@ public:
 			STORAGE_IMAGE	= 0x000000004,
 			STORAGE_BUFFER	= 0x000000008,
 			PUSH_CONSTANTS	= 0x000000010,
+			ANY_BLOCK		= BLOCK | PUSH_CONSTANTS,
 			ANY_IMAGE		= SAMPLER | STORAGE_IMAGE,
 			ANY				= BLOCK | SAMPLER | STORAGE_IMAGE | STORAGE_BUFFER | PUSH_CONSTANTS
 		};
@@ -206,6 +207,8 @@ public:
 		void								setTexture( const vk::TextureBaseRef& texture );
 
 		void								sortByOffset();
+
+		std::vector<VkPushConstantRange>	getPushConstantRanges() const;
 
 	private:
 		bool								mDirty = false;
@@ -258,6 +261,8 @@ public:
 	void								addBinding( vk::UniformLayout::Binding::Type bindingType, const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber );
 	UniformLayout&						setBinding( const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber );
 	const std::vector<Binding>&			getBindings() const { return mBindings; }
+
+	std::vector<VkPushConstantRange>	getPushConstantRanges() const;
 
 	void								addSet( uint32_t setNumber, uint32_t changeFrequency );
 	UniformLayout&						setSet( uint32_t setNumber, uint32_t changeFrequency );
@@ -377,7 +382,9 @@ public:
 	UniformSet( const UniformLayout& layout, const UniformSet::Options& options, vk::Device *device );
 	virtual ~UniformSet();
 
-	static UniformSetRef			create( const UniformLayout& layout, const UniformSet::Options& options = UniformSet::Options(), vk::Device *device = nullptr );
+	static UniformSetRef				create( const UniformLayout& layout, const UniformSet::Options& options = UniformSet::Options(), vk::Device *device = nullptr );
+
+	std::vector<VkPushConstantRange>	getPushConstantRanges() const;
 
 	const std::vector<UniformSet::SetRef>&							getSets() const { return mSets; }
 	const std::vector<std::vector<VkDescriptorSetLayoutBinding>>&	getCachedDescriptorSetLayoutBindings() const { return mCachedDescriptorSetLayoutBindings; }

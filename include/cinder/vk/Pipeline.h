@@ -169,7 +169,7 @@ public:
 		Options& setCullModeBack() { return setCullMode( VK_CULL_MODE_BACK_BIT ); }
 		Options& setCullModeFrontAndBack() { return setCullMode( VK_CULL_MODE_FRONT_AND_BACK ); }
 
-		Options& setSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
+		Options& setRasterizationSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
 
 	private:
 		VkPrimitiveTopology								mTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
