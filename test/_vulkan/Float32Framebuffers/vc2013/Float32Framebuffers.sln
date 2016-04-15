@@ -1,0 +1,26 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Float32Framebuffers", "Float32Framebuffers.vcxproj", "{F31A7ED2-5DCF-48E9-BD59-A7412DBB8DC7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F31A7ED2-5DCF-48E9-BD59-A7412DBB8DC7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F31A7ED2-5DCF-48E9-BD59-A7412DBB8DC7}.Debug|Win32.Build.0 = Debug|Win32
+		{F31A7ED2-5DCF-48E9-BD59-A7412DBB8DC7}.Release|Win32.ActiveCfg = Release|Win32
+		{F31A7ED2-5DCF-48E9-BD59-A7412DBB8DC7}.Release|Win32.Build.0 = Release|Win32
+		{F31A7ED2-5DCF-48E9-BD59-A7412DBB8DC7}.Debug|x64.ActiveCfg = Debug|x64
+		{F31A7ED2-5DCF-48E9-BD59-A7412DBB8DC7}.Debug|x64.Build.0 = Debug|x64
+		{F31A7ED2-5DCF-48E9-BD59-A7412DBB8DC7}.Release|x64.ActiveCfg = Release|x64
+		{F31A7ED2-5DCF-48E9-BD59-A7412DBB8DC7}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
