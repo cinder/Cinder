@@ -30,7 +30,7 @@
 #define CINDER_GL_ES_VERSION_3_1	310
 #define CINDER_GL_ES_VERSION_3_2	320
 
-#if ! defined( CINDER_GL_ANGLE ) && defined( CINDER_WINRT )
+#if ! defined( CINDER_GL_ANGLE ) && defined( CINDER_UWP )
 	#define CINDER_GL_ANGLE
 #endif
 
@@ -121,15 +121,15 @@
 	#endif
 #else // iOS
 	#define CINDER_GL_ES
-	// the default for iOS is GL ES 2, but can be overridden with CINDER_GL_ES_3
-	#if defined( CINDER_GL_ES_3 )
+	// the default for iOS is GL ES 3, but can be overridden with CINDER_GL_ES_2
+	#if ! defined( CINDER_GL_ES_2 )
 		#include <OpenGLES/ES3/gl.h>
 		#include <OpenGLES/ES3/glext.h>
+		#define CINDER_GL_ES_3
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_3
 	#else
 		#include <OpenGLES/ES2/gl.h>
 		#include <OpenGLES/ES2/glext.h>
-		#define CINDER_GL_ES_2
  		#define CINDER_GL_ES_VERSION CINDER_GL_ES_VERSION_2		
 	#endif
 #endif
@@ -207,7 +207,7 @@
  	#endif
 #endif
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	#if ! defined( CINDER_GL_ANGLE ) // MSW Desktop Only
 		#define CINDER_GL_HAS_COMPUTE_SHADER
 		#define CINDER_GL_HAS_DEBUG_OUTPUT
@@ -222,7 +222,7 @@
 		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
 		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleANGLE
 	#endif
-#endif // defined( CINDER_MSW )
+#endif // defined( CINDER_MSW_DESKTOP )
 
 #if defined( GL_EXT_debug_label )
 	#define CINDER_GL_HAS_DEBUG_LABEL 

@@ -192,7 +192,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 }
 #endif
 
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 
 #include <windows.h>
 	
@@ -337,7 +337,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 	else
 		return sKeyTable[nativeKeyCode];
 }
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 
 using namespace Windows::System;
 

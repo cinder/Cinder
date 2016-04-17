@@ -31,7 +31,7 @@
 #include "cinder/gl/Environment.h"
 #include <signal.h>
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#include "cinder/winrt/WinRTUtils.h"
 	#include "angle_windowsstore.h"
 #endif
@@ -57,14 +57,14 @@ RendererImplGlAngle::RendererImplGlAngle( RendererGl *renderer )
 	
 }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 bool RendererImplGlAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
 #endif
 {
 	mWnd = wnd;
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	mDc = dc;
 #endif
 
@@ -90,7 +90,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 	if( ! eglGetPlatformDisplayEXT )
 		return false;
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	const EGLint displayAttributes[] = {
 		EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
 		EGL_NONE
@@ -111,7 +111,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 
 	EGLint majorVersion, minorVersion;
 	if( eglInitialize( mDisplay, &majorVersion, &minorVersion ) == EGL_FALSE ) {
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 		// try again with D3D11 Feature Level 9.3 if 10.0+ is unavailable
 		const EGLint fl9_3DisplayAttributes[] = {
 			EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
@@ -143,7 +143,7 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &config, 1, &configCount ) || (configCount != 1) )
 		return false;
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	mSurface = eglCreateWindowSurface( mDisplay, config, wnd, NULL );
 #else
 	Windows::Foundation::Collections::PropertySet^ surfaceCreationProperties = ref new Windows::Foundation::Collections::PropertySet();
@@ -212,7 +212,7 @@ void RendererImplGlAngle::defaultResize() const
 {
 	checkGlStatus();
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	::RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
 	int width = clientRect.right - clientRect.left;

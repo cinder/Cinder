@@ -26,9 +26,7 @@ class BasicApp : public App {
 
 void prepareSettings( BasicApp::Settings* settings )
 {
-#if defined( CINDER_ANDROID )
 	settings->setMultiTouchEnabled( false );
-#endif
 }
 
 void BasicApp::mouseDrag( MouseEvent event )

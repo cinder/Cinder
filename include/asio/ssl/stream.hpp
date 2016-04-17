@@ -17,35 +17,25 @@
 
 #include "asio/detail/config.hpp"
 
-#if defined(ASIO_ENABLE_OLD_SSL)
-# include "asio/ssl/old/stream.hpp"
-#else // defined(ASIO_ENABLE_OLD_SSL)
-# include "asio/async_result.hpp"
-# include "asio/detail/buffer_sequence_adapter.hpp"
-# include "asio/detail/handler_type_requirements.hpp"
-# include "asio/detail/noncopyable.hpp"
-# include "asio/detail/type_traits.hpp"
-# include "asio/ssl/context.hpp"
-# include "asio/ssl/detail/buffered_handshake_op.hpp"
-# include "asio/ssl/detail/handshake_op.hpp"
-# include "asio/ssl/detail/io.hpp"
-# include "asio/ssl/detail/read_op.hpp"
-# include "asio/ssl/detail/shutdown_op.hpp"
-# include "asio/ssl/detail/stream_core.hpp"
-# include "asio/ssl/detail/write_op.hpp"
-# include "asio/ssl/stream_base.hpp"
-#endif // defined(ASIO_ENABLE_OLD_SSL)
+#include "asio/async_result.hpp"
+#include "asio/detail/buffer_sequence_adapter.hpp"
+#include "asio/detail/handler_type_requirements.hpp"
+#include "asio/detail/noncopyable.hpp"
+#include "asio/detail/type_traits.hpp"
+#include "asio/ssl/context.hpp"
+#include "asio/ssl/detail/buffered_handshake_op.hpp"
+#include "asio/ssl/detail/handshake_op.hpp"
+#include "asio/ssl/detail/io.hpp"
+#include "asio/ssl/detail/read_op.hpp"
+#include "asio/ssl/detail/shutdown_op.hpp"
+#include "asio/ssl/detail/stream_core.hpp"
+#include "asio/ssl/detail/write_op.hpp"
+#include "asio/ssl/stream_base.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace ssl {
-
-#if defined(ASIO_ENABLE_OLD_SSL)
-
-using asio::ssl::old::stream;
-
-#else // defined(ASIO_ENABLE_OLD_SSL)
 
 /// Provides stream-oriented functionality using SSL.
 /**
@@ -84,15 +74,13 @@ public:
     SSL* ssl;
   };
 
-  /// (Deprecated: Use native_handle_type.) The underlying implementation type.
-  typedef impl_struct* impl_type;
-
   /// The type of the next layer.
   typedef typename remove_reference<Stream>::type next_layer_type;
 
   /// The type of the lowest layer.
   typedef typename next_layer_type::lowest_layer_type lowest_layer_type;
 
+#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   /// Construct a stream.
   /**
    * This constructor creates a stream and initialises the underlying stream
@@ -103,12 +91,21 @@ public:
    * @param ctx The SSL context to be used for the stream.
    */
   template <typename Arg>
+  stream(Arg&& arg, context& ctx)
+    : next_layer_(ASIO_MOVE_CAST(Arg)(arg)),
+      core_(ctx.native_handle(),
+          next_layer_.lowest_layer().get_executor().context())
+  {
+  }
+#else // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
+  template <typename Arg>
   stream(Arg& arg, context& ctx)
     : next_layer_(arg),
-      core_(ctx.native_handle(), next_layer_.lowest_layer().get_io_service())
+      core_(ctx.native_handle(),
+          next_layer_.lowest_layer().get_executor().context())
   {
-    backwards_compatible_impl_.ssl = core_.engine_.native_handle();
   }
+#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Destructor.
   ~stream()
@@ -155,18 +152,6 @@ public:
   native_handle_type native_handle()
   {
     return core_.engine_.native_handle();
-  }
-
-  /// (Deprecated: Use native_handle().) Get the underlying implementation in
-  /// the native type.
-  /**
-   * This function may be used to obtain the underlying implementation of the
-   * context. This is intended to allow access to stream functionality that is
-   * not otherwise provided.
-   */
-  impl_type impl()
-  {
-    return &backwards_compatible_impl_;
   }
 
   /// Get a reference to the next layer.
@@ -447,9 +432,8 @@ public:
     // not meet the documented type requirements for a HandshakeHandler.
     ASIO_HANDSHAKE_HANDLER_CHECK(HandshakeHandler, handler) type_check;
 
-    asio::detail::async_result_init<
-      HandshakeHandler, void (asio::error_code)> init(
-        ASIO_MOVE_CAST(HandshakeHandler)(handler));
+    asio::async_completion<HandshakeHandler,
+      void (asio::error_code)> init(handler);
 
     detail::async_io(next_layer_, core_,
         detail::handshake_op(type), init.handler);
@@ -489,9 +473,8 @@ public:
     ASIO_BUFFERED_HANDSHAKE_HANDLER_CHECK(
         BufferedHandshakeHandler, handler) type_check;
 
-    asio::detail::async_result_init<BufferedHandshakeHandler,
-      void (asio::error_code, std::size_t)> init(
-        ASIO_MOVE_CAST(BufferedHandshakeHandler)(handler));
+    asio::async_completion<BufferedHandshakeHandler,
+      void (asio::error_code, std::size_t)> init(handler);
 
     detail::async_io(next_layer_, core_,
         detail::buffered_handshake_op<ConstBufferSequence>(type, buffers),
@@ -548,9 +531,8 @@ public:
     // not meet the documented type requirements for a ShutdownHandler.
     ASIO_SHUTDOWN_HANDLER_CHECK(ShutdownHandler, handler) type_check;
 
-    asio::detail::async_result_init<
-      ShutdownHandler, void (asio::error_code)> init(
-        ASIO_MOVE_CAST(ShutdownHandler)(handler));
+    asio::async_completion<ShutdownHandler,
+      void (asio::error_code)> init(handler);
 
     detail::async_io(next_layer_, core_, detail::shutdown_op(), init.handler);
 
@@ -638,9 +620,8 @@ public:
     // not meet the documented type requirements for a WriteHandler.
     ASIO_WRITE_HANDLER_CHECK(WriteHandler, handler) type_check;
 
-    asio::detail::async_result_init<
-      WriteHandler, void (asio::error_code, std::size_t)> init(
-        ASIO_MOVE_CAST(WriteHandler)(handler));
+    asio::async_completion<WriteHandler,
+      void (asio::error_code, std::size_t)> init(handler);
 
     detail::async_io(next_layer_, core_,
         detail::write_op<ConstBufferSequence>(buffers), init.handler);
@@ -730,9 +711,8 @@ public:
     // not meet the documented type requirements for a ReadHandler.
     ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
-    asio::detail::async_result_init<
-      ReadHandler, void (asio::error_code, std::size_t)> init(
-        ASIO_MOVE_CAST(ReadHandler)(handler));
+    asio::async_completion<ReadHandler,
+      void (asio::error_code, std::size_t)> init(handler);
 
     detail::async_io(next_layer_, core_,
         detail::read_op<MutableBufferSequence>(buffers), init.handler);
@@ -743,10 +723,7 @@ public:
 private:
   Stream next_layer_;
   detail::stream_core core_;
-  impl_struct backwards_compatible_impl_;
 };
-
-#endif // defined(ASIO_ENABLE_OLD_SSL)
 
 } // namespace ssl
 } // namespace asio

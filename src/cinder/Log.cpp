@@ -31,7 +31,7 @@
 	#include "cinder/app/cocoa/PlatformCocoa.h"
 	#import <Foundation/Foundation.h>
 	#include <syslog.h>
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#include <Windows.h>
 	#include <codecvt>
 #elif defined( CINDER_ANDROID )
@@ -360,7 +360,7 @@ protected:
 	}
 };
 	
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 
 // ----------------------------------------------------------------------------------------------------
 // MARK: - ImplEventLog
@@ -483,7 +483,7 @@ LoggerSystem::LoggerSystem()
 	mMinLevel = static_cast<Level>(CI_MIN_LOG_LEVEL);
 #if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	LoggerSystem::mImpl = std::unique_ptr<ImplSysLog>( new ImplSysLog() );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	LoggerSystem::mImpl = std::unique_ptr<ImplEventLog>( new ImplEventLog() );
 #elif defined( CINDER_ANDROID )
 	LoggerSystem::mImpl = std::unique_ptr<ImplLogCat>( new ImplLogCat() );
@@ -496,7 +496,7 @@ LoggerSystem::~LoggerSystem()
 
 void LoggerSystem::write( const Metadata &meta, const std::string &text )
 {
-#if ! defined( CINDER_WINRT ) // Currently no system logging support on WinRT
+#if ! defined( CINDER_UWP ) // Currently no system logging support on WinRT
 	if( meta.mLevel >= mMinLevel ) {
 		mImpl->write( meta, text );
 	}

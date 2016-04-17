@@ -23,30 +23,6 @@
 
 // Intel C++
 
-# if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#  pragma GCC visibility push (default)
-# endif // (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-
-#elif defined(__clang__)
-
-// Clang
-
-# if defined(__OBJC__)
-#  if !defined(__APPLE_CC__) || (__APPLE_CC__ <= 1)
-#   if !defined(ASIO_DISABLE_OBJC_WORKAROUND)
-#    if !defined(Protocol) && !defined(id)
-#     define Protocol cpp_Protocol
-#     define id cpp_id
-#     define ASIO_OBJC_WORKAROUND
-#    endif
-#   endif
-#  endif
-# endif
-
-# if !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32)
-#  pragma GCC visibility push (default)
-# endif // !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32)
-
 #elif defined(__GNUC__)
 
 // GNU C++
@@ -66,10 +42,6 @@
 #   endif
 #  endif
 # endif
-
-# if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#  pragma GCC visibility push (default)
-# endif // (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
 
 #elif defined(__KCC)
 
@@ -135,6 +107,10 @@
 # pragma warning (disable:4512)
 # pragma warning (disable:4610)
 # pragma warning (disable:4675)
+# if (_MSC_VER < 1600)
+// Visual Studio 2008 generates spurious warnings about unused parameters.
+#  pragma warning (disable:4100)
+# endif // (_MSC_VER < 1600)
 # if defined(_M_IX86) && defined(_Wp64)
 // The /Wp64 option is broken. If you want to check 64 bit portability, use a
 // 64 bit compiler!

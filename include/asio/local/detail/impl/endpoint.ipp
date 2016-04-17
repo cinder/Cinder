@@ -62,11 +62,7 @@ void endpoint::resize(std::size_t new_size)
   else
   {
     path_length_ = new_size
-#if defined( CINDER_ASIO_CLANG_BUILTIN_OFFSETOF )
-      - __builtin_offsetof(asio::detail::sockaddr_un_type, sun_path);
-#else
       - offsetof(asio::detail::sockaddr_un_type, sun_path);
-#endif
 
     // The path returned by the operating system may be NUL-terminated.
     if (path_length_ > 0 && data_.local.sun_path[path_length_ - 1] == 0)
