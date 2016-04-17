@@ -71,17 +71,20 @@ public:
 
 	static PipelineLayoutRef	create( const DescriptorSetLayoutRef &descriptorSetLayouts, vk::Device *device = nullptr );
 	static PipelineLayoutRef	create( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, vk::Device *device = nullptr );
+	static PipelineLayoutRef	create( const std::vector<VkPushConstantRange>& pushConstantRanges, vk::Device *device = nullptr );
 
 	VkPipelineLayout			getPipelineLayout() const { return mPipelineLayout; }
 
 private:
 	PipelineLayout( const DescriptorSetLayoutRef &descriptorSetLayouts, vk::Device *device );
 	PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, vk::Device *device );
+	PipelineLayout( const std::vector<VkPushConstantRange>& pushConstantRanges, vk::Device *device );
 
 	VkPipelineLayout			mPipelineLayout = VK_NULL_HANDLE;
 
 	void initialize( const DescriptorSetLayoutRef &descriptorSetLayout );
 	void initialize( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts );
+	void initialize( const std::vector<VkPushConstantRange>& pushConstantRanges );
 	void destroy( bool removeFromTracking = true );
 	friend class vk::Device;
 };
@@ -96,6 +99,7 @@ public:
 	static PipelineLayoutSelectorRef	create( vk::Device *context );
 
 	VkPipelineLayout					getSelectedLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts ) const;
+	VkPipelineLayout					getSelectedLayout( const std::vector<VkPushConstantRange>& pushConstantRanges ) const;
 
 private:
 	PipelineLayoutSelector( vk::Device *context );
@@ -103,11 +107,14 @@ private:
 	vk::Device *mDevice = nullptr;
 
 	struct HashData {
-		std::vector<VkDescriptorSetLayout>	mData;
+		std::vector<VkDescriptorSetLayout>	mDescriptorSetLayouts;
+		std::vector<VkPushConstantRange>	mPushConstantRanges;
 		uint32_t							mHash = 0;
 
-		HashData( const std::vector<VkDescriptorSetLayout>& data, uint32_t hash )
-			: mData( data ), mHash( hash ) {}
+		HashData( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, uint32_t hash )
+			: mDescriptorSetLayouts( descriptorSetLayouts ), mHash( hash ) {}
+		HashData( const std::vector<VkPushConstantRange>& pushConstantRnages, uint32_t hash )
+			: mPushConstantRanges( pushConstantRnages ), mHash( hash ) {}
 	};
 	using HashPair = std::pair<PipelineLayoutSelector::HashData, PipelineLayoutRef>;
 

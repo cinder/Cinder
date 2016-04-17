@@ -240,6 +240,8 @@ public:
 	bool								isCompute() const;
 
 	const std::vector<VkPipelineShaderStageCreateInfo>&		getPipelineShaderStages() const { return mPipelineShaderStages; }
+	const std::vector<VkPushConstantRange>&					getCachedPushConstantRanges() const { return mCachedPushConstantRanges; }
+	VkPushConstantRange										getCachedPushConstantRange( const std::string& name ) const;
 
 	const std::vector<Attribute>&		getActiveAttributes() const { return mAttributes; }
 	const vk::VertexBufferMesh::Layout&	getVertexLayout() const { return mVertexLayout; }
@@ -272,6 +274,9 @@ private:
 	std::vector<Attribute>							mAttributes;
 	vk::VertexBufferMesh::Layout					mVertexLayout;
 	vk::UniformLayout								mUniformLayout;
+
+	std::vector<VkPushConstantRange>				mCachedPushConstantRanges;
+	std::map<std::string, VkPushConstantRange>		mCachedNamedPushConstantRanges;
 
 	void initialize( const ShaderProg::Format &format );
 	void destroy( bool removeFromTracking = true );

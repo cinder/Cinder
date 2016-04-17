@@ -62,6 +62,12 @@ PipelineLayout::PipelineLayout( const std::vector<VkDescriptorSetLayout>& descri
 	initialize( descriptorSetLayouts );
 }
 
+PipelineLayout::PipelineLayout( const std::vector<VkPushConstantRange>& pushConstantRanges, vk::Device *device )
+	: BaseDeviceObject( device )
+{
+	initialize( pushConstantRanges );
+}
+
 PipelineLayout::~PipelineLayout()
 {
 	destroy();
@@ -81,21 +87,27 @@ PipelineLayoutRef PipelineLayout::create( const std::vector<VkDescriptorSetLayou
 	return result;
 }
 
+PipelineLayoutRef PipelineLayout::create( const std::vector<VkPushConstantRange>& pushConstantRanges, vk::Device *device )
+{
+	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
+	PipelineLayoutRef result = PipelineLayoutRef( new PipelineLayout( pushConstantRanges, device ) );
+	return result;
+}
+
 void PipelineLayout::initialize( const DescriptorSetLayoutRef &descriptorSetLayout )
 {
 	std::vector<VkDescriptorSetLayout> descSetLayouts;
 	descSetLayouts.push_back( descriptorSetLayout->vkObject() );
 
-    // Now use the descriptor layout to create a pipeline layout
     VkPipelineLayoutCreateInfo createInfo = {};
     createInfo.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    createInfo.pNext                  = NULL;
+    createInfo.pNext                  = nullptr;
     createInfo.pushConstantRangeCount = 0;
-    createInfo.pPushConstantRanges    = NULL;
+    createInfo.pPushConstantRanges    = nullptr;
     createInfo.setLayoutCount         = static_cast<uint32_t>( descSetLayouts.size() );
     createInfo.pSetLayouts            = descSetLayouts.data();
 
-    VkResult res = vkCreatePipelineLayout( mDevice->getDevice(), &createInfo, NULL, &mPipelineLayout );
+    VkResult res = vkCreatePipelineLayout( mDevice->getDevice(), &createInfo, nullptr, &mPipelineLayout );
     assert( res == VK_SUCCESS );
 
 	mDevice->trackedObjectCreated( this );
@@ -103,16 +115,31 @@ void PipelineLayout::initialize( const DescriptorSetLayoutRef &descriptorSetLayo
 
 void PipelineLayout::initialize( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts )
 {
-	// Now use the descriptor layout to create a pipeline layout
     VkPipelineLayoutCreateInfo createInfo = {};
     createInfo.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    createInfo.pNext                  = NULL;
-    createInfo.pushConstantRangeCount = 0;
-    createInfo.pPushConstantRanges    = NULL;
+    createInfo.pNext                  = nullptr;
     createInfo.setLayoutCount         = static_cast<uint32_t>( descriptorSetLayouts.size() );
     createInfo.pSetLayouts            = descriptorSetLayouts.empty() ? nullptr : descriptorSetLayouts.data();
+    createInfo.pushConstantRangeCount = 0;
+    createInfo.pPushConstantRanges    = nullptr;
 
-    VkResult res = vkCreatePipelineLayout( mDevice->getDevice(), &createInfo, NULL, &mPipelineLayout );
+    VkResult res = vkCreatePipelineLayout( mDevice->getDevice(), &createInfo, nullptr, &mPipelineLayout );
+    assert( res == VK_SUCCESS );
+
+	mDevice->trackedObjectCreated( this );
+}
+
+void PipelineLayout::initialize( const std::vector<VkPushConstantRange>& pushConstantRanges )
+{
+    VkPipelineLayoutCreateInfo createInfo = {};
+    createInfo.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    createInfo.pNext                  = nullptr;
+    createInfo.setLayoutCount         = 0;
+    createInfo.pSetLayouts            = nullptr;
+    createInfo.pushConstantRangeCount = static_cast<uint32_t>( pushConstantRanges.size() );
+    createInfo.pPushConstantRanges    = pushConstantRanges.empty() ? nullptr : pushConstantRanges.data();
+
+    VkResult res = vkCreatePipelineLayout( mDevice->getDevice(), &createInfo, nullptr, &mPipelineLayout );
     assert( res == VK_SUCCESS );
 
 	mDevice->trackedObjectCreated( this );
@@ -172,6 +199,38 @@ VkPipelineLayout PipelineLayoutSelector::getSelectedLayout( const std::vector<Vk
 
 			vk::PipelineLayoutRef dsl = vk::PipelineLayout::create( descriptorSetLayouts, mDevice );			
 			mPipelineLayouts.push_back( std::make_pair( HashData( descriptorSetLayouts, hash ), dsl ) );
+			result = dsl->getPipelineLayout();
+		}
+	}
+	return result;
+}
+
+VkPipelineLayout PipelineLayoutSelector::getSelectedLayout( const std::vector<VkPushConstantRange>& pushConstantRanges ) const
+{
+	VkPipelineLayout result = VK_NULL_HANDLE;
+	if( ! pushConstantRanges.empty() ) {
+		// Calculate the hash
+		const char *s = reinterpret_cast<const char*>( pushConstantRanges.data() );
+		size_t len = pushConstantRanges.size()*sizeof( VkDescriptorSetLayout );
+		uint32_t hash = ::util::Hash32( s, len );
+		// Look up using hash
+		auto it = std::find_if(
+			std::begin( mPipelineLayouts ),
+			std::end( mPipelineLayouts ),
+			[hash]( const PipelineLayoutSelector::HashPair& elem ) -> bool {
+				return elem.first.mHash == hash;
+			}
+		);
+		// If a descriptor set layout is found, select it
+		if( it != std::end( mPipelineLayouts ) ) {
+			result = it->second->getPipelineLayout();
+		}
+		// Otherwise create it
+		else {
+			std::lock_guard<std::mutex> lock( mMutex );
+
+			vk::PipelineLayoutRef dsl = vk::PipelineLayout::create( pushConstantRanges, mDevice );			
+			mPipelineLayouts.push_back( std::make_pair( HashData( pushConstantRanges, hash ), dsl ) );
 			result = dsl->getPipelineLayout();
 		}
 	}

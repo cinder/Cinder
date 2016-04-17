@@ -136,6 +136,21 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------------------
+
+	class PushConstant : public vk::UniformLayout::Uniform {
+	public:
+
+		PushConstant() {}
+		PushConstant( VkShaderStageFlags shaderStages, const vk::UniformLayout::Uniform& uniform )
+			: vk::UniformLayout::Uniform( uniform ), mShaderStages( shaderStages ) {}
+		virtual ~PushConstant() {}
+
+		VkShaderStageFlags					getShaderStages() const { return mShaderStages; }
+	private:
+		VkShaderStageFlags					mShaderStages = 0;
+	};
+
+	// ---------------------------------------------------------------------------------------------
 	
 	//! \class Block
 	//
@@ -154,8 +169,8 @@ public:
 		void								sortUniformsByOffset();
 
 	private:
-		std::vector<UniformStore>		mUniforms;
-		size_t							mSizeBytes = 0;
+		std::vector<UniformStore>			mUniforms;
+		size_t								mSizeBytes = 0;
 
 		UniformStore* findUniformObject( const std::string& name, GlslUniformDataType dataType, bool addIfNotExits = false );
 		void setSizeBytes( size_t size ) { mSizeBytes = size; }
@@ -192,7 +207,7 @@ public:
 
 		uint32_t							getSet() const { return mSet; }
 		uint32_t							getBinding() const { return mBinding; }
-		VkShaderStageFlags					getStages() const { return mStages; }
+		VkShaderStageFlags					getShaderStages() const { return mShaderStages; }
 		Binding::Type						getType() const { return mType; }
 		const std::string&					getName() const { return mName; } 
 		bool								isBlock() const { return Binding::Type::BLOCK == mType; }
@@ -208,14 +223,14 @@ public:
 
 		void								sortByOffset();
 
-		std::vector<VkPushConstantRange>	getPushConstantRanges() const;
+		std::vector<UniformLayout::PushConstant>	getPushConstants() const;
 
 	private:
 		bool								mDirty = false;
 
 		uint32_t							mSet = DEFAULT_SET;
 		uint32_t							mBinding = INVALID_BINDING;
-		VkShaderStageFlags					mStages = 0;
+		VkShaderStageFlags					mShaderStages = 0;
 		Binding::Type						mType = Binding::Type::UNDEFINED;
 		std::string							mName;
 
@@ -227,7 +242,7 @@ public:
 		// These functions force their type since in most cases mBinding is set before it's know what the binding is needed.
 		void setBinding( uint32_t binding, uint32_t set ) { mBinding = binding; mSet = set; }
 		void setBlockSizeBytes( size_t sizeBytes ) { mBlock.setSizeBytes( sizeBytes ); }
-		void setStages( VkShaderStageFlags stages, bool exclusive = false ) { if( exclusive ) { mStages = stages; } else { mStages |= stages; } }
+		void setShaderStages( VkShaderStageFlags stages, bool exclusive = false ) { if( exclusive ) { mShaderStages = stages; } else { mShaderStages |= stages; } }
 		friend class UniformLayout;
 	};
 
@@ -262,7 +277,7 @@ public:
 	UniformLayout&						setBinding( const std::string& bindingName, uint32_t bindingNumber, VkShaderStageFlags bindingStages, uint32_t setNumber );
 	const std::vector<Binding>&			getBindings() const { return mBindings; }
 
-	std::vector<VkPushConstantRange>	getPushConstantRanges() const;
+	std::vector<UniformLayout::PushConstant>	getPushConstants() const;
 
 	void								addSet( uint32_t setNumber, uint32_t changeFrequency );
 	UniformLayout&						setSet( uint32_t setNumber, uint32_t changeFrequency );
@@ -384,7 +399,7 @@ public:
 
 	static UniformSetRef				create( const UniformLayout& layout, const UniformSet::Options& options = UniformSet::Options(), vk::Device *device = nullptr );
 
-	std::vector<VkPushConstantRange>	getPushConstantRanges() const;
+	std::vector<UniformLayout::PushConstant>						getPushConstants() const;
 
 	const std::vector<UniformSet::SetRef>&							getSets() const { return mSets; }
 	const std::vector<std::vector<VkDescriptorSetLayoutBinding>>&	getCachedDescriptorSetLayoutBindings() const { return mCachedDescriptorSetLayoutBindings; }

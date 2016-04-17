@@ -1044,6 +1044,12 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 		}
 	}
 
+	// Cache push constant ranges
+	std::vector<vk::UniformLayout::PushConstant> pushConstants = mUniformLayout.getPushConstants();
+	for( const auto& pushConstant : pushConstants ) {
+		VkPushConstantRange range = {};
+	}	
+
 	mDevice->trackedObjectCreated( this );
 }
 
