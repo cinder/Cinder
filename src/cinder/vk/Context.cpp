@@ -1409,6 +1409,11 @@ void Context::addTransient( const vk::DescriptorLayoutRef& obj )
 	addTransientObject( obj, mTransientDescriptorLayouts );
 }
 
+void Context::addTransient( const vk::DescriptorSetViewRef& obj )
+{
+	addTransientObject( obj, mTransientDescriptorSetViews );
+}
+
 void Context::addTransient( const vk::UniformSetRef& obj )
 {
 	addTransientObject( obj, mTransientUniformSets );
@@ -1424,6 +1429,7 @@ void Context::clearTransients()
 	mTransientDescriptorSets.clear();
 	mTransientDescriptorPools.clear();
 	mTransientDescriptorLayouts.clear();
+	mTransientDescriptorSetViews.clear();
 
 	mTransientUniformSets.clear();
 }

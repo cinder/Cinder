@@ -147,23 +147,6 @@ geom::Attrib attributeNameToSemantic( const std::string& name )
 	return result;
 }
 
-//void copyUniformVariableData( GlslUniformDataType dataType, size_t arraySize, const uint8_t* srcData, const size_t srcDataSizeBytes, const size_t srcElemStride, uint8_t* dstData, const size_t dstDataSizeBytes, const size_t dstElemStride )
-//{
-//	size_t columnCount = glslUniformDataTypeColumnCount( dataType );
-//	size_t srcColumnStride = srcElemStride / columnCount;
-//	size_t dstColumnStride = dstElemStride / columnCount;
-//	for( size_t i = 0; i < arraySize; ++i ) {
-//		const uint8_t* src = srcData + ( i * srcElemStride );
-//		uint8_t* dst = dstData + ( i * dstElemStride );
-//		for( size_t column = 0; column < columnCount; ++column ) {
-//			size_t nbytes = std::min( srcColumnStride, dstColumnStride );
-//			std::memcpy( dst, src, nbytes );
-//			src += srcColumnStride;
-//			dst += dstColumnStride;
-//		}
-//	}
-//}
-
 // -------------------------------------------------------------------------------------------------
 // UniformLayout::Block
 // -------------------------------------------------------------------------------------------------
@@ -180,31 +163,18 @@ UniformLayout::Uniform::Uniform( const std::string& name, GlslUniformDataType da
 	mSemantic = uniformNameToSemantic( uniformName );
 }
 
-//size_t UniformLayout::Block::getSizeBytes() const
-//{
-//	size_t result = 0;
-//	for( auto& elem : mUniforms ) {
-//		size_t dataTypeSize = glslUniformDataTypeSizeBytes( elem.first.getDataType() );
-//		result += ( dataTypeSize * elem.first.getArraySize() );
-//	}
-//	// Round to next multiple of 16
-//	result = ( result + 0xF) & ~0xF;
-//	return result; 
-//}
+// -------------------------------------------------------------------------------------------------
+// UniformLayout::Block
+// -------------------------------------------------------------------------------------------------
+uint32_t UniformLayout::PushConstant::getSize() const
+{
+	uint32_t result = getArraySize()*glslUniformDataTypeSizeBytes( getDataType() );
+	return result;
+}
 
-//size_t UniformLayout::Block::getSizeBytesStd140() const
-//{
-//	size_t result = 0;
-//	for( auto& elem : mUniforms ) {
-//		size_t dataTypeSize = glslUniformDataTypeSizeBytesStd140( elem.first.getDataType() );
-//		size_t arraySize = elem.first.getArraySize();
-//		result += ( dataTypeSize * arraySize );
-//	}
-//	// Round to next multiple of 16
-//	result = ( result + 0xF) & ~0xF;
-//	return result; 
-//}
-
+// -------------------------------------------------------------------------------------------------
+// UniformLayout::Block
+// -------------------------------------------------------------------------------------------------
 void UniformLayout::Block::sortUniformsByOffset()
 {
 	std::sort(
@@ -216,9 +186,6 @@ void UniformLayout::Block::sortUniformsByOffset()
 	);
 }
 
-// -------------------------------------------------------------------------------------------------
-// UniformLayout::Block
-// -------------------------------------------------------------------------------------------------
 UniformLayout::Block::UniformStore* UniformLayout::Block::findUniformObject( const std::string& name, GlslUniformDataType dataType, bool addIfNotExits )
 {
 	UniformLayout::Block::UniformStore* result = nullptr;

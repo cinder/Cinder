@@ -39,6 +39,7 @@
 #pragma once
 
 #include "cinder/vk/platform.h"
+#include "cinder/vk/glsl_types.h"
 #include "cinder/GeomIo.h"
 
 namespace cinder { namespace vk {
@@ -65,6 +66,7 @@ VkPrimitiveTopology	toVk( geom::Primitive prim );
 geom::Primitive		toGeomPrimitive( VkPrimitiveTopology prim );
 //! Converts info into a matching VKFormat
 VkFormat			toVkFormat( const geom::AttribInfo& info );
+VkFormat			toVkFormat( GlslAttributeDataType dataType );
 
 VkImageAspectFlags	determineAspectMask( VkFormat format );
 VkFormat			determineCompressedFormat( int glFormatConstant );

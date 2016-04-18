@@ -339,7 +339,7 @@ void NormalMappingApp::draw()
 			pipelineOptions.setRenderPass( vk::context()->getPresenter()->getCurrentRenderPass() );
 			pipelineOptions.setShaderProg( mShaderNormalMapping );
 			pipelineOptions.setCullModeBack();
-			pipelineOptions.setSamples( vk::context()->getPresenter()->getSamples() );
+			pipelineOptions.setRasterizationSamples( vk::context()->getPresenter()->getSamples() );
 			{
 				auto bindings = vertexInputDesc.getBindings();
 				for( const auto& binding : bindings ) {

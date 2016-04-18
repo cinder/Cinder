@@ -1048,6 +1048,11 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 	std::vector<vk::UniformLayout::PushConstant> pushConstants = mUniformLayout.getPushConstants();
 	for( const auto& pushConstant : pushConstants ) {
 		VkPushConstantRange range = {};
+		range.stageFlags = pushConstant.getShaderStages();
+		range.offset = pushConstant.getOffset();
+		range.size = pushConstant.getSize();
+		mCachedPushConstantRanges.push_back( range );
+		mCachedNamedPushConstantRanges[pushConstant.getName()] = range;
 	}	
 
 	mDevice->trackedObjectCreated( this );
@@ -1096,6 +1101,16 @@ ShaderProgRef ShaderProg::create( const std::string &vertexShader, const std::st
 bool ShaderProg::isCompute() const
 {
 	bool result = ( 1 == mPipelineShaderStages.size() ) && ( VK_SHADER_STAGE_COMPUTE_BIT == mPipelineShaderStages[0].stage );
+	return result;
+}
+
+VkPushConstantRange ShaderProg::getCachedPushConstantRange( const std::string& name ) const
+{
+	VkPushConstantRange result = {};
+	auto it = mCachedNamedPushConstantRanges.find( name );
+	if( mCachedNamedPushConstantRanges.end() != it ) {
+		result = it->second;
+	}
 	return result;
 }
 

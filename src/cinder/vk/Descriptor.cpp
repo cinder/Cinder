@@ -150,6 +150,16 @@ VkDescriptorSetLayout DescriptorSetLayoutSelector::getSelectedLayout( const std:
 	return result;
 }
 
+std::vector<VkDescriptorSetLayout> DescriptorSetLayoutSelector::getSelectedLayout( const std::vector<std::vector<VkDescriptorSetLayoutBinding>>& setOfBindings ) const
+{
+	std::vector<VkDescriptorSetLayout> result;
+	for( const auto& bindings : setOfBindings ) {
+		VkDescriptorSetLayout dsl = getSelectedLayout( bindings );
+		result.push_back( dsl );
+	}
+	return result;
+}
+
 // ------------------------------------------------------------------------------------------------ 
 // DescriptorPool
 // ------------------------------------------------------------------------------------------------ 
@@ -387,9 +397,10 @@ DescriptorSetView::~DescriptorSetView()
 {
 	mDevice = nullptr;
 	mUniformSet.reset();
+	// Sets need to be destroyed before pools
 	mDescriptorSetLayouts.clear();
-	mDescriptorPool.reset();
 	mDescriptorSets.clear();
+	mDescriptorPool.reset();
 }
 
 vk::DescriptorSetViewRef DescriptorSetView::create( const vk::UniformSetRef& uniformSet, vk::Device *device )

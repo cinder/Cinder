@@ -49,114 +49,158 @@
 #include "cinder/vk/UniformBuffer.h"
 #include "cinder/vk/UniformLayout.h"
 #include "cinder/vk/VertexBuffer.h"
+#include "cinder/vk/wrapper.h"
 
 namespace cinder { namespace vk {
 
-void draw( const Texture2dRef &texture, const Rectf &dstRect )
+void draw( const Texture2dRef &texture, const Rectf &dstRect, const std::string& uniformName )
 {
-	vec2 uv0 = vec2( 0.0f, 0.0f );
-	vec2 uv1 = texture->getFormat().isUnnormalizedCoordinates() ? vec2( texture->getSize() ) : vec2( 1.0f, 1.0f );
-
-	// Triangle strip
-	std::vector<float> data = {
-		dstRect.x1, dstRect.y1, 0.0f, 1.0f, uv0.x, uv0.y,
-		dstRect.x1, dstRect.y2, 0.0f, 1.0f, uv0.x, uv1.y,
-		dstRect.x2, dstRect.y1, 0.0f, 1.0f, uv1.x, uv0.y,
-		dstRect.x2, dstRect.y2, 0.0f, 1.0f, uv1.x, uv1.y
+	struct DrawCache {
+		vk::ShaderProgRef			shader;
+		vk::Texture2dRef			texture;
+		VkPipelineLayout			pipelineLayout = VK_NULL_HANDLE;
+		VkPipeline					pipeline = VK_NULL_HANDLE;
+		bool						updateSetBindings = false;
+		DrawCache() {}
 	};
 
-	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ), vk::VertexBuffer::Format().setTransientAllocation() );
-	vk::context()->addTransient( vertexBuffer );
+	static vk::VertexBufferRef sVertexBufferCache;
+	static std::shared_ptr<DrawCache> sDrawCache;
 
-	auto shader = vk::context()->hasShaderProg() ? vk::context()->getShaderProg() : vk::context()->getStockShader( vk::ShaderDef().texture() );
+	vk::UniformSetRef transientUniformSet;
+	vk::DescriptorSetViewRef transientDescriptorView;
 
-	// Uniform layout, uniform set
-	const vk::UniformLayout& uniformLayout = shader->getUniformLayout();
-	vk::UniformSet::Options uniformSetOptions = vk::UniformSet::Options().setTransientAllocation();
-	vk::UniformSetRef uniformSet = vk::UniformSet::create( uniformLayout, uniformSetOptions );
-	vk::context()->addTransient( uniformSet );
-
-	// Set the texture here so we can create the descriptor set without any grief
-	uniformSet->uniform( "uTex0", texture );
-
-	// Descriptor layout, pool, set
-	const auto& layoutBindings = uniformSet->getCachedDescriptorSetLayoutBindings()[0];
-	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( layoutBindings );
-	vk::DescriptorPoolRef descriptorPool = vk::DescriptorPool::create( uniformSet->getCachedDescriptorSetLayoutBindings() );
-	vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool.get(), descriptorSetLayout );
-	vk::context()->addTransient( descriptorPool );
-	vk::context()->addTransient( descriptorSet );
-
-	// Pipeline layout
-	VkPipelineLayout pipelineLayout = vk::context()->getDevice()->getPipelineLayoutSelector()->getSelectedLayout( { descriptorSetLayout } );
-
-	// Pipeline
-	VkPipeline pipeline = VK_NULL_HANDLE;
+	// Handle caching
 	{
-		// Vertex input attribute description
-		// Position
-		VkVertexInputAttributeDescription viad0 = {};
-		viad0.binding	= 0;
-		viad0.format	= VK_FORMAT_R32G32B32A32_SFLOAT;
-		viad0.location	= 0;
-		viad0.offset	= 0;
-		// UV
-		VkVertexInputAttributeDescription viad1 = {};
-		viad1.binding	= 0;
-		viad1.format	= VK_FORMAT_R32G32_SFLOAT;
-		viad1.location	= 1;
-		viad1.offset	= 4*sizeof(float);
+		// Cache vertex buffer
+		if( ! sVertexBufferCache ) {
+			// Triangle strip
+			std::vector<float> data = {
+				0.0f, 0.0f, 0.0f, 1.0f,
+				0.0f, 1.0f, 0.0f, 1.0f,
+				1.0f, 0.0f, 0.0f, 1.0f,
+				1.0f, 1.0f, 0.0f, 1.0f,
+			};
+			// Vertex buffer
+			sVertexBufferCache = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ), vk::VertexBuffer::Format().setTransientAllocation() );
+		}
 
-		// Vertex input binding description
-		VkVertexInputBindingDescription vibd = {};
-		vibd.binding	= 0;
-		vibd.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
-		vibd.stride		= 2*sizeof(float) + 4*sizeof(float);
+		if( ! sDrawCache ) {
+			sDrawCache = std::shared_ptr<DrawCache>( new DrawCache() );
+		}
 
-		auto ctx = vk::context();
-		auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
-		pipelineSelector->setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
-		pipelineSelector->setVertexInputAttributeDescriptions( { viad0, viad1 } );
-		pipelineSelector->setVertexInputBindingDescriptions( { vibd }  );
-		pipelineSelector->setCullMode( ctx->getCullMode() );
-		pipelineSelector->setFrontFace( ctx->getFrontFace() );
-		pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
-		pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubpass() ) );
-		pipelineSelector->setDepthTest( ctx->getDepthTest() );
-		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
-		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-		pipelineSelector->setShaderStages( shader->getPipelineShaderStages() );
-		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
-		pipelineSelector->setSubPass( ctx->getSubpass() );
-		pipelineSelector->setPipelineLayout( pipelineLayout );
-		pipeline = pipelineSelector->getSelectedPipeline();
+		const auto& shader = vk::context()->getShaderProg();
+		if( ( shader != sDrawCache->shader ) || ( texture != sDrawCache->texture ) ) {
+			// Update cache
+			sDrawCache->shader = shader;
+			sDrawCache->texture = texture;
+			// Create descriptor view
+			const vk::UniformLayout& uniformLayout = sDrawCache->shader->getUniformLayout();			
+			transientUniformSet = vk::UniformSet::create( uniformLayout );
+			transientUniformSet->uniform( uniformName, sDrawCache->texture );
+			vk::context()->addTransient( transientUniformSet );
+			std::vector<VkDescriptorSetLayout> descriptorSetLayouts = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( transientUniformSet->getCachedDescriptorSetLayoutBindings() );
+			transientDescriptorView = vk::DescriptorSetView::create( transientUniformSet );
+			transientDescriptorView->allocateDescriptorSets();
+			transientDescriptorView->updateDescriptorSets();
+			vk::context()->addTransient( transientDescriptorView );
+			// Update pipeline layout
+
+			//const auto& descriptorSetLayouts = transientDescriptorView->getCachedDescriptorSetLayouts();
+			const auto& pushConstantRanges = sDrawCache->shader->getCachedPushConstantRanges();
+			sDrawCache->pipelineLayout = vk::context()->getDevice()->getPipelineLayoutSelector()->getSelectedLayout( descriptorSetLayouts, pushConstantRanges );
+			// Set update flag
+			sDrawCache->updateSetBindings = true;
+		}
+
+		// Pipeline
+		{
+			// Vertex input attribute description
+			size_t stride = 0;
+			std::vector<VkVertexInputAttributeDescription> viads;
+			for( const auto& attrib : shader->getActiveAttributes() ) {
+				VkVertexInputAttributeDescription viad = {};
+				viad.location = attrib.getLocation();
+				viad.binding  = attrib.getBinding();
+				viad.format   = toVkFormat( attrib.getType() );
+				viad.offset   = static_cast<uint32_t>( stride );
+				viads.push_back( viad );
+				size_t sizeBytes = vk::formatSizeBytes( viad.format );
+				stride += sizeBytes;
+			}
+
+			// Vertex input binding description
+			VkVertexInputBindingDescription vibd = {};
+			vibd.binding	= 0;
+			vibd.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
+			vibd.stride		= static_cast<uint32_t>( stride );
+
+			auto ctx = vk::context();
+			auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
+			pipelineSelector->setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
+			pipelineSelector->setVertexInputAttributeDescriptions( viads );
+			pipelineSelector->setVertexInputBindingDescriptions( { vibd }  );
+			pipelineSelector->setCullMode( ctx->getCullMode() );
+			pipelineSelector->setFrontFace( ctx->getFrontFace() );
+			pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
+			pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubpass() ) );
+			pipelineSelector->setDepthTest( ctx->getDepthTest() );
+			pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
+			pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
+			pipelineSelector->setShaderStages( sDrawCache->shader->getPipelineShaderStages() );
+			pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
+			pipelineSelector->setSubPass( ctx->getSubpass() );
+			pipelineSelector->setPipelineLayout( sDrawCache->pipelineLayout );
+			sDrawCache->pipeline = pipelineSelector->getSelectedPipeline();
+		}
 	}
-
-	// This is the separation between the setup and the draw sequence. 
 
 	// Get current command buffer
 	auto cmdBufRef = vk::context()->getCommandBuffer();
 	auto cmdBuf = cmdBufRef->getCommandBuffer();
 
-	// Fill out uniform vars
-	uniformSet->setDefaultUniformVars( vk::context() );
-	uniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+	// Handle descriptors
+	if( sDrawCache->updateSetBindings ) {
+		sDrawCache->updateSetBindings = false;
+		const auto& descriptorSets = transientDescriptorView->getDescriptorSets();
+		for( uint32_t i = 0; i < descriptorSets.size(); ++i ) {
+			const auto& ds = descriptorSets[i];
+			std::vector<VkDescriptorSet> descSets = { ds->vkObject() };
+			vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, sDrawCache->pipelineLayout, i, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+		}
+	}
 
-	// Update descriptor set
-	auto descriptorSetWrites = uniformSet->getSets()[0]->getBindingUpdates( descriptorSet->vkObject() );
-	descriptorSet->update( descriptorSetWrites );
+	// Push model view projection matrix
+	VkPushConstantRange pcr = sDrawCache->shader->getCachedPushConstantRange( "ciBlock0.ciModelViewProjection" );
+	if( 0 != pcr.stageFlags ) {
+		mat4 mvp = vk::getModelViewProjection();
+		vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, pcr.stageFlags, pcr.offset, pcr.size, &mvp );
+	}
+	// Push rect
+	pcr = sDrawCache->shader->getCachedPushConstantRange( "ciBlock0.ciRect" );
+	if( 0 != pcr.stageFlags ) {
+		vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, pcr.stageFlags, pcr.offset, pcr.size, &dstRect );
+	}
+	// Push texture coords
+	pcr = sDrawCache->shader->getCachedPushConstantRange( "ciBlock0.ciTexCoord" );
+	if( 0 != pcr.stageFlags ) {
+		vec2 texCoords[2] = { vec2( 0, 0 ), vec2( 1, 1 ) };
+		vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, pcr.stageFlags, pcr.offset, pcr.size, texCoords );
+	}
+	// Push color
+	pcr = sDrawCache->shader->getCachedPushConstantRange( "ciBlock0.ciColor" );
+	if( 0 != pcr.stageFlags ) {
+		const ColorAf& color = vk::context()->getCurrentColor();
+		vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, pcr.stageFlags, pcr.offset, pcr.size, &color );
+	}
 
 	// Bind vertex buffer
-	std::vector<VkBuffer> vertexBuffers = { vertexBuffer->getBuffer() };
+	std::vector<VkBuffer> vertexBuffers = { sVertexBufferCache->getBuffer() };
 	std::vector<VkDeviceSize> offsets = { 0 };
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
 
 	// Bind pipeline
-	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );
-
-	// Bind descriptor sets
-	std::vector<VkDescriptorSet> descSets = { descriptorSet->vkObject() };
-	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
+	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, sDrawCache->pipeline );
 
 	// Draw geometry
 	uint32_t numVertices = 4;
@@ -166,12 +210,9 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect )
 void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &lowerRightTexCoord )
 {
 	struct DrawCache {
-		vk::ShaderProgRef		shader;
-		VkPipelineLayout		pipelineLayout = VK_NULL_HANDLE;
-		VkPushConstantRange		pcrMvp;
-		VkPushConstantRange		pcrRect;
-		VkPushConstantRange		pcrUvs;
-		VkPushConstantRange		pcrColor;
+		vk::ShaderProgRef	shader;
+		VkPipelineLayout	pipelineLayout = VK_NULL_HANDLE;
+		VkPipeline			pipeline = VK_NULL_HANDLE;
 		DrawCache() {}
 	};
 
@@ -205,51 +246,76 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 			const auto& pushConstantRanges = shader->getCachedPushConstantRanges();
 			sDrawCache->pipelineLayout = vk::context()->getDevice()->getPipelineLayoutSelector()->getSelectedLayout( pushConstantRanges );
 		}
-	}
 
-	// Pipeline
-	VkPipeline pipeline = VK_NULL_HANDLE;
-	{
-		// Vertex input attribute description
-		// Position
-		VkVertexInputAttributeDescription viad0 = {};
-		viad0.binding	= 0;
-		viad0.format	= VK_FORMAT_R32G32B32A32_SFLOAT;
-		viad0.location	= 0;
-		viad0.offset	= 0;
+		// Pipeline
+		{
+			// Vertex input attribute description
+			size_t stride = 0;
+			std::vector<VkVertexInputAttributeDescription> viads;
+			for( const auto& attrib : shader->getActiveAttributes() ) {
+				VkVertexInputAttributeDescription viad = {};
+				viad.location = attrib.getLocation();
+				viad.binding  = attrib.getBinding();
+				viad.format   = toVkFormat( attrib.getType() );
+				viad.offset   = static_cast<uint32_t>( stride );
+				viads.push_back( viad );
+				size_t sizeBytes = vk::formatSizeBytes( viad.format );
+				stride += sizeBytes;
+			}
 
-		// Vertex input binding description
-		VkVertexInputBindingDescription vibd = {};
-		vibd.binding	= 0;
-		vibd.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
-		vibd.stride		= 4*sizeof(float) + 2*sizeof(float) + 4*sizeof(float);
+			// Vertex input binding description
+			VkVertexInputBindingDescription vibd = {};
+			vibd.binding	= 0;
+			vibd.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
+			vibd.stride		= static_cast<uint32_t>( stride );
 
-		auto ctx = vk::context();
-		auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
-		pipelineSelector->setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
-		pipelineSelector->setVertexInputAttributeDescriptions( { viad0 } );
-		pipelineSelector->setVertexInputBindingDescriptions( { vibd }  );
-		pipelineSelector->setCullMode( ctx->getCullMode() );
-		pipelineSelector->setFrontFace( ctx->getFrontFace() );
-		pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
-		pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubpass() ) );
-		pipelineSelector->setDepthTest( ctx->getDepthTest() );
-		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
-		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-		pipelineSelector->setShaderStages( sDrawCache->shader->getPipelineShaderStages() );
-		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
-		pipelineSelector->setSubPass( ctx->getSubpass() );
-		pipelineSelector->setPipelineLayout( sDrawCache->pipelineLayout );
-		pipeline = pipelineSelector->getSelectedPipeline();
+			auto ctx = vk::context();
+			auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
+			pipelineSelector->setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
+			pipelineSelector->setVertexInputAttributeDescriptions( viads );
+			pipelineSelector->setVertexInputBindingDescriptions( { vibd }  );
+			pipelineSelector->setCullMode( ctx->getCullMode() );
+			pipelineSelector->setFrontFace( ctx->getFrontFace() );
+			pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
+			pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubpass() ) );
+			pipelineSelector->setDepthTest( ctx->getDepthTest() );
+			pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
+			pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
+			pipelineSelector->setShaderStages( sDrawCache->shader->getPipelineShaderStages() );
+			pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
+			pipelineSelector->setSubPass( ctx->getSubpass() );
+			pipelineSelector->setPipelineLayout( sDrawCache->pipelineLayout );
+			sDrawCache->pipeline = pipelineSelector->getSelectedPipeline();
+		}
 	}
 
 	// Get current command buffer
 	auto cmdBufRef = vk::context()->getCommandBuffer();
 	auto cmdBuf = cmdBufRef->getCommandBuffer();
 
-	mat4 mvp = vk::getModelViewProjection();
-	vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, 0, sizeof(mat4), &mvp );
-	vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, 64, sizeof(Rectf), &r );
+	// Push model view projection matrix
+	VkPushConstantRange pcr = sDrawCache->shader->getCachedPushConstantRange( "ciBlock0.ciModelViewProjection" );
+	if( 0 != pcr.stageFlags ) {
+		mat4 mvp = vk::getModelViewProjection();
+		vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, pcr.stageFlags, pcr.offset, pcr.size, &mvp );
+	}
+	// Push rect
+	pcr = sDrawCache->shader->getCachedPushConstantRange( "ciBlock0.ciRect" );
+	if( 0 != pcr.stageFlags ) {
+		vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, pcr.stageFlags, pcr.offset, pcr.size, &r );
+	}
+	// Push texture coords
+	pcr = sDrawCache->shader->getCachedPushConstantRange( "ciBlock0.ciTexCoord" );
+	if( 0 != pcr.stageFlags ) {
+		vec2 texCoords[2] = { upperLeftTexCoord, lowerRightTexCoord };
+		vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, pcr.stageFlags, pcr.offset, pcr.size, texCoords );
+	}
+	// Push color
+	pcr = sDrawCache->shader->getCachedPushConstantRange( "ciBlock0.ciColor" );
+	if( 0 != pcr.stageFlags ) {
+		const ColorAf& color = vk::context()->getCurrentColor();
+		vkCmdPushConstants( cmdBuf, sDrawCache->pipelineLayout, pcr.stageFlags, pcr.offset, pcr.size, &color );
+	}
 
 	// Bind vertex buffer
 	std::vector<VkBuffer> vertexBuffers = { sVertexBufferCache->getBuffer() };
@@ -257,125 +323,11 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
 
 	// Bind pipeline
-	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );
+	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, sDrawCache->pipeline );
 
 	// Draw geometry
 	uint32_t numVertices = 4;
 	vkCmdDraw( cmdBuf, numVertices, 1, 0, 0 );
-
-/*
-	const ColorAf& color = vk::context()->getCurrentColor();
-	vec2 uv0 = upperLeftTexCoord;
-	vec2 uv1 = lowerRightTexCoord;
-
-	// Triangle strip
-	std::vector<float> data = {
-		r.x1, r.y1, 0.0f, 1.0f, uv0.x, uv0.y, color.r, color.g, color.b, color.a,
-		r.x1, r.y2, 0.0f, 1.0f, uv0.x, uv1.y, color.r, color.g, color.b, color.a,
-		r.x2, r.y1, 0.0f, 1.0f, uv1.x, uv0.y, color.r, color.g, color.b, color.a,
-		r.x2, r.y2, 0.0f, 1.0f, uv1.x, uv1.y, color.r, color.g, color.b, color.a
-	};
-
-	vk::VertexBufferRef vertexBuffer = vk::VertexBuffer::create( static_cast<const void*>( data.data() ), data.size()*sizeof( float ), vk::VertexBuffer::Format().setTransientAllocation() );
-	vk::context()->addTransient( vertexBuffer );
-
-	auto shader = vk::context()->hasShaderProg() ? vk::context()->getShaderProg() : vk::context()->getStockShader( vk::ShaderDef().color() );
-
-	// Uniform layout, uniform set
-	const vk::UniformLayout& uniformLayout = shader->getUniformLayout();
-	vk::UniformSet::Options uniformSetOptions = vk::UniformSet::Options().setTransientAllocation();
-	vk::UniformSetRef uniformSet = vk::UniformSet::create( uniformLayout, uniformSetOptions );
-	vk::context()->addTransient( uniformSet );
-
-	// Descriptor layout, pool, set
-	const auto& layoutBindings = uniformSet->getCachedDescriptorSetLayoutBindings()[0];
-	VkDescriptorSetLayout descriptorSetLayout = vk::context()->getDevice()->getDescriptorSetLayoutSelector()->getSelectedLayout( layoutBindings );
-	vk::DescriptorPoolRef descriptorPool = vk::DescriptorPool::create( uniformSet->getCachedDescriptorSetLayoutBindings() );
-	vk::DescriptorSetRef descriptorSet = vk::DescriptorSet::create( descriptorPool.get(), descriptorSetLayout );
-	vk::context()->addTransient( descriptorPool );
-	vk::context()->addTransient( descriptorSet );
-
-	// Pipeline layout
-	VkPipelineLayout pipelineLayout = vk::context()->getDevice()->getPipelineLayoutSelector()->getSelectedLayout( { descriptorSetLayout } );
-
-	// Pipeline
-	VkPipeline pipeline = VK_NULL_HANDLE;
-	{
-		// Vertex input attribute description
-		// Position
-		VkVertexInputAttributeDescription viad0 = {};
-		viad0.binding	= 0;
-		viad0.format	= VK_FORMAT_R32G32B32A32_SFLOAT;
-		viad0.location	= 0;
-		viad0.offset	= 0;
-		// UV
-		VkVertexInputAttributeDescription viad1 = {};
-		viad1.binding	= 0;
-		viad1.format	= VK_FORMAT_R32G32_SFLOAT;
-		viad1.location	= 1;
-		viad1.offset	= 4*sizeof(float);
-		// Color
-		VkVertexInputAttributeDescription viad2 = {};
-		viad2.binding	= 0;
-		viad2.format	= VK_FORMAT_R32G32B32A32_SFLOAT;
-		viad2.location	= 2;
-		viad2.offset	= 2*sizeof(float) + 4*sizeof(float);
-
-		// Vertex input binding description
-		VkVertexInputBindingDescription vibd = {};
-		vibd.binding	= 0;
-		vibd.inputRate	= VK_VERTEX_INPUT_RATE_VERTEX;
-		vibd.stride		= 4*sizeof(float) + 2*sizeof(float) + 4*sizeof(float);
-
-		auto ctx = vk::context();
-		auto& pipelineSelector = ctx->getDevice()->getPipelineSelector();
-		pipelineSelector->setTopology( VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP );
-		pipelineSelector->setVertexInputAttributeDescriptions( { viad0, viad1, viad2 } );
-		pipelineSelector->setVertexInputBindingDescriptions( { vibd }  );
-		pipelineSelector->setCullMode( ctx->getCullMode() );
-		pipelineSelector->setFrontFace( ctx->getFrontFace() );
-		pipelineSelector->setDepthBias( ctx->getDepthBiasEnable(), ctx->getDepthBiasSlopeFactor(), ctx->getDepthBiasConstantFactor(), ctx->getDepthBiasClamp() );
-		pipelineSelector->setRasterizationSamples( ctx->getRenderPass()->getSubpassSampleCount( ctx->getSubpass() ) );
-		pipelineSelector->setDepthTest( ctx->getDepthTest() );
-		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
-		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-		pipelineSelector->setShaderStages( shader->getPipelineShaderStages() );
-		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
-		pipelineSelector->setSubPass( ctx->getSubpass() );
-		pipelineSelector->setPipelineLayout( pipelineLayout );
-		pipeline = pipelineSelector->getSelectedPipeline();
-	}
-
-	// This is the separation between the setup and the draw sequence. 
-
-	// Get current command buffer
-	auto cmdBufRef = vk::context()->getCommandBuffer();
-	auto cmdBuf = cmdBufRef->getCommandBuffer();
-
-	// Fill out uniform vars
-	uniformSet->setDefaultUniformVars( vk::context() );
-	uniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
-
-	// Update descriptor set
-	auto descriptorSetWrites = uniformSet->getSets()[0]->getBindingUpdates( descriptorSet->vkObject() );
-	descriptorSet->update( descriptorSetWrites );
-
-	// Bind vertex buffer
-	std::vector<VkBuffer> vertexBuffers = { vertexBuffer->getBuffer() };
-	std::vector<VkDeviceSize> offsets = { 0 };
-	vkCmdBindVertexBuffers( cmdBuf, 0, static_cast<uint32_t>( vertexBuffers.size() ), vertexBuffers.data(), offsets.data() );
-
-	// Bind pipeline
-	vkCmdBindPipeline( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline );
-
-	// Bind descriptor sets
-	std::vector<VkDescriptorSet> descSets = { descriptorSet->vkObject() };
-	vkCmdBindDescriptorSets( cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, static_cast<uint32_t>( descSets.size() ), descSets.data(), 0, nullptr );
-
-	// Draw geometry
-	uint32_t numVertices = 4;
-	vkCmdDraw( cmdBuf, numVertices, 1, 0, 0 );
-*/
 }
 
 }} // namespace cinder::vk

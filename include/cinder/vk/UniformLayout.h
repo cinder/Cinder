@@ -146,6 +146,7 @@ public:
 		virtual ~PushConstant() {}
 
 		VkShaderStageFlags					getShaderStages() const { return mShaderStages; }
+		uint32_t							getSize() const;
 	private:
 		VkShaderStageFlags					mShaderStages = 0;
 	};

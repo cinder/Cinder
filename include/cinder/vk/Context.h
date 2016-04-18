@@ -60,6 +60,7 @@ class CommandPool;
 class DescriptorLayout;
 class DescriptorPool;
 class DescriptorSet;
+class DescriptorSetView;
 class Device;
 class Environment;
 class IndexBuffer;
@@ -77,6 +78,7 @@ using CommandPoolRef = std::shared_ptr<CommandPool>;
 using DescriptorLayoutRef = std::shared_ptr<DescriptorLayout>;
 using DescriptorPoolRef = std::shared_ptr<DescriptorPool>;
 using DescriptorSetRef = std::shared_ptr<DescriptorSet>;
+using DescriptorSetViewRef = std::shared_ptr<DescriptorSetView>;
 using IndexBufferRef =std::shared_ptr<IndexBuffer>;
 using PresenterRef = std::shared_ptr<Presenter>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
@@ -404,6 +406,7 @@ private:
 	std::vector<vk::DescriptorSetRef>			mTransientDescriptorSets;
 	std::vector<vk::DescriptorPoolRef>			mTransientDescriptorPools;
 	std::vector<vk::DescriptorLayoutRef>		mTransientDescriptorLayouts;
+	std::vector<vk::DescriptorSetViewRef>		mTransientDescriptorSetViews;
 	std::vector<vk::UniformSetRef>				mTransientUniformSets;
 
 public:
@@ -413,6 +416,7 @@ public:
 	void	addTransient( const vk::DescriptorPoolRef& obj );
 	void	addTransient( const vk::DescriptorSetRef& obj );
 	void	addTransient( const vk::DescriptorLayoutRef& obj );
+	void	addTransient( const vk::DescriptorSetViewRef& obj );
 	void	addTransient( const vk::UniformSetRef& obj );
 	void	clearTransients();
 };
