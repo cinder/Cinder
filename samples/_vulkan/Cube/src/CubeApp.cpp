@@ -119,6 +119,7 @@ void RotatingCubeApp::update()
 	// Rotate the cube by 0.2 degrees around the y-axis
 	mCubeRotation *= rotate( toRadians( 0.2f ), normalize( vec3( 0, 1, 0 ) ) );
 
+/*
 	// Update uniforms
 	{
 		vk::setMatrices( mCam );
@@ -129,13 +130,14 @@ void RotatingCubeApp::update()
 		mBatch->setDefaultUniformVars( vk::context() );
 		vk::context()->addPendingUniformVars( mBatch );
 	}
+*/
 }
 
 void RotatingCubeApp::draw()
 {
-	//vk::setMatrices( mCam );
-	//vk::ScopedModelMatrix modelScope;
-	//vk::multModelMatrix( mCubeRotation );
+	vk::setMatrices( mCam );
+	vk::ScopedModelMatrix modelScope;
+	vk::multModelMatrix( mCubeRotation );
 
 	mBatch->draw();
 
@@ -174,16 +176,20 @@ VkBool32 debugReportVk(
 }
 
 const std::vector<std::string> gLayers = {
-	//"VK_LAYER_LUNARG_api_dump",
-	//"VK_LAYER_LUNARG_threading",
-	//"VK_LAYER_LUNARG_mem_tracker",
-	//"VK_LAYER_LUNARG_object_tracker",
-	//"VK_LAYER_LUNARG_draw_state",
-	//"VK_LAYER_LUNARG_param_checker",
-	//"VK_LAYER_LUNARG_swapchain",
-	//"VK_LAYER_LUNARG_device_limits",
-	//"VK_LAYER_LUNARG_image",
-	//"VK_LAYER_GOOGLE_unique_objects",
+	"VK_LAYER_LUNARG_api_dump",
+	"VK_LAYER_LUNARG_core_validation",
+	"VK_LAYER_LUNARG_device_limits",
+	"VK_LAYER_LUNARG_image",
+	"VK_LAYER_LUNARG_object_tracker",
+	"VK_LAYER_LUNARG_parameter_validation",
+	"VK_LAYER_LUNARG_screenshot",
+	"VK_LAYER_LUNARG_swapchain",
+	"VK_LAYER_GOOGLE_threading",
+	"VK_LAYER_GOOGLE_unique_objects",
+	"VK_LAYER_LUNARG_vktrace",
+	//"VK_LAYER_RENDERDOC_Capture",
+	//"VK_LAYER_VALVE_steam_overlay",
+	"VK_LAYER_LUNARG_standard_validation",
 };
 
 CINDER_APP( 

@@ -168,7 +168,7 @@ UniformLayout::Uniform::Uniform( const std::string& name, GlslUniformDataType da
 // -------------------------------------------------------------------------------------------------
 uint32_t UniformLayout::PushConstant::getSize() const
 {
-	uint32_t result = getArraySize()*glslUniformDataTypeSizeBytes( getDataType() );
+	uint32_t result = static_cast<uint32_t>( getArraySize()*glslUniformDataTypeSizeBytes( getDataType() ) );
 	return result;
 }
 
@@ -1164,15 +1164,19 @@ void UniformSet::setDefaultUniformVars( vk::Context *context )
 
 void UniformSet::bufferPending( const vk::CommandBufferRef& cmdBuf, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
 {
+	bool addBarrier = false;
 	for( auto& set : mSets ) {
 		for( auto& binding : set->mBindings ) {
 			if( ! binding.isBlock() ) {
 				continue;
 			}
 			binding.getUniformBuffer()->transferPending();
-			//cmdBuf->pipelineBarrierBufferMemory( binding.getUniformBuffer(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
-			cmdBuf->pipelineBarrierBufferMemory( vk::BufferMemoryBarrierParams( binding.getUniformBuffer(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
+			addBarrier = true;
 		}
+	}
+
+	if( addBarrier ) {
+		cmdBuf->pipelineBarrierGlobalMemory( vk::GlobalMemoryBarrierParams( srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
 	}
 }
 

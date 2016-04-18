@@ -1314,8 +1314,8 @@ void Context::transferPendingUniformBuffer( const vk::CommandBufferRef& cmdBuf, 
 		}
 
 		uniformBuffer->transferPending();
-		//cmdBuf->pipelineBarrierBufferMemory( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
-		cmdBuf->pipelineBarrierBufferMemory( vk::BufferMemoryBarrierParams( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
+		//cmdBuf->pipelineBarrierBufferMemory( vk::BufferMemoryBarrierParams( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
+		cmdBuf->pipelineBarrierGlobalMemory( vk::GlobalMemoryBarrierParams( srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
 	}
 
 	mPendingUniformBuffers.clear();

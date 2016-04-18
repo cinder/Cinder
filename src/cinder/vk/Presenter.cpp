@@ -185,11 +185,11 @@ void Presenter::resize( const ivec2& newWindowSize )
 					.addColorAttachment( 0, 1 ) // 0 - multiple sample attachment, 1 - single sample auto resolve attachment
 					.addDepthStencilAttachment( 2 );
 				options.addSubPass( subPass );
-				//// Subpass dependencies
-				//vk::RenderPass::SubpassDependency subpassDep = vk::RenderPass::SubpassDependency( 0, 0 )
-				//	.setStageMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits )
-				//	.setAccessMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits );
-				//options.addSubpassDependency( subpassDep );
+				// Subpass dependencies - subpass depends on itself
+				vk::RenderPass::SubpassDependency subpassDep = vk::RenderPass::SubpassDependency( 0, 0 )
+					.setStageMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits )
+					.setAccessMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits );
+				options.addSubpassDependency( subpassDep );
 				// Render pass
 				mRenderPasses[i] = vk::RenderPass::create( options, mDevice );		
 			}
@@ -242,11 +242,11 @@ void Presenter::resize( const ivec2& newWindowSize )
 					.addColorAttachment( 0 )
 					.addDepthStencilAttachment( 1 );
 				options.addSubPass( subpass );
-				//// Subpass dependencies
-				//vk::RenderPass::SubpassDependency subpassDep = vk::RenderPass::SubpassDependency( 0, 0 )
-				//	.setStageMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits )
-				//	.setAccessMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits );
-				//options.addSubpassDependency( subpassDep );
+				// Subpass dependencies - subpass depends on itself
+				vk::RenderPass::SubpassDependency subpassDep = vk::RenderPass::SubpassDependency( 0, 0 )
+					.setStageMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits )
+					.setAccessMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits );
+				options.addSubpassDependency( subpassDep );
 				// Render pass
 				mRenderPasses[i] = vk::RenderPass::create( options, mDevice );		
 			}
@@ -324,8 +324,8 @@ void Presenter::beginRender( const vk::CommandBufferRef& cmdBuf, vk::Context *co
 	if( ! mOptions.mExplicitMode ) {
 		mCommandBuffer->begin();
 		
-		// Update uniform buffers
-		context->transferPendingUniformBuffer( cmdBuf, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+		//// Update uniform buffers
+		//context->transferPendingUniformBuffer( cmdBuf, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
 
 
