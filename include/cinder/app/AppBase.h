@@ -357,7 +357,7 @@ class AppBase {
 	bool				isHighDensityDisplayEnabled() const		{ return mHighDensityDisplayEnabled; }
 
 	// utilities
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
 	DataSourceRef		loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) const { return Platform::get()->loadResource( resourcePath, mswID, mswType ); }
 #else
@@ -546,7 +546,7 @@ inline uint32_t	getElapsedFrames()	{ return AppBase::get()->getElapsedFrames(); 
 //! Returns \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
 inline bool		isMainThread()		{ return AppBase::isMainThread(); }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 //! (MSW only) Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
 inline DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) { return Platform::get()->loadResource( resourcePath, mswID, mswType ); }
 #else

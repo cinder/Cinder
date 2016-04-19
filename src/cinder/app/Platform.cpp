@@ -26,9 +26,9 @@
 
 #if defined( CINDER_COCOA )
 	#include "cinder/app/cocoa/PlatformCocoa.h"
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#include "cinder/app/msw/PlatformMsw.h"
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	#include "cinder/app/winrt/PlatformWinRt.h"
 #elif defined( CINDER_ANDROID )
 	#include "cinder/app/android/PlatformAndroid.h"
@@ -54,9 +54,9 @@ Platform* Platform::get()
 		// set a default platform instance
 #if defined( CINDER_COCOA )
 		sInstance = new PlatformCocoa;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		sInstance = new PlatformMsw;
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 		sInstance = new PlatformWinRt;
 #elif defined( CINDER_ANDROID )
 		sInstance = new PlatformAndroid;

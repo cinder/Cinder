@@ -179,7 +179,7 @@ protected:
 #if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	class ImplSysLog;
 	std::unique_ptr<ImplSysLog> mImpl;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	class ImplEventLog;
 	std::unique_ptr<ImplEventLog> mImpl;
 #elif defined( CINDER_ANDROID )

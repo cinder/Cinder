@@ -421,7 +421,7 @@ void XmlTree::write( DataTargetRef target, bool createDocument )
 
 XmlTree::ExcChildNotFound::ExcChildNotFound( const XmlTree &node, const string &childPath ) throw()
 {
-#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	sprintf_s( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
 #else
 	sprintf( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
@@ -430,7 +430,7 @@ XmlTree::ExcChildNotFound::ExcChildNotFound( const XmlTree &node, const string &
 
 XmlTree::ExcAttrNotFound::ExcAttrNotFound( const XmlTree &node, const string &attrName ) throw()
 {
-#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	sprintf_s( mMessage, "Could not find attribute: %s for node: %s", attrName.c_str(), node.getPath().c_str() );
 #else
 	sprintf( mMessage, "Could not find attribute: %s for node: %s", attrName.c_str(), node.getPath().c_str() );

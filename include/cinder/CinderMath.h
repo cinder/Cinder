@@ -31,7 +31,7 @@
 #include <climits>
 #include <cfloat>
 #include <functional>
-#if defined( CINDER_MSW ) || defined( CINDER_WINRT )
+#if defined( CINDER_MSW )
 	#undef min
 	#undef max
 #endif

@@ -15,6 +15,8 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/associated_allocator.hpp"
+#include "asio/associated_executor.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_cont_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
@@ -137,6 +139,36 @@ namespace detail
   }
 } // namespace detail
 
+#if !defined(GENERATING_DOCUMENTATION)
+
+template <typename ReadHandler, typename Allocator>
+struct associated_allocator<
+    detail::buffered_fill_handler<ReadHandler>, Allocator>
+{
+  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
+
+  static type get(const detail::buffered_fill_handler<ReadHandler>& h,
+      const Allocator& a = Allocator()) ASIO_NOEXCEPT
+  {
+    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
+  }
+};
+
+template <typename ReadHandler, typename Executor>
+struct associated_executor<
+    detail::buffered_fill_handler<ReadHandler>, Executor>
+{
+  typedef typename associated_executor<ReadHandler, Executor>::type type;
+
+  static type get(const detail::buffered_fill_handler<ReadHandler>& h,
+      const Executor& ex = Executor()) ASIO_NOEXCEPT
+  {
+    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+  }
+};
+
+#endif // !defined(GENERATING_DOCUMENTATION)
+
 template <typename Stream>
 template <typename ReadHandler>
 ASIO_INITFN_RESULT_TYPE(ReadHandler,
@@ -148,9 +180,8 @@ buffered_read_stream<Stream>::async_fill(
   // not meet the documented type requirements for a ReadHandler.
   ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
-  detail::async_result_init<
-    ReadHandler, void (asio::error_code, std::size_t)> init(
-      ASIO_MOVE_CAST(ReadHandler)(handler));
+  async_completion<ReadHandler,
+    void (asio::error_code, std::size_t)> init(handler);
 
   std::size_t previous_size = storage_.size();
   storage_.resize(storage_.capacity());
@@ -205,7 +236,7 @@ namespace detail
         const MutableBufferSequence& buffers, ReadHandler& handler)
       : storage_(storage),
         buffers_(buffers),
-        handler_(handler)
+        handler_(ASIO_MOVE_CAST(ReadHandler)(handler))
     {
     }
 
@@ -295,6 +326,44 @@ namespace detail
   }
 } // namespace detail
 
+#if !defined(GENERATING_DOCUMENTATION)
+
+template <typename MutableBufferSequence,
+    typename ReadHandler, typename Allocator>
+struct associated_allocator<
+    detail::buffered_read_some_handler<MutableBufferSequence, ReadHandler>,
+    Allocator>
+{
+  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
+
+  static type get(
+      const detail::buffered_read_some_handler<
+        MutableBufferSequence, ReadHandler>& h,
+      const Allocator& a = Allocator()) ASIO_NOEXCEPT
+  {
+    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
+  }
+};
+
+template <typename MutableBufferSequence,
+    typename ReadHandler, typename Executor>
+struct associated_executor<
+    detail::buffered_read_some_handler<MutableBufferSequence, ReadHandler>,
+    Executor>
+{
+  typedef typename associated_executor<ReadHandler, Executor>::type type;
+
+  static type get(
+      const detail::buffered_read_some_handler<
+        MutableBufferSequence, ReadHandler>& h,
+      const Executor& ex = Executor()) ASIO_NOEXCEPT
+  {
+    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+  }
+};
+
+#endif // !defined(GENERATING_DOCUMENTATION)
+
 template <typename Stream>
 template <typename MutableBufferSequence, typename ReadHandler>
 ASIO_INITFN_RESULT_TYPE(ReadHandler,
@@ -307,9 +376,8 @@ buffered_read_stream<Stream>::async_read_some(
   // not meet the documented type requirements for a ReadHandler.
   ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
-  detail::async_result_init<
-    ReadHandler, void (asio::error_code, std::size_t)> init(
-      ASIO_MOVE_CAST(ReadHandler)(handler));
+  async_completion<ReadHandler,
+    void (asio::error_code, std::size_t)> init(handler);
 
   if (asio::buffer_size(buffers) == 0 || !storage_.empty())
   {

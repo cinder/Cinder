@@ -26,17 +26,7 @@
 #include "cinder/Shape2d.h"
 #include "cinder/Exception.h"
 #include "cinder/DataSource.h"
-#if defined( CINDER_WINRT )
-	#include <ft2build.h>
-
-	// Note: generic is a reserved word in winrt c++/cx
-	// need to redefine it for freetype.h
-	#define generic GenericFromFreeTypeLibrary
-	#include FT_FREETYPE_H
-	#include FT_OUTLINE_H
-	#undef generic
-
-	#include FT_GLYPH_H
+#if defined( CINDER_UWP )
 #endif
 
 #include <string>
@@ -47,13 +37,13 @@
 	#if defined( CINDER_COCOA )
 		typedef const struct __CTFont * CTFontRef;
 	#endif
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#include "cinder/msw/CinderWindowsFwd.h"
 
 	namespace Gdiplus {
 		class Font;
 	}
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	typedef struct FT_FaceRec_* FT_Face;
 #endif
 
@@ -103,7 +93,7 @@ class Font {
 	//! Returns the bounding box of a Glyph, relative to the baseline as the origin
 	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
 
-#if defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#if defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	FT_Face					getFreetypeFace() const;
 #endif
 	
@@ -113,7 +103,7 @@ class Font {
 #if defined( CINDER_COCOA )
 	CGFontRef				getCgFontRef() const;
 	CTFontRef				getCtFontRef() const;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	//! Returns the underlying LOGFONTW on MSW
 	const void*				getLogfont() const;
 	::HFONT					getHfont() const;

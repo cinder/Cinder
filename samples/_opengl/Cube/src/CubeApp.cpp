@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -27,10 +28,10 @@ void RotatingCubeApp::setup()
 	try {
 		mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
 		//mTexture->bind();
-		console() << "Loaded texture" << std::endl;
+		CI_LOG_I( "Loaded texture" );
 	}
 	catch( const std::exception& e ) {
-		console() << "Texture Error: " << e.what() << std::endl;
+		CI_LOG_E( "Texture Error: " << e.what() );
 	}
 
 	try {
@@ -39,18 +40,18 @@ void RotatingCubeApp::setup()
 #else
 		mGlsl = gl::GlslProg::create(loadAsset("shader.vert"), loadAsset("shader.frag"));
 #endif
-		console() << "Loaded shader" << std::endl;
+		CI_LOG_I( "Loaded shader" );
 	}
 	catch( const std::exception& e ) {
-		console() << "Shader Error: " << e.what() << std::endl;
+		CI_LOG_E( "Shader Error: " << e.what() );
 	}
 
 	try {
 		mBatch = gl::Batch::create( geom::Cube(), mGlsl );
-		console() << "Creaeted batch" << std::endl;
+		CI_LOG_I( "Creaeted batch" );
 	}
 	catch( const std::exception& e ) {
-		console() << "Shader Error: " << e.what() << std::endl;
+		CI_LOG_E( "Shader Error: " << e.what() );
 	}
 
 	gl::enableDepthWrite();
