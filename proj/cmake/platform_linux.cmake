@@ -197,6 +197,6 @@ else() # Rpi
 	set( CINDER_TARGET_GL_SUBFOLDER "es2-rpi" )
 endif()
 
-list( APPEND CINDER_DEFINES "-D_UNIX -D_GLIBCXX_USE_CXX11_ABI=0 ${GLFW_FLAGS}"  )
+list( APPEND CINDER_DEFINES "-D_UNIX -D_GLIBCXX_USE_CXX11_ABI=0" ${GLFW_FLAGS}  )
 
 include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )
