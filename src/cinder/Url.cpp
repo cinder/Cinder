@@ -26,7 +26,7 @@
 #include "cinder/DataSource.h"
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	#include <Shlwapi.h>
 	#include "cinder/UrlImplWinInet.h"
 	typedef cinder::IStreamUrlImplWinInet	IStreamUrlPlatformImpl;
@@ -35,7 +35,7 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#include "cinder/UrlImplCocoa.h"
 	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	#include "cinder/winrt/WinRTUtils.h"
 	#include "cinder/msw/CinderMsw.h"
 	#include <wrl/client.h>
@@ -111,13 +111,13 @@ std::string Url::encode( const std::string &unescaped )
 	std::string result = cocoa::convertCfString( escaped );
 	::CFRelease( escaped );
 	return result;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	char16_t buffer[4096];
 	DWORD bufferSize = 4096;
 	std::u16string wideUnescaped = toUtf16( unescaped );
 	UrlEscape( (wchar_t*)wideUnescaped.c_str(), (wchar_t*)buffer, &bufferSize, 0 );
 	return toUtf8( buffer );
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	std::wstring urlStr = msw::toWideString( unescaped );
 	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));
 	return msw::toUtf8String( std::wstring( uri->AbsoluteCanonicalUri->Data()));
@@ -130,7 +130,7 @@ std::string Url::encode( const std::string &unescaped )
 #endif	
 }
 
-#if !defined( CINDER_WINRT)
+#if ! defined( CINDER_UWP )
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // IStreamUrl

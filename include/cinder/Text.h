@@ -155,12 +155,12 @@ class TextBox {
 	void			createLines() const;
 
 	mutable std::vector<std::pair<std::shared_ptr<const __CTLine>,vec2> >	mLines;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	std::vector<std::string>	calculateLineBreaks() const;
 	void						calculate() const;
 
 	mutable std::u16string	mWideText;
-#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	std::vector<std::string>	calculateLineBreaks( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) const;
 	void 						calculate() const;
 #endif

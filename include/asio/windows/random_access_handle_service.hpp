@@ -58,13 +58,6 @@ public:
   typedef service_impl_type::implementation_type implementation_type;
 #endif
 
-  /// (Deprecated: Use native_handle_type.) The native handle type.
-#if defined(GENERATING_DOCUMENTATION)
-  typedef implementation_defined native_type;
-#else
-  typedef service_impl_type::native_handle_type native_type;
-#endif
-
   /// The native handle type.
 #if defined(GENERATING_DOCUMENTATION)
   typedef implementation_defined native_handle_type;
@@ -129,12 +122,6 @@ public:
     return service_impl_.close(impl, ec);
   }
 
-  /// (Deprecated: Use native_handle().) Get the native handle implementation.
-  native_type native(implementation_type& impl)
-  {
-    return service_impl_.native_handle(impl);
-  }
-
   /// Get the native handle implementation.
   native_handle_type native_handle(implementation_type& impl)
   {
@@ -164,9 +151,8 @@ public:
       uint64_t offset, const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
-    asio::detail::async_result_init<
-      WriteHandler, void (asio::error_code, std::size_t)> init(
-        ASIO_MOVE_CAST(WriteHandler)(handler));
+    asio::async_completion<WriteHandler,
+      void (asio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_write_some_at(impl, offset, buffers, init.handler);
 
@@ -189,9 +175,8 @@ public:
       uint64_t offset, const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
-    asio::detail::async_result_init<
-      ReadHandler, void (asio::error_code, std::size_t)> init(
-        ASIO_MOVE_CAST(ReadHandler)(handler));
+    asio::async_completion<ReadHandler,
+      void (asio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_read_some_at(impl, offset, buffers, init.handler);
 

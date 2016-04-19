@@ -23,7 +23,7 @@
 */
 
 #include "cinder/Cinder.h"
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#define ASIO_WINDOWS_RUNTIME 1
 #endif
 
@@ -64,6 +64,7 @@
  	#if defined( __ANDROID__ )
  		#include "cinder/android/libc_helper.h"
  	#endif
+	#define NOMINMAX
 	#include "asio/asio.hpp"
 #endif
 
@@ -154,7 +155,7 @@ AppBase::AppBase()
 
 	// due to an issue with boost::filesystem's static initialization on Windows, 
 	// it's necessary to create a fs::path here in case of secondary threads doing the same thing simultaneously
-#if (defined( CINDER_MSW ) || defined ( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	fs::path dummyPath( "dummy" );
 #endif
 }

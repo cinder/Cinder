@@ -343,8 +343,16 @@ std::map<std::string, std::string> PlatformLinux::getEnvironmentVariables()
 
 fs::path PlatformLinux::expandPath( const fs::path &path ) 
 {
-	// @TODO: Implement
-	return fs::path();	
+	fs::path filename = path.filename();
+
+	char actualPath[PATH_MAX];
+	if( ::realpath( path.parent_path().c_str(), actualPath ) ) { 
+		fs::path expandedPath = fs::path( std::string( actualPath ) );
+		expandedPath /= filename;
+		return expandedPath;	
+	}   
+
+	return fs::path();  
 }
 
 fs::path PlatformLinux::getHomeDirectory() const 

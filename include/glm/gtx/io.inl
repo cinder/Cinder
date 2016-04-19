@@ -219,6 +219,36 @@ namespace io
 	}
 
 	template <typename CTy, typename CTr, typename T, precision P>
+        GLM_FUNC_QUALIFIER std::basic_ostream<CTy,CTr>& operator<<(std::basic_ostream<CTy,CTr>& os, tvec1<T,P> const& a)
+        {
+                typename std::basic_ostream<CTy,CTr>::sentry const cerberus(os);
+
+                if(cerberus)
+                {
+                        io::format_punct<CTy> const & fmt(io::get_facet<io::format_punct<CTy> >(os));
+
+                        if(fmt.formatted)
+                        {
+                                io::basic_state_saver<CTy> const bss(os);
+
+                                os << std::fixed
+                                        << std::right
+                                        << std::setprecision(fmt.precision)
+                                        << std::setfill(fmt.space)
+                                        << fmt.delim_left
+                                        << std::setw(fmt.width) << a.x
+                                        << fmt.delim_right;
+                        }
+                        else
+                        {
+                                os << a.x;
+                        }
+                }
+
+                return os;
+        }
+
+	template <typename CTy, typename CTr, typename T, precision P>
 	GLM_FUNC_QUALIFIER std::basic_ostream<CTy,CTr>& operator<<(std::basic_ostream<CTy,CTr>& os, tvec2<T,P> const& a)
 	{
 		typename std::basic_ostream<CTy,CTr>::sentry const cerberus(os);
@@ -614,5 +644,13 @@ namespace io
 		}
 
 		return os;
+	}
+
+	template <typename CTy, typename CTr, typename T, precision P>
+	GLM_FUNC_QUALIFIER std::basic_ostream<CTy,CTr>& operator<<(
+		std::basic_ostream<CTy,CTr> & os,
+		std::pair<tmat4x4<T,P>, tmat4x4<T,P> > const& a)
+	{
+		return operator<<(os, static_cast<std::pair<tmat4x4<T,P> const, tmat4x4<T,P> const> const&>(a));
 	}
 }//namespace glm

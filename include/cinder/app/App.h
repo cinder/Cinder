@@ -37,13 +37,13 @@
 		typedef AppCocoaTouch	App;
 	} }
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_COCOA_TOUCH( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#include "cinder/app/msw/AppMsw.h"
 	namespace cinder { namespace app {
 		typedef AppMsw		App;
 	} } // namespace cinder::app		
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_MSW( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	#include "cinder/app/winrt/AppWinRt.h"
 	namespace cinder { namespace app {
 		typedef AppWinRt	App;

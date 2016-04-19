@@ -35,7 +35,7 @@ using std::string;
 
 namespace cinder {
 
-#if defined ( CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#pragma warning(push) 
 	#pragma warning(disable:4996) 
 #endif
@@ -783,7 +783,7 @@ IStreamAndroidAssetRef loadAndroidAssetStream( const fs::path &path )
 
 StreamExc::StreamExc( const std::string &fontName ) throw()
 {
-#if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	sprintf_s( mMessage, "%s", fontName.c_str() );
 #else
 	sprintf( mMessage, "%s", fontName.c_str() );
@@ -804,7 +804,7 @@ StreamExc::StreamExc( const std::string &fontName ) throw()
 
 BOOST_PP_SEQ_FOR_EACH( STREAM_PROTOTYPES, ~, (int8_t)(uint8_t)(int16_t)(uint16_t)(int32_t)(uint32_t)(float)(double) )
 
-#if defined (CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#pragma warning(pop) 
 #endif
 

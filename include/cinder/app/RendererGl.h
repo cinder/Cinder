@@ -172,14 +172,14 @@ class RendererGl : public Renderer {
 		EAGLContext*				getEaglContext() const;
 	#endif
 	void	setFrameSize( int width, int height ) override;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	virtual void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill();
 	virtual HWND	getHwnd() override { return mWnd; }
 	virtual HDC		getDc() override;
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	void			setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
 	void			prepareToggleFullScreen();
 	void			finishToggleFullScreen();	
@@ -211,7 +211,7 @@ protected:
 	RendererImplGlMac		*mImpl;
 #elif defined( CINDER_COCOA_TOUCH )
 	RendererImplGlCocoaTouch	*mImpl;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#if defined( CINDER_GL_ANGLE )
 		class RendererImplGlAngle	*mImpl;
 		friend class				RendererImplGlAngle;
@@ -220,7 +220,7 @@ protected:
 		friend class				RendererImplGlMsw;
 	#endif
 	HWND						mWnd;
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	class RendererImplGlAngle	*mImpl;
 	friend class				RendererImplGlAngle;
 	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;

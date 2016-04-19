@@ -40,9 +40,9 @@ class RendererImplGlAngle : public RendererImplMsw {
  public:
 	RendererImplGlAngle( class RendererGl *renderer );
 
-#if defined( CINDER_MSW )	
+#if defined( CINDER_MSW_DESKTOP )	
 	bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
 #endif
 	void	prepareToggleFullScreen() override;
@@ -52,7 +52,7 @@ class RendererImplGlAngle : public RendererImplMsw {
 	void	swapBuffers() const override;
 	void	makeCurrentContext( bool force = false ) override;
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	HDC		getDc() const { return mDc; }
 #endif
  protected:
@@ -64,7 +64,7 @@ class RendererImplGlAngle : public RendererImplMsw {
 	EGLContext		mContext;
 	EGLDisplay		mDisplay;
 	EGLSurface		mSurface;
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	HDC				mDc;
 #endif
 };
