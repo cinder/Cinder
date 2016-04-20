@@ -126,7 +126,7 @@ public:
 	const vk::QueueRef&						getGraphicsQueue() const { return mGraphicsQueue; }
 	const vk::QueueRef&						getComputeQueue() const { return mComputeQueue; }
 	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
-	void									addPresentWaitSemaphore( VkSemaphore semaphore, VkPipelineStageFlagBits waitDstStageMask );
+	void									addRenderWaitSemaphore( VkSemaphore semaphore, VkPipelineStageFlagBits waitDstStageMask );
 
 	const vk::CommandPoolRef&				getDefaultCommandPool() const { return mDefaultCommandPool; }
 	const vk::CommandPoolRef&				getDefaultTransientCommandPool() const { return mDefaultCommandPool; }
@@ -283,10 +283,12 @@ private:
 public:
 	ShaderProgRef&				getStockShader( const vk::ShaderDef &shaderDef );
 
+/*
 	void						addPendingUniformVars( const vk::UniformBufferRef& buffer );
 	void						addPendingUniformVars( const vk::UniformSetRef& uniformSetRef );
 	void						addPendingUniformVars( const vk::BatchRef& batch );
 	void						transferPendingUniformBuffer( const vk::CommandBufferRef& cmdBuf, VkAccessFlags srcAccessMask = VK_ACCESS_HOST_WRITE_BIT, VkAccessFlags dstAccessMask = VK_ACCESS_UNIFORM_READ_BIT, VkPipelineStageFlags srcStageMask = VK_PIPELINE_STAGE_HOST_BIT, VkPipelineStageFlags dstStageMask = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+*/
 
 protected:
 	//! Returns \c true if \a value is different from the previous top of the stack
@@ -330,7 +332,10 @@ private:
 	vk::QueueRef													mGraphicsQueue;
 	vk::QueueRef													mComputeQueue;
 	vk::PresenterRef												mPresenter;
-	std::vector<std::pair<VkSemaphore, VkPipelineStageFlagBits>>	mPresentWaitSemaphores; 
+
+	std::vector<std::pair<VkSemaphore, VkPipelineStageFlagBits>>		mRenderWaitSemaphores; 
+	const std::vector<std::pair<VkSemaphore, VkPipelineStageFlagBits>>	getRenderWaitSemaphores() const { return mRenderWaitSemaphores; }
+	void																clearRenderWaitSemaphores();
 
 	// Default graphics variables
 	std::pair<ivec2,ivec2>					mDefaultViewport;

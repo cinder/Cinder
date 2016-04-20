@@ -74,16 +74,5 @@ void main()
 		vec4 samp = readSample( uTex, vTexCoord + texCoordOffset ) + readSample( uTex, vTexCoord - texCoordOffset );
 		FragColor += weights[i] * samp;
 	}	
-
-/*
-	vec2 dv = 1.0/ciBlock1.res * ciBlock1.axis;
-	float offset[4] = float[]( 0.0, 1.411764705882353, 3.294117647058823, 5.176470588235294 );
-	float weight[4] = float[]( 0.196482550151140, 0.2969069646728344, 0.09447039785044732, 0.0103813624011480 );
-	FragColor  = readSample( uTex, vTexCoord ) * weight[0];
-	for( int i = 1; i < 4; ++i ) {
-		FragColor += readSample( uTex, vTexCoord + dv * offset[i] ) * weight[i];
-		FragColor += readSample( uTex, vTexCoord - dv * offset[i] ) * weight[i];
-	}
-*/	
 }
 

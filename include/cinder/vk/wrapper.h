@@ -248,4 +248,11 @@ inline void translate( const ci::vec2 &v ) { translate( vec3( v, 0 ) ); }
 //! Translates the Model matrix by (\a x,\a y)
 inline void translate( float x, float y ) { translate( vec3( x, y, 0 ) ); }
 
+void color( float r, float g, float b );
+void color( float r, float g, float b, float a );
+void color( const ci::Color &c );
+void color( const ci::ColorA &c );
+void color( const ci::Color8u &c );
+void color( const ci::ColorA8u &c );
+
 }} // namespace cinder::vk

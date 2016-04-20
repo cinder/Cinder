@@ -44,7 +44,6 @@
 #include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/Texture.h"
 #include "cinder/Camera.h"
-#include "DrawUtil.h"
 
 class Light;
 using LightRef = std::shared_ptr<Light>;
@@ -56,7 +55,6 @@ public:
 	static LightRef					create();
 
 	void							update( float time, float dt );
-	//void							draw();
 	void							prepareDraw( const ci::vk::CommandBufferRef& cmdBuf );
 	void							finishDraw();
 	void							toggleW(){ mPos.w = ( 1.0f - mPos.w ); };
@@ -93,6 +91,6 @@ private:
 	float					mDepthBias;
 	float					mRandomOffset;
 
-	ci::vk::GlslProgRef			mBlurShader;
-	std::vector<SolidRectRef>	mBlurRect;
+	ci::vk::GlslProgRef				mBlurShader;
+	std::vector<ci::vk::BatchRef>	mBlurRect;
 };

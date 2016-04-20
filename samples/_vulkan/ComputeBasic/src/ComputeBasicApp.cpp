@@ -128,8 +128,7 @@ void ComputeBasicApp::update()
 		{
 			float t = 2.0f*getElapsedSeconds();
 			mComputeUniformSet->uniform( "ciBlock0.pos", vec2( 0.5 ) + 0.5f*vec2( cos( t ), sin( t ) ) );
-			vk::context()->addPendingUniformVars( mComputeUniformSet );
-			vk::context()->transferPendingUniformBuffer( mComputeCmdBuf, VK_ACCESS_UNIFORM_READ_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
+			mComputeUniformSet->bufferPending( mComputeCmdBuf, VK_ACCESS_UNIFORM_READ_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
 
 			mComputeCmdBuf->bindPipeline( VK_PIPELINE_BIND_POINT_COMPUTE, mComputePipeline );
 
@@ -146,21 +145,13 @@ void ComputeBasicApp::update()
 		mComputeCmdBuf->end();
 
 		vk::context()->getComputeQueue()->submit( mComputeCmdBuf, VK_NULL_HANDLE, 0, VK_NULL_HANDLE, mComputeDoneSemaphore );
-		vk::context()->addPresentWaitSemaphore( mComputeDoneSemaphore, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
-	}
-
-	// Update uniforms
-	{
-		//vk::setMatrices( mCam );
-		vk::setMatricesWindow( getWindowSize() );
-		
-		mBatch->setDefaultUniformVars( vk::context() );
-		vk::context()->addPendingUniformVars( mBatch );
+		vk::context()->addRenderWaitSemaphore( mComputeDoneSemaphore, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
 	}
 }
 
 void ComputeBasicApp::draw()
 {
+	vk::setMatricesWindow( getWindowSize() );
 	mBatch->draw();
 }
 
@@ -195,15 +186,17 @@ VkBool32 debugReportVk(
 
 const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_api_dump",
-	//"VK_LAYER_LUNARG_threading",
-	//"VK_LAYER_LUNARG_mem_tracker",
-	//"VK_LAYER_LUNARG_object_tracker",
-	//"VK_LAYER_LUNARG_draw_state",
-	//"VK_LAYER_LUNARG_param_checker",
-	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_LUNARG_core_validation",
 	//"VK_LAYER_LUNARG_device_limits",
 	//"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_LUNARG_object_tracker",
+	//"VK_LAYER_LUNARG_parameter_validation",
+	//"VK_LAYER_LUNARG_screenshot",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_GOOGLE_threading",
 	//"VK_LAYER_GOOGLE_unique_objects",
+	//"VK_LAYER_LUNARG_vktrace",
+	//"VK_LAYER_LUNARG_standard_validation",
 };
 
 CINDER_APP( 

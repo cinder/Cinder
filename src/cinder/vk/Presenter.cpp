@@ -185,11 +185,8 @@ void Presenter::resize( const ivec2& newWindowSize )
 					.addColorAttachment( 0, 1 ) // 0 - multiple sample attachment, 1 - single sample auto resolve attachment
 					.addDepthStencilAttachment( 2 );
 				options.addSubPass( subPass );
-				// Subpass dependencies - subpass depends on itself
-				vk::RenderPass::SubpassDependency subpassDep = vk::RenderPass::SubpassDependency( 0, 0 )
-					.setStageMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits )
-					.setAccessMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits );
-				options.addSubpassDependency( subpassDep );
+				// Subpass self dependency to allow for global memory pipeline barriers
+				options.addSubpassSelfDependency( 0, vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits, vk::AccessFlagsBits, vk::AccessFlagsBits );
 				// Render pass
 				mRenderPasses[i] = vk::RenderPass::create( options, mDevice );		
 			}
@@ -242,11 +239,8 @@ void Presenter::resize( const ivec2& newWindowSize )
 					.addColorAttachment( 0 )
 					.addDepthStencilAttachment( 1 );
 				options.addSubPass( subpass );
-				// Subpass dependencies - subpass depends on itself
-				vk::RenderPass::SubpassDependency subpassDep = vk::RenderPass::SubpassDependency( 0, 0 )
-					.setStageMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits )
-					.setAccessMasks( vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits );
-				options.addSubpassDependency( subpassDep );
+				// Subpass self dependency to allow for global memory pipeline barriers
+				options.addSubpassSelfDependency( 0, vk::PipelineStageGraphicsBits, vk::PipelineStageGraphicsBits, vk::AccessFlagsBits, vk::AccessFlagsBits );
 				// Render pass
 				mRenderPasses[i] = vk::RenderPass::create( options, mDevice );		
 			}
@@ -262,6 +256,28 @@ void Presenter::resize( const ivec2& newWindowSize )
 			}
 		}
 	}
+}
+
+void Presenter::clearSwapchainImages( vk::Context *context )
+{
+	vk::CommandBufferRef cmdBuf = vk::CommandBuffer::create( context->getDefaultTransientCommandPool()->getCommandPool(), context );
+	cmdBuf->begin();
+	{		
+		const auto& attachments = mSwapchain->getColorAttachments();
+		for( const auto& attachment : attachments ) {
+			VkClearColorValue clearColor = {};
+			VkImageSubresourceRange subresRange = {};
+			subresRange.aspectMask		= VK_IMAGE_ASPECT_COLOR_BIT;
+			subresRange.baseMipLevel	= 0;
+			subresRange.levelCount		= 1;
+			subresRange.baseArrayLayer	= 0;
+			subresRange.layerCount		= 1;
+			cmdBuf->clearColorImage( attachment->getImage()->getImage(), VK_IMAGE_LAYOUT_GENERAL, &clearColor, 1, &subresRange );
+		}
+	}
+	cmdBuf->end();
+	context->getGraphicsQueue()->submit( cmdBuf );
+	context->getGraphicsQueue()->waitIdle();
 }
 
 void Presenter::transitionToFirstUse( vk::Context *context )

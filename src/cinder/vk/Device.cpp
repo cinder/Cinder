@@ -78,6 +78,7 @@ Device::~Device()
 
 void Device::initializeGpuProperties()
 {
+	mGpuProperties= {};
     vkGetPhysicalDeviceProperties( mGpu, &mGpuProperties );
 int32_t major = ( mGpuProperties.apiVersion >> 22 ) & 0xFF;
 int32_t minor = ( mGpuProperties.apiVersion >> 12 ) & 0xFF;
@@ -94,12 +95,19 @@ CI_LOG_I( "limits.sampledImageColorSampleCounts : " << mGpuProperties.limits.sam
 CI_LOG_I( "limits.sampledImageDepthSampleCounts : " << mGpuProperties.limits.sampledImageDepthSampleCounts );
 
 	// Retrieve memory properties
+	mMemoryProperties = {};
 	vkGetPhysicalDeviceMemoryProperties( mGpu, &mMemoryProperties );
 
 	// Print memory properties
 	for( uint32_t i = 0; i < mMemoryProperties.memoryTypeCount; ++i ) {
 		CI_LOG_I( "memoryTypes[" << i << "]: " << vk::toStringVkMemoryPropertyFlags( mMemoryProperties.memoryTypes[i].propertyFlags ) );
 	}
+
+	// Features
+	mGpuFeatures = {};
+	vkGetPhysicalDeviceFeatures( mGpu, &mGpuFeatures );
+CI_LOG_I( "features.shaderClipDistance : " << mGpuFeatures.shaderClipDistance );
+
 }
 
 void Device::initializeQueueProperties()

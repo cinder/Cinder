@@ -98,12 +98,13 @@ public:
 			// Render pass
 			vk::RenderPass::Attachment attachment = vk::RenderPass::Attachment( mTextureShadowMap->getFormat().getInternalFormat() )
 				.setInitialLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
-				.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+				.setFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 			vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 				.addAttachment( attachment );
 			vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()
 				.addDepthStencilAttachment( 0 );
 			renderPassOptions.addSubPass( subpass );
+			renderPassOptions.addSubpassSelfDependency( 0 );
 			mRenderPass = vk::RenderPass::create( renderPassOptions );
 
 			mRenderPass->setAttachmentClearValue( 0, { 1.0f, 0.0f, 0.0f, 1.0f } );
@@ -148,7 +149,7 @@ class ShadowMappingApp : public App {
 	
 	void keyDown( KeyEvent event ) override;
   private:
-	void updateScene( float spinAngle, const vk::GlslProgRef& glsl = nullptr );
+	//void updateScene( float spinAngle, const vk::GlslProgRef& glsl = nullptr );
 	void drawScene( float spinAngle, const vk::GlslProgRef& glsl = nullptr );
 
 	float						mSpinAngle = 0.0f;
@@ -289,19 +290,17 @@ void ShadowMappingApp::update()
 	mFrameRate = getAverageFps();
 }
 
-void ShadowMappingApp::updateScene( float spinAngle, const vk::GlslProgRef& shadowGlsl )
+void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadowGlsl )
 {
 	{
 		vk::ScopedModelMatrix push;
 		vk::scale( vec3(4) );
 		
 		if( shadowGlsl ) {
-			mSphereShadowed->setDefaultUniformVars( vk::context() );
-			vk::context()->addPendingUniformVars( mSphereShadowed );
+			mSphereShadowed->draw();
 		}
 		else {
-			mSphere->setDefaultUniformVars( vk::context() );
-			vk::context()->addPendingUniformVars( mSphere );
+			mSphere->draw();
 		}
 	}
 	
@@ -312,32 +311,11 @@ void ShadowMappingApp::updateScene( float spinAngle, const vk::GlslProgRef& shad
 			vk::multModelMatrix( rotate( mSpinAngle, teapot.mAxis ) * teapot.mTransform );
 				
 			if( shadowGlsl ) {
-				teapot.mShadowed->setDefaultUniformVars( vk::context() );
-				vk::context()->addPendingUniformVars( teapot.mShadowed );
+				teapot.mShadowed->draw();
 			}
 			else {
-				teapot.mPlain->setDefaultUniformVars( vk::context() );
-				vk::context()->addPendingUniformVars( teapot.mPlain );
+				teapot.mPlain->draw();
 			}
-		}
-	}
-}
-
-void ShadowMappingApp::drawScene( float spinAngle, const vk::GlslProgRef& shadowGlsl )
-{
-	if( shadowGlsl ) {
-		mSphereShadowed->draw();
-	}
-	else {
-		mSphere->draw();
-	}
-	
-	for( auto& teapot : mTeapots ) {
-		if( shadowGlsl ) {
-			teapot.mShadowed->draw();
-		}
-		else {
-			teapot.mPlain->draw();
 		}
 	}
 }
@@ -346,64 +324,48 @@ void ShadowMappingApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf
 {
 	cmdBuf->begin();
 	{
-		// Update uniforms for shadow map render
-		{
-			vk::ScopedMatrices push;
-
-			// Update uniforms for shadow map render
-			vk::setMatrices( mLight.camera );
-
-			updateScene( mSpinAngle );
-
-			vk::context()->transferPendingUniformBuffer( cmdBuf );
-		}
-
 		// Render the shadow map
-		mShadowMap->getRenderPass()->beginRenderExplicit( cmdBuf, mShadowMap->getFramebuffer() );
 		{
 			// Offset to help combat surface acne (self-shadowing)
 			vk::enablePolygonOffsetFill();
 			vk::polygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
 
+			mShadowMap->getRenderPass()->beginRenderExplicit( cmdBuf, mShadowMap->getFramebuffer() );
+
+			vk::ScopedMatrices push;
+			vk::setMatrices( mLight.camera );
+
 			drawScene( mSpinAngle );
 
-			// Disable polygon offset
+			mShadowMap->getRenderPass()->endRenderExplicit();
+
 			vk::disablePolygonOffsetFill();
 		}
-		mShadowMap->getRenderPass()->endRenderExplicit();
-
-		// Update uniforms for shadowed render
-		{
-			vk::ScopedMatrices push;
-
-			vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
-			{
-				const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
-				mat4 shadowMatrix = flipY*mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix();
-				vec4 lightPos = vk::getModelView() * vec4( mLight.viewpoint, 1.0 ); 
-				auto& batches = mShaderGrouping[mShadowShader];
-				for( auto& batch : batches ) {
-					batch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
-					batch->uniform( "ciBlock1.uShadowTechnique", mShadowTechnique );
-					batch->uniform( "ciBlock1.uDepthBias", mDepthBias );
-					batch->uniform( "ciBlock1.uOnlyShadowmap", mOnlyShadowmap );
-					batch->uniform( "ciBlock1.uRandomOffset", mRandomOffset );
-					batch->uniform( "ciBlock1.uNumRandomSamples", mNumRandomSamples );
-					batch->uniform( "ciBlock1.uEnableNormSlopeOffset", mEnableNormSlopeOffset );
-					batch->uniform( "ciBlock1.uLightPos", lightPos );
-				}
-				updateScene( mSpinAngle, mShadowShader );
-
-				vk::context()->transferPendingUniformBuffer( cmdBuf );
-			}
-		}
-
+		
 		// Rendered shadowed pass
 		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
 		{
 			// Clear if single sample, multi sample is cleared on attachment load
 			if( ! vk::context()->getPresenter()->isMultiSample() ) {
 				vk::context()->clearAttachments();
+			}
+
+			vk::ScopedMatrices push;
+			vk::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
+
+			const mat4 flipY = mat4( 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 );
+			mat4 shadowMatrix = flipY*mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix();
+			vec4 lightPos = vk::getModelView() * vec4( mLight.viewpoint, 1.0 ); 
+			auto& batches = mShaderGrouping[mShadowShader];
+			for( auto& batch : batches ) {
+				batch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
+				batch->uniform( "ciBlock1.uShadowTechnique", mShadowTechnique );
+				batch->uniform( "ciBlock1.uDepthBias", mDepthBias );
+				batch->uniform( "ciBlock1.uOnlyShadowmap", mOnlyShadowmap );
+				batch->uniform( "ciBlock1.uRandomOffset", mRandomOffset );
+				batch->uniform( "ciBlock1.uNumRandomSamples", mNumRandomSamples );
+				batch->uniform( "ciBlock1.uEnableNormSlopeOffset", mEnableNormSlopeOffset );
+				batch->uniform( "ciBlock1.uLightPos", lightPos );
 			}
 
 			drawScene( mSpinAngle, mShadowShader );
@@ -481,15 +443,17 @@ VkBool32 debugReportVk(
 
 const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_api_dump",
-	//"VK_LAYER_LUNARG_threading",
-	//"VK_LAYER_LUNARG_mem_tracker",
-	//"VK_LAYER_LUNARG_object_tracker",
-	//"VK_LAYER_LUNARG_draw_state",
-	//"VK_LAYER_LUNARG_param_checker",
-	//"VK_LAYER_LUNARG_swapchain",
-	//"VK_LAYER_LUNARG_device_limits"
+	//"VK_LAYER_LUNARG_core_validation",
+	//"VK_LAYER_LUNARG_device_limits",
 	//"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_LUNARG_object_tracker",
+	//"VK_LAYER_LUNARG_parameter_validation",
+	//"VK_LAYER_LUNARG_screenshot",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_GOOGLE_threading",
 	//"VK_LAYER_GOOGLE_unique_objects",
+	//"VK_LAYER_LUNARG_vktrace",
+	//"VK_LAYER_LUNARG_standard_validation",
 };
 
 CINDER_APP( 

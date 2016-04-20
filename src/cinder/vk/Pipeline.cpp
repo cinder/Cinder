@@ -190,14 +190,18 @@ VkPipelineLayout PipelineLayoutSelector::getSelectedLayout( const std::vector<Vk
 		uint32_t hash0 = 0;
 		uint32_t hash1 = 0;		
 		if( ! descriptorSetLayouts.empty() ) {
-			const char *s = reinterpret_cast<const char*>( descriptorSetLayouts.data() );
-			size_t len = pushConstantRanges.size()*sizeof( VkDescriptorSetLayout );
-			hash1 = ::util::Hash32( s, len );
+			const char *data = descriptorSetLayouts.empty() ? nullptr : reinterpret_cast<const char*>( descriptorSetLayouts.data() );
+			assert( nullptr != data );
+			size_t len = descriptorSetLayouts.size()*sizeof( VkDescriptorSetLayout );
+			assert( len > 0 );
+			hash1 = ::util::Hash32( data, len );
 		}
 		if( ! pushConstantRanges.empty() ) {
-			const char *s = reinterpret_cast<const char*>( pushConstantRanges.data() );
+			const char *data = pushConstantRanges.empty() ? nullptr : reinterpret_cast<const char*>( pushConstantRanges.data() );
+			assert( nullptr != data );
 			size_t len = pushConstantRanges.size()*sizeof( VkPushConstantRange );
-			hash0 = ::util::Hash32( s, len );
+			assert( len > 0 );
+			hash0 = ::util::Hash32( data, len );
 		}
 		uint64_t hash = ( ( static_cast<uint64_t>( hash1 ) << 32 ) & 0xFFFFFFFF00000000ULL ) | ( static_cast<uint64_t>( hash0 ) & 0x00000000FFFFFFFFULL );
 		// Look up using hash
@@ -386,7 +390,7 @@ Pipeline::Options& Pipeline::Options::setRenderPass( const VkRenderPass &renderP
 
 Pipeline::Options& Pipeline::Options::setShaderProg( const ShaderProgRef &prog )
 {
-	mShaderStages = prog->getPipelineShaderStages(); 
+	mShaderStages = prog->getShaderStages(); 
 	return *this;
 }
 

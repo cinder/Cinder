@@ -53,8 +53,8 @@ public:
 	void						setFboPositions( const ci::vk::TextureRef& curTex, const ci::vk::TextureRef& prevTex, ci::Surface32f& velSurf );
 	void						setFboVelocities( const ci::vk::TextureRef& curTex, const ci::vk::TextureRef& prevTex, ci::Surface32f& outSurf );
 	void						update( float time, float dt, const ci::vec3& camPos, const ci::vec3& predPos );
-	void						updateForDepthFbo();
-	void						updateForMainFbo();
+	//void						updateForDepthFbo();
+	//void						updateForMainFbo();
 	void						drawIntoVelocityFbo();
 	void						drawIntoPositionFbo();
 	void						drawToDepthFbo();
@@ -75,6 +75,8 @@ public:
 	float						mMinSpeed, mMaxSpeed;
 	
 	float						mTime, mTimeDelta;
+	ci::vec3					mCamPos;
+	ci::vec3					mPredPos;
 
 	int							mThisFbo, mPrevFbo;
 	ci::vk::TextureRef			mPositionTextures[2];
@@ -104,8 +106,6 @@ private:
 
 	ci::vk::BatchRef			mPositionRects[2];
 	ci::vk::BatchRef			mVelocityRects[2];
-	bool						mCanDrawPosition[2];
-	bool						mCanDrawVelocity[2];
 
 	ci::vk::CommandBufferRef	mCommandBuffer;
 };

@@ -73,16 +73,17 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	mFboSize			= vec2( FBO_RES, FBO_RES );
 	mFboBounds			= Area( 0, 0, FBO_RES, FBO_RES );
 
-	mCanDrawVelocity[0] = false;
-	mCanDrawVelocity[1] = false;
-	mCanDrawPosition[0] = false;
-	mCanDrawPosition[1] = false;
+	//mCanDrawVelocity[0] = false;
+	//mCanDrawVelocity[1] = false;
+	//mCanDrawPosition[0] = false;
+	//mCanDrawPosition[1] = false;
 
 	VkFormat textureFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 
 	vk::Texture2d::Format texFormat;
 	texFormat.setInternalFormat( textureFormat );
 	texFormat.setUsageColorAttachment();
+	texFormat.setUsageTransferDestination();
 	texFormat.setUnnormalizedCoordinates();
 	texFormat.setMagFilter( VK_FILTER_NEAREST );
 	texFormat.setMinFilter( VK_FILTER_NEAREST );
@@ -100,10 +101,10 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 	for( size_t i = 0; i < 2; ++i ) {
 		ci::vk::RenderPass::Attachment attachment0 = ci::vk::RenderPass::Attachment( textureFormat )
 			.setInitialLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
-			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+			.setFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 		ci::vk::RenderPass::Attachment attachment1 = ci::vk::RenderPass::Attachment( textureFormat )
 			.setInitialLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL )
-			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+			.setFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
 		auto renderPassOptions = ci::vk::RenderPass::Options()
 			.addAttachment( attachment0 )	// color attachment 0
 			.addAttachment( attachment1 )	// color attachment 1
@@ -116,6 +117,9 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 		spd.setSrcAccessMask( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
 		spd.setDstAccessMask( VK_ACCESS_SHADER_READ_BIT );
 		renderPassOptions.addSubpassDependency( spd );
+
+		renderPassOptions.addSubpassSelfDependency( 0 );
+		renderPassOptions.addSubpassSelfDependency( 1 );
 
 		mRenderPasses[i] = ci::vk::RenderPass::create( renderPassOptions );
 
@@ -174,12 +178,6 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( passThrough )
 				.fragment( fragShader );
-				//.binding( "ciBlock0", 0 )
-				//.binding( "ciBlock1", 1 )
-				//.binding( "uPosition", 2 )
-				//.binding( "uVelocity", 3 )
-				//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-				//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
 
 			mVelocityShader = vk::GlslProg::create( format );
 		}
@@ -192,12 +190,6 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( passThrough )
 				.fragment( loadAsset( "flocking/position.frag" ) );
-				//.binding( "ciBlock0", 0 )
-				//.binding( "ciBlock1", 1 )
-				//.binding( "uPosition", 2 )
-				//.binding( "uVelocity", 3 )
-				//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-				//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
 
 			mPositionShader = vk::GlslProg::create( format );
 		}
@@ -210,19 +202,6 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( loadAsset( "flocking/render.vert" ) )
 				.fragment( loadAsset( "flocking/render.frag" ) );
-				//.binding( "ciBlock0",     0 )
-				//.binding( "uPrevPosTex",  1 )
-				//.binding( "uCurrPosTex",  2 )
-				//.binding( "uCurrVelTex",  3 )
-				//.binding( "ciBlock1",     4 )
-				//.binding( "uDiffuseTex",  5 )
-				//.binding( "uNormalsTex",  6 )
-				//.binding( "uSpecularTex", 7 )
-				//.binding( "uCausticsTex", 8 )
-				//.binding( "uShadowMap",   9 )
-				//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-				//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
-				//.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 );
 
 			mRenderShader = vk::GlslProg::create( format );
 		}
@@ -235,15 +214,6 @@ GpuFlocker::GpuFlocker( FishTornadoApp *app )
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( loadAsset( "flocking/depth.vert" ) )
 				.fragment( loadAsset( "flocking/depth.frag" ) );
-				//.binding( "ciBlock0", 0 )
-				//.binding( "uPrevPosTex", 1 )
-				//.binding( "uCurrPosTex", 2 )
-				//.binding( "uCurrVelTex", 3 )
-				//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-				//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 )
-				//.attribute( geom::Attrib::NORMAL,       2, 0, vk::glsl_attr_vec3 )
-				//.attribute( geom::Attrib::USER_DEFINED, 3, 0, vk::glsl_attr_vec3 );
-				//.uniformLayout( uniformLayout );
 
 			mDepthShader = vk::GlslProg::create( format );
 		}
@@ -349,72 +319,74 @@ void GpuFlocker::update( float time, float dt, const ci::vec3& camPos, const ci:
 	mTime		= time;
 	mTimeDelta	= dt;
 
-	// Velocity
-	{
-		vk::ScopedMatrices pushMatrices;
-
-		vk::setMatricesWindow( mFboSize, true );
-
-		mVelocityRects[mThisFbo]->uniform( "uPosition",				mPositionTextures[mPrevFbo] );
-		mVelocityRects[mThisFbo]->uniform( "uVelocity",				mVelocityTextures[mPrevFbo] );
-		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMinThresh",	mMinThresh );
-		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMaxThresh",	mMaxThresh );
-		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uZoneRadius",	mZoneRadius );
-		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMinSpeed",	mMinSpeed );
-		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMaxSpeed",	mMaxSpeed );
-		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uTimeDelta",	mTimeDelta );
-		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uTime",		mTime );
-		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uPredPos",		predPos );
-		mVelocityRects[mThisFbo]->uniform( "ciBlock1.uCamPos",		camPos );
-
-		vk::context()->setDefaultUniformVars( mVelocityRects[mThisFbo] );
-		vk::context()->addPendingUniformVars( mVelocityRects[mThisFbo] );
-
-		mCanDrawVelocity[mThisFbo] = true;
-	}
-
-	// Position
-	{
-		vk::ScopedMatrices pushMatrices;
-
-		vk::setMatricesWindow( mFboSize );
-
-		mPositionRects[mThisFbo]->uniform( "uPosition",				mPositionTextures[mPrevFbo] );
-		mPositionRects[mThisFbo]->uniform( "uVelocity",				mVelocityTextures[mThisFbo] );
-		mPositionRects[mThisFbo]->uniform( "ciBlock1.uFboRes",		FBO_RES );
-		mPositionRects[mThisFbo]->uniform( "ciBlock1.uTimeDelta",	mTimeDelta );
-
-		vk::context()->setDefaultUniformVars( mPositionRects[mThisFbo] );
-		vk::context()->addPendingUniformVars( mPositionRects[mThisFbo] );
-
-		mCanDrawPosition[mThisFbo] = true;
-	}
+	mCamPos		= camPos;
+	mPredPos	= predPos;
 }
 
-void GpuFlocker::updateForDepthFbo()
-{
+void GpuFlocker::drawIntoVelocityFbo()
+{	
+	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
+
+	vk::ScopedMatrices pushMatrices;
+
+	vk::setMatricesWindow( mFboSize, true );
+
+	mVelocityRects[mThisFbo]->uniform( "uPosition",				mPositionTextures[mPrevFbo] );
+	mVelocityRects[mThisFbo]->uniform( "uVelocity",				mVelocityTextures[mPrevFbo] );
+	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMinThresh",	mMinThresh );
+	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMaxThresh",	mMaxThresh );
+	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uZoneRadius",	mZoneRadius );
+	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMinSpeed",	mMinSpeed );
+	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uMaxSpeed",	mMaxSpeed );
+	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uTimeDelta",	mTimeDelta );
+	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uTime",		mTime );
+	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uPredPos",		mPredPos );
+	mVelocityRects[mThisFbo]->uniform( "ciBlock1.uCamPos",		mCamPos );
+
+	mVelocityRects[mThisFbo]->draw();
+}
+
+void GpuFlocker::drawIntoPositionFbo()
+{	
+	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
+
+	vk::ScopedMatrices pushMatrices;
+
+	vk::setMatricesWindow( mFboSize );
+
+	mPositionRects[mThisFbo]->uniform( "uPosition",				mPositionTextures[mPrevFbo] );
+	mPositionRects[mThisFbo]->uniform( "uVelocity",				mVelocityTextures[mThisFbo] );
+	mPositionRects[mThisFbo]->uniform( "ciBlock1.uFboRes",		FBO_RES );
+	mPositionRects[mThisFbo]->uniform( "ciBlock1.uTimeDelta",	mTimeDelta );
+
+	mPositionRects[mThisFbo]->draw();
+}
+
+void GpuFlocker::drawToDepthFbo()
+{	
 	auto light = mApp->getLight();
 	auto ocean = mApp->getOcean();
 
 	if( light && ocean ) {
+		vk::cullMode( VK_CULL_MODE_BACK_BIT );
+
 		mLoResFishBatch->uniform( "uPrevPosTex",		mPositionTextures[mPrevFbo] );
 		mLoResFishBatch->uniform( "uCurrPosTex",		mPositionTextures[mThisFbo] );
 		mLoResFishBatch->uniform( "uCurrVelTex",		mVelocityTextures[mThisFbo] );
 		mLoResFishBatch->uniform( "ciBlock0.uTime",		mTime );
 		mLoResFishBatch->uniform( "ciBlock0.uFboRes",	FBO_RES );
 
-		vk::context()->setDefaultUniformVars( mLoResFishBatch );
-		vk::context()->addPendingUniformVars( mLoResFishBatch );
-
-		mCanDrawFishDepth = true;
+		mLoResFishBatch->drawInstanced( FBO_RES * FBO_RES );
 	}
 }
 
-void GpuFlocker::updateForMainFbo()
-{
+void GpuFlocker::drawToMainFbo()
+{	
 	auto light = mApp->getLight();
 	auto ocean = mApp->getOcean();
 	if( light && ocean ) {
+		vk::cullMode( VK_CULL_MODE_BACK_BIT );
+
 		mHiResFishBatch->uniform( "uPrevPosTex",				mPositionTextures[mPrevFbo] );
 		mHiResFishBatch->uniform( "uCurrPosTex",				mPositionTextures[mThisFbo] );
 		mHiResFishBatch->uniform( "uCurrVelTex",				mVelocityTextures[mThisFbo] );
@@ -431,51 +403,17 @@ void GpuFlocker::updateForMainFbo()
 		mHiResFishBatch->uniform( "ciBlock0.uFogFarDist",		FOG_FAR_DIST );
 		mHiResFishBatch->uniform( "ciBlock0.uFogPower",			FOG_POWER );
 		mHiResFishBatch->uniform( "ciBlock0.uFboRes",			FBO_RES );
-
-
+		
 		mHiResFishBatch->uniform( "ciBlock1.uFogColor",			FOG_COLOR );
 		mHiResFishBatch->uniform( "ciBlock1.uFishColor",		FISH_COLOR );
 		mHiResFishBatch->uniform( "ciBlock1.uFloorColor",		FLOOR_COLOR );
 		mHiResFishBatch->uniform( "ciBlock1.uTime",				mTime );
 		mHiResFishBatch->uniform( "ciBlock1.uDepthBias",		light->getDepthBias() );
 
-		vk::context()->setDefaultUniformVars( mHiResFishBatch );
-		vk::context()->addPendingUniformVars( mHiResFishBatch );
+		mHiResFishBatch->drawInstanced( FBO_RES * FBO_RES );
 
 		mCanDrawFishMain = true;
 	}
-}
-
-void GpuFlocker::drawIntoVelocityFbo()
-{	
-	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
-	mVelocityRects[mThisFbo]->draw();
-}
-
-void GpuFlocker::drawIntoPositionFbo()
-{	
-	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
-	mPositionRects[mThisFbo]->draw();
-}
-
-void GpuFlocker::drawToDepthFbo()
-{	
-	if( ! mCanDrawFishDepth ) {
-		return;
-	}
-
-	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-	mLoResFishBatch->drawInstanced( FBO_RES * FBO_RES );
-}
-
-void GpuFlocker::drawToMainFbo()
-{	
-	if( !  mCanDrawFishMain ) {
-		return;
-	}
-
-	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-	mHiResFishBatch->drawInstanced( FBO_RES * FBO_RES );
 }
 
 void GpuFlocker::swapFbos()

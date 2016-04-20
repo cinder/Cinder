@@ -897,4 +897,40 @@ void translate( const ci::vec3& v )
 	ctx->getModelMatrixStack().back() *= glm::translate( v );
 }
 
+void color( float r, float g, float b )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( ColorAf( r, g, b, 1.0f ) );
+}
+
+void color( float r, float g, float b, float a )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( ColorAf( r, g, b, a ) );
+}
+
+void color( const ci::Color &c )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( c );
+}
+
+void color( const ci::ColorA &c )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( c );
+}
+
+void color( const ci::Color8u &c )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( c );
+}
+
+void color( const ci::ColorA8u &c )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( c );
+}
+
 }} // namespace cinder::vk

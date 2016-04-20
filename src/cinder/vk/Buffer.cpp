@@ -226,7 +226,7 @@ void Buffer::bufferDataImpl(  VkDeviceSize size, const void *data  )
 			std::memcpy( dst, data, size );
 			unmap();
 
-			if( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT != ( mFormat.getMemoryProperty() & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) ) {
+			if( VK_MEMORY_PROPERTY_HOST_COHERENT_BIT == ( mFormat.getMemoryProperty() & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) ) {
 				VkMappedMemoryRange range = {};
 				range.sType  = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 				range.pNext  = nullptr;
@@ -246,15 +246,17 @@ void Buffer::bufferData( VkDeviceSize size, const void *data )
 		bufferDataImpl( size, data );
 	}
 	else {
-		vk::Buffer::Format stagingFormat = vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-			.setUsageTransferSource()
-			.setTransientAllocation();
-		vk::BufferRef stagingBuffer = vk::Buffer::create( size, stagingFormat );
-		if( stagingBuffer ) {
-			// Buffer data to staging
-			stagingBuffer->bufferDataImpl( size, data );
-			// Copy to current buffer
-			vk::Buffer::copy( vk::context(), stagingBuffer->getBuffer(), 0, mBuffer, 0, size );
+		if( ( size > 0 ) && ( nullptr != data ) ) {
+			vk::Buffer::Format stagingFormat = vk::Buffer::Format( mFormat.mUsage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				.setUsageTransferSource()
+				.setTransientAllocation();
+			vk::BufferRef stagingBuffer = vk::Buffer::create( size, stagingFormat );
+			if( stagingBuffer ) {
+				// Buffer data to staging
+				stagingBuffer->bufferDataImpl( size, data );
+				// Copy to current buffer
+				vk::Buffer::copy( vk::context(), stagingBuffer->getBuffer(), 0, mBuffer, 0, size );
+			}
 		}
 	}
 }

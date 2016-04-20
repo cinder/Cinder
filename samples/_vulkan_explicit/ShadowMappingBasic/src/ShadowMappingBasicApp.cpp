@@ -61,28 +61,35 @@ class ShadowMappingBasic : public App {
 	void update() override;
 	void draw() override;
 	
-	void updateScene( bool shadowMap );
 	void drawScene( bool shadowMap );
 	
   private:
-	vk::RenderPassRef	mRenderPass;
-	vk::FramebufferRef	mFbo;
+	vk::RenderPassRef		mRenderPass;
+	vk::FramebufferRef		mFbo;
 
-	CameraPersp			mCam;
-	CameraPersp			mLightCam;
-	vec3				mLightPos;
+	CameraPersp				mCam;
+	CameraPersp				mLightCam;
+	vec3					mLightPos;
 	
-	vk::GlslProgRef		mGlsl;
-	vk::Texture2dRef	mShadowMapTex;
+	vk::GlslProgRef			mGlsl;
+	vk::Texture2dRef		mShadowMapTex;
 	
-	vk::BatchRef		mTeapotBatch;
-	vk::BatchRef		mTeapotShadowedBatch;
-	vk::BatchRef		mFloorBatch;
-	vk::BatchRef		mFloorShadowedBatch;
+	vk::BatchRef			mTeapotBatch;
+	vk::BatchRef			mTeapotShadowedBatch;
+	vk::BatchRef			mFloorBatch;
+	vk::BatchRef			mFloorShadowedBatch;
 	
-	float				mTime;
+	float					mTime;
 
-	void generateCommandBuffer( const vk::CommandBufferRef& cmdBuf );
+	VkSemaphore				mImageAcquiredSemaphore;
+	VkSemaphore				mShadowMapCompleteSemaphore;
+	VkSemaphore				mRenderingCompleteSemaphore;
+		
+	vk::CommandBufferRef	mShadowMapCmdBuf;
+	vk::CommandBufferRef	mRenderCmdBuf;
+
+	void generateShadowMapCommandbuffer( const vk::CommandBufferRef& cmdBuf );
+	void generateRenderCommandBuffer( const vk::CommandBufferRef& cmdBuf );
 };
 
 void ShadowMappingBasic::prepareSettings( Settings *settings )
@@ -111,12 +118,13 @@ void ShadowMappingBasic::setup()
 		// Render pass
 		vk::RenderPass::Attachment attachment = vk::RenderPass::Attachment( mShadowMapTex->getFormat().getInternalFormat() )
 			.setInitialLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL )
-			.setFinalLayout( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+			.setFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
 		vk::RenderPass::Options renderPassOptions = vk::RenderPass::Options()
 			.addAttachment( attachment );
 		vk::RenderPass::Subpass subpass = vk::RenderPass::Subpass()
 			.addDepthStencilAttachment( 0 );
 		renderPassOptions.addSubPass( subpass );
+		renderPassOptions.addSubpassSelfDependency( 0 );
 		mRenderPass = vk::RenderPass::create( renderPassOptions );
 
 		// Framebuffer
@@ -152,6 +160,15 @@ void ShadowMappingBasic::setup()
 	mTeapotShadowedBatch	= vk::Batch::create( teapot, mGlsl );
 	mFloorShadowedBatch		= vk::Batch::create( floor, mGlsl );
 
+	// Semaphores
+	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mShadowMapCompleteSemaphore );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
+
+	mShadowMapCmdBuf = vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
+	mRenderCmdBuf = vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
+
 	vk::enableDepthRead();
 	vk::enableDepthWrite();
 }
@@ -168,35 +185,6 @@ void ShadowMappingBasic::update()
 	mCam.lookAt( vec3( sin( mTime ) * 5.0f, sin( mTime ) * 2.5f + 2, 5.0f ), vec3( 0.0f ) );
 }
 
-void ShadowMappingBasic::updateScene( bool shadowMap )
-{
-	vk::pushModelMatrix();
-	vk::rotate( mTime * 2.0f, 1.0f, 1.0f, 1.0f );
-
-	if( shadowMap ) {
-		mTeapotBatch->setDefaultUniformVars( vk::context() );
-		vk::context()->addPendingUniformVars( mTeapotBatch );
-	}
-	else {
-		mTeapotShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.4f, 0.6f, 0.9f ) );		
-		mTeapotShadowedBatch->setDefaultUniformVars( vk::context() );
-		vk::context()->addPendingUniformVars( mTeapotShadowedBatch );
-	}
-	vk::popModelMatrix();
-	
-	vk::translate( 0.0f, -2.0f, 0.0f );
-	if( shadowMap ) {
-		mFloorBatch->setDefaultUniformVars( vk::context() );
-		vk::context()->addPendingUniformVars( mFloorBatch );
-	
-	}
-	else {
-		mFloorShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.7f, 0.7f, 0.7f ) );
-		mFloorShadowedBatch->setDefaultUniformVars( vk::context() );
-		vk::context()->addPendingUniformVars( mFloorShadowedBatch );
-	}
-}
-
 void ShadowMappingBasic::drawScene( bool shadowMap )
 {
 	vk::pushModelMatrix();
@@ -206,14 +194,12 @@ void ShadowMappingBasic::drawScene( bool shadowMap )
 		mTeapotBatch->draw();
 	}
 	else {
-		mTeapotShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.4f, 0.6f, 0.9f ) );
+		mTeapotShadowedBatch->uniform( "ciBlock1.uColor", ColorA( 0.4f, 0.6f, 0.9f ) );		
 		mTeapotShadowedBatch->draw();
 	}
-
 	vk::popModelMatrix();
 	
 	vk::translate( 0.0f, -2.0f, 0.0f );
-	
 	if( shadowMap ) {
 		mFloorBatch->draw();
 	}
@@ -223,39 +209,43 @@ void ShadowMappingBasic::drawScene( bool shadowMap )
 	}
 }
 
-void ShadowMappingBasic::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf )
+void ShadowMappingBasic::generateShadowMapCommandbuffer( const vk::CommandBufferRef& cmdBuf )
 {
 	cmdBuf->begin();
 	{
-		// Update for shadow map render
-		{
-			vk::pushMatrices();
-
-			vk::setMatrices( mLightCam );
-			updateScene( true );
-
-			vk::popMatrices();
-
-			// Transfer data to 
-			vk::context()->transferPendingUniformBuffer( cmdBuf );
-		}
-
 		// Render shadow map
-		mRenderPass->beginRenderExplicit( vk::context()->getDefaultCommandBuffer(), mFbo );
 		{
 			// Set polygon offset to battle shadow acne
 			vk::enablePolygonOffsetFill();
 			vk::polygonOffset( 2.0f, 2.0f );
 
+			mRenderPass->beginRenderExplicit( cmdBuf, mFbo );
+
+			vk::ScopedMatrices pushMatrices;
+			vk::setMatrices( mLightCam );
 			drawScene( true );
+
+			mRenderPass->endRenderExplicit();
 
 			// Disable polygon offset for final render
 			vk::disablePolygonOffsetFill();
 		}
-		mRenderPass->endRenderExplicit();
+	}
+	cmdBuf->end();
+}
 
-		// Update for shadowed render
+void ShadowMappingBasic::generateRenderCommandBuffer( const vk::CommandBufferRef& cmdBuf )
+{
+	cmdBuf->begin();
+	{
+		// Render shadowed pass
+		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
 		{
+			// Clear if single sample, multi sample is cleared on attachment load
+			if( ! vk::context()->getPresenter()->isMultiSample() ) {
+				vk::context()->clearAttachments();
+			}
+
 			vk::setMatrices( mCam );
 
 			vec4 mvLightPos	= vk::getModelView() * vec4( mLightPos, 1.0f );
@@ -267,27 +257,14 @@ void ShadowMappingBasic::generateCommandBuffer( const vk::CommandBufferRef& cmdB
 			mFloorShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
 			mFloorShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
 
-			updateScene( false );
-
-			vk::context()->transferPendingUniformBuffer( cmdBuf );
-		}
-
-		// Render shadowed pass
-		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
-		{
-			// Clear if single sample, multi sample is cleared on attachment load
-			if( ! vk::context()->getPresenter()->isMultiSample() ) {
-				vk::context()->clearAttachments();
-			}
-
 			drawScene( false ); 
 
 			// Uncomment for debug
-			/*    
+			/*			
 			vk::setMatricesWindow( getWindowSize() );
-			//vk::color( 1.0f, 1.0f, 1.0f );
+			vk::color( 1.0f, 1.0f, 1.0f );
 			float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
-			vk::draw( mShadowMapTex, Rectf( 0, 0, size, size ) );    
+			vk::draw( mShadowMapTex, Rectf( 0, 0, size, size ) );
 			*/
 		}
 		vk::context()->getPresenter()->endRender( vk::context() );
@@ -297,32 +274,31 @@ void ShadowMappingBasic::generateCommandBuffer( const vk::CommandBufferRef& cmdB
 
 void ShadowMappingBasic::draw()
 {
-	// Semaphores
-	VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
-	VkSemaphore renderingCompleteSemaphore = VK_NULL_HANDLE;
-	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &imageAcquiredSemaphore );
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &renderingCompleteSemaphore );
-
 	// Get next image
-	vk::context()->getPresenter()->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
+	vk::context()->getPresenter()->acquireNextImage( VK_NULL_HANDLE, mImageAcquiredSemaphore );
 
-	// Build command buffer
-	const auto& cmdBuf = vk::context()->getDefaultCommandBuffer();
-	generateCommandBuffer( cmdBuf );
+	// Build shadow map command buffer
+	generateShadowMapCommandbuffer( mShadowMapCmdBuf );
 
-    // Submit command buffer for processing
-	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	vk::context()->getGraphicsQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
+	// Build render command buffer
+	generateRenderCommandBuffer( mRenderCmdBuf );
+
+    // Submit command buffers for processing
+	{
+		const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		vk::context()->getGraphicsQueue()->submit( mShadowMapCmdBuf, mImageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, mShadowMapCompleteSemaphore );
+	}
+
+	{
+		const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		vk::context()->getGraphicsQueue()->submit( mRenderCmdBuf, mShadowMapCompleteSemaphore, waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore );
+	}
 
 	// Submit presentation
-	vk::context()->getGraphicsQueue()->present( renderingCompleteSemaphore, vk::context()->getPresenter() );
+	vk::context()->getGraphicsQueue()->present( mRenderingCompleteSemaphore, vk::context()->getPresenter() );
 
 	// Wait for work to be done
 	vk::context()->getGraphicsQueue()->waitIdle();
-
-	vkDestroySemaphore( vk::context()->getDevice(), imageAcquiredSemaphore, nullptr );
-	vkDestroySemaphore( vk::context()->getDevice(), renderingCompleteSemaphore, nullptr );
 }
 
 VkBool32 debugReportVk(
@@ -356,15 +332,17 @@ VkBool32 debugReportVk(
 
 const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_api_dump",
-	//"VK_LAYER_LUNARG_threading",
-	//"VK_LAYER_LUNARG_mem_tracker",
-	//"VK_LAYER_LUNARG_object_tracker",
-	//"VK_LAYER_LUNARG_draw_state",
-	//"VK_LAYER_LUNARG_param_checker",
-	//"VK_LAYER_LUNARG_swapchain",
-	//"VK_LAYER_LUNARG_device_limits"
+	//"VK_LAYER_LUNARG_core_validation",
+	//"VK_LAYER_LUNARG_device_limits",
 	//"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_LUNARG_object_tracker",
+	//"VK_LAYER_LUNARG_parameter_validation",
+	//"VK_LAYER_LUNARG_screenshot",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_GOOGLE_threading",
 	//"VK_LAYER_GOOGLE_unique_objects",
+	//"VK_LAYER_LUNARG_vktrace",
+	//"VK_LAYER_LUNARG_standard_validation",
 };
 
 CINDER_APP( 

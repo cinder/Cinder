@@ -239,7 +239,7 @@ public:
 
 	bool								isCompute() const;
 
-	const std::vector<VkPipelineShaderStageCreateInfo>&		getPipelineShaderStages() const { return mPipelineShaderStages; }
+	const std::vector<VkPipelineShaderStageCreateInfo>&		getShaderStages() const { return mPipelineShaderStages; }
 	const std::vector<VkPushConstantRange>&					getCachedPushConstantRanges() const { return mCachedPushConstantRanges; }
 	VkPushConstantRange										getCachedPushConstantRange( const std::string& name ) const;
 

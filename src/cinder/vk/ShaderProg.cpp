@@ -57,7 +57,11 @@ namespace cinder { namespace vk {
 // ShaderProg::Format
 // -------------------------------------------------------------------------------------------------
 ShaderDef::ShaderDef()
-	: mColor( false ), mTextureMapping( false ), mTextureUnormalizedCoordinates( false ), mLambert( false ), mUniformBasedPosAndTexCoord( false )
+	: mColor( false ), 
+	  mTextureMapping( false ), 
+	  mTextureUnormalizedCoordinates( false ), 
+	  mLambert( false ), 
+	  mUniformBasedPosAndTexCoord( false )
 {
 }
 
@@ -95,7 +99,6 @@ bool ShaderDef::operator<( const ShaderDef &rhs ) const
 		return rhs.mLambert;
 	if( rhs.mUniformBasedPosAndTexCoord != mUniformBasedPosAndTexCoord )
 		return rhs.mUniformBasedPosAndTexCoord;
-	
 	return false;
 }
 
@@ -488,38 +491,31 @@ static bool glslToSpv( const VkShaderStageFlagBits shader_type, const char *psha
 {
     glslang::TProgram& program = *new glslang::TProgram;
     const char *shaderStrings[1];
-    TBuiltInResource Resources;
-    initResources(Resources);
+    TBuiltInResource resources;
+    initResources( resources );
 
     // Enable SPIR-V and Vulkan rules when parsing GLSL
-    EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
+    EShMessages messages = (EShMessages)( EShMsgSpvRules | EShMsgVulkanRules );
 
-    EShLanguage stage = findLanguage(shader_type);
-    glslang::TShader* shader = new glslang::TShader(stage);
+    EShLanguage stage = findLanguage( shader_type );
+    glslang::TShader* shader = new glslang::TShader( stage );
 
     shaderStrings[0] = pshader;
-    shader->setStrings(shaderStrings, 1);
+    shader->setStrings( shaderStrings, 1 );
 
-    if (! shader->parse(&Resources, 100, false, messages)) {
-        puts(shader->getInfoLog());
-        puts(shader->getInfoDebugLog());
+    if( ! shader->parse( &resources, 100, false, messages ) ) {
 		std::string msg = shader->getInfoLog();
 		throw std::runtime_error( msg );
-        //return false; // something didn't work
     }
 
-    program.addShader(shader);
+    program.addShader( shader );
 
     //
     // Program-level processing...
     //
-
-    if (! program.link(messages)) {
-        puts(program.getInfoLog());
-        puts(program.getInfoDebugLog());
+    if ( ! program.link( messages ) ) {
 		std::string msg = program.getInfoLog();
 		throw std::runtime_error( msg );
-        //return false;
     }
 
     glslang::GlslangToSpv(*program.getIntermediate(stage), spirv);
