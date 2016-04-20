@@ -45,22 +45,8 @@
 namespace cinder { namespace vk {
 
 class Context;
-
-////! \class ScopedSemaphore
-////!
-////!
-//class ScopedSemaphore : public BaseVkObject {
-//public:
-//
-//	ScopedSemaphore( Context *context = nullptr );
-//	virtual ~ScopedSemaphore();
-//
-//	VkSemaphore			obj() const { return mSemaphore; }
-//	const VkSemaphore*	ptr() const { return &mSemaphore; }
-//
-//private:
-//	VkSemaphore			mSemaphore = VK_NULL_HANDLE;
-//};
+class ShaderProg;
+using ShaderProgRef = std::shared_ptr<ShaderProg>;
 
 struct ScopedColor : private Noncopyable {
 	ScopedColor();
@@ -72,7 +58,6 @@ struct ScopedColor : private Noncopyable {
 	Context		*mCtx;
 	ColorAf		mColor;
 };
-
 
 //! Controls the current blend mode for the current scope.
 struct ScopedBlend : private Noncopyable {
@@ -109,6 +94,14 @@ struct ScopedBlendAdditive : public ScopedBlend
 	ScopedBlendAdditive()
 		: ScopedBlend( VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE )
 	{}
+};
+
+struct ScopedShaderProg : private Noncopyable {
+	ScopedShaderProg( const ShaderProgRef &prog );
+	~ScopedShaderProg();
+
+  private:
+	Context		*mCtx;
 };
 
 struct ScopedScissor : private Noncopyable {

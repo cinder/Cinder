@@ -69,7 +69,7 @@ void draw( const VboMeshRef &mesh, GLint first = 0, GLsizei count = -1 );
 */
 
 //! Draws a Texture2d \a texture, fitting it to \a dstRect. Ignores currently bound shader.
-void draw( const Texture2dRef &texture, const Rectf &dstRect );
+void draw( const Texture2dRef &texture, const Rectf &dstRect, const std::string& uniformName = "uTex0" );
 //! Draws a subregion \a srcArea of a Texture (expressed as upper-left origin pixels).
 //void draw( const Texture2dRef &texture, const Area &srcArea, const Rectf &dstRect );
 //void draw( const Texture2dRef &texture, const vec2 &dstOffset = vec2() );

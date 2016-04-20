@@ -70,18 +70,23 @@ public:
 	virtual ~PipelineLayout();
 
 	static PipelineLayoutRef	create( const DescriptorSetLayoutRef &descriptorSetLayouts, vk::Device *device = nullptr );
+	static PipelineLayoutRef	create( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, const std::vector<VkPushConstantRange>& pushConstantRanges, vk::Device *device = nullptr );
 	static PipelineLayoutRef	create( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, vk::Device *device = nullptr );
+	static PipelineLayoutRef	create( const std::vector<VkPushConstantRange>& pushConstantRanges, vk::Device *device = nullptr );
 
 	VkPipelineLayout			getPipelineLayout() const { return mPipelineLayout; }
 
 private:
 	PipelineLayout( const DescriptorSetLayoutRef &descriptorSetLayouts, vk::Device *device );
-	PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, vk::Device *device );
+	PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, const std::vector<VkPushConstantRange>& pushConstantRanges, vk::Device *device );
+	//PipelineLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, vk::Device *device );
+	//PipelineLayout( const std::vector<VkPushConstantRange>& pushConstantRanges, vk::Device *device );
 
 	VkPipelineLayout			mPipelineLayout = VK_NULL_HANDLE;
 
 	void initialize( const DescriptorSetLayoutRef &descriptorSetLayout );
-	void initialize( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts );
+	void initialize( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, const std::vector<VkPushConstantRange>& pushConstantRanges );
+	//void initialize( const std::vector<VkPushConstantRange>& pushConstantRanges );
 	void destroy( bool removeFromTracking = true );
 	friend class vk::Device;
 };
@@ -95,7 +100,9 @@ public:
 
 	static PipelineLayoutSelectorRef	create( vk::Device *context );
 
+	VkPipelineLayout					getSelectedLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, const std::vector<VkPushConstantRange>& pushConstantRanges ) const;
 	VkPipelineLayout					getSelectedLayout( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts ) const;
+	VkPipelineLayout					getSelectedLayout( const std::vector<VkPushConstantRange>& pushConstantRanges ) const;
 
 private:
 	PipelineLayoutSelector( vk::Device *context );
@@ -103,11 +110,14 @@ private:
 	vk::Device *mDevice = nullptr;
 
 	struct HashData {
-		std::vector<VkDescriptorSetLayout>	mData;
-		uint32_t							mHash = 0;
+		std::vector<VkDescriptorSetLayout>	mDescriptorSetLayouts;
+		std::vector<VkPushConstantRange>	mPushConstantRanges;
+		uint64_t							mHash = 0;
 
-		HashData( const std::vector<VkDescriptorSetLayout>& data, uint32_t hash )
-			: mData( data ), mHash( hash ) {}
+		HashData( const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, const std::vector<VkPushConstantRange>& pushConstantRanges, uint64_t hash )
+			: mDescriptorSetLayouts( descriptorSetLayouts ), mPushConstantRanges( pushConstantRanges ), mHash( hash ) {}
+		HashData( const std::vector<VkPushConstantRange>& pushConstantRnages, uint64_t hash )
+			: mPushConstantRanges( pushConstantRnages ), mHash( hash ) {}
 	};
 	using HashPair = std::pair<PipelineLayoutSelector::HashData, PipelineLayoutRef>;
 
@@ -169,7 +179,7 @@ public:
 		Options& setCullModeBack() { return setCullMode( VK_CULL_MODE_BACK_BIT ); }
 		Options& setCullModeFrontAndBack() { return setCullMode( VK_CULL_MODE_FRONT_AND_BACK ); }
 
-		Options& setSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
+		Options& setRasterizationSamples( VkSampleCountFlagBits value ) { mSamples = value; return *this; }
 
 	private:
 		VkPrimitiveTopology								mTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

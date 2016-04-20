@@ -147,23 +147,6 @@ geom::Attrib attributeNameToSemantic( const std::string& name )
 	return result;
 }
 
-//void copyUniformVariableData( GlslUniformDataType dataType, size_t arraySize, const uint8_t* srcData, const size_t srcDataSizeBytes, const size_t srcElemStride, uint8_t* dstData, const size_t dstDataSizeBytes, const size_t dstElemStride )
-//{
-//	size_t columnCount = glslUniformDataTypeColumnCount( dataType );
-//	size_t srcColumnStride = srcElemStride / columnCount;
-//	size_t dstColumnStride = dstElemStride / columnCount;
-//	for( size_t i = 0; i < arraySize; ++i ) {
-//		const uint8_t* src = srcData + ( i * srcElemStride );
-//		uint8_t* dst = dstData + ( i * dstElemStride );
-//		for( size_t column = 0; column < columnCount; ++column ) {
-//			size_t nbytes = std::min( srcColumnStride, dstColumnStride );
-//			std::memcpy( dst, src, nbytes );
-//			src += srcColumnStride;
-//			dst += dstColumnStride;
-//		}
-//	}
-//}
-
 // -------------------------------------------------------------------------------------------------
 // UniformLayout::Block
 // -------------------------------------------------------------------------------------------------
@@ -180,31 +163,18 @@ UniformLayout::Uniform::Uniform( const std::string& name, GlslUniformDataType da
 	mSemantic = uniformNameToSemantic( uniformName );
 }
 
-//size_t UniformLayout::Block::getSizeBytes() const
-//{
-//	size_t result = 0;
-//	for( auto& elem : mUniforms ) {
-//		size_t dataTypeSize = glslUniformDataTypeSizeBytes( elem.first.getDataType() );
-//		result += ( dataTypeSize * elem.first.getArraySize() );
-//	}
-//	// Round to next multiple of 16
-//	result = ( result + 0xF) & ~0xF;
-//	return result; 
-//}
+// -------------------------------------------------------------------------------------------------
+// UniformLayout::Block
+// -------------------------------------------------------------------------------------------------
+uint32_t UniformLayout::PushConstant::getSize() const
+{
+	uint32_t result = static_cast<uint32_t>( getArraySize()*glslUniformDataTypeSizeBytes( getDataType() ) );
+	return result;
+}
 
-//size_t UniformLayout::Block::getSizeBytesStd140() const
-//{
-//	size_t result = 0;
-//	for( auto& elem : mUniforms ) {
-//		size_t dataTypeSize = glslUniformDataTypeSizeBytesStd140( elem.first.getDataType() );
-//		size_t arraySize = elem.first.getArraySize();
-//		result += ( dataTypeSize * arraySize );
-//	}
-//	// Round to next multiple of 16
-//	result = ( result + 0xF) & ~0xF;
-//	return result; 
-//}
-
+// -------------------------------------------------------------------------------------------------
+// UniformLayout::Block
+// -------------------------------------------------------------------------------------------------
 void UniformLayout::Block::sortUniformsByOffset()
 {
 	std::sort(
@@ -216,9 +186,6 @@ void UniformLayout::Block::sortUniformsByOffset()
 	);
 }
 
-// -------------------------------------------------------------------------------------------------
-// UniformLayout::Block
-// -------------------------------------------------------------------------------------------------
 UniformLayout::Block::UniformStore* UniformLayout::Block::findUniformObject( const std::string& name, GlslUniformDataType dataType, bool addIfNotExits )
 {
 	UniformLayout::Block::UniformStore* result = nullptr;
@@ -263,9 +230,21 @@ void UniformLayout::Binding::setTexture( const vk::TextureBaseRef& texture )
 	setDirty();
 }
 
-void UniformLayout::Binding::sortUniformsByOffset()
+void UniformLayout::Binding::sortByOffset()
 {
 	mBlock.sortUniformsByOffset();
+}
+
+std::vector<UniformLayout::PushConstant> UniformLayout::Binding::getPushConstants() const
+{
+	std::vector<UniformLayout::PushConstant> result;
+	if( isPushConstants() ) {
+		const auto& uniforms = mBlock.getUniforms();
+		for( const auto& uniformStore : uniforms ) {
+			result.push_back( UniformLayout::PushConstant( mShaderStages, uniformStore.first ) );
+		}
+	}
+	return result;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -320,7 +299,7 @@ void UniformLayout::addUniformImpl( GlslUniformDataType dataType, const std::str
 
 	std::string bindingName = tokens[0];
 
-	auto bindingRef = findBindingObject( bindingName, Binding::Type::BLOCK, true );
+	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY_BLOCK, true );
 	if( bindingRef ) {
 		// NOTE: Use the full name (in block.uniform format) for the uniform name
 		auto uniformRef = bindingRef->mBlock.findUniformObject( name, dataType, true );
@@ -357,7 +336,7 @@ void UniformLayout::setUniformValue( GlslUniformDataType dataType, const std::st
 
 	// Find the binding that contains the block we need
 	std::string bindingName = tokens[0];
-	auto bindingRef = findBindingObject( bindingName, Binding::Type::BLOCK, false );
+	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY_BLOCK, false );
 	if( ! bindingRef ) {
 		return;
 	}
@@ -451,7 +430,7 @@ void UniformLayout::addBinding( vk::UniformLayout::Binding::Type bindingType, co
 	auto bindingRef = findBindingObject( bindingName, bindingType, true );
 	if( bindingRef ) {
 		bindingRef->setBinding( bindingNumber, setNumber );
-		bindingRef->setStages( bindingStages );
+		bindingRef->setShaderStages( bindingStages );
 	}
 }
 
@@ -460,9 +439,19 @@ UniformLayout& UniformLayout::setBinding( const std::string& bindingName, uint32
 	auto bindingRef = findBindingObject( bindingName, Binding::Type::ANY, true );
 	if( bindingRef ) {
 		bindingRef->setBinding( bindingNumber, setNumber );
-		bindingRef->setStages( bindingStages );
+		bindingRef->setShaderStages( bindingStages );
 	}
 	return *this;
+}
+
+std::vector<UniformLayout::PushConstant> UniformLayout::getPushConstants() const
+{
+	std::vector<UniformLayout::PushConstant> result;
+	for( const auto& binding : mBindings ) {
+		auto ranges = binding.getPushConstants();
+		std::copy( std::begin( ranges ), std::end( ranges ), std::back_inserter( result ) );
+	}
+	return result;
 }
 
 void UniformLayout::addSet( uint32_t setNumber, uint32_t changeFrequency )
@@ -639,10 +628,10 @@ UniformLayout& UniformLayout::addUniform( const std::string& name, const vk::Tex
 	return *this;
 }
 
-void UniformLayout::sortUniformsByOffset()
+void UniformLayout::sortByOffset()
 {
 	for( auto& binding : mBindings ) {
-		binding.sortUniformsByOffset();
+		binding.sortByOffset();
 	}
 }
 
@@ -858,33 +847,34 @@ UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& 
 	// Create DescriptorSetLayoutBindings
 	for( auto& set : mSets ) {
 		for( const auto& binding : set->mBindings ) {
+			// Skip push constants
+			if( UniformLayout::Binding::Type::PUSH_CONSTANTS == binding.getType() ) {
+				continue;
+			}
+			// Proceed with the rest
 			VkDescriptorSetLayoutBinding layoutBinding = {};
 			layoutBinding.binding			= binding.getBinding();
 			layoutBinding.descriptorCount	= 1;
-			layoutBinding.stageFlags		= binding.getStages();
+			layoutBinding.stageFlags		= binding.getShaderStages();
 			layoutBinding.pImmutableSamplers = nullptr;
 			switch( binding.getType() ) {
 				case UniformLayout::Binding::Type::BLOCK: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
 				break;
 
 				case UniformLayout::Binding::Type::SAMPLER: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
 				break;
 
 				case UniformLayout::Binding::Type::STORAGE_IMAGE: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
 				break;
 
 				case UniformLayout::Binding::Type::STORAGE_BUFFER: {
 					layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-					//layoutBinding.stageFlags     = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 				}
 				break;
 			}
@@ -902,6 +892,9 @@ UniformSet::UniformSet( const UniformLayout& layout, const UniformSet::Options& 
 		//}
 
 		const auto& srcBindings = set->mDescriptorSetLayoutBindings;
+		if( srcBindings.empty() ) {
+			continue;
+		}
 		
 		// Find the max binding number
 		uint32_t maxBindingNumber = 0;
@@ -1004,6 +997,18 @@ UniformSetRef UniformSet::create( const UniformLayout& layout, const UniformSet:
 {
 	device = ( nullptr != device ) ? device : vk::Context::getCurrent()->getDevice();
 	UniformSetRef result = UniformSetRef( new UniformSet( layout, options, device ) );
+	return result;
+}
+
+std::vector<UniformLayout::PushConstant> UniformSet::getPushConstants() const
+{
+	std::vector<UniformLayout::PushConstant> result;
+	for( const auto& set : mSets ) {
+		for( const auto& binding : set->mBindings ) {
+			auto ranges = binding.getPushConstants();
+			std::copy( std::begin( ranges ), std::end( ranges ), std::back_inserter( result ) );
+		}
+	}
 	return result;
 }
 
@@ -1159,15 +1164,19 @@ void UniformSet::setDefaultUniformVars( vk::Context *context )
 
 void UniformSet::bufferPending( const vk::CommandBufferRef& cmdBuf, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
 {
+	bool addBarrier = false;
 	for( auto& set : mSets ) {
 		for( auto& binding : set->mBindings ) {
 			if( ! binding.isBlock() ) {
 				continue;
 			}
 			binding.getUniformBuffer()->transferPending();
-			//cmdBuf->pipelineBarrierBufferMemory( binding.getUniformBuffer(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
-			cmdBuf->pipelineBarrierBufferMemory( vk::BufferMemoryBarrierParams( binding.getUniformBuffer(), srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
+			addBarrier = true;
 		}
+	}
+
+	if( addBarrier ) {
+		cmdBuf->pipelineBarrierGlobalMemory( vk::GlobalMemoryBarrierParams( srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
 	}
 }
 

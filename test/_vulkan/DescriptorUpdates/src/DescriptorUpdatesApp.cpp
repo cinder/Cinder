@@ -11,6 +11,7 @@ using namespace std;
 #include "Test1.h"
 #include "Test2.h"
 #include "Test3.h"
+#include "Test4.h"
 
 /** \class BasicApp
  *
@@ -25,6 +26,7 @@ private:
 	Test1		mTest1;
 	Test2		mTest2;
 	Test3		mTest3;
+	Test4		mTest4;
 };
 
 void DescriptorUpdatesApp::setup()
@@ -32,10 +34,12 @@ void DescriptorUpdatesApp::setup()
 	//mTest1.disable();
 	//mTest2.disable();
 	//mTest3.disable();
+	//mTest4.disable();
 
 	mTest1.setup();
 	mTest2.setup();
 	mTest3.setup();
+	mTest4.setup();
 }
 
 void DescriptorUpdatesApp::update()
@@ -43,6 +47,7 @@ void DescriptorUpdatesApp::update()
 	mTest1.update();
 	mTest2.update();
 	mTest3.update();
+	mTest4.update();
 }
 
 void DescriptorUpdatesApp::draw()
@@ -50,6 +55,7 @@ void DescriptorUpdatesApp::draw()
 	mTest1.draw();
 	mTest2.draw();
 	mTest3.draw();
+	mTest4.draw();
 }
 
 VkBool32 debugReportVk(
@@ -85,19 +91,19 @@ const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_api_dump",
 	//"VK_LAYER_LUNARG_threading",
 	//"VK_LAYER_LUNARG_mem_tracker",
-	"VK_LAYER_LUNARG_object_tracker",
-	"VK_LAYER_LUNARG_draw_state",
-	"VK_LAYER_LUNARG_param_checker",
-	"VK_LAYER_LUNARG_swapchain",
-	"VK_LAYER_LUNARG_device_limits",
-	"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_LUNARG_object_tracker",
+	//"VK_LAYER_LUNARG_draw_state",
+	//"VK_LAYER_LUNARG_param_checker",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_LUNARG_device_limits",
+	//"VK_LAYER_LUNARG_image",
 	//"VK_LAYER_GOOGLE_unique_objects",
 };
 
 CINDER_APP( 
 	DescriptorUpdatesApp, 
 	RendererVk( RendererVk::Options()
-		.setSamples( VK_SAMPLE_COUNT_8_BIT )
+		.setSamples( VK_SAMPLE_COUNT_1_BIT )
 		.setLayers( gLayers )
 		.setDebugReportCallbackFn( debugReportVk ) 
 	) 

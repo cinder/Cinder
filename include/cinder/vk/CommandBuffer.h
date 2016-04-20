@@ -60,6 +60,25 @@ using VertexBufferRef = std::shared_ptr<VertexBuffer>;
 class CommandBuffer;
 using CommandBufferRef = std::shared_ptr<CommandBuffer>;
 
+//! \class GlobalMemoryBarrierParams
+//!
+//!
+class GlobalMemoryBarrierParams {
+public:
+	GlobalMemoryBarrierParams( VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask = 0, VkPipelineStageFlags dstStageMask = 0 );
+	virtual ~GlobalMemoryBarrierParams() {}
+	GlobalMemoryBarrierParams&		setSrcAccessMask( VkAccessFlags value, bool exclusive = false ) { if( exclusive ) { mBarrier.srcAccessMask = value; } else { mBarrier.srcAccessMask |= value; } return *this; }
+	GlobalMemoryBarrierParams&		setDstAccessMask( VkAccessFlags value, bool exclusive = false ) { if( exclusive ) { mBarrier.dstAccessMask = value; } else { mBarrier.dstAccessMask |= value; } return *this; }
+	GlobalMemoryBarrierParams&		setSrcStageMask( VkPipelineStageFlags value, bool exclusive = false ) { if( exclusive ) { mSrcStageMask = value; } else { mSrcStageMask |= value; } return *this; }
+	GlobalMemoryBarrierParams&		setDstStageMask( VkPipelineStageFlags value, bool exclusive = false ) { if( exclusive ) { mDstStageMask = value; } else { mDstStageMask |= value; } return *this; }
+private:
+	GlobalMemoryBarrierParams();
+	VkMemoryBarrier mBarrier;
+	VkPipelineStageFlags mSrcStageMask = 0;
+	VkPipelineStageFlags mDstStageMask = 0;
+	friend class CommandBuffer;
+};
+
 //! \class BufferMemoryBarrierParams
 //!
 //!
@@ -177,6 +196,7 @@ public:
 	void bindIndexBuffer( const IndexBufferRef& indexBuffer, VkDeviceSize offset = 0 );
 
 
+	void pipelineBarrierGlobalMemory( const vk::GlobalMemoryBarrierParams& params );
 	void pipelineBarrierBufferMemory( const vk::BufferMemoryBarrierParams& params );
 	void pipelineBarrierImageMemory( const vk::ImageMemoryBarrierParams& params );
 

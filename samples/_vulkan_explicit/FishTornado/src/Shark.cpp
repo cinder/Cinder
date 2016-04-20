@@ -66,15 +66,6 @@ Shark::Shark( FishTornadoApp *app )
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "shark/shark.vert" ) )
 			.fragment( loadAsset( "shark/shark.frag" ) );
-			//.binding( "ciBlock0",     0 )
-			//.binding( "ciBlock1",     1 )
-			//.binding( "uDiffuseTex",  2 )
-			//.binding( "uNormalsTex",  3 )
-			//.binding( "uCausticsTex", 4 )
-			//.binding( "uShadowMap",   5 )
-			//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			//.attribute( geom::Attrib::NORMAL,       1, 0, vk::glsl_attr_vec3 )
-			//.attribute( geom::Attrib::TEX_COORD_0,  2, 0, vk::glsl_attr_vec2 );
 
 		mShader = vk::GlslProg::create( format );
 	} 
@@ -138,11 +129,13 @@ void Shark::update( float time, float dt )
 	mMatrix			= mMatrix * rotMat;
 }
 
-void Shark::updateForDepthFbo()
+void Shark::drawToDepthFbo()
 {
 	auto light = mApp->getLight();
 	auto ocean = mApp->getOcean();
 	if( light && ocean ) {
+		vk::cullMode( VK_CULL_MODE_FRONT_BIT );
+
 		// LoResBatch
 		{
 			mLoResBatch->uniform( "ciBlock0.uShadowMvp",	light->getBiasedViewProjection() );
@@ -166,18 +159,19 @@ void Shark::updateForDepthFbo()
 
 			vk::pushModelView();
 			vk::multModelMatrix( mMatrix );
-			vk::context()->setDefaultUniformVars( mLoResBatch );
-			vk::context()->addPendingUniformVars( mLoResBatch );
+			mLoResBatch->draw();
 			vk::popModelView();
 		}
 	}
 }
 
-void Shark::updateForMainFbo()
+void Shark::draw()
 {
 	auto light = mApp->getLight();
 	auto ocean = mApp->getOcean();
 	if( light && ocean ) {
+		vk::cullMode( VK_CULL_MODE_BACK_BIT );
+
 		// HiResBatch
 		{
 			mHiResBatch->uniform( "ciBlock0.uShadowMvp",	light->getBiasedViewProjection() );
@@ -201,32 +195,9 @@ void Shark::updateForMainFbo()
 
 			vk::pushModelView();
 			vk::multModelMatrix( mMatrix );
-			vk::context()->setDefaultUniformVars( mHiResBatch );
-			vk::context()->addPendingUniformVars( mHiResBatch );
+			mHiResBatch->draw();
 			vk::popModelView();
 		}
-
-		mCanDraw = true;
 	}
-}
-
-void Shark::drawToDepthFbo()
-{
-	if( ! mCanDraw ) {
-		return;
-	}
-
-	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
-	mLoResBatch->draw();
-}
-
-void Shark::draw()
-{
-	if( ! mCanDraw ) {
-		return;
-	}
-
-	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-	mHiResBatch->draw();
 }
 

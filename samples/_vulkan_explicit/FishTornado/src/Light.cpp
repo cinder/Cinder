@@ -38,8 +38,9 @@
 
 #include "Light.h"
 
-#include "cinder/vk/ShaderProg.h"
+#include "cinder/vk/CommandBuffer.h"
 #include "cinder/vk/Context.h"
+#include "cinder/vk/ShaderProg.h"
 #include "cinder/vk/wrapper.h"
 #include "cinder/Rand.h"
 
@@ -77,6 +78,7 @@ Light::Light()
 	mShadowMapTex = vk::Texture2d::create( shadowMapSize, shadowMapSize, depthFormat );
 	ci::vk::transitionToFirstUse( mShadowMapTex, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vk::context() );
 
+	//VkFormat blurredInternalFormat = VK_FORMAT_R16_SFLOAT;
 	VkFormat blurredInternalFormat = VK_FORMAT_R16_SFLOAT;
 	depthFormat.setInternalFormat( blurredInternalFormat );
 	depthFormat.setUsageSampled( true );
@@ -90,9 +92,9 @@ Light::Light()
 	try {			
 		ci::vk::RenderPass::Options renderPassOptions = ci::vk::RenderPass::Options();
 		// Attachments
-		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mShadowMapTex->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ) );
-		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[0]->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ) );
-		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[1]->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ) );
+		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mShadowMapTex->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL ) );
+		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[0]->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) );
+		renderPassOptions.addAttachment( ci::vk::RenderPass::Attachment( mBlurredShadowMapTex[1]->getFormat().getInternalFormat() ).setInitialAndFinalLayout( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) );
 		// Subpasses
 		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addDepthStencilAttachment( 0 ) );
 		renderPassOptions.addSubPass( ci::vk::RenderPass::Subpass().addColorAttachment( 1 ).addPreserveAttachment( 0 ) );
@@ -112,8 +114,11 @@ Light::Light()
 			spd2.setSrcAccessMask( VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT );
 			spd2.setDstAccessMask( VK_ACCESS_COLOR_ATTACHMENT_READ_BIT );
 			renderPassOptions.addSubpassDependency( spd2 );
-
 		}
+		// Subpass self dependencies
+		renderPassOptions.addSubpassSelfDependency( 0 );
+		renderPassOptions.addSubpassSelfDependency( 1 );
+		renderPassOptions.addSubpassSelfDependency( 2 );
 		// Create render pass
 		mShadowMapRenderPass = ci::vk::RenderPass::create( renderPassOptions );
 		mShadowMapRenderPass->setAttachmentClearValue( 1, { 0.0f, 0.0f, 0.0f, 0.0f } );
@@ -134,11 +139,6 @@ Light::Light()
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "blur.vert" ) )
 			.fragment( loadAsset( "blur.frag" ) );
-			//.binding( "ciBlock0", 0 )
-			//.binding( "ciBlock1", 1 )
-			//.binding( "uTex", 2 )
-			//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
 
 		mBlurShader = vk::GlslProg::create( format );
 	}
@@ -149,30 +149,30 @@ Light::Light()
 	// Allocate blur rects
 	mBlurRect.resize( 2  );
 
+	geom::Rect blurRect = geom::Rect( mBlurredShadowMapTex[0]->getBounds() ).texCoords( vec2( 0, 0 ), vec2( 1, 0 ), vec2( 1, 1 ), vec2( 0, 1 ) );
+
 	// Rect for vertical pass of blur
 	mBlurShader->uniform( "ciBlock1.res", vec2( mShadowMapTex->getSize() ) );
 	mBlurShader->uniform( "ciBlock1.axis", vec2( 0, 1 ) );
 	mBlurShader->uniform( "ciBlock1.pass0", 1.0f );
 	mBlurShader->uniform( "ciBlock1.pass1", 0.0f );
 	mBlurShader->uniform( "uTex", mShadowMapTex );
-	mBlurRect[0] = SolidRectRef( new SolidRect( mBlurShader ) );
-	mBlurRect[0]->set( mBlurredShadowMapTex[0]->getBounds() );
+	mBlurRect[0] = vk::Batch::create( blurRect, mBlurShader );
 	// Rect for horizontal pass of blur
 	mBlurShader->uniform( "ciBlock1.res", vec2( mBlurredShadowMapTex[0]->getSize() ) );
 	mBlurShader->uniform( "ciBlock1.axis", vec2( 1, 0 ) );
 	mBlurShader->uniform( "ciBlock1.pass0", 0.0f );
 	mBlurShader->uniform( "ciBlock1.pass1", 1.0f );
 	mBlurShader->uniform( "uTex", mBlurredShadowMapTex[0] );
-	mBlurRect[1] = SolidRectRef( new SolidRect( mBlurShader ) );
-	mBlurRect[1]->set( mBlurredShadowMapTex[1]->getBounds() );
+	mBlurRect[1] = vk::Batch::create( blurRect, mBlurShader );
 
 	mBiasMatrix = mat4( 0.5f, 0.0f, 0.0f, 0.0f,
 					    0.0f, 0.5f, 0.0f, 0.0f,
 					    0.0f, 0.0f, 1.0f, 0.0f,
 					    0.5f, 0.5f, 0.0f, 1.0f );
 	
-	mDepthBias			= -0.000025f;
-	mRandomOffset		=  1.0025f;
+	mDepthBias		= -0.000025f;
+	mRandomOffset	=  1.0025f;
 }
 
 LightRef Light::create()
@@ -201,52 +201,23 @@ const ci::vk::RenderPassRef& Light::getRenderPass()
 	return mShadowMapRenderPass;
 }
 
-void Light::update(float time, float dt)
+void Light::update( float time, float dt )
 {
 	mCam.lookAt( vec3( mPos ), mCenter );
-
-	// Update uniforms
-	{
-		vk::ScopedMatrices pushMatrices;
-
-		vk::setMatricesWindow( mBlurredShadowMapTex[0]->getSize() );
-
-		//mBlurRect[0]->getUniformSet()->uniform( "ciBlock1.pass0", 1.0f );
-		//mBlurRect[0]->getUniformSet()->uniform( "ciBlock1.pass1", 0.0f );
-		//mBlurRect[0]->getUniformSet()->uniform( "uTex", mShadowMapTex );
-		vk::context()->setDefaultUniformVars( mBlurRect[0]->getUniformSet() );
-		vk::context()->addPendingUniformVars( mBlurRect[0]->getUniformSet() );
-
-		vk::context()->setDefaultUniformVars( mBlurRect[1]->getUniformSet() );
-		vk::context()->addPendingUniformVars( mBlurRect[1]->getUniformSet() );
-	}
 }
-
-//void Light::draw()
-//{
-//	vk::pushModelMatrix();
-//	vk::translate( vec3( mPos ) );
-//	mBatch->draw();
-//	vk::popModelMatrix();
-//}
 
 void Light::prepareDraw( const ci::vk::CommandBufferRef& cmdBuf )
 {	
 	vk::ImageMemoryBarrierParams barrierParams = vk::ImageMemoryBarrierParams( mShadowMapTex->getImageView()->getImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
 	cmdBuf->pipelineBarrierImageMemory( barrierParams );
 
-	mShadowMapRenderPass->beginRenderExplicit( cmdBuf, mShadowMapFbo );
-	//vk::setMatrices( mCam );
+	mShadowMapRenderPass->beginRenderExplicit( cmdBuf, mShadowMapFbo );	
 }
 
 void Light::finishDraw()
 {
-	/*
-	// Start off with depth texture as source for mBlurRect[0]
-	mBlurRect[0]->getUniformSet()->uniform( "ciBlock1.pass0", 1.0f );
-	mBlurRect[0]->getUniformSet()->uniform( "ciBlock1.pass1", 0.0f );
-	mBlurRect[0]->getUniformSet()->uniform( "uTex", mShadowMapTex );
-	*/
+	vk::cullMode( VK_CULL_MODE_NONE );
+	vk::setMatricesWindow( mBlurredShadowMapTex[0]->getSize() );
 
 	auto& cmdBuf = mShadowMapRenderPass->getCommandBuffer();
 
@@ -259,8 +230,7 @@ void Light::finishDraw()
 		barrierParams = vk::ImageMemoryBarrierParams( mBlurredShadowMapTex[0]->getImageView()->getImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
 		cmdBuf->pipelineBarrierImageMemory( barrierParams );
 
-		//vk::setMatricesWindow( mBlurredShadowMapTex[0]->getSize() );
-		mBlurRect[0]->draw( cmdBuf );
+		mBlurRect[0]->draw();
 	}
 
 	// Horizontal pass of blur
@@ -272,8 +242,7 @@ void Light::finishDraw()
 		barrierParams = vk::ImageMemoryBarrierParams( mBlurredShadowMapTex[1]->getImageView()->getImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
 		cmdBuf->pipelineBarrierImageMemory( barrierParams );
 
-		//vk::setMatricesWindow( mBlurredShadowMapTex[1]->getSize() );
-		mBlurRect[1]->draw( cmdBuf );
+		mBlurRect[1]->draw();
 
 		barrierParams = vk::ImageMemoryBarrierParams( mBlurredShadowMapTex[1]->getImageView()->getImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT );
 		cmdBuf->pipelineBarrierImageMemory( barrierParams );

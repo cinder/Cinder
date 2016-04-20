@@ -1,48 +1,70 @@
-# VK_LAYER_LUNARG_api_dump
-ApiDumpDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-ApiDumpReportFlags = debug,info,error,warn,perf
-ApiDumpDetailed = TRUE
-ApiDumpNoAddr = FALSE
-ApiDumpFile = TRUE
-ApiDumpLogFilename = vk_api_dump_log.txt 
-ApiDumpFlush = FALSE
+# VK_LAYER_LUNARG_api_dump Settings
+lunarg_api_dump.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_api_dump.report_flags = info,warn,perf,error,debug
+lunarg_api_dump.log_filename = stdout
 
-# VK_LAYER_LUNARG_param_checker
-ParamCheckerDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-ParamCheckerReportFlags = debug,info,error,warn,perf
-ParamCheckerDetailed = TRUE
-ParamCheckerFile = TRUE
-ParamCheckerLogFilename = vk_param_checker_log.txt 
-ParamCheckerFlush = FALSE
+# VK_LAYER_LUNARG_core_validation Settings
+lunarg_core_validation.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_core_validation.report_flags = info,warn,perf,error,debug
+lunarg_core_validation.log_filename = stdout
 
-# VK_LAYER_LUNARG_mem_tracker
-MemTrackerDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-MemTrackerReportFlags = debug,info,error,warn,perf
-MemTrackerDetailed = TRUE
-MemTrackerFile = TRUE
-MemTrackerLogFilename = vk_mem_tracker_log.txt 
-MemTrackerFlush = FALSE
+# VK_LAYER_LUNARG_device_limits Settings
+lunarg_device_limits.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_device_limits.report_flags = info,warn,perf,error,debug
+lunarg_device_limits.log_filename = stdout
 
-# VK_LAYER_LUNARG_draw_state
-DrawStateDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-DrawStateReportFlags = debug,info,error,warn,perf
-DrawStateDetailed = TRUE
-DrawStateFile = FALSE
-DrawStateLogFilename = vk_drawstate_log.txt 
-DrawStateFlush = FALSE
+# VK_LAYER_LUNARG_image Settings
+lunarg_image.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_image.report_flags = info,warn,perf,error,debug
+lunarg_image.log_filename = stdout
 
-# VK_LAYER_LUNARG_device_limits
-DeviceLimitsDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-DeviceLimitsReportFlags = debug,info,error,warn,perf
-DeviceLimitsDetailed = TRUE
-DeviceLimitsFile = TRUE
-DeviceLimitsLogFilename = vk_device_limits_log.txt 
-DeviceLimitsFlush = FALSE
+# VK_LAYER_LUNARG_object_tracker Settings
+lunarg_object_tracker.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_object_tracker.report_flags = info,warn,perf,error,debug
+lunarg_object_tracker.log_filename = stdout
 
-# VK_LAYER_LUNARG_image
-ImageDebugAction = VK_DBG_LAYER_ACTION_LOG_MSG
-ImageReportFlags = debug,info,error,warn,perf
-ImageDetailed = TRUE
-ImageFile = FALSE
-ImageLogFilename = vk_image_log.txt 
-ImageFlush = FALSE
+# VK_LAYER_LUNARG_parameter_validation Settings
+lunarg_parameter_validation.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_parameter_validation.report_flags = info,warn,perf,error,debug
+lunarg_parameter_validation.log_filename = stdout
+
+# VK_LAYER_LUNARG_screenshot Settings
+lunarg_screenshot.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_screenshot.report_flags = info,warn,perf,error,debug
+lunarg_screenshot.log_filename = stdout
+
+# VK_LAYER_LUNARG_swapchain Settings
+lunarg_swapchain.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_swapchain.report_flags = info,warn,perf,error,debug
+lunarg_swapchain.log_filename = stdout
+
+# VK_LAYER_GOOGLE_threading Settings
+google_threading.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+google_threading.report_flags = info,warn,perf,error,debug
+google_threading.log_filename = stdout
+
+# VK_LAYER_GOOGLE_unique_objects Settings
+google_unique_objects.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+google_unique_objects.report_flags = info,warn,perf,error,debug
+google_unique_objects.log_filename = stdout
+
+# VK_LAYER_LUNARG_vktrace Settings
+lunarg_vktrace.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_vktrace.report_flags = info,warn,perf,error,debug
+lunarg_vktrace.log_filename = stdout
+
+# VK_LAYER_RENDERDOC_Capture Settings
+renderdoc_capture.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+renderdoc_capture.report_flags = info,warn,perf,error,debug
+renderdoc_capture.log_filename = stdout
+
+# VK_LAYER_VALVE_steam_overlay Settings
+valve_steam_overlay.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+valve_steam_overlay.report_flags = info,warn,perf,error,debug
+valve_steam_overlay.log_filename = stdout
+
+# VK_LAYER_LUNARG_standard_validation Settings
+lunarg_standard_validation.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_standard_validation.report_flags = info,warn,perf,error,debug
+lunarg_standard_validation.log_filename = stdout
+

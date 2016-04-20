@@ -323,9 +323,24 @@ void RendererVk::finishDraw()
 		presenter->endRender( mContext.get() );
 
 		// Submit command buffer for processing
-		const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		VkFence nullFence = VK_NULL_HANDLE;
-		queue->submit( mContext->getDefaultCommandBuffer(), mImageAcquiredSemaphore, waitDstStageMask, nullFence, mRenderingCompleteSemaphore );
+		{
+			const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+			std::vector<vk::CommandBufferRef> cmdBufs          = { mContext->getDefaultCommandBuffer() };
+			std::vector<VkSemaphore>          waitSemaphores   = { mImageAcquiredSemaphore };
+			std::vector<VkPipelineStageFlags> waitStageMasks   = { waitDstStageMask };
+			std::vector<VkSemaphore>          signalSemaphores = { mRenderingCompleteSemaphore };
+
+			const auto& renderWaitSemaphores = mContext->getRenderWaitSemaphores();
+			for( const auto& elem : renderWaitSemaphores ) {
+				waitSemaphores.push_back( elem.first );
+				waitStageMasks.push_back( elem.second );
+			}
+			mContext->clearRenderWaitSemaphores();
+
+			VkFence nullFence = VK_NULL_HANDLE;
+			queue->submit( cmdBufs, waitSemaphores, waitStageMasks, nullFence, signalSemaphores );
+		}
 
 		// Submit present operation to present queue
 		queue->present( mRenderingCompleteSemaphore, presenter );
@@ -377,6 +392,7 @@ void RendererVk::defaultResize()
 	{
 		const ivec2 windowSize = ivec2( width, height );
 		mContext->getPresenter()->resize( windowSize );
+		mContext->getPresenter()->clearSwapchainImages( mContext.get() );
 		mContext->getPresenter()->transitionToFirstUse( mContext.get() );
 
 		vk::viewport( 0, 0, width, height );

@@ -47,6 +47,27 @@
 namespace cinder { namespace vk {
 
 // -------------------------------------------------------------------------------------------------
+// GlobalMemoryBarrier
+// -------------------------------------------------------------------------------------------------
+GlobalMemoryBarrierParams::GlobalMemoryBarrierParams()
+{
+	mBarrier = {};
+	mBarrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+}
+
+GlobalMemoryBarrierParams::GlobalMemoryBarrierParams( VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask )
+	: GlobalMemoryBarrierParams()
+{
+	mBarrier.sType					= VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+	mBarrier.pNext					= nullptr;
+	mBarrier.srcAccessMask			= srcAccessMask;
+	mBarrier.dstAccessMask			= srcAccessMask;
+
+	mSrcStageMask = srcStageMask;
+	mDstStageMask = dstStageMask;
+}
+
+// -------------------------------------------------------------------------------------------------
 // BufferMemoryBarrier
 // -------------------------------------------------------------------------------------------------
 BufferMemoryBarrierParams::BufferMemoryBarrierParams()
@@ -457,6 +478,12 @@ void CommandBuffer::bindDescriptorSet( VkPipelineBindPoint pipelineBindPoint, Vk
 void CommandBuffer::bindIndexBuffer( const IndexBufferRef& indexBuffer, VkDeviceSize offset )
 {
 	bindIndexBuffer( indexBuffer->getBuffer(), offset, indexBuffer->getIndexType() );
+}
+
+void CommandBuffer::pipelineBarrierGlobalMemory( const vk::GlobalMemoryBarrierParams& params )
+{
+	VkMemoryBarrier barrier = params.mBarrier;
+	pipelineBarrier( params.mSrcStageMask, params.mDstStageMask, 0, 1, &barrier, 0, nullptr, 0, nullptr );
 }
 
 void CommandBuffer::pipelineBarrierBufferMemory( const vk::BufferMemoryBarrierParams& params )

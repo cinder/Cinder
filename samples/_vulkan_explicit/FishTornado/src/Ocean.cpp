@@ -198,10 +198,12 @@ void Ocean::update( float time, float dt )
 	}
 }
 
-void Ocean::updateForMainFbo()
+void Ocean::drawSurface()
 {
 	auto light = mApp->getLight();
 	if( light ) {
+		vk::cullMode( VK_CULL_MODE_FRONT_BIT );
+
 		// Surface
 		{
 			const float scale = 1000.0f;
@@ -223,9 +225,16 @@ void Ocean::updateForMainFbo()
 			mSurfaceBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
 			mSurfaceBatch->uniform( "ciBlock1.uTime",			mTime * 0.1f );
 
-			vk::context()->setDefaultUniformVars( mSurfaceBatch );
-			vk::context()->addPendingUniformVars( mSurfaceBatch );
+			mSurfaceBatch->draw();
 		}
+	}
+}
+
+void Ocean::drawFloor()
+{
+	auto light = mApp->getLight();
+	if( light ) {
+		vk::cullMode( VK_CULL_MODE_BACK_BIT );
 
 		// Floor
 		{
@@ -244,9 +253,16 @@ void Ocean::updateForMainFbo()
 			mFloorBatch->uniform( "ciBlock1.uDepthBias",	light->getDepthBias() );
 			mFloorBatch->uniform( "ciBlock1.uFogColor",		FOG_COLOR );
 
-			vk::context()->setDefaultUniformVars( mFloorBatch );
-			vk::context()->addPendingUniformVars( mFloorBatch );
+			mFloorBatch->draw();
 		}
+	}
+}
+
+void Ocean::drawBeams()
+{
+	auto light = mApp->getLight();
+	if( light ) {
+		vk::cullMode( VK_CULL_MODE_NONE );
 
 		// Beams
 		{
@@ -254,47 +270,13 @@ void Ocean::updateForMainFbo()
 
 			vk::rotate( mTime * 0.01f, vec3( 0.0f, 1.0f, 0.0f ) );
 			mBeamsBatch1->uniform( "ciBlock1.uOceanCol", FOG_COLOR );
-			vk::context()->setDefaultUniformVars( mBeamsBatch1 );
-			vk::context()->addPendingUniformVars( mBeamsBatch1 );
+			mBeamsBatch1->draw();
 	
 			vk::rotate( mTime * -0.022f, vec3( 0.0f, 1.0f, 0.0f ) );
 			mBeamsBatch2->uniform( "ciBlock1.uOceanCol", FOG_COLOR );
-			vk::context()->setDefaultUniformVars( mBeamsBatch2 );
-			vk::context()->addPendingUniformVars( mBeamsBatch2 );
+			mBeamsBatch2->draw();
 		}
-
-		mCanDraw = true;
 	}
-}
-
-void Ocean::drawSurface()
-{
-	if( ! mCanDraw ) {
-		return;
-	}
-
-	vk::cullMode( VK_CULL_MODE_FRONT_BIT );
-	mSurfaceBatch->draw();
-}
-
-void Ocean::drawFloor()
-{
-	if( ! mCanDraw ) {
-		return;
-	}
-
-	vk::cullMode( VK_CULL_MODE_BACK_BIT );
-	mFloorBatch->draw();
-}
-
-void Ocean::drawBeams()
-{
-	if( ! mCanDraw ) {
-		return;
-	}
-
-	mBeamsBatch1->draw();
-	mBeamsBatch2->draw();
 }
 
 const vk::TextureRef& Ocean::getCausticsTex() const

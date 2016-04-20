@@ -60,6 +60,7 @@ class CommandPool;
 class DescriptorLayout;
 class DescriptorPool;
 class DescriptorSet;
+class DescriptorSetView;
 class Device;
 class Environment;
 class IndexBuffer;
@@ -77,6 +78,7 @@ using CommandPoolRef = std::shared_ptr<CommandPool>;
 using DescriptorLayoutRef = std::shared_ptr<DescriptorLayout>;
 using DescriptorPoolRef = std::shared_ptr<DescriptorPool>;
 using DescriptorSetRef = std::shared_ptr<DescriptorSet>;
+using DescriptorSetViewRef = std::shared_ptr<DescriptorSetView>;
 using IndexBufferRef =std::shared_ptr<IndexBuffer>;
 using PresenterRef = std::shared_ptr<Presenter>;
 using RenderPassRef = std::shared_ptr<RenderPass>;
@@ -124,7 +126,7 @@ public:
 	const vk::QueueRef&						getGraphicsQueue() const { return mGraphicsQueue; }
 	const vk::QueueRef&						getComputeQueue() const { return mComputeQueue; }
 	const vk::PresenterRef&					getPresenter() const { return mPresenter; }
-	void									addPresentWaitSemaphore( VkSemaphore semaphore, VkPipelineStageFlagBits waitDstStageMask );
+	void									addRenderWaitSemaphore( VkSemaphore semaphore, VkPipelineStageFlagBits waitDstStageMask );
 
 	const vk::CommandPoolRef&				getDefaultCommandPool() const { return mDefaultCommandPool; }
 	const vk::CommandPoolRef&				getDefaultTransientCommandPool() const { return mDefaultCommandPool; }
@@ -281,10 +283,12 @@ private:
 public:
 	ShaderProgRef&				getStockShader( const vk::ShaderDef &shaderDef );
 
+/*
 	void						addPendingUniformVars( const vk::UniformBufferRef& buffer );
 	void						addPendingUniformVars( const vk::UniformSetRef& uniformSetRef );
 	void						addPendingUniformVars( const vk::BatchRef& batch );
 	void						transferPendingUniformBuffer( const vk::CommandBufferRef& cmdBuf, VkAccessFlags srcAccessMask = VK_ACCESS_HOST_WRITE_BIT, VkAccessFlags dstAccessMask = VK_ACCESS_UNIFORM_READ_BIT, VkPipelineStageFlags srcStageMask = VK_PIPELINE_STAGE_HOST_BIT, VkPipelineStageFlags dstStageMask = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+*/
 
 protected:
 	//! Returns \c true if \a value is different from the previous top of the stack
@@ -328,7 +332,10 @@ private:
 	vk::QueueRef													mGraphicsQueue;
 	vk::QueueRef													mComputeQueue;
 	vk::PresenterRef												mPresenter;
-	std::vector<std::pair<VkSemaphore, VkPipelineStageFlagBits>>	mPresentWaitSemaphores; 
+
+	std::vector<std::pair<VkSemaphore, VkPipelineStageFlagBits>>		mRenderWaitSemaphores; 
+	const std::vector<std::pair<VkSemaphore, VkPipelineStageFlagBits>>	getRenderWaitSemaphores() const { return mRenderWaitSemaphores; }
+	void																clearRenderWaitSemaphores();
 
 	// Default graphics variables
 	std::pair<ivec2,ivec2>					mDefaultViewport;
@@ -404,6 +411,7 @@ private:
 	std::vector<vk::DescriptorSetRef>			mTransientDescriptorSets;
 	std::vector<vk::DescriptorPoolRef>			mTransientDescriptorPools;
 	std::vector<vk::DescriptorLayoutRef>		mTransientDescriptorLayouts;
+	std::vector<vk::DescriptorSetViewRef>		mTransientDescriptorSetViews;
 	std::vector<vk::UniformSetRef>				mTransientUniformSets;
 
 public:
@@ -413,6 +421,7 @@ public:
 	void	addTransient( const vk::DescriptorPoolRef& obj );
 	void	addTransient( const vk::DescriptorSetRef& obj );
 	void	addTransient( const vk::DescriptorLayoutRef& obj );
+	void	addTransient( const vk::DescriptorSetViewRef& obj );
 	void	addTransient( const vk::UniformSetRef& obj );
 	void	clearTransients();
 };

@@ -40,9 +40,7 @@ void Test2::setup()
 		try {
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( loadAsset("shader_2.vert") )
-				.fragment( loadAsset("shader_2.frag") )
-				.attribute( geom::Attrib::POSITION,    0, 0, vk::glsl_attr_vec4 )
-				.attribute( geom::Attrib::TEX_COORD_0, 1, 0, vk::glsl_attr_vec2 );
+				.fragment( loadAsset("shader_2.frag") );
 
 			mShader = vk::GlslProg::create( format );
 			mShader->uniform( "uTex0", mTexture );
@@ -64,13 +62,14 @@ void Test2::setup()
 		bindings[0].descriptorType		= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		bindings[0].descriptorCount		= 1;
 		bindings[0].stageFlags			= VK_SHADER_STAGE_VERTEX_BIT;
-		/*
+		
+		// Partially fill this in so it doesn't get zero'd out and overwrite the entry at binding[0]
 		bindings[1] = {};
 		bindings[1].binding				= 1;
-		bindings[1].descriptorType		= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		bindings[1].descriptorCount		= 1;
-		bindings[1].stageFlags			= VK_SHADER_STAGE_VERTEX_BIT;
-		*/
+		//bindings[1].descriptorType	= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		//bindings[1].descriptorCount	= 1;
+		//bindings[1].stageFlags		= VK_SHADER_STAGE_VERTEX_BIT;
+		
 		bindings[2] = {};
 		bindings[2].binding				= 2;
 		bindings[2].descriptorType		= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -222,7 +221,7 @@ void Test2::draw()
 		pipelineSelector->setDepthTest( ctx->getDepthTest() );
 		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-		pipelineSelector->setShaderStages( mShader->getShaderStages() );
+		pipelineSelector->setShaderStages( mShader->getPipelineShaderStages() );
 		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 		pipelineSelector->setSubPass( ctx->getSubpass() );
 		pipelineSelector->setPipelineLayout( mPipelineLayout->getPipelineLayout() );

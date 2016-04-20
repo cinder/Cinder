@@ -97,7 +97,7 @@ void ComputeBasicApp::setup()
 
 		mComputePipelineLayout = vk::PipelineLayout::create( mComputeDescriptorView->getCachedDescriptorSetLayouts() );
 
-		const std::vector<VkPipelineShaderStageCreateInfo>&	shaderStages = mComputeShader->getPipelineShaderStages();
+		const std::vector<VkPipelineShaderStageCreateInfo>&	shaderStages = mComputeShader->getShaderStages();
 		VkComputePipelineCreateInfo createInfo = {};
 		createInfo.sType				= VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
 		createInfo.pNext				= nullptr;
@@ -127,12 +127,7 @@ void ComputeBasicApp::generateComputeCommandBuffer( const vk::CommandBufferRef& 
 		{
 			float t = 2.0f*getElapsedSeconds();
 			mComputeUniformSet->uniform( "ciBlock0.pos", vec2( 0.5 ) + 0.5f*vec2( cos( t ), sin( t ) ) );
-			vk::context()->addPendingUniformVars( mComputeUniformSet );
-		}
-
-		// Transfer uniforms
-		{
-			vk::context()->transferPendingUniformBuffer( cmdBuf, VK_ACCESS_UNIFORM_READ_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
+			mComputeUniformSet->bufferPending( cmdBuf, VK_ACCESS_UNIFORM_READ_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
 		}
 
 		// Compute
@@ -157,17 +152,7 @@ void ComputeBasicApp::generateCommandBuffer( const vk::CommandBufferRef& cmdBuf 
 {
 	cmdBuf->begin();
 	{
-		// Update uniforms
-		{
-			vk::setMatricesWindow( getWindowSize() );		
-			mBatch->setDefaultUniformVars( vk::context() );
-			vk::context()->addPendingUniformVars( mBatch );
-		}
-
-		// Transfer uniforms
-		{
-			vk::context()->transferPendingUniformBuffer( cmdBuf );
-		}
+		vk::setMatricesWindow( getWindowSize() );		
 
 		// Render
 		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );
@@ -259,15 +244,17 @@ VkBool32 debugReportVk(
 
 const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_api_dump",
-	//"VK_LAYER_LUNARG_threading",
-	//"VK_LAYER_LUNARG_mem_tracker",
-	//"VK_LAYER_LUNARG_object_tracker",
-	//"VK_LAYER_LUNARG_draw_state",
-	//"VK_LAYER_LUNARG_param_checker",
-	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_LUNARG_core_validation",
 	//"VK_LAYER_LUNARG_device_limits",
 	//"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_LUNARG_object_tracker",
+	//"VK_LAYER_LUNARG_parameter_validation",
+	//"VK_LAYER_LUNARG_screenshot",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_GOOGLE_threading",
 	//"VK_LAYER_GOOGLE_unique_objects",
+	//"VK_LAYER_LUNARG_vktrace",
+	//"VK_LAYER_LUNARG_standard_validation",
 };
 
 CINDER_APP( 

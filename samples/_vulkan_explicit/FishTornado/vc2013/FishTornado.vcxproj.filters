@@ -33,9 +33,6 @@
     <ClCompile Include="..\src\Shark.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\DrawUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -57,9 +54,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Shark.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\DrawUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\FishTornadoApp.h">

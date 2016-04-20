@@ -213,6 +213,15 @@ RenderPass::Options::Options( VkFormat colorFormat, VkFormat depthStencilFormat,
 	addSubPass( subPass );
 }
 
+RenderPass::Options& RenderPass::Options::addSubpassSelfDependency( uint32_t subpassIndex, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask )
+{
+	vk::RenderPass::SubpassDependency subpassDep = vk::RenderPass::SubpassDependency( subpassIndex, subpassIndex )
+		.setStageMasks( srcStageMask, dstStageMask )
+		.setAccessMasks( srcAccessMask, dstAccessMask );
+	addSubpassDependency( subpassDep );
+	return *this;
+}
+
 // -------------------------------------------------------------------------------------------------
 // RenderPass
 // -------------------------------------------------------------------------------------------------
@@ -456,8 +465,8 @@ void RenderPass::beginRender( const vk::CommandBufferRef& cmdBuf,const vk::Frame
 	mCommandBuffer->begin();
 	vk::context()->pushCommandBuffer( mCommandBuffer );
 
-	// Tranmsfer uniform data
-	vk::context()->transferPendingUniformBuffer( mCommandBuffer, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
+	//// Tranmsfer uniform data
+	//vk::context()->transferPendingUniformBuffer( mCommandBuffer, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 	// Viewport, scissor
 	VkRect2D ra;

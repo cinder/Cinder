@@ -293,6 +293,7 @@ void FishTornadoApp::setup()
 			.addColorAttachment( 0, 2 )
 			.addDepthStencilAttachment( 1 );
 		renderPassOptions.addSubPass( subpasses );
+		renderPassOptions.addSubpassSelfDependency( 0 );
 		mMainRenderPass = ci::vk::RenderPass::create( renderPassOptions );
 
 		mMainRenderPass->setAttachmentClearValue( 0, { FOG_COLOR.r, FOG_COLOR.g, FOG_COLOR.b, 1.0 }  );
@@ -347,12 +348,6 @@ void FishTornadoApp::loadShaders()
 		vk::ShaderProg::Format format = vk::ShaderProg::Format()
 			.vertex( loadAsset( "main.vert" ) )
 			.fragment( loadAsset( "main.frag" ) );
-			//.binding( "ciBlock0", 0 )
-			//.binding( "ciBlock1", 1 )
-			//.binding( "uNoiseNormalsTex", 2 )
-			//.binding( "uFboTex", 3 )
-			//.attribute( geom::Attrib::POSITION,     0, 0, vk::glsl_attr_vec4 )
-			//.attribute( geom::Attrib::TEX_COORD_0,  1, 0, vk::glsl_attr_vec2 );
 
 		mMainShader = vk::GlslProg::create( format );
 	}
@@ -451,55 +446,6 @@ void FishTornadoApp::update()
 				mGpuFlocker->update( mTimeElapsed, mTimeDelta, mCamera.getEyePoint(), mShark->getPos() );
 			}
 		}
-
-		// Update uniforms for depth render
-		{
-			vk::ScopedMatrices pushMatrices;
-			vk::setMatrices( mLight->getCam() );
-
-			if( mSharkLoaded && mDrawShark ) {
-				mShark->updateForDepthFbo();
-			}
-
-			if( mFishLoaded && mSharkLoaded ) {
-				mGpuFlocker->updateForDepthFbo();
-			}
-		}
-
-		// Update uniforms for main render
-		{
-			vk::ScopedMatrices pushMatrices;
-			vk::setMatrices( mCamera );
-
-			if( mOceanLoaded && mDrawOcean ) {
-				mOcean->updateForMainFbo();
-			}
-
-			if( mSharkLoaded && mDrawShark ) {
-				mShark->updateForMainFbo();
-			}
-
-			if( mFishLoaded && mSharkLoaded ) {
-				mGpuFlocker->updateForMainFbo();
-			}
-		}
-	}
-
-	// Update uniforms for present render
-	{
-		vk::ScopedMatrices pushMatrices;
-		vk::setMatricesWindow( getWindowSize() );
-		mMainBatch->uniform( "uFboTex",					mMainColorTex );
-		mMainBatch->uniform( "uNoiseNormalsTex",		mNoiseNormalsTex );
-		mMainBatch->uniform( "ciBlock1.uTime",			mTimeElapsed );
-		mMainBatch->uniform( "ciBlock1.uContrast",		mContrast );
-		mMainBatch->uniform( "ciBlock1.uExposure",		mExposure );
-		mMainBatch->uniform( "ciBlock1.uBrightness",	mBrightness );
-		mMainBatch->uniform( "ciBlock1.uBlend",			mBlend );
-		mMainBatch->uniform( "ciBlock1.uDistort",		mDistortion );
-		mMainBatch->uniform( "ciBlock1.uResolution",	vec2( getWindowWidth(), getWindowHeight() ) );
-		vk::context()->setDefaultUniformVars( mMainBatch->getUniformSet() );
-		vk::context()->addPendingUniformVars( mMainBatch );
 	}
 }
 
@@ -513,6 +459,10 @@ void FishTornadoApp::drawToDepthFbo( const ci::vk::CommandBufferRef& cmdBuf )
 	mLight->prepareDraw( cmdBuf );
 
 	if( mCanAnimate ) {
+		vk::ScopedMatrices pushMatrices;
+		vk::setMatrices( mLight->getCam() );
+
+
 		if( mSharkLoaded && mDrawShark && mLightLoaded && mOceanLoaded ) {
 			mShark->drawToDepthFbo();	
 		}
@@ -529,6 +479,9 @@ void FishTornadoApp::drawToMainFbo( const ci::vk::CommandBufferRef& cmdBuf )
 {
 	mMainRenderPass->beginRenderExplicit( cmdBuf, mMainFbo );
 	{
+		vk::ScopedMatrices pushMatrices;
+		vk::setMatrices( mCamera );
+
 		vk::enableDepthRead();
 		vk::enableDepthWrite();
 		vk::enableAlphaBlending();
@@ -568,9 +521,6 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 
 	cmdBuf->begin();
 	{
-		// Copy uniform vars to GPU
-		vk::context()->transferPendingUniformBuffer( cmdBuf );
-
 		if( mCanAnimate ) {
 			if( mFishLoaded && mSharkLoaded ) {
 				mGpuFlocker->processSimulation( cmdBuf );
@@ -586,6 +536,19 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 		// Present
 		vk::context()->getPresenter()->beginRender( cmdBuf, vk::context() );		
 		{
+			vk::ScopedMatrices pushMatrices;
+			vk::setMatricesWindow( getWindowSize() );
+
+			mMainBatch->uniform( "uFboTex",					mMainColorTex );
+			mMainBatch->uniform( "uNoiseNormalsTex",		mNoiseNormalsTex );
+			mMainBatch->uniform( "ciBlock1.uTime",			mTimeElapsed );
+			mMainBatch->uniform( "ciBlock1.uContrast",		mContrast );
+			mMainBatch->uniform( "ciBlock1.uExposure",		mExposure );
+			mMainBatch->uniform( "ciBlock1.uBrightness",	mBrightness );
+			mMainBatch->uniform( "ciBlock1.uBlend",			mBlend );
+			mMainBatch->uniform( "ciBlock1.uDistort",		mDistortion );
+			mMainBatch->uniform( "ciBlock1.uResolution",	vec2( getWindowWidth(), getWindowHeight() ) );
+
 			mMainBatch->draw();
 /*
 			vk::setMatricesWindow( getWindowSize() );
@@ -601,10 +564,11 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 				vk::setMatricesWindow( getWindowSize() );
 				//vk::color( 1.0f, 1.0f, 1.0f );
 				float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
-				vk::draw( mLight->getTexture(), Rectf( 0, 0, size, size ) ); 
+				//vk::draw( mLight->getTexture(), Rectf( 0, 0, size, size ) ); 
 				vk::draw( mLight->getBlurredTexture(), Rectf( 0, 0, size, size ) + vec2( size + 10, 0 ) ); 
 			}
 */
+
 		}
 		vk::context()->getPresenter()->endRender( vk::context() );
 	}
@@ -666,7 +630,10 @@ VkBool32 debugReportVk(
 		//CI_LOG_I( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
 	}
 	else if( flags & VK_DEBUG_REPORT_ERROR_BIT_EXT ) {
-		//CI_LOG_E( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+		CI_LOG_E( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
+		if( std::string::npos != std::string( pMessage ).find( "Attachment 0" ) ) {
+			int stopMe = 1;
+		}
 	}
 	else if( flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT ) {
 		//CI_LOG_D( "[" << pLayerPrefix << "] : " << pMessage << " (" << messageCode << ")" );
@@ -676,15 +643,17 @@ VkBool32 debugReportVk(
 
 const std::vector<std::string> gLayers = {
 	//"VK_LAYER_LUNARG_api_dump",
-	//"VK_LAYER_LUNARG_threading",
-	//"VK_LAYER_LUNARG_mem_tracker",
-	//"VK_LAYER_LUNARG_object_tracker",
-	//"VK_LAYER_LUNARG_draw_state",
-	//"VK_LAYER_LUNARG_param_checker",
-	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_LUNARG_core_validation",
 	//"VK_LAYER_LUNARG_device_limits",
 	//"VK_LAYER_LUNARG_image",
+	//"VK_LAYER_LUNARG_object_tracker",
+	//"VK_LAYER_LUNARG_parameter_validation",
+	//"VK_LAYER_LUNARG_screenshot",
+	//"VK_LAYER_LUNARG_swapchain",
+	//"VK_LAYER_GOOGLE_threading",
 	//"VK_LAYER_GOOGLE_unique_objects",
+	//"VK_LAYER_LUNARG_vktrace",
+	//"VK_LAYER_LUNARG_standard_validation",
 };
 
 CINDER_APP( 

@@ -107,6 +107,7 @@
     <ClCompile Include="..\src\Test1.cpp" />
     <ClCompile Include="..\src\Test2.cpp" />
     <ClCompile Include="..\src\Test3.cpp" />
+    <ClCompile Include="..\src\Test4.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
@@ -114,6 +115,7 @@
     <ClInclude Include="..\src\Test1.h" />
     <ClInclude Include="..\src\Test2.h" />
     <ClInclude Include="..\src\Test3.h" />
+    <ClInclude Include="..\src\Test4.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

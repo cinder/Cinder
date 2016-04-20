@@ -87,6 +87,7 @@ public:
 	static DescriptorSetLayoutSelectorRef	create( vk::Device *device );
 
 	VkDescriptorSetLayout					getSelectedLayout( const std::vector<VkDescriptorSetLayoutBinding>& bindings ) const;
+	std::vector<VkDescriptorSetLayout>		getSelectedLayout( const std::vector<std::vector<VkDescriptorSetLayoutBinding>>& setOfBindings ) const;
 
 private:
 	DescriptorSetLayoutSelector( vk::Device *device );

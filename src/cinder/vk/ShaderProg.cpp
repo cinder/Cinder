@@ -57,7 +57,11 @@ namespace cinder { namespace vk {
 // ShaderProg::Format
 // -------------------------------------------------------------------------------------------------
 ShaderDef::ShaderDef()
-	: mColor( false ), mTextureMapping( false ), mTextureUnormalizedCoordinates( false ), mLambert( false ), mUniformBasedPosAndTexCoord( false )
+	: mColor( false ), 
+	  mTextureMapping( false ), 
+	  mTextureUnormalizedCoordinates( false ), 
+	  mLambert( false ), 
+	  mUniformBasedPosAndTexCoord( false )
 {
 }
 
@@ -95,7 +99,6 @@ bool ShaderDef::operator<( const ShaderDef &rhs ) const
 		return rhs.mLambert;
 	if( rhs.mUniformBasedPosAndTexCoord != mUniformBasedPosAndTexCoord )
 		return rhs.mUniformBasedPosAndTexCoord;
-	
 	return false;
 }
 
@@ -488,38 +491,31 @@ static bool glslToSpv( const VkShaderStageFlagBits shader_type, const char *psha
 {
     glslang::TProgram& program = *new glslang::TProgram;
     const char *shaderStrings[1];
-    TBuiltInResource Resources;
-    initResources(Resources);
+    TBuiltInResource resources;
+    initResources( resources );
 
     // Enable SPIR-V and Vulkan rules when parsing GLSL
-    EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
+    EShMessages messages = (EShMessages)( EShMsgSpvRules | EShMsgVulkanRules );
 
-    EShLanguage stage = findLanguage(shader_type);
-    glslang::TShader* shader = new glslang::TShader(stage);
+    EShLanguage stage = findLanguage( shader_type );
+    glslang::TShader* shader = new glslang::TShader( stage );
 
     shaderStrings[0] = pshader;
-    shader->setStrings(shaderStrings, 1);
+    shader->setStrings( shaderStrings, 1 );
 
-    if (! shader->parse(&Resources, 100, false, messages)) {
-        puts(shader->getInfoLog());
-        puts(shader->getInfoDebugLog());
+    if( ! shader->parse( &resources, 100, false, messages ) ) {
 		std::string msg = shader->getInfoLog();
 		throw std::runtime_error( msg );
-        //return false; // something didn't work
     }
 
-    program.addShader(shader);
+    program.addShader( shader );
 
     //
     // Program-level processing...
     //
-
-    if (! program.link(messages)) {
-        puts(program.getInfoLog());
-        puts(program.getInfoDebugLog());
+    if ( ! program.link( messages ) ) {
 		std::string msg = program.getInfoLog();
 		throw std::runtime_error( msg );
-        //return false;
     }
 
     glslang::GlslangToSpv(*program.getIntermediate(stage), spirv);
@@ -791,6 +787,50 @@ void extractAttributeData( const std::unique_ptr<spir2cross::CompilerGLSL>& back
 	);
 }
 
+void extractBlock( VkShaderStageFlagBits shaderStage, const spir2cross::Resource& res, const std::unique_ptr<spir2cross::CompilerGLSL>& backCompiler, vk::UniformLayout *outUniformLayout )
+{
+	const uint64_t kBlockMask = ( 1ULL << spv::DecorationBlock ) | ( 1ULL << spv::DecorationBufferBlock );
+
+	auto&    typeInfo       = backCompiler->get_type( res.type_id );
+	bool     isPushConstant = ( spv::StorageClassPushConstant == backCompiler->get_storage_class( res.id ) );
+	bool     isBlock        = ( 0 != ( backCompiler->get_decoration_mask( typeInfo.self ) & kBlockMask  ) );
+	uint32_t typeId         = ( ( ! isPushConstant && isBlock ) ? res.type_id : res.id );
+
+	auto                  bindingType   = isPushConstant ? vk::UniformLayout::Binding::Type::PUSH_CONSTANTS : vk::UniformLayout::Binding::Type::BLOCK;
+	std::string           bindingName   = backCompiler->get_name( res.id );
+	uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
+	uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
+	VkShaderStageFlagBits bindingStage  = shaderStage;
+
+	outUniformLayout->addBinding( bindingType, bindingName, bindingNumber, bindingStage, bindingSet );
+	outUniformLayout->addSet( bindingSet, CHANGES_DONTCARE );
+
+	for( uint32_t index = 0; index < typeInfo.member_types.size(); ++index ) {
+		std::string         memberName      = backCompiler->get_member_name( res.type_id, index );								
+		uint32_t            memberId        = typeInfo.member_types[index];
+		auto&               memberTypeInfo  = backCompiler->get_type( memberId );
+		uint32_t            memberOffset    = backCompiler->get_member_decoration( res.type_id, index, spv::DecorationOffset );
+		uint32_t            memberArraySize = memberTypeInfo.array.empty() ? 1 : memberTypeInfo.array[0];
+		GlslUniformDataType memberDataType = spirTypeToGlslUniformDataType( memberTypeInfo );
+
+		std::string uniformName = bindingName + "." + memberName;
+		outUniformLayout->addUniform( uniformName, memberDataType, memberOffset, memberArraySize );
+	}
+
+	// Block size
+	size_t blockSize = backCompiler->get_declared_struct_size( typeInfo );
+
+	// Round up to next multiple of 16			
+	size_t paddedSize = ( blockSize + 15 ) & ( ~15 );
+	if( ( blockSize != paddedSize ) && ( ! isPushConstant ) ) {
+		CI_LOG_I( "Padded uniform block " << bindingName << " from " << blockSize << " bytes to " << paddedSize << " bytes" );
+	}
+
+	// Use block size for push constants and padded size for UBOs
+	outUniformLayout->setBlockSizeBytes( bindingName, isPushConstant ? blockSize : paddedSize );
+	outUniformLayout->sortByOffset();
+}
+
 void extractUniformData( VkShaderStageFlagBits shaderStage, const std::unique_ptr<spir2cross::CompilerGLSL>& backCompiler, vk::UniformLayout *outUniformLayout )
 {
 	if( ! backCompiler ) {
@@ -799,43 +839,7 @@ void extractUniformData( VkShaderStageFlagBits shaderStage, const std::unique_pt
 
 	// Extract uniform blocks from all shader stages
 	for( auto& res : backCompiler->get_shader_resources().uniform_buffers ) {
-		const uint64_t kBlockMask = ( 1ULL << spv::DecorationBlock ) | ( 1ULL << spv::DecorationBufferBlock );
-
-		auto&    typeInfo       = backCompiler->get_type( res.type_id );
-		bool     isPushConstant = ( spv::StorageClassPushConstant == backCompiler->get_storage_class( res.id ) );
-		bool     isBlock        = ( 0 != ( backCompiler->get_decoration_mask( typeInfo.self ) & kBlockMask  ) );
-		uint32_t typeId         = ( ( ! isPushConstant && isBlock ) ? res.type_id : res.id );
-
-		std::string           bindingName   = backCompiler->get_name( res.id );
-		uint32_t              bindingNumber = backCompiler->get_decoration( res.id, spv::DecorationBinding );
-		uint32_t              bindingSet    = backCompiler->get_decoration( res.id, spv::DecorationDescriptorSet );
-		VkShaderStageFlagBits bindingStage  = shaderStage;
-
-		outUniformLayout->addBinding( vk::UniformLayout::Binding::Type::BLOCK, bindingName, bindingNumber, bindingStage, bindingSet );
-		outUniformLayout->addSet( bindingSet, CHANGES_DONTCARE );
-
-		for( uint32_t index = 0; index < typeInfo.member_types.size(); ++index ) {
-			std::string         memberName     = backCompiler->get_member_name( res.type_id, index );								
-			uint32_t            memberId       = typeInfo.member_types[index];
-			auto&               memberTypeInfo = backCompiler->get_type( memberId );
-			uint32_t            memberOffset   = backCompiler->get_member_decoration( res.type_id, index, spv::DecorationOffset );
-			GlslUniformDataType memberDataType = spirTypeToGlslUniformDataType( memberTypeInfo );
-
-			std::string uniformName = bindingName + "." + memberName;
-			outUniformLayout->addUniform( uniformName, memberDataType, memberOffset );
-		}
-
-		// Block size
-		size_t blockSize = backCompiler->get_declared_struct_size( typeInfo );
-
-		// Round up to next multiple of 16			
-		size_t paddedSize = ( blockSize + 15 ) & ( ~15 );
-		if( blockSize != paddedSize ) {
-			CI_LOG_I( "Padded uniform block " << bindingName << " from " << blockSize << " bytes to " << paddedSize << " bytes" );
-		}
-
-		outUniformLayout->setBlockSizeBytes( bindingName, paddedSize );
-		outUniformLayout->sortUniformsByOffset();
+		extractBlock( shaderStage, res, backCompiler, outUniformLayout );
 	}
 
 	// Extract samplers from all shader stages
@@ -869,6 +873,11 @@ void extractUniformData( VkShaderStageFlagBits shaderStage, const std::unique_pt
 
 		outUniformLayout->addBinding( vk::UniformLayout::Binding::Type::STORAGE_BUFFER, bindingName, bindingNumber, bindingStage, bindingSet );
 		outUniformLayout->addSet( bindingSet, CHANGES_DONTCARE );
+	}
+
+	// Extract push constants from all shader stages
+	for( auto& res : backCompiler->get_shader_resources().push_constant_buffers ) {
+		extractBlock( shaderStage, res, backCompiler, outUniformLayout );
 	}
 }
 
@@ -957,9 +966,15 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 		for( auto& shader : shaderBuildData ) {
 			// Compile shader if needed
 			if( shader.needsCompile ) {
-				if( ! compileGlslToSpirv( mDevice->getDevice(), shader.stage, shader.sourceText, &(shader.spirvBinary) ) ) {
-					std::string msg = "GLSL compile failed for shader stage " + toStringVkShaderStageFlagBits( shader.stage );
-					throw std::runtime_error(  msg );
+				try {
+					if( ! compileGlslToSpirv( mDevice->getDevice(), shader.stage, shader.sourceText, &(shader.spirvBinary) ) ) {
+						throw std::runtime_error( "Compiling GLSL to SPIR-V failed" );
+					}
+				}
+				catch( const std::exception& e ) {
+					std::stringstream ss;
+					ss << "("<< toStringVkShaderStageFlagBits( shader.stage ) << ") " << e.what();
+					throw std::runtime_error( ss.str() );
 				}
 			}
 
@@ -1025,6 +1040,17 @@ void ShaderProg::initialize( const ShaderProg::Format &format )
 		}
 	}
 
+	// Cache push constant ranges
+	std::vector<vk::UniformLayout::PushConstant> pushConstants = mUniformLayout.getPushConstants();
+	for( const auto& pushConstant : pushConstants ) {
+		VkPushConstantRange range = {};
+		range.stageFlags = pushConstant.getShaderStages();
+		range.offset = pushConstant.getOffset();
+		range.size = pushConstant.getSize();
+		mCachedPushConstantRanges.push_back( range );
+		mCachedNamedPushConstantRanges[pushConstant.getName()] = range;
+	}	
+
 	mDevice->trackedObjectCreated( this );
 }
 
@@ -1071,6 +1097,16 @@ ShaderProgRef ShaderProg::create( const std::string &vertexShader, const std::st
 bool ShaderProg::isCompute() const
 {
 	bool result = ( 1 == mPipelineShaderStages.size() ) && ( VK_SHADER_STAGE_COMPUTE_BIT == mPipelineShaderStages[0].stage );
+	return result;
+}
+
+VkPushConstantRange ShaderProg::getCachedPushConstantRange( const std::string& name ) const
+{
+	VkPushConstantRange result = {};
+	auto it = mCachedNamedPushConstantRanges.find( name );
+	if( mCachedNamedPushConstantRanges.end() != it ) {
+		result = it->second;
+	}
 	return result;
 }
 

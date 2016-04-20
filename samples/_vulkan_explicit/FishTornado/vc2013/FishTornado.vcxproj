@@ -194,7 +194,6 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\DrawUtil.h" />
     <ClInclude Include="..\include\FishTornadoApp.h" />
     <ClInclude Include="..\include\Globals.h" />
     <ClInclude Include="..\include\GpuFlocker.h" />
@@ -204,7 +203,6 @@
     <ClInclude Include="..\include\Shark.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\DrawUtil.cpp" />
     <ClCompile Include="..\src\FishTornadoApp.cpp" />
     <ClCompile Include="..\src\Globals.cpp" />
     <ClCompile Include="..\src\GpuFlocker.cpp" />

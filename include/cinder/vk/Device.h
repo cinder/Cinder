@@ -168,6 +168,7 @@ private:
 	Environment								*mEnvironment = nullptr;
 
 	VkPhysicalDevice									mGpu = VK_NULL_HANDLE;
+	VkPhysicalDeviceFeatures							mGpuFeatures;
     VkPhysicalDeviceProperties							mGpuProperties;
     VkPhysicalDeviceMemoryProperties					mMemoryProperties;
 	std::vector<VkQueueFamilyProperties>				mQueueFamilyProperties;

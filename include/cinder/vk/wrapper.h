@@ -39,6 +39,7 @@
 #pragma once
 
 #include "cinder/vk/platform.h"
+#include "cinder/vk/glsl_types.h"
 #include "cinder/GeomIo.h"
 
 namespace cinder { namespace vk {
@@ -65,6 +66,7 @@ VkPrimitiveTopology	toVk( geom::Primitive prim );
 geom::Primitive		toGeomPrimitive( VkPrimitiveTopology prim );
 //! Converts info into a matching VKFormat
 VkFormat			toVkFormat( const geom::AttribInfo& info );
+VkFormat			toVkFormat( GlslAttributeDataType dataType );
 
 VkImageAspectFlags	determineAspectMask( VkFormat format );
 VkFormat			determineCompressedFormat( int glFormatConstant );
@@ -245,5 +247,12 @@ inline void translate( float x, float y, float z ) { translate( vec3( x, y, z ) 
 inline void translate( const ci::vec2 &v ) { translate( vec3( v, 0 ) ); }
 //! Translates the Model matrix by (\a x,\a y)
 inline void translate( float x, float y ) { translate( vec3( x, y, 0 ) ); }
+
+void color( float r, float g, float b );
+void color( float r, float g, float b, float a );
+void color( const ci::Color &c );
+void color( const ci::ColorA &c );
+void color( const ci::Color8u &c );
+void color( const ci::ColorA8u &c );
 
 }} // namespace cinder::vk

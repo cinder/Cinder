@@ -40,9 +40,7 @@ void Test3::setup()
 		try {
 			vk::ShaderProg::Format format = vk::ShaderProg::Format()
 				.vertex( loadAsset("shader_3.vert") )
-				.fragment( loadAsset("shader_3.frag") )
-				.attribute( geom::Attrib::POSITION,    0, 0, vk::glsl_attr_vec4 )
-				.attribute( geom::Attrib::TEX_COORD_0, 1, 0, vk::glsl_attr_vec2 );
+				.fragment( loadAsset("shader_3.frag") );
 
 			mShader = vk::GlslProg::create( format );
 			mShader->uniform( "uTex0", mTexture );
@@ -222,7 +220,7 @@ void Test3::draw()
 		pipelineSelector->setDepthTest( ctx->getDepthTest() );
 		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-		pipelineSelector->setShaderStages( mShader->getShaderStages() );
+		pipelineSelector->setShaderStages( mShader->getPipelineShaderStages() );
 		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 		pipelineSelector->setSubPass( ctx->getSubpass() );
 		pipelineSelector->setPipelineLayout( mPipelineLayout->getPipelineLayout() );

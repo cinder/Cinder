@@ -174,6 +174,7 @@ public:
 		Options&					addAttachment( const Attachment& value ) { mAttachments.push_back( value ); return *this; }
 		Options&					addSubPass( const Subpass& value ) { mSubpasses.push_back( value ); return *this; }
 		Options&					addSubpassDependency( const SubpassDependency& value ) { mSubpassDependencies.push_back( value ); return *this; }
+		Options&					addSubpassSelfDependency( uint32_t subpassIndex, VkPipelineStageFlags srcStageMask = vk::PipelineStageGraphicsBits, VkPipelineStageFlags dstStageMask = vk::PipelineStageGraphicsBits, VkAccessFlags srcAccessMask = vk::AccessFlagsBits, VkAccessFlags dstAccessMask = vk::AccessFlagsBits );
 
 	private:
 		std::vector<Attachment>			mAttachments;

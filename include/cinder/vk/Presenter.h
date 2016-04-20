@@ -95,6 +95,7 @@ public:
 	const vk::RenderPassRef&			getCurrentRenderPass() const;
 
 	void								resize( const ivec2& newWindowSize );
+	void								clearSwapchainImages( vk::Context *context );
 	void								transitionToFirstUse( vk::Context *context );
 
 	uint32_t							acquireNextImage( VkFence fence, VkSemaphore signalSemaphore );

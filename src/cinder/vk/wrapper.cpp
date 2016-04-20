@@ -179,6 +179,33 @@ VkFormat toVkFormat( const geom::AttribInfo& info )
 	return result;
 }
 
+VkFormat toVkFormat( GlslAttributeDataType dataType )
+{
+	VkFormat result = VK_FORMAT_UNDEFINED;
+	switch( dataType ) {
+		case glsl_attr_float        : result = VK_FORMAT_R32_SFLOAT; break;
+		case glsl_attr_vec2         : result = VK_FORMAT_R32G32_SFLOAT; break;
+		case glsl_attr_vec3         : result = VK_FORMAT_R32G32B32_SFLOAT; break;
+		case glsl_attr_vec4         : result = VK_FORMAT_R32G32B32A32_SFLOAT; break;
+
+		//case glsl_attr_double       : result = VK_FORMAT_R32_SFLOAT; break;
+		//case glsl_attr_dvec2        : result = VK_FORMAT_R32G32_SFLOAT; break;
+		//case glsl_attr_dvec3        : result = VK_FORMAT_R32G32B32_SFLOAT; break;
+		//case glsl_attr_dvec4        : result = VK_FORMAT_R32G32B32A32_SFLOAT; break;
+
+		case glsl_attr_int          : result = VK_FORMAT_R32_SINT; break;
+		case glsl_attr_ivec2        : result = VK_FORMAT_R32G32_SINT; break;
+		case glsl_attr_ivec3        : result = VK_FORMAT_R32G32B32_SINT; break;
+		case glsl_attr_ivec4        : result = VK_FORMAT_R32_SINT; break;
+
+		case glsl_attr_unsigned_int : result = VK_FORMAT_R32_UINT; break;
+		case glsl_attr_uvec2        : result = VK_FORMAT_R32G32_UINT; break;
+		case glsl_attr_uvec3        : result = VK_FORMAT_R32G32B32_UINT; break;
+		case glsl_attr_uvec4        : result = VK_FORMAT_R32G32B32A32_UINT; break;
+	}
+	return result;
+}
+
 VkImageAspectFlags determineAspectMask( VkFormat format )
 {
 	VkImageAspectFlags result = 0;
@@ -868,6 +895,42 @@ void translate( const ci::vec3& v )
 {
 	auto ctx = vk::context();
 	ctx->getModelMatrixStack().back() *= glm::translate( v );
+}
+
+void color( float r, float g, float b )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( ColorAf( r, g, b, 1.0f ) );
+}
+
+void color( float r, float g, float b, float a )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( ColorAf( r, g, b, a ) );
+}
+
+void color( const ci::Color &c )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( c );
+}
+
+void color( const ci::ColorA &c )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( c );
+}
+
+void color( const ci::Color8u &c )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( c );
+}
+
+void color( const ci::ColorA8u &c )
+{
+	auto ctx = vk::context();
+	ctx->setCurrentColor( c );
 }
 
 }} // namespace cinder::vk

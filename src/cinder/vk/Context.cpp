@@ -253,22 +253,27 @@ bool Context::isExplicitMode() const
 	return mDevice->isExplicitMode();
 }
 
-void Context::addPresentWaitSemaphore( VkSemaphore semaphore, VkPipelineStageFlagBits waitDstStageMask )
+void Context::addRenderWaitSemaphore( VkSemaphore semaphore, VkPipelineStageFlagBits waitDstStageMask )
 {
 	auto it = std::find_if(
-		std::begin( mPresentWaitSemaphores ),
-		std::end( mPresentWaitSemaphores ),
+		std::begin( mRenderWaitSemaphores ),
+		std::end( mRenderWaitSemaphores ),
 		[semaphore]( const std::pair<VkSemaphore, VkPipelineStageFlagBits>& elem ) -> bool {
 			return elem.first == semaphore;
 		}
 	);
 
-	if( std::end( mPresentWaitSemaphores ) != it ) {
+	if( std::end( mRenderWaitSemaphores ) != it ) {
 		it->second = waitDstStageMask;
 	}
 	else {
-		mPresentWaitSemaphores.push_back( std::make_pair( semaphore, waitDstStageMask ) );
+		mRenderWaitSemaphores.push_back( std::make_pair( semaphore, waitDstStageMask ) );
 	}
+}
+
+void Context::clearRenderWaitSemaphores()
+{
+	mRenderWaitSemaphores.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1105,7 +1110,7 @@ void Context::clearAttachments( bool color, bool depthStencil )
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders
 std::string	Context::generateVertexShader( const vk::ShaderDef &shader )
-{	
+{
 	std::string s;
 	
 	s +=		"#version 150\n"
@@ -1175,8 +1180,8 @@ std::string	Context::generateVertexShader( const vk::ShaderDef &shader )
 	}
 	
 	s +=		"}";
-	
-//ci::app::console() << "Vertex shader: " << "\n" << s << "\n" << std::endl;
+
+	//ci::app::console() << "Vertex shader: " << "\n" << s << "\n" << std::endl;
 	return s;
 }
 
@@ -1234,15 +1239,12 @@ std::string	Context::generateFragmentShader( const vk::ShaderDef &shader )
 		s +=	" * vec4( vec3( lambert ), 1.0 )";
 
 	s +=	";\n";
-	
-	//s +=	"oColor = vec4( TexCoord.st, 0, 1 );\n";
 
 	s +=	"}";
-	
-//ci::app::console() << "Fragment shader: " << "\n" << s << "\n" << std::endl;
+
+	//ci::app::console() << "Fragment shader: " << "\n" << s << "\n" << std::endl;
 	return s;
 }
-
 
 ShaderProgRef Context::buildShader( const vk::ShaderDef &shader )
 {
@@ -1272,7 +1274,7 @@ ShaderProgRef& Context::getStockShader( const vk::ShaderDef &shaderDef )
 	return existing->second;
 }
 
-
+/*
 void Context::addPendingUniformVars( const ci::vk::UniformBufferRef& buffer )
 {
 	auto it = std::find_if(
@@ -1314,12 +1316,13 @@ void Context::transferPendingUniformBuffer( const vk::CommandBufferRef& cmdBuf, 
 		}
 
 		uniformBuffer->transferPending();
-		//cmdBuf->pipelineBarrierBufferMemory( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask );
-		cmdBuf->pipelineBarrierBufferMemory( vk::BufferMemoryBarrierParams( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
+		//cmdBuf->pipelineBarrierBufferMemory( vk::BufferMemoryBarrierParams( uniformBuffer, srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
+		cmdBuf->pipelineBarrierGlobalMemory( vk::GlobalMemoryBarrierParams( srcAccessMask, dstAccessMask, srcStageMask, dstStageMask ) );
 	}
 
 	mPendingUniformBuffers.clear();
 }
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Object tracking routines
@@ -1409,6 +1412,11 @@ void Context::addTransient( const vk::DescriptorLayoutRef& obj )
 	addTransientObject( obj, mTransientDescriptorLayouts );
 }
 
+void Context::addTransient( const vk::DescriptorSetViewRef& obj )
+{
+	addTransientObject( obj, mTransientDescriptorSetViews );
+}
+
 void Context::addTransient( const vk::UniformSetRef& obj )
 {
 	addTransientObject( obj, mTransientUniformSets );
@@ -1424,6 +1432,7 @@ void Context::clearTransients()
 	mTransientDescriptorSets.clear();
 	mTransientDescriptorPools.clear();
 	mTransientDescriptorLayouts.clear();
+	mTransientDescriptorSetViews.clear();
 
 	mTransientUniformSets.clear();
 }
