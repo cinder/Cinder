@@ -159,6 +159,7 @@ void Test3::update()
 		return;
 	}
 
+	/*
 	// Fill out UBO
 	{
 		for( auto& set : mUniformSet->getSets() ) {
@@ -178,6 +179,7 @@ void Test3::update()
 		vk::context()->getGraphicsQueue()->submit( cmdBuf );
 		vk::context()->getGraphicsQueue()->waitIdle();
 	}
+	*/
 }
 
 void Test3::draw()
@@ -220,7 +222,7 @@ void Test3::draw()
 		pipelineSelector->setDepthTest( ctx->getDepthTest() );
 		pipelineSelector->setDepthWrite( ctx->getDepthWrite() );
 		pipelineSelector->setColorBlendAttachments( ctx->getColorBlendAttachments() );
-		pipelineSelector->setShaderStages( mShader->getPipelineShaderStages() );
+		pipelineSelector->setShaderStages( mShader->getShaderStages() );
 		pipelineSelector->setRenderPass( ctx->getRenderPass()->getRenderPass() );
 		pipelineSelector->setSubPass( ctx->getSubpass() );
 		pipelineSelector->setPipelineLayout( mPipelineLayout->getPipelineLayout() );
@@ -230,7 +232,12 @@ void Test3::draw()
 	// Draw
 	{
 		// Get current command buffer
-		auto cmdBuf = vk::context()->getCommandBuffer()->getCommandBuffer();
+		auto cmdBufRef = vk::context()->getCommandBuffer();
+		auto cmdBuf = cmdBufRef->getCommandBuffer();
+
+		// Update uniform vars
+		vk::context()->setDefaultUniformVars( mUniformSet );
+		mUniformSet->bufferPending( cmdBufRef, VK_ACCESS_HOST_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 
 		// Bind vertex buffer
 		std::vector<VkBuffer> vertexBuffers = { mVertexBuffer->getBuffer() };
