@@ -224,6 +224,14 @@ void ShadowMappingBasic::draw()
 	mFloorShadowedBatch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
 	mFloorShadowedBatch->uniform( "ciBlock1.uLightPos", mvLightPos );
 
+	// Transition shadow map
+	vk::ImageMemoryBarrierParams imageMemoryBarrier = vk::ImageMemoryBarrierParams( mShadowMapTex->getImageView()->getImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+	imageMemoryBarrier.setSrcStageMask( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+	imageMemoryBarrier.setDstStageMask( VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
+	imageMemoryBarrier.setSrcAccessMask( VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT );
+	imageMemoryBarrier.setDstAccessMask( VK_ACCESS_SHADER_READ_BIT );
+	vk::context()->getDefaultCommandBuffer()->pipelineBarrierImageMemory( imageMemoryBarrier );
+
 	drawScene( false );
 
     // Uncomment for debug

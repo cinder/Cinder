@@ -344,15 +344,23 @@ void ShadowMappingApp::draw()
 	vec4 lightPos = vk::getModelView() * vec4( mLight.viewpoint, 1.0 );
 	auto& batches = mShaderGrouping[mShadowShader];
 	for( auto& batch : batches ) {
-		batch->uniform( "ciBlock0.uShadowMatrix", shadowMatrix );
-		batch->uniform( "ciBlock1.uShadowTechnique", mShadowTechnique );
-		batch->uniform( "ciBlock1.uDepthBias", mDepthBias );
-		batch->uniform( "ciBlock1.uOnlyShadowmap", mOnlyShadowmap );
-		batch->uniform( "ciBlock1.uRandomOffset", mRandomOffset );
-		batch->uniform( "ciBlock1.uNumRandomSamples", mNumRandomSamples );
-		batch->uniform( "ciBlock1.uEnableNormSlopeOffset", mEnableNormSlopeOffset );
-		batch->uniform( "ciBlock1.uLightPos", lightPos );
+		batch->uniform( "ciBlock0.uShadowMatrix",			shadowMatrix );
+		batch->uniform( "ciBlock1.uShadowTechnique",		mShadowTechnique );
+		batch->uniform( "ciBlock1.uDepthBias",				mDepthBias );
+		batch->uniform( "ciBlock1.uOnlyShadowmap",			mOnlyShadowmap );
+		batch->uniform( "ciBlock1.uRandomOffset",			mRandomOffset );
+		batch->uniform( "ciBlock1.uNumRandomSamples",		mNumRandomSamples );
+		batch->uniform( "ciBlock1.uEnableNormSlopeOffset",	mEnableNormSlopeOffset );
+		batch->uniform( "ciBlock1.uLightPos",				lightPos );
 	}
+
+	// Transition shadow map
+	vk::ImageMemoryBarrierParams imageMemoryBarrier = vk::ImageMemoryBarrierParams( mShadowMap->getTexture()->getImageView()->getImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+	imageMemoryBarrier.setSrcStageMask( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT );
+	imageMemoryBarrier.setDstStageMask( VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
+	imageMemoryBarrier.setSrcAccessMask( VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT );
+	imageMemoryBarrier.setDstAccessMask( VK_ACCESS_SHADER_READ_BIT );
+	vk::context()->getDefaultCommandBuffer()->pipelineBarrierImageMemory( imageMemoryBarrier );
 
 	// Render shadowed scene
 	drawScene( mSpinAngle, mShadowShader );
