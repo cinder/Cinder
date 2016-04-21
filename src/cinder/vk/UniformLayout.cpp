@@ -226,7 +226,10 @@ UniformLayout::Binding::Binding( const std::string& name, Binding::Type type, ui
 void UniformLayout::Binding::setTexture( const vk::TextureBaseRef& texture )
 {
 	mTexture = texture; 
-	mType = Binding::Type::SAMPLER;
+	// Assume a sampler if type is still undefined
+	if( Binding::Type::UNDEFINED == mType ) {
+		mType = Binding::Type::SAMPLER;
+	}
 	setDirty();
 }
 
