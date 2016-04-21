@@ -22,13 +22,12 @@ function( ci_make_app )
 			)
 	endif()
 
-	# CLion specific: If we can detect that the output binary app is going to be placed in clion's cache,
-	# reroute it to be within the user app's project. This is necessary for cinder's assets systemt o work.
-	if( ${CMAKE_BINARY_DIR} MATCHES "Caches/CLion" )
+	# Unless already set by the user, make sure runtime output directory is relative to the project folder
+	# so that cinder's assets system works.
+	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
 		set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
-		if( CINDER_BUILD_VERBOSE )
-			message( WARNING "detected Clion output to cache, rerouted to sample directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
-		endif()
+		# this shouldn't be a warning, but this is currently the only way to see the message in CLion
+		# message( WARNING "set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
 	endif()
 
 	if( CINDER_BUILD_VERBOSE )
