@@ -2413,7 +2413,7 @@ void Cylinder::calculate( vector<vec3> *positions, vector<vec3> *normals, vector
 
 	const float segmentIncr = 1.0f / (mNumSegments - 1);
 	const float ringIncr = 1.0f / (mNumSlices - 1);
-	const quat axis( vec3( 0, 1, 0 ), mDirection );
+	const quat axis = glm::rotation( vec3( 0, 1, 0 ), mDirection );
 
 	// vertex, normal, tex coord and color buffers
 	for( int i = 0; i < mNumSegments; ++i ) {
@@ -2463,7 +2463,7 @@ void Cylinder::calculateCap( bool flip, float height, float radius, vector<vec3>
 	normals->resize( index + mSubdivisionsCap * mNumSegments * 2, n );
 	colors->resize( index + mSubdivisionsCap *mNumSegments * 2, vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
 
-	const quat axis( vec3( 0, 1, 0 ), mDirection );
+	const quat axis = glm::rotation( vec3( 0, 1, 0 ), mDirection );
 
 	// vertices
 	const float segmentIncr = 1.0f / ( mNumSegments - 1 );
@@ -2578,12 +2578,12 @@ Plane& Plane::normal( const vec3 &normal )
 	auto normalNormal = normalize( normal );
 	float yAxisDot = dot( normalNormal, vec3( 0, 1, 0 ) );
 	if( abs( yAxisDot ) < 0.999f ) {
-		quat normalQuat( vec3( 0, 1, 0 ), normalNormal );
+		quat normalQuat = glm::rotation( vec3( 0, 1, 0 ), normalNormal );
 		mAxisU = normalQuat * vec3( 1, 0, 0 );
 		mAxisV = normalQuat * vec3( 0, 0, 1 );
 	}
 	else {
-		quat normalQuat( vec3( 0, 0, 1 ), normalNormal );
+		quat normalQuat = glm::rotation( vec3( 0, 0, 1 ), normalNormal );
 		mAxisU = normalQuat * vec3( 1, 0, 0 );
 		mAxisV = normalQuat * vec3( 0, -1, 0 );
 	}
@@ -3595,7 +3595,7 @@ void WireCapsule::calculate( vector<vec3> *positions ) const
 		calculateRing( radius, t, positions );
 	}
 
-	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
+	const quat quaternion = glm::rotation( vec3( 0, 1, 0 ), mDirection );
 
 	int subdivisionsAxis = mSubdivisionsAxis > 1 ? mSubdivisionsAxis : 0;
 	float axisIncr = 1.0f / (float) ( mSubdivisionsAxis );
@@ -3627,7 +3627,7 @@ void WireCapsule::calculate( vector<vec3> *positions ) const
 
 void WireCapsule::calculateRing( float radius, float d, vector<vec3> *positions ) const
 {
-	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
+	const quat quaternion = glm::rotation( vec3( 0, 1, 0 ), mDirection );
 
 	float length = mLength + 2 * mRadius;
 	float segIncr = 1.0f / (float) ( mNumSegments );
@@ -3870,7 +3870,7 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 
 	vec3 *ptr = positions.data();
 
-	glm::mat3 m = glm::toMat3( glm::quat( vec3( 0, 1, 0 ), mDirection ) );
+	glm::mat3 m = glm::toMat3( glm::rotation( vec3( 0, 1, 0 ), mDirection ) );
 
 	if ( mSubdivisionsAxis > 1 ) {
 		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
@@ -3991,12 +3991,12 @@ WirePlane& WirePlane::normal( const vec3 &normal )
 	auto normalNormal = normalize( normal );
 	float yAxisDot = dot( normalNormal, vec3( 0, 1, 0 ) );
 	if( abs( yAxisDot ) < 0.999f ) {
-		quat normalQuat( vec3( 0, 1, 0 ), normalNormal );
+		quat normalQuat = glm::rotation( vec3( 0, 1, 0 ), normalNormal );
 		mAxisU = normalQuat * vec3( 1, 0, 0 );
 		mAxisV = normalQuat * vec3( 0, 0, 1 );
 	}
 	else {
-		quat normalQuat( vec3( 0, 0, 1 ), normalNormal );
+		quat normalQuat = glm::rotation( vec3( 0, 0, 1 ), normalNormal );
 		mAxisU = normalQuat * vec3( 1, 0, 0 );
 		mAxisV = normalQuat * vec3( 0, -1, 0 );
 	}
@@ -4550,6 +4550,9 @@ void Subdivide::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 void SourceMods::copyImpl( const SourceMods &rhs )
 {
 	mVariablesCached = false;
+	mChildren.clear();
+	mModifiers.clear();
+	mSourceStorage.reset();
 
 	if( rhs.mSourcePtr ) {
 		mSourceStorage = std::unique_ptr<Source>( rhs.mSourcePtr->clone() );
@@ -4701,37 +4704,30 @@ void SourceMods::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 
 void SourceMods::append( const Modifier &modifier )
 {
-	mModifiers.push_back( std::unique_ptr<Modifier>( modifier.clone() ) );
+	mModifiers.emplace_back( modifier.clone() );
 	mVariablesCached = false;
 }
 
 void SourceMods::append( const Source &source )
 {
-	if( mSourcePtr ) { // if we already have a Source, append a Combine modifier
-		SourceMods sourceMods( &source, true ); // clone the source since it's a temporary
-		append( sourceMods );
-	}
-	else {
-		mSourceStorage = std::unique_ptr<Source>( source.clone() );
-		mSourcePtr = mSourceStorage.get();
-	}
+	append( SourceMods( source ) );
 }
 
 void SourceMods::append( const SourceMods &sourceMods )
 {
-	// if we don't have a Source, this is no problem
+	// if we don't have a Source (ie we're not a "bachelor"), this is no problem; just add 'sourceMods' as another child
 	if( ! mSourcePtr ) {
-		mChildren.push_back( std::unique_ptr<SourceMods>( sourceMods.clone() ) );
+		mChildren.emplace_back( sourceMods.clone() );
 	}
-	else { // we were a bachelor SouceMods before; now we need to make a child of ourselves and then add 'sourceMods' as a second child
+	else { // we're a "bachelor"; now we need to make a child of ourselves and then add 'sourceMods' as the second child
 		CI_ASSERT( mChildren.empty() );
-		mChildren.push_back( std::unique_ptr<SourceMods>( clone() ) );
+		mChildren.emplace_back( clone() );
 		// clear traces of when we owned our Source & Modifiers
 		mSourcePtr = nullptr;
 		mSourceStorage.reset();
 		mModifiers.clear();
 		// add the original SourceMods we were combining with
-		mChildren.push_back( std::unique_ptr<SourceMods>( sourceMods.clone() ) );
+		mChildren.emplace_back( sourceMods.clone() );
 	}
 }
 

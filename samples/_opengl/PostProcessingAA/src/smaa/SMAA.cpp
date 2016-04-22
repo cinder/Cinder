@@ -28,15 +28,19 @@
 #include "SearchTex.h"
 
 using namespace ci;
+using namespace ci::app;
 using namespace std;
 
 SMAA::SMAA()
 {
 	// Load and compile our shaders
 	try {
-		mGlslFirstPass = gl::GlslProg::create( app::loadAsset( "smaa1.vert" ), app::loadAsset( "smaa1.frag" ) );
-		mGlslSecondPass = gl::GlslProg::create( app::loadAsset( "smaa2.vert" ), app::loadAsset( "smaa2.frag" ) );
-		mGlslThirdPass = gl::GlslProg::create( app::loadAsset( "smaa3.vert" ), app::loadAsset( "smaa3.frag" ) );
+		// Define the format by specifying the vertex and fragment shader files and defining the quality settings.
+		auto fmt = gl::GlslProg::Format().vertex( loadAsset( "smaa.vert" ) ).fragment( loadAsset( "smaa.frag" ) ).define( "SMAA_PRESET_ULTRA" ).define( "SMAA_GLSL_3", "1" );
+		// Each pass uses the same files, but with a different value for the SMAA_PASS pre-processor directive.
+		mGlslFirstPass = gl::GlslProg::create( gl::GlslProg::Format( fmt ).define( "SMAA_PASS", "1" ) );
+		mGlslSecondPass = gl::GlslProg::create( gl::GlslProg::Format( fmt ).define( "SMAA_PASS", "2" ) );
+		mGlslThirdPass = gl::GlslProg::create( gl::GlslProg::Format( fmt ).define( "SMAA_PASS", "3" ) );
 	}
 	catch( const std::exception& e ) {
 		CI_LOG_EXCEPTION( "exception caught loading smaa shaders", e );
@@ -51,13 +55,11 @@ SMAA::SMAA()
 	// Search Texture (Grayscale, 8 bits unsigned).
 	fmt.setInternalFormat( GL_R8 );
 	fmt.setSwizzleMask( GL_RED, GL_RED, GL_RED, GL_ONE );
-	fmt.loadTopDown( true );
 	mSearchTex = gl::Texture2d::create( searchTexBytes, GL_RED, SEARCHTEX_WIDTH, SEARCHTEX_HEIGHT, fmt );
 
 	// Area Texture (Red+Green Channels, 8 bits unsigned).
 	fmt.setInternalFormat( GL_RG8 );
 	fmt.setSwizzleMask( GL_RED, GL_GREEN, GL_ZERO, GL_ONE );
-	fmt.loadTopDown( true );
 	mAreaTex = gl::Texture2d::create( areaTexBytes, GL_RG, AREATEX_WIDTH, AREATEX_HEIGHT, fmt );
 
 	// Specify the Fbo format.

@@ -67,11 +67,4 @@
          </FileRef>
       </Group>
    </Group>
-   <Group
-      location = "container:"
-      name = "unit test">
-      <FileRef
-         location = "group:unit/xcode/Audio2Unit.xcodeproj">
-      </FileRef>
-   </Group>
 </Workspace>

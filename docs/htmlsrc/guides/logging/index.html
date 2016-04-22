@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+	<head>
+			<title>Logging in Cinder</title>
+
+		<!-- keywords used for searching -->
+		<meta name="keywords" content="guide, logging, logs, log, trace, debugging">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- reference to Cinder classes -->
+   		<!-- <ci seealso dox="[CLASS NAME GOES HERE]" label="[NAME OF LINK]"></ci> -->
+      	<ci seealso dox="cinder::log" label="Logging in Cinder"></ci>
+
+   		<!-- master stylesheet - these links will be replaced when compiled -->
+		<link rel="stylesheet" href="../../_assets/css/foundation.css">
+		<link rel="stylesheet" href="../../_assets/css/prism.css">
+		<link rel="stylesheet" href="../../_assets/css/style.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+		<!-- Place additional stylsheet links here, which will be copied over when compiled (optional) -->
+		
+	</head>
+
+	<body id="guide-contents" class="language-c++">
+
+		<!-- CONTENT STARTS HERE -->
+		<h1>Logging in Cinder</h1>
+        
+        <p>
+        	This document provides an overview of the logging capabilities in Cinder.  You can use this, along with the sample in <em><a href="https://github.com/cinder/Cinder/tree/master/samples/Logging" target="_blank">samples/Logging</a></em>, to quickly begin utilizing Cinder's built in logging capabilities.
+        </p>
+        <a name="overview"></a>
+        <section>
+        <h2>Overview</h2>
+        <p>
+            Cinder logging resides in the <ci>ci::log</ci> namespace, and provides a set of tools for straight forward, and relatively flexible logging.  The purpose of Cinder logging is not to circumvent advanced logging packages, but rather to provide Cinder users with basic, integrated functionality that will cover most practical use cases.
+        </p>
+        <p>
+            All Cinder apps start with the default <ci dox="ci::log::LoggerConsole">LoggerConsole</ci> enabled, meaning any Cinder logging calls will appear in the application console window.  You can confirm this by making a logging call in a new Cinder app.  The example code:
+            <pre><code class="language-cpp">CI_LOG_D( "Hello world!" );</code></pre>
+            Would produce the following trace in the application console:
+            <pre><code class="language-cpp">|debug  | virtual void TestApp::setup()[40] Hello world!</code></pre>
+        </p>
+        <p>
+            Using concise, but flexible calls, a user can enable any number of additional loggers.  Below is an example of how you would log to a file by adding an instance of <ci dox="ci::log::LoggerFile">LoggerFile</ci> to your Cinder project:
+            <pre><code class="language-cpp">log::makeLogger&lt;log::LoggerFile&gt;( "/tmp/cinder/cinder.log" );</code></pre>
+        </p>
+        <p>
+        Before getting deeper into the features in <ci>ci::log</ci>, let's review some high level information.
+        </p>
+        </section>
+
+        <a name="levels"></a>
+        <section>
+        <h2>Log Levels</h2>
+        <p>
+            <ci>ci::log::Level</ci> defines standard logging levels.  Opinions vary on the exact use of each logging level, so this is left up to the developer.  What is important to understand is that <code>LEVEL_VERBOSE</code> is considered the lowest logging level, and <code>LEVEL_FATAL</code> the highest.  This is important when understanding how to configure logging levels in Cinder.  The supported logging levels and their corresonding functions are below:
+        </p>
+        <table>
+        <tr><td><b>Level</b></td><td><b>Function</b></td><td><b>Enum Value</b></td><td><b>Comment</b></td></tr> 
+        <tr><td>LEVEL_VERBOSE</td><td>CI_LOG_V</td><td>0</td><td>(lowest logging level)</td></tr> 
+        <tr><td>LEVEL_DEBUG</td><td>CI_LOG_D</td><td>1</td><td></td></tr> 
+        <tr><td>LEVEL_INFO</td><td>CI_LOG_I</td><td>2</td><td></td></tr> 
+        <tr><td>LEVEL_WARNING</td><td>CI_LOG_W</td><td>3</td><td></td></tr> 
+        <tr><td>LEVEL_ERROR</td><td>CI_LOG_E</td><td>4</td><td></td></tr> 
+        <tr><td>LEVEL_FATAL</td><td>CI_LOG_F</td><td>5</td><td>(highest logging level)</td></tr> 
+        </table>
+		</section>
+
+		<a name="types"></a>
+        <section>
+        <h2>Logger Types</h2>
+        <ul>
+            <li><ci dox="ci::log::Logger">Logger</ci> is the base class for all loggers.  This class is never directly used.</li>
+            <li><ci dox="ci::log::LoggerConsole">LoggerConsole</ci> directs log messages into the application console window.  This logger is enabled by default.  This logger takes no parameters.</li>
+            <li><ci dox="ci::log::LoggerFile">LoggerFile</ci> directs log messages to a specified file.</li>
+            <li><ci dox="ci::log::LoggerFileRotating">LoggerFileRotating</ci> directs log messages to a specified file.  The name of that file is evaluated at the first logging call after application startup, and re-evaluated at the first logging call after midnight.</li>
+            <li>
+                <ci dox="ci::log::LoggerBreakpoint">LoggerBreakpoint</ci> doesn't actually log messages, but triggers a breakpoint on log events above a specified threshold.  <code>triggerLevel</code> defines the minimum logging level that will break execution.
+                <br>The trigger level can be controlled by calling <ci dox="ci::log::LoggerBreakpoint::setTriggerLevel">LoggerBreakpoint::setTriggerLevel()</ci>.
+            </li>
+            <li><ci dox="ci::log::LoggerSystem">LoggerSystem</ci> will write log messages to the platform specific system log.  This currently means the system log on OS X <code>/var/log/system.log</code> and the Event Log on Windows with MSW applications.  WinRT system logging is still being developed.</li>
+        </ul>
+        <h3>LoggerSystem Notes</h3>
+        <h4>Minimum System Logging Level</h4>
+        <p>
+            The minimum system logging level can be controlled by calling <ci dox="ci::log::LoggerSystem::setLoggingLevel">LoggerSystem::setLoggingLevel()</ci>.  This level can be controlled independently of the Cinder minimum logging level, but the system logging level can never be lower than the Cinder minimum logging level.  For more information on this, see the section on <a href="#optimization">Compile Time Settings & Optimization.</a>
+        </p>
+        <h4>OS X Specific Notes</h4>
+        <p>
+            <b>Note:</b> By default, logging messages that are lower than LOG_NOTICE do not show up in the system log.  This can be adjusted by configuring the <code>/etc/syslog.conf</code> file, but in order for OS X system logging to work out of the box, Cinder logging levels are never mapped to a logging level lower than LOG_NOTICE.  The full mapping is shown below.  The log messages themselves will contain the Cinder logging level.
+            <table>
+            <tr><td><b>Cinder Level</b></td><td><b>Event Log Level</b></td></tr> 
+            <tr><td>LEVEL_VERBOSE</td><td>LOG_NOTICE</td></tr> 
+            <tr><td>LEVEL_DEBUG</td><td>LOG_NOTICE</td></tr> 
+            <tr><td>LEVEL_INFO</td><td>LOG_NOTICE</td></tr> 
+            <tr><td>LEVEL_WARNING</td><td>LOG_WARNING</td></tr> 
+            <tr><td>LEVEL_ERROR</td><td>LOG_ERR</td></tr> 
+            <tr><td>LEVEL_FATAL</td><td>LOG_CRIT</td></tr> 
+            </table>
+        </p>
+        <h4>Windows Specific Notes</h4>
+        <p>
+            <b>Note:</b> On Windows, there is no direct conversion of Cinder logging levels to Event Log logging levels.  Event levels are mapped as follows.  The log messages themselves will contain the Cinder logging level.
+            <table>
+            <tr><td><b>Cinder Level</b></td><td><b>Event Log Level</b></td></tr> 
+            <tr><td>LEVEL_VERBOSE</td><td>EVENTLOG_INFORMATION_TYPE</td></tr> 
+            <tr><td>LEVEL_DEBUG</td><td>EVENTLOG_INFORMATION_TYPE</td></tr> 
+            <tr><td>LEVEL_INFO</td><td>EVENTLOG_INFORMATION_TYPE</td></tr> 
+            <tr><td>LEVEL_WARNING</td><td>EVENTLOG_WARNING_TYPE</td></tr> 
+            <tr><td>LEVEL_ERROR</td><td>EVENTLOG_ERROR_TYPE</td></tr> 
+            <tr><td>LEVEL_FATAL</td><td>EVENTLOG_ERROR_TYPE</td></tr> 
+            </table>
+        </p>
+        <p>
+            <b>Note:</b> For deployments on Windows systems, you may find that you need to create and register an application manifest file.  We are exploring how this may be integrated into the Cinder workflow, but in the mean time, please reference issue <a href="https://github.com/cinder/Cinder/issues/1109" target="_blank">#1109</a> for information.
+        </p>
+        </section>
+
+        <a name="management"></a>
+        <section>
+        <h2>Logger Management</h2>
+        <p>
+            Multiple logger types aren't much use if you can't easily create, enable, and disable loggers.  The <ci>ci::log::LogManager</ci> manages a stack of all active loggers, and provides functions to aid in the management of loggers.
+        </p>
+        <h3>Usage</h3>
+        <p>
+            The LogManager allows you to add individual logs to the stack of active loggers.  You can either keep track of loggers after you've added them to the stack, or you can search for the logger at a later point in time.
+        </p>
+        <p>
+            <b>Example 1: Adding and forgetting a LoggerFile:</b><br>
+            <pre><code class="language-cpp">log::makeLogger&lt;log::LoggerFile&gt;( "/tmp/logging/cinder.log", true );</code></pre>
+            This causes a <ci>ci::log::LoggerFile</ci> to be created and added to the logger stack.
+        </p>
+        <p>
+            <b>Example 2: Adding and keeping a <ci>ci::log::LoggerRef</ci>:</b><br>
+            <pre><code class="language-cpp">log::LoggerRef logger = log::makeLogger&lt;log::LoggerFile&gt;( "/tmp/logging/cinder.log", true );
+... log some things to the console and file
+// remove the logger
+log::manager()->removeLogger( logger );
+... log some things to the console only</code></pre>
+        </p>
+        <p>
+            <b>Example 3: Getting an active logger:</b><br>
+            <pre><code class="language-cpp">// gets the active LoggerSystem and sets the minimum level to LEVEL_ERROR
+log::manager()->getLoggers&lt;log::LoggerSystem&gt;()[0]->setLoggingLevel( log::LEVEL_ERROR );</code></pre>
+        </p>
+        </section>
+
+        <a name="optimization"></a>
+       	<section>
+        <h2>Compile Time Settings &amp; Optimization</h2>
+        <p>
+            The <code>CI_MIN_LOG_LEVEL</code> directive allows you to configure the minimum logging level that is enabled.  For example, if you you included the following code in your main application:
+            <pre><code class="language-cpp">#define CI_MIN_LOG_LEVEL 4
+#include "cinder/Log.h"</code></pre>
+            Then the lowest enabled logging level would be <code>LEVEL_ERROR</code>.  Calls to lower logging levels, such as <code>CI_LOG_D</code> would incur no runtime costs because the method is optimized away at compile time.
+        </p>
+        <p>
+            By default, when compiling your application in debug mode, all logging levels are supported.
+        </p>
+        <p>
+            By default, when compiling your application in release mode, all levels including and above <code>LEVEL_INFO</code> are supported.
+        </p>
+        <p>
+            When you set <code>CI_MIN_LOG_LEVEL</code> these default settings are overwritten.<br>
+            <b>Note:</b> this is why the minimum system logging level can never be lower than the currently enabled Cinder logging level.
+        </p>
+        </section>
+         
+        <a name="advanced"></a>
+        <section>
+        <h2>Advanced Usage</h2>
+        <p>
+            Sticking with the Cinder mantra "make easy things easy, and hard things possible", Cinder allows for the insertion of custom loggers.  For example, if I felt like creating a logger that prepended text to my logging string, I could use the following code:
+            <pre><code class="language-cpp">class SpecialLogger: public log::LoggerConsole
+{
+    virtual void write( const log::Metadata &meta, const std::string &text ) override
+    {
+        LoggerConsole::write( meta, "Special: " + text );
+    }
+};
+...
+log::makeLogger&lt;SpecialLogger&gt;();
+CI_LOG_D( "nothing special.");</code></pre>
+            Which would print the following to the console output:
+            <pre><code class="language-cpp">|debug  | virtual void LoggingApp::setup()[51] Special: nothing special.</code></pre>
+        </p>
+        </section>
+
+		<a name="limitations"></a>      
+        <section>
+        <h2>Limitations</h2>
+        <p>
+            <h3>Message Formatting</h3>
+            Currently you can not change the message format.
+        </p>
+        <p>
+            <h3>File Rotating Interval</h3>
+            Currently the <ci>ci::log::LoggerFileRotating</ci> will only rotate log files during the first logging event after midnight.  This is not configurable to a different interval period.
+        </p>
+        </section>
+
+        <a name="examples"></a>
+        <section>
+        <p>
+           	<h2>Example Projects</h2>
+            <a href="https://github.com/Cinder/Cinder/tree/master/samples/Logging" target="_blank">samples/Logging</a><br>
+            <a href="https://github.com/Cinder/Cinder/tree/master/test/DebugTest" target="_blank">test/DebugTest</a>
+        </p>
+        </section>
+
+		<!-- END CONTENT -->
+
+		<!-- Scripts -->
+		<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+		<!-- Place additional scripts here (optional) -->
+		<!-- <script type="text/javascript"></script> -->
+
+	</body>
+</html> 

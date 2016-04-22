@@ -218,6 +218,9 @@ public:
 	template<typename LoggerT, typename... Args>
 	std::shared_ptr<LoggerT> makeLogger( Args&&... args );
 
+	template<typename LoggerT, typename... Args>
+	std::shared_ptr<LoggerT> makeOrGetLogger( Args&&... args );
+	
 protected:
 	LogManager();
 
@@ -264,6 +267,14 @@ std::shared_ptr<LoggerT> makeLogger( Args&&... args )
 	return manager()->makeLogger<LoggerT>( std::forward<Args>( args )... );
 }
 
+//! If a logger of type LoggerT exists, it will return that logger.  Otherwise creates and
+//! returns a new logger of type LoggerT, adding it to the current Logger stack.
+template<typename LoggerT, typename... Args>
+std::shared_ptr<LoggerT> makeOrGetLogger( Args&&... args )
+{
+	return manager()->makeOrGetLogger<LoggerT>( std::forward<Args>( args )... );
+}
+
 // ----------------------------------------------------------------------------------
 // Template method implementations
 
@@ -277,6 +288,21 @@ std::shared_ptr<LoggerT> LogManager::makeLogger( Args&&... args )
 	return result;
 }
 
+template<typename LoggerT, typename... Args>
+std::shared_ptr<LoggerT> LogManager::makeOrGetLogger( Args&&... args )
+{
+	static_assert( std::is_base_of<Logger, LoggerT>::value, "LoggerT must inherit from log::Logger" );
+	
+	auto vector = getLoggers<LoggerT>();
+	if( ! vector.empty() ) {
+		return vector.front();
+	}
+	
+	std::shared_ptr<LoggerT> result = std::make_shared<LoggerT>( std::forward<Args>( args )... );
+	addLogger( result );
+	return result;
+}
+	
 template<typename LoggerT>
 std::vector<std::shared_ptr<LoggerT>> LogManager::getLoggers()
 {

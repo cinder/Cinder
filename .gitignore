@@ -23,6 +23,8 @@ lib/winrt/x64/cinder*.lib
 *.suo
 *.ncb
 *.sdf
+*.VC.opendb
+*.VC.db
 *.opensdf
 Debug/
 Release/

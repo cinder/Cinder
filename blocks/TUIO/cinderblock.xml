@@ -3,15 +3,14 @@
 <block
 	name="TUIO"
 	id="org.libcinder.tuio"
-	author="Cinder Project"
+	author="Cinder Project, Ryan Bartley"
+	license="BSD"
+	summary="Implents the TUIO 1.1 spec. For full reference, go to www.tuio.org."
 	core="true"
 	>
 	<requires>org.libcinder.osc</requires>
-	<source>src/TuioClient.cpp</source>
-	<header>include/TuioClient.h</header>
-	<header>include/TuioCursor.h</header>
-	<header>include/TuioObject.h</header>
-	<header>include/TuioProfileBase.h</header>
-	<includePath>include</includePath>
+	<sourcePattern>src/*.cpp</sourcePattern>
+	<headerPattern>src/*.h</headerPattern>
+	<includePath>src</includePath>
 </block>
 </cinder>

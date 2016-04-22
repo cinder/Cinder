@@ -359,9 +359,19 @@ void Fbo::attachAttachments()
 	// attach Textures
 	for( auto &textureAttachment : mAttachmentsTexture ) {
 		auto textureTarget = textureAttachment.second->getTarget();
+#if ! defined( CINDER_GL_ES )
+		if( textureTarget == GL_TEXTURE_CUBE_MAP ) {
+			textureTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+			glFramebufferTexture2D( GL_FRAMEBUFFER, textureAttachment.first, textureTarget, textureAttachment.second->getId(), 0 );
+		}
+		else {
+			glFramebufferTexture( GL_FRAMEBUFFER, textureAttachment.first, textureAttachment.second->getId(), 0 );
+		}
+#else
 		if( textureTarget == GL_TEXTURE_CUBE_MAP )
 			textureTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 		glFramebufferTexture2D( GL_FRAMEBUFFER, textureAttachment.first, textureTarget, textureAttachment.second->getId(), 0 );
+#endif
 	}	
 }
 
@@ -656,6 +666,9 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: incomplete multisample" );
 		break;
+		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: not all attached images are layered" );
+		return false;
 #else
 		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: not all attached images have the same number of samples" );

@@ -56,13 +56,20 @@ class RectT {
 	void		clipBy( const RectT &clip );
 	RectT		getClipBy( const RectT &clip ) const;
 	Area		getInteriorArea() const;
+	//! Translates the RectT by \a off
 	void		offset( const Vec2T &offset );
-	RectT		getOffset( const Vec2T &off ) const { RectT result( *this ); result.offset( off ); return result; }
+	//! Returns a copy of the RectT translated by \a off
+	RectT		getOffset( const Vec2T &off ) const;
+	//! Translates the RectT so that its upper-left corner is \a newUL
+	void		moveULTo( const Vec2T &newUL );
+	//! Returns a copy of the RectT translated so that its upper-left corner is \a newUL
+	RectT		getMoveULTo( const Vec2T &newUL ) const;
 	void		inflate( const Vec2T &amount );
 	RectT		inflated( const Vec2T &amount ) const;
 	//! Translates the rectangle so that its center is at \a center
 	void		offsetCenterTo( const Vec2T &center ) { offset( center - getCenter() ); }
 	void		scaleCentered( const Vec2T &scale );
+	RectT		scaledCentered( const Vec2T &scale ) const;
 	void		scaleCentered( T scale );
 	RectT		scaledCentered( T scale ) const;
 	void		scale( T scale );

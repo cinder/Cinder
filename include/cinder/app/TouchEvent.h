@@ -37,9 +37,13 @@ class TouchEvent : public Event {
 	  public:
 		Touch() {}
 		Touch( const vec2 &pos, const vec2 &prevPos, uint32_t id, double time, void *native )
-			: mPos( pos ), mPrevPos( prevPos ), mId( id ), mTime( time ), mNative( native )
+			: mPos( pos ), mPrevPos( prevPos ), mId( id ), mTime( time ), mNative( native ), mHandled( false )
 		{}
-	
+
+		//! Returns whether this Touch has been marked as handled.
+		bool		isHandled() const { return mHandled; }
+		//! Marks the Touch as handled.
+		void		setHandled( bool handled = true ) { mHandled = handled; }
 		//! Returns the x position of the touch measured in points
 		float		getX() const { return mPos.x; }
 		//! Returns the y position of the touch measured in points
@@ -64,6 +68,7 @@ class TouchEvent : public Event {
 	  private:
 		vec2		mPos, mPrevPos;
 		uint32_t	mId;
+		bool        mHandled;
 		double		mTime;
 		void		*mNative;
 	};

@@ -39,7 +39,9 @@
 #define CINDER_VERSION		901
 #define CINDER_VERSION_STR	"0.9.1dev"
 
+#if ! defined( ASIO_STANDALONE )
 #define ASIO_STANDALONE 1
+#endif
 
 namespace cinder {
 using std::int8_t;
@@ -63,6 +65,7 @@ using std::uint64_t;
 		#endif
 	#else
 		#define CINDER_MSW
+		#include <sdkddkver.h>
 	#endif
 #elif defined(linux) || defined(__linux) || defined(__linux__)
 	#define CINDER_LINUX

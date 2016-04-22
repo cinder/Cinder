@@ -44,6 +44,8 @@ class CameraUi {
 	void connect( const app::WindowRef &window, int signalPriority = 0 );
 	//! Disconnects all signal handlers
 	void disconnect();
+	//! Returns whether the CameraUi is connected to mouse and window signal handlers
+	bool isConnected() const;
 	//! Sets whether the CameraUi will modify its CameraPersp either through its Window signals or through the various mouse*() member functions. Does not prevent resize handling.
 	void enable( bool enable = true )	{ mEnabled = enable; }
 	//! Prevents the CameraUi from modifying its CameraPersp either through its Window signals or through the various mouse*() member functions. Does not prevent resize handling.
@@ -98,7 +100,7 @@ class CameraUi {
 	app::WindowRef			mWindow;
 	bool					mEnabled;
 	int						mSignalPriority;
-	signals::Connection		mMouseDownConnection, mMouseUpConnection, mMouseDragConnection, mMouseWheelConnection;
+	std::vector<ci::signals::Connection>	mMouseConnections;
 	signals::Connection		mWindowResizeConnection;
 	signals::Signal<void()>	mSignalCameraChange;
 };

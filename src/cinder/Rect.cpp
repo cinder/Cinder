@@ -118,6 +118,26 @@ void RectT<T>::offset( const Vec2T &offset )
 }
 
 template<typename T>
+RectT<T> RectT<T>::getOffset( const Vec2T &off ) const
+{
+	RectT result( *this ); result.offset( off ); return result;
+}
+
+template<typename T>
+void RectT<T>::moveULTo( const Vec2T &newUL )
+{
+	set( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
+}
+
+template<typename T>
+RectT<T> RectT<T>::getMoveULTo( const Vec2T &newUL ) const
+{
+	RectT result( *this );
+	result.moveULTo( newUL );
+	return result;
+}
+
+template<typename T>
 void RectT<T>::inflate( const Vec2T &amount )
 {
 	x1 -= amount.x;
@@ -156,6 +176,15 @@ void RectT<T>::scaleCentered( T scale )
 	x2 = center.x + halfWidth;
 	y1 = center.y - halfHeight;
 	y2 = center.y + halfHeight;
+}
+
+template<typename T>
+RectT<T> RectT<T>::scaledCentered( const Vec2T &scale ) const
+{
+	const T halfWidth = getWidth() * scale.x / 2;
+	const T halfHeight = getHeight() * scale.y / 2;
+	const auto center = getCenter();
+	return RectT<T>( center.x - halfWidth, center.y - halfHeight, center.x + halfWidth, center.y + halfHeight );
 }
 
 template<typename T>

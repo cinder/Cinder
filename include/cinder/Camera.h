@@ -114,9 +114,9 @@ class Camera {
 	virtual const mat4&	getInverseViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseView(); return mInverseModelViewMatrix; }
 
 	//! Returns a Ray that passes through the image plane coordinates (\a u, \a v) (expressed in the range [0,1]) on an image plane of aspect ratio \a imagePlaneAspectRatio
-	Ray		generateRay( float u, float v, float imagePlaneAspectRatio ) const;
+	Ray		generateRay( float u, float v, float imagePlaneAspectRatio ) const { return calcRay( u, v, imagePlaneAspectRatio ); }
 	//! Returns a Ray that passes through the pixels coordinates \a posPixels on an image of size \a imageSizePixels
-	Ray		generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const;
+	Ray		generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const { return calcRay( posPixels.x / imageSizePixels.x, ( imageSizePixels.y - posPixels.y ) / imageSizePixels.y, imageSizePixels.x / imageSizePixels.y ); }
 	//! Returns the \a right and \a up vectors suitable for billboarding relative to the Camera
 	void	getBillboardVectors( vec3 *right, vec3 *up ) const;
 
@@ -147,6 +147,8 @@ class Camera {
 	virtual void	calcViewMatrix() const;
 	virtual void	calcInverseView() const;
 	virtual void	calcProjection() const = 0;
+
+	virtual Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const;
 
 	vec3	mEyePoint;
 	vec3	mViewDirection;
@@ -213,7 +215,7 @@ class CameraPersp : public Camera {
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	void	setLensShiftVertical( float vertical ) { setLensShift( mLensShift.x, vertical ); }
 	
-	virtual bool	isPersp() const { return true; }
+	bool	isPersp() const override { return true; }
 
 	//! Returns a Camera whose eyePoint is positioned to exactly frame \a worldSpaceSphere but is equivalent in other parameters (including orientation). Sets the result's pivotDistance to be the distance to \a worldSpaceSphere's center.
 	CameraPersp		calcFraming( const Sphere &worldSpaceSphere ) const;
@@ -221,7 +223,8 @@ class CameraPersp : public Camera {
   protected:
 	vec2	mLensShift;
 
-	virtual void	calcProjection() const;
+	void	calcProjection() const override;
+	Ray		calcRay( float u, float v, float imagePlaneAspectRatio ) const override;
 };
 
 //! An orthographic Camera.
@@ -230,12 +233,12 @@ class CameraOrtho : public Camera {
 	CameraOrtho();
 	CameraOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane );
 
-	void setOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane );
+	void	setOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane );
 
-	virtual bool	isPersp() const { return false; }
+	bool	isPersp() const override { return false; }
 	
   protected:
-	virtual void	calcProjection() const;
+	void	calcProjection() const override;
 };
 
 //! A Camera used for stereoscopic displays.
