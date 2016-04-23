@@ -11,6 +11,7 @@ include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 set( CINDER_BUILD_VERBOSE TRUE )
 
 ci_make_app(
+	APP_NAME    "Cube"
 	SOURCES     ${SRC_DIR}/CubeApp.cpp
 	CINDER_PATH ${CINDER_PATH}
 )

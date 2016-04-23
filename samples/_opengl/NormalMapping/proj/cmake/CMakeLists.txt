@@ -17,6 +17,7 @@ set( SRC_FILES
 )
 
 ci_make_app(
+	APP_NAME    "NormalMapping"
 	SOURCES     ${SRC_FILES}
 	CINDER_PATH ${CINDER_PATH}
 	INCLUDES    ${INCLUDE_DIR}
