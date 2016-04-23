@@ -52,5 +52,9 @@ else()
 endif()
 
 if( CINDER_BUILD_SAMPLES )
+	# TODO: move these to separate file and make easier to add new samples
 	add_subdirectory( ${CINDER_ROOT}/samples/BasicApp/proj/cmake )
+	add_subdirectory( ${CINDER_ROOT}/samples/_audio/NodeBasic/proj/cmake )
+	add_subdirectory( ${CINDER_ROOT}/samples/_opengl/Cube/proj/cmake )
+	add_subdirectory( ${CINDER_ROOT}/samples/_opengl/NormalMapping/proj/cmake )
 endif()
