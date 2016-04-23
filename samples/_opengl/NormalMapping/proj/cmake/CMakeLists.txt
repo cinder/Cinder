@@ -4,21 +4,20 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 project( opengl-NormalMapping )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE )
-get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../src" ABSOLUTE )
-get_filename_component( INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../include" ABSOLUTE )
+get_filename_component( SAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 set( CINDER_BUILD_VERBOSE TRUE )
 
 set( SRC_FILES
-	${SRC_DIR}/DebugMesh.cpp
-	${SRC_DIR}/NormalMappingApp.cpp
+	${SAMPLE_DIR}/src/DebugMesh.cpp
+	${SAMPLE_DIR}/src/NormalMappingApp.cpp
 )
 
 ci_make_app(
 	APP_NAME    "NormalMapping"
 	SOURCES     ${SRC_FILES}
 	CINDER_PATH ${CINDER_PATH}
-	INCLUDES    ${INCLUDE_DIR}
+	INCLUDES    ${SAMPLE_DIR}/include
 )

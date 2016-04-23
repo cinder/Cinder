@@ -4,7 +4,7 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 project( audio-NodeBasic )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE )
-get_filename_component( SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../src" ABSOLUTE )
+get_filename_component( SAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
@@ -12,6 +12,6 @@ set( CINDER_BUILD_VERBOSE TRUE )
 
 ci_make_app(
 	APP_NAME    "NodeBasic"
-	SOURCES     ${SRC_DIR}/NodeBasicApp.cpp
+	SOURCES     ${SAMPLE_DIR}/src/NodeBasicApp.cpp
 	CINDER_PATH ${CINDER_PATH}
 )
