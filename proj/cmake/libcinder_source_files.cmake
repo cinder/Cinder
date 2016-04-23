@@ -169,6 +169,8 @@ source_group( "cinder\\gl" FILES    ${SRC_SET_CINDER_GL} )
 
 list( APPEND SRC_SET_CINDER_IP
 	${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Blur.cpp
+	${CINDER_SRC_DIR}/cinder/ip/Checkerboard.cpp
 	${CINDER_SRC_DIR}/cinder/ip/Fill.cpp
 	${CINDER_SRC_DIR}/cinder/ip/Grayscale.cpp
 	${CINDER_SRC_DIR}/cinder/ip/Premultiply.cpp
