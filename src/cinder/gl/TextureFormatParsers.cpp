@@ -275,6 +275,11 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	int32_t blockSizeBytes = 16;
 	switch( ddsd.ddpfPixelFormat.dwFourCC ) { 
 #if ! defined( CINDER_GL_ANGLE )
+		case 0: /*Note that some DDS files do not have a valid format
+				 - we assume they are RGB 24
+				 - We might want some better logic here, but it is unclear how
+				 - one might discern a RGBA vs RGB DDS from exporters which do not
+				 - clearly mark their format */
 		case 20 /*D3DFMT_R8G8B8*/:
 			internalFormat = GL_RGB8;
 			dataFormat = GL_BGR;
