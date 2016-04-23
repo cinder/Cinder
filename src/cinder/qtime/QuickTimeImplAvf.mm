@@ -37,6 +37,7 @@
 	#if defined( CINDER_COCOA_TOUCH )
 		#import <CoreVideo/CoreVideo.h>
 	#else
+		#import <VideoToolbox/VideoToolbox.h>
 		#import <CoreVideo/CVDisplayLink.h>
 	#endif
 #endif
@@ -506,6 +507,15 @@ void MovieBase::stop()
 
 void MovieBase::init()
 {
+#if defined( CINDER_MAC )
+	// vade - We want to register professional video codecs so we can use them.
+	// this enables Apple Intermdiate, and other decoders
+	// as well as enabling Pro Res export, etc.
+	VTRegisterProfessionalVideoWorkflowVideoDecoders();
+	VTRegisterProfessionalVideoWorkflowVideoEncoders();
+#endif
+
+	
 	mHasAudio = mHasVideo = false;
 	mPlayThroughOk = mPlayable = mProtected = false;
 	mPlaying = false;
