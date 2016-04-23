@@ -38,6 +38,7 @@
 		#import <CoreVideo/CoreVideo.h>
 	#else
 		#import <CoreVideo/CVDisplayLink.h>
+		#import <VideoToolbox/VideoToolbox.h>
 	#endif
 #endif
 
@@ -506,6 +507,12 @@ void MovieBase::stop()
 
 void MovieBase::init()
 {
+#if defined( CINDER_MAC )
+	// ON OS X, these calls enable extra codecs for reading and writing.
+	VTRegisterProfessionalVideoWorkflowVideoEncoders();
+	VTRegisterProfessionalVideoWorkflowVideoDecoders();
+#endif
+	
 	mHasAudio = mHasVideo = false;
 	mPlayThroughOk = mPlayable = mProtected = false;
 	mPlaying = false;
