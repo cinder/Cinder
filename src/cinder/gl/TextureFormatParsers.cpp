@@ -275,7 +275,6 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	int32_t blockSizeBytes = 16;
 	switch( ddsd.ddpfPixelFormat.dwFourCC ) { 
 #if ! defined( CINDER_GL_ANGLE )
-		case 0: // not noted, assume RGBA 8 bit?
 		case 20 /*D3DFMT_R8G8B8*/:
 			internalFormat = GL_RGB8;
 			dataFormat = GL_BGR;

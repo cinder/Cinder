@@ -72,7 +72,7 @@ class Buffer {
 	//! Writes a Buffer to a DataTarget
 	void	write( const DataTargetRef &dataTarget );
 	
-  protected:
+  private:
 	void*	mData;
 	size_t	mAllocatedSize;
 	size_t	mDataSize;
