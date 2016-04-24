@@ -9,9 +9,6 @@ execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH
 
 set( CINDER_TARGET_SUBFOLDER "linux/${CINDER_ARCH}" )
 
-include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
-include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
-
 list( APPEND SRC_SET_GLFW 
 	${CINDER_SRC_DIR}/glfw/src/context.c
 	${CINDER_SRC_DIR}/glfw/src/init.c
@@ -177,8 +174,7 @@ else()
 endif()
 
 # Defaults... dl and pthread
-list(  APPEND CINDER_LIBS_DEPENDS dl pthread )
-
+list( APPEND CINDER_LIBS_DEPENDS dl pthread )
 
 source_group( "cinder\\linux"           FILES ${SRC_SET_CINDER_LINUX} )
 source_group( "cinder\\app\\linux"      FILES ${SRC_SET_CINDER_APP_LINUX} )
@@ -212,5 +208,3 @@ else() # Rpi
 endif()
 
 list( APPEND CINDER_DEFINES "-D_UNIX -D_GLIBCXX_USE_CXX11_ABI=0" ${GLFW_FLAGS}  )
-
-include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )

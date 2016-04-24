@@ -8,9 +8,6 @@ set( CINDER_ANDROID_NDK_ARCH "armeabi-v7a" )
 
 set( CINDER_TARGET_SUBFOLDER "android-${CINDER_ANDROID_NDK_PLATFORM/CINDER_ANDROID_NDK_ARCH" )
 
-include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
-include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
-
 list( APPEND SRC_SET_CINDER_ANDROID
 	${CINDER_SRC_DIR}/cinder/CaptureImplJni.cpp
 	${CINDER_SRC_DIR}/cinder/UrlImplJni.cpp
@@ -35,5 +32,3 @@ list( APPEND CINDER_SRC_FILES
 
 source_group( "cinder\\android"         FILES ${SRC_SET_CINDER_ANDROID} )
 source_group( "cinder\\app\\android"    FILES ${SRC_SET_CINDER_APP_ANDROID} )
-
-include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )
