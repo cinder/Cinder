@@ -56,6 +56,7 @@ if( CINDER_BUILD_SAMPLES )
 	# TODO: move these to separate file and make easier to add new samples
 	add_subdirectory( ${CINDER_ROOT}/samples/BasicApp/proj/cmake )
 	add_subdirectory( ${CINDER_ROOT}/samples/_audio/NodeBasic/proj/cmake )
+	add_subdirectory( ${CINDER_ROOT}/samples/_audio/BufferPlayer/proj/cmake )
 	add_subdirectory( ${CINDER_ROOT}/samples/_opengl/Cube/proj/cmake )
 	add_subdirectory( ${CINDER_ROOT}/samples/_opengl/NormalMapping/proj/cmake )
 	add_subdirectory( ${CINDER_ROOT}/samples/_opengl/ObjLoader/proj/cmake )
