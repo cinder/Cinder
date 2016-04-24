@@ -12,7 +12,6 @@ set( CINDER_TARGET_SUBFOLDER "linux/${CINDER_ARCH}" )
 include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
 include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
 
-
 list( APPEND SRC_SET_GLFW 
 	${CINDER_SRC_DIR}/glfw/src/context.c
 	${CINDER_SRC_DIR}/glfw/src/init.c
@@ -34,7 +33,20 @@ list( APPEND SRC_SET_CINDER_APP_LINUX
 	${CINDER_SRC_DIR}/cinder/app/linux/AppLinux.cpp
 	${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
 )
-	
+
+list( APPEND SRC_SET_CINDER_AUDIO_LINUX
+	${CINDER_SRC_DIR}/cinder/audio/linux/ContextJack.cpp
+	${CINDER_SRC_DIR}/cinder/audio/linux/ContextPulseAudio.cpp
+	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerJack.cpp
+	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerPulseAudio.cpp
+	${CINDER_SRC_DIR}/cinder/audio/linux/FileAudioLoader.cpp
+)
+
+list( APPEND SRC_SET_CINDER_AUDIO_DSP
+	${CINDER_SRC_DIR}/cinder/audio/dsp/ooura/fftsg.cpp
+	${CINDER_SRC_DIR}/cinder/audio/dsp/ConverterR8brain.cpp
+)
+
 # Relevant source files depending on target GL.
 if( NOT CINDER_GL_ES_2_RPI )
 	if( CINDER_GL_ES )
@@ -73,6 +85,8 @@ endif()
 list( APPEND CINDER_SRC_FILES
 	${SRC_SET_CINDER_LINUX}
 	${SRC_SET_CINDER_APP_LINUX}
+	${SRC_SET_CINDER_AUDIO_LINUX}
+	${SRC_SET_CINDER_AUDIO_DSP}
 )
 
 # Relevant libs and include dirs depending on target platform and target GL.
