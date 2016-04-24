@@ -172,6 +172,13 @@ struct DialogHelper {
 					}
 				}
 				if( ! value.empty() ) {
+					// Zenity seems to add a new line character at the end of the path, so remove it if present.
+					const auto newLineCharacterPos = std::strcspn( value.c_str(), "\n" );
+
+					if( newLineCharacterPos !=  value.size() ) {
+						value[ newLineCharacterPos ] = 0;
+					}
+
 					result = value;
 				}
 			}
@@ -414,7 +421,7 @@ fs::path PlatformLinux::getDefaultExecutablePath() const
     if( ( -1 != len ) && ( len < buf.size() ) ) {
       buf[len] = '\0';
     }
- 	return fs::path( std::string( &(buf[0]), len ) );
+ 	return fs::path( std::string( &(buf[0]), len ) ).parent_path();
 }
 
 void PlatformLinux::sleep( float milliseconds ) 
