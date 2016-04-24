@@ -23,11 +23,13 @@ list( APPEND SRC_SET_APP_COCOA
 	${CINDER_SRC_DIR}/cinder/app/cocoa/PlatformCocoa.cpp
 	${CINDER_SRC_DIR}/cinder/app/cocoa/RendererImpl2dMacQuartz.mm
 	${CINDER_SRC_DIR}/cinder/app/cocoa/RendererImplGlMac.mm
-	${CINDER_SRC_DIR}/cinder/CaptureImplAvFoundation.mm
-	${CINDER_SRC_DIR}/cinder/ImageSourceFileQuartz.cpp
-	${CINDER_SRC_DIR}/cinder/ImageTargetFileQuartz.cpp
-	${CINDER_SRC_DIR}/cinder/UrlImplCocoa.mm
-	${CINDER_SRC_DIR}/cinder/cocoa/CinderCocoa.mm
+)
+
+list( APPEND SRC_SET_AUDIO_COCOA
+	${CINDER_SRC_DIR}/cinder/audio/cocoa/CinderCoreAudio.cpp
+	${CINDER_SRC_DIR}/cinder/audio/cocoa/ContextAudioUnit.cpp
+	${CINDER_SRC_DIR}/cinder/audio/cocoa/DeviceManagerCoreAudio.cpp
+	${CINDER_SRC_DIR}/cinder/audio/cocoa/FileCoreAudio.cpp
 )
 
 # specify what files need to be compiled as Objective-C++
@@ -65,6 +67,7 @@ set_source_files_properties( ${CINDER_SOURCES_OBJCPP}
 list( APPEND CINDER_SRC_FILES
 	${SRC_SET_COCOA}
 	${SRC_SET_APP_COCOA}
+	${SRC_SET_AUDIO_COCOA}
 )
 
 list( APPEND CINDER_LIBS_DEPENDS
@@ -100,7 +103,8 @@ list( APPEND CINDER_LIBS_DEPENDS
     ${IOKIT_FRAMEWORK}
 )
 
-source_group( "cinder\\cocoa"       FILES ${SRC_SET_COCOA} )
-source_group( "cinder\\app\\cocoa"  FILES ${SRC_SET_APP_COCOA} )
+source_group( "cinder\\cocoa"           FILES ${SRC_SET_COCOA} )
+source_group( "cinder\\app\\cocoa"      FILES ${SRC_SET_APP_COCOA} )
+source_group( "cinder\\audio\\cocoa"    FILES ${SRC_SET_AUDIO_COCOA} )
 
 include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )

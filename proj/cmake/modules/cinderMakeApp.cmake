@@ -2,7 +2,7 @@ include( CMakeParseArguments )
 
 function( ci_make_app )
 	set( oneValueArgs APP_NAME CINDER_PATH )
-	set( multiValueArgs SOURCES INCLUDES )
+	set( multiValueArgs SOURCES INCLUDES RESOURCES )
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
@@ -22,13 +22,12 @@ function( ci_make_app )
 			)
 	endif()
 
-	# CLion specific: If we can detect that the output binary app is going to be placed in clion's cache,
-	# reroute it to be within the user app's project. This is necessary for cinder's assets systemt o work.
-	if( ${CMAKE_BINARY_DIR} MATCHES "Caches/CLion" )
+	# Unless already set by the user, make sure runtime output directory is relative to the project folder
+	# so that cinder's assets system works.
+	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
 		set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
-		if( CINDER_BUILD_VERBOSE )
-			message( WARNING "detected Clion output to cache, rerouted to sample directory: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
-		endif()
+		# this shouldn't be a warning, but this is currently the only way to see the message in CLion
+		# message( WARNING "set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
 	endif()
 
 	if( CINDER_BUILD_VERBOSE )
@@ -65,15 +64,17 @@ function( ci_make_app )
 	endif()
 
 	if( CINDER_MAC )
-		# set icon
+		# set icon. TODO: make this overridable
 		set( ICON_NAME "CinderApp.icns" )
 		set( ICON_PATH "${ARG_CINDER_PATH}/samples/data/${ICON_NAME}" )
 
 		# copy .icns to bundle's resources folder
 		set_source_files_properties( ${ICON_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+		# copy any other resources specified by user
+		set_source_files_properties( ${ARG_RESOURCES} PROPERTIES HEADER_FILE_ONLY ON MACOSX_PACKAGE_LOCATION Resources )
 	endif()
 
-	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} )
+	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} ${ARG_RESOURCES} )
 
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
 
