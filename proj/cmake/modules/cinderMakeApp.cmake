@@ -6,6 +6,8 @@ function( ci_make_app )
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
+	option( CINDER_VERBOSE "Print verbose build configuration messages. " OFF )
+
 	if( NOT ARG_APP_NAME )
 		set( ARG_APP_NAME "${PROJECT_NAME}" )
 	endif()
@@ -30,7 +32,7 @@ function( ci_make_app )
 		# message( WARNING "set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
 	endif()
 
-	if( CINDER_BUILD_VERBOSE )
+	if( CINDER_VERBOSE )
 		message( STATUS "APP_NAME: ${ARG_APP_NAME}" )
 		message( STATUS "SOURCES: ${ARG_SOURCES}" )
 		message( STATUS "INCLUDES: ${ARG_INCLUDES}" )

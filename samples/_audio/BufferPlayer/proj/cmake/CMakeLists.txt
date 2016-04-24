@@ -8,8 +8,6 @@ get_filename_component( SAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
-set( CINDER_BUILD_VERBOSE TRUE )
-
 set( SRC_FILES
 	${SAMPLE_DIR}/src/BufferPlayerApp.cpp
 	${SAMPLE_DIR}/../common/AudioDrawUtils.cpp
