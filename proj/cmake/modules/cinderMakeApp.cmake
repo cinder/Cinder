@@ -19,9 +19,9 @@ function( ci_make_app )
 	if( NOT CMAKE_BUILD_TYPE )
 		message( STATUS "Setting default CMAKE_BUILD_TYPE to Debug" )
 		set( CMAKE_BUILD_TYPE Debug CACHE STRING
-			"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel. "
-			FORCE
-			)
+			 "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel. "
+			 FORCE
+		)
 	endif()
 
 	# Unless already set by the user, make sure runtime output directory is relative to the project folder
@@ -60,8 +60,8 @@ function( ci_make_app )
 	# pull in cinder's exported configuration
 	if( NOT TARGET cinder )
 		find_package( cinder REQUIRED
-				PATHS "${ARG_CINDER_PATH}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}" 
-				"$ENV{Cinder_Dir}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}" 
+			PATHS "${ARG_CINDER_PATH}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}"
+			"$ENV{Cinder_Dir}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}"
 		)
 	endif()
 
@@ -77,9 +77,7 @@ function( ci_make_app )
 	endif()
 
 	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} ${ARG_RESOURCES} )
-
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
-
 	target_link_libraries( ${ARG_APP_NAME} cinder )
 
 	if( CINDER_MAC )
