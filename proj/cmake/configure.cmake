@@ -106,6 +106,6 @@ elseif( CINDER_MSW )
 	set( CINDER_TARGET_SUBFOLDER "msw" ) # TODO: place in msw/arch folder (x64 or x86)
 endif()
 
-# CINDER_ARCHIVE_OUTPUT_DIRECTORY will be used to define CMAKE_ARCHIVE_OUTPUT_DIRECTORY for libcinder
-# and also specifies where user apps will locate the cinder package
-set( CINDER_ARCHIVE_OUTPUT_DIRECTORY lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE}/ )
+# CINDER_LIB_DIRECTORY is the platform-specific, relative path that will be used to define
+# CMAKE_ARCHIVE_OUTPUT_DIRECTORY for libcinder and also specifies where user apps will locate the cinder package
+set( CINDER_LIB_DIRECTORY lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE}/ )
