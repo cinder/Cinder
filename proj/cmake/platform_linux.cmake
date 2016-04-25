@@ -162,9 +162,10 @@ if( CINDER_BOOST_USE_SYSTEM )
 	list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
 	list( APPEND CINDER_INCLUDE_SYSTEM ${Boost_INCLUDE_DIRS} )
 else()
-	list( APPEND CINDER_LIBS_DEPENDS 
-		${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_system.a 
-		${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_filesystem.a 
+	set( LINUX_LIB_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/linux/${CINDER_ARCH}/" )
+	list( APPEND CINDER_LIBS_DEPENDS
+		${LINUX_LIB_DIRECTORY}/libboost_system.a
+		${LINUX_LIB_DIRECTORY}/libboost_filesystem.a
 	)
 endif()
 
