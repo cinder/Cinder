@@ -5,7 +5,7 @@ project( cinder )
 
 option( CINDER_BUILD_SAMPLES "Build Samples" OFF )
 
-set( CINDER_ROOT      "${CMAKE_CURRENT_SOURCE_DIR}" )
+set( CINDER_PATH      "${CMAKE_CURRENT_SOURCE_DIR}" )
 set( CINDER_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake" )
 
 include( ${CINDER_CMAKE_DIR}/configure.cmake )
@@ -28,10 +28,10 @@ include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )
 
 if( CINDER_BUILD_SAMPLES )
 	# TODO: move these to separate file and make easier to add new samples
-	add_subdirectory( ${CINDER_ROOT}/samples/BasicApp/proj/cmake )
-	add_subdirectory( ${CINDER_ROOT}/samples/_audio/NodeBasic/proj/cmake )
-	add_subdirectory( ${CINDER_ROOT}/samples/_audio/BufferPlayer/proj/cmake )
-	add_subdirectory( ${CINDER_ROOT}/samples/_opengl/Cube/proj/cmake )
-	add_subdirectory( ${CINDER_ROOT}/samples/_opengl/NormalMapping/proj/cmake )
-	add_subdirectory( ${CINDER_ROOT}/samples/_opengl/ObjLoader/proj/cmake )
+	add_subdirectory( ${CINDER_PATH}/samples/BasicApp/proj/cmake )
+	add_subdirectory( ${CINDER_PATH}/samples/_audio/NodeBasic/proj/cmake )
+	add_subdirectory( ${CINDER_PATH}/samples/_audio/BufferPlayer/proj/cmake )
+	add_subdirectory( ${CINDER_PATH}/samples/_opengl/Cube/proj/cmake )
+	add_subdirectory( ${CINDER_PATH}/samples/_opengl/NormalMapping/proj/cmake )
+	add_subdirectory( ${CINDER_PATH}/samples/_opengl/ObjLoader/proj/cmake )
 endif()

@@ -2,13 +2,11 @@ cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
 cmake_policy( SET CMP0022 NEW )
 
-# note: CINDER_TARGET_SUBFOLDER is defined by each platform config, to be a folder that lives in cinder/lib/*
-# note: CINDER_TARGET_GL_SUBFOLDER is necessary for Linux since we can have various builds depending on the target GL.
-# e.g on the TK1 we can build both core profile and es2 so this takes care of putting everything on the right place.
-# For other platforms than Linux if this var is not needed will just stay empty.
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL_SUBFOLDER} )
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CINDER_PATH}/${CINDER_ARCHIVE_OUTPUT_DIRECTORY} )
 
-message( "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" )
+if( CINDER_VERBOSE )
+	message( "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" )
+endif()
 
 add_library(
     cinder STATIC

@@ -1,7 +1,6 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
 set( CINDER_PLATFORM "Cocoa" )
-set( CINDER_TARGET_SUBFOLDER "macosx" )
 
 # append mac specific source files
 list( APPEND SRC_SET_COCOA

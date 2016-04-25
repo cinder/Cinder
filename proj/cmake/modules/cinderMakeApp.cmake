@@ -6,22 +6,12 @@ function( ci_make_app )
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-	option( CINDER_VERBOSE "Print verbose build configuration messages. " OFF )
-
 	if( NOT ARG_APP_NAME )
 		set( ARG_APP_NAME "${PROJECT_NAME}" )
 	endif()
 
 	if( ARG_UNPARSED_ARGUMENTS )
 		message( WARNING "unhandled arguments: ${ARG_UNPARSED_ARGUMENTS}" )
-	endif()
-
-	if( NOT CMAKE_BUILD_TYPE )
-		message( STATUS "Setting default CMAKE_BUILD_TYPE to Debug" )
-		set( CMAKE_BUILD_TYPE Debug CACHE STRING
-			 "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel. "
-			 FORCE
-		)
 	endif()
 
 	# Unless already set by the user, make sure runtime output directory is relative to the project folder
@@ -39,29 +29,15 @@ function( ci_make_app )
 		message( STATUS "CINDER_PATH: ${ARG_CINDER_PATH}" )
 		message( STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
 		message( STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}" )
-	endif()
-
-
-	# TODO: how can we keep these variabels in sync with how they're defined in main CMakeLists.txt?
-	if( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
-		set( CINDER_TARGET "macosx" )
-		set( CINDER_MAC TRUE )
-	elseif( CMAKE_SYSTEM_NAME MATCHES "Linux" )
-		set( CINDER_TARGET "linux" )
-		set( CINDER_LINUX TRUE )
-		execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
-	elseif( CMAKE_SYSTEM_NAME MATCHES "Windows" )
-		set( CINDER_TARGET "msw" )
-		set( CINDER_MSW TRUE )
-	else()
-		message( FATAL_ERROR "CINDER_TARGET not defined, and no default for platform '${CMAKE_SYSTEM_NAME}.'" )
+		message( STATUS "CINDER_TARGET: ${CINDER_TARGET}" )
 	endif()
 
 	# pull in cinder's exported configuration
 	if( NOT TARGET cinder )
-		find_package( cinder REQUIRED
-			PATHS "${ARG_CINDER_PATH}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}"
-			"$ENV{Cinder_Dir}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}"
+		message( STATUS "CINDER_ARCHIVE_OUTPUT_DIRECTORY: ${CINDER_ARCHIVE_OUTPUT_DIRECTORY}" )
+		find_package( cinder REQUIRED PATHS
+			"${ARG_CINDER_PATH}/${CINDER_ARCHIVE_OUTPUT_DIRECTORY}"
+			"$ENV{Cinder_Dir}/${CINDER_ARCHIVE_OUTPUT_DIRECTORY}"
 		)
 	endif()
 

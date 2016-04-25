@@ -1,7 +1,6 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
 set( CINDER_PLATFORM "MSW" )
-set( CINDER_TARGET_SUBFOLDER "msw" ) # TODO: place in msw/arch folder (x64 or x86)
 
 list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/cinder/CaptureImplDirectShow.cpp
