@@ -16,11 +16,19 @@ list( APPEND SRC_SET_MSW
 )
 
 list( APPEND SRC_SET_APP_MSW
+	# TODO: should these two files be added to "cinder\\app" group?
 	${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp
-	${CINDER_SRC_DIR}/cinder/app/AppImplMsw.cpp
-	${CINDER_SRC_DIR}/cinder/app/AppImplMswBasic.cpp
-	${CINDER_SRC_DIR}/cinder/app/AppImplMswRendererGl.cpp
 	${CINDER_SRC_DIR}/cinder/app/RendererDx.cpp
+
+	${CINDER_SRC_DIR}/cinder/app/msw/AppImplMsw.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/AppImplMswBasic.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/AppImplMswScreenSaver.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/AppMsw.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/PlatformMsw.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/RendererImpl2dGdi.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/RendererImplDx.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/RendererImplGlAngle.cpp
+	${CINDER_SRC_DIR}/cinder/app/msw/RendererImplGlMsw.cpp
 )
 
 list( APPEND CINDER_SRC_FILES
@@ -30,5 +38,11 @@ list( APPEND CINDER_SRC_FILES
 
 source_group( "cinder\\msw"       FILES ${SRC_SET_MSW} )
 source_group( "cinder\\app\\msw"  FILES ${SRC_SET_APP_MSW} )
+
+list( APPEND CINDER_INCLUDE_SYSTEM
+    ${CINDER_INC_DIR}/msw/zlib
+)
+
+list( APPEND CINDER_DEFINES "_LIB UNICODE _UNICODE NOMINMAX _WIN32_WINNT=0x0601 _CRT_SECURE_NO_WARNINGS _SCL_SECURE_NO_WARNINGS" )
 
 include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )

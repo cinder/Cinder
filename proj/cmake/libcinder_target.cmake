@@ -23,16 +23,16 @@ target_link_libraries( cinder INTERFACE ${CINDER_LIBS_DEPENDS} )
 target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
 
 # Check compiler support for enabling c++11 or c++14.
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+include( CheckCXXCompilerFlag )
+CHECK_CXX_COMPILER_FLAG( "-std=c++14" COMPILER_SUPPORTS_CXX14 )
+CHECK_CXX_COMPILER_FLAG( "-std=c++11" COMPILER_SUPPORTS_CXX11 )
 
-if(COMPILER_SUPPORTS_CXX14)
+if( COMPILER_SUPPORTS_CXX14 )
 	set( CINDER_COMPILER_FLAGS "-std=c++14" )
-elseif(COMPILER_SUPPORTS_CXX11)
+elseif( COMPILER_SUPPORTS_CXX11 )
 	set( CINDER_COMPILER_FLAGS "-std=c++11" )
 else()
-	message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has neither C++11 or C++14 support. Please use a different C++ compiler.")
+	message( FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has neither C++11 or C++14 support. Please use a different C++ compiler." )
 endif()
 
 set( CMAKE_CXX_FLAGS ${CINDER_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS} )

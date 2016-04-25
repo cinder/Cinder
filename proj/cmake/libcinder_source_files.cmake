@@ -58,7 +58,6 @@ list( APPEND SRC_SET_CINDER
 	${CINDER_SRC_DIR}/cinder/Tween.cpp
 	${CINDER_SRC_DIR}/cinder/Unicode.cpp
 	${CINDER_SRC_DIR}/cinder/Url.cpp
-	${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp
 	${CINDER_SRC_DIR}/cinder/Utilities.cpp
 	${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
@@ -67,6 +66,12 @@ if( NOT CINDER_LINUX )
 	list( APPEND SRC_SET_CINDER
 		${CINDER_SRC_DIR}/cinder/Capture.cpp
 		${CINDER_SRC_DIR}/cinder/Serial.cpp
+	)
+endif()
+
+if( NOT CINDER_MSW )
+	list( APPEND SRC_SET_CINDER
+		${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp
 	)
 endif()
 
