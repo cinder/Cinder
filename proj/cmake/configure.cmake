@@ -92,7 +92,9 @@ endif()
 if( CINDER_LINUX )
 	# Find architecture name.
 	execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
-	set( CINDER_TARGET_SUBFOLDER "linux/${CINDER_ARCH}" )
+	# CINDER_TARGET_GL is added to CINDER_TARGET_SUBFOLDER on Linux since we can have various builds depending on the target GL.
+	# e.g on the TK1 we can build both core profile and es2 so this takes care of putting everything on the right place.
+	set( CINDER_TARGET_SUBFOLDER "linux/${CINDER_ARCH}/${CINDER_TARGET_GL}" )
 elseif( CINDER_MAC )
 	set( CINDER_TARGET_SUBFOLDER "macosx" )
 elseif( CINDER_ANDROID )
@@ -104,8 +106,6 @@ elseif( CINDER_MSW )
 	set( CINDER_TARGET_SUBFOLDER "msw" ) # TODO: place in msw/arch folder (x64 or x86)
 endif()
 
-# note: CINDER_TARGET_SUBFOLDER is defined by each platform config, to be a folder that lives in cinder/lib/*
-# note: CINDER_TARGET_GL_SUBFOLDER is necessary for Linux since we can have various builds depending on the target GL.
-# e.g on the TK1 we can build both core profile and es2 so this takes care of putting everything on the right place.
-# For other platforms than Linux if this var is not needed will just stay empty.
-set( CINDER_ARCHIVE_OUTPUT_DIRECTORY lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL} )
+# CINDER_ARCHIVE_OUTPUT_DIRECTORY will be used to define CMAKE_ARCHIVE_OUTPUT_DIRECTORY for libcinder
+# and also specifies where user apps will locate the cinder package
+set( CINDER_ARCHIVE_OUTPUT_DIRECTORY lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE}/ )
