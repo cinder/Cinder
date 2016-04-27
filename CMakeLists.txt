@@ -3,7 +3,8 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 project( cinder )
 
-option( CINDER_BUILD_SAMPLES "Build Samples" OFF )
+option( CINDER_BUILD_SAMPLES "Build all samples." OFF )
+set( CINDER_BUILD_SAMPLE "" CACHE STRING "Build a specific sample by specifying its path relative to the samples directory (ex. '_opengl/Cube')." )
 
 set( CINDER_PATH      "${CMAKE_CURRENT_SOURCE_DIR}" )
 set( CINDER_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake" )
@@ -34,4 +35,6 @@ if( CINDER_BUILD_SAMPLES )
 	add_subdirectory( ${CINDER_PATH}/samples/_opengl/Cube/proj/cmake )
 	add_subdirectory( ${CINDER_PATH}/samples/_opengl/NormalMapping/proj/cmake )
 	add_subdirectory( ${CINDER_PATH}/samples/_opengl/ObjLoader/proj/cmake )
+elseif( CINDER_BUILD_SAMPLE )
+	add_subdirectory( ${CINDER_PATH}/samples/${CINDER_BUILD_SAMPLE}/proj/cmake )
 endif()
