@@ -1,10 +1,6 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
 set( CINDER_PLATFORM "Cocoa" )
-set( CINDER_TARGET_SUBFOLDER "macosx" )
-
-include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
-include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
 
 # append mac specific source files
 list( APPEND SRC_SET_COCOA
@@ -106,5 +102,3 @@ list( APPEND CINDER_LIBS_DEPENDS
 source_group( "cinder\\cocoa"           FILES ${SRC_SET_COCOA} )
 source_group( "cinder\\app\\cocoa"      FILES ${SRC_SET_APP_COCOA} )
 source_group( "cinder\\audio\\cocoa"    FILES ${SRC_SET_AUDIO_COCOA} )
-
-include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )

@@ -4,15 +4,6 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 set( CINDER_PLATFORM "Posix" )
 
-# Find architecture name.
-execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
-
-set( CINDER_TARGET_SUBFOLDER "linux/${CINDER_ARCH}" )
-
-include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
-include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
-
-
 list( APPEND SRC_SET_GLFW 
 	${CINDER_SRC_DIR}/glfw/src/context.c
 	${CINDER_SRC_DIR}/glfw/src/init.c
@@ -34,7 +25,20 @@ list( APPEND SRC_SET_CINDER_APP_LINUX
 	${CINDER_SRC_DIR}/cinder/app/linux/AppLinux.cpp
 	${CINDER_SRC_DIR}/cinder/app/linux/PlatformLinux.cpp
 )
-	
+
+list( APPEND SRC_SET_CINDER_AUDIO_LINUX
+	${CINDER_SRC_DIR}/cinder/audio/linux/ContextJack.cpp
+	${CINDER_SRC_DIR}/cinder/audio/linux/ContextPulseAudio.cpp
+	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerJack.cpp
+	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerPulseAudio.cpp
+	${CINDER_SRC_DIR}/cinder/audio/linux/FileAudioLoader.cpp
+)
+
+list( APPEND SRC_SET_CINDER_AUDIO_DSP
+	${CINDER_SRC_DIR}/cinder/audio/dsp/ooura/fftsg.cpp
+	${CINDER_SRC_DIR}/cinder/audio/dsp/ConverterR8brain.cpp
+)
+
 # Relevant source files depending on target GL.
 if( NOT CINDER_GL_ES_2_RPI )
 	if( CINDER_GL_ES )
@@ -73,6 +77,8 @@ endif()
 list( APPEND CINDER_SRC_FILES
 	${SRC_SET_CINDER_LINUX}
 	${SRC_SET_CINDER_APP_LINUX}
+	${SRC_SET_CINDER_AUDIO_LINUX}
+	${SRC_SET_CINDER_AUDIO_DSP}
 )
 
 # Relevant libs and include dirs depending on target platform and target GL.
@@ -156,15 +162,15 @@ if( CINDER_BOOST_USE_SYSTEM )
 	list( APPEND CINDER_LIBS_DEPENDS ${Boost_LIBRARIES} )
 	list( APPEND CINDER_INCLUDE_SYSTEM ${Boost_INCLUDE_DIRS} )
 else()
-	list( APPEND CINDER_LIBS_DEPENDS 
-		${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_system.a 
-		${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_filesystem.a 
+	set( LINUX_LIB_DIRECTORY "${CMAKE_SOURCE_DIR}/lib/linux/${CINDER_ARCH}/" )
+	list( APPEND CINDER_LIBS_DEPENDS
+		${LINUX_LIB_DIRECTORY}/libboost_system.a
+		${LINUX_LIB_DIRECTORY}/libboost_filesystem.a
 	)
 endif()
 
 # Defaults... dl and pthread
-list(  APPEND CINDER_LIBS_DEPENDS dl pthread )
-
+list( APPEND CINDER_LIBS_DEPENDS dl pthread )
 
 source_group( "cinder\\linux"           FILES ${SRC_SET_CINDER_LINUX} )
 source_group( "cinder\\app\\linux"      FILES ${SRC_SET_CINDER_APP_LINUX} )
@@ -178,25 +184,17 @@ if( CINDER_GL_ES AND NOT CINDER_GL_ES_2_RPI ) # es2, es3, es31, es32
 	list( APPEND GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_EGL -D_GLFW_USE_GLESV2" )
 	if( CINDER_GL_ES_2 )
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" )
-		set( CINDER_TARGET_GL_SUBFOLDER "es2" )
 	elseif( CINDER_GL_ES_3 )
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3" )
-		set( CINDER_TARGET_GL_SUBFOLDER "es3" )
 	elseif( CINDER_GL_ES_3_1 )
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_1" )
-		set( CINDER_TARGET_GL_SUBFOLDER "es31" )
 	elseif( CINDER_GL_ES_3_2 )
 		list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_3_2" )
-		set( CINDER_TARGET_GL_SUBFOLDER "es32" )
 	endif()
 elseif( NOT CINDER_GL_ES ) # Core Profile
 	list( APPEND GLFW_FLAGS "-D_GLFW_X11 -D_GLFW_GLX -D_GLFW_USE_OPENGL" )
-	set( CINDER_TARGET_GL_SUBFOLDER "ogl" )
 else() # Rpi
 	list( APPEND CINDER_DEFINES "-DCINDER_GL_ES_2" "-DCINDER_LINUX_EGL_ONLY" )
-	set( CINDER_TARGET_GL_SUBFOLDER "es2-rpi" )
 endif()
 
 list( APPEND CINDER_DEFINES "-D_UNIX -D_GLIBCXX_USE_CXX11_ABI=0" ${GLFW_FLAGS}  )
-
-include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )

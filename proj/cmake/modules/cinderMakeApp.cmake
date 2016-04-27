@@ -14,13 +14,7 @@ function( ci_make_app )
 		message( WARNING "unhandled arguments: ${ARG_UNPARSED_ARGUMENTS}" )
 	endif()
 
-	if( NOT CMAKE_BUILD_TYPE )
-		message( STATUS "Setting default CMAKE_BUILD_TYPE to Debug" )
-		set( CMAKE_BUILD_TYPE Debug CACHE STRING
-			"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel. "
-			FORCE
-			)
-	endif()
+	include( "${ARG_CINDER_PATH}/proj/cmake/configure.cmake" )
 
 	# Unless already set by the user, make sure runtime output directory is relative to the project folder
 	# so that cinder's assets system works.
@@ -30,36 +24,22 @@ function( ci_make_app )
 		# message( WARNING "set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
 	endif()
 
-	if( CINDER_BUILD_VERBOSE )
+	if( CINDER_VERBOSE )
 		message( STATUS "APP_NAME: ${ARG_APP_NAME}" )
 		message( STATUS "SOURCES: ${ARG_SOURCES}" )
 		message( STATUS "INCLUDES: ${ARG_INCLUDES}" )
 		message( STATUS "CINDER_PATH: ${ARG_CINDER_PATH}" )
 		message( STATUS "CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
 		message( STATUS "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}" )
-	endif()
-
-
-	# TODO: how can we keep these variabels in sync with how they're defined in main CMakeLists.txt?
-	if( CMAKE_SYSTEM_NAME MATCHES "Darwin" )
-		set( CINDER_TARGET "macosx" )
-		set( CINDER_MAC TRUE )
-	elseif( CMAKE_SYSTEM_NAME MATCHES "Linux" )
-		set( CINDER_TARGET "linux" )
-		set( CINDER_LINUX TRUE )
-		execute_process( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE CINDER_ARCH )
-	elseif( CMAKE_SYSTEM_NAME MATCHES "Windows" )
-		set( CINDER_TARGET "msw" )
-		set( CINDER_MSW TRUE )
-	else()
-		message( FATAL_ERROR "CINDER_TARGET not defined, and no default for platform '${CMAKE_SYSTEM_NAME}.'" )
+		message( STATUS "CINDER_TARGET: ${CINDER_TARGET}" )
+		message( STATUS "CINDER_LIB_DIRECTORY: ${CINDER_LIB_DIRECTORY}" )
 	endif()
 
 	# pull in cinder's exported configuration
 	if( NOT TARGET cinder )
-		find_package( cinder REQUIRED
-				PATHS "${ARG_CINDER_PATH}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}" 
-				"$ENV{Cinder_Dir}/lib/${CINDER_TARGET}/${CINDER_ARCH}/${CMAKE_BUILD_TYPE}/${CINDER_TARGET_GL}" 
+		find_package( cinder REQUIRED PATHS
+			"${ARG_CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
+			"$ENV{Cinder_Dir}/${CINDER_LIB_DIRECTORY}"
 		)
 	endif()
 
@@ -75,9 +55,7 @@ function( ci_make_app )
 	endif()
 
 	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} ${ARG_RESOURCES} )
-
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
-
 	target_link_libraries( ${ARG_APP_NAME} cinder )
 
 	if( CINDER_MAC )

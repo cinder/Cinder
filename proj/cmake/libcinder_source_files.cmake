@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
+# This file is used to specify sources that become part of the libcinder binary, organized according to namespace or folders.
 
 # ----------------------------------------------------------------------------------------------------------------------
 # cinder

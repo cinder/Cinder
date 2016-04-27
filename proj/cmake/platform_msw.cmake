@@ -1,10 +1,6 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
 set( CINDER_PLATFORM "MSW" )
-set( CINDER_TARGET_SUBFOLDER "msw" ) # TODO: place in msw/arch folder (x64 or x86)
-
-include( ${CINDER_CMAKE_DIR}/libcinder_configure_build.cmake )
-include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
 
 list( APPEND SRC_SET_MSW
 	${CINDER_SRC_DIR}/cinder/CaptureImplDirectShow.cpp
@@ -44,5 +40,3 @@ list( APPEND CINDER_INCLUDE_SYSTEM
 )
 
 list( APPEND CINDER_DEFINES "_LIB UNICODE _UNICODE NOMINMAX _WIN32_WINNT=0x0601 _CRT_SECURE_NO_WARNINGS _SCL_SECURE_NO_WARNINGS" )
-
-include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )
