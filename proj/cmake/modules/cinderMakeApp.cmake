@@ -14,6 +14,8 @@ function( ci_make_app )
 		message( WARNING "unhandled arguments: ${ARG_UNPARSED_ARGUMENTS}" )
 	endif()
 
+	include( "${ARG_CINDER_PATH}/proj/cmake/configure.cmake" )
+
 	# Unless already set by the user, make sure runtime output directory is relative to the project folder
 	# so that cinder's assets system works.
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
