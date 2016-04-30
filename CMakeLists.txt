@@ -3,7 +3,8 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 
 project( cinder )
 
-option( CINDER_BUILD_SAMPLES "Build Samples" OFF )
+option( CINDER_BUILD_SAMPLES "Build all samples." OFF )
+set( CINDER_BUILD_SAMPLE "" CACHE STRING "Build a specific sample by specifying its path relative to the samples directory (ex. '_opengl/Cube')." )
 
 set( CINDER_PATH      "${CMAKE_CURRENT_SOURCE_DIR}" )
 set( CINDER_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake" )
@@ -27,11 +28,20 @@ endif()
 include( ${CINDER_CMAKE_DIR}/libcinder_target.cmake )
 
 if( CINDER_BUILD_SAMPLES )
-	# TODO: move these to separate file and make easier to add new samples
-	add_subdirectory( ${CINDER_PATH}/samples/BasicApp/proj/cmake )
-	add_subdirectory( ${CINDER_PATH}/samples/_audio/NodeBasic/proj/cmake )
-	add_subdirectory( ${CINDER_PATH}/samples/_audio/BufferPlayer/proj/cmake )
-	add_subdirectory( ${CINDER_PATH}/samples/_opengl/Cube/proj/cmake )
-	add_subdirectory( ${CINDER_PATH}/samples/_opengl/NormalMapping/proj/cmake )
-	add_subdirectory( ${CINDER_PATH}/samples/_opengl/ObjLoader/proj/cmake )
+	include( ${CINDER_CMAKE_DIR}/modules/findCMakeDirs.cmake )
+
+	set( allSamples "" )
+	findCMakeDirs( allSamples "${CINDER_PATH}/samples" )
+
+	foreach( sampleDir ${allSamples} )
+		if( CINDER_VERBOSE )
+			message( STATUS "adding sample: ${sampleDir}" )
+		endif()
+		add_subdirectory( ${sampleDir} )
+	endforeach()
+elseif( CINDER_BUILD_SAMPLE )
+	if( CINDER_VERBOSE )
+		message( STATUS "adding sample: ${CINDER_BUILD_SAMPLE}" )
+	endif()
+	add_subdirectory( ${CINDER_PATH}/samples/${CINDER_BUILD_SAMPLE}/proj/cmake )
 endif()
