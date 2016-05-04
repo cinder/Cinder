@@ -80,7 +80,7 @@ Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &unclippedBo
 			break;
 		}
 	}
-	for( rightColumn = bounds.getX2(); rightColumn > leftColumn; --rightColumn ) {
+	for( rightColumn = bounds.getX2() - 1; rightColumn > leftColumn; --rightColumn ) {
 		if( ! transparentVerticalScanline( surface, rightColumn, topLine, bottomLine ) ) {
 			break;
 		}
