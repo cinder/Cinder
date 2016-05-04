@@ -27,13 +27,13 @@ namespace cinder { namespace ip {
 namespace {
 
 template<typename T>
-size_t getPixelIncrement( const SurfaceT<T> &surface )
+uint8_t getPixelIncrement( const SurfaceT<T> &surface )
 {
 	return surface.getPixelInc();
 }
 
 template<typename T>
-size_t getPixelIncrement( const ChannelT<T> &channel )
+uint8_t getPixelIncrement( const ChannelT<T> &channel )
 {
 	return channel.getIncrement();
 }
@@ -65,10 +65,10 @@ void stackBlur_impl( const IMAGET &srcSurface, IMAGET *dstSurface, const Area &a
 	const int32_t radiusPlusOne = radius + 1;
 	const SUMT divisor = (SUMT)(((div+1)>>1)*((div+1)>>1));
 	const SUMT invDivisor = 1 / divisor;
-	const size_t srcPixelInc = ( CHANNELS == 4 ) ? 4 : getPixelIncrement( srcSurface );
-	const size_t dstPixelInc = ( CHANNELS == 4 ) ? 4 : getPixelIncrement( *dstSurface );
-	const size_t srcRowInc = srcSurface.getRowBytes() / sizeof(T);
-	const size_t dstRowInc = dstSurface->getRowBytes() / sizeof(T);
+	const uint8_t srcPixelInc = ( CHANNELS == 4 ) ? 4 : getPixelIncrement( srcSurface );
+	const uint8_t dstPixelInc = ( CHANNELS == 4 ) ? 4 : getPixelIncrement( *dstSurface );
+	const ptrdiff_t srcRowInc = srcSurface.getRowBytes() / sizeof(T);
+	const ptrdiff_t dstRowInc = dstSurface->getRowBytes() / sizeof(T);
 
 	const T *srcPixelData = srcSurface.getData( area.getUL() );
 	T *dstPixelData = dstSurface->getData( area.getUL() );

@@ -102,7 +102,7 @@ class ImageSourceSurface : public ImageSource {
 
 	// not ideal, but these are used to register a reference to the surface we were constructed with
 	const uint8_t			*mData;
-	size_t					mRowBytes;
+	ptrdiff_t				mRowBytes;
 	std::shared_ptr<void>	mDataStoreRef;
 };
 
@@ -155,7 +155,7 @@ SurfaceChannelOrder::SurfaceChannelOrder( const SurfaceChannelOrder &aOrder )
 {
 }
 
-void SurfaceChannelOrder::set( uint8_t aRed, uint8_t aGreen, uint8_t aBlue, uint8_t aAlpha, size_t aPixelInc )
+void SurfaceChannelOrder::set( uint8_t aRed, uint8_t aGreen, uint8_t aBlue, uint8_t aAlpha, uint8_t aPixelInc )
 {
 	mRed = aRed;
 	mGreen = aGreen;
@@ -256,7 +256,7 @@ SurfaceT<T>::SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceC
 }
 
 template<typename T>
-SurfaceT<T>::SurfaceT( T *data, int32_t width, int32_t height, size_t rowBytes, SurfaceChannelOrder channelOrder )
+SurfaceT<T>::SurfaceT( T *data, int32_t width, int32_t height, ptrdiff_t rowBytes, SurfaceChannelOrder channelOrder )
 	: mData( data ), mWidth( width ), mHeight( height ), mRowBytes( rowBytes ), mChannelOrder( channelOrder )
 {
 	mPremultiplied = false;
@@ -418,9 +418,9 @@ void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, 
 template<typename T>
 void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
-	size_t srcRowBytes = srcSurface.getRowBytes();
-	size_t srcPixelInc = srcSurface.getPixelInc();
-	size_t dstPixelInc = getPixelInc();
+	ptrdiff_t srcRowBytes = srcSurface.getRowBytes();
+	uint8_t srcPixelInc = srcSurface.getPixelInc();
+	uint8_t dstPixelInc = getPixelInc();
 	size_t copyBytes = srcArea.getWidth() * srcPixelInc * sizeof(T);
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
 		const T *srcPtr = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcSurface.getData() + srcArea.x1 * srcPixelInc ) + ( srcArea.y1 + y ) * srcRowBytes );
@@ -432,7 +432,7 @@ void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const 
 template<typename T>
 void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
-	const size_t srcRowBytes = srcSurface.getRowBytes();
+	const ptrdiff_t srcRowBytes = srcSurface.getRowBytes();
 	uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
 	uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
 	uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
@@ -462,8 +462,8 @@ void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcAre
 template<typename T>
 void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
-	const size_t srcRowBytes = srcSurface.getRowBytes();
-	const size_t srcPixelInc = srcSurface.getPixelInc();
+	const ptrdiff_t srcRowBytes = srcSurface.getRowBytes();
+	const uint8_t srcPixelInc = srcSurface.getPixelInc();
 	uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
 	uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
 	uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
@@ -493,8 +493,8 @@ void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area
 template<typename T>
 void SurfaceT<T>::copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
-	const size_t srcRowBytes = srcSurface.getRowBytes();
-	const size_t srcPixelInc = srcSurface.getPixelInc();
+	const ptrdiff_t srcRowBytes = srcSurface.getRowBytes();
+	const uint8_t srcPixelInc = srcSurface.getPixelInc();
 	const uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
 	const uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
 	const uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
@@ -529,7 +529,7 @@ ColorT<T> SurfaceT<T>::areaAverage( const Area &area ) const
 		return ColorT<T>( 0, 0, 0 );
 
 	uint8_t red = getRedOffset(), green = getGreenOffset(), blue = getBlueOffset();
-	size_t inc = getPixelInc();
+	uint8_t inc = getPixelInc();
 	const T *line = getData( clipped.getUL() );
 	for( int32_t y = clipped.y1; y < clipped.y2; ++y ) {
 		const T *d = line;

@@ -67,7 +67,7 @@ class SurfaceChannelOrder {
 	uint8_t		getBlueOffset() const { return mBlue; }
 	uint8_t		getAlphaOffset() const { return mAlpha; }
 	bool		hasAlpha() const { return ( mAlpha != INVALID ) ? true : false; }
-	size_t		getPixelInc() const { return mPixelInc; }
+	uint8_t		getPixelInc() const { return mPixelInc; }
 	int			getCode() const { return mCode; }
 
 	bool operator==( const SurfaceChannelOrder& sco ) const
@@ -81,10 +81,10 @@ class SurfaceChannelOrder {
 	int			getImageIoChannelOrder() const;
 
   private:
-	void		set( uint8_t aRed, uint8_t aGreen, uint8_t aBlue, uint8_t aAlpha, size_t aPixelInc );
+	void		set( uint8_t aRed, uint8_t aGreen, uint8_t aBlue, uint8_t aAlpha, uint8_t aPixelInc );
 	int			mCode; // the enum
 	uint8_t		mRed, mGreen, mBlue, mAlpha;
-	size_t		mPixelInc;
+	uint8_t		mPixelInc;
 };
 
 //! Base class for defining the properties of a Surface necessary to be interoperable with different APIs
@@ -93,7 +93,7 @@ class SurfaceConstraints {
 	virtual ~SurfaceConstraints() {}
 
 	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const { return ( alpha ) ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB; }
-	virtual size_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
+	virtual ptrdiff_t			getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
 };
 
 class SurfaceConstraintsDefault : public SurfaceConstraints {
@@ -113,7 +113,7 @@ class SurfaceT {
 	//! Allocates a Surface of size \a width X \a height, with an optional \a alpha channel. \a constraints allows specification of channel order and rowBytes constraints as a function of width.
 	SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints );
 	//! Constructs a surface from the memory pointed to by \a data. Does not assume ownership of the memory in \a data, which consequently should not be freed while the Surface is still in use.
-	SurfaceT( T *data, int32_t width, int32_t height, size_t rowBytes, SurfaceChannelOrder channelOrder );
+	SurfaceT( T *data, int32_t width, int32_t height, ptrdiff_t rowBytes, SurfaceChannelOrder channelOrder );
 	//! Constructs a Surface from an \a imageSource and optional \a constraints. Default value for \a alpha chooses one based on the contents of the ImageSource.
 	SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
 
@@ -131,7 +131,7 @@ class SurfaceT {
 	{ return std::make_shared<SurfaceT<T>>( width, height, alpha, constraints ); }
 
 	//! Creates a SurfaceRef from the memory pointed to by \a data. Does not assume ownership of the memory in \a data, which consequently should not be freed while the Surface is still in use.
-	static std::shared_ptr<SurfaceT<T>>	create( T *data, int32_t width, int32_t height, size_t rowBytes, SurfaceChannelOrder channelOrder )
+	static std::shared_ptr<SurfaceT<T>>	create( T *data, int32_t width, int32_t height, ptrdiff_t rowBytes, SurfaceChannelOrder channelOrder )
 	{ return std::make_shared<SurfaceT<T>>( data, width, height, rowBytes, channelOrder ); }
 
 	//! Creates a SurfaceRef from an \a imageSource and optional \a constraints. Default value for \a alpha chooses one based on the contents of the ImageSource.
@@ -172,11 +172,11 @@ class SurfaceT {
 	//! Sets whether the Surface color data should be interpreted as being premultiplied by its alpha channel or not
 	void			setPremultiplied( bool premult = true ) { mPremultiplied = premult; }
 	//! Returns the width of a row of the Surface measured in bytes, which is not necessarily getWidth() * getPixelInc()
-	size_t			getRowBytes() const { return mRowBytes; }
+	ptrdiff_t		getRowBytes() const { return mRowBytes; }
 	//! Returns the amount to increment a T* to increment by a pixel. Analogous to the number of channels, which is either 3 or 4
-	size_t			getPixelInc() const { return mChannelOrder.getPixelInc(); }
+	uint8_t			getPixelInc() const { return mChannelOrder.getPixelInc(); }
 	//! Returns the number of bytes to increment by a pixel. Analogous to the number of channels, (which is either 3 or 4) * sizeof(T)
-	size_t			getPixelBytes() const { return mChannelOrder.getPixelInc() * sizeof(T); }
+	uint8_t			getPixelBytes() const { return mChannelOrder.getPixelInc() * sizeof(T); }
 
 	//! Returns a new Surface which is a duplicate. If \a copyPixels the pixel values are copied, otherwise the clone's pixels remain uninitialized
 	SurfaceT			clone( bool copyPixels = true ) const;
@@ -263,7 +263,7 @@ class SurfaceT {
 	void	initChannels();
 
 	int32_t						mWidth, mHeight;
-	size_t						mRowBytes;
+	ptrdiff_t					mRowBytes;
 	bool						mPremultiplied;
 	T							*mData;
 	std::shared_ptr<T>			mDataStore; // shared rather than unique because member Channels (r/g/b/a) share the same data store and may need to outlive their parent Surface
@@ -359,10 +359,10 @@ class SurfaceT {
 		int32_t		getHeight() const { return mHeight; }
 
 		/// \cond
-		uint8_t				mRedOff, mGreenOff, mBlueOff, mAlphaOff;
+		uint8_t				mRedOff, mGreenOff, mBlueOff, mAlphaOff, mInc;
 		uint8_t				*mLinePtr;
 		T					*mPtr;
-		size_t				mInc, mRowInc;
+		ptrdiff_t			mRowInc;
 		int32_t				mWidth, mHeight;
 		int32_t				mX, mY, mStartX, mStartY, mEndX, mEndY;
 		/// \endcond
@@ -475,10 +475,10 @@ class SurfaceT {
 		int32_t		getHeight() const { return mHeight; }
 
 		/// \cond
-		uint8_t				mRedOff, mGreenOff, mBlueOff, mAlphaOff;
+		uint8_t				mRedOff, mGreenOff, mBlueOff, mAlphaOff, mInc;
 		const uint8_t		*mLinePtr;
 		const T				*mPtr;
-		size_t				mInc, mRowInc;
+		ptrdiff_t			mRowInc;
 		int32_t				mWidth, mHeight;
 		int32_t				mX, mY, mStartX, mStartY, mEndX, mEndY;
 		/// \endcond

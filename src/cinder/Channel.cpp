@@ -101,7 +101,7 @@ class ImageSourceChannel : public ImageSource {
 	// this is used to register a reference to the channel we were constructed with
 	shared_ptr<void>	mDataStore;
 	const uint8_t		*mData;
-	size_t				mRowBytes;
+	ptrdiff_t			mRowBytes;
 };
 
 template<typename T>
@@ -122,14 +122,14 @@ ChannelT<T>::ChannelT( int32_t width, int32_t height )
 }
 
 template<typename T>
-ChannelT<T>::ChannelT( int32_t width, int32_t height, size_t rowBytes, size_t increment, T *data )
+ChannelT<T>::ChannelT( int32_t width, int32_t height, ptrdiff_t rowBytes, uint8_t increment, T *data )
 	: mWidth( width ), mHeight( height ), mRowBytes( rowBytes ), mIncrement( increment ), mData( data )
 {
 	mDataStore = nullptr;
 }
 
 template<typename T>
-ChannelT<T>::ChannelT( int32_t width, int32_t height, size_t rowBytes, size_t increment, T *data, const std::shared_ptr<T> &dataStore )
+ChannelT<T>::ChannelT( int32_t width, int32_t height, ptrdiff_t rowBytes, uint8_t increment, T *data, const std::shared_ptr<T> &dataStore )
 	: mWidth( width ), mHeight( height ), mRowBytes( rowBytes ), mIncrement( increment ), mData( data ), mDataStore( dataStore )
 {
 }
@@ -229,9 +229,9 @@ void ChannelT<T>::copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, 
 {
 	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
 	
-	size_t srcRowBytes = srcChannel.getRowBytes();
-	size_t srcIncrement = srcChannel.getIncrement();
-	size_t increment = mIncrement;
+	ptrdiff_t srcRowBytes = srcChannel.getRowBytes();
+	uint8_t srcIncrement = srcChannel.getIncrement();
+	uint8_t increment = mIncrement;
 	
 	int32_t width = srcDst.first.getWidth();
 	
@@ -255,8 +255,8 @@ T ChannelT<T>::areaAverage( const Area &area ) const
 	if( ( clipped.getWidth() <= 0 ) || ( clipped.getHeight() <= 0 ) )
 		return 0;
 
-	size_t increment = mIncrement;
-	size_t rowBytes = mRowBytes;
+	uint8_t increment = mIncrement;
+	ptrdiff_t rowBytes = mRowBytes;
 	
 	const T *line = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( mData + clipped.x1 * mIncrement ) + clipped.y1 * mRowBytes );
 	for( int32_t y = clipped.y1; y < clipped.y2; ++y ) {
