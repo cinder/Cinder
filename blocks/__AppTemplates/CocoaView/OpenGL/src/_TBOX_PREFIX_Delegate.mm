@@ -10,17 +10,20 @@
 {
     [super dealloc];
 }
-	
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+	cinder::app::AppBase::Settings settings;
+	cinder::app::RendererRef renderer( new cinder::app::RendererGl );
+	_TBOX_PREFIX_App::initialize(&settings, renderer);
+
 	mApp = new _TBOX_PREFIX_App;
-	mApp->prepareLaunch();
-	mApp->setupCinderView( cinderView, cinder::app::RendererGl::create() );
+	mApp->setupCinderView( cinderView );
 	mApp->launch();
 
 	[window setAcceptsMouseMovedEvents:YES];
-	
-	colorWell.color = [NSColor colorWithCalibratedRed:mApp->mColor.r green:mApp->mColor.g blue:mApp->mColor.b alpha:1.0f]; 
+
+	colorWell.color = [NSColor colorWithCalibratedRed:mApp->mColor.r green:mApp->mColor.g blue:mApp->mColor.b alpha:1.0f];
 }
 
 - (IBAction)subdivisionSliderChanged:(id)sender
