@@ -71,6 +71,7 @@ else()
 		${CINDER_SRC_DIR}/cinder/app/linux/AppImplLinuxEgl.cpp
 		${CINDER_SRC_DIR}/cinder/app/linux/RendererGlLinuxEgl.cpp
 		${CINDER_SRC_DIR}/cinder/app/linux/WindowImplLinuxEgl.cpp
+		${CINDER_SRC_DIR}/cinder/linux/gl_es_load.cpp
 	)
 endif()
 
@@ -97,6 +98,7 @@ elseif( CINDER_GL_ES AND NOT CINDER_GL_ES_2_RPI ) # No X for the rpi.
 else() # rpi specific
 	list( APPEND CINDER_INCLUDE_SYSTEM 
 		/opt/vc/include
+		/opt/vc/include/interface/vmcs_host/linux/
 		/opt/vc/include/interface/vcos/pthreads
 	)
 	list( APPEND CINDER_LIBS_DEPENDS 
