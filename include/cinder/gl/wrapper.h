@@ -77,6 +77,8 @@ bool isExtensionAvailable( const std::string &extName );
 //! Returns the OpenGL version number as a pair<major,minor>
 std::pair<GLint,GLint>	getVersion();
 std::string getVersionString();
+std::string getVendorString();
+
 
 GlslProgRef& getStockShader( const class ShaderDef &shader );
 void bindStockShader( const class ShaderDef &shader );
