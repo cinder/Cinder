@@ -54,6 +54,7 @@ if( NOT CINDER_GL_ES_2_RPI )
 		)
 		list( APPEND SRC_SET_CINDER_LINUX
 			${CINDER_SRC_DIR}/glload/glx_load.c
+			${CINDER_SRC_DIR}/glload/glx_load_cpp.cpp
 		)
 	endif()
 		

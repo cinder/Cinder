@@ -3,20 +3,25 @@ cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 cmake_policy( SET CMP0022 NEW )
 
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CINDER_PATH}/${CINDER_LIB_DIRECTORY} )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CINDER_PATH}/${CINDER_LIB_DIRECTORY} )
 
 if( CINDER_VERBOSE )
 	message( "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" )
 endif()
 
+# The type is based on the value of the BUILD_SHARED_LIBS variable.
+# When OFF ( default value ) Cinder will be built as a static lib
+# and when ON as a shared library.
+# See https://cmake.org/cmake/help/v3.0/command/add_library.html for more info.
 add_library(
-    cinder STATIC
+	cinder 
     ${CINDER_SRC_FILES}
 )
 
 target_include_directories( cinder BEFORE PUBLIC ${CINDER_INCLUDE_USER} )
 target_include_directories( cinder SYSTEM BEFORE PUBLIC ${CINDER_INCLUDE_SYSTEM} )
 
-target_link_libraries( cinder INTERFACE ${CINDER_LIBS_DEPENDS} )
+target_link_libraries( cinder PUBLIC ${CINDER_LIBS_DEPENDS} )
 
 target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
 
