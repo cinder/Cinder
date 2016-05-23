@@ -289,6 +289,10 @@ void AppImplLinux::run()
 	mApp->privateSetup__();
 	mSetupHasBeenCalled = true;
 
+	// quit() was called from setup()
+	if( mShouldQuit )
+		goto terminate;
+
 	// issue initial app activation event
 	mApp->emitDidBecomeActive();
 	
@@ -304,6 +308,8 @@ void AppImplLinux::run()
 		// update and draw
 		mApp->privateUpdate__();
 		for( auto &window : mWindows ) {
+			if( mShouldQuit ) // test for quit() issued from update() or draw()
+				goto terminate;
 			window->draw();
 		}
 
@@ -318,6 +324,7 @@ void AppImplLinux::run()
 		}
 	}
 
+  terminate:
 	// Destroy the main window - this should resolve to
 	// a call for ::glfwDestroyWindow( ... );
 	mMainWindow.reset();
@@ -362,6 +369,7 @@ void AppImplLinux::quit()
 	for( auto &window : mWindows ) {
 		::glfwSetWindowShouldClose( window->getNative(), true );	
 	}
+	mShouldQuit = true;
 }
 
 float AppImplLinux::getFrameRate() const 
