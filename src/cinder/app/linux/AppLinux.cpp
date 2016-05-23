@@ -55,7 +55,11 @@ WindowRef AppLinux::createWindow( const Window::Format &format )
 
 void AppLinux::quit()
 {
-	mImpl->quit();
+	// if launch() has not yet been called, we note the request rather than issue the call to mImpl::quit()
+	if( ! getLaunchCalled() )
+		setQuitRequested();
+	else
+		mImpl->quit();
 }
 
 float AppLinux::getFrameRate() const
