@@ -453,6 +453,7 @@ class AppBase {
 	double					mFpsLastSampleTime;
 	double					mFpsSampleInterval;
 	bool					mMultiTouchEnabled, mHighDensityDisplayEnabled;
+	bool					mLaunchCalled, mQuitCalledBeforeLaunch;
 	RendererRef				mDefaultRenderer;
 
 	std::vector<std::string>	mCommandLineArgs;
@@ -469,6 +470,9 @@ class AppBase {
   protected:
 	static AppBase*			sInstance;
 	static Settings*		sSettingsFromMain;
+
+	bool					getLaunchCalled() const { return mLaunchCalled; }
+	void					setQuitCalledBeforeLaunch() { mQuitCalledBeforeLaunch = true; }
 
 	bool					mPowerManagement;
 };

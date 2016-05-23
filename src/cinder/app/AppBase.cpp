@@ -141,7 +141,7 @@ void AppBase::Settings::setShouldQuit( bool shouldQuit )
 
 AppBase::AppBase()
 	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() ),
-		mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 )
+		mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 ), mLaunchCalled( false ), mQuitCalledBeforeLaunch( false )
 {
 	sInstance = this;
 
@@ -183,6 +183,9 @@ void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer
 void AppBase::executeLaunch()
 {
 	try {
+		if( mQuitCalledBeforeLaunch )
+			return;
+		mLaunchCalled = true;
 		launch();
 	}
 	catch( std::exception &exc ) {

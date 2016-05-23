@@ -68,7 +68,10 @@ WindowRef AppMac::createWindow( const Window::Format &format )
 
 void AppMac::quit()
 {
-	[mImpl quit];
+	if( ! getLaunchCalled() )
+		setQuitCalledBeforeLaunch();
+	else
+		[mImpl quit];
 }
 
 float AppMac::getFrameRate() const
