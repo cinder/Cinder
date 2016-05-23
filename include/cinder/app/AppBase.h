@@ -420,6 +420,9 @@ class AppBase {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
+	//! Returns whether a call to quit() has been issued
+	bool			getQuitRequested() const { return mQuitRequested; }
+	void			setQuitRequested() { mQuitRequested = true; }	
 	virtual void	privateSetup__();
 	virtual void	privateUpdate__();
 	bool			privateEmitShouldQuit()		{ return mSignalShouldQuit.emit(); }
@@ -453,7 +456,7 @@ class AppBase {
 	double					mFpsLastSampleTime;
 	double					mFpsSampleInterval;
 	bool					mMultiTouchEnabled, mHighDensityDisplayEnabled;
-	bool					mLaunchCalled, mQuitCalledBeforeLaunch;
+	bool					mLaunchCalled, mQuitRequested;
 	RendererRef				mDefaultRenderer;
 
 	std::vector<std::string>	mCommandLineArgs;
@@ -472,7 +475,6 @@ class AppBase {
 	static Settings*		sSettingsFromMain;
 
 	bool					getLaunchCalled() const { return mLaunchCalled; }
-	void					setQuitCalledBeforeLaunch() { mQuitCalledBeforeLaunch = true; }
 
 	bool					mPowerManagement;
 };

@@ -146,6 +146,10 @@ using namespace cinder::app;
 		// issue update() event
 		mApp->privateUpdate__();
 
+		// if quit() was called from update(), we don't want to issue another draw()
+		if( mApp->getQuitRequested() )
+			return;
+
 		// mark all windows as ready to draw; this really only matters the first time, to ensure the first update() fires before draw()
 		for( WindowImplBasicCocoa* winIt in mWindows ) {
 			[winIt->mCinderView setReadyToDraw:YES];
@@ -347,6 +351,8 @@ using namespace cinder::app;
 	// so we call this here and then pass nil to terminate: instead
 	if( ! mApp->privateEmitShouldQuit() )
 		return;
+
+	mApp->setQuitRequested();
 
 	[NSApp stop:nil];
 
