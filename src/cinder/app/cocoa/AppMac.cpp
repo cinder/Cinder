@@ -68,7 +68,11 @@ WindowRef AppMac::createWindow( const Window::Format &format )
 
 void AppMac::quit()
 {
-	[mImpl quit];
+	// if launch() has not yet been called, we note the request rather than issue the call to AppImpl's quit
+	if( ! getLaunchCalled() )
+		setQuitRequested();
+	else
+		[mImpl quit];
 }
 
 float AppMac::getFrameRate() const
