@@ -157,7 +157,7 @@ Surface8uRef convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwn
 	int32_t width = (int32_t)[rep pixelsWide];
 	int32_t height = (int32_t)[rep pixelsHigh];
 	uint8_t *data = [rep bitmapData];
-	SurfaceChannelOrder co = ( bpp == 24 ) ? SurfaceChannelOrder::RGB : SurfaceChannelOrder::RGBA;
+	SurfaceChannelOrder co = ( bpp == 24 ) ? SurfaceChannelOrder::RGB : SurfaceChannelOrder::ARGB;
 	// If requested, point the result's deallocator to the appropriate function. This will get called when the Surface::Obj is destroyed
 	if( assumeOwnership )
 		return Surface8uRef( new Surface8u( data, width, height, rowBytes, co ),
