@@ -71,6 +71,8 @@ class AppMac : public AppBase {
 	void	launch() override;
 
   private:
+	static void		initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] );
+
 	AppImplMac*	mImpl;
 };
 
@@ -80,7 +82,7 @@ void AppMac::main( const RendererRef &defaultRenderer, const char *title, int ar
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBase::initialize( &settings, defaultRenderer, title, argc, argv );
+	AppMac::initialize( &settings, defaultRenderer, title, argc, argv );
 
 	if( settingsFn )
 		settingsFn( &settings );
