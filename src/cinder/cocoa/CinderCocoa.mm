@@ -152,12 +152,14 @@ CGContextRef getWindowContext()
 #if defined( CINDER_MAC )
 Surface8uRef convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership )
 {
-	NSInteger bpp = [rep bitsPerPixel];
 	int32_t rowBytes = (int32_t)[rep bytesPerRow];
 	int32_t width = (int32_t)[rep pixelsWide];
 	int32_t height = (int32_t)[rep pixelsHigh];
 	uint8_t *data = [rep bitmapData];
-	SurfaceChannelOrder co = ( bpp == 24 ) ? SurfaceChannelOrder::RGB : SurfaceChannelOrder::ARGB;
+	SurfaceChannelOrder co = SurfaceChannelOrder::RGB;
+	if( [rep bitsPerPixel] == 32 )
+		co = ( [rep bitmapFormat] & NSAlphaFirstBitmapFormat ) ? SurfaceChannelOrder::ARGB : SurfaceChannelOrder::RGBA;
+
 	// If requested, point the result's deallocator to the appropriate function. This will get called when the Surface::Obj is destroyed
 	if( assumeOwnership )
 		return Surface8uRef( new Surface8u( data, width, height, rowBytes, co ),

@@ -72,10 +72,9 @@
 {
 	[view lockFocus];
 	
-	// We need to recreate the CGContextRef if this method
-	// isn't called between startDraw and finishDraw
+	// We need to recreate the CGContextRef if this method isn't called between startDraw and finishDraw
 	CGContextRef tempRef = currentRef;
-	if( !tempRef )
+	if( ! tempRef )
 		tempRef = (CGContextRef)[currentGraphicsContext graphicsPort];
 
 	CGContextFlush( tempRef );
