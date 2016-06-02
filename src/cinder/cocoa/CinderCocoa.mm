@@ -669,7 +669,7 @@ SurfaceChannelOrder SurfaceConstraintsCgBitmapContext::getChannelOrder( bool alp
 	return ( alpha ) ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGBX;
 }
 
-ptrdiff_t SurfaceConstraintsCgBitmapContext::getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const
+ptrdiff_t SurfaceConstraintsCgBitmapContext::getRowBytes( int32_t requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const
 {
 	return requestedWidth * elementSize * 4;
 }

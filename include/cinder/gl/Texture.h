@@ -796,7 +796,7 @@ class Texture2dCache : public std::enable_shared_from_this<Texture2dCache>
 class SurfaceConstraintsGLTexture : public SurfaceConstraints {
   public:
 	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const { return ( alpha ) ? SurfaceChannelOrder::BGRA : SurfaceChannelOrder::BGR; }
-	virtual ptrdiff_t			getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
+	virtual ptrdiff_t			getRowBytes( int32_t requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
 };
 
 class KtxParseExc : public Exception {

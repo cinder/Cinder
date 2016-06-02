@@ -93,7 +93,7 @@ class SurfaceConstraints {
 	virtual ~SurfaceConstraints() {}
 
 	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const { return ( alpha ) ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB; }
-	virtual ptrdiff_t			getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
+	virtual ptrdiff_t			getRowBytes( int32_t requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
 };
 
 class SurfaceConstraintsDefault : public SurfaceConstraints {
