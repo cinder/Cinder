@@ -169,6 +169,8 @@ class AppBase {
 
 		//! Returns the command line args passed to the application from its entry point (ex. a main's argc / argv).
 		const std::vector<std::string>&	getCommandLineArgs() const	{ return mCommandLineArgs; }
+		//! Primarily for internal use. Replaces the command line args.
+		void							setCommandLineArgs( const std::vector<std::string> &commandLineArgs ) { mCommandLineArgs = commandLineArgs; }
 
 		//!	Set this to true if the app should terminate prior to launching.
 		void	setShouldQuit( bool shouldQuit = true );
