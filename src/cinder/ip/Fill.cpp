@@ -31,7 +31,7 @@ void fill_impl( SurfaceT<T> *surface, const ColorT<T> &color, const Area &area )
 {
 	const Area clippedArea = area.getClipBy( surface->getBounds() );
 
-	int32_t rowBytes = surface->getRowBytes();
+	ptrdiff_t rowBytes = surface->getRowBytes();
 	uint8_t pixelInc = surface->getPixelInc();
 	const T red = color.r, green = color.g, blue = color.b;
 	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset();
@@ -57,7 +57,7 @@ void fill_impl( SurfaceT<T> *surface, const ColorAT<T> &color, const Area &area 
 	
 	const Area clippedArea = area.getClipBy( surface->getBounds() );
 
-	int32_t rowBytes = surface->getRowBytes();
+	ptrdiff_t rowBytes = surface->getRowBytes();
 	uint8_t pixelInc = surface->getPixelInc();
 	const T red = color.r, green = color.g, blue = color.b, alpha = color.a;
 	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset(), alphaOffset = surface->getAlphaOffset();
@@ -106,7 +106,7 @@ void fill( ChannelT<T> *channel, T value, const Area &area )
 {
 	const Area clippedArea = area.getClipBy( channel->getBounds() );
 	
-	int32_t rowBytes = channel->getRowBytes();
+	ptrdiff_t rowBytes = channel->getRowBytes();
 	uint8_t inc = channel->getIncrement();
 	for( int32_t y = clippedArea.getY1(); y < clippedArea.getY2(); ++y ) {
 		T *dstPtr = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( channel->getData() + clippedArea.getX1() * inc ) + y * rowBytes );

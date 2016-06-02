@@ -42,9 +42,9 @@ void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const 
 	const ivec2 &dstOffset( srcDst.second );
 	typename CHANTRAIT<T>::SignedSum sumX, sumY;
 
-	int32_t srcRowInc = srcChannel.getRowBytes() / sizeof(T);
-	int8_t srcPixelInc = srcChannel.getIncrement();
-	int8_t dstPixelInc = dstChannel->getIncrement();
+	ptrdiff_t srcRowInc = srcChannel.getRowBytes() / sizeof(T);
+	uint8_t srcPixelInc = srcChannel.getIncrement();
+	uint8_t dstPixelInc = dstChannel->getIncrement();
 	const T maxValue = CHANTRAIT<T>::max();
 	for( int32_t y = 1; y < area.getHeight() - 1; ++y ) {
 		const T *srcLine = srcChannel.getData( area.getX1() + 1, area.getY1() + y );
