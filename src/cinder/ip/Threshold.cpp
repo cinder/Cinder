@@ -33,7 +33,7 @@ template<typename T>
 void thresholdImpl( SurfaceT<T> *surface, T value, const Area &area )
 {
 	const Area clippedArea = area.getClipBy( surface->getBounds() );
-	int32_t rowBytes = surface->getRowBytes();
+	ptrdiff_t rowBytes = surface->getRowBytes();
 	uint8_t pixelInc = surface->getPixelInc();
 	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset();
 	T maxValue = CHANTRAIT<T>::max();
@@ -55,11 +55,11 @@ void thresholdImpl( const SurfaceT<T> &srcSurface, T value, const Area &srcArea,
 	const Area &area( srcDst.first );
 	const ivec2 &dstOffset( srcDst.second );
 
-	int32_t srcRowBytes = srcSurface.getRowBytes();
-	int8_t srcPixelInc = srcSurface.getPixelInc();
+	ptrdiff_t srcRowBytes = srcSurface.getRowBytes();
+	uint8_t srcPixelInc = srcSurface.getPixelInc();
 	uint8_t srcRedOffset = srcSurface.getRedOffset(), srcGreenOffset = srcSurface.getGreenOffset(), srcBlueOffset = srcSurface.getBlueOffset();
-	int32_t dstRowBytes = dstSurface->getRowBytes();
-	int8_t dstPixelInc = dstSurface->getPixelInc();
+	ptrdiff_t dstRowBytes = dstSurface->getRowBytes();
+	uint8_t dstPixelInc = dstSurface->getPixelInc();
 	uint8_t dstRedOffset = dstSurface->getRedOffset(), dstGreenOffset = dstSurface->getGreenOffset(), dstBlueOffset = dstSurface->getBlueOffset();
 	const T maxValue = CHANTRAIT<T>::max();
 	for( int32_t y = 0; y < area.getHeight(); ++y ) {
@@ -82,8 +82,8 @@ void thresholdImpl( const ChannelT<T> &srcChannel, T value, const Area &srcArea,
 	const Area &area( srcDst.first );
 	const ivec2 &dstOffset( srcDst.second );
 
-	int8_t srcInc = srcChannel.getIncrement();
-	int8_t dstInc = dstChannel->getIncrement();
+	uint8_t srcInc = srcChannel.getIncrement();
+	uint8_t dstInc = dstChannel->getIncrement();
 	const T maxValue = CHANTRAIT<T>::max();
 	for( int32_t y = 0; y < area.getHeight(); ++y ) {
 		T *dstPtr = dstChannel->getData( ivec2( area.getX1(), y ) + dstOffset );
@@ -220,7 +220,7 @@ template<typename T>
 void calculateIntegralImage( const ChannelT<T> &channel, typename CHANTRAIT<T>::Accum *integralImage )
 {
 	int32_t imageWidth = channel.getWidth(), imageHeight = channel.getHeight();
-	int32_t srcRowBytes = channel.getRowBytes();
+	ptrdiff_t srcRowBytes = channel.getRowBytes();
 	uint8_t srcInc = channel.getIncrement();
 	const T *src = channel.getData();
 	/*for( int32_t i = 0; i < imageWidth; i++ ) {
