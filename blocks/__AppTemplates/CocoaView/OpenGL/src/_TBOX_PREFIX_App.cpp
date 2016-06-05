@@ -13,7 +13,7 @@ void _TBOX_PREFIX_App::setup()
 void _TBOX_PREFIX_App::draw()
 {
 	gl::clear();
-	
+
 	gl::color( mColor );
 	gl::drawSolidCircle( getWindowCenter(), mRadius );
 }
