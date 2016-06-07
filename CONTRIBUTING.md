@@ -59,7 +59,7 @@ Please make sure your code conforms to the following general guidelines. If some
 
 * When an object doesn't have clear copy semantics (ex. a system resource or `gl::Texture`, inherit from `ci::Noncopyable` so it is obvious that the object cannot be copied.
 * When overriding a virtual method in a subclass, do not use the `virtual` keyword a second time, instead use `override`, which has the added benefit of the compiler checking that the override took place.
-* Unless it is templated or performance critical code, place method implementations in the .cpp to try to keep the header more consise. The exception to this rule is simple getters
+* Unless it is templated or performance critical code, place method implementations in the .cpp to try to keep the header more concise. The exception to this rule is simple getters
   *  ex. `getWidth() const   { return mWidth; }`.
 
 #### Comments
