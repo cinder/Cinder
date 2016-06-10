@@ -380,6 +380,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 					default:
 						throw DdsParseExc( "Unsupported image format" );
 				}
+			break;
 			default:
 				throw DdsParseExc( "Unsupported image format" );
 			break;
