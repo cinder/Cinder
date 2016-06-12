@@ -32,24 +32,24 @@ class DeviceManagerJack : public DeviceManager {
 	DeviceManagerJack();
 	virtual ~DeviceManagerJack();
 
-	const std::vector<DeviceRef>& getDevices()									override;
-	DeviceRef getDefaultOutput()												override;
-	DeviceRef getDefaultInput()													override;
+	const std::vector<DeviceRef>& getDevices()									override {};
+	DeviceRef getDefaultOutput()												override {};
+	DeviceRef getDefaultInput()													override {};
 
-	std::string getName( const DeviceRef &device )								override;
-	size_t getNumInputChannels( const DeviceRef &device )						override;
-	size_t getNumOutputChannels( const DeviceRef &device )						override;
-	size_t getSampleRate( const DeviceRef &device )								override;
-	size_t getFramesPerBlock( const DeviceRef &device )							override;
+	std::string getName( const DeviceRef &device )								override {};
+	size_t getNumInputChannels( const DeviceRef &device )						override {};
+	size_t getNumOutputChannels( const DeviceRef &device )						override {};
+	size_t getSampleRate( const DeviceRef &device )								override {};
+	size_t getFramesPerBlock( const DeviceRef &device )							override {};
 
-	void setSampleRate( const DeviceRef &device, size_t sampleRate )			override;
-	void setFramesPerBlock( const DeviceRef &device, size_t framesPerBlock )	override;
+	void setSampleRate( const DeviceRef &device, size_t sampleRate )			override {};
+	void setFramesPerBlock( const DeviceRef &device, size_t framesPerBlock )	override {};
 
 	//! Returns the hardware's actual frames per block, which might not be a power of two.
-	size_t getFramesPerBlockHardware( const DeviceRef &device );
+	size_t getFramesPerBlockHardware( const DeviceRef &device ){};
 
 private:
-	DeviceRef getDefaultDevice();
+	DeviceRef getDefaultDevice(){};
 
 	DeviceRef   mDefaultDevice;
 };	
