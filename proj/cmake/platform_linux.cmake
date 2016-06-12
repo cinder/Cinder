@@ -27,9 +27,9 @@ list( APPEND SRC_SET_CINDER_APP_LINUX
 )
 
 list( APPEND SRC_SET_CINDER_AUDIO_LINUX
-	${CINDER_SRC_DIR}/cinder/audio/linux/ContextJack.cpp
+#	${CINDER_SRC_DIR}/cinder/audio/linux/ContextJack.cpp
 	${CINDER_SRC_DIR}/cinder/audio/linux/ContextPulseAudio.cpp
-	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerJack.cpp
+#	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerJack.cpp
 	${CINDER_SRC_DIR}/cinder/audio/linux/DeviceManagerPulseAudio.cpp
 	${CINDER_SRC_DIR}/cinder/audio/linux/FileAudioLoader.cpp
 )
