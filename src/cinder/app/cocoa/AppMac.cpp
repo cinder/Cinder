@@ -45,6 +45,23 @@ AppMac::~AppMac()
 	[mImpl release];
 }
 
+void AppMac::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
+{
+	AppBase::initialize( settings, defaultRenderer, title, argc, argv );
+
+	// Xcode automatically adds a pair of command line args, `NSDocumentRevisionsDebugMode YES` if "Allow debugging when using document Versions Browser" is not explicitly unchecked.
+	// We strip this known flag here
+	vector<string> replacedArgs;
+	const vector<string>& currentArgs = settings->getCommandLineArgs();
+	for( size_t i = 0; i < currentArgs.size(); ++i ) {
+		if( ( currentArgs[i] == "-NSDocumentRevisionsDebugMode" ) && ( i + 1 < currentArgs.size() ) )
+			i += 2; // skip this arg and the successor, which will be 'YES' or 'NO'
+		else
+			replacedArgs.push_back( currentArgs[i] );
+	}
+	settings->setCommandLineArgs( replacedArgs );
+}
+
 void AppMac::launch()
 {
 	[[NSApplication sharedApplication] run];
@@ -68,7 +85,11 @@ WindowRef AppMac::createWindow( const Window::Format &format )
 
 void AppMac::quit()
 {
-	[mImpl quit];
+	// if launch() has not yet been called, we note the request rather than issue the call to AppImpl's quit
+	if( ! getLaunchCalled() )
+		setQuitRequested();
+	else
+		[mImpl quit];
 }
 
 float AppMac::getFrameRate() const

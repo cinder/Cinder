@@ -146,6 +146,10 @@ using namespace cinder::app;
 		// issue update() event
 		mApp->privateUpdate__();
 
+		// if quit() was called from update(), we don't want to issue another draw()
+		if( mApp->getQuitRequested() )
+			return;
+
 		// mark all windows as ready to draw; this really only matters the first time, to ensure the first update() fires before draw()
 		for( WindowImplBasicCocoa* winIt in mWindows ) {
 			[winIt->mCinderView setReadyToDraw:YES];
@@ -348,7 +352,15 @@ using namespace cinder::app;
 	if( ! mApp->privateEmitShouldQuit() )
 		return;
 
+	mApp->setQuitRequested();
+
 	[NSApp stop:nil];
+
+	// we need to post a dummy event to force the runloop to cycle once more
+	// otherwise the app won't actually terminate until the mouse is moved or similar
+	NSEvent* event = [NSEvent otherEventWithType: NSApplicationDefined location: NSMakePoint(0,0)
+							modifierFlags: 0 timestamp: 0.0 windowNumber: 0 context: nil subtype: 0 data1: 0 data2: 0];
+	[NSApp postEvent:event atStart:YES];
 }
 
 - (void)setPowerManagementEnabled:(BOOL)flag
