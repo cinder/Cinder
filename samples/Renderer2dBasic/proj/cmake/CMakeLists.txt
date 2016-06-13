@@ -9,6 +9,6 @@ get_filename_component( SAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 ci_make_app(
-	SOURCES     ${SAMPLE_DIR}/src/Renderer2dBasicApp.cpp
+	SOURCES     ${SAMPLE_DIR}/src/Renderer2dApp.cpp
 	CINDER_PATH ${CINDER_PATH}
 )
