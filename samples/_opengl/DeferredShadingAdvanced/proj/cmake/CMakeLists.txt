@@ -11,4 +11,5 @@ include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 ci_make_app(
 	SOURCES     ${SAMPLE_DIR}/src/DeferredShadingAdvancedApp.cpp
 	CINDER_PATH ${CINDER_PATH}
+	INCLUDES    ${SAMPLE_DIR}/include
 )
