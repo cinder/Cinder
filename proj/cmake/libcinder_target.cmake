@@ -42,7 +42,7 @@ set( CMAKE_CXX_FLAGS ${CINDER_COMPILER_FLAGS} ${CMAKE_CXX_FLAGS} )
 target_compile_options( cinder INTERFACE ${CINDER_COMPILER_FLAGS} )
 
 # This file will contain all dependencies, includes, definition, compiler flags and so on..
-export( TARGETS cinder FILE ${PROJECT_BINARY_DIR}/cinderTargets.cmake )
+export( TARGETS cinder FILE ${PROJECT_BINARY_DIR}/${CINDER_LIB_DIRECTORY}/cinderTargets.cmake )
 
 # And this command will generate a file on the ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
 # that applications have to pull in order to link successfully with Cinder and its dependencies.
