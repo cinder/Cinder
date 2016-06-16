@@ -10,6 +10,7 @@ include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 set( SRC_FILES
 	${SAMPLE_DIR}/src/NodeSubclassingApp.cpp
+	${SAMPLE_DIR}/src/CustomTremoloNode.cpp
 	${SAMPLE_DIR}/../common/AudioDrawUtils.cpp
 )
 
