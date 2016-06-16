@@ -7,6 +7,8 @@
 #include "cinder/Surface.h"
 #include "cinder/ImageIo.h"
 
+#include "Resources.h"
+
 #include <vector>
 #include <memory>
 
