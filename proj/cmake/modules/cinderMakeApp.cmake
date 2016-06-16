@@ -52,6 +52,8 @@ function( ci_make_app )
 		set_source_files_properties( ${ICON_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 		# copy any other resources specified by user
 		set_source_files_properties( ${ARG_RESOURCES} PROPERTIES HEADER_FILE_ONLY ON MACOSX_PACKAGE_LOCATION Resources )
+	elseif( CINDER_LINUX )
+		unset( ARG_RESOURCES ) # Don't allow resources to be added to the executable on linux
 	endif()
 
 	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} ${ARG_RESOURCES} )
