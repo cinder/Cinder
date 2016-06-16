@@ -72,7 +72,7 @@ class MotionBlurVelocityBufferApp : public App {
 	float					mAverageGpuTime = 0.0f;
 	float					mAverageCpuTime = 0.0f;
 
-#if ! defined( CINDER_ANDROID )
+#if ! defined( CINDER_GL_ES )
 	params::InterfaceGlRef	mParams;
 #endif
 
@@ -316,7 +316,7 @@ void MotionBlurVelocityBufferApp::draw()
 	mAverageCpuTime = (mCpuTimer.getSeconds() * 200) + mAverageCpuTime * 0.8f;
 	mAverageGpuTime = mGpuTimer->getElapsedMilliseconds() * 0.2f + mAverageGpuTime * 0.8f;
 
-#if ! defined( CINDER_ANDROID )
+#if ! defined( CINDER_GL_ES )
 	mParams->draw();
 #endif
 }
