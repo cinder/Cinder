@@ -8,7 +8,14 @@ get_filename_component( SAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
+set( SRC_FILES
+	${SAMPLE_DIR}/src/PostProcessingAAApp.cpp
+	${SAMPLE_DIR}/src/Pistons.cpp
+	${SAMPLE_DIR}/src/fxaa/FXAA.cpp
+	${SAMPLE_DIR}/src/smaa/SMAA.cpp
+)
+
 ci_make_app(
-	SOURCES     ${SAMPLE_DIR}/src/PostProcessingAAApp.cpp
+	SOURCES     ${SRC_FILES}
 	CINDER_PATH ${CINDER_PATH}
 )
