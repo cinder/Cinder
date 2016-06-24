@@ -620,7 +620,7 @@ using namespace cinder::app;
 
 	NSRect frame = [mWin frame];
 	NSRect content = [mWin contentRectForFrameRect:frame];
-	mPos = ivec2( content.origin.x, mWin.screen.frame.size.height - frame.origin.y - content.size.height );
+	mPos = ivec2( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
 	[mAppImpl setActiveWindow:self];
 
 	// This appears to be NULL in some scenarios
