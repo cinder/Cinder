@@ -712,25 +712,10 @@ void Context::renderbufferDeleted( const Renderbuffer *buffer )
 #if ! defined( CINDER_GL_ES_2 )
 void Context::bindBufferBase( GLenum target, GLuint index, const BufferObjRef &buffer )
 {
-	switch( target ) {
-#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
-		case GL_TRANSFORM_FEEDBACK_BUFFER:
-			if( mCachedTransformFeedbackObj )
-				mCachedTransformFeedbackObj->setIndex( index, buffer );
-			else
-				glBindBufferBase( target, index, buffer->getId() );
-		break;
-#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
-		case GL_UNIFORM_BUFFER:
-#if defined( GL_SHADER_STORAGE_BUFFER )
-		case GL_SHADER_STORAGE_BUFFER:
-#endif
-			glBindBufferBase( target, index, buffer->getId() );
-		break;
-		default:
-			CI_LOG_E( "Unknown target" );
-		break;
-	}
+	if( target == GL_TRANSFORM_FEEDBACK && mCachedTransformFeedbackObj )
+		mCachedTransformFeedbackObj->setIndex( index, buffer );
+	else
+		glBindBufferBase( target, index, buffer->getId() );
 }
 
 void Context::bindBufferBase( GLenum target, GLuint index, GLuint id )
@@ -1793,6 +1778,20 @@ void Context::drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoi
 	glDrawElements( mode, count, type, indices );
 }
 
+#if defined( CINDER_GL_HAS_MULTI_DRAW )
+
+void Context::multiDrawArrays( GLenum mode, GLint *first, GLsizei *count, GLsizei primcount )
+{
+	glMultiDrawArrays( mode, first, count, primcount );
+}
+
+void Context::multiDrawElements( GLenum mode, GLsizei *count, GLenum type, const GLvoid * const *indices, GLsizei primcount )
+{
+	glMultiDrawElements( mode, count, type, indices, primcount );
+}
+
+#endif // defined( CINDER_GL_HAS_MULTI_DRAW )
+
 #if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 void Context::drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount )
@@ -1818,6 +1817,34 @@ void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, co
 }
 
 #endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
+
+#if defined( CINDER_GL_HAS_DRAW_INDIRECT )
+
+void Context::drawArraysIndirect( GLenum mode, const GLvoid *indirect )
+{
+	glDrawArraysIndirect( mode, indirect );
+}
+
+void Context::drawElementsIndirect( GLenum mode, GLenum type, const GLvoid *indirect )
+{
+	glDrawElementsIndirect( mode, type, indirect );
+}
+
+#endif // defined( CINDER_GL_HAS_DRAW_INDIRECT )
+
+#if defined( CINDER_GL_HAS_MULTI_DRAW_INDIRECT )
+
+void Context::multiDrawArraysIndirect( GLenum mode, const GLvoid *indirect, GLsizei drawcount, GLsizei stride )
+{
+	glMultiDrawArraysIndirect( mode, indirect, drawcount, stride );
+}
+
+void Context::multiDrawElementsIndirect( GLenum mode, GLenum type, const GLvoid *indirect, GLsizei drawcount, GLsizei stride )
+{
+	glMultiDrawElementsIndirect( mode, type, indirect, drawcount, stride );
+}
+
+#endif // defined( CINDER_GL_HAS_MULTI_DRAW_INDIRECT )
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders

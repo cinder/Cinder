@@ -138,9 +138,24 @@ void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] = nullptr );
 void	drawArrays( GLenum mode, GLint first, GLsizei count );
 void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
 
+#if defined( CINDER_GL_HAS_MULTI_DRAW )
+void	multiDrawArrays( GLenum mode, GLint *first, GLsizei *count, GLsizei primcount );
+void	multiDrawElements( GLenum mode, GLsizei *count, GLenum type, const GLvoid * const *indices, GLsizei primcount );
+#endif
+
 #if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 void	drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount );
 void	drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei instanceCount );
+#endif
+
+#if defined( CINDER_GL_HAS_DRAW_INDIRECT )
+void	drawArraysIndirect( GLenum mode, const GLvoid *indirect );
+void	drawElementsIndirect( GLenum mode, GLenum type, const GLvoid *indirect );
+#endif
+
+#if defined( CINDER_GL_HAS_MULTI_DRAW_INDIRECT )
+void	multiDrawArraysIndirect( GLenum mode, const GLvoid *indirect, GLsizei drawcount, GLsizei stride );
+void	multiDrawElementsIndirect( GLenum mode, GLenum type, const GLvoid *indirect, GLsizei drawcount, GLsizei stride );
 #endif
 
 } } // namespace cinder::gl

@@ -63,6 +63,18 @@ void drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indice
 	context()->drawElements( mode, count, type, indices );
 }
 
+#if defined( CINDER_GL_HAS_MULTI_DRAW )
+void multiDrawArrays( GLenum mode, GLint *first, GLsizei *count, GLsizei primcount )
+{
+	context()->multiDrawArrays( mode, first, count, primcount );
+}
+
+void multiDrawElements( GLenum mode, GLsizei *count, GLenum type, const GLvoid * const *indices, GLsizei primcount )
+{
+	context()->multiDrawElements( mode, count, type, indices, primcount );
+}
+#endif // defined( CINDER_GL_HAS_MULTI_DRAW )
+
 #if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 void drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount )
 {
@@ -74,6 +86,30 @@ void drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoi
 	context()->drawElementsInstanced( mode, count, type, indices, instanceCount );
 }
 #endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
+
+#if defined( CINDER_GL_HAS_DRAW_INDIRECT )
+void drawArraysIndirect( GLenum mode, const GLvoid *indirect )
+{
+	context()->drawArraysIndirect( mode, indirect );
+}
+
+void drawElementsIndirect( GLenum mode, GLenum type, const GLvoid *indirect )
+{
+	context()->drawElementsIndirect( mode, type, indirect );
+}
+#endif // defined( CINDER_GL_HAS_DRAW_INDIRECT )
+
+#if defined( CINDER_GL_HAS_MULTI_DRAW_INDIRECT )
+void multiDrawArraysIndirect( GLenum mode, const GLvoid *indirect, GLsizei drawcount, GLsizei stride )
+{
+	context()->multiDrawArraysIndirect( mode, indirect, drawcount, stride );
+}
+
+void multiDrawElementsIndirect( GLenum mode, GLenum type, const GLvoid *indirect, GLsizei drawcount, GLsizei stride )
+{
+	context()->multiDrawElementsIndirect( mode, type, indirect, drawcount, stride );
+}
+#endif // defined( CINDER_GL_HAS_MULTI_DRAW_INDIRECT )
 
 namespace {
 
