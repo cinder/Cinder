@@ -38,7 +38,11 @@ class BufferObj {
 	
 	static BufferObjRef create( GLenum target, GLsizeiptr allocationSize, const void *data, GLenum usage );
 	
+	//! Binds to the associated target.
 	void		bind() const;
+	//! Binds to an arbitrary target \a target.
+	void		bind( GLenum target ) const;
+	//! Unbinds from the associated target.
 	void		unbind() const;
 
 	//! Analogous to glBufferData()	
