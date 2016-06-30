@@ -5,10 +5,19 @@
 #include "cinder/Rand.h"
 
 // https://www.researchgate.net/publication/235611365_A_Rendering_Pipeline_for_Real-Time_Crowds
+// https://www.opengl.org/registry/specs/ARB/query_buffer_object.txt
+// http://rastergrid.com/blog/2011/06/multi-draw-indirect-is-here/
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+enum {
+	ATOMIC_COUNTER = 0,
+	QUERY_BUFFER_OBJECT = 1
+};
+
+#define TECHNIQUE QUERY_BUFFER_OBJECT
 
 struct TeapotInstIn {
 	vec3 mPosition;
@@ -19,10 +28,19 @@ struct TeapotInstOut {
 	float mLod;
 };
 
+// TODO: reconsider those names
+struct IndirectDrawCommand {
+	GLuint elementCount;
+	GLuint instanceCount;
+	GLuint firstIndex;
+	GLuint baseVertex;
+	GLuint baseInstance;
+};
+
 const int NUM_LODS = 3;
 const int NUM_INSTANCES = 2000;
 
-class LevelOfDetailBasicApp : public App {
+class LevelOfDetailIndirectApp : public App {
   public:
 	void setup() override;
 	void update() override;
@@ -33,7 +51,7 @@ class LevelOfDetailBasicApp : public App {
 
 	void setFrustumCullingUniforms( gl::GlslProgRef & const glsl );
 	void runTransformFeedback( int lod );
-	void drawLod( int lod );
+	void drawLodIndirect( int lod );
 
 	CameraPersp					mCamera;
 	CameraUi					mCameraUi;
@@ -50,23 +68,21 @@ class LevelOfDetailBasicApp : public App {
 	gl::QueryRef				mQueryObjs[NUM_LODS];
 	gl::TransformFeedbackObjRef mTransformFeedbackObjs[NUM_LODS];
 
-	gl::VboRef					mAllTeapotsVbo;
-	gl::BatchRef				mAllTeapotsBatch;
-
-	GLuint						mLodInstanceCounts[NUM_LODS];
+	gl::BufferObjRef			mIndirectBuffers[NUM_LODS];
+	IndirectDrawCommand			mIndirectDrawCommands[NUM_LODS];
 
 	bool						mWireframe;
-	bool						mLodEnabled;
 	bool						mVisualizeLods;
 	bool						mZoomedIn;
+	bool						mCPUReadBack;
 };
 
-void LevelOfDetailBasicApp::setup()
+void LevelOfDetailIndirectApp::setup()
 {
 	mWireframe		= false;
-	mLodEnabled		= true;
 	mVisualizeLods	= true;
 	mZoomedIn		= false;
+	mCPUReadBack	= false;
 
 	mCamera.setPerspective( 60.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
 	mCamera.lookAt( vec3( 0, 0, 0 ), vec3( 10, 0, 0 ) );
@@ -77,25 +93,28 @@ void LevelOfDetailBasicApp::setup()
 
 	getWindow()->getSignalKeyDown().connect( [&] ( KeyEvent &e ) {
 		if( e.getCode() == KeyEvent::KEY_w ) mWireframe		^= true;
-		if( e.getCode() == KeyEvent::KEY_l ) mLodEnabled	^= true;
 		if( e.getCode() == KeyEvent::KEY_v ) mVisualizeLods ^= true;
 		if( e.getCode() == KeyEvent::KEY_z ) mZoomedIn		^= true;
+		if( e.getCode() == KeyEvent::KEY_r ) mCPUReadBack	^= true;
 	} );
 
 	gl::enableVerticalSync( false );
 }
 
-void LevelOfDetailBasicApp::loadGlslProgs()
+void LevelOfDetailIndirectApp::loadGlslProgs()
 {
 	gl::GlslProg::Format updateGlslFormat;
 	updateGlslFormat.vertex( loadAsset( "update.vert" ) )
-					.geometry( loadAsset( "update.geom" ) )
-					.feedbackVaryings( { "oPosition", "oLod" } )
-					.feedbackFormat( GL_INTERLEAVED_ATTRIBS );
+		.geometry( loadAsset( "update.geom" ) )
+#if TECHNIQUE == ATOMIC_COUNTER
+		.define( "USE_ATOMIC_COUNTER" )
+#endif
+		.feedbackVaryings( { "oPosition", "oLod" } )
+		.feedbackFormat( GL_INTERLEAVED_ATTRIBS );
 
 	gl::GlslProg::Format renderGlslFormat;
 	renderGlslFormat.vertex( loadAsset( "render.vert" ) )
-					.fragment( loadAsset( "render.frag" ) );
+		.fragment( loadAsset( "render.frag" ) );
 
 	try {	
 		mUpdateGlsl = gl::GlslProg::create( updateGlslFormat );
@@ -106,7 +125,7 @@ void LevelOfDetailBasicApp::loadGlslProgs()
 	}
 }
 
-void LevelOfDetailBasicApp::setupBuffers()
+void LevelOfDetailIndirectApp::setupBuffers()
 {
 	// populate initial instance data
 	mTeapots.resize( NUM_INSTANCES );
@@ -156,28 +175,15 @@ void LevelOfDetailBasicApp::setupBuffers()
 			{ geom::Attrib::CUSTOM_0, "InstancePosition" },
 			{ geom::Attrib::CUSTOM_1, "InstanceLod" }
 		} );
-	}
 
-	// setup buffers for the non-LOD batch
-	if( true ) {
-		geom::AttribSet requested	= { geom::Attrib::POSITION, geom::Attrib::NORMAL };
-		auto vboMesh				= gl::VboMesh::create( geom::Teapot().subdivisions( 32 ), requested );
-		mAllTeapotsVbo				= gl::Vbo::create( GL_ARRAY_BUFFER, sizeof( TeapotInstIn ) * NUM_INSTANCES, nullptr, GL_STATIC_DRAW );
-		
-		mAllTeapotsVbo->bufferData( sizeof( TeapotInstIn ) * NUM_INSTANCES, mTeapots.data(), GL_STATIC_DRAW );
-
-		geom::BufferLayout instanceDataVboLayout;
-		instanceDataVboLayout.append( geom::CUSTOM_0, 3, sizeof( TeapotInstIn ), 0, 1 );
-
-		vboMesh->appendVbo( instanceDataVboLayout, mAllTeapotsVbo );
-
-		mAllTeapotsBatch = gl::Batch::create( vboMesh, mRenderGlsl, {
-			{ geom::Attrib::CUSTOM_0, "InstancePosition" }
-		} );
+		// set up indirect draw command buffers, fill in index count of each LOD's model
+		GLuint elementCount = lodVboMesh->getNumIndices();
+		mIndirectDrawCommands[i] = { elementCount, 0, 0, 0, 0 };
+		mIndirectBuffers[i] = gl::BufferObj::create( GL_DRAW_INDIRECT_BUFFER, sizeof( IndirectDrawCommand ), &mIndirectDrawCommands[i], GL_STATIC_COPY );
 	}
 }
 
-void LevelOfDetailBasicApp::setFrustumCullingUniforms( gl::GlslProgRef & const glsl )
+void LevelOfDetailIndirectApp::setFrustumCullingUniforms( gl::GlslProgRef & const glsl )
 {
 	vec3 Z = normalize( mCamera.getViewDirection() );
 	vec3 X = normalize( cross( Z, mCamera.getWorldUp() ) );
@@ -194,7 +200,7 @@ void LevelOfDetailBasicApp::setFrustumCullingUniforms( gl::GlslProgRef & const g
 	glsl->uniform( "uDelta",		0.4f );
 }
 
-void LevelOfDetailBasicApp::runTransformFeedback( int lod )
+void LevelOfDetailIndirectApp::runTransformFeedback( int lod )
 {
 	gl::ScopedVao		vao_( mUpdateVao );
 	gl::ScopedGlslProg	glsl_( mUpdateGlsl );
@@ -206,6 +212,16 @@ void LevelOfDetailBasicApp::runTransformFeedback( int lod )
 
 	setFrustumCullingUniforms( mUpdateGlsl );
 	mUpdateGlsl->uniform( "uCurrentLod", float( lod ) );
+	
+#if TECHNIQUE == ATOMIC_COUNTER
+	// reset instance count of indirect buffer, but keep the elements count field
+	IndirectDrawCommand reset = mIndirectDrawCommands[lod];
+	reset.instanceCount = 0;
+	mIndirectBuffers[lod]->bufferSubData( 0 , sizeof( IndirectDrawCommand ), &reset );
+
+	// note that we're binding to a target different from the buffer's designated target
+	gl::bindBufferBase( GL_ATOMIC_COUNTER_BUFFER, 0, mIndirectBuffers[lod] );
+#endif
 
 	mTransformFeedbackObjs[lod]->bind();
 
@@ -216,28 +232,35 @@ void LevelOfDetailBasicApp::runTransformFeedback( int lod )
 	mQueryObjs[lod]->end();
 }
 
-void LevelOfDetailBasicApp::drawLod( int lod )
+void LevelOfDetailIndirectApp::drawLodIndirect( int lod )
 {
-	GLuint instanceCount = mQueryObjs[lod]->getValueUInt();
-	mLodInstanceCounts[lod] = instanceCount;
+#if TECHNIQUE == QUERY_BUFFER_OBJECT
+	// write vertex count of the transform feedback count into indirect command buffer as instance count
+	mIndirectBuffers[lod]->bind( GL_QUERY_BUFFER );
+	mQueryObjs[lod]->getValueUInt( reinterpret_cast<GLuint*>( offsetof( IndirectDrawCommand, instanceCount ) ) );
+#endif
+
+	// read instance count from GPU buffer to CPU
+	if( mCPUReadBack )
+		mIndirectBuffers[lod]->getBufferSubData( 0, sizeof( IndirectDrawCommand ), &mIndirectDrawCommands[lod] );
+
+	gl::ScopedBuffer indirect_( mIndirectBuffers[lod] );
 
 	mLodBatches[lod]->getGlslProg()->uniform( "uVisualizeLods", mVisualizeLods );
-	mLodBatches[lod]->drawInstanced( instanceCount );
+	mLodBatches[lod]->drawIndirect( reinterpret_cast<GLvoid*>( 0 ) );
 }
 
-void LevelOfDetailBasicApp::update()
+void LevelOfDetailIndirectApp::update()
 {
 	getWindow()->setTitle( to_string( int( getAverageFps() ) ) );
 
 	mCamera.setFov( mZoomedIn ? 8.0f : 60.0f );
 
-	if( mLodEnabled ) {
-		for( int i = 0; i < NUM_LODS; ++i )
-			runTransformFeedback( i );
-	}
+	for( int i = 0; i < NUM_LODS; ++i )
+		runTransformFeedback( i );
 }
 
-void LevelOfDetailBasicApp::draw()
+void LevelOfDetailIndirectApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) ); 
 
@@ -250,14 +273,8 @@ void LevelOfDetailBasicApp::draw()
 		if( mWireframe )
 			gl::enableWireframe();
 
-		if( mLodEnabled ) {
-			for( int i = 0; i < NUM_LODS; ++i )
-				drawLod( i );
-		}
-		else {
-			mAllTeapotsBatch->getGlslProg()->uniform( "uVisualizeLods", false );
-			mAllTeapotsBatch->drawInstanced( NUM_INSTANCES );
-		}
+		for( int i = 0; i < NUM_LODS; ++i )
+			drawLodIndirect( i );
 
 		gl::disableWireframe();
 	}
@@ -273,9 +290,9 @@ void LevelOfDetailBasicApp::draw()
 		layoutL.setColor( Color::white() );
 		layoutL.setLeadingOffset( 3 );
 		layoutL.addLine( "(V) Toggle visualizing layers" );
-		layoutL.addLine( "(L) Toggle LOD" );
 		layoutL.addLine( "(W) Toggle wireframe" );
 		layoutL.addLine( "(Z) Toggle zoom" );
+		layoutL.addLine( "(R) Toggle instance count read back" );
 
 		layoutR.clear( ColorA::gray( 0.2f, 0.5f ) );
 		layoutR.setFont( Font( "Arial", 18 ) );
@@ -283,12 +300,12 @@ void LevelOfDetailBasicApp::draw()
 		layoutR.setLeadingOffset( 3 );
 		layoutR.addRightLine( string( "FPS: " + to_string( int( getAverageFps() ) ) ) );
 
-		if( mLodEnabled )
+		if( mCPUReadBack )
 			for( int i = 0; i < NUM_LODS; ++i )
-				layoutR.addRightLine( string( "LOD" + to_string( i ) + ": " + to_string( mLodInstanceCounts[i] ) ) );
+				layoutR.addRightLine( string( "LOD" + to_string( i ) + ": " + to_string( mIndirectDrawCommands[i].instanceCount ) ) );
 		else
-			layoutR.addRightLine( "All instances (" + to_string( NUM_INSTANCES ) + ") drawn as LOD0" );
-
+			layoutR.addRightLine( "Instance count not available on the CPU, turn on read back to see" );
+		
 		auto texL = gl::Texture::create( layoutL.render( true ) );
 		gl::draw( texL, vec2( 16, 10 ) );
 
@@ -297,7 +314,7 @@ void LevelOfDetailBasicApp::draw()
 	}
 }
 
-CINDER_APP( LevelOfDetailBasicApp, RendererGl( RendererGl::Options().msaa( 16 ) ), [] ( App::Settings *settings ) {
+CINDER_APP( LevelOfDetailIndirectApp, RendererGl( RendererGl::Options().msaa( 16 ) ), [] ( App::Settings *settings ) {
 	settings->setHighDensityDisplayEnabled();
 	settings->setWindowSize( 1200, 800 );
 	settings->disableFrameRate();
