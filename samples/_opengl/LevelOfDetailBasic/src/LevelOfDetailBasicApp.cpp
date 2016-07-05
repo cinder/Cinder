@@ -31,7 +31,7 @@ class LevelOfDetailBasicApp : public App {
 	void loadGlslProgs();
 	void setupBuffers();
 
-	void setFrustumCullingUniforms( gl::GlslProgRef & const glsl );
+	void setFrustumCullingUniforms( const gl::GlslProgRef &glsl );
 	void runTransformFeedback( int lod );
 	void drawLod( int lod );
 
@@ -116,7 +116,7 @@ void LevelOfDetailBasicApp::setupBuffers()
 	}
 
 	// setup transform feedback VAO
-	if( true ) {
+	{
 		mUpdateVao				= gl::Vao::create();
 		mInputVbo				= gl::Vbo::create( GL_ARRAY_BUFFER, mTeapots, GL_STATIC_DRAW );
 
@@ -159,7 +159,7 @@ void LevelOfDetailBasicApp::setupBuffers()
 	}
 
 	// setup buffers for the non-LOD batch
-	if( true ) {
+	{
 		geom::AttribSet requested	= { geom::Attrib::POSITION, geom::Attrib::NORMAL };
 		auto vboMesh				= gl::VboMesh::create( geom::Teapot().subdivisions( 32 ), requested );
 		mAllTeapotsVbo				= gl::Vbo::create( GL_ARRAY_BUFFER, sizeof( TeapotInstIn ) * NUM_INSTANCES, nullptr, GL_STATIC_DRAW );
@@ -177,7 +177,7 @@ void LevelOfDetailBasicApp::setupBuffers()
 	}
 }
 
-void LevelOfDetailBasicApp::setFrustumCullingUniforms( gl::GlslProgRef & const glsl )
+void LevelOfDetailBasicApp::setFrustumCullingUniforms( const gl::GlslProgRef &glsl )
 {
 	vec3 Z = normalize( mCamera.getViewDirection() );
 	vec3 X = normalize( cross( Z, mCamera.getWorldUp() ) );
@@ -244,7 +244,7 @@ void LevelOfDetailBasicApp::draw()
 	gl::ScopedMatrices	mtx_;
 	gl::ScopedDepth		depth_( true );
 
-	if( true ) {
+	{
 		gl::setMatrices( mCamera );
 
 		if( mWireframe )
@@ -262,7 +262,7 @@ void LevelOfDetailBasicApp::draw()
 		gl::disableWireframe();
 	}
 
-	if( true ) {
+	{
 		gl::setMatricesWindow( getWindowSize() );
 
 		gl::ScopedBlendAlpha blend_;
