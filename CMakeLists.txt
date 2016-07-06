@@ -13,6 +13,8 @@ include( ${CINDER_CMAKE_DIR}/configure.cmake )
 include( ${CINDER_CMAKE_DIR}/libcinder_configure.cmake )
 include( ${CINDER_CMAKE_DIR}/libcinder_source_files.cmake )
 
+set( CINDER_SKIP_SAMPLES "" )
+
 if( CINDER_LINUX )
 	include( "${CINDER_CMAKE_DIR}/platform_linux.cmake" )
 elseif( CINDER_MAC )
@@ -31,7 +33,7 @@ if( CINDER_BUILD_SAMPLES )
 	include( ${CINDER_CMAKE_DIR}/modules/findCMakeDirs.cmake )
 
 	set( allSamples "" )
-	findCMakeDirs( allSamples "${CINDER_PATH}/samples" )
+	findCMakeDirs( allSamples "${CINDER_PATH}/samples" "${CINDER_SKIP_SAMPLES}" )
 
 	foreach( sampleDir ${allSamples} )
 		if( CINDER_VERBOSE )
