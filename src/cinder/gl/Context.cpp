@@ -33,6 +33,7 @@
 #include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
+#include "cinder/Breakpoint.h"
 
 #include "cinder/app/AppBase.h"
 
@@ -2092,7 +2093,11 @@ int debugSeverityToOrd( GLenum severity )
 }
 } // anonymous namespace
 
+#if defined( CINDER_MSW )
 void __stdcall Context::debugMessageCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, void *userParam )
+#else
+void Context::debugMessageCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, void *userParam )
+#endif
 {
 	Context *ctx = reinterpret_cast<Context*>( userParam );
 	if( ctx->mDebugLogSeverity && (debugSeverityToOrd(severity) >= debugSeverityToOrd(ctx->mDebugLogSeverity)) ) {
@@ -2111,7 +2116,7 @@ void __stdcall Context::debugMessageCallback( GLenum source, GLenum type, GLuint
 	}
 
 	if( ctx->mDebugBreakSeverity && (debugSeverityToOrd(severity) >= debugSeverityToOrd(ctx->mDebugBreakSeverity)) ) {
-		__debugbreak();	
+		CI_BREAKPOINT();
 	}
 }
 #endif // defined( CINDER_GL_HAS_DEBUG_OUTPUT )
