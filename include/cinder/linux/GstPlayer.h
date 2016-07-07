@@ -17,7 +17,7 @@
 #include <thread>
 #include <mutex>
 
-#if GST_CHECK_VERSION(1, 4, 5)
+#if GST_CHECK_VERSION(1, 4, 4)
 	#include <gst/gl/gstglconfig.h>
 
 	#if defined( CINDER_GL_ES )
