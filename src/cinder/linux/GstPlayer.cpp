@@ -21,6 +21,9 @@
 #include "cinder/app/AppBase.h"
 #include "cinder/gl/Environment.h"
 
+// set the env variable GST_DEBUG_DUMP_DOT_DIR to specify the path were the graphs get write
+//#define CINDER_GST_WRITE_PIPELINEGRAPH
+
 namespace gst { namespace video {
 
 static bool sUseGstGl = false;
@@ -115,9 +118,11 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 			gst_message_parse_context_type( message, &context_type );
 
 			g_print( "Got **NEED** context %s from element %s\n", context_type, GST_ELEMENT_NAME( GST_MESSAGE_SRC( message ) ) );
+#if GST_CHECK_VERSION(1, 6, 0)
+
 			GstContext* context = nullptr;
 
-			if( g_strcmp0( context_type, GST_GL_DISPLAY_CONTEXT_TYPE ) == 0 ) {
+            if( g_strcmp0( context_type, GST_GL_DISPLAY_CONTEXT_TYPE ) == 0 ) {
 				context = gst_context_new( GST_GL_DISPLAY_CONTEXT_TYPE, TRUE );
 				gst_context_set_gl_display( context, data.mCinderDisplay );
 				gst_element_set_context( GST_ELEMENT( message->src ), context );
@@ -132,6 +137,9 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 			if( context ) { 
 				gst_context_unref( context ); 
 			}
+#else
+            g_object_set (G_OBJECT (data.mGLcolorconvert), "other-context", data.mCinderContext, NULL);
+#endif
 
 		}
 		break;
@@ -184,13 +192,21 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 						data.mIsPrerolled = true;
 						data.mPaused = true;
 						data.mIsLoaded = true;
+#if defined(CINDER_GST_WRITE_PIPELINEGRAPH)
+                        g_print( "Writing Graphfile for state PAUSED\n");
+                        GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(player->getPipeline()), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_paused");
+#endif
 					}
 					break;
 
 					case GST_STATE_PLAYING: {
 						data.mPaused = false;
 						data.mIsPlayable = true;
-					}
+#if defined(CINDER_GST_WRITE_PIPELINEGRAPH)
+                        g_print( "Writing Graphfile for state PLAYING\n");
+                        GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(player->getPipeline()), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_playing");
+#endif
+                    }
 					break;
 
 					case GST_STATE_READY: {
@@ -205,12 +221,20 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userPlayer
 						data.mIsDone = false;
 						data.mPosition = 0;
 						data.mRate = 1.0f;
+#if defined(CINDER_GST_WRITE_PIPELINEGRAPH)
+                        g_print( "Writing Graphfile for state READY\n");
+                        GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(player->getPipeline()), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_ready");
+#endif
 					}
 					break;
 
 					case GST_STATE_NULL:
 					{
 						data.reset();
+#if defined(CINDER_GST_WRITE_PIPELINEGRAPH)
+                        g_print( "Writing Graphfile for state NULL\n"   );
+                        GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(player->getPipeline()), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline_null");
+#endif
 					}
 					break;
 
@@ -443,7 +467,7 @@ bool GstPlayer::initializeGStreamer()
 		}
 		else {
 			
-			if( major >= 1 && minor >= 6 ) {
+			if( major >= 1 && minor >= 4 && micro >= 3 ) {
 				sUseGstGl = true;
 			}
 			else {
@@ -634,7 +658,7 @@ void GstPlayer::constructPipeline()
     gst_app_sink_set_drop( GST_APP_SINK(mGstAppSink), true);
     gst_base_sink_set_qos_enabled( GST_BASE_SINK(mGstAppSink), true );
     gst_base_sink_set_sync( GST_BASE_SINK(mGstAppSink), true );
-    gst_base_sink_set_max_lateness( GST_BASE_SINK(mGstAppSink), 20 );
+    gst_base_sink_set_max_lateness( GST_BASE_SINK(mGstAppSink), 20* GST_MSECOND );
 
     // With this cb we check if we have audio or not and if yes we link the audio branch of the pipeline.
     g_signal_connect( mGstData.mUriDecode, "pad-added", G_CALLBACK( cb_new_pad ), this );
@@ -645,6 +669,8 @@ void GstPlayer::constructPipeline()
     gst_bin_add_many( GST_BIN( mGstPipeline ), mGstData.mUriDecode, mGstData.mVideoQueue, mGstAppSink, NULL );
 
     if( sUseGstGl ) {
+#if GST_CHECK_VERSION(1, 6, 0)
+
         mGstData.mGLupload = gst_element_factory_make( "glupload", "upload" );
         mGstData.mGLcolorconvert = gst_element_factory_make( "glcolorconvert", "convert" );
 		if( !mGstData.mGLupload || !mGstData.mGLcolorconvert ) {
@@ -654,6 +680,17 @@ void GstPlayer::constructPipeline()
         if( ! gst_element_link_many( mGstData.mVideoQueue, mGstData.mGLupload, mGstData.mGLcolorconvert, mGstAppSink, nullptr ) ) {
             g_printerr( " FAILED to LINK VIDEO elements.\n" );
         }
+#else
+        mGstData.mGLcolorconvert = gst_element_factory_make( "glcolorscale", "glconvert" );
+        if( !mGstData.mGLcolorconvert ) {
+            g_printerr( "Not all GL elements could be created !\n" );
+        }
+        gst_bin_add( GST_BIN( mGstPipeline ), mGstData.mGLcolorconvert );
+        if( ! gst_element_link_many( mGstData.mVideoQueue, mGstData.mGLcolorconvert, mGstAppSink, nullptr ) ) {
+            g_printerr( " FAILED to LINK VIDEO elements.\n" );
+        }
+#endif
+
     }
     else {
         mGstData.mVideoconvert = gst_element_factory_make( "videoconvert", "convert" );
@@ -747,9 +784,10 @@ void GstPlayer::load( const std::string& path )
 	// set the new movie path
 	const gchar* uri = ( ! uriPath.empty() ) ? uriPath.c_str() : path.c_str();
     g_object_set( G_OBJECT ( gst_bin_get_by_name( GST_BIN(mGstPipeline), "uridecode" ) ), "uri", uri, nullptr );
-	
-	// and preroll async.
+
+    // and preroll async.
 	gst_element_set_state( mGstPipeline, GST_STATE_PAUSED );
+
 }
 
 void GstPlayer::unlinkAudioBranch() 
@@ -772,6 +810,7 @@ void GstPlayer::unlinkAudioBranch()
 void GstPlayer::play()
 {
 	setPipelineState( GST_STATE_PLAYING );
+
 }
 
 void GstPlayer::stop()
@@ -1092,9 +1131,8 @@ void GstPlayer::createTextureFromMemory()
 void GstPlayer::createTextureFromID()
 {
 	// Pop any old buffers.
-	GAsyncQueue *mOutputVideoBuffers = nullptr;
-	mOutputVideoBuffers = (GAsyncQueue*)g_object_get_data( G_OBJECT(mGstAppSink), "queue_output_buf" );
 	GstBuffer* old = nullptr;
+    //g_print("Outputbuffer queue lenght %i \n", g_async_queue_length( mOutputVideoBuffers ) );
 	if( g_async_queue_length( mOutputVideoBuffers ) > 0 ) {
 		old = (GstBuffer*)g_async_queue_pop( mOutputVideoBuffers );
 	}
@@ -1103,6 +1141,12 @@ void GstPlayer::createTextureFromID()
 			delete texture;
 			if( old ) gst_buffer_unref( old );
 	};
+
+    //remove older ones
+    while( g_async_queue_length( mOutputVideoBuffers ) > 0 ) {
+        old = (GstBuffer*)g_async_queue_pop( mOutputVideoBuffers );
+        gst_buffer_unref( old );
+    }
 
 	int currentTextureID = -1;
 	mMutex.lock();
@@ -1210,9 +1254,6 @@ void GstPlayer::sample( GstSample* sample, GstAppSink* sink )
 		// Save the buffer for avoiding override on next sample and use with the async queue.
 		gst_buffer_ref( buffer );
 
-		GAsyncQueue *mInputVideoBuffers = nullptr;
-
-		mInputVideoBuffers = (GAsyncQueue*)g_object_get_data( G_OBJECT( sink ), "queue_input_buf" );
 		g_async_queue_push( mInputVideoBuffers, buffer );
 
 		if( g_async_queue_length( mInputVideoBuffers ) > 0 ) {
@@ -1224,7 +1265,7 @@ void GstPlayer::sample( GstSample* sample, GstAppSink* sink )
 	else {
 		std::lock_guard<std::mutex> lock( mMutex );
 		gst_buffer_map( buffer, &mMemoryMapInfo, GST_MAP_READ ); // Map the buffer for reading the data.
-	
+
 		// We have pre-rolled so query info and allocate buffers if we have a new video.
 		if( newVideo() ) {
 			GstCaps* currentCaps = gst_sample_get_caps( sample );
@@ -1244,17 +1285,17 @@ void GstPlayer::sample( GstSample* sample, GstAppSink* sink )
 			if( !mFrontVBuffer ) {
 				mFrontVBuffer = new unsigned char[ mMemoryMapInfo.size ];
 			}
-			
+
 			if( !mBackVBuffer ) {
 				mBackVBuffer = new unsigned char[ mMemoryMapInfo.size ];
 			}
-			
+
 			///Reset the new video flag .
 			mGstData.mVideoHasChanged = false;
 		}
 		mNewFrame = true;
 		memcpy( mBackVBuffer, mMemoryMapInfo.data, mMemoryMapInfo.size );
-		gst_buffer_unmap( buffer, &mMemoryMapInfo ); 
+		gst_buffer_unmap( buffer, &mMemoryMapInfo );
 	}
 }
 
@@ -1271,8 +1312,6 @@ GstFlowReturn GstPlayer::onGstSample( GstAppSink* sink, gpointer userData )
 void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 {
 #if defined( CINDER_GST_HAS_GL )
-	GAsyncQueue* mInputVideoBuffers = (GAsyncQueue*) g_object_get_data( G_OBJECT( sink ), "queue_input_buf" );
-
 	// Grab a buffer from the queue.
 	GstBuffer* buffer = (GstBuffer*)g_async_queue_pop( mInputVideoBuffers );
 
