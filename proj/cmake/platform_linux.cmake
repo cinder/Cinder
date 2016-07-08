@@ -39,6 +39,13 @@ list( APPEND SRC_SET_CINDER_AUDIO_DSP
 	${CINDER_SRC_DIR}/cinder/audio/dsp/ConverterR8brain.cpp
 )
 
+
+list( APPEND SRC_SET_CINDER_VIDEO_LINUX
+    ${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp
+    ${CINDER_SRC_DIR}/cinder/linux/Movie.cpp
+)
+
+
 # Relevant source files depending on target GL.
 if( NOT CINDER_GL_ES_2_RPI )
 	if( CINDER_GL_ES )
@@ -81,6 +88,7 @@ list( APPEND CINDER_SRC_FILES
 	${SRC_SET_CINDER_APP_LINUX}
 	${SRC_SET_CINDER_AUDIO_LINUX}
 	${SRC_SET_CINDER_AUDIO_DSP}
+    ${SRC_SET_CINDER_VIDEO_LINUX}
 )
 
 # Relevant libs and include dirs depending on target platform and target GL.
@@ -137,7 +145,7 @@ list( APPEND CINDER_INCLUDE_SYSTEM ${SNDFILE_INCLUDE_DIR} )
 # GStreamer and its dependencies.
 # Glib
 find_package( Glib REQUIRED COMPONENTS gobject )
-list( APPEND CINDER_LIBS_DEPENDS ${GLIB_GOBJECT_LIBRARIES} )
+list( APPEND CINDER_LIBS_DEPENDS ${GLIB_GOBJECT_LIBRARIES} ${GLIB_LIBRARIES} )
 list( APPEND CINDER_INCLUDE_SYSTEM ${GLIB_INCLUDE_DIRS} )
 # GStreamer
 find_package( GStreamer REQUIRED )
