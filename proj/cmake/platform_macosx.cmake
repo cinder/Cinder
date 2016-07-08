@@ -102,3 +102,10 @@ list( APPEND CINDER_LIBS_DEPENDS
 source_group( "cinder\\cocoa"           FILES ${SRC_SET_COCOA} )
 source_group( "cinder\\app\\cocoa"      FILES ${SRC_SET_APP_COCOA} )
 source_group( "cinder\\audio\\cocoa"    FILES ${SRC_SET_AUDIO_COCOA} )
+
+# These are samples that cannot be built on Mac OS X, indicating they should be skipped with CINDER_BUILD_SAMPLES is on.
+list( APPEND CINDER_SKIP_SAMPLES
+	_opengl/ParticleSphereCS
+	_opengl/NVidiaComputeParticles
+)
+
