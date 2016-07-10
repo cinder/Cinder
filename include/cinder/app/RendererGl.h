@@ -101,7 +101,7 @@ class RendererGl : public Renderer {
 		int			getMsaa() const { return mMsaaSamples; }
 
 #if ! defined( CINDER_GL_ES )
-		//! Enables a debug context (per \c ARB_debug_output). Currently only implemented by MSW GL implementations. By default this is made GL_DEBUG_OUTPUT_SYNCHRONOUS
+		//! Enables a debug context (per \c ARB_debug_output). Currently only implemented by MSW and Linux GL implementations. By default this is made \c GL_DEBUG_OUTPUT_SYNCHRONOUS
 		Options&	debug() { mDebugContext = true; return *this; }
 		//! Returns whether the context has debug enabled
 		bool		getDebug() const { return mDebugContext; }

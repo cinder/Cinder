@@ -67,6 +67,8 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	else {
 		std::cout << "Rendering with OpenGL " << majorVersion << "." << minorVersion << std::endl;		
 	}
+	if( options.getDebug() )
+		::glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE );
 #endif
 
     ::glfwWindowHint( GLFW_SAMPLES, options.getMsaa() );
