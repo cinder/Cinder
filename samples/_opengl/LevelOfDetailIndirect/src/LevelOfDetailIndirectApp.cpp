@@ -49,7 +49,7 @@ class LevelOfDetailIndirectApp : public App {
 	void loadGlslProgs();
 	void setupBuffers();
 
-	void setFrustumCullingUniforms( gl::GlslProgRef & const glsl );
+	void setFrustumCullingUniforms( const gl::GlslProgRef& glsl );
 	void runTransformFeedback( int lod );
 	void drawLodIndirect( int lod );
 
@@ -183,7 +183,7 @@ void LevelOfDetailIndirectApp::setupBuffers()
 	}
 }
 
-void LevelOfDetailIndirectApp::setFrustumCullingUniforms( gl::GlslProgRef & const glsl )
+void LevelOfDetailIndirectApp::setFrustumCullingUniforms( const gl::GlslProgRef& glsl )
 {
 	vec3 Z = normalize( mCamera.getViewDirection() );
 	vec3 X = normalize( cross( Z, mCamera.getWorldUp() ) );
