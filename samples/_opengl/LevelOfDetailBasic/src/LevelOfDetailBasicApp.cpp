@@ -4,6 +4,7 @@
 #include "cinder/CameraUi.h"
 #include "cinder/Rand.h"
 
+// Reference:
 // https://www.researchgate.net/publication/235611365_A_Rendering_Pipeline_for_Real-Time_Crowds
 
 using namespace ci;
@@ -48,7 +49,7 @@ class LevelOfDetailBasicApp : public App {
 	gl::VboRef					mOutputLodVbos[NUM_LODS];
 	gl::BatchRef				mLodBatches[NUM_LODS];
 	gl::QueryRef				mQueryObjs[NUM_LODS];
-	gl::TransformFeedbackObjRef mTransformFeedbackObjs[NUM_LODS];
+	gl::TransformFeedbackObjRef	mTransformFeedbackObjs[NUM_LODS];
 
 	gl::VboRef					mAllTeapotsVbo;
 	gl::BatchRef				mAllTeapotsBatch;
@@ -70,7 +71,8 @@ void LevelOfDetailBasicApp::setup()
 
 	mCamera.setPerspective( 60.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
 	mCamera.lookAt( vec3( 0, 0, 0 ), vec3( 10, 0, 0 ) );
-	mCameraUi = CameraUi( &mCamera, getWindow() );
+	mCameraUi.setCamera( &mCamera );
+	mCameraUi.connect( getWindow() );
 
 	loadGlslProgs();
 	setupBuffers();
@@ -78,7 +80,7 @@ void LevelOfDetailBasicApp::setup()
 	getWindow()->getSignalKeyDown().connect( [&] ( KeyEvent &e ) {
 		if( e.getCode() == KeyEvent::KEY_w ) mWireframe		^= true;
 		if( e.getCode() == KeyEvent::KEY_l ) mLodEnabled	^= true;
-		if( e.getCode() == KeyEvent::KEY_v ) mVisualizeLods ^= true;
+		if( e.getCode() == KeyEvent::KEY_v ) mVisualizeLods	^= true;
 		if( e.getCode() == KeyEvent::KEY_z ) mZoomedIn		^= true;
 	} );
 
@@ -97,7 +99,7 @@ void LevelOfDetailBasicApp::loadGlslProgs()
 	renderGlslFormat.vertex( loadAsset( "render.vert" ) )
 					.fragment( loadAsset( "render.frag" ) );
 
-	try {	
+	try {
 		mUpdateGlsl = gl::GlslProg::create( updateGlslFormat );
 		mRenderGlsl = gl::GlslProg::create( renderGlslFormat );
 	}
@@ -158,7 +160,7 @@ void LevelOfDetailBasicApp::setupBuffers()
 		} );
 	}
 
-	// setup buffers for the non-LOD batch
+	// setup buffers of the non-LOD batch for performance comparison
 	{
 		geom::AttribSet requested	= { geom::Attrib::POSITION, geom::Attrib::NORMAL };
 		auto vboMesh				= gl::VboMesh::create( geom::Teapot().subdivisions( 32 ), requested );
@@ -244,6 +246,7 @@ void LevelOfDetailBasicApp::draw()
 	gl::ScopedMatrices	mtx_;
 	gl::ScopedDepth		depth_( true );
 
+	// render scene
 	{
 		gl::setMatrices( mCamera );
 
@@ -259,9 +262,11 @@ void LevelOfDetailBasicApp::draw()
 			mAllTeapotsBatch->drawInstanced( NUM_INSTANCES );
 		}
 
-		gl::disableWireframe();
+		if( mWireframe )
+			gl::disableWireframe();
 	}
 
+	// render UI
 	{
 		gl::setMatricesWindow( getWindowSize() );
 

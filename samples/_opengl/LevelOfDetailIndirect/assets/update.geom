@@ -1,7 +1,6 @@
 #version 420
 
 uniform float uCurrentLod;
-
 uniform float uNear, uFar, uTanFov, uAspectRatio, uDelta;
 uniform vec3 uCameraPos, uCameraX, uCameraY, uCameraZ;
 
@@ -12,11 +11,11 @@ layout( binding = 0, offset = 4 ) uniform atomic_uint uInstanceCounter;
 layout( points ) in;
 layout( points, max_vertices = 1 ) out;
 
-in vec3		vPosition[];
-in float	vLod[];
+in vec3 vPosition[];
+in float vLod[];
 
-out vec3	oPosition;
-out float	oLod;
+out vec3 oPosition;
+out float oLod;
 
 bool insideViewFrustum( vec3 point )
 {
@@ -44,8 +43,8 @@ bool insideViewFrustum( vec3 point )
 void main()
 {
 	if( vLod[0] == uCurrentLod && insideViewFrustum( vPosition[0] ) ) {
-		oPosition	= vPosition[0];
-		oLod		= vLod[0];
+		oPosition = vPosition[0];
+		oLod = vLod[0];
 
 		EmitVertex();
 		EndPrimitive();

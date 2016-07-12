@@ -1,11 +1,11 @@
 #version 150
 
-uniform mat4	ciModelView;
+uniform mat4 ciModelView;
 
-in vec4			ciPosition;
+in vec4 ciPosition;
 
-out vec3		vPosition;
-out float		vLod;
+out vec3 vPosition;
+out float vLod;
 
 void main()
 {
