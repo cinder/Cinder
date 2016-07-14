@@ -96,6 +96,21 @@ find_library( ACCELERATE_FRAMEWORK Accelerate REQUIRED )
 find_library( IOSURFACE_FRAMEWORK IOSurface REQUIRED )
 find_library( IOKIT_FRAMEWORK IOKit REQUIRED )
 
+# Option for using GStreamer under OS X.
+if( CINDER_MAC )
+	option( CINDER_MAC_USE_GSTREAMER "Use GStreamer for video playback." OFF )
+endif()
+
+if( CINDER_MAC_USE_GSTREAMER )
+	find_library( GSTREAMER_FRAMEWORK GStreamer REQUIRED )
+	list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_FRAMEWORK} ${GSTREAMER_FRAMEWORK}/Versions/Current/lib/libgstgl-1.0.dylib )
+	list( APPEND CINDER_INCLUDE_SYSTEM ${GSTREAMER_FRAMEWORK}/Headers ${CINDER_INC_DIR}/cinder/linux )
+	list( APPEND CINDER_SRC_FILES ${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp ${CINDER_SRC_DIR}/cinder/linux/Movie.cpp )
+	list( APPEND CINDER_DEFINES CINDER_MAC_USE_GSTREAMER )
+else()
+	# QuickTime files should go here..
+endif()
+
 list( APPEND CINDER_LIBS_DEPENDS
     ${COCOA_FRAMEWORK}
     ${OPENGL_FRAMEWORK}

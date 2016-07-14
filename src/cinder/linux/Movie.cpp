@@ -99,8 +99,7 @@ int32_t MovieBase::getHeight() const
 
 float MovieBase::getPixelAspectRatio() const
 {
-	// @TODO: Fix me!
-	return 1.0f;
+	return mGstPlayer->getPixelAspectRatio();
 }
 
 bool MovieBase::checkPlaythroughOk()
@@ -139,8 +138,12 @@ float MovieBase::getFramerate() const
 
 int32_t MovieBase::getNumFrames()
 {
-	// @TODO: Fix me!
-	return 0;	
+	return mGstPlayer->getNumFrames();	
+}
+
+bool MovieBase::hasVisuals() const
+{
+	return mGstPlayer->hasVisuals();
 }
 
 bool MovieBase::hasAudio() const
@@ -176,7 +179,7 @@ void MovieBase::seekToStart()
 void MovieBase::seekToEnd()
 {
     // This triggers EOS. Probably needs revision.
-    seekToTime(getDuration());
+    //seekToTime(getDuration());
 }
 
 void MovieBase::setActiveSegment( float startTime, float duration )
@@ -196,7 +199,7 @@ void MovieBase::setLoop( bool loop, bool palindrome )
 
 bool MovieBase::stepForward()
 {
-	// @TODO: Fix me!
+	mGstPlayer->stepForward();
 	return false;	
 }
 
