@@ -41,7 +41,11 @@ public:
 
 SimpleMultiThreadedSenderApp::SimpleMultiThreadedSenderApp()
 : mIoService( new asio::io_service ), mWork( new asio::io_service::work( *mIoService ) ),
-	mSender( 10000, destinationHost, destinationPort )
+#if USE_UDP
+	mSender( 10000, destinationHost, destinationPort, osc::SenderUdp::protocol::v4(), *mIoService )
+#else
+    mSender( 10000, destinationHost, destinationPort, nullptr, osc::SenderTcp::protocol::v4(), *mIoService )
+#endif
 {
 }
 
