@@ -106,7 +106,7 @@ void GstData::updateState( const GstState& current )
 		}
 		case GST_STATE_PLAYING: {
 			isDone 			= false;
-			isPaused 		= false;
+			isPaused 		= false;	
 			isPlayable 		= true;
 			break;
 		}
@@ -469,9 +469,9 @@ bool GstPlayer::initialize()
   #endif 
 #endif 
 #elif defined( CINDER_MAC )
-        mGstData.display   = gst_gl_display_new ();
-		auto platformData  = std::dynamic_pointer_cast<ci::gl::PlatformDataMac>( ci::gl::context()->getPlatformData() );
-        mGstData.context   = gst_gl_context_new_wrapped( GST_GL_DISPLAY( mGstData.display ), (guintptr)platformData->mCglContext, GST_GL_PLATFORM_CGL, GST_GL_API_OPENGL );
+   	 mGstData.display   = gst_gl_display_new ();
+	 auto platformData  = std::dynamic_pointer_cast<ci::gl::PlatformDataMac>( ci::gl::context()->getPlatformData() );
+	 mGstData.context   = gst_gl_context_new_wrapped( GST_GL_DISPLAY( mGstData.display ), (guintptr)platformData->mCglContext, GST_GL_PLATFORM_CGL, GST_GL_API_OPENGL );
 #endif
     }
 #endif // defined( CINDER_GST_HAS_GL )
@@ -499,10 +499,10 @@ void GstPlayer::constructPipeline()
 		return;
 	}
 
-    mGstData.videoSink 	= gst_bin_new( "cinder-vsink" );
+	mGstData.videoSink 	= gst_bin_new( "cinder-vsink" );
 	if( ! mGstData.videoSink ) g_printerr( "Failed to create video sink bin!\n" );
 
-    mGstData.appSink 	= gst_element_factory_make( "appsink", "videosink" );
+	mGstData.appSink 	= gst_element_factory_make( "appsink", "videosink" );
 	if( ! mGstData.appSink ) {
 		g_printerr( "Failed to create app sink element!\n" );
 	}
@@ -534,24 +534,24 @@ void GstPlayer::constructPipeline()
 
     if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
-        mGstData.glupload 			= gst_element_factory_make( "glupload", "upload" );
+		mGstData.glupload 			= gst_element_factory_make( "glupload", "upload" );
 		if( ! mGstData.glupload ) g_printerr( "Failed to create GL upload element!\n" );
 
-        mGstData.glcolorconvert 	= gst_element_factory_make( "glcolorconvert", "convert" );
+		mGstData.glcolorconvert 	= gst_element_factory_make( "glcolorconvert", "convert" );
 		if( ! mGstData.glcolorconvert ) g_printerr( "Failed to create GL convert element!\n" );
 
 		mGstData.rawCapsFilter		= gst_element_factory_make( "capsfilter", "rawcapsfilter" );
 		if( mGstData.rawCapsFilter ) g_object_set( G_OBJECT( mGstData.rawCapsFilter ), "caps", gst_caps_from_string( "video/x-raw" ), nullptr );
 		else g_printerr( "Failed to create raw caps filter element!\n" );
 
-        gst_bin_add_many( GST_BIN( mGstData.videoSink ),  mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert, mGstData.appSink, nullptr );
+		gst_bin_add_many( GST_BIN( mGstData.videoSink ),  mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert, mGstData.appSink, nullptr );
 
-        if( ! gst_element_link_many( mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert,  mGstData.appSink, nullptr ) ) {
-            g_printerr( "Failed to link video elements...!\n" );
-        }
+		if( ! gst_element_link_many( mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert,  mGstData.appSink, nullptr ) ) {
+			g_printerr( "Failed to link video elements...!\n" );
+		}
 
 		pad = gst_element_get_static_pad( mGstData.rawCapsFilter, "sink" );
-	 	gst_element_add_pad( mGstData.videoSink, gst_ghost_pad_new( "sink", pad ) );
+		gst_element_add_pad( mGstData.videoSink, gst_ghost_pad_new( "sink", pad ) );
 #endif
     }
 	else{
@@ -567,8 +567,7 @@ void GstPlayer::constructPipeline()
 
 	g_object_set( G_OBJECT( mGstData.pipeline ), "video-sink", mGstData.videoSink, nullptr );
 
-    addBusWatch( mGstData.pipeline );
-
+	addBusWatch( mGstData.pipeline );
 }
 
 void GstPlayer::load( const std::string& path )
@@ -579,9 +578,9 @@ void GstPlayer::load( const std::string& path )
 	}
 
     // Construct and link the elements of our pipeline if this is our first run..
-    if( ! mGstData.pipeline ) {
-        constructPipeline();
-    }
+	if( ! mGstData.pipeline ) {
+		constructPipeline();
+	}
 	
 	// Prepare for (re)loading....
 	setPipelineState( GST_STATE_READY );
@@ -606,7 +605,7 @@ void GstPlayer::load( const std::string& path )
 
 	// set the new movie path
 	const gchar* uri = ( ! uriPath.empty() ) ? uriPath.c_str() : path.c_str();
-    g_object_set( G_OBJECT ( mGstData.pipeline ), "uri", uri, nullptr );
+	g_object_set( G_OBJECT ( mGstData.pipeline ), "uri", uri, nullptr );
 	
 	// and preroll.
 	setPipelineState( GST_STATE_PAUSED );
@@ -674,7 +673,7 @@ GstVideoFormat GstPlayer::format() const
 
 float GstPlayer::getFramerate() const
 {
-    return mGstData.frameRate;
+	return mGstData.frameRate;
 }
 
 bool GstPlayer::hasAudio() const
@@ -683,7 +682,7 @@ bool GstPlayer::hasAudio() const
 
 	gint numAudioChannels = 0;
 	g_object_get( G_OBJECT( mGstData.pipeline ), "n-audio", &numAudioChannels, nullptr );
-    return ( numAudioChannels > 0 ) ? true : false;
+	return ( numAudioChannels > 0 ) ? true : false;
 }
 
 bool GstPlayer::hasVisuals() const
@@ -692,7 +691,7 @@ bool GstPlayer::hasVisuals() const
 
 	gint numVideoStreams = 0;
 	g_object_get( G_OBJECT( mGstData.pipeline ), "n-video", &numVideoStreams, nullptr );
-    return ( numVideoStreams > 0 ) ? true : false;
+	return ( numVideoStreams > 0 ) ? true : false;
 }
 
 gint64 GstPlayer::getDurationNanos()
@@ -1080,7 +1079,7 @@ void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 		mGstData.width = mGstData.videoInfo.width;
 		mGstData.height = mGstData.videoInfo.height;
 		mGstData.videoFormat = mGstData.videoInfo.finfo->format;
-        mGstData.frameRate = (float)mGstData.videoInfo.fps_n / (float)mGstData.videoInfo.fps_d;
+		mGstData.frameRate = (float)mGstData.videoInfo.fps_n / (float)mGstData.videoInfo.fps_d;	
 		mGstData.pixelAspectRatio = (float)mGstData.videoInfo.par_n / (float)mGstData.videoInfo.par_d ;
 		if( isPrerolled() && mGstData.numFrames == 0 ) {
 			mGstData.numFrames = (int)( getDurationNanos() * (float)mGstData.videoInfo.fps_n / (float)mGstData.videoInfo.fps_d / (float) GST_SECOND );	
