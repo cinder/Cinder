@@ -26,7 +26,7 @@
 namespace gst { namespace video {
 
 static bool 		sUseGstGl = false;
-static const int 	sEnableAsynStateChange = false;
+static const int 	sEnableAsyncStateChange = false;
 
 GstData::GstData()
 : isPaused( false ),
@@ -901,7 +901,7 @@ bool GstPlayer::setPipelineState( GstState targetState )
 	g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name ( targetState ) );
 
 	bool success = checkStateChange( stateChangeResult );
-	if( ! sEnableAsynStateChange && stateChangeResult == GST_STATE_CHANGE_ASYNC ) {
+	if( ! sEnableAsyncStateChange && stateChangeResult == GST_STATE_CHANGE_ASYNC ) {
 		gst_element_get_state( mGstData.pipeline, &current, &pending, GST_CLOCK_TIME_NONE );
 		g_print( " Blocking until pipeline state changes from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name ( targetState ) );
 	}
