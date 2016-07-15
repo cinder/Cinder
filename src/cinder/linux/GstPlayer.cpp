@@ -21,8 +21,6 @@
 #include "cinder/app/AppBase.h"
 #include "cinder/gl/Environment.h"
 
-#include "cinder/gl/Sync.h"
-
 namespace gst { namespace video {
 
 static bool 		sUseGstGl = false;
@@ -281,6 +279,7 @@ GstPlayer::GstPlayer()
 	: mGMainLoop( nullptr ),
 	  mGstBus( nullptr ),
 	  mNewFrame( false ),
+	  mClosing( false ),
 	  mUsingCustomPipeline( false )
 {
 	bool success = initializeGStreamer();
@@ -367,6 +366,11 @@ void GstPlayer::resetPipeline()
 	if( ! mGstData.pipeline ) {
 		return;
 	}
+	mMutex.lock();
+	mClosing = true;
+	mMutex.unlock();
+
+	mNewFrameCv.notify_one();
 
 	gst_element_set_state( mGstData.pipeline, GST_STATE_NULL );
 	gst_element_get_state( mGstData.pipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE );
@@ -381,6 +385,12 @@ void GstPlayer::resetPipeline()
 		mGstData.display = nullptr;
 		mGstData.glupload = nullptr;
 		mGstData.glcolorconvert = nullptr;
+		if( mGstData.bufferQueue ){
+			resetGLBuffers(); // GstBuffers need to be flushed here if we are destroying the pipeline.
+			g_async_queue_unref( mGstData.bufferQueue );
+			mGstData.bufferQueue = nullptr;
+		}
+
 #endif
     }
 }
@@ -454,7 +464,6 @@ bool GstPlayer::initialize()
 {		
 #if defined( CINDER_GST_HAS_GL ) 
     if( sUseGstGl ) {
-		mContext           = ci::gl::Context::create( ci::gl::context() );
 #if defined( CINDER_LINUX )
         auto platformData  = std::dynamic_pointer_cast<ci::gl::PlatformDataLinux>( ci::gl::context()->getPlatformData() );
 #if defined( CINDER_LINUX_EGL_ONLY )
@@ -552,6 +561,8 @@ void GstPlayer::constructPipeline()
 
 		pad = gst_element_get_static_pad( mGstData.rawCapsFilter, "sink" );
 		gst_element_add_pad( mGstData.videoSink, gst_ghost_pad_new( "sink", pad ) );
+
+		mGstData.bufferQueue = g_async_queue_new();
 #endif
     }
 	else{
@@ -948,6 +959,10 @@ void GstPlayer::createTextureFromMemory()
 
 void GstPlayer::createTextureFromID()
 {
+	mVideoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, mGstTextureID, mGstData.width, mGstData.height, true );
+	if( mVideoTexture ) {
+		mVideoTexture->setTopDown();
+	}
 }
 
 ci::gl::Texture2dRef GstPlayer::getVideoTexture()
@@ -956,7 +971,14 @@ ci::gl::Texture2dRef GstPlayer::getVideoTexture()
 		if( ! sUseGstGl ) {
 			createTextureFromMemory();
 		}
+		else {
+			createTextureFromID();
+		}
+		// We need the manual lock/unlock 
+		mMutex.lock();
 		mNewFrame = false;
+		mMutex.unlock();
+		mNewFrameCv.notify_one();
 	}
 	return mVideoTexture;
 }
@@ -973,6 +995,13 @@ void GstPlayer::resetVideoBuffers()
 
 void GstPlayer::resetGLBuffers()
 {
+	if( mGstData.bufferQueue ) {
+		while( g_async_queue_length( mGstData.bufferQueue ) > 0 ) {
+			GstBuffer* old = (GstBuffer*)g_async_queue_pop( mGstData.bufferQueue );
+			if( old ) gst_buffer_unref( old );
+			old = nullptr;
+		}
+	}
 }
 
 void GstPlayer::resetSystemMemoryBuffers()
@@ -1061,13 +1090,11 @@ GstFlowReturn GstPlayer::onGstSample( GstAppSink* sink, gpointer userData )
 void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 {
 #if defined( CINDER_GST_HAS_GL )
+	std::unique_lock<std::mutex> uniqueLock( mMutex );
 	GstBuffer* buffer;
 	buffer = gst_sample_get_buffer( sample );
 	// Save the buffer for avoiding override on next sample.
 	gst_buffer_ref( buffer );
-
-	ci::ThreadSetup threadSetup;
-	mContext->makeCurrent();
 
 	// Map the GL memory for reading. This will give us the texture id that arrives from GStreamer.
 	gst_buffer_map( buffer, &mGstData.memoryMapInfo, (GstMapFlags)( GST_MAP_READ | GST_MAP_GL ) ); 
@@ -1087,34 +1114,24 @@ void GstPlayer::updateTexture( GstSample* sample, GstAppSink* sink )
 	}
 
 	// Save the texture ID.
-	mMutex.lock();
 	mGstTextureID = *(guint*)mGstData.memoryMapInfo.data;
-	mMutex.unlock();
-
-	auto deleter = [ buffer ] ( ci::gl::Texture *texture ) {
-			delete texture;
-			if( buffer ) gst_buffer_unref( buffer );
-	};
-
-#if ! defined( CINDER_LINUX_EGL_ONLY )
-	mBufferTexture = ci::gl::Texture::create( GL_TEXTURE_2D, mGstTextureID, mGstData.width, mGstData.height, true, deleter );
-	if( mBufferTexture ) {
-		mBufferTexture->setTopDown();
-	}
-	auto fence = ci::gl::Sync::create();
-	fence->clientWaitSync();
-
-	mVideoTexture = mBufferTexture;
-#else
-	mVideoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, mGstTextureID, mGstData.width, mGstData.height, true, deleter );
-	if( mVideoTexture ) {
-		mVideoTexture->setTopDown();
-	}
-#endif
 
 	// Unmap the memory. 
 	gst_buffer_unmap( buffer, &mGstData.memoryMapInfo );
 
+	g_async_queue_push( mGstData.bufferQueue, buffer );
+
+	mNewFrameCv.wait( uniqueLock, [ this ]{ return ( ! mNewFrame || mClosing ); } );
+	
+	if( mGstData.bufferQueue ) {
+		if( g_async_queue_length( mGstData.bufferQueue ) > 3 ){
+			GstBuffer* old = (GstBuffer*)g_async_queue_pop( mGstData.bufferQueue );
+			if( old ) {
+				gst_buffer_unref( old );
+				old = nullptr;
+			}
+		}
+	}
 #endif
 }
 

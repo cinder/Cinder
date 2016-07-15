@@ -15,6 +15,7 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/Context.h"
@@ -110,6 +111,7 @@ struct GstData {
 
 	GstElement* 				rawCapsFilter 	= nullptr;
 	GstPlayer*					player 			= nullptr;
+	GAsyncQueue*				bufferQueue		= nullptr;
 #endif
 };
 
@@ -214,13 +216,8 @@ private:
 	int  					mBusId; // Save the id of the bus for releasing when not needed.
 	std::thread	 			mGMainLoopThread; // Seperate thread for GMainLoop.
 	
-#if defined( CINDER_GST_HAS_GL )
-	ci::gl::ContextRef		mContext;
-	ci::gl::Texture2dRef	mBufferTexture;
-#endif
-
 	std::mutex 				mMutex; // Protect  since the appsink callbacks are executed from the streaming thread internally from GStreamer.
-	
+
 	bool 					mUsingCustomPipeline;
 	GstData 				mGstData; // Data that describe the current state of the pipeline.
 	
@@ -232,6 +229,8 @@ private:
 	GLint 					mGstTextureID;
 
 	std::atomic<bool> 		mNewFrame;
+	std::atomic<bool>		mClosing;
+	std::condition_variable mNewFrameCv;
 };
 	
 }} // namespace gst::video
