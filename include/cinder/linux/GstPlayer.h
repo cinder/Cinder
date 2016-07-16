@@ -185,7 +185,8 @@ private:
 	static void 			onGstEos( GstAppSink* sink, gpointer userData );
 	static GstFlowReturn 	onGstSample( GstAppSink* sink, gpointer userData );
 	static GstFlowReturn	onGstPreroll( GstAppSink* sink, gpointer userData );
-	void 					sample( GstSample* sample, GstAppSink* sink );
+	void 					processNewSample( GstSample* sample );
+	void 					getVideoInfo( const GstVideoInfo& videoInfo );
 	
 	bool 					setPipelineState( GstState targetState );
 	bool 					checkStateChange( GstStateChangeReturn stateChangeResult );
@@ -208,8 +209,9 @@ private:
 
 	void 					createTextureFromMemory();
 	void 					createTextureFromID();
-	void 					updateTexture( GstSample* sample, GstAppSink* sink );
+	void 					updateTextureID( GstBuffer* newBuffer );
 
+	void 					unblockStreamingThread();
 private:
 	GMainLoop* 				mGMainLoop; // Needed for message activation since we are not using signals.
 	GstBus* 				mGstBus; // Delivers the messages.
@@ -229,8 +231,8 @@ private:
 	GLint 					mGstTextureID;
 
 	std::atomic<bool> 		mNewFrame;
-	std::atomic<bool>		mClosing;
-	std::condition_variable mNewFrameCv;
+	std::atomic<bool>		mUnblockStreamingThread;
+	std::condition_variable	mStreamingThreadCV;
 };
 	
 }} // namespace gst::video
