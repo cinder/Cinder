@@ -13,14 +13,6 @@ endif()
 
 list( APPEND CMAKE_MODULE_PATH ${CINDER_CMAKE_DIR} ${CMAKE_CURRENT_LIST_DIR}/modules )
 
-#if( NOT CMAKE_BUILD_TYPE )
-#	message( "CMAKE_BUILD_TYPE not specified, defaulting to Debug" )
-#	set( CMAKE_BUILD_TYPE Debug CACHE STRING
-#		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel. "
-#		FORCE
-#		)
-#endif()
-
 list( APPEND CINDER_INCLUDE_USER
 	${CINDER_INC_DIR}
 	${CINDER_INC_DIR}/jsoncpp

@@ -7,7 +7,9 @@ option( BUILD_SHARED_LIBS "Build Cinder as a shared library. " OFF )
 
 # Set default build type to Debug
 if( NOT CMAKE_BUILD_TYPE )
-	message( "CMAKE_BUILD_TYPE not specified, defaulting to Debug" )
+	if( CINDER_VERBOSE )
+		message( "CMAKE_BUILD_TYPE not specified, defaulting to Debug" )
+	endif()
 	set( CMAKE_BUILD_TYPE Debug CACHE STRING
 		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel. "
 		FORCE
