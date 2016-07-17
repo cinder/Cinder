@@ -35,7 +35,7 @@ list( APPEND CINDER_SRC_FILES
 source_group( "cinder\\msw"       FILES ${SRC_SET_MSW} )
 source_group( "cinder\\app\\msw"  FILES ${SRC_SET_APP_MSW} )
 
-list( APPEND CINDER_INCLUDE_SYSTEM
+list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
     ${CINDER_INC_DIR}/msw/zlib
 )
 
