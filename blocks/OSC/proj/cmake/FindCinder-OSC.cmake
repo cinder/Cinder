@@ -3,5 +3,8 @@ get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../
 
 add_library( Cinder-OSC ${OSC_SOURCE_PATH}/OSC.cpp )
 
-target_include_directories( Cinder-OSC PUBLIC "${BOX2D_SOURCE_PATH}" )
+target_compile_options( Cinder-OSC PUBLIC "-std=c++11" )
+
+target_include_directories( Cinder-OSC PUBLIC "${OSC_SOURCE_PATH}" )
 target_include_directories( Cinder-OSC SYSTEM BEFORE PUBLIC "${CINDER_PATH}/include" )
+
