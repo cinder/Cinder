@@ -39,7 +39,7 @@
 #include "cinder/Exception.h"
 
 //! Convenience macro that allows one to embed raw glsl code in-line. The \a VERSION parameter will be used for the glsl's '#version' define.
-//! \note Some strings will confuse different compilers, most commonly being preprocessor derictives (hence the need for \a VERSION to be a pamaeter).
+//! \note Some strings will confuse different compilers, most commonly being preprocessor directives (hence the need for \a VERSION to be a parameter).
 //! If available on all target platforms, users should use C+11 raw string literals, which do not suffer from the same limitations.
 #define CI_GLSL(VERSION,CODE) "#version " #VERSION "\n" #CODE
 

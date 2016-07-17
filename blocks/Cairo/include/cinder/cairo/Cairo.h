@@ -788,7 +788,7 @@ namespace cinder {
 class SurfaceConstraintsCairo : public cinder::SurfaceConstraints {
  public:
 	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const;
-	virtual int32_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const;
+	virtual ptrdiff_t			getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const;
 };
 
 } // namespace cinder

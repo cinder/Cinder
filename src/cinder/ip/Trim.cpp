@@ -43,7 +43,7 @@ template<typename T>
 bool transparentVerticalScanline( const SurfaceT<T> &surface, int32_t column, int32_t y1, int32_t y2 )
 {
 	const T *dstPtr = surface.getDataAlpha( ivec2( column, y1 ) );
-	int32_t rowBytes = surface.getRowBytes();
+	ptrdiff_t rowBytes = surface.getRowBytes();
 	for( int32_t y = y1; y < y2; ++y ) {
 		if( *dstPtr ) return false;
 		dstPtr += rowBytes;
@@ -80,7 +80,7 @@ Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &unclippedBo
 			break;
 		}
 	}
-	for( rightColumn = bounds.getX2(); rightColumn > leftColumn; --rightColumn ) {
+	for( rightColumn = bounds.getX2() - 1; rightColumn > leftColumn; --rightColumn ) {
 		if( ! transparentVerticalScanline( surface, rightColumn, topLine, bottomLine ) ) {
 			break;
 		}

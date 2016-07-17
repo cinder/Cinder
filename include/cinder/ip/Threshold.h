@@ -72,7 +72,7 @@ class AdaptiveThresholdT {
 	const ChannelT<T>*	mChannel;
 	int32_t				mImageWidth;
 	int32_t				mImageHeight;
-	int8_t				mIncrement;
+	uint8_t				mIncrement;
 	std::vector<SUMT>	mIntegralImage;
 };
 

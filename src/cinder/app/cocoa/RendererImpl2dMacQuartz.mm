@@ -71,11 +71,19 @@
 - (NSBitmapImageRep*)getContents:(cinder::Area)area
 {
 	[view lockFocus];
-	CGContextFlush( currentRef );
+	
+	// We need to recreate the CGContextRef if this method isn't called between startDraw and finishDraw
+	CGContextRef tempRef = currentRef;
+	if( ! tempRef )
+		tempRef = (CGContextRef)[currentGraphicsContext graphicsPort];
+
+	CGContextFlush( tempRef );
 	NSRect rect = NSMakeRect( area.x1, area.y1, area.getWidth(), area.getHeight() );
 	NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:rect];
 	[view unlockFocus];
-	return [rep autorelease];
+
+	// Caller assumes ownership
+	return rep;
 }
 
 - (void)startDraw

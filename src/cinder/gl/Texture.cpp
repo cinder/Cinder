@@ -597,7 +597,7 @@ void TextureBase::setCompareFunc( GLenum compareFunc )
 }
 
 template<typename T>
-bool TextureBase::surfaceRequiresIntermediate( int32_t width, uint8_t pixelBytes, int32_t rowBytes, SurfaceChannelOrder surfaceChannelOrder )
+bool TextureBase::surfaceRequiresIntermediate( int32_t width, uint8_t pixelBytes, ptrdiff_t rowBytes, SurfaceChannelOrder surfaceChannelOrder )
 {
 	if( width * pixelBytes != rowBytes )
 		return true;

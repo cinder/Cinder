@@ -253,13 +253,15 @@ template<typename TuioType>
 class TypeHandler : public TypeHandlerBase {
 public:
 	//! TODO: Need to figure out about "PastFrameThreshold", got rid of it.
-	TypeHandler() = default;
+	TypeHandler() : mSourceIsCurrent( false ) {}
 	virtual ~TypeHandler() = default;
 
 	//! Handles incoming osc::Messages from the osc::Receiver.
 	void			handleMessage( const osc::Message &message ) override;
 	//! Abstract function that represents calling the function handlers.
 	virtual void	handleFseq( int32_t frame ) = 0;
+	void setSource( const std::string &source );
+	
 	
 protected:
 	typename map<string, vector<TuioType>>::iterator	mCurrentIt;
@@ -267,6 +269,7 @@ protected:
 	vector<int32_t>					mAdded, mUpdated;
 	vector<TuioType>				mRemovedTouches;
 	map<std::string, int32_t>		mSourceFrameNums;
+	bool							mSourceIsCurrent;
 };
 	
 //! Represents a handler with seperated callbacks
@@ -560,20 +563,29 @@ namespace detail {
 ///// TypeHandler templated
 	
 template<typename TuioType>
+void TypeHandler<TuioType>::setSource( const std::string &source )
+{
+	mCurrentIt = mSetOfCurrentTouches.find( source );
+	if( mCurrentIt == mSetOfCurrentTouches.end() ) {
+		auto emplaced = mSetOfCurrentTouches.emplace( move( source ), std::vector<TuioType>() );
+		mCurrentIt = emplaced.first;
+	}
+	mSourceIsCurrent = true;
+}
+	
+template<typename TuioType>
 void TypeHandler<TuioType>::handleMessage( const osc::Message &message )
 {
 	auto messageType = message[0].string();
 	
 	using namespace std;
 	if( messageType == "source" ) {
-		auto source = message[1].string();
-		mCurrentIt = mSetOfCurrentTouches.find( source );
-		if( mCurrentIt == mSetOfCurrentTouches.end() ) {
-			auto emplaced = mSetOfCurrentTouches.emplace( source, std::vector<TuioType>() );
-			mCurrentIt = emplaced.first;
-		}
+		setSource( message[1].string() );
 	}
 	else if( messageType == "set" ) {
+		if( ! mSourceIsCurrent )
+			setSource( message.getSenderIpAddress().to_string() );
+		
 		auto sessionId = message[1].int32();
 		auto &currentSet = mCurrentIt->second;
 		auto currentBegin = begin( currentSet );
@@ -602,6 +614,9 @@ void TypeHandler<TuioType>::handleMessage( const osc::Message &message )
 		}
 	}
 	else if( messageType == "alive" ) {
+		if( ! mSourceIsCurrent )
+			setSource( message.getSenderIpAddress().to_string() );
+		
 		std::vector<int32_t> aliveIds( message.getNumArgs() - 1 );
 		int i = 1;
 		for( auto & aliveId : aliveIds ) {
@@ -621,7 +636,12 @@ void TypeHandler<TuioType>::handleMessage( const osc::Message &message )
 		}
 	}
 	else if( messageType == "fseq" ) {
+		if( ! mSourceIsCurrent )
+			setSource( message.getSenderIpAddress().to_string() );
+		
 		handleFseq( message[1].int32() );
+		
+		mSourceIsCurrent = false;
 	}
 }
 	

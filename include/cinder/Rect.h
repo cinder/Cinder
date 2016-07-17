@@ -69,6 +69,7 @@ class RectT {
 	//! Translates the rectangle so that its center is at \a center
 	void		offsetCenterTo( const Vec2T &center ) { offset( center - getCenter() ); }
 	void		scaleCentered( const Vec2T &scale );
+	RectT		scaledCentered( const Vec2T &scale ) const;
 	void		scaleCentered( T scale );
 	RectT		scaledCentered( T scale ) const;
 	void		scale( T scale );

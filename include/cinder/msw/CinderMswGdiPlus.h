@@ -52,7 +52,7 @@ namespace cinder {
 
 class SurfaceConstraintsGdiPlus : public SurfaceConstraints {
 	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const { return ( alpha ) ? SurfaceChannelOrder::BGRA : SurfaceChannelOrder::BGR; }
-	virtual int32_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { int32_t result = requestedWidth * elementSize * sco.getPixelInc(); result += ( result & 3 ) ? ( 4 - (result&3) ) : 0; return result; }
+	virtual ptrdiff_t			getRowBytes( int32_t requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { size_t result = requestedWidth * elementSize * sco.getPixelInc(); result += ( result & 3 ) ? ( 4 - (result&3) ) : 0; return result; }
 };
 
 } // namespace cinder
