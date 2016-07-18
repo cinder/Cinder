@@ -277,10 +277,15 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	int32_t blockSizeBytes = 16;
 
 	if( ! ( ddsd.ddpfPixelFormat.dwFlags & DDPF_FOURCC ) ) { // does not have valid FOURCC value
+#if ! defined( CINDER_GL_ANGLE )
 		if( ddsd.ddpfPixelFormat.dwFlags & DDPF_RGB ) { // uncompressed RGB data
 			if( ddsd.ddpfPixelFormat.dwFlags & DDPF_ALPHAPIXELS ) { // contains alpha data
 				internalFormat = GL_RGBA8;
+#if defined( CINDER_GL_ES )
+				dataFormat = GL_BGRA_EXT;
+#else
 				dataFormat = GL_BGRA;
+#endif
 				blockSizeBytes = sizeof(uint8_t) * 4;
 				dataType = GL_UNSIGNED_BYTE;
 			}
@@ -294,6 +299,9 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 		else {
 			throw DdsParseExc( "Unsupported image format" );
 		}
+#else // ANGLE doesn't support GL_BGR or GL_BGRA
+		throw DdsParseExc( "Unsupported image format" );
+#endif
 	}
 	else {
 		switch( ddsd.ddpfPixelFormat.dwFourCC ) { 
