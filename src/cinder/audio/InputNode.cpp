@@ -58,6 +58,14 @@ void InputNode::connectInput( const NodeRef &input )
 InputDeviceNode::InputDeviceNode( const DeviceRef &device, const Format &format )
 	: InputNode( format ), mDevice( device ), mLastOverrun( 0 ), mLastUnderrun( 0 )
 {
+	if( ! mDevice ) {
+		string errorMsg = "Empty DeviceRef.";
+		if( ! audio::Device::getDefaultInput() )
+			errorMsg += " Also, no default input Device so perhaps there is no available hardware input.";
+
+		throw AudioDeviceExc( errorMsg );
+	}
+
 	size_t deviceNumChannels = mDevice->getNumInputChannels();
 
 	// If number of channels hasn't been specified, default to 2.

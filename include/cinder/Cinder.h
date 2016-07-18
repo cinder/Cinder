@@ -66,6 +66,7 @@ using std::uint64_t;
 		#endif
 	#else
 		#define CINDER_MSW_DESKTOP
+		#include <sdkddkver.h>
 	#endif
 #elif (defined( linux ) || defined( __linux ) || defined( __linux__ )) && ! defined( __ANDROID__ )
 	#define CINDER_POSIX

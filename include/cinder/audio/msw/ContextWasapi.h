@@ -73,8 +73,8 @@ private:
 
 class ContextWasapi : public Context {
   public:
-	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() ) override;
-	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format()  ) override;
+	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() )	override;
+	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() )	override;
 };
 
 } } } // namespace cinder::audio::msw

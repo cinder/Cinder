@@ -91,6 +91,7 @@ class TargetFileMediaFoundation : public TargetFile {
 	  DWORD						mStreamIndex;
 	  size_t					mSampleSize;
 	  BufferDynamicInterleaved	mBitConverterBuffer;	// only used when bit conversion and interleaving are done in separate steps (ex. 24-bit stereo).
+	  bool						mSamplesWritten = false;
 };
 
 class MediaFoundationInitializer {

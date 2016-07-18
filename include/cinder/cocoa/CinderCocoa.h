@@ -233,7 +233,7 @@ namespace cinder {
 class SurfaceConstraintsCgBitmapContext : public cinder::SurfaceConstraints {
  public:
 	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const;
-	virtual int32_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const;
+	virtual ptrdiff_t			getRowBytes( int32_t requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const;
 };
 //! \endcond
 

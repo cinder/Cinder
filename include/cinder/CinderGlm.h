@@ -37,11 +37,14 @@ namespace cinder {
 using glm::length;
 using glm::length2;
 using glm::normalize;
+using glm::clamp;
 using glm::distance;
 using glm::distance2;
 using glm::dot;
 using glm::cross;
 using glm::mix;
+using glm::smoothstep;
+using glm::step;
 using glm::rotate;
 using glm::translate;
 using glm::inverse;

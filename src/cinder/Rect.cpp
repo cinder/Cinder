@@ -179,6 +179,15 @@ void RectT<T>::scaleCentered( T scale )
 }
 
 template<typename T>
+RectT<T> RectT<T>::scaledCentered( const Vec2T &scale ) const
+{
+	const T halfWidth = getWidth() * scale.x / 2;
+	const T halfHeight = getHeight() * scale.y / 2;
+	const auto center = getCenter();
+	return RectT<T>( center.x - halfWidth, center.y - halfHeight, center.x + halfWidth, center.y + halfHeight );
+}
+
+template<typename T>
 RectT<T> RectT<T>::scaledCentered( T scale ) const
 {
 	const T halfWidth = getWidth() * scale / 2;

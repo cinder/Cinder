@@ -66,6 +66,9 @@ void TargetFile::write( const Buffer *buffer )
 
 void TargetFile::write( const Buffer *buffer, size_t numFrames )
 {
+	if( ! numFrames )
+		return;
+
 	CI_ASSERT_MSG( numFrames <= buffer->getNumFrames(), "numFrames out of bounds" );
 
 	performWrite( buffer, numFrames, 0 );
@@ -73,6 +76,9 @@ void TargetFile::write( const Buffer *buffer, size_t numFrames )
 
 void TargetFile::write( const Buffer *buffer, size_t numFrames, size_t frameOffset )
 {
+	if( ! numFrames )
+		return;
+
 	CI_ASSERT_MSG( numFrames + frameOffset <= buffer->getNumFrames(), "numFrames + frameOffset out of bounds" );
 
 	performWrite( buffer, numFrames, frameOffset );

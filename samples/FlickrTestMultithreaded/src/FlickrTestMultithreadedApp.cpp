@@ -68,11 +68,14 @@ void FlickrTestMTApp::loadImagesThreadFn( gl::ContextRef context )
 	// load images as Textures into our ConcurrentCircularBuffer
 	while( ( ! mShouldQuit ) && ( ! urls.empty() ) ) {
 		try {
+			auto urlSource = loadUrl( urls.back() );
+			auto imageSource = loadImage( urlSource );
+			auto tex = gl::Texture::create( imageSource );
+			
 			// we need to wait on a fence before alerting the primary thread that the Texture is ready
 			auto fence = gl::Sync::create();
-			auto tex = gl::Texture::create( loadImage( loadUrl( urls.back() ) ) );
-			// wait on the fence
 			fence->clientWaitSync();
+			
 			mImages->pushFront( tex );
 			urls.pop_back();
 		}

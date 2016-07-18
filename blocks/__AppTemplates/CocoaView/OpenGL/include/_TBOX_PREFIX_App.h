@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cinder/app/AppCocoaView.h"
+#include "cinder/app/cocoa/AppCocoaView.h"
 
 class _TBOX_PREFIX_App : public cinder::app::AppCocoaView {
   public:

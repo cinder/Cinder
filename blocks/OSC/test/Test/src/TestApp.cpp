@@ -30,6 +30,7 @@ class TestApp : public App {
 	osc::SenderUdp		mSender;
 #else
 	void sendMessageTcp( const osc::Message &message );
+	void cleanup() override;
 	
 	osc::PacketFramingRef mPacketFraming;
 	
@@ -53,12 +54,14 @@ TestApp::TestApp()
 #endif
 	mReceiver( 10000, mPacketFraming ), mSender( 12345, "127.0.0.1", 10000, mPacketFraming )
 #endif
-{	
+{
+	log::manager()->makeLogger<log::LoggerBreakpoint>();
 	mReceiver.bind();
 	mReceiver.listen();
 	mReceiver.setListener( "/app/?",
 	[]( const osc::Message &message ){
 		cout << "Integer: " << message[0].int32() << endl;
+		cout << "Received From: " << message.getSenderIpAddress() << endl;
 	} );
 	mReceiver.setListener( "/app/?",
 	[]( const osc::Message &message ) {
@@ -178,20 +181,28 @@ void TestApp::update()
 		message.append( true );
 		
 		mSender.send( message );
-		
 		mMessage = std::move( message );
 //		cout << mMessage << endl;
-        
+		
         {
 			const char* something = "Something";
 			mMessage2 = osc::Message( "/message2" ) << 3 << 4 << 2.0 << 3.0f << "string literal" << something;
-			cout << "As constructed: " << mMessage2 << endl;
+//			cout << "As constructed: " << mMessage2 << endl;
             mSender.send(mMessage2);
         }
 	}
 	
 	gl::clear();
 }
+
+#if ! TEST_UDP
+void TestApp::cleanup()
+{
+	mSender.shutdown();
+	mReceiver.close();
+	mSender.close();
+}
+#endif
 
 #if defined( CINDER_MSW )
 CINDER_APP(TestApp, RendererGl, [](App::Settings *settings) { settings->setConsoleWindowEnabled(); })
