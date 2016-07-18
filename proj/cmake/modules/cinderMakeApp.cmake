@@ -2,7 +2,7 @@ include( CMakeParseArguments )
 
 function( ci_make_app )
 	set( oneValueArgs APP_NAME CINDER_PATH )
-	set( multiValueArgs SOURCES INCLUDES RESOURCES )
+  set( multiValueArgs SOURCES INCLUDES RESOURCES LIBRARIES)
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
@@ -58,7 +58,7 @@ function( ci_make_app )
 
 	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} ${ARG_RESOURCES} )
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
-	target_link_libraries( ${ARG_APP_NAME} cinder )
+	target_link_libraries( ${ARG_APP_NAME} cinder ${ARG_LIBRARIES} )
 
 	if( CINDER_MAC )
 		# set bundle info.plist properties
