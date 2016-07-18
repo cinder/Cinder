@@ -2,7 +2,7 @@ include( CMakeParseArguments )
 
 function( ci_make_app )
 	set( oneValueArgs APP_NAME CINDER_PATH )
-  set( multiValueArgs SOURCES INCLUDES RESOURCES LIBRARIES)
+	set( multiValueArgs SOURCES INCLUDES RESOURCES LIBRARIES )
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
