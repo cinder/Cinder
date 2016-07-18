@@ -51,6 +51,6 @@ list( APPEND BOX2D_SOURCES
 	${BOX2D_SOURCE_PATH}/Box2D/Rope/b2Rope.cpp
 )
 
-add_library( Cinder-Box2D ${BOX2D_SOURCES} )
+add_library( Box2D ${BOX2D_SOURCES} )
 
-target_include_directories( Cinder-Box2D PUBLIC "${BOX2D_SOURCE_PATH}" )
+target_include_directories( Box2D PUBLIC "${BOX2D_SOURCE_PATH}" )
