@@ -8,12 +8,14 @@ option( BUILD_SHARED_LIBS "Build Cinder as a shared library. " OFF )
 # Set default build type to Debug
 if( NOT CMAKE_BUILD_TYPE )
 	if( CINDER_VERBOSE )
-		message( "CMAKE_BUILD_TYPE not specified, defaulting to Debug" )
+		message( STATUS "CMAKE_BUILD_TYPE not specified, defaulting to Debug" )
 	endif()
 	set( CMAKE_BUILD_TYPE Debug CACHE STRING
 		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel. "
 		FORCE
 	)
+elseif( CINDER_VERBOSE )
+	message( STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}" )
 endif()
 
 # If there's a target specified, try to build for that. Otherwise, build based on the current host OS.
@@ -59,7 +61,7 @@ set( CINDER_TARGET_GL ${CINDER_TARGET_GL_DEFAULT} CACHE STRING "Target GL for th
 
 if( CINDER_TARGET_GL )
 	if( CINDER_VERBOSE )
-		message( "CINDER_TARGET_GL: ${CINDER_TARGET_GL}" )
+		message( STATUS "CINDER_TARGET_GL: ${CINDER_TARGET_GL}" )
 	endif()
 
 	string( TOLOWER "${CINDER_TARGET_GL}" CINDER_TARGET_GL_LOWER )
