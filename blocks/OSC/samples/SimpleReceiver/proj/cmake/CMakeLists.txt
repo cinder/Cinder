@@ -13,3 +13,7 @@ ci_make_app(
 	CINDER_PATH ${CINDER_PATH}
 	BLOCKS		OSC
 )
+
+# FIXME: why aren't these different when building out of source?
+message( "CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}" )
+message( "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}" )
