@@ -16,12 +16,17 @@ function( ci_make_app )
 
 	include( "${ARG_CINDER_PATH}/proj/cmake/configure.cmake" )
 
-	# Unless already set by the user, make sure runtime output directory is relative to the project folder
-	# so that cinder's assets system works.
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
-		set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
-		# this shouldn't be a warning, but this is currently the only way to see the message in CLion
-		# message( WARNING "set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+		if( DEFINED ENV{CLION_IDE} )
+			# By default, CLion places its binary outputs in a global cache location, where assets can't be found in the current
+			# folder heirarchy. So we override that, unless the user has specified a custom binary output dir (then they're on their own).
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE} )
+			# message( WARNING "CLion detected, set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+		else()
+			# Append the build type to the output dir
+			set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
+			message( STATUS "set CMAKE_RUNTIME_OUTPUT_DIRECTORY to: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" )
+		endif()
 	endif()
 
 	if( CINDER_VERBOSE )
