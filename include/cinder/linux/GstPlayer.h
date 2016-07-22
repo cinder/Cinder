@@ -25,6 +25,7 @@
 
 	#if defined( CINDER_GL_ES )
 		#undef GST_GL_HAVE_OPENGL
+		#undef GST_GL_HAVE_GLES2
 		#undef GST_GL_HAVE_PLATFORM_GLX
 	#else // Desktop
 		#undef GST_GL_HAVE_GLES2
