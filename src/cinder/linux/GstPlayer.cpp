@@ -916,6 +916,7 @@ bool GstPlayer::setPipelineState( GstState targetState )
 	
 	// Unblock the streaming thread for executing state change.
 	unblockStreamingThread();
+
 	GstStateChangeReturn stateChangeResult = gst_element_set_state( mGstData.pipeline, mGstData.targetState );
 	g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name ( targetState ) );
 
@@ -1154,12 +1155,12 @@ void GstPlayer::processNewSample( GstSample* sample )
 
 		mNewFrame = true;
 
-		mMutex.unlock();
-
 		// Finished working with the sample - unref-it.
 		gst_sample_unref( sample );
 		sample = nullptr;
 	}
+
+	mMutex.unlock();
 
 	// Pause the streaming thread until the new Cinder texture is created.
 	std::unique_lock<std::mutex> uniqueLock( mMutex );
