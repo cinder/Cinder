@@ -35,6 +35,10 @@ function( ci_make_app )
 		message( STATUS "CINDER_LIB_DIRECTORY: ${CINDER_LIB_DIRECTORY}" )
 	endif()
 
+	if( cinder_DIR )
+		unset( cinder_DIR CACHE )
+	endif()
+
 	# pull in cinder's exported configuration
 	if( NOT TARGET cinder )
 		find_package( cinder REQUIRED PATHS
