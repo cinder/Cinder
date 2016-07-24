@@ -102,7 +102,7 @@ struct GstData {
 	GstVideoInfo 				videoInfo; // For retrieving video info.
 	GstElement* 				pipeline 		= nullptr; 
 	GstElement* 				appSink 		= nullptr; 
-	GstElement* 				videoSink 		= nullptr; 		
+	GstElement* 				videoBin 		= nullptr; 		
 #if defined( CINDER_GST_HAS_GL )
 	GstGLContext* 				context 		= nullptr;
 	GstGLDisplay* 				display 		= nullptr;

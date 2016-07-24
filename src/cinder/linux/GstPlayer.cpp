@@ -387,7 +387,7 @@ void GstPlayer::resetPipeline()
 	
 	if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
-		mGstData.videoSink = nullptr;
+		mGstData.videoBin = nullptr;
 		mGstData.context = nullptr;
 		mGstData.display = nullptr;
 		mGstData.glupload = nullptr;
@@ -515,8 +515,8 @@ void GstPlayer::constructPipeline()
 		return;
 	}
 
-	mGstData.videoSink 	= gst_bin_new( "cinder-vsink" );
-	if( ! mGstData.videoSink ) g_printerr( "Failed to create video sink bin!\n" );
+	mGstData.videoBin 	= gst_bin_new( "cinder-vbin" );
+	if( ! mGstData.videoBin ) g_printerr( "Failed to create video bin!\n" );
 
 	mGstData.appSink 	= gst_element_factory_make( "appsink", "videosink" );
 	if( ! mGstData.appSink ) {
@@ -560,22 +560,22 @@ void GstPlayer::constructPipeline()
 		if( mGstData.rawCapsFilter ) g_object_set( G_OBJECT( mGstData.rawCapsFilter ), "caps", gst_caps_from_string( "video/x-raw" ), nullptr );
 		else g_printerr( "Failed to create raw caps filter element!\n" );
 
-		gst_bin_add_many( GST_BIN( mGstData.videoSink ),  mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert, mGstData.appSink, nullptr );
+		gst_bin_add_many( GST_BIN( mGstData.videoBin ),  mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert, mGstData.appSink, nullptr );
 
 		if( ! gst_element_link_many( mGstData.rawCapsFilter, mGstData.glupload, mGstData.glcolorconvert,  mGstData.appSink, nullptr ) ) {
 			g_printerr( "Failed to link video elements...!\n" );
 		}
 
 		pad = gst_element_get_static_pad( mGstData.rawCapsFilter, "sink" );
-		gst_element_add_pad( mGstData.videoSink, gst_ghost_pad_new( "sink", pad ) );
+		gst_element_add_pad( mGstData.videoBin, gst_ghost_pad_new( "sink", pad ) );
 
 		mGstData.bufferQueue = g_async_queue_new();
 #endif
     }
 	else{
-		gst_bin_add( GST_BIN( mGstData.videoSink ), mGstData.appSink );
+		gst_bin_add( GST_BIN( mGstData.videoBin ), mGstData.appSink );
 		pad = gst_element_get_static_pad( mGstData.appSink, "sink" );
-	 	gst_element_add_pad( mGstData.videoSink, gst_ghost_pad_new( "sink", pad ) );
+	 	gst_element_add_pad( mGstData.videoBin, gst_ghost_pad_new( "sink", pad ) );
 	}
 
 	if( pad ) {
@@ -583,7 +583,7 @@ void GstPlayer::constructPipeline()
 		pad = nullptr;
 	}
 
-	g_object_set( G_OBJECT( mGstData.pipeline ), "video-sink", mGstData.videoSink, nullptr );
+	g_object_set( G_OBJECT( mGstData.pipeline ), "video-sink", mGstData.videoBin, nullptr );
 
 	addBusWatch( mGstData.pipeline );
 }
