@@ -979,7 +979,7 @@ void GstPlayer::createTextureFromID()
 		old = (GstBuffer*)g_async_queue_try_pop( mGstData.bufferQueue );
 	}
 
-	auto deleter = [ old ] ( ci::gl::Texture* texture ) mutable { 
+	auto deleter = [ this, old ] ( ci::gl::Texture* texture ) mutable { 
 		if( old ) gst_buffer_unref( old );
 		old = nullptr;
 		delete texture;
@@ -1079,6 +1079,7 @@ void GstPlayer::getVideoInfo( const GstVideoInfo& videoInfo )
 
 void GstPlayer::processNewSample( GstSample* sample )
 {
+	GstBuffer* newBuffer = nullptr;
 	if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
 		// Keep only the last buffer around.
@@ -1092,7 +1093,7 @@ void GstPlayer::processNewSample( GstSample* sample )
 			}
 		}
 		// Pull the memory buffer from the sample.
-		GstBuffer* newBuffer = gst_sample_get_buffer( sample );
+		newBuffer = gst_sample_get_buffer( sample );
 
 		// Save the buffer for avoiding override on next sample.
 		// The incoming buffer is owened and managed by GStreamer.
@@ -1126,7 +1127,7 @@ void GstPlayer::processNewSample( GstSample* sample )
 	else {
 		mMutex.lock();
 
-		GstBuffer* newBuffer = gst_sample_get_buffer( sample );
+	 	newBuffer = gst_sample_get_buffer( sample );
 		gst_buffer_map( newBuffer, &mGstData.memoryMapInfo, GST_MAP_READ ); // Map the buffer for reading the data.
 
 		// We have pre-rolled so query info and allocate buffers if we have a new video.
@@ -1155,12 +1156,12 @@ void GstPlayer::processNewSample( GstSample* sample )
 
 		mNewFrame = true;
 
+		mMutex.unlock();
+
 		// Finished working with the sample - unref-it.
 		gst_sample_unref( sample );
 		sample = nullptr;
 	}
-
-	mMutex.unlock();
 
 	// Pause the streaming thread until the new Cinder texture is created.
 	std::unique_lock<std::mutex> uniqueLock( mMutex );
