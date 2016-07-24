@@ -1891,7 +1891,7 @@ void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	normals.resize( numSegments * numRings );
 	texCoords.resize( numSegments * numRings );
 	colors.resize( numSegments * numRings );
-	indices.resize( numSegments * numRings * 6 );
+	indices.resize( (numSegments - 1) * (numRings - 1) * 6 );
 
 	float ringIncr = 1.0f / (float)( numRings - 1 );
 	float segIncr = 1.0f / (float)( numSegments - 1 );
