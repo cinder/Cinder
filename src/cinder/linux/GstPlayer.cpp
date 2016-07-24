@@ -20,8 +20,11 @@
 
 #include "cinder/app/AppBase.h"
 #include "cinder/gl/Environment.h"
+#include <chrono>
 
 namespace gst { namespace video {
+
+using namespace std::chrono_literals;
 
 static bool 		sUseGstGl = false;
 static const int 	sEnableAsyncStateChange = false;
@@ -984,7 +987,6 @@ void GstPlayer::createTextureFromID()
 		old = nullptr;
 		delete texture;
 	};
-
 	mVideoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, textureID, mGstData.width, mGstData.height, true, deleter );
 	if( mVideoTexture ) {
 		mVideoTexture->setTopDown();
@@ -1165,7 +1167,10 @@ void GstPlayer::processNewSample( GstSample* sample )
 
 	// Pause the streaming thread until the new Cinder texture is created.
 	std::unique_lock<std::mutex> uniqueLock( mMutex );
-	mStreamingThreadCV.wait( uniqueLock, [ this ]{ return mUnblockStreamingThread.load(); } );
+	auto now = std::chrono::system_clock::now();
+	mStreamingThreadCV.wait_until( uniqueLock, now + 100ms, [ this ]{ return mUnblockStreamingThread.load(); } );
+
+	mUnblockStreamingThread = false;
 }
 
 void GstPlayer::updateTextureID( GstBuffer* newBuffer )
@@ -1176,7 +1181,6 @@ void GstPlayer::updateTextureID( GstBuffer* newBuffer )
 
 	// Save the texture ID.
 	mGstTextureID = *(guint*)mGstData.memoryMapInfo.data;
-
 	// Unmap the memory. 
 	gst_buffer_unmap( newBuffer, &mGstData.memoryMapInfo );
 #endif
