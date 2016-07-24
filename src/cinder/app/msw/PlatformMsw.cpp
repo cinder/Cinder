@@ -52,8 +52,8 @@ PlatformMsw::PlatformMsw()
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileTinyExr::registerSelf();
 	ImageTargetFileTinyExr::registerSelf();
-    ImageSourceFileStbImage::registerSelf();
-    ImageTargetFileStbImage::registerSelf();
+	ImageSourceFileStbImage::registerSelf();
+	ImageTargetFileStbImage::registerSelf();
 }
 
 DataSourceRef PlatformMsw::loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType )
