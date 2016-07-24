@@ -946,11 +946,11 @@ class WireRect : public WireSource {
   	WireRect();
   	WireRect( const Rectf &r );
 
-  	WireRect& rect( const Rectf &r );
+  	WireRect& 			rect( const Rectf &r );
 
-  	size_t getNumVertices() const override { return 4; }
-  	void loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-  	WireRect* clone() const override { return new WireRect( *this ); };
+  	size_t 				getNumVertices() const override { return 4; }
+  	void 				loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+  	WireRect* 			clone() const override { return new WireRect( *this ); };
 
   protected:
   	std::array<vec2, 4> mPositions;
