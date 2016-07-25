@@ -36,7 +36,7 @@ class GstPlayerTestApp : public App {
 	void testPlayPause();
 	void toggleVideoPlayback();
 
-	void testCurrentTestCase();
+	void testCurrentCase();
 
 	gl::TextureRef				mFrameTexture;
 	qtime::MovieGlRef			mMovie;
@@ -67,7 +67,7 @@ void GstPlayerTestApp::setup()
 	mTimeLastPlayPauseTrigger = mTriggerTimer.getSeconds();
 }
 
-void GstPlayerTestApp::testCurrentTestCase() 
+void GstPlayerTestApp::testCurrentCase() 
 {
 	switch( mCurrentTestCase ) {
 		case TEST_PLAY_PAUSE:
