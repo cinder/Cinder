@@ -48,7 +48,7 @@ void RotatingCubeApp::setup()
 
 	try {
 		mBatch = gl::Batch::create( geom::Cube(), mGlsl );
-		CI_LOG_I( "Creaeted batch" );
+		CI_LOG_I( "Created batch" );
 	}
 	catch( const std::exception& e ) {
 		CI_LOG_E( "Shader Error: " << e.what() );
