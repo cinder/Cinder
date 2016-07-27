@@ -923,14 +923,13 @@ bool GstPlayer::setPipelineState( GstState targetState )
 	GstStateChangeReturn stateChangeResult = gst_element_set_state( mGstData.pipeline, mGstData.targetState );
 	g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name ( targetState ) );
 
-	bool success = checkStateChange( stateChangeResult );
 	if( ! sEnableAsyncStateChange && stateChangeResult == GST_STATE_CHANGE_ASYNC ) {
-		gst_element_get_state( mGstData.pipeline, &current, &pending, GST_CLOCK_TIME_NONE );
-		mGstData.updateState( current );
-		g_print( " Passed blocking state change to : %s with pending : %s\n", gst_element_state_get_name( current ), gst_element_state_get_name ( targetState ) );
-	}
-	
-	return success;
+        g_print( " Blocking until pipeline state changes from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name ( targetState ) );
+        stateChangeResult = gst_element_get_state( mGstData.pipeline, &current, &pending, GST_CLOCK_TIME_NONE );
+        mGstData.updateState( current );
+    }
+
+	return checkStateChange( stateChangeResult );
 }
 
 bool GstPlayer::checkStateChange( GstStateChangeReturn stateChangeResult )
