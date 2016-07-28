@@ -908,27 +908,28 @@ GstStateChangeReturn GstPlayer::getStateChange()
 
 bool GstPlayer::setPipelineState( GstState targetState )
 {
-	if( ! mGstData.pipeline ) return false;
+	if( ! mGstData.pipeline )
+		return false;
 	
 	GstState current, pending;
 	gst_element_get_state( mGstData.pipeline, &current, &pending, 0 );
-
-	if( current == targetState || pending == targetState ) return true; // Avoid unnecessary state changes.
-
+	
+	if( current == targetState || pending == targetState )
+		return true; // Avoid unnecessary state changes.
+	
 	mGstData.targetState = targetState;
 	
 	// Unblock the streaming thread for executing state change.
 	unblockStreamingThread();
-
+	
 	GstStateChangeReturn stateChangeResult = gst_element_set_state( mGstData.pipeline, mGstData.targetState );
-	g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name ( targetState ) );
-
+	g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ));
+	
 	if( ! sEnableAsyncStateChange && stateChangeResult == GST_STATE_CHANGE_ASYNC ) {
-        g_print( " Blocking until pipeline state changes from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name ( targetState ) );
-        stateChangeResult = gst_element_get_state( mGstData.pipeline, &current, &pending, GST_CLOCK_TIME_NONE );
-        mGstData.updateState( current );
-    }
-
+		g_print( " Blocking until pipeline state changes from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ));
+		stateChangeResult = gst_element_get_state( mGstData.pipeline, &current, &pending, GST_CLOCK_TIME_NONE);
+	}
+	
 	return checkStateChange( stateChangeResult );
 }
 
