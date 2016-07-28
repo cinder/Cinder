@@ -1612,8 +1612,8 @@
 		277C2CEC1366632B00178A29 /* Matrix22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix22.h; sourceTree = "<group>"; };
 		277C2CED1366632B00178A29 /* Matrix33.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix33.h; sourceTree = "<group>"; };
 		277C2CEE1366632B00178A29 /* Matrix44.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Matrix44.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		27C100CF1BD16D4800AF387F /* libcinder-iphone-sim_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		27C1FF771BD0AE3400AF387F /* libcinder-iphone_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		27C100CF1BD16D4800AF387F /* libcinder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		27C1FF771BD0AE3400AF387F /* libcinder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
 		434708D81267EE4300AA7349 /* Blend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blend.cpp; path = ip/Blend.cpp; sourceTree = "<group>"; };
 		43C4323F1450A8DA0095B260 /* CinderMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CinderMath.cpp; sourceTree = "<group>"; };
@@ -1637,7 +1637,7 @@
 		C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureImplAvFoundation.mm; sourceTree = "<group>"; };
 		C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplAvFoundation.h; sourceTree = "<group>"; };
-		D2AAC07E0554694100DB518D /* libcinder_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2AAC07E0554694100DB518D /* libcinder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EAC3D1A81011F2E700FFBC9E /* Serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serial.h; sourceTree = "<group>"; };
 		EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Serial.cpp; sourceTree = "<group>"; };
@@ -2247,9 +2247,9 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2AAC07E0554694100DB518D /* libcinder_d.a */,
-				27C1FF771BD0AE3400AF387F /* libcinder-iphone_d.a */,
-				27C100CF1BD16D4800AF387F /* libcinder-iphone-sim_d.a */,
+				D2AAC07E0554694100DB518D /* libcinder.a */,
+				27C1FF771BD0AE3400AF387F /* libcinder.a */,
+				27C100CF1BD16D4800AF387F /* libcinder.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3248,7 +3248,7 @@
 			);
 			name = cinder_iphone;
 			productName = cinder;
-			productReference = 27C1FF771BD0AE3400AF387F /* libcinder-iphone_d.a */;
+			productReference = 27C1FF771BD0AE3400AF387F /* libcinder.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		27C1FF781BD16D4800AF387F /* cinder_iphone_sim */ = {
@@ -3265,7 +3265,7 @@
 			);
 			name = cinder_iphone_sim;
 			productName = cinder;
-			productReference = 27C100CF1BD16D4800AF387F /* libcinder-iphone-sim_d.a */;
+			productReference = 27C100CF1BD16D4800AF387F /* libcinder.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D2AAC07D0554694100DB518D /* cinder */ = {
@@ -3282,7 +3282,7 @@
 			);
 			name = cinder;
 			productName = cinder;
-			productReference = D2AAC07E0554694100DB518D /* libcinder_d.a */;
+			productReference = D2AAC07E0554694100DB518D /* libcinder.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -3934,7 +3934,8 @@
 					../lib/macosx/libboost_system.a,
 				);
 				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a";
-				PRODUCT_NAME = cinder_d;
+				PRODUCT_NAME = cinder;
+				SYMROOT = "../lib/macosx/$(CONFIGURATION)";
 			};
 			name = Debug;
 		};
@@ -3966,6 +3967,7 @@
 				);
 				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a";
 				PRODUCT_NAME = cinder;
+				SYMROOT = "../lib/macosx/$(CONFIGURATION)";
 			};
 			name = Release;
 		};
@@ -4004,7 +4006,6 @@
 				);
 				OBJROOT = build/;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				SYMROOT = ../lib;
 				USER_HEADER_SEARCH_PATHS = "../include ../include/json ../src/oggvorbis/vorbis ../src/r8brain";
 			};
 			name = Debug;
@@ -4044,7 +4045,6 @@
 				);
 				OBJROOT = build/;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				SYMROOT = ../lib;
 				USER_HEADER_SEARCH_PATHS = "../include ../src/oggvorbis/vorbis ../src/r8brain";
 			};
 			name = Release;
@@ -4070,9 +4070,10 @@
 					"../lib/ios-sim/libboost_filesystem.a",
 				);
 				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a";
-				PRODUCT_NAME = "cinder-iphone-sim_d";
+				PRODUCT_NAME = cinder;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SYMROOT = "../lib/ios-sim/$(CONFIGURATION)";
 			};
 			name = Debug;
 		};
@@ -4100,9 +4101,10 @@
 					"../lib/ios-sim/libboost_filesystem.a",
 				);
 				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a";
-				PRODUCT_NAME = "cinder-iphone-sim";
+				PRODUCT_NAME = cinder;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SYMROOT = "../lib/ios-sim/$(CONFIGURATION)";
 			};
 			name = Release;
 		};
@@ -4126,8 +4128,9 @@
 					../lib/ios/libboost_system.a,
 				);
 				PRELINK_LIBS = "../lib/ios/libboost_filesystem.a ../lib/ios/libboost_system.a";
-				PRODUCT_NAME = "cinder-iphone_d";
+				PRODUCT_NAME = cinder;
 				SDKROOT = iphoneos;
+				SYMROOT = "../lib/ios/$(CONFIGURATION)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 armv7";
 			};
@@ -4157,8 +4160,9 @@
 					../lib/ios/libboost_system.a,
 				);
 				PRELINK_LIBS = "../lib/ios/libboost_filesystem.a ../lib/ios/libboost_system.a";
-				PRODUCT_NAME = "cinder-iphone";
+				PRODUCT_NAME = cinder;
 				SDKROOT = iphoneos;
+				SYMROOT = "../lib/ios/$(CONFIGURATION)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 armv7";
 			};
