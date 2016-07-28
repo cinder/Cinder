@@ -36,15 +36,26 @@ class GstPlayerTestApp : public App {
 	void testPlayPause();
 	void toggleVideoPlayback();
 
+	void testSeek();
+	void newSeek();
+
 	void testCurrentCase();
 
 	gl::TextureRef				mFrameTexture;
 	qtime::MovieGlRef			mMovie;
 	Timer						mTriggerTimer;
+
+	// Play / Pause
 	double 						mTriggerPlayPauseRate = 4.0;
 	bool 						mRandomizePlayPauseRate = true;
 	double 						mTimeLastPlayPauseTrigger;
-	TestCase					mCurrentTestCase = TEST_PLAY_PAUSE;
+
+	// Seek
+	double 						mTriggerSeekRate = 4.0;
+	bool						mRandomizeSeekRate = true;
+	double 						mTimeLastSeekTrigger;
+
+	TestCase					mCurrentTestCase = TEST_SEEKING;
 };
 
 void GstPlayerTestApp::setup()
@@ -73,6 +84,11 @@ void GstPlayerTestApp::testCurrentCase()
 		case TEST_PLAY_PAUSE:
 		{
 			testPlayPause();
+			break;
+		}
+		case TEST_SEEKING:
+		{
+			testSeek();
 			break;
 		}
 		default:
@@ -111,8 +127,31 @@ void GstPlayerTestApp::testPlayPause()
 	if( now - mTimeLastPlayPauseTrigger >= mTriggerPlayPauseRate ) {
 		toggleVideoPlayback();
 		mTimeLastPlayPauseTrigger = now;
-		if( mRandomizePlayPauseRate ) mTriggerPlayPauseRate = randFloat( .5f, 1.0f );
+		if( mRandomizePlayPauseRate ) mTriggerPlayPauseRate = randFloat( .1f, .4f );
 	}
+}
+
+void GstPlayerTestApp::testSeek()
+{
+	auto now = mTriggerTimer.getSeconds();
+	if( now - mTimeLastSeekTrigger >= mTriggerSeekRate ) {
+		newSeek();
+		mTimeLastSeekTrigger = now;
+		if( mRandomizeSeekRate ) mTriggerSeekRate = randFloat( .1f, .4f );
+	}
+}
+
+void GstPlayerTestApp::newSeek()
+{
+	if( ! mMovie ) return;
+
+	CI_LOG_I( "---------- NEW SEEK START ----------" );
+	CI_LOG_I( "CURRENT POS : " << mMovie->getCurrentTime() );
+	auto videoDuration = mMovie->getDuration();
+	auto jumpTo = randFloat( 0.0f, videoDuration );
+	CI_LOG_I( "NEW SEEK JUMP TO : " << jumpTo );
+	mMovie->seekToTime( jumpTo );
+	CI_LOG_I( "---------- NEW SEEK END ----------" );
 }
 
 void GstPlayerTestApp::update()
