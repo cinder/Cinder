@@ -2,7 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "Osc.h"
+#include "cinder/osc/Osc.h"
 
 #define USE_UDP 1
 
