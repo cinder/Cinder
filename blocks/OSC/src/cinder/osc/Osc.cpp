@@ -1000,13 +1000,13 @@ void SenderUdp::closeImpl()
 ////////////////////////////////////////////////////////////////////////////////////////
 //// SenderTcp
 
-SenderTcp::SenderTcp( uint16_t localPort, const string &destinationHost, uint16_t destinationPort, PacketFramingRef packetFraming, const protocol &protocol, io_service &service )
+SenderTcp::SenderTcp( uint16_t localPort, const string &destinationHost, uint16_t destinationPort, const protocol &protocol, io_service &service, PacketFramingRef packetFraming )
 : SenderBase( packetFraming ), mSocket( new tcp::socket( service ) ), mLocalEndpoint( protocol, localPort ),
 	mRemoteEndpoint( tcp::endpoint( address::from_string( destinationHost ), destinationPort ) ), mIsConnected( false )
 {
 }
 	
-SenderTcp::SenderTcp( uint16_t localPort, const protocol::endpoint &destination, PacketFramingRef packetFraming, const protocol &protocol, io_service &service )
+SenderTcp::SenderTcp( uint16_t localPort, const protocol::endpoint &destination, const protocol &protocol, io_service &service, PacketFramingRef packetFraming )
 : SenderBase( packetFraming ), mSocket( new tcp::socket( service ) ), mLocalEndpoint( protocol, localPort ),
 	mRemoteEndpoint( destination ), mIsConnected( false )
 {
@@ -1476,13 +1476,13 @@ void ReceiverTcp::Connection::read()
 	});
 }
 
-ReceiverTcp::ReceiverTcp( uint16_t port, PacketFramingRef packetFraming, const protocol &protocol, asio::io_service &service )
+ReceiverTcp::ReceiverTcp( uint16_t port, const protocol &protocol, asio::io_service &service, PacketFramingRef packetFraming )
 : ReceiverBase( packetFraming ), mAcceptor( new tcp::acceptor( service ) ), mLocalEndpoint( protocol, port ),
 	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 }
 
-ReceiverTcp::ReceiverTcp( const protocol::endpoint &localEndpoint, PacketFramingRef packetFraming, asio::io_service &service )
+ReceiverTcp::ReceiverTcp( const protocol::endpoint &localEndpoint, asio::io_service &service, PacketFramingRef packetFraming )
 : ReceiverBase( packetFraming ), mAcceptor( new tcp::acceptor( service ) ), mLocalEndpoint( localEndpoint ),
 	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {

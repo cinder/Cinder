@@ -6,11 +6,17 @@
 #include "cinder/Timeline.h"
 #include "cinder/osc/Osc.h"
 
-#define USE_UDP 1
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+#define USE_UDP 1
+
+#if USE_UDP
+using Receiver = osc::ReceiverUdp;
+#else
+using Receiver = osc::ReceiverTcp;
+#endif
 
 class SimpleReceiverApp : public App {
   public:
@@ -22,11 +28,7 @@ class SimpleReceiverApp : public App {
 	vec2	mCurrentSquarePos;
 	bool	mMouseDown = false;
 	
-#if USE_UDP
-	osc::ReceiverUdp mReceiver;
-#else
-	osc::ReceiverTcp mReceiver;
-#endif
+	Receiver mReceiver;
 };
 
 SimpleReceiverApp::SimpleReceiverApp()
