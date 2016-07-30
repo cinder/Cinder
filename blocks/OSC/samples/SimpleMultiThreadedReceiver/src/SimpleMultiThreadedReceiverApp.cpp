@@ -38,7 +38,11 @@ public:
 
 SimpleMultiThreadedReceiverApp::SimpleMultiThreadedReceiverApp()
 : mIoService( new asio::io_service ), mWork( new asio::io_service::work( *mIoService ) ),
-	mReceiver( 10001 )
+#if USE_UDP
+	mReceiver( 10001, osc::ReceiverUdp::protocol::v4(), *mIoService )
+#else
+    mReceiver( 10001, nullptr, osc::ReceiverTcp::protocol::v4(), *mIoService )
+#endif
 {
 }
 
