@@ -2,7 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/System.h"
 #include "cinder/Rand.h"
-#include "Tuio.h"
+#include "cinder/tuio/Tuio.h"
 
 using namespace ci;
 using namespace ci::app;

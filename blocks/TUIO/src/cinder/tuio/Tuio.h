@@ -28,7 +28,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"
-#include "Osc.h"
+#include "cinder/osc/Osc.h"
 #include "cinder/Log.h"
 
 namespace cinder { namespace tuio {
