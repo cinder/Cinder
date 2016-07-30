@@ -6,11 +6,20 @@
 
 #include "cinder/osc/Osc.h"
 
-#define USE_UDP 1
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+#define USE_UDP 0
+
+#if USE_UDP
+using Sender = osc::SenderUdp;
+using protocol = asio::ip::udp;
+#else
+using Sender = osc::SenderTcp;
+using protocol = asio::ip::tcp;
+#endif
+
 
 const std::string destinationHost = "127.0.0.1";
 const uint16_t destinationPort = 10001;
@@ -32,20 +41,12 @@ public:
 	std::shared_ptr<asio::io_service::work>	mWork;
 	std::thread								mThread;
 	
-#if USE_UDP
-	osc::SenderUdp mSender;
-#else
-	osc::SenderTcp mSender;
-#endif
+	Sender mSender;
 };
 
 SimpleMultiThreadedSenderApp::SimpleMultiThreadedSenderApp()
 : mIoService( new asio::io_service ), mWork( new asio::io_service::work( *mIoService ) ),
-#if USE_UDP
-	mSender( 10000, destinationHost, destinationPort, osc::SenderUdp::protocol::v4(), *mIoService )
-#else
-    mSender( 10000, destinationHost, destinationPort, nullptr, osc::SenderTcp::protocol::v4(), *mIoService )
-#endif
+	mSender( 10000, destinationHost, destinationPort, protocol::v4(), *mIoService )
 {
 }
 

@@ -4,8 +4,6 @@
 
 #include "cinder/osc/Osc.h"
 
-#define USE_UDP 1
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -26,8 +24,8 @@ public:
 	
 	ivec2 mCurrentMousePositon;
 
-	osc::UdpSocketRef mSocket;
-	osc::SenderUdp mSender;
+	osc::UdpSocketRef	mSocket;
+	osc::SenderUdp		mSender;
 };
 
 BroadcastSenderApp::BroadcastSenderApp()

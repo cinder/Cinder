@@ -565,18 +565,18 @@ class SenderTcp : public SenderBase {
 	SenderTcp( uint16_t localPort,
 			   const std::string &destinationHost,
 			   uint16_t destinationPort,
-			   PacketFramingRef packetFraming = nullptr,
 			   const protocol &protocol = protocol::v4(),
-			   asio::io_service &service = ci::app::App::get()->io_service() );
+			   asio::io_service &service = ci::app::App::get()->io_service(),
+			   PacketFramingRef packetFraming = nullptr );
 	//! Constructs a Sender (called a \a server in the OSC spec) using TCP as transport, whose local endpoint is
 	//! defined by \a localPort and \a protocol, which defaults to v4, and remote endpoint is defined by \a
 	//! destination and PacketFraming shared_ptr \a packetFraming, which defaults to null. Takes an optional
 	//! io_service to construct the socket from.
 	SenderTcp( uint16_t localPort,
 			   const protocol::endpoint &destination,
-			   PacketFramingRef packetFraming = nullptr,
 			   const protocol &protocol = protocol::v4(),
-			   asio::io_service &service = ci::app::App::get()->io_service() );
+			   asio::io_service &service = ci::app::App::get()->io_service(),
+			   PacketFramingRef packetFraming = nullptr );
 	//! Constructs a Sender (called a \a server in the OSC spec) using TCP as transport, with an already created
 	//! tcp::socket shared_ptr \a socket, and remote endpoint is defined by \a destination and PacketFraming
 	//! shared_ptr \a packetFraming, which defaults to null. This constructor is good for using already constructed
@@ -779,15 +779,15 @@ class ReceiverTcp : public ReceiverBase {
 	//! is defined by \a localPort and \a protocol, which defaults to v4, and PacketFraming shared_ptr \a packetFraming,
 	//! which defaults to null. Takes an optional io_service to construct the socket from.
 	ReceiverTcp( uint16_t port,
-				 PacketFramingRef packetFraming = nullptr,
 				 const protocol &protocol = protocol::v4(),
-				 asio::io_service &service = ci::app::App::get()->io_service() );
+				 asio::io_service &service = ci::app::App::get()->io_service(),
+				 PacketFramingRef packetFraming = nullptr );
 	//! Constructs a Receiver (called a \a client in the OSC spec) using TCP for transport, whose local endpoint
 	//! is defined by \a localEndpoint and PacketFraming shared_ptr \a packetFraming, which defaults to null. Takes
 	//! an optional io_service to construct the socket from.
 	ReceiverTcp( const protocol::endpoint &localEndpoint,
-				 PacketFramingRef packetFraming = nullptr,
-			 	 asio::io_service &service = ci::app::App::get()->io_service() );
+				 asio::io_service &service = ci::app::App::get()->io_service(),
+				 PacketFramingRef packetFraming = nullptr );
 	//! Constructs a Receiver (called a \a client in the OSC spec) using TCP for transport, from the already
 	//! constructed tcp::acceptor shared_ptr \a acceptor and PacketFraming shared_ptr \a packetFraming, which
 	//! defaults to null. Use this for extra configuration.
