@@ -915,21 +915,6 @@ ByteBufferRef Bundle::getSharedBuffer() const
 ////////////////////////////////////////////////////////////////////////////////////////
 //// SenderBase
 	
-void SenderBase::setSocketTransportErrorFn( SocketTransportErrorFn errorFn )
-{
-	std::lock_guard<std::mutex> lock( mSocketErrorFnMutex );
-	mSocketTransportErrorFn = errorFn;
-}
-	
-void SenderBase::handleError( const asio::error_code &error, const std::string &oscAddress )
-{
-	std::lock_guard<std::mutex> lock( mSocketErrorFnMutex );
-	if( mSocketTransportErrorFn )
-		mSocketTransportErrorFn( error, oscAddress );
-	else
-		CI_LOG_E( "Socket error: " << error.message() << ", didn't send message [" << oscAddress << "]" );
-}
-	
 std::string SenderBase::extractOscAddress( const ByteBufferRef &transportData )
 {
 	std::string oscAddress;
@@ -939,6 +924,16 @@ std::string SenderBase::extractOscAddress( const ByteBufferRef &transportData )
 		oscAddress = std::string( foundBegin, foundEnd );
 	}
 	return oscAddress;
+}
+	
+void SenderBase::send( const Message &message, SenderOptions senderOptions )
+{
+	sendImpl( message.getSharedBuffer(), std::move( senderOptions ) );
+}
+	
+void SenderBase::send( const Bundle &bundle, SenderOptions senderOptions )
+{
+	sendImpl( bundle.getSharedBuffer(), std::move( senderOptions ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -961,20 +956,18 @@ SenderUdp::SenderUdp( const UdpSocketRef &socket, const protocol::endpoint &dest
 {
 }
 	
-void SenderUdp::bindImpl()
+asio::error_code SenderUdp::bindImpl()
 {
 	asio::error_code ec;
 	mSocket->open( mLocalEndpoint.protocol(), ec );
-	if( ec ) {
-		handleError( ec, "" );
-		return;
-	}
-	mSocket->bind( mLocalEndpoint, ec );
 	if( ec )
-		handleError( ec, "" );
+		return ec;
+
+	mSocket->bind( mLocalEndpoint, ec );
+	return ec;
 }
 	
-void SenderUdp::sendImpl( const ByteBufferRef &data )
+void SenderUdp::sendImpl( const ByteBufferRef &data, SenderOptions options )
 {
 	if( ! mSocket->is_open() )
 		return;
@@ -982,19 +975,25 @@ void SenderUdp::sendImpl( const ByteBufferRef &data )
 	// data's first 4 bytes(int) comprise the size of the buffer, which datagram doesn't need.
 	mSocket->async_send_to( asio::buffer( data->data() + 4, data->size() - 4 ), mRemoteEndpoint,
 	// copy data pointer to persist the asynchronous send
-	[&, data]( const asio::error_code& error, size_t bytesTransferred )
+	[&, data, options]( const asio::error_code& error, size_t bytesTransferred )
 	{
-		if( error )
-			handleError( error, extractOscAddress( data ) );
+		if( error ) {
+			if( options.errorFn )
+				options.errorFn( error );
+			else
+				CI_LOG_E( "Udp Send: " << error.message() << " - Code: " << error.value() );
+		}
+		else if( options.completeFn ) {
+			options.completeFn();
+		}
 	});
 }
 	
-void SenderUdp::closeImpl()
+asio::error_code SenderUdp::closeImpl()
 {
 	asio::error_code ec;
 	mSocket->close( ec );
-	if( ec )
-		handleError( ec, "" );
+	return ec;
 }
 	
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1023,80 +1022,78 @@ SenderTcp::~SenderTcp()
 	SenderTcp::closeImpl();
 }
 	
-void SenderTcp::bindImpl()
+asio::error_code SenderTcp::bindImpl()
 {
 	asio::error_code ec;
 	mSocket->open( mLocalEndpoint.protocol(), ec );
-	if( ec ) {
-		handleError( ec, "" );
-		return;
-	}
-	mSocket->bind( mLocalEndpoint, ec );
 	if( ec )
-		handleError( ec, "" );
+		return ec;
+	mSocket->bind( mLocalEndpoint, ec );
+	return ec;
 }
 	
-void SenderTcp::connect()
+void SenderTcp::connect( OnConnectFn onConnectFn )
 {
-	if( ! mSocket->is_open() )
+	if( ! mSocket->is_open() ) {
+		CI_LOG_E( "Socket not open." );
 		return;
+	}
 	
 	mSocket->async_connect( mRemoteEndpoint,
-	[&]( const asio::error_code &error ){
-		if( error )
-			handleError( error, "" );
-		else {
+	[&, onConnectFn]( const asio::error_code &error ){
+		if( onConnectFn )
+			onConnectFn( error, mSocket );
+		else if( error )
+			CI_LOG_E( "Asio Error: " << error.message() << " - Code: " << error.value() );
+		
+		if( ! error )
 			mIsConnected.store( true );
-			std::lock_guard<std::mutex> lock( mOnConnectFnMutex );
-			if( mOnConnectFn )
-				mOnConnectFn( mSocket );
-		}
 	});
 }
 	
-void SenderTcp::shutdown( asio::socket_base::shutdown_type shutdownType )
+asio::error_code SenderTcp::shutdown( asio::socket_base::shutdown_type shutdownType )
 {
-	if( ! mSocket->is_open() || ! mIsConnected )
-		return;
-	
 	asio::error_code ec;
+	if( ! mSocket->is_open() || ! mIsConnected )
+		return ec;
+	
 	mSocket->shutdown( shutdownType, ec );
 	mIsConnected.store( false );
 	// the other side may have already shutdown the connection.
-	if( ec && ec != asio::error::not_connected )
-		handleError( ec, "" );
+	return ec;
 }
 
-void SenderTcp::setOnConnectFn( OnConnectFn onConnectFn )
+void SenderTcp::sendImpl( const ByteBufferRef &data, SenderOptions options )
 {
-	std::lock_guard<std::mutex> lock( mOnConnectFnMutex );
-	mOnConnectFn = onConnectFn;
-}
-
-void SenderTcp::sendImpl( const ByteBufferRef &data )
-{
-	if( ! mSocket->is_open() )
+	if( ! mSocket->is_open() || ! mIsConnected.load() )
 		return;
 	
 	ByteBufferRef transportData = data;
 	if( mPacketFraming )
-		transportData = mPacketFraming->encode( data );
+		transportData = mPacketFraming->encode( transportData );
 	mSocket->async_send( asio::buffer( *transportData ),
 	// copy data pointer to persist the asynchronous send
-	[&, transportData]( const asio::error_code& error, size_t bytesTransferred )
+	[&, transportData, options]( const asio::error_code& error, size_t bytesTransferred )
 	{
-		if( error )
-			handleError( error, extractOscAddress( transportData ) );
+		if( error ) {
+			if( options.errorFn )
+				options.errorFn( error );
+			else
+				CI_LOG_E( "Tcp Send: " << error.message() << " - Code: " << error.value() );
+		}
+		else if( options.completeFn ) {
+			options.completeFn();
+		}
 	});
 }
 	
-void SenderTcp::closeImpl()
+asio::error_code SenderTcp::closeImpl()
 {
-	shutdown();
-	asio::error_code ec;
-	mSocket->close( ec );
+	asio::error_code ec = shutdown();
 	if( ec )
-		handleError( ec, "" );
+		return ec;
+	mSocket->close( ec );
+	return ec;
 }
 	
 /////////////////////////////////////////////////////////////////////////////////////////
