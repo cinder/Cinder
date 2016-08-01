@@ -970,6 +970,7 @@ void GstPlayer::createTextureFromMemory()
 
 void GstPlayer::createTextureFromID()
 {
+#if defined( CINDER_GST_HAS_GL )
     GLint textureID = mGstTextureID;
 
     // Grab the last generated buffer for unref-ing on texture destruction.
@@ -992,6 +993,7 @@ void GstPlayer::createTextureFromID()
 
     // Unblock the streaming thread for processing next frame.
     unblockStreamingThread();
+#endif
 }
 
 ci::gl::Texture2dRef GstPlayer::getVideoTexture()
@@ -1020,6 +1022,7 @@ void GstPlayer::resetVideoBuffers()
 
 void GstPlayer::resetGLBuffers()
 {
+#if defined( CINDER_GST_HAS_GL )
     if( mGstData.bufferQueue ) {
         while( g_async_queue_length( mGstData.bufferQueue ) > 0 ) {
                 GstBuffer* old = (GstBuffer*)g_async_queue_pop( mGstData.bufferQueue );
@@ -1027,6 +1030,7 @@ void GstPlayer::resetGLBuffers()
                 old = nullptr;
         }
     }
+#endif
 }
 
 void GstPlayer::resetSystemMemoryBuffers()

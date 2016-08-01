@@ -103,6 +103,7 @@ struct GstData {
 	GstElement* 			pipeline 	= nullptr; 
 	GstElement* 			appSink 	= nullptr; 
 	GstElement* 			videoBin 	= nullptr; 		
+	GstPlayer*			player 		= nullptr;
 #if defined( CINDER_GST_HAS_GL )
 	GstGLContext* 			context 	= nullptr;
 	GstGLDisplay* 			display 	= nullptr;
@@ -111,7 +112,6 @@ struct GstData {
 	GstElement* 			glcolorconvert  = nullptr;
 
 	GstElement* 			rawCapsFilter 	= nullptr;
-	GstPlayer*			player 		= nullptr;
 	GAsyncQueue*			bufferQueue	= nullptr;
 #endif
 };
