@@ -1060,6 +1060,8 @@ asio::error_code SenderTcp::shutdown( asio::socket_base::shutdown_type shutdownT
 	mSocket->shutdown( shutdownType, ec );
 	mIsConnected.store( false );
 	// the other side may have already shutdown the connection.
+	if( ec == asio::error::not_connected )
+		ec = asio::error_code();
 	return ec;
 }
 
@@ -1310,17 +1312,14 @@ ReceiverUdp::ReceiverUdp( UdpSocketRef socket )
 {
 }
 	
-void ReceiverUdp::bindImpl()
+asio::error_code ReceiverUdp::bindImpl()
 {
 	asio::error_code ec;
 	mSocket->open( mLocalEndpoint.protocol(), ec );
-	if( ec ) {
-		handleError( ec, protocol::endpoint() );
-		return;
-	}
-	mSocket->bind( mLocalEndpoint, ec );
 	if( ec )
-		handleError( ec, protocol::endpoint() );
+		return ec;
+	mSocket->bind( mLocalEndpoint, ec );
+	return ec;
 }
 	
 void ReceiverUdp::setAmountToReceive( uint32_t amountToReceive )
@@ -1331,7 +1330,8 @@ void ReceiverUdp::setAmountToReceive( uint32_t amountToReceive )
 
 void ReceiverUdp::listenImpl()
 {
-	if ( ! mSocket->is_open() ) return;
+	if ( ! mSocket->is_open() )
+		return;
 	
 	uint32_t prepareAmount = 0;
 	{
@@ -1356,12 +1356,11 @@ void ReceiverUdp::listenImpl()
 	});
 }
 	
-void ReceiverUdp::closeImpl()
+asio::error_code ReceiverUdp::closeImpl()
 {
 	asio::error_code ec;
 	mSocket->close( ec );
-	if( ec )
-		handleError( ec, protocol::endpoint() );
+	return ec;
 }
 	
 void ReceiverUdp::setSocketErrorFn( SocketTransportErrorFn errorFn )
@@ -1398,17 +1397,18 @@ ReceiverTcp::Connection::~Connection()
 	mReceiver = nullptr;
 }
 	
-void ReceiverTcp::Connection::shutdown( asio::socket_base::shutdown_type shutdownType )
+asio::error_code ReceiverTcp::Connection::shutdown( asio::socket_base::shutdown_type shutdownType )
 {
-	if( ! mSocket->is_open() || ! mIsConnected )
-		return;
-	
 	asio::error_code ec;
+	if( ! mSocket->is_open() || ! mIsConnected )
+		return ec;
+	
 	mSocket->shutdown( asio::socket_base::shutdown_both, ec );
 	mIsConnected.store( false );
 	// the other side may have already shutdown the connection.
-	if( ec && ec != asio::error::not_connected )
-		mReceiver->handleSocketError( ec, mIdentifier, mSocket->remote_endpoint() );
+	if( ec == asio::error::not_connected )
+		ec = asio::error_code();
+	return ec;
 }
 	
 using iterator = asio::buffers_iterator<asio::streambuf::const_buffers_type>;
@@ -1433,7 +1433,8 @@ std::pair<iterator, bool> ReceiverTcp::Connection::readMatchCondition( iterator 
 
 void ReceiverTcp::Connection::read()
 {
-	if( ! mSocket->is_open() ) return;
+	if( ! mSocket->is_open() )
+		return;
 	
 	auto receiver = mReceiver;
 	
@@ -1501,25 +1502,20 @@ ReceiverTcp::ReceiverTcp( TcpSocketRef socket, PacketFramingRef packetFraming )
 	mConnections.back()->read();
 }
 	
-void ReceiverTcp::bindImpl()
+asio::error_code ReceiverTcp::bindImpl()
 {
+	asio::error_code ec;
 	if( ! mAcceptor )
-		return;
+		return ec;
 	
 	mIsShuttingDown.store( false );
 	
-	asio::error_code ec;
 	mAcceptor->open( mLocalEndpoint.protocol(), ec );
-	if( ec ) {
-		handleAcceptorError( ec );
-		return;
-	}
+	if( ec )
+		return ec;
 	mAcceptor->set_option( socket_base::reuse_address( true ) );
 	mAcceptor->bind( mLocalEndpoint, ec );
-	if( ec ) {
-		handleAcceptorError( ec );
-		return;
-	}
+	return ec;
 }
 	
 void ReceiverTcp::setSocketTransportErrorFn( SocketTransportErrorFn errorFn )
@@ -1575,19 +1571,19 @@ void ReceiverTcp::accept()
 	}, socket, _1 ) );
 }
 	
-void ReceiverTcp::closeAcceptor()
+asio::error_code ReceiverTcp::closeAcceptor()
 {
-	if( ! mAcceptor ) return;
-	
 	asio::error_code ec;
+	if( ! mAcceptor )
+		return ec;
+	
 	mAcceptor->close( ec );
-	if( ec )
-		handleAcceptorError( ec );
+	return ec;
 }
 
-void ReceiverTcp::closeImpl()
+asio::error_code ReceiverTcp::closeImpl()
 {
-	closeAcceptor();
+	auto ec = closeAcceptor();
 	// if there's an error on a socket while shutting down the receiver, it could
 	// cause a recursive run on the mConnectionMutex by someone listening for
 	// connection error and attempting to close the connection on error through
@@ -1598,12 +1594,14 @@ void ReceiverTcp::closeImpl()
 	for( auto & connection : mConnections )
 		connection->shutdown( socket_base::shutdown_both );
 	mConnections.clear();
+	return ec;
 }
 	
-void ReceiverTcp::closeConnection( uint64_t connectionIdentifier, asio::socket_base::shutdown_type shutdownType )
+asio::error_code ReceiverTcp::closeConnection( uint64_t connectionIdentifier, asio::socket_base::shutdown_type shutdownType )
 {
+	asio::error_code ec;
 	if( mIsShuttingDown )
-		return;
+		return ec;
 	
 	std::lock_guard<std::mutex> lock( mConnectionMutex );
 	auto rem = remove_if( mConnections.begin(), mConnections.end(),
@@ -1611,9 +1609,10 @@ void ReceiverTcp::closeConnection( uint64_t connectionIdentifier, asio::socket_b
 		return cached->mIdentifier == connectionIdentifier;
 	} );
 	if( rem != mConnections.end() ) {
-		(*rem)->shutdown( shutdownType );
+		ec = (*rem)->shutdown( shutdownType );
 		mConnections.erase( rem );
 	}
+	return ec;
 }
 	
 void ReceiverTcp::handleSocketError( const asio::error_code &error, uint64_t originatorId, const asio::ip::tcp::endpoint &endpoint )

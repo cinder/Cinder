@@ -637,11 +637,11 @@ public:
 	using Listeners = std::vector<std::pair<std::string, ListenerFn>>;
 	
 	//! Binds the underlying network socket. Should be called before executing communication operations.
-	void		bind() { bindImpl(); }
+	asio::error_code	bind() { return bindImpl(); }
 	//! Commits the socket to asynchronously listen and begin to receive from outside connections.
-	void		listen() { listenImpl(); }
+	void				listen() { listenImpl(); }
 	//! Closes the underlying network socket. Should be called on most errors to reset the socket.
-	void		close() { closeImpl(); }
+	asio::error_code	close() { return closeImpl(); }
 	
 	//! Sets a callback, \a listener, to be called when receiving a message with \a address. If a ListenerFn
 	//! does not exist for a specific address, any messages with that address will be disregarded. If a ListenerFn
@@ -672,11 +672,11 @@ public:
 	bool patternMatch( const std::string &lhs, const std::string &rhs ) const;
 	
 	//! Abstract bind implementation function.
-	virtual void bindImpl() = 0;
+	virtual asio::error_code bindImpl() = 0;
 	//! Abstract listen implementation function.
 	virtual void listenImpl() = 0;
 	//! Abstract close implementation function.
-	virtual void closeImpl() = 0;
+	virtual asio::error_code closeImpl() = 0;
 	
 	Listeners				mListeners;
 	std::mutex				mListenerMutex, mSocketTransportErrorFnMutex;
@@ -722,13 +722,13 @@ class ReceiverUdp : public ReceiverBase {
   protected:
 	//! Opens and Binds the underlying UDP socket to the protocol and localEndpoint respectively. If an error occurs,
 	//! the SocketTranportErrorFn will be called with a default constructed endpoint.
-	void bindImpl() override;
+	asio::error_code bindImpl() override;
 	//! Listens on the UDP network socket for incoming datagrams. Handles the async receive completion operations.
 	//! If an error occurs, the SocketTranportErrorFn will be called with an endpoint if present.
 	void listenImpl() override;
 	//! Closes the underlying UDP socket. If an error occurs, the SocketTranportErrorFn will be called with a
 	//! default constructed endpoint.
-	void closeImpl() override;
+	asio::error_code closeImpl() override;
 	
 	//! helper that handles locking and dispatching of errors.
 	void handleError( const asio::error_code &error, const protocol::endpoint &originator );
@@ -804,11 +804,11 @@ class ReceiverTcp : public ReceiverBase {
 	//! ReceiverTcp::Connection is constructed and read from.
 	void setOnAcceptFn( OnAcceptFn acceptFn );
 	//! Closes the underlying acceptor. Must rebind to listen again after calling this function.
-	void closeAcceptor();
+	asio::error_code closeAcceptor();
 	//! Closes the Connection associated with the connectionIdentifier. \a connectionIdentifier is the handle
 	//! to the socket, received in the OnAccept method. \a shutdownType sets the shutdown method for the underlying
 	//! socket before closing it. See OnAcceptFn and SocketTransportErrorFn for more.
-	void closeConnection( uint64_t connectionIdentifier, asio::socket_base::shutdown_type shutdownType = asio::socket_base::shutdown_both );
+	asio::error_code closeConnection( uint64_t connectionIdentifier, asio::socket_base::shutdown_type shutdownType = asio::socket_base::shutdown_both );
 	
   protected:
 	//! Handles reading from the socket.
@@ -819,7 +819,7 @@ class ReceiverTcp : public ReceiverBase {
 		
 		//! Implements asynchronous read on the underlying socket. Handles the async receive completion operations.
 		void read();
-		void shutdown( asio::socket_base::shutdown_type shutdownType );
+		asio::error_code shutdown( asio::socket_base::shutdown_type shutdownType );
 		//! Simple alias for asio buffer iterator type.
 		using iterator = asio::buffers_iterator<asio::streambuf::const_buffers_type>;
 		//! Static method which is used to read the stream as it's coming in and notate each packet. Implementation
@@ -847,7 +847,7 @@ class ReceiverTcp : public ReceiverBase {
 	
 	//! Opens and Binds the underlying TCP acceptor to the protocol and localEndpoint respectively. If an error occurs,
 	//! the AccpetorErrorFn will be called.
-	void bindImpl() override;
+	asio::error_code bindImpl() override;
 	//! Listens on the underlying TCP network socket for incoming connections. If an error occurs,
 	//! the AcceptorErrorFn will be called.
 	void listenImpl() override;
@@ -856,7 +856,7 @@ class ReceiverTcp : public ReceiverBase {
 	//! Implements the close operation for the underlying sockets and acceptor. For the underlying socket, shutdown is
 	//! called on the prior to close. If an error occurs, the AcceptorErrorFn or the SocketErrorFn will be called
 	//! respectively.
-	void closeImpl() override;
+	asio::error_code closeImpl() override;
 	//! Helper which handles any errors happening to the acceptor.
 	void handleAcceptorError( const asio::error_code &error );
 	//! Helper which handles any errors with the connection.
