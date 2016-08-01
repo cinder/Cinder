@@ -24,8 +24,6 @@
 
 namespace gst { namespace video {
 
-using namespace std::chrono_literals;
-
 static bool 		sUseGstGl = false;
 static const int 	sEnableAsyncStateChange = false;
 
@@ -627,7 +625,7 @@ void GstPlayer::load( const std::string& path )
 	// set the new movie path
 	const gchar* uri = ( ! uriPath.empty() ) ? uriPath.c_str() : path.c_str();
 	g_object_set( G_OBJECT ( mGstData.pipeline ), "uri", uri, nullptr );
-	
+
 	// and preroll.
 	setPipelineState( GST_STATE_PAUSED );
 }
@@ -919,11 +917,11 @@ bool GstPlayer::setPipelineState( GstState targetState )
 	
 	mGstData.targetState = targetState;
 	
-	// Unblock the streaming thread for executing state change.
-	unblockStreamingThread();
-	
 	GstStateChangeReturn stateChangeResult = gst_element_set_state( mGstData.pipeline, mGstData.targetState );
 	g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ));
+
+	// Unblock the streaming thread for not delaying state change.
+	unblockStreamingThread();
 	
 	if( ! sEnableAsyncStateChange && stateChangeResult == GST_STATE_CHANGE_ASYNC ) {
 		g_print( " Blocking until pipeline state changes from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ));
@@ -1169,7 +1167,9 @@ void GstPlayer::processNewSample( GstSample* sample )
 	// Pause the streaming thread until the new Cinder texture is created.
 	std::unique_lock<std::mutex> uniqueLock( mMutex );
 	auto now = std::chrono::system_clock::now();
-	mStreamingThreadCV.wait_until( uniqueLock, now + 100ms, [ this ]{ return mUnblockStreamingThread.load(); } );
+	std::chrono::duration<double, std::milli> frameInterval ( 1000.0 / (double)mGstData.frameRate );
+
+	mStreamingThreadCV.wait_until( uniqueLock, now + frameInterval, [ this ]{ return mUnblockStreamingThread.load(); } );
 
 	mUnblockStreamingThread = false;
 }
