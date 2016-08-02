@@ -72,6 +72,8 @@ void GstData::prepareForNewVideo()
     isPaused 		= false;
     isBuffering 	= false;
     isLive 		= false;
+    isStream            = false;
+    videoFormat         = GST_VIDEO_FORMAT_RGBA;
     position 		= -1;
     isPrerolled 	= false;
     isBuffering		= false;
@@ -79,8 +81,11 @@ void GstData::prepareForNewVideo()
     width 	        = -1;
     height	        = -1;
     rate 		= 1.0f;
-    frameRate		= -1;
+    frameRate		= -1.0f;
     numFrames		= 0;
+    pixelAspectRatio    = 0.0f;
+    loop                = false;
+    palindrome          = false;
 }
 
 void GstData::updateState( const GstState& current )
@@ -821,11 +826,11 @@ bool GstPlayer::setRate( float rate )
 {
     if( rate == getRate() ) return true; // Avoid unnecessary rate change;
     // A rate equal to 0 is not valid and has to be handled by pausing the pipeline.
-    if( rate == 0 ){
+    if( rate == 0.0f ){
         return setPipelineState( GST_STATE_PAUSED );
     }
     
-    if( rate < 0 && isStream() ) {
+    if( rate < 0.0f && isStream() ) {
         g_print( "No reverse playback supported for streams!\n " );
         return false;
     }
@@ -917,7 +922,7 @@ bool GstPlayer::setPipelineState( GstState targetState )
     GstStateChangeReturn stateChangeResult = gst_element_set_state( mGstData.pipeline, mGstData.targetState );
     g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ));
 
-    // Unblock the streaming thread for not delaying state change.
+    // Unblock the streaming thread for avoiding state change delay.
     unblockStreamingThread();
 	
     if( ! sEnableAsyncStateChange && stateChangeResult == GST_STATE_CHANGE_ASYNC ) {
