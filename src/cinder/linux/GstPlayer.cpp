@@ -715,10 +715,14 @@ bool GstPlayer::hasVisuals() const
 gint64 GstPlayer::getDurationNanos()
 {
     if( ! mGstData.pipeline ) return -1;
-	
+    
+    if( ! sEnableAsyncStateChange ) {
+        gst_element_get_state( mGstData.pipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE );
+    }
+
     gint64 duration;
     if( isPrerolled() ) {
-        if( !gst_element_query_duration( mGstData.pipeline, GST_FORMAT_TIME, &duration)) {
+        if( ! gst_element_query_duration( mGstData.pipeline, GST_FORMAT_TIME, &duration ) ) {
             g_warning( "Cannot query duration." );
             return -1.0;
         }
@@ -750,6 +754,10 @@ float GstPlayer::getPixelAspectRatio() const
 gint64 GstPlayer::getPositionNanos()
 {
     if( !mGstData.pipeline ) return -1;
+
+    if( ! sEnableAsyncStateChange ) {
+        gst_element_get_state( mGstData.pipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE );
+    }
 	
     gint64 pos = 0;
     if( isPrerolled() ) {
@@ -794,15 +802,23 @@ bool GstPlayer::isDone() const
 void GstPlayer::seekToTime( float seconds )
 {
     if( ! mGstData.pipeline ) return;
-    // When doing flushing seeks the pipeline will pre-roll
-    // which means that we might be in a GST_STATE_CHANGE_ASYNC when we request the seek ( ..when fast-seeking ).
-    // If thats the case then we should wait for GST_MESSAGE_ASYNC_DONE before executing the
-    // next seek.
+
     auto timeToSeek = seconds*GST_SECOND;
-    if( getStateChange() == GST_STATE_CHANGE_ASYNC || isBuffering() ) {
-        mGstData.requestedSeek = true;
-        mGstData.requestedSeekTime = timeToSeek; // convert to nanos.
-        return;
+
+    // If we are not async wait for any previous state change to finish before proceeding..
+    if( ! sEnableAsyncStateChange ) {
+        gst_element_get_state( mGstData.pipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE );
+    }
+    else {
+        // When doing flushing seeks the pipeline will pre-roll
+        // which means that we might be in a GST_STATE_CHANGE_ASYNC when we request the seek ( ..when fast-seeking ).
+        // If thats the case then we should wait for GST_MESSAGE_ASYNC_DONE before executing the
+        // next seek.
+        if( getStateChange() == GST_STATE_CHANGE_ASYNC || isBuffering() ) {
+            mGstData.requestedSeek = true;
+            mGstData.requestedSeekTime = timeToSeek; // convert to nanos.
+            return;
+        }
     }
     sendSeekEvent( timeToSeek );
 }
@@ -918,14 +934,14 @@ bool GstPlayer::setPipelineState( GstState targetState )
     mGstData.targetState = targetState;
 	
     GstStateChangeReturn stateChangeResult = gst_element_set_state( mGstData.pipeline, mGstData.targetState );
-    g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ));
+    g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ) );
 
     // Unblock the streaming thread for avoiding state change delay.
     unblockStreamingThread();
 	
     if( ! sEnableAsyncStateChange && stateChangeResult == GST_STATE_CHANGE_ASYNC ) {
-        g_print( " Blocking until pipeline state changes from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ));
-        stateChangeResult = gst_element_get_state( mGstData.pipeline, &current, &pending, GST_CLOCK_TIME_NONE);
+        g_print( " Blocking until pipeline state changes from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ) );
+        stateChangeResult = gst_element_get_state( mGstData.pipeline, &current, &pending, GST_CLOCK_TIME_NONE );
     }
 	
     return checkStateChange( stateChangeResult );
