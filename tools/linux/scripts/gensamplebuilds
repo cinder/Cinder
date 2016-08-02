@@ -8,7 +8,7 @@ import stat
 print( "Samples Linux Build File Generate v0.001\n" )
 
 Build = """#!/bin/sh
-$<CINDER_REL_PATH>/tools/linux/cbuilder -app "$@"
+$<CINDER_REL_PATH>/tools/linux/cibuilder -app "$@"
 """
 
 CMakeListsTxt= """# $<APPNAME>
