@@ -183,7 +183,10 @@ void GstPlayerTestApp::newStepFwd()
     if( ! mMovie ) return;
     CI_LOG_I( "---------- NEW STEP FWD START ----------" );
     CI_LOG_I( "POS BEFORE STEP : " << mMovie->getCurrentTime() );
-    mMovie->stepForward();
+
+    if( ! mMovie->stepForward() ) {
+        CI_LOG_W( "Failed to step forward!!!" );
+    }
     // We have reached the end, so wrap and start over..
     if( mMovie->getCurrentTime() == mLastStepPosition ) {
         mMovie->seekToTime( 0.0f );
