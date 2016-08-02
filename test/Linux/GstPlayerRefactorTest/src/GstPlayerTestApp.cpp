@@ -11,6 +11,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+static int sFrameNum = 0;
+
 class GstPlayerTestApp : public App {
   public:
 	enum TestCase{
@@ -64,7 +66,9 @@ class GstPlayerTestApp : public App {
 	bool			mRandomizeStepFwdRate  = true;
 	double 			mTimeLastStepFwdTrigger;
         float                   mLastStepPosition   = 0.0f;
-	TestCase		mCurrentTestCase = TEST_STEP_FORWARD;
+
+	TestCase		mCurrentTestCase = TEST_NONE;
+
 };
 
 void GstPlayerTestApp::setup()
@@ -237,6 +241,10 @@ void GstPlayerTestApp::keyDown( KeyEvent event )
     }
     else if( event.getCode() == KeyEvent::KEY_t ) {
         if( mMovie ) mMovie->stepForward();
+    }
+    else if( event.getCode() == KeyEvent::KEY_f ) {
+        if( mMovie ) mMovie->stop();
+        mMovie->seekToFrame( sFrameNum++ );
     }
 }
 
