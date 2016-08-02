@@ -18,7 +18,8 @@ class GstPlayerTestApp : public App {
 		TEST_PLAY_PAUSE,
 		TEST_SEEKING,
 		TEST_LOOPING,
-		TEST_RELOADING
+		TEST_RELOADING,
+                TEST_STEP_FORWARD
 	};
 	static void prepareSettings( Settings *settings ) { }
 
@@ -39,6 +40,9 @@ class GstPlayerTestApp : public App {
 	void testSeek();
 	void newSeek();
 
+        void testStepForward();
+        void newStepFwd();
+
 	void testCurrentCase();
 
 	gl::TextureRef		mFrameTexture;
@@ -55,7 +59,12 @@ class GstPlayerTestApp : public App {
 	bool			mRandomizeSeekRate  = true;
 	double 			mTimeLastSeekTrigger;
 
-	TestCase		mCurrentTestCase = TEST_SEEKING;
+        // Step
+	double 			mTriggerStepFwdRate    = 4.0;
+	bool			mRandomizeStepFwdRate  = true;
+	double 			mTimeLastStepFwdTrigger;
+        float                   mLastStepPosition   = 0.0f;
+	TestCase		mCurrentTestCase = TEST_STEP_FORWARD;
 };
 
 void GstPlayerTestApp::setup()
@@ -89,6 +98,11 @@ void GstPlayerTestApp::testCurrentCase()
         case TEST_SEEKING:
         {
             testSeek();
+            break;
+        }
+        case TEST_STEP_FORWARD:
+        {
+            testStepForward();
             break;
         }
         default:
@@ -154,6 +168,31 @@ void GstPlayerTestApp::newSeek()
     CI_LOG_I( "---------- NEW SEEK END ----------" );
 }
 
+void GstPlayerTestApp::testStepForward()
+{
+    auto now = mTriggerTimer.getSeconds();
+    if( now - mTimeLastStepFwdTrigger >= mTriggerStepFwdRate ) {
+        newStepFwd();
+        mTimeLastStepFwdTrigger = now;
+        if( mRandomizeStepFwdRate ) mTriggerStepFwdRate = randFloat( .1f, .4f );
+    }
+}
+
+void GstPlayerTestApp::newStepFwd()
+{
+    if( ! mMovie ) return;
+    CI_LOG_I( "---------- NEW STEP FWD START ----------" );
+    CI_LOG_I( "POS BEFORE STEP : " << mMovie->getCurrentTime() );
+    mMovie->stepForward();
+    // We have reached the end, so wrap and start over..
+    if( mMovie->getCurrentTime() == mLastStepPosition ) {
+        mMovie->seekToTime( 0.0f );
+    }
+    mLastStepPosition = mMovie->getCurrentTime();
+    CI_LOG_I( "POS AFTER STEP : " << mMovie->getCurrentTime() );
+    CI_LOG_I( "---------- NEW STEP FWD END ----------" );
+}
+
 void GstPlayerTestApp::update()
 {
 
@@ -182,18 +221,19 @@ void GstPlayerTestApp::draw()
 
 void GstPlayerTestApp::keyDown( KeyEvent event )
 {
-    if( event.getChar() == 'o' ) {
+    if( event.getCode() == KeyEvent::KEY_o ) {
         fs::path moviePath = getOpenFilePath();
         if( ! moviePath.empty() )
             loadMovieFile( moviePath );
     }
-    else if( event.getChar() == 'p' ) {
+    else if( event.getCode() == KeyEvent::KEY_p ) {
         if( mMovie ) mMovie->stop();
     }
-    else if( event.getChar() == 'l' ) {
+    else if( event.getCode() == KeyEvent::KEY_l ) {
         if( mMovie ) mMovie->play();
     }
-    else if( event.getChar() == 't' ) {
+    else if( event.getCode() == KeyEvent::KEY_t ) {
+        if( mMovie ) mMovie->stepForward();
     }
 }
 
