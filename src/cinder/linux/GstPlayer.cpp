@@ -1,11 +1,8 @@
  
 // Quell the GL macro redefined warnings.
 #if defined( __CLANG__ )
-	#pragma diagnostic push
-	#pragma diagnostic ignored "-Wmacro-redefined"
-#else // GCC
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wmacro-redefined"	
+    #pragma diagnostic push
+    #pragma diagnostic ignored "-Wmacro-redefined"
 #endif
 
 #include "cinder/linux/GstPlayer.h"
@@ -1198,7 +1195,5 @@ void GstPlayer::updateTextureID( GstBuffer* newBuffer )
 }} // namespace gst::video
 
 #if defined( __CLANG__ )
-	#pragma diagnostic pop 
-#else // GCC
-	#pragma GCC diagnostic pop
+    #pragma diagnostic pop 
 #endif
