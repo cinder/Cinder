@@ -807,10 +807,11 @@ void GstPlayer::seekToTime( float seconds )
     sendSeekEvent( timeToSeek );
 }
 
-void GstPlayer::stepForward()
+bool GstPlayer::stepForward()
 {
     setPipelineState( GST_STATE_PAUSED );
-    gst_element_send_event( mGstData.pipeline, gst_event_new_step ( GST_FORMAT_BUFFERS, 1, getRate(), TRUE, FALSE ) );
+    bool handled = gst_element_send_event( mGstData.pipeline, gst_event_new_step ( GST_FORMAT_BUFFERS, 1, getRate(), TRUE, FALSE ) );
+    return handled;
 }
 
 void GstPlayer::setLoop( bool loop, bool palindrome )

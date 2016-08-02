@@ -143,7 +143,7 @@ public:
 	int  			stride() const;
 	void 			setLoop( bool loop = true, bool palindrome = false );
 	bool 			setRate( float rate );
-	void 			stepForward();
+	bool 			stepForward();
 	
 	float 			getRate() const;
 	

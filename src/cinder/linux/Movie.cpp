@@ -183,8 +183,8 @@ void MovieBase::setLoop( bool loop, bool palindrome )
 
 bool MovieBase::stepForward()
 {
-    mGstPlayer->stepForward();
-    return false;	
+    bool handled = mGstPlayer->stepForward();
+    return handled;	
 }
 
 bool MovieBase::stepBackward()
