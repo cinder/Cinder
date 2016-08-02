@@ -74,7 +74,6 @@ list( APPEND CINDER_SRC_FILES
 	${SRC_SET_COCOA}
 	${SRC_SET_APP_COCOA}
 	${SRC_SET_AUDIO_COCOA}
-	${SRC_SET_QTIME}
 )
 
 list( APPEND CINDER_LIBS_DEPENDS
@@ -108,7 +107,7 @@ if( CINDER_MAC_USE_GSTREAMER )
 	list( APPEND CINDER_SRC_FILES ${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp ${CINDER_SRC_DIR}/cinder/linux/Movie.cpp )
 	list( APPEND CINDER_DEFINES CINDER_MAC_USE_GSTREAMER )
 else()
-	# QuickTime files should go here..
+        list( APPEND CINDER_SRC_FILES ${SRC_SET_QTIME} )
 endif()
 
 list( APPEND CINDER_LIBS_DEPENDS
