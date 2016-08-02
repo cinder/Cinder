@@ -37,8 +37,8 @@ namespace cinder { namespace linux {
 //!
 MovieBase::MovieBase()
 {
-	mGstPlayer.reset( new gst::video::GstPlayer() );
-	mGstPlayer->initialize();
+    mGstPlayer.reset( new gst::video::GstPlayer() );
+    mGstPlayer->initialize();
 }
 
 MovieBase::~MovieBase()
@@ -48,40 +48,27 @@ MovieBase::~MovieBase()
 
 void MovieBase::init()
 {
-	if( ! mGstPlayer ) {
-		return;
-	}
-
-    // This here is not correct since with GStreamer in order to be 
-    // able to query video info you must be in a pre-rolled state aka GST_STATE_PAUSED so these queries here will always fail.
-    // Since loading is happening async right now ( i.e we are not waiting for the GST_STATE_PAUSED to complete which is much faster ) on the GstPlayer you have to check if isLoaded before actually requesting any video info.
-
-	//mWidth		= mGstPlayer->width(); 
-	//mHeight		= mGstPlayer->height();
-	//mDuration 	= mGstPlayer->getDurationSeconds();
-	
+    // unused
 }
 
 void MovieBase::initFromUrl( const Url& url )
 {
-	if( ! mGstPlayer ) {
-		return;
-	}
+    if( ! mGstPlayer ) {
+        return;
+    }
 
-	mGstPlayer->load( url.str() );
-
-	init();
+    mGstPlayer->load( url.str() );
 }
 
 void MovieBase::initFromPath( const fs::path& filePath )
 {
-	if( ! mGstPlayer ) {
-		return;
-	}
+    if( ! mGstPlayer ) {
+        return;
+    }
 
-	mGstPlayer->load( filePath.string() );
+    mGstPlayer->load( filePath.string() );
 
-	init();
+    init();
 }
 
 int32_t MovieBase::getWidth() const
@@ -96,7 +83,7 @@ int32_t MovieBase::getHeight() const
 
 float MovieBase::getPixelAspectRatio() const
 {
-	return mGstPlayer->getPixelAspectRatio();
+    return mGstPlayer->getPixelAspectRatio();
 }
 
 bool MovieBase::checkPlaythroughOk()
@@ -106,7 +93,7 @@ bool MovieBase::checkPlaythroughOk()
     if( mGstPlayer->isLoaded() && !mGstPlayer->isBuffering() ) {
         playThroughOk = true;
     }
-	return playThroughOk;
+    return playThroughOk;
 }
 
 bool MovieBase::isLoaded() const
@@ -135,12 +122,12 @@ float MovieBase::getFramerate() const
 
 int32_t MovieBase::getNumFrames()
 {
-	return mGstPlayer->getNumFrames();	
+    return mGstPlayer->getNumFrames();	
 }
 
 bool MovieBase::hasVisuals() const
 {
-	return mGstPlayer->hasVisuals();
+    return mGstPlayer->hasVisuals();
 }
 
 bool MovieBase::hasAudio() const
@@ -150,17 +137,17 @@ bool MovieBase::hasAudio() const
 
 bool MovieBase::checkNewFrame()
 {
-	return mGstPlayer->hasNewFrame();
+    return mGstPlayer->hasNewFrame();
 }
 
 float MovieBase::getCurrentTime() const
 {
-	return mGstPlayer->getPositionSeconds();
+    return mGstPlayer->getPositionSeconds();
 }
 
 void MovieBase::seekToTime( float seconds )
 {
-	 mGstPlayer->seekToTime( seconds );
+    mGstPlayer->seekToTime( seconds );
 }
 
 void MovieBase::seekToFrame( int frame )
@@ -191,34 +178,34 @@ void MovieBase::resetActiveSegment()
 
 void MovieBase::setLoop( bool loop, bool palindrome )
 {
-	mGstPlayer->setLoop( loop, palindrome );
+    mGstPlayer->setLoop( loop, palindrome );
 }
 
 bool MovieBase::stepForward()
 {
-	mGstPlayer->stepForward();
-	return false;	
+    mGstPlayer->stepForward();
+    return false;	
 }
 
 bool MovieBase::stepBackward()
 {
-	// @TODO: Fix me!
-	return false;	
+    // @TODO: Fix me!
+    return false;	
 }
 
 bool MovieBase::setRate( float rate )
 {
-	return mGstPlayer->setRate( rate );
+    return mGstPlayer->setRate( rate );
 }
 
 void MovieBase::setVolume( float volume )
 {
-	mGstPlayer->setVolume( volume );
+    mGstPlayer->setVolume( volume );
 }
 
 float MovieBase::getVolume() const
 {
-	return mGstPlayer->getVolume();
+    return mGstPlayer->getVolume();
 }
 
 bool MovieBase::isPlaying() const
