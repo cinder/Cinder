@@ -188,6 +188,10 @@ void GstPlayerTestApp::newStepFwd()
     CI_LOG_I( "---------- NEW STEP FWD START ----------" );
     CI_LOG_I( "POS BEFORE STEP : " << mMovie->getCurrentTime() );
 
+    // Pause the pipeline in order to get a better feeling of 
+    // the frame-by-frame action.
+    if( mMovie->isPlaying() ) mMovie->stop();
+
     if( ! mMovie->stepForward() ) {
         CI_LOG_W( "Failed to step forward!!!" );
     }
