@@ -25,9 +25,6 @@
 #if defined( __CLANG__ )
 	#pragma diagnostic push
 	#pragma diagnostic ignored "-Wmacro-redefined"
-#else // GCC
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wmacro-redefined"	
 #endif
 
 #include "cinder/linux/Movie.h"
@@ -272,6 +269,4 @@ gl::TextureRef MovieGl::getTexture()
 
 #if defined( __CLANG__ )
 	#pragma diagnostic pop 
-#else // GCC
-	#pragma GCC diagnostic pop
 #endif
