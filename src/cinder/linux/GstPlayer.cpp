@@ -48,6 +48,8 @@ GstData::GstData()
     isStream( false ),
     frameRate( -1.0f ),
     numFrames( 0 ),
+    fpsNom( -1 ),
+    fpsDenom( -1 ),
     pixelAspectRatio( 0.0f ),
     player( nullptr )
 {
@@ -80,6 +82,8 @@ void GstData::prepareForNewVideo()
     rate 		= 1.0f;
     frameRate		= -1.0f;
     numFrames		= 0;
+    fpsNom              = -1;
+    fpsDenom            = -1;
     pixelAspectRatio    = 0.0f;
     loop                = false;
     palindrome          = false;
@@ -90,28 +94,27 @@ void GstData::updateState( const GstState& current )
     currentState = current;
 
     switch ( currentState ) {
-            case GST_STATE_NULL: {
-                    reset();
-                    break;
-            }
-            case GST_STATE_READY: {
-                    prepareForNewVideo();
-                    break;
-            }
-            case GST_STATE_PAUSED: {
-                    isPrerolled     = true;
-                    isPaused 	    = true;
-                    isLoaded 	    = true;
-                    isPlayable 	    = true;
-                    break;
-            }
-            case GST_STATE_PLAYING: {
-                    isDone          = false;
-                    isPaused        = false;	
-                    isPlayable      = true;
-                    break;
-            }
-            default: break;
+        case GST_STATE_NULL: {
+            reset();
+            break;
+        }
+        case GST_STATE_READY: {
+            prepareForNewVideo();
+            break;
+        }
+        case GST_STATE_PAUSED: {
+            isPaused 	    = true;
+            isLoaded 	    = true;
+            isPlayable 	    = true;
+            break;
+        }
+        case GST_STATE_PLAYING: {
+            isDone          = false;
+            isPaused        = false;	
+            isPlayable      = true;
+            break;
+        }
+        default: break;
     }
 }
 
@@ -741,8 +744,9 @@ float GstPlayer::getDurationSeconds()
     return (float)duration / 1000000000.0f ;
 }
 
-int GstPlayer::getNumFrames() const
+int GstPlayer::getNumFrames() 
 {
+    mGstData.numFrames = (int)( getDurationNanos() * (float)mGstData.fpsNom / (float)mGstData.fpsDenom / (float) GST_SECOND );	
     return mGstData.numFrames;
 }
 
@@ -821,6 +825,13 @@ void GstPlayer::seekToTime( float seconds )
         }
     }
     sendSeekEvent( timeToSeek );
+}
+
+void GstPlayer::seekToFrame( int frame )
+{
+    if( ! mGstData.pipeline ) return;
+    auto timeToSeek = (float)frame * (float)mGstData.fpsDenom / (float)mGstData.fpsNom;
+    seekToTime( timeToSeek );
 }
 
 bool GstPlayer::stepForward()
@@ -1094,15 +1105,16 @@ void GstPlayer::getVideoInfo( const GstVideoInfo& videoInfo )
     mGstData.videoFormat    	= videoInfo.finfo->format;
     mGstData.frameRate 		= (float)videoInfo.fps_n / (float)videoInfo.fps_d;	
     mGstData.pixelAspectRatio   = (float)videoInfo.par_n / (float)videoInfo.par_d ;
-
-    if( isPrerolled() && mGstData.numFrames == 0 ) {
-        mGstData.numFrames = (int)( getDurationNanos() * (float)videoInfo.fps_n / (float)videoInfo.fps_d / (float) GST_SECOND );	
-    }
+    mGstData.fpsNom             = videoInfo.fps_n;
+    mGstData.fpsDenom           = videoInfo.fps_d;
 }
 
 void GstPlayer::processNewSample( GstSample* sample )
 {
     GstBuffer* newBuffer = nullptr;
+
+    mGstData.isPrerolled = true;
+
     if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
         // Keep only the last buffer around.

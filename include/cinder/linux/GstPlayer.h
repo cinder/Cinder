@@ -96,6 +96,8 @@ struct GstData {
 	std::atomic<bool> 		isStream;
 	std::atomic<float> 		frameRate;
 	std::atomic<int>		numFrames;
+	std::atomic<int>		fpsNom;
+	std::atomic<int>		fpsDenom;
 	std::atomic<float>		pixelAspectRatio;
 
 	GstMapInfo 			memoryMapInfo; // Memory map that holds the incoming frame.
@@ -157,7 +159,7 @@ public:
 	float 			getDurationSeconds();
 	float                   getFramerate() const;
 	float			getPixelAspectRatio() const;
-	int 		        getNumFrames() const;
+	int 		        getNumFrames();
 	
 	bool                    hasAudio() const;
 	bool                    hasVisuals() const;
@@ -170,6 +172,7 @@ public:
 	GstElement* 		getPipeline();
 	
 	void 			seekToTime( float seconds );
+        void                    seekToFrame( int frame );
 	
 	bool 			isStream() const;
 

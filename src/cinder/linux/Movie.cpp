@@ -152,7 +152,7 @@ void MovieBase::seekToTime( float seconds )
 
 void MovieBase::seekToFrame( int frame )
 {
-
+    mGstPlayer->seekToFrame( frame );
 }
 
 void MovieBase::seekToStart()
