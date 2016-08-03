@@ -253,7 +253,7 @@ void Serial::writeBytes( const void *data, size_t numBytes )
 #if defined( CINDER_MAC )
 		long bytesWritten = ::write( mImpl->mFd, data, numBytes - totalBytesWritten );
 		if( ( bytesWritten == -1 ) && ( errno != EAGAIN ) )
-			throw SerialExcReadFailure();	
+			throw SerialExcWriteFailure();
 #elif defined( CINDER_MSW )
 		::DWORD bytesWritten;
 		if( ! ::WriteFile( mImpl->mDeviceHandle, data, numBytes - totalBytesWritten, &bytesWritten, 0 ) )
