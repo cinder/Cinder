@@ -13,7 +13,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-const int NUM_CUBES = 1000000;
+const int NUM_CUBES = 100000;
 
 class SsboIntegrationApp : public App {
 public:

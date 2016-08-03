@@ -114,16 +114,30 @@ class GlslProg {
 
 	public:
 
+		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string& getName() const { return mName; }
+		//! Returns the type as a GLint as provided through the API Introspection
 		GLint getType() const { return mType; }
+		//! Returns offset of the variable into the backing buffer
+		//! the value written is the offset, in basic machine units, relative to the base of buffer range holding the values of the variable
 		GLint getOffset() const { return mOffset; }
+		//! Returns true if variable is an array
 		bool isArray() const { return mArrayStride > 0; }
+		//! Returns the stride between array elements in an active variable array
+		//! Returns 0 if not an array
 		GLint getArrayStride() const { return mArrayStride; }
+		//! Returns the size an active variable array with a fixed size.
+		//! Returns 0 if variable is not a array or the last variable of a storage block is an array of non-fixed size, returns 0
 		GLint getArraySize() const { return mArraySize; }
+		//! Returns true if variable is of any Matrix type
 		bool isMatrix() const { return mMatrixStride > 0; }
+		//! Returns true if matrix variable is specified as row-major in the glsl
 		bool isRowMajor() const { return mIsRowMajor; }
+		//! Returns the stride of the matrix in bytes, could be used to determine matirx type
 		GLint getMatrixStride() const { return mMatrixStride; }
+		//! Returns the number of active array elements of the top-level shader storage block member containing to the active variable
 		GLint getTopLevelArraySize() const { return mTopLevelArraySize; }
+		//! Returns the stride between array elements of the top-level shader storage block member containing the active variable.
 		GLint getTopLevelArrayStride() const { return mTopLevelArrayStride; }
 
 	private:
@@ -145,10 +159,18 @@ class GlslProg {
 	struct ShaderStorageBlock
 	{
 	public:
+
+		//! Returns a const reference of the name of the Ssbo as defined inside the Glsl.
 		const std::string& getName() const { return mName; }
+		//! Returns the specified (or compiler generated) binding point of the shader storage block. 
+		//! Returns -1 if block is not bound
 		GLint getBlockBinding() const { return mBinding; }
+		//! Returns the index of the block
 		GLint getIndex() const { return mIndex; }
+		//! Returns then the implementation-dependent minimum total buffer object size, in basic machine units, required to hold all active variables associated with a shader storage block.
+		//! If the final member of an active shader storage block is array with no declared size, the minimum buffer size is computed assuming the array was declared as an array with one element.
 		GLint getDataSize() const { return mDataSize; }
+		//! Returns a const reference to the vector of active buffer variables contained within the shader storage block
 		const std::vector<BufferVariable>& getActiveVariables() const { return mActiveVariables; }
 
 	private:
@@ -502,9 +524,9 @@ class GlslProg {
 	GLint	getShaderStorageBlockBinding(const std::string &name) const;
 	//! Returns the size of the  Shader Storage  block matching \a blockIndex.
 	GLint	getShaderStorageBlockSize(GLint blockIndex) const;
-	//! Returns a const pointer to the  ShaderStorageBlock that matches \a name. Returns nullptr if the uniform block doesn't exist.
+	//! Returns a const pointer to the  ShaderStorageBlock that matches \a name. Returns nullptr if the ss block doesn't exist.
 	const ShaderStorageBlock* findShaderStorageBlock(const std::string &name) const;
-	//! Returns a const reference to the UniformBlock cache.
+	//! Returns a const reference to the ShaderStorageBlock cache.
 	const std::vector<ShaderStorageBlock>& getActiveShaderStorageBlocks() const { return mShaderStorageBlocks; }
 #endif
 

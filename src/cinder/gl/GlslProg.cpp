@@ -900,7 +900,7 @@ void GlslProg::cacheActiveUniformBlocks()
 			GLenum type;
 			
 			glGetActiveUniform( mHandle, (GLuint)index, 511, &nameLength, &count, &type, name );
-			
+
 			UniformSemantic uniformSemantic = UniformSemantic::UNIFORM_USER_DEFINED;
 			
 			auto foundSemantic = semanticNameMap.find( name );
