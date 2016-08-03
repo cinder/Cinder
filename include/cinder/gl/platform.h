@@ -78,6 +78,7 @@
 #if defined( CINDER_MSW )
 	#if ! defined( CINDER_GL_ANGLE ) // MSW Desktop Only
 		#define CINDER_GL_HAS_COMPUTE_SHADER
+		#define CINDER_GL_HAS_SHADER_STORAGE_BLOCKS
 		#define CINDER_GL_HAS_DEBUG_OUTPUT
 	#endif
 	// both ANGLE and desktop have FBO Multisampling

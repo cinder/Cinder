@@ -106,6 +106,60 @@ class GlslProg {
 		
 		friend class GlslProg;
 	};
+
+#if defined( CINDER_GL_HAS_SHADER_STORAGE_BLOCKS )
+
+	struct BufferVariable
+	{
+
+	public:
+
+		const std::string& getName() const { return mName; }
+		GLint getType() const { return mType; }
+		GLint getOffset() const { return mOffset; }
+		bool isArray() const { return mArrayStride > 0; }
+		GLint getArrayStride() const { return mArrayStride; }
+		GLint getArraySize() const { return mArraySize; }
+		bool isMatrix() const { return mMatrixStride > 0; }
+		bool isRowMajor() const { return mIsRowMajor; }
+		GLint getMatrixStride() const { return mMatrixStride; }
+		GLint getTopLevelArraySize() const { return mTopLevelArraySize; }
+		GLint getTopLevelArrayStride() const { return mTopLevelArrayStride; }
+
+	private:
+
+		std::string mName;
+		GLint mType = -1;
+		GLint mOffset = 0;
+		GLint mArraySize = 0;
+		GLint mArrayStride = 0;
+		GLint mMatrixStride = 0;
+		GLint mTopLevelArrayStride = 0;
+		GLint mTopLevelArraySize = 0;
+		bool mIsRowMajor = false;
+
+		friend GlslProg;
+
+	};
+
+	struct ShaderStorageBlock
+	{
+	public:
+		const std::string& getName() const { return mName; }
+		GLint getBlockBinding() const { return mBinding; }
+		GLint getIndex() const { return mIndex; }
+		GLint getDataSize() const { return mDataSize; }
+		const std::vector<BufferVariable>& getActiveVariables() const { return mActiveVariables; }
+
+	private:
+		std::string mName;
+		GLint mIndex = -1, mBinding = -1, mDataSize = 0;
+		std::vector<BufferVariable> mActiveVariables;
+
+		friend GlslProg;
+	};
+
+#endif
 	
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 
@@ -441,6 +495,19 @@ class GlslProg {
 	//! Returns a const pointer to the Uniform that matches \a name. Returns nullptr if the uniform doesn't exist. The uniform location (accounting for indices, like "example[2]") is stored in \a resultLocation if it's non-null.
 	const Uniform*					findUniform( const std::string &name, int *resultLocation ) const;
 
+#if defined( CINDER_GL_HAS_SHADER_STORAGE_BLOCKS )
+	//! Analogous to glShaderStorageBlockBinding()
+	void	shaderStorageBlock(const std::string &name, GLint binding);
+	//!	Returns the binding location of the Shader Storage Block that matches \a name.
+	GLint	getShaderStorageBlockBinding(const std::string &name) const;
+	//! Returns the size of the  Shader Storage  block matching \a blockIndex.
+	GLint	getShaderStorageBlockSize(GLint blockIndex) const;
+	//! Returns a const pointer to the  ShaderStorageBlock that matches \a name. Returns nullptr if the uniform block doesn't exist.
+	const ShaderStorageBlock* findShaderStorageBlock(const std::string &name) const;
+	//! Returns a const reference to the UniformBlock cache.
+	const std::vector<ShaderStorageBlock>& getActiveShaderStorageBlocks() const { return mShaderStorageBlocks; }
+#endif
+
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	//! Analogous to glUniformBlockBinding()
 	void	uniformBlock( const std::string &name, GLint binding );
@@ -533,6 +600,14 @@ class GlslProg {
 	bool			checkUniformType( GLenum uniformType ) const;
 	template<typename T>
 	bool			checkUniformType( GLenum uniformType, std::string &typeName ) const;
+
+#if defined( CINDER_GL_HAS_SHADER_STORAGE_BLOCKS )
+	//! Caches all active Uniform Blocks after linking.
+	void			cacheActiveShaderStorageBlocks();
+	//! Returns a pointer to the Uniform Block that matches \a name. Returns nullptr if the attrib doesn't exist.
+	ShaderStorageBlock*	findShaderStorageBlock(const std::string &name);
+#endif
+
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	//! Caches all active Uniform Blocks after linking.
 	void			cacheActiveUniformBlocks();
@@ -554,6 +629,9 @@ class GlslProg {
 	std::vector<Attribute>						mAttributes;
 	std::vector<Uniform>						mUniforms;
 	mutable std::unique_ptr<UniformValueCache>	mUniformValueCache;
+#if defined( CINDER_GL_HAS_SHADER_STORAGE_BLOCKS )
+	std::vector<ShaderStorageBlock>			mShaderStorageBlocks;
+#endif
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	std::vector<UniformBlock>				mUniformBlocks;
 #endif

@@ -557,6 +557,9 @@ GlslProg::GlslProg( const Format &format )
 		cacheActiveTransformFeedbackVaryings();
 	}
 #endif
+#if defined( CINDER_GL_HAS_SHADER_STORAGE_BLOCKS )
+	cacheActiveShaderStorageBlocks();
+#endif
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	cacheActiveUniformBlocks();
 #endif
@@ -784,7 +787,80 @@ void GlslProg::cacheActiveUniforms()
 #endif
 }
 
+
+#if defined( CINDER_GL_HAS_SHADER_STORAGE_BLOCKS )
+
+void GlslProg::cacheActiveShaderStorageBlocks()
+{
+	GLint activeShaderStorageBlocks;
+	glGetProgramInterfaceiv(mHandle, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &activeShaderStorageBlocks);
+
+	const GLenum blockProps[4] = { GL_NAME_LENGTH, GL_NUM_ACTIVE_VARIABLES, GL_BUFFER_BINDING, GL_BUFFER_DATA_SIZE };
+	const GLenum activeVariablesProp[1] = { GL_ACTIVE_VARIABLES };
+	const GLenum variableProps[9] = { GL_NAME_LENGTH, GL_TYPE, GL_OFFSET, GL_ARRAY_STRIDE, GL_ARRAY_SIZE, GL_MATRIX_STRIDE, GL_IS_ROW_MAJOR, GL_TOP_LEVEL_ARRAY_SIZE, GL_TOP_LEVEL_ARRAY_STRIDE };
+
+	for (GLint blockIndex = 0; blockIndex < activeShaderStorageBlocks; ++blockIndex) {
+
+		GLint blockParams[4];
+		glGetProgramResourceiv(mHandle, GL_SHADER_STORAGE_BLOCK, blockIndex, 4, blockProps, 4, nullptr, &blockParams[0]);
+
+		std::vector<char> blockName(blockParams[0]);
+		glGetProgramResourceName(mHandle, GL_SHADER_STORAGE_BLOCK, blockIndex, blockName.size(), nullptr, &blockName[0]);
+
+		ShaderStorageBlock ssbo;
+		ssbo.mName = std::move(std::string(blockName.begin(), blockName.end() - 1));
+		ssbo.mBinding = blockParams[2];
+		ssbo.mDataSize = blockParams[3];
+		ssbo.mIndex = blockIndex;
+
+		if (!blockParams[1])continue;
+
+		std::vector<GLint> blockVariables(blockParams[1]);
+		glGetProgramResourceiv(mHandle, GL_SHADER_STORAGE_BLOCK, blockIndex, 1, activeVariablesProp, blockParams[1], nullptr, &blockVariables[0]);
+
+		for (int variableIndex = 0; variableIndex < blockParams[1]; ++variableIndex)
+		{
+			GLint variableValues[9];
+			glGetProgramResourceiv(mHandle, GL_BUFFER_VARIABLE, blockVariables[variableIndex], 9, variableProps, 9, nullptr, variableValues);
+
+			std::vector<char> variableName(variableValues[0]);
+			glGetProgramResourceName(mHandle, GL_BUFFER_VARIABLE, blockVariables[variableIndex], variableName.size(), nullptr, &variableName[0]);
+
+			BufferVariable variable;
+			variable.mName = std::move(std::string(variableName.begin(), variableName.end() - 1));
+			variable.mType = variableValues[1];
+			variable.mOffset = variableValues[2];
+			variable.mArrayStride = variableValues[3];
+			variable.mArraySize = variableValues[4];
+			variable.mMatrixStride = variableValues[5];
+			variable.mIsRowMajor = variableValues[6] == 1 ? true : false;
+			variable.mTopLevelArrayStride = variableValues[7];
+			variable.mTopLevelArraySize = variableValues[8];
+
+			ssbo.mActiveVariables.push_back(variable);
+
+		}
+
+		mShaderStorageBlocks.push_back(std::move(ssbo));
+	}
+}
+
+GlslProg::ShaderStorageBlock * GlslProg::findShaderStorageBlock(const std::string & name)
+{
+	ShaderStorageBlock *ret = nullptr;
+	for (auto &shaderStorageBlock : mShaderStorageBlocks) {
+		if (shaderStorageBlock.mName == name) {
+			ret = &shaderStorageBlock;
+			break;
+		}
+	}
+	return ret;
+}
+
+#endif
+
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+
 void GlslProg::cacheActiveUniformBlocks()
 {
 	GLint numActiveUniformBlocks = 0;
@@ -1089,6 +1165,7 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 	return resultUniform;
 }
 
+
 const GlslProg::Uniform* GlslProg::findUniform( int location, int *resultLocation ) const
 {
 	const Uniform* ret = nullptr;
@@ -1136,7 +1213,58 @@ GLint GlslProg::getAttribLocation( const std::string &name ) const
     else
         return -1;
 }
-    
+   
+#if defined(CINDER_GL_HAS_SHADER_STORAGE_BLOCKS)
+
+void GlslProg::shaderStorageBlock(const std::string & name, GLint binding)
+{
+	auto found = findShaderStorageBlock(name);
+	if (found) {
+		if (found->mBinding != binding) {
+			found->mBinding = binding;
+			glShaderStorageBlockBinding(mHandle, found->mIndex, binding);
+		}
+	}
+	else {
+		CI_LOG_W("Shader storage block \"" << name << "\" not found");
+	}
+}
+
+GLint GlslProg::getShaderStorageBlockBinding(const std::string & name) const
+{
+	auto found = findShaderStorageBlock(name);
+	if (found) {
+		return found->mBinding;
+	}
+	CI_LOG_W("Shader storage block \"" << name << "\" not found");
+	return -1;
+}
+
+GLint GlslProg::getShaderStorageBlockSize(GLint blockIndex) const
+{
+	for (auto & ssbo : mShaderStorageBlocks) {
+		if (ssbo.mIndex == blockIndex)
+			return ssbo.mIndex;
+	}
+	CI_LOG_W("Shader storage block index \"" << blockIndex << "\" not found");
+	return -1;
+}
+
+const GlslProg::ShaderStorageBlock * GlslProg::findShaderStorageBlock(const std::string & name) const
+{
+	const ShaderStorageBlock *ret = nullptr;
+	for (auto &shaderStorageBlock : mShaderStorageBlocks) {
+		if (shaderStorageBlock.mName == name) {
+			ret = &shaderStorageBlock;
+			break;
+		}
+	}
+	return ret;
+}
+
+#endif
+
+
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 
 GlslProg::UniformBlock* GlslProg::findUniformBlock( const std::string &name )
