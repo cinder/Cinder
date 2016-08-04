@@ -3,6 +3,7 @@
 #include "cinder/System.h"
 #include "cinder/Rand.h"
 #include "cinder/tuio/Tuio.h"
+#include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;
