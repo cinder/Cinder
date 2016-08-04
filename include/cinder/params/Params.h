@@ -119,7 +119,7 @@ class InterfaceGl {
 		Options&	keyDecr( const std::string &keyDecr )		{ setKeyDecr( keyDecr ); return *this; }
 		//! Sets a shortcut key for param types that cannot be incremented / decremented (ex. bool)
 		Options&	key( const std::string &key )				{ setKey( key ); return *this; }
-		//! Sets the param label
+		//! Sets the param label. A parameter name must be unique, but you can override it with a 'label', which does not have to be unique.
 		Options&	label( const std::string &label )			{ setLabel( label ); return *this; }
 		//! Sets the param group
 		Options&	group( const std::string &group )			{ setGroup( group ); return *this; }
