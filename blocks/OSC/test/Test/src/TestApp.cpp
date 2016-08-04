@@ -57,9 +57,13 @@ TestApp::TestApp()
 	mSender( 12345, "127.0.0.1", 10000, protocol::v4(), io_service(), mPacketFraming )
 #endif
 {
-	log::manager()->makeLogger<log::LoggerBreakpoint>();
+//	log::manager()->makeLogger<log::LoggerBreakpoint>();
 	mReceiver.bind();
-	mReceiver.listen();
+	mReceiver.listen([]( const asio::error_code &error,
+						const asio::ip::udp::endpoint &originator){
+		CI_LOG_E("Error: " << error.message() << ", val: " << error.value()
+				 << ", originator: " << originator.address().to_string() );
+	});
 	mReceiver.setListener( "/app/?",
 	[]( const osc::Message &message ){
 		cout << "Integer: " << message[0].int32() << endl;
@@ -147,7 +151,13 @@ TestApp::TestApp()
 void TestApp::update()
 {
 	if( ! mIsConnected ) {
-		mSender.bind();
+		try{
+			mSender.bind();
+		}
+		catch( const osc::Exception &ex ) {
+			CI_LOG_EXCEPTION("", ex);
+			return;
+		}
 #if ! TEST_UDP
 		mSender.connect(
 		[&]( asio::error_code error ){
@@ -156,6 +166,9 @@ void TestApp::update()
 			else
 				CI_LOG_E( "error: " << error.message() << ", val: " << error.value() );
 		});
+#else
+		// If we're using ud
+		mIsConnected = true;
 #endif
 	}
 	else {
@@ -186,13 +199,19 @@ void TestApp::update()
 		message.append( 1.4f );
 		message.append( 28.4 );
 		message.append( true );
-		
+#if TEST_UDP
+		auto size = message.getPacketSize();
+		if( size > 65535 ) {
+			CI_LOG_W( "Size is too big for datagram: " << size );
+		}
+#endif
 		mSender.send( message );
 		mMessage = std::move( message );
 		
         {
 			const char* something = "Something";
 			mMessage2 = osc::Message( "/message2" ) << 3 << 4 << 2.0 << 3.0f << "string literal" << something;
+//			cout << "As constructed: " << mMessage2 << endl;
             mSender.send(mMessage2);
         }
 	}

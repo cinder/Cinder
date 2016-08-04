@@ -1299,20 +1299,17 @@ bool ReceiverBase::patternMatch( const std::string& lhs, const std::string& rhs 
 //// ReceiverUdp
 	
 ReceiverUdp::ReceiverUdp( uint16_t port, const asio::ip::udp &protocol, asio::io_service &service )
-: ReceiverBase( nullptr ), mSocket( new udp::socket( service ) ), mLocalEndpoint( protocol, port ),
-	mAmountToReceive( 4096 )
+: mSocket( new udp::socket( service ) ), mLocalEndpoint( protocol, port ), mAmountToReceive( 4096 )
 {
 }
 
 ReceiverUdp::ReceiverUdp( const asio::ip::udp::endpoint &localEndpoint, asio::io_service &io )
-: ReceiverBase( nullptr ), mSocket( new udp::socket( io ) ), mLocalEndpoint( localEndpoint ),
-	mAmountToReceive( 4096 )
+: mSocket( new udp::socket( io ) ), mLocalEndpoint( localEndpoint ), mAmountToReceive( 4096 )
 {
 }
 
 ReceiverUdp::ReceiverUdp( UdpSocketRef socket )
-: ReceiverBase( nullptr ), mSocket( socket ), mLocalEndpoint( socket->local_endpoint() ),
-	mAmountToReceive( 4096 )
+: mSocket( socket ), mLocalEndpoint( socket->local_endpoint() ), mAmountToReceive( 4096 )
 {
 }
 	
@@ -1330,26 +1327,26 @@ void ReceiverUdp::bindImpl()
 	
 void ReceiverUdp::setAmountToReceive( uint32_t amountToReceive )
 {
-	std::lock_guard<std::mutex> lock( mAmountToReceiveMutex );
-	mAmountToReceive = amountToReceive;
+	mAmountToReceive.store( amountToReceive );
 }
 
-void ReceiverUdp::listenImpl()
+void ReceiverUdp::listen( OnSocketErrorFn onSocketErrorFn )
 {
 	if ( ! mSocket->is_open() )
 		return;
 	
-	uint32_t prepareAmount = 0;
-	{
-		std::lock_guard<std::mutex> lock( mAmountToReceiveMutex );
-		prepareAmount = mAmountToReceive;
-	}
+	uint32_t prepareAmount = mAmountToReceive.load();
 	auto tempBuffer = mBuffer.prepare( prepareAmount );
 	auto uniqueEndpoint = std::make_shared<asio::ip::udp::endpoint>();
 	mSocket->async_receive_from( tempBuffer, *uniqueEndpoint,
-	[&, uniqueEndpoint]( const asio::error_code &error, size_t bytesTransferred ) {
-		if( error )
-			handleError( error, *uniqueEndpoint );
+	[&, uniqueEndpoint, onSocketErrorFn]( const asio::error_code &error, size_t bytesTransferred ) {
+		if( error ) {
+			if( onSocketErrorFn )
+				onSocketErrorFn( error, *uniqueEndpoint );
+			else
+				CI_LOG_E( "Udp Receive: " << error.message() << " - Code: " << error.value()
+						  << ", Endpoint: " << uniqueEndpoint->address().to_string() );
+		}
 		else {
 			mBuffer.commit( bytesTransferred );
 			auto data = std::unique_ptr<uint8_t[]>( new uint8_t[ bytesTransferred + 1 ] );
@@ -1358,7 +1355,7 @@ void ReceiverUdp::listenImpl()
 			stream.read( reinterpret_cast<char*>( data.get() ), bytesTransferred );
 			dispatchMethods( data.get(), bytesTransferred, uniqueEndpoint->address() );
 		}
-		listen();
+		listen( onSocketErrorFn );
 	});
 }
 	
@@ -1368,21 +1365,6 @@ void ReceiverUdp::closeImpl()
 	mSocket->close( ec );
 	if( ec )
 		throw osc::Exception( ec );
-}
-	
-void ReceiverUdp::setSocketErrorFn( SocketTransportErrorFn errorFn )
-{
-	std::lock_guard<std::mutex> lock( mSocketTransportErrorFnMutex );
-	mSocketTransportErrorFn = errorFn;
-}
-	
-void ReceiverUdp::handleError( const asio::error_code &error, const protocol::endpoint &originator )
-{
-	std::lock_guard<std::mutex> lock( mSocketTransportErrorFnMutex );
-	if( mSocketTransportErrorFn )
-		mSocketTransportErrorFn( error, originator );
-	else
-		CI_LOG_E( error.message() << ", didn't receive message from " << originator.address().to_string() );
 }
 	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1481,25 +1463,25 @@ void ReceiverTcp::Connection::read()
 }
 
 ReceiverTcp::ReceiverTcp( uint16_t port, const protocol &protocol, asio::io_service &service, PacketFramingRef packetFraming )
-: ReceiverBase( packetFraming ), mAcceptor( new tcp::acceptor( service ) ), mLocalEndpoint( protocol, port ),
+: mAcceptor( new tcp::acceptor( service ) ), mPacketFraming( packetFraming ), mLocalEndpoint( protocol, port ),
 	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 }
 
 ReceiverTcp::ReceiverTcp( const protocol::endpoint &localEndpoint, asio::io_service &service, PacketFramingRef packetFraming )
-: ReceiverBase( packetFraming ), mAcceptor( new tcp::acceptor( service ) ), mLocalEndpoint( localEndpoint ),
+: mAcceptor( new tcp::acceptor( service ) ), mPacketFraming( packetFraming ), mLocalEndpoint( localEndpoint ),
 	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 }
 	
 ReceiverTcp::ReceiverTcp( AcceptorRef acceptor, PacketFramingRef packetFraming )
-: ReceiverBase( packetFraming ), mAcceptor( acceptor ), mLocalEndpoint( mAcceptor->local_endpoint() ),
+: mAcceptor( acceptor ), mLocalEndpoint( mAcceptor->local_endpoint() ), mPacketFraming( packetFraming ),
 	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 }
 	
 ReceiverTcp::ReceiverTcp( TcpSocketRef socket, PacketFramingRef packetFraming )
-: ReceiverBase( packetFraming ), mAcceptor( nullptr ), mLocalEndpoint( socket->local_endpoint() ),
+: mAcceptor( nullptr ), mLocalEndpoint( socket->local_endpoint() ), mPacketFraming( packetFraming ),
 	mConnectionIdentifiers( 0 ), mIsShuttingDown( false )
 {
 	auto identifier = mConnectionIdentifiers++;
@@ -1526,19 +1508,13 @@ void ReceiverTcp::bindImpl()
 		throw osc::Exception( ec );
 }
 	
-void ReceiverTcp::setSocketTransportErrorFn( SocketTransportErrorFn errorFn )
-{
-	std::lock_guard<std::mutex> lock( mSocketTransportErrorFnMutex );
-	mSocketTransportErrorFn = errorFn;
-}
-	
 void ReceiverTcp::setOnAcceptFn( OnAcceptFn acceptFn )
 {
 	std::lock_guard<std::mutex> lock( mOnAcceptFnMutex );
 	mOnAcceptFn = acceptFn;
 }
 
-void ReceiverTcp::listenImpl()
+void ReceiverTcp::listen()
 {
 	if( ! mAcceptor || ! mAcceptor->is_open() )
 		return;
@@ -1622,15 +1598,6 @@ asio::error_code ReceiverTcp::closeConnection( uint64_t connectionIdentifier, as
 		mConnections.erase( rem );
 	}
 	return ec;
-}
-	
-void ReceiverTcp::handleSocketError( const asio::error_code &error, uint64_t originatorId, const asio::ip::tcp::endpoint &endpoint )
-{
-	std::lock_guard<std::mutex> lock( mSocketTransportErrorFnMutex );
-	if( mSocketTransportErrorFn )
-		mSocketTransportErrorFn( error, originatorId );
-	else
-		CI_LOG_E( error.message() << ", didn't receive message from " << endpoint.address().to_string() );
 }
 	
 void ReceiverTcp::handleAcceptorError( const asio::error_code &error )
