@@ -149,9 +149,14 @@ void TestApp::update()
 	if( ! mIsConnected ) {
 		mSender.bind();
 #if ! TEST_UDP
-		mSender.connect();
+		mSender.connect(
+		[&]( asio::error_code error ){
+			if( ! error )
+				mIsConnected = true;
+			else
+				CI_LOG_E( "error: " << error.message() << ", val: " << error.value() );
+		});
 #endif
-		mIsConnected = true;
 	}
 	else {
 		
