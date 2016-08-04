@@ -17,9 +17,9 @@
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
-		6F33E655E27C41C1B606F24E /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908F019920DA4062958DC84F /* Osc.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		98D44A1EDB5B4F97955CCE63 /* BroadcastSenderApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7F6A8939E26B43CD91A8AFEB /* BroadcastSenderApp.cpp */; };
+		B3253BD91D4C57BB00CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253BD71D4C57BB00CDF15F /* Osc.cpp */; };
 		B37BB9CF1BDBC9D700311784 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = B37BB9CE1BDBC9D700311784 /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
@@ -40,8 +40,8 @@
 		790CAEA414E34194AD5AB208 /* BroadcastSender_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = BroadcastSender_Prefix.pch; sourceTree = "<group>"; };
 		7F6A8939E26B43CD91A8AFEB /* BroadcastSenderApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = BroadcastSenderApp.cpp; path = ../src/BroadcastSenderApp.cpp; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* BroadcastSender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BroadcastSender.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		908F019920DA4062958DC84F /* Osc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Osc.cpp; path = ../../../src/Osc.cpp; sourceTree = "<group>"; };
-		B14083EE16564A3CBFF9EF54 /* Osc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Osc.h; path = ../../../src/Osc.h; sourceTree = "<group>"; };
+		B3253BD71D4C57BB00CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
+		B3253BD81D4C57BB00CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		B37BB9CE1BDBC9D700311784 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
 		DFDD5C43D9B6491AA0FD2F73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E6B3C05D9AE64BEC96733F6E /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
@@ -123,7 +123,7 @@
 		2928EA30F8F34807A83F47C6 /* OSC */ = {
 			isa = PBXGroup;
 			children = (
-				D92D4B37061C493D9CB41BCE /* src */,
+				B3253BD51D4C57BB00CDF15F /* cinder */,
 			);
 			name = OSC;
 			sourceTree = "<group>";
@@ -168,13 +168,22 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D92D4B37061C493D9CB41BCE /* src */ = {
+		B3253BD51D4C57BB00CDF15F /* cinder */ = {
 			isa = PBXGroup;
 			children = (
-				908F019920DA4062958DC84F /* Osc.cpp */,
-				B14083EE16564A3CBFF9EF54 /* Osc.h */,
+				B3253BD61D4C57BB00CDF15F /* osc */,
 			);
-			name = src;
+			name = cinder;
+			path = ../../../src/cinder;
+			sourceTree = "<group>";
+		};
+		B3253BD61D4C57BB00CDF15F /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BD71D4C57BB00CDF15F /* Osc.cpp */,
+				B3253BD81D4C57BB00CDF15F /* Osc.h */,
+			);
+			path = osc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,7 +250,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				98D44A1EDB5B4F97955CCE63 /* BroadcastSenderApp.cpp in Sources */,
-				6F33E655E27C41C1B606F24E /* Osc.cpp in Sources */,
+				B3253BD91D4C57BB00CDF15F /* Osc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

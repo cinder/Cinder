@@ -18,8 +18,8 @@
 		3055FA52E2B64D8B8241C976 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C54F90022F5B4BC686D47D6D /* Images.xcassets */; };
 		5764D35F20E14CB181EC0EF2 /* TestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A3E8D2FB9754EF7BE444B51 /* TestApp.cpp */; };
 		9AFE3E4F0CAC40F08F6F5342 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = ADF9A6FB52654E099042D499 /* LaunchScreen.xib */; };
+		B3253BD41D4C571000CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253BD21D4C571000CDF15F /* Osc.cpp */; };
 		B37BB9C81BD6550400311784 /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = B37BB9C71BD6550400311784 /* CinderApp_ios.png */; };
-		B37BB9CC1BD6552200311784 /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B37BB9CA1BD6552200311784 /* Osc.cpp */; };
 		C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C725E000121DAC8F00FA186B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8FFFFA18FF /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091FFFF /* ImageIO.framework */; };
@@ -42,9 +42,9 @@
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		9A3E8D2FB9754EF7BE444B51 /* TestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = TestApp.cpp; path = ../src/TestApp.cpp; sourceTree = "<group>"; };
 		ADF9A6FB52654E099042D499 /* LaunchScreen.xib */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = LaunchScreen.xib; sourceTree = "<group>"; };
+		B3253BD21D4C571000CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
+		B3253BD31D4C571000CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		B37BB9C71BD6550400311784 /* CinderApp_ios.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CinderApp_ios.png; path = ../../../../../samples/data/CinderApp_ios.png; sourceTree = "<group>"; };
-		B37BB9CA1BD6552200311784 /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
-		B37BB9CB1BD6552200311784 /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		B6E68F43E549481A871FCB64 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		C54F90022F5B4BC686D47D6D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Images.xcassets; sourceTree = "<group>"; };
 		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -151,27 +151,43 @@
 		99692BD914FF149000DFFFFF /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				B37BB9CD1BD6552A00311784 /* osc */,
+				B3253BCE1D4C570400CDF15F /* OSC */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
 		};
-		B37BB9C91BD6552200311784 /* src */ = {
+		B3253BCE1D4C570400CDF15F /* OSC */ = {
 			isa = PBXGroup;
 			children = (
-				B37BB9CA1BD6552200311784 /* Osc.cpp */,
-				B37BB9CB1BD6552200311784 /* Osc.h */,
+				B3253BCF1D4C571000CDF15F /* src */,
+			);
+			name = OSC;
+			sourceTree = "<group>";
+		};
+		B3253BCF1D4C571000CDF15F /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BD01D4C571000CDF15F /* cinder */,
 			);
 			name = src;
 			path = ../../../src;
 			sourceTree = "<group>";
 		};
-		B37BB9CD1BD6552A00311784 /* osc */ = {
+		B3253BD01D4C571000CDF15F /* cinder */ = {
 			isa = PBXGroup;
 			children = (
-				B37BB9C91BD6552200311784 /* src */,
+				B3253BD11D4C571000CDF15F /* osc */,
 			);
-			name = osc;
+			path = cinder;
+			sourceTree = "<group>";
+		};
+		B3253BD11D4C571000CDF15F /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BD21D4C571000CDF15F /* Osc.cpp */,
+				B3253BD31D4C571000CDF15F /* Osc.h */,
+			);
+			path = osc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -238,7 +254,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5764D35F20E14CB181EC0EF2 /* TestApp.cpp in Sources */,
-				B37BB9CC1BD6552200311784 /* Osc.cpp in Sources */,
+				B3253BD41D4C571000CDF15F /* Osc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -327,6 +343,7 @@
 					"-lz",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../src";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -347,6 +364,7 @@
 					"-lz",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../src";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

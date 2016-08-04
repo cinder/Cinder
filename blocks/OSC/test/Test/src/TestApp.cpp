@@ -3,7 +3,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
 
-#include "Osc.h"
+#include "cinder/osc/Osc.h"
 
 using namespace ci;
 using namespace ci::app;
