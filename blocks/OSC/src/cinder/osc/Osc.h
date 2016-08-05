@@ -753,17 +753,20 @@ struct AcceptorOptions {
 	AcceptorOptions() = default;
 	~AcceptorOptions() = default;
 	
-	//! Alias function that represents an on accept callback with the constructed tcp::socket and the connectionIdentifier.
-	//! The connectionIdentifier is useful to target closing the underlying socket at a later time.
+	//! Alias function that represents an on accept callback with the constructed tcp::socket and the
+	//! connectionIdentifier. The connectionIdentifier is useful to target closing the underlying
+	//! socket at a later time. Function should return whether the Receiver should or should not cache
+	//! the connection.
 	using OnAcceptFn	= std::function<bool( TcpSocketRef, uint64_t )>;
-	//! Alias function that represents a general error callback for the underlying tcp::acceptor, arguments include the
-	//! error_code.
-	using OnErrorFn		= std::function<void( asio::error_code )>;
+	//! Alias function that represents a general error callback for the underlying tcp::acceptor,
+	//! arguments include the error_code. Function should return whether or not the acceptor should
+	//! continue to accept.
+	using OnErrorFn		= std::function<bool( asio::error_code )>;
 	
 	//! Helper that sets the completeFn to \a onCompleteFn.
-	SenderOptions& onAccept( OnAcceptFn onAcceptFn );
+	AcceptorOptions& onAccept( OnAcceptFn onAcceptFn );
 	//! Helper that sets the errorFn to \a onErrorFn.
-	SenderOptions& onError( OnErrorFn onErrorFn );
+	AcceptorOptions& onError( OnErrorFn onErrorFn );
 	
 	OnAcceptFn		acceptFn{nullptr};
 	OnErrorFn		errorFn{nullptr};

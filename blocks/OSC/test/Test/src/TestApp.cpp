@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#define TEST_UDP 1
+#define TEST_UDP 0
 
 #define USE_SLIP_PACKET_FRAMING 1
 
@@ -35,6 +35,9 @@ class TestApp : public App {
 	void update() override;
 	void cleanup() override;
 	
+	void setupUdp();
+	void setupTcp();
+	
 	osc::PacketFramingRef	mPacketFraming;
 	Receiver				mReceiver;
 	Sender					mSender;
@@ -58,17 +61,13 @@ TestApp::TestApp()
 #endif
 {
 //	log::manager()->makeLogger<log::LoggerBreakpoint>();
-	mReceiver.bind();
-	mReceiver.listen(
-	[]( const asio::error_code &error, const asio::ip::udp::endpoint &originator ) -> bool {
-		if( error ) {
-			CI_LOG_E("Error: " << error.message() << ", val: " << error.value()
-					 << ", originator: " << originator.address().to_string() );
-			return true;
-		}
-		else
-			return false;
-	});
+	
+#if TEST_UDP
+	setupUdp();
+#else
+	setupTcp();
+#endif
+	
 	mReceiver.setListener( "/app/?",
 	[]( const osc::Message &message ){
 		cout << "Integer: " << message[0].int32() << endl;
@@ -153,31 +152,90 @@ TestApp::TestApp()
     });
 }
 
+void TestApp::setupUdp()
+{
+#if TEST_UDP
+	try{
+		mReceiver.bind();
+	}
+	catch( const osc::Exception &ex ) {
+		CI_LOG_EXCEPTION("Receiver Bind: ", ex);
+		quit();
+	}
+	
+	mReceiver.listen(
+	[]( const asio::error_code &error, const asio::ip::udp::endpoint &originator ) -> bool {
+		// Decide whether we want to keep listening, is this an originator error or our socket's
+		// error. Return false to make the socket stop listenings
+		if( error ) {
+			CI_LOG_E("Error: " << error.message() << ", val: " << error.value()
+					<< ", originator: " << originator.address().to_string() );
+			return false;
+		}
+		else
+			return true;
+	});
+	
+	try{
+		mSender.bind();
+		mIsConnected = true;
+	}
+	catch( const osc::Exception &ex ) {
+		CI_LOG_EXCEPTION("Sender bind: ", ex);
+		quit();
+	}
+#endif
+}
+
+void TestApp::setupTcp()
+{
+#if ! TEST_UDP
+	try{
+		mReceiver.bind();
+	}
+	catch( const osc::Exception &ex ) {
+		CI_LOG_EXCEPTION("Receiver Bind: ", ex);
+		quit();
+	}
+	
+	mReceiver.accept( osc::AcceptorOptions()
+					 .onAccept(
+							   [&]( osc::TcpSocketRef socket, uint64_t identifier ) -> bool {
+								   // Decide whether this connection is correct and return whether
+								   // the socket should be cached and read from
+								   bool shouldAccept = true;
+								   if( shouldAccept )
+									   return true;
+								   else
+									   return false;
+							   })
+					 .onError(
+							  [&]( asio::error_code error ) {
+								  // if it's decided that the error can't be recovered from, stop
+								  // accepting by returning false. otherwise do the fix and return
+								  // true. possible fix could be closing and rebinding the acceptor
+								  if( error ) {
+									  CI_LOG_E( "Acceptor Error: " << error.message()
+											   << " - Val: " << error.value() );
+									  return false;
+								  }
+								  else
+									  return true;
+							  }));
+	
+	mSender.connect(
+	[&]( asio::error_code error ){
+		if( ! error )
+			mIsConnected = true;
+		else
+			CI_LOG_E( "error: " << error.message() << ", val: " << error.value() );
+	});
+#endif
+}
+
 void TestApp::update()
 {
-	if( ! mIsConnected ) {
-		try{
-			mSender.bind();
-		}
-		catch( const osc::Exception &ex ) {
-			CI_LOG_EXCEPTION("", ex);
-			return;
-		}
-#if ! TEST_UDP
-		mSender.connect(
-		[&]( asio::error_code error ){
-			if( ! error )
-				mIsConnected = true;
-			else
-				CI_LOG_E( "error: " << error.message() << ", val: " << error.value() );
-		});
-#else
-		// If we're using ud
-		mIsConnected = true;
-#endif
-	}
-	else {
-		
+	if( mIsConnected ) {
 		static int i = 245;
 		i++;
 		static std::string test("testing");

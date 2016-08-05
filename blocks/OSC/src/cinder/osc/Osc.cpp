@@ -1342,7 +1342,7 @@ void ReceiverUdp::listen( OnSocketErrorFn onSocketErrorFn )
 	[&, uniqueEndpoint, onSocketErrorFn]( const asio::error_code &error, size_t bytesTransferred ) {
 		if( error ) {
 			if( onSocketErrorFn ) {
-				if( onSocketErrorFn( error, *uniqueEndpoint ) )
+				if( ! onSocketErrorFn( error, *uniqueEndpoint ) )
 					return;
 			}
 			else {
@@ -1370,6 +1370,21 @@ void ReceiverUdp::closeImpl()
 	mSocket->close( ec );
 	if( ec )
 		throw osc::Exception( ec );
+}
+	
+/////////////////////////////////////////////////////////////////////////////////////////
+//// AcceptorOptions
+	
+AcceptorOptions& AcceptorOptions::onError( OnErrorFn onErrorFn )
+{
+	errorFn = onErrorFn;
+	return *this;
+}
+	
+AcceptorOptions& AcceptorOptions::onAccept( OnAcceptFn onAcceptFn )
+{
+	acceptFn = onAcceptFn;
+	return *this;
 }
 	
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1541,7 +1556,8 @@ void ReceiverTcp::accept( AcceptorOptions acceptorOptions )
 		}
 		else {
 			if( acceptorOptions.errorFn ) {
-				acceptorOptions.errorFn( error );
+				if( ! acceptorOptions.errorFn( error ) )
+					return;
 			}
 			else {
 				CI_LOG_E( "Tcp Accept: " << error.message() << " - Code: " << error.value() );
