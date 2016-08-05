@@ -697,7 +697,7 @@ class ReceiverUdp : public ReceiverBase {
 	using protocol = asio::ip::udp;
 	//! Alias function that represents a general error callback for the socket, with an error_code and orginating endpoint
 	//! if present. To see more about asio's error_codes, look at "asio/error.hpp".
-	using OnSocketErrorFn = std::function<void( const asio::error_code &/*error*/,
+	using OnSocketErrorFn = std::function<bool( const asio::error_code &/*error*/,
 												const protocol::endpoint &/*originator*/)>;
 	//! Constructs a Receiver (called a \a client in the OSC spec) using UDP for transport, whose local endpoint
 	//! is defined by \a localPort and \a protocol, which defaults to v4. Takes an optional io_service to
@@ -747,6 +747,27 @@ class ReceiverUdp : public ReceiverBase {
 	//! Non-Moveable.
 	ReceiverUdp& operator=( ReceiverUdp &&other ) = delete;
 };
+	
+//! Represents Options for sender callbacks. Holds both a completeFn and errorFn.
+struct AcceptorOptions {
+	AcceptorOptions() = default;
+	~AcceptorOptions() = default;
+	
+	//! Alias function that represents an on accept callback with the constructed tcp::socket and the connectionIdentifier.
+	//! The connectionIdentifier is useful to target closing the underlying socket at a later time.
+	using OnAcceptFn	= std::function<bool( TcpSocketRef, uint64_t )>;
+	//! Alias function that represents a general error callback for the underlying tcp::acceptor, arguments include the
+	//! error_code.
+	using OnErrorFn		= std::function<void( asio::error_code )>;
+	
+	//! Helper that sets the completeFn to \a onCompleteFn.
+	SenderOptions& onAccept( OnAcceptFn onAcceptFn );
+	//! Helper that sets the errorFn to \a onErrorFn.
+	SenderOptions& onError( OnErrorFn onErrorFn );
+	
+	OnAcceptFn		acceptFn{nullptr};
+	OnErrorFn		errorFn{nullptr};
+};
 
 //! Represents an OSC Receiver(called a \a client in the OSC spec) and implements the TCP
 //! transport networking layer.
@@ -759,12 +780,6 @@ class ReceiverTcp : public ReceiverBase {
 	//! can be used to close the underlying socket and notify the rest of your system.
 	using SocketTransportErrorFn = std::function<void( const asio::error_code &/*error*/,
 													   uint64_t /*connectionIdentifier*/ )>;
-	//! Alias function that represents a general error callback for the underlying tcp::acceptor, arguments include the
-	//! error_code.
-	using AcceptorErrorFn = std::function<void( const asio::error_code &/*error*/ )>;
-	//! Alias function that represents an on accept callback with the constructed tcp::socket and the connectionIdentifier.
-	//! The connectionIdentifier is useful to target closing the underlying socket at a later time.
-	using OnAcceptFn = std::function<void( TcpSocketRef, uint64_t )>;
 	//! Constructs a Receiver (called a \a client in the OSC spec) using TCP for transport, whose local endpoint
 	//! is defined by \a localPort and \a protocol, which defaults to v4, and PacketFraming shared_ptr \a packetFraming,
 	//! which defaults to null. Takes an optional io_service to construct the socket from.
@@ -790,16 +805,10 @@ class ReceiverTcp : public ReceiverBase {
 				 PacketFramingRef packetFraming = nullptr );
 	virtual ~ReceiverTcp();
 	
-	void listen();
 	//! Launches acceptor to asynchronously accept connections. If an error occurs, the AcceptorErrorFn will be called.
-	void accept();
+	void accept( AcceptorOptions acceptorOptions = AcceptorOptions() );
 	//! Sets the underlying SocketTransportErrorFn, called on any errors happening on the underlying sockets.
 	void setSocketTransportErrorFn( SocketTransportErrorFn errorFn );
-	//! Sets the underlying AcceptorErrorFn, called on any errors happening on the underlying acceptor.
-	void setAcceptorErrorFn( AcceptorErrorFn errorFn );
-	//! Sets the underlying OnAcceptFn. Called when the Acceptor receives a connection and before the
-	//! ReceiverTcp::Connection is constructed and read from.
-	void setOnAcceptFn( OnAcceptFn acceptFn );
 	//! Closes the underlying acceptor. Must rebind to listen again after calling this function.
 	void closeAcceptor();
 	//! Closes the Connection associated with the connectionIdentifier. \a connectionIdentifier is the handle
@@ -859,11 +868,9 @@ class ReceiverTcp : public ReceiverBase {
 	protocol::endpoint	mLocalEndpoint;
 	
 	SocketTransportErrorFn	mSocketTransportErrorFn;
-	AcceptorErrorFn			mAcceptorErrorFn;
-	OnAcceptFn				mOnAcceptFn;
 	
-	std::mutex				mDispatchMutex, mConnectionMutex,
-							mOnAcceptFnMutex, mAcceptorErrorFnMutex;
+	std::mutex				mDispatchMutex, mConnectionMutex;
+	
 	//! Alias representing each connection.
 	using UniqueConnection = std::unique_ptr<Connection>;
 	std::vector<UniqueConnection>		mConnections;

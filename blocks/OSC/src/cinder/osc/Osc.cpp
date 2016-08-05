@@ -1341,11 +1341,16 @@ void ReceiverUdp::listen( OnSocketErrorFn onSocketErrorFn )
 	mSocket->async_receive_from( tempBuffer, *uniqueEndpoint,
 	[&, uniqueEndpoint, onSocketErrorFn]( const asio::error_code &error, size_t bytesTransferred ) {
 		if( error ) {
-			if( onSocketErrorFn )
-				onSocketErrorFn( error, *uniqueEndpoint );
-			else
-				CI_LOG_E( "Udp Receive: " << error.message() << " - Code: " << error.value()
+			if( onSocketErrorFn ) {
+				if( onSocketErrorFn( error, *uniqueEndpoint ) )
+					return;
+			}
+			else {
+				CI_LOG_E( "Udp Message: " << error.message() << " - Code: " << error.value()
 						  << ", Endpoint: " << uniqueEndpoint->address().to_string() );
+				CI_LOG_W( "Exiting Listen loop." );
+				return;
+			}
 		}
 		else {
 			mBuffer.commit( bytesTransferred );
@@ -1355,7 +1360,7 @@ void ReceiverUdp::listen( OnSocketErrorFn onSocketErrorFn )
 			stream.read( reinterpret_cast<char*>( data.get() ), bytesTransferred );
 			dispatchMethods( data.get(), bytesTransferred, uniqueEndpoint->address() );
 		}
-		listen( onSocketErrorFn );
+		listen( std::move( onSocketErrorFn ) );
 	});
 }
 	
@@ -1492,7 +1497,7 @@ ReceiverTcp::ReceiverTcp( TcpSocketRef socket, PacketFramingRef packetFraming )
 	
 void ReceiverTcp::bindImpl()
 {
-	if( ! mAcceptor )
+	if( ! mAcceptor || mAcceptor->is_open() )
 		return;
 	
 	asio::error_code ec;
@@ -1506,52 +1511,49 @@ void ReceiverTcp::bindImpl()
 	mAcceptor->bind( mLocalEndpoint, ec );
 	if( ec )
 		throw osc::Exception( ec );
+	
+	mAcceptor->listen( socket_base::max_connections, ec );
+	if( ec )
+		throw osc::Exception( ec );
 }
 	
-void ReceiverTcp::setOnAcceptFn( OnAcceptFn acceptFn )
-{
-	std::lock_guard<std::mutex> lock( mOnAcceptFnMutex );
-	mOnAcceptFn = acceptFn;
-}
-
-void ReceiverTcp::listen()
+void ReceiverTcp::accept( AcceptorOptions acceptorOptions )
 {
 	if( ! mAcceptor || ! mAcceptor->is_open() )
 		return;
 	
-	asio::error_code ec;
-	mAcceptor->listen( socket_base::max_connections, ec );
-	if( ec )
-		throw osc::Exception( ec );
-	
-	accept();
-}
-	
-void ReceiverTcp::accept()
-{
-	if( ! mAcceptor || ! mAcceptor->is_open() ) return;
-	
-	auto socket = TcpSocketRef( new tcp::socket( mAcceptor->get_io_service() ) );
+	auto socket = std::make_shared<tcp::socket>( mAcceptor->get_io_service() );
 	
 	mAcceptor->async_accept( *socket, std::bind(
-	[&]( TcpSocketRef socket, const asio::error_code &error ) {
+	[&, acceptorOptions]( TcpSocketRef socket, const asio::error_code &error ) {
 		if( ! error ) {
 			auto identifier = mConnectionIdentifiers++;
 			{
-				std::lock_guard<std::mutex> lock( mOnAcceptFnMutex );
-				if( mOnAcceptFn )
-					mOnAcceptFn( socket, identifier );
-			}
-			{
-				std::lock_guard<std::mutex> lock( mConnectionMutex );
-				mConnections.emplace_back( new Connection( socket, this, identifier ) );
-				mConnections.back()->read();
+				bool shouldAdd = true;
+				if( acceptorOptions.acceptFn ) {
+					shouldAdd = acceptorOptions.acceptFn( socket, identifier );
+				}
+				
+				if( shouldAdd ) {
+					std::lock_guard<std::mutex> lock( mConnectionMutex );
+					mConnections.emplace_back( new Connection( socket, this, identifier ) );
+					mConnections.back()->read();
+				}
 			}
 		}
-		else
-			handleAcceptorError( error );
+		else {
+			if( acceptorOptions.errorFn ) {
+				acceptorOptions.errorFn( error );
+			}
+			else {
+				CI_LOG_E( "Tcp Accept: " << error.message() << " - Code: " << error.value() );
+				CI_LOG_W( "Exiting Accept loop." );
+				return;
+			}
+		}
+			
 		
-		accept();
+		accept( acceptorOptions );
 	}, socket, _1 ) );
 }
 	
@@ -1598,15 +1600,6 @@ asio::error_code ReceiverTcp::closeConnection( uint64_t connectionIdentifier, as
 		mConnections.erase( rem );
 	}
 	return ec;
-}
-	
-void ReceiverTcp::handleAcceptorError( const asio::error_code &error )
-{
-	std::lock_guard<std::mutex> lock( mAcceptorErrorFnMutex );
-	if( mAcceptorErrorFn )
-		mAcceptorErrorFn( error );
-	else
-		CI_LOG_E( "Acceptor: " << error.message() );
 }
 
 ByteBufferRef SLIPPacketFraming::encode( ByteBufferRef bufferToEncode )

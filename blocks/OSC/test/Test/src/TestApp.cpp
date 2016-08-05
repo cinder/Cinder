@@ -59,10 +59,15 @@ TestApp::TestApp()
 {
 //	log::manager()->makeLogger<log::LoggerBreakpoint>();
 	mReceiver.bind();
-	mReceiver.listen([]( const asio::error_code &error,
-						const asio::ip::udp::endpoint &originator){
-		CI_LOG_E("Error: " << error.message() << ", val: " << error.value()
-				 << ", originator: " << originator.address().to_string() );
+	mReceiver.listen(
+	[]( const asio::error_code &error, const asio::ip::udp::endpoint &originator ) -> bool {
+		if( error ) {
+			CI_LOG_E("Error: " << error.message() << ", val: " << error.value()
+					 << ", originator: " << originator.address().to_string() );
+			return true;
+		}
+		else
+			return false;
 	});
 	mReceiver.setListener( "/app/?",
 	[]( const osc::Message &message ){
@@ -199,12 +204,7 @@ void TestApp::update()
 		message.append( 1.4f );
 		message.append( 28.4 );
 		message.append( true );
-#if TEST_UDP
-		auto size = message.getPacketSize();
-		if( size > 65535 ) {
-			CI_LOG_W( "Size is too big for datagram: " << size );
-		}
-#endif
+		
 		mSender.send( message );
 		mMessage = std::move( message );
 		
