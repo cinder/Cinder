@@ -1458,10 +1458,9 @@ void ReceiverTcp::Connection::read()
 				dataPtr = data->data() + 4;
 				dataSize = data->size() - 4;
 			}
-			{
-				std::lock_guard<std::mutex> lock( mReceiver->mDispatchMutex );
-				receiver->dispatchMethods( dataPtr, dataSize, mSocket->remote_endpoint().address() );
-			}
+			
+			receiver->dispatchMethods( dataPtr, dataSize, mSocket->remote_endpoint().address() );
+			
 			read();
 		}
 	});
@@ -1530,9 +1529,8 @@ void ReceiverTcp::accept( AcceptorOptions acceptorOptions )
 			auto identifier = mConnectionIdentifiers++;
 			{
 				bool shouldAdd = true;
-				if( acceptorOptions.acceptFn ) {
+				if( acceptorOptions.acceptFn )
 					shouldAdd = acceptorOptions.acceptFn( socket, identifier );
-				}
 				
 				if( shouldAdd ) {
 					std::lock_guard<std::mutex> lock( mConnectionMutex );
@@ -1551,10 +1549,18 @@ void ReceiverTcp::accept( AcceptorOptions acceptorOptions )
 				return;
 			}
 		}
-			
 		
 		accept( acceptorOptions );
 	}, socket, _1 ) );
+}
+	
+void ReceiverTcp::handleSocketError( const error_code &error, uint64_t originator, const tcp::endpoint &endpoint )
+{
+	std::lock_guard<std::mutex> lock( mSocketTransportErrorFnMutex );
+	if( mSocketTransportErrorFn )
+		mSocketTransportErrorFn( error, originator );
+	else
+		CI_LOG_E( error.message() << ", didn't receive message from " << endpoint.address().to_string() );
 }
 	
 void ReceiverTcp::closeAcceptor()

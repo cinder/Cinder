@@ -858,8 +858,6 @@ class ReceiverTcp : public ReceiverBase {
 	//! called on the prior to close. If an error occurs, the AcceptorErrorFn or the SocketErrorFn will be called
 	//! respectively.
 	void closeImpl() override;
-	//! Helper which handles any errors happening to the acceptor.
-	void handleAcceptorError( const asio::error_code &error );
 	//! Helper which handles any errors with the connection.
 	void handleSocketError( const asio::error_code &error, uint64_t originator, const asio::ip::tcp::endpoint &endpoint );
 	
@@ -869,7 +867,7 @@ class ReceiverTcp : public ReceiverBase {
 	
 	SocketTransportErrorFn	mSocketTransportErrorFn;
 	
-	std::mutex				mDispatchMutex, mConnectionMutex;
+	std::mutex				mConnectionMutex, mSocketTransportErrorFnMutex;
 	
 	//! Alias representing each connection.
 	using UniqueConnection = std::unique_ptr<Connection>;
