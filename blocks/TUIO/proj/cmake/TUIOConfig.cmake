@@ -8,11 +8,7 @@ if( NOT TARGET TUIO )
 
 	# Add OSC block as a dependency
 	get_filename_component( OSC_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../OSC/proj/cmake" ABSOLUTE )
-	message( "OSC_MODULE_PATH: ${OSC_MODULE_PATH}" )
-
-	list( APPEND CMAKE_MODULE_PATH "${OSC_MODULE_PATH}" )
-
-	find_package( OSC REQUIRED )
+	find_package( OSC REQUIRED PATHS "${OSC_MODULE_PATH}" )
 	add_dependencies( TUIO OSC )
 	target_link_libraries( TUIO OSC )
 endif()
