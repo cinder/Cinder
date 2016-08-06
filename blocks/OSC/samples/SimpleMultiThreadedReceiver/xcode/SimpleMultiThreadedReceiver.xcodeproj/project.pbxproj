@@ -17,8 +17,8 @@
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
-		67918C2088A546C3876E643F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F1D69EF994B45A4B496600B /* Osc.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B3253BE51D4C589000CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253BE31D4C589000CDF15F /* Osc.cpp */; };
 		B37BB9BC1BD64CC100311784 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = B37BB9BB1BD64CC100311784 /* CinderApp.icns */; };
 		E894EFA248B4485581F0E3BC /* SimpleMultiThreadedReceiverApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F27C5A9C89B74CFEB8170CD5 /* SimpleMultiThreadedReceiverApp.cpp */; };
 /* End PBXBuildFile section */
@@ -35,14 +35,14 @@
 		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		0941A317FCF54CE988EE34EE /* SimpleMultiThreadedReceiver_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = SimpleMultiThreadedReceiver_Prefix.pch; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		1F1D69EF994B45A4B496600B /* Osc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Osc.cpp; path = ../../../src/Osc.cpp; sourceTree = "<group>"; };
-		2989943F05EB430F8112EFB2 /* Osc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Osc.h; path = ../../../src/Osc.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		3C9E048B51A24347BA57D996 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		4C96F8368D8944248713FA22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* SimpleMultiThreadedReceiver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleMultiThreadedReceiver.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3253BE31D4C589000CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
+		B3253BE41D4C589000CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		B37BB9BB1BD64CC100311784 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
 		F27C5A9C89B74CFEB8170CD5 /* SimpleMultiThreadedReceiverApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SimpleMultiThreadedReceiverApp.cpp; path = ../src/SimpleMultiThreadedReceiverApp.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -123,7 +123,7 @@
 		2088B566C69F4444BA951E38 /* OSC */ = {
 			isa = PBXGroup;
 			children = (
-				A6070E4F3926433EA1B7DC79 /* src */,
+				B3253BE01D4C589000CDF15F /* src */,
 			);
 			name = OSC;
 			sourceTree = "<group>";
@@ -168,13 +168,30 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		A6070E4F3926433EA1B7DC79 /* src */ = {
+		B3253BE01D4C589000CDF15F /* src */ = {
 			isa = PBXGroup;
 			children = (
-				1F1D69EF994B45A4B496600B /* Osc.cpp */,
-				2989943F05EB430F8112EFB2 /* Osc.h */,
+				B3253BE11D4C589000CDF15F /* cinder */,
 			);
 			name = src;
+			path = ../../../src;
+			sourceTree = "<group>";
+		};
+		B3253BE11D4C589000CDF15F /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BE21D4C589000CDF15F /* osc */,
+			);
+			path = cinder;
+			sourceTree = "<group>";
+		};
+		B3253BE21D4C589000CDF15F /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BE31D4C589000CDF15F /* Osc.cpp */,
+				B3253BE41D4C589000CDF15F /* Osc.h */,
+			);
+			path = osc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,7 +258,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E894EFA248B4485581F0E3BC /* SimpleMultiThreadedReceiverApp.cpp in Sources */,
-				67918C2088A546C3876E643F /* Osc.cpp in Sources */,
+				B3253BE51D4C589000CDF15F /* Osc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

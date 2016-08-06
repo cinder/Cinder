@@ -4,13 +4,21 @@
 
 #include "cinder/Log.h"
 #include "cinder/Timeline.h"
-#include "Osc.h"
-
-#define USE_UDP 1
+#include "cinder/osc/Osc.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+#define USE_UDP 0
+
+#if USE_UDP
+using Receiver = osc::ReceiverUdp;
+using protocol = asio::ip::udp;
+#else
+using Receiver = osc::ReceiverTcp;
+using protocol = asio::ip::tcp;
+#endif
 
 class SimpleMultiThreadedReceiverApp : public App {
 public:
@@ -29,16 +37,12 @@ public:
 	
 	std::mutex mCirclePosMutex, mSquarePosMutex;
 	
-#if USE_UDP
-	osc::ReceiverUdp mReceiver;
-#else
-	osc::ReceiverTcp mReceiver;
-#endif
+	Receiver mReceiver;
 };
 
 SimpleMultiThreadedReceiverApp::SimpleMultiThreadedReceiverApp()
 : mIoService( new asio::io_service ), mWork( new asio::io_service::work( *mIoService ) ),
-	mReceiver( 10001 )
+    mReceiver( 10001, protocol::v4(), *mIoService )
 {
 }
 

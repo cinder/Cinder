@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -21,23 +22,23 @@
     <Filter Include="Blocks\OSC\src">
       <UniqueIdentifier>{E5670CD6-5709-4F07-8BC7-72D5864E217C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Blocks\OSC\src\ip">
-      <UniqueIdentifier>{DBC90789-DFE3-401D-BBCA-77494BD1D8A7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Blocks\OSC\src\osc">
-      <UniqueIdentifier>{BEF8335E-0128-400A-A955-066ABCDF971E}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Blocks\OSC\src\ip\win32">
-      <UniqueIdentifier>{12E3FECE-DE44-4928-8B09-6A9AC9956459}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Blocks\TUIO">
       <UniqueIdentifier>{972E866F-EB75-4B9D-A646-601F699E23B4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\TUIO\src">
       <UniqueIdentifier>{DF219D27-2390-496D-B89F-D252C1DEA583}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Blocks\TUIO\include">
-      <UniqueIdentifier>{0A5CBEE5-2203-4E9A-A35C-A9AE8E64FD96}</UniqueIdentifier>
+    <Filter Include="Blocks\OSC\src\cinder">
+      <UniqueIdentifier>{4ade2755-f9c6-4a99-b50c-bd84b80a5321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src\cinder\osc">
+      <UniqueIdentifier>{cfbec125-8069-4488-ba8d-0d4f462dff1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO\src\cinder">
+      <UniqueIdentifier>{336e9bf2-560d-4ccb-bb70-2dff83a11e9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO\src\cinder\tuio">
+      <UniqueIdentifier>{7a9cda55-6bf7-40e3-b08a-5bf5ee88ceaa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -50,112 +51,22 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\..\osc\src\OscBundle.cpp">
-      <Filter>Blocks\OSC\src</Filter>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\osc\src\OscListener.cpp">
-      <Filter>Blocks\OSC\src</Filter>
+    <ClCompile Include="..\..\..\src\cinder\tuio\Tuio.cpp">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\osc\src\OscMessage.cpp">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\osc\src\OscSender.cpp">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\osc\src\ip\IpEndpointName.cpp">
-      <Filter>Blocks\OSC\src\ip</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\osc\src\osc\OscOutboundPacketStream.cpp">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\osc\src\osc\OscPrintReceivedElements.cpp">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\osc\src\osc\OscReceivedElements.cpp">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\osc\src\osc\OscTypes.cpp">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\..\osc\src\OscArg.h">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\OscBundle.h">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\OscListener.h">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\OscMessage.h">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\OscSender.h">
-      <Filter>Blocks\OSC\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\ip\IpEndpointName.h">
-      <Filter>Blocks\OSC\src\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\ip\NetworkingUtils.h">
-      <Filter>Blocks\OSC\src\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\ip\PacketListener.h">
-      <Filter>Blocks\OSC\src\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\ip\TimerListener.h">
-      <Filter>Blocks\OSC\src\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\ip\UdpSocket.h">
-      <Filter>Blocks\OSC\src\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\osc\MessageMappingOscPacketListener.h">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscException.h">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscHostEndianness.h">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscOutboundPacketStream.h">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscPacketListener.h">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscPrintReceivedElements.h">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscReceivedElements.h">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscTypes.h">
-      <Filter>Blocks\OSC\src\osc</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\..\..\osc\src\ip\win32\NetworkingUtils.cpp">
-      <Filter>Blocks\OSC\src\ip\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\osc\src\ip\win32\UdpSocket.cpp">
-      <Filter>Blocks\OSC\src\ip\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\TuioClient.cpp">
-      <Filter>Blocks\TUIO\src</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\..\include\TuioClient.h">
-      <Filter>Blocks\TUIO\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\TuioCursor.h">
-      <Filter>Blocks\TUIO\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\TuioObject.h">
-      <Filter>Blocks\TUIO\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\TuioProfileBase.h">
-      <Filter>Blocks\TUIO\include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\cinder\tuio\Tuio.h">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

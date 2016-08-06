@@ -105,7 +105,6 @@ void CameraUi::disconnect()
 	for( auto &conn : mMouseConnections )
 		conn.disconnect();
 
-	mWindowResizeConnection.disconnect();
 	mWindow.reset();
 }
 

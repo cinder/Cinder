@@ -17,6 +17,7 @@
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
 		2E19CEBE938948318D27F588 /* SimpleSenderApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34D6F51433494587BA59B3A4 /* SimpleSenderApp.cpp */; };
 		675DF9344E3241B08BB6104F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A686591D77694DC4B1B15B88 /* Images.xcassets */; };
+		B3253C091D4C5BED00CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253C071D4C5BED00CDF15F /* Osc.cpp */; };
 		B37BB9C01BD650B700311784 /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = B37BB9BF1BD650B700311784 /* CinderApp_ios.png */; };
 		C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C725E000121DAC8F00FA186B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -25,7 +26,6 @@
 		C7FB19D6124BC0D70045AFD2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */; };
 		CCF56ADD07C04F2DB231B20E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D570547500064FAF99B6C5DE /* LaunchScreen.xib */; };
 		DDDDE001121DAC8FFFFADDDD /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDDDDF6A1138442D0091DDDD /* MobileCoreServices.framework */; };
-		FF0DD884896C4B068C06B19F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FB69C4282AF4385ACE25CD1 /* Osc.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,14 +38,14 @@
 		0E0956F59FD143AF897C99E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		282BFF1B61C6415A8930AFF7 /* Osc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Osc.h; path = ../../../src/Osc.h; sourceTree = "<group>"; };
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		34D6F51433494587BA59B3A4 /* SimpleSenderApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SimpleSenderApp.cpp; path = ../src/SimpleSenderApp.cpp; sourceTree = "<group>"; };
 		42BBDB531BCB4F87966C68F1 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
-		5FB69C4282AF4385ACE25CD1 /* Osc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Osc.cpp; path = ../../../src/Osc.cpp; sourceTree = "<group>"; };
 		9E9EDDE25B794BFC8014075D /* SimpleSender_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = SimpleSender_Prefix.pch; sourceTree = "<group>"; };
 		A686591D77694DC4B1B15B88 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Images.xcassets; sourceTree = "<group>"; };
+		B3253C071D4C5BED00CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
+		B3253C081D4C5BED00CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		B37BB9BF1BD650B700311784 /* CinderApp_ios.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CinderApp_ios.png; path = ../../../../../samples/data/CinderApp_ios.png; sourceTree = "<group>"; };
 		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C727C02B121B400300192073 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -142,7 +142,7 @@
 		395F94F664D644259CDF5918 /* OSC */ = {
 			isa = PBXGroup;
 			children = (
-				CA43A74A0DBD4C129D584E3D /* src */,
+				B3253C041D4C5BED00CDF15F /* src */,
 			);
 			name = OSC;
 			sourceTree = "<group>";
@@ -164,13 +164,30 @@
 			name = Blocks;
 			sourceTree = "<group>";
 		};
-		CA43A74A0DBD4C129D584E3D /* src */ = {
+		B3253C041D4C5BED00CDF15F /* src */ = {
 			isa = PBXGroup;
 			children = (
-				5FB69C4282AF4385ACE25CD1 /* Osc.cpp */,
-				282BFF1B61C6415A8930AFF7 /* Osc.h */,
+				B3253C051D4C5BED00CDF15F /* cinder */,
 			);
 			name = src;
+			path = ../../../src;
+			sourceTree = "<group>";
+		};
+		B3253C051D4C5BED00CDF15F /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C061D4C5BED00CDF15F /* osc */,
+			);
+			path = cinder;
+			sourceTree = "<group>";
+		};
+		B3253C061D4C5BED00CDF15F /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C071D4C5BED00CDF15F /* Osc.cpp */,
+				B3253C081D4C5BED00CDF15F /* Osc.h */,
+			);
+			path = osc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -237,7 +254,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E19CEBE938948318D27F588 /* SimpleSenderApp.cpp in Sources */,
-				FF0DD884896C4B068C06B19F /* Osc.cpp in Sources */,
+				B3253C091D4C5BED00CDF15F /* Osc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -17,9 +17,9 @@
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
-		538D3B5820074B5094E84931 /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A23A65B1011491BA091FEB9 /* Osc.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AF8E7C8F1E5C4C29A97C906C /* SimpleMultiThreadedSenderApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B69A308B78AF4F39925CC4C6 /* SimpleMultiThreadedSenderApp.cpp */; };
+		B3253BF11D4C591E00CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253BEF1D4C591E00CDF15F /* Osc.cpp */; };
 		B37BB9BE1BD64CD600311784 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = B37BB9BD1BD64CD600311784 /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
@@ -40,11 +40,11 @@
 		3C395BB9465C45A09FD946E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* SimpleMultiThreadedSender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleMultiThreadedSender.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9A23A65B1011491BA091FEB9 /* Osc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Osc.cpp; path = ../../../src/Osc.cpp; sourceTree = "<group>"; };
+		B3253BEF1D4C591E00CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
+		B3253BF01D4C591E00CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		B37BB9BD1BD64CD600311784 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
 		B69A308B78AF4F39925CC4C6 /* SimpleMultiThreadedSenderApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SimpleMultiThreadedSenderApp.cpp; path = ../src/SimpleMultiThreadedSenderApp.cpp; sourceTree = "<group>"; };
 		E8182B8940FA431F9523BBCD /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
-		FBA4C3CB80A2419B98F52B9C /* Osc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Osc.h; path = ../../../src/Osc.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,21 +160,38 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B3253BEC1D4C591E00CDF15F /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BED1D4C591E00CDF15F /* cinder */,
+			);
+			name = src;
+			path = ../../../src;
+			sourceTree = "<group>";
+		};
+		B3253BED1D4C591E00CDF15F /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BEE1D4C591E00CDF15F /* osc */,
+			);
+			path = cinder;
+			sourceTree = "<group>";
+		};
+		B3253BEE1D4C591E00CDF15F /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BEF1D4C591E00CDF15F /* Osc.cpp */,
+				B3253BF01D4C591E00CDF15F /* Osc.h */,
+			);
+			path = osc;
+			sourceTree = "<group>";
+		};
 		D39F916E4FDD4656938E664A /* OSC */ = {
 			isa = PBXGroup;
 			children = (
-				DD473F3601B04D298B032F98 /* src */,
+				B3253BEC1D4C591E00CDF15F /* src */,
 			);
 			name = OSC;
-			sourceTree = "<group>";
-		};
-		DD473F3601B04D298B032F98 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				9A23A65B1011491BA091FEB9 /* Osc.cpp */,
-				FBA4C3CB80A2419B98F52B9C /* Osc.h */,
-			);
-			name = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,7 +258,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF8E7C8F1E5C4C29A97C906C /* SimpleMultiThreadedSenderApp.cpp in Sources */,
-				538D3B5820074B5094E84931 /* Osc.cpp in Sources */,
+				B3253BF11D4C591E00CDF15F /* Osc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

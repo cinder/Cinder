@@ -2,9 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "Osc.h"
-
-#define USE_UDP 1
+#include "cinder/osc/Osc.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -26,8 +24,8 @@ public:
 	
 	ivec2 mCurrentMousePositon;
 
-	osc::UdpSocketRef mSocket;
-	osc::SenderUdp mSender;
+	osc::UdpSocketRef	mSocket;
+	osc::SenderUdp		mSender;
 };
 
 BroadcastSenderApp::BroadcastSenderApp()
