@@ -583,7 +583,7 @@ void InterfaceGl::OptionsBase::reAddOptions()
 		setKeyIncr( mKeyIncr );
 	if( ! mKeyDecr.empty() )
 		setKeyDecr( mKeyDecr );
-	if( !mLabel.empty() )
+	if( ! mLabel.empty() )
 		setLabel( mLabel );
 	if( ! mGroup.empty() )
 		setGroup( mGroup );

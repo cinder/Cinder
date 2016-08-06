@@ -78,7 +78,7 @@ class InterfaceGl {
 		void setKeyIncr( const std::string &keyIncr );
 		void setKeyDecr( const std::string &keyDecr );
 		void setKey( const std::string &key );
-		void setLabel( const std::string & label );
+		void setLabel( const std::string &label );
 		void setGroup( const std::string &group );
 		void setOptionsStr( const std::string &optionsStr );
 
