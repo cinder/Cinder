@@ -124,7 +124,7 @@
       <AdditionalIncludeDirectories>&quot;..\..\..\..\include&quot;;..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset)-ANGLE.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -187,7 +187,7 @@ xcopy /y &quot;..\..\..\..\lib\msw\x86\d3dcompiler_46.dll&quot; &quot;$(OutDir)&
       <AdditionalIncludeDirectories>&quot;..\..\..\..\include&quot;;..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset)-ANGLE.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
