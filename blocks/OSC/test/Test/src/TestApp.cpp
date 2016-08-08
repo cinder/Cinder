@@ -76,10 +76,6 @@ TestApp::TestApp()
 		cout << "Integer: " << message[0].int32() << endl;
 		cout << "Received From: " << message.getSenderIpAddress() << endl;
 	} );
-	mReceiver.setListener( "/app/?",
-	[]( const osc::Message &message ) {
-		cout << "String: " << message[1].string() << endl;
-	});
 	mReceiver.setListener( "/app/*",
 	[]( const osc::Message &message ) {
 		auto blob0 = message[2].blob();
@@ -94,30 +90,6 @@ TestApp::TestApp()
 		"\tint: " << myStruct1.myInt << endl <<
 		"\tfloat: " << myStruct1.myFloat << endl <<
 		"\tdouble: " << myStruct1.myDouble << endl;
-	});
-	mReceiver.setListener( "/app/?",
-	[]( const osc::Message &message ) {
-		cout << "Character: " << message[4].character() << endl;
-	});
-	mReceiver.setListener( "/app/?",
-	[]( const osc::Message &message ) {
-		cout << "Midi: " << message << endl;
-	});
-	mReceiver.setListener( "/app/?",
-	[]( const osc::Message &message ) {
-		cout << "Int64: " << message[6].int64() << endl;
-	});
-	mReceiver.setListener( "/app/?",
-	[]( const osc::Message &message ) {
-		cout << "Float: " << message[7].flt() << endl;
-	});
-	mReceiver.setListener( "/app/?",
-	[]( const osc::Message &message ) {
-		cout << "Double: " << message[8].dbl() << endl;
-	});
-	mReceiver.setListener( "/app/?",
-	[]( const osc::Message &message ) {
-		cout << "Boolean: " << message[9].boolean() << endl;
 	});
 	mReceiver.setListener( "/app/10",
 	[&]( const osc::Message &message ) {
