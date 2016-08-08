@@ -926,14 +926,14 @@ std::string SenderBase::extractOscAddress( const ByteBufferRef &transportData )
 	return oscAddress;
 }
 	
-void SenderBase::send( const Message &message, SenderOptions senderOptions )
+void SenderBase::send( const Message &message, OnErrorFn onErrorFn, OnCompleteFn onCompleteFn )
 {
-	sendImpl( message.getSharedBuffer(), std::move( senderOptions ) );
+	sendImpl( message.getSharedBuffer(), std::move( onErrorFn ), std::move( onCompleteFn ) );
 }
 	
-void SenderBase::send( const Bundle &bundle, SenderOptions senderOptions )
+void SenderBase::send( const Bundle &bundle, OnErrorFn onErrorFn, OnCompleteFn onCompleteFn )
 {
-	sendImpl( bundle.getSharedBuffer(), std::move( senderOptions ) );
+	sendImpl( bundle.getSharedBuffer(), std::move( onErrorFn ), std::move( onCompleteFn ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -968,7 +968,7 @@ void SenderUdp::bindImpl()
 		throw osc::Exception( ec );
 }
 	
-void SenderUdp::sendImpl( const ByteBufferRef &data, SenderOptions options )
+void SenderUdp::sendImpl( const ByteBufferRef &data, OnErrorFn onErrorFn, OnCompleteFn onCompleteFn )
 {
 	if( ! mSocket->is_open() )
 		return;
@@ -976,16 +976,16 @@ void SenderUdp::sendImpl( const ByteBufferRef &data, SenderOptions options )
 	// data's first 4 bytes(int) comprise the size of the buffer, which datagram doesn't need.
 	mSocket->async_send_to( asio::buffer( data->data() + 4, data->size() - 4 ), mRemoteEndpoint,
 	// copy data pointer to persist the asynchronous send
-	[&, data, options]( const asio::error_code& error, size_t bytesTransferred )
+	[&, data, onErrorFn, onCompleteFn]( const asio::error_code& error, size_t bytesTransferred )
 	{
 		if( error ) {
-			if( options.errorFn )
-				options.errorFn( error );
+			if( onErrorFn )
+				onErrorFn( error );
 			else
 				CI_LOG_E( "Udp Send: " << error.message() << " - Code: " << error.value() );
 		}
-		else if( options.completeFn ) {
-			options.completeFn();
+		else if( onCompleteFn ) {
+			onCompleteFn();
 		}
 	});
 }
@@ -1069,7 +1069,7 @@ void SenderTcp::shutdown( asio::socket_base::shutdown_type shutdownType )
 		throw osc::Exception( ec );
 }
 
-void SenderTcp::sendImpl( const ByteBufferRef &data, SenderOptions options )
+void SenderTcp::sendImpl( const ByteBufferRef &data, OnErrorFn onErrorFn, OnCompleteFn onCompleteFn )
 {
 	if( ! mSocket->is_open() )
 		return;
@@ -1079,16 +1079,16 @@ void SenderTcp::sendImpl( const ByteBufferRef &data, SenderOptions options )
 		transportData = mPacketFraming->encode( transportData );
 	mSocket->async_send( asio::buffer( *transportData ),
 	// copy data pointer to persist the asynchronous send
-	[&, transportData, options]( const asio::error_code& error, size_t bytesTransferred )
+	[&, transportData, onErrorFn, onCompleteFn]( const asio::error_code& error, size_t bytesTransferred )
 	{
 		if( error ) {
-			if( options.errorFn )
-				options.errorFn( error );
+			if( onErrorFn )
+				onErrorFn( error );
 			else
 				CI_LOG_E( "Tcp Send: " << error.message() << " - Code: " << error.value() );
 		}
-		else if( options.completeFn ) {
-			options.completeFn();
+		else if( onCompleteFn ) {
+			onCompleteFn();
 		}
 	});
 }
@@ -1373,21 +1373,6 @@ void ReceiverUdp::closeImpl()
 }
 	
 /////////////////////////////////////////////////////////////////////////////////////////
-//// AcceptorOptions
-	
-AcceptorOptions& AcceptorOptions::onError( OnErrorFn onErrorFn )
-{
-	errorFn = onErrorFn;
-	return *this;
-}
-	
-AcceptorOptions& AcceptorOptions::onAccept( OnAcceptFn onAcceptFn )
-{
-	acceptFn = onAcceptFn;
-	return *this;
-}
-	
-/////////////////////////////////////////////////////////////////////////////////////////
 //// ReceiverTcp
 	
 ReceiverTcp::~ReceiverTcp()
@@ -1531,7 +1516,7 @@ void ReceiverTcp::bindImpl()
 		throw osc::Exception( ec );
 }
 	
-void ReceiverTcp::accept( AcceptorOptions acceptorOptions )
+void ReceiverTcp::accept( OnAcceptErrorFn onAcceptErrorFn, OnAcceptFn onAcceptFn )
 {
 	if( ! mAcceptor || ! mAcceptor->is_open() )
 		return;
@@ -1539,13 +1524,13 @@ void ReceiverTcp::accept( AcceptorOptions acceptorOptions )
 	auto socket = std::make_shared<tcp::socket>( mAcceptor->get_io_service() );
 	
 	mAcceptor->async_accept( *socket, std::bind(
-	[&, acceptorOptions]( TcpSocketRef socket, const asio::error_code &error ) {
+	[&, onAcceptErrorFn, onAcceptFn]( TcpSocketRef socket, const asio::error_code &error ) {
 		if( ! error ) {
 			auto identifier = mConnectionIdentifiers++;
 			{
 				bool shouldAdd = true;
-				if( acceptorOptions.acceptFn )
-					shouldAdd = acceptorOptions.acceptFn( socket, identifier );
+				if( onAcceptFn )
+					shouldAdd = onAcceptFn( socket, identifier );
 				
 				if( shouldAdd ) {
 					std::lock_guard<std::mutex> lock( mConnectionMutex );
@@ -1555,8 +1540,9 @@ void ReceiverTcp::accept( AcceptorOptions acceptorOptions )
 			}
 		}
 		else {
-			if( acceptorOptions.errorFn ) {
-				if( ! acceptorOptions.errorFn( error ) )
+			if( onAcceptErrorFn ) {
+				auto endpoint = socket->remote_endpoint();
+				if( ! onAcceptErrorFn( error, endpoint ) )
 					return;
 			}
 			else {
@@ -1566,7 +1552,7 @@ void ReceiverTcp::accept( AcceptorOptions acceptorOptions )
 			}
 		}
 		
-		accept( acceptorOptions );
+		accept( onAcceptErrorFn, onAcceptFn );
 	}, socket, _1 ) );
 }
 	
@@ -1577,6 +1563,12 @@ void ReceiverTcp::handleSocketError( const error_code &error, uint64_t originato
 		mSocketTransportErrorFn( error, originator );
 	else
 		CI_LOG_E( error.message() << ", didn't receive message from " << endpoint.address().to_string() );
+}
+	
+void ReceiverTcp::setSocketTransportErrorFn( SocketTransportErrorFn errorFn )
+{
+	std::lock_guard<std::mutex> lock( mSocketTransportErrorFnMutex );
+	mSocketTransportErrorFn = errorFn;
 }
 	
 void ReceiverTcp::closeAcceptor()
