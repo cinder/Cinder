@@ -1,7 +1,7 @@
 include( CMakeParseArguments )
 
 function( ci_make_app )
-	set( oneValueArgs APP_NAME CINDER_PATH )
+	set( oneValueArgs APP_NAME CINDER_PATH ICON )
 	set( multiValueArgs SOURCES INCLUDES LIBRARIES RESOURCES BLOCKS )
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -40,6 +40,9 @@ function( ci_make_app )
 		message( STATUS "CINDER_TARGET: ${CINDER_TARGET}" )
 		message( STATUS "CINDER_LIB_DIRECTORY: ${CINDER_LIB_DIRECTORY}" )
 		message( STATUS "CINDER BLOCKS: ${ARG_BLOCKS}" )
+		if( CINDER_MAC )
+			message( STATUS "ICON: ${ARG_ICON}" )
+		endif()
 	endif()
 
 	# pull in cinder's exported configuration
@@ -51,12 +54,26 @@ function( ci_make_app )
 	endif()
 
 	if( CINDER_MAC )
-		# set icon. TODO: make this overridable
-		set( ICON_NAME "CinderApp.icns" )
-		set( ICON_PATH "${ARG_CINDER_PATH}/samples/data/${ICON_NAME}" )
+		if( ARG_ICON )
+			# Icon is first searched relative to the sample's CMakeLists.txt file, then within the app's resources folder
+			get_filename_component( ICON_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${ARG_ICON}" ABSOLUTE )
+			if( EXISTS "${ICON_PATH}" )
+				get_filename_component( ICON_NAME ${ICON_PATH} NAME )
+			elseif( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../resources/${ARG_ICON}" )
+				set( ICON_NAME ${ARG_ICON} )
+				get_filename_component( ICON_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../resources/${ICON_NAME}" ABSOLUTE )
+			else()
+				message( ERROR " Could not find icon: ${ARG_ICON}" )
+			endif()
+		else()
+			set( ICON_NAME "CinderApp.icns" )
+			set( ICON_PATH "${ARG_CINDER_PATH}/samples/data/${ICON_NAME}" )
+		endif()
 
 		# copy .icns to bundle's resources folder
-		set_source_files_properties( ${ICON_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+		if( ICON_PATH )
+			set_source_files_properties( ${ICON_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
+		endif()
 		# copy any other resources specified by user
 		set_source_files_properties( ${ARG_RESOURCES} PROPERTIES HEADER_FILE_ONLY ON MACOSX_PACKAGE_LOCATION Resources )
 	elseif( CINDER_LINUX )
