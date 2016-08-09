@@ -536,6 +536,15 @@ void InterfaceGl::OptionsBase::setKey( const std::string &key )
 	mKey = key;
 }
 
+void InterfaceGl::OptionsBase::setLabel( const std::string &label )
+{
+	assert( mParent );
+
+	string optionsStr = "label=`" + label + "`";
+	mParent->setOptions( getName(), optionsStr );
+	mLabel = label;
+}
+
 void InterfaceGl::OptionsBase::setGroup( const std::string &group )
 {
 	assert( mParent );
@@ -574,6 +583,8 @@ void InterfaceGl::OptionsBase::reAddOptions()
 		setKeyIncr( mKeyIncr );
 	if( ! mKeyDecr.empty() )
 		setKeyDecr( mKeyDecr );
+	if( ! mLabel.empty() )
+		setLabel( mLabel );
 	if( ! mGroup.empty() )
 		setGroup( mGroup );
 	if( ! mOptionsStr.empty() )

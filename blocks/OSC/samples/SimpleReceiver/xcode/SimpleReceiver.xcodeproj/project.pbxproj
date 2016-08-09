@@ -19,8 +19,8 @@
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		734FC070F96D4F21B1203481 /* SimpleReceiverApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B28A232A327C404AB60D0AF6 /* SimpleReceiverApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B3253C031D4C5BC400CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253C011D4C5BC400CDF15F /* Osc.cpp */; };
 		B37BB9BA1BD2031C00311784 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = B37BB9B91BD2031C00311784 /* CinderApp.icns */; };
-		D504047C27654A8AA9487417 /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8150ADF70A8E4F08A11C1CAE /* Osc.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,14 +36,14 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		14923CD671174971AB167ED8 /* SimpleReceiver_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = SimpleReceiver_Prefix.pch; sourceTree = "<group>"; };
 		16D258740A29403AAF5BC45F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1A214D6DDE144A66A2B66FB0 /* Osc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Osc.h; path = ../../../src/Osc.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		64B18EB25E034945B5F9A325 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
-		8150ADF70A8E4F08A11C1CAE /* Osc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Osc.cpp; path = ../../../src/Osc.cpp; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* SimpleReceiver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleReceiver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28A232A327C404AB60D0AF6 /* SimpleReceiverApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SimpleReceiverApp.cpp; path = ../src/SimpleReceiverApp.cpp; sourceTree = "<group>"; };
+		B3253C011D4C5BC400CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
+		B3253C021D4C5BC400CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		B37BB9B91BD2031C00311784 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -160,19 +160,36 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		8402D347F4884F609FC86857 /* src */ = {
+		B3253BFE1D4C5BC400CDF15F /* src */ = {
 			isa = PBXGroup;
 			children = (
-				8150ADF70A8E4F08A11C1CAE /* Osc.cpp */,
-				1A214D6DDE144A66A2B66FB0 /* Osc.h */,
+				B3253BFF1D4C5BC400CDF15F /* cinder */,
 			);
 			name = src;
+			path = ../../../src;
+			sourceTree = "<group>";
+		};
+		B3253BFF1D4C5BC400CDF15F /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C001D4C5BC400CDF15F /* osc */,
+			);
+			path = cinder;
+			sourceTree = "<group>";
+		};
+		B3253C001D4C5BC400CDF15F /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C011D4C5BC400CDF15F /* Osc.cpp */,
+				B3253C021D4C5BC400CDF15F /* Osc.h */,
+			);
+			path = osc;
 			sourceTree = "<group>";
 		};
 		D7EC5074022B4898A72EABCE /* OSC */ = {
 			isa = PBXGroup;
 			children = (
-				8402D347F4884F609FC86857 /* src */,
+				B3253BFE1D4C5BC400CDF15F /* src */,
 			);
 			name = OSC;
 			sourceTree = "<group>";
@@ -241,7 +258,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				734FC070F96D4F21B1203481 /* SimpleReceiverApp.cpp in Sources */,
-				D504047C27654A8AA9487417 /* Osc.cpp in Sources */,
+				B3253C031D4C5BC400CDF15F /* Osc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

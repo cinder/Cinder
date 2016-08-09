@@ -690,6 +690,9 @@ void drawEquirectangular( const gl::TextureCubeMapRef &texture, const Rectf &rec
 	glsl->uniform( "uCubeMapTex", 0 );
 	if( useLod )
 		glsl->uniform( "uLod", lod );
+
+	 gl::ScopedTextureBind scTex( texture );
+
 	drawSolidRect( rect, vec2( 0, 1 ), vec2( 1, 0 ) );
 }
 

@@ -32,7 +32,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#include "Tuio.h"
+#include "cinder/tuio/Tuio.h"
 #include "cinder/Log.h"
 
 class TuioClientApp : public App {

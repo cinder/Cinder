@@ -105,13 +105,13 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp" />
-    <ClCompile Include="..\..\..\src\Tuio.cpp" />
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp" />
+    <ClCompile Include="..\..\..\src\cinder\tuio\Tuio.cpp" />
     <ClCompile Include="..\src\TUIOListenerApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h" />
-    <ClInclude Include="..\..\..\src\Tuio.h" />
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h" />
+    <ClInclude Include="..\..\..\src\cinder\tuio\Tuio.h" />
     <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -28,6 +28,18 @@
     <Filter Include="Blocks\OSC\src">
       <UniqueIdentifier>{8bb0f467-eb26-4041-b2ae-af34a342207e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Blocks\OSC\src\cinder">
+      <UniqueIdentifier>{f9816a61-5cac-45cd-adbb-95b03d4f2df0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\OSC\src\cinder\osc">
+      <UniqueIdentifier>{eadaeb89-c3e5-41aa-8347-39f7308104e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO\src\cinder">
+      <UniqueIdentifier>{128bce6a-308f-47c0-a939-4c1233ae5bfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO\src\cinder\tuio">
+      <UniqueIdentifier>{e328ec82-aee1-4c75-9c3b-53692f7fc094}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\TUIOListenerApp.cpp">
@@ -39,22 +51,22 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\..\src\Tuio.cpp">
-      <Filter>Blocks\TUIO\src</Filter>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\OSC\src\Osc.cpp">
-      <Filter>Blocks\OSC\src</Filter>
+    <ClCompile Include="..\..\..\src\cinder\tuio\Tuio.cpp">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\Tuio.h">
-      <Filter>Blocks\TUIO\src</Filter>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\OSC\src\Osc.h">
-      <Filter>Blocks\OSC\src</Filter>
+    <ClInclude Include="..\..\..\src\cinder\tuio\Tuio.h">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
