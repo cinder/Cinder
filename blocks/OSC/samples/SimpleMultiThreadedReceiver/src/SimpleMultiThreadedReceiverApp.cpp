@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#define USE_UDP 0
+#define USE_UDP 1
 
 #if USE_UDP
 using Receiver = osc::ReceiverUdp;
@@ -35,9 +35,10 @@ public:
 	vec2	mCurrentSquarePos;
 	bool	mUpdatedTarget;
 	
-	std::mutex mCirclePosMutex, mSquarePosMutex;
+	std::mutex mCirclePosMutex, mSquarePosMutex, mConnectionsMutex;
 	
 	Receiver mReceiver;
+	std::map<uint64_t, protocol::endpoint> mConnections;
 };
 
 SimpleMultiThreadedReceiverApp::SimpleMultiThreadedReceiverApp()
@@ -60,9 +61,61 @@ void SimpleMultiThreadedReceiverApp::setup()
 		mCurrentSquarePos = vec2( msg[0].flt(), msg[1].flt() ) * vec2( getWindowSize() );
 	});
 	
-	mReceiver.bind();
-	mReceiver.listen();
+	// For a description of the below setup, take a look at SimpleReceiver. The only difference
+	// is the usage of the mutex around the connection map.
+	try {
+		mReceiver.bind();
+	}
+	catch( const osc::Exception &ex ) {
+		CI_LOG_E( "Error binding: " << ex.what() << " val: " << ex.value() );
+		quit();
+	}
 	
+#if USE_UDP
+	mReceiver.listen(
+	[]( asio::error_code error, protocol::endpoint endpoint ) -> bool {
+		if( error ) {
+			CI_LOG_E( "Error Listening: " << error.message() << " val: "
+					 << error.value() << " endpoint: " << endpoint );
+			return false;
+		}
+		else
+			return true;
+	});
+#else
+	mReceiver.setConnectionErrorFn(
+	[&]( asio::error_code error, uint64_t identifier ) {
+		if ( error ) {
+			std::lock_guard<std::mutex> lock( mConnectionsMutex );
+			auto foundIt = mConnections.find( identifier );
+			if( foundIt != mConnections.end() ) {
+				CI_LOG_E( "Error Reading from Socket: " << error.message()
+						 << " val: " << error.value() << " endpoint: "
+						 << foundIt->second.address().to_string() );
+				mConnections.erase( foundIt );
+			}
+		}
+	});
+	auto expectedOriginator = protocol::endpoint( asio::ip::address::from_string( "127.0.0.1" ), 10000 );
+	mReceiver.accept(
+	[]( asio::error_code error, protocol::endpoint endpoint ) -> bool {
+		if( error ) {
+			CI_LOG_E( "Error Accepting: " << error.message()
+					 << " val: " << error.value() << " endpoint: "
+					 << endpoint.address().to_string() );
+			return false;
+		}
+		else
+			return true;
+	},
+	[&, expectedOriginator]( osc::TcpSocketRef socket, uint64_t identifier ) -> bool {
+		std::lock_guard<std::mutex> lock( mConnectionsMutex );
+		mConnections.emplace( identifier, socket->remote_endpoint() );
+		return socket->remote_endpoint() == expectedOriginator;
+	} );
+#endif
+	
+	// Now that everything is setup, run the io_service on the other thread.
 	mThread = std::thread( std::bind(
 	[]( std::shared_ptr<asio::io_service> &service ){
 		service->run();

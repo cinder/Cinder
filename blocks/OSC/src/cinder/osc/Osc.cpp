@@ -1438,7 +1438,11 @@ void ReceiverTcp::Connection::read()
 	asio::async_read_until( *mSocket, mBuffer, match,
 	[&, receiver]( const asio::error_code &error, size_t bytesTransferred ) {
 		if( error ) {
-			receiver->handleSocketError( error, mIdentifier, mSocket->remote_endpoint() );
+			std::lock_guard<std::mutex> lock( receiver->mConnectionErrorFnMutex );
+			if( receiver->mConnectionErrorFn )
+				receiver->mConnectionErrorFn( error, mIdentifier );
+			else
+				CI_LOG_E( error.message() << ", didn't receive message from " << mSocket->remote_endpoint().address().to_string() );
 			receiver->closeConnection( mIdentifier );
 		}
 		else {
@@ -1556,19 +1560,10 @@ void ReceiverTcp::accept( OnAcceptErrorFn onAcceptErrorFn, OnAcceptFn onAcceptFn
 	}, socket, _1 ) );
 }
 	
-void ReceiverTcp::handleSocketError( const error_code &error, uint64_t originator, const tcp::endpoint &endpoint )
+void ReceiverTcp::setConnectionErrorFn( ConnectionErrorFn errorFn )
 {
-	std::lock_guard<std::mutex> lock( mSocketTransportErrorFnMutex );
-	if( mSocketTransportErrorFn )
-		mSocketTransportErrorFn( error, originator );
-	else
-		CI_LOG_E( error.message() << ", didn't receive message from " << endpoint.address().to_string() );
-}
-	
-void ReceiverTcp::setSocketTransportErrorFn( SocketTransportErrorFn errorFn )
-{
-	std::lock_guard<std::mutex> lock( mSocketTransportErrorFnMutex );
-	mSocketTransportErrorFn = errorFn;
+	std::lock_guard<std::mutex> lock( mConnectionErrorFnMutex );
+	mConnectionErrorFn = errorFn;
 }
 	
 void ReceiverTcp::closeAcceptor()

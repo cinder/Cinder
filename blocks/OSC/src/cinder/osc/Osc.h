@@ -744,7 +744,7 @@ class ReceiverTcp : public ReceiverBase {
 	//! the error_code and the connectionIdentifier. To see more about asio's error_codes, look
 	//! at "asio/error.hpp". The connectionIdentifier can be used to close the underlying socket
 	//! and notify the rest of your system.
-	using SocketTransportErrorFn = std::function<void( asio::error_code /*error*/, uint64_t /*connectionId*/ )>;
+	using ConnectionErrorFn = std::function<void( asio::error_code /*error*/, uint64_t /*connectionId*/ )>;
 	//! Alias function that represents an on accept callback with the constructed tcp::socket and the
 	//! connectionIdentifier. The connectionIdentifier is useful to target closing the underlying
 	//! socket at a later time. Function should return whether the Receiver should or should not cache
@@ -786,7 +786,7 @@ class ReceiverTcp : public ReceiverBase {
 	//! will be called. When a connection is accepted, /a onAcceptFn will be called.
 	void accept( OnAcceptErrorFn onAcceptErrorFn, OnAcceptFn onAcceptFn );
 	//! Sets the underlying SocketTransportErrorFn, called on any errors happening on the underlying sockets.
-	void setSocketTransportErrorFn( SocketTransportErrorFn errorFn );
+	void setConnectionErrorFn( ConnectionErrorFn errorFn );
 	//! Closes the underlying acceptor. Must rebind to listen again after calling this function.
 	void closeAcceptor();
 	//! Closes the Connection associated with the connectionIdentifier. \a connectionIdentifier is the handle
@@ -836,16 +836,14 @@ class ReceiverTcp : public ReceiverBase {
 	//! called on the prior to close. If an error occurs, the AcceptorErrorFn or the SocketErrorFn will be called
 	//! respectively.
 	void closeImpl() override;
-	//! Helper which handles any errors with the connection.
-	void handleSocketError( const asio::error_code &error, uint64_t originator, const asio::ip::tcp::endpoint &endpoint );
 	
 	AcceptorRef			mAcceptor;
 	PacketFramingRef	mPacketFraming;
 	protocol::endpoint	mLocalEndpoint;
 	
-	SocketTransportErrorFn	mSocketTransportErrorFn;
+	ConnectionErrorFn	mConnectionErrorFn;
 	
-	std::mutex				mConnectionMutex, mSocketTransportErrorFnMutex;
+	std::mutex			mConnectionMutex, mConnectionErrorFnMutex;
 	
 	//! Alias representing each connection.
 	using UniqueConnection = std::unique_ptr<Connection>;
@@ -894,8 +892,9 @@ class SLIPPacketFraming : public PacketFraming {
 class Exception : public ci::Exception {
 public:
 	Exception( asio::error_code error ) : ci::Exception( error.message() ), mError( error ) {}
-
-	int32_t value() { return mError.value(); }
+	//! Returns system level value of the error for reference online. Very helpful information
+	//! can be found using this number.
+	int32_t value() const { return mError.value(); }
 private:
 	asio::error_code mError;
 };
