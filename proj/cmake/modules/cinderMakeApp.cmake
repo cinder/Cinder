@@ -46,7 +46,7 @@ function( ci_make_app )
 	if( NOT TARGET cinder )
 		find_package( cinder REQUIRED PATHS
 			"${ARG_CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
-			"$ENV{Cinder_Dir}/${CINDER_LIB_DIRECTORY}"
+			"$ENV{CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
 		)
 	endif()
 
