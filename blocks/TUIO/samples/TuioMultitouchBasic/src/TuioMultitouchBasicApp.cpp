@@ -1,9 +1,12 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+
 #include "cinder/System.h"
 #include "cinder/Rand.h"
-#include "cinder/tuio/Tuio.h"
+#include "cinder/PolyLine.h"
 #include "cinder/gl/gl.h"
+
+#include "cinder/tuio/Tuio.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -37,7 +40,7 @@ struct TouchPoint {
 
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
 	
-	PolyLine2	mLine;
+	PolyLine2f	mLine;
 	Color		mColor;
 	float		mTimeOfDeath;
 };

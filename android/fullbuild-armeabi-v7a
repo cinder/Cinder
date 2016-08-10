@@ -1,0 +1,3 @@
+#!/bin/bash
+ARCH=armeabi-v7a
+bash cbuilder "$@" -a ${ARCH}

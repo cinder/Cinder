@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    CFF token stream parser (body)                                       */
 /*                                                                         */
-/*  Copyright 1996-2004, 2007-2012 by                                      */
+/*  Copyright 1996-2015 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -65,19 +65,17 @@
       if ( p + 2 > limit )
         goto Bad;
 
-      val = (FT_Short)( ( (FT_Int)p[0] << 8 ) | p[1] );
-      p  += 2;
+      val = (FT_Short)( ( (FT_UShort)p[0] << 8 ) | p[1] );
     }
     else if ( v == 29 )
     {
       if ( p + 4 > limit )
         goto Bad;
 
-      val = ( (FT_Long)p[0] << 24 ) |
-            ( (FT_Long)p[1] << 16 ) |
-            ( (FT_Long)p[2] <<  8 ) |
-                       p[3];
-      p += 4;
+      val = (FT_Long)( ( (FT_ULong)p[0] << 24 ) |
+                       ( (FT_ULong)p[1] << 16 ) |
+                       ( (FT_ULong)p[2] <<  8 ) |
+                         (FT_ULong)p[3]         );
     }
     else if ( v < 247 )
     {
@@ -89,7 +87,6 @@
         goto Bad;
 
       val = ( v - 247 ) * 256 + p[0] + 108;
-      p++;
     }
     else
     {
@@ -97,7 +94,6 @@
         goto Bad;
 
       val = -( v - 251 ) * 256 - p[0] - 108;
-      p++;
     }
 
   Exit:
@@ -133,7 +129,7 @@
                   FT_Long*  scaling )
   {
     FT_Byte*  p = start;
-    FT_UInt   nib;
+    FT_Int    nib;
     FT_UInt   phase;
 
     FT_Long   result, number, exponent;
@@ -170,7 +166,7 @@
       }
 
       /* Get the nibble. */
-      nib   = ( p[0] >> phase ) & 0xF;
+      nib   = (FT_Int)( p[0] >> phase ) & 0xF;
       phase = 4 - phase;
 
       if ( nib == 0xE )
@@ -192,7 +188,7 @@
     }
 
     /* Read fraction part, if any. */
-    if ( nib == 0xa )
+    if ( nib == 0xA )
       for (;;)
       {
         /* If we entered this iteration with phase == 4, we need */
@@ -316,7 +312,7 @@
           else
             exponent -= fraction_length;
 
-          result   = number << 16;
+          result   = (FT_Long)( (FT_ULong)number << 16 );
           *scaling = exponent;
         }
       }
@@ -373,7 +369,7 @@
         if ( number > 0x7FFFL )
           goto Overflow;
 
-        result = number << 16;
+        result = (FT_Long)( (FT_ULong)number << 16 );
       }
     }
 
@@ -435,7 +431,7 @@
         goto Overflow;
       }
 
-      return val << 16;
+      return (FT_Long)( (FT_ULong)val << 16 );
 
     Overflow:
       FT_TRACE4(( "!!!OVERFLOW:!!!" ));
@@ -501,7 +497,7 @@
       else
       {
         *scaling = 0;
-        return number << 16;
+        return (FT_Long)( (FT_ULong)number << 16 );
       }
     }
   }
@@ -515,7 +511,7 @@
     FT_Vector*       offset = &dict->font_offset;
     FT_ULong*        upm    = &dict->units_per_em;
     FT_Byte**        data   = parser->stack;
-    FT_Error         error  = CFF_Err_Stack_Underflow;
+    FT_Error         error  = FT_ERR( Stack_Underflow );
 
 
     if ( parser->top >= parser->stack + 6 )
@@ -523,7 +519,7 @@
       FT_Long  scaling;
 
 
-      error = CFF_Err_Ok;
+      error = FT_Err_Ok;
 
       dict->has_font_matrix = TRUE;
 
@@ -563,7 +559,7 @@
       offset->x  = cff_parse_fixed_scaled( data++, scaling );
       offset->y  = cff_parse_fixed_scaled( data,   scaling );
 
-      *upm = power_tens[scaling];
+      *upm = (FT_ULong)power_tens[scaling];
 
       FT_TRACE4(( " [%f %f %f %f %f %f]\n",
                   (double)matrix->xx / *upm / 65536,
@@ -588,7 +584,7 @@
     FT_Error         error;
 
 
-    error = CFF_Err_Stack_Underflow;
+    error = FT_ERR( Stack_Underflow );
 
     if ( parser->top >= parser->stack + 4 )
     {
@@ -596,7 +592,7 @@
       bbox->yMin = FT_RoundFix( cff_parse_fixed( data++ ) );
       bbox->xMax = FT_RoundFix( cff_parse_fixed( data++ ) );
       bbox->yMax = FT_RoundFix( cff_parse_fixed( data   ) );
-      error = CFF_Err_Ok;
+      error = FT_Err_Ok;
 
       FT_TRACE4(( " [%d %d %d %d]\n",
                   bbox->xMin / 65536,
@@ -617,18 +613,38 @@
     FT_Error         error;
 
 
-    error = CFF_Err_Stack_Underflow;
+    error = FT_ERR( Stack_Underflow );
 
     if ( parser->top >= parser->stack + 2 )
     {
-      dict->private_size   = cff_parse_num( data++ );
-      dict->private_offset = cff_parse_num( data   );
+      FT_Long  tmp;
+
+
+      tmp = cff_parse_num( data++ );
+      if ( tmp < 0 )
+      {
+        FT_ERROR(( "cff_parse_private_dict: Invalid dictionary size\n" ));
+        error = FT_THROW( Invalid_File_Format );
+        goto Fail;
+      }
+      dict->private_size = (FT_ULong)tmp;
+
+      tmp = cff_parse_num( data );
+      if ( tmp < 0 )
+      {
+        FT_ERROR(( "cff_parse_private_dict: Invalid dictionary offset\n" ));
+        error = FT_THROW( Invalid_File_Format );
+        goto Fail;
+      }
+      dict->private_offset = (FT_ULong)tmp;
+
       FT_TRACE4(( " %lu %lu\n",
                   dict->private_size, dict->private_offset ));
 
-      error = CFF_Err_Ok;
+      error = FT_Err_Ok;
     }
 
+  Fail:
     return error;
   }
 
@@ -641,7 +657,7 @@
     FT_Error         error;
 
 
-    error = CFF_Err_Stack_Underflow;
+    error = FT_ERR( Stack_Underflow );
 
     if ( parser->top >= parser->stack + 3 )
     {
@@ -653,7 +669,7 @@
       if ( dict->cid_supplement < 0 )
         FT_TRACE1(( "cff_parse_cid_ros: negative supplement %d is found\n",
                    dict->cid_supplement ));
-      error = CFF_Err_Ok;
+      error = FT_Err_Ok;
 
       FT_TRACE4(( " %d %d %d\n",
                   dict->cid_registry,
@@ -922,7 +938,7 @@
 
     *output_class = clazz;
 
-    return CFF_Err_Ok;
+    return FT_Err_Ok;
   }
 
 
@@ -935,7 +951,7 @@
                   FT_Byte*    limit )
   {
     FT_Byte*    p       = start;
-    FT_Error    error   = CFF_Err_Ok;
+    FT_Error    error   = FT_Err_Ok;
     FT_Library  library = parser->library;
     FT_UNUSED( library );
 
@@ -1161,15 +1177,15 @@
     return error;
 
   Stack_Overflow:
-    error = CFF_Err_Invalid_Argument;
+    error = FT_THROW( Invalid_Argument );
     goto Exit;
 
   Stack_Underflow:
-    error = CFF_Err_Invalid_Argument;
+    error = FT_THROW( Invalid_Argument );
     goto Exit;
 
   Syntax_Error:
-    error = CFF_Err_Invalid_Argument;
+    error = FT_THROW( Invalid_Argument );
     goto Exit;
   }
 

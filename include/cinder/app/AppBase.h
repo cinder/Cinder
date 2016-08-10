@@ -52,7 +52,23 @@ class io_service;
 
 namespace cinder { namespace app {
 
-typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>				EventSignalShouldQuit;
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+enum InterfaceOrientation {
+	Unknown					= 0,
+	Portrait				= 1 << 0,
+	PortraitUpsideDown		= 1 << 1,
+	LandscapeLeft			= 1 << 2,
+	LandscapeRight			= 1 << 3,
+	PortraitAll				= (Portrait | PortraitUpsideDown),
+	LandscapeAll			= (LandscapeLeft | LandscapeRight),
+	All						= (PortraitAll | LandscapeAll)
+};
+
+//! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
+typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t>>		EventSignalSupportedOrientations;	
+#endif
+
+typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>						EventSignalShouldQuit;
 
 //! Base class that all apps derive from.
 class AppBase {
@@ -86,7 +102,7 @@ class AppBase {
 		bool	isQuitOnLastWindowCloseEnabled() const					{ return mQuitOnLastWindowClose; }
 
 		//! Returns whether the default window is fullscreen
-		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
+		bool	isFullScreen() const { return mDefaultWindowFormat.isFullScreen(); }
 		//! Sets whether the default window is fullscreen at startup with FullScreenOptions \a options. Kiosk Mode is enabled by default.
 		void	setFullScreen( bool fullScreen = true, const FullScreenOptions &options = FullScreenOptions() ) { mDefaultWindowFormat.setFullScreen( fullScreen, options ); }
 
@@ -153,6 +169,8 @@ class AppBase {
 
 		//! Returns the command line args passed to the application from its entry point (ex. a main's argc / argv).
 		const std::vector<std::string>&	getCommandLineArgs() const	{ return mCommandLineArgs; }
+		//! Primarily for internal use. Replaces the command line args.
+		void							setCommandLineArgs( const std::vector<std::string> &commandLineArgs ) { mCommandLineArgs = commandLineArgs; }
 
 		//!	Set this to true if the app should terminate prior to launching.
 		void	setShouldQuit( bool shouldQuit = true );
@@ -219,7 +237,7 @@ class AppBase {
 	
 	//! Override to cleanup any resources before app destruction
 	virtual void	cleanup() {}
-	//! Requests that the application exit gracefully. Use std::terminate() instead to end application immediately.
+	//! Requests that the application exit gracefully upon completion of the current event loop. Use std::terminate() instead to end application immediately.
 	virtual void	quit() = 0;
 
 	//! Emitted at the start of each application update cycle
@@ -341,7 +359,7 @@ class AppBase {
 	bool				isHighDensityDisplayEnabled() const		{ return mHighDensityDisplayEnabled; }
 
 	// utilities
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
 	DataSourceRef		loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) const { return Platform::get()->loadResource( resourcePath, mswID, mswType ); }
 #else
@@ -404,6 +422,9 @@ class AppBase {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
+	//! Returns whether a call to quit() has been issued
+	bool			getQuitRequested() const { return mQuitRequested; }
+	void			setQuitRequested() { mQuitRequested = true; }	
 	virtual void	privateSetup__();
 	virtual void	privateUpdate__();
 	bool			privateEmitShouldQuit()		{ return mSignalShouldQuit.emit(); }
@@ -437,6 +458,7 @@ class AppBase {
 	double					mFpsLastSampleTime;
 	double					mFpsSampleInterval;
 	bool					mMultiTouchEnabled, mHighDensityDisplayEnabled;
+	bool					mLaunchCalled, mQuitRequested;
 	RendererRef				mDefaultRenderer;
 
 	std::vector<std::string>	mCommandLineArgs;
@@ -453,6 +475,8 @@ class AppBase {
   protected:
 	static AppBase*			sInstance;
 	static Settings*		sSettingsFromMain;
+
+	bool					getLaunchCalled() const { return mLaunchCalled; }
 
 	bool					mPowerManagement;
 };
@@ -530,7 +554,7 @@ inline uint32_t	getElapsedFrames()	{ return AppBase::get()->getElapsedFrames(); 
 //! Returns \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
 inline bool		isMainThread()		{ return AppBase::isMainThread(); }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 //! (MSW only) Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
 inline DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) { return Platform::get()->loadResource( resourcePath, mswID, mswType ); }
 #else

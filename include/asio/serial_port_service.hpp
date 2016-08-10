@@ -2,7 +2,7 @@
 // serial_port_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -61,13 +61,6 @@ public:
   typedef implementation_defined implementation_type;
 #else
   typedef service_impl_type::implementation_type implementation_type;
-#endif
-
-  /// (Deprecated: Use native_handle_type.) The native handle type.
-#if defined(GENERATING_DOCUMENTATION)
-  typedef implementation_defined native_type;
-#else
-  typedef service_impl_type::native_handle_type native_type;
 #endif
 
   /// The native handle type.
@@ -140,12 +133,6 @@ public:
     return service_impl_.close(impl, ec);
   }
 
-  /// (Deprecated: Use native_handle().) Get the native handle implementation.
-  native_type native(implementation_type& impl)
-  {
-    return service_impl_.native_handle(impl);
-  }
-
   /// Get the native handle implementation.
   native_handle_type native_handle(implementation_type& impl)
   {
@@ -198,9 +185,8 @@ public:
       const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
-    detail::async_result_init<
-      WriteHandler, void (asio::error_code, std::size_t)> init(
-        ASIO_MOVE_CAST(WriteHandler)(handler));
+    async_completion<WriteHandler,
+      void (asio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_write_some(impl, buffers, init.handler);
 
@@ -223,9 +209,8 @@ public:
       const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
-    detail::async_result_init<
-      ReadHandler, void (asio::error_code, std::size_t)> init(
-        ASIO_MOVE_CAST(ReadHandler)(handler));
+    async_completion<ReadHandler,
+      void (asio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_read_some(impl, buffers, init.handler);
 

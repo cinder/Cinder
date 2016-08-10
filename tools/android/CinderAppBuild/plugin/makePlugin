@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Force to build with 1.7
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
+
+# Use the gradle version that ships with Android Studio
+ANDROID_STUDIO_PATH=/Applications/Android\ Studio.app
+sh "$ANDROID_STUDIO_PATH/Contents/gradle/gradle-2.4/bin/gradle" uploadArchives
+

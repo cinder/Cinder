@@ -28,16 +28,25 @@ class TessellationBezierApp : public App {
 void TessellationBezierApp::setup()
 {
 	mSelectedIndex = -1;
-	
-	mVertices[0] = vec2( 50, 250 );
-	mVertices[1] = vec2( 20, 50 );
-	mVertices[2] = vec2( 450, 100 );
-	mVertices[3] = vec2( 350, 350 );
-	
-	mGlslProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "bezier.vert" ) )
-															.tessellationCtrl( loadAsset( "bezier.tesc" ) )
-															.tessellationEval( loadAsset( "bezier.tese" ) )
-															.fragment( loadAsset( "bezier.frag" ) ) );
+
+	// Adjust scale so it doesn't look so small on mobile.
+	vec2 scale = vec2( getWindowWidth()/640.0f, getWindowHeight()/480.0f );
+	mVertices[0] = vec2( 50, 250 )*scale;
+	mVertices[1] = vec2( 20, 50 )*scale;
+	mVertices[2] = vec2( 450, 100 )*scale;
+	mVertices[3] = vec2( 350, 350 )*scale;
+
+
+#if ! defined( CINDER_GL_ES )
+	fs::path glDir = "ogl";
+#else
+	fs::path glDir = "es31a";
+#endif
+
+	mGlslProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( glDir / "bezier.vert" ) )
+															.tessellationCtrl( loadAsset( glDir / "bezier.tesc" ) )
+															.tessellationEval( loadAsset( glDir / "bezier.tese" ) )
+															.fragment( loadAsset( glDir / "bezier.frag" ) ) );
 	mGlslProg->uniform( "uSubdivisions", SUBDIVISIONS );
 															
 	// a VertBatch would be fine for a simple mesh like ours but for more vertices we'd want to use a technique like this.
@@ -49,9 +58,16 @@ void TessellationBezierApp::setup()
 
 void TessellationBezierApp::mouseDown( MouseEvent event )
 {
+	// Give mobile a bit more breathing room.
+#if defined( CINDER_GL_ES )
+	float minDist = 50.0f;
+#else
+	float minDist = 7.0f;
+#endif
+
 	mSelectedIndex = -1;
 	for( size_t i = 0; i < NUM_POINTS; ++i )
-		if( glm::distance( vec2( event.getPos() ), mVertices[i] ) < 7.0f )
+		if( glm::distance( vec2( event.getPos() ), mVertices[i] ) < minDist )
 			mSelectedIndex = i;
 }
 
@@ -73,6 +89,21 @@ void TessellationBezierApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 
+#if defined( CINDER_GL_ES )
+	float size = 10.0f;
+
+	// Draw an indicator when a point is selected.
+	if( -1 != mSelectedIndex ) {
+		gl::color( 1, 1, 0 );
+		gl::drawSolidRect( Rectf( 0, 0, getWindowWidth(), 10 ) );
+	}
+
+	gl::lineWidth( 5.0f );
+#else
+	float size = 3.0f;
+#endif
+
+
 	gl::color( 1, 0.5f, 0.25f );
 	gl::patchParameteri( GL_PATCH_VERTICES, 4 );
 	mBezierBatch->draw();
@@ -82,8 +113,15 @@ void TessellationBezierApp::draw()
 			gl::color( 1, 1, 0 );
 		else
 			gl::color( 0, 0, 1 );
-		gl::drawSolidRect( Rectf( mVertices[i] - vec2( 3 ), mVertices[i] + vec2( 3 ) ) );
+		gl::drawSolidRect( Rectf( mVertices[i] - vec2( 3 ), mVertices[i] + vec2( size ) ) );
 	}
 }
 
-CINDER_APP( TessellationBezierApp, RendererGl( RendererGl::Options().msaa( 16 ).version( 4, 0 ) ) )
+#if defined( CINDER_GL_ES )
+	CINDER_APP( TessellationBezierApp, RendererGl(), []( TessellationBezierApp::Settings* settings ) {
+		settings->setMultiTouchEnabled( false );
+	})
+#else
+	CINDER_APP( TessellationBezierApp, RendererGl( RendererGl::Options().msaa( 16 ).version( 4, 0 ) ) )
+#endif
+

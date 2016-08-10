@@ -38,13 +38,15 @@
 
 #if defined( CINDER_MSW )
 	#include <Windows.h>
+#elif defined( CINDER_ANDROID )
+    #include "cinder/android/AndroidDevLog.h" 
 #endif
 
 using namespace std;
 
 namespace cinder { namespace gl {
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	static pthread_key_t sThreadSpecificCurrentContextKey;
 	static bool sThreadSpecificCurrentContextInitialized = false;
 #elif defined( _MSC_VER )
@@ -154,7 +156,7 @@ Context::~Context()
 	if( getCurrent() == this ) {
 		env()->makeContextCurrent( nullptr );
 
-	#if defined( CINDER_COCOA )
+	#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 		pthread_setspecific( sThreadSpecificCurrentContextKey, NULL );
 	#else
 		sThreadSpecificCurrentContext = (Context*)( nullptr );
@@ -178,7 +180,7 @@ ContextRef Context::createFromExisting( const std::shared_ptr<PlatformData> &pla
 
 void Context::makeCurrent( bool force ) const
 {
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	if( ! sThreadSpecificCurrentContextInitialized ) {
 		pthread_key_create( &sThreadSpecificCurrentContextKey, NULL );
 		sThreadSpecificCurrentContextInitialized = true;
@@ -197,7 +199,7 @@ void Context::makeCurrent( bool force ) const
 
 Context* Context::getCurrent()
 {
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	if( ! sThreadSpecificCurrentContextInitialized ) {
 		return nullptr;
 	}
@@ -209,7 +211,7 @@ Context* Context::getCurrent()
 
 void Context::reflectCurrent( Context *context )
 {
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_LINUX )
 	if( ! sThreadSpecificCurrentContextInitialized ) {
 		pthread_key_create( &sThreadSpecificCurrentContextKey, NULL );
 		sThreadSpecificCurrentContextInitialized = true;
@@ -1823,9 +1825,24 @@ GlslProgRef& Context::getStockShader( const ShaderDef &shaderDef )
 {
 	auto existing = mStockShaders.find( shaderDef );
 	if( existing == mStockShaders.end() ) {
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+		try {
+			auto result = gl::env()->buildShader( shaderDef );
+			mStockShaders[shaderDef] = result;
+			return mStockShaders[shaderDef];
+		}
+		catch( const exception& e ) {
+	#if defined( CINDER_ANDROID )
+			ci::android::dbg_app_error( std::string( "getStockShader error: " ) + e.what() );
+	#elif defined( CINDER_LINUX )
+			std::cout << "getStockShader error: " << e.what() << std::endl;
+	#endif
+		}
+#else
 		auto result = gl::env()->buildShader( shaderDef );
 		mStockShaders[shaderDef] = result;
 		return mStockShaders[shaderDef];
+#endif		
 	}
 	else
 		return existing->second;

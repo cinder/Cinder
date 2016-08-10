@@ -2,7 +2,7 @@
 // detail/descriptor_ops.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -98,6 +98,9 @@ ASIO_DECL int poll_read(int d,
     state_type state, asio::error_code& ec);
 
 ASIO_DECL int poll_write(int d,
+    state_type state, asio::error_code& ec);
+
+ASIO_DECL int poll_error(int d,
     state_type state, asio::error_code& ec);
 
 } // namespace descriptor_ops

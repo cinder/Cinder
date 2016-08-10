@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Type 1 driver interface (body).                                      */
 /*                                                                         */
-/*  Copyright 1996-2004, 2006, 2007, 2009, 2011 by                         */
+/*  Copyright 1996-2015 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -32,7 +32,7 @@
 
 #include FT_SERVICE_MULTIPLE_MASTERS_H
 #include FT_SERVICE_GLYPH_DICT_H
-#include FT_SERVICE_XFREE86_NAME_H
+#include FT_SERVICE_FONT_FORMAT_H
 #include FT_SERVICE_POSTSCRIPT_NAME_H
 #include FT_SERVICE_POSTSCRIPT_CMAPS_H
 #include FT_SERVICE_POSTSCRIPT_INFO_H
@@ -61,7 +61,7 @@
   {
     FT_STRCPYN( buffer, face->type1.glyph_names[glyph_index], buffer_max );
 
-    return T1_Err_Ok;
+    return FT_Err_Ok;
   }
 
 
@@ -69,13 +69,13 @@
   t1_get_name_index( T1_Face     face,
                      FT_String*  glyph_name )
   {
-    FT_Int      i;
-    FT_String*  gname;
+    FT_Int  i;
 
 
     for ( i = 0; i < face->type1.num_glyphs; i++ )
     {
-      gname = face->type1.glyph_names[i];
+      FT_String*  gname = face->type1.glyph_names[i];
+
 
       if ( !ft_strcmp( glyph_name, gname ) )
         return (FT_UInt)i;
@@ -138,7 +138,7 @@
   {
     *afont_info = ((T1_Face)face)->type1.font_info;
 
-    return T1_Err_Ok;
+    return FT_Err_Ok;
   }
 
 
@@ -148,7 +148,7 @@
   {
     *afont_extra = ((T1_Face)face)->type1.font_extra;
 
-    return T1_Err_Ok;
+    return FT_Err_Ok;
   }
 
 
@@ -167,7 +167,7 @@
   {
     *afont_private = ((T1_Face)face)->type1.private_dict;
 
-    return T1_Err_Ok;
+    return FT_Err_Ok;
   }
 
 
@@ -176,9 +176,11 @@
                         PS_Dict_Keys  key,
                         FT_UInt       idx,
                         void         *value,
-                        FT_Long       value_len )
+                        FT_Long       value_len_ )
   {
-    FT_Long  retval = -1;
+    FT_ULong  retval    = 0; /* always >= 1 if valid */
+    FT_ULong  value_len = value_len_ < 0 ? 0 : (FT_ULong)value_len_;
+
     T1_Face  t1face = (T1_Face)face;
     T1_Font  type1  = &t1face->type1;
 
@@ -225,7 +227,7 @@
       if ( idx < sizeof ( type1->font_bbox ) /
                    sizeof ( type1->font_bbox.xMin ) )
       {
-        FT_Fixed val = 0;
+        FT_Fixed  val = 0;
 
 
         retval = sizeof ( val );
@@ -557,12 +559,9 @@
       if ( value && value_len >= retval )
         *((FT_Long *)value) = type1->font_info.italic_angle;
       break;
-
-    default:
-      break;
     }
 
-    return retval;
+    return retval == 0 ? -1 : (FT_Long)retval;
   }
 
 
@@ -593,7 +592,7 @@
   {
     { FT_SERVICE_ID_POSTSCRIPT_FONT_NAME, &t1_service_ps_name },
     { FT_SERVICE_ID_GLYPH_DICT,           &t1_service_glyph_dict },
-    { FT_SERVICE_ID_XF86_NAME,            FT_XF86_FORMAT_TYPE_1 },
+    { FT_SERVICE_ID_FONT_FORMAT,          FT_FONT_FORMAT_TYPE_1 },
     { FT_SERVICE_ID_POSTSCRIPT_INFO,      &t1_service_ps_info },
 
 #ifndef T1_CONFIG_OPTION_NO_AFM
@@ -669,7 +668,7 @@
                       right_glyph,
                       kerning );
 
-    return T1_Err_Ok;
+    return FT_Err_Ok;
   }
 
 
@@ -708,10 +707,6 @@
     T1_GlyphSlot_Init,
     T1_GlyphSlot_Done,
 
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-    ft_stub_set_char_sizes,
-    ft_stub_set_pixel_sizes,
-#endif
     T1_Load_Glyph,
 
 #ifdef T1_CONFIG_OPTION_NO_AFM

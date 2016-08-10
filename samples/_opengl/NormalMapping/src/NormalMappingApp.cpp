@@ -37,6 +37,13 @@ http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-go
 #include "cinder/TriMesh.h"
 #include "cinder/Log.h"
 
+#if defined( CINDER_ANDROID )
+  #include "cinder/android/CinderAndroid.h"
+  #include "cinder/app/android/AssetFileSystem.h"
+#endif
+
+
+
 #include "DebugMesh.h"
 
 using namespace ci;
@@ -193,6 +200,11 @@ void NormalMappingApp::setup()
 		quit();
 	}
 
+#if defined( CINDER_ANDROID )
+ci::app::android::AssetFileSystem_FILE* asset = ci::app::android::AssetFileSystem_fopen( "leprechaun.msh", 0 );
+console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset ) << std::endl;
+#endif
+
 	// load mesh file and create missing data (normals, tangents) if necessary
 	try {
 		fs::path mshFile = getAssetPath( "leprechaun.msh" );
@@ -238,6 +250,7 @@ void NormalMappingApp::setup()
 
 void NormalMappingApp::update()
 {
+
 	// keep track of time
 	float fElapsed = (float)getElapsedSeconds() - mTime;
 	mTime += fElapsed;
@@ -370,13 +383,17 @@ TriMesh NormalMappingApp::createMesh( const fs::path& mshFile )
 	Timer	timer;
 
 	// try to load the msh file
+#if defined( CINDER_ANDROID )
+	if( ci::android::fs::exists( mshFile ) ) {
+#else
 	if( fs::exists( mshFile ) ) {
+#endif
 		timer.start();
 		mesh.read( loadFile( mshFile ) );
 		CI_LOG_I( "Loading the mesh took " << timer.getSeconds() << " seconds." );
 	}
 	else {
-		std::string msg = "Could not locate the file (" + mshFile.string() + ").";
+		std::string msg = "File does not exist (" + mshFile.string() + ")";
 		throw std::runtime_error( msg );
 	}
 

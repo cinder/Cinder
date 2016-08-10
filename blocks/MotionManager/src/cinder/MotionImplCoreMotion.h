@@ -59,6 +59,7 @@ class MotionImplCoreMotion {
 
 	ci::vec3	getGravityDirection( app::InterfaceOrientation orientation );
     ci::quat	getRotation( app::InterfaceOrientation orientation );
+    ci::mat4	getRotationMatrix( app::InterfaceOrientation orientation );
 	ci::vec3	getRotationRate( app::InterfaceOrientation orientation );
 	ci::vec3	getAcceleration( app::InterfaceOrientation orientation );
 

@@ -26,8 +26,11 @@
 #if defined( CINDER_COCOA )
 #	include <mach/mach.h>
 #	include <mach/mach_time.h>
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
+#elif defined( CINDER_MSW )
 #	include <windows.h>
+#elif defined( CINDER_ANDROID )
+#	include <sys/time.h>
+#	include <time.h>
 #endif
 
 namespace cinder {
@@ -39,8 +42,13 @@ void Rand::randomize()
 {
 #if defined( CINDER_COCOA )
 	sBase = std::mt19937( (uint32_t)( mach_absolute_time() & 0xFFFFFFFF ) );
-#elif defined( CINDER_WINRT)
+#elif defined( CINDER_UWP )
 	sBase = std::mt19937( static_cast<unsigned long>(::GetTickCount64()) );
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	struct timespec now;
+	::clock_gettime(CLOCK_MONOTONIC, &now);
+	long long tickCount = (now.tv_sec * 1000000000LL) + now.tv_nsec;
+	sBase = std::mt19937( tickCount );
 #else
 	sBase = std::mt19937( ::GetTickCount() );
 #endif

@@ -1,3 +1,7 @@
+Welcome to the Cinder for Android and Linux ports! Please see **[Cinder for Android](https://github.com/cinder/Cinder/wiki/Cinder-for-Android)** and **[Cinder for Linux](https://github.com/cinder/Cinder/wiki/Cinder-for-Linux)** for details on how to get going.
+
+If you run into any issues or have any questions, please [visit the forums](https://forum.libcinder.org).
+
 ### Cinder 0.9.1dev: [libcinder.org](http://libcinder.org)
 
 <p align="center">

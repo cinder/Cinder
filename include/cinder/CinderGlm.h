@@ -56,5 +56,6 @@ using glm::value_ptr;
 using glm::orientate3;
 using glm::orientate4;
 using glm::toMat4;
+using glm::toQuat;
 
 } // namespace cinder

@@ -476,10 +476,15 @@ class Context {
 	std::vector<GLint>					mBlendSrcRgbStack, mBlendDstRgbStack;
 	std::vector<GLint>					mBlendSrcAlphaStack, mBlendDstAlphaStack;
 
-#if defined( CINDER_GL_ES_2 ) && (! defined( CINDER_COCOA_TOUCH )) && (! defined( CINDER_GL_ANGLE ))
-	std::vector<GLint>			mFramebufferStack;
-#else
+// #if defined( CINDER_GL_ES_2 ) && (! defined( CINDER_COCOA_TOUCH )) && (! defined( CINDER_GL_ANGLE ))
+// 	std::vector<GLint>			mFramebufferStack;
+// #else
+// 	std::vector<GLint>			mReadFramebufferStack, mDrawFramebufferStack;
+// #endif
+#if defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	std::vector<GLint>			mReadFramebufferStack, mDrawFramebufferStack;
+#else
+	std::vector<GLint>			mFramebufferStack;
 #endif
 
 	std::vector<GLenum>			mCullFaceStack;

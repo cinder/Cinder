@@ -143,7 +143,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 	
 	// initialize the stream based on properties of the cinder::DataSouce
 	if( mDataTarget->providesFilePath() ) {
-#if defined( CINDER_WINRT)
+#if defined( CINDER_UWP )
 		std::string s = mDataTarget->getFilePath().string();
 		std::wstring filePath =	std::wstring(s.begin(), s.end());                 
 #else

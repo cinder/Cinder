@@ -93,7 +93,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	
     // Create a decoder
 	IWICBitmapDecoder *decoderP = NULL;
-#if defined( CINDER_WINRT)
+#if defined( CINDER_UWP )
 		std::string s = dataSourceRef->getFilePath().string();
 		std::wstring filePath =	std::wstring(s.begin(), s.end());                 
 #else

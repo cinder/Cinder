@@ -190,12 +190,12 @@ JsonTree::JsonTree( const string &key, uint32_t value )
 
 JsonTree::JsonTree( const string &key, int64_t value )
 {
-	init( key, Json::Value( value ), true, NODE_VALUE, VALUE_INT );
+	init( key, Json::Value( static_cast<Json::Value::Int64>( value ) ), true, NODE_VALUE, VALUE_INT );
 }
 	
 JsonTree::JsonTree( const string &key, uint64_t value )
 {
-	init( key, Json::Value( value ), true, NODE_VALUE, VALUE_UINT );
+	init( key, Json::Value( static_cast<Json::Value::UInt64>( value ) ), true, NODE_VALUE, VALUE_UINT );
 }
 
 JsonTree JsonTree::makeArray( const std::string &key )
@@ -627,13 +627,13 @@ Json::Value JsonTree::createNativeDoc( WriteOptions writeOptions ) const
 				value = Json::Value( fromString<double>( mValue ) );
 				break;
 			case VALUE_INT:
-				value = Json::Value( fromString<int64_t>( mValue ) );
+				value = Json::Value( static_cast<Json::Value::Int64>( fromString<int64_t>( mValue ) ) );
 				break;
 			case VALUE_STRING:
 				value = Json::Value( mValue );
 				break;
 			case VALUE_UINT:
-				value = Json::Value( fromString<uint64_t>( mValue ) );
+				value = Json::Value( static_cast<Json::Value::UInt64>( fromString<uint64_t>( mValue ) ) );
 				break;
 			}
 		break;
@@ -709,7 +709,7 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 
 JsonTree::ExcChildNotFound::ExcChildNotFound( const JsonTree &node, const string &childPath ) throw()
 {
-#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	sprintf_s( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
 #else
 	sprintf( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
@@ -718,7 +718,7 @@ JsonTree::ExcChildNotFound::ExcChildNotFound( const JsonTree &node, const string
 
 JsonTree::ExcNonConvertible::ExcNonConvertible( const JsonTree &node ) throw()
 {
-#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	sprintf_s( mMessage, "Unable to convert value for node: %s", node.getPath().c_str() );
 #else
 	sprintf( mMessage, "Unable to convert value for node: %s", node.getPath().c_str() );
@@ -727,7 +727,7 @@ JsonTree::ExcNonConvertible::ExcNonConvertible( const JsonTree &node ) throw()
 
 JsonTree::ExcJsonParserError::ExcJsonParserError( const string &errorMessage ) throw()
 {
-#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	sprintf_s( mMessage, "Unable to parse JSON\n: %s", errorMessage.c_str() );
 #else
 	sprintf( mMessage, "Unable to parse JSON\n: %s", errorMessage.c_str() );

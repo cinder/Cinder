@@ -24,21 +24,39 @@ const int SKY_BOX_SIZE = 500;
 
 void CubeMappingApp::setup()
 {
-	mCubeMap = gl::TextureCubeMap::create( loadImage( loadAsset( "env_map.jpg" ) ), gl::TextureCubeMap::Format().mipmap() );
+	try {
+		mCubeMap = gl::TextureCubeMap::create( loadImage( loadAsset( "env_map.jpg" ) ), gl::TextureCubeMap::Format().mipmap() );
+	}
+	catch( const std::exception& e ) {
+		console() << "loadImage error: " << e.what() << std::endl;
+	}
 
 #if defined( CINDER_GL_ES )
-	auto envMapGlsl = gl::GlslProg::create( loadAsset( "env_map_es2.vert" ), loadAsset( "env_map_es2.frag" ) );
-	auto skyBoxGlsl = gl::GlslProg::create( loadAsset( "sky_box_es2.vert" ), loadAsset( "sky_box_es2.frag" ) );
+	try {
+		auto envMapGlsl = gl::GlslProg::create( loadAsset( "env_map_es2.vert" ), loadAsset( "env_map_es2.frag" ) );
+		mTeapotBatch = gl::Batch::create( geom::Teapot().subdivisions( 7 ), envMapGlsl );
+		mTeapotBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
+	}
+	catch( const std::exception& e ) {
+		console() << "Shader Failed (env_map): " << e.what() << std::endl;
+	}
+
+	try {
+		auto skyBoxGlsl = gl::GlslProg::create( loadAsset( "sky_box_es2.vert" ), loadAsset( "sky_box_es2.frag" ) );
+		mSkyBoxBatch = gl::Batch::create( geom::Cube(), skyBoxGlsl );
+		mSkyBoxBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
+	}
+	catch( const std::exception& e ) {
+		console() << "Shader Failed (sky_box): " << e.what() << std::endl;
+	}
 #else
 	auto envMapGlsl = gl::GlslProg::create( loadAsset( "env_map.vert" ), loadAsset( "env_map.frag" ) );
 	auto skyBoxGlsl = gl::GlslProg::create( loadAsset( "sky_box.vert" ), loadAsset( "sky_box.frag" ) );
-#endif
-
 	mTeapotBatch = gl::Batch::create( geom::Teapot().subdivisions( 7 ), envMapGlsl );
 	mTeapotBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
-
 	mSkyBoxBatch = gl::Batch::create( geom::Cube(), skyBoxGlsl );
 	mSkyBoxBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
+#endif
 	
 	gl::enableDepthRead();
 	gl::enableDepthWrite();	

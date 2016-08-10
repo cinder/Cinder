@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    CID-keyed Type1 font loader (body).                                  */
 /*                                                                         */
-/*  Copyright 1996-2006, 2009, 2011-2012 by                                */
+/*  Copyright 1996-2015 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -38,11 +38,11 @@
 
 
   /* read a single offset */
-  FT_LOCAL_DEF( FT_Long )
+  FT_LOCAL_DEF( FT_ULong )
   cid_get_offset( FT_Byte*  *start,
                   FT_Byte    offsize )
   {
-    FT_Long   result;
+    FT_ULong  result;
     FT_Byte*  p = *start;
 
 
@@ -114,7 +114,7 @@
         {
           FT_ERROR(( "cid_load_keyword: invalid use of `%s'\n",
                      keyword->ident ));
-          error = CID_Err_Syntax_Error;
+          error = FT_THROW( Syntax_Error );
           goto Exit;
         }
 
@@ -150,8 +150,6 @@
   cid_parse_font_matrix( CID_Face     face,
                          CID_Parser*  parser )
   {
-    FT_Matrix*    matrix;
-    FT_Vector*    offset;
     CID_FaceDict  dict;
     FT_Face       root = (FT_Face)&face->root;
     FT_Fixed      temp[6];
@@ -160,13 +158,27 @@
 
     if ( parser->num_dict >= 0 && parser->num_dict < face->cid.num_dicts )
     {
+      FT_Matrix*  matrix;
+      FT_Vector*  offset;
+      FT_Int      result;
+
+
       dict   = face->cid.font_dicts + parser->num_dict;
       matrix = &dict->font_matrix;
       offset = &dict->font_offset;
 
-      (void)cid_parser_to_fixed_array( parser, 6, temp, 3 );
+      result = cid_parser_to_fixed_array( parser, 6, temp, 3 );
+
+      if ( result < 6 )
+        return FT_THROW( Invalid_File_Format );
 
       temp_scale = FT_ABS( temp[3] );
+
+      if ( temp_scale == 0 )
+      {
+        FT_ERROR(( "cid_parse_font_matrix: invalid font matrix\n" ));
+        return FT_THROW( Invalid_File_Format );
+      }
 
       /* Set Units per EM based on FontMatrix values.  We set the value to */
       /* 1000 / temp_scale, because temp_scale was already multiplied by   */
@@ -182,7 +194,7 @@
         temp[2] = FT_DivFix( temp[2], temp_scale );
         temp[4] = FT_DivFix( temp[4], temp_scale );
         temp[5] = FT_DivFix( temp[5], temp_scale );
-        temp[3] = 0x10000L;
+        temp[3] = temp[3] < 0 ? -0x10000L : 0x10000L;
       }
 
       matrix->xx = temp[0];
@@ -195,8 +207,7 @@
       offset->y  = temp[5] >> 16;
     }
 
-    return CID_Err_Ok;      /* this is a callback function; */
-                            /* we must return an error code */
+    return FT_Err_Ok;
   }
 
 
@@ -206,11 +217,17 @@
   {
     CID_FaceInfo  cid    = &face->cid;
     FT_Memory     memory = face->root.memory;
-    FT_Error      error  = CID_Err_Ok;
+    FT_Error      error  = FT_Err_Ok;
     FT_Long       num_dicts;
 
 
     num_dicts = cid_parser_to_int( parser );
+    if ( num_dicts < 0 )
+    {
+      FT_ERROR(( "parse_fd_array: invalid number of dictionaries\n" ));
+      error = FT_THROW( Invalid_File_Format );
+      goto Exit;
+    }
 
     if ( !cid->font_dicts )
     {
@@ -220,7 +237,7 @@
       if ( FT_NEW_ARRAY( cid->font_dicts, num_dicts ) )
         goto Exit;
 
-      cid->num_dicts = (FT_UInt)num_dicts;
+      cid->num_dicts = num_dicts;
 
       /* don't forget to set a few defaults */
       for ( n = 0; n < cid->num_dicts; n++ )
@@ -257,7 +274,7 @@
       dict->private_dict.expansion_factor = dict->expansion_factor;
     }
 
-    return CID_Err_Ok;
+    return FT_Err_Ok;
   }
 
 
@@ -279,14 +296,14 @@
   cid_parse_dict( CID_Face     face,
                   CID_Loader*  loader,
                   FT_Byte*     base,
-                  FT_Long      size )
+                  FT_ULong     size )
   {
     CID_Parser*  parser = &loader->parser;
 
 
     parser->root.cursor = base;
     parser->root.limit  = base + size;
-    parser->root.error  = CID_Err_Ok;
+    parser->root.error  = FT_Err_Ok;
 
     {
       FT_Byte*  cur   = base;
@@ -331,11 +348,11 @@
         /* look for immediates */
         if ( *cur == '/' && cur + 2 < limit )
         {
-          FT_PtrDist  len;
+          FT_UInt  len;
 
 
           cur++;
-          len = parser->root.cursor - cur;
+          len = (FT_UInt)( parser->root.cursor - cur );
 
           if ( len > 0 && len < 22 )
           {
@@ -352,10 +369,10 @@
               if ( !name )
                 break;
 
-              if ( cur[0] == name[0]                                 &&
-                   len == (FT_PtrDist)ft_strlen( (const char*)name ) )
+              if ( cur[0] == name[0]                     &&
+                   len == ft_strlen( (const char*)name ) )
               {
-                FT_PtrDist  n;
+                FT_UInt  n;
 
 
                 for ( n = 1; n < len; n++ )
@@ -396,7 +413,7 @@
     FT_Int         n;
     CID_Subrs      subr;
     FT_UInt        max_offsets = 0;
-    FT_ULong*      offsets = 0;
+    FT_ULong*      offsets = NULL;
     PSAux_Service  psaux = (PSAux_Service)face->psaux;
 
 
@@ -416,7 +433,7 @@
       /* Check for possible overflow. */
       if ( num_subrs == FT_UINT_MAX )
       {
-        error = CID_Err_Syntax_Error;
+        error = FT_THROW( Syntax_Error );
         goto Fail;
       }
 
@@ -428,7 +445,7 @@
 
         if ( new_max <= max_offsets )
         {
-          error = CID_Err_Syntax_Error;
+          error = FT_THROW( Syntax_Error );
           goto Fail;
         }
 
@@ -439,8 +456,8 @@
       }
 
       /* read the subrmap's offsets */
-      if ( FT_STREAM_SEEK( cid->data_offset + dict->subrmap_offset ) ||
-           FT_FRAME_ENTER( ( num_subrs + 1 ) * dict->sd_bytes )      )
+      if ( FT_STREAM_SEEK( cid->data_offset + dict->subrmap_offset )     ||
+           FT_FRAME_ENTER( ( num_subrs + 1 ) * (FT_UInt)dict->sd_bytes ) )
         goto Fail;
 
       p = (FT_Byte*)stream->cursor;
@@ -489,7 +506,7 @@
         }
       }
 
-      subr->num_subrs = num_subrs;
+      subr->num_subrs = (FT_Int)num_subrs;
     }
 
   Exit:
@@ -535,7 +552,7 @@
 
   static FT_Error
   cid_hex_to_binary( FT_Byte*  data,
-                     FT_Long   data_len,
+                     FT_ULong  data_len,
                      FT_ULong  offset,
                      CID_Face  face )
   {
@@ -571,7 +588,7 @@
 
         if ( size == 0 )
         {
-          error = CID_Err_Syntax_Error;
+          error = FT_THROW( Syntax_Error );
           goto Exit;
         }
 
@@ -604,7 +621,7 @@
       }
       else
       {
-        error = CID_Err_Syntax_Error;
+        error = FT_THROW( Syntax_Error );
         goto Exit;
       }
 
@@ -624,7 +641,7 @@
       p++;
     }
 
-    error = CID_Err_Ok;
+    error = FT_Err_Ok;
 
   Exit:
     return error;

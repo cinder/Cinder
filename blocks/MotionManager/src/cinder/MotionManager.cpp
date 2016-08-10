@@ -22,7 +22,11 @@
  */
 
 #include "MotionManager.h"
-#include "MotionImplCoreMotion.h"
+#if defined( CINDER_COCOA_TOUCH ) 
+  #include "MotionImplCoreMotion.h"
+#elif defined( CINDER_ANDROID )
+   #include "MotionImplAndroid.h"
+#endif 
 #include "cinder/CinderMath.h"
 
 namespace cinder {
@@ -31,7 +35,7 @@ std::mutex MotionManager::sMutex;
 
 void MotionManager::enable( float updateFrequency, SensorMode mode, bool showsCalibrationDisplay )
 {
-	auto impl = get()->mImpl;
+	auto impl = MotionManager::get()->mImpl;
 	impl->setSensorMode( mode );
 	impl->setUpdateFrequency( updateFrequency );
 	impl->setShowsCalibrationView( showsCalibrationDisplay );
@@ -40,71 +44,107 @@ void MotionManager::enable( float updateFrequency, SensorMode mode, bool showsCa
 
 void MotionManager::disable()
 {
-    get()->mImpl->stopMotionUpdates();
+    MotionManager::get()->mImpl->stopMotionUpdates();
 }
 
 bool MotionManager::isEnabled()
 {
-	return get()->mImpl->isMotionUpdatesActive();
+	return MotionManager::get()->mImpl->isMotionUpdatesActive();
 }
 
 MotionManager::SensorMode MotionManager::getSensorMode()
 {
-	return get()->mImpl->getSensorMode();
+	return MotionManager::get()->mImpl->getSensorMode();
 }
 
 bool MotionManager::isDataAvailable()
 {
-	return get()->mImpl->isMotionDataAvailable();
+	return MotionManager::get()->mImpl->isMotionDataAvailable();
 }
 
 bool MotionManager::isGyroAvailable()
 {
-	return get()->mImpl->isGyroAvailable();
+	return MotionManager::get()->mImpl->isGyroAvailable();
 }
 
 bool MotionManager::isNorthReliable()
 {
-	return get()->mImpl->isNorthReliable();
+	return MotionManager::get()->mImpl->isNorthReliable();
 }
 
 void MotionManager::setShowsCalibrationView( bool shouldShow )
 {
-	get()->mImpl->setShowsCalibrationView( shouldShow );
+	MotionManager::get()->mImpl->setShowsCalibrationView( shouldShow );
 }
 
 vec3 MotionManager::getGravityDirection( app::InterfaceOrientation orientation )
 {
-	return get()->mImpl->getGravityDirection( orientation );
+	return MotionManager::get()->mImpl->getGravityDirection( orientation );
 }
 
 quat MotionManager::getRotation( app::InterfaceOrientation orientation )
 {
-    return get()->mImpl->getRotation( orientation );
+    return MotionManager::get()->mImpl->getRotation( orientation );
+}
+
+ci::mat4 MotionManager::getRotationMatrix( app::InterfaceOrientation orientation )
+{
+    return MotionManager::get()->mImpl->getRotationMatrix( orientation );	
 }
 
 vec3 MotionManager::getRotationRate( app::InterfaceOrientation orientation )
 {
-    return get()->mImpl->getRotationRate( orientation );
+    return MotionManager::get()->mImpl->getRotationRate( orientation );
 }
 
 vec3 MotionManager::getAcceleration( app::InterfaceOrientation orientation)
 {
-    return get()->mImpl->getAcceleration( orientation );
+    return MotionManager::get()->mImpl->getAcceleration( orientation );
 }
 
 bool MotionManager::isShaking( float minShakeDeltaThreshold )
 {
-    return get()->isShakingImpl( minShakeDeltaThreshold );
+    return MotionManager::get()->isShakingImpl( minShakeDeltaThreshold );
 }
+
+#if defined( CINDER_ANDROID )
+ci::vec3 MotionManager::getAccelerometer()
+{
+	return MotionManager::get()->mImpl->getAccelerometer();
+}
+
+ci::vec3 MotionManager::getMagneticField()
+{
+	return MotionManager::get()->mImpl->getMagneticField();
+}
+
+ci::vec3 MotionManager::getGyroscope()
+{
+	return MotionManager::get()->mImpl->getGyroscope();
+}
+
+ci::vec3 MotionManager::getGravity()
+{
+	return MotionManager::get()->mImpl->getGravity();
+}
+
+ci::quat MotionManager::getRotationVector()
+{
+	return MotionManager::get()->mImpl->getRotationVector();
+}
+#endif	
 
 MotionManager* MotionManager::get()
 {
-	static MotionManager *sInst = 0;
+	static MotionManager *sInst = nullptr;
 	std::unique_lock<std::mutex> lock( sMutex );
 	if( ! sInst ) {
 		sInst = new MotionManager;
+#if defined( CINDER_COCOA_TOUCH )		
         sInst->mImpl = std::make_shared<MotionImplCoreMotion>();
+#elif defined( CINDER_ANDROID )
+        sInst->mImpl = std::make_shared<MotionImplAndroid>();
+#endif        
 	}
 	return sInst;
 }

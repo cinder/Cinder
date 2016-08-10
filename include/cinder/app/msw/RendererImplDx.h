@@ -83,9 +83,9 @@ class RendererImplDx : public RendererImplMsw {
 
 	RendererImplDx( AppBase *aApp, RendererDx *aRenderer );
 	
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	virtual bool	initialize( HWND wnd, HDC dc,  RendererRef sharedRenderer );
-#elif defined( CINDER_WINRT)
+#elif defined( CINDER_UWP )
 	virtual bool	initialize( Platform::Agile<Windows::UI::Core::CoreWindow> wnd );
 #endif
 
@@ -127,7 +127,7 @@ class RendererImplDx : public RendererImplMsw {
 
 	RendererDx	*mRenderer;
 	D3D_FEATURE_LEVEL mFeatureLevel;
-  #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= _WIN32_WINNT_VISTA ) // requires Windows Vista+
+  #if defined( CINDER_UWP ) || ( _WIN32_WINNT >= _WIN32_WINNT_VISTA ) // requires Windows Vista+
 	ID3D11DeviceContext1 *mDeviceContext;
 	IDXGISwapChain1 *mSwapChain;
 	ID3D11Device1 *md3dDevice;

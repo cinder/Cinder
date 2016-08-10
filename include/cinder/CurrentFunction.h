@@ -23,10 +23,12 @@
 
 #pragma once
 
-#if defined( __clang__ )
+#if defined( __clang__ ) || defined( __ANDROID__ )
 	#define CINDER_CURRENT_FUNCTION __PRETTY_FUNCTION__
 #elif defined( _MSC_VER )
 	#define CINDER_CURRENT_FUNCTION __FUNCTION__
+#elif defined( __GNUG__ )
+	#define CINDER_CURRENT_FUNCTION __PRETTY_FUNCTION__
 #else
 	#define CINDER_CURRENT_FUNCTION "(unknown function)"
 #endif

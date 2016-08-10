@@ -75,7 +75,7 @@ void MultiTouchApp::setup()
 
 void MultiTouchApp::touchesBegan( TouchEvent event )
 {
-	CI_LOG_I( event );
+	//CI_LOG_I( event );
 
 	for( const auto &touch : event.getTouches() ) {
 		Color newColor( CM_HSV, Rand::randFloat(), 1, 1 );
@@ -85,7 +85,7 @@ void MultiTouchApp::touchesBegan( TouchEvent event )
 
 void MultiTouchApp::touchesMoved( TouchEvent event )
 {
-	CI_LOG_I( event );
+	//CI_LOG_I( event );
 	for( const auto &touch : event.getTouches() ) {
 		mActivePoints[touch.getId()].addPoint( touch.getPos() );
 	}
@@ -93,7 +93,7 @@ void MultiTouchApp::touchesMoved( TouchEvent event )
 
 void MultiTouchApp::touchesEnded( TouchEvent event )
 {
-	CI_LOG_I( event );
+	//CI_LOG_I( event );
 	for( const auto &touch : event.getTouches() ) {
 		mActivePoints[touch.getId()].startDying();
 		mDyingPoints.push_back( mActivePoints[touch.getId()] );

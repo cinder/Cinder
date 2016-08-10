@@ -11,11 +11,10 @@ attribute vec4	ciPosition;
 attribute vec3	ciNormal;
 attribute vec2  ciTexCoord0;
 
-varying vec4 vColor;
-varying vec3 vNormal;
-varying vec4 vPosition;
-varying vec4 vShadowCoord;
-varying vec2 vTexCoord0;
+varying lowp vec4 vColor;
+varying lowp vec3 vNormal;
+varying lowp vec4 vPosition;
+varying highp vec4 vShadowCoord;
 
 const mat4 biasMatrix = mat4( 0.5, 0.0, 0.0, 0.0,
 							  0.0, 0.5, 0.0, 0.0,
@@ -28,6 +27,5 @@ void main( void )
 	vPosition		= ciModelView * ciPosition;
 	vNormal			= normalize( ciNormalMatrix * ciNormal );
 	vShadowCoord	= ( biasMatrix * uShadowMatrix * ciModelMatrix ) * ciPosition;
-	vTexCoord0		= ciTexCoord0;
 	gl_Position		= ciModelViewProjection * ciPosition;
 }
