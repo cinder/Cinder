@@ -47,3 +47,6 @@ elseif( CINDER_BUILD_SAMPLE )
 	endif()
 	add_subdirectory( ${CINDER_PATH}/samples/${CINDER_BUILD_SAMPLE}/proj/cmake )
 endif()
+
+enable_testing()
+add_subdirectory(${CINDER_PATH}/test/unit/proj/cmake )
