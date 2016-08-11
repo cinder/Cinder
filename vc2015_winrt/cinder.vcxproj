@@ -1055,37 +1055,37 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
@@ -1096,6 +1096,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1164,6 +1165,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
