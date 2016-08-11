@@ -108,23 +108,23 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\include;_TBOX_CINDER_PATH_\include;_TBOX_CINDER_PATH_\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\include\ANGLE";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\$(Configuration)\"</AdditionalLibraryDirectories>
       <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-	  <AdditionalIncludeDirectories>..\include;_TBOX_CINDER_PATH_\include;_TBOX_CINDER_PATH_\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+	  <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\include\ANGLE";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\</AdditionalLibraryDirectories>
-	  <AdditionalDependencies>cinder-$(PlatformToolset)_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\$(Configuration)\";</AdditionalLibraryDirectories>
+	  <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
