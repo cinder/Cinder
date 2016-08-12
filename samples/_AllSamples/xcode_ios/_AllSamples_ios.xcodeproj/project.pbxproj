@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				001FA1CF1D5D72770007DD5F /* PBXTargetDependency */,
 				004309C81BBCE52200B72510 /* PBXTargetDependency */,
 				004309CA1BBCE52200B72510 /* PBXTargetDependency */,
 				004309CC1BBCE52200B72510 /* PBXTargetDependency */,
@@ -60,6 +61,20 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
+		001FA1CC1D5D71E40007DD5F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 001FA1C81D5D71E30007DD5F /* MultiTouchBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
+			remoteInfo = MultiTouchBasic;
+		};
+		001FA1CE1D5D72770007DD5F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 001FA1C81D5D71E30007DD5F /* MultiTouchBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
+			remoteInfo = MultiTouchBasic;
+		};
 		004309531BBCE41700B72510 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0043094F1BBCE41700B72510 /* Cube.xcodeproj */;
@@ -623,6 +638,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		001FA1C81D5D71E30007DD5F /* MultiTouchBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MultiTouchBasic.xcodeproj; path = ../../MultiTouchBasic/xcode_ios/MultiTouchBasic.xcodeproj; sourceTree = "<group>"; };
 		0043094F1BBCE41700B72510 /* Cube.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Cube.xcodeproj; path = ../../_opengl/Cube/xcode_ios/Cube.xcodeproj; sourceTree = "<group>"; };
 		004309551BBCE42100B72510 /* CubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CubeMapping.xcodeproj; path = ../../_opengl/CubeMapping/xcode_ios/CubeMapping.xcodeproj; sourceTree = "<group>"; };
 		0043095B1BBCE42F00B72510 /* DeferredShading.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DeferredShading.xcodeproj; path = ../../_opengl/DeferredShading/xcode_ios/DeferredShading.xcodeproj; sourceTree = "<group>"; };
@@ -666,6 +682,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		001FA1C91D5D71E30007DD5F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				001FA1CD1D5D71E40007DD5F /* MultiTouch.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		0043094E1BBCE40300B72510 /* _opengl */ = {
 			isa = PBXGroup;
 			children = (
@@ -859,6 +883,7 @@
 				0043094E1BBCE40300B72510 /* _opengl */,
 				00D494D01988A2B300A44E4C /* _audio */,
 				009F6EA214C0FED70036C292 /* _timeline */,
+				001FA1C81D5D71E30007DD5F /* MultiTouchBasic.xcodeproj */,
 				00D494F91988A31F00A44E4C /* BezierPathIteration.xcodeproj */,
 				009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */,
 				0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */,
@@ -1063,7 +1088,7 @@
 			isa = PBXProject;
 			attributes = {
 			};
-			buildConfigurationList = 0087D08912CD7DC5002CD69F /* Build configuration list for PBXProject "_AllSamples_iOS" */;
+			buildConfigurationList = 0087D08912CD7DC5002CD69F /* Build configuration list for PBXProject "_AllSamples_ios" */;
 			compatibilityVersion = "Xcode 2.4";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -1161,6 +1186,10 @@
 					ProjectRef = 004309851BBCE48200B72510 /* MotionBlurFbo.xcodeproj */;
 				},
 				{
+					ProductGroup = 001FA1C91D5D71E30007DD5F /* Products */;
+					ProjectRef = 001FA1C81D5D71E30007DD5F /* MultiTouchBasic.xcodeproj */;
+				},
+				{
 					ProductGroup = 00D4950C1988A38900A44E4C /* Products */;
 					ProjectRef = 00D4950B1988A38900A44E4C /* NativeControls.xcodeproj */;
 				},
@@ -1245,6 +1274,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		001FA1CD1D5D71E40007DD5F /* MultiTouch.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MultiTouch.app;
+			remoteRef = 001FA1CC1D5D71E40007DD5F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		004309541BBCE41700B72510 /* Cube.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -1528,6 +1564,11 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXTargetDependency section */
+		001FA1CF1D5D72770007DD5F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MultiTouchBasic;
+			targetProxy = 001FA1CE1D5D72770007DD5F /* PBXContainerItemProxy */;
+		};
 		004309C81BBCE52200B72510 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TransformFeedbackSmokeParticles;
@@ -1769,7 +1810,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0087D08912CD7DC5002CD69F /* Build configuration list for PBXProject "_AllSamples_iOS" */ = {
+		0087D08912CD7DC5002CD69F /* Build configuration list for PBXProject "_AllSamples_ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0087D08712CD7DC5002CD69F /* Debug */,
