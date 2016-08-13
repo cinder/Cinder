@@ -78,9 +78,9 @@ list( APPEND CINDER_SRC_FILES
 )
 
 list( APPEND CINDER_LIBS_DEPENDS
-    ${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_system.a
-    ${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_filesystem.a
-    ${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libz.a
+    ${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_system.a
+    ${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_filesystem.a
+    ${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/libz.a
 )
 
 # link in system frameworks
