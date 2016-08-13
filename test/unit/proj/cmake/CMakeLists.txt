@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
-project( TestMain )
+project( UnitTests )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../.." ABSOLUTE )
 get_filename_component( UNIT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
@@ -29,7 +29,7 @@ ci_make_app(
 )
 
 target_compile_definitions(
-	TestMain
+	UnitTests
 	PRIVATE -DUNIT_DIR_ASSETS="${UNIT_DIR}/assets"
 )
 
