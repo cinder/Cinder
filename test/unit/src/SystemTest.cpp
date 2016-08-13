@@ -11,7 +11,9 @@ TEST_CASE("System", "[noisy]")
 {
 	console() << "System information:" << std::endl;
 #if ! defined( CINDER_WINRT )
-  #if ! defined( CINDER_MSW )
+  #if defined ( CINDER_LINUX )
+        /* os version is not too meaningful on linux, so skip it */
+  #elif ! defined( CINDER_MSW )
 	console() << " OS Version " << System::getOsMajorVersion() << "." << System::getOsMinorVersion() << "." << System::getOsBugFixVersion() << std::endl;
   #else
 	console() << " OS Version " << System::getOsMajorVersion() << "." << System::getOsMinorVersion() << " Service Pack " << System::getOsBugFixVersion() << std::endl;

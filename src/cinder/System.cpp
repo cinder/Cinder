@@ -59,6 +59,20 @@
 	using namespace Windows::Networking;
 	using namespace Windows::Networking::Connectivity;
 	using namespace cinder::winrt;
+#elif defined( CINDER_LINUX ) && ( defined ( __x86_64__ ) || defined ( __i386__ ))
+	#include <netdb.h>
+	#include <sys/types.h>
+	#include <ifaddrs.h>
+	#include <unistd.h>
+	#include <cpuid.h>
+
+	#define GETCPUID(lev) \
+	unsigned int level = lev; \
+	unsigned int eax = 0; \
+	unsigned int ebx = 0; \
+	unsigned int ecx = 0; \
+	unsigned int edx = 0; \
+	__get_cpuid(level, &eax, &ebx, &ecx, &edx)
 #endif
 
 #if defined( __clang__ ) || defined( __GNUC__ )
@@ -272,6 +286,9 @@ bool System::hasSse2()
 	if( ! instance()->mCachedValues[HAS_SSE2] ) {
 #if defined( CINDER_COCOA )	
 		instance()->mHasSSE2 = ( getSysCtlValue<int>( "hw.optional.sse2" ) == 1 );
+#elif defined( CINDER_LINUX ) && ( defined ( __x86_64__ ) || defined ( __i386__ ))
+	        GETCPUID(1);
+		instance()->mHasSSE2 = !!( edx & bit_SSE2 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE2 = true;
 #elif defined( CINDER_MSW_DESKTOP )
@@ -292,6 +309,9 @@ bool System::hasSse3()
 	if( ! instance()->mCachedValues[HAS_SSE3] ) {
 #if defined( CINDER_COCOA )	
 		instance()->mHasSSE3 = ( getSysCtlValue<int>( "hw.optional.sse3" ) == 1 );
+#elif defined( CINDER_LINUX ) && ( defined ( __x86_64__ ) || defined ( __i386__ ))
+	        GETCPUID(1);
+		instance()->mHasSSE3 = !! ( ecx & bit_SSE3 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE3 = true;
 #elif defined( CINDER_MSW_DESKTOP )
@@ -312,6 +332,9 @@ bool System::hasSse4_1()
 	if( ! instance()->mCachedValues[HAS_SSE4_1] ) {
 #if defined( CINDER_COCOA )	
 		instance()->mHasSSE4_1 = ( getSysCtlValue<int>( "hw.optional.sse4_1" ) == 1 );
+#elif defined( CINDER_LINUX ) && ( defined ( __x86_64__ ) || defined ( __i386__ ))
+	        GETCPUID(1);
+		instance()->mHasSSE4_1 = !!( ecx & bit_SSE4_1 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE4_1 = true; // TODO: this is not being tested
 #elif defined( CINDER_MSW_DESKTOP )
@@ -330,6 +353,9 @@ bool System::hasSse4_2()
 	if( ! instance()->mCachedValues[HAS_SSE4_2] ) {
 #if defined( CINDER_COCOA )	
 		instance()->mHasSSE4_2 = ( getSysCtlValue<int>( "hw.optional.sse4_2" ) == 1 );
+#elif defined( CINDER_LINUX ) && ( defined ( __x86_64__ ) || defined ( __i386__ ))
+	        GETCPUID(1);
+		instance()->mHasSSE4_2 = !!( ecx & bit_SSE4_2 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE4_2 = true; // TODO: this is not being tested
 #elif defined( CINDER_MSW_DESKTOP )
@@ -365,6 +391,12 @@ bool System::hasX86_64()
 	if( ! instance()->mCachedValues[HAS_X86_64] ) {
 #if defined( CINDER_COCOA )	
 		instance()->mHasX86_64 = ( getSysCtlValue<int>( "hw.optional.x86_64" ) == 1 );
+#elif defined( CINDER_LINUX ) && defined ( __x86_64__ )
+		// approximation
+		instance()->mHasX86_64 = true;
+#elif defined( CINDER_LINUX ) && defined ( __i386__ )
+		// approximation
+		instance()->mHasX86_64 = false;
 #elif defined( _WIN64 )
 		instance()->mHasX86_64 = true;
 #elif defined( CINDER_MSW_DESKTOP )
@@ -388,6 +420,9 @@ int System::getNumCpus()
 	if( ! instance()->mCachedValues[PHYSICAL_CPUS] ) {
 #if defined( CINDER_COCOA )	
 		instance()->mPhysicalCPUs = getSysCtlValue<int>( "hw.packages" );
+#elif defined( CINDER_LINUX )
+		// approximation
+		instance()->mPhysicalCPUs = sysconf(_SC_NPROCESSORS_ONLN);
 #elif defined( CINDER_UWP ) || defined( _WIN64 )
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
@@ -435,6 +470,9 @@ int System::getNumCores()
 	if( ! instance()->mCachedValues[LOGICAL_CPUS] ) {
 #if defined( CINDER_COCOA )	
 		instance()->mLogicalCPUs = getSysCtlValue<int>( "hw.logicalcpu" );
+#elif defined( CINDER_LINUX )
+		// approximation
+		instance()->mLogicalCPUs = sysconf(_SC_NPROCESSORS_ONLN);
 #elif defined( CINDER_UWP ) || defined( _WIN64 )
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
@@ -641,7 +679,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 {
 	vector<System::NetworkAdapter> adapters;
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined ( CINDER_LINUX )
 	struct ifaddrs *interfaces = NULL;
 	struct ifaddrs *currentInterface = NULL;
 
@@ -649,7 +687,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 	if( success == 0 ) {
 		currentInterface = interfaces;
 		while( currentInterface ) {
-			if( currentInterface->ifa_addr->sa_family == AF_INET ) {
+			if( currentInterface->ifa_addr && (currentInterface->ifa_addr->sa_family == AF_INET) ) {
 				char host[NI_MAXHOST], subnetMask[NI_MAXHOST];
 				int result = getnameinfo( currentInterface->ifa_addr,
                            (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
