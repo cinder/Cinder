@@ -5,6 +5,8 @@ set( CINDER_TARGET "" CACHE STRING "Target platform to build for." )
 option( CINDER_VERBOSE "Print verbose build configuration messages. " OFF )
 option( BUILD_SHARED_LIBS "Build Cinder as a shared library. " OFF )
 
+include( ${CMAKE_CURRENT_LIST_DIR}/utilities.cmake )
+
 # Set default build type to Debug
 if( NOT CMAKE_BUILD_TYPE )
 	if( CINDER_VERBOSE )
