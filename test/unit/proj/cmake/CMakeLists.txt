@@ -34,12 +34,12 @@ target_compile_definitions(
 )
 
 if( APPLE )
-	set( TESTBINDIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/TestMain.app/Contents/MacOS )
+	set( TESTBINDIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/UnitTests.app/Contents/MacOS )
 else()
 	set( TESTBINDIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE} )
 endif()
 
 add_test(
-	NAME TestMain
-	COMMAND ${TESTBINDIR}/TestMain
+	NAME UnitTests
+	COMMAND ${TESTBINDIR}/UnitTests
 )
