@@ -11,7 +11,7 @@ using namespace std;
 
 TEST_CASE("Json", "[noisy]")
 {
-	app::Platform::get()->addAssetDirectory(UNIT_DIR_ASSETS);
+	app::Platform::get()->addAssetDirectory( UNIT_DIR_ASSETS );
 
 	SECTION("Basic JSON Parsing")
 	{

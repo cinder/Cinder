@@ -51,6 +51,6 @@ endif()
 
 if( CINDER_BUILD_TESTS )
 	enable_testing()
-	add_subdirectory(${CINDER_PATH}/test/unit/proj/cmake )
-	add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
+	add_subdirectory( ${CINDER_PATH}/test/unit/proj/cmake )
+	add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} --verbose )
 endif()
