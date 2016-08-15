@@ -70,11 +70,17 @@ set_source_files_properties( ${CINDER_SOURCES_OBJCPP}
 	PROPERTIES COMPILE_FLAGS "-x objective-c++"
 )
 
+list( APPEND SRC_SET_GLLOAD
+	${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
+	${CINDER_SRC_DIR}/glload/gl_load.c
+)
+
 list( APPEND CINDER_SRC_FILES
 	${SRC_SET_COCOA}
 	${SRC_SET_APP_COCOA}
 	${SRC_SET_AUDIO_COCOA}
 	${SRC_SET_QTIME}
+	${SRC_SET_GLLOAD}
 )
 
 list( APPEND CINDER_LIBS_DEPENDS
