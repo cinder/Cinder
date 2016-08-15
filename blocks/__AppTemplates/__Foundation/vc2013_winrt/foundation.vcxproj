@@ -112,8 +112,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\$(Configuration)\"</AdditionalLibraryDirectories>
-      <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\"</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -123,8 +123,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\$(Configuration)\";</AdditionalLibraryDirectories>
-	  <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\";</AdditionalLibraryDirectories>
+	  <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
