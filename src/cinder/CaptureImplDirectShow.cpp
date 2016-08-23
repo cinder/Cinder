@@ -87,7 +87,7 @@ class SurfaceCache {
 			if( ! mSurfaceUsed[i] ) {
 				mSurfaceUsed[i] = true;
 				auto newSurface = new Surface( mSurfaceData[i].get(), mWidth, mHeight, mWidth * mSCO.getPixelInc(), mSCO );
-				Surface8uRef result = shared_ptr<Surface8u>( newSurface, [=] ( Surface8u* s ) { mSurfaceUsed[i] = false; } );
+				Surface8uRef result = shared_ptr<Surface8u>(newSurface, [=](Surface8u* s) { delete s; mSurfaceUsed[i] = false; });
 				return result;
 			}
 		}
