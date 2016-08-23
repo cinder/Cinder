@@ -112,7 +112,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\"</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\msw-uwp\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\msw-uwp\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\"</AdditionalLibraryDirectories>
       <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -123,7 +123,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\winrt\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\";</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>"_TBOX_CINDER_PATH_\lib\msw-uwp\$(PlatformTarget)\";"_TBOX_CINDER_PATH_\lib\msw-uwp\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\";</AdditionalLibraryDirectories>
 	  <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -139,7 +139,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="_TBOX_CINDER_PATH_\lib\winrt\x64\libEGL.dll">
+    <None Include="_TBOX_CINDER_PATH_\lib\msw-uwp\x64\libEGL.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
 	  <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</DeploymentContent>
@@ -147,7 +147,7 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
 	  <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</DeploymentContent>
     </None>
-    <None Include="_TBOX_CINDER_PATH_\lib\winrt\x64\libGLESv2.dll">
+    <None Include="_TBOX_CINDER_PATH_\lib\msw-uwp\x64\libGLESv2.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</DeploymentContent>
@@ -155,7 +155,7 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
 	  <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</DeploymentContent>
     </None>
-    <None Include="_TBOX_CINDER_PATH_\lib\winrt\x86\libEGL.dll">
+    <None Include="_TBOX_CINDER_PATH_\lib\msw-uwp\x86\libEGL.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
 	  <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</DeploymentContent>
@@ -163,7 +163,7 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
 	  <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</DeploymentContent>
     </None>
-    <None Include="_TBOX_CINDER_PATH_\lib\winrt\x86\libGLESv2.dll">
+    <None Include="_TBOX_CINDER_PATH_\lib\msw-uwp\x86\libGLESv2.dll">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
 	  <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</DeploymentContent>
