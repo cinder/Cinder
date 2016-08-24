@@ -15,17 +15,17 @@
 #include "FXAA3_11.h"
 
 uniform sampler2D	uTexture;
-uniform vec4		uExtends;
+uniform vec4		uExtents;
 
 out     vec4        oColor;
 
 void main( void )
 {
 	FxaaFloat2 fxaaQualityRcpFrame;
-	fxaaQualityRcpFrame.x = uExtends.x;
-	fxaaQualityRcpFrame.y = uExtends.y;
+	fxaaQualityRcpFrame.x = uExtents.x;
+	fxaaQualityRcpFrame.y = uExtents.y;
 
-	FxaaFloat2 uv = gl_FragCoord.xy * uExtends.xy;
+	FxaaFloat2 uv = gl_FragCoord.xy * uExtents.xy;
 
 	FxaaFloat4 ConsolePosPos = FxaaFloat4(0.0,0.0,0.0,0.0);
 	FxaaFloat4 ConsoleRcpFrameOpt = FxaaFloat4(0.0,0.0,0.0,0.0);
