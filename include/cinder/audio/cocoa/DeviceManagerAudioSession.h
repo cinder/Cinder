@@ -27,9 +27,9 @@
 #include "cinder/audio/Device.h"
 
 #if defined( __OBJC__ )
-	@class AudioSessionInterruptionHandlerImpl;
+	@class AudioSessionNotificationHandlerImpl;
 #else
-	class AudioSessionInterruptionHandlerImpl;
+	class AudioSessionNotificationHandlerImpl;
 #endif
 
 namespace cinder { namespace audio { namespace cocoa {
@@ -60,19 +60,19 @@ class DeviceManagerAudioSession : public DeviceManager {
 	void setInputEnabled( bool enable = true );
 	bool isInputEnabled() const		{ return mInputEnabled; }
 
-  private:
+	void beginInterruption();
+	void endInterruption( bool shouldResume );
 
+ private:
 	const DeviceRef&				getRemoteIODevice();
-	void							activateSession();
 	std::string						getSessionCategory();
-
-	AudioSessionInterruptionHandlerImpl *getSessionInterruptionHandler();
-
+	
+	void							activateSession();
 
 	DeviceRef mRemoteIODevice;
 	bool mSessionIsActive, mInputEnabled;
 
-	AudioSessionInterruptionHandlerImpl *mSessionInterruptionHandler;
+	AudioSessionNotificationHandlerImpl *mSessionNotificationHandler;
 };
 
 } } } // namespace cinder::audio::cocoa

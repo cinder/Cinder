@@ -129,15 +129,19 @@ class DeviceManager : private Noncopyable {
 	//! override if subclass needs to update params async, and will issue formatWillChange callbacks
 	virtual bool			isFormatUpdatedAsync() const		{ return false; }
 
+	signals::Signal<void()> &getSignalInterruptionBegan() { return mSignalInterruptionBegan; }
+	signals::Signal<void()> &getSignalInterruptionEnded() { return mSignalInterruptionEnded; }
   protected:
-	DeviceManager()	{}
+	DeviceManager() {}
 
-	DeviceRef	addDevice( const std::string &key );
+	DeviceRef addDevice( const std::string &key );
 
 	void emitParamsWillChange( const DeviceRef &device );
 	void emitParamsDidChange( const DeviceRef &device );
 
 	std::vector<DeviceRef> mDevices;
+
+	signals::Signal<void()> mSignalInterruptionBegan, mSignalInterruptionEnded;
 };
 
 } } // namespace cinder::audio

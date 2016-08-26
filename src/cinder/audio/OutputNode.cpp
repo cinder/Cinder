@@ -95,6 +95,9 @@ OutputDeviceNode::OutputDeviceNode( const DeviceRef &device, const Format &forma
 	mWillChangeConn = mDevice->getSignalParamsWillChange().connect( bind( &OutputDeviceNode::deviceParamsWillChange, this ) );
 	mDidChangeConn = mDevice->getSignalParamsDidChange().connect( bind( &OutputDeviceNode::deviceParamsDidChange, this ) );
 
+	mInterruptionBeganConn = Context::deviceManager()->getSignalInterruptionBegan().connect( [this] { disable(); } );
+	mInterruptionBeganConn = Context::deviceManager()->getSignalInterruptionEnded().connect( [this] { enable(); } );
+
 	size_t deviceNumChannels = mDevice->getNumOutputChannels();
 
 	// If number of channels hasn't been specified, default to 2 (or 1 if that is all that is available).
