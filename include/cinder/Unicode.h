@@ -29,6 +29,9 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <algorithm> 
+#include <cctype>
+#include <locale>
 
 namespace cinder {
 
@@ -69,5 +72,45 @@ void		calcLinebreaksUtf16( const uint16_t *str, std::vector<uint8_t> *resultBrea
 
 //! Sets \a resultBreaks to be of the same length as the UTF-16 string \a str with the values enumerated by UnicodeBreaks
 void		calcLinebreaksUtf16( const uint16_t *str, size_t strLength, std::vector<uint8_t> *resultBreaks );
+
+//! Trims white space from the start.
+inline std::u32string &ltrim( std::u32string &s )
+{
+	s.erase( s.begin(), std::find_if( s.begin(), s.end(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ) );
+	return s;
+}
+
+//! Trims white space from the end.
+inline std::u32string &rtrim( std::u32string &s )
+{
+	s.erase( std::find_if( s.rbegin(), s.rend(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ).base(), s.end() );
+	return s;
+}
+
+//! Trims white space from both the start and end.
+inline std::u32string &trim( std::u32string &s )
+{
+	return ltrim( rtrim( s ) );
+}
+
+//! Trims white space from the start.
+inline std::u16string &ltrim( std::u16string &s )
+{
+	s.erase( s.begin(), std::find_if( s.begin(), s.end(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ) );
+	return s;
+}
+
+//! Trims white space from the end.
+inline std::u16string &rtrim( std::u16string &s )
+{
+	s.erase( std::find_if( s.rbegin(), s.rend(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ).base(), s.end() );
+	return s;
+}
+
+//! Trims white space from both the start and end.
+inline std::u16string &trim( std::u16string &s )
+{
+	return ltrim( rtrim( s ) );
+}
 
 }

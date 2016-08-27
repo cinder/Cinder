@@ -28,6 +28,11 @@
 #include <vector>
 #include <map>
 
+#include <algorithm> 
+#include <functional> 
+#include <cctype>
+#include <locale>
+
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
@@ -50,6 +55,26 @@ void launchWebBrowser( const Url &url );
 std::vector<std::string> split( const std::string &str, char separator, bool compress = true );
 //! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", " ," ) -> [ "one", "two", "three" ]</tt> If \a compress is TRUE, it will consider consecutive separators as one.
 std::vector<std::string> split( const std::string &str, const std::string &separators, bool compress = true );
+
+//! Trims white space from the start.
+inline std::string &ltrim( std::string &s )
+{
+	s.erase( s.begin(), std::find_if( s.begin(), s.end(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ) );
+	return s;
+}
+
+//! Trims white space from the end.
+inline std::string &rtrim( std::string &s )
+{
+	s.erase( std::find_if( s.rbegin(), s.rend(), std::not1( std::ptr_fun<int, int>( std::isspace ) ) ).base(), s.end() );
+	return s;
+}
+
+//! Trims white space from both the start and end.
+inline std::string &trim( std::string &s )
+{
+	return ltrim( rtrim( s ) );
+}
 
 //! Loads the contents of \a dataSource and returns it as a std::string
 std::string loadString( const DataSourceRef &dataSource );
