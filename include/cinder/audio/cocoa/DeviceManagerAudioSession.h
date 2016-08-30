@@ -43,7 +43,7 @@ class DeviceManagerAudioSession : public DeviceManager {
 
 	DeviceRef	getDefaultOutput()								override;
 	DeviceRef	getDefaultInput()								override;
-	DeviceRef	findDeviceByName( const std::string &name )		override;
+	DeviceRef	findDeviceByName( const std::string &name, bool supportsOutput, bool supportsInput )		override;
 	DeviceRef	findDeviceByKey( const std::string &key )		override;
 
 	const std::vector<DeviceRef>&	getDevices()				override;

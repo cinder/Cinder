@@ -71,7 +71,7 @@ class DeviceTestApp : public App {
 
 void DeviceTestApp::setup()
 {
-	console() << audio::Device::printDevicesToString();
+	console() << audio::Device::printDevicesToString() << endl;
 
 	auto ctx = audio::master();
 
@@ -82,11 +82,13 @@ void DeviceTestApp::setup()
 	mGain->connect( mMonitor );
 
 	setOutputDevice( audio::Device::getDefaultOutput() );
+	//setOutputDevice( audio::Device::findOutputByName( "1-2 (OCTA-CAPTURE)" ) );
+
 	setInputDevice( audio::Device::getDefaultInput() );
 	//setInputDevice( audio::Device::getDefaultInput(), 1 ); // force mono input
 
 	//setupMultiChannelDevice( "PreSonus FIREPOD (1431)" );
-//	setupMultiChannelDeviceWindows( "MOTU Analog (MOTU Audio Wave for 64 bit)" );
+	//setupMultiChannelDeviceWindows( "MOTU Analog (MOTU Audio Wave for 64 bit)" );
 
 	mRecorder = ctx->makeNode( new audio::BufferRecorderNode( RECORD_SECONDS * ctx->getSampleRate() ) );
 	mRecorder->setEnabled( false );
@@ -182,22 +184,13 @@ void DeviceTestApp::setupMultiChannelDevice( const string &deviceName )
 
 void DeviceTestApp::setupMultiChannelDeviceWindows(  const string &deviceName )
 {
-	audio::DeviceRef inputDev, outputDev;
-
-	for( auto &dev : audio::Device::getDevices() ) {
-		if( dev->getName() == deviceName ) {
-			if( dev->getNumOutputChannels() > 2 )
-				outputDev = dev;
-			if( dev->getNumInputChannels() > 2 )
-				inputDev = dev;
-		}
-	}
-
+	auto outputDev = audio::Device::findOutputByName( deviceName );
 	if( outputDev )
 		setOutputDevice( outputDev, outputDev->getNumOutputChannels() );
 	else
 		CI_LOG_E( "could not find output device with channels > 2 named: " << deviceName );
 
+	auto inputDev = audio::Device::findInputByName( deviceName );
 	if( inputDev )
 		setInputDevice( inputDev, inputDev->getNumInputChannels() );
 	else
@@ -486,7 +479,7 @@ void DeviceTestApp::processTap( ivec2 pos )
 
 	size_t currentOutputIndex = mOutputSelector.mCurrentSectionIndex;
 	if( mOutputSelector.hitTest( pos ) && currentOutputIndex != mOutputSelector.mCurrentSectionIndex ) {
-		auto dev = audio::Device::findDeviceByName( mOutputSelector.mSegments[mOutputSelector.mCurrentSectionIndex] );
+		auto dev = audio::Device::findOutputByName( mOutputSelector.mSegments[mOutputSelector.mCurrentSectionIndex] );
 		CI_LOG_V( "selected output device named: " << dev->getName() << ", key: " << dev->getKey() );
 
 		setOutputDevice( dev );
@@ -496,7 +489,7 @@ void DeviceTestApp::processTap( ivec2 pos )
 
 	size_t currentInputIndex = mInputSelector.mCurrentSectionIndex;
 	if( mInputSelector.hitTest( pos ) && currentInputIndex != mInputSelector.mCurrentSectionIndex ) {
-		auto dev = audio::Device::findDeviceByName( mInputSelector.mSegments[mInputSelector.mCurrentSectionIndex] );
+		auto dev = audio::Device::findInputByName( mInputSelector.mSegments[mInputSelector.mCurrentSectionIndex] );
 		CI_LOG_V( "selected input named: " << dev->getName() << ", key: " << dev->getKey() );
 
 		setInputDevice( dev );
