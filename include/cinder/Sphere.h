@@ -57,7 +57,7 @@ class Sphere {
 	static Sphere	calculateBoundingSphere( const vec3 *points, size_t numPoints );
 
 	//! Converts sphere to another coordinate system. Note that it will not return correct results if there are non-uniform scaling, shears, or other unusual transforms in \a transform.
-	Sphere	transformed( const mat4 &transform );
+	Sphere	transformed( const mat4 &transform ) const;
 
 	//! Calculates the projection of the Sphere (an oriented ellipse) given \a focalLength. Returns \c false if calculation failed, rendering only \a outCenter correct. Algorithm due to Iñigo Quilez.
 	void	calcProjection( float focalLength, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const;
