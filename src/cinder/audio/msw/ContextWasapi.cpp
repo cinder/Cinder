@@ -256,7 +256,7 @@ void WasapiRenderClientImpl::initRenderClient()
 	CI_ASSERT( hr == S_OK );
 	mRenderClient = ci::msw::makeComUnique( renderClient );
 
-	// set the ring bufer size to accomodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes.
+	// set the ring buffer size to accommodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes. 
 	const size_t ringBufferSize = ( mAudioClientNumFrames + mOutputDeviceNode->getFramesPerBlock() ) * mNumChannels;
 	mRingBuffer.reset( new dsp::RingBuffer( ringBufferSize ) );
 
