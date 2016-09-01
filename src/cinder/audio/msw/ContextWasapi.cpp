@@ -355,7 +355,7 @@ void WasapiCaptureClientImpl::init()
 	initAudioClient( device, mInputDeviceNode->getNumChannels(), nullptr );
 	initCapture();
 
-	mMaxReadFrames = mAudioClientNumFrames;
+	mMaxReadFrames = mAudioClientNumFrames * mInputDeviceNode->getRingBufferPaddingFactor();
 
 	for( size_t ch = 0; ch < mNumChannels; ch++ )
 		mRingBuffers.emplace_back( mMaxReadFrames * mNumChannels );
