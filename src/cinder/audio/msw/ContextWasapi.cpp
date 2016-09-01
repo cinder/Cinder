@@ -53,10 +53,37 @@ const size_t DEFAULT_AUDIOCLIENT_FRAMES = 1024;
 //! When there are mismatched samplerates between OutputDeviceNode and InputDeviceNode, the capture AudioClient's buffer needs to be larger.
 const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2;
 
+const bool EXCLUSIVE_MODE = true; // TODO: expose as property on context and device nodes
+
 // converts to 100-nanoseconds
 inline ::REFERENCE_TIME samplesToReferenceTime( size_t samples, size_t sampleRate )
 {
 	return (::REFERENCE_TIME)( (double)samples * 10000000.0 / (double)sampleRate );
+}
+
+const char* hresultErrorToString( ::HRESULT hr )
+{
+	switch( hr ) {
+		case E_POINTER: return "E_POINTER";
+		case E_INVALIDARG: return "E_INVALIDARG";
+		case E_OUTOFMEMORY: return "E_OUTOFMEMORY";
+		case AUDCLNT_E_DEVICE_INVALIDATED: return "AUDCLNT_E_DEVICE_INVALIDATED";
+		case AUDCLNT_E_SERVICE_NOT_RUNNING: return "AUDCLNT_E_SERVICE_NOT_RUNNING";
+		case AUDCLNT_E_ALREADY_INITIALIZED: return "AUDCLNT_E_ALREADY_INITIALIZED";
+		case AUDCLNT_E_WRONG_ENDPOINT_TYPE: return "AUDCLNT_E_WRONG_ENDPOINT_TYPE";
+		case AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED: return "AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED";
+		case AUDCLNT_E_BUFFER_SIZE_ERROR: return "AUDCLNT_E_BUFFER_SIZE_ERROR";
+		case AUDCLNT_E_CPUUSAGE_EXCEEDED: return "AUDCLNT_E_CPUUSAGE_EXCEEDED";
+		case AUDCLNT_E_DEVICE_IN_USE: return "AUDCLNT_E_DEVICE_IN_USE";
+		case AUDCLNT_E_ENDPOINT_CREATE_FAILED: return "AUDCLNT_E_ENDPOINT_CREATE_FAILED";
+		case AUDCLNT_E_INVALID_DEVICE_PERIOD: return "AUDCLNT_E_INVALID_DEVICE_PERIOD";
+		case AUDCLNT_E_UNSUPPORTED_FORMAT: return "AUDCLNT_E_UNSUPPORTED_FORMAT";
+		case AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED: return "AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED";
+		case AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL: return "AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL";
+		default: break;
+	}
+
+	return "(unknown)";
 }
 
 } // anonymous namespace
@@ -149,10 +176,11 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 
 	size_t sampleRate = device->getSampleRate();
 	auto wfx = interleavedFloatWaveFormat( sampleRate, numChannels );
+	::AUDCLNT_SHAREMODE shareMode = EXCLUSIVE_MODE ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
 	::WAVEFORMATEX *closestMatch;
-	hr = mAudioClient->IsFormatSupported( ::AUDCLNT_SHAREMODE_SHARED, wfx.get(), &closestMatch );
-	// S_FALSE indicates that a closest match was provided. AUDCLNT_E_UNSUPPORTED_FORMAT seems to be unreliable,
-	// so we accept it too and try to Initialize() optimistically.
+	hr = mAudioClient->IsFormatSupported( shareMode, wfx.get(), EXCLUSIVE_MODE ? nullptr : &closestMatch );
+
+	// S_FALSE indicates that a closest match was provided.
 	if( hr == S_FALSE ) {
 		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
 		auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
@@ -170,8 +198,15 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		wfx->nBlockAlign = closestMatch->nBlockAlign;
 		wfx->wBitsPerSample = closestMatch->wBitsPerSample;
 	}
-	else if( hr != S_OK && hr != AUDCLNT_E_UNSUPPORTED_FORMAT ) {
-		throw AudioExc( "Format unsupported by IAudioClient", (int32_t)hr );
+	else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
+		// This is only unacceptable when in exclusive mode, shared mode drivers will convert to the requested format
+		if( EXCLUSIVE_MODE ) {
+			throw AudioExc( "Format unsupported while in Wasapi 'exclusive mode'." );
+		}
+	}
+	else if( hr != S_OK ) {
+		string hrErrorStr = hresultErrorToString( hr );
+		throw AudioExc( "Failed to retrieve a supported format, HRESULT error: " + hrErrorStr, (int32_t)hr );
 	}
 
 	mNumChannels = wfx->nChannels; // in preparation for using closesMatch
@@ -179,9 +214,11 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	::REFERENCE_TIME requestedDuration = samplesToReferenceTime( mAudioClientNumFrames, sampleRate );
 	DWORD streamFlags = eventHandle ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
 
-	hr = mAudioClient->Initialize( ::AUDCLNT_SHAREMODE_SHARED, streamFlags, requestedDuration, 0, wfx.get(), NULL );
-	if( hr != S_OK )
-		throw AudioExc( "Could not initialize IAudioClient", (int32_t)hr );
+	hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, 0, wfx.get(), NULL );
+	if( hr != S_OK ) {
+		string hrErrorStr = hresultErrorToString( hr );
+		throw AudioExc( "Could not initialize IAudioClient, HRESULT error: " + hrErrorStr, (int32_t)hr );
+	}
 
 	if( eventHandle ) {
 		// enable event driven rendering.
@@ -194,6 +231,17 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	CI_ASSERT( hr == S_OK );
 
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
+
+	{
+		::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
+		::REFERENCE_TIME minDevicePeriod; // this is for exclusive mode
+		hr = mAudioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
+		CI_ASSERT( hr == S_OK );
+
+		double defaultDevicePeriodMS = double( defaultDevicePeriod ) / 10000.0;
+		double minDevicePeriodMS = double( minDevicePeriod ) / 10000.0;
+		CI_LOG_I( "device: " << device->getName() << ", default device period: " << defaultDevicePeriodMS << ", min device period: " << minDevicePeriodMS );
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------
