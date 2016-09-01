@@ -42,6 +42,9 @@
 #include <avrt.h>
 #pragma comment(lib, "avrt.lib")
 
+//#define LOG_XRUN( stream )	CI_LOG_I( stream )
+#define LOG_XRUN( stream )	    ( (void)( 0 ) )
+
 namespace {
 
 // TODO: should requestedDuration come from Device's frames per block?
@@ -392,6 +395,7 @@ void WasapiCaptureClientImpl::captureAudio()
 
 	while( numPacketFrames ) {
 		if( numPacketFrames > ( mMaxReadFrames - mNumFramesBuffered ) ) {
+			LOG_XRUN( "[" << mInputDeviceNode->getContext()->getNumProcessedFrames() << "] buffer overrun. mNumFramesBuffered: " << mNumFramesBuffered << ", numPacketFrames: " << numPacketFrames << ", mMaxReadFrames: " << mMaxReadFrames );
 			mInputDeviceNode->markOverrun();
 			return;
 		}
@@ -418,15 +422,19 @@ void WasapiCaptureClientImpl::captureAudio()
 		if( mConverter ) {
 			pair<size_t, size_t> count = mConverter->convert( &mReadBuffer, &mConvertedReadBuffer );
 			for( size_t ch = 0; ch < mNumChannels; ch++ ) {
-				if( ! mRingBuffers[ch].write( mConvertedReadBuffer.getChannel( ch ), count.second ) )
+				if( ! mRingBuffers[ch].write( mConvertedReadBuffer.getChannel( ch ), count.second ) ) {
+					LOG_XRUN( "[" << mInputDeviceNode->getContext()->getNumProcessedFrames() << "] buffer overrun (with converter). failed to read from ringbuffer,  num samples to write: " << count.second << ", channel: " << ch );
 					mInputDeviceNode->markOverrun();
+				}
 			}
 			mNumFramesBuffered += count.second;
 		}
 		else {
 			for( size_t ch = 0; ch < mNumChannels; ch++ ) {
-				if( ! mRingBuffers[ch].write( mReadBuffer.getChannel( ch ), numFramesAvailable ) )
+				if( ! mRingBuffers[ch].write( mReadBuffer.getChannel( ch ), numFramesAvailable ) ) {
+					LOG_XRUN( "[" << mInputDeviceNode->getContext()->getNumProcessedFrames() << "] buffer overrun. failed to read from ringbuffer, num samples to write: " << numFramesAvailable << ", channel: " << ch );
 					mInputDeviceNode->markOverrun();
+				}
 			}
 			mNumFramesBuffered += numFramesAvailable;
 		}
@@ -552,6 +560,7 @@ void InputDeviceNodeWasapi::process( Buffer *buffer )
 
 	const size_t framesNeeded = buffer->getNumFrames();
 	if( mCaptureImpl->mNumFramesBuffered < framesNeeded ) {
+		LOG_XRUN( "[" << getContext()->getNumProcessedFrames() << "] buffer underrun. failed to read from ringbuffer, mCaptureImpl->mNumFramesBuffered: " << mCaptureImpl->mNumFramesBuffered << ", framesNeeded: " << framesNeeded );
 		markUnderrun();
 		return;
 	}
