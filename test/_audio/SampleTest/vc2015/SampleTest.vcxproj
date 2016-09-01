@@ -202,7 +202,7 @@
     <ClCompile Include="..\src\SampleTestApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\samples\common\AudioDrawUtils.h" />
+    <ClInclude Include="..\..\..\..\samples\_audio\common\AudioDrawUtils.h" />
     <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

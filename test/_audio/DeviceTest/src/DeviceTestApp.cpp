@@ -13,9 +13,9 @@
 #include "cinder/audio/Exception.h"
 
 #include "../../common/AudioTestGui.h"
+#include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
-// TODO: check iOS 6+ interruption handlers via notification
-
+const bool USE_SECONDARY_SCREEN = true;
 const double RECORD_SECONDS = 2.0;
 
 using namespace ci;
@@ -77,12 +77,12 @@ void DeviceTestApp::setup()
 
 	mMonitor = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 1024 ) ) );
 	mGain = ctx->makeNode( new audio::GainNode() );
-	mGain->setValue( 0.4f );
+	mGain->setValue( 0.8f );
 
 	mGain->connect( mMonitor );
 
-	setOutputDevice( audio::Device::getDefaultOutput() );
-	//setOutputDevice( audio::Device::findOutputByName( "1-2 (OCTA-CAPTURE)" ) );
+	//setOutputDevice( audio::Device::getDefaultOutput() );
+	setOutputDevice( audio::Device::findOutputByName( "1-2 (OCTA-CAPTURE)" ) );
 
 	setInputDevice( audio::Device::getDefaultInput() );
 	//setInputDevice( audio::Device::getDefaultInput(), 1 ); // force mono input
@@ -346,6 +346,7 @@ void DeviceTestApp::setupUI()
 	mTestSelector.mSegments.push_back( "I/O and sine" );
 	mTestSelector.mSegments.push_back( "send" );
 	mTestSelector.mSegments.push_back( "send stereo" );
+	mTestSelector.mCurrentSectionIndex = 3;
 	mWidgets.push_back( &mTestSelector );
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -355,8 +356,8 @@ void DeviceTestApp::setupUI()
 #else
 	mPlayButton.mBounds = Rectf( 0, 0, 200, 60 );
 	mRecordButton.mBounds = Rectf( 210, 0, 310, 40 );
-	mTestSelector.mBounds = Rectf( getWindowCenter().x + 110, 0, (float)getWindowWidth(), 180 );
 #endif
+	mTestSelector.mBounds = Rectf( (float)getWindowWidth() - 210, 0, (float)getWindowWidth(), 180 );
 
 	mGainSlider.mBounds = Rectf( mTestSelector.mBounds.x1, mTestSelector.mBounds.y2 + 10, mTestSelector.mBounds.x2, mTestSelector.mBounds.y2 + 50 );
 	mGainSlider.mTitle = "GainNode";
@@ -619,26 +620,12 @@ void DeviceTestApp::draw()
 	gl::translate( 0, mViewYOffset );
 
 	if( mMonitor && mMonitor->isEnabled() ) {
-		const audio::Buffer &buffer = mMonitor->getBuffer();
 
-		float padding = 20;
-		float waveHeight = ((float)getWindowHeight() - padding * 3.0f ) / (float)buffer.getNumChannels();
-
-		float yOffset = padding;
-		float xScale = (float)getWindowWidth() / (float)buffer.getNumFrames();
-		for( size_t ch = 0; ch < buffer.getNumChannels(); ch++ ) {
-			PolyLine2f waveform;
-			const float *channel = buffer.getChannel( ch );
-			for( size_t i = 0; i < buffer.getNumFrames(); i++ ) {
-				float x = i * xScale;
-				float y = ( channel[i] * 0.5f + 0.5f ) * waveHeight + yOffset;
-				waveform.push_back( vec2( x, y ) );
-			}
-			gl::draw( waveform );
-			yOffset += waveHeight + padding;
-		}
+		Rectf scopeRect( 10, 10, (float)getWindowWidth() - 10, (float)getWindowHeight() - 10 );
+		drawAudioBuffer( mMonitor->getBuffer(), scopeRect, true );
 
 		float volume = mMonitor->getVolume();
+		const float padding = 20;
 		Rectf volumeRect( mGainSlider.mBounds.x1, mGainSlider.mBounds.y2 + padding, mGainSlider.mBounds.x1 + mGainSlider.mBounds.getWidth() * volume, mGainSlider.mBounds.y2 + padding + 20 );
 		gl::drawSolidRect( volumeRect );
 	}
@@ -665,6 +652,25 @@ void DeviceTestApp::draw()
 }
 
 CINDER_APP( DeviceTestApp, RendererGl, []( App::Settings *settings ) {
-	settings->setWindowSize( 800, 600 );
-	settings->setWindowPos( 6, 30 );
+	bool useSecondaryScreen = ( USE_SECONDARY_SCREEN && Display::getDisplays().size() > 1 );
+
+	if( useSecondaryScreen ) {
+		for( const auto &display : Display::getDisplays() ) {
+			//CI_LOG_I( "display name: " << display->getName() );
+			if( display->getName() == "Color LCD" ) {
+				// macbook
+				settings->setDisplay( display );
+				settings->setWindowSize( 1280, 720 );
+			}
+			else if( display->getName() == "Generic PnP Monitor" ) {
+				// gechic 1303i 13"touch display
+				settings->setDisplay( display );
+				settings->setFullScreen( true );
+			}
+		}
+	}
+	else {
+		settings->setWindowPos( 0, 0 );
+		settings->setWindowSize( 960, 565 );
+	}
 } )
