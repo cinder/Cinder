@@ -32,6 +32,7 @@ class DeviceTestApp : public App {
 	void setInputDevice( const audio::DeviceRef &device, size_t numChannels = 0 );
 	void setupMultiChannelDevice( const string &deviceName );
 	void setupMultiChannelDeviceWindows( const string &deviceName );
+	void setupRolandOctaCaptureInputMonitoring();
 	void printDeviceDetails( const audio::DeviceRef &device );
 	void startRecording();
 	void writeRecordedToFile();
@@ -84,8 +85,9 @@ void DeviceTestApp::setup()
 	//setOutputDevice( audio::Device::getDefaultOutput() );
 	setOutputDevice( audio::Device::findOutputByName( "1-2 (OCTA-CAPTURE)" ) );
 
-	setInputDevice( audio::Device::getDefaultInput() );
+	//setInputDevice( audio::Device::getDefaultInput() );
 	//setInputDevice( audio::Device::getDefaultInput(), 1 ); // force mono input
+	setupRolandOctaCaptureInputMonitoring();
 
 	//setupMultiChannelDevice( "PreSonus FIREPOD (1431)" );
 	//setupMultiChannelDeviceWindows( "MOTU Analog (MOTU Audio Wave for 64 bit)" );
@@ -95,7 +97,7 @@ void DeviceTestApp::setup()
 	mGain >> mRecorder;
 
 	setupUI();
-	setupTest( mTestSelector.currentSection() );
+	//setupTest( mTestSelector.currentSection() );
 
 //	setupInputPulled();
 //	setupIOClean();
@@ -188,13 +190,41 @@ void DeviceTestApp::setupMultiChannelDeviceWindows(  const string &deviceName )
 	if( outputDev )
 		setOutputDevice( outputDev, outputDev->getNumOutputChannels() );
 	else
-		CI_LOG_E( "could not find output device with channels > 2 named: " << deviceName );
+		CI_LOG_E( "could not find output device named: " << deviceName );
 
 	auto inputDev = audio::Device::findInputByName( deviceName );
 	if( inputDev )
 		setInputDevice( inputDev, inputDev->getNumInputChannels() );
 	else
-		CI_LOG_E( "could not find input device with channels > 2 named: " << deviceName );
+		CI_LOG_E( "could not find input device named: " << deviceName );
+}
+
+void DeviceTestApp::setupRolandOctaCaptureInputMonitoring()
+{
+	vector<string> deviceNames = {
+		"1-2 (OCTA-CAPTURE)",
+		"3-4 (OCTA-CAPTURE)",
+		"5-6 (OCTA-CAPTURE)",
+		"7-8 (OCTA-CAPTURE)",
+		"9-10 (OCTA-CAPTURE)"
+	};
+
+	size_t numChannels = deviceNames.size() * 2;
+	auto channelRouter = audio::master()->makeNode<audio::ChannelRouterNode>( audio::Node::Format().channels( numChannels ) );
+
+	channelRouter >> mGain;
+
+	for( size_t i = 0; i < deviceNames.size(); i++ ) {
+		auto devName = deviceNames[i];
+		auto inputDev = audio::Device::findInputByName( devName );
+		if( inputDev ) {
+			auto inputNode = audio::master()->createInputDeviceNode( inputDev );
+			inputNode >> channelRouter->route( 0, i * 2 );
+			inputNode->enable();
+		}
+		else
+			CI_LOG_E( "could not find input device with channels > 2 named: " << devName );
+	}
 }
 
 void DeviceTestApp::printDeviceDetails( const audio::DeviceRef &device )
@@ -377,7 +407,7 @@ void DeviceTestApp::setupUI()
 
 	mInputSelector.mTitle = "Input Devices";
 	mInputSelector.mBounds = mOutputSelector.mBounds - vec2( mOutputSelector.mBounds.getWidth() + 10, 0 );
-	if( mOutputDeviceNode ) {
+	if( mInputDeviceNode ) {
 		for( const auto &dev : audio::Device::getInputDevices() ) {
 			if( dev == mInputDeviceNode->getDevice() )
 				mInputSelector.mCurrentSectionIndex = mInputSelector.mSegments.size();
