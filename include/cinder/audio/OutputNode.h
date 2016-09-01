@@ -80,6 +80,9 @@ class CI_API OutputDeviceNode : public OutputNode {
 	//! Implemented to return the frames per block of the owned Device.
 	size_t getOutputFramesPerBlock() override		{ return getDevice()->getFramesPerBlock(); }
 
+	//! Overridden to append the Device's name.
+	std::string getName() const override;
+
   protected:
 	OutputDeviceNode( const DeviceRef &device, const Format &format = Format() );
 

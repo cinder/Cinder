@@ -126,4 +126,9 @@ void OutputDeviceNode::deviceParamsDidChange()
 	getContext()->setEnabled( mWasEnabledBeforeParamsChange );
 }
 
+string OutputDeviceNode::getName() const
+{
+	return Node::getName() + " (" + getDevice()->getName() + ")";
+}
+
 } } // namespace cinder::audio

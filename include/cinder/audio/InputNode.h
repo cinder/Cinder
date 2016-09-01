@@ -69,6 +69,9 @@ class CI_API InputDeviceNode : public InputNode {
 	//! Returns the amount of extra sample storage used by RingBuffers.
 	float	getRingBufferPaddingFactor() const	{ return mRingBufferPaddingFactor; }
 
+	//! Overridden to append the Device's name.
+	std::string getName() const override;
+
   protected:
 	InputDeviceNode( const DeviceRef &device, const Format &format );
 
