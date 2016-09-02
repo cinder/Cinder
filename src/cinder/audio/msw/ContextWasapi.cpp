@@ -177,7 +177,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	size_t sampleRate = device->getSampleRate();
 	auto wfx = interleavedFloatWaveFormat( sampleRate, numChannels );
 	::AUDCLNT_SHAREMODE shareMode = EXCLUSIVE_MODE ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
-	::WAVEFORMATEX *closestMatch;
+	::WAVEFORMATEX *closestMatch = nullptr;
 	hr = mAudioClient->IsFormatSupported( shareMode, wfx.get(), EXCLUSIVE_MODE ? nullptr : &closestMatch );
 
 	// S_FALSE indicates that a closest match was provided.
@@ -359,7 +359,7 @@ void WasapiRenderClientImpl::renderAudio()
 		mOutputDeviceNode->renderInputs();
 
 	float *renderBuffer;
-	hr = mRenderClient->GetBuffer( static_cast<UINT32>(numWriteFramesAvailable), (BYTE **)&renderBuffer );
+	hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, (BYTE **)&renderBuffer );
 	CI_ASSERT( hr == S_OK );
 
 	DWORD bufferFlags = 0;
@@ -369,7 +369,7 @@ void WasapiRenderClientImpl::renderAudio()
 
 	mNumFramesBuffered -= numWriteFramesAvailable;
 
-	hr = mRenderClient->ReleaseBuffer( static_cast<UINT32>( numWriteFramesAvailable ), bufferFlags );
+	hr = mRenderClient->ReleaseBuffer( (UINT32)numWriteFramesAvailable, bufferFlags );
 	CI_ASSERT( hr == S_OK );
 }
 
@@ -403,7 +403,7 @@ void WasapiCaptureClientImpl::init()
 	initAudioClient( device, mInputDeviceNode->getNumChannels(), nullptr );
 	initCapture();
 
-	mMaxReadFrames = mAudioClientNumFrames * mInputDeviceNode->getRingBufferPaddingFactor();
+	mMaxReadFrames = size_t( mAudioClientNumFrames * mInputDeviceNode->getRingBufferPaddingFactor() );
 
 	for( size_t ch = 0; ch < mNumChannels; ch++ )
 		mRingBuffers.emplace_back( mMaxReadFrames * mNumChannels );
