@@ -193,15 +193,37 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		if( closestMatch->nSamplesPerSec != wfx->nSamplesPerSec )
 			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected samplerate." );
 
-		wfx->nChannels = closestMatch->nChannels;
-		wfx->nAvgBytesPerSec = closestMatch->nAvgBytesPerSec;
-		wfx->nBlockAlign = closestMatch->nBlockAlign;
-		wfx->wBitsPerSample = closestMatch->wBitsPerSample;
+		copyWaveFormat( *closestMatch, wfx.get() );
 	}
 	else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
-		// This is only unacceptable when in exclusive mode, shared mode drivers will convert to the requested format
-		if( EXCLUSIVE_MODE ) {
-			throw AudioExc( "Format unsupported while in Wasapi 'exclusive mode'." );
+		// Try the system device format
+		::IPropertyStore *properties;
+		hr = immDevice->OpenPropertyStore( STGM_READ, &properties );
+		CI_ASSERT( hr == S_OK );
+		auto propertiesPtr = ci::msw::makeComUnique( properties );
+
+		::PROPVARIANT formatVar;
+		hr = properties->GetValue( PKEY_AudioEngine_DeviceFormat, &formatVar );
+		CI_ASSERT( hr == S_OK );
+		::WAVEFORMATEX *audioEngineFormat = (::WAVEFORMATEX *)formatVar.blob.pBlobData;
+
+		hr = mAudioClient->IsFormatSupported( shareMode, audioEngineFormat, EXCLUSIVE_MODE ? nullptr : &closestMatch );
+
+		// TODO: IsFormatSupported() needs to be done in a for loop iterating over a set of WAVEFORMATEX structures
+		// - some will be WAVEFORMATEXTENSIBLES
+		// - also that way there isn't left over data if audioEngineFormat is a WAVEFORMATEX (as wfx was extensible)
+		if( hr == S_OK ) {
+			copyWaveFormat( *audioEngineFormat, wfx.get() );
+		}
+		else {
+			// This is only unacceptable when in exclusive mode, shared mode drivers will convert to the requested format
+			if( EXCLUSIVE_MODE ) {
+				throw AudioExc( "Format unsupported while in Wasapi exclusive mode." );
+			}
+			else {
+				// TODO: we should still try to find an acceptable format by iterating over all possible formats
+				CI_LOG_W( "Format unsupported while in Wasapi shared mode." );
+			}
 		}
 	}
 	else if( hr != S_OK ) {
@@ -212,9 +234,10 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	mNumChannels = wfx->nChannels; // in preparation for using closesMatch
 
 	::REFERENCE_TIME requestedDuration = samplesToReferenceTime( mAudioClientNumFrames, sampleRate );
+	::REFERENCE_TIME periodicity = EXCLUSIVE_MODE ? requestedDuration : 0;
 	DWORD streamFlags = eventHandle ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
 
-	hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, 0, wfx.get(), NULL );
+	hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, wfx.get(), NULL );
 	if( hr != S_OK ) {
 		string hrErrorStr = hresultErrorToString( hr );
 		throw AudioExc( "Could not initialize IAudioClient, HRESULT error: " + hrErrorStr, (int32_t)hr );

@@ -45,4 +45,10 @@ std::shared_ptr<::WAVEFORMATEX> interleavedFloatWaveFormat( size_t sampleRate, s
 	return std::shared_ptr<::WAVEFORMATEX>( (::WAVEFORMATEX *)wfx, free );
 }
 
+void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest )
+{
+	size_t sizeBytes = source.wFormatTag == WAVE_FORMAT_EXTENSIBLE ? sizeof( ::WAVEFORMATEXTENSIBLE ) : sizeof( ::WAVEFORMATEX );
+	memcpy( dest, &source, sizeBytes );
+}
+
 } } } // namespace cinder::audio::msw

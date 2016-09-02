@@ -35,5 +35,7 @@ namespace cinder { namespace audio { namespace msw {
 
 //! return pointer type is actually a WAVEFORMATEXTENSIBLE, identifiable by the wFormat tag
 std::shared_ptr<::WAVEFORMATEX> interleavedFloatWaveFormat( size_t sampleRate, size_t numChannels );
+//! Copies \t source format to \t dest. Handles both WAVEFORMATEXTENSIBLE and WAVEFORMATEX.
+void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest );
 
 } } } // namespace cinder::audio::msw
