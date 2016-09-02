@@ -29,6 +29,7 @@
 #include "cinder/audio/msw/DeviceManagerWasapi.h"
 #include "cinder/audio/msw/MswUtil.h"
 #include "cinder/audio/Context.h"
+#include "cinder/audio/SampleType.h"
 #include "cinder/audio/dsp/Dsp.h"
 #include "cinder/audio/dsp/RingBuffer.h"
 #include "cinder/audio/dsp/Converter.h"
@@ -97,7 +98,9 @@ struct WasapiAudioClientImpl {
 
 	unique_ptr<::IAudioClient, ci::msw::ComDeleter>		mAudioClient;
 
-	size_t	mNumFramesBuffered, mAudioClientNumFrames, mNumChannels;
+	size_t		mNumFramesBuffered, mAudioClientNumFrames, mNumChannels;
+	SampleType	mSampleType;
+	size_t		mBytesPerSample;
 
   protected:
 	void initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle );
@@ -115,7 +118,7 @@ struct WasapiRenderClientImpl : public WasapiAudioClientImpl {
 	::HANDLE	mRenderSamplesReadyEvent, mRenderShouldQuitEvent;
 	::HANDLE    mRenderThread;
 
-	std::unique_ptr<dsp::RingBuffer>	mRingBuffer;
+	std::unique_ptr<dsp::RingBufferT<char>>	mRingBuffer;
 
 private:
 	void initRenderClient();
@@ -137,7 +140,7 @@ struct WasapiCaptureClientImpl : public WasapiAudioClientImpl {
 
 	unique_ptr<::IAudioCaptureClient, ci::msw::ComDeleter>	mCaptureClient;
 
-	vector<dsp::RingBuffer>				mRingBuffers;
+	vector<dsp::RingBufferT<char>>				mRingBuffers;
 
   private:
 	void initCapture();
@@ -180,8 +183,11 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	::WAVEFORMATEX *closestMatch = nullptr;
 	hr = mAudioClient->IsFormatSupported( shareMode, wfx.get(), EXCLUSIVE_MODE ? nullptr : &closestMatch );
 
-	// S_FALSE indicates that a closest match was provided.
-	if( hr == S_FALSE ) {
+	if( hr == S_OK ) {
+		mSampleType = SampleType::FLOAT_32;
+	}
+	else if( hr == S_FALSE ) {
+		// indicates that a closest match was provided.
 		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
 		auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
 
@@ -214,6 +220,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		// - also that way there isn't left over data if audioEngineFormat is a WAVEFORMATEX (as wfx was extensible)
 		if( hr == S_OK ) {
 			copyWaveFormat( *audioEngineFormat, wfx.get() );
+			mSampleType = SampleType::INT_16;
 		}
 		else {
 			// This is only unacceptable when in exclusive mode, shared mode drivers will convert to the requested format
@@ -226,12 +233,13 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 			}
 		}
 	}
-	else if( hr != S_OK ) {
+	else {
 		string hrErrorStr = hresultErrorToString( hr );
 		throw AudioExc( "Failed to retrieve a supported format, HRESULT error: " + hrErrorStr, (int32_t)hr );
 	}
 
 	mNumChannels = wfx->nChannels; // in preparation for using closesMatch
+	mBytesPerSample = sampleSize( mSampleType );
 
 	::REFERENCE_TIME requestedDuration = samplesToReferenceTime( mAudioClientNumFrames, sampleRate );
 	::REFERENCE_TIME periodicity = EXCLUSIVE_MODE ? requestedDuration : 0;
@@ -331,8 +339,8 @@ void WasapiRenderClientImpl::initRenderClient()
 	mRenderClient = ci::msw::makeComUnique( renderClient );
 
 	// set the ring buffer size to accommodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes. 
-	const size_t ringBufferSize = ( mAudioClientNumFrames + mOutputDeviceNode->getFramesPerBlock() ) * mNumChannels;
-	mRingBuffer.reset( new dsp::RingBuffer( ringBufferSize ) );
+	size_t ringBufferSize = ( mAudioClientNumFrames + mOutputDeviceNode->getFramesPerBlock() ) * mNumChannels * mBytesPerSample;
+	mRingBuffer.reset( new dsp::RingBufferT<char>( ringBufferSize ) );
 
 	mRenderThread = ::CreateThread( NULL, 0, renderThreadEntryPoint, this, 0, NULL );
 	CI_ASSERT( mRenderThread );
@@ -381,17 +389,18 @@ void WasapiRenderClientImpl::renderAudio()
 	while( mNumFramesBuffered < numWriteFramesAvailable )
 		mOutputDeviceNode->renderInputs();
 
-	float *renderBuffer;
-	hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, (BYTE **)&renderBuffer );
+	BYTE *renderBuffer;
+	hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, &renderBuffer );
 	CI_ASSERT( hr == S_OK );
 
-	DWORD bufferFlags = 0;
 	size_t numReadSamples = numWriteFramesAvailable * mNumChannels;
-	bool readSuccess = mRingBuffer->read( renderBuffer, numReadSamples );
+
+	bool readSuccess = mRingBuffer->read( (char *)renderBuffer, numReadSamples * mBytesPerSample );
 	CI_ASSERT( readSuccess ); // since this is sync read / write, the read should always succeed.
 
 	mNumFramesBuffered -= numWriteFramesAvailable;
 
+	DWORD bufferFlags = 0;
 	hr = mRenderClient->ReleaseBuffer( (UINT32)numWriteFramesAvailable, bufferFlags );
 	CI_ASSERT( hr == S_OK );
 }
@@ -540,7 +549,7 @@ void OutputDeviceNodeWasapi::initialize()
 		setupProcessWithSumming();
 	}
 
-	mInterleavedBuffer = BufferInterleaved( getFramesPerBlock(), getNumChannels() );
+	mSampleBuffer.resize( getFramesPerBlock() * getNumChannels() * mRenderImpl->mBytesPerSample );
 }
 
 void OutputDeviceNodeWasapi::uninitialize()
@@ -582,11 +591,24 @@ void OutputDeviceNodeWasapi::renderInputs()
 	if( checkNotClipping() )
 		internalBuffer->zero();
 
-	dsp::interleaveBuffer( internalBuffer, &mInterleavedBuffer );
-	bool writeSuccess = mRenderImpl->mRingBuffer->write( mInterleavedBuffer.getData(), mInterleavedBuffer.getSize() );
+	const auto &sampleType = mRenderImpl->mSampleType;
+	const size_t numFrames = internalBuffer->getNumFrames();
+	const size_t numChannels = internalBuffer->getNumChannels();
+	if( sampleType == SampleType::FLOAT_32 ) {
+		dsp::interleave( internalBuffer->getData(), (float *)mSampleBuffer.data(), numFrames, numChannels, numFrames );
+	}
+	else if( sampleType == SampleType::INT_16 ) {
+		dsp::interleave( internalBuffer->getData(), (int16_t *)mSampleBuffer.data(), numFrames, numChannels, numFrames );
+	}
+	else {
+		// TODO: support INT_24
+		CI_ASSERT_NOT_REACHABLE();
+	}
+
+	bool writeSuccess = mRenderImpl->mRingBuffer->write( mSampleBuffer.data(), mSampleBuffer.size() );
 	CI_ASSERT( writeSuccess ); // Since this is sync read / write, the write should always succeed.
 
-	mRenderImpl->mNumFramesBuffered += mInterleavedBuffer.getNumFrames();
+	mRenderImpl->mNumFramesBuffered += numFrames;
 	ctx->postProcess();
 }
 

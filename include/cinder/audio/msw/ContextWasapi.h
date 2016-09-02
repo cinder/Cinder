@@ -48,7 +48,7 @@ protected:
 	void renderInputs();
 
 	std::unique_ptr<WasapiRenderClientImpl>		mRenderImpl;
-	BufferInterleaved							mInterleavedBuffer;
+	std::vector<char>							mSampleBuffer;
 
 	friend WasapiRenderClientImpl;
 };
