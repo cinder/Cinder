@@ -63,11 +63,11 @@ void Timeline::stepTo( float absoluteTime )
 	
 	eraseMarked();
 	
-	// we need to cache the end(). If a tween's update() fn or similar were to manipulate
+	// we need to cache the items. If a tween's update() fn or similar were to manipulate
 	// the list of items by adding new ones, we'll have invalidated our iterator.
 	// Deleted items are never removed immediately, but are marked for deletion.
-	s_iter endItem = mItems.end();
-	for( s_iter iter = mItems.begin(); iter != endItem; ++iter ) {
+	auto items = mItems;
+	for( s_iter iter = items.begin(); iter != items.end(); ++iter ) {
 		iter->second->stepTo( mCurrentTime, reverse );
 		if( iter->second->isComplete() && iter->second->getAutoRemove() )
 			iter->second->mMarkedForRemoval = true;
