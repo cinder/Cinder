@@ -31,6 +31,8 @@ using namespace std;
 
 namespace cinder { namespace gl {
 
+signals::Signal<bool(const fs::path&,std::string*)> ShaderPreprocessor::sSignalInclude;
+
 namespace {
 // due to null or the rest of the line being a comment (//)
 bool isTerminated( const char *c )
@@ -257,31 +259,16 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 	return output.str();
 }
 
-string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path &currentDirectory, set<fs::path> &includeTree )
+std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path &path, set<fs::path> &includeTree )
 {
-	const fs::path fullPath = findFullPath( path, currentDirectory );
-
-	if( includeTree.count( fullPath ) ) {
-		// circular include, skip it as it has already been appended.
-		return "";
-	}
-
-	includeTree.insert( fullPath );
-
-	stringstream output;
-	ifstream input( fullPath.string().c_str() );
-	if( ! input.is_open() )
-		throw ShaderPreprocessorExc( "Failed to open file at path: " + fullPath.string() );
-
 	// go through each line and process includes
 	string line;
-
 	size_t lineNumber = 1;
-
+	stringstream output;
 	while( getline( input, line ) ) {
 		std::string includeFilePath;
 		if( findIncludeStatement( line, &includeFilePath ) ) {
-			output << parseRecursive( includeFilePath, fullPath.parent_path(), includeTree );
+			output << parseRecursive( includeFilePath, path.parent_path(), includeTree );
 			output << "#line " << lineNumber << endl;
 		}
 		else
@@ -291,8 +278,39 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 		lineNumber++;
 	}
 
-	input.close();
 	return output.str();
+}
+string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path &currentDirectory, set<fs::path> &includeTree )
+{	
+	string output;
+	string signalIncludeResult;
+	if( sSignalInclude.emit( path, &signalIncludeResult ) ){
+		
+		if( includeTree.count( path ) )
+			throw ShaderPreprocessorExc( "circular include found, path: " + path.string() );
+
+		includeTree.insert( path );
+		istringstream input( signalIncludeResult );
+		output = readStream( input, path, includeTree );
+	}
+	else {
+		const fs::path fullPath = findFullPath( path, currentDirectory );
+
+		if( includeTree.count( fullPath ) ) {
+			// circular include, skip it as it has already been appended.
+			return "";
+		}
+
+		includeTree.insert( fullPath );
+
+		ifstream input( fullPath.string().c_str() );
+		if( ! input.is_open() )
+			throw ShaderPreprocessorExc( "Failed to open file at path: " + fullPath.string() );
+		output = readStream( input, fullPath, includeTree );
+		input.close();
+	}
+	
+	return output;
 }
 
 
