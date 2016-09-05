@@ -50,7 +50,7 @@ namespace {
 
 // TODO: should requestedDuration come from Device's frames per block?
 // - seems like this is fixed at 10ms in shared mode. (896 samples @ stereo 44100 s/r) 
-const size_t DEFAULT_AUDIOCLIENT_FRAMES = 1024;
+const size_t DEFAULT_AUDIOCLIENT_FRAMES = 480;
 //! When there are mismatched samplerates between OutputDeviceNode and InputDeviceNode, the capture AudioClient's buffer needs to be larger.
 const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2;
 
@@ -62,9 +62,11 @@ inline ::REFERENCE_TIME samplesToReferenceTime( size_t samples, size_t sampleRat
 	return (::REFERENCE_TIME)( (double)samples * 10000000.0 / (double)sampleRate );
 }
 
-const char* hresultErrorToString( ::HRESULT hr )
+const char* hresultToString( ::HRESULT hr )
 {
 	switch( hr ) {
+		case S_OK: return "S_OK";
+		case S_FALSE: return "S_FALSE";
 		case E_POINTER: return "E_POINTER";
 		case E_INVALIDARG: return "E_INVALIDARG";
 		case E_OUTOFMEMORY: return "E_OUTOFMEMORY";
@@ -81,6 +83,7 @@ const char* hresultErrorToString( ::HRESULT hr )
 		case AUDCLNT_E_UNSUPPORTED_FORMAT: return "AUDCLNT_E_UNSUPPORTED_FORMAT";
 		case AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED: return "AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED";
 		case AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL: return "AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL";
+		case AUDCLNT_E_NOT_INITIALIZED: return "AUDCLNT_E_NOT_INITIALIZED";
 		default: break;
 	}
 
@@ -183,25 +186,26 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	::WAVEFORMATEX *closestMatch = nullptr;
 	hr = mAudioClient->IsFormatSupported( shareMode, wfx.get(), EXCLUSIVE_MODE ? nullptr : &closestMatch );
 
-	if( hr == S_OK ) {
-		mSampleType = SampleType::FLOAT_32;
-	}
-	else if( hr == S_FALSE ) {
-		// indicates that a closest match was provided.
-		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
-		auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
+	//if( hr == S_OK ) {
+	//	mSampleType = SampleType::FLOAT_32;
+	//}
+	//else if( hr == S_FALSE ) {
+	//	// indicates that a closest match was provided.
+	//	CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
+	//	auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
 
-		// If possible, update wfx to the closestMatch. Currently this can only be done if the channels are different.
-		if( closestMatch->wFormatTag != wfx->wFormatTag )
-			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected format type." );
-		if( closestMatch->cbSize != wfx->cbSize )
-			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected cbSize." );
-		if( closestMatch->nSamplesPerSec != wfx->nSamplesPerSec )
-			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected samplerate." );
+	//	// If possible, update wfx to the closestMatch. Currently this can only be done if the channels are different.
+	//	if( closestMatch->wFormatTag != wfx->wFormatTag )
+	//		throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected format type." );
+	//	if( closestMatch->cbSize != wfx->cbSize )
+	//		throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected cbSize." );
+	//	if( closestMatch->nSamplesPerSec != wfx->nSamplesPerSec )
+	//		throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected samplerate." );
 
-		copyWaveFormat( *closestMatch, wfx.get() );
-	}
-	else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
+	//	copyWaveFormat( *closestMatch, wfx.get() );
+	//}
+	//else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
+	if( true ) {
 		// Try the system device format
 		::IPropertyStore *properties;
 		hr = immDevice->OpenPropertyStore( STGM_READ, &properties );
@@ -234,20 +238,35 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		}
 	}
 	else {
-		string hrErrorStr = hresultErrorToString( hr );
+		string hrErrorStr = hresultToString( hr );
 		throw AudioExc( "Failed to retrieve a supported format, HRESULT error: " + hrErrorStr, (int32_t)hr );
 	}
 
 	mNumChannels = wfx->nChannels; // in preparation for using closesMatch
 	mBytesPerSample = sampleSize( mSampleType );
 
+	// TODO: clean this up to use the recommended device period as the msdn sample does
+	//{
+		::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
+		::REFERENCE_TIME minDevicePeriod; // this is for exclusive mode
+		hr = mAudioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
+		CI_ASSERT( hr == S_OK );
+
+		double defaultDevicePeriodMS = double( defaultDevicePeriod ) / 10000.0;
+		double minDevicePeriodMS = double( minDevicePeriod ) / 10000.0;
+		CI_LOG_I( "device: " << device->getName() << ", default device period: " << defaultDevicePeriodMS << ", min device period: " << minDevicePeriodMS );
+	//}
+
 	::REFERENCE_TIME requestedDuration = samplesToReferenceTime( mAudioClientNumFrames, sampleRate );
+	
+	//requestedDuration = minDevicePeriod;
+
 	::REFERENCE_TIME periodicity = EXCLUSIVE_MODE ? requestedDuration : 0;
 	DWORD streamFlags = eventHandle ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
 
 	hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, wfx.get(), NULL );
 	if( hr != S_OK ) {
-		string hrErrorStr = hresultErrorToString( hr );
+		string hrErrorStr = hresultToString( hr );
 		throw AudioExc( "Could not initialize IAudioClient, HRESULT error: " + hrErrorStr, (int32_t)hr );
 	}
 
@@ -263,16 +282,6 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
 
-	{
-		::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
-		::REFERENCE_TIME minDevicePeriod; // this is for exclusive mode
-		hr = mAudioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
-		CI_ASSERT( hr == S_OK );
-
-		double defaultDevicePeriodMS = double( defaultDevicePeriod ) / 10000.0;
-		double minDevicePeriodMS = double( minDevicePeriod ) / 10000.0;
-		CI_LOG_I( "device: " << device->getName() << ", default device period: " << defaultDevicePeriodMS << ", min device period: " << minDevicePeriodMS );
-	}
 }
 
 // ----------------------------------------------------------------------------------------------------
