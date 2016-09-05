@@ -22,27 +22,36 @@
 */
 
 #include "cinder/audio/msw/MswUtil.h"
-
-#include <mmreg.h>
+#include "cinder/CinderAssert.h"
 
 namespace cinder { namespace audio { namespace msw {
 
-std::shared_ptr<::WAVEFORMATEX> interleavedFloatWaveFormat( size_t sampleRate, size_t numChannels )
+::WAVEFORMATEXTENSIBLE makeWaveFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bitsPerSample )
 {
-	::WAVEFORMATEXTENSIBLE *wfx = (::WAVEFORMATEXTENSIBLE *)calloc( 1, sizeof( ::WAVEFORMATEXTENSIBLE ) );
+	::WAVEFORMATEXTENSIBLE wfx;
 
-	wfx->Format.wFormatTag				= WAVE_FORMAT_EXTENSIBLE ;
-	wfx->Format.nSamplesPerSec			= static_cast<DWORD>( sampleRate );
-	wfx->Format.nChannels				= static_cast<WORD>( numChannels );
-	wfx->Format.wBitsPerSample			= 32;
-	wfx->Format.nBlockAlign				= wfx->Format.nChannels * wfx->Format.wBitsPerSample / 8;
-	wfx->Format.nAvgBytesPerSec			= wfx->Format.nSamplesPerSec * wfx->Format.nBlockAlign;
-	wfx->Format.cbSize					= sizeof( ::WAVEFORMATEXTENSIBLE ) - sizeof( ::WAVEFORMATEX );
-	wfx->Samples.wValidBitsPerSample	= wfx->Format.wBitsPerSample;
-	wfx->SubFormat						= KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
-	wfx->dwChannelMask					= 0; // this could be a very complicated bit mask of channel order, but 0 means 'first channel is left, second channel is right, etc'
+	if( bitsPerSample == 0 ) {
+		switch( sampleType ) {
+			case SampleType::INT_16:	bitsPerSample = 16; break;
+			case SampleType::INT_24:	bitsPerSample = 24; break;
+			case SampleType::FLOAT_32:	bitsPerSample = 32; break;
+			default:					CI_ASSERT_NOT_REACHABLE();
+		}
+	}
 
-	return std::shared_ptr<::WAVEFORMATEX>( (::WAVEFORMATEX *)wfx, free );
+	wfx.Samples.wValidBitsPerSample		= bitsPerSample;
+	wfx.SubFormat						= sampleType == SampleType::FLOAT_32 ? KSDATAFORMAT_SUBTYPE_IEEE_FLOAT : KSDATAFORMAT_SUBTYPE_PCM;
+	wfx.dwChannelMask					= 0; // use the default channel order ('no speaker location is desired on any of the mono streams')
+
+	wfx.Format.wFormatTag				= useExtensible ? WAVE_FORMAT_EXTENSIBLE : WAVE_FORMAT_PCM;
+	wfx.Format.nSamplesPerSec			= (DWORD)sampleRate;
+	wfx.Format.nChannels				= (WORD)numChannels;
+	wfx.Format.wBitsPerSample			= (WORD)bitsPerSample;
+	wfx.Format.nBlockAlign				= wfx.Format.nChannels * wfx.Format.wBitsPerSample / 8;
+	wfx.Format.nAvgBytesPerSec			= wfx.Format.nSamplesPerSec * wfx.Format.nBlockAlign;
+	wfx.Format.cbSize					= sizeof( ::WAVEFORMATEXTENSIBLE ) - sizeof( ::WAVEFORMATEX );
+
+	return wfx;
 }
 
 void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest )

@@ -23,18 +23,17 @@
 
 #pragma once
 
-#include "cinder/Stream.h"
+#include "cinder/audio/SampleType.h"
 
-#include <memory>
 #include <Objidl.h>
-
-struct tWAVEFORMATEX;
-typedef struct tWAVEFORMATEX WAVEFORMATEX;
+#include <mmreg.h>
 
 namespace cinder { namespace audio { namespace msw {
 
-//! return pointer type is actually a WAVEFORMATEXTENSIBLE, identifiable by the wFormat tag
-std::shared_ptr<::WAVEFORMATEX> interleavedFloatWaveFormat( size_t sampleRate, size_t numChannels );
+//! Constructs and returns an appropriate WAVEFORMATEXTENSIBLE for the given parameters. Always interleaved.
+//! If \t bitPerSample is non-zero then it will be used for the WAVEFORMATEX's wBitsPerSample property, which may be larger than wValidBitsPerSample for alignment purposes.
+::WAVEFORMATEXTENSIBLE makeWaveFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bitsPerSample = 0 );
+
 //! Copies \t source format to \t dest. Handles both WAVEFORMATEXTENSIBLE and WAVEFORMATEX.
 void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest );
 
