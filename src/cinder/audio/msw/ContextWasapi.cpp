@@ -54,7 +54,7 @@ const size_t DEFAULT_AUDIOCLIENT_FRAMES = 480;
 //! When there are mismatched samplerates between OutputDeviceNode and InputDeviceNode, the capture AudioClient's buffer needs to be larger.
 const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2;
 
-const bool EXCLUSIVE_MODE = true; // TODO: expose as property on context and device nodes
+const bool EXCLUSIVE_MODE = false; // TODO: expose as property on context and device nodes
 
 // converts to 100-nanoseconds
 inline ::REFERENCE_TIME samplesToReferenceTime( size_t samples, size_t sampleRate )
@@ -121,7 +121,7 @@ struct WasapiRenderClientImpl : public WasapiAudioClientImpl {
 	::HANDLE	mRenderSamplesReadyEvent, mRenderShouldQuitEvent;
 	::HANDLE    mRenderThread;
 
-	std::unique_ptr<dsp::RingBufferT<char>>	mRingBuffer;
+	std::unique_ptr<dsp::RingBufferT<char>>	mRingBuffer; // storage for raw samples attained from mRenderClient::GetBuffer()
 
 private:
 	void initRenderClient();
@@ -143,13 +143,12 @@ struct WasapiCaptureClientImpl : public WasapiAudioClientImpl {
 
 	unique_ptr<::IAudioCaptureClient, ci::msw::ComDeleter>	mCaptureClient;
 
-	vector<dsp::RingBufferT<char>>				mRingBuffers;
+	vector<dsp::RingBufferT<float>>				mRingBuffers; // storage for converted samples attained from mCaptureClient::GetBuffer()
 
   private:
 	void initCapture();
 
 	std::unique_ptr<dsp::Converter>		mConverter;
-	BufferInterleaved					mInterleavedBuffer;
 	BufferDynamic						mReadBuffer, mConvertedReadBuffer;
 	size_t								mMaxReadFrames;
 
@@ -186,26 +185,26 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	::WAVEFORMATEX *closestMatch = nullptr;
 	hr = mAudioClient->IsFormatSupported( shareMode, wfx.get(), EXCLUSIVE_MODE ? nullptr : &closestMatch );
 
-	//if( hr == S_OK ) {
-	//	mSampleType = SampleType::FLOAT_32;
-	//}
-	//else if( hr == S_FALSE ) {
-	//	// indicates that a closest match was provided.
-	//	CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
-	//	auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
+	if( hr == S_OK ) {
+		mSampleType = SampleType::FLOAT_32;
+	}
+	else if( hr == S_FALSE ) {
+		// indicates that a closest match was provided.
+		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
+		auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
 
-	//	// If possible, update wfx to the closestMatch. Currently this can only be done if the channels are different.
-	//	if( closestMatch->wFormatTag != wfx->wFormatTag )
-	//		throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected format type." );
-	//	if( closestMatch->cbSize != wfx->cbSize )
-	//		throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected cbSize." );
-	//	if( closestMatch->nSamplesPerSec != wfx->nSamplesPerSec )
-	//		throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected samplerate." );
+		// If possible, update wfx to the closestMatch. Currently this can only be done if the channels are different.
+		if( closestMatch->wFormatTag != wfx->wFormatTag )
+			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected format type." );
+		if( closestMatch->cbSize != wfx->cbSize )
+			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected cbSize." );
+		if( closestMatch->nSamplesPerSec != wfx->nSamplesPerSec )
+			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected samplerate." );
 
-	//	copyWaveFormat( *closestMatch, wfx.get() );
-	//}
-	//else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
-	if( true ) {
+		copyWaveFormat( *closestMatch, wfx.get() );
+		mSampleType = SampleType::FLOAT_32;
+	}
+	else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
 		// Try the system device format
 		::IPropertyStore *properties;
 		hr = immDevice->OpenPropertyStore( STGM_READ, &properties );
@@ -242,7 +241,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		throw AudioExc( "Failed to retrieve a supported format, HRESULT error: " + hrErrorStr, (int32_t)hr );
 	}
 
-	mNumChannels = wfx->nChannels; // in preparation for using closesMatch
+	mNumChannels = wfx->nChannels;
 	mBytesPerSample = sampleSize( mSampleType );
 
 	// TODO: clean this up to use the recommended device period as the msdn sample does
@@ -398,13 +397,13 @@ void WasapiRenderClientImpl::renderAudio()
 	while( mNumFramesBuffered < numWriteFramesAvailable )
 		mOutputDeviceNode->renderInputs();
 
-	BYTE *renderBuffer;
-	hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, &renderBuffer );
+	BYTE *audioBuffer;
+	hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, &audioBuffer );
 	CI_ASSERT( hr == S_OK );
 
 	size_t numReadSamples = numWriteFramesAvailable * mNumChannels;
 
-	bool readSuccess = mRingBuffer->read( (char *)renderBuffer, numReadSamples * mBytesPerSample );
+	bool readSuccess = mRingBuffer->read( (char *)audioBuffer, numReadSamples * mBytesPerSample );
 	CI_ASSERT( readSuccess ); // since this is sync read / write, the read should always succeed.
 
 	mNumFramesBuffered -= numWriteFramesAvailable;
@@ -449,7 +448,6 @@ void WasapiCaptureClientImpl::init()
 	for( size_t ch = 0; ch < mNumChannels; ch++ )
 		mRingBuffers.emplace_back( mMaxReadFrames * mNumChannels );
 
-	mInterleavedBuffer = BufferInterleaved( mMaxReadFrames, mNumChannels );
 	mReadBuffer.setSize( mMaxReadFrames, mNumChannels );
 
 	if( needsConverter ) {
@@ -489,23 +487,37 @@ void WasapiCaptureClientImpl::captureAudio()
 			return;
 		}
 	
-		BYTE *audioData;
+		BYTE *audioBuffer;
 		UINT32 numFramesAvailable;
 		DWORD flags;
-		HRESULT hr = mCaptureClient->GetBuffer( &audioData, &numFramesAvailable, &flags, NULL, NULL );
+		HRESULT hr = mCaptureClient->GetBuffer( &audioBuffer, &numFramesAvailable, &flags, NULL, NULL );
 		if( hr == AUDCLNT_S_BUFFER_EMPTY )
 			return;
-		else
+		else {
 			CI_ASSERT( hr == S_OK );
+		}
 
+		// We do the de-interleave and conversion here so that we know the correct number of samples that are available
+		// the next time InputDeviceNodeWasapi::process() is called.
 		const size_t numSamples = numFramesAvailable * mNumChannels;
 		mReadBuffer.setNumFrames( numFramesAvailable );
 
-		if( mNumChannels == 1 )
-			memcpy( mReadBuffer.getData(), audioData, numSamples * sizeof( float ) );
+		if( mNumChannels == 1 ) {
+			if( mSampleType == SampleType::INT_16 )
+				dsp::convert( (int16_t *)audioBuffer, mReadBuffer.getData(), numSamples );
+			else if( mSampleType == SampleType::INT_24 )
+				dsp::convertInt24ToFloat( (char *)audioBuffer, mReadBuffer.getData(), numSamples );
+			else if( mSampleType == SampleType::FLOAT_32 )
+				memcpy( mReadBuffer.getData(), audioBuffer, numSamples * mBytesPerSample );
+		}
 		else {
-			memcpy( mInterleavedBuffer.getData(), audioData, numSamples * sizeof( float ) );
-			dsp::deinterleaveBuffer( &mInterleavedBuffer, &mReadBuffer );
+			if( mSampleType == SampleType::INT_16 )
+				dsp::deinterleave( (int16_t *)audioBuffer, mReadBuffer.getData(), numFramesAvailable, mNumChannels, numFramesAvailable );
+			else if( mSampleType == SampleType::INT_24 ) {
+				dsp::deinterleaveInt24ToFloat( (char *)audioBuffer, mReadBuffer.getData(), numFramesAvailable, mNumChannels, numFramesAvailable );
+			}
+			else if( mSampleType == SampleType::FLOAT_32 )
+				dsp::deinterleave( (float *)audioBuffer, mReadBuffer.getData(), numFramesAvailable, mNumChannels, numFramesAvailable );
 		}
 
 		if( mConverter ) {
@@ -669,7 +681,7 @@ void InputDeviceNodeWasapi::process( Buffer *buffer )
 
 	for( size_t ch = 0; ch < getNumChannels(); ch++ ) {
 		bool readSuccess = mCaptureImpl->mRingBuffers[ch].read( buffer->getChannel( ch ), framesNeeded );
-		CI_ASSERT( readSuccess );
+		CI_VERIFY( readSuccess );
 	}
 
 	mCaptureImpl->mNumFramesBuffered -= framesNeeded;
