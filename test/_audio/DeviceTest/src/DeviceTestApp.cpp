@@ -12,11 +12,16 @@
 #include "cinder/audio/dsp/Dsp.h"
 #include "cinder/audio/Exception.h"
 
+#if defined( CINDER_MSW )
+#include "cinder/audio/msw/ContextWasapi.h"
+#endif
+
 #include "../../common/AudioTestGui.h"
 #include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
 const bool USE_SECONDARY_SCREEN = true;
-const double RECORD_SECONDS = 2.0;
+const bool WASAPI_EXCLUSIVE_MODE = false;
+const double RECORD_SECONDS = 4.0;
 
 using namespace ci;
 using namespace ci::app;
@@ -76,8 +81,16 @@ void DeviceTestApp::setup()
 
 	auto ctx = audio::master();
 
-	mMonitor = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 1024 ) ) );
-	mGain = ctx->makeNode( new audio::GainNode( audio::Node::Format().channels( 1 ) ) );
+#if defined( CINDER_MSW )
+	if( WASAPI_EXCLUSIVE_MODE ) {
+		CI_LOG_I( "enabling WASAPI exlusive mode" );
+		dynamic_cast<audio::msw::ContextWasapi *>( ctx )->setExclusiveModeEnabled();
+	}
+#endif
+
+	mMonitor = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 512 ) ) );
+	mGain = ctx->makeNode( new audio::GainNode() );
+	//mGain = ctx->makeNode( new audio::GainNode( audio::Node::Format().channels( 1 ) ) ); // force mix down to mono
 	mGain->setValue( 0.8f );
 
 	mGain->connect( mMonitor );
@@ -181,7 +194,6 @@ void DeviceTestApp::setupMultiChannelDevice( const string &deviceName )
 
 	setOutputDevice( dev, dev->getNumOutputChannels() );
 	setInputDevice( dev, dev->getNumInputChannels() );
-
 }
 
 void DeviceTestApp::setupMultiChannelDeviceWindows(  const string &deviceName )

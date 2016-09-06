@@ -35,7 +35,7 @@ struct WasapiCaptureClientImpl;
 
 class OutputDeviceNodeWasapi : public OutputDeviceNode {
   public:
-	OutputDeviceNodeWasapi( const DeviceRef &device, const Format &format );
+	OutputDeviceNodeWasapi( const DeviceRef &device, bool exclusiveMode, const Format &format );
 
 protected:
 	void initialize()				override;
@@ -55,7 +55,7 @@ protected:
 
 class InputDeviceNodeWasapi : public InputDeviceNode {
 public:
-	InputDeviceNodeWasapi( const DeviceRef &device, const Format &format = Format() );
+	InputDeviceNodeWasapi( const DeviceRef &device, bool exclusiveMode, const Format &format = Format() );
 	virtual ~InputDeviceNodeWasapi();
 
 protected:
@@ -75,6 +75,14 @@ class ContextWasapi : public Context {
   public:
 	OutputDeviceNodeRef	createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() )	override;
 	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() )	override;
+
+	//! Sets whether 'Exclusive-Mode Streams' are used for OutputDeviceNode and InputDeviceNode instances. Default is false ('shared mode').
+	void setExclusiveModeEnabled( bool enable = true )	{ mExclusiveMode = enable; }
+	//! Returns whether 'Exclusive-Mode Streams' are used for OutputDeviceNode and InputDeviceNode instances. Default is false ('shared mode').
+	bool isExclusiveModeEnabled() const					{ return mExclusiveMode; }
+
+  private:
+	bool	mExclusiveMode = false;
 };
 
 } } } // namespace cinder::audio::msw

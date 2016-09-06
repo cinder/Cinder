@@ -60,8 +60,6 @@ const size_t DEFAULT_AUDIOCLIENT_FRAMES = 480;
 //! When there are mismatched samplerates between OutputDeviceNode and InputDeviceNode, the capture AudioClient's buffer needs to be larger.
 const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2;
 
-const bool EXCLUSIVE_MODE = true; // TODO: expose as property on context and device nodes
-
 // According to the docs, the only guarunteed way to find an acceptable format is to try IAudioClient::IsFormatSupported() repeatedly until you find one.
 // - PKEY_AudioEngine_DeviceFormat docs state that it should not be used for the format in exclusive mode as it still might not be acceptable.
 // - Documentation on 'Device Formats' recommends that we try all possible formats as both WAVEFORMATEXTENSIBLE and WAVEFORMATEX
@@ -112,13 +110,14 @@ const char* hresultToString( ::HRESULT hr )
 } // anonymous namespace
 
 struct WasapiAudioClientImpl {
-	WasapiAudioClientImpl();
+	WasapiAudioClientImpl( bool exclusiveMode );
 
 	unique_ptr<::IAudioClient, ci::msw::ComDeleter>		mAudioClient;
 
 	size_t		mNumFramesBuffered, mAudioClientNumFrames, mNumChannels;
 	SampleType	mSampleType;
 	size_t		mBytesPerSample;
+	bool		mExclusiveMode;
 
   protected:
 	void initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle );
@@ -128,7 +127,7 @@ struct WasapiAudioClientImpl {
 };
 
 struct WasapiRenderClientImpl : public WasapiAudioClientImpl {
-	WasapiRenderClientImpl( OutputDeviceNodeWasapi *outputDeviceNode );
+	WasapiRenderClientImpl( OutputDeviceNodeWasapi *outputDeviceNode, bool exclusiveMode );
 	~WasapiRenderClientImpl();
 
 	void init();
@@ -154,7 +153,7 @@ private:
 };
 
 struct WasapiCaptureClientImpl : public WasapiAudioClientImpl {
-	WasapiCaptureClientImpl( InputDeviceNodeWasapi *inputDeviceNode );
+	WasapiCaptureClientImpl( InputDeviceNodeWasapi *inputDeviceNode, bool exclusiveMode );
 
 	void init();
 	void uninit();
@@ -178,8 +177,8 @@ struct WasapiCaptureClientImpl : public WasapiAudioClientImpl {
 // WasapiAudioClientImpl
 // ----------------------------------------------------------------------------------------------------
 
-WasapiAudioClientImpl::WasapiAudioClientImpl()
-	: mAudioClientNumFrames( DEFAULT_AUDIOCLIENT_FRAMES ), mNumFramesBuffered( 0 ), mNumChannels( 0 )
+WasapiAudioClientImpl::WasapiAudioClientImpl( bool exclusiveMode )
+	: mExclusiveMode( exclusiveMode ), mAudioClientNumFrames( DEFAULT_AUDIOCLIENT_FRAMES ), mNumFramesBuffered( 0 ), mNumChannels( 0 )
 {
 }
 
@@ -187,10 +186,10 @@ WasapiAudioClientImpl::WasapiAudioClientImpl()
 bool WasapiAudioClientImpl::tryFormat( const PossibleFormat &possibleFormat, size_t sampleRate, size_t numChannels, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const
 {
 	auto wfx = makeWaveFormat( possibleFormat.mSampleType, sampleRate, numChannels, possibleFormat.mBitsPerSample, possibleFormat.mUseExtensible );
-	::AUDCLNT_SHAREMODE shareMode = EXCLUSIVE_MODE ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
+	::AUDCLNT_SHAREMODE shareMode = mExclusiveMode ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
 
 	::WAVEFORMATEX *closestMatch = nullptr;
-	HRESULT hr = mAudioClient->IsFormatSupported( shareMode, &wfx.Format, EXCLUSIVE_MODE ? nullptr : &closestMatch );
+	HRESULT hr = mAudioClient->IsFormatSupported( shareMode, &wfx.Format, mExclusiveMode ? nullptr : &closestMatch );
 	if( hr == S_OK ) {
 		copyWaveFormat( wfx.Format, &result->Format );
 		*isClosestMatch = false;
@@ -275,10 +274,10 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		requestedDuration = minDevicePeriod;
 	}
 
-	::REFERENCE_TIME periodicity = EXCLUSIVE_MODE ? requestedDuration : 0;
+	::REFERENCE_TIME periodicity = mExclusiveMode ? requestedDuration : 0;
 	DWORD streamFlags = eventHandle ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
 
-	::AUDCLNT_SHAREMODE shareMode = EXCLUSIVE_MODE ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
+	::AUDCLNT_SHAREMODE shareMode = mExclusiveMode ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
 	hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &wfx.Format, NULL );
 	if( hr != S_OK ) {
 		string hrStr = hresultToString( hr );
@@ -302,8 +301,8 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 // WasapiRenderClientImpl
 // ----------------------------------------------------------------------------------------------------
 
-WasapiRenderClientImpl::WasapiRenderClientImpl( OutputDeviceNodeWasapi *outputDeviceNode )
-	: WasapiAudioClientImpl(), mOutputDeviceNode( outputDeviceNode )
+WasapiRenderClientImpl::WasapiRenderClientImpl( OutputDeviceNodeWasapi *outputDeviceNode, bool exclusiveMode )
+	: WasapiAudioClientImpl( exclusiveMode ), mOutputDeviceNode( outputDeviceNode )
 {
 	// create render events
 	mRenderSamplesReadyEvent = ::CreateEvent( NULL, FALSE, FALSE, NULL );
@@ -405,7 +404,7 @@ void WasapiRenderClientImpl::runRenderThread()
 //   available, which was retrieved from mAudioClient->GetBufferSize()
 size_t WasapiRenderClientImpl::getWriteFramesAvailable() const
 {
-	if( EXCLUSIVE_MODE ) {
+	if( mExclusiveMode ) {
 		return mAudioClientNumFrames;
 	}
 	else {
@@ -454,8 +453,8 @@ void WasapiRenderClientImpl::increaseThreadPriority()
 // WasapiCaptureClientImpl
 // ----------------------------------------------------------------------------------------------------
 
-WasapiCaptureClientImpl::WasapiCaptureClientImpl( InputDeviceNodeWasapi *inputDeviceNode )
-	: WasapiAudioClientImpl(), mInputDeviceNode( inputDeviceNode ), mMaxReadFrames( 0 )
+WasapiCaptureClientImpl::WasapiCaptureClientImpl( InputDeviceNodeWasapi *inputDeviceNode, bool exclusiveMode )
+	: WasapiAudioClientImpl( exclusiveMode ), mInputDeviceNode( inputDeviceNode ), mMaxReadFrames( 0 )
 {
 }
 
@@ -579,8 +578,8 @@ void WasapiCaptureClientImpl::captureAudio()
 // OutputDeviceNodeWasapi
 // ----------------------------------------------------------------------------------------------------
 
-OutputDeviceNodeWasapi::OutputDeviceNodeWasapi( const DeviceRef &device, const Format &format )
-	: OutputDeviceNode( device, format ), mRenderImpl( new WasapiRenderClientImpl( this ) )
+OutputDeviceNodeWasapi::OutputDeviceNodeWasapi( const DeviceRef &device, bool exclusiveMode, const Format &format )
+	: OutputDeviceNode( device, format ), mRenderImpl( new WasapiRenderClientImpl( this, exclusiveMode ) )
 {
 }
 
@@ -670,8 +669,8 @@ void OutputDeviceNodeWasapi::renderInputs()
 // InputDeviceNodeWasapi
 // ----------------------------------------------------------------------------------------------------
 
-InputDeviceNodeWasapi::InputDeviceNodeWasapi( const DeviceRef &device, const Format &format )
-	: InputDeviceNode( device, format ), mCaptureImpl( new WasapiCaptureClientImpl( this ) )
+InputDeviceNodeWasapi::InputDeviceNodeWasapi( const DeviceRef &device, bool exclusiveMode, const Format &format )
+	: InputDeviceNode( device, format ), mCaptureImpl( new WasapiCaptureClientImpl( this, exclusiveMode ) )
 {
 }
 
@@ -726,12 +725,12 @@ void InputDeviceNodeWasapi::process( Buffer *buffer )
 
 OutputDeviceNodeRef ContextWasapi::createOutputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
-	return makeNode( new OutputDeviceNodeWasapi( device, format ) );
+	return makeNode( new OutputDeviceNodeWasapi( device, mExclusiveMode, format ) );
 }
 
 InputDeviceNodeRef ContextWasapi::createInputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
-	return makeNode( new InputDeviceNodeWasapi( device, format ) );
+	return makeNode( new InputDeviceNodeWasapi( device, mExclusiveMode, format ) );
 }
 
 } } } // namespace cinder::audio::msw
