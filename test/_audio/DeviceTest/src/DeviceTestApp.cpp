@@ -20,7 +20,7 @@
 #include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
 const bool USE_SECONDARY_SCREEN = true;
-const bool WASAPI_EXCLUSIVE_MODE = false;
+const bool WASAPI_EXCLUSIVE_MODE = true;
 const double RECORD_SECONDS = 4.0;
 
 using namespace ci;
@@ -116,7 +116,7 @@ void DeviceTestApp::setup()
 //	setupIOClean();
 
 	PRINT_GRAPH( ctx );
-	CI_LOG_V( "Context samplerate: " << ctx->getSampleRate() );
+	CI_LOG_I( "Context samplerate: " << ctx->getSampleRate() );
 }
 
 void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numChannels )
@@ -138,7 +138,7 @@ void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numC
 
 	mOutputDeviceNode->getDevice()->getSignalParamsDidChange().connect(
 							[this] {
-								CI_LOG_V( "OutputDeviceNode params changed:" );
+								CI_LOG_I( "OutputDeviceNode params changed:" );
 								printDeviceDetails( mOutputDeviceNode->getDevice() );
 								PRINT_GRAPH( audio::master() );
 							} );
@@ -153,7 +153,7 @@ void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numC
 
 	ctx->initializeAllNodes();
 
-	CI_LOG_V( "OutputDeviceNode device properties: " );
+	CI_LOG_I( "OutputDeviceNode device properties: " );
 	printDeviceDetails( device );
 
 	// TODO: considering doing this automatically in Context::setOutput, but then also have to worry about initialize()
@@ -180,7 +180,7 @@ void DeviceTestApp::setInputDevice( const audio::DeviceRef &device, size_t numCh
 
 	mInputDeviceNode = audio::master()->createInputDeviceNode( device, format );
 
-	CI_LOG_V( "InputDeviceNode device properties: " );
+	CI_LOG_I( "InputDeviceNode device properties: " );
 	printDeviceDetails( device );
 }
 
@@ -215,8 +215,8 @@ void DeviceTestApp::setupRolandOctaCaptureInputMonitoring()
 {
 	vector<string> deviceNames = {
 		"1-2 (OCTA-CAPTURE)",
-		"3-4 (OCTA-CAPTURE)"//,
-		//"5-6 (OCTA-CAPTURE)",
+		"3-4 (OCTA-CAPTURE)",
+		"5-6 (OCTA-CAPTURE)"//,
 		//"7-8 (OCTA-CAPTURE)",
 		//"9-10 (OCTA-CAPTURE)"
 	};
@@ -323,7 +323,7 @@ void DeviceTestApp::setupSend()
 	auto input = mGen;
 
 	int channelIndex = mSendChannelInput.getValue();
-	CI_LOG_V( "routing input to channel: " << channelIndex );
+	CI_LOG_I( "routing input to channel: " << channelIndex );
 
 	input >> mGain >> router->route( 0, channelIndex );
 	router >> mMonitor >> ctx->getOutput();
@@ -340,7 +340,7 @@ void DeviceTestApp::setupSendStereo()
 	auto upmix = ctx->makeNode( new audio::Node( audio::Node::Format().channels( 2 ) ) );
 
 	int channelIndex = mSendChannelInput.getValue();
-	CI_LOG_V( "routing input to channel: " << channelIndex );
+	CI_LOG_I( "routing input to channel: " << channelIndex );
 
 	mGen >> upmix >> mGain >> router->route( 0, channelIndex );
 	router >> mMonitor >> ctx->getOutput();
@@ -362,11 +362,11 @@ void DeviceTestApp::startRecording()
 void DeviceTestApp::writeRecordedToFile()
 {
 	const string fileName = "recorder_out.wav";
-	CI_LOG_V( "writing to: " << fileName );
+	CI_LOG_I( "writing to: " << fileName );
 
 	mRecorder->writeToFile( fileName );
 
-	CI_LOG_V( "...complete." );
+	CI_LOG_I( "...complete." );
 }
 
 void DeviceTestApp::setupUI()
@@ -514,7 +514,7 @@ void DeviceTestApp::processTap( ivec2 pos )
 	size_t currentTestIndex = mTestSelector.mCurrentSectionIndex;
 	if( mTestSelector.hitTest( pos ) && currentTestIndex != mTestSelector.mCurrentSectionIndex ) {
 		string currentTest = mTestSelector.currentSection();
-		CI_LOG_V( "selected: " << currentTest );
+		CI_LOG_I( "selected: " << currentTest );
 
 		setupTest( currentTest );
 		return;
@@ -523,7 +523,7 @@ void DeviceTestApp::processTap( ivec2 pos )
 	size_t currentOutputIndex = mOutputSelector.mCurrentSectionIndex;
 	if( mOutputSelector.hitTest( pos ) && currentOutputIndex != mOutputSelector.mCurrentSectionIndex ) {
 		auto dev = audio::Device::findOutputByName( mOutputSelector.mSegments[mOutputSelector.mCurrentSectionIndex] );
-		CI_LOG_V( "selected output device named: " << dev->getName() << ", key: " << dev->getKey() );
+		CI_LOG_I( "selected output device named: " << dev->getName() << ", key: " << dev->getKey() );
 
 		setOutputDevice( dev );
 		// Don't need to reset test as the Device will be updated on the Context's OutputDeviceNode and the change will propagate through the graph
@@ -533,7 +533,7 @@ void DeviceTestApp::processTap( ivec2 pos )
 	size_t currentInputIndex = mInputSelector.mCurrentSectionIndex;
 	if( mInputSelector.hitTest( pos ) && currentInputIndex != mInputSelector.mCurrentSectionIndex ) {
 		auto dev = audio::Device::findInputByName( mInputSelector.mSegments[mInputSelector.mCurrentSectionIndex] );
-		CI_LOG_V( "selected input named: " << dev->getName() << ", key: " << dev->getKey() );
+		CI_LOG_I( "selected input named: " << dev->getName() << ", key: " << dev->getKey() );
 
 		setInputDevice( dev );
 		setupTest( mTestSelector.currentSection() ); // need to reset the test so that we construct the InputDeviceNode with the proper Device
@@ -546,7 +546,7 @@ void DeviceTestApp::setupTest( string test )
 	if( test.empty() )
 		test = "sinewave";
 
-	CI_LOG_V( "test: " << test );
+	CI_LOG_I( "test: " << test );
 
 	// FIXME: Switching from 'noise' to 'i/o' on mac is causing a deadlock when initializing InputDeviceNodeAudioUnit.
 	//	- it shouldn't have to be stopped, need to check why.
@@ -594,22 +594,22 @@ void DeviceTestApp::keyDown( KeyEvent event )
 		try {
 			if( currentSelected == &mSamplerateInput ) {
 				int sr = currentSelected->getValue();
-				CI_LOG_V( "updating samplerate from: " << mOutputDeviceNode->getSampleRate() << " to: " << sr );
+				CI_LOG_I( "updating samplerate from: " << mOutputDeviceNode->getSampleRate() << " to: " << sr );
 				mOutputDeviceNode->getDevice()->updateFormat( audio::Device::Format().sampleRate( sr ) );
 			}
 			else if( currentSelected == &mFramesPerBlockInput ) {
 				int frames = currentSelected->getValue();
-				CI_LOG_V( "updating frames per block from: " << mOutputDeviceNode->getFramesPerBlock() << " to: " << frames );
+				CI_LOG_I( "updating frames per block from: " << mOutputDeviceNode->getFramesPerBlock() << " to: " << frames );
 				mOutputDeviceNode->getDevice()->updateFormat( audio::Device::Format().framesPerBlock( frames ) );
 			}
 			else if( currentSelected == &mNumInChannelsInput ) {
 				int numChannels = currentSelected->getValue();
-				CI_LOG_V( "updating nnm input channels from: " << mInputDeviceNode->getNumChannels() << " to: " << numChannels );
+				CI_LOG_I( "updating nnm input channels from: " << mInputDeviceNode->getNumChannels() << " to: " << numChannels );
 				setInputDevice( mInputDeviceNode->getDevice(), numChannels );
 			}
 			else if( currentSelected == &mNumOutChannelsInput ) {
 				int numChannels = currentSelected->getValue();
-				CI_LOG_V( "updating nnm output channels from: " << mOutputDeviceNode->getNumChannels() << " to: " << numChannels );
+				CI_LOG_I( "updating nnm output channels from: " << mOutputDeviceNode->getNumChannels() << " to: " << numChannels );
 				setOutputDevice( mOutputDeviceNode->getDevice(), numChannels );
 			}
 			else if( currentSelected == &mSendChannelInput ) {
