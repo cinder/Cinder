@@ -37,13 +37,13 @@ typedef std::multimap<void*,TimelineItemRef>::iterator s_iter;
 typedef std::multimap<void*,TimelineItemRef>::const_iterator s_const_iter;
 
 Timeline::Timeline()
-	: TimelineItem( 0, 0, 0, 0 ), mDefaultAutoRemove( true ), mCurrentTime( 0 )
+	: TimelineItem( 0, 0, 0, 0 ), mDefaultAutoRemove( true ), mCurrentTime( 0 ), mLockItems( false )
 {
 	mUseAbsoluteTime = true;
 }
 
 Timeline::Timeline( const Timeline &rhs )
-	: TimelineItem( rhs ), mDefaultAutoRemove( rhs.mDefaultAutoRemove ), mCurrentTime( rhs.mCurrentTime )
+	: TimelineItem( rhs ), mDefaultAutoRemove( rhs.mDefaultAutoRemove ), mCurrentTime( rhs.mCurrentTime ), mLockItems( false )
 {
 	for( s_const_iter iter = rhs.mItems.begin(); iter != rhs.mItems.end(); ++iter ) {
 		mItems.insert( make_pair( iter->first, iter->second->clone() ) );
@@ -63,17 +63,23 @@ void Timeline::stepTo( float absoluteTime )
 	
 	eraseMarked();
 	
-	// we need to cache the items. If a tween's update() fn or similar were to manipulate
+	// we need to lock the items. If a tween's update() fn or similar were to manipulate
 	// the list of items by adding new ones, we'll have invalidated our iterator.
 	// Deleted items are never removed immediately, but are marked for deletion.
-	auto items = mItems;
-	for( s_iter iter = items.begin(); iter != items.end(); ++iter ) {
+	// Inserted items are added to a temporary list and inserted afterwards.
+	mLockItems = true;
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
 		iter->second->stepTo( mCurrentTime, reverse );
 		if( iter->second->isComplete() && iter->second->getAutoRemove() )
 			iter->second->mMarkedForRemoval = true;
 	}
+	mLockItems = false;
 	
-	eraseMarked();	
+	eraseMarked();
+
+	for( auto &item : mInsertedItems )
+		mItems.insert( item );
+	mInsertedItems.clear();
 }
 
 CueRef Timeline::add( const std::function<void ()> &action, float atTime )
@@ -86,7 +92,13 @@ CueRef Timeline::add( const std::function<void ()> &action, float atTime )
 
 void Timeline::clear()
 {
-	mItems.clear();	
+	if( mLockItems ) {
+		for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
+			iter->second->mMarkedForRemoval = true;
+		}
+	}
+	else
+		mItems.clear();
 }
 
 void Timeline::appendPingPong()
@@ -101,7 +113,10 @@ void Timeline::appendPingPong()
 	}
 	
 	for( vector<TimelineItemRef>::const_iterator appIt = toAppend.begin(); appIt != toAppend.end(); ++appIt ) {
-		mItems.insert( make_pair( (*appIt)->mTarget, *appIt ) );
+		if( mLockItems )
+			mInsertedItems.emplace_back( ( *appIt )->mTarget, *appIt );
+		else
+			mItems.insert( make_pair( (*appIt)->mTarget, *appIt ) );
 	}
 	
 	setDurationDirty();
@@ -118,20 +133,27 @@ void Timeline::add( TimelineItemRef item )
 {
 	item->mParent = this;
 	item->mStartTime = mCurrentTime;
-	mItems.insert( make_pair( item->mTarget, item ) );
+	if( mLockItems )
+		mInsertedItems.emplace_back( item->mTarget, item );
+	else
+		mItems.insert( make_pair( item->mTarget, item ) );
 	setDurationDirty();
 }
 
 void Timeline::insert( TimelineItemRef item )
 {
 	item->mParent = this;
-	mItems.insert( make_pair( item->mTarget, item ) );
+	if( mLockItems )
+		mInsertedItems.emplace_back( item->mTarget, item );
+	else
+		mItems.insert( make_pair( item->mTarget, item ) );
 	setDurationDirty();
 }
 
 // remove all items which have been marked for removal
 void Timeline::eraseMarked()
 {
+	assert( !mLockItems );
 	bool needRecalc = false;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ) {
 		if( iter->second->mMarkedForRemoval ) {
@@ -266,14 +288,19 @@ void Timeline::cloneAndReplaceTarget( void *target, void *replacementTarget )
 		newItems.back()->setTarget( replacementTarget );
 	}
 
-	for( vector<TimelineItemRef>::iterator newItemIt = newItems.begin(); newItemIt != newItems.end(); ++newItemIt )
-		mItems.insert( make_pair( replacementTarget, *newItemIt ) );
+	for( vector<TimelineItemRef>::iterator newItemIt = newItems.begin(); newItemIt != newItems.end(); ++newItemIt ) {
+		if( mLockItems )
+			mInsertedItems.emplace_back( replacementTarget, *newItemIt );
+		else
+			mItems.insert( make_pair( replacementTarget, *newItemIt ) );
+	}
 
 	setDurationDirty();
 }
 
 void Timeline::replaceTarget( void *target, void *replacementTarget )
 {
+	assert( !mLockItems );
 	if( target == nullptr )
 		return;
 

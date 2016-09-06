@@ -213,7 +213,9 @@ class Timeline : public TimelineItem {
 	bool						mDefaultAutoRemove;
 	float						mCurrentTime;
 	
-	std::multimap<void*,TimelineItemRef>		mItems;
+	std::multimap<void*,TimelineItemRef>			mItems;
+	std::vector<std::pair<void*, TimelineItemRef>>	mInsertedItems;
+	bool											mLockItems;
 	
   private:
 	Timeline( const Timeline &rhs ); // private to prevent copying; use clone() method instead
