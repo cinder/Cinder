@@ -48,6 +48,10 @@
 //#define LOG_XRUN( stream )	CI_LOG_I( stream )
 #define LOG_XRUN( stream )	    ( (void)( 0 ) )
 
+using namespace std;
+
+namespace cinder { namespace audio { namespace msw {
+
 namespace {
 
 // TODO: should requestedDuration come from Device's frames per block?
@@ -57,6 +61,25 @@ const size_t DEFAULT_AUDIOCLIENT_FRAMES = 480;
 const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2;
 
 const bool EXCLUSIVE_MODE = true; // TODO: expose as property on context and device nodes
+
+// According to the docs, the only guarunteed way to find an acceptable format is to try IAudioClient::IsFormatSupported() repeatedly until you find one.
+// - PKEY_AudioEngine_DeviceFormat docs state that it should not be used for the format in exclusive mode as it still might not be acceptable.
+// - Documentation on 'Device Formats' recommends that we try all possible formats as both WAVEFORMATEXTENSIBLE and WAVEFORMATEX
+// - TODO: try more formats, like INT_32 and INT_24 in 32-bit container
+//		- both will need consideration when converting
+struct PossibleFormat {
+	SampleType	mSampleType;
+	size_t		mBitsPerSample;
+	bool		mUseExtensible;
+};
+
+const array<PossibleFormat, 5> possibleFormats = { {
+	{ SampleType::FLOAT_32, 32, true },
+	{ SampleType::INT_24, 24, true },
+	{ SampleType::INT_24, 24, false },
+	{ SampleType::INT_16, 16, true },
+	{ SampleType::INT_16, 16, false }
+} };
 
 // converts to 100-nanoseconds
 inline ::REFERENCE_TIME samplesToReferenceTime( size_t samples, size_t sampleRate )
@@ -94,10 +117,6 @@ const char* hresultToString( ::HRESULT hr )
 
 } // anonymous namespace
 
-using namespace std;
-
-namespace cinder { namespace audio { namespace msw {
-
 struct WasapiAudioClientImpl {
 	WasapiAudioClientImpl();
 
@@ -111,7 +130,7 @@ struct WasapiAudioClientImpl {
 	void initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle );
 
   private:
-	  bool tryFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bytesPerSample, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const;
+	  bool tryFormat( const PossibleFormat &possibleFormat, size_t sampleRate, size_t numChannels, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const;
 };
 
 struct WasapiRenderClientImpl : public WasapiAudioClientImpl {
@@ -169,9 +188,10 @@ WasapiAudioClientImpl::WasapiAudioClientImpl()
 {
 }
 
-bool WasapiAudioClientImpl::tryFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bytesPerSample, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const
+// FIXME: if the user asks for a mono input in exclusive mode, IsFormatSupported() might fail as it wants to return a stereo format
+bool WasapiAudioClientImpl::tryFormat( const PossibleFormat &possibleFormat, size_t sampleRate, size_t numChannels, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const
 {
-	auto wfx = makeWaveFormat( sampleType, sampleRate, numChannels );
+	auto wfx = makeWaveFormat( possibleFormat.mSampleType, sampleRate, numChannels, possibleFormat.mBitsPerSample, possibleFormat.mUseExtensible );
 	::AUDCLNT_SHAREMODE shareMode = EXCLUSIVE_MODE ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
 
 	::WAVEFORMATEX *closestMatch = nullptr;
@@ -215,33 +235,15 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 
 	size_t sampleRate = device->getSampleRate();
 
-	// According to the docs, the only guarunteed way to find an acceptable format is to try IAudioClient::IsFormatSupported() repeatedly until you find one.
-	// - PKEY_AudioEngine_DeviceFormat docs state that it should not be used for the format in exclusive mode as it still might not be acceptable.
-	// - Documentation on 'Device Formats' recommends that we try all possible formats as both WAVEFORMATEXTENSIBLE and WAVEFORMATEX
-	// - TODO: try more formats, like INT_32 and INT_24 in 32-bit container
-	//		- both will need consideration when converting
-	struct PossibleFormat {
-		SampleType	sampleType;
-		size_t		bytesPerSample;
-		bool		useExtensible;
-	};
-
-	array<PossibleFormat, 5> possibleFormats = { {
-		{ SampleType::FLOAT_32, 32, true },
-		{ SampleType::INT_24, 24, true },
-		{ SampleType::INT_24, 24, false },
-		{ SampleType::INT_16, 16, true },
-		{ SampleType::INT_16, 16, false }
-	} };
-
+	// Try all possible WAVEFORMATEX formats until we find one that is supported
 	bool foundSupportedFormat = false;
 	::WAVEFORMATEXTENSIBLE wfx;
 	for( const auto &possibleFormat : possibleFormats ) {
 		bool isClosestMatch = false;
-		foundSupportedFormat = tryFormat( possibleFormat.sampleType, sampleRate, numChannels, possibleFormat.bytesPerSample, &wfx, &isClosestMatch );
+		foundSupportedFormat = tryFormat( possibleFormat, sampleRate, numChannels, &wfx, &isClosestMatch );
 		if( foundSupportedFormat ) {
 			mNumChannels = wfx.Format.nChannels;
-			mSampleType = possibleFormat.sampleType;
+			mSampleType = possibleFormat.mSampleType;
 			mBytesPerSample = sampleSize( mSampleType );
 			break;
 		}

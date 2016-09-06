@@ -77,7 +77,7 @@ void DeviceTestApp::setup()
 	auto ctx = audio::master();
 
 	mMonitor = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 1024 ) ) );
-	mGain = ctx->makeNode( new audio::GainNode() );
+	mGain = ctx->makeNode( new audio::GainNode( audio::Node::Format().channels( 1 ) ) );
 	mGain->setValue( 0.8f );
 
 	mGain->connect( mMonitor );
@@ -85,9 +85,9 @@ void DeviceTestApp::setup()
 	//setOutputDevice( audio::Device::getDefaultOutput() );
 	setOutputDevice( audio::Device::findOutputByName( "1-2 (OCTA-CAPTURE)" ) );
 
-	//setInputDevice( audio::Device::getDefaultInput() );
+	setInputDevice( audio::Device::getDefaultInput() );
 	//setInputDevice( audio::Device::getDefaultInput(), 1 ); // force mono input
-	setupRolandOctaCaptureInputMonitoring();
+	//setupRolandOctaCaptureInputMonitoring();
 
 	//setupMultiChannelDevice( "PreSonus FIREPOD (1431)" );
 	//setupMultiChannelDeviceWindows( "MOTU Analog (MOTU Audio Wave for 64 bit)" );
@@ -97,7 +97,7 @@ void DeviceTestApp::setup()
 	mGain >> mRecorder;
 
 	setupUI();
-	//setupTest( mTestSelector.currentSection() );
+	setupTest( mTestSelector.currentSection() );
 
 //	setupInputPulled();
 //	setupIOClean();
@@ -203,10 +203,10 @@ void DeviceTestApp::setupRolandOctaCaptureInputMonitoring()
 {
 	vector<string> deviceNames = {
 		"1-2 (OCTA-CAPTURE)",
-		"3-4 (OCTA-CAPTURE)",
-		"5-6 (OCTA-CAPTURE)",
-		"7-8 (OCTA-CAPTURE)",
-		"9-10 (OCTA-CAPTURE)"
+		"3-4 (OCTA-CAPTURE)"//,
+		//"5-6 (OCTA-CAPTURE)",
+		//"7-8 (OCTA-CAPTURE)",
+		//"9-10 (OCTA-CAPTURE)"
 	};
 
 	size_t numChannels = deviceNames.size() * 2;
@@ -223,7 +223,7 @@ void DeviceTestApp::setupRolandOctaCaptureInputMonitoring()
 			inputNode->enable();
 		}
 		else
-			CI_LOG_E( "could not find input device with channels > 2 named: " << devName );
+			CI_LOG_E( "could not find input device named: " << devName );
 	}
 }
 
@@ -376,7 +376,7 @@ void DeviceTestApp::setupUI()
 	mTestSelector.mSegments.push_back( "I/O and sine" );
 	mTestSelector.mSegments.push_back( "send" );
 	mTestSelector.mSegments.push_back( "send stereo" );
-	mTestSelector.mCurrentSectionIndex = 3;
+	mTestSelector.mCurrentSectionIndex = 0;
 	mWidgets.push_back( &mTestSelector );
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -639,6 +639,10 @@ void DeviceTestApp::update()
 		if( mOutputDeviceNode->getLastClip() )
 			timeline().apply( &mOutputDeviceNodeClipFade, 1.0f, 0.0f, xrunFadeTime );
 	}
+
+	//if( getElapsedFrames() % 20 == 0 ) {
+	//	CI_LOG_I( "framerate: " << to_string( getAverageFps() ) );
+	//}
 }
 
 void DeviceTestApp::draw()
