@@ -56,7 +56,7 @@ const size_t DEFAULT_AUDIOCLIENT_FRAMES = 480;
 //! When there are mismatched samplerates between OutputDeviceNode and InputDeviceNode, the capture AudioClient's buffer needs to be larger.
 const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2;
 
-const bool EXCLUSIVE_MODE = false; // TODO: expose as property on context and device nodes
+const bool EXCLUSIVE_MODE = true; // TODO: expose as property on context and device nodes
 
 // converts to 100-nanoseconds
 inline ::REFERENCE_TIME samplesToReferenceTime( size_t samples, size_t sampleRate )
@@ -169,6 +169,7 @@ WasapiAudioClientImpl::WasapiAudioClientImpl()
 {
 }
 
+// TODO NEXT: get this working for exclusive mode
 bool WasapiAudioClientImpl::tryFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bytesPerSample, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const
 {
 	auto wfx = makeWaveFormat( sampleType, sampleRate, numChannels );
@@ -215,19 +216,22 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 
 	size_t sampleRate = device->getSampleRate();
 
-	struct PossibleFormat {
-		SampleType sampleType;
-		size_t bytesPerSample;
-	};
-	
 	// According to the docs, the only guarunteed way to find an acceptable format is to try IAudioClient::IsFormatSupported() repeatedly until you find one.
 	// - PKEY_AudioEngine_DeviceFormat docs state that it should not be used for the format in exclusive mode as it still might not be acceptable.
-	// TODO: try more formats, like INT_32 and INT_24 in 32-bit container
-	// - both will need consideration when converting
-	array<PossibleFormat, 3> possibleFormats = { {
-		{ SampleType::FLOAT_32, 32 },
-		{ SampleType::INT_24, 24 },
-		{ SampleType::INT_16, 16 }
+	// - Documentation on 'Device Formats' recommends that we try all possible formats as both WAVEFORMATEXTENSIBLE and WAVEFORMATEX
+	// - TODO: try more formats, like INT_32 and INT_24 in 32-bit container
+	//		- both will need consideration when converting
+	struct PossibleFormat {
+		SampleType	sampleType;
+		size_t		bytesPerSample;
+		bool		useExtensible;
+	};
+
+	array<PossibleFormat, 4> possibleFormats = { {
+		{ SampleType::FLOAT_32, 32, true },
+		{ SampleType::INT_24, 24, true },
+		{ SampleType::INT_16, 16, true },
+		{ SampleType::INT_16, 16, false }
 	} };
 
 	bool foundSupportedFormat = false;
@@ -235,7 +239,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	for( const auto &possibleFormat : possibleFormats ) {
 		bool isClosestMatch = false;
 		foundSupportedFormat = tryFormat( possibleFormat.sampleType, sampleRate, numChannels, possibleFormat.bytesPerSample, &wfx, &isClosestMatch );
-		if( foundSupportedFormat ) {			
+		if( foundSupportedFormat ) {
 			mNumChannels = wfx.Format.nChannels;
 			mSampleType = possibleFormat.sampleType;
 			mBytesPerSample = sampleSize( mSampleType );
@@ -243,7 +247,19 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		}
 	}
 	if( ! foundSupportedFormat ) {
-		throw AudioExc( "Failed to find a supported format" );
+		// We failed to find a supported format. For debugging purposes, print the format indicated by PKEY_AudioEngine_DeviceFormat
+		::IPropertyStore *properties;
+		hr = immDevice->OpenPropertyStore( STGM_READ, &properties );
+		CI_ASSERT( hr == S_OK );
+		auto propertiesPtr = ci::msw::makeComUnique( properties );
+
+		::PROPVARIANT formatVar;
+		hr = properties->GetValue( PKEY_AudioEngine_DeviceFormat, &formatVar );
+		CI_ASSERT( hr == S_OK );
+		::WAVEFORMATEX *audioEngineFormat = (::WAVEFORMATEX *)formatVar.blob.pBlobData;
+
+		string audioEngineFormatStr = printWaveFormat( *audioEngineFormat );
+		throw AudioExc( "Failed to find a supported format. Note: the PKEY_AudioEngine_DeviceFormat suggests that the format should be: " + audioEngineFormatStr );
 	}
 
 	CI_LOG_I( "using WAVEFORMATEX: " << printWaveFormat( wfx ) );

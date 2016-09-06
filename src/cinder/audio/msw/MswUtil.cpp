@@ -26,7 +26,7 @@
 
 namespace cinder { namespace audio { namespace msw {
 
-::WAVEFORMATEXTENSIBLE makeWaveFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bitsPerSample )
+::WAVEFORMATEXTENSIBLE makeWaveFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bitsPerSample, bool useExtensible )
 {
 	::WAVEFORMATEXTENSIBLE wfx;
 

@@ -34,7 +34,8 @@ namespace cinder { namespace audio { namespace msw {
 
 //! Constructs and returns an appropriate WAVEFORMATEXTENSIBLE for the given parameters. Always interleaved.
 //! If \t bitPerSample is non-zero then it will be used for the WAVEFORMATEX's wBitsPerSample property, which may be larger than wValidBitsPerSample for alignment purposes.
-::WAVEFORMATEXTENSIBLE makeWaveFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bitsPerSample = 0 );
+//! If \t useExtensible is true, sets the wFormatTag to WAVE_FORMAT_EXTENSIBLE, otherwise to WAVE_FORMAT_PCM
+::WAVEFORMATEXTENSIBLE makeWaveFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bitsPerSample = 0, bool useExtensible = true );
 //! Copies \t source format to \t dest. If source.wFormatTag == WAVE_FORMAT_EXTENSIBLE, copies a WAVEFORMATEXTENSIBLE, otherwise copies a WAVEFORMATEX.
 void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest );
 //! Prints a WAVEFORMATEX or WAVEFORMATEXTENSIBLE to string and returns it
