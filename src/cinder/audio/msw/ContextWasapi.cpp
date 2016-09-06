@@ -123,6 +123,7 @@ struct WasapiAudioClientImpl {
 	void initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle );
 
   private:
+	  void createAudioClient( ::IMMDevice *immDevice );
 	  bool tryFormat( const PossibleFormat &possibleFormat, size_t sampleRate, size_t numChannels, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const;
 };
 
@@ -213,22 +214,25 @@ bool WasapiAudioClientImpl::tryFormat( const PossibleFormat &possibleFormat, siz
 	}
 }
 
+void WasapiAudioClientImpl::createAudioClient( ::IMMDevice *immDevice )
+{
+	mAudioClient = nullptr;
+
+	::IAudioClient *audioClient;
+	HRESULT hr = immDevice->Activate( __uuidof(::IAudioClient), CLSCTX_ALL, NULL, (void**)&audioClient );
+	CI_ASSERT( hr == S_OK );
+	mAudioClient = ci::msw::makeComUnique( audioClient );
+}
+
 void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle )
 {
-	CI_ASSERT( ! mAudioClient );
-
 	DeviceManagerWasapi *manager = dynamic_cast<DeviceManagerWasapi *>( Context::deviceManager() );
 	CI_ASSERT( manager );
 
 	shared_ptr<::IMMDevice> immDevice = manager->getIMMDevice( device );
-	HRESULT hr = S_OK;
-	{
-		::IAudioClient *audioClient;
-		hr = immDevice->Activate( __uuidof(::IAudioClient), CLSCTX_ALL, NULL, (void**)&audioClient );
-		CI_ASSERT( hr == S_OK );
-		mAudioClient = ci::msw::makeComUnique( audioClient );
-	}
+	createAudioClient( immDevice.get() );
 
+	HRESULT hr = S_OK;
 	size_t sampleRate = device->getSampleRate();
 
 	// Try all possible WAVEFORMATEX formats until we find those that are supported
@@ -281,29 +285,51 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	::AUDCLNT_SHAREMODE shareMode = mExclusiveMode ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
 
 	// Now try to Initialize() with all supported formats until we succeed
+	// - the IAudioClient instance must be recreated after a failed Initialize() attempt
 	bool initializeSucceeded = false;
 	for( const auto &supportedFormats : supportedFormats ) {
 		auto &wfx = supportedFormats.second;
 
 		hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &wfx.Format, NULL );
 		if( hr == S_OK ) {
-			CI_LOG_I( "Initialize() succeeded with WAVEFORMATEX: " << waveFormatToString( wfx ) );
 			initializeSucceeded = true;
+		}
+		else if( hr == AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED ) {
+
+			// need to query GetBufferSize() again to see what the aligned size should be
+			// 
+
+			UINT32 alignedBufferSize;
+			hr = mAudioClient->GetBufferSize( &alignedBufferSize );
+			CI_ASSERT( hr == S_OK );
+
+			CI_LOG_W( "Initialize attempt failed with AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED. alignedBufferSize: " << alignedBufferSize );
+
+			// throw away this IAudioClient and try again with aligned buffer size
+			createAudioClient( immDevice.get() );
+
+			requestedDuration = framesToHundredNanoSeconds( alignedBufferSize, sampleRate );
+			periodicity = mExclusiveMode ? requestedDuration : 0;
+			hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &wfx.Format, NULL );
+			if( hr == S_OK ) {
+				initializeSucceeded = true;
+			}
+		}
+
+		if( initializeSucceeded ) {
+			CI_LOG_I( "Initialize() succeeded with WAVEFORMATEX: " << waveFormatToString( wfx ) );
+
 			mNumChannels = wfx.Format.nChannels;
 			mSampleType = supportedFormats.first.mSampleType;
 			mBytesPerSample = sampleSize( mSampleType );
 			break;
 		}
+		else {
+			string hrStr = hresultToString( hr );
+			CI_LOG_W( "Initialize attempt failed, HRESULT error: " << hrStr << ", code: " << hex << hr << dec );
 
-		string hrStr = hresultToString( hr );
-		CI_LOG_W( "Initialize attempt failed, HRESULT error: " << hrStr << ", code: " << hex << hr << dec );
-
-		// IAudioClient must be recreated after a failed Initialize() attempt
-		mAudioClient = nullptr;
-		::IAudioClient *audioClient;
-		HRESULT hr = immDevice->Activate( __uuidof(::IAudioClient), CLSCTX_ALL, NULL, (void**)&audioClient );
-		CI_ASSERT( hr == S_OK );
-		mAudioClient = ci::msw::makeComUnique( audioClient );
+			createAudioClient( immDevice.get() );
+		}
 	}
 
 	if( ! initializeSucceeded ) {
