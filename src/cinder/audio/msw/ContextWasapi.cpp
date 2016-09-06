@@ -43,6 +43,8 @@
 #include <avrt.h>
 #pragma comment(lib, "avrt.lib")
 
+#include <array>
+
 //#define LOG_XRUN( stream )	CI_LOG_I( stream )
 #define LOG_XRUN( stream )	    ( (void)( 0 ) )
 
@@ -107,6 +109,9 @@ struct WasapiAudioClientImpl {
 
   protected:
 	void initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle );
+
+  private:
+	  bool tryFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bytesPerSample, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const;
 };
 
 struct WasapiRenderClientImpl : public WasapiAudioClientImpl {
@@ -164,6 +169,36 @@ WasapiAudioClientImpl::WasapiAudioClientImpl()
 {
 }
 
+bool WasapiAudioClientImpl::tryFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bytesPerSample, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const
+{
+	auto wfx = makeWaveFormat( sampleType, sampleRate, numChannels );
+	::AUDCLNT_SHAREMODE shareMode = EXCLUSIVE_MODE ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
+
+	::WAVEFORMATEX *closestMatch = nullptr;
+	HRESULT hr = mAudioClient->IsFormatSupported( shareMode, &wfx.Format, EXCLUSIVE_MODE ? nullptr : &closestMatch );
+	if( hr == S_OK ) {
+		copyWaveFormat( wfx.Format, &result->Format );
+		*isClosestMatch = false;
+		return true;
+	}
+	else if( hr == S_FALSE && closestMatch->nSamplesPerSec == wfx.Format.nSamplesPerSec ) {
+		// indicates that a closest match was provided.
+		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
+		auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
+
+		copyWaveFormat( *closestMatch, &result->Format );
+		*isClosestMatch = true;
+		return true;
+	}
+	else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
+		return false;
+	}
+	else {
+		string hrErrorStr = hresultToString( hr );
+		throw AudioExc( "Failed to check if format is supported, HRESULT error: " + hrErrorStr, (int32_t)hr );
+	}
+}
+
 void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle )
 {
 	CI_ASSERT( ! mAudioClient );
@@ -179,68 +214,39 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	mAudioClient = ci::msw::makeComUnique( audioClient );
 
 	size_t sampleRate = device->getSampleRate();
-	mSampleType = SampleType::FLOAT_32;
-	auto wfx = makeWaveFormat( mSampleType, sampleRate, numChannels );
-	::AUDCLNT_SHAREMODE shareMode = EXCLUSIVE_MODE ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
-	::WAVEFORMATEX *closestMatch = nullptr;
-	hr = mAudioClient->IsFormatSupported( shareMode, &wfx.Format, EXCLUSIVE_MODE ? nullptr : &closestMatch );
 
-	if( hr == S_FALSE ) {
-		// indicates that a closest match was provided.
-		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
-		auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
+	struct PossibleFormat {
+		SampleType sampleType;
+		size_t bytesPerSample;
+	};
+	
+	// According to the docs, the only guarunteed way to find an acceptable format is to try IAudioClient::IsFormatSupported() repeatedly until you find one.
+	// - PKEY_AudioEngine_DeviceFormat docs state that it should not be used for the format in exclusive mode as it still might not be acceptable.
+	// TODO: try more formats, like INT_32 and INT_24 in 32-bit container
+	// - both will need consideration when converting
+	array<PossibleFormat, 3> possibleFormats = { {
+		{ SampleType::FLOAT_32, 32 },
+		{ SampleType::INT_24, 24 },
+		{ SampleType::INT_16, 16 }
+	} };
 
-		// If possible, update wfx to the closestMatch. Currently this can only be done if the channels are different.
-		if( closestMatch->wFormatTag != wfx.Format.wFormatTag )
-			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected format type." );
-		if( closestMatch->cbSize != wfx.Format.cbSize )
-			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected cbSize." );
-		if( closestMatch->nSamplesPerSec != wfx.Format.nSamplesPerSec )
-			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected samplerate." );
-
-		copyWaveFormat( *closestMatch, &wfx.Format );
-	}
-	else if( hr == AUDCLNT_E_UNSUPPORTED_FORMAT ) {
-		// Try the system device format
-		::IPropertyStore *properties;
-		hr = immDevice->OpenPropertyStore( STGM_READ, &properties );
-		CI_ASSERT( hr == S_OK );
-		auto propertiesPtr = ci::msw::makeComUnique( properties );
-
-		::PROPVARIANT formatVar;
-		hr = properties->GetValue( PKEY_AudioEngine_DeviceFormat, &formatVar );
-		CI_ASSERT( hr == S_OK );
-		::WAVEFORMATEX *audioEngineFormat = (::WAVEFORMATEX *)formatVar.blob.pBlobData;
-
-		hr = mAudioClient->IsFormatSupported( shareMode, audioEngineFormat, EXCLUSIVE_MODE ? nullptr : &closestMatch );
-
-		// TODO: IsFormatSupported() needs to be done in a for loop iterating over a set of WAVEFORMATEX structures
-		// - some will be WAVEFORMATEXTENSIBLES
-		// - also that way there isn't left over data if audioEngineFormat is a WAVEFORMATEX (as wfx was extensible)
-		if( hr == S_OK ) {
-			copyWaveFormat( *audioEngineFormat, &wfx.Format );
-			mSampleType = SampleType::INT_16;
-		}
-		else {
-			// This is only unacceptable when in exclusive mode, shared mode drivers will convert to the requested format
-			if( EXCLUSIVE_MODE ) {
-				throw AudioExc( "Format unsupported while in Wasapi exclusive mode." );
-			}
-			else {
-				// TODO: we should still try to find an acceptable format by iterating over all possible formats
-				CI_LOG_W( "Format unsupported while in Wasapi shared mode." );
-			}
+	bool foundSupportedFormat = false;
+	::WAVEFORMATEXTENSIBLE wfx;
+	for( const auto &possibleFormat : possibleFormats ) {
+		bool isClosestMatch = false;
+		foundSupportedFormat = tryFormat( possibleFormat.sampleType, sampleRate, numChannels, possibleFormat.bytesPerSample, &wfx, &isClosestMatch );
+		if( foundSupportedFormat ) {			
+			mNumChannels = wfx.Format.nChannels;
+			mSampleType = possibleFormat.sampleType;
+			mBytesPerSample = sampleSize( mSampleType );
+			break;
 		}
 	}
-	else if( hr != S_OK ) {
-		string hrErrorStr = hresultToString( hr );
-		throw AudioExc( "Failed to retrieve a supported format, HRESULT error: " + hrErrorStr, (int32_t)hr );
+	if( ! foundSupportedFormat ) {
+		throw AudioExc( "Failed to find a supported format" );
 	}
 
-	//CI_LOG_I( "using WAVEFORMATEX: " << printWaveFormat( wfx ) );
-
-	mNumChannels = wfx.Format.nChannels;
-	mBytesPerSample = sampleSize( mSampleType );
+	CI_LOG_I( "using WAVEFORMATEX: " << printWaveFormat( wfx ) );
 
 	// TODO: clean this up to use the recommended device period as the msdn sample does
 	//{
@@ -261,6 +267,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	::REFERENCE_TIME periodicity = EXCLUSIVE_MODE ? requestedDuration : 0;
 	DWORD streamFlags = eventHandle ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
 
+	::AUDCLNT_SHAREMODE shareMode = EXCLUSIVE_MODE ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
 	hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &wfx.Format, NULL );
 	if( hr != S_OK ) {
 		string hrErrorStr = hresultToString( hr );
@@ -278,7 +285,6 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	CI_ASSERT( hr == S_OK );
 
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
-
 }
 
 // ----------------------------------------------------------------------------------------------------
