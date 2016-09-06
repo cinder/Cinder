@@ -601,7 +601,13 @@ void OutputDeviceNodeWasapi::enableProcessing()
 void OutputDeviceNodeWasapi::disableProcessing()
 {
 	HRESULT hr = mRenderImpl->mAudioClient->Stop();
-	CI_ASSERT( hr == S_OK );
+
+	// TODO: not sure why, but sometimes this isn't returning S_OK or any other expected hresult (it returns 0x10000000)
+	//CI_ASSERT( hr == S_OK );
+	if( hr != S_OK ) {
+		string hrStr = hresultToString( hr );
+		CI_LOG_W( "Stop() returned non-OK hresult: " << hex << hr << dec << ", as string " << hrStr );
+	}
 }
 
 void OutputDeviceNodeWasapi::renderInputs()
