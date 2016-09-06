@@ -39,8 +39,8 @@ namespace cinder { namespace audio { namespace msw {
 //! Copies \t source format to \t dest. If source.wFormatTag == WAVE_FORMAT_EXTENSIBLE, copies a WAVEFORMATEXTENSIBLE, otherwise copies a WAVEFORMATEX.
 void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest );
 //! Prints a WAVEFORMATEX or WAVEFORMATEXTENSIBLE to string and returns it
-std::string	printWaveFormat( const ::WAVEFORMATEX &wfx );
+std::string	waveFormatToString( const ::WAVEFORMATEX &wfx );
 //! Prints a WAVEFORMATEXTENSIBLE to string and returns it
-std::string	printWaveFormat( const ::WAVEFORMATEXTENSIBLE &wfx );
+std::string	waveFormatToString( const ::WAVEFORMATEXTENSIBLE &wfx );
 
 } } } // namespace cinder::audio::msw

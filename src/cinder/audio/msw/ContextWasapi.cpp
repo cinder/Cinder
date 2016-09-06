@@ -169,7 +169,6 @@ WasapiAudioClientImpl::WasapiAudioClientImpl()
 {
 }
 
-// TODO NEXT: get this working for exclusive mode
 bool WasapiAudioClientImpl::tryFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bytesPerSample, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const
 {
 	auto wfx = makeWaveFormat( sampleType, sampleRate, numChannels );
@@ -227,9 +226,10 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		bool		useExtensible;
 	};
 
-	array<PossibleFormat, 4> possibleFormats = { {
+	array<PossibleFormat, 5> possibleFormats = { {
 		{ SampleType::FLOAT_32, 32, true },
 		{ SampleType::INT_24, 24, true },
+		{ SampleType::INT_24, 24, false },
 		{ SampleType::INT_16, 16, true },
 		{ SampleType::INT_16, 16, false }
 	} };
@@ -258,11 +258,11 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		CI_ASSERT( hr == S_OK );
 		::WAVEFORMATEX *audioEngineFormat = (::WAVEFORMATEX *)formatVar.blob.pBlobData;
 
-		string audioEngineFormatStr = printWaveFormat( *audioEngineFormat );
-		throw AudioExc( "Failed to find a supported format. Note: the PKEY_AudioEngine_DeviceFormat suggests that the format should be: " + audioEngineFormatStr );
+		string audioEngineFormatStr = waveFormatToString( *audioEngineFormat );
+		throw AudioExc( "Failed to find a supported format. The PKEY_AudioEngine_DeviceFormat suggests that the format should be: " + audioEngineFormatStr );
 	}
 
-	CI_LOG_I( "using WAVEFORMATEX: " << printWaveFormat( wfx ) );
+	CI_LOG_I( "using WAVEFORMATEX: " << waveFormatToString( wfx ) );
 
 	// TODO: clean this up to use the recommended device period as the msdn sample does
 	//{

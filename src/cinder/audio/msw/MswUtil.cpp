@@ -60,7 +60,7 @@ void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest )
 	memcpy( dest, &source, sizeBytes );
 }
 
-std::string	printWaveFormat( const ::WAVEFORMATEX &wfx )
+std::string	waveFormatToString( const ::WAVEFORMATEX &wfx )
 {
 	std::string result;
 	result += ".Format.wFormatTag: "; 
@@ -92,9 +92,9 @@ std::string	printWaveFormat( const ::WAVEFORMATEX &wfx )
 	return result;
 }
 
-std::string	printWaveFormat( const ::WAVEFORMATEXTENSIBLE &wfx )
+std::string	waveFormatToString( const ::WAVEFORMATEXTENSIBLE &wfx )
 {
-	return printWaveFormat( wfx.Format );
+	return waveFormatToString( wfx.Format );
 }
 
 } } } // namespace cinder::audio::msw
