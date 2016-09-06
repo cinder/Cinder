@@ -30,6 +30,8 @@
 
 #include <string>
 
+typedef LONGLONG REFERENCE_TIME;
+
 namespace cinder { namespace audio { namespace msw {
 
 //! Constructs and returns an appropriate WAVEFORMATEXTENSIBLE for the given parameters. Always interleaved.
@@ -42,5 +44,7 @@ void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest );
 std::string	waveFormatToString( const ::WAVEFORMATEX &wfx );
 //! Prints a WAVEFORMATEXTENSIBLE to string and returns it
 std::string	waveFormatToString( const ::WAVEFORMATEXTENSIBLE &wfx );
+//! Converts frames to 100-nanoseconds
+::REFERENCE_TIME framesToHundredNanoSeconds( size_t frames, size_t sampleRate );
 
 } } } // namespace cinder::audio::msw

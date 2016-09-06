@@ -81,12 +81,6 @@ const array<PossibleFormat, 5> possibleFormats = { {
 	{ SampleType::INT_16, 16, false }
 } };
 
-// converts to 100-nanoseconds
-inline ::REFERENCE_TIME samplesToReferenceTime( size_t samples, size_t sampleRate )
-{
-	return (::REFERENCE_TIME)( (double)samples * 10000000.0 / (double)sampleRate );
-}
-
 const char* hresultToString( ::HRESULT hr )
 {
 	switch( hr ) {
@@ -266,21 +260,19 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 
 	CI_LOG_I( "using WAVEFORMATEX: " << waveFormatToString( wfx ) );
 
-	// TODO: clean this up to use the recommended device period as the msdn sample does
-	//{
-		::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
-		::REFERENCE_TIME minDevicePeriod; // this is for exclusive mode
-		hr = mAudioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
-		CI_ASSERT( hr == S_OK );
+	// Check minimum device period
+	::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
+	::REFERENCE_TIME minDevicePeriod; // this is for exclusive mode
+	hr = mAudioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
+	CI_ASSERT( hr == S_OK );
 
-		double defaultDevicePeriodMS = double( defaultDevicePeriod ) / 10000.0;
-		double minDevicePeriodMS = double( minDevicePeriod ) / 10000.0;
-		CI_LOG_I( "device: " << device->getName() << ", default device period: " << defaultDevicePeriodMS << ", min device period: " << minDevicePeriodMS );
-	//}
+	CI_LOG_I( "device: " << device->getName() << ", default device period: " << defaultDevicePeriod / 10000.0 << "ms, min device period: " << minDevicePeriod / 10000.0 << "ms" );
 
-	::REFERENCE_TIME requestedDuration = samplesToReferenceTime( mAudioClientNumFrames, sampleRate );
-	
-	//requestedDuration = minDevicePeriod;
+	::REFERENCE_TIME requestedDuration = framesToHundredNanoSeconds( mAudioClientNumFrames, sampleRate );
+	if( requestedDuration < minDevicePeriod ) {
+		CI_LOG_W( "requested buffer duration (" << requestedDuration / 10000.0 << "ms) is less than minDevicePeriod (" << minDevicePeriod / 10000.0 );
+		requestedDuration = minDevicePeriod;
+	}
 
 	::REFERENCE_TIME periodicity = EXCLUSIVE_MODE ? requestedDuration : 0;
 	DWORD streamFlags = eventHandle ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
@@ -288,8 +280,8 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	::AUDCLNT_SHAREMODE shareMode = EXCLUSIVE_MODE ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
 	hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &wfx.Format, NULL );
 	if( hr != S_OK ) {
-		string hrErrorStr = hresultToString( hr );
-		throw AudioExc( "Could not initialize IAudioClient, HRESULT error: " + hrErrorStr, (int32_t)hr );
+		string hrStr = hresultToString( hr );
+		throw AudioExc( "Could not initialize IAudioClient, HRESULT error: " + hrStr, (int32_t)hr );
 	}
 
 	if( eventHandle ) {

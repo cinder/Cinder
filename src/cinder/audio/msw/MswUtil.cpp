@@ -97,4 +97,9 @@ std::string	waveFormatToString( const ::WAVEFORMATEXTENSIBLE &wfx )
 	return waveFormatToString( wfx.Format );
 }
 
+::REFERENCE_TIME framesToHundredNanoSeconds( size_t frames, size_t sampleRate )
+{
+	return (::REFERENCE_TIME)( ( 10000.0 * 1000.0 / (double)sampleRate * (double)frames ) + 0.5 );
+}
+
 } } } // namespace cinder::audio::msw
