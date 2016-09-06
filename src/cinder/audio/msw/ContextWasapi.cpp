@@ -146,6 +146,7 @@ private:
 	void runRenderThread();
 	void renderAudio();
 	void increaseThreadPriority();
+	size_t getWriteFramesAvailable() const;
 
 	static DWORD __stdcall renderThreadEntryPoint( LPVOID Context );
 
@@ -399,20 +400,32 @@ void WasapiRenderClientImpl::runRenderThread()
 	}
 }
 
+// the current padding represents the number of frames queued on the audio endpoint, waiting to be sent to hardware.
+// - in exclusive mode with AUDCLNT_STREAMFLAGS_EVENTCALLBACK enabled, each render loop there should be mAudioClientNumFrames
+//   available, which was retrieved from mAudioClient->GetBufferSize()
+size_t WasapiRenderClientImpl::getWriteFramesAvailable() const
+{
+	if( EXCLUSIVE_MODE ) {
+		return mAudioClientNumFrames;
+	}
+	else {
+		UINT32 numFramesPadding;
+		HRESULT hr = mAudioClient->GetCurrentPadding( &numFramesPadding );
+		CI_ASSERT( hr == S_OK );
+
+		return mAudioClientNumFrames - numFramesPadding;
+	}
+}
+
 void WasapiRenderClientImpl::renderAudio()
 {
-	// the current padding represents the number of frames queued on the audio endpoint, waiting to be sent to hardware.
-	UINT32 numFramesPadding;
-	HRESULT hr = mAudioClient->GetCurrentPadding( &numFramesPadding );
-	CI_ASSERT( hr == S_OK );
-
-	size_t numWriteFramesAvailable = mAudioClientNumFrames - numFramesPadding;
+	size_t numWriteFramesAvailable = getWriteFramesAvailable();
 
 	while( mNumFramesBuffered < numWriteFramesAvailable )
 		mOutputDeviceNode->renderInputs();
 
 	BYTE *audioBuffer;
-	hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, &audioBuffer );
+	HRESULT hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, &audioBuffer );
 	CI_ASSERT( hr == S_OK );
 
 	size_t numReadSamples = numWriteFramesAvailable * mNumChannels;
