@@ -237,6 +237,8 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		throw AudioExc( "Failed to retrieve a supported format, HRESULT error: " + hrErrorStr, (int32_t)hr );
 	}
 
+	//CI_LOG_I( "using WAVEFORMATEX: " << printWaveFormat( wfx ) );
+
 	mNumChannels = wfx.Format.nChannels;
 	mBytesPerSample = sampleSize( mSampleType );
 

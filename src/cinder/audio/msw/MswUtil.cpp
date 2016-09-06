@@ -60,4 +60,41 @@ void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest )
 	memcpy( dest, &source, sizeBytes );
 }
 
+std::string	printWaveFormat( const ::WAVEFORMATEX &wfx )
+{
+	std::string result;
+	result += ".Format.wFormatTag: "; 
+	if( wfx.wFormatTag == WAVE_FORMAT_EXTENSIBLE )
+		result += "WAVE_FORMAT_EXTENSIBLE";
+	else if( wfx.wFormatTag == WAVE_FORMAT_PCM )
+		result += "WAVE_FORMAT_PCM";
+	else
+		result += "(unknown)";
+
+	result += ", .Format.nSamplesPerSec: " + std::to_string( (int)wfx.nSamplesPerSec );
+	result += ", .Format.nChannels: " +  std::to_string( (int)wfx.nChannels );
+	result += ", .Format.wBitsPerSample: " +  std::to_string( (int)wfx.wBitsPerSample );
+
+	if( wfx.wFormatTag == WAVE_FORMAT_EXTENSIBLE ) {
+		const auto &wfxextensible = (const ::WAVEFORMATEXTENSIBLE &)wfx; 
+		result += ", .SubFormat: "; 
+		if( wfxextensible.SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT )
+			result += "KSDATAFORMAT_SUBTYPE_IEEE_FLOAT";
+		else if( wfxextensible.SubFormat == KSDATAFORMAT_SUBTYPE_PCM )
+			result += "KSDATAFORMAT_SUBTYPE_PCM";
+		else
+			result += "(unknown)";
+
+		result += ", .Samples.wValidBitsPerSample: " + std::to_string( (int)wfxextensible.Samples.wValidBitsPerSample );
+		result += ", .Samples.wValidBitsPerSample: " + std::to_string( (int)wfxextensible.Samples.wValidBitsPerSample );
+	}
+
+	return result;
+}
+
+std::string	printWaveFormat( const ::WAVEFORMATEXTENSIBLE &wfx )
+{
+	return printWaveFormat( wfx.Format );
+}
+
 } } } // namespace cinder::audio::msw

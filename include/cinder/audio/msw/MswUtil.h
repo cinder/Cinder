@@ -28,13 +28,18 @@
 #include <Objidl.h>
 #include <mmreg.h>
 
+#include <string>
+
 namespace cinder { namespace audio { namespace msw {
 
 //! Constructs and returns an appropriate WAVEFORMATEXTENSIBLE for the given parameters. Always interleaved.
 //! If \t bitPerSample is non-zero then it will be used for the WAVEFORMATEX's wBitsPerSample property, which may be larger than wValidBitsPerSample for alignment purposes.
 ::WAVEFORMATEXTENSIBLE makeWaveFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bitsPerSample = 0 );
-
-//! Copies \t source format to \t dest. Handles both WAVEFORMATEXTENSIBLE and WAVEFORMATEX.
+//! Copies \t source format to \t dest. If source.wFormatTag == WAVE_FORMAT_EXTENSIBLE, copies a WAVEFORMATEXTENSIBLE, otherwise copies a WAVEFORMATEX.
 void copyWaveFormat( const ::WAVEFORMATEX &source, ::WAVEFORMATEX *dest );
+//! Prints a WAVEFORMATEX or WAVEFORMATEXTENSIBLE to string and returns it
+std::string	printWaveFormat( const ::WAVEFORMATEX &wfx );
+//! Prints a WAVEFORMATEXTENSIBLE to string and returns it
+std::string	printWaveFormat( const ::WAVEFORMATEXTENSIBLE &wfx );
 
 } } } // namespace cinder::audio::msw
