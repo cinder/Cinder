@@ -221,28 +221,32 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	CI_ASSERT( manager );
 
 	shared_ptr<::IMMDevice> immDevice = manager->getIMMDevice( device );
-
-	::IAudioClient *audioClient;
-	HRESULT hr = immDevice->Activate( __uuidof(::IAudioClient), CLSCTX_ALL, NULL, (void**)&audioClient );
-	CI_ASSERT( hr == S_OK );
-	mAudioClient = ci::msw::makeComUnique( audioClient );
+	HRESULT hr = S_OK;
+	{
+		::IAudioClient *audioClient;
+		hr = immDevice->Activate( __uuidof(::IAudioClient), CLSCTX_ALL, NULL, (void**)&audioClient );
+		CI_ASSERT( hr == S_OK );
+		mAudioClient = ci::msw::makeComUnique( audioClient );
+	}
 
 	size_t sampleRate = device->getSampleRate();
 
-	// Try all possible WAVEFORMATEX formats until we find one that is supported
-	bool foundSupportedFormat = false;
-	::WAVEFORMATEXTENSIBLE wfx;
+	// Try all possible WAVEFORMATEX formats until we find those that are supported
+	// - even though IsFormatSupported() might indicate that this one will work, Initialize() may still fail.
+	// - so build a list of 'supported formats' and keep trying to Initialize() until one succeeds.
+	vector<pair<PossibleFormat, ::WAVEFORMATEXTENSIBLE>>	supportedFormats;
 	for( const auto &possibleFormat : possibleFormats ) {
+		::WAVEFORMATEXTENSIBLE wfx;
 		bool isClosestMatch = false;
-		foundSupportedFormat = tryFormat( possibleFormat, sampleRate, numChannels, &wfx, &isClosestMatch );
-		if( foundSupportedFormat ) {
-			mNumChannels = wfx.Format.nChannels;
-			mSampleType = possibleFormat.mSampleType;
-			mBytesPerSample = sampleSize( mSampleType );
-			break;
+		bool supported = tryFormat( possibleFormat, sampleRate, numChannels, &wfx, &isClosestMatch );
+		if( supported ) {
+			supportedFormats.push_back( { possibleFormat, wfx } );
+
+			CI_LOG_I( "supported WAVEFORMATEX: " << waveFormatToString( wfx ) );
 		}
 	}
-	if( ! foundSupportedFormat ) {
+
+	if( supportedFormats.empty() ) {
 		// We failed to find a supported format. For debugging purposes, print the format indicated by PKEY_AudioEngine_DeviceFormat
 		::IPropertyStore *properties;
 		hr = immDevice->OpenPropertyStore( STGM_READ, &properties );
@@ -257,8 +261,6 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		string audioEngineFormatStr = waveFormatToString( *audioEngineFormat );
 		throw AudioExc( "Failed to find a supported format. The PKEY_AudioEngine_DeviceFormat suggests that the format should be: " + audioEngineFormatStr );
 	}
-
-	CI_LOG_I( "using WAVEFORMATEX: " << waveFormatToString( wfx ) );
 
 	// Check minimum device period
 	::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
@@ -276,18 +278,45 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 
 	::REFERENCE_TIME periodicity = mExclusiveMode ? requestedDuration : 0;
 	DWORD streamFlags = eventHandle ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
-
 	::AUDCLNT_SHAREMODE shareMode = mExclusiveMode ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
-	hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &wfx.Format, NULL );
-	if( hr != S_OK ) {
+
+	// Now try to Initialize() with all supported formats until we succeed
+	bool initializeSucceeded = false;
+	for( const auto &supportedFormats : supportedFormats ) {
+		auto &wfx = supportedFormats.second;
+
+		hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &wfx.Format, NULL );
+		if( hr == S_OK ) {
+			CI_LOG_I( "Initialize() succeeded with WAVEFORMATEX: " << waveFormatToString( wfx ) );
+			initializeSucceeded = true;
+			mNumChannels = wfx.Format.nChannels;
+			mSampleType = supportedFormats.first.mSampleType;
+			mBytesPerSample = sampleSize( mSampleType );
+			break;
+		}
+
 		string hrStr = hresultToString( hr );
-		throw AudioExc( "Could not initialize IAudioClient, HRESULT error: " + hrStr, (int32_t)hr );
+		CI_LOG_W( "Initialize attempt failed, HRESULT error: " << hrStr << ", code: " << hex << hr << dec );
+
+		// IAudioClient must be recreated after a failed Initialize() attempt
+		mAudioClient = nullptr;
+		::IAudioClient *audioClient;
+		HRESULT hr = immDevice->Activate( __uuidof(::IAudioClient), CLSCTX_ALL, NULL, (void**)&audioClient );
+		CI_ASSERT( hr == S_OK );
+		mAudioClient = ci::msw::makeComUnique( audioClient );
+	}
+
+	if( ! initializeSucceeded ) {
+		throw AudioExc( "Failed to initialize IAudioClient." );
 	}
 
 	if( eventHandle ) {
 		// enable event driven rendering.
-		HRESULT hr = mAudioClient->SetEventHandle( eventHandle );
-		CI_ASSERT( hr == S_OK );
+		hr = mAudioClient->SetEventHandle( eventHandle );
+		if( hr != S_OK ) {
+			string hrErrorStr = hresultToString( hr );
+			throw AudioExc( "Failed to SetEventHandle(), HRESULT error: " + hrErrorStr, (int32_t)hr );
+		}
 	}
 
 	UINT32 actualNumFrames;
