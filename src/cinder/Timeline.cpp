@@ -246,9 +246,19 @@ float Timeline::findEndTimeOf( void *target, bool *found ) const
 		return result->second->getEndTime();
 	}
 	else {
+		// Check items in insertion queue.
+		float time = getCurrentTime();
+		for( auto iter = mInsertedItems.begin(); iter != mInsertedItems.end(); ++iter ) {
+			if( iter->second->getTarget() == target && ( !iter->second->mMarkedForRemoval ) ) {
+				if( iter->second->getEndTime() > time )
+					time = iter->second->getEndTime();
+			}
+		}
+
 		if( found )
-			*found = false;
-		return getCurrentTime();
+			*found = ( time > getCurrentTime() );
+
+		return time;
 	}
 }
 
