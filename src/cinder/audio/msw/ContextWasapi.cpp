@@ -45,8 +45,14 @@
 
 #include <array>
 
+#if( _WIN32_WINNT >= 0x0A00 ) // Windows 10
+	#define HAVE_AUDIO_CLIENT_3
+#endif
+
 //#define LOG_XRUN( stream )	CI_LOG_I( stream )
 #define LOG_XRUN( stream )	    ( (void)( 0 ) )
+
+#define ASSERT_HR_OK( hr ) CI_ASSERT_MSG( hr == S_OK, hresultToString( hr ) )
 
 using namespace std;
 
@@ -112,7 +118,11 @@ const char* hresultToString( ::HRESULT hr )
 struct WasapiAudioClientImpl {
 	WasapiAudioClientImpl( bool exclusiveMode );
 
+#if defined( HAVE_AUDIO_CLIENT_3 )
+	unique_ptr<::IAudioClient3, ci::msw::ComDeleter>	mAudioClient;
+#else
 	unique_ptr<::IAudioClient, ci::msw::ComDeleter>		mAudioClient;
+#endif
 
 	size_t		mNumFramesBuffered, mAudioClientNumFrames, mNumChannels;
 	SampleType	mSampleType;
@@ -125,6 +135,7 @@ struct WasapiAudioClientImpl {
   private:
 	  void createAudioClient( ::IMMDevice *immDevice );
 	  bool tryFormat( const PossibleFormat &possibleFormat, size_t sampleRate, size_t numChannels, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const;
+	  bool tryInit( ::REFERENCE_TIME requestedDuration, const ::WAVEFORMATEX &format, ::IMMDevice *immDevice, bool eventDriven );
 };
 
 struct WasapiRenderClientImpl : public WasapiAudioClientImpl {
@@ -183,6 +194,23 @@ WasapiAudioClientImpl::WasapiAudioClientImpl( bool exclusiveMode )
 {
 }
 
+void WasapiAudioClientImpl::createAudioClient( ::IMMDevice *immDevice )
+{
+	mAudioClient = nullptr;
+
+#if defined( HAVE_AUDIO_CLIENT_3 )
+	auto iid = __uuidof(::IAudioClient3 );
+	::IAudioClient3 *audioClient;
+#else
+	auto iid = __uuidof( ::IAudioClient );
+	::IAudioClient *audioClient;
+#endif
+
+	HRESULT hr = immDevice->Activate(iid, CLSCTX_ALL, NULL, (void**)&audioClient );
+	CI_ASSERT( hr == S_OK );
+	mAudioClient = ci::msw::makeComUnique( audioClient );
+}
+
 // FIXME: if the user asks for a mono input in exclusive mode, IsFormatSupported() might fail as it wants to return a stereo format
 bool WasapiAudioClientImpl::tryFormat( const PossibleFormat &possibleFormat, size_t sampleRate, size_t numChannels, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const
 {
@@ -214,17 +242,44 @@ bool WasapiAudioClientImpl::tryFormat( const PossibleFormat &possibleFormat, siz
 	}
 }
 
-void WasapiAudioClientImpl::createAudioClient( ::IMMDevice *immDevice )
+bool WasapiAudioClientImpl::tryInit( ::REFERENCE_TIME requestedDuration, const ::WAVEFORMATEX &format, ::IMMDevice *immDevice, bool eventDriven )
 {
-	mAudioClient = nullptr;
+	::REFERENCE_TIME periodicity = mExclusiveMode ? requestedDuration : 0;
+	DWORD streamFlags = eventDriven ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
+	::AUDCLNT_SHAREMODE shareMode = mExclusiveMode ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
 
-	::IAudioClient *audioClient;
-	HRESULT hr = immDevice->Activate( __uuidof(::IAudioClient), CLSCTX_ALL, NULL, (void**)&audioClient );
-	CI_ASSERT( hr == S_OK );
-	mAudioClient = ci::msw::makeComUnique( audioClient );
+	HRESULT hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &format, NULL );
+	if( hr == S_OK ) {
+		return true;
+	}
+	else if( hr == AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED ) {
+		// need to query GetBufferSize() again to see what the aligned size should be
+		UINT32 alignedBufferSize;
+		hr = mAudioClient->GetBufferSize( &alignedBufferSize );
+		CI_ASSERT( hr == S_OK );
+
+		CI_LOG_W( "Initialize attempt failed with AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED. alignedBufferSize: " << alignedBufferSize );
+
+		// throw away this IAudioClient and try again with aligned buffer size
+		createAudioClient( immDevice );
+
+		requestedDuration = framesToHundredNanoSeconds( alignedBufferSize, format.nSamplesPerSec );
+		periodicity = mExclusiveMode ? requestedDuration : 0;
+		hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &format, NULL );
+		if( hr == S_OK ) {
+			return true;
+		}
+	}
+
+	string hrStr = hresultToString( hr );
+	CI_LOG_W( "Initialize attempt failed, HRESULT error: " << hrStr << ", code: " << hex << hr << dec );
+
+	createAudioClient( immDevice );
+
+	return false;
 }
 
-void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t numChannels, HANDLE eventHandle )
+void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t numChannels, ::HANDLE eventHandle )
 {
 	DeviceManagerWasapi *manager = dynamic_cast<DeviceManagerWasapi *>( Context::deviceManager() );
 	CI_ASSERT( manager );
@@ -280,42 +335,14 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		requestedDuration = minDevicePeriod;
 	}
 
-	::REFERENCE_TIME periodicity = mExclusiveMode ? requestedDuration : 0;
-	DWORD streamFlags = eventHandle ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
-	::AUDCLNT_SHAREMODE shareMode = mExclusiveMode ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
-
 	// Now try to Initialize() with all supported formats until we succeed
 	// - the IAudioClient instance must be recreated after a failed Initialize() attempt
 	bool initializeSucceeded = false;
+	bool eventDriven = eventHandle != nullptr;
 	for( const auto &supportedFormats : supportedFormats ) {
 		auto &wfx = supportedFormats.second;
 
-		hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &wfx.Format, NULL );
-		if( hr == S_OK ) {
-			initializeSucceeded = true;
-		}
-		else if( hr == AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED ) {
-
-			// need to query GetBufferSize() again to see what the aligned size should be
-			// 
-
-			UINT32 alignedBufferSize;
-			hr = mAudioClient->GetBufferSize( &alignedBufferSize );
-			CI_ASSERT( hr == S_OK );
-
-			CI_LOG_W( "Initialize attempt failed with AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED. alignedBufferSize: " << alignedBufferSize );
-
-			// throw away this IAudioClient and try again with aligned buffer size
-			createAudioClient( immDevice.get() );
-
-			requestedDuration = framesToHundredNanoSeconds( alignedBufferSize, sampleRate );
-			periodicity = mExclusiveMode ? requestedDuration : 0;
-			hr = mAudioClient->Initialize( shareMode, streamFlags, requestedDuration, periodicity, &wfx.Format, NULL );
-			if( hr == S_OK ) {
-				initializeSucceeded = true;
-			}
-		}
-
+		initializeSucceeded = tryInit( requestedDuration, wfx.Format, immDevice.get(), eventDriven );
 		if( initializeSucceeded ) {
 			CI_LOG_I( "Initialize() succeeded with WAVEFORMATEX: " << waveFormatToString( wfx ) );
 
@@ -323,12 +350,6 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 			mSampleType = supportedFormats.first.mSampleType;
 			mBytesPerSample = sampleSize( mSampleType );
 			break;
-		}
-		else {
-			string hrStr = hresultToString( hr );
-			CI_LOG_W( "Initialize attempt failed, HRESULT error: " << hrStr << ", code: " << hex << hr << dec );
-
-			createAudioClient( immDevice.get() );
 		}
 	}
 
