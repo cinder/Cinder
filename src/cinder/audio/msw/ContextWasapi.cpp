@@ -136,6 +136,10 @@ struct WasapiAudioClientImpl {
 	  void createAudioClient( ::IMMDevice *immDevice );
 	  bool tryFormat( const PossibleFormat &possibleFormat, size_t sampleRate, size_t numChannels, ::WAVEFORMATEXTENSIBLE *result, bool *isClosestMatch ) const;
 	  bool tryInit( ::REFERENCE_TIME requestedDuration, const ::WAVEFORMATEX &format, ::IMMDevice *immDevice, bool eventDriven );
+
+#if defined( HAVE_AUDIO_CLIENT_3 )
+	  bool testWin10SharedModeLowLatency( const ::WAVEFORMATEX &format );
+#endif
 };
 
 struct WasapiRenderClientImpl : public WasapiAudioClientImpl {
@@ -244,6 +248,10 @@ bool WasapiAudioClientImpl::tryFormat( const PossibleFormat &possibleFormat, siz
 
 bool WasapiAudioClientImpl::tryInit( ::REFERENCE_TIME requestedDuration, const ::WAVEFORMATEX &format, ::IMMDevice *immDevice, bool eventDriven )
 {
+#if defined( HAVE_AUDIO_CLIENT_3 )
+	//return testWin10SharedModeLowLatency( format );
+#endif
+
 	::REFERENCE_TIME periodicity = mExclusiveMode ? requestedDuration : 0;
 	DWORD streamFlags = eventDriven ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
 	::AUDCLNT_SHAREMODE shareMode = mExclusiveMode ? ::AUDCLNT_SHAREMODE_EXCLUSIVE : ::AUDCLNT_SHAREMODE_SHARED;
@@ -278,6 +286,72 @@ bool WasapiAudioClientImpl::tryInit( ::REFERENCE_TIME requestedDuration, const :
 
 	return false;
 }
+
+#if defined( HAVE_AUDIO_CLIENT_3 )
+// experimenting with Windows 10 IAudioClient3 api to adjust the latency (buffer size) in shared mode
+// - so far I don't have a device that has updated drivers to make use of this.
+// https://msdn.microsoft.com/en-us/library/windows/hardware/mt298187(v=vs.85).aspx?f=255&MSPPError=-2147217396#Windows_Audio_Session_API_WASAPI
+bool WasapiAudioClientImpl::testWin10SharedModeLowLatency( const ::WAVEFORMATEX &format )
+{
+	// 2. Setting the audio client properties – note that low latency offload is not supported
+
+	AudioClientProperties audioProps = { 0 };
+	audioProps.cbSize = sizeof( AudioClientProperties );
+	audioProps.eCategory = AudioCategory_Media;
+
+	// if the device has System.Devices.AudioDevice.RawProcessingSupported set to true and you want to use raw mode
+	// audioProps.Options |= AUDCLNT_STREAMOPTIONS_RAW;
+	//
+	// if it is important to avoid resampling in the audio engine, set this flag
+	// audioProps.Options |= AUDCLNT_STREAMOPTIONS_MATCH_FORMAT;
+
+	HRESULT hr = mAudioClient->SetClientProperties( &audioProps );
+	ASSERT_HR_OK( hr );
+
+	// 3. Querying the legal periods
+
+	::WAVEFORMATEX *mixFormat;
+	hr = mAudioClient->GetMixFormat( &mixFormat ); // TODO: free mixFormat if it is used
+	ASSERT_HR_OK( hr );
+
+	CI_LOG_I( "mix format: " << waveFormatToString( *mixFormat ) );
+
+	// The wfx parameter below is optional (Its needed only for MATCH_FORMAT clients). Otherwise, wfx will be assumed 
+	// to be the current engine format based on the processing mode for this stream
+	//WAVEFORMATEX *matchFormat = nullptr;
+	UINT32 defaultPeriodInFrames;
+	UINT32 fundamentalPeriodInFrames;
+	UINT32 minPeriodInFrames;
+	UINT32 maxPeriodInFrames;
+	hr = mAudioClient->GetSharedModeEnginePeriod( mixFormat, &defaultPeriodInFrames, &fundamentalPeriodInFrames, &minPeriodInFrames, &maxPeriodInFrames );
+	ASSERT_HR_OK( hr );
+
+	CI_LOG_I( "defaultPeriodInFrames:" << defaultPeriodInFrames << ", fundamentalPeriodInFrames: " << fundamentalPeriodInFrames << ", minPeriodInFrames: " << minPeriodInFrames << ", maxPeriodInFrames: " << maxPeriodInFrames );
+
+	::WAVEFORMATEX *currentFormat;
+	UINT32 currentPeriodInFrames;
+	hr = mAudioClient->GetCurrentSharedModeEnginePeriod( &currentFormat, &currentPeriodInFrames );
+	ASSERT_HR_OK( hr );
+	CI_LOG_I( "currentPeriodInFrames: " << currentPeriodInFrames << ", currentFormat: " << waveFormatToString( *currentFormat ) );
+
+	// legal periods are any multiple of fundamentalPeriodInFrames between 
+	// minPeriodInFrames and maxPeriodInFrames, inclusive
+	// the Windows shared-mode engine uses defaultPeriodInFrames unless an audio client // has specifically requested otherwise
+
+	// 4. Initializing a low-latency client
+	UINT32 desiredPeriodInFrames = minPeriodInFrames;
+	hr = mAudioClient->InitializeSharedAudioStream(	AUDCLNT_STREAMFLAGS_EVENTCALLBACK, desiredPeriodInFrames, &format, nullptr );
+	if( hr == AUDCLNT_E_ENGINE_PERIODICITY_LOCKED ) {
+		// engine is already running at a different period; call m_AudioClient->GetSharedModeEnginePeriod to see what it is
+		CI_LOG_I( "IAudioClient::InitializeSharedAudioStream() returned AUDCLNT_E_ENGINE_PERIODICITY_LOCKED" );
+	} else {
+		ASSERT_HR_OK( hr );
+	}
+
+	return true;
+}
+
+#endif // defined( HAVE_AUDIO_CLIENT_3 )
 
 void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t numChannels, ::HANDLE eventHandle )
 {
