@@ -37,12 +37,9 @@
 #include <initguid.h> // must be included before mmdeviceapi.h for the pkey defines to be properly instantiated. Both must be first included from a translation unit.
 #include <mmdeviceapi.h>
 #include <Functiondiscoverykeys_devpkey.h>
+#include <Audioclient.h>
 
-// TODO: I don't know of any way to get a device's preferred blocksize on windows, if it exists.
-// - if it doesn't need a way to tell the user they should not listen to this value,
-//   or we can use a pretty standard default (like 512 or 1024).
-// - IAudioClient::GetBufferSize seems to be a possiblity, needs to be activated first
-#define PREFERRED_FRAMES_PER_BLOCK 512
+#define ASSERT_HR_OK( hr ) CI_ASSERT_MSG( hr == S_OK, hresultToString( hr ) )
 
 using namespace std;
 
@@ -265,7 +262,22 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 
 		devInfo.mNumChannels = format->nChannels;
 		devInfo.mSampleRate = format->nSamplesPerSec;
-		devInfo.mFramesPerBlock = PREFERRED_FRAMES_PER_BLOCK;
+
+		// activate IAudioClient to get the default device period (for frames-per-block)
+		{
+			::IAudioClient *audioClient;
+			HRESULT hr = deviceImm->Activate( __uuidof( ::IAudioClient ), CLSCTX_ALL, NULL, (void**)&audioClient );
+			ASSERT_HR_OK( hr );
+
+			auto audioClientPtr = ci::msw::makeComUnique( audioClient );
+
+			::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
+			::REFERENCE_TIME minDevicePeriod; // this is for exclusive mode
+			hr = audioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
+			ASSERT_HR_OK( hr );
+
+			devInfo.mFramesPerBlock = hundredNanoSecondsToFrames( defaultDevicePeriod, devInfo.mSampleRate );
+		}
 
 		DeviceRef addedDevice = addDevice( devInfo.mKey );
 		auto result = mDeviceInfoSet.insert( make_pair( addedDevice, devInfo ) );

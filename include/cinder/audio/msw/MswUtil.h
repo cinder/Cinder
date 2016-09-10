@@ -46,6 +46,8 @@ std::string	waveFormatToString( const ::WAVEFORMATEX &wfx );
 std::string	waveFormatToString( const ::WAVEFORMATEXTENSIBLE &wfx );
 //! Converts frames to 100-nanoseconds
 ::REFERENCE_TIME framesToHundredNanoSeconds( size_t frames, size_t sampleRate );
+//! Converts 100-nanoseconds to frames
+size_t hundredNanoSecondsToFrames( ::REFERENCE_TIME refTime, size_t sampleRate );
 //! Returns a string representation of \c hr
 const char* hresultToString( ::HRESULT hr );
 

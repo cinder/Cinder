@@ -104,6 +104,11 @@ std::string	waveFormatToString( const ::WAVEFORMATEXTENSIBLE &wfx )
 	return (::REFERENCE_TIME)( ( 10000.0 * 1000.0 / (double)sampleRate * (double)frames ) + 0.5 );
 }
 
+size_t hundredNanoSecondsToFrames( ::REFERENCE_TIME timeHundredNs, size_t sampleRate )
+{
+	return lround( (double)sampleRate * (double)timeHundredNs * 0.0000001 );
+}
+
 const char* hresultToString( ::HRESULT hr )
 {
 	switch( hr ) {
