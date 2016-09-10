@@ -48,8 +48,6 @@ void MonitorNode::initialize()
 {
 	if( ! mWindowSize )
 		mWindowSize = getFramesPerBlock();
-	else if( ! isPowerOf2( mWindowSize ) )
-		mWindowSize = nextPowerOf2( static_cast<uint32_t>( mWindowSize ) );
 
 	for( size_t ch = 0; ch < getNumChannels(); ch++ )
 		mRingBuffers.emplace_back( mWindowSize * mRingBufferPaddingFactor );
@@ -113,16 +111,11 @@ void MonitorSpectralNode::initialize()
 		mFftSize = mWindowSize;
 	if( ! isPowerOf2( mFftSize ) )
 		mFftSize = nextPowerOf2( static_cast<uint32_t>( mFftSize ) );
-	
+
 	mFft = unique_ptr<dsp::Fft>( new dsp::Fft( mFftSize ) );
 	mFftBuffer = audio::Buffer( mFftSize );
 	mBufferSpectral = audio::BufferSpectral( mFftSize );
 	mMagSpectrum.resize( mFftSize / 2 );
-
-	if( ! mWindowSize  )
-		mWindowSize = mFftSize;
-	else if( ! isPowerOf2( mWindowSize ) )
-		mWindowSize = nextPowerOf2( static_cast<uint32_t>( mWindowSize ) );
 
 	mWindowingTable = makeAlignedArray<float>( mWindowSize );
 	generateWindow( mWindowType, mWindowingTable.get(), mWindowSize );
