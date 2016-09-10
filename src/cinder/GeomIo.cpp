@@ -3296,11 +3296,12 @@ ExtrudeSpline::ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &
 {
 	for( const auto &contour : shape.getContours() )
 		mPaths.push_back( contour );
-
+	
+	const vec3 firstFrameEps = vec3( 0.0000001f );
 	const float splineLength = spline.getLength( 0, 1 );
 	vec3 prevPos = spline.getPosition( 0 );
 	vec3 prevTangent = spline.getDerivative( 0 );
-	mSplineFrames.emplace_back( firstFrame( prevPos, spline.getPosition( 0.1f ), spline.getPosition( 0.2f ) ) );
+	mSplineFrames.emplace_back( firstFrame( prevPos + firstFrameEps, spline.getPosition( 0.1f ), spline.getPosition( 0.2f ) ) );
 	mSplineTimes.push_back( 0 );
 	for( int sub = 1; sub <= mSubdivisions; ++sub ) {
 		const float t = spline.getTime( sub / (float)mSubdivisions * splineLength );
