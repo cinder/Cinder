@@ -69,7 +69,7 @@ const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2;
 // According to the docs, the only guarunteed way to find an acceptable format is to try IAudioClient::IsFormatSupported() repeatedly until you find one.
 // - PKEY_AudioEngine_DeviceFormat docs state that it should not be used for the format in exclusive mode as it still might not be acceptable.
 // - Documentation on 'Device Formats' recommends that we try all possible formats as both WAVEFORMATEXTENSIBLE and WAVEFORMATEX
-// - TODO: try more formats, like INT_32 and INT_24 in 32-bit container
+// - TODO: try more formats, like INT_32 and INT_24 / INT_20 in both 24-bit and 32-bit container
 //		- both will need consideration when converting
 struct PossibleFormat {
 	SampleType	mSampleType;
@@ -481,7 +481,17 @@ void WasapiRenderClientImpl::init()
 	success = ::ResetEvent( mRenderSamplesReadyEvent );
 	CI_ASSERT( success );
 
-	initAudioClient( mOutputDeviceNode->getDevice(), mOutputDeviceNode->getNumChannels(), mRenderSamplesReadyEvent );
+	auto device = mOutputDeviceNode->getDevice();
+	size_t numChannels = mOutputDeviceNode->getNumChannels();
+	if( mExclusiveMode ) {
+		// Force the number of channels to match the device
+		size_t deviceNumChannels = device->getNumOutputChannels();
+		if( numChannels != deviceNumChannels ) {
+			numChannels = deviceNumChannels;
+		}
+	}
+
+	initAudioClient( device, numChannels, mRenderSamplesReadyEvent );
 	initRenderClient();
 }
 
@@ -615,7 +625,16 @@ void WasapiCaptureClientImpl::init()
 	if( needsConverter )
 		mAudioClientNumFrames *= CAPTURE_CONVERSION_PADDING_FACTOR;
 
-	initAudioClient( device, mInputDeviceNode->getNumChannels(), nullptr );
+	size_t numChannels = mInputDeviceNode->getNumChannels();
+	if( mExclusiveMode ) {
+		// Force the number of channels to match the device
+		size_t deviceNumChannels = device->getNumInputChannels();
+		if( numChannels != deviceNumChannels ) {
+			numChannels = deviceNumChannels;
+		}
+	}
+
+	initAudioClient( device, numChannels, nullptr );
 	initCapture();
 
 	mMaxReadFrames = size_t( mAudioClientNumFrames * mInputDeviceNode->getRingBufferPaddingFactor() );
@@ -626,7 +645,7 @@ void WasapiCaptureClientImpl::init()
 	mReadBuffer.setSize( mMaxReadFrames, mNumChannels );
 
 	if( needsConverter ) {
-		mConverter = audio::dsp::Converter::create( device->getSampleRate(), mInputDeviceNode->getSampleRate(), mNumChannels, mInputDeviceNode->getNumChannels(), mMaxReadFrames );
+		mConverter = audio::dsp::Converter::create( device->getSampleRate(), mInputDeviceNode->getSampleRate(), mNumChannels, mNumChannels, mMaxReadFrames );
 		mConvertedReadBuffer.setSize( mConverter->getDestMaxFramesPerBlock(), mNumChannels );
 	}
 }

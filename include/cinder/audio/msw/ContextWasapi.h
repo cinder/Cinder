@@ -77,6 +77,7 @@ class ContextWasapi : public Context {
 	InputDeviceNodeRef	createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() )	override;
 
 	//! Sets whether 'Exclusive-Mode Streams' are used for OutputDeviceNode and InputDeviceNode instances. Default is false ('shared mode').
+	//! \note when exclusive mode is enabled, the channel count for OutputDeviceNode and InputDeviceNode always matches the Device's number of outputs or inputs.
 	void setExclusiveModeEnabled( bool enable = true )	{ mExclusiveMode = enable; }
 	//! Returns whether 'Exclusive-Mode Streams' are used for OutputDeviceNode and InputDeviceNode instances. Default is false ('shared mode').
 	bool isExclusiveModeEnabled() const					{ return mExclusiveMode; }
