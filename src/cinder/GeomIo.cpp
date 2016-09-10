@@ -3292,7 +3292,7 @@ void Extrude::loadInto( Target *target, const AttribSet &requestedAttribs ) cons
 ///////////////////////////////////////////////////////////////////////////////////////
 // Extrude
 ExtrudeSpline::ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions, float approximationScale )
-	: mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true ), mSubdivisions( splineSubdivisions )
+	: mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true ), mSubdivisions( splineSubdivisions ), mThicknessFn( []( float ) { return 1.0f; } )
 {
 	for( const auto &contour : shape.getContours() )
 		mPaths.push_back( contour );
@@ -3366,7 +3366,7 @@ void ExtrudeSpline::calculate( vector<vec3> *positions, vector<vec3> *normals, v
 	if( mFrontCap ) {
 		const vec3 frontNormal = vec3( mSplineFrames.front() * vec4( 0, 0, -1, 0 ) );
 		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
-			positions->emplace_back( mSplineFrames.front() * vec4( capPositions[v], 0, 1 ) );
+			positions->emplace_back( mSplineFrames.front() * vec4( capPositions[v] * mThicknessFn( 0.0f ), 0, 1 ) );
 			normals->emplace_back( frontNormal );
 			texCoords->emplace_back( vec3( ( capPositions[v].x - mCapBounds.x1 ) / mCapBounds.getWidth(),
 											1.0f - ( capPositions[v].y - mCapBounds.y1 ) / mCapBounds.getHeight(),
@@ -3377,7 +3377,7 @@ void ExtrudeSpline::calculate( vector<vec3> *positions, vector<vec3> *normals, v
 	if( mBackCap ) {
 		const vec3 backNormal = vec3( mSplineFrames.back() * vec4( 0, 0, 1, 0 ) );
 		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
-			positions->emplace_back( mSplineFrames.back() * vec4( capPositions[v], 0, 1 ) );
+			positions->emplace_back( mSplineFrames.back() * vec4( capPositions[v] * mThicknessFn( 1.0f ), 0, 1 ) );
 			normals->emplace_back( backNormal );
 			texCoords->emplace_back( vec3( ( capPositions[v].x - mCapBounds.x1 ) / mCapBounds.getWidth(),
 											1.0f - ( capPositions[v].y - mCapBounds.y1 ) / mCapBounds.getHeight(),
@@ -3403,7 +3403,7 @@ void ExtrudeSpline::calculate( vector<vec3> *positions, vector<vec3> *normals, v
 	// EXTRUSION
 	for( size_t p = 0; p < mPathSubdivisionPositions.size(); ++p ) {
 		for( int sub = 0; sub <= mSubdivisions; ++sub ) {
-			const mat4 &transform = mSplineFrames[sub];
+			const mat4 &transform = mSplineFrames[sub] * glm::scale( vec3( mThicknessFn( static_cast<float>( sub ) / static_cast<float>( mSubdivisions ) ) ) );
 			const auto &pathPositions = mPathSubdivisionPositions[p];
 			const auto &pathTangents = mPathSubdivisionTangents[p];
 			// add all the positions & normals
