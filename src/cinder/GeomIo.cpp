@@ -3331,6 +3331,11 @@ void ExtrudeSpline::updatePathSubdivision()
 		mPathSubdivisionPositions.emplace_back( vector<vec2>() );
 		mPathSubdivisionTangents.emplace_back( vector<vec2>() );
 		path.subdivide( &mPathSubdivisionPositions.back(), &mPathSubdivisionTangents.back(), mApproximationScale );
+		
+		// Path2d::subdivide might returns duplicates
+		mPathSubdivisionPositions.back().erase( std::unique( mPathSubdivisionPositions.back().begin(), mPathSubdivisionPositions.back().end() ), mPathSubdivisionPositions.back().end() );	
+		mPathSubdivisionTangents.back().erase( std::unique( mPathSubdivisionTangents.back().begin(), mPathSubdivisionTangents.back().end() ), mPathSubdivisionTangents.back().end() );	
+
 		// normalize the tangents
 		for( auto& tan : mPathSubdivisionTangents.back() )
 			tan = normalize( tan );
