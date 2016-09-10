@@ -24,6 +24,8 @@
 #include "cinder/audio/msw/MswUtil.h"
 #include "cinder/CinderAssert.h"
 
+#include <Audioclient.h>
+
 namespace cinder { namespace audio { namespace msw {
 
 ::WAVEFORMATEXTENSIBLE makeWaveFormat( SampleType sampleType, size_t sampleRate, size_t numChannels, size_t bitsPerSample, bool useExtensible )
@@ -100,6 +102,34 @@ std::string	waveFormatToString( const ::WAVEFORMATEXTENSIBLE &wfx )
 ::REFERENCE_TIME framesToHundredNanoSeconds( size_t frames, size_t sampleRate )
 {
 	return (::REFERENCE_TIME)( ( 10000.0 * 1000.0 / (double)sampleRate * (double)frames ) + 0.5 );
+}
+
+const char* hresultToString( ::HRESULT hr )
+{
+	switch( hr ) {
+		case S_OK: return "S_OK";
+		case S_FALSE: return "S_FALSE";
+		case E_POINTER: return "E_POINTER";
+		case E_INVALIDARG: return "E_INVALIDARG";
+		case E_OUTOFMEMORY: return "E_OUTOFMEMORY";
+		case AUDCLNT_E_DEVICE_INVALIDATED: return "AUDCLNT_E_DEVICE_INVALIDATED";
+		case AUDCLNT_E_SERVICE_NOT_RUNNING: return "AUDCLNT_E_SERVICE_NOT_RUNNING";
+		case AUDCLNT_E_ALREADY_INITIALIZED: return "AUDCLNT_E_ALREADY_INITIALIZED";
+		case AUDCLNT_E_WRONG_ENDPOINT_TYPE: return "AUDCLNT_E_WRONG_ENDPOINT_TYPE";
+		case AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED: return "AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED";
+		case AUDCLNT_E_BUFFER_SIZE_ERROR: return "AUDCLNT_E_BUFFER_SIZE_ERROR";
+		case AUDCLNT_E_CPUUSAGE_EXCEEDED: return "AUDCLNT_E_CPUUSAGE_EXCEEDED";
+		case AUDCLNT_E_DEVICE_IN_USE: return "AUDCLNT_E_DEVICE_IN_USE";
+		case AUDCLNT_E_ENDPOINT_CREATE_FAILED: return "AUDCLNT_E_ENDPOINT_CREATE_FAILED";
+		case AUDCLNT_E_INVALID_DEVICE_PERIOD: return "AUDCLNT_E_INVALID_DEVICE_PERIOD";
+		case AUDCLNT_E_UNSUPPORTED_FORMAT: return "AUDCLNT_E_UNSUPPORTED_FORMAT";
+		case AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED: return "AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED";
+		case AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL: return "AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL";
+		case AUDCLNT_E_NOT_INITIALIZED: return "AUDCLNT_E_NOT_INITIALIZED";
+		default: break;
+	}
+
+	return "(unknown)";
 }
 
 } } } // namespace cinder::audio::msw
