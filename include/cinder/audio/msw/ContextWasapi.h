@@ -85,6 +85,12 @@ class ContextWasapi : public Context {
 	bool	mExclusiveMode = false;
 };
 
+class WasapiExc : public AudioExc {
+  public:
+	WasapiExc( const std::string &description );
+	WasapiExc( const std::string &description, ::HRESULT hr );
+};
+
 } } } // namespace cinder::audio::msw
 
 #endif // defined( CINDER_UWP ) || ( _WIN32_WINNT >= 0x0600 )

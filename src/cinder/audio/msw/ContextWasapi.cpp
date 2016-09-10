@@ -211,7 +211,7 @@ void WasapiAudioClientImpl::createAudioClient( ::IMMDevice *immDevice )
 #endif
 
 	HRESULT hr = immDevice->Activate(iid, CLSCTX_ALL, NULL, (void**)&audioClient );
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 	mAudioClient = ci::msw::makeComUnique( audioClient );
 }
 
@@ -223,6 +223,7 @@ bool WasapiAudioClientImpl::tryFormat( const PossibleFormat &possibleFormat, siz
 
 	::WAVEFORMATEX *closestMatch = nullptr;
 	HRESULT hr = mAudioClient->IsFormatSupported( shareMode, &wfx.Format, mExclusiveMode ? nullptr : &closestMatch );
+
 	if( hr == S_OK ) {
 		copyWaveFormat( wfx.Format, &result->Format );
 		*isClosestMatch = false;
@@ -241,8 +242,7 @@ bool WasapiAudioClientImpl::tryFormat( const PossibleFormat &possibleFormat, siz
 		return false;
 	}
 	else {
-		string hrErrorStr = hresultToString( hr );
-		throw AudioExc( "Failed to check if format is supported, HRESULT error: " + hrErrorStr, (int32_t)hr );
+		throw WasapiExc( "Failed to check if format is supported", hr );
 	}
 }
 
@@ -264,7 +264,7 @@ bool WasapiAudioClientImpl::tryInit( ::REFERENCE_TIME requestedDuration, const :
 		// need to query GetBufferSize() again to see what the aligned size should be
 		UINT32 alignedBufferSize;
 		hr = mAudioClient->GetBufferSize( &alignedBufferSize );
-		CI_ASSERT( hr == S_OK );
+		ASSERT_HR_OK( hr );
 
 		CI_LOG_W( "Initialize attempt failed with AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED. alignedBufferSize: " << alignedBufferSize );
 
@@ -383,23 +383,23 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		// We failed to find a supported format. For debugging purposes, print the format indicated by PKEY_AudioEngine_DeviceFormat
 		::IPropertyStore *properties;
 		hr = immDevice->OpenPropertyStore( STGM_READ, &properties );
-		CI_ASSERT( hr == S_OK );
+		ASSERT_HR_OK( hr );
 		auto propertiesPtr = ci::msw::makeComUnique( properties );
 
 		::PROPVARIANT formatVar;
 		hr = properties->GetValue( PKEY_AudioEngine_DeviceFormat, &formatVar );
-		CI_ASSERT( hr == S_OK );
+		ASSERT_HR_OK( hr );
 		::WAVEFORMATEX *audioEngineFormat = (::WAVEFORMATEX *)formatVar.blob.pBlobData;
 
 		string audioEngineFormatStr = waveFormatToString( *audioEngineFormat );
-		throw AudioExc( "Failed to find a supported format. The PKEY_AudioEngine_DeviceFormat suggests that the format should be: " + audioEngineFormatStr );
+		throw WasapiExc( "Failed to find a supported format. The PKEY_AudioEngine_DeviceFormat suggests that the format should be: " + audioEngineFormatStr );
 	}
 
 	// Check minimum device period
 	::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
 	::REFERENCE_TIME minDevicePeriod; // this is for exclusive mode
 	hr = mAudioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 
 	CI_LOG_I( "device: " << device->getName() << ", default device period: " << defaultDevicePeriod / 10000.0 << "ms, min device period: " << minDevicePeriod / 10000.0 << "ms" );
 
@@ -428,21 +428,20 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	}
 
 	if( ! initializeSucceeded ) {
-		throw AudioExc( "Failed to initialize IAudioClient." );
+		throw WasapiExc( "Failed to initialize IAudioClient. Tried " + to_string( supportedFormats.size() ) + " supported formats." );
 	}
 
 	if( eventHandle ) {
 		// enable event driven rendering.
 		hr = mAudioClient->SetEventHandle( eventHandle );
 		if( hr != S_OK ) {
-			string hrErrorStr = hresultToString( hr );
-			throw AudioExc( "Failed to SetEventHandle(), HRESULT error: " + hrErrorStr, (int32_t)hr );
+			throw WasapiExc( "Failed to SetEventHandle()", hr );
 		}
 	}
 
 	UINT32 actualNumFrames;
 	hr = mAudioClient->GetBufferSize( &actualNumFrames );
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
 }
@@ -507,7 +506,7 @@ void WasapiRenderClientImpl::initRenderClient()
 
 	::IAudioRenderClient *renderClient;
 	HRESULT hr = mAudioClient->GetService( __uuidof(::IAudioRenderClient), (void**)&renderClient );
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 	mRenderClient = ci::msw::makeComUnique( renderClient );
 
 	// set the ring buffer size to accommodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes. 
@@ -560,7 +559,7 @@ size_t WasapiRenderClientImpl::getWriteFramesAvailable() const
 	else {
 		UINT32 numFramesPadding;
 		HRESULT hr = mAudioClient->GetCurrentPadding( &numFramesPadding );
-		CI_ASSERT( hr == S_OK );
+		ASSERT_HR_OK( hr );
 
 		return mAudioClientNumFrames - numFramesPadding;
 	}
@@ -575,7 +574,7 @@ void WasapiRenderClientImpl::renderAudio()
 
 	BYTE *audioBuffer;
 	HRESULT hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, &audioBuffer );
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 
 	size_t numReadSamples = numWriteFramesAvailable * mNumChannels;
 
@@ -586,7 +585,7 @@ void WasapiRenderClientImpl::renderAudio()
 
 	DWORD bufferFlags = 0;
 	hr = mRenderClient->ReleaseBuffer( (UINT32)numWriteFramesAvailable, bufferFlags );
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 }
 
 // This uses the "Multimedia Class Scheduler Service" (MMCSS) to increase the priority of the current thread.
@@ -645,7 +644,7 @@ void WasapiCaptureClientImpl::initCapture()
 
 	::IAudioCaptureClient *captureClient;
 	HRESULT hr = mAudioClient->GetService( __uuidof(::IAudioCaptureClient), (void**)&captureClient );
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 
 	mCaptureClient = ci::msw::makeComUnique( captureClient );
 }
@@ -654,7 +653,7 @@ void WasapiCaptureClientImpl::captureAudio()
 {
 	UINT32 numPacketFrames;
 	HRESULT hr = mCaptureClient->GetNextPacketSize( &numPacketFrames );
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 
 	while( numPacketFrames ) {
 		if( numPacketFrames > ( mMaxReadFrames - mNumFramesBuffered ) ) {
@@ -670,7 +669,7 @@ void WasapiCaptureClientImpl::captureAudio()
 		if( hr == AUDCLNT_S_BUFFER_EMPTY )
 			return;
 		else {
-			CI_ASSERT( hr == S_OK );
+			ASSERT_HR_OK( hr );
 		}
 
 		// We do the de-interleave and conversion here so that we know the correct number of samples that are available
@@ -717,10 +716,10 @@ void WasapiCaptureClientImpl::captureAudio()
 		}
 
 		hr = mCaptureClient->ReleaseBuffer( numFramesAvailable );
-		CI_ASSERT( hr == S_OK );
+		ASSERT_HR_OK( hr );
 
 		hr = mCaptureClient->GetNextPacketSize( &numPacketFrames );
-		CI_ASSERT( hr == S_OK );
+		ASSERT_HR_OK( hr );
 	}
 }
 
@@ -757,7 +756,7 @@ void OutputDeviceNodeWasapi::uninitialize()
 void OutputDeviceNodeWasapi::enableProcessing()
 {
 	HRESULT hr = mRenderImpl->mAudioClient->Start();
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 }
 
 void OutputDeviceNodeWasapi::disableProcessing()
@@ -765,7 +764,7 @@ void OutputDeviceNodeWasapi::disableProcessing()
 	HRESULT hr = mRenderImpl->mAudioClient->Stop();
 
 	// TODO: not sure why, but sometimes this isn't returning S_OK or any other expected hresult (it returns 0x10000000)
-	//CI_ASSERT( hr == S_OK );
+	//ASSERT_HR_OK( hr );
 	if( hr != S_OK ) {
 		string hrStr = hresultToString( hr );
 		CI_LOG_W( "Stop() returned non-OK hresult: " << hex << hr << dec << ", as string " << hrStr );
@@ -841,13 +840,13 @@ void InputDeviceNodeWasapi::uninitialize()
 void InputDeviceNodeWasapi::enableProcessing()
 {
 	HRESULT hr = mCaptureImpl->mAudioClient->Start();
-	CI_ASSERT( hr == S_OK );	
+	ASSERT_HR_OK( hr );	
 }
 
 void InputDeviceNodeWasapi::disableProcessing()
 {
 	HRESULT hr = mCaptureImpl->mAudioClient->Stop();
-	CI_ASSERT( hr == S_OK );
+	ASSERT_HR_OK( hr );
 }
 
 void InputDeviceNodeWasapi::process( Buffer *buffer )
@@ -881,6 +880,23 @@ OutputDeviceNodeRef ContextWasapi::createOutputDeviceNode( const DeviceRef &devi
 InputDeviceNodeRef ContextWasapi::createInputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
 	return makeNode( new InputDeviceNodeWasapi( device, mExclusiveMode, format ) );
+}
+
+// ----------------------------------------------------------------------------------------------------
+// MARK: - WasapiExc
+// ----------------------------------------------------------------------------------------------------
+
+WasapiExc::WasapiExc( const std::string &description )
+	: AudioExc( description )
+{
+}
+
+WasapiExc::WasapiExc( const std::string &description, ::HRESULT hr )
+	: AudioExc( "", hr ) 
+{
+	stringstream ss;
+	ss << description << " (HRESULT: " << hex << hr << dec << ", '" << hresultToString( hr ) << "')";
+	setDescription( ss.str() );
 }
 
 } } } // namespace cinder::audio::msw
