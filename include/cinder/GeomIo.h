@@ -809,13 +809,14 @@ class ExtrudeSpline : public Source {
 	std::vector<Path2d>				mPaths;
 	std::vector<mat4>				mSplineFrames;
 	std::vector<float>				mSplineTimes;
-	float							mApproximationScale;
+	float							mApproximationScale, mSplineLength;
 	bool							mFrontCap, mBackCap;
 	int								mSubdivisions;
 	std::shared_ptr<TriMesh>		mCap;
 	Rectf							mCapBounds;
-
+	
 	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
+	std::vector<float>				mPathSubdivisionLengths;
 };
 
 //! Converts a BSpline into a \c LINE_STRIP

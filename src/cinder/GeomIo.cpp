@@ -3298,13 +3298,13 @@ ExtrudeSpline::ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &
 		mPaths.push_back( contour );
 	
 	const vec3 firstFrameEps = vec3( 0.0000001f );
-	const float splineLength = spline.getLength( 0, 1 );
+	mSplineLength = spline.getLength( 0, 1 );
 	vec3 prevPos = spline.getPosition( 0 );
 	vec3 prevTangent = spline.getDerivative( 0 );
 	mSplineFrames.emplace_back( firstFrame( prevPos + firstFrameEps, spline.getPosition( 0.1f ), spline.getPosition( 0.2f ) ) );
 	mSplineTimes.push_back( 0 );
 	for( int sub = 1; sub <= mSubdivisions; ++sub ) {
-		const float t = spline.getTime( sub / (float)mSubdivisions * splineLength );
+		const float t = spline.getTime( sub / (float)mSubdivisions * mSplineLength );
 		const vec3 curPos = spline.getPosition( t );
 		const vec3 curTangent = normalize( spline.getDerivative( t ) );
 		mSplineFrames.emplace_back( nextFrame( mSplineFrames.back(), prevPos, curPos, prevTangent, curTangent ) );
@@ -3339,6 +3339,13 @@ void ExtrudeSpline::updatePathSubdivision()
 		// normalize the tangents
 		for( auto& tan : mPathSubdivisionTangents.back() )
 			tan = normalize( tan );
+
+		// calculate path length
+		float pathLength = 0.0f;
+		for( size_t i = 1; i < mPathSubdivisionPositions.back().size(); ++i ) {
+			pathLength += glm::length( mPathSubdivisionPositions.back()[i-1] - mPathSubdivisionPositions.back()[i] );
+		}
+		mPathSubdivisionLengths.emplace_back( pathLength );
 	}
 
 	// Each of the subdivided paths' positions constitute a new contour on our triangulation
@@ -3363,7 +3370,7 @@ void ExtrudeSpline::calculate( vector<vec3> *positions, vector<vec3> *normals, v
 			normals->emplace_back( frontNormal );
 			texCoords->emplace_back( vec3( ( capPositions[v].x - mCapBounds.x1 ) / mCapBounds.getWidth(),
 											1.0f - ( capPositions[v].y - mCapBounds.y1 ) / mCapBounds.getHeight(),
-											0 ) );
+											0 ) ); // the uv z-component allows to differentiate caps and extrusion
 		}
 	}
 	// back cap
@@ -3374,7 +3381,7 @@ void ExtrudeSpline::calculate( vector<vec3> *positions, vector<vec3> *normals, v
 			normals->emplace_back( backNormal );
 			texCoords->emplace_back( vec3( ( capPositions[v].x - mCapBounds.x1 ) / mCapBounds.getWidth(),
 											1.0f - ( capPositions[v].y - mCapBounds.y1 ) / mCapBounds.getHeight(),
-											1 ) );
+											0 ) ); // the uv z-component allows to differentiate caps and extrusion
 		}
 	}
 	
@@ -3404,9 +3411,9 @@ void ExtrudeSpline::calculate( vector<vec3> *positions, vector<vec3> *normals, v
 			for( size_t v = 0; v < pathPositions.size(); ++v ) {
 				positions->emplace_back( vec3( transform * vec4( pathPositions[v], 0, 1 ) ) );
 				normals->emplace_back( transform * vec4( vec2( pathTangents[v].y, -pathTangents[v].x ), 0, 0 ) );
-				texCoords->emplace_back( ( pathPositions[v].x - mCapBounds.x1 ) / mCapBounds.getWidth(),
-											1.0f - ( pathPositions[v].y - mCapBounds.y1 ) / mCapBounds.getHeight(),
-											mSplineTimes[sub] );
+				texCoords->emplace_back( (float) v / (float) ( pathPositions.size() ),
+										mSplineTimes[sub] * mSplineLength / mPathSubdivisionLengths[p],
+										1 ); // the uv z-component allows to differentiate caps and extrusion
 			}
 			// add the indices
 			if( sub != mSubdivisions ) {
