@@ -55,18 +55,18 @@ class DeviceManagerWasapi : public DeviceManager {
 
   private:
 
-	  struct DeviceInfo {
-		  std::string mKey;							//! mKey used by Device to get more info from manager
-		  std::string mName;						//! friendly mName
-		  enum Usage { INPUT, OUTPUT } mUsage;
-		  std::wstring			mEndpointId;		//! id used by Wasapi / MMDevice
-		  size_t mNumChannels, mSampleRate, mFramesPerBlock;
-	  };
+	struct DeviceInfo {
+		std::string mKey;							//! mKey used by Device to get more info from manager
+		std::string mName;							//! friendly mName
+		enum Usage { INPUT, OUTPUT } mUsage;
+		std::wstring			mEndpointId;		//! id used by Wasapi / MMDevice
+		size_t mNumChannels, mSampleRate, mFramesPerBlock;
+	};
 
-	  DeviceInfo& getDeviceInfo( const DeviceRef &device );
-	  void parseDevices( DeviceInfo::Usage usage );
+	DeviceInfo& getDeviceInfo( const DeviceRef &device );
+	void parseDevices( DeviceInfo::Usage usage );
 
-	  std::map<DeviceRef, DeviceInfo> mDeviceInfoSet;
+	std::map<DeviceRef, DeviceInfo> mDeviceInfoSet;
 };
 
 } } } // namespace cinder::audio::msw
