@@ -882,7 +882,7 @@ WasapiExc::WasapiExc( const std::string &description )
 {
 }
 
-WasapiExc::WasapiExc( const std::string &description, ::HRESULT hr )
+WasapiExc::WasapiExc( const std::string &description, int32_t hr )
 	: AudioExc( "", hr ) 
 {
 	stringstream ss;

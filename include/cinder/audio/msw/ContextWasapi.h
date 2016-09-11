@@ -89,7 +89,7 @@ class ContextWasapi : public Context {
 class WasapiExc : public AudioExc {
   public:
 	WasapiExc( const std::string &description );
-	WasapiExc( const std::string &description, ::HRESULT hr );
+	WasapiExc( const std::string &description, int32_t hr );
 };
 
 } } } // namespace cinder::audio::msw
