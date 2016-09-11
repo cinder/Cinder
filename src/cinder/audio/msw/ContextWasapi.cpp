@@ -60,9 +60,6 @@ namespace cinder { namespace audio { namespace msw {
 
 namespace {
 
-// TODO: should requestedDuration come from Device's frames per block?
-// - seems like this is fixed at 10ms in shared mode. (896 samples @ stereo 44100 s/r) 
-const size_t DEFAULT_AUDIOCLIENT_FRAMES = 480;
 //! When there are mismatched samplerates between OutputDeviceNode and InputDeviceNode, the capture AudioClient's buffer needs to be larger.
 const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2;
 
@@ -166,7 +163,7 @@ struct WasapiCaptureClientImpl : public WasapiAudioClientImpl {
 // ----------------------------------------------------------------------------------------------------
 
 WasapiAudioClientImpl::WasapiAudioClientImpl( bool exclusiveMode )
-	: mExclusiveMode( exclusiveMode ), mAudioClientNumFrames( DEFAULT_AUDIOCLIENT_FRAMES ), mNumFramesBuffered( 0 ), mNumChannels( 0 )
+	: mExclusiveMode( exclusiveMode ), mAudioClientNumFrames( 0 ), mNumFramesBuffered( 0 ), mNumChannels( 0 )
 {
 }
 
@@ -265,8 +262,7 @@ bool WasapiAudioClientImpl::tryInit( ::REFERENCE_TIME requestedDuration, const :
 // https://msdn.microsoft.com/en-us/library/windows/hardware/mt298187(v=vs.85).aspx?f=255&MSPPError=-2147217396#Windows_Audio_Session_API_WASAPI
 bool WasapiAudioClientImpl::testWin10SharedModeLowLatency( const ::WAVEFORMATEX &format )
 {
-	// 2. Setting the audio client properties – note that low latency offload is not supported
-
+	// 2. Setting the audio client properties ï¿½ note that low latency offload is not supporte
 	AudioClientProperties audioProps = { 0 };
 	audioProps.cbSize = sizeof( AudioClientProperties );
 	audioProps.eCategory = AudioCategory_Media;
@@ -346,8 +342,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		bool supported = tryFormat( possibleFormat, sampleRate, numChannels, &wfx, &isClosestMatch );
 		if( supported ) {
 			supportedFormats.push_back( { possibleFormat, wfx } );
-
-			CI_LOG_I( "supported WAVEFORMATEX: " << waveFormatToString( wfx ) );
+			//CI_LOG_I( "supported WAVEFORMATEX: " << waveFormatToString( wfx ) );
 		}
 	}
 
@@ -366,6 +361,8 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		string audioEngineFormatStr = waveFormatToString( *audioEngineFormat );
 		throw WasapiExc( "Failed to find a supported format. The PKEY_AudioEngine_DeviceFormat suggests that the format should be: " + audioEngineFormatStr );
 	}
+
+	mAudioClientNumFrames = device->getFramesPerBlock();
 
 	// Check minimum device period
 	::REFERENCE_TIME defaultDevicePeriod; // engine time, this is for shared mode
@@ -416,6 +413,13 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	ASSERT_HR_OK( hr );
 
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
+
+	if( device->getFramesPerBlock() != actualNumFrames ) {
+		CI_LOG_I( "GetBufferSize returned " << actualNumFrames << " frames, updating DeviceInfo.mFramesPerBlock." );
+		manager->updateActualFramesPerBlock( device, actualNumFrames );
+	}
+
+	CI_LOG_I( "init complete. mAudioClientNumFrames: " << mAudioClientNumFrames );
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -592,11 +596,6 @@ WasapiCaptureClientImpl::WasapiCaptureClientImpl( InputDeviceNodeWasapi *inputDe
 void WasapiCaptureClientImpl::init()
 {
 	auto device = mInputDeviceNode->getDevice();
-	bool needsConverter = device->getSampleRate() != mInputDeviceNode->getSampleRate();
-
-	if( needsConverter )
-		mAudioClientNumFrames *= CAPTURE_CONVERSION_PADDING_FACTOR;
-
 	size_t numChannels = mInputDeviceNode->getNumChannels();
 	if( mExclusiveMode ) {
 		// Force the number of channels to match the device
@@ -608,6 +607,15 @@ void WasapiCaptureClientImpl::init()
 
 	initAudioClient( device, numChannels, nullptr );
 	initCapture();
+
+
+	bool needsConverter = device->getSampleRate() != mInputDeviceNode->getSampleRate();
+
+	// TODO: mAudioClientFrames should be left at what the IAudioClient wants
+	// - Converter buffers may need to be larger but this should be a separate value
+	if( needsConverter )
+		mAudioClientNumFrames *= CAPTURE_CONVERSION_PADDING_FACTOR;
+
 
 	mMaxReadFrames = size_t( mAudioClientNumFrames * mInputDeviceNode->getRingBufferPaddingFactor() );
 

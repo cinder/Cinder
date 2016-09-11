@@ -145,18 +145,20 @@ size_t DeviceManagerWasapi::getFramesPerBlock( const DeviceRef &device )
 // - but this is a kludge to allow context's other samplerates / block sizes until Context handles it.
 void DeviceManagerWasapi::setSampleRate( const DeviceRef &device, size_t sampleRate )
 {
-	//throw AudioDeviceExc( "Samplerate cannot be changed for Wasapi devices in shared mode." );
 	getDeviceInfo( device ).mSampleRate = sampleRate;
-	emitParamsDidChange( device );
+
+	// emitParamsWillDidChange() will be called by Device::updatFormat() next
 }
 
 void DeviceManagerWasapi::setFramesPerBlock( const DeviceRef &device, size_t framesPerBlock )
 {
-	//throw AudioDeviceExc( "Frames per block changes not supported for Wasapi devices." );
-
-	// also temp kludge:
+	// TODO: this is a bit of a kludge - we can't check if this value will actually be accepted by the IAudioClient until
+	// Initialize() is called on it followed by GetBufferSize().
+	// - so for now OutputDeviceNode / InputDeviceNode will later try this value, and update it as necessary
+	// - later this should be done more in sync.
 	getDeviceInfo( device ).mFramesPerBlock = framesPerBlock;
-	emitParamsDidChange( device );
+
+	// emitParamsWillDidChange() will be called by Device::updatFormat() next
 }
 
 shared_ptr<::IMMDevice> DeviceManagerWasapi::getIMMDevice( const DeviceRef &device )
@@ -172,6 +174,12 @@ shared_ptr<::IMMDevice> DeviceManagerWasapi::getIMMDevice( const DeviceRef &devi
 	CI_ASSERT( hr == S_OK );
 
 	return 	ci::msw::makeComShared( deviceImm );
+}
+
+void DeviceManagerWasapi::updateActualFramesPerBlock( const DeviceRef &device, size_t framesPerBlock )
+{
+	getDeviceInfo( device ).mFramesPerBlock = framesPerBlock;
+	clearCachedValues( device );
 }
 
 // ----------------------------------------------------------------------------------------------------

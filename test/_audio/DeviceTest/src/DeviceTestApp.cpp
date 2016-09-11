@@ -20,7 +20,7 @@
 #include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
 const bool USE_SECONDARY_SCREEN = true;
-const bool WASAPI_EXCLUSIVE_MODE = true;
+const bool WASAPI_EXCLUSIVE_MODE = false;
 const double RECORD_SECONDS = 4.0;
 
 using namespace ci;
@@ -95,11 +95,12 @@ void DeviceTestApp::setup()
 
 	mGain->connect( mMonitor );
 
-	//setOutputDevice( audio::Device::getDefaultOutput() );
-	setOutputDevice( audio::Device::findOutputByName( "1-2 (OCTA-CAPTURE)" ) );
+//	setOutputDevice( audio::Device::getDefaultOutput() );
+	setOutputDevice( audio::Device::getDefaultOutput(), 1 );
+	//setOutputDevice( audio::Device::findOutputByName( "1-2 (OCTA-CAPTURE)" ) );
 
-	setInputDevice( audio::Device::getDefaultInput() );
-	//setInputDevice( audio::Device::getDefaultInput(), 1 ); // force mono input
+	//setInputDevice( audio::Device::getDefaultInput() );
+	setInputDevice( audio::Device::getDefaultInput(), 1 );
 	//setupRolandOctaCaptureInputMonitoring();
 
 	//setupMultiChannelDevice( "PreSonus FIREPOD (1431)" );
@@ -116,7 +117,7 @@ void DeviceTestApp::setup()
 //	setupIOClean();
 
 	PRINT_GRAPH( ctx );
-	CI_LOG_I( "Context samplerate: " << ctx->getSampleRate() );
+	CI_LOG_I( "Context samplerate: " << ctx->getSampleRate() << ", frames per block: " << ctx->getFramesPerBlock() );
 }
 
 void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numChannels )
@@ -136,11 +137,11 @@ void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numC
 
 	mOutputDeviceNode = ctx->createOutputDeviceNode( device, format );
 
-	mOutputDeviceNode->getDevice()->getSignalParamsDidChange().connect(
+	mOutputDeviceNode->getDevice()->getSignalParamsDidChange().connect( -1,
 							[this] {
 								CI_LOG_I( "OutputDeviceNode params changed:" );
 								printDeviceDetails( mOutputDeviceNode->getDevice() );
-								PRINT_GRAPH( audio::master() );
+								//PRINT_GRAPH( audio::master() );
 							} );
 
 
@@ -245,7 +246,7 @@ void DeviceTestApp::printDeviceDetails( const audio::DeviceRef &device )
 	console() << "\t output channels: " << device->getNumOutputChannels() << endl;
 	console() << "\t input channels: " << device->getNumInputChannels() << endl;
 	console() << "\t samplerate: " << device->getSampleRate() << endl;
-	console() << "\t block size: " << device->getFramesPerBlock() << endl;
+	console() << "\t frames per block: " << device->getFramesPerBlock() << endl;
 
 	bool isSyncIO = mInputDeviceNode && mOutputDeviceNode && ( mInputDeviceNode->getDevice() == mOutputDeviceNode->getDevice() && ( mInputDeviceNode->getNumChannels() == mOutputDeviceNode->getNumChannels() ) );
 
@@ -271,6 +272,11 @@ void DeviceTestApp::setupNoise()
 
 void DeviceTestApp::setupInputPulled()
 {
+	if( ! mInputDeviceNode ) {
+		CI_LOG_E( "no InputDeviceNode" );
+		return;
+	}
+
 	mOutputDeviceNode->disconnectAllInputs();
 
 	mInputDeviceNode >> mGain >> mMonitor;
@@ -279,12 +285,22 @@ void DeviceTestApp::setupInputPulled()
 
 void DeviceTestApp::setupIOClean()
 {
+	if( ! mInputDeviceNode ) {
+		CI_LOG_E( "no InputDeviceNode" );
+		return;
+	}
+
 	mInputDeviceNode->connect( mGain );
 	mInputDeviceNode->enable();
 }
 
 void DeviceTestApp::setupIOProcessed()
 {
+	if( ! mInputDeviceNode ) {
+		CI_LOG_E( "no InputDeviceNode" );
+		return;
+	}
+
 	auto ctx = audio::master();
 	auto mod = ctx->makeNode( new audio::GenSineNode( audio::Node::Format().autoEnable() ) );
 	mod->setFreq( 200 );
@@ -306,6 +322,11 @@ void DeviceTestApp::setupIOAndSine()
 
 	mGen->connect( mGain );
 	mGen->enable();
+
+	if( ! mInputDeviceNode ) {
+		CI_LOG_E( "no InputDeviceNode" );
+		return;
+	}
 
 	mInputDeviceNode->connect( mGain );
 	mInputDeviceNode->enable();

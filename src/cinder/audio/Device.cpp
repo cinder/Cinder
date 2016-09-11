@@ -232,11 +232,15 @@ void DeviceManager::emitParamsWillChange( const DeviceRef &device )
 
 void DeviceManager::emitParamsDidChange( const DeviceRef &device )
 {
-	// clear param caching, will be updated the next time Device is queried
-	device->mSampleRate = 0;
-	device->mFramesPerBlock = 0;
+	clearCachedValues( device );
 
 	device->mSignalParamsDidChange.emit();
+}
+
+void DeviceManager::clearCachedValues( const DeviceRef &device )
+{
+	device->mSampleRate = 0;
+	device->mFramesPerBlock = 0;
 }
 
 } } // namespace cinder::audio
