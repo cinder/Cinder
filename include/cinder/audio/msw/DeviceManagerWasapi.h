@@ -50,24 +50,21 @@ class DeviceManagerWasapi : public DeviceManager {
 	void setSampleRate( const DeviceRef &device, size_t sampleRate ) override;
 	void setFramesPerBlock( const DeviceRef &device, size_t framesPerBlock ) override;
 
-	const std::wstring& getDeviceId( const DeviceRef &device );
 
 	std::shared_ptr<::IMMDevice> getIMMDevice( const DeviceRef &device );
 
   private:
 
 	  struct DeviceInfo {
-		  std::string mKey;						//! mKey used by Device to get more info from manager
+		  std::string mKey;							//! mKey used by Device to get more info from manager
 		  std::string mName;						//! friendly mName
 		  enum Usage { INPUT, OUTPUT } mUsage;
-		  std::wstring			mDeviceId;		//! id used when creating XAudio2 master voice
 		  std::wstring			mEndpointId;		//! id used by Wasapi / MMDevice
 		  size_t mNumChannels, mSampleRate, mFramesPerBlock;
 	  };
 
 	  DeviceInfo& getDeviceInfo( const DeviceRef &device );
 	  void parseDevices( DeviceInfo::Usage usage );
-	  std::vector<std::wstring> parseDeviceIds( DeviceInfo::Usage usage );
 
 	  std::map<DeviceRef, DeviceInfo> mDeviceInfoSet;
 };
