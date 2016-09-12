@@ -20,7 +20,9 @@
 #include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
 const bool USE_SECONDARY_SCREEN = true;
-const bool WASAPI_EXCLUSIVE_MODE = false;
+const bool WASAPI_EXCLUSIVE_MODE = true;
+const bool SET_FRAMES_PER_BLOCK = true;
+const size_t FRAMES_PER_BLOCK = 160;
 const double RECORD_SECONDS = 4.0;
 
 using namespace ci;
@@ -50,6 +52,7 @@ class DeviceTestApp : public App {
 	void setupIOAndSine();
 	void setupSend();
 	void setupSendStereo();
+	void updateUIParams();
 
 	void setupTest( string test );
 	void setupUI();
@@ -88,20 +91,20 @@ void DeviceTestApp::setup()
 	}
 #endif
 
-	mMonitor = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 512 ) ) );
+	mMonitor = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 480 ) ) );
 	mGain = ctx->makeNode( new audio::GainNode() );
 	//mGain = ctx->makeNode( new audio::GainNode( audio::Node::Format().channels( 1 ) ) ); // force mix down to mono
 	mGain->setValue( 0.8f );
 
 	mGain->connect( mMonitor );
 
-//	setOutputDevice( audio::Device::getDefaultOutput() );
-	setOutputDevice( audio::Device::getDefaultOutput(), 1 );
+	setOutputDevice( audio::Device::getDefaultOutput() );
+//	setOutputDevice( audio::Device::getDefaultOutput(), 1 );
 	//setOutputDevice( audio::Device::findOutputByName( "1-2 (OCTA-CAPTURE)" ) );
 
 	//setInputDevice( audio::Device::getDefaultInput() );
-	setInputDevice( audio::Device::getDefaultInput(), 1 );
-	//setupRolandOctaCaptureInputMonitoring();
+	//setInputDevice( audio::Device::getDefaultInput(), 1 );
+	setupRolandOctaCaptureInputMonitoring();
 
 	//setupMultiChannelDevice( "PreSonus FIREPOD (1431)" );
 	//setupMultiChannelDeviceWindows( "MOTU Analog (MOTU Audio Wave for 64 bit)" );
@@ -111,7 +114,7 @@ void DeviceTestApp::setup()
 	mGain >> mRecorder;
 
 	setupUI();
-	setupTest( mTestSelector.currentSection() );
+	//setupTest( mTestSelector.currentSection() );
 
 //	setupInputPulled();
 //	setupIOClean();
@@ -125,6 +128,10 @@ void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numC
 	if( ! device ) {
 		CI_LOG_E( "Empty DeviceRef" );
 		return;
+	}
+
+	if( SET_FRAMES_PER_BLOCK ) {
+		device->updateFormat( audio::Device::Format().framesPerBlock( FRAMES_PER_BLOCK ) );
 	}
 
 	auto ctx = audio::master();
@@ -141,6 +148,7 @@ void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numC
 							[this] {
 								CI_LOG_I( "OutputDeviceNode params changed:" );
 								printDeviceDetails( mOutputDeviceNode->getDevice() );
+								updateUIParams();
 								//PRINT_GRAPH( audio::master() );
 							} );
 
@@ -171,6 +179,10 @@ void DeviceTestApp::setInputDevice( const audio::DeviceRef &device, size_t numCh
 	}
 
 	audio::ScopedEnableNode enableNodeScope( mInputDeviceNode, false );
+
+	if( SET_FRAMES_PER_BLOCK ) {
+		device->updateFormat( audio::Device::Format().framesPerBlock( FRAMES_PER_BLOCK ) );
+	}
 
 	if( mInputDeviceNode )
 		mInputDeviceNode->disconnectAllOutputs();
@@ -231,6 +243,10 @@ void DeviceTestApp::setupRolandOctaCaptureInputMonitoring()
 		auto devName = deviceNames[i];
 		auto inputDev = audio::Device::findInputByName( devName );
 		if( inputDev ) {
+			if( SET_FRAMES_PER_BLOCK ) {
+				inputDev->updateFormat( audio::Device::Format().framesPerBlock( FRAMES_PER_BLOCK ) );
+			}
+
 			auto inputNode = audio::master()->createInputDeviceNode( inputDev );
 			inputNode >> channelRouter->route( 0, i * 2 );
 			inputNode->enable();
@@ -676,6 +692,18 @@ void DeviceTestApp::update()
 	//if( getElapsedFrames() % 20 == 0 ) {
 	//	CI_LOG_I( "framerate: " << to_string( getAverageFps() ) );
 	//}
+}
+
+void DeviceTestApp::updateUIParams()
+{
+	auto ctx = audio::master();
+	
+	if( mSamplerateInput.getValue() != ctx->getSampleRate() ) {
+		mSamplerateInput.setValue( ctx->getSampleRate() );
+	}
+	if( mFramesPerBlockInput.getValue() != ctx->getFramesPerBlock() ) {
+		mFramesPerBlockInput.setValue( ctx->getFramesPerBlock() );
+	}
 }
 
 void DeviceTestApp::draw()
