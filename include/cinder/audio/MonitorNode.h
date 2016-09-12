@@ -52,8 +52,8 @@ class MonitorNode : public NodeAutoPullable {
 	struct Format : public Node::Format {
 		Format() : mWindowSize( 0 ) {}
 
-		//! Sets the window size, the number of samples that are recorded for one 'window' into the audio signal. Default is the Context's frames-per-block.
-		//! \note will be rounded up to the nearest power of two.
+		//! Sets the window size, which is the number of samples that are recorded for one 'window' into the audio signal.
+		//! Default is the Context's frames-per-block.
 		Format&		windowSize( size_t size )		{ mWindowSize = size; return *this; }
 		//! Returns the window size.
 		size_t		getWindowSize() const			{ return mWindowSize; }
@@ -99,12 +99,12 @@ class MonitorSpectralNode : public MonitorNode {
 	struct Format : public MonitorNode::Format {
 		Format() : MonitorNode::Format(), mFftSize( 0 ), mWindowType( dsp::WindowType::BLACKMAN ) {}
 
-		//! Sets the FFT size, rounded up to the nearest power of 2 greater or equal to \a windowSize. Setting this larger than \a windowSize causes the FFT transform to be 'zero-padded'. Default is the same as windowSize.
-		//! \note resulting number of output spectral bins is equal to (\a size / 2)
+		//! Sets the FFT size, rounded up to the nearest power of 2 greater or equal to \a windowSize. Setting this larger than \a windowSize causes the FFT transform to be 'zero-padded'.
+		//! Default is getWindowSize() rounded up to the nearest power of two. \note resulting number of output spectral bins is equal to (\a size / 2)
 		Format&     fftSize( size_t size )              { mFftSize = size; return *this; }
-		//! defaults to WindowType::BLACKMAN
+		//! The windowing function applied to the samples before computing the transform. Defaults to WindowType::BLACKMAN
 		Format&		windowType( dsp::WindowType type )	{ mWindowType = type; return *this; }
-		//! \see Scope::windowSize()
+		//! \see MonitorNode::Format::windowSize() 
 		Format&		windowSize( size_t size )			{ MonitorNode::Format::windowSize( size ); return *this; }
 
 		size_t			getFftSize() const				{ return mFftSize; }
