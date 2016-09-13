@@ -52,6 +52,9 @@
 //#define LOG_XRUN( stream )	CI_LOG_I( stream )
 #define LOG_XRUN( stream )	    ( (void)( 0 ) )
 
+//#define LOG_AUDIOCLIENT( stream )	CI_LOG_I( stream )
+#define LOG_AUDIOCLIENT( stream )	    ( (void)( 0 ) )
+
 #define ASSERT_HR_OK( hr ) CI_ASSERT_MSG( hr == S_OK, hresultToString( hr ) )
 
 using namespace std;
@@ -61,7 +64,7 @@ namespace cinder { namespace audio { namespace msw {
 namespace {
 
 //! When there are mismatched samplerates between OutputDeviceNode and InputDeviceNode, the capture AudioClient's buffer needs to be larger.
-const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2;
+const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2; // TODO: use RINGBUFFER_PADDING_FACTOR instead
 
 // According to the docs, the only guarunteed way to find an acceptable format is to try IAudioClient::IsFormatSupported() repeatedly until you find one.
 // - PKEY_AudioEngine_DeviceFormat docs state that it should not be used for the format in exclusive mode as it still might not be acceptable.
@@ -247,12 +250,13 @@ bool WasapiAudioClientImpl::tryInit( ::REFERENCE_TIME requestedDuration, const :
 			return true;
 		}
 	}
+	else if( hr == E_INVALIDARG ) {
+		CI_LOG_W( "Initialize attempt failed with E_INVALIDARG. It's likely that this format isn't actually supported, so skipping it. WAVEFORMATEX: " << waveFormatToString( format ) );
+		createAudioClient( immDevice ); // throw away the current IAudioClient and create a new one
+		return false;
+	}
 
-	string hrStr = hresultToString( hr );
-	CI_LOG_W( "Initialize attempt failed, HRESULT error: " << hrStr << ", code: " << hex << hr << dec << ", WAVEFORMATEX: " << waveFormatToString( format ) );
-
-	createAudioClient( immDevice );
-
+	ASSERT_HR_OK( hr );
 	return false;
 }
 
@@ -283,7 +287,7 @@ bool WasapiAudioClientImpl::testWin10SharedModeLowLatency( const ::WAVEFORMATEX 
 	hr = mAudioClient->GetMixFormat( &mixFormat ); // TODO: free mixFormat if it is used
 	ASSERT_HR_OK( hr );
 
-	CI_LOG_I( "mix format: " << waveFormatToString( *mixFormat ) );
+	LOG_AUDIOCLIENT( "mix format: " << waveFormatToString( *mixFormat ) );
 
 	// The wfx parameter below is optional (Its needed only for MATCH_FORMAT clients). Otherwise, wfx will be assumed 
 	// to be the current engine format based on the processing mode for this stream
@@ -295,13 +299,13 @@ bool WasapiAudioClientImpl::testWin10SharedModeLowLatency( const ::WAVEFORMATEX 
 	hr = mAudioClient->GetSharedModeEnginePeriod( mixFormat, &defaultPeriodInFrames, &fundamentalPeriodInFrames, &minPeriodInFrames, &maxPeriodInFrames );
 	ASSERT_HR_OK( hr );
 
-	CI_LOG_I( "defaultPeriodInFrames:" << defaultPeriodInFrames << ", fundamentalPeriodInFrames: " << fundamentalPeriodInFrames << ", minPeriodInFrames: " << minPeriodInFrames << ", maxPeriodInFrames: " << maxPeriodInFrames );
+	LOG_AUDIOCLIENT( "defaultPeriodInFrames:" << defaultPeriodInFrames << ", fundamentalPeriodInFrames: " << fundamentalPeriodInFrames << ", minPeriodInFrames: " << minPeriodInFrames << ", maxPeriodInFrames: " << maxPeriodInFrames );
 
 	::WAVEFORMATEX *currentFormat;
 	UINT32 currentPeriodInFrames;
 	hr = mAudioClient->GetCurrentSharedModeEnginePeriod( &currentFormat, &currentPeriodInFrames );
 	ASSERT_HR_OK( hr );
-	CI_LOG_I( "currentPeriodInFrames: " << currentPeriodInFrames << ", currentFormat: " << waveFormatToString( *currentFormat ) );
+	LOG_AUDIOCLIENT( "currentPeriodInFrames: " << currentPeriodInFrames << ", currentFormat: " << waveFormatToString( *currentFormat ) );
 
 	// legal periods are any multiple of fundamentalPeriodInFrames between 
 	// minPeriodInFrames and maxPeriodInFrames, inclusive
@@ -312,7 +316,7 @@ bool WasapiAudioClientImpl::testWin10SharedModeLowLatency( const ::WAVEFORMATEX 
 	hr = mAudioClient->InitializeSharedAudioStream(	AUDCLNT_STREAMFLAGS_EVENTCALLBACK, desiredPeriodInFrames, &format, nullptr );
 	if( hr == AUDCLNT_E_ENGINE_PERIODICITY_LOCKED ) {
 		// engine is already running at a different period; call m_AudioClient->GetSharedModeEnginePeriod to see what it is
-		CI_LOG_I( "IAudioClient::InitializeSharedAudioStream() returned AUDCLNT_E_ENGINE_PERIODICITY_LOCKED" );
+		LOG_AUDIOCLIENT( "IAudioClient::InitializeSharedAudioStream() returned AUDCLNT_E_ENGINE_PERIODICITY_LOCKED" );
 	} else {
 		ASSERT_HR_OK( hr );
 	}
@@ -343,7 +347,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		bool supported = tryFormat( possibleFormat, sampleRate, numChannels, &wfx, &isClosestMatch );
 		if( supported ) {
 			supportedFormats.push_back( { possibleFormat, wfx } );
-			//CI_LOG_I( "supported WAVEFORMATEX: " << waveFormatToString( wfx ) );
+			//LOG_AUDIOCLIENT( "supported WAVEFORMATEX: " << waveFormatToString( wfx ) );
 		}
 	}
 
@@ -371,7 +375,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	hr = mAudioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
 	ASSERT_HR_OK( hr );
 
-	CI_LOG_I( "device: " << device->getName() << ", default device period: " << defaultDevicePeriod / 10000.0 << "ms, min device period: " << minDevicePeriod / 10000.0 << "ms" );
+	LOG_AUDIOCLIENT( "device: " << device->getName() << ", outputs: " << device->getNumOutputChannels() << ", inputs: " << device->getNumInputChannels() << ", default device period: " << defaultDevicePeriod / 10000.0 << "ms, min device period: " << minDevicePeriod / 10000.0 << "ms" );
 
 	::REFERENCE_TIME requestedDuration = framesToHundredNanoSeconds( mAudioClientNumFrames, sampleRate );
 	if( requestedDuration < minDevicePeriod ) {
@@ -383,15 +387,15 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	// - the IAudioClient instance must be recreated after a failed Initialize() attempt
 	bool initializeSucceeded = false;
 	bool eventDriven = eventHandle != nullptr;
-	for( const auto &supportedFormats : supportedFormats ) {
-		auto &wfx = supportedFormats.second;
+	for( const auto &supportedFormat : supportedFormats ) {
+		auto &wfx = supportedFormat.second;
 
 		initializeSucceeded = tryInit( requestedDuration, wfx.Format, immDevice.get(), eventDriven );
 		if( initializeSucceeded ) {
-			CI_LOG_I( "Initialize() succeeded with WAVEFORMATEX: " << waveFormatToString( wfx ) );
+			LOG_AUDIOCLIENT( "Initialize() succeeded with WAVEFORMATEX: " << waveFormatToString( wfx ) );
 
 			mNumChannels = wfx.Format.nChannels;
-			mSampleType = supportedFormats.first.mSampleType;
+			mSampleType = supportedFormat.first.mSampleType;
 			mBytesPerSample = sampleSize( mSampleType );
 			break;
 		}
@@ -416,11 +420,11 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
 
 	if( device->getFramesPerBlock() != actualNumFrames ) {
-		CI_LOG_I( "Device asked for " << device->getFramesPerBlock() << " frames per block but GetBufferSize returned " << actualNumFrames << " frames, updating DeviceInfo.mFramesPerBlock." );
+		LOG_AUDIOCLIENT( "Device asked for " << device->getFramesPerBlock() << " frames per block but GetBufferSize returned " << actualNumFrames << " frames, updating DeviceInfo.mFramesPerBlock." );
 		manager->updateActualFramesPerBlock( device, actualNumFrames );
 	}
 
-	CI_LOG_I( "init complete. mAudioClientNumFrames: " << mAudioClientNumFrames );
+	LOG_AUDIOCLIENT( "init complete. mAudioClientNumFrames: " << mAudioClientNumFrames );
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -559,11 +563,8 @@ void WasapiRenderClientImpl::renderAudio()
 {
 	size_t numWriteFramesAvailable = getWriteFramesAvailable();
 
-//	CI_LOG_I( "[" << mOutputDeviceNode->getContext()->getNumProcessedFrames() << "] rendering inputs. mNumFramesBuffered: " << mNumFramesBuffered << ", numWriteFramesAvailable: " << numWriteFramesAvailable );
 	while( mNumFramesBuffered < numWriteFramesAvailable ) {
-		//CI_LOG_I( "\t- calling renderInputs()..." );
 		mOutputDeviceNode->renderInputs();
-		//CI_LOG_I( "\t- mNumFramesBuffered: " << mNumFramesBuffered );
 	}
 
 	BYTE *audioBuffer;
@@ -744,7 +745,7 @@ void OutputDeviceNodeWasapi::initialize()
 	if( mRenderImpl->mAudioClient && mRenderImpl->mRenderClient ) {
 		// Avoid extra hardware initialization, this can happen when we re-initializes the entire
 		// graph because the frames per block had to be changed
-		CI_LOG_I( "already initialized, returning." );
+		LOG_AUDIOCLIENT( "already initialized, returning." );
 		return;
 	}
 
