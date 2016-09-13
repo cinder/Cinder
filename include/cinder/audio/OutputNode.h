@@ -76,9 +76,9 @@ class CI_API OutputDeviceNode : public OutputNode {
 	const DeviceRef& getDevice() const		{ return mDevice; }
 
 	//! Implemented to return the samplerate of the owned Device.
-	size_t getOutputSampleRate() override			{ return getDevice()->getSampleRate(); }
+	size_t getOutputSampleRate() override;
 	//! Implemented to return the frames per block of the owned Device.
-	size_t getOutputFramesPerBlock() override		{ return getDevice()->getFramesPerBlock(); }
+	size_t getOutputFramesPerBlock() override;
 
 	//! Overridden to append the Device's name.
 	std::string getName() const override;
@@ -90,7 +90,8 @@ class CI_API OutputDeviceNode : public OutputNode {
 	virtual void deviceParamsDidChange();
 
 	DeviceRef					mDevice;
-	bool						mWasEnabledBeforeParamsChange;
+	bool						mWasEnabledBeforeParamsChange, mOutputFramesPerBlockDirty;
+	size_t						mOutputFramesPerBlock;
 	signals::ScopedConnection	mWillChangeConn, mDidChangeConn, mInterruptionBeganConn, mInterruptionEndedConn;
 };
 

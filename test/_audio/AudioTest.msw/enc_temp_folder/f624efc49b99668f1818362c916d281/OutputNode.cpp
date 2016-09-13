@@ -33,7 +33,7 @@ using namespace std;
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
-// OutputNode
+// MARK: - OutputNode
 // ----------------------------------------------------------------------------------------------------
 
 OutputNode::OutputNode( const Format &format )
@@ -43,7 +43,7 @@ OutputNode::OutputNode( const Format &format )
 		setAutoEnabled( false );
 }
 
-void OutputNode::connect( const NodeRef & /*output*/ )
+void OutputNode::connect( const NodeRef &output )
 {
 	CI_ASSERT_MSG( 0, "OutputNode does not support connecting to other outputs" );
 }
@@ -77,7 +77,7 @@ bool OutputNode::checkNotClipping()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// OutputDeviceNode
+// MARK: - OutputDeviceNode
 // ----------------------------------------------------------------------------------------------------
 
 OutputDeviceNode::OutputDeviceNode( const DeviceRef &device, const Format &format )
@@ -94,9 +94,6 @@ OutputDeviceNode::OutputDeviceNode( const DeviceRef &device, const Format &forma
 	// listen to the notifications sent by device property changes in order to update the audio graph.
 	mWillChangeConn = mDevice->getSignalParamsWillChange().connect( bind( &OutputDeviceNode::deviceParamsWillChange, this ) );
 	mDidChangeConn = mDevice->getSignalParamsDidChange().connect( bind( &OutputDeviceNode::deviceParamsDidChange, this ) );
-
-	mInterruptionBeganConn = Context::deviceManager()->getSignalInterruptionBegan().connect( [this] { disable(); } );
-	mInterruptionEndedConn = Context::deviceManager()->getSignalInterruptionEnded().connect( [this] { enable(); } );
 
 	size_t deviceNumChannels = mDevice->getNumOutputChannels();
 
@@ -134,9 +131,13 @@ size_t OutputDeviceNode::getOutputSampleRate()
 
 size_t OutputDeviceNode::getOutputFramesPerBlock()
 {
+	// TODO: try calculating this only after deviceParamsWill change() is called
+	// - but OutputDeviceNode still needs to be able to mark this value as dirty
 	if( mOutputFramesPerBlockDirty ) {
 		mOutputFramesPerBlock = getDevice()->getFramesPerBlock();
 		if( ! isPowerOf2( mOutputFramesPerBlock ) ) {
+			// TODO: is it OK to use the closest power of 2 instead?
+			// - could mean a much smaller buffer, ex if device asks for 1056 samples use a 1024 size buffer instead of 2048
 			mOutputFramesPerBlock = nextPowerOf2( static_cast<uint32_t>( mOutputFramesPerBlock ) );
 		}
 		mOutputFramesPerBlockDirty = false;

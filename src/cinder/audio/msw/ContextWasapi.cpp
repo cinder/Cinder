@@ -249,7 +249,7 @@ bool WasapiAudioClientImpl::tryInit( ::REFERENCE_TIME requestedDuration, const :
 	}
 
 	string hrStr = hresultToString( hr );
-	CI_LOG_W( "Initialize attempt failed, HRESULT error: " << hrStr << ", code: " << hex << hr << dec );
+	CI_LOG_W( "Initialize attempt failed, HRESULT error: " << hrStr << ", code: " << hex << hr << dec << ", WAVEFORMATEX: " << waveFormatToString( format ) );
 
 	createAudioClient( immDevice );
 
@@ -262,7 +262,8 @@ bool WasapiAudioClientImpl::tryInit( ::REFERENCE_TIME requestedDuration, const :
 // https://msdn.microsoft.com/en-us/library/windows/hardware/mt298187(v=vs.85).aspx?f=255&MSPPError=-2147217396#Windows_Audio_Session_API_WASAPI
 bool WasapiAudioClientImpl::testWin10SharedModeLowLatency( const ::WAVEFORMATEX &format )
 {
-	// 2. Setting the audio client properties � note that low latency offload is not supporte
+	// 2. Setting the audio client properties - note that low latency offload is not supported
+
 	AudioClientProperties audioProps = { 0 };
 	audioProps.cbSize = sizeof( AudioClientProperties );
 	audioProps.eCategory = AudioCategory_Media;
@@ -415,7 +416,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
 
 	if( device->getFramesPerBlock() != actualNumFrames ) {
-		CI_LOG_I( "GetBufferSize returned " << actualNumFrames << " frames, updating DeviceInfo.mFramesPerBlock." );
+		CI_LOG_I( "Device asked for " << device->getFramesPerBlock() << " frames per block but GetBufferSize returned " << actualNumFrames << " frames, updating DeviceInfo.mFramesPerBlock." );
 		manager->updateActualFramesPerBlock( device, actualNumFrames );
 	}
 
@@ -495,8 +496,11 @@ void WasapiRenderClientImpl::initRenderClient()
 	ASSERT_HR_OK( hr );
 	mRenderClient = ci::msw::makeComUnique( renderClient );
 
-	// set the ring buffer size to accommodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes. 
-	size_t ringBufferSize = ( mAudioClientNumFrames + mOutputDeviceNode->getFramesPerBlock() ) * mNumChannels * mBytesPerSample;
+	// set the ring buffer size to accommodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes.
+	const size_t RINGBUFFER_PADDING_FACTOR = 2;
+	size_t deviceFramesPerBlock = mOutputDeviceNode->mDevice->getFramesPerBlock();
+	deviceFramesPerBlock = (uint32_t)nextPowerOf2( (uint32_t)deviceFramesPerBlock );
+	size_t ringBufferSize = deviceFramesPerBlock * mNumChannels * mBytesPerSample * RINGBUFFER_PADDING_FACTOR;
 	mRingBuffer.reset( new dsp::RingBufferT<char>( ringBufferSize ) );
 
 	mRenderThread = ::CreateThread( NULL, 0, renderThreadEntryPoint, this, 0, NULL );
@@ -555,8 +559,12 @@ void WasapiRenderClientImpl::renderAudio()
 {
 	size_t numWriteFramesAvailable = getWriteFramesAvailable();
 
-	while( mNumFramesBuffered < numWriteFramesAvailable )
+//	CI_LOG_I( "[" << mOutputDeviceNode->getContext()->getNumProcessedFrames() << "] rendering inputs. mNumFramesBuffered: " << mNumFramesBuffered << ", numWriteFramesAvailable: " << numWriteFramesAvailable );
+	while( mNumFramesBuffered < numWriteFramesAvailable ) {
+		//CI_LOG_I( "\t- calling renderInputs()..." );
 		mOutputDeviceNode->renderInputs();
+		//CI_LOG_I( "\t- mNumFramesBuffered: " << mNumFramesBuffered );
+	}
 
 	BYTE *audioBuffer;
 	HRESULT hr = mRenderClient->GetBuffer( (UINT32)numWriteFramesAvailable, &audioBuffer );
@@ -733,6 +741,9 @@ OutputDeviceNodeWasapi::OutputDeviceNodeWasapi( const DeviceRef &device, bool ex
 
 void OutputDeviceNodeWasapi::initialize()
 {
+	// store initial frames per block, before the Device can possibly be reconfigured based on IAudioClient::GetBufferSize()
+	size_t deviceFramesPerBlockBefore = mDevice->getFramesPerBlock();
+
 	mRenderImpl->init();
 
 	if( getNumChannels() != mRenderImpl->mNumChannels ) {
@@ -742,6 +753,20 @@ void OutputDeviceNodeWasapi::initialize()
 		setNumChannels( mRenderImpl->mNumChannels );
 		// manually call this to make sure internal buffers are the correct size
 		setupProcessWithSumming();
+	}
+
+	if( deviceFramesPerBlockBefore != mRenderImpl->mAudioClientNumFrames ) {
+		// If the IAudioClient needs a different block size, we need to reconfigure the entire graph, as parts of it
+		// may have already configured its buffers based on the previous size.
+		// TODO: if multiple OutputDeviceNodes are allowed, probably want to just re-init the sub-graph connected to this one.
+		// - but auto-pulled nodes need to be updated too
+		mOutputFramesPerBlockDirty = true; // This will tell OutputDeviceNode to recalculate its frames per block to the nearest power of 2.
+
+		mRenderImpl->uninit();
+
+		auto ctx = getContext();
+		ctx->uninitializeAllNodes();
+		ctx->initializeAllNodes();
 	}
 
 	mSampleBuffer.resize( getFramesPerBlock() * getNumChannels() * mRenderImpl->mBytesPerSample );
