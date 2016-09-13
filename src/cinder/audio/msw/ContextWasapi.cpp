@@ -51,10 +51,8 @@
 
 //#define LOG_XRUN( stream )	CI_LOG_I( stream )
 #define LOG_XRUN( stream )	    ( (void)( 0 ) )
-
 //#define LOG_AUDIOCLIENT( stream )	CI_LOG_I( stream )
 #define LOG_AUDIOCLIENT( stream )	    ( (void)( 0 ) )
-
 #define ASSERT_HR_OK( hr ) CI_ASSERT_MSG( hr == S_OK, hresultToString( hr ) )
 
 using namespace std;
@@ -63,8 +61,7 @@ namespace cinder { namespace audio { namespace msw {
 
 namespace {
 
-//! When there are mismatched samplerates between OutputDeviceNode and InputDeviceNode, the capture AudioClient's buffer needs to be larger.
-const size_t CAPTURE_CONVERSION_PADDING_FACTOR = 2; // TODO: use RINGBUFFER_PADDING_FACTOR instead
+const size_t RINGBUFFER_PADDING_FACTOR = 2;
 
 // According to the docs, the only guarunteed way to find an acceptable format is to try IAudioClient::IsFormatSupported() repeatedly until you find one.
 // - PKEY_AudioEngine_DeviceFormat docs state that it should not be used for the format in exclusive mode as it still might not be acceptable.
@@ -501,7 +498,6 @@ void WasapiRenderClientImpl::initRenderClient()
 	mRenderClient = ci::msw::makeComUnique( renderClient );
 
 	// set the ring buffer size to accommodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes.
-	const size_t RINGBUFFER_PADDING_FACTOR = 2;
 	size_t deviceFramesPerBlock = mOutputDeviceNode->mDevice->getFramesPerBlock();
 	deviceFramesPerBlock = (uint32_t)nextPowerOf2( (uint32_t)deviceFramesPerBlock );
 	size_t ringBufferSize = deviceFramesPerBlock * mNumChannels * mBytesPerSample * RINGBUFFER_PADDING_FACTOR;
@@ -617,23 +613,14 @@ void WasapiCaptureClientImpl::init()
 	initAudioClient( device, numChannels, nullptr );
 	initCapture();
 
-
-	bool needsConverter = device->getSampleRate() != mInputDeviceNode->getSampleRate();
-
-	// TODO: mAudioClientFrames should be left at what the IAudioClient wants
-	// - Converter buffers may need to be larger but this should be a separate value
-	if( needsConverter )
-		mAudioClientNumFrames *= CAPTURE_CONVERSION_PADDING_FACTOR;
-
-
 	mMaxReadFrames = size_t( mAudioClientNumFrames * mInputDeviceNode->getRingBufferPaddingFactor() );
 
 	for( size_t ch = 0; ch < mNumChannels; ch++ )
-		mRingBuffers.emplace_back( mMaxReadFrames * mNumChannels );
+		mRingBuffers.emplace_back( mMaxReadFrames * mNumChannels * RINGBUFFER_PADDING_FACTOR );
 
 	mReadBuffer.setSize( mMaxReadFrames, mNumChannels );
 
-	if( needsConverter ) {
+	if( device->getSampleRate() != mInputDeviceNode->getSampleRate() ) {
 		mConverter = audio::dsp::Converter::create( device->getSampleRate(), mInputDeviceNode->getSampleRate(), mNumChannels, mNumChannels, mMaxReadFrames );
 		mConvertedReadBuffer.setSize( mConverter->getDestMaxFramesPerBlock(), mNumChannels );
 	}
