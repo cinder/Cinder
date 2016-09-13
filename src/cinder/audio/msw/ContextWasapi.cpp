@@ -741,8 +741,16 @@ OutputDeviceNodeWasapi::OutputDeviceNodeWasapi( const DeviceRef &device, bool ex
 
 void OutputDeviceNodeWasapi::initialize()
 {
+	if( mRenderImpl->mAudioClient && mRenderImpl->mRenderClient ) {
+		// Avoid extra hardware initialization, this can happen when we re-initializes the entire
+		// graph because the frames per block had to be changed
+		CI_LOG_I( "already initialized, returning." );
+		return;
+	}
+
 	// store initial frames per block, before the Device can possibly be reconfigured based on IAudioClient::GetBufferSize()
 	size_t deviceFramesPerBlockBefore = mDevice->getFramesPerBlock();
+	bool reconfigureSummingBuffers = false;
 
 	mRenderImpl->init();
 
@@ -751,8 +759,7 @@ void OutputDeviceNodeWasapi::initialize()
 		// kludge: Update OutputDeviceNode's channels to match the number requested from IAudioClient.
 		// - this will call Node::uninitializeImpl(), but that won't do anything because we haven't completed our initialization yet.
 		setNumChannels( mRenderImpl->mNumChannels );
-		// manually call this to make sure internal buffers are the correct size
-		setupProcessWithSumming();
+		reconfigureSummingBuffers = true;
 	}
 
 	if( deviceFramesPerBlockBefore != mRenderImpl->mAudioClientNumFrames ) {
@@ -761,13 +768,17 @@ void OutputDeviceNodeWasapi::initialize()
 		// TODO: if multiple OutputDeviceNodes are allowed, probably want to just re-init the sub-graph connected to this one.
 		// - but auto-pulled nodes need to be updated too
 		mOutputFramesPerBlockDirty = true; // This will tell OutputDeviceNode to recalculate its frames per block to the nearest power of 2.
-
-		mRenderImpl->uninit();
+		reconfigureSummingBuffers = true;
 
 		auto ctx = getContext();
 		ctx->uninitializeAllNodes();
 		ctx->initializeAllNodes();
+
+		setupProcessWithSumming();
 	}
+
+	if( reconfigureSummingBuffers )
+		setupProcessWithSumming();
 
 	mSampleBuffer.resize( getFramesPerBlock() * getNumChannels() * mRenderImpl->mBytesPerSample );
 }
