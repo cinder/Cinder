@@ -372,7 +372,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	hr = mAudioClient->GetDevicePeriod( &defaultDevicePeriod, &minDevicePeriod );
 	ASSERT_HR_OK( hr );
 
-	LOG_AUDIOCLIENT( "device: " << device->getName() << ", outputs: " << device->getNumOutputChannels() << ", inputs: " << device->getNumInputChannels() << ", default device period: " << defaultDevicePeriod / 10000.0 << "ms, min device period: " << minDevicePeriod / 10000.0 << "ms" );
+	LOG_AUDIOCLIENT( "device: " << device->getName() << ", default device period: " << defaultDevicePeriod / 10000.0 << "ms, min device period: " << minDevicePeriod / 10000.0 << "ms" );
 
 	::REFERENCE_TIME requestedDuration = framesToHundredNanoSeconds( mAudioClientNumFrames, sampleRate );
 	if( requestedDuration < minDevicePeriod ) {
@@ -417,7 +417,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	mAudioClientNumFrames = actualNumFrames; // update with the actual size
 
 	if( device->getFramesPerBlock() != actualNumFrames ) {
-		LOG_AUDIOCLIENT( "Device asked for " << device->getFramesPerBlock() << " frames per block but GetBufferSize returned " << actualNumFrames << " frames, updating DeviceInfo.mFramesPerBlock." );
+		LOG_AUDIOCLIENT( "GetBufferSize returned " << actualNumFrames << " frames, updating DeviceInfo.mFramesPerBlock." );
 		manager->updateActualFramesPerBlock( device, actualNumFrames );
 	}
 
