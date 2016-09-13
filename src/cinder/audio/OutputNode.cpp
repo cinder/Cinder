@@ -134,12 +134,12 @@ size_t OutputDeviceNode::getOutputSampleRate()
 
 size_t OutputDeviceNode::getOutputFramesPerBlock()
 {
-#if 0
+#if 1
 	if( mOutputFramesPerBlockDirty ) {
 		mOutputFramesPerBlock = getDevice()->getFramesPerBlock();
-		if( ! isPowerOf2( mOutputFramesPerBlock ) ) {
-			mOutputFramesPerBlock = nextPowerOf2( static_cast<uint32_t>( mOutputFramesPerBlock ) );
-		}
+		//if( ! isPowerOf2( mOutputFramesPerBlock ) ) {
+		//	mOutputFramesPerBlock = nextPowerOf2( static_cast<uint32_t>( mOutputFramesPerBlock ) );
+		//}
 		mOutputFramesPerBlockDirty = false;
 	}
 	
