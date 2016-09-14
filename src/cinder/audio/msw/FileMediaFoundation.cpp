@@ -119,16 +119,16 @@ size_t SourceFileMediaFoundation::performRead( Buffer *buffer, size_t bufferFram
 
 	size_t readCount = 0;
 	while( readCount < numFramesNeeded ) {
-
 		// first drain any frames that were previously read from an IMFSample
 		if( mFramesRemainingInReadBuffer ) {
 			size_t remainingToDrain = std::min( mFramesRemainingInReadBuffer, numFramesNeeded );
 
 			// TODO: use Buffer::copyChannel
+			size_t writeOffset = bufferFrameOffset + readCount;
 			for( size_t ch = 0; ch < mNumChannels; ch++ ) {
 				float *readChannel = mReadBuffer.getChannel( ch ) + mReadBufferPos;
-				float *resultChannel = buffer->getChannel( ch );
-				memcpy( resultChannel + readCount, readChannel, remainingToDrain * sizeof( float ) );
+				float *writeChannel = buffer->getChannel( ch );
+				memcpy( writeChannel + writeOffset, readChannel, remainingToDrain * sizeof( float ) );
 			}
 
 			mReadBufferPos += remainingToDrain;
@@ -161,11 +161,11 @@ size_t SourceFileMediaFoundation::performRead( Buffer *buffer, size_t bufferFram
 			outNumFrames = numFramesNeeded - readCount;
 		}
 
-		size_t offset = bufferFrameOffset + readCount;
+		size_t writeOffset = bufferFrameOffset + readCount;
 		for( size_t ch = 0; ch < mNumChannels; ch++ ) {
 			float *readChannel = mReadBuffer.getChannel( ch );
-			float *resultChannel = buffer->getChannel( ch );
-			memcpy( resultChannel + readCount, readChannel, outNumFrames * sizeof( float ) );
+			float *writeChannel = buffer->getChannel( ch );
+			memcpy( writeChannel + writeOffset, readChannel, outNumFrames * sizeof( float ) );
 		}
 
 		mReadBufferPos += outNumFrames;
