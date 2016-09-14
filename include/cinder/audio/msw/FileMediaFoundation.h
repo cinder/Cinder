@@ -55,7 +55,7 @@ class SourceFileMediaFoundation : public SourceFile {
 
   private:
 	void		initReader();
-	size_t		processNextReadSample();
+	size_t		processNextReadSample( bool *endOfFile );
 
 	ci::msw::ManagedComPtr<::IMFSourceReader>		mSourceReader;
 	ci::msw::ManagedComPtr<ci::msw::ComIStream>		mComIStream;
