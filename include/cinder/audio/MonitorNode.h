@@ -125,7 +125,9 @@ class MonitorSpectralNode : public MonitorNode {
 
 	//! Returns the magnitude spectrum of the currently sampled audio stream, suitable for consuming on the main UI thread.
 	const	std::vector<float>& getMagSpectrum();
-	//! Returns the number of frequency bins in the analyzed magnitude spectrum. Equivilant to fftSize / 2.
+	//! Returns the 'center of mass' of the magnitude spectrum, which is often correlated with the perception of 'brightness', in hertz.
+	float	getSpectralCentroid();
+	//! Returns the number of frequency bins in the analyzed magnitude spectrum. Equivalent to fftSize / 2.
 	size_t	getNumBins() const				{ return mFftSize / 2; }
 	//! Returns the size of the FFT used for spectral analysis.
 	size_t	getFftSize() const				{ return mFftSize; }
