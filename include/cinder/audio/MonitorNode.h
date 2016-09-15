@@ -148,6 +148,7 @@ class MonitorSpectralNode : public MonitorNode {
 	size_t						mFftSize;
 	dsp::WindowType				mWindowType;
 	float						mSmoothingFactor;
+	uint64_t					mLastFrameMagSpectrumComputed;
 };
 
 } } // namespace cinder::audio
