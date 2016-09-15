@@ -194,8 +194,6 @@ void SamplePlayerNodeTestApp::setupBufferRecorderNode()
 void SamplePlayerNodeTestApp::setSourceFile( const DataSourceRef &dataSource )
 {
 	mSourceFile = audio::load( dataSource, audio::master()->getSampleRate() );
-	mLoopEndSlider.mMax = (float)mSourceFile->getNumSeconds();
-	mLoopBeginSlider.set( (float)mSourceFile->getNumSeconds() );
 
 	getWindow()->setTitle( dataSource->getFilePath().filename().string() );
 
@@ -486,6 +484,8 @@ void SamplePlayerNodeTestApp::fileDrop( FileDropEvent event )
 	}
 
 	mLoopBeginSlider.mMax = mLoopEndSlider.mMax = (float)mSamplePlayerNode->getNumSeconds();
+	mLoopBeginSlider.set( mSamplePlayerNode->getLoopBeginTime() );
+	mLoopEndSlider.set( mSamplePlayerNode->getLoopEndTime() );
 
 	CI_LOG_V( "loaded and set new source buffer, channels: " << mSourceFile->getNumChannels() << ", frames: " << mSourceFile->getNumFrames() );
 	PRINT_GRAPH( audio::master() );
