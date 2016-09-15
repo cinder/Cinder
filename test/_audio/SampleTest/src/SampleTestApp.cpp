@@ -115,7 +115,7 @@ void SamplePlayerNodeTestApp::setupBufferPlayerNode()
 	auto bufferPlayer = audio::master()->makeNode( new audio::BufferPlayerNode() );
 
 	auto loadFn = [bufferPlayer, this] {
-		bufferPlayer->loadBuffer( mSourceFile );
+		bufferPlayer->loadBuffer( mSourceFile->clone() );
 		mWaveformPlot.load( bufferPlayer->getBuffer(), getWindowBounds() );
 		CI_LOG_V( "loaded source buffer, frames: " << bufferPlayer->getBuffer()->getNumFrames() );
 
@@ -157,7 +157,7 @@ void SamplePlayerNodeTestApp::setupFilePlayerNode()
 //	mSourceFile->setMaxFramesPerRead( 8192 );
 	bool asyncRead = mAsyncButton.mEnabled;
 	CI_LOG_V( "async read: " << asyncRead );
-	mSamplePlayerNode = ctx->makeNode( new audio::FilePlayerNode( mSourceFile, asyncRead ) );
+	mSamplePlayerNode = ctx->makeNode( new audio::FilePlayerNode( mSourceFile->clone(), asyncRead ) );
 
 	// TODO: it is pretty surprising when you recreate mMonitor here without checking if there has already been one added.
 	//	- user will no longer see the old mMonitor, but the context still owns a reference to it, so another gets added each time we call this method.
@@ -473,14 +473,14 @@ void SamplePlayerNodeTestApp::fileDrop( FileDropEvent event )
 
 	auto bufferPlayer = dynamic_pointer_cast<audio::BufferPlayerNode>( mSamplePlayerNode );
 	if( bufferPlayer ) {
-		bufferPlayer->loadBuffer( mSourceFile );
+		bufferPlayer->loadBuffer( mSourceFile->clone() );
 		mWaveformPlot.load( bufferPlayer->getBuffer(), getWindowBounds() );
 	}
 	else {
 		auto filePlayer = dynamic_pointer_cast<audio::FilePlayerNode>( mSamplePlayerNode );
 		CI_ASSERT_MSG( filePlayer, "expected sample player to be either BufferPlayerNode or FilePlayerNode" );
 
-		filePlayer->setSourceFile( mSourceFile );
+		filePlayer->setSourceFile( mSourceFile->clone() );
 	}
 
 	mLoopBeginSlider.mMax = mLoopEndSlider.mMax = (float)mSamplePlayerNode->getNumSeconds();
