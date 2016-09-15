@@ -170,23 +170,9 @@ const std::vector<float>& MonitorSpectralNode::getMagSpectrum()
 
 float MonitorSpectralNode::getSpectralCentroid()
 {
+
 	const auto &magSpectrum = getMagSpectrum();
-	float binToFreq = (float)getSampleRate() / (float)mFftSize;
-
-	float FA = 0;	// f(n) * x(n)
-	float A = 0;	// x(n)
-	for( size_t n = 0; n < magSpectrum.size(); n++ ) {
-		float freq = n * binToFreq;
-		float mag = magSpectrum[n];
-
-		FA += freq * mag;
-		A += mag;
-	}
-
-	if( A < EPSILON )
-		return 0;
-
-	return FA / A;
+	return dsp::spectralCentroid( magSpectrum.data(), magSpectrum.size(), getSampleRate() );
 }
 
 void MonitorSpectralNode::setSmoothingFactor( float factor )

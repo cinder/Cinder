@@ -126,6 +126,8 @@ class MonitorSpectralNode : public MonitorNode {
 	//! Returns the magnitude spectrum of the currently sampled audio stream, suitable for consuming on the main UI thread.
 	const	std::vector<float>& getMagSpectrum();
 	//! Returns the 'center of mass' of the magnitude spectrum, which is often correlated with the perception of 'brightness', in hertz.
+	//! \note The calculation of the magnitude spectrum happens on the main thread, so the result of getMagSpectrum() and getSpectralCentroid() might be analyzing different
+	//! audio data that is streaming on the audio thread. For a more precise centroid of getMagSpectrum(), you can use audio::dsp::spectralCentroid() directly on it.
 	float	getSpectralCentroid();
 	//! Returns the number of frequency bins in the analyzed magnitude spectrum. Equivalent to fftSize / 2.
 	size_t	getNumBins() const				{ return mFftSize / 2; }
