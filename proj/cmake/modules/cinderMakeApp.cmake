@@ -129,6 +129,11 @@ function( ci_make_app )
 		get_filename_component( ASSETS_SYMLINK_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ABSOLUTE )
 
 		if( EXISTS "${ARG_ASSETS_PATH}" AND IS_DIRECTORY "${ARG_ASSETS_PATH}" )
+			# Need to ensure that the runtime output dir already exists before symlinking something into it
+			if( NOT EXISTS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+				file( MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} )
+			endif()
+
 			execute_process(
 					COMMAND "${CMAKE_COMMAND}" "-E" "create_symlink" "${ARG_ASSETS_PATH}" "${ASSETS_SYMLINK_PATH}"
 					RESULT_VARIABLE resultCode
