@@ -12,7 +12,7 @@ function( ci_make_app )
 
 	if( NOT ARG_ASSETS_PATH )
 		# Set the default assets path to be in the standard app location (next to proj folder)
-		get_filename_component( ARG_ASSETS_PATH "../../assets" ABSOLUTE )
+		get_filename_component( ARG_ASSETS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../assets" ABSOLUTE )
 	endif()
 
 	if( ARG_UNPARSED_ARGUMENTS )
