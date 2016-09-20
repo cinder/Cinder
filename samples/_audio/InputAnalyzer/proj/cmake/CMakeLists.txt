@@ -4,13 +4,13 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 project( audio-InputAnalyzer )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE )
-get_filename_component( SAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
+get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 set( SRC_FILES
-	${SAMPLE_DIR}/src/InputAnalyzerApp.cpp
-	${SAMPLE_DIR}/../common/AudioDrawUtils.cpp
+	${APP_PATH}/src/InputAnalyzerApp.cpp
+	${APP_PATH}/../common/AudioDrawUtils.cpp
 )
 
 ci_make_app(
