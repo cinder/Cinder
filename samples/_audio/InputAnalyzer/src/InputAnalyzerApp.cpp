@@ -15,10 +15,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/TextureFont.h"
 
-#include "cinder/audio/Context.h"
-#include "cinder/audio/MonitorNode.h"
-#include "cinder/audio/Utilities.h"
-
+#include "cinder/audio/audio.h"
 #include "../../common/AudioDrawUtils.h"
 
 using namespace ci;
@@ -32,6 +29,7 @@ class InputAnalyzer : public App {
 	void update() override;
 	void draw() override;
 
+	void drawSpectralCentroid();
 	void drawLabels();
 	void printBinInfo( int mouseX );
 
@@ -84,7 +82,28 @@ void InputAnalyzer::draw()
 	gl::enableAlphaBlending();
 
 	mSpectrumPlot.draw( mMagSpectrum );
+	drawSpectralCentroid();
 	drawLabels();
+}
+
+void InputAnalyzer::drawSpectralCentroid()
+{
+	// The spectral centroid is largely correlated with 'brightness' of a sound. It is the center of mass of all frequency values.
+	// See the note on audio::MonitorSpectralNode::getSpectralCentroid() - it may be analyzing a more recent magnitude spectrum
+	// than what we're drawing in the SpectrumPlot. It is not a problem for this simple sample, but if you need a more precise
+	// value, use audio::dsp::spectralCentroid() directly.
+
+	float spectralCentroid = mMonitorSpectralNode->getSpectralCentroid();
+
+	float nyquist = (float)audio::master()->getSampleRate() / 2.0f;
+	Rectf bounds = mSpectrumPlot.getBounds();
+
+	float freqNormalized = spectralCentroid / nyquist;
+	float barCenter = bounds.x1 + freqNormalized * bounds.getWidth();
+	Rectf verticalBar = { barCenter - 2, bounds.y1, barCenter + 2, bounds.y2 };
+
+	gl::ScopedColor colorScope( 0.85f, 0.45f, 0, 0.4f ); // transparent orange
+	gl::drawSolidRect( verticalBar );
 }
 
 void InputAnalyzer::drawLabels()

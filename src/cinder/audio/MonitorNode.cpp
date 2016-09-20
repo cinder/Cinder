@@ -95,7 +95,8 @@ void MonitorNode::fillCopiedBuffer()
 // ----------------------------------------------------------------------------------------------------
 
 MonitorSpectralNode::MonitorSpectralNode( const Format &format )
-	: MonitorNode( format ), mFftSize( format.getFftSize() ), mWindowType( format.getWindowType() ), mSmoothingFactor( 0.5f )
+	: MonitorNode( format ), mFftSize( format.getFftSize() ), mWindowType( format.getWindowType() ),
+		mSmoothingFactor( 0.5f ), mLastFrameMagSpectrumComputed( 0 )
 {
 }
 
@@ -125,6 +126,12 @@ void MonitorSpectralNode::initialize()
 // - alternatively, this tap can force mono output, which only works if it isn't a tap but is really a leaf node (no output).
 const std::vector<float>& MonitorSpectralNode::getMagSpectrum()
 {
+	uint64_t numFramesProcessed = getContext()->getNumProcessedFrames();
+	if( mLastFrameMagSpectrumComputed == numFramesProcessed )
+		return mMagSpectrum;
+
+	mLastFrameMagSpectrumComputed = numFramesProcessed;
+
 	fillCopiedBuffer();
 
 	// window the copied buffer and compute forward FFT transform
@@ -146,11 +153,11 @@ const std::vector<float>& MonitorSpectralNode::getMagSpectrum()
 	float *real = mBufferSpectral.getReal();
 	float *imag = mBufferSpectral.getImag();
 
-	// remove nyquist component
+	// remove Nyquist component
 	imag[0] = 0.0f;
 
 	// compute normalized magnitude spectrum
-	// TODO: break this into vector cartisian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
+	// TODO: break this into vector cartesian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
 	const float magScale = 1.0f / mFft->getSize();
 	for( size_t i = 0; i < mMagSpectrum.size(); i++ ) {
 		float re = real[i];
@@ -159,6 +166,13 @@ const std::vector<float>& MonitorSpectralNode::getMagSpectrum()
 	}
 
 	return mMagSpectrum;
+}
+
+float MonitorSpectralNode::getSpectralCentroid()
+{
+
+	const auto &magSpectrum = getMagSpectrum();
+	return dsp::spectralCentroid( magSpectrum.data(), magSpectrum.size(), getSampleRate() );
 }
 
 void MonitorSpectralNode::setSmoothingFactor( float factor )

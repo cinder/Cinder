@@ -259,4 +259,24 @@ void normalize( float *array, size_t length, float maxValue )
 	}
 }
 
+float spectralCentroid( const float *magArray, size_t magArrayLength, size_t sampleRate )
+{
+	float binToFreq = (float)sampleRate / (float)(magArrayLength * 2 ); // sr / fft size
+	float FA = 0;	// f(n) * x(n)
+	float A = 0;	// x(n)
+
+	for( size_t n = 0; n < magArrayLength; n++ ) {
+		float freq = n * binToFreq;
+		float mag = magArray[n];
+
+		FA += freq * mag;
+		A += mag;
+	}
+
+	if( A < EPSILON )
+		return 0;
+
+	return FA / A;
+}
+
 } } } // namespace cinder::audio::dsp
