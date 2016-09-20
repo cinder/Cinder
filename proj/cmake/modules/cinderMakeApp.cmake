@@ -1,13 +1,18 @@
 include( CMakeParseArguments )
 
 function( ci_make_app )
-	set( oneValueArgs APP_NAME CINDER_PATH )
+	set( oneValueArgs APP_NAME CINDER_PATH ASSETS_PATH )
 	set( multiValueArgs SOURCES INCLUDES LIBRARIES RESOURCES BLOCKS )
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
 	if( NOT ARG_APP_NAME )
 		set( ARG_APP_NAME "${PROJECT_NAME}" )
+	endif()
+
+	if( NOT ARG_ASSETS_PATH )
+		# Set the default assets path to be in the standard app location (next to proj folder)
+		get_filename_component( ARG_ASSETS_PATH "../../assets" ABSOLUTE )
 	endif()
 
 	if( ARG_UNPARSED_ARGUMENTS )
@@ -29,6 +34,9 @@ function( ci_make_app )
 		endif()
 	endif()
 
+	set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ARG_APP_NAME} )
+
+
 	if( CINDER_VERBOSE )
 		message( STATUS "APP_NAME: ${ARG_APP_NAME}" )
 		message( STATUS "SOURCES: ${ARG_SOURCES}" )
@@ -40,6 +48,7 @@ function( ci_make_app )
 		message( STATUS "CINDER_TARGET: ${CINDER_TARGET}" )
 		message( STATUS "CINDER_LIB_DIRECTORY: ${CINDER_LIB_DIRECTORY}" )
 		message( STATUS "CINDER BLOCKS: ${ARG_BLOCKS}" )
+		message( STATUS "ASSETS_PATH: ${ARG_ASSETS_PATH}" )
 	endif()
 
 	# pull in cinder's exported configuration
@@ -115,6 +124,20 @@ function( ci_make_app )
 			MACOSX_BUNDLE_BUNDLE_NAME ${ARG_APP_NAME}
 			MACOSX_BUNDLE_ICON_FILE ${ICON_NAME}
 		)
+	elseif( CINDER_LINUX )
+		# If an assets directory exists, symlink it next to the executable
+		get_filename_component( ASSETS_SYMLINK_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ABSOLUTE )
+
+		if( EXISTS "${ARG_ASSETS_PATH}" AND IS_DIRECTORY "${ARG_ASSETS_PATH}" )
+			execute_process(
+					COMMAND "${CMAKE_COMMAND}" "-E" "create_symlink" "${ARG_ASSETS_PATH}" "${ASSETS_SYMLINK_PATH}"
+					RESULT_VARIABLE resultCode
+			)
+
+			if( NOT resultCode EQUAL 0 )
+			  	message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_SYMLINK_PATH}', result: ${resultCode}" )
+			endif()
+		endif()
 	endif()
 
 endfunction()
