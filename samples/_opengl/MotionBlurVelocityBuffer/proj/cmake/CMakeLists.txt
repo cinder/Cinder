@@ -4,13 +4,13 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 project( opengl-MotionBlurVelocityBuffer )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE )
-get_filename_component( SAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
+get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 set( SRC_FILES
-	${SAMPLE_DIR}/src/MotionBlurVelocityBufferApp.cpp
-	${SAMPLE_DIR}/src/BlurrableThings.cpp
+	${APP_PATH}/src/MotionBlurVelocityBufferApp.cpp
+	${APP_PATH}/src/BlurrableThings.cpp
 )
 
 ci_make_app(
