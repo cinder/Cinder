@@ -60,7 +60,7 @@ inline void copyToBufferList( ::AudioBufferList *bufferList, const Buffer *buffe
 		memcpy( bufferList->mBuffers[i].mData, buffer->getChannel( i ), bufferList->mBuffers[i].mDataByteSize );
 }
 
-inline void copyToBufferList(::AudioBufferList *bufferList, const Buffer *buffer, size_t startFrame, size_t frameCount )
+inline void copyToBufferList( ::AudioBufferList *bufferList, const Buffer *buffer, size_t startFrame, size_t frameCount )
 {
 	for( UInt32 i = 0; i < bufferList->mNumberBuffers; i++ ) {
 		Float32 *startPtr = static_cast<Float32 *>( bufferList->mBuffers[i].mData ) + startFrame;

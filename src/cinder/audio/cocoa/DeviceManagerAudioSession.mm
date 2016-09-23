@@ -227,9 +227,7 @@ const DeviceRef& DeviceManagerAudioSession::getRemoteIODevice()
 
 void DeviceManagerAudioSession::activateSession()
 {
-	CI_LOG_V("Activating Session");
-
-	if( !mSessionNotificationHandler ) {
+	if( ! mSessionNotificationHandler ) {
 		mSessionNotificationHandler = [AudioSessionNotificationHandlerImpl new];
 		mSessionNotificationHandler->mDeviceManager = this;
 
@@ -242,7 +240,7 @@ void DeviceManagerAudioSession::activateSession()
 	bool didActivate = [globalSession setActive:YES error:&error];
 	CI_ASSERT( !error );
 
-	if( !didActivate )
+	if( ! didActivate )
 		throw AudioDeviceExc( "Failed to activate global AVAudioSession." );
 
 	mSessionIsActive = true;
