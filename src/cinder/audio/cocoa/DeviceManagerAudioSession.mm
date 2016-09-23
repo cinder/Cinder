@@ -24,7 +24,6 @@
 #include "cinder/audio/cocoa/DeviceManagerAudioSession.h"
 #include "cinder/audio/Exception.h"
 #include "cinder/CinderAssert.h"
-#include "cinder/Log.h"
 
 #include "cinder/cocoa/CinderCocoa.h"
 
@@ -210,12 +209,7 @@ void DeviceManagerAudioSession::endInterruption( bool shouldResume )
 {
 	mSessionIsActive = true;
 
-	if( shouldResume ) {
-		CI_LOG_V("Resume after interruption");
-	}
-
-	// TODO(ryan): Somehow notify whether to resume or not.
-	mSignalInterruptionEnded.emit();
+	mSignalInterruptionEnded.emit( shouldResume );
 }
 
 

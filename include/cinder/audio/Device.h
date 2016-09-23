@@ -130,7 +130,7 @@ class DeviceManager : private Noncopyable {
 	virtual bool			isFormatUpdatedAsync() const		{ return false; }
 
 	signals::Signal<void()> &getSignalInterruptionBegan() { return mSignalInterruptionBegan; }
-	signals::Signal<void()> &getSignalInterruptionEnded() { return mSignalInterruptionEnded; }
+	signals::Signal<void(bool)> &getSignalInterruptionEnded() { return mSignalInterruptionEnded; }
   protected:
 	DeviceManager() {}
 
@@ -141,7 +141,8 @@ class DeviceManager : private Noncopyable {
 
 	std::vector<DeviceRef> mDevices;
 
-	signals::Signal<void()> mSignalInterruptionBegan, mSignalInterruptionEnded;
+	signals::Signal<void()> mSignalInterruptionBegan;
+	signals::Signal<void(bool)> mSignalInterruptionEnded;
 };
 
 } } // namespace cinder::audio
