@@ -183,6 +183,10 @@ class TextureBase {
 		void	setDataType( GLint dataType ) { mDataType = dataType; }
 		//! Sets the Texture's data type format to be automatically selected based on the context.
 		void	setAutoDataType() { mDataType = -1; }
+		//! Sets the data format parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination.
+		void	setDataFormat( GLint dataFormat ) { mDataFormat = dataFormat; }
+		//! Sets the Texture's data format to be automatically selected based on the context.
+		void	setAutoDataFormat() { mDataFormat = -1; }
 		
 		// Specifies the texture comparison mode for currently bound depth textures.
 		void	setCompareMode( GLenum compareMode ) { mCompareMode = compareMode; }
@@ -227,6 +231,10 @@ class TextureBase {
 		GLint	getDataType() const { return mDataType; }
 		//! Returns whether the Texture's data type will be automatically selected based on the context.
 		bool	isAutoDataType() const { return mDataType == -1; }
+		//! Returns the Texture's internal format. A value of -1 implies automatic selection of the data format based on the context.
+		GLint	getDataFormat() const { return mDataFormat; }
+		//! Returns whether the Texture's data format will be automatically selected based on the context.
+		bool	isAutoDataFormat() const { return mDataFormat == -1; }
 		
 		//! Returns the horizontal wrapping behavior for the texture coordinates.
 		GLenum	getWrapS() const { return mWrapS; }
@@ -281,7 +289,7 @@ class TextureBase {
 		GLint				mMaxMipmapLevel;
 		bool				mImmutableStorage;
 		GLfloat				mMaxAnisotropy;
-		GLint				mInternalFormat, mDataType;
+		GLint				mInternalFormat, mDataType, mDataFormat;
 		bool				mSwizzleSpecified;
 		std::array<GLint,4>	mSwizzleMask;
 		bool				mBorderSpecified;
@@ -298,7 +306,7 @@ class TextureBase {
 	TextureBase();
 	TextureBase( GLenum target, GLuint textureId, GLint internalFormat );
 	
-	void			initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataType );
+	void			initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataType, GLint defaultDataFormat );
 
 	virtual void	printDims( std::ostream &os ) const = 0;
 	
@@ -437,7 +445,7 @@ class Texture1d : public TextureBase {
 	//! Constructs a Texture1d using the top row of \a surface
 	static Texture1dRef create( const Surface8u &surface, const Format &format = Format() );
 	//! Constructs a Texture1d using the data pointed to by \a data, in format \a dataFormat. For a dataType other than \c GL_UNSIGNED_CHAR use \a format.setDataType()
-	static Texture1dRef	create( const void *data, GLenum dataFormat, int width, const Format &format = Format() );
+	static Texture1dRef	create( const void *data, int width, const Format &format = Format() );
 	
 	//! Updates the Texture1d using the top row of \a surface.
 	void	update( const Surface8u &surface, int mipLevel = 0 );
@@ -454,7 +462,7 @@ class Texture1d : public TextureBase {
   protected:
   	Texture1d( GLint width, Format format );
 	Texture1d( const Surface8u &surface, Format format );
-	Texture1d( const void *data, GLenum dataFormat, int width, Format format );
+	Texture1d( const void *data, int width, Format format );
 
 	void	printDims( std::ostream &os ) const override;
 
@@ -512,7 +520,7 @@ class Texture2d : public TextureBase {
 	//! Constructs a texture of size(\a width, \a height) and allocates storage.
 	static Texture2dRef	create( int width, int height, const Format &format = Format() );
 	//! Constructs a texture of size(\a width, \a height). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR. Ignores \a format.loadTopDown().
-	static Texture2dRef	create( const void *data, GLenum dataFormat, int width, int height, const Format &format = Format() );
+	static Texture2dRef	create( const void *data, int width, int height, const Format &format = Format() );
 	//! Constructs a Texture based on the contents of \a surface.
 	static Texture2dRef	create( const Surface8u &surface, const Format &format = Format() );
 	//! Constructs a Texture based on the contents of \a channel. Sets swizzle mask to {R,R,R,1} where supported unless otherwise specified in \a format.
@@ -602,7 +610,7 @@ class Texture2d : public TextureBase {
   protected:
 
 	Texture2d( int width, int height, Format format = Format() );
-	Texture2d( const void *data, GLenum dataFormat, int width, int height, Format format = Format() );
+	Texture2d( const void *data, int width, int height, Format format = Format() );
 	Texture2d( const Surface8u &surface, Format format = Format() );
 	Texture2d( const Surface16u &surface, Format format = Format() );
 	Texture2d( const Surface32f &surface, Format format = Format() );
@@ -614,13 +622,13 @@ class Texture2d : public TextureBase {
 	Texture2d( const TextureData &data, Format format );
 	
 	void	printDims( std::ostream &os ) const override;
-	void	initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataType );
+	void	initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataFormat, GLint defaultDataType );
 	void	initMaxMipmapLevel();
 	template<typename T>
 	void	setData( const SurfaceT<T> &surface, bool createStorage, int mipLevel, const ivec2 &offset );
 	template<typename T>
 	void	setData( const ChannelT<T> &channel, bool createStorage, int mipLevel, const ivec2 &offset );
-	void	initData( const void *data, GLenum dataFormat, const Format &format );
+	void	initData( const void *data, const Format &format );
 	void	initData( const ImageSourceRef &imageSource, const Format &format );
 #if ! defined( CINDER_GL_ES )
 	void	initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, GLint dataType, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo );

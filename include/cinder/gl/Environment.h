@@ -67,10 +67,10 @@ class Environment {
 	//! Returns whether this platform supports Texture Level-of-Detail. \c true everywhere but ES 2, which requires \c GL_EXT_shader_texture_lod
 	virtual bool			supportsTextureLod() const = 0;
 
-	virtual void			allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) = 0;
-	virtual void			allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) = 0;
-	virtual void			allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) = 0;
-	virtual void			allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) = 0;	
+	virtual void			allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataFormat, GLint texImageDataType ) = 0;
+	virtual void			allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataFormat, GLint texImageDataType ) = 0;
+	virtual void			allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable, GLint texImageDataFormat, GLint texImageDataType ) = 0;
+	virtual void			allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataFormat, GLint texImageDataType ) = 0;
 
 	virtual void			objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) = 0;
 
