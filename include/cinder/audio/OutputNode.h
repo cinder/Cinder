@@ -88,7 +88,7 @@ class OutputDeviceNode : public OutputNode {
 
 	DeviceRef					mDevice;
 	bool						mWasEnabledBeforeParamsChange;
-	signals::ScopedConnection	mWillChangeConn, mDidChangeConn, mInterruptionBeganConn, mInterruptionEndedConn;
+	signals::ScopedConnection	mWillChangeConn, mDidChangeConn, mInterruptionBeganConn, mInterruptionEndedConn, mAppDidBecomeActiveConn;
 };
 
 } } // namespace cinder::audio

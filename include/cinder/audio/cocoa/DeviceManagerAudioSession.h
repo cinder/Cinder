@@ -61,7 +61,7 @@ class DeviceManagerAudioSession : public DeviceManager {
 	bool isInputEnabled() const		{ return mInputEnabled; }
 
 	void beginInterruption();
-	void endInterruption( bool shouldResume );
+	void endInterruption( bool resumeImmediately );
 
  private:
 	const DeviceRef&				getRemoteIODevice();

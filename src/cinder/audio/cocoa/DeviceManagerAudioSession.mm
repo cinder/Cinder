@@ -29,9 +29,9 @@
 
 #include <cmath>
 
-
 #import <AVFoundation/AVAudioSession.h>
-#import <Foundation/NSNotification.h>
+#import <Foundation/Foundation.h>
+#import <UIKit/UIApplication.h>
 
 @interface AudioSessionNotificationHandlerImpl : NSObject {
   @public
@@ -205,11 +205,11 @@ void DeviceManagerAudioSession::beginInterruption()
 	mSignalInterruptionBegan.emit();
 }
 
-void DeviceManagerAudioSession::endInterruption( bool shouldResume )
+void DeviceManagerAudioSession::endInterruption( bool resumeImmediately )
 {
 	mSessionIsActive = true;
 
-	mSignalInterruptionEnded.emit( shouldResume );
+	mSignalInterruptionEnded.emit( resumeImmediately );
 }
 
 
@@ -264,18 +264,21 @@ string DeviceManagerAudioSession::getSessionCategory()
 
 - (void)handleInterruption:(NSNotification *)notification
 {
-	NSUInteger interruptionType = [[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] unsignedIntValue];
+	NSUInteger interruptionType = [[notification.userInfo objectForKey:AVAudioSessionInterruptionTypeKey] unsignedIntValue];
 
 	if( interruptionType == AVAudioSessionInterruptionTypeBegan ) {
 		mDeviceManager->beginInterruption();
 	}
 	else if( interruptionType == AVAudioSessionInterruptionTypeEnded ) {
-		NSUInteger interruptionOption = [[notification.userInfo valueForKey:AVAudioSessionInterruptionOptionKey] unsignedIntValue];
-		if( interruptionOption == AVAudioSessionInterruptionOptionShouldResume ) {
-			mDeviceManager->endInterruption(true);
-		} else {
-			mDeviceManager->endInterruption(false);
-		}
+		UIApplication *app = [UIApplication sharedApplication];
+		AVAudioSession *session = [AVAudioSession sharedInstance];
+
+		auto resumeImmediately = app.applicationState == UIApplicationStateActive ||
+			[session.category isEqualToString:AVAudioSessionCategoryPlayAndRecord] ||
+			[session.category isEqualToString:AVAudioSessionCategoryPlayback] ||
+			[session.category isEqualToString:AVAudioSessionCategoryRecord];
+
+		mDeviceManager->endInterruption( resumeImmediately );
 	}
 }
 
