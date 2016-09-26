@@ -1,6 +1,6 @@
 /*
  * This is an OpenSSL-compatible implementation of the RSA Data Security, Inc.
- * MD5 Message-Digest Algorithm (RFC 1321).
+ * FT_MD5 Message-Digest Algorithm (RFC 1321).
  *
  * Homepage:
  * http://openwall.info/wiki/people/solar/software/public-domain-source-code/md5
@@ -42,7 +42,7 @@
 #include "md5.h"
 
 /*
- * The basic MD5 functions.
+ * The basic FT_MD5 functions.
  *
  * F and G are optimized compared to their RFC 1321 definitions for
  * architectures that lack an AND-NOT instruction, just like in Colin Plumb's
@@ -55,7 +55,7 @@
 #define I(x, y, z)			((y) ^ ((x) | ~(z)))
 
 /*
- * The MD5 transformation for all four rounds.
+ * The FT_MD5 transformation for all four rounds.
  */
 #define STEP(f, a, b, c, d, x, t, s) \
 	(a) += f((b), (c), (d)) + (x) + (t); \
@@ -72,16 +72,16 @@
  */
 #if defined(__i386__) || defined(__x86_64__) || defined(__vax__)
 #define SET(n) \
-	(*(MD5_u32plus *)&ptr[(n) * 4])
+	(*(FT_MD5_u32plus *)&ptr[(n) * 4])
 #define GET(n) \
 	SET(n)
 #else
 #define SET(n) \
 	(ctx->block[(n)] = \
-	(MD5_u32plus)ptr[(n) * 4] | \
-	((MD5_u32plus)ptr[(n) * 4 + 1] << 8) | \
-	((MD5_u32plus)ptr[(n) * 4 + 2] << 16) | \
-	((MD5_u32plus)ptr[(n) * 4 + 3] << 24))
+	(FT_MD5_u32plus)ptr[(n) * 4] | \
+	((FT_MD5_u32plus)ptr[(n) * 4 + 1] << 8) | \
+	((FT_MD5_u32plus)ptr[(n) * 4 + 2] << 16) | \
+	((FT_MD5_u32plus)ptr[(n) * 4 + 3] << 24))
 #define GET(n) \
 	(ctx->block[(n)])
 #endif
@@ -90,11 +90,11 @@
  * This processes one or more 64-byte data blocks, but does NOT update
  * the bit counters.  There are no alignment requirements.
  */
-static const void *body(MD5_CTX *ctx, const void *data, unsigned long size)
+static const void *body(FT_MD5_CTX *ctx, const void *data, unsigned long size)
 {
 	const unsigned char *ptr;
-	MD5_u32plus a, b, c, d;
-	MD5_u32plus saved_a, saved_b, saved_c, saved_d;
+	FT_MD5_u32plus a, b, c, d;
+	FT_MD5_u32plus saved_a, saved_b, saved_c, saved_d;
 
 	ptr = (const unsigned char *)data;
 
@@ -197,7 +197,7 @@ static const void *body(MD5_CTX *ctx, const void *data, unsigned long size)
 	return ptr;
 }
 
-void MD5_Init(MD5_CTX *ctx)
+void FT_MD5_Init(FT_MD5_CTX *ctx)
 {
 	ctx->a = 0x67452301;
 	ctx->b = 0xefcdab89;
@@ -208,9 +208,9 @@ void MD5_Init(MD5_CTX *ctx)
 	ctx->hi = 0;
 }
 
-void MD5_Update(MD5_CTX *ctx, const void *data, unsigned long size)
+void FT_MD5_Update(FT_MD5_CTX *ctx, const void *data, unsigned long size)
 {
-	MD5_u32plus saved_lo;
+	FT_MD5_u32plus saved_lo;
 	unsigned long used, available;
 
 	saved_lo = ctx->lo;
@@ -242,7 +242,7 @@ void MD5_Update(MD5_CTX *ctx, const void *data, unsigned long size)
 	memcpy(ctx->buffer, data, size);
 }
 
-void MD5_Final(unsigned char *result, MD5_CTX *ctx)
+void FT_MD5_Final(unsigned char *result, FT_MD5_CTX *ctx)
 {
 	unsigned long used, available;
 
