@@ -320,37 +320,15 @@ protected:
 /////////////////////////////////////////////////////////////////////////////////////////////////
 ///// Receiver
 	
-Receiver::Receiver( uint16_t localPort, const asio::ip::udp &protocol, asio::io_service &io )
-: mReceiver( new osc::ReceiverUdp( localPort, protocol, io ) ), mOwnsReceiver( true )
-{
-}
-	
 Receiver::Receiver( osc::ReceiverBase *ptr )
-: mReceiver(  ptr ), mOwnsReceiver( false )
+: mReceiver(  ptr )
 {
-}
-	
-Receiver::Receiver( const app::WindowRef &window, uint16_t localPort, const asio::ip::udp &protocol )
-: mReceiver( new osc::ReceiverUdp( localPort, protocol, app::App::get()->io_service() ) ), mOwnsReceiver( true )
-{
-	setupWindowReceiver( window );
 }
 	
 Receiver::Receiver( const app::WindowRef &window, osc::ReceiverBase *ptr )
-: mReceiver( ptr ), mOwnsReceiver( false )
+: mReceiver( ptr )
 {
 	setupWindowReceiver( window );
-}
-	
-void Receiver::connect()
-{
-	mReceiver->bind();
-	mReceiver->listen();
-}
-
-void Receiver::disconnect()
-{
-	mReceiver->close();
 }
 	
 Receiver::~Receiver()
@@ -359,8 +337,6 @@ Receiver::~Receiver()
 		mReceiver->removeListener( handler.first );
 	}
 	mHandlers.clear();
-	if( mOwnsReceiver )
-		delete mReceiver;
 }
 	
 template<typename TuioType>

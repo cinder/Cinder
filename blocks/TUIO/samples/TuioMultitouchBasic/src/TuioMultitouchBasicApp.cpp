@@ -18,34 +18,34 @@ struct TouchPoint {
 	TouchPoint( const vec2 &initialPt, const Color &color )
 		: mColor( color ), mTimeOfDeath( -1.0 )
 	{
-		mLine.push_back( initialPt ); 
+		mLine.push_back( initialPt );
 	}
-	
+
 	void addPoint( const vec2 &pt ) { mLine.push_back( pt ); }
-	
+
 	void draw() const
 	{
 		if( mTimeOfDeath > 0 ) // are we dying? then fade out
 			gl::color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0f ) );
 		else
 			gl::color( mColor );
-		
+
 		gl::draw( mLine );
 	}
-	
+
 	void startDying() { mTimeOfDeath = getElapsedSeconds() + 2.0f; } // two seconds til dead
 
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
-	
+
 	PolyLine2	mLine;
 	Color		mColor;
 	float		mTimeOfDeath;
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
-class MultiTouchApp : public App {
- public:
-	MultiTouchApp();
+class TuioMultiTouchBasicApp : public App {
+public:
+	TuioMultiTouchBasicApp();
 
 	void	touchesBegan( TouchEvent event ) override;
 	void	touchesMoved( TouchEvent event ) override;
@@ -54,23 +54,42 @@ class MultiTouchApp : public App {
 	void	setup() override;
 	void	draw() override;
 	void	keyDown( KeyEvent event ) override;
-	
-	map<uint32_t,TouchPoint>	mActivePoints;
+
+	map<uint32_t, TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;
+	osc::ReceiverUdp			mOscReceiver;
 	tuio::Receiver				mTuio;
 };
 
-MultiTouchApp::MultiTouchApp()
-: App(), mTuio( app::getWindow() )
+TuioMultiTouchBasicApp::TuioMultiTouchBasicApp()
+: App(), mOscReceiver( tuio::Receiver::DEFAULT_TUIO_PORT ),
+	mTuio( app::getWindow(), &mOscReceiver )
 {
 }
 
-void MultiTouchApp::setup()
+void TuioMultiTouchBasicApp::setup()
 {
-	mTuio.connect();
+	// Bind the Osc Receiver...
+	try {
+		mOscReceiver.bind();
+	}
+	catch( const ci::Exception &ex ) {
+		CI_LOG_EXCEPTION( "OscReceiver bind", ex );
+		quit();
+	}
+	// And listen for messages.
+	mOscReceiver.listen(
+		[]( asio::error_code ec, asio::ip::udp::endpoint ep ) -> bool {
+		if( ec ) {
+			CI_LOG_E( "Error on listener: " << ec.message() << " Error Value: " << ec.value() );
+			return false;
+		}
+		else
+			return true;
+	} );
 }
 
-void MultiTouchApp::touchesBegan( TouchEvent event )
+void TuioMultiTouchBasicApp::touchesBegan( TouchEvent event )
 {
 	for( auto & touch : event.getTouches() ) {
 		Color newColor( CM_HSV, Rand::randFloat(), 1, 1 );
@@ -78,13 +97,13 @@ void MultiTouchApp::touchesBegan( TouchEvent event )
 	}
 }
 
-void MultiTouchApp::touchesMoved( TouchEvent event )
+void TuioMultiTouchBasicApp::touchesMoved( TouchEvent event )
 {
 	for( auto & touch : event.getTouches() )
 		mActivePoints[touch.getId()].addPoint( touch.getPos() );
 }
 
-void MultiTouchApp::touchesEnded( TouchEvent event )
+void TuioMultiTouchBasicApp::touchesEnded( TouchEvent event )
 {
 	for( auto & touch : event.getTouches() ) {
 		mActivePoints[touch.getId()].startDying();
@@ -93,13 +112,13 @@ void MultiTouchApp::touchesEnded( TouchEvent event )
 	}
 }
 
-void MultiTouchApp::keyDown( KeyEvent event )
+void TuioMultiTouchBasicApp::keyDown( KeyEvent event )
 {
-	 if( event.getChar() == 'f' )
-		 setFullScreen( ! isFullScreen() );
+	if( event.getChar() == 'f' )
+		setFullScreen( !isFullScreen() );
 }
 
-void MultiTouchApp::draw()
+void TuioMultiTouchBasicApp::draw()
 {
 	gl::enableAlphaBlending();
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
@@ -115,14 +134,14 @@ void MultiTouchApp::draw()
 		else
 			++dyingIt;
 	}
-	
+
 	// draw yellow circles at the active touch points
 	gl::color( Color( 1, 1, 0 ) );
-//	vector<TouchEvent::Touch> activeTouches( mTuio.getActiveTouches() );
-//	for( auto touchIt = activeTouches.begin(); touchIt != activeTouches.end(); ++touchIt )
-//		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
+	//	vector<TouchEvent::Touch> activeTouches( mTuio.getActiveTouches() );
+	//	for( auto touchIt = activeTouches.begin(); touchIt != activeTouches.end(); ++touchIt )
+	//		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 
-CINDER_APP( MultiTouchApp, RendererGl, []( App::Settings *settings ) {
+CINDER_APP( TuioMultiTouchBasicApp, RendererGl, []( App::Settings *settings ) {
 	settings->setMultiTouchEnabled( false );
 } )

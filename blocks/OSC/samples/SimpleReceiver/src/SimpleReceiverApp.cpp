@@ -37,13 +37,12 @@ class SimpleReceiverApp : public App {
 };
 
 SimpleReceiverApp::SimpleReceiverApp()
-: mReceiver( localPort )
+: mReceiver( 3000 )
 {
 }
 
 void SimpleReceiverApp::setup()
 {
-	// Set up the callbacks for the receiver.
 	mReceiver.setListener( "/mousemove/1",
 	[&]( const osc::Message &msg ){
 		mCurrentCirclePos.x = msg[0].int32();
