@@ -61,7 +61,8 @@ class DeviceManagerAudioSession : public DeviceManager {
 	bool isInputEnabled() const		{ return mInputEnabled; }
 
 	void beginInterruption();
-	void endInterruption( bool resumeImmediately );
+	void endInterruption();
+	void endInterruptionOnceAppIsActive();
 
  private:
 	const DeviceRef&				getRemoteIODevice();
@@ -70,7 +71,9 @@ class DeviceManagerAudioSession : public DeviceManager {
 	void							activateSession();
 
 	DeviceRef mRemoteIODevice;
-	bool mSessionIsActive, mInputEnabled;
+	bool mSessionIsActive, mInputEnabled, mEndInterruptionOnceAppIsActive;
+
+	signals::ScopedConnection mAppDidBecomeActiveConn;
 
 	AudioSessionNotificationHandlerImpl *mSessionNotificationHandler;
 };

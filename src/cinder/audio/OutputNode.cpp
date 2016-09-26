@@ -26,8 +26,6 @@
 #include "cinder/audio/Utilities.h"
 #include "cinder/audio/Exception.h"
 
-#include "cinder/app/App.h"
-
 #include <string>
 
 using namespace std;
@@ -98,21 +96,7 @@ OutputDeviceNode::OutputDeviceNode( const DeviceRef &device, const Format &forma
 	mDidChangeConn = mDevice->getSignalParamsDidChange().connect( bind( &OutputDeviceNode::deviceParamsDidChange, this ) );
 
 	mInterruptionBeganConn = Context::deviceManager()->getSignalInterruptionBegan().connect( [this] { disable(); } );
-	mInterruptionEndedConn = Context::deviceManager()->getSignalInterruptionEnded().connect( [this]( bool resumeImmediately ) {
-		if( resumeImmediately ) {
-			enable();
-		}
-		else {
-			// Resume output once the app becomes active again.
-			auto app = app::App::get();
-			if( app ) {
-				mAppDidBecomeActiveConn = app->getSignalDidBecomeActive().connect( [this] {
-					mAppDidBecomeActiveConn.disconnect();
-					enable();
-				} );
-			}
-		}
-	} );
+	mInterruptionEndedConn = Context::deviceManager()->getSignalInterruptionEnded().connect( [this] { enable(); } );
 
 	size_t deviceNumChannels = mDevice->getNumOutputChannels();
 

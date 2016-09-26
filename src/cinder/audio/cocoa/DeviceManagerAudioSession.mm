@@ -23,6 +23,7 @@
 
 #include "cinder/audio/cocoa/DeviceManagerAudioSession.h"
 #include "cinder/audio/Exception.h"
+#include "cinder/app/App.h"
 #include "cinder/CinderAssert.h"
 
 #include "cinder/cocoa/CinderCocoa.h"
@@ -60,7 +61,7 @@ const string REMOTE_IO_KEY = "iOS-RemoteIO";
 // ----------------------------------------------------------------------------------------------------
 
 DeviceManagerAudioSession::DeviceManagerAudioSession()
-: DeviceManager(), mSessionIsActive( false ), mInputEnabled( false ), mSessionNotificationHandler( nullptr )
+: DeviceManager(), mSessionIsActive( false ), mInputEnabled( false ), mEndInterruptionOnceAppIsActive( false ), mSessionNotificationHandler( nullptr )
 {
 	activateSession();
 }
@@ -205,11 +206,16 @@ void DeviceManagerAudioSession::beginInterruption()
 	mSignalInterruptionBegan.emit();
 }
 
-void DeviceManagerAudioSession::endInterruption( bool resumeImmediately )
+void DeviceManagerAudioSession::endInterruption()
 {
 	mSessionIsActive = true;
 
-	mSignalInterruptionEnded.emit( resumeImmediately );
+	mSignalInterruptionEnded.emit();
+}
+
+void DeviceManagerAudioSession::endInterruptionOnceAppIsActive()
+{
+	mEndInterruptionOnceAppIsActive = true;
 }
 
 
@@ -238,10 +244,20 @@ void DeviceManagerAudioSession::activateSession()
 
 	NSError *error = nil;
 	bool didActivate = [globalSession setActive:YES error:&error];
-	CI_ASSERT( !error );
+	CI_ASSERT( ! error );
 
 	if( ! didActivate )
 		throw AudioDeviceExc( "Failed to activate global AVAudioSession." );
+
+	auto app = app::App::get();
+	if( app ) {
+		mAppDidBecomeActiveConn = app->getSignalDidBecomeActive().connect( [this] {
+			if( mEndInterruptionOnceAppIsActive ) {
+				mEndInterruptionOnceAppIsActive = false;
+				endInterruption();
+			}
+		} );
+	}
 
 	mSessionIsActive = true;
 }
@@ -273,12 +289,17 @@ string DeviceManagerAudioSession::getSessionCategory()
 		UIApplication *app = [UIApplication sharedApplication];
 		AVAudioSession *session = [AVAudioSession sharedInstance];
 
-		auto resumeImmediately = app.applicationState == UIApplicationStateActive ||
+		bool resumeImmediately = app.applicationState == UIApplicationStateActive ||
 			[session.category isEqualToString:AVAudioSessionCategoryPlayAndRecord] ||
 			[session.category isEqualToString:AVAudioSessionCategoryPlayback] ||
 			[session.category isEqualToString:AVAudioSessionCategoryRecord];
 
-		mDeviceManager->endInterruption( resumeImmediately );
+		if( resumeImmediately ) {
+			mDeviceManager->endInterruption();
+		}
+		else {
+			mDeviceManager->endInterruptionOnceAppIsActive();
+		}
 	}
 }
 
