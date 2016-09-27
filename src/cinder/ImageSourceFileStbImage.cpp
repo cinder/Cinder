@@ -62,7 +62,7 @@ ImageSourceFileStbImage::ImageSourceFileStbImage( DataSourceRef dataSourceRef, I
 	int width = 0, height = 0, components = 0;
 	
 	if( dataSourceRef->isFilePath() ) {
-		if( stbi_is_hdr( dataSourceRef->getFilePath().string().c_str() ) ) {		
+		if( stbi_is_hdr( dataSourceRef->getFilePath().string().c_str() ) ) {
 			mData32f = stbi_loadf( dataSourceRef->getFilePath().string().c_str(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData32f )
 				throw ImageIoException();
@@ -74,20 +74,20 @@ ImageSourceFileStbImage::ImageSourceFileStbImage( DataSourceRef dataSourceRef, I
 			if( ! mData8u )
 				throw ImageIoException();
 
-			mRowBytes = width * components;		
+			mRowBytes = width * components;
 		}
 	}
 	else { // we'll use a dataref from the buffer
-		Buffer buffer = dataSourceRef->getBuffer();
-		if( stbi_is_hdr_from_memory( (unsigned char*)buffer.getData(), (int)buffer.getDataSize() ) ) {
-			mData32f = stbi_loadf_from_memory( (unsigned char*)buffer.getData(), (int)buffer.getDataSize(), &width, &height, &components, 0 /*any # of components*/ );
+		BufferRef buffer = dataSourceRef->getBuffer();
+		if( stbi_is_hdr_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize() ) ) {
+			mData32f = stbi_loadf_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData32f )
 				throw ImageIoException();
 			
 			mRowBytes = width * components * sizeof(float);
 		}
 		else {
-			mData8u = stbi_load_from_memory( (unsigned char*)buffer.getData(), (int)buffer.getDataSize(), &width, &height, &components, 0 /*any # of components*/ );
+			mData8u = stbi_load_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData8u )
 				throw ImageIoException();
 				
