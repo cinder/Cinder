@@ -48,7 +48,27 @@
 			<p>In addition to the normal <em>Debug</em> and <em>Release</em> build configurations, Cinder also ships with <em>Debug_ANGLE</em> and <em>Release_ANGLE</em> variants. <a href="https://code.google.com/p/angleproject/">ANGLE</a>, which stands for Almost Native Graphics Library, is an implementation of OpenGL ES in terms of DirectX. This can be useful for supporting machines where OpenGL drivers can't be guaranteed or are of poorer quality than DirectX. TinderBox can setup your project to use ANGLE.</p>
 		</section>
 
-		
+
+		<section>
+			<h2>(Advanced) Defining preprocessor flags from outside of the cinder repo</h2>
+			<p>Sometimes you may need to modify certain preprocessor flags that affect how libcinder is built. If you are keeping a specific version of cinder tied to your application (ex. a git submodule), it can be useful to be able to set these flags without modifying the cinder repo itself. Some common cases include the  <ci>CI_MIN_LOG_LEVEL</ci>, as described in <a href="../logging/index.html">this guide</a>, and a few compile time macros that adjust the way that <ci>CI_ASSERT()</ci> works (see this header2).</p>
+
+
+			<ul>
+			<li>For starters, you need to add cinder.vcxproj to your main project's solution file. This is a nice thing to do anyway when working on a large project, as it allows you to easily navigate cinder's codebase to find what you're after.
+			</li>
+			<li>Next thing to know, is that cinder.vcxproj will search for a file called <code>CinderMswUserDefines.h</code>, which will be added as a "Forced Include File", i.e. its contents will be prepended to every source file built in libcinder. The first place that cinder.vcxproj searches for this file is in the same directory as your project's solution (.sln) file, which lives outside of the cinder repository. if you don't provide a CinderMswUserDefines.h file, an empty default will be used that is tucked away in cinder's include/cinder/msw folder. So the trick is, add a file named <code>CinderMswUserDefines.h</code> to the same directory where your solution file lives, and add the prprocessor directories to that. You can also add this same setting to any vcxproj file that you want to make use of the same preprocessor adjustments. Here's a screencap of what that looks like:
+				<center><img class="shadow" width="626" height="449" src="msw_notes/forced_includes.png" /></center>
+			</li>
+			<li>For this file to also be found in your projects, you should add an 'Additional Include Directories' to your project for $(SolutionDir), which looks like:
+				<center><img class="shadow" width="626" height="449" src="msw_notes/solution_dir_include.png" /></center>
+			</li>
+			<li>Lastly, you may want to make cinder.lib a dependency on your app's target, which forces it to be rebuilt whenever necessary you modify your <code>CinderMswUserDefines.h</code> file (or any other source in libcinder). You can do this by going to the Solution Explorer and right clicking on your solution, then going to the 'Common Properties -> Project Dependencies' page.
+			</li>
+			</ul>
+			<p>That's about it, now when you place anything in your <code>CinderMswUserDefines.h</code> file, it will customize the cinder.lib that your app links to accordingly. Of course, this file could be abused by placing #includes or other devilry in there so use when appropriate.</p>
+		</section>
+
 		<!-- END CONTENT -->
 
 		<!-- Scripts -->

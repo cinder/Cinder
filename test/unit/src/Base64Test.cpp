@@ -8,12 +8,7 @@ using namespace std;
 
 std::string toString( Buffer b )
 {
-	if( b.getSize() == 0 )
-		return std::string();
-	char *temp = new char[b.getSize()+1];
-	memcpy( temp, b.getData(), b.getSize() );
-	temp[b.getSize()] = 0;
-	return string( temp );
+	return string( static_cast<const char *>( b.getData() ), b.getSize() );
 }
 
 TEST_CASE("Base64")
@@ -25,8 +20,15 @@ TEST_CASE("Base64")
 		REQUIRE( toBase64( "any carnal pleasur" ) == "YW55IGNhcm5hbCBwbGVhc3Vy" );
 		REQUIRE( toBase64( "any carnal pleasu" ) == "YW55IGNhcm5hbCBwbGVhc3U=" );
 		REQUIRE( toBase64( "any carnal pleas" ) == "YW55IGNhcm5hbCBwbGVhcw==" );
+		REQUIRE( toBase64( "any" ) == "YW55" );
+		REQUIRE( toBase64( "an" ) == "YW4=" );
+		REQUIRE( toBase64( "a" ) == "YQ==" );
+		REQUIRE( toBase64( "" ) == "" );
+		REQUIRE( "" == toString( fromBase64( "" ) ) );
+		REQUIRE( "a" == toString( fromBase64( "YQ==" ) ) );
+		REQUIRE( "an" == toString( fromBase64( "YW4=" ) ) );
+		REQUIRE( "any" == toString( fromBase64( "YW55" ) ) );
 	}
-
 	SECTION("Round trip to/from base64 yields the input.")
 	{
 		for( int a = 0; a < 1000; ++a ) {
@@ -36,7 +38,7 @@ TEST_CASE("Base64")
 
 			for( int i = 0; i < 100; ++i ) { // test word wraps
 				std::string base64 = toBase64( test, i );
-				Buffer b = fromBase64(base64);
+				Buffer b = fromBase64( base64 );
 				REQUIRE( toString( b ) == test );
 			}
 		}

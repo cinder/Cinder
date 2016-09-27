@@ -38,9 +38,14 @@ SMAA::SMAA()
 		// Define the format by specifying the vertex and fragment shader files and defining the quality settings.
 		auto fmt = gl::GlslProg::Format().vertex( loadAsset( "smaa.vert" ) ).fragment( loadAsset( "smaa.frag" ) ).define( "SMAA_PRESET_ULTRA" ).define( "SMAA_GLSL_3", "1" );
 		// Each pass uses the same files, but with a different value for the SMAA_PASS pre-processor directive.
-		mGlslFirstPass = gl::GlslProg::create( gl::GlslProg::Format( fmt ).define( "SMAA_PASS", "1" ) );
-		mGlslSecondPass = gl::GlslProg::create( gl::GlslProg::Format( fmt ).define( "SMAA_PASS", "2" ) );
-		mGlslThirdPass = gl::GlslProg::create( gl::GlslProg::Format( fmt ).define( "SMAA_PASS", "3" ) );
+		auto glslFirstPass = gl::GlslProg::create( gl::GlslProg::Format( fmt ).define( "SMAA_PASS", "1" ) );
+		auto glslSecondPass = gl::GlslProg::create( gl::GlslProg::Format( fmt ).define( "SMAA_PASS", "2" ) );
+		auto glslThirdPass = gl::GlslProg::create( gl::GlslProg::Format( fmt ).define( "SMAA_PASS", "3" ) );
+
+		auto geom = geom::Rect( Rectf( 0, 0, 1, 1 ) );
+		mBatchFirstPass = gl::Batch::create( geom, glslFirstPass );
+		mBatchSecondPass = gl::Batch::create( geom, glslSecondPass );
+		mBatchThirdPass = gl::Batch::create( geom, glslThirdPass );
 	}
 	catch( const std::exception& e ) {
 		CI_LOG_EXCEPTION( "exception caught loading smaa shaders", e );
@@ -101,7 +106,7 @@ void SMAA::apply( const gl::FboRef &destination, const gl::FboRef &source )
 
 void SMAA::draw( const gl::Texture2dRef &source, const Area &bounds )
 {
-	if( ! mGlslFirstPass || ! mGlslSecondPass || ! mGlslThirdPass )
+	if( ! mBatchFirstPass || ! mBatchSecondPass || ! mBatchThirdPass )
 		return;
 
 	// Create or resize buffers.
@@ -116,13 +121,14 @@ void SMAA::draw( const gl::Texture2dRef &source, const Area &bounds )
 	// Apply SMAA.
 	gl::ScopedTextureBind tex0( source );
 	gl::ScopedTextureBind tex1( mFboBlendPass->getColorTexture(), 1 );
-	gl::ScopedGlslProg glslScope( mGlslThirdPass );
-	mGlslThirdPass->uniform( "SMAA_RT_METRICS", mMetrics );
-	mGlslThirdPass->uniform( "uColorTex", 0 );
-	mGlslThirdPass->uniform( "uBlendTex", 1 );
+	mBatchThirdPass->getGlslProg()->uniform( "SMAA_RT_METRICS", mMetrics );
+	mBatchThirdPass->getGlslProg()->uniform( "uColorTex", 0 );
+	mBatchThirdPass->getGlslProg()->uniform( "uBlendTex", 1 );
 
-	gl::color( Color::white() );
-	gl::drawSolidRect( bounds );
+	gl::ScopedModelMatrix modelScope;
+	gl::scale( bounds.getWidth(), bounds.getHeight(), 1.0f );
+
+	mBatchThirdPass->draw();
 
 	//	gl::draw( mAreaTex );
 }
@@ -158,13 +164,14 @@ void SMAA::doEdgePass( const gl::Texture2dRef &source )
 	gl::clear( ColorA( 0, 0, 0, 0 ) );
 
 	gl::ScopedTextureBind tex0( source );
-	gl::ScopedGlslProg glslScope( mGlslFirstPass );
-	mGlslFirstPass->uniform( "SMAA_RT_METRICS", mMetrics );
-	mGlslFirstPass->uniform( "uColorTex", 0 );
+	mBatchFirstPass->getGlslProg()->uniform( "SMAA_RT_METRICS", mMetrics );
+	mBatchFirstPass->getGlslProg()->uniform( "uColorTex", 0 );
 
 	// Execute shader by drawing a 'full screen' rectangle.
-	gl::color( Color::white() );
-	gl::drawSolidRect( mFboEdgePass->getBounds() );
+	gl::ScopedModelMatrix modelScope;
+	gl::scale( mFboEdgePass->getWidth(), mFboEdgePass->getHeight(), 1.0f );
+
+	mBatchFirstPass->draw();
 }
 
 void SMAA::doBlendPass()
@@ -176,13 +183,14 @@ void SMAA::doBlendPass()
 	gl::ScopedTextureBind tex0( mFboEdgePass->getColorTexture() );
 	gl::ScopedTextureBind tex1( mAreaTex, 1 );
 	gl::ScopedTextureBind tex2( mSearchTex, 2 );
-	gl::ScopedGlslProg glslScope( mGlslSecondPass );
-	mGlslSecondPass->uniform( "SMAA_RT_METRICS", mMetrics );
-	mGlslSecondPass->uniform( "uEdgesTex", 0 );
-	mGlslSecondPass->uniform( "uAreaTex", 1 );
-	mGlslSecondPass->uniform( "uSearchTex", 2 );
+	mBatchSecondPass->getGlslProg()->uniform( "SMAA_RT_METRICS", mMetrics );
+	mBatchSecondPass->getGlslProg()->uniform( "uEdgesTex", 0 );
+	mBatchSecondPass->getGlslProg()->uniform( "uAreaTex", 1 );
+	mBatchSecondPass->getGlslProg()->uniform( "uSearchTex", 2 );
 
 	// Execute shader by drawing a 'full screen' rectangle.
-	gl::color( Color::white() );
-	gl::drawSolidRect( mFboBlendPass->getBounds() );
+	gl::ScopedModelMatrix modelScope;
+	gl::scale( mFboBlendPass->getWidth(), mFboBlendPass->getHeight(), 1.0f );
+
+	mBatchSecondPass->draw();
 }

@@ -23,7 +23,7 @@
 #pragma once
 
 #include "cinder/gl/gl.h"
-#include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Batch.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Texture.h"
 
@@ -42,9 +42,9 @@ class SMAA {
 	ci::gl::FboRef        mFboEdgePass;
 	ci::gl::FboRef        mFboBlendPass;
 
-	ci::gl::GlslProgRef		mGlslFirstPass;		// edge detection
-	ci::gl::GlslProgRef		mGlslSecondPass;	// blending weight calculation
-	ci::gl::GlslProgRef		mGlslThirdPass;		// neighborhood blending
+	ci::gl::BatchRef	mBatchFirstPass;	// edge detection
+	ci::gl::BatchRef	mBatchSecondPass;	// blending weight calculation
+	ci::gl::BatchRef	mBatchThirdPass;	// neighborhood blending
 
 	// These textures contain look-up tables that speed up the SMAA process.
 	ci::gl::Texture2dRef  mAreaTex;
