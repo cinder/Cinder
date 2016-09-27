@@ -65,14 +65,14 @@ ImageSourceFileStbImage::ImageSourceFileStbImage( DataSourceRef dataSourceRef, I
 		if( stbi_is_hdr( dataSourceRef->getFilePath().string().c_str() ) ) {
 			mData32f = stbi_loadf( dataSourceRef->getFilePath().string().c_str(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData32f )
-				throw ImageIoException();
+				throw ImageIoException( stbi_failure_reason() );
 
 			mRowBytes = width * components * sizeof( float );
 		}
 		else {
 			mData8u = stbi_load( dataSourceRef->getFilePath().string().c_str(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData8u )
-				throw ImageIoException();
+				throw ImageIoException( stbi_failure_reason() );
 
 			mRowBytes = width * components;
 		}
@@ -82,14 +82,14 @@ ImageSourceFileStbImage::ImageSourceFileStbImage( DataSourceRef dataSourceRef, I
 		if( stbi_is_hdr_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize() ) ) {
 			mData32f = stbi_loadf_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData32f )
-				throw ImageIoException();
+				throw ImageIoException( stbi_failure_reason() );
 			
 			mRowBytes = width * components * sizeof(float);
 		}
 		else {
 			mData8u = stbi_load_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData8u )
-				throw ImageIoException();
+				throw ImageIoException( stbi_failure_reason() );
 				
 			mRowBytes = width * components;
 		}
