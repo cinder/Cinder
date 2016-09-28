@@ -110,14 +110,19 @@ using namespace cinder::app;
 {
 	mApp->getRenderer()->makeCurrentContext();
 
+	// update positions for all windows, their frames might not have been correct when created.
+	for( WindowImplBasicCocoa* winIt in mWindows ) {
+		[winIt updatePosRelativeToPrimaryDisplay];
+	}
+
 	mApp->privateSetup__();
 	
-	// give all windows initial resizes
+	// call initial window resize signals
 	for( WindowImplBasicCocoa* winIt in mWindows ) {
 		[winIt->mCinderView makeCurrentContext];
 		[self setActiveWindow:winIt];
-		[winIt resize];
-	}	
+		winIt->mWindowRef->emitResize();
+	}
 	
 	// when available, make the first window the active window
 	[self setActiveWindow:[mWindows firstObject]];
