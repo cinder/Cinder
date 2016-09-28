@@ -116,7 +116,7 @@ using namespace cinder::app;
 	for( WindowImplBasicCocoa* winIt in mWindows ) {
 		[winIt->mCinderView makeCurrentContext];
 		[self setActiveWindow:winIt];
-		winIt->mWindowRef->emitResize();
+		[winIt resize];
 	}	
 	
 	// when available, make the first window the active window
@@ -500,6 +500,13 @@ using namespace cinder::app;
 	[mWin setFrameOrigin:targetFrameRect.origin];
 }
 
+- (void)updatePosRelativeToPrimaryDisplay
+{
+	NSRect frame = [mWin frame];
+	NSRect content = [mWin contentRectForFrameRect:frame];
+	mPos = ivec2( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
+}
+
 - (void)close
 {
 	[mWin close];
@@ -616,15 +623,11 @@ using namespace cinder::app;
 
 - (void)windowMovedNotification:(NSNotification *)notification
 {
-	NSWindow *window = [notification object];
-
-	NSRect frame = [mWin frame];
-	NSRect content = [mWin contentRectForFrameRect:frame];
-	mPos = ivec2( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
+	[self updatePosRelativeToPrimaryDisplay];
 	[mAppImpl setActiveWindow:self];
 
-	// This appears to be NULL in some scenarios
-	NSScreen *screen = [window screen];
+	NSWindow *window = [notification object];
+	NSScreen *screen = [window screen]; // This appears to be NULL in some scenarios
 	if( screen ) {
 		NSDictionary *dict = [screen deviceDescription];
 		CGDirectDisplayID displayID = (CGDirectDisplayID)[[dict objectForKey:@"NSScreenNumber"] intValue];
@@ -666,11 +669,8 @@ using namespace cinder::app;
 	NSSize nsSize = [mCinderView frame].size;
 	mSize = cinder::ivec2( nsSize.width, nsSize.height );
 
-	NSRect frame = [mWin frame];
-	NSRect content = [mWin contentRectForFrameRect:frame];
-	
-	ivec2 prevPos = mPos;	
-	mPos = ivec2( content.origin.x, mWin.screen.frame.size.height - frame.origin.y - content.size.height );
+	ivec2 prevPos = mPos;
+	[self updatePosRelativeToPrimaryDisplay];
 
 	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
 		[mAppImpl setActiveWindow:self];
@@ -843,7 +843,7 @@ using namespace cinder::app;
 	NSRect contentRect = [winImpl->mWin contentRectForFrameRect:[winImpl->mWin frame]];
 	winImpl->mSize.x = (int)contentRect.size.width;
 	winImpl->mSize.y = (int)contentRect.size.height;
-	winImpl->mPos = ivec2( contentRect.origin.x, Display::getMainDisplay()->getHeight() - [winImpl->mWin frame].origin.y - contentRect.size.height );
+	[winImpl updatePosRelativeToPrimaryDisplay];
 
 	[winImpl->mWin setLevel:( winImpl->mAlwaysOnTop ? NSScreenSaverWindowLevel : NSNormalWindowLevel )];
 

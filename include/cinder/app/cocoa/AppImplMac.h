@@ -125,6 +125,7 @@
 - (cinder::DisplayRef)getDisplay;
 - (cinder::app::RendererRef)getRenderer;
 - (void*)getNative;
+- (void)updatePosRelativeToPrimaryDisplay;
 
 - (void)windowMovedNotification:(NSNotification *)notification;
 - (void)windowWillCloseNotification:(NSNotification *)notification;
