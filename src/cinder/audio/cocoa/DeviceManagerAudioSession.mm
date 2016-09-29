@@ -61,7 +61,7 @@ const string REMOTE_IO_KEY = "iOS-RemoteIO";
 // ----------------------------------------------------------------------------------------------------
 
 DeviceManagerAudioSession::DeviceManagerAudioSession()
-: DeviceManager(), mSessionIsActive( false ), mInputEnabled( false ), mEndInterruptionOnceAppIsActive( false ), mSessionNotificationHandler( nullptr )
+: DeviceManager(), mSessionIsActive( false ), mInputEnabled( false ), mInterruptionHasEnded( false ), mSessionNotificationHandler( nullptr )
 {
 	activateSession();
 }
@@ -199,25 +199,25 @@ void DeviceManagerAudioSession::setFramesPerBlock( const DeviceRef &device, size
 		throw AudioDeviceExc( "Failed to update frames per block to the requested value." );
 }
 
-void DeviceManagerAudioSession::beginInterruption()
+void DeviceManagerAudioSession::privateBeginInterruption()
 {
 	mSessionIsActive = false;
 
 	mSignalInterruptionBegan.emit();
 }
 
-void DeviceManagerAudioSession::endInterruption()
+void DeviceManagerAudioSession::privateEndInterruption( bool resumeImmediately )
 {
-	mSessionIsActive = true;
+	if( resumeImmediately ) {
+		mSessionIsActive = true;
+		mInterruptionHasEnded = false;
 
-	mSignalInterruptionEnded.emit();
+		mSignalInterruptionEnded.emit();
+	}
+	else {
+		mInterruptionHasEnded = true;
+	}
 }
-
-void DeviceManagerAudioSession::endInterruptionOnceAppIsActive()
-{
-	mEndInterruptionOnceAppIsActive = true;
-}
-
 
 // ----------------------------------------------------------------------------------------------------
 // MARK: - Private
@@ -252,9 +252,8 @@ void DeviceManagerAudioSession::activateSession()
 	auto app = app::App::get();
 	if( app ) {
 		mAppDidBecomeActiveConn = app->getSignalDidBecomeActive().connect( [this] {
-			if( mEndInterruptionOnceAppIsActive ) {
-				mEndInterruptionOnceAppIsActive = false;
-				endInterruption();
+			if( mInterruptionHasEnded ) {
+				privateEndInterruption( true );
 			}
 		} );
 	}
@@ -283,7 +282,7 @@ string DeviceManagerAudioSession::getSessionCategory()
 	NSUInteger interruptionType = [[notification.userInfo objectForKey:AVAudioSessionInterruptionTypeKey] unsignedIntValue];
 
 	if( interruptionType == AVAudioSessionInterruptionTypeBegan ) {
-		mDeviceManager->beginInterruption();
+		mDeviceManager->privateBeginInterruption();
 	}
 	else if( interruptionType == AVAudioSessionInterruptionTypeEnded ) {
 		UIApplication *app = [UIApplication sharedApplication];
@@ -294,12 +293,7 @@ string DeviceManagerAudioSession::getSessionCategory()
 			[session.category isEqualToString:AVAudioSessionCategoryPlayback] ||
 			[session.category isEqualToString:AVAudioSessionCategoryRecord];
 
-		if( resumeImmediately ) {
-			mDeviceManager->endInterruption();
-		}
-		else {
-			mDeviceManager->endInterruptionOnceAppIsActive();
-		}
+		mDeviceManager->privateEndInterruption( resumeImmediately );
 	}
 }
 
