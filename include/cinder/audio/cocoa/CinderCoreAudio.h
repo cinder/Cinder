@@ -60,6 +60,14 @@ inline void copyToBufferList( ::AudioBufferList *bufferList, const Buffer *buffe
 		memcpy( bufferList->mBuffers[i].mData, buffer->getChannel( i ), bufferList->mBuffers[i].mDataByteSize );
 }
 
+inline void copyToBufferList( ::AudioBufferList *bufferList, const Buffer *buffer, size_t startFrame, size_t frameCount )
+{
+	for( UInt32 i = 0; i < bufferList->mNumberBuffers; i++ ) {
+		Float32 *startPtr = static_cast<Float32 *>( bufferList->mBuffers[i].mData ) + startFrame;
+		memcpy( startPtr, buffer->getChannel( i ), frameCount * sizeof( Float32 ) );
+	}
+}
+
 inline void copyFromBufferList( Buffer *buffer, const ::AudioBufferList *bufferList )
 {
 	for( UInt32 i = 0; i < bufferList->mNumberBuffers; i++ )
@@ -70,6 +78,14 @@ inline void zeroBufferList( const ::AudioBufferList *bufferList )
 {
 	for( UInt32 i = 0; i < bufferList->mNumberBuffers; i++ )
 		memset( bufferList->mBuffers[i].mData, 0, bufferList->mBuffers[i].mDataByteSize );
+}
+
+inline void zeroBufferList( const ::AudioBufferList *bufferList, size_t startFrame, size_t frameCount )
+{
+	for( UInt32 i = 0; i < bufferList->mNumberBuffers; i++ ) {
+		Float32 *startPtr = static_cast<Float32 *>( bufferList->mBuffers[i].mData ) + startFrame;
+		memset( startPtr, 0, frameCount * sizeof( Float32 ) );
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------

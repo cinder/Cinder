@@ -142,19 +142,23 @@ OSStatus OutputDeviceNodeAudioUnit::renderCallback( void *data, ::AudioUnitRende
 
 	OutputDeviceNodeAudioUnit *outputDeviceNode = static_cast<OutputDeviceNodeAudioUnit *>( renderData->node );
 	Buffer *internalBuffer = outputDeviceNode->getInternalBuffer();
-	internalBuffer->zero();
 
 	renderData->context->setCurrentTimeStamp( timeStamp );
-	ctx->preProcess();
-	outputDeviceNode->pullInputs( internalBuffer );
 
-	// if clip detection is enabled and buffer clipped, silence it
-	if( outputDeviceNode->checkNotClipping() )
-		zeroBufferList( bufferList );
-	else
-		copyToBufferList( bufferList, internalBuffer );
+	for( size_t startFrame = 0; startFrame < numFrames; startFrame += internalBuffer->getNumFrames() ) {
+		internalBuffer->zero();
 
-	ctx->postProcess();
+		ctx->preProcess();
+		outputDeviceNode->pullInputs( internalBuffer );
+
+		// if clip detection is enabled and buffer clipped, silence it
+		if( outputDeviceNode->checkNotClipping() )
+			zeroBufferList( bufferList, startFrame, internalBuffer->getNumFrames() );
+		else
+			copyToBufferList( bufferList, internalBuffer, startFrame, internalBuffer->getNumFrames() );
+
+		ctx->postProcess();
+	}
 
 	return noErr;
 }
