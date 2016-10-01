@@ -24,6 +24,7 @@ lib/winrt/x64/cinder*.lib
 *.ncb
 *.sdf
 *.VC.opendb
+*.VC.db
 *.opensdf
 Debug/
 Release/
@@ -58,6 +59,9 @@ local.properties
 proguard-rules.pro
 .gradle/
 jniLibs/
+
+# cmake generated files
+cinderConfig.cmake
 
 # CinderBlocks
 blocks/

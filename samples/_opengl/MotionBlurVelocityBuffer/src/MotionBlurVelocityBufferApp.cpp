@@ -72,16 +72,12 @@ class MotionBlurVelocityBufferApp : public App {
 	float					mAverageGpuTime = 0.0f;
 	float					mAverageCpuTime = 0.0f;
 
-#if ! defined( CINDER_ANDROID )
+#if ! defined( CINDER_GL_ES )
 	params::InterfaceGlRef	mParams;
-<<<<<<< HEAD
 #endif
-	int						mTileSize = 20;
-	int						mSampleCount = 31;
-=======
+
 	int						mTileSize = 20;		// TileMax program samples a TileSize x TileSize region of pixels for each of its output pixels.
 	int						mSampleCount = 31;	// Number of samples used when calculating motion blur. Low-movement areas skip calculation.
->>>>>>> upstream/master
 	float					mAnimationSpeed = 1.0f;
 	float					mBlurNoise = 0.0f;
 	bool					mBlurEnabled = true;
@@ -296,6 +292,7 @@ void MotionBlurVelocityBufferApp::draw()
 	gl::ScopedMatrices matrices;
 	gl::setMatricesWindowPersp( getWindowSize(), 60.0f, 1.0f, 5000.0f );
 	gl::ScopedViewport viewport( vec2(0), getWindowSize() );
+	gl::ScopedBlend blend(false);
 
 	gl::draw( mBackground, getWindowBounds() );
 
@@ -314,16 +311,13 @@ void MotionBlurVelocityBufferApp::draw()
 		drawVelocityBuffers();
 	}
 
-<<<<<<< HEAD
-#if ! defined( CINDER_ANDROID )
-=======
 	mCpuTimer.stop();
 	mGpuTimer->end();
 
 	mAverageCpuTime = (mCpuTimer.getSeconds() * 200) + mAverageCpuTime * 0.8f;
 	mAverageGpuTime = mGpuTimer->getElapsedMilliseconds() * 0.2f + mAverageGpuTime * 0.8f;
 
->>>>>>> upstream/master
+#if ! defined( CINDER_GL_ES )
 	mParams->draw();
 #endif
 }

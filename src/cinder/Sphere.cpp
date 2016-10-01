@@ -251,7 +251,7 @@ float Sphere::calcProjectedArea( float focalLength, vec2 screenSizePixels ) cons
 	return area * screenSizePixels.x * screenSizePixels.y * 0.25f / aspectRatio;
 }
 
-Sphere Sphere::transformed( const mat4 &transform )
+Sphere Sphere::transformed( const mat4 &transform ) const
 {
 	vec4 center = transform * vec4( mCenter, 1 );
 	vec4 radius = transform * vec4( mRadius, 0, 0, 0 );

@@ -31,6 +31,10 @@
 	#include "glload/wgl_all.h"
 #elif defined( CINDER_MAC )
 	#include <OpenGL/OpenGL.h>
+#elif defined( CINDER_LINUX )
+	#if ! defined( CINDER_LINUX_EGL_ONLY )
+		#include "glfw/glfw3.h"
+	#endif
 #endif
 
 using namespace std;
@@ -51,6 +55,11 @@ void enableVerticalSync( bool enable )
 	GLint sync = ( enable ) ? 1 : 0;
 	if( wglext_EXT_swap_control )
 		::wglSwapIntervalEXT( sync );
+#elif defined( CINDER_LINUX )
+	#if ! defined( CINDER_LINUX_EGL_ONLY )
+		GLint sync = ( enable ) ? 1 : 0;
+		glfwSwapInterval( sync );
+	#endif
 #endif
 }
 

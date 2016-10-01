@@ -343,9 +343,21 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 	}
 }
 
+<<<<<<< HEAD
 CINDER_APP( ShadowMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ), []( App::Settings *settings ) {
 //#if ! defined( CINDER_GL_ES )
 	//settings->enableHighDensityDisplay();
 	settings->setWindowSize( 900, 900 );
 //#endif
 } )
+=======
+void prepareSettings( App::Settings *settings )
+{
+#if ! defined( CINDER_GL_ES )
+	//settings->enableHighDensityDisplay();
+	settings->setWindowSize( 900, 900 );
+#endif
+}
+
+CINDER_APP( ShadowMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ), prepareSettings )
+>>>>>>> android_linux

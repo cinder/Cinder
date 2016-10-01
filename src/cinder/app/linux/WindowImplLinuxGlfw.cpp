@@ -33,7 +33,11 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
 
+<<<<<<< HEAD
 
+=======
+	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
+>>>>>>> android_linux
 #if defined( CINDER_GL_ES )
 	::glfwDefaultWindowHints();
 	::glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
@@ -56,11 +60,14 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
   #endif
 
 #else // Desktop
+<<<<<<< HEAD
   #if defined( CINDER_VULKAN )
 	::glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	std::cout << "Rendering with Vulkan" << std::endl;
   #else 	
 	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
+=======
+>>>>>>> android_linux
 	int32_t majorVersion = options.getVersion().first;
 	int32_t minorVersion = options.getVersion().second;
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, majorVersion );
@@ -74,6 +81,8 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	}
   #endif	
 #endif
+
+    ::glfwWindowHint( GLFW_SAMPLES, options.getMsaa() );
 
 	auto windowSize = format.getSize();
 	mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
@@ -126,6 +135,7 @@ void WindowImplLinux::close()
 
 void WindowImplLinux::setTitle( const std::string &title )
 {
+    ::glfwSetWindowTitle( mGlfwWindow, title.c_str() );
 }
 
 void WindowImplLinux::hide()

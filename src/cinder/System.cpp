@@ -42,7 +42,7 @@
 	#import <net/ethernet.h>
 	#import <net/if_dl.h>
 	#include <sys/sysctl.h>
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#include <windows.h>
 	#include <windowsx.h>
 	#include <iphlpapi.h>
@@ -50,7 +50,7 @@
 	namespace cinder {
 		void cpuidwrap( int *p, unsigned int param );
 	}
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	#include <collection.h>
 	#include "cinder/winrt/WinRTUtils.h"
 	using namespace Windows::Devices::Input;
@@ -87,7 +87,7 @@ System::System()
 	for( size_t b = 0; b < TOTAL_CACHE_TYPES; ++b )
 		mCachedValues[b] = false;
 		
-#if defined( CINDER_MSW ) && ! defined( _WIN64 )
+#if defined( CINDER_MSW_DESKTOP ) && ! defined( _WIN64 )
 	int p[4];
 	cpuidwrap( p, 1 );
 	mCPUID_EBX = p[1];
@@ -134,7 +134,7 @@ static T getSysCtlValue( const std::string &key )
 }
 #endif
 
-#if defined( CINDER_MSW ) && ! defined( _WIN64 )
+#if defined( CINDER_MSW_DESKTOP ) && ! defined( _WIN64 )
 typedef struct _LOGICALPROCESSORDATA
 {
    unsigned int nLargestStandardFunctionNumber;
@@ -265,7 +265,7 @@ void cpuid( int whichlp, PLOGICALPROCESSORDATA p )
    p->nCoreId = p->nLocalApicId & mask;
 }
 
-#endif // defined( CINDER_MSW ) && ! defined( _WIN64 )
+#endif // defined( CINDER_MSW_DESKTOP ) && ! defined( _WIN64 )
 
 bool System::hasSse2()
 {
@@ -274,9 +274,9 @@ bool System::hasSse2()
 		instance()->mHasSSE2 = ( getSysCtlValue<int>( "hw.optional.sse2" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE2 = true;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		instance()->mHasSSE2 = ( instance()->mCPUID_EDX & 0x04000000 ) != 0;
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 		instance()->mHasSSE2 = IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE) != 0;
 #else
 	throw Exception( "Not implemented" );
@@ -294,9 +294,9 @@ bool System::hasSse3()
 		instance()->mHasSSE3 = ( getSysCtlValue<int>( "hw.optional.sse3" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE3 = true;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		instance()->mHasSSE3 = ( instance()->mCPUID_ECX & 0x00000001 ) != 0;
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 		instance()->mHasSSE3 = IsProcessorFeaturePresent(PF_SSE3_INSTRUCTIONS_AVAILABLE) != 0;
 #else
 		throw Exception( "Not implemented" );
@@ -314,7 +314,7 @@ bool System::hasSse4_1()
 		instance()->mHasSSE4_1 = ( getSysCtlValue<int>( "hw.optional.sse4_1" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE4_1 = true; // TODO: this is not being tested
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		instance()->mHasSSE4_1 = ( instance()->mCPUID_ECX & ( 1 << 19 ) ) != 0;
 #else
 		throw Exception( "Not implemented" );
@@ -332,7 +332,7 @@ bool System::hasSse4_2()
 		instance()->mHasSSE4_2 = ( getSysCtlValue<int>( "hw.optional.sse4_2" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasSSE4_2 = true; // TODO: this is not being tested
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		instance()->mHasSSE4_2 = ( instance()->mCPUID_ECX & ( 1 << 20 ) ) != 0;
 #else
 		throw Exception( "Not implemented" );
@@ -346,7 +346,7 @@ bool System::hasSse4_2()
 bool System::hasArm()
 {
 	if( ! instance()->mCachedValues[HAS_ARM] ) {
-#if defined( CINDER_WINRT )	
+#if defined( CINDER_UWP )	
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
 		instance()->mHasArm = info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM;
@@ -367,9 +367,9 @@ bool System::hasX86_64()
 		instance()->mHasX86_64 = ( getSysCtlValue<int>( "hw.optional.x86_64" ) == 1 );
 #elif defined( _WIN64 )
 		instance()->mHasX86_64 = true;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		instance()->mHasX86_64 = ( instance()->mCPUID_EDX & ( 1 << 29 ) ) != 0;
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
 		instance()->mHasX86_64 = info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
@@ -388,11 +388,11 @@ int System::getNumCpus()
 	if( ! instance()->mCachedValues[PHYSICAL_CPUS] ) {
 #if defined( CINDER_COCOA )	
 		instance()->mPhysicalCPUs = getSysCtlValue<int>( "hw.packages" );
-#elif defined( CINDER_WINRT ) || defined( _WIN64 )
+#elif defined( CINDER_UWP ) || defined( _WIN64 )
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
 		instance()->mPhysicalCPUs = info.dwNumberOfProcessors;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		const int MAX_NUMBER_OF_LOGICAL_PROCESSORS = 96;
 		const int MAX_NUMBER_OF_PHYSICAL_PROCESSORS = 8;
 		const int MAX_NUMBER_OF_IOAPICS = 16;
@@ -435,12 +435,12 @@ int System::getNumCores()
 	if( ! instance()->mCachedValues[LOGICAL_CPUS] ) {
 #if defined( CINDER_COCOA )	
 		instance()->mLogicalCPUs = getSysCtlValue<int>( "hw.logicalcpu" );
-#elif defined( CINDER_WINRT ) || defined( _WIN64 )
+#elif defined( CINDER_UWP ) || defined( _WIN64 )
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
 		// no way to check the actual number of cores, so return dwNumberOfProcessors
 		instance()->mLogicalCPUs = info.dwNumberOfProcessors;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		::SYSTEM_INFO sys;
 		::GetSystemInfo( &sys );
 		instance()->mLogicalCPUs = sys.dwNumberOfProcessors;
@@ -478,7 +478,7 @@ int System::getOsMajorVersion()
 				throw SystemExcFailedQuery();
 	#pragma clang diagnostic pop
 		}
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		::OSVERSIONINFOEX info;
 		::ZeroMemory( &info, sizeof( OSVERSIONINFOEX ) );
 		info.dwOSVersionInfoSize = sizeof( OSVERSIONINFOEX );
@@ -510,7 +510,7 @@ int System::getOsMinorVersion()
 				throw SystemExcFailedQuery();
 	#pragma clang diagnostic pop
 		}
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		::OSVERSIONINFOEX info;
 		::ZeroMemory( &info, sizeof( OSVERSIONINFOEX ) );
 		info.dwOSVersionInfoSize = sizeof( OSVERSIONINFOEX );
@@ -545,7 +545,7 @@ int System::getOsBugFixVersion()
 				throw SystemExcFailedQuery();
 	#pragma clang diagnostic pop
 		}
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		::OSVERSIONINFOEX info;
 		::ZeroMemory( &info, sizeof( OSVERSIONINFOEX ) );
 		info.dwOSVersionInfoSize = sizeof( OSVERSIONINFOEX );
@@ -571,11 +571,11 @@ bool System::hasMultiTouch()
 	#endif
 #elif defined( CINDER_COCOA_TOUCH ) // all incarnations of the iPhone OS support multiTouch
 		instance()->mHasMultiTouch = true;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		int value = ::GetSystemMetrics( 94/*SM_DIGITIZER*/ );
 		instance()->mHasMultiTouch = (value & 0x00000080/*NID_READY*/ ) && 
 				( (value & 0x00000040/*NID_MULTI_INPUT*/ ) || (value & 0x00000001/*NID_INTEGRATED_TOUCH*/ ) );
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 		auto pointerDevices = PointerDevice::GetPointerDevices();
 		std::for_each(begin(pointerDevices), end(pointerDevices), [&](PointerDevice^ p) {
 			if(p->PointerDeviceType == PointerDeviceType::Touch) {
@@ -601,9 +601,9 @@ int32_t System::getMaxMultiTouchPoints()
 		instance()->mMaxMultiTouchPoints = 10;
 #elif defined( CINDER_COCOA_TOUCH ) // all incarnations of the iPhone OS support multiTouch
 		instance()->mMaxMultiTouchPoints = 6; // we don't seem to be able to query this at runtime; should be hardcoded based on the device
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 		instance()->mMaxMultiTouchPoints = ::GetSystemMetrics( 95/*SM_MAXIMUMTOUCHES*/ );
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 		auto pointerDevices = PointerDevice::GetPointerDevices();
 		unsigned int maxContacts = 0;
 		std::for_each(begin(pointerDevices), end(pointerDevices), [&](PointerDevice^ p) {
@@ -626,6 +626,7 @@ int32_t System::getMaxMultiTouchPoints()
 
 string System::demangleTypeName( const char *mangledName )
 {
+	// not supported on MSW or UWP
 #if defined( CINDER_MSW )
 	return mangledName;
 #else
@@ -667,7 +668,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 		}
 	}
 	freeifaddrs( interfaces );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
     PIP_ADAPTER_INFO pAdapterInfo;
     PIP_ADAPTER_INFO pAdapter = NULL;
     DWORD dwRetVal = 0;
@@ -697,7 +698,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 
     if( pAdapterInfo )
         ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	auto hosts = NetworkInformation::GetHostNames();
 	std::for_each( begin(hosts), end(hosts), [&](HostName^ n) {
 		std::string subnetMask;
@@ -725,7 +726,7 @@ std::string System::getSubnetMask() {
 	return "0.0.0.0";
 }
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 std::string System::getIpAddress()
 {
     auto icp = NetworkInformation::GetInternetConnectionProfile();

@@ -24,16 +24,16 @@
 
 #include "cinder/Surface.h"
 
-#if defined( CINDER_WINRT )
-#include <ppltasks.h>
-#include "cinder/winrt/WinRTUtils.h"
-#include "cinder/Utilities.h"
-#include "cinder/msw/CinderMsw.h"
-using namespace Windows::Storage;
-using namespace Concurrency;
-#undef max
-using namespace Windows::Storage;
-using namespace Concurrency;
+#if defined( CINDER_UWP )
+	#include <ppltasks.h>
+	#include "cinder/winrt/WinRTUtils.h"
+	#include "cinder/Utilities.h"
+	#include "cinder/msw/CinderMsw.h"
+	using namespace Windows::Storage;
+	using namespace Concurrency;
+	#undef max
+	using namespace Windows::Storage;
+	using namespace Concurrency;
 #endif
 
 #include "cinder/ChanTraits.h"
@@ -43,7 +43,6 @@ using namespace Concurrency;
 #include <boost/preprocessor/seq.hpp>
 #include <boost/type_traits/is_same.hpp>
 using boost::tribool;
-
 
 
 namespace cinder {
@@ -92,17 +91,17 @@ class ImageSourceSurface : public ImageSource {
 	void load( ImageTargetRef target ) {
 		// get a pointer to the ImageSource function appropriate for handling our data configuration
 		ImageSource::RowFunc func = setupRowFunc( target );
-		
+
 		const uint8_t *data = mData;
 		for( int32_t row = 0; row < mHeight; ++row ) {
 			((*this).*func)( target, row, data );
 			data += mRowBytes;
 		}
 	}
-	
+
 	// not ideal, but these are used to register a reference to the surface we were constructed with
 	const uint8_t			*mData;
-	int32_t					mRowBytes;
+	ptrdiff_t				mRowBytes;
 	std::shared_ptr<void>	mDataStoreRef;
 };
 
@@ -256,7 +255,7 @@ SurfaceT<T>::SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceC
 }
 
 template<typename T>
-SurfaceT<T>::SurfaceT( T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder )
+SurfaceT<T>::SurfaceT( T *data, int32_t width, int32_t height, ptrdiff_t rowBytes, SurfaceChannelOrder channelOrder )
 	: mData( data ), mWidth( width ), mHeight( height ), mRowBytes( rowBytes ), mChannelOrder( channelOrder )
 {
 	mPremultiplied = false;
@@ -269,7 +268,7 @@ SurfaceT<T>::SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &con
 	init( imageSource, constraints, alpha );
 }
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 
 template<typename T>
 void SurfaceT<T>::loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate )
@@ -418,9 +417,9 @@ void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, 
 template<typename T>
 void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
-	int32_t srcRowBytes = srcSurface.getRowBytes();
-	int32_t srcPixelInc = srcSurface.getPixelInc();
-	int32_t dstPixelInc = getPixelInc();
+	ptrdiff_t srcRowBytes = srcSurface.getRowBytes();
+	uint8_t srcPixelInc = srcSurface.getPixelInc();
+	uint8_t dstPixelInc = getPixelInc();
 	size_t copyBytes = srcArea.getWidth() * srcPixelInc * sizeof(T);
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
 		const T *srcPtr = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcSurface.getData() + srcArea.x1 * srcPixelInc ) + ( srcArea.y1 + y ) * srcRowBytes );
@@ -432,19 +431,19 @@ void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const 
 template<typename T>
 void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
-	const int32_t srcRowBytes = srcSurface.getRowBytes();
+	const ptrdiff_t srcRowBytes = srcSurface.getRowBytes();
 	uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
 	uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
 	uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
 	uint8_t srcAlpha = srcSurface.getChannelOrder().getAlphaOffset();
-	
+
 	uint8_t dstRed = getChannelOrder().getRedOffset();
 	uint8_t dstGreen = getChannelOrder().getGreenOffset();
 	uint8_t dstBlue = getChannelOrder().getBlueOffset();
 	uint8_t dstAlpha = getChannelOrder().getAlphaOffset();
-	
+
 	int32_t width = srcArea.getWidth();
-	
+
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
 		const T *src = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcSurface.getData() + srcArea.x1 * 4 ) + ( srcArea.y1 + y ) * srcRowBytes );
 		T *dst = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( getData() + absoluteOffset.x * 4 ) + ( y + absoluteOffset.y ) * getRowBytes() );
@@ -462,20 +461,20 @@ void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcAre
 template<typename T>
 void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
-	const int32_t srcRowBytes = srcSurface.getRowBytes();
-	const int8_t srcPixelInc = srcSurface.getPixelInc();
+	const ptrdiff_t srcRowBytes = srcSurface.getRowBytes();
+	const uint8_t srcPixelInc = srcSurface.getPixelInc();
 	uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
 	uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
 	uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
 	const T fullAlpha = CHANTRAIT<T>::max();
-	
+
 	uint8_t dstRed = getChannelOrder().getRedOffset();
 	uint8_t dstGreen = getChannelOrder().getGreenOffset();
 	uint8_t dstBlue = getChannelOrder().getBlueOffset();
 	uint8_t dstAlpha = getChannelOrder().getAlphaOffset();
-	
+
 	int32_t width = srcArea.getWidth();
-	
+
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
 		const T *src = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcSurface.getData() + srcArea.x1 * 4 ) + ( srcArea.y1 + y ) * srcRowBytes );
 		T *dst = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( getData() + absoluteOffset.x * 4 ) + ( y + absoluteOffset.y ) * getRowBytes() );
@@ -493,19 +492,19 @@ void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area
 template<typename T>
 void SurfaceT<T>::copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
-	const int32_t srcRowBytes = srcSurface.getRowBytes();
-	const int8_t srcPixelInc = srcSurface.getPixelInc();
+	const ptrdiff_t srcRowBytes = srcSurface.getRowBytes();
+	const uint8_t srcPixelInc = srcSurface.getPixelInc();
 	const uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
 	const uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
 	const uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
-	
+
 	const uint8_t dstPixelInc = getPixelInc();
 	const uint8_t dstRed = getChannelOrder().getRedOffset();
 	const uint8_t dstGreen = getChannelOrder().getGreenOffset();
 	const uint8_t dstBlue = getChannelOrder().getBlueOffset();
-	
+
 	int32_t width = srcArea.getWidth();
-	
+
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
 		const T *src = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcSurface.getData() + srcArea.x1 * srcPixelInc ) + ( srcArea.y1 + y ) * srcRowBytes );
 		T *dst = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( getData() + absoluteOffset.x * dstPixelInc ) + ( y + absoluteOffset.y ) * getRowBytes() );

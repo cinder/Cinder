@@ -214,6 +214,15 @@
     <ClInclude Include="..\include\cinder\winrt\FontEnumerator.h" />
     <ClInclude Include="..\include\cinder\winrt\WinRTUtils.h" />
     <ClInclude Include="..\include\cinder\Xml.h" />
+    <ClInclude Include="..\src\r8brain\CDSPBlockConvolver.h" />
+    <ClInclude Include="..\src\r8brain\CDSPFIRFilter.h" />
+    <ClInclude Include="..\src\r8brain\CDSPFracInterpolator.h" />
+    <ClInclude Include="..\src\r8brain\CDSPRealFFT.h" />
+    <ClInclude Include="..\src\r8brain\CDSPResampler.h" />
+    <ClInclude Include="..\src\r8brain\CDSPSincFilterGen.h" />
+    <ClInclude Include="..\src\r8brain\fft4g.h" />
+    <ClInclude Include="..\src\r8brain\r8bbase.h" />
+    <ClInclude Include="..\src\r8brain\r8bconf.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\AppBase.cpp" />
@@ -588,14 +597,6 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftxf86.c">
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
-      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
-    </ClCompile>
     <ClCompile Include="..\src\freetype\bdf\bdf.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -868,6 +869,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\src\r8brain\r8bbase.cpp" />
     <ClCompile Include="..\src\tinyexr\tinyexr.cc">
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BufferSecurityCheck>
@@ -1092,8 +1094,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1109,8 +1111,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1126,8 +1128,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1143,8 +1145,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1160,8 +1162,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1177,8 +1179,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

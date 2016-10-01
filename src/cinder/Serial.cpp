@@ -253,7 +253,7 @@ void Serial::writeBytes( const void *data, size_t numBytes )
 #if defined( CINDER_MAC )
 		long bytesWritten = ::write( mImpl->mFd, data, numBytes - totalBytesWritten );
 		if( ( bytesWritten == -1 ) && ( errno != EAGAIN ) )
-			throw SerialExcReadFailure();	
+			throw SerialExcWriteFailure();
 #elif defined( CINDER_MSW )
 		::DWORD bytesWritten;
 		if( ! ::WriteFile( mImpl->mDeviceHandle, data, numBytes - totalBytesWritten, &bytesWritten, 0 ) )
@@ -368,7 +368,7 @@ size_t Serial::getNumBytesAvailable() const
 	::COMSTAT status;
 	::DWORD error;
 	if( ! ::ClearCommError( mImpl->mDeviceHandle, &error, &status ) )
-		throw SerialExc( "Serial failuture upon attempt to retreive information on device handle" );
+		throw SerialExc( "Serial failure upon attempt to retrieve information on device handle" );
 	else
 		result = status.cbInQue;
 #endif

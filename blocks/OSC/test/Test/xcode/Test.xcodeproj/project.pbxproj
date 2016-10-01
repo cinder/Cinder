@@ -18,8 +18,8 @@
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B3253BCD1D4C56DE00CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253BCB1D4C56DE00CDF15F /* Osc.cpp */; };
 		B37BB9A21BD0168B00311784 /* TestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A3083A29E03041BFB198D8E5 /* TestApp.cpp */; };
-		B3EE6DF11BCF0037002798EA /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3EE6DEF1BCF0037002798EA /* Osc.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,8 +41,8 @@
 		8AC1CA0FCD2D4ED19E544C92 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3083A29E03041BFB198D8E5 /* TestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = TestApp.cpp; path = ../src/TestApp.cpp; sourceTree = "<group>"; };
-		B3EE6DEF1BCF0037002798EA /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
-		B3EE6DF01BCF0037002798EA /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
+		B3253BCB1D4C56DE00CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
+		B3253BCC1D4C56DE00CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +70,7 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				B3DB89261BA0DDD800961814 /* osc */,
+				B3DB89261BA0DDD800961814 /* OSC */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
@@ -157,22 +157,38 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B3DB89261BA0DDD800961814 /* osc */ = {
+		B3253BC81D4C56DE00CDF15F /* src */ = {
 			isa = PBXGroup;
 			children = (
-				B3DB89271BA0DDE100961814 /* src */,
-			);
-			name = osc;
-			sourceTree = "<group>";
-		};
-		B3DB89271BA0DDE100961814 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				B3EE6DEF1BCF0037002798EA /* Osc.cpp */,
-				B3EE6DF01BCF0037002798EA /* Osc.h */,
+				B3253BC91D4C56DE00CDF15F /* cinder */,
 			);
 			name = src;
 			path = ../../../src;
+			sourceTree = "<group>";
+		};
+		B3253BC91D4C56DE00CDF15F /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BCA1D4C56DE00CDF15F /* osc */,
+			);
+			path = cinder;
+			sourceTree = "<group>";
+		};
+		B3253BCA1D4C56DE00CDF15F /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BCB1D4C56DE00CDF15F /* Osc.cpp */,
+				B3253BCC1D4C56DE00CDF15F /* Osc.h */,
+			);
+			path = osc;
+			sourceTree = "<group>";
+		};
+		B3DB89261BA0DDD800961814 /* OSC */ = {
+			isa = PBXGroup;
+			children = (
+				B3253BC81D4C56DE00CDF15F /* src */,
+			);
+			name = OSC;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -238,7 +254,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B37BB9A21BD0168B00311784 /* TestApp.cpp in Sources */,
-				B3EE6DF11BCF0037002798EA /* Osc.cpp in Sources */,
+				B3253BCD1D4C56DE00CDF15F /* Osc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +284,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = Test;
 				SYMROOT = ./build;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../src";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -297,6 +314,7 @@
 				PRODUCT_NAME = Test;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../src";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

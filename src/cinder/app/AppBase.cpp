@@ -23,7 +23,7 @@
 */
 
 #include "cinder/Cinder.h"
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#define ASIO_WINDOWS_RUNTIME 1
 #endif
 
@@ -64,6 +64,7 @@
  	#if defined( __ANDROID__ )
  		#include "cinder/android/libc_helper.h"
  	#endif
+	#define NOMINMAX
 	#include "asio/asio.hpp"
 #endif
 
@@ -140,7 +141,7 @@ void AppBase::Settings::setShouldQuit( bool shouldQuit )
 
 AppBase::AppBase()
 	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() ),
-		mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 )
+		mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 ), mLaunchCalled( false ), mQuitRequested( false )
 {
 	sInstance = this;
 
@@ -156,7 +157,7 @@ AppBase::AppBase()
 
 	// due to an issue with boost::filesystem's static initialization on Windows, 
 	// it's necessary to create a fs::path here in case of secondary threads doing the same thing simultaneously
-#if (defined( CINDER_MSW ) || defined ( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	fs::path dummyPath( "dummy" );
 #endif
 }
@@ -184,10 +185,14 @@ void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer
 void AppBase::executeLaunch()
 {
 	try {
+		// a quit() was called from the app constructor; don't launch
+		if( mQuitRequested )
+			return;
+		mLaunchCalled = true;
 		launch();
 	}
 	catch( std::exception &exc ) {
-		CI_LOG_E( "Uncaught exception, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what : " << exc.what() );
+		CI_LOG_F( "Uncaught exception, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
 		throw;
 	}
 }

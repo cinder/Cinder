@@ -25,6 +25,8 @@ TYPE loadStringFromFile( const DataSourceRef &dataSource )
 
 TEST_CASE("Unicode")
 {
+	app::Platform::get()->addAssetDirectory( UNIT_DIR_ASSETS );
+
 	SECTION("Unicode strings are convertible between 8, 16, and 32 bit representations.")
 	{
 		// these files should be identical except for their encoding

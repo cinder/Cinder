@@ -1,4 +1,5 @@
 #include "cinder/app/App.h"
+#include "cinder/app/Platform.h"
 #include "cinder/Json.h"
 
 #include "jsoncpp/json.h"
@@ -10,6 +11,8 @@ using namespace std;
 
 TEST_CASE("Json", "[noisy]")
 {
+	app::Platform::get()->addAssetDirectory( UNIT_DIR_ASSETS );
+
 	SECTION("Basic JSON Parsing")
 	{
 		console() << "jsoncpp version: " << JSONCPP_VERSION_STRING << endl;

@@ -67,8 +67,8 @@ void stackBlur_impl( const IMAGET &srcSurface, IMAGET *dstSurface, const Area &a
 	const SUMT invDivisor = 1 / divisor;
 	const uint8_t srcPixelInc = ( CHANNELS == 4 ) ? 4 : getPixelIncrement( srcSurface );
 	const uint8_t dstPixelInc = ( CHANNELS == 4 ) ? 4 : getPixelIncrement( *dstSurface );
-	const int32_t srcRowInc = srcSurface.getRowBytes() / sizeof(T);
-	const int32_t dstRowInc = dstSurface->getRowBytes() / sizeof(T);
+	const ptrdiff_t srcRowInc = srcSurface.getRowBytes() / sizeof(T);
+	const ptrdiff_t dstRowInc = dstSurface->getRowBytes() / sizeof(T);
 
 	const T *srcPixelData = srcSurface.getData( area.getUL() );
 	T *dstPixelData = dstSurface->getData( area.getUL() );

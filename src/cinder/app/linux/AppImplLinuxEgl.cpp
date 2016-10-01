@@ -278,7 +278,18 @@ void AppImplLinux::run()
 						case rpi::INPUT_MOUSERIGHT:  { sMouseState.rightDown  = true; initiator = MouseEvent::RIGHT_DOWN;  } break;
 					}
 
-					MouseEvent event( getWindow(), initiator, sMouseState.pos.x, sMouseState.pos.y, 0, 0.0f, 0 );
+					int modifiers = 0;
+					if( sMouseState.leftDown ) {
+						modifiers |= MouseEvent::LEFT_DOWN;
+					}
+					if( sMouseState.middleDown ) {
+						modifiers |= MouseEvent::MIDDLE_DOWN;
+					}
+					if( sMouseState.rightDown ) {
+						modifiers |= MouseEvent::RIGHT_DOWN;
+					}
+
+					MouseEvent event( getWindow(), initiator, sMouseState.pos.x, sMouseState.pos.y, modifiers, 0.0f, 0 );
 					mMainWindow->emitMouseDown( &event );
 				}
 				break;

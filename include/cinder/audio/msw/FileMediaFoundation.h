@@ -55,7 +55,7 @@ class SourceFileMediaFoundation : public SourceFile {
 
   private:
 	void		initReader();
-	size_t		processNextReadSample();
+	size_t		processNextReadSample( bool *endOfFile );
 
 	ci::msw::ManagedComPtr<::IMFSourceReader>		mSourceReader;
 	ci::msw::ManagedComPtr<ci::msw::ComIStream>		mComIStream;
@@ -91,6 +91,7 @@ class TargetFileMediaFoundation : public TargetFile {
 	  DWORD						mStreamIndex;
 	  size_t					mSampleSize;
 	  BufferDynamicInterleaved	mBitConverterBuffer;	// only used when bit conversion and interleaving are done in separate steps (ex. 24-bit stereo).
+	  bool						mSamplesWritten = false;
 };
 
 class MediaFoundationInitializer {

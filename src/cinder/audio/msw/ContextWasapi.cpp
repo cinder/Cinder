@@ -21,6 +21,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/Cinder.h"
+
 #if( _WIN32_WINNT >= 0x0600 ) // Requires Windows Vista+
 
 #include "cinder/audio/msw/ContextWasapi.h"

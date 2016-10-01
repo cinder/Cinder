@@ -26,6 +26,7 @@
 #include "cinder/CinderAssert.h"
 
 #include <atomic>
+#include <cstring>
 
 namespace cinder { namespace audio { namespace dsp {
 

@@ -14,23 +14,6 @@
 		1A0A3DB9238A47039E282467 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E899D3DB7DAA44AE92D9D38E /* Default-568h@2x.png */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		27C100D21BD1749D00AF387F /* CubeMappingApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 527A05479D9641A9894DD2E3 /* CubeMappingApp.cpp */; };
-		27C100D41BD1749D00AF387F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C725E000121DAC8F00FA186B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		27C100D51BD1749D00AF387F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		27C100D61BD1749D00AF387F /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091FFFF /* ImageIO.framework */; };
-		27C100D71BD1749D00AF387F /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDDDDF6A1138442D0091DDDD /* MobileCoreServices.framework */; };
-		27C100D81BD1749D00AF387F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		27C100D91BD1749D00AF387F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		27C100DA1BD1749D00AF387F /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
-		27C100DB1BD1749D00AF387F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
-		27C100DC1BD1749D00AF387F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
-		27C100DD1BD1749D00AF387F /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02D121B400300192073 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		27C100DE1BD1749D00AF387F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */; };
-		27C100DF1BD1749D00AF387F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D25412CD809F002CD69F /* CoreText.framework */; };
-		27C100E11BD1749D00AF387F /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00822ECB1B18F8B300EB0E21 /* LaunchScreen.xib */; };
-		27C100E21BD1749D00AF387F /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 00748057165D41390024B57A /* assets */; };
-		27C100E31BD1749D00AF387F /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = 77BA4AE294004AF9B852207E /* CinderApp_ios.png */; };
-		27C100E41BD1749D00AF387F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E899D3DB7DAA44AE92D9D38E /* Default-568h@2x.png */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
 		3C80ACBD0B7A4B42BD70C0B9 /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = 77BA4AE294004AF9B852207E /* CinderApp_ios.png */; };
@@ -53,7 +36,6 @@
 		0CE8286B18FC4B3386432563 /* CubeMapping_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = CubeMapping_Prefix.pch; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		27C100E81BD1749D00AF387F /* CubeMapping_es3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CubeMapping_es3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27C100E91BD1749D00AF387F /* CubeMapping copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "CubeMapping copy-Info.plist"; path = "/Users/hai/code/cinder/cinder_chaoticbob/samples/_opengl/CubeMapping/xcode_ios/CubeMapping copy-Info.plist"; sourceTree = "<absolute>"; };
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -89,25 +71,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		27C100D31BD1749D00AF387F /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				27C100D41BD1749D00AF387F /* AVFoundation.framework in Frameworks */,
-				27C100D51BD1749D00AF387F /* CoreMedia.framework in Frameworks */,
-				27C100D61BD1749D00AF387F /* ImageIO.framework in Frameworks */,
-				27C100D71BD1749D00AF387F /* MobileCoreServices.framework in Frameworks */,
-				27C100D81BD1749D00AF387F /* Foundation.framework in Frameworks */,
-				27C100D91BD1749D00AF387F /* UIKit.framework in Frameworks */,
-				27C100DA1BD1749D00AF387F /* OpenGLES.framework in Frameworks */,
-				27C100DB1BD1749D00AF387F /* QuartzCore.framework in Frameworks */,
-				27C100DC1BD1749D00AF387F /* CoreGraphics.framework in Frameworks */,
-				27C100DD1BD1749D00AF387F /* CoreVideo.framework in Frameworks */,
-				27C100DE1BD1749D00AF387F /* AudioToolbox.framework in Frameworks */,
-				27C100DF1BD1749D00AF387F /* CoreText.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -128,7 +91,6 @@
 			isa = PBXGroup;
 			children = (
 				00692BCF14FF149000D0A05E /* CubeMapping.app */,
-				27C100E81BD1749D00AF387F /* CubeMapping_es3.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -208,23 +170,6 @@
 			productReference = 00692BCF14FF149000D0A05E /* CubeMapping.app */;
 			productType = "com.apple.product-type.application";
 		};
-		27C100D01BD1749D00AF387F /* CubeMapping_es3 */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 27C100E51BD1749D00AF387F /* Build configuration list for PBXNativeTarget "CubeMapping_es3" */;
-			buildPhases = (
-				27C100D11BD1749D00AF387F /* Sources */,
-				27C100D31BD1749D00AF387F /* Frameworks */,
-				27C100E01BD1749D00AF387F /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = CubeMapping_es3;
-			productName = CubeMapping;
-			productReference = 27C100E81BD1749D00AF387F /* CubeMapping_es3.app */;
-			productType = "com.apple.product-type.application";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -245,7 +190,6 @@
 			projectRoot = "";
 			targets = (
 				00692BCE14FF149000D0A05E /* CubeMapping */,
-				27C100D01BD1749D00AF387F /* CubeMapping_es3 */,
 			);
 		};
 /* End PBXProject section */
@@ -262,17 +206,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		27C100E01BD1749D00AF387F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				27C100E11BD1749D00AF387F /* LaunchScreen.xib in Resources */,
-				27C100E21BD1749D00AF387F /* assets in Resources */,
-				27C100E31BD1749D00AF387F /* CinderApp_ios.png in Resources */,
-				27C100E41BD1749D00AF387F /* Default-568h@2x.png in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -281,14 +214,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD8D80CC1392416F946B001E /* CubeMappingApp.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		27C100D11BD1749D00AF387F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				27C100D21BD1749D00AF387F /* CubeMappingApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,44 +315,6 @@
 			};
 			name = Release;
 		};
-		27C100E61BD1749D00AF387F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = CubeMapping_Prefix.pch;
-				INFOPLIST_FILE = "CubeMapping copy-Info.plist";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone-es3_d.a\"",
-					"-lz",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim-es3_d.a\"",
-					"-lz",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Debug;
-		};
-		27C100E71BD1749D00AF387F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = CubeMapping_Prefix.pch;
-				INFOPLIST_FILE = "CubeMapping copy-Info.plist";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone-es3.a\"",
-					"-lz",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim-es3.a\"",
-					"-lz",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -445,15 +332,6 @@
 			buildConfigurations = (
 				00692BF614FF149000D0A05E /* Debug */,
 				00692BF714FF149000D0A05E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		27C100E51BD1749D00AF387F /* Build configuration list for PBXNativeTarget "CubeMapping_es3" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				27C100E61BD1749D00AF387F /* Debug */,
-				27C100E71BD1749D00AF387F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

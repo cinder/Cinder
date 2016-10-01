@@ -28,7 +28,7 @@
 
 #if defined( CINDER_COCOA )
 	#include "cinder/audio/cocoa/FileCoreAudio.h"
-#elif defined( CINDER_MSW ) || defined( CINDER_WINRT )
+#elif defined( CINDER_MSW )
 	#include "cinder/audio/msw/FileMediaFoundation.h"
 #endif
 
@@ -40,7 +40,7 @@ namespace cinder { namespace audio {
 
 std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
 {
-#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
+#if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 	std::string ext = dataTarget->getFilePathHint().extension().string();
 #else
 	std::string ext = dataTarget->getFilePathHint().extension();
@@ -49,7 +49,7 @@ std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget,
 
 #if defined( CINDER_COCOA )
 	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, ext ) );
-#elif defined( CINDER_MSW ) || defined( CINDER_WINRT )
+#elif defined( CINDER_MSW )
 	return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
 #endif
 }
@@ -66,6 +66,9 @@ void TargetFile::write( const Buffer *buffer )
 
 void TargetFile::write( const Buffer *buffer, size_t numFrames )
 {
+	if( ! numFrames )
+		return;
+
 	CI_ASSERT_MSG( numFrames <= buffer->getNumFrames(), "numFrames out of bounds" );
 
 	performWrite( buffer, numFrames, 0 );
@@ -73,6 +76,9 @@ void TargetFile::write( const Buffer *buffer, size_t numFrames )
 
 void TargetFile::write( const Buffer *buffer, size_t numFrames, size_t frameOffset )
 {
+	if( ! numFrames )
+		return;
+
 	CI_ASSERT_MSG( numFrames + frameOffset <= buffer->getNumFrames(), "numFrames + frameOffset out of bounds" );
 
 	performWrite( buffer, numFrames, frameOffset );

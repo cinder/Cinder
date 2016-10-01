@@ -79,9 +79,10 @@ void AppImplMswBasic::run()
 
 		// update and draw
 		mApp->privateUpdate__();
-		for( auto &window : mWindows )
-			window->redraw();
-
+		for( auto &window : mWindows ) {
+			if( ! mShouldQuit ) // test for quit() issued either from update() or prior draw()
+				window->redraw();
+		}
 		// get current time in seconds
 		double currentSeconds = mApp->getElapsedSeconds();
 

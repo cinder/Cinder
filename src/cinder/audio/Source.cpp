@@ -46,7 +46,7 @@ unique_ptr<SourceFile> SourceFile::create( const DataSourceRef &dataSource, size
 {
 	unique_ptr<SourceFile> result;
 
-#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
+#if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 	if( dataSource->getFilePathHint().extension().string() == ".ogg" )
 #else
 	if( dataSource->getFilePathHint().extension() == ".ogg" )

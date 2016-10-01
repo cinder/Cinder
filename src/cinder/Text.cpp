@@ -28,6 +28,13 @@
 #include "cinder/Utilities.h"
 #include "cinder/Noncopyable.h"
 
+#if defined( CINDER_UWP )
+	#define generic GenericFromFreeTypeLibrary
+	#include <ft2build.h>
+	#include <freetype.h>
+	#undef generic
+#endif
+
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
@@ -35,7 +42,7 @@
 	#elif defined( CINDER_COCOA_TOUCH )
 		#include <CoreText/CoreText.h>
 	#endif
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#include <Windows.h>
 	#define max(a, b) (((a) > (b)) ? (a) : (b))
 	#define min(a, b) (((a) < (b)) ? (a) : (b))
@@ -48,12 +55,10 @@
 	#include "cinder/Unicode.h"
 
 	static const float MAX_SIZE = 1000000.0f;
-
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	#include "cinder/linux/FreeTypeUtil.h"
 
 	static const float MAX_SIZE = 1000000.0f;
-
 #endif
 
 #include <limits.h>
@@ -74,7 +79,7 @@ class TextManager : private Noncopyable
 	static TextManager*		instance();
 
 #if defined( CINDER_MAC )
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	HDC					getDc() { return mDummyDC; }
 	Gdiplus::Graphics*	getGraphics() { return mGraphics; }
 #endif
@@ -83,7 +88,7 @@ class TextManager : private Noncopyable
 	static TextManager	*sInstance;
 
 #if defined( CINDER_MAC )
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	HDC					mDummyDC;
 	Gdiplus::Graphics	*mGraphics;
 #endif
@@ -94,7 +99,7 @@ TextManager *TextManager::sInstance = 0;
 TextManager::TextManager()
 {
 #if defined( CINDER_MAC )
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	mDummyDC = ::CreateCompatibleDC( 0 );
 	mGraphics = new Gdiplus::Graphics( mDummyDC );
 #endif
@@ -103,7 +108,7 @@ TextManager::TextManager()
 TextManager::~TextManager()
 {
 #if defined( CINDER_MAC )
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	::DeleteDC( mDummyDC );
 #endif
 }
@@ -122,7 +127,7 @@ struct Run {
 	Run( const string &aText, const Font &aFont, const ColorA &aColor )
 		: mText( aText ), mFont( aFont ), mColor( aColor )
 	{
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 		mWideText = toUtf16( mText );
 #endif
 	}
@@ -130,7 +135,7 @@ struct Run {
 	string		mText;
 	Font		mFont;
 	ColorA		mColor;
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	std::u16string		mWideText;
 	// in GDI+ rendering we need to know each run's typographic metrics
 	float				mWidth;
@@ -150,11 +155,11 @@ class Line {
 	void calcExtents();
 #if defined( CINDER_COCOA )
 	void render( CGContextRef &cgContext, float currentY, float xBorder, float maxWidth );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	void render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth );
-#elif defined( CINDER_WINRT )
+#elif 0 //defined( CINDER_UWP )
 	void render(Channel &channel, float currentY, float xBorder, float maxWidth);
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	void render( Surface &surface, float currentY, float xBorder, float maxWidth );
 #endif
 
@@ -212,7 +217,7 @@ void Line::calcExtents()
 	mDescent = descentCG;
 	mLeading = leadingCG;
 	mHeight = 0;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		Gdiplus::StringFormat format;
@@ -232,7 +237,7 @@ void Line::calcExtents()
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
 		mHeight = std::max( mHeight, sizeRect.Height );
 	}
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		FT_Face face = runIt->mFont.getFreetypeFace();
@@ -283,7 +288,7 @@ void Line::render( CGContextRef &cgContext, float currentY, float xBorder, float
 	::CTLineDraw( mCTLineRef, cgContext );
 }
 
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 
 void Line::render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth )
 {
@@ -301,7 +306,7 @@ void Line::render( Gdiplus::Graphics *graphics, float currentY, float xBorder, f
 	}
 }
 
-#elif defined( CINDER_WINRT )
+#elif 0//defined( CINDER_UWP )
 
 void Line::render(Channel &channel, float currentY, float xBorder, float maxWidth)
 {
@@ -324,7 +329,7 @@ void Line::render(Channel &channel, float currentY, float xBorder, float maxWidt
 	}
 }
 
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 
 void draw_bitmap( FT_Int x, FT_Int y, FT_Bitmap* bitmap, const ColorA8u& color, uint8_t *dstData, size_t dstPixelInc, size_t dstRowBytes, const ivec2& dstSize )
 {
@@ -558,7 +563,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	// since CGContextBitmaps are always premultiplied, if the caller didn't want that we'll have to undo it
 	if( ! premultiplied )
 		ip::unpremultiply( &result );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	// I don't have a great explanation for this other than it seems to be necessary
 	pixelHeight += 1;
 	// prep our GDI and GDI+ resources
@@ -588,7 +593,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 
 	delete offscreenBitmap;
 	delete offscreenGraphics;
-#elif defined( CINDER_WINRT )
+#elif 0 //defined( CINDER_UWP )
 	Channel channel( pixelWidth, pixelHeight );
 	ip::fill<uint8_t>( &channel, 0 );
 	float currentY = (float)mVerticalBorder;
@@ -599,7 +604,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	}
 	result = Surface(channel, SurfaceConstraintsDefault(), true);
 	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
-#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	result = Surface( pixelWidth, pixelHeight, true, SurfaceConstraintsDefault() );
 	ip::fill( &result, mBackgroundColor );
 
@@ -655,7 +660,7 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 	::CGContextRelease( cgContext );
 	return result;
 }
-#elif defined( CINDER_MAC) || defined( CINDER_MSW ) || defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+#elif defined( CINDER_MAC) || defined( CINDER_MSW_DESKTOP ) || defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 Surface renderString( const string &str, const Font &font, const ColorA &color, float *baselineOffset )
 {
 	Line line;
@@ -687,7 +692,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	::CGContextRelease( cgContext );
 
 	ip::unpremultiply( &result );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	// I don't have a great explanation for this other than it seems to be necessary
 	pixelHeight += 1;
 	// prep our GDI and GDI+ resources
@@ -711,23 +716,12 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 
 	delete offscreenBitmap;
 	delete offscreenGraphics;
-#elif defined( CINDER_WINRT ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
-	Channel channel( pixelWidth, pixelHeight );
-	ip::fill<uint8_t>( &channel, 0 );
-	FT_Face face = font.getFreetypeFace();
-	int offset = 0;
-	for(string::const_iterator strIt = str.begin(); strIt != str.end(); ++strIt)
-	{
-		FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
-		uint8_t *pBuff = face->glyph->bitmap.buffer;
-		FT_Glyph_Metrics &metrics = face->glyph->metrics;
-		int32_t alignedRowBytes = face->glyph->bitmap.pitch;
-		Channel glyphChannel( face->glyph->bitmap.width, face->glyph->bitmap.rows, alignedRowBytes, 1, pBuff );
-		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), ivec2(offset + (metrics.horiBearingX >> 6), (face->ascender + face->descender - metrics.horiBearingY) >> 6) );
-		offset += metrics.horiAdvance >> 6;
-	}
-	Surface result(channel, SurfaceConstraintsDefault(), true);
-	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	Surface result = Surface( pixelWidth, pixelHeight, true, SurfaceConstraintsDefault() );
+	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
+
+	float currentY = line.mAscent + line.mLeadingOffset;
+	line.render( result, currentY, (float)0, (float)pixelWidth );	
 #endif	
 
 	if( baselineOffset )
@@ -845,7 +839,7 @@ Surface	TextBox::render( vec2 offset )
 	return result;
 }
 
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 
 void TextBox::calculate() const
 {

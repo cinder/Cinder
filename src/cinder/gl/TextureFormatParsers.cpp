@@ -240,7 +240,9 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	} DdsHeader10;
 
 	enum { FOURCC_DXT1 = 0x31545844, FOURCC_DXT3 = 0x33545844, FOURCC_DXT5 = 0x35545844, FOURCC_DX10 = 0x30315844,
-		FOURCC_ATI1 = 0x31495441, FOURCC_ATI2= 0x32495441, DDPF_FOURCC = 0x4 };
+		FOURCC_ATI1 = 0x31495441, FOURCC_ATI2= 0x32495441 };
+
+	enum { DDPF_ALPHAPIXELS = 0x1, DDPF_ALPHA = 0x2, DDPF_FOURCC = 0x4, DDPF_RGB = 0x40, DDPF_YUV = 0x200, DDPF_LUMINANCE = 0x20000 };
 
 	auto ddsStream = dataSource->createStream();
 	DdSurface ddsd;
@@ -270,98 +272,128 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	resultData->setDepth( 1 );
 	resultData->setNumFaces( numFaces );
 
-	int numMipMaps = ddsd.dwMipMapCount;
+	int numMipMaps = ddsd.dwMipMapCount > 0 ? ddsd.dwMipMapCount : 1;
 	int internalFormat, dataFormat = 0, dataType = 0;
 	int32_t blockSizeBytes = 16;
-	switch( ddsd.ddpfPixelFormat.dwFourCC ) { 
+
+	if( ! ( ddsd.ddpfPixelFormat.dwFlags & DDPF_FOURCC ) ) { // does not have valid FOURCC value
 #if ! defined( CINDER_GL_ANGLE )
-		case 20 /*D3DFMT_R8G8B8*/:
-			internalFormat = GL_RGB8;
-			dataFormat = GL_BGR;
-			dataType = GL_UNSIGNED_BYTE;
-			blockSizeBytes = sizeof(uint8_t) * 3;
-		break;
-		case 32 /*D3DFMT_A8B8G8R8*/:
-			internalFormat = GL_RGBA8;
-			dataFormat = GL_BGRA;
-			dataType = GL_UNSIGNED_BYTE;
-			blockSizeBytes = sizeof(uint8_t) * 4;
-		break;
+		if( ddsd.ddpfPixelFormat.dwFlags & DDPF_RGB ) { // uncompressed RGB data
+			if( ddsd.ddpfPixelFormat.dwFlags & DDPF_ALPHAPIXELS ) { // contains alpha data
+				internalFormat = GL_RGBA8;
+#if defined( CINDER_GL_ES )
+				dataFormat = GL_BGRA_EXT;
+#else
+				dataFormat = GL_BGRA;
 #endif
-		case FOURCC_DXT1: 
-			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-			blockSizeBytes = 8;
-		break; 
-		case FOURCC_DXT3: 
-			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-		break; 
-		case FOURCC_DXT5: 
-			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
-		break;
-#if ! defined( CINDER_GL_ANGLE )
-		case FOURCC_ATI1: // aka DX10 BC4
-			internalFormat = GL_COMPRESSED_RED_RGTC1;
-			blockSizeBytes = 8;
-		break;
-		case FOURCC_ATI2: // aka DX10 BC5
-			internalFormat = GL_COMPRESSED_RG_RGTC2;
-		break;
-#endif
-		case FOURCC_DX10:
-			switch( ddsHeader10.dxgiFormat ) {
-#if ! defined( CINDER_GL_ES_2 )
-				case 10/*DXGI_FORMAT_R16G16B16A16_FLOAT*/:
-					internalFormat = GL_RGBA16F;
-					dataType = GL_HALF_FLOAT;
-					dataFormat = GL_RGBA;
-					blockSizeBytes = sizeof(uint16_t) * 4;
-				break;
-				case 2/*DXGI_FORMAT_R32G32B32A32_FLOAT*/:
-					internalFormat = GL_RGBA32F;
-					dataType = GL_FLOAT;
-					dataFormat = GL_RGBA;
-					blockSizeBytes = sizeof(float) * 4;
-				break;
-#endif
-#if ! defined( CINDER_GL_ANGLE )
-				case 12/*DXGI_FORMAT_R16G16B16A16_UINT*/:
-					internalFormat = GL_RGBA16;
-					dataType = GL_UNSIGNED_SHORT;
-					dataFormat = GL_RGBA;
-					blockSizeBytes = sizeof(uint16_t) * 4;
-				break;
-#endif
-				case 70/*DXGI_FORMAT_BC1_TYPELESS*/:
-				case 71/*DXGI_FORMAT_BC1_UNORM*/:
-				case 72/*DXGI_FORMAT_BC1_UNORM_SRGB*/:
-					internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-					blockSizeBytes = 8;
-				break;
-				case 73/*DXGI_FORMAT_BC2_TYPELESS*/:
-				case 74/*DXGI_FORMAT_BC2_UNORM*/:
-				case 75/*DXGI_FORMAT_BC2_UNORM_SRGB*/:
-					internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-				break;
-				case 76/*DXGI_FORMAT_BC3_TYPELESS*/:
-				case 77/*DXGI_FORMAT_BC3_UNORM*/:
-				case 78/*DXGI_FORMAT_BC3_UNORM_SRGB*/:
-					internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-				break;
-#if ! defined( CINDER_GL_ANGLE )
-				case 97/*DXGI_FORMAT_BC7_TYPELESS*/:
-				case 98/*DXGI_FORMAT_BC7_UNORM*/:
-				case 99/*DXGI_FORMAT_BC7_UNORM_SRGB*/:
-					internalFormat = GL_COMPRESSED_RGBA_BPTC_UNORM_ARB;
-				break;
-#endif
-				default:
-					throw DdsParseExc( "Unsupported image format" );
+				blockSizeBytes = sizeof(uint8_t) * 4;
+				dataType = GL_UNSIGNED_BYTE;
 			}
-		break;
-		default:
+			else {
+				internalFormat = GL_RGB8;
+				dataFormat = GL_BGR;
+				blockSizeBytes = sizeof(uint8_t) * 3;
+				dataType = GL_UNSIGNED_BYTE;
+			}
+		}
+		else {
 			throw DdsParseExc( "Unsupported image format" );
-		break;
-	} 
+		}
+#else // ANGLE doesn't support GL_BGR or GL_BGRA
+		throw DdsParseExc( "Unsupported image format" );
+#endif
+	}
+	else {
+		switch( ddsd.ddpfPixelFormat.dwFourCC ) { 
+#if ! defined( CINDER_GL_ANGLE )
+			case 20 /*D3DFMT_R8G8B8*/:
+				internalFormat = GL_RGB8;
+				dataFormat = GL_BGR;
+				dataType = GL_UNSIGNED_BYTE;
+				blockSizeBytes = sizeof(uint8_t) * 3;
+			break;
+			case 32 /*D3DFMT_A8B8G8R8*/:
+				internalFormat = GL_RGBA8;
+				dataFormat = GL_BGRA;
+				dataType = GL_UNSIGNED_BYTE;
+				blockSizeBytes = sizeof(uint8_t) * 4;
+			break;
+#endif
+			case FOURCC_DXT1: 
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+				blockSizeBytes = 8;
+			break; 
+			case FOURCC_DXT3: 
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+			break; 
+			case FOURCC_DXT5: 
+				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
+			break;
+#if ! defined( CINDER_GL_ANGLE )
+			case FOURCC_ATI1: // aka DX10 BC4
+				internalFormat = GL_COMPRESSED_RED_RGTC1;
+				blockSizeBytes = 8;
+			break;
+			case FOURCC_ATI2: // aka DX10 BC5
+				internalFormat = GL_COMPRESSED_RG_RGTC2;
+			break;
+#endif
+			case FOURCC_DX10:
+				switch( ddsHeader10.dxgiFormat ) {
+#if ! defined( CINDER_GL_ES_2 )
+					case 10/*DXGI_FORMAT_R16G16B16A16_FLOAT*/:
+						internalFormat = GL_RGBA16F;
+						dataType = GL_HALF_FLOAT;
+						dataFormat = GL_RGBA;
+						blockSizeBytes = sizeof(uint16_t) * 4;
+					break;
+					case 2/*DXGI_FORMAT_R32G32B32A32_FLOAT*/:
+						internalFormat = GL_RGBA32F;
+						dataType = GL_FLOAT;
+						dataFormat = GL_RGBA;
+						blockSizeBytes = sizeof(float) * 4;
+					break;
+#endif
+#if ! defined( CINDER_GL_ANGLE )
+					case 12/*DXGI_FORMAT_R16G16B16A16_UINT*/:
+						internalFormat = GL_RGBA16;
+						dataType = GL_UNSIGNED_SHORT;
+						dataFormat = GL_RGBA;
+						blockSizeBytes = sizeof(uint16_t) * 4;
+					break;
+#endif
+					case 70/*DXGI_FORMAT_BC1_TYPELESS*/:
+					case 71/*DXGI_FORMAT_BC1_UNORM*/:
+					case 72/*DXGI_FORMAT_BC1_UNORM_SRGB*/:
+						internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+						blockSizeBytes = 8;
+					break;
+					case 73/*DXGI_FORMAT_BC2_TYPELESS*/:
+					case 74/*DXGI_FORMAT_BC2_UNORM*/:
+					case 75/*DXGI_FORMAT_BC2_UNORM_SRGB*/:
+						internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+					break;
+					case 76/*DXGI_FORMAT_BC3_TYPELESS*/:
+					case 77/*DXGI_FORMAT_BC3_UNORM*/:
+					case 78/*DXGI_FORMAT_BC3_UNORM_SRGB*/:
+						internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+					break;
+#if ! defined( CINDER_GL_ANGLE )
+					case 97/*DXGI_FORMAT_BC7_TYPELESS*/:
+					case 98/*DXGI_FORMAT_BC7_UNORM*/:
+					case 99/*DXGI_FORMAT_BC7_UNORM_SRGB*/:
+						internalFormat = GL_COMPRESSED_RGBA_BPTC_UNORM_ARB;
+					break;
+#endif
+					default:
+						throw DdsParseExc( "Unsupported image format" );
+				}
+			break;
+			default:
+				throw DdsParseExc( "Unsupported image format" );
+			break;
+		} 
+	}
 
 	if( (dataType == 0) && ( ! (ddsd.ddpfPixelFormat.dwFlags & DDPF_FOURCC) ) )
 		blockSizeBytes = ( ddsd.ddpfPixelFormat.dwRGBBitCount + 7 ) / 8;

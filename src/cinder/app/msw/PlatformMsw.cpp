@@ -32,6 +32,8 @@
 #include "cinder/ImageTargetFileWic.h"
 #include "cinder/ImageSourceFileRadiance.h"
 #include "cinder/ImageFileTinyExr.h"
+#include "cinder/ImageSourceFileStbImage.h"
+#include "cinder/ImageTargetFileStbImage.h"
 
 #include <windows.h>
 #include <Shlwapi.h>
@@ -50,6 +52,8 @@ PlatformMsw::PlatformMsw()
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileTinyExr::registerSelf();
 	ImageTargetFileTinyExr::registerSelf();
+	ImageSourceFileStbImage::registerSelf();
+	ImageTargetFileStbImage::registerSelf();
 }
 
 DataSourceRef PlatformMsw::loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType )

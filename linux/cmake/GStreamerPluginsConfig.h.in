@@ -1,1 +1,0 @@
-#cmakedefine GST_PLUGINS_PATH "@GST_PLUGINS_PATH@"

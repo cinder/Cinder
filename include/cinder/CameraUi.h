@@ -100,8 +100,7 @@ class CameraUi {
 	app::WindowRef			mWindow;
 	bool					mEnabled;
 	int						mSignalPriority;
-	signals::Connection		mMouseDownConnection, mMouseUpConnection, mMouseDragConnection, mMouseWheelConnection;
-	signals::Connection		mWindowResizeConnection;
+	std::vector<ci::signals::Connection>	mMouseConnections;
 	signals::Signal<void()>	mSignalCameraChange;
 };
 

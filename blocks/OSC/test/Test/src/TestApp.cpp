@@ -3,15 +3,25 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
 
-#include "Osc.h"
+#include "cinder/osc/Osc.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#define TEST_UDP 0
+#define TEST_UDP 1
 
 #define USE_SLIP_PACKET_FRAMING 1
+
+#if TEST_UDP
+using Receiver = osc::ReceiverUdp;
+using Sender = osc::SenderUdp;
+using protocol = asio::ip::udp;
+#else
+using Receiver = osc::ReceiverTcp;
+using Sender = osc::SenderTcp;
+using protocol = asio::ip::tcp;
+#endif
 
 struct TestStruct {
 	int myInt;
@@ -23,22 +33,14 @@ class TestApp : public App {
   public:
 	TestApp();
 	void update() override;
+	void cleanup() override;
 	
-#if TEST_UDP
-	void sendMessageUdp( const osc::Message &message );
-	osc::ReceiverUdp	mReceiver;
-	osc::SenderUdp		mSender;
-#else
-	void sendMessageTcp( const osc::Message &message );
-	
-	osc::PacketFramingRef mPacketFraming;
-	
-	osc::ReceiverTcp	mReceiver;
-	osc::SenderTcp		mSender;
-#endif
-	osc::Message		mMessage;
+	osc::PacketFramingRef	mPacketFraming;
+	Receiver				mReceiver;
+	Sender					mSender;
+	osc::Message			mMessage;
     /// For testing variadic templated functions
-    osc::Message        mMessage2;
+    osc::Message			mMessage2;
 	
 	bool mIsConnected = false;
 };
@@ -51,14 +53,17 @@ TestApp::TestApp()
 #if USE_SLIP_PACKET_FRAMING
 	mPacketFraming( new osc::SLIPPacketFraming ),
 #endif
-	mReceiver( 10000, mPacketFraming ), mSender( 12345, "127.0.0.1", 10000, mPacketFraming )
+	mReceiver( 10000, protocol::v4(), io_service(), mPacketFraming ),
+	mSender( 12345, "127.0.0.1", 10000, protocol::v4(), io_service(), mPacketFraming )
 #endif
-{	
+{
+	log::manager()->makeLogger<log::LoggerBreakpoint>();
 	mReceiver.bind();
 	mReceiver.listen();
 	mReceiver.setListener( "/app/?",
 	[]( const osc::Message &message ){
 		cout << "Integer: " << message[0].int32() << endl;
+		cout << "Received From: " << message.getSenderIpAddress() << endl;
 	} );
 	mReceiver.setListener( "/app/?",
 	[]( const osc::Message &message ) {
@@ -178,19 +183,25 @@ void TestApp::update()
 		message.append( true );
 		
 		mSender.send( message );
-		
 		mMessage = std::move( message );
-//		cout << mMessage << endl;
-        
+		
         {
 			const char* something = "Something";
 			mMessage2 = osc::Message( "/message2" ) << 3 << 4 << 2.0 << 3.0f << "string literal" << something;
-			cout << "As constructed: " << mMessage2 << endl;
             mSender.send(mMessage2);
         }
 	}
 	
 	gl::clear();
+}
+
+void TestApp::cleanup()
+{
+#if ! TEST_UDP
+	mSender.shutdown();
+#endif
+	mReceiver.close();
+	mSender.close();
 }
 
 #if defined( CINDER_MSW )

@@ -26,7 +26,7 @@
 
 #include "cinder/app/Renderer.h"
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#include <agile.h>
 #endif
 
@@ -41,10 +41,10 @@ class RendererDx : public Renderer {
 	static RendererDxRef	create( int antiAliasing = AA_MSAA_16  ) { return RendererDxRef( new RendererDx( antiAliasing ) ); }
 	virtual RendererRef		clone() const { return RendererDxRef( new RendererDx( *this ) ); }
 
-#if defined ( CINDER_MSW )
+#if defined ( CINDER_MSW_DESKTOP )
 	virtual void setup( AppBase *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual HWND	getHwnd() { return mWnd; }
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	virtual void	setup( AppBase *aApp, Platform::Agile<Windows::UI::Core::CoreWindow> wnd);
 #endif
 
