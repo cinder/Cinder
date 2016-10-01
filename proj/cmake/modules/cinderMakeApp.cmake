@@ -61,12 +61,42 @@ function( ci_make_app )
 		set_source_files_properties( ${ARG_RESOURCES} PROPERTIES HEADER_FILE_ONLY ON MACOSX_PACKAGE_LOCATION Resources )
 	elseif( CINDER_LINUX )
 		unset( ARG_RESOURCES ) # Don't allow resources to be added to the executable on linux
+	elseif( CINDER_MSW )		
+		if( MSVC )
+			# x86 or x64
+			set( PlatformTarget "x86" )
+			if( CMAKE_CL_64 )
+				set( PlatformTarget "x64" )
+			endif()
+			# Override the default /MD with /MT
+			foreach( 
+				flag_var
+				CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO 
+				CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO 
+			)
+				if( ${flag_var} MATCHES "/MD" )
+					string( REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}" )
+					set( "${flag_var}" "${${flag_var}}" PARENT_SCOPE )
+				endif()
+			endforeach()
+			# Force synchronous PDB writes
+			add_compile_options( /FS ) 
+			# Force multiprocess compilation
+			add_compile_options( /MP )
+			# Add necessary platform libraries		
+			list( APPEND PLATFORM_LIBRARIES "zlib.lib;shlwapi.lib;OpenGL32.lib" )
+			# Add lib dirs
+			cmake_policy( PUSH )
+			cmake_policy( SET CMP0015 OLD )
+			link_directories( "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/${PlatformTarget}" )
+			cmake_policy( POP )
+		endif()
 	endif()
 
 	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} ${ARG_RESOURCES} )
 
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
-	target_link_libraries( ${ARG_APP_NAME} cinder ${ARG_LIBRARIES} )
+	target_link_libraries( ${ARG_APP_NAME} cinder ${ARG_LIBRARIES} ${PLATFORM_LIBRARIES} )
 
 	# Blocks are first searched relative to the sample's CMakeLists.txt file, then within cinder's blocks folder
 	foreach( block ${ARG_BLOCKS} )
