@@ -41,6 +41,7 @@ endif()
 # NDK host
 if( APPLE )
 elseif( UNIX )
+	set( CINDER_ANDROID_NDK_HOST "linux-x86_64" )
 elseif( WIN32 )
 	set( CINDER_ANDROID_NDK_HOST "windows-x86_64" )
 	set( EXE_SUFFIX ".exe" )
