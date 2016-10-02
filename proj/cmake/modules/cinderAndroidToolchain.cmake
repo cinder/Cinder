@@ -144,13 +144,14 @@ elseif( "mips64" STREQUAL "${CINDER_ANDROID_NDK_ARCH_LOWER}" )
 endif()
 
 # C_FLAGS
-set( C_FLAGS 				"-DANDROID ${ARCH_FLAGS} -fvisibility=default" )
+set( C_FLAGS "-DANDROID ${ARCH_FLAGS} -fvisibility=default" )
+# CMAKE_FLAGS
 set( CMAKE_C_FLAGS_DEBUG   	"-DCINDER_DEBUG ${C_FLAGS} -fPIC -g" CACHE STRING "" FORCE )
 set( CMAKE_C_FLAGS_RELEASE 	"${C_FLAGS} -fPIC -Os -ffast-math ${C_FLAGS}" CACHE STRING "" FORCE )
 
 # CXX_FLAGS
-set( CXX_FLAGS 				"-gcc-toolchain ${CINDER_ANDROID_NDK_BINUTIL_DIR} ${ARCH_FLAGS} -fvisibility=default -stdlib=libstdc++ -D_GLIBCXX_HAS_GTHREADS -ffunction-sections -funwind-tables -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes -fomit-frame-pointer -DANDROID" )
+set( CXX_FLAGS "-gcc-toolchain ${CINDER_ANDROID_NDK_BINUTIL_DIR} ${ARCH_FLAGS} -fvisibility=default -stdlib=libstdc++ -D_GLIBCXX_HAS_GTHREADS -ffunction-sections -funwind-tables -Wno-invalid-command-line-argument -Wno-unused-command-line-argument -no-canonical-prefixes -fomit-frame-pointer -DANDROID" )
+# CMAKE_CXX_FLAGS
 set( CMAKE_CXX_FLAGS_DEBUG   "-DCINDER_DEBUG ${CXX_FLAGS} -fPIC -g -rdynamic -fexceptions -frtti" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -fPIC -Os -rdynamic -fexceptions -frtti -ffast-math" CACHE STRING "" FORCE )
-
 
