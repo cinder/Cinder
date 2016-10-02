@@ -4,6 +4,7 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 project( cinder )
 
 option( CINDER_BUILD_SAMPLES "Build all samples." OFF )
+option( CINDER_BUILD_TESTS "Build all unit tests." OFF )
 set( CINDER_BUILD_SAMPLE "" CACHE STRING "Build a specific sample by specifying its path relative to the samples directory (ex. '_opengl/Cube')." )
 
 set( CINDER_PATH      "${CMAKE_CURRENT_SOURCE_DIR}" )
@@ -46,4 +47,10 @@ elseif( CINDER_BUILD_SAMPLE )
 		message( STATUS "adding sample: ${CINDER_BUILD_SAMPLE}" )
 	endif()
 	add_subdirectory( ${CINDER_PATH}/samples/${CINDER_BUILD_SAMPLE}/proj/cmake )
+endif()
+
+if( CINDER_BUILD_TESTS )
+	enable_testing()
+	add_subdirectory( ${CINDER_PATH}/test/unit/proj/cmake )
+	add_custom_target( check COMMAND ${CMAKE_CTEST_COMMAND} --verbose )
 endif()

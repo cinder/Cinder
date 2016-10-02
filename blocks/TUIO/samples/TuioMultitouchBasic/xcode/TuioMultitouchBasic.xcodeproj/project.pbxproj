@@ -16,8 +16,8 @@
 		00FFAEAF19D4E6070002CA8E /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00FFAEAD19D4E6070002CA8E /* CoreMedia.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		B3E196871BEB3149007BA530 /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3E196851BEB3149007BA530 /* Osc.cpp */; };
-		B3E1968A1BEB3165007BA530 /* Tuio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3E196881BEB3165007BA530 /* Tuio.cpp */; };
+		B3253C211D4C6CC700CDF15F /* Tuio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253C1F1D4C6CC700CDF15F /* Tuio.cpp */; };
+		B3253C271D4C6CD100CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253C251D4C6CD100CDF15F /* Osc.cpp */; };
 		B3E1968C1BEB319A007BA530 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3E1968B1BEB319A007BA530 /* IOKit.framework */; };
 		B3E1968E1BEB31A2007BA530 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3E1968D1BEB31A2007BA530 /* IOSurface.framework */; };
 		BB8E77D2CF944EBF86978D25 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7551729BD30B4E0C8B2924C6 /* CinderApp.icns */; };
@@ -42,10 +42,10 @@
 		5B5BAEFD4C3B46DE830FD99C /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		7551729BD30B4E0C8B2924C6 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TUIOMultiTouchBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TUIOMultiTouchBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B3E196851BEB3149007BA530 /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
-		B3E196861BEB3149007BA530 /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
-		B3E196881BEB3165007BA530 /* Tuio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Tuio.cpp; path = ../../../src/Tuio.cpp; sourceTree = "<group>"; };
-		B3E196891BEB3165007BA530 /* Tuio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tuio.h; path = ../../../src/Tuio.h; sourceTree = "<group>"; };
+		B3253C1F1D4C6CC700CDF15F /* Tuio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tuio.cpp; sourceTree = "<group>"; };
+		B3253C201D4C6CC700CDF15F /* Tuio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tuio.h; sourceTree = "<group>"; };
+		B3253C251D4C6CD100CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
+		B3253C261D4C6CD100CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
 		B3E1968B1BEB319A007BA530 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		B3E1968D1BEB31A2007BA530 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		C6B7B6BA13D94436B9D45093 /* TUIOMultiTouchBasic_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = TUIOMultiTouchBasic_Prefix.pch; sourceTree = "<group>"; };
@@ -114,15 +114,6 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		18A758132CAF4A459438A584 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				B3E196881BEB3165007BA530 /* Tuio.cpp */,
-				B3E196891BEB3165007BA530 /* Tuio.h */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,27 +169,69 @@
 		5EF755663845449D8EE11A54 /* TUIO */ = {
 			isa = PBXGroup;
 			children = (
-				18A758132CAF4A459438A584 /* src */,
+				B3253C1C1D4C6CC700CDF15F /* src */,
 			);
 			name = TUIO;
+			sourceTree = "<group>";
+		};
+		B3253C1C1D4C6CC700CDF15F /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C1D1D4C6CC700CDF15F /* cinder */,
+			);
+			name = src;
+			path = ../../../src;
+			sourceTree = "<group>";
+		};
+		B3253C1D1D4C6CC700CDF15F /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C1E1D4C6CC700CDF15F /* tuio */,
+			);
+			path = cinder;
+			sourceTree = "<group>";
+		};
+		B3253C1E1D4C6CC700CDF15F /* tuio */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C1F1D4C6CC700CDF15F /* Tuio.cpp */,
+				B3253C201D4C6CC700CDF15F /* Tuio.h */,
+			);
+			path = tuio;
+			sourceTree = "<group>";
+		};
+		B3253C221D4C6CD100CDF15F /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C231D4C6CD100CDF15F /* cinder */,
+			);
+			name = src;
+			path = ../../../../OSC/src;
+			sourceTree = "<group>";
+		};
+		B3253C231D4C6CD100CDF15F /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C241D4C6CD100CDF15F /* osc */,
+			);
+			path = cinder;
+			sourceTree = "<group>";
+		};
+		B3253C241D4C6CD100CDF15F /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				B3253C251D4C6CD100CDF15F /* Osc.cpp */,
+				B3253C261D4C6CD100CDF15F /* Osc.h */,
+			);
+			path = osc;
 			sourceTree = "<group>";
 		};
 		B3E196831BEB312A007BA530 /* OSC */ = {
 			isa = PBXGroup;
 			children = (
-				B3E196841BEB3149007BA530 /* src */,
+				B3253C221D4C6CD100CDF15F /* src */,
 			);
 			name = OSC;
-			sourceTree = "<group>";
-		};
-		B3E196841BEB3149007BA530 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				B3E196851BEB3149007BA530 /* Osc.cpp */,
-				B3E196861BEB3149007BA530 /* Osc.h */,
-			);
-			name = src;
-			path = ../../../../OSC/src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -264,8 +297,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E1968A1BEB3165007BA530 /* Tuio.cpp in Sources */,
-				B3E196871BEB3149007BA530 /* Osc.cpp in Sources */,
+				B3253C271D4C6CD100CDF15F /* Osc.cpp in Sources */,
+				B3253C211D4C6CC700CDF15F /* Tuio.cpp in Sources */,
 				CABBD8933B204D618E07B3AC /* TUIOMultiTouchBasicApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -296,6 +329,7 @@
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_NAME = TUIOMultiTouchBasic;
 				SYMROOT = ./build;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../../osc/src ../../../include ../../../src";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -321,6 +355,7 @@
 				PRODUCT_NAME = TUIOMultiTouchBasic;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../../osc/src ../../../include ../../../src";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

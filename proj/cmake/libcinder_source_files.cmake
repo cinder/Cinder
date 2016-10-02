@@ -216,6 +216,8 @@ source_group( "thirdparty\\tinyexr" FILES   ${SRC_SET_TINYEXR} )
 # glload
 # ----------------------------------------------------------------------------------------------------------------------
 
+if( NOT CINDER_GL_ES )
+
 list( APPEND SRC_SET_GLLOAD
 	${CINDER_SRC_DIR}/glload/gl_load_cpp.cpp
 	${CINDER_SRC_DIR}/glload/gl_load.c
@@ -223,6 +225,8 @@ list( APPEND SRC_SET_GLLOAD
 
 list( APPEND CINDER_SRC_FILES               ${SRC_SET_GLLOAD} )
 source_group( "thirdparty\\glload" FILES    ${SRC_SET_GLLOAD} )
+
+endif()
 
 # ----------------------------------------------------------------------------------------------------------------------
 # jsoncpp

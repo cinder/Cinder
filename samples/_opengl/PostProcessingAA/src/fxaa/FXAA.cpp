@@ -31,8 +31,10 @@ using namespace std;
 FXAA::FXAA()
 {
 	try {
-		mGlslProg = gl::GlslProg::create( app::loadAsset( "fxaa.vert" ), app::loadAsset( "fxaa.frag" ) );
-		mGlslProg->uniform( "uTexture", 0 );
+		auto glsl = gl::GlslProg::create( app::loadAsset( "fxaa.vert" ), app::loadAsset( "fxaa.frag" ) );
+		glsl->uniform( "uTexture", 0 );
+
+		mBatch = gl::Batch::create( geom::Rect( Rectf( 0, 0, 1, 1 ) ), glsl );
 	}
 	catch( const std::exception &e ) {
 		CI_LOG_EXCEPTION( "exception caught loading fxaa.vert / frag", e );
@@ -63,17 +65,17 @@ void FXAA::apply( const gl::FboRef &destination, const gl::FboRef &source )
 
 void FXAA::draw( const gl::TextureRef &source, const Area &bounds )
 {
-	if( ! mGlslProg )
+	if( ! mBatch )
 		return;
 
-	const int w = bounds.getWidth();
-	const int h = bounds.getHeight();
+	const float w = (float)bounds.getWidth();
+	const float h = (float)bounds.getHeight();
 
-	gl::ScopedGlslProg glslScope( mGlslProg );
-	mGlslProg->uniform( "uExtends", vec4( 1.0f / w, 1.0f / h, (float) w, (float) h ) );
+	mBatch->getGlslProg()->uniform( "uExtents", vec4( 1.0f / w, 1.0f / h, w, h ) );
 
 	gl::ScopedTextureBind tex0( source );
+	gl::ScopedModelMatrix modelScope;
+	gl::scale( w, h, 1.0f );
 
-	gl::color( Color::white() );
-	gl::drawSolidRect( bounds );
+	mBatch->draw();
 }

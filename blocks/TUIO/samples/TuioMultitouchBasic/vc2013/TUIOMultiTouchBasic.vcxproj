@@ -50,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\..\\include";..\..\..\..\osc\src;..\..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\..\include;..\..\..\..\OSC\src;..\..\..\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -76,7 +76,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\..\\include";..\..\..\..\osc\src;..\..\..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\..\..\..\include;..\..\..\..\OSC\src;..\..\..\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -107,44 +107,14 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp" />
+    <ClCompile Include="..\..\..\src\cinder\tuio\Tuio.cpp" />
     <ClCompile Include="..\src\TUIOMultiTouchBasicApp.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\OscBundle.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\OscListener.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\OscMessage.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\OscSender.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\ip\IpEndpointName.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\osc\OscOutboundPacketStream.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\osc\OscPrintReceivedElements.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\osc\OscReceivedElements.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\osc\OscTypes.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\ip\win32\NetworkingUtils.cpp" />
-    <ClCompile Include="..\..\..\..\osc\src\ip\win32\UdpSocket.cpp" />
-    <ClCompile Include="..\..\..\src\TuioClient.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h" />
+    <ClInclude Include="..\..\..\src\cinder\tuio\Tuio.h" />
     <ClInclude Include="..\include\Resources.h" />
-    <ClInclude Include="..\..\..\..\osc\src\OscArg.h" />
-    <ClInclude Include="..\..\..\..\osc\src\OscBundle.h" />
-    <ClInclude Include="..\..\..\..\osc\src\OscListener.h" />
-    <ClInclude Include="..\..\..\..\osc\src\OscMessage.h" />
-    <ClInclude Include="..\..\..\..\osc\src\OscSender.h" />
-    <ClInclude Include="..\..\..\..\osc\src\ip\IpEndpointName.h" />
-    <ClInclude Include="..\..\..\..\osc\src\ip\NetworkingUtils.h" />
-    <ClInclude Include="..\..\..\..\osc\src\ip\PacketListener.h" />
-    <ClInclude Include="..\..\..\..\osc\src\ip\TimerListener.h" />
-    <ClInclude Include="..\..\..\..\osc\src\ip\UdpSocket.h" />
-    <ClInclude Include="..\..\..\..\osc\src\osc\MessageMappingOscPacketListener.h" />
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscException.h" />
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscHostEndianness.h" />
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscOutboundPacketStream.h" />
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscPacketListener.h" />
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscPrintReceivedElements.h" />
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscReceivedElements.h" />
-    <ClInclude Include="..\..\..\..\osc\src\osc\OscTypes.h" />
-    <ClInclude Include="..\..\..\include\TuioClient.h" />
-    <ClInclude Include="..\..\..\include\TuioCursor.h" />
-    <ClInclude Include="..\..\..\include\TuioObject.h" />
-    <ClInclude Include="..\..\..\include\TuioProfileBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

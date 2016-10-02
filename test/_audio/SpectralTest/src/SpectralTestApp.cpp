@@ -62,8 +62,8 @@ void SpectralTestApp::setup()
 	mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( format ) );
 	mMonitorSpectralNode->setAutoEnabled();
 
-	//mGen = ctx->makeNode( new audio::GenSineNode() );
-	mGen = ctx->makeNode( new audio::GenTriangleNode() );
+	mGen = ctx->makeNode( new audio::GenSineNode() );
+	//mGen = ctx->makeNode( new audio::GenTriangleNode() );
 	mGen->setFreq( 440.0f );
 
 	mSourceFile = audio::load( loadResource( RES_TONE440L220R_MP3 ), ctx->getSampleRate() );
@@ -200,9 +200,13 @@ void SpectralTestApp::processTap( ivec2 pos )
 		ctx->setEnabled( ! ctx->isEnabled() );
 	else if( mPlaybackButton.hitTest( pos ) ) {
 		if( mTestSelector.currentSection() == "sine" || mTestSelector.currentSection() == "sine (no output)" )
-			mGen->setEnabled( ! mGen->isEnabled() );
-		else
-			mPlayerNode->setEnabled( ! mPlayerNode->isEnabled() );
+			mGen->setEnabled( mPlaybackButton.mEnabled );
+		else {
+			if( mPlaybackButton.mEnabled )
+				mPlayerNode->start();
+			else
+				mPlayerNode->stop();
+		}
 	}
 	else if( mLoopButton.hitTest( pos ) )
 		mPlayerNode->setLoopEnabled( ! mPlayerNode->isLoopEnabled() );
@@ -277,6 +281,24 @@ void SpectralTestApp::draw()
 
 		string info = string( "min: " ) + toString( *min ) + string( ", max: " ) + toString( *max );
 		gl::drawString( info, vec2( mSpectroMargin, getWindowHeight() - 30.0f ) );
+	}
+
+	// draw vertical line for spectral centroid
+	{
+		float spectralCentroid = mMonitorSpectralNode->getSpectralCentroid();
+		float nyquist = (float)audio::master()->getSampleRate() / 2.0f;
+		Rectf bounds = mSpectrumPlot.getBounds();
+
+		float freqNormalized = spectralCentroid / nyquist;
+		float barCenter = bounds.x1 + freqNormalized * bounds.getWidth();
+		Rectf bar = { barCenter - 2, bounds.y1, barCenter + 2, bounds.y2 };
+
+		gl::ScopedColor colorScope( 0.85f, 0.45f, 0, 0.4f );
+		gl::drawSolidRect( bar );
+
+		//if( app::getElapsedFrames() % 30 == 0 ) {
+		//	CI_LOG_I( "spectralCentroid: " << spectralCentroid );
+		//}
 	}
 
 	drawWidgets( mWidgets );

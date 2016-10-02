@@ -4129,18 +4129,18 @@
       err = FT_Bitmap_Convert( library, &slot->bitmap, &bitmap, 1 );
       if ( !err )
       {
-        MD5_CTX        ctx;
+        FT_MD5_CTX        ctx;
         unsigned char  md5[16];
         int            i;
         unsigned int   rows  = bitmap.rows;
         unsigned int   pitch = (unsigned int)bitmap.pitch;
 
 
-        MD5_Init( &ctx );
-        MD5_Update( &ctx, bitmap.buffer, rows * pitch );
-        MD5_Final( md5, &ctx );
+        FT_MD5_Init( &ctx );
+        FT_MD5_Update( &ctx, bitmap.buffer, rows * pitch );
+        FT_MD5_Final( md5, &ctx );
 
-        FT_TRACE3(( "MD5 checksum for %dx%d bitmap:\n"
+        FT_TRACE3(( "FT_MD5 checksum for %dx%d bitmap:\n"
                     "  ",
                     rows, pitch ));
         for ( i = 0; i < 16; i++ )

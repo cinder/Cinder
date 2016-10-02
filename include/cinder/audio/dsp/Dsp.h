@@ -84,5 +84,7 @@ float sum( const float *array, size_t length );
 float rms( const float *array, size_t length );
 //! normalizes \a array to \a maxValue (default = 1)
 void normalize( float *array, size_t length, float maxValue = 1 );
+//! returns the spectral centroid of the frequency magnitude spectrum in \a magArray, computed the provided \a sampleRate. \a magArrayLength is expected to be half of the FFT size used to compute the magnitude spectrum.
+float spectralCentroid( const float *magArray, size_t magArrayLength, size_t sampleRate );
 
 } } } // namespace cinder::audio::dsp

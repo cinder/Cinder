@@ -119,44 +119,44 @@ size_t SourceFileMediaFoundation::performRead( Buffer *buffer, size_t bufferFram
 
 	size_t readCount = 0;
 	while( readCount < numFramesNeeded ) {
-
 		// first drain any frames that were previously read from an IMFSample
 		if( mFramesRemainingInReadBuffer ) {
 			size_t remainingToDrain = std::min( mFramesRemainingInReadBuffer, numFramesNeeded );
-
-			// TODO: use Buffer::copyChannel
-			for( size_t ch = 0; ch < mNumChannels; ch++ ) {
-				float *readChannel = mReadBuffer.getChannel( ch ) + mReadBufferPos;
-				float *resultChannel = buffer->getChannel( ch );
-				memcpy( resultChannel + readCount, readChannel, remainingToDrain * sizeof( float ) );
-			}
+			size_t writeOffset = bufferFrameOffset + readCount;
+			buffer->copyOffset( mReadBuffer, remainingToDrain, writeOffset, mReadBufferPos );
 
 			mReadBufferPos += remainingToDrain;
 			mFramesRemainingInReadBuffer -= remainingToDrain;
 			readCount += remainingToDrain;
-			continue;
+			continue; // check if we've filled the requested number of frames
 		}
 
 		CI_ASSERT( ! mFramesRemainingInReadBuffer );
 
 		mReadBufferPos = 0;
-		size_t outNumFrames = processNextReadSample();
-		if( ! outNumFrames )
-			break;
-
-		// if the IMFSample num frames is over the specified buffer size, 
-		// record how many samples are left over and use up what was asked for.
-		if( outNumFrames + readCount > numFramesNeeded ) {
+		bool endOfFile;
+		size_t outNumFrames = processNextReadSample( &endOfFile );
+		if( ! outNumFrames ) {
+			if( endOfFile ) {
+				// Whoops, IMFSourceReader::ReadSample() must of reported EOF before we reached the expected number of frames. I've seen this happen with mp3s.
+				// - so we'll just zero out the remaining frames, so the SourceFile receives the expected number of frames as reported when parsing the header.
+				mReadBuffer.zero();
+				outNumFrames = numFramesNeeded - readCount;
+			}
+			else {
+				CI_LOG_W( "Could not read the expected number of samples: " << numFramesNeeded << ", readCount: " << readCount );
+				break;
+			}
+		}
+		else if( outNumFrames + readCount > numFramesNeeded ) {
+			// if the IMFSample num frames is over the specified buffer size, 
+			// record how many samples are left over and use up what was asked for.
 			mFramesRemainingInReadBuffer = outNumFrames + readCount - numFramesNeeded;
 			outNumFrames = numFramesNeeded - readCount;
 		}
 
-		size_t offset = bufferFrameOffset + readCount;
-		for( size_t ch = 0; ch < mNumChannels; ch++ ) {
-			float *readChannel = mReadBuffer.getChannel( ch );
-			float *resultChannel = buffer->getChannel( ch );
-			memcpy( resultChannel + readCount, readChannel, outNumFrames * sizeof( float ) );
-		}
+		size_t writeOffset = bufferFrameOffset + readCount;
+		buffer->copyOffset( mReadBuffer, outNumFrames, writeOffset, 0 );
 
 		mReadBufferPos += outNumFrames;
 		readCount += outNumFrames;
@@ -294,11 +294,12 @@ void SourceFileMediaFoundation::initReader()
 	mCanSeek = ( ( flags & MFMEDIASOURCE_CAN_SEEK ) == MFMEDIASOURCE_CAN_SEEK );
 }
 
-size_t SourceFileMediaFoundation::processNextReadSample()
+size_t SourceFileMediaFoundation::processNextReadSample( bool *endOfFile )
 {
 	::IMFSample *mediaSample;
 	DWORD streamFlags = 0;
 	LONGLONG timeStamp;
+	*endOfFile = false;
 	HRESULT hr = mSourceReader->ReadSample( MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, NULL, &streamFlags, &timeStamp, &mediaSample );
 	CI_ASSERT( hr == S_OK );
 
@@ -307,7 +308,7 @@ size_t SourceFileMediaFoundation::processNextReadSample()
 		return 0;
 	}
 	if( streamFlags & MF_SOURCE_READERF_ENDOFSTREAM ) {
-		// end of file
+		*endOfFile = true;
 		return 0;
 	}
 	if( ! mediaSample ) {

@@ -28,6 +28,15 @@ list( APPEND SRC_SET_AUDIO_COCOA
 	${CINDER_SRC_DIR}/cinder/audio/cocoa/FileCoreAudio.cpp
 )
 
+list( APPEND SRC_SET_QTIME
+	${CINDER_SRC_DIR}/cinder/qtime/AvfUtils.mm
+	${CINDER_SRC_DIR}/cinder/qtime/AvfWriter.mm
+	${CINDER_SRC_DIR}/cinder/qtime/MovieWriter.cpp
+	${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplAvf.cpp
+	${CINDER_SRC_DIR}/cinder/qtime/QuickTimeImplAvf.mm
+	${CINDER_SRC_DIR}/cinder/qtime/QuickTimeUtils.cpp
+)
+
 # specify what files need to be compiled as Objective-C++
 list( APPEND CINDER_SOURCES_OBJCPP
 	${CINDER_SRC_DIR}/cinder/Capture.cpp
@@ -44,6 +53,7 @@ list( APPEND CINDER_SOURCES_OBJCPP
 	${CINDER_SRC_DIR}/cinder/app/cocoa/AppMac.cpp
 	${CINDER_SRC_DIR}/cinder/app/cocoa/PlatformCocoa.cpp
 	${CINDER_SRC_DIR}/cinder/gl/Environment.cpp
+	${CINDER_SRC_DIR}/cinder/qtime/QuickTimeGlImplAvf.cpp
 
 	${CINDER_SRC_DIR}/AntTweakBar/TwColors.cpp
 	${CINDER_SRC_DIR}/AntTweakBar/TwFonts.cpp
@@ -64,12 +74,13 @@ list( APPEND CINDER_SRC_FILES
 	${SRC_SET_COCOA}
 	${SRC_SET_APP_COCOA}
 	${SRC_SET_AUDIO_COCOA}
+	${SRC_SET_QTIME}
 )
 
 list( APPEND CINDER_LIBS_DEPENDS
-    ${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_system.a
-    ${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_filesystem.a
-    ${CMAKE_SOURCE_DIR}/lib/${CINDER_TARGET_SUBFOLDER}/libz.a
+    ${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_system.a
+    ${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_filesystem.a
+    ${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/libz.a
 )
 
 # link in system frameworks

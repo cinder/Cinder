@@ -34,6 +34,7 @@ class TweakBarApp : public App {
 	vec3					getLightDirection() { return mLightDirection; }
 	vec3					mLightDirection;
 	uint32_t				mSomeValue;
+	float					mA, mB, mC, mD;
 
 	vector<string>			mEnumNames;
 	int						mEnumSelection;
@@ -51,13 +52,14 @@ void TweakBarApp::setup()
 	mLightDirection = vec3( 0, 0, -1 );
 	mColor = ColorA( 0.25f, 0.5f, 1, 1 );
 	mSomeValue = 2;
+	mA = mB = mC = mD = 0;
 	mPrintFps = false;
 
 	// Setup our default camera, looking down the z-axis.
 	mCam.lookAt( vec3( -20, 0, 0 ), vec3( 0 ) );
 
 	// Create the interface and give it a name.
-	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 300 ) ) );
+	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
 
 	// Setup some basic parameters.
 	mParams->addParam( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" ).precision( 2 ).step( 0.02f );
@@ -79,6 +81,14 @@ void TweakBarApp::setup()
 	// Other types of controls that can be added to the interface.
 	mParams->addButton( "Button!", bind( &TweakBarApp::button, this ) );
 	mParams->addText( "text", "label=`This is a label without a parameter.`" );
+
+	mParams->addSeparator();
+
+	// A parameter name must be unique, but you can override it with a 'label', which does not have to be unique.
+	mParams->addParam( "float1", &mA ).group( "Group 1" ).label( "Item X" );
+	mParams->addParam( "float2", &mB ).group( "Group 1" ).label( "Item Y" );
+	mParams->addParam( "float3", &mC ).group( "Group 2" ).label( "Item X" );
+	mParams->addParam( "float4", &mD ).group( "Group 2" ).label( "Item Y" );
 
 	mParams->addSeparator();
 

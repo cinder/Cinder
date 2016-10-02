@@ -2,13 +2,19 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "Osc.h"
-
-#define USE_UDP 1
+#include "cinder/osc/Osc.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+#define USE_UDP 1
+
+#if USE_UDP
+using Sender = osc::SenderUdp;
+#else
+using sender = osc::SenderTcp;
+#endif
 
 const std::string destinationHost = "127.0.0.1";
 const uint16_t destinationPort = 10001;
@@ -25,11 +31,7 @@ class SimpleSenderApp : public App {
 	
 	ivec2 mCurrentMousePositon;
 	
-#if USE_UDP
-	osc::SenderUdp mSender;
-#else
-	osc::SenderTcp mSender;
-#endif
+	Sender mSender;
 };
 
 SimpleSenderApp::SimpleSenderApp()

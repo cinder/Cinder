@@ -6,7 +6,7 @@
 #include "cinder/PolyLine.h"
 #include "cinder/gl/gl.h"
 
-#include "Tuio.h"
+#include "cinder/tuio/Tuio.h"
 
 using namespace ci;
 using namespace ci::app;

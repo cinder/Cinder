@@ -78,12 +78,13 @@ class InterfaceGl {
 		void setKeyIncr( const std::string &keyIncr );
 		void setKeyDecr( const std::string &keyDecr );
 		void setKey( const std::string &key );
+		void setLabel( const std::string &label );
 		void setGroup( const std::string &group );
 		void setOptionsStr( const std::string &optionsStr );
 
 		void reAddOptions();
 
-		std::string mName, mKeyIncr, mKeyDecr, mKey, mGroup, mOptionsStr;
+		std::string mName, mKeyIncr, mKeyDecr, mKey, mLabel, mGroup, mOptionsStr;
 		void*		mVoidPtr;
 		float		mMin, mMax, mStep;
 		int			mPrecision;
@@ -118,6 +119,8 @@ class InterfaceGl {
 		Options&	keyDecr( const std::string &keyDecr )		{ setKeyDecr( keyDecr ); return *this; }
 		//! Sets a shortcut key for param types that cannot be incremented / decremented (ex. bool)
 		Options&	key( const std::string &key )				{ setKey( key ); return *this; }
+		//! Sets the param label. A parameter name must be unique, but you can override it with a 'label', which does not have to be unique.
+		Options&	label( const std::string &label )			{ setLabel( label ); return *this; }
 		//! Sets the param group
 		Options&	group( const std::string &group )			{ setGroup( group ); return *this; }
 		//! Sets other implementation defined options via string.

@@ -4,12 +4,12 @@ set( CMAKE_VERBOSE_MAKEFILE ON )
 project( opengl-Cube )
 
 get_filename_component( CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE )
-get_filename_component( SAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
+get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 ci_make_app(
 	APP_NAME    "Cube"
-	SOURCES     ${SAMPLE_DIR}/src/CubeApp.cpp
+	SOURCES     ${APP_PATH}/src/CubeApp.cpp
 	CINDER_PATH ${CINDER_PATH}
 )

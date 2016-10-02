@@ -9,8 +9,8 @@
 	core="true"
 	>
 	<requires>org.libcinder.osc</requires>
-	<sourcePattern>src/*.cpp</sourcePattern>
-	<headerPattern>src/*.h</headerPattern>
+	<sourcePattern>src/cinder/tuio/*.cpp</sourcePattern>
+	<headerPattern>src/cinder/tuio/*.h</headerPattern>
 	<includePath>src</includePath>
 </block>
 </cinder>

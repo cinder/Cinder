@@ -8,8 +8,8 @@
 	summary="Implements the Open Sound Control (OSC) protocol over UDP and TCP. Extendable to other protocols."
 	core="true"
 	>
-	<sourcePattern>src/*.cpp</sourcePattern>
-	<headerPattern>src/*.h</headerPattern>
+	<sourcePattern>src/cinder/osc/*.cpp</sourcePattern>
+	<headerPattern>src/cinder/osc/*.h</headerPattern>
 	<includePath>src</includePath>
 </block>
 </cinder>

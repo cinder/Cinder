@@ -24,10 +24,12 @@
 
 #pragma once
 
+#include "cinder/Camera.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Vector.h"
 #include "cinder/Sphere.h"
 #include "cinder/app/MouseEvent.h"
+#include "cinder/app/Window.h"
 
 namespace cinder {
 
