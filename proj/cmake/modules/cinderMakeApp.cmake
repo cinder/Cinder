@@ -63,11 +63,6 @@ function( ci_make_app )
 		unset( ARG_RESOURCES ) # Don't allow resources to be added to the executable on linux
 	elseif( CINDER_MSW )		
 		if( MSVC )
-			# x86 or x64
-			set( PlatformTarget "x86" )
-			if( CMAKE_CL_64 )
-				set( PlatformTarget "x64" )
-			endif()
 			# Override the default /MD with /MT
 			foreach( 
 				flag_var
@@ -88,7 +83,7 @@ function( ci_make_app )
 			# Add lib dirs
 			cmake_policy( PUSH )
 			cmake_policy( SET CMP0015 OLD )
-			link_directories( "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/${PlatformTarget}" )
+			link_directories( "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}" )
 			cmake_policy( POP )
 		endif()
 	endif()
@@ -97,6 +92,11 @@ function( ci_make_app )
 
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
 	target_link_libraries( ${ARG_APP_NAME} cinder ${ARG_LIBRARIES} ${PLATFORM_LIBRARIES} )
+
+	# Ignore Specific Default Libraries
+	if( MSVC )
+		set_target_properties( ${ARG_APP_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
+	endif()
 
 	# Blocks are first searched relative to the sample's CMakeLists.txt file, then within cinder's blocks folder
 	foreach( block ${ARG_BLOCKS} )

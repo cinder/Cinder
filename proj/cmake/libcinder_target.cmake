@@ -14,7 +14,7 @@ endif()
 # and when ON as a shared library.
 # See https://cmake.org/cmake/help/v3.0/command/add_library.html for more info.
 add_library(
-	cinder 
+	cinder
     ${CINDER_SRC_FILES}
 )
 
@@ -26,17 +26,29 @@ target_include_directories( cinder SYSTEM BEFORE PRIVATE ${CINDER_INCLUDE_SYSTEM
 
 target_link_libraries( cinder PUBLIC ${CINDER_LIBS_DEPENDS} )
 
-message( "CINDER_LIBS_DEPENDS: ${CINDER_LIBS_DEPENDS}" )
-
 target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
+
+# Adjust the library and archive output directories for Visual Studio
+if( MSVC )
+	# Force the library output directory
+    set_target_properties( cinder PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG          "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Debug/$(PlatformToolset)" )	
+    set_target_properties( cinder PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE        "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
+    set_target_properties( cinder PROPERTIES LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL     "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
+    set_target_properties( cinder PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
+	# Force the archive output directory
+    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG          "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Debug/$(PlatformToolset)" )	
+    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE        "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
+    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL     "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
+    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
+endif()
 
 # Check compiler support for enabling c++11 or c++14.
 if( CINDER_MSW AND MSVC )
-    if( MSVC_VERSION LESS 1800 )
+    if( MSVC_VERSION LESS 1800 ) # Older version of Visual Studio
         message( FATAL "Unsupported MSVC version: ${MSVC_VERSION}" )
-    elseif( MSVC_VERSION LESS 1900 )
+    elseif( MSVC_VERSION LESS 1900 ) # Visual Studio 2013
         set( COMPILER_SUPPORTS_CXX11 true )
-    else()
+    else() # Visual Studio 2015
         set( COMPILER_SUPPORTS_CXX14 true )
         set( COMPILER_SUPPORTS_CXX11 true )
     endif()

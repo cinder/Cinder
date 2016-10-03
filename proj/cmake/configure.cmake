@@ -107,14 +107,18 @@ elseif( CINDER_ANDROID )
 	#set( CINDER_ANDROID_NDK_ARCH "armeabi-v7a" CACHE STRING "Android NDK target architecture." )
 	set( CINDER_TARGET_SUBFOLDER "android/android-${CINDER_ANDROID_NDK_PLATFORM}/${CINDER_ANDROID_NDK_ARCH}" )
 elseif( CINDER_MSW )
-	set( CINDER_TARGET_SUBFOLDER "msw" ) # TODO: place in msw/arch folder (x64 or x86)
+    set( CINDER_ARCH "x86" )
+    if( CMAKE_CL_64 )
+        set( CINDER_ARCH "x64" )
+    endif()
+	set( CINDER_TARGET_SUBFOLDER "msw/${CINDER_ARCH}" ) # TODO: place in msw/arch folder (x64 or x86)
 endif()
 
 # CINDER_LIB_DIRECTORY is the platform-specific, relative path that will be used to define
 # CMAKE_ARCHIVE_OUTPUT_DIRECTORY for libcinder and also specifies where user apps will locate the cinder package
 if( MSVC )
-    # MSVC generator will automatically add a directory for the build type
-    set( CINDER_LIB_DIRECTORY lib/${CINDER_TARGET_SUBFOLDER}/ )
+    # MSVC generator forces a build type directory, so leave it off.
+    set( CINDER_LIB_DIRECTORY lib/${CINDER_TARGET_SUBFOLDER} )
 else()
     set( CINDER_LIB_DIRECTORY lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE}/ )
 endif()
