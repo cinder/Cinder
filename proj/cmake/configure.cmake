@@ -116,8 +116,8 @@ endif()
 
 # CINDER_LIB_DIRECTORY is the platform-specific, relative path that will be used to define
 # CMAKE_ARCHIVE_OUTPUT_DIRECTORY for libcinder and also specifies where user apps will locate the cinder package
-if( MSVC )
-    # MSVC generator forces a build type directory, so leave it off.
+if( MSVC OR ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
+    # MSVC and Xcode generator forces a build type directory, so leave it off.
     set( CINDER_LIB_DIRECTORY lib/${CINDER_TARGET_SUBFOLDER} )
 else()
     set( CINDER_LIB_DIRECTORY lib/${CINDER_TARGET_SUBFOLDER}/${CMAKE_BUILD_TYPE}/ )
