@@ -40,6 +40,7 @@ endif()
 
 # NDK host
 if( APPLE )
+    set( CINDER_ANDROID_NDK_HOST "darwin-x86_64" )
 elseif( UNIX )
 	set( CINDER_ANDROID_NDK_HOST "linux-x86_64" )
 elseif( WIN32 )
