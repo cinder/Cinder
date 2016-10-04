@@ -91,11 +91,6 @@ function( ci_make_app )
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
 	target_link_libraries( ${ARG_APP_NAME} cinder ${ARG_LIBRARIES} )
 
-	# Add platform specific libraries for Windows
-	if( MSVC )
-		target_link_libraries( ${ARG_APP_NAME} "zlib.lib;shlwapi.lib;OpenGL32.lib" )
-	endif()
-
 	# Ignore Specific Default Libraries
 	if( MSVC )
 		set_target_properties( ${ARG_APP_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )

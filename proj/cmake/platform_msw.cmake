@@ -61,4 +61,6 @@ if( MSVC )
 	add_compile_options( /FS )
 	# Force multiprocess compilation
 	add_compile_options( /MP )
+	# Add platform libraries
+	list( APPEND CINDER_LIBS_DEPENDS zlib.lib shlwapi.lib OpenGL32.lib )
 endif()
