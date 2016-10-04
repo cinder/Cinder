@@ -78,8 +78,6 @@ function( ci_make_app )
 			add_compile_options( /FS ) 
 			# Force multiprocess compilation
 			add_compile_options( /MP )
-			# Add necessary platform libraries		
-			list( APPEND PLATFORM_LIBRARIES "zlib.lib;shlwapi.lib;OpenGL32.lib" )
 			# Add lib dirs
 			cmake_policy( PUSH )
 			cmake_policy( SET CMP0015 OLD )
@@ -91,7 +89,12 @@ function( ci_make_app )
 	add_executable( ${ARG_APP_NAME} MACOSX_BUNDLE WIN32 ${ARG_SOURCES} ${ICON_PATH} ${ARG_RESOURCES} )
 
 	target_include_directories( ${ARG_APP_NAME} PUBLIC ${ARG_INCLUDES} )
-	target_link_libraries( ${ARG_APP_NAME} cinder ${ARG_LIBRARIES} ${PLATFORM_LIBRARIES} )
+	target_link_libraries( ${ARG_APP_NAME} cinder ${ARG_LIBRARIES} )
+
+	# Add platform specific libraries for Windows
+	if( MSVC )
+		target_link_libraries( ${ARG_APP_NAME} "zlib.lib;shlwapi.lib;OpenGL32.lib" )
+	endif()
 
 	# Ignore Specific Default Libraries
 	if( MSVC )
