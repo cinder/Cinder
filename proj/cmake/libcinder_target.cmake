@@ -24,11 +24,12 @@ target_include_directories( cinder SYSTEM BEFORE INTERFACE ${CINDER_INCLUDE_SYST
 target_include_directories( cinder BEFORE PRIVATE ${CINDER_INCLUDE_USER_PRIVATE} )
 target_include_directories( cinder SYSTEM BEFORE PRIVATE ${CINDER_INCLUDE_SYSTEM_PRIVATE} )
 
-target_link_libraries( cinder PUBLIC ${CINDER_LIBS_DEPENDS} )
+target_link_libraries( cinder PUBLIC ${CINDER_LIBS_DEPENDS}  )
+target_link_libraries( cinder LINK_PRIVATE Ws2_32.lib  )
 
 target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
 
-# Adjust the library and archive output directories for Visual Studio
+# MSVC specific options
 if( MSVC )
 	# Force the library output directory
     set_target_properties( cinder PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG          "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Debug/$(PlatformToolset)" )	
@@ -39,7 +40,9 @@ if( MSVC )
     set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG          "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Debug/$(PlatformToolset)" )	
     set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE        "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
     set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL     "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
-    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
+    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )
+	# Remove and set default libs to shut up link warnings 
+	set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS "/REMOVE:LIBCMT /REMOVE:LIBCPMT /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT" )
 endif()
 
 # Check compiler support for enabling c++11 or c++14.
