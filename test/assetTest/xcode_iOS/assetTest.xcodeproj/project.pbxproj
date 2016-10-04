@@ -211,8 +211,8 @@
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "assetTest-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"";
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/ios/$(CONFIGURATION)/libcinder.a\"";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/ios-sim/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_NAME = assetTest;
 			};
 			name = Debug;
@@ -229,8 +229,8 @@
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "assetTest-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"";
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/ios/$(CONFIGURATION)/libcinder.a\"";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/ios-sim/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_NAME = assetTest;
 			};
 			name = Release;

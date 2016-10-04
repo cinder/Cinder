@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
-		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		006D726019953059008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D725E19953059008149E2 /* AVFoundation.framework */; };
 		006D726119953059008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D725F19953059008149E2 /* CoreMedia.framework */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
@@ -16,6 +14,8 @@
 		00AA99820FB0A5100094126A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00AA997F0FB0A5100094126A /* AudioToolbox.framework */; };
 		00AA99830FB0A5100094126A /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00AA99800FB0A5100094126A /* AudioUnit.framework */; };
 		00AA99840FB0A5100094126A /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00AA99810FB0A5100094126A /* CoreAudio.framework */; };
+		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
+		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		00BAE65A0E7ED9C10018A608 /* ArcballDemoApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* ArcballDemoApp.cpp */; };
 		00C073010FF32E5C004801EA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C073000FF32E5C004801EA /* Accelerate.framework */; };
 		00FF55511AEB2CFE0085071E /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 00FF55501AEB2CFE0085071E /* CinderApp.icns */; };
@@ -27,8 +27,6 @@
 
 /* Begin PBXFileReference section */
 		004DA2491AE5A435008D4CE7 /* Arcball.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Arcball.h; path = ../../../include/cinder/Arcball.h; sourceTree = "<group>"; };
-		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
-		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		006D725E19953059008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		006D725F19953059008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -36,6 +34,8 @@
 		00AA997F0FB0A5100094126A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00AA99800FB0A5100094126A /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00AA99810FB0A5100094126A /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		00BAE6590E7ED9C10018A608 /* ArcballDemoApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArcballDemoApp.cpp; path = ../src/ArcballDemoApp.cpp; sourceTree = SOURCE_ROOT; };
 		00C073000FF32E5C004801EA /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		00FF55501AEB2CFE0085071E /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../data/CinderApp.icns; sourceTree = "<group>"; };
@@ -249,7 +249,7 @@
 					"$(inherited)",
 					../../../lib,
 				);
-				OTHER_LDFLAGS = ../../../lib/libcinder_d.a;
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_NAME = ArcballDemo;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -273,7 +273,7 @@
 					"$(inherited)",
 					../../../lib,
 				);
-				OTHER_LDFLAGS = ../../../lib/libcinder.a;
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_NAME = ArcballDemo;
 				WRAPPER_EXTENSION = app;
 			};

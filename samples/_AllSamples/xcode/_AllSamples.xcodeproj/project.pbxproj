@@ -90,12 +90,8 @@
 				009F6E7E14C0FE790036C292 /* PBXTargetDependency */,
 				009F6E8214C0FE790036C292 /* PBXTargetDependency */,
 				0005C9711006813C004D82BC /* PBXTargetDependency */,
-				0005CA7B10068268004D82BC /* PBXTargetDependency */,
-				0005CA7D10068268004D82BC /* PBXTargetDependency */,
 				0005CA7F10068268004D82BC /* PBXTargetDependency */,
-				0005CA8510068268004D82BC /* PBXTargetDependency */,
 				0005CA8910068268004D82BC /* PBXTargetDependency */,
-				0005CA8B10068268004D82BC /* PBXTargetDependency */,
 				0005CA8D10068268004D82BC /* PBXTargetDependency */,
 				0005CA9B10068268004D82BC /* PBXTargetDependency */,
 				0005CA9F10068268004D82BC /* PBXTargetDependency */,
@@ -132,40 +128,12 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = basicApp;
 		};
-		0005C97A1006817F004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = ArcballDemo;
-		};
-		0005C98C100681AF004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C985100681AF004D82BC /* bezierPath.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = bezierPath;
-		};
-		0005C996100681B5004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C98E100681B5004D82BC /* bspline.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = bspline;
-		};
 		0005C9B3100681D2004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = Earthquake;
-		};
-		0005C9CE100681E3004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = flickrTest;
 		};
 		0005C9D7100681EA004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -195,20 +163,6 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = TextTest;
 		};
-		0005CA7A10068268004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C985100681AF004D82BC /* bezierPath.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = bezierPath;
-		};
-		0005CA7C10068268004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C98E100681B5004D82BC /* bspline.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = bspline;
-		};
 		0005CA7E10068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0005C9D0100681E9004D82BC /* fontSample.xcodeproj */;
@@ -216,26 +170,12 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = fontSample;
 		};
-		0005CA8410068268004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = flickrTest;
-		};
 		0005CA8810068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0005CA2F10068222004D82BC /* SaveImage.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = SaveImage;
-		};
-		0005CA8A10068268004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = ArcballDemo;
 		};
 		0005CA8C10068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1494,11 +1434,7 @@
 
 /* Begin PBXFileReference section */
 		0005C95510068030004D82BC /* basicApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = basicApp.xcodeproj; path = ../../basicApp/xcode/basicApp.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ArcballDemo.xcodeproj; path = ../../ArcballDemo/xcode/ArcballDemo.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005C985100681AF004D82BC /* bezierPath.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bezierPath.xcodeproj; path = ../../bezierPath/xcode/bezierPath.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005C98E100681B5004D82BC /* bspline.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bspline.xcodeproj; path = ../../bspline/xcode/bspline.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Earthquake.xcodeproj; path = ../../Earthquake/xcode/Earthquake.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = flickrTest.xcodeproj; path = ../../flickrTest/xcode/flickrTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9D0100681E9004D82BC /* fontSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = fontSample.xcodeproj; path = ../../fontSample/xcode/fontSample.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9FF10068206004D82BC /* perlinTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = perlinTest.xcodeproj; path = ../../perlinTest/xcode/perlinTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA2F10068222004D82BC /* SaveImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SaveImage.xcodeproj; path = ../../SaveImage/xcode/SaveImage.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1570,6 +1506,7 @@
 		00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EaseGallery.xcodeproj; path = ../../EaseGallery/xcode/EaseGallery.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoronoiGpu.xcodeproj; path = ../../VoronoiGpu/xcode/VoronoiGpu.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeBasic.xcodeproj; path = ../../QuickTimeBasic/xcode/QuickTimeBasic.xcodeproj; sourceTree = "<group>"; };
+		00BFB1C31D4EB65E00EE4CA7 /* ArcballDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ArcballDemo.xcodeproj; path = ../../ArcballDemo/xcode/ArcballDemo.xcodeproj; sourceTree = "<group>"; };
 		00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicAppMultiWindow.xcodeproj; path = ../../BasicAppMultiWindow/xcode/BasicAppMultiWindow.xcodeproj; sourceTree = "<group>"; };
 		00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BezierPathIteration.xcodeproj; path = ../../BezierPathIteration/xcode/BezierPathIteration.xcodeproj; sourceTree = "<group>"; };
 		00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ClipboardBasic.xcodeproj; path = ../../ClipboardBasic/xcode/ClipboardBasic.xcodeproj; sourceTree = "<group>"; };
@@ -1602,12 +1539,10 @@
 				11754415193596440075AF60 /* _audio */,
 				0029329B1530F5480022B1BF /* _svg */,
 				009F6E0E14C0FDD20036C292 /* _timeline */,
-				0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */,
+				00BFB1C31D4EB65E00EE4CA7 /* ArcballDemo.xcodeproj */,
 				00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */,
 				0005C95510068030004D82BC /* basicApp.xcodeproj */,
-				0005C985100681AF004D82BC /* bezierPath.xcodeproj */,
 				00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */,
-				0005C98E100681B5004D82BC /* bspline.xcodeproj */,
 				00236D981130E4C7006C991F /* CairoBasic.xcodeproj */,
 				009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */,
 				00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */,
@@ -1615,7 +1550,6 @@
 				0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */,
 				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */,
-				0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */,
 				00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */,
 				0005C9D0100681E9004D82BC /* fontSample.xcodeproj */,
 				00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */,
@@ -1658,42 +1592,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0005C9741006817F004D82BC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0005C97B1006817F004D82BC /* ArcballDemo.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0005C986100681AF004D82BC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0005C98D100681AF004D82BC /* bezierPath.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0005C98F100681B5004D82BC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0005C997100681B5004D82BC /* BSpline.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		0005C9AC100681D2004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				0005C9B4100681D2004D82BC /* Earthquake.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0005C9C8100681E3004D82BC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0005C9CF100681E3004D82BC /* flickrTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2324,6 +2226,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00BFB1C41D4EB65E00EE4CA7 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
 		00D4948019889EBE00A44E4C /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2542,8 +2449,8 @@
 					ProjectRef = 0029329C1530F5660022B1BF /* AnimatedReveal.xcodeproj */;
 				},
 				{
-					ProductGroup = 0005C9741006817F004D82BC /* Products */;
-					ProjectRef = 0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */;
+					ProductGroup = 00BFB1C41D4EB65E00EE4CA7 /* Products */;
+					ProjectRef = 00BFB1C31D4EB65E00EE4CA7 /* ArcballDemo.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C95610068030004D82BC /* Products */;
@@ -2558,16 +2465,8 @@
 					ProjectRef = 00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */;
 				},
 				{
-					ProductGroup = 0005C986100681AF004D82BC /* Products */;
-					ProjectRef = 0005C985100681AF004D82BC /* bezierPath.xcodeproj */;
-				},
-				{
 					ProductGroup = 00D4948819889EED00A44E4C /* Products */;
 					ProjectRef = 00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */;
-				},
-				{
-					ProductGroup = 0005C98F100681B5004D82BC /* Products */;
-					ProjectRef = 0005C98E100681B5004D82BC /* bspline.xcodeproj */;
 				},
 				{
 					ProductGroup = 11754417193596610075AF60 /* Products */;
@@ -2652,10 +2551,6 @@
 				{
 					ProductGroup = 004307EE1BBCE1C100B72510 /* Products */;
 					ProjectRef = 004307ED1BBCE1C100B72510 /* FboMultipleRenderTargets.xcodeproj */;
-				},
-				{
-					ProductGroup = 0005C9C8100681E3004D82BC /* Products */;
-					ProjectRef = 0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */;
 				},
 				{
 					ProductGroup = 00712F251627A416005FC5A0 /* Products */;
@@ -2945,39 +2840,11 @@
 			remoteRef = 0005C95910068030004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005C97B1006817F004D82BC /* ArcballDemo.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = ArcballDemo.app;
-			remoteRef = 0005C97A1006817F004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0005C98D100681AF004D82BC /* bezierPath.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = bezierPath.app;
-			remoteRef = 0005C98C100681AF004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0005C997100681B5004D82BC /* BSpline.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = BSpline.app;
-			remoteRef = 0005C996100681B5004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		0005C9B4100681D2004D82BC /* Earthquake.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = Earthquake.app;
 			remoteRef = 0005C9B3100681D2004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0005C9CF100681E3004D82BC /* flickrTest.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = flickrTest.app;
-			remoteRef = 0005C9CE100681E3004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0005C9D8100681EA004D82BC /* FontSample.app */ = {
@@ -3632,35 +3499,15 @@
 			name = basicApp;
 			targetProxy = 0005C9701006813C004D82BC /* PBXContainerItemProxy */;
 		};
-		0005CA7B10068268004D82BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = bezierPath;
-			targetProxy = 0005CA7A10068268004D82BC /* PBXContainerItemProxy */;
-		};
-		0005CA7D10068268004D82BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = bspline;
-			targetProxy = 0005CA7C10068268004D82BC /* PBXContainerItemProxy */;
-		};
 		0005CA7F10068268004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = fontSample;
 			targetProxy = 0005CA7E10068268004D82BC /* PBXContainerItemProxy */;
 		};
-		0005CA8510068268004D82BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = flickrTest;
-			targetProxy = 0005CA8410068268004D82BC /* PBXContainerItemProxy */;
-		};
 		0005CA8910068268004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = SaveImage;
 			targetProxy = 0005CA8810068268004D82BC /* PBXContainerItemProxy */;
-		};
-		0005CA8B10068268004D82BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ArcballDemo;
-			targetProxy = 0005CA8A10068268004D82BC /* PBXContainerItemProxy */;
 		};
 		0005CA8D10068268004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

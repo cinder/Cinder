@@ -27,218 +27,218 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\cinder\app\App.h" />
-    <ClInclude Include="..\include\cinder\app\AppBase.h" />
-    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
-    <ClInclude Include="..\include\cinder\app\Event.h" />
-    <ClInclude Include="..\include\cinder\app\FileDropEvent.h" />
-    <ClInclude Include="..\include\cinder\app\KeyEvent.h" />
-    <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
-    <ClInclude Include="..\include\cinder\app\Platform.h" />
-    <ClInclude Include="..\include\cinder\app\Renderer.h" />
-    <ClInclude Include="..\include\cinder\app\RendererDx.h" />
-    <ClInclude Include="..\include\cinder\app\RendererGl.h" />
-    <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
-    <ClInclude Include="..\include\cinder\app\Window.h" />
-    <ClInclude Include="..\include\cinder\app\winrt\AppWinRt.h" />
-    <ClInclude Include="..\include\cinder\app\winrt\CinderFrameworkView.h" />
-    <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h" />
-    <ClInclude Include="..\include\cinder\app\winrt\WindowImplWinRt.h" />
-    <ClInclude Include="..\include\cinder\Arcball.h" />
-    <ClInclude Include="..\include\cinder\Area.h" />
-    <ClInclude Include="..\include\cinder\audio\audio.h" />
-    <ClInclude Include="..\include\cinder\audio\Buffer.h" />
-    <ClInclude Include="..\include\cinder\audio\ChannelRouterNode.h" />
-    <ClInclude Include="..\include\cinder\audio\Context.h" />
-    <ClInclude Include="..\include\cinder\audio\DelayNode.h" />
-    <ClInclude Include="..\include\cinder\audio\Device.h" />
-    <ClInclude Include="..\include\cinder\audio\dsp\Biquad.h" />
-    <ClInclude Include="..\include\cinder\audio\dsp\Converter.h" />
-    <ClInclude Include="..\include\cinder\audio\dsp\ConverterR8brain.h" />
-    <ClInclude Include="..\include\cinder\audio\dsp\Dsp.h" />
-    <ClInclude Include="..\include\cinder\audio\dsp\Fft.h" />
-    <ClInclude Include="..\include\cinder\audio\dsp\ooura\fftsg.h" />
-    <ClInclude Include="..\include\cinder\audio\dsp\RingBuffer.h" />
-    <ClInclude Include="..\include\cinder\audio\Exception.h" />
-    <ClInclude Include="..\include\cinder\audio\FileOggVorbis.h" />
-    <ClInclude Include="..\include\cinder\audio\FilterNode.h" />
-    <ClInclude Include="..\include\cinder\audio\GainNode.h" />
-    <ClInclude Include="..\include\cinder\audio\GenNode.h" />
-    <ClInclude Include="..\include\cinder\audio\InputNode.h" />
-    <ClInclude Include="..\include\cinder\audio\MonitorNode.h" />
-    <ClInclude Include="..\include\cinder\audio\msw\ContextWasapi.h" />
-    <ClInclude Include="..\include\cinder\audio\msw\DeviceManagerWasapi.h" />
-    <ClInclude Include="..\include\cinder\audio\msw\FileMediaFoundation.h" />
-    <ClInclude Include="..\include\cinder\audio\msw\MswUtil.h" />
-    <ClInclude Include="..\include\cinder\audio\Node.h" />
-    <ClInclude Include="..\include\cinder\audio\NodeEffects.h" />
-    <ClInclude Include="..\include\cinder\audio\NodeMath.h" />
-    <ClInclude Include="..\include\cinder\audio\OutputNode.h" />
-    <ClInclude Include="..\include\cinder\audio\PanNode.h" />
-    <ClInclude Include="..\include\cinder\audio\Param.h" />
-    <ClInclude Include="..\include\cinder\audio\SamplePlayerNode.h" />
-    <ClInclude Include="..\include\cinder\audio\SampleRecorderNode.h" />
-    <ClInclude Include="..\include\cinder\audio\SampleType.h" />
-    <ClInclude Include="..\include\cinder\audio\Source.h" />
-    <ClInclude Include="..\include\cinder\audio\Target.h" />
-    <ClInclude Include="..\include\cinder\audio\Utilities.h" />
-    <ClInclude Include="..\include\cinder\audio\Voice.h" />
-    <ClInclude Include="..\include\cinder\audio\WaveformType.h" />
-    <ClInclude Include="..\include\cinder\audio\WaveTable.h" />
-    <ClInclude Include="..\include\cinder\AxisAlignedBox.h" />
-    <ClInclude Include="..\include\cinder\BandedMatrix.h" />
-    <ClInclude Include="..\include\cinder\Base64.h" />
-    <ClInclude Include="..\include\cinder\Breakpoint.h" />
-    <ClInclude Include="..\include\cinder\BSpline.h" />
-    <ClInclude Include="..\include\cinder\BSplineFit.h" />
-    <ClInclude Include="..\include\cinder\Buffer.h" />
-    <ClInclude Include="..\include\cinder\Camera.h" />
-    <ClInclude Include="..\include\cinder\CameraUi.h" />
-    <ClInclude Include="..\include\cinder\Capture.h" />
-    <ClInclude Include="..\include\cinder\CaptureImplAvFoundation.h" />
-    <ClInclude Include="..\include\cinder\CaptureImplCocoaDummy.h" />
-    <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
-    <ClInclude Include="..\include\cinder\Channel.h" />
-    <ClInclude Include="..\include\cinder\ChanTraits.h" />
-    <ClInclude Include="..\include\cinder\Cinder.h" />
-    <ClInclude Include="..\include\cinder\CinderAssert.h" />
-    <ClInclude Include="..\include\cinder\CinderGlm.h" />
-    <ClInclude Include="..\include\cinder\CinderMath.h" />
-    <ClInclude Include="..\include\cinder\CinderResources.h" />
-    <ClInclude Include="..\include\cinder\Clipboard.h" />
-    <ClInclude Include="..\include\cinder\Color.h" />
-    <ClInclude Include="..\include\cinder\ConcurrentCircularBuffer.h" />
-    <ClInclude Include="..\include\cinder\ConvexHull.h" />
-    <ClInclude Include="..\include\cinder\CurrentFunction.h" />
-    <ClInclude Include="..\include\cinder\DataSource.h" />
-    <ClInclude Include="..\include\cinder\DataTarget.h" />
-    <ClInclude Include="..\include\cinder\Display.h" />
-    <ClInclude Include="..\include\cinder\Easing.h" />
-    <ClInclude Include="..\include\cinder\Exception.h" />
-    <ClInclude Include="..\include\cinder\Filesystem.h" />
-    <ClInclude Include="..\include\cinder\Filter.h" />
-    <ClInclude Include="..\include\cinder\Font.h" />
-    <ClInclude Include="..\include\cinder\Frustum.h" />
-    <ClInclude Include="..\include\cinder\Function.h" />
-    <ClInclude Include="..\include\cinder\GeomIo.h" />
-    <ClInclude Include="..\include\cinder\gl\Batch.h" />
-    <ClInclude Include="..\include\cinder\gl\BufferObj.h" />
-    <ClInclude Include="..\include\cinder\gl\BufferTexture.h" />
-    <ClInclude Include="..\include\cinder\gl\ConstantConversions.h" />
-    <ClInclude Include="..\include\cinder\gl\Context.h" />
-    <ClInclude Include="..\include\cinder\gl\draw.h" />
-    <ClInclude Include="..\include\cinder\gl\Environment.h" />
-    <ClInclude Include="..\include\cinder\gl\Fbo.h" />
-    <ClInclude Include="..\include\cinder\gl\gl.h" />
-    <ClInclude Include="..\include\cinder\gl\GlslProg.h" />
-    <ClInclude Include="..\include\cinder\gl\Pbo.h" />
-    <ClInclude Include="..\include\cinder\gl\platform.h" />
-    <ClInclude Include="..\include\cinder\gl\Query.h" />
-    <ClInclude Include="..\include\cinder\gl\scoped.h" />
-    <ClInclude Include="..\include\cinder\gl\Shader.h" />
-    <ClInclude Include="..\include\cinder\gl\ShaderPreprocessor.h" />
-    <ClInclude Include="..\include\cinder\gl\Ssbo.h" />
-    <ClInclude Include="..\include\cinder\gl\Sync.h" />
-    <ClInclude Include="..\include\cinder\gl\Texture.h" />
-    <ClInclude Include="..\include\cinder\gl\TextureFont.h" />
-    <ClInclude Include="..\include\cinder\gl\TextureFormatParsers.h" />
-    <ClInclude Include="..\include\cinder\gl\TransformFeedbackObj.h" />
-    <ClInclude Include="..\include\cinder\gl\Ubo.h" />
-    <ClInclude Include="..\include\cinder\gl\Vao.h" />
-    <ClInclude Include="..\include\cinder\gl\Vbo.h" />
-    <ClInclude Include="..\include\cinder\gl\VboMesh.h" />
-    <ClInclude Include="..\include\cinder\gl\wrapper.h" />
-    <ClInclude Include="..\include\cinder\ImageFileTinyExr.h" />
-    <ClInclude Include="..\include\cinder\ImageIo.h" />
-    <ClInclude Include="..\include\cinder\ImageSourceFileQuartz.h" />
-    <ClInclude Include="..\include\cinder\ImageSourceFileRadiance.h" />
-    <ClInclude Include="..\include\cinder\ImageSourceFileStbImage.h" />
-    <ClInclude Include="..\include\cinder\ImageSourceFileWic.h" />
-    <ClInclude Include="..\include\cinder\ImageSourcePng.h" />
-    <ClInclude Include="..\include\cinder\ImageTargetFileQuartz.h" />
-    <ClInclude Include="..\include\cinder\ImageTargetFileStbImage.h" />
-    <ClInclude Include="..\include\cinder\ImageTargetFileWic.h" />
-    <ClInclude Include="..\include\cinder\ip\Blend.h" />
-    <ClInclude Include="..\include\cinder\ip\Blur.h" />
-    <ClInclude Include="..\include\cinder\ip\Checkerboard.h" />
-    <ClInclude Include="..\include\cinder\ip\EdgeDetect.h" />
-    <ClInclude Include="..\include\cinder\ip\Fill.h" />
-    <ClInclude Include="..\include\cinder\ip\Flip.h" />
-    <ClInclude Include="..\include\cinder\ip\Grayscale.h" />
-    <ClInclude Include="..\include\cinder\ip\Hdr.h" />
-    <ClInclude Include="..\include\cinder\ip\Premultiply.h" />
-    <ClInclude Include="..\include\cinder\ip\Resize.h" />
-    <ClInclude Include="..\include\cinder\ip\Threshold.h" />
-    <ClInclude Include="..\include\cinder\ip\Trim.h" />
-    <ClInclude Include="..\include\cinder\Json.h" />
-    <ClInclude Include="..\include\cinder\KdTree.h" />
-    <ClInclude Include="..\include\cinder\Log.h" />
-    <ClInclude Include="..\include\cinder\Matrix.h" />
-    <ClInclude Include="..\include\cinder\Matrix22.h" />
-    <ClInclude Include="..\include\cinder\Matrix33.h" />
-    <ClInclude Include="..\include\cinder\Matrix44.h" />
-    <ClInclude Include="..\include\cinder\Noncopyable.h" />
-    <ClInclude Include="..\include\cinder\ObjLoader.h" />
-    <ClInclude Include="..\include\cinder\Path2d.h" />
-    <ClInclude Include="..\include\cinder\Perlin.h" />
-    <ClInclude Include="..\include\cinder\Plane.h" />
-    <ClInclude Include="..\include\cinder\PolyLine.h" />
-    <ClInclude Include="..\include\cinder\Quaternion.h" />
-    <ClInclude Include="..\include\cinder\Rand.h" />
-    <ClInclude Include="..\include\cinder\Ray.h" />
-    <ClInclude Include="..\include\cinder\Rect.h" />
-    <ClInclude Include="..\include\cinder\Serial.h" />
-    <ClInclude Include="..\include\cinder\Shape2d.h" />
-    <ClInclude Include="..\include\cinder\Signals.h" />
-    <ClInclude Include="..\include\cinder\Sphere.h" />
-    <ClInclude Include="..\include\cinder\Stream.h" />
-    <ClInclude Include="..\include\cinder\Surface.h" />
-    <ClInclude Include="..\include\cinder\svg\Svg.h" />
-    <ClInclude Include="..\include\cinder\svg\SvgGl.h" />
-    <ClInclude Include="..\include\cinder\System.h" />
-    <ClInclude Include="..\include\cinder\Text.h" />
-    <ClInclude Include="..\include\cinder\Thread.h" />
-    <ClInclude Include="..\include\cinder\Timeline.h" />
-    <ClInclude Include="..\include\cinder\TimelineItem.h" />
-    <ClInclude Include="..\include\cinder\Timer.h" />
-    <ClInclude Include="..\include\cinder\Triangulate.h" />
-    <ClInclude Include="..\include\cinder\TriMesh.h" />
-    <ClInclude Include="..\include\cinder\Tween.h" />
-    <ClInclude Include="..\include\cinder\Unicode.h" />
-    <ClInclude Include="..\include\cinder\Url.h" />
-    <ClInclude Include="..\include\cinder\UrlImplCocoa.h" />
-    <ClInclude Include="..\include\cinder\UrlImplCurl.h" />
-    <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
-    <ClInclude Include="..\include\cinder\Utilities.h" />
-    <ClInclude Include="..\include\cinder\Vector.h" />
-    <ClInclude Include="..\include\cinder\winrt\FontEnumerator.h" />
-    <ClInclude Include="..\include\cinder\winrt\WinRTUtils.h" />
-    <ClInclude Include="..\include\cinder\Xml.h" />
-    <ClInclude Include="..\src\r8brain\CDSPBlockConvolver.h" />
-    <ClInclude Include="..\src\r8brain\CDSPFIRFilter.h" />
-    <ClInclude Include="..\src\r8brain\CDSPFracInterpolator.h" />
-    <ClInclude Include="..\src\r8brain\CDSPRealFFT.h" />
-    <ClInclude Include="..\src\r8brain\CDSPResampler.h" />
-    <ClInclude Include="..\src\r8brain\CDSPSincFilterGen.h" />
-    <ClInclude Include="..\src\r8brain\fft4g.h" />
-    <ClInclude Include="..\src\r8brain\r8bbase.h" />
-    <ClInclude Include="..\src\r8brain\r8bconf.h" />
+    <ClInclude Include="..\..\include\cinder\app\App.h" />
+    <ClInclude Include="..\..\include\cinder\app\AppBase.h" />
+    <ClInclude Include="..\..\include\cinder\app\AppScreenSaver.h" />
+    <ClInclude Include="..\..\include\cinder\app\Event.h" />
+    <ClInclude Include="..\..\include\cinder\app\FileDropEvent.h" />
+    <ClInclude Include="..\..\include\cinder\app\KeyEvent.h" />
+    <ClInclude Include="..\..\include\cinder\app\MouseEvent.h" />
+    <ClInclude Include="..\..\include\cinder\app\Platform.h" />
+    <ClInclude Include="..\..\include\cinder\app\Renderer.h" />
+    <ClInclude Include="..\..\include\cinder\app\RendererDx.h" />
+    <ClInclude Include="..\..\include\cinder\app\RendererGl.h" />
+    <ClInclude Include="..\..\include\cinder\app\TouchEvent.h" />
+    <ClInclude Include="..\..\include\cinder\app\Window.h" />
+    <ClInclude Include="..\..\include\cinder\app\winrt\AppWinRt.h" />
+    <ClInclude Include="..\..\include\cinder\app\winrt\CinderFrameworkView.h" />
+    <ClInclude Include="..\..\include\cinder\app\winrt\PlatformWinRt.h" />
+    <ClInclude Include="..\..\include\cinder\app\winrt\WindowImplWinRt.h" />
+    <ClInclude Include="..\..\include\cinder\Arcball.h" />
+    <ClInclude Include="..\..\include\cinder\Area.h" />
+    <ClInclude Include="..\..\include\cinder\audio\audio.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Buffer.h" />
+    <ClInclude Include="..\..\include\cinder\audio\ChannelRouterNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Context.h" />
+    <ClInclude Include="..\..\include\cinder\audio\DelayNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Device.h" />
+    <ClInclude Include="..\..\include\cinder\audio\dsp\Biquad.h" />
+    <ClInclude Include="..\..\include\cinder\audio\dsp\Converter.h" />
+    <ClInclude Include="..\..\include\cinder\audio\dsp\ConverterR8brain.h" />
+    <ClInclude Include="..\..\include\cinder\audio\dsp\Dsp.h" />
+    <ClInclude Include="..\..\include\cinder\audio\dsp\Fft.h" />
+    <ClInclude Include="..\..\include\cinder\audio\dsp\ooura\fftsg.h" />
+    <ClInclude Include="..\..\include\cinder\audio\dsp\RingBuffer.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Exception.h" />
+    <ClInclude Include="..\..\include\cinder\audio\FileOggVorbis.h" />
+    <ClInclude Include="..\..\include\cinder\audio\FilterNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\GainNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\GenNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\InputNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\MonitorNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\msw\ContextWasapi.h" />
+    <ClInclude Include="..\..\include\cinder\audio\msw\DeviceManagerWasapi.h" />
+    <ClInclude Include="..\..\include\cinder\audio\msw\FileMediaFoundation.h" />
+    <ClInclude Include="..\..\include\cinder\audio\msw\MswUtil.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Node.h" />
+    <ClInclude Include="..\..\include\cinder\audio\NodeEffects.h" />
+    <ClInclude Include="..\..\include\cinder\audio\NodeMath.h" />
+    <ClInclude Include="..\..\include\cinder\audio\OutputNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\PanNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Param.h" />
+    <ClInclude Include="..\..\include\cinder\audio\SamplePlayerNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\SampleRecorderNode.h" />
+    <ClInclude Include="..\..\include\cinder\audio\SampleType.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Source.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Target.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Utilities.h" />
+    <ClInclude Include="..\..\include\cinder\audio\Voice.h" />
+    <ClInclude Include="..\..\include\cinder\audio\WaveformType.h" />
+    <ClInclude Include="..\..\include\cinder\audio\WaveTable.h" />
+    <ClInclude Include="..\..\include\cinder\AxisAlignedBox.h" />
+    <ClInclude Include="..\..\include\cinder\BandedMatrix.h" />
+    <ClInclude Include="..\..\include\cinder\Base64.h" />
+    <ClInclude Include="..\..\include\cinder\Breakpoint.h" />
+    <ClInclude Include="..\..\include\cinder\BSpline.h" />
+    <ClInclude Include="..\..\include\cinder\BSplineFit.h" />
+    <ClInclude Include="..\..\include\cinder\Buffer.h" />
+    <ClInclude Include="..\..\include\cinder\Camera.h" />
+    <ClInclude Include="..\..\include\cinder\CameraUi.h" />
+    <ClInclude Include="..\..\include\cinder\Capture.h" />
+    <ClInclude Include="..\..\include\cinder\CaptureImplAvFoundation.h" />
+    <ClInclude Include="..\..\include\cinder\CaptureImplCocoaDummy.h" />
+    <ClInclude Include="..\..\include\cinder\CaptureImplDirectShow.h" />
+    <ClInclude Include="..\..\include\cinder\Channel.h" />
+    <ClInclude Include="..\..\include\cinder\ChanTraits.h" />
+    <ClInclude Include="..\..\include\cinder\Cinder.h" />
+    <ClInclude Include="..\..\include\cinder\CinderAssert.h" />
+    <ClInclude Include="..\..\include\cinder\CinderGlm.h" />
+    <ClInclude Include="..\..\include\cinder\CinderMath.h" />
+    <ClInclude Include="..\..\include\cinder\CinderResources.h" />
+    <ClInclude Include="..\..\include\cinder\Clipboard.h" />
+    <ClInclude Include="..\..\include\cinder\Color.h" />
+    <ClInclude Include="..\..\include\cinder\ConcurrentCircularBuffer.h" />
+    <ClInclude Include="..\..\include\cinder\ConvexHull.h" />
+    <ClInclude Include="..\..\include\cinder\CurrentFunction.h" />
+    <ClInclude Include="..\..\include\cinder\DataSource.h" />
+    <ClInclude Include="..\..\include\cinder\DataTarget.h" />
+    <ClInclude Include="..\..\include\cinder\Display.h" />
+    <ClInclude Include="..\..\include\cinder\Easing.h" />
+    <ClInclude Include="..\..\include\cinder\Exception.h" />
+    <ClInclude Include="..\..\include\cinder\Filesystem.h" />
+    <ClInclude Include="..\..\include\cinder\Filter.h" />
+    <ClInclude Include="..\..\include\cinder\Font.h" />
+    <ClInclude Include="..\..\include\cinder\Frustum.h" />
+    <ClInclude Include="..\..\include\cinder\Function.h" />
+    <ClInclude Include="..\..\include\cinder\GeomIo.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Batch.h" />
+    <ClInclude Include="..\..\include\cinder\gl\BufferObj.h" />
+    <ClInclude Include="..\..\include\cinder\gl\BufferTexture.h" />
+    <ClInclude Include="..\..\include\cinder\gl\ConstantConversions.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Context.h" />
+    <ClInclude Include="..\..\include\cinder\gl\draw.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Environment.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Fbo.h" />
+    <ClInclude Include="..\..\include\cinder\gl\gl.h" />
+    <ClInclude Include="..\..\include\cinder\gl\GlslProg.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Pbo.h" />
+    <ClInclude Include="..\..\include\cinder\gl\platform.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Query.h" />
+    <ClInclude Include="..\..\include\cinder\gl\scoped.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Shader.h" />
+    <ClInclude Include="..\..\include\cinder\gl\ShaderPreprocessor.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Ssbo.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Sync.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Texture.h" />
+    <ClInclude Include="..\..\include\cinder\gl\TextureFont.h" />
+    <ClInclude Include="..\..\include\cinder\gl\TextureFormatParsers.h" />
+    <ClInclude Include="..\..\include\cinder\gl\TransformFeedbackObj.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Ubo.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Vao.h" />
+    <ClInclude Include="..\..\include\cinder\gl\Vbo.h" />
+    <ClInclude Include="..\..\include\cinder\gl\VboMesh.h" />
+    <ClInclude Include="..\..\include\cinder\gl\wrapper.h" />
+    <ClInclude Include="..\..\include\cinder\ImageFileTinyExr.h" />
+    <ClInclude Include="..\..\include\cinder\ImageIo.h" />
+    <ClInclude Include="..\..\include\cinder\ImageSourceFileQuartz.h" />
+    <ClInclude Include="..\..\include\cinder\ImageSourceFileRadiance.h" />
+    <ClInclude Include="..\..\include\cinder\ImageSourceFileStbImage.h" />
+    <ClInclude Include="..\..\include\cinder\ImageSourceFileWic.h" />
+    <ClInclude Include="..\..\include\cinder\ImageSourcePng.h" />
+    <ClInclude Include="..\..\include\cinder\ImageTargetFileQuartz.h" />
+    <ClInclude Include="..\..\include\cinder\ImageTargetFileStbImage.h" />
+    <ClInclude Include="..\..\include\cinder\ImageTargetFileWic.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Blend.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Blur.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Checkerboard.h" />
+    <ClInclude Include="..\..\include\cinder\ip\EdgeDetect.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Fill.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Flip.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Grayscale.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Hdr.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Premultiply.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Resize.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Threshold.h" />
+    <ClInclude Include="..\..\include\cinder\ip\Trim.h" />
+    <ClInclude Include="..\..\include\cinder\Json.h" />
+    <ClInclude Include="..\..\include\cinder\KdTree.h" />
+    <ClInclude Include="..\..\include\cinder\Log.h" />
+    <ClInclude Include="..\..\include\cinder\Matrix.h" />
+    <ClInclude Include="..\..\include\cinder\Matrix22.h" />
+    <ClInclude Include="..\..\include\cinder\Matrix33.h" />
+    <ClInclude Include="..\..\include\cinder\Matrix44.h" />
+    <ClInclude Include="..\..\include\cinder\Noncopyable.h" />
+    <ClInclude Include="..\..\include\cinder\ObjLoader.h" />
+    <ClInclude Include="..\..\include\cinder\Path2d.h" />
+    <ClInclude Include="..\..\include\cinder\Perlin.h" />
+    <ClInclude Include="..\..\include\cinder\Plane.h" />
+    <ClInclude Include="..\..\include\cinder\PolyLine.h" />
+    <ClInclude Include="..\..\include\cinder\Quaternion.h" />
+    <ClInclude Include="..\..\include\cinder\Rand.h" />
+    <ClInclude Include="..\..\include\cinder\Ray.h" />
+    <ClInclude Include="..\..\include\cinder\Rect.h" />
+    <ClInclude Include="..\..\include\cinder\Serial.h" />
+    <ClInclude Include="..\..\include\cinder\Shape2d.h" />
+    <ClInclude Include="..\..\include\cinder\Signals.h" />
+    <ClInclude Include="..\..\include\cinder\Sphere.h" />
+    <ClInclude Include="..\..\include\cinder\Stream.h" />
+    <ClInclude Include="..\..\include\cinder\Surface.h" />
+    <ClInclude Include="..\..\include\cinder\svg\Svg.h" />
+    <ClInclude Include="..\..\include\cinder\svg\SvgGl.h" />
+    <ClInclude Include="..\..\include\cinder\System.h" />
+    <ClInclude Include="..\..\include\cinder\Text.h" />
+    <ClInclude Include="..\..\include\cinder\Thread.h" />
+    <ClInclude Include="..\..\include\cinder\Timeline.h" />
+    <ClInclude Include="..\..\include\cinder\TimelineItem.h" />
+    <ClInclude Include="..\..\include\cinder\Timer.h" />
+    <ClInclude Include="..\..\include\cinder\Triangulate.h" />
+    <ClInclude Include="..\..\include\cinder\TriMesh.h" />
+    <ClInclude Include="..\..\include\cinder\Tween.h" />
+    <ClInclude Include="..\..\include\cinder\Unicode.h" />
+    <ClInclude Include="..\..\include\cinder\Url.h" />
+    <ClInclude Include="..\..\include\cinder\UrlImplCocoa.h" />
+    <ClInclude Include="..\..\include\cinder\UrlImplCurl.h" />
+    <ClInclude Include="..\..\include\cinder\UrlImplWinInet.h" />
+    <ClInclude Include="..\..\include\cinder\Utilities.h" />
+    <ClInclude Include="..\..\include\cinder\Vector.h" />
+    <ClInclude Include="..\..\include\cinder\winrt\FontEnumerator.h" />
+    <ClInclude Include="..\..\include\cinder\winrt\WinRTUtils.h" />
+    <ClInclude Include="..\..\include\cinder\Xml.h" />
+    <ClInclude Include="..\..\src\r8brain\CDSPBlockConvolver.h" />
+    <ClInclude Include="..\..\src\r8brain\CDSPFIRFilter.h" />
+    <ClInclude Include="..\..\src\r8brain\CDSPFracInterpolator.h" />
+    <ClInclude Include="..\..\src\r8brain\CDSPRealFFT.h" />
+    <ClInclude Include="..\..\src\r8brain\CDSPResampler.h" />
+    <ClInclude Include="..\..\src\r8brain\CDSPSincFilterGen.h" />
+    <ClInclude Include="..\..\src\r8brain\fft4g.h" />
+    <ClInclude Include="..\..\src\r8brain\r8bbase.h" />
+    <ClInclude Include="..\..\src\r8brain\r8bconf.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\cinder\app\AppBase.cpp" />
-    <ClCompile Include="..\src\cinder\app\KeyEvent.cpp" />
-    <ClCompile Include="..\src\cinder\app\msw\RendererImplGlAngle.cpp" />
-    <ClCompile Include="..\src\cinder\app\Platform.cpp" />
-    <ClCompile Include="..\src\cinder\app\Renderer.cpp" />
-    <ClCompile Include="..\src\cinder\app\RendererGl.cpp" />
-    <ClCompile Include="..\src\cinder\app\Window.cpp" />
-    <ClCompile Include="..\src\cinder\app\winrt\AppWinRt.cpp" />
-    <ClCompile Include="..\src\cinder\app\winrt\CinderFrameworkView.cpp" />
-    <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp" />
-    <ClCompile Include="..\src\cinder\app\winrt\WindowImplWinRt.cpp" />
-    <ClCompile Include="..\src\cinder\Area.cpp" />
-    <ClCompile Include="..\src\cinder\audio\ChannelRouterNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Context.cpp">
+    <ClCompile Include="..\..\src\cinder\app\AppBase.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\KeyEvent.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\msw\RendererImplGlAngle.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\Platform.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\Renderer.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\RendererGl.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\Window.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\winrt\AppWinRt.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\winrt\CinderFrameworkView.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\winrt\PlatformWinRt.cpp" />
+    <ClCompile Include="..\..\src\cinder\app\winrt\WindowImplWinRt.cpp" />
+    <ClCompile Include="..\..\src\cinder\Area.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\ChannelRouterNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\Context.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\AudioContext.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)\AudioContext.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)\AudioContext.obj</ObjectFileName>
@@ -246,20 +246,20 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\AudioContext.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)\AudioContext.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\DelayNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Device.cpp" />
-    <ClCompile Include="..\src\cinder\audio\dsp\Biquad.cpp" />
-    <ClCompile Include="..\src\cinder\audio\dsp\Converter.cpp" />
-    <ClCompile Include="..\src\cinder\audio\dsp\ConverterR8brain.cpp" />
-    <ClCompile Include="..\src\cinder\audio\dsp\Dsp.cpp" />
-    <ClCompile Include="..\src\cinder\audio\dsp\Fft.cpp" />
-    <ClCompile Include="..\src\cinder\audio\dsp\ooura\fftsg.cpp" />
-    <ClCompile Include="..\src\cinder\audio\FileOggVorbis.cpp" />
-    <ClCompile Include="..\src\cinder\audio\FilterNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\GenNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\InputNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\MonitorNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\msw\ContextWasapi.cpp">
+    <ClCompile Include="..\..\src\cinder\audio\DelayNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\Device.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\dsp\Biquad.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\dsp\Converter.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\dsp\ConverterR8brain.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\dsp\Dsp.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\dsp\Fft.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\dsp\ooura\fftsg.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\FileOggVorbis.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\FilterNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\GenNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\InputNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\MonitorNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\msw\ContextWasapi.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
@@ -267,7 +267,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\msw\DeviceManagerWasapi.cpp">
+    <ClCompile Include="..\..\src\cinder\audio\msw\DeviceManagerWasapi.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
@@ -275,7 +275,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\msw\FileMediaFoundation.cpp">
+    <ClCompile Include="..\..\src\cinder\audio\msw\FileMediaFoundation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
@@ -283,17 +283,17 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\msw\MswUtil.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Node.cpp" />
-    <ClCompile Include="..\src\cinder\audio\NodeMath.cpp" />
-    <ClCompile Include="..\src\cinder\audio\OutputNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\PanNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Param.cpp" />
-    <ClCompile Include="..\src\cinder\audio\SamplePlayerNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\SampleRecorderNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Source.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Target.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Utilities.cpp">
+    <ClCompile Include="..\..\src\cinder\audio\msw\MswUtil.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\Node.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\NodeMath.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\OutputNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\PanNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\Param.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\SamplePlayerNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\SampleRecorderNode.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\Source.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\Target.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\Utilities.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\AudioUtilities.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)\AudioUtilities.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(IntDir)\AudioUtilities.obj</ObjectFileName>
@@ -301,75 +301,75 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\AudioUtilities.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)\AudioUtilities.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\Voice.cpp" />
-    <ClCompile Include="..\src\cinder\audio\WaveTable.cpp" />
-    <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
-    <ClCompile Include="..\src\cinder\Base64.cpp" />
-    <ClCompile Include="..\src\cinder\BSpline.cpp" />
-    <ClCompile Include="..\src\cinder\BSplineFit.cpp" />
-    <ClCompile Include="..\src\cinder\Buffer.cpp" />
-    <ClCompile Include="..\src\cinder\Camera.cpp" />
-    <ClCompile Include="..\src\cinder\CameraUi.cpp" />
-    <ClCompile Include="..\src\cinder\Channel.cpp" />
-    <ClCompile Include="..\src\cinder\CinderAssert.cpp" />
-    <ClCompile Include="..\src\cinder\CinderMath.cpp" />
-    <ClCompile Include="..\src\cinder\Color.cpp" />
-    <ClCompile Include="..\src\cinder\ConvexHull.cpp" />
-    <ClCompile Include="..\src\cinder\DataSource.cpp" />
-    <ClCompile Include="..\src\cinder\DataTarget.cpp" />
-    <ClCompile Include="..\src\cinder\Display.cpp" />
-    <ClCompile Include="..\src\cinder\Exception.cpp" />
-    <ClCompile Include="..\src\cinder\Font.cpp" />
-    <ClCompile Include="..\src\cinder\Frustum.cpp" />
-    <ClCompile Include="..\src\cinder\GeomIo.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Batch.cpp" />
-    <ClCompile Include="..\src\cinder\gl\BufferObj.cpp" />
-    <ClCompile Include="..\src\cinder\gl\BufferTexture.cpp" />
-    <ClCompile Include="..\src\cinder\gl\ConstantConversions.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Context.cpp" />
-    <ClCompile Include="..\src\cinder\gl\draw.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Environment.cpp" />
-    <ClCompile Include="..\src\cinder\gl\EnvironmentCore.cpp" />
-    <ClCompile Include="..\src\cinder\gl\EnvironmentEs.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Fbo.cpp" />
-    <ClCompile Include="..\src\cinder\gl\GlslProg.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Pbo.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Query.cpp" />
-    <ClCompile Include="..\src\cinder\gl\scoped.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Shader.cpp" />
-    <ClCompile Include="..\src\cinder\gl\ShaderPreprocessor.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Sync.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Texture.cpp" />
-    <ClCompile Include="..\src\cinder\gl\TextureFont.cpp" />
-    <ClCompile Include="..\src\cinder\gl\TextureFormatParsers.cpp" />
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Ubo.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Vao.cpp" />
-    <ClCompile Include="..\src\cinder\gl\VaoImplCore.cpp" />
-    <ClCompile Include="..\src\cinder\gl\VaoImplEs.cpp" />
-    <ClCompile Include="..\src\cinder\gl\VaoImplSoftware.cpp" />
-    <ClCompile Include="..\src\cinder\gl\Vbo.cpp" />
-    <ClCompile Include="..\src\cinder\gl\VboMesh.cpp" />
-    <ClCompile Include="..\src\cinder\gl\wrapper.cpp" />
-    <ClCompile Include="..\src\cinder\ImageFileTinyExr.cpp" />
-    <ClCompile Include="..\src\cinder\ImageIo.cpp" />
-    <ClCompile Include="..\src\cinder\ImageSourceFileRadiance.cpp" />
-    <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
-    <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Blend.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Blur.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Checkerboard.cpp" />
-    <ClCompile Include="..\src\cinder\ip\EdgeDetect.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Fill.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Flip.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Grayscale.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Hdr.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Premultiply.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Resize.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Threshold.cpp" />
-    <ClCompile Include="..\src\cinder\ip\Trim.cpp" />
-    <ClCompile Include="..\src\cinder\Json.cpp" />
-    <ClCompile Include="..\src\cinder\Log.cpp">
+    <ClCompile Include="..\..\src\cinder\audio\Voice.cpp" />
+    <ClCompile Include="..\..\src\cinder\audio\WaveTable.cpp" />
+    <ClCompile Include="..\..\src\cinder\BandedMatrix.cpp" />
+    <ClCompile Include="..\..\src\cinder\Base64.cpp" />
+    <ClCompile Include="..\..\src\cinder\BSpline.cpp" />
+    <ClCompile Include="..\..\src\cinder\BSplineFit.cpp" />
+    <ClCompile Include="..\..\src\cinder\Buffer.cpp" />
+    <ClCompile Include="..\..\src\cinder\Camera.cpp" />
+    <ClCompile Include="..\..\src\cinder\CameraUi.cpp" />
+    <ClCompile Include="..\..\src\cinder\Channel.cpp" />
+    <ClCompile Include="..\..\src\cinder\CinderAssert.cpp" />
+    <ClCompile Include="..\..\src\cinder\CinderMath.cpp" />
+    <ClCompile Include="..\..\src\cinder\Color.cpp" />
+    <ClCompile Include="..\..\src\cinder\ConvexHull.cpp" />
+    <ClCompile Include="..\..\src\cinder\DataSource.cpp" />
+    <ClCompile Include="..\..\src\cinder\DataTarget.cpp" />
+    <ClCompile Include="..\..\src\cinder\Display.cpp" />
+    <ClCompile Include="..\..\src\cinder\Exception.cpp" />
+    <ClCompile Include="..\..\src\cinder\Font.cpp" />
+    <ClCompile Include="..\..\src\cinder\Frustum.cpp" />
+    <ClCompile Include="..\..\src\cinder\GeomIo.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Batch.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\BufferObj.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\BufferTexture.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\ConstantConversions.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Context.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\draw.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Environment.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\EnvironmentCore.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\EnvironmentEs.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Fbo.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\GlslProg.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Pbo.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Query.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\scoped.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Shader.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\ShaderPreprocessor.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Sync.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Texture.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\TextureFont.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\TextureFormatParsers.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\TransformFeedbackObj.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Ubo.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Vao.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\VaoImplCore.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\VaoImplEs.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\VaoImplSoftware.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\Vbo.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\VboMesh.cpp" />
+    <ClCompile Include="..\..\src\cinder\gl\wrapper.cpp" />
+    <ClCompile Include="..\..\src\cinder\ImageFileTinyExr.cpp" />
+    <ClCompile Include="..\..\src\cinder\ImageIo.cpp" />
+    <ClCompile Include="..\..\src\cinder\ImageSourceFileRadiance.cpp" />
+    <ClCompile Include="..\..\src\cinder\ImageSourceFileWic.cpp" />
+    <ClCompile Include="..\..\src\cinder\ImageTargetFileWic.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Blend.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Blur.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Checkerboard.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\EdgeDetect.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Fill.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Flip.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Grayscale.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Hdr.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Premultiply.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Resize.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Threshold.cpp" />
+    <ClCompile Include="..\..\src\cinder\ip\Trim.cpp" />
+    <ClCompile Include="..\..\src\cinder\Json.cpp" />
+    <ClCompile Include="..\..\src\cinder\Log.cpp">
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</BufferSecurityCheck>
@@ -377,33 +377,33 @@
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</BufferSecurityCheck>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\Matrix.cpp" />
-    <ClCompile Include="..\src\cinder\msw\CinderMsw.cpp" />
-    <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
-    <ClCompile Include="..\src\cinder\Path2d.cpp" />
-    <ClCompile Include="..\src\cinder\Perlin.cpp" />
-    <ClCompile Include="..\src\cinder\Plane.cpp" />
-    <ClCompile Include="..\src\cinder\PolyLine.cpp" />
-    <ClCompile Include="..\src\cinder\Rand.cpp" />
-    <ClCompile Include="..\src\cinder\Ray.cpp" />
-    <ClCompile Include="..\src\cinder\Rect.cpp" />
-    <ClCompile Include="..\src\cinder\Shape2d.cpp" />
-    <ClCompile Include="..\src\cinder\Signals.cpp" />
-    <ClCompile Include="..\src\cinder\Sphere.cpp" />
-    <ClCompile Include="..\src\cinder\Stream.cpp" />
-    <ClCompile Include="..\src\cinder\Surface.cpp" />
-    <ClCompile Include="..\src\cinder\svg\Svg.cpp" />
-    <ClCompile Include="..\src\cinder\System.cpp" />
-    <ClCompile Include="..\src\cinder\Text.cpp" />
-    <ClCompile Include="..\src\cinder\Timeline.cpp" />
-    <ClCompile Include="..\src\cinder\TimelineItem.cpp" />
-    <ClCompile Include="..\src\cinder\Timer.cpp" />
-    <ClCompile Include="..\src\cinder\Triangulate.cpp" />
-    <ClCompile Include="..\src\cinder\TriMesh.cpp" />
-    <ClCompile Include="..\src\cinder\Tween.cpp" />
-    <ClCompile Include="..\src\cinder\Unicode.cpp" />
-    <ClCompile Include="..\src\cinder\Url.cpp" />
-    <ClCompile Include="..\src\cinder\Utilities.cpp">
+    <ClCompile Include="..\..\src\cinder\Matrix.cpp" />
+    <ClCompile Include="..\..\src\cinder\msw\CinderMsw.cpp" />
+    <ClCompile Include="..\..\src\cinder\ObjLoader.cpp" />
+    <ClCompile Include="..\..\src\cinder\Path2d.cpp" />
+    <ClCompile Include="..\..\src\cinder\Perlin.cpp" />
+    <ClCompile Include="..\..\src\cinder\Plane.cpp" />
+    <ClCompile Include="..\..\src\cinder\PolyLine.cpp" />
+    <ClCompile Include="..\..\src\cinder\Rand.cpp" />
+    <ClCompile Include="..\..\src\cinder\Ray.cpp" />
+    <ClCompile Include="..\..\src\cinder\Rect.cpp" />
+    <ClCompile Include="..\..\src\cinder\Shape2d.cpp" />
+    <ClCompile Include="..\..\src\cinder\Signals.cpp" />
+    <ClCompile Include="..\..\src\cinder\Sphere.cpp" />
+    <ClCompile Include="..\..\src\cinder\Stream.cpp" />
+    <ClCompile Include="..\..\src\cinder\Surface.cpp" />
+    <ClCompile Include="..\..\src\cinder\svg\Svg.cpp" />
+    <ClCompile Include="..\..\src\cinder\System.cpp" />
+    <ClCompile Include="..\..\src\cinder\Text.cpp" />
+    <ClCompile Include="..\..\src\cinder\Timeline.cpp" />
+    <ClCompile Include="..\..\src\cinder\TimelineItem.cpp" />
+    <ClCompile Include="..\..\src\cinder\Timer.cpp" />
+    <ClCompile Include="..\..\src\cinder\Triangulate.cpp" />
+    <ClCompile Include="..\..\src\cinder\TriMesh.cpp" />
+    <ClCompile Include="..\..\src\cinder\Tween.cpp" />
+    <ClCompile Include="..\..\src\cinder\Unicode.cpp" />
+    <ClCompile Include="..\..\src\cinder\Url.cpp" />
+    <ClCompile Include="..\..\src\cinder\Utilities.cpp">
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</BufferSecurityCheck>
@@ -411,10 +411,10 @@
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</BufferSecurityCheck>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\winrt\FontEnumerator.cpp" />
-    <ClCompile Include="..\src\cinder\winrt\WinRTUtils.cpp" />
-    <ClCompile Include="..\src\cinder\Xml.cpp" />
-    <ClCompile Include="..\src\freetype\autofit\autofit.c">
+    <ClCompile Include="..\..\src\cinder\winrt\FontEnumerator.cpp" />
+    <ClCompile Include="..\..\src\cinder\winrt\WinRTUtils.cpp" />
+    <ClCompile Include="..\..\src\cinder\Xml.cpp" />
+    <ClCompile Include="..\..\src\freetype\autofit\autofit.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -422,7 +422,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftbase.c">
+    <ClCompile Include="..\..\src\freetype\base\ftbase.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -430,7 +430,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftbbox.c">
+    <ClCompile Include="..\..\src\freetype\base\ftbbox.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -438,7 +438,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftbdf.c">
+    <ClCompile Include="..\..\src\freetype\base\ftbdf.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -446,7 +446,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftbitmap.c">
+    <ClCompile Include="..\..\src\freetype\base\ftbitmap.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -454,7 +454,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftcid.c">
+    <ClCompile Include="..\..\src\freetype\base\ftcid.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -462,7 +462,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftdebug.c">
+    <ClCompile Include="..\..\src\freetype\base\ftdebug.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -470,7 +470,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftfstype.c">
+    <ClCompile Include="..\..\src\freetype\base\ftfstype.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -478,7 +478,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftgasp.c">
+    <ClCompile Include="..\..\src\freetype\base\ftgasp.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -486,7 +486,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftglyph.c">
+    <ClCompile Include="..\..\src\freetype\base\ftglyph.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -494,7 +494,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftgxval.c">
+    <ClCompile Include="..\..\src\freetype\base\ftgxval.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -502,7 +502,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftinit.c">
+    <ClCompile Include="..\..\src\freetype\base\ftinit.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -510,7 +510,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftlcdfil.c">
+    <ClCompile Include="..\..\src\freetype\base\ftlcdfil.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -518,7 +518,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftmm.c">
+    <ClCompile Include="..\..\src\freetype\base\ftmm.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -526,7 +526,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftotval.c">
+    <ClCompile Include="..\..\src\freetype\base\ftotval.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -534,7 +534,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftpatent.c">
+    <ClCompile Include="..\..\src\freetype\base\ftpatent.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -542,7 +542,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftpfr.c">
+    <ClCompile Include="..\..\src\freetype\base\ftpfr.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -550,7 +550,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftstroke.c">
+    <ClCompile Include="..\..\src\freetype\base\ftstroke.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -558,7 +558,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftsynth.c">
+    <ClCompile Include="..\..\src\freetype\base\ftsynth.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -566,7 +566,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftsystem.c">
+    <ClCompile Include="..\..\src\freetype\base\ftsystem.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -581,7 +581,7 @@
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BufferSecurityCheck>
       <SDLCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</SDLCheck>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\fttype1.c">
+    <ClCompile Include="..\..\src\freetype\base\fttype1.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -589,7 +589,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\base\ftwinfnt.c">
+    <ClCompile Include="..\..\src\freetype\base\ftwinfnt.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -597,7 +597,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\bdf\bdf.c">
+    <ClCompile Include="..\..\src\freetype\bdf\bdf.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -605,7 +605,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\bdf\bdflib.c">
+    <ClCompile Include="..\..\src\freetype\bdf\bdflib.c">
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BufferSecurityCheck>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -621,7 +621,7 @@
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4996</DisableSpecificWarnings>
       <SDLCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</SDLCheck>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\bzip2\ftbzip2.c">
+    <ClCompile Include="..\..\src\freetype\bzip2\ftbzip2.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -629,7 +629,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\cache\ftcache.c">
+    <ClCompile Include="..\..\src\freetype\cache\ftcache.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -637,7 +637,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\cff\cff.c">
+    <ClCompile Include="..\..\src\freetype\cff\cff.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -645,7 +645,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\cid\type1cid.c">
+    <ClCompile Include="..\..\src\freetype\cid\type1cid.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -653,7 +653,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\gxvalid\gxvalid.c">
+    <ClCompile Include="..\..\src\freetype\gxvalid\gxvalid.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -661,7 +661,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\gzip\ftgzip.c">
+    <ClCompile Include="..\..\src\freetype\gzip\ftgzip.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -669,7 +669,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\lzw\ftlzw.c">
+    <ClCompile Include="..\..\src\freetype\lzw\ftlzw.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -677,7 +677,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\otvalid\otvalid.c">
+    <ClCompile Include="..\..\src\freetype\otvalid\otvalid.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -685,7 +685,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\pcf\pcf.c">
+    <ClCompile Include="..\..\src\freetype\pcf\pcf.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -693,7 +693,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\pfr\pfr.c">
+    <ClCompile Include="..\..\src\freetype\pfr\pfr.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -701,7 +701,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\psaux\psaux.c">
+    <ClCompile Include="..\..\src\freetype\psaux\psaux.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -709,7 +709,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\pshinter\pshinter.c">
+    <ClCompile Include="..\..\src\freetype\pshinter\pshinter.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -717,7 +717,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\psnames\psnames.c">
+    <ClCompile Include="..\..\src\freetype\psnames\psnames.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -725,7 +725,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\raster\raster.c">
+    <ClCompile Include="..\..\src\freetype\raster\raster.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -733,7 +733,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\sfnt\sfnt.c">
+    <ClCompile Include="..\..\src\freetype\sfnt\sfnt.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -741,7 +741,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\smooth\smooth.c">
+    <ClCompile Include="..\..\src\freetype\smooth\smooth.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BufferSecurityCheck>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -750,7 +750,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\truetype\truetype.c">
+    <ClCompile Include="..\..\src\freetype\truetype\truetype.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -758,7 +758,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\type1\type1.c">
+    <ClCompile Include="..\..\src\freetype\type1\type1.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -766,7 +766,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\type42\type42.c">
+    <ClCompile Include="..\..\src\freetype\type42\type42.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -774,7 +774,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\freetype\winfonts\winfnt.c">
+    <ClCompile Include="..\..\src\freetype\winfonts\winfnt.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -789,7 +789,7 @@
       <FunctionLevelLinking Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</FunctionLevelLinking>
       <FunctionLevelLinking Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</FunctionLevelLinking>
     </ClCompile>
-    <ClCompile Include="..\src\libtess2\bucketalloc.c">
+    <ClCompile Include="..\..\src\libtess2\bucketalloc.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -797,7 +797,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\libtess2\dict.c">
+    <ClCompile Include="..\..\src\libtess2\dict.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -805,7 +805,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\libtess2\geom.c">
+    <ClCompile Include="..\..\src\libtess2\geom.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -813,7 +813,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\libtess2\mesh.c">
+    <ClCompile Include="..\..\src\libtess2\mesh.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -821,7 +821,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\libtess2\priorityq.c">
+    <ClCompile Include="..\..\src\libtess2\priorityq.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -829,7 +829,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\libtess2\sweep.c">
+    <ClCompile Include="..\..\src\libtess2\sweep.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -837,7 +837,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\libtess2\tess.c">
+    <ClCompile Include="..\..\src\libtess2\tess.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -845,7 +845,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\linebreak\linebreak.c">
+    <ClCompile Include="..\..\src\linebreak\linebreak.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -853,7 +853,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\linebreak\linebreakdata.c">
+    <ClCompile Include="..\..\src\linebreak\linebreakdata.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -861,7 +861,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\linebreak\linebreakdef.c">
+    <ClCompile Include="..\..\src\linebreak\linebreakdef.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -869,8 +869,8 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\r8brain\r8bbase.cpp" />
-    <ClCompile Include="..\src\tinyexr\tinyexr.cc">
+    <ClCompile Include="..\..\src\r8brain\r8bbase.cpp" />
+    <ClCompile Include="..\..\src\tinyexr\tinyexr.cc">
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</BufferSecurityCheck>
@@ -878,7 +878,7 @@
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</BufferSecurityCheck>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\adler32.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\adler32.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -886,7 +886,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\compress.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\compress.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -894,7 +894,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\crc32.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\crc32.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -902,7 +902,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\deflate.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\deflate.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -910,7 +910,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\gzio.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\gzio.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -924,7 +924,7 @@
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</BufferSecurityCheck>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\infback.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\infback.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -932,7 +932,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\inffast.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\inffast.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -940,7 +940,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\inflate.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\inflate.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -948,7 +948,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\inftrees.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\inftrees.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -956,7 +956,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\trees.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\trees.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -964,7 +964,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\uncompr.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\uncompr.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -972,7 +972,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="..\src\zlib-1.2.3\zutil.c">
+    <ClCompile Include="..\..\src\zlib-1.2.3\zutil.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
@@ -1055,39 +1055,39 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
-    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <OutDir>..\..\lib\msw-uwp\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
-    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
+    <OutDir>..\..\lib\msw-uwp\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
-    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <OutDir>..\..\lib\msw-uwp\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
-    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
+    <OutDir>..\..\lib\msw-uwp\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
-    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <OutDir>..\..\lib\msw-uwp\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
-    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
+    <OutDir>..\..\lib\msw-uwp\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -1095,7 +1095,8 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib-1.2.3;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1112,7 +1113,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib-1.2.3;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1129,7 +1130,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib-1.2.3;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1146,7 +1147,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib-1.2.3;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1163,7 +1164,8 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib-1.2.3;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -1180,7 +1182,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;..\include\tinyexr;..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\AntTweakBar;..\..\include\cinder;..\..\include;..\..\src\linebreak;..\..\src\zlib-1.2.3;..\..\include\ANGLE;..\..\src\r8brain;..\..\include\oggvorbis;..\..\include\tinyexr;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

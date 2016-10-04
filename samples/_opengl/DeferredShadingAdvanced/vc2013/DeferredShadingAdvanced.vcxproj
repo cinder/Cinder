@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{300BC54D-132A-4D01-A591-FF8F3EB42467}</ProjectGuid>
+    <ProjectGuid>{2B5C97B5-AE63-4B7F-8FB6-FDA4ADA8FF28}</ProjectGuid>
     <RootNamespace>DeferredShadingAdvanced</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>DeferredShadingAdvanced</ProjectName>
@@ -102,8 +102,8 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset)_d.lib;%(AdditionalDependencies);OpenGL32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>"..\..\..\..\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies);OpenGL32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -129,8 +129,8 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset)_d.lib;%(AdditionalDependencies);OpenGL32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>"..\..\..\..\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies);OpenGL32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -156,8 +156,8 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies);OpenGL32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>"..\..\..\..\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies);OpenGL32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
@@ -186,8 +186,8 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies);OpenGL32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>"..\..\..\..\lib\msw\$(PlatformTarget)"</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies);OpenGL32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <SubSystem>Windows</SubSystem>

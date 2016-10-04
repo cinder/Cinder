@@ -244,7 +244,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/libcinder_d.a";
+				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a";
 				PRODUCT_NAME = FboBasic;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -268,7 +268,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/libcinder.a";
+				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a";
 				PRODUCT_NAME = FboBasic;
 				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
