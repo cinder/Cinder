@@ -230,7 +230,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/bin;
 				OTHER_LDFLAGS = (
-					"$(CINDER_PATH)/lib/libcinder_d.a",
+					"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a",
 					"-lz",
 				);
 				PRODUCT_NAME = mathTest;
@@ -246,7 +246,7 @@
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/bin;
 				OTHER_LDFLAGS = (
-					"$(CINDER_PATH)/lib/libcinder.a",
+					"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a",
 					"-lz",
 				);
 				PRODUCT_NAME = mathTest;

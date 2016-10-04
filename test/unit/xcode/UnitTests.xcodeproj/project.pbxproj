@@ -332,7 +332,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
-					"$(CINDER_PATH)/lib/libcinder_d.a",
+					"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a",
 					"-lcurl",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -371,7 +371,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
-					"$(CINDER_PATH)/lib/libcinder.a",
+					"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a",
 					"-lcurl",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
