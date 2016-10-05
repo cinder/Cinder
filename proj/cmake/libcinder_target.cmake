@@ -25,7 +25,6 @@ target_include_directories( cinder BEFORE PRIVATE ${CINDER_INCLUDE_USER_PRIVATE}
 target_include_directories( cinder SYSTEM BEFORE PRIVATE ${CINDER_INCLUDE_SYSTEM_PRIVATE} )
 
 target_link_libraries( cinder PUBLIC ${CINDER_LIBS_DEPENDS}  )
-target_link_libraries( cinder LINK_PRIVATE Ws2_32.lib  )
 
 target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
 
