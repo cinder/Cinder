@@ -54,12 +54,6 @@ ImageTargetRef ImageTargetFileStbImage::create( DataTargetRef dataTarget, ImageS
 ImageTargetFileStbImage::ImageTargetFileStbImage( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData )
 	: mDataTarget( dataTarget )
 {
-	//if( ! dataTarget->providesFilePath() ) {
-	//	throw ImageIoExceptionFailedWrite( "ImageTargetFileStbImage only supports writing to files." );
-	//}
-
-	//mFilePath = dataTarget->getFilePath();
-
 	if( ! ( mDataTarget->providesFilePath() || mDataTarget->getStream() ) ) {
 		throw ImageIoExceptionFailedWrite( "No file path or stream provided" );
 	}
