@@ -22,6 +22,7 @@
 */
 
 #include "cinder/ImageTargetFileStbImage.h"
+#include "cinder/Log.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_STATIC
@@ -51,12 +52,11 @@ ImageTargetRef ImageTargetFileStbImage::create( DataTargetRef dataTarget, ImageS
 }
 
 ImageTargetFileStbImage::ImageTargetFileStbImage( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData )
+	: mDataTarget( dataTarget )
 {
-	if( ! dataTarget->providesFilePath() ) {
-		throw ImageIoExceptionFailedWrite( "ImageTargetFileStbImage only supports writing to files." );
+	if( ! ( mDataTarget->providesFilePath() || mDataTarget->getStream() ) ) {
+		throw ImageIoExceptionFailedWrite( "No file path or stream provided" );
 	}
-
-	mFilePath = dataTarget->getFilePath();
 
 	setSize( imageSource->getWidth(), imageSource->getHeight() );
 	ImageIo::ColorModel cm = options.isColorModelDefault() ? imageSource->getColorModel() : options.getColorModel();
@@ -85,6 +85,10 @@ ImageTargetFileStbImage::ImageTargetFileStbImage( DataTargetRef dataTarget, Imag
 		setDataType( ImageIo::DataType::UINT8 );
 		mRowBytes = mNumComponents * imageSource->getWidth() * sizeof(float);
 	}
+
+	if( mDataTarget->providesFilePath() ) {
+		mFilePath = dataTarget->getFilePath();
+	}
 	
 	mData = std::unique_ptr<uint8_t[]>( new uint8_t[mHeight * mRowBytes] );
 }
@@ -94,23 +98,50 @@ void* ImageTargetFileStbImage::getRowPointer( int32_t row )
 	return &mData.get()[row * mRowBytes];
 }
 
+void stbWriteToStream( void *context, void *data, int size )
+{
+	OStream *stream = reinterpret_cast<OStream *>( context );
+	stream->writeData( data, static_cast<size_t>( size ) );
+}
+
 void ImageTargetFileStbImage::finalize()
 {
-	if( mExtension == "png" ) {
-		if( ! stbi_write_png( mFilePath.string().c_str(), (int)mWidth, (int)mHeight, mNumComponents, mData.get(), (int)mRowBytes ) )
-			throw ImageIoExceptionFailedWrite();
+	if( ! mFilePath.empty() ) {
+		if( mExtension == "png" ) {
+			if( ! stbi_write_png( mFilePath.string().c_str(), (int)mWidth, (int)mHeight, mNumComponents, mData.get(), (int)mRowBytes ) )
+				throw ImageIoExceptionFailedWrite();
+		}
+		else if( mExtension == "bmp" ) {
+			if( ! stbi_write_bmp( mFilePath.string().c_str(), (int)mWidth, (int)mHeight, mNumComponents, mData.get() ) )
+				throw ImageIoExceptionFailedWrite();
+		}
+		else if( mExtension == "tga" ) {
+			if( ! stbi_write_tga( mFilePath.string().c_str(), (int)mWidth, (int)mHeight, mNumComponents, mData.get() ) )
+				throw ImageIoExceptionFailedWrite();
+		}
+		else if( mExtension == "hdr" ) {
+			if( ! stbi_write_hdr( mFilePath.string().c_str(), (int)mWidth, (int)mHeight, mNumComponents, (const float*)mData.get() ) )
+				throw ImageIoExceptionFailedWrite();
+		}
 	}
-	else if( mExtension == "bmp" ) {
-		if( ! stbi_write_bmp( mFilePath.string().c_str(), (int)mWidth, (int)mHeight, mNumComponents, mData.get() ) )
-			throw ImageIoExceptionFailedWrite();
-	}
-	else if( mExtension == "tga" ) {
-		if( ! stbi_write_tga( mFilePath.string().c_str(), (int)mWidth, (int)mHeight, mNumComponents, mData.get() ) )
-			throw ImageIoExceptionFailedWrite();
-	}
-	else if( mExtension == "hdr" ) {
-		if( ! stbi_write_hdr( mFilePath.string().c_str(), (int)mWidth, (int)mHeight, mNumComponents, (const float*)mData.get() ) )
-			throw ImageIoExceptionFailedWrite();
+	else {
+		OStream *stream = mDataTarget->getStream().get();
+		if( mExtension == "png" ) {
+			if( ! stbi_write_png_to_func( stbWriteToStream, stream, (int)mWidth, (int)mHeight, mNumComponents, mData.get(), (int)mRowBytes ) )
+				throw ImageIoExceptionFailedWrite();
+		}
+		else if( mExtension == "bmp" ) {
+			if( ! stbi_write_bmp_to_func( stbWriteToStream, stream, (int)mWidth, (int)mHeight, mNumComponents, mData.get() ) )
+				throw ImageIoExceptionFailedWrite();
+		}
+		else if( mExtension == "tga" ) {
+			if( ! stbi_write_tga_to_func( stbWriteToStream, stream, (int)mWidth, (int)mHeight, mNumComponents, mData.get() ) )
+				throw ImageIoExceptionFailedWrite();
+		}
+		else if( mExtension == "hdr" ) {
+			if( ! stbi_write_hdr_to_func( stbWriteToStream, stream, (int)mWidth, (int)mHeight, mNumComponents, (const float*)mData.get() ) )
+				throw ImageIoExceptionFailedWrite();
+		}
 	}
 }
 
