@@ -46,6 +46,7 @@ class ImageTargetFileStbImage : public ImageTarget {
 	std::string					mExtension;
 	fs::path					mFilePath;
 	std::unique_ptr<uint8_t[]>	mData;
+	DataTargetRef				mDataTarget;
 };
 
 } // namespace cinder
