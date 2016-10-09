@@ -42,8 +42,11 @@ class GstPlayerTestApp : public App {
 	void testSeek();
 	void newSeek();
 
-        void testStepForward();
-        void newStepFwd();
+    void testStepForward();
+    void newStepFwd();
+
+    void testReload();
+    void newLoad();
 
 	void testCurrentCase();
 
@@ -61,13 +64,19 @@ class GstPlayerTestApp : public App {
 	bool			mRandomizeSeekRate  = true;
 	double 			mTimeLastSeekTrigger;
 
-        // Step
+    // Step
 	double 			mTriggerStepFwdRate    = 4.0;
 	bool			mRandomizeStepFwdRate  = true;
 	double 			mTimeLastStepFwdTrigger;
-        float                   mLastStepPosition   = 0.0f;
+	float           mLastStepPosition   = 0.0f;
 
-	TestCase		mCurrentTestCase = TEST_NONE;
+    // Reload
+    double          mTriggerReloadRate = 4.0;
+    bool            mRandomizeReloadRate = true;
+    double          mTimeLastReloadTrigger;
+    std::vector<fs::path> mReloadPaths;
+
+	TestCase		mCurrentTestCase = TEST_RELOADING;
 
 };
 
@@ -87,6 +96,8 @@ void GstPlayerTestApp::setup()
 	fs::path moviePath = getAssetPath( "bbb.mp4" );
 	if( ! moviePath.empty() )
 		loadMovieFile( moviePath );
+    mReloadPaths.push_back( getAssetPath( "bbb.mp4" ) );
+    mReloadPaths.push_back( "http://docs.gstreamer.com/media/sintel_trailer-480p.webm" );
 	mTriggerTimer.start();
 	mTimeLastPlayPauseTrigger = mTriggerTimer.getSeconds();
 }
@@ -107,6 +118,11 @@ void GstPlayerTestApp::testCurrentCase()
         case TEST_STEP_FORWARD:
         {
             testStepForward();
+            break;
+        }
+        case TEST_RELOADING:
+        {
+            testReload();
             break;
         }
         default:
@@ -170,6 +186,24 @@ void GstPlayerTestApp::newSeek()
     CI_LOG_I( "NEW SEEK JUMP TO : " << jumpTo );
     mMovie->seekToTime( jumpTo );
     CI_LOG_I( "---------- NEW SEEK END ----------" );
+}
+
+void GstPlayerTestApp::testReload()
+{
+    auto now = mTriggerTimer.getSeconds();
+    if( now - mTimeLastReloadTrigger >= mTriggerReloadRate ) {
+        newLoad();
+        mTimeLastReloadTrigger = now;
+        if( mRandomizeReloadRate ) mTriggerReloadRate = randFloat( 31.5f, 61.f );
+    }
+}
+
+void GstPlayerTestApp::newLoad()
+{
+    static int currentMovieIndex = 0;
+    fs::path movieToLoad = mReloadPaths[ currentMovieIndex % 2 ];
+    currentMovieIndex++;
+    loadMovieFile( movieToLoad );
 }
 
 void GstPlayerTestApp::testStepForward()
