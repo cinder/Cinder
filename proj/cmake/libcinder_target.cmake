@@ -28,35 +28,44 @@ target_link_libraries( cinder PUBLIC ${CINDER_LIBS_DEPENDS}  )
 
 target_compile_definitions( cinder PUBLIC ${CINDER_DEFINES} )
 
-# MSVC specific options
-if( MSVC )
-	# Force the library output directory
-    set_target_properties( cinder PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG				"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Debug/$(PlatformToolset)" )	
-    set_target_properties( cinder PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE			"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
-    set_target_properties( cinder PROPERTIES LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL		"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
-    set_target_properties( cinder PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
-	# Force the archive output directory
-    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG				"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Debug/$(PlatformToolset)" )	
-    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE			"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
-    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL		"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )	
-    set_target_properties( cinder PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/Release/$(PlatformToolset)" )
-	# Remove and set default libs to shut up link warnings 
-	#set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS "/REMOVE:LIBCMT /REMOVE:LIBCPMT /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT C:\\Users\\hai\\code\\cinder\\cinder_chaoticbob_android_linux\\lib\\msw\\x64\\libboost_filesystem-vc120-mt-sgd-1_60.lib C:\\Users\\hai\\code\\cinder\\cinder_chaoticbob_android_linux\\lib\\msw\\x64\\libboost_system-vc120-mt-sgd-1_60.lib C:\\Users\\hai\\code\\cinder\\cinder_chaoticbob_android_linux\\lib\\msw\\x64\\zlib.lib \"shlwapi.lib\"" )
-endif()
-
+# Visual Studio and Xcode generators adds a ${CMAKE_BUILD_TYPE} to the ARCHIVE 
+# and LIBRARY directories. Override the directories so, ${CMAKE_BUILD_TYPE} doesn't double up.
 if( CINDER_MSW )
-    set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS_DEBUG					"${CINDER_STATIC_LIBS_FLAGS_DEBUG} ${CINDER_STATIC_LIBS_DEPENDS_DEBUG}" )
-    set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE				"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}" )
-    set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS_MINSIZEREL			"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}" )
-    set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS_RELWITHDEBINFO		"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}" )    
-elseif( CINDER_MAC OR CINDER_COCOA_TOUCH )
-    set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS					    "${CINDER_STATIC_LIBS_DEPENDS}" )
+    set( OUTPUT_DIRECTORY_BASE "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
+    set_target_properties( cinder PROPERTIES 
+        ARCHIVE_OUTPUT_DIRECTORY_DEBUG			"${OUTPUT_DIRECTORY_BASE}/Debug/$(PlatformToolset)"
+        ARCHIVE_OUTPUT_DIRECTORY_RELEASE		"${OUTPUT_DIRECTORY_BASE}/Release/$(PlatformToolset)"
+        ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL		"${OUTPUT_DIRECTORY_BASE}/MinSizeRel/$(PlatformToolset)"
+        ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${OUTPUT_DIRECTORY_BASE}/RelWithDebInfo/$(PlatformToolset)"
+        LIBRARY_OUTPUT_DIRECTORY_DEBUG			"${OUTPUT_DIRECTORY_BASE}/Debug/$(PlatformToolset)"
+        LIBRARY_OUTPUT_DIRECTORY_RELEASE		"${OUTPUT_DIRECTORY_BASE}/Release/$(PlatformToolset)"
+        LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL		"${OUTPUT_DIRECTORY_BASE}/MinSizeRel/$(PlatformToolset)"
+        LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${OUTPUT_DIRECTORY_BASE}/RelWithDebInfo/$(PlatformToolset)"
+        STATIC_LIBRARY_FLAGS_DEBUG				"${CINDER_STATIC_LIBS_FLAGS_DEBUG} ${CINDER_STATIC_LIBS_DEPENDS_DEBUG}" 
+        STATIC_LIBRARY_FLAGS_RELEASE			"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}"
+        STATIC_LIBRARY_FLAGS_MINSIZEREL			"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}"
+        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO		"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}" 
+    )    
+elseif( CINDER_MAC )
+    set( OUTPUT_DIRECTORY_BASE "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
+    set_target_properties( cinder PROPERTIES 
+		LIBRARY_OUTPUT_DIRECTORY_DEBUG			"${OUTPUT_DIRECTORY_BASE}/Debug"
+		LIBRARY_OUTPUT_DIRECTORY_RELEASE		"${OUTPUT_DIRECTORY_BASE}/Release"
+		LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL		"${OUTPUT_DIRECTORY_BASE}/MinSizeRel"
+		LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${OUTPUT_DIRECTORY_BASE}/RelWithDebInfo"
+		ARCHIVE_OUTPUT_DIRECTORY_DEBUG			"${OUTPUT_DIRECTORY_BASE}/Debug"
+		ARCHIVE_OUTPUT_DIRECTORY_RELEASE		"${OUTPUT_DIRECTORY_BASE}/Release"
+		ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL		"${OUTPUT_DIRECTORY_BASE}/MinSizeRel"
+		ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO	"${OUTPUT_DIRECTORY_BASE}/RelWithDebInfo"
+		STATIC_LIBRARY_FLAGS					"${CINDER_STATIC_LIBS_DEPENDS}" 
+	)
+elseif( CINDER_COCOA_TOUCH )
 endif()
 
 # Check compiler support for enabling c++11 or c++14.
 if( CINDER_MSW AND MSVC )
     if( MSVC_VERSION LESS 1800 ) # Older version of Visual Studio
-        message( FATAL "Unsupported MSVC version: ${MSVC_VERSION}" )
+        message( FATAL_ERROR "Unsupported MSVC version: ${MSVC_VERSION}" )
     elseif( MSVC_VERSION LESS 1900 ) # Visual Studio 2013
         set( COMPILER_SUPPORTS_CXX11 true )
     else() # Visual Studio 2015
@@ -95,7 +104,8 @@ export( TARGETS cinder FILE ${PROJECT_BINARY_DIR}/${CINDER_LIB_DIRECTORY}/cinder
 
 # And this command will generate a file on the ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
 # that applications have to pull in order to link successfully with Cinder and its dependencies.
-# This specific cinderConfig.cmake file will just hold a path to the above mention cinderTargets.cmake file which holds the actual info.
+# This specific cinderConfig.cmake file will just hold a path to the above mention 
+# cinderTargets.cmake file which holds the actual info.
 configure_file( ${CMAKE_CURRENT_LIST_DIR}/modules/cinderConfig.buildtree.cmake.in
-	${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/cinderConfig.cmake
+    "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/cinderConfig.cmake"
 )
