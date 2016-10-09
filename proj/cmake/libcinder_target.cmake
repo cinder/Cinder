@@ -44,11 +44,13 @@ if( MSVC )
 	#set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS "/REMOVE:LIBCMT /REMOVE:LIBCPMT /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT C:\\Users\\hai\\code\\cinder\\cinder_chaoticbob_android_linux\\lib\\msw\\x64\\libboost_filesystem-vc120-mt-sgd-1_60.lib C:\\Users\\hai\\code\\cinder\\cinder_chaoticbob_android_linux\\lib\\msw\\x64\\libboost_system-vc120-mt-sgd-1_60.lib C:\\Users\\hai\\code\\cinder\\cinder_chaoticbob_android_linux\\lib\\msw\\x64\\zlib.lib \"shlwapi.lib\"" )
 endif()
 
-if( CINDER_MSW OR CINDER_MAC OR CINDER_COCOA_TOUCH )
+if( CINDER_MSW )
     set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS_DEBUG					"${CINDER_STATIC_LIBS_FLAGS_DEBUG} ${CINDER_STATIC_LIBS_DEPENDS_DEBUG}" )
     set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE				"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}" )
     set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS_MINSIZEREL			"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}" )
     set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS_RELWITHDEBINFO		"${CINDER_STATIC_LIBS_FLAGS_RELEASE} ${CINDER_STATIC_LIBS_DEPENDS_RELEASE}" )    
+elseif( CINDER_MAC OR CINDER_COCOA_TOUCH )
+    set_target_properties( cinder PROPERTIES STATIC_LIBRARY_FLAGS					    "${CINDER_STATIC_LIBS_DEPENDS}" )
 endif()
 
 # Check compiler support for enabling c++11 or c++14.

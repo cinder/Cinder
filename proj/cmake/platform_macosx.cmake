@@ -114,6 +114,9 @@ source_group( "cinder\\cocoa"           FILES ${SRC_SET_COCOA} )
 source_group( "cinder\\app\\cocoa"      FILES ${SRC_SET_APP_COCOA} )
 source_group( "cinder\\audio\\cocoa"    FILES ${SRC_SET_AUDIO_COCOA} )
 
+set( MACOS_SUBFOLDER            "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
+set( CINDER_STATIC_LIBS_DEPENDS "${MACOS_SUBFOLDER}/libboost_filesystem.a ${MACOS_SUBFOLDER}/libboost_system.a ${MACOS_SUBFOLDER}/libz.a" )
+
 # These are samples that cannot be built on Mac OS X, indicating they should be skipped with CINDER_BUILD_SAMPLES is on.
 list( APPEND CINDER_SKIP_SAMPLES
 	_opengl/ParticleSphereCS
