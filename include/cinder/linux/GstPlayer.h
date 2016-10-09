@@ -114,7 +114,6 @@ struct GstData {
 	GstElement* 			glcolorconvert  = nullptr;
 
 	GstElement* 			rawCapsFilter 	= nullptr;
-	GAsyncQueue*			bufferQueue	= nullptr;
 #endif
 };
 
@@ -213,9 +212,7 @@ private:
 
 	void 			createTextureFromMemory();
 	void 			createTextureFromID();
-	void 			updateTextureID( GstBuffer* newBuffer );
 
-	void 			unblockStreamingThread();
 private:
 	GMainLoop* 		mGMainLoop; // Needed for message activation since we are not using signals.
 	GstBus* 		mGstBus; // Delivers the messages.
@@ -232,11 +229,12 @@ private:
 	unsigned char* 	    	mFrontVBuffer = nullptr;
 	unsigned char* 		mBackVBuffer = nullptr;		
 
-	GLint 			mGstTextureID;
+	std::shared_ptr<GstBuffer> mCurrentBuffer;
+	std::shared_ptr<GstBuffer> mNewBuffer;
+	GLint getTextureID( GstBuffer* newBuffer );
+
 
 	std::atomic<bool>	mNewFrame;
-	std::atomic<bool>	mUnblockStreamingThread;
-	std::condition_variable	mStreamingThreadCV;
 };
 	
 }} // namespace gst::video
