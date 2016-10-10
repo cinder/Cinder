@@ -25,7 +25,7 @@
 #include "cinder/Rand.h"
 
 namespace cinder {
-	
+
 std::mt19937 Rand::sBase( 310u );
 std::uniform_real_distribution<float> Rand::sFloatGen;
 
@@ -36,12 +36,12 @@ void Rand::randomize()
 
 void Rand::randSeed( uint32_t seed )
 {
-	sBase = std::mt19937( seed );
+	sBase.seed(seed);
 }
 
 void Rand::seed( uint32_t seedValue )
 {
-	mBase = std::mt19937( seedValue );
+	mBase.seed( seedValue );
 }
 
 } // ci
