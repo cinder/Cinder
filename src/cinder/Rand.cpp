@@ -29,19 +29,4 @@ namespace cinder {
 std::mt19937 Rand::sBase( 310u );
 std::uniform_real_distribution<float> Rand::sFloatGen;
 
-void Rand::randomize()
-{
-	sBase.seed(std::random_device{}());
-}
-
-void Rand::randSeed( uint32_t seed )
-{
-	sBase.seed(seed);
-}
-
-void Rand::seed( uint32_t seedValue )
-{
-	mBase.seed( seedValue );
-}
-
 } // ci

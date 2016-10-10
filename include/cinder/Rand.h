@@ -38,7 +38,10 @@ class Rand {
 	{}
 
 	//! Re-seeds the random generator
-	void seed( uint32_t seedValue );
+	void seed( uint32_t seedValue )
+	{
+		mBase.seed(seedValue);
+	}
 
 	//! returns a random boolean value
 	bool nextBool()
@@ -154,10 +157,16 @@ class Rand {
 
 	// STATICS
 	//! Resets the static random generator to a random seed based on the clock
-	static void randomize();
+	static void randomize()
+	{
+		sBase.seed(std::random_device{}());
+	}
 
 	//! Resets the static random generator to the specific seed \a seedValue
-	static void	randSeed( uint32_t seedValue );
+	static void	randSeed( uint32_t seedValue )
+	{
+		sBase.seed(seedValue);
+	}
 
 	//! returns a random boolean value
 	static bool randBool()
