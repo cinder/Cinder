@@ -114,6 +114,24 @@ source_group( "cinder\\cocoa"           FILES ${SRC_SET_COCOA} )
 source_group( "cinder\\app\\cocoa"      FILES ${SRC_SET_APP_COCOA} )
 source_group( "cinder\\audio\\cocoa"    FILES ${SRC_SET_AUDIO_COCOA} )
 
+set( MACOS_SUBFOLDER            "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
+set( CINDER_STATIC_LIBS_DEPENDS "${MACOS_SUBFOLDER}/libboost_filesystem.a ${MACOS_SUBFOLDER}/libboost_system.a ${MACOS_SUBFOLDER}/libz.a" )
+
+if( NOT ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
+	if(NOT CMAKE_LIBTOOL)
+		find_program(CMAKE_LIBTOOL NAMES libtool)
+	endif()
+
+	if(CMAKE_LIBTOOL)
+		set(CMAKE_LIBTOOL ${CMAKE_LIBTOOL} CACHE PATH "libtool executable")
+		message(STATUS "Found libtool - ${CMAKE_LIBTOOL}")
+		get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+		foreach(lang ${languages})
+			set(CMAKE_${lang}_CREATE_STATIC_LIBRARY "${CMAKE_LIBTOOL} -static -arch_only x86_64 -o <TARGET> <LINK_FLAGS> <OBJECTS> ")
+		endforeach()
+	endif()
+endif()
+
 # These are samples that cannot be built on Mac OS X, indicating they should be skipped with CINDER_BUILD_SAMPLES is on.
 list( APPEND CINDER_SKIP_SAMPLES
 	_opengl/ParticleSphereCS

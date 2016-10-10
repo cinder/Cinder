@@ -789,10 +789,10 @@
     <ClCompile Include="..\..\src\cinder\ImageFileTinyExr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\ImageSourceFileStbImage.cpp">
+    <ClCompile Include="..\..\src\cinder\ImageTargetFileStbImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\ImageTargetFileStbImage.cpp">
+    <ClCompile Include="..\..\src\cinder\ImageSourceFileStbImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1658,10 +1658,10 @@
     <ClInclude Include="..\..\include\tinyexr\tinyexr.h">
       <Filter>Header Files\tinyexr</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\ImageSourceFileStbImage.h">
+    <ClInclude Include="..\..\include\cinder\ImageTargetFileStbImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\ImageTargetFileStbImage.h">
+    <ClInclude Include="..\..\include\cinder\ImageSourceFileStbImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

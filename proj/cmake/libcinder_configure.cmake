@@ -61,7 +61,7 @@ else()
 	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 		${CINDER_INC_DIR}/freetype
 	)
-	list( APPEND CINDER_DEFINES "-DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE"  )
+	list( APPEND CINDER_DEFINES "-DFT2_BUILD_LIBRARY;-DFT_DEBUG_LEVEL_TRACE" )
 endif()
 
 # declare whether AntTweakBar is available (isn't on mobile devices)

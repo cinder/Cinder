@@ -535,8 +535,10 @@
     <ClCompile Include="..\..\src\cinder\ImageFileTinyExr.cpp" />
     <ClCompile Include="..\..\src\cinder\ImageIo.cpp" />
     <ClCompile Include="..\..\src\cinder\ImageSourceFileRadiance.cpp" />
+    <ClCompile Include="..\..\src\cinder\ImageSourceFileStbImage.cpp" />
     <ClCompile Include="..\..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\..\src\cinder\ImageSourcePng.cpp" />
+    <ClCompile Include="..\..\src\cinder\ImageTargetFileStbImage.cpp" />
     <ClCompile Include="..\..\src\cinder\ImageTargetFileWic.cpp" />
     <ClCompile Include="..\..\src\cinder\ip\Blend.cpp" />
     <ClCompile Include="..\..\src\cinder\CinderMath.cpp" />
@@ -769,6 +771,8 @@
     <ClInclude Include="..\..\include\cinder\gl\VboMesh.h" />
     <ClInclude Include="..\..\include\cinder\gl\wrapper.h" />
     <ClInclude Include="..\..\include\cinder\ImageSourceFileRadiance.h" />
+    <ClInclude Include="..\..\include\cinder\ImageSourceFileStbImage.h" />
+    <ClInclude Include="..\..\include\cinder\ImageTargetFileStbImage.h" />
     <ClInclude Include="..\..\include\cinder\ip\Blend.h" />
     <ClInclude Include="..\..\include\cinder\ip\Blur.h" />
     <ClInclude Include="..\..\include\cinder\ip\Checkerboard.h" />

@@ -1,6 +1,15 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
+# Configure the Android toolchain before the project start
+if( CINDER_TARGET )
+	string( TOLOWER "${CINDER_TARGET}" CINDER_TARGET_LOWER )
+	if( "android" STREQUAL "${CINDER_TARGET_LOWER}" )
+	    include( "${CMAKE_CURRENT_SOURCE_DIR}/proj/cmake/modules/cinderAndroidToolchain.cmake" )
+    endif()
+endif()
+
+# Project start
 project( cinder )
 
 option( CINDER_BUILD_SAMPLES "Build all samples." OFF )
