@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Auto-fitter hinting routines for CJK writing system (body).          */
 /*                                                                         */
-/*  Copyright 2006-2015 by                                                 */
+/*  Copyright 2006-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -88,7 +88,6 @@
     {
       FT_Error          error;
       FT_ULong          glyph_index;
-      FT_Long           y_offset;
       int               dim;
       AF_CJKMetricsRec  dummy[1];
       AF_Scaler         scaler = &dummy->root.scaler;
@@ -101,45 +100,61 @@
       AF_ScriptClass  script_class = AF_SCRIPT_CLASSES_GET
                                        [style_class->script];
 
-      FT_UInt32  standard_char;
+      void*        shaper_buf;
+      const char*  p;
 
+#ifdef FT_DEBUG_LEVEL_TRACE
+      FT_ULong  ch = 0;
+#endif
 
-      standard_char = script_class->standard_char1;
-      af_get_char_index( &metrics->root,
-                         standard_char,
-                         &glyph_index,
-                         &y_offset );
-      if ( !glyph_index )
+      p          = script_class->standard_charstring;
+      shaper_buf = af_shaper_buf_create( face );
+
+      /* We check a list of standard characters.  The first match wins. */
+
+      glyph_index = 0;
+      while ( *p )
       {
-        if ( script_class->standard_char2 )
-        {
-          standard_char = script_class->standard_char2;
-          af_get_char_index( &metrics->root,
-                             standard_char,
-                             &glyph_index,
-                             &y_offset );
-          if ( !glyph_index )
-          {
-            if ( script_class->standard_char3 )
-            {
-              standard_char = script_class->standard_char3;
-              af_get_char_index( &metrics->root,
-                                 standard_char,
-                                 &glyph_index,
-                                 &y_offset );
-              if ( !glyph_index )
-                goto Exit;
-            }
-            else
-              goto Exit;
-          }
-        }
-        else
-          goto Exit;
+        unsigned int  num_idx;
+
+#ifdef FT_DEBUG_LEVEL_TRACE
+        const char*  p_old;
+#endif
+
+
+        while ( *p == ' ' )
+          p++;
+
+#ifdef FT_DEBUG_LEVEL_TRACE
+        p_old = p;
+        GET_UTF8_CHAR( ch, p_old );
+#endif
+
+        /* reject input that maps to more than a single glyph */
+        p = af_shaper_get_cluster( p, &metrics->root, shaper_buf, &num_idx );
+        if ( num_idx > 1 )
+          continue;
+
+        /* otherwise exit loop if we have a result */
+        glyph_index = af_shaper_get_elem( &metrics->root,
+                                          shaper_buf,
+                                          0,
+                                          NULL,
+                                          NULL );
+        if ( glyph_index )
+          break;
       }
 
+      af_shaper_buf_destroy( face, shaper_buf );
+
+      if ( !glyph_index )
+        goto Exit;
+
+      if ( !glyph_index )
+        goto Exit;
+
       FT_TRACE5(( "standard character: U+%04lX (glyph index %d)\n",
-                  standard_char, glyph_index ));
+                  ch, glyph_index ));
 
       error = FT_Load_Glyph( face, glyph_index, FT_LOAD_NO_SCALE );
       if ( error || face->glyph->outline.n_points <= 0 )
@@ -177,6 +192,12 @@
         if ( error )
           goto Exit;
 
+        /*
+         *  We assume that the glyphs selected for the stem width
+         *  computation are `featureless' enough so that the linking
+         *  algorithm works fine without adjustments of its scoring
+         *  function.
+         */
         af_latin_hints_link_segments( hints,
                                       0,
                                       NULL,
@@ -275,6 +296,8 @@
     AF_Blue_Stringset         bss = sc->blue_stringset;
     const AF_Blue_StringRec*  bs  = &af_blue_stringsets[bss];
 
+    void*  shaper_buf;
+
 
     /* we walk over the blue character strings as specified in the   */
     /* style's entry in the `af_blue_stringset' array, computing its */
@@ -283,6 +306,8 @@
     FT_TRACE5(( "cjk blue zones computation\n"
                 "==========================\n"
                 "\n" ));
+
+    shaper_buf = af_shaper_buf_create( face );
 
     for ( ; bs->string != AF_BLUE_STRING_MAX; bs++ )
     {
@@ -322,26 +347,47 @@
 
       while ( *p )
       {
-        FT_ULong    ch;
         FT_ULong    glyph_index;
-        FT_Long     y_offset;
         FT_Pos      best_pos;       /* same as points.y or points.x, resp. */
         FT_Int      best_point;
         FT_Vector*  points;
 
+        unsigned int  num_idx;
 
-        GET_UTF8_CHAR( ch, p );
+#ifdef FT_DEBUG_LEVEL_TRACE
+        const char*  p_old;
+        FT_ULong     ch;
+#endif
+
+
+        while ( *p == ' ' )
+          p++;
+
+#ifdef FT_DEBUG_LEVEL_TRACE
+        p_old = p;
+        GET_UTF8_CHAR( ch, p_old );
+#endif
 
         /* switch to characters that define flat values */
-        if ( ch == '|' )
+        if ( *p == '|' )
         {
           fill = 0;
           FT_TRACE5(( "  [reference values]\n" ));
+          p++;
           continue;
         }
 
+        /* reject input that maps to more than a single glyph */
+        p = af_shaper_get_cluster( p, &metrics->root, shaper_buf, &num_idx );
+        if ( num_idx > 1 )
+          continue;
+
         /* load the character in the face -- skip unknown or empty ones */
-        af_get_char_index( &metrics->root, ch, &glyph_index, &y_offset );
+        glyph_index = af_shaper_get_elem( &metrics->root,
+                                          shaper_buf,
+                                          0,
+                                          NULL,
+                                          NULL );
         if ( glyph_index == 0 )
         {
           FT_TRACE5(( "  U+%04lX unavailable\n", ch ));
@@ -350,9 +396,9 @@
 
         error   = FT_Load_Glyph( face, glyph_index, FT_LOAD_NO_SCALE );
         outline = face->glyph->outline;
-        if ( error || outline.n_points <= 0 )
+        if ( error || outline.n_points <= 2 )
         {
-          FT_TRACE5(( "  U+%04lX contains no outlines\n", ch ));
+          FT_TRACE5(( "  U+%04lX contains no (usable) outlines\n", ch ));
           continue;
         }
 
@@ -431,7 +477,8 @@
           fills[num_fills++] = best_pos;
         else
           flats[num_flats++] = best_pos;
-      }
+
+      } /* end while loop */
 
       if ( num_flats == 0 && num_fills == 0 )
       {
@@ -498,7 +545,10 @@
       FT_TRACE5(( "    -> reference = %ld\n"
                   "       overshoot = %ld\n",
                   *blue_ref, *blue_shoot ));
-    }
+
+    } /* end for loop */
+
+    af_shaper_buf_destroy( face, shaper_buf );
 
     FT_TRACE5(( "\n" ));
 
@@ -512,27 +562,36 @@
   af_cjk_metrics_check_digits( AF_CJKMetrics  metrics,
                                FT_Face        face )
   {
-    FT_UInt   i;
     FT_Bool   started = 0, same_width = 1;
     FT_Fixed  advance, old_advance = 0;
 
+    void*  shaper_buf;
 
-    /* digit `0' is 0x30 in all supported charmaps */
-    for ( i = 0x30; i <= 0x39; i++ )
+    /* in all supported charmaps, digits have character codes 0x30-0x39 */
+    const char   digits[] = "0 1 2 3 4 5 6 7 8 9";
+    const char*  p;
+
+
+    p          = digits;
+    shaper_buf = af_shaper_buf_create( face );
+
+    while ( *p )
     {
-      FT_ULong  glyph_index;
-      FT_Long   y_offset;
+      FT_ULong      glyph_index;
+      unsigned int  num_idx;
 
 
-      af_get_char_index( &metrics->root, i, &glyph_index, &y_offset );
-      if ( glyph_index == 0 )
+      /* reject input that maps to more than a single glyph */
+      p = af_shaper_get_cluster( p, &metrics->root, shaper_buf, &num_idx );
+      if ( num_idx > 1 )
         continue;
 
-      if ( FT_Get_Advance( face, glyph_index,
-                           FT_LOAD_NO_SCALE         |
-                           FT_LOAD_NO_HINTING       |
-                           FT_LOAD_IGNORE_TRANSFORM,
-                           &advance ) )
+      glyph_index = af_shaper_get_elem( &metrics->root,
+                                        shaper_buf,
+                                        0,
+                                        &advance,
+                                        NULL );
+      if ( !glyph_index )
         continue;
 
       if ( started )
@@ -549,6 +608,8 @@
         started     = 1;
       }
     }
+
+    af_shaper_buf_destroy( face, shaper_buf );
 
     metrics->root.digits_have_same_width = same_width;
   }
@@ -685,6 +746,22 @@
 
     af_cjk_metrics_scale_dim( metrics, scaler, AF_DIMENSION_HORZ );
     af_cjk_metrics_scale_dim( metrics, scaler, AF_DIMENSION_VERT );
+  }
+
+
+  /* Extract standard_width from writing system/script specific */
+  /* metrics class.                                             */
+
+  FT_LOCAL_DEF( void )
+  af_cjk_get_standard_widths( AF_CJKMetrics  metrics,
+                              FT_Pos*        stdHW,
+                              FT_Pos*        stdVW )
+  {
+    if ( stdHW )
+      *stdHW = metrics->axis[AF_DIMENSION_VERT].standard_width;
+
+    if ( stdVW )
+      *stdVW = metrics->axis[AF_DIMENSION_HORZ].standard_width;
   }
 
 
@@ -889,15 +966,12 @@
 
       if ( seg2 )
       {
-        seg2->num_linked++;
         if ( seg2->link != seg1 )
         {
           seg1->link = NULL;
 
           if ( seg2->score < dist_threshold || seg1->score < seg2->score * 4 )
             seg1->serif = seg2->link;
-          else
-            seg2->num_linked--;
         }
       }
     }
@@ -1014,7 +1088,7 @@
         /* insert a new edge in the list and */
         /* sort according to the position    */
         error = af_axis_hints_new_edge( axis, seg->pos,
-                                        (AF_Direction)seg->dir,
+                                        (AF_Direction)seg->dir, 0,
                                         memory, &edge );
         if ( error )
           goto Exit;
@@ -1451,7 +1525,7 @@
       }
 
       if ( dist < 54 )
-        dist += ( 54 - dist ) / 2 ;
+        dist += ( 54 - dist ) / 2;
       else if ( dist < 3 * 64 )
       {
         FT_Pos  delta;
@@ -2181,7 +2255,8 @@
   /* Apply the complete hinting algorithm to a CJK glyph. */
 
   FT_LOCAL_DEF( FT_Error )
-  af_cjk_hints_apply( AF_GlyphHints  hints,
+  af_cjk_hints_apply( FT_UInt        glyph_index,
+                      AF_GlyphHints  hints,
                       FT_Outline*    outline,
                       AF_CJKMetrics  metrics )
   {
@@ -2189,6 +2264,7 @@
     int       dim;
 
     FT_UNUSED( metrics );
+    FT_UNUSED( glyph_index );
 
 
     error = af_glyph_hints_reload( hints, outline );
@@ -2278,6 +2354,7 @@
     (AF_WritingSystem_InitMetricsFunc) af_cjk_metrics_init,
     (AF_WritingSystem_ScaleMetricsFunc)af_cjk_metrics_scale,
     (AF_WritingSystem_DoneMetricsFunc) NULL,
+    (AF_WritingSystem_GetStdWidthsFunc)af_cjk_get_standard_widths,
 
     (AF_WritingSystem_InitHintsFunc)   af_cjk_hints_init,
     (AF_WritingSystem_ApplyHintsFunc)  af_cjk_hints_apply
@@ -2297,6 +2374,7 @@
     (AF_WritingSystem_InitMetricsFunc) NULL,
     (AF_WritingSystem_ScaleMetricsFunc)NULL,
     (AF_WritingSystem_DoneMetricsFunc) NULL,
+    (AF_WritingSystem_GetStdWidthsFunc)NULL,
 
     (AF_WritingSystem_InitHintsFunc)   NULL,
     (AF_WritingSystem_ApplyHintsFunc)  NULL

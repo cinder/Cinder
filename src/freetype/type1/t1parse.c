@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Type 1 parser (body).                                                */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -334,7 +334,6 @@
       /* first of all, look at the `eexec' keyword */
       FT_Byte*    cur   = parser->base_dict;
       FT_Byte*    limit = cur + parser->base_len;
-      FT_Byte     c;
       FT_Pointer  pos_lf;
       FT_Bool     test_cr;
 
@@ -342,9 +341,9 @@
     Again:
       for (;;)
       {
-        c = cur[0];
-        if ( c == 'e' && cur + 9 < limit )  /* 9 = 5 letters for `eexec' + */
-                                            /* whitespace + 4 chars        */
+        if ( cur[0] == 'e'   &&
+             cur + 9 < limit )      /* 9 = 5 letters for `eexec' + */
+                                    /* whitespace + 4 chars        */
         {
           if ( cur[1] == 'e' &&
                cur[2] == 'x' &&
@@ -374,8 +373,15 @@
 
       while ( cur < limit )
       {
-        if ( *cur == 'e' && ft_strncmp( (char*)cur, "eexec", 5 ) == 0 )
-          goto Found;
+        if ( cur[0] == 'e'   &&
+             cur + 5 < limit )
+        {
+          if ( cur[1] == 'e' &&
+               cur[2] == 'x' &&
+               cur[3] == 'e' &&
+               cur[4] == 'c' )
+            goto Found;
+        }
 
         T1_Skip_PS_Token( parser );
         if ( parser->root.error )
@@ -389,6 +395,15 @@
 
       cur   = limit;
       limit = parser->base_dict + parser->base_len;
+
+      if ( cur >= limit )
+      {
+        FT_ERROR(( "T1_Get_Private_Dict:"
+                   " premature end in private dictionary\n" ));
+        error = FT_THROW( Invalid_File_Format );
+        goto Exit;
+      }
+
       goto Again;
 
       /* now determine where to write the _encrypted_ binary private  */

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType API for controlling the auto-hinter (specification only).   */
 /*                                                                         */
-/*  Copyright 2012-2015 by                                                 */
+/*  Copyright 2012-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#ifndef __FTAUTOH_H__
-#define __FTAUTOH_H__
+#ifndef FTAUTOH_H_
+#define FTAUTOH_H_
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -219,8 +219,8 @@ FT_BEGIN_HEADER
    *       U+0F00 - U+0FFF  // Tibetan
    *       U+1900 - U+194F  // Limbu
    *       U+1B80 - U+1BBF  // Sundanese
-   *       U+1C80 - U+1CDF  // Meetei Mayak
    *       U+A800 - U+A82F  // Syloti Nagri
+   *       U+ABC0 - U+ABFF  // Meetei Mayek
    *      U+11800 - U+118DF // Sharada
    *     }
    *
@@ -247,8 +247,8 @@ FT_BEGIN_HEADER
    */
   typedef struct  FT_Prop_GlyphToScriptMap_
   {
-    FT_Face   face;
-    FT_Byte*  map;
+    FT_Face     face;
+    FT_UShort*  map;
 
   } FT_Prop_GlyphToScriptMap;
 
@@ -428,6 +428,9 @@ FT_BEGIN_HEADER
    * @note:
    *   This property can be used with @FT_Property_Get also.
    *
+   *   This property can be set via the `FREETYPE_PROPERTIES' environment
+   *   variable (using values 1 and 0 for `on' and `off', respectively).
+   *
    *   The warping code can also change advance widths.  Have a look at the
    *   `lsb_delta' and `rsb_delta' fields in the @FT_GlyphSlotRec structure
    *   for details on improving inter-glyph distances while rendering.
@@ -439,12 +442,70 @@ FT_BEGIN_HEADER
    */
 
 
+  /**************************************************************************
+   *
+   * @property:
+   *   no-stem-darkening[autofit]
+   *
+   * @description:
+   *   *Experimental* *only,* *requires* *linear* *alpha* *blending* *and*
+   *   *gamma* *correction*
+   *
+   *   Stem darkening emboldens glyphs at smaller sizes to make them more
+   *   readable on common low-DPI screens when using linear alpha blending
+   *   and gamma correction, see @FT_Render_Glyph.  When not using linear
+   *   alpha blending and gamma correction, glyphs will appear heavy and
+   *   fuzzy!
+   *
+   *   Gamma correction essentially lightens fonts since shades of grey are
+   *   shifted to higher pixel values (=~higher brightness) to match the
+   *   original intention to the reality of our screens.  The side-effect is
+   *   that glyphs `thin out'.  Mac OS~X and Adobe's proprietary font
+   *   rendering library implement a counter-measure: stem darkening at
+   *   smaller sizes where shades of gray dominate.  By emboldening a glyph
+   *   slightly in relation to its pixel size, individual pixels get higher
+   *   coverage of filled-in outlines and are therefore `blacker'.  This
+   *   counteracts the `thinning out' of glyphs, making text remain readable
+   *   at smaller sizes.  All glyphs that pass through the auto-hinter will
+   *   be emboldened unless this property is set to TRUE.
+   *
+   *   See the description of the CFF driver for algorithmic details.  Total
+   *   consistency with the CFF driver is currently not achieved because the
+   *   emboldening method differs and glyphs must be scaled down on the
+   *   Y-axis to keep outline points inside their precomputed blue zones.
+   *   The smaller the size (especially 9ppem and down), the higher the loss
+   *   of emboldening versus the CFF driver.
+   *
+   *   This property can be set via the `FREETYPE_PROPERTIES' environment
+   *   variable similar to the CFF driver.
+   *
+   */
+
+
+  /**************************************************************************
+   *
+   * @property:
+   *   darkening-parameters[autofit]
+   *
+   * @description:
+   *   *Experimental* *only*
+   *
+   *   See the description of the CFF driver for details.  This
+   *   implementation appropriates the
+   *   CFF_CONFIG_OPTION_DARKENING_PARAMETER_* #defines for consistency.
+   *   Note the differences described in @no-stem-darkening[autofit].
+   *
+   *   This property can be set via the `FREETYPE_PROPERTIES' environment
+   *   variable similar to the CFF driver.
+   */
+
+
   /* */
 
 
 FT_END_HEADER
 
-#endif /* __FTAUTOH_H__ */
+#endif /* FTAUTOH_H_ */
 
 
 /* END */

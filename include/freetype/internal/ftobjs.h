@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    The FreeType private base classes (specification).                   */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -23,8 +23,8 @@
   /*************************************************************************/
 
 
-#ifndef __FTOBJS_H__
-#define __FTOBJS_H__
+#ifndef FTOBJS_H_
+#define FTOBJS_H_
 
 #include <ft2build.h>
 #include FT_RENDER_H
@@ -83,12 +83,12 @@ FT_BEGIN_HEADER
             x > y ? x + ( 3 * y >> 3 )   \
                   : y + ( 3 * x >> 3 ) )
 
-  /* we use the TYPEOF macro to suppress signedness compilation warnings */
-#define FT_PAD_FLOOR( x, n )  ( (x) & ~TYPEOF( x )( (n)-1 ) )
+  /* we use FT_TYPEOF to suppress signedness compilation warnings */
+#define FT_PAD_FLOOR( x, n )  ( (x) & ~FT_TYPEOF( x )( (n)-1 ) )
 #define FT_PAD_ROUND( x, n )  FT_PAD_FLOOR( (x) + ((n)/2), n )
 #define FT_PAD_CEIL( x, n )   FT_PAD_FLOOR( (x) + ((n)-1), n )
 
-#define FT_PIX_FLOOR( x )     ( (x) & ~TYPEOF( x )63 )
+#define FT_PIX_FLOOR( x )     ( (x) & ~FT_TYPEOF( x )63 )
 #define FT_PIX_ROUND( x )     FT_PIX_FLOOR( (x) + 32 )
 #define FT_PIX_CEIL( x )      FT_PIX_FLOOR( (x) + 63 )
 
@@ -341,12 +341,6 @@ FT_BEGIN_HEADER
   /*      this data when first opened.  This field exists only if          */
   /*      @FT_CONFIG_OPTION_INCREMENTAL is defined.                        */
   /*                                                                       */
-  /*    ignore_unpatented_hinter ::                                        */
-  /*      This boolean flag instructs the glyph loader to ignore the       */
-  /*      native font hinter, if one is found.  This is exclusively used   */
-  /*      in the case when the unpatented hinter is compiled within the    */
-  /*      library.                                                         */
-  /*                                                                       */
   /*    refcount ::                                                        */
   /*      A counter initialized to~1 at the time an @FT_Face structure is  */
   /*      created.  @FT_Reference_Face increments this counter, and        */
@@ -365,7 +359,6 @@ FT_BEGIN_HEADER
     FT_Incremental_InterfaceRec*  incremental_interface;
 #endif
 
-    FT_Bool             ignore_unpatented_hinter;
     FT_Int              refcount;
 
   } FT_Face_InternalRec;
@@ -506,6 +499,9 @@ FT_BEGIN_HEADER
 #define FT_DRIVER_HAS_HINTER( x )  ( FT_MODULE_CLASS( x )->module_flags & \
                                      FT_MODULE_DRIVER_HAS_HINTER )
 
+#define FT_DRIVER_HINTS_LIGHTLY( x )  ( FT_MODULE_CLASS( x )->module_flags & \
+                                        FT_MODULE_DRIVER_HINTS_LIGHTLY )
+
 
   /*************************************************************************/
   /*                                                                       */
@@ -535,6 +531,14 @@ FT_BEGIN_HEADER
   FT_BASE( FT_Pointer )
   ft_module_get_service( FT_Module    module,
                          const char*  service_id );
+
+#ifdef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+  FT_BASE( FT_Error )
+  ft_property_string_set( FT_Library        library,
+                          const FT_String*  module_name,
+                          const FT_String*  property_name,
+                          FT_String*        value );
+#endif
 
   /* */
 
@@ -772,13 +776,6 @@ FT_BEGIN_HEADER
 #define FT_DEBUG_HOOK_TRUETYPE            0
 
 
-  /* Set this debug hook to a non-null pointer to force unpatented hinting */
-  /* for all faces when both TT_USE_BYTECODE_INTERPRETER and               */
-  /* TT_CONFIG_OPTION_UNPATENTED_HINTING are defined.  This is only used   */
-  /* during debugging.                                                     */
-#define FT_DEBUG_HOOK_UNPATENTED_HINTING  1
-
-
   typedef void  (*FT_Bitmap_LcdFilterFunc)( FT_Bitmap*      bitmap,
                                             FT_Render_Mode  render_mode,
                                             FT_Library      library );
@@ -844,7 +841,7 @@ FT_BEGIN_HEADER
   /*                        filtering callback function.                   */
   /*                                                                       */
   /*    pic_container    :: Contains global structs and tables, instead    */
-  /*                        of defining them globallly.                    */
+  /*                        of defining them globally.                     */
   /*                                                                       */
   /*    refcount         :: A counter initialized to~1 at the time an      */
   /*                        @FT_Library structure is created.              */
@@ -982,8 +979,8 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /* <Description>                                                         */
   /*    Used to initialize an instance of FT_Outline_Funcs struct.         */
-  /*    When FT_CONFIG_OPTION_PIC is defined an init funtion will need to  */
-  /*    be called with a pre-allocated structure to be filled.             */
+  /*    When FT_CONFIG_OPTION_PIC is defined an init function will need    */
+  /*    to be called with a pre-allocated structure to be filled.          */
   /*    When FT_CONFIG_OPTION_PIC is not defined the struct will be        */
   /*    allocated in the global scope (or the scope where the macro        */
   /*    is used).                                                          */
@@ -1041,8 +1038,8 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /* <Description>                                                         */
   /*    Used to initialize an instance of FT_Raster_Funcs struct.          */
-  /*    When FT_CONFIG_OPTION_PIC is defined an init funtion will need to  */
-  /*    be called with a pre-allocated structure to be filled.             */
+  /*    When FT_CONFIG_OPTION_PIC is defined an init function will need    */
+  /*    to be called with a pre-allocated structure to be filled.          */
   /*    When FT_CONFIG_OPTION_PIC is not defined the struct will be        */
   /*    allocated in the global scope (or the scope where the macro        */
   /*    is used).                                                          */
@@ -1101,8 +1098,8 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /* <Description>                                                         */
   /*    Used to initialize an instance of FT_Glyph_Class struct.           */
-  /*    When FT_CONFIG_OPTION_PIC is defined an init funtion will need to  */
-  /*    be called with a pre-allocated stcture to be filled.               */
+  /*    When FT_CONFIG_OPTION_PIC is defined an init function will need    */
+  /*    to be called with a pre-allocated structure to be filled.          */
   /*    When FT_CONFIG_OPTION_PIC is not defined the struct will be        */
   /*    allocated in the global scope (or the scope where the macro        */
   /*    is used).                                                          */
@@ -1175,11 +1172,11 @@ FT_BEGIN_HEADER
   /* <Description>                                                         */
   /*    Used to initialize an instance of FT_Renderer_Class struct.        */
   /*                                                                       */
-  /*    When FT_CONFIG_OPTION_PIC is defined a `create' funtion will need  */
-  /*    to be called with a pointer where the allocated structure is       */
+  /*    When FT_CONFIG_OPTION_PIC is defined a `create' function will      */
+  /*    need to be called with a pointer where the allocated structure is  */
   /*    returned.  And when it is no longer needed a `destroy' function    */
   /*    needs to be called to release that allocation.                     */
-  /*    `fcinit.c' (ft_create_default_module_classes) already contains     */
+  /*    `ftinit.c' (ft_create_default_module_classes) already contains     */
   /*    a mechanism to call these functions for the default modules        */
   /*    described in `ftmodule.h'.                                         */
   /*                                                                       */
@@ -1379,11 +1376,11 @@ FT_BEGIN_HEADER
   /* <Description>                                                         */
   /*    Used to initialize an instance of an FT_Module_Class struct.       */
   /*                                                                       */
-  /*    When FT_CONFIG_OPTION_PIC is defined a `create' funtion needs to   */
-  /*    be called with a pointer where the allocated structure is          */
+  /*    When FT_CONFIG_OPTION_PIC is defined a `create' function needs     */
+  /*    to be called with a pointer where the allocated structure is       */
   /*    returned.  And when it is no longer needed a `destroy' function    */
   /*    needs to be called to release that allocation.                     */
-  /*    `fcinit.c' (ft_create_default_module_classes) already contains     */
+  /*    `ftinit.c' (ft_create_default_module_classes) already contains     */
   /*    a mechanism to call these functions for the default modules        */
   /*    described in `ftmodule.h'.                                         */
   /*                                                                       */
@@ -1565,7 +1562,7 @@ FT_BEGIN_HEADER
 
 FT_END_HEADER
 
-#endif /* __FTOBJS_H__ */
+#endif /* FTOBJS_H_ */
 
 
 /* END */
