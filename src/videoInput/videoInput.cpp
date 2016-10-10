@@ -364,7 +364,7 @@ void videoDevice::destroyGraph(){
 			if(verbose)printf("SETUP: removing filter %S...\n", buffer);
 			hr = pGraph->RemoveFilter(pFilter);
 			if (FAILED(hr)) { if(verbose)printf("SETUP: pGraph->RemoveFilter() failed. \n"); return; }
-			if(verbose)printf("SETUP: filter removed %s  \n",buffer);
+			if(verbose)printf("SETUP: filter removed %S  \n",buffer);
 			
 			pFilter->Release();
 			pFilter = NULL;
