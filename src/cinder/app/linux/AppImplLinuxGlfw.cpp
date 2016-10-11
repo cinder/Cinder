@@ -41,6 +41,7 @@ public:
 		::glfwSetKeyCallback( glfwWindow, GlfwCallbacks::onKeyboard );
 		::glfwSetCursorPosCallback( glfwWindow, GlfwCallbacks::onMousePos );
 		::glfwSetMouseButtonCallback( glfwWindow, GlfwCallbacks::onMouseButton );
+		::glfwSetScrollCallback( glfwWindow, GlfwCallbacks::onMouseWheel );
 	}
 
 	static void unregisterWindowEvents( GLFWwindow *glfwWindow ) {
@@ -199,6 +200,36 @@ public:
 					cinderWindow->emitMouseUp( &event );	
 				}
 			}
+		}
+	}
+
+	static void onMouseWheel(GLFWwindow* glfwWindow, double xoffset, double yoffset ) {
+		auto iter = sWindowMapping.find( glfwWindow );
+		if( sWindowMapping.end() != iter ) {
+			auto& cinderAppImpl = iter->second.first;
+			auto& cinderWindow = iter->second.second;
+			cinderAppImpl->setWindow( cinderWindow );
+
+			double mouseX, mouseY;
+			::glfwGetCursorPos( glfwWindow, &mouseX, &mouseY );
+
+			int modifiers = 0;
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_SHIFT ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_SHIFT ) ) ) {
+				modifiers |= MouseEvent::SHIFT_DOWN;
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_CONTROL ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_CONTROL ) ) ) {
+				modifiers |= MouseEvent::CTRL_DOWN;
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_ALT ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_ALT ) ) ) {
+				modifiers |= MouseEvent::ALT_DOWN;
+			}
+			if( ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_LEFT_SUPER ) ) || ( GLFW_PRESS == glfwGetKey( glfwWindow, GLFW_KEY_RIGHT_SUPER ) )  ) {
+				modifiers |= MouseEvent::META_DOWN;
+			}
+
+			float wheelDelta = xoffset + yoffset;
+			MouseEvent event( getWindow(), 0, (int)mouseX, (int)mouseX, modifiers, wheelDelta , 0 );
+			cinderWindow->emitMouseWheel( &event );	
 		}
 	}
 };
