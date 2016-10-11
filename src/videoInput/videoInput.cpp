@@ -330,10 +330,9 @@ void videoDevice::NukeDownstream(IBaseFilter *pBF){
 
 void videoDevice::destroyGraph(){
 	HRESULT hr = NULL;
- 	int FuncRetval=0;
- 	int NumFilters=0;
+	int FuncRetval=0;
+	int NumFilters=0;
 
-	int i = 0;
 	while (hr == NOERROR)	
 	{
 		IEnumFilters * pEnum = 0;
@@ -351,31 +350,18 @@ void videoDevice::destroyGraph(){
 			hr = pFilter->QueryFilterInfo(&FilterInfo);
 			FilterInfo.pGraph->Release();
 
-			int count = 0;
-			WCHAR buffer[255];
-			memset(buffer, 0, 255 * sizeof(WCHAR));
-						
-			while( FilterInfo.achName[count] != 0x00 ) 
-			{
-				buffer[count] = FilterInfo.achName[count];
-				count++;
-			}
-			
-			if(verbose)printf("SETUP: removing filter %S...\n", buffer);
+			if(verbose)printf("SETUP: removing filter %S...\n", FilterInfo.achName);
 			hr = pGraph->RemoveFilter(pFilter);
 			if (FAILED(hr)) { if(verbose)printf("SETUP: pGraph->RemoveFilter() failed. \n"); return; }
-			if(verbose)printf("SETUP: filter removed %s  \n",buffer);
-			
+			if(verbose)printf("SETUP: filter removed %S  \n", FilterInfo.achName);
+
 			pFilter->Release();
 			pFilter = NULL;
 		}
 		else break;
 		pEnum->Release();
 		pEnum = NULL;
-		i++;
 	}
-
- return;
 }
 
 
