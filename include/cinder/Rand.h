@@ -29,12 +29,10 @@ namespace cinder {
 
 class Rand {
  public:
-	Rand()
-		: mBase( 214u ), mHaveNextNextGaussian( false )
-	{}
+	Rand() = default;
 
 	Rand( uint32_t seed )
-		: mBase( seed ), mHaveNextNextGaussian( false )
+		: mBase( seed )
 	{}
 
 	//! Re-seeds the random generator
@@ -132,31 +130,11 @@ class Rand {
 	//! returns a random float via Gaussian distribution
 	float nextGaussian()
 	{
-		if( mHaveNextNextGaussian ) {
-			mHaveNextNextGaussian = false;
-			return mNextNextGaussian;
-		}
-		else {
-			float v1, v2, s;
-			do {
-				v1 = 2.0f * nextFloat() - 1.0f;
-				v2 = 2.0f * nextFloat() - 1.0f;
-
-				s = v1 * v1 + v2 * v2;
-			}
-			while( s >= 1.0f || s == 0.0f );
-
-			float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
-
-			mNextNextGaussian       = v2 * m;
-			mHaveNextNextGaussian   = true;
-
-			return v1 * m;
-		}
+		return mNormDist(mBase);
 	}
 
 	// STATICS
-	//! Resets the static random generator to a random seed based on the clock
+	//! Resets the static random generator to a random seed
 	static void randomize()
 	{
 		sBase.seed(std::random_device{}());
@@ -254,40 +232,17 @@ class Rand {
 		return vec2( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
 
-	//! returns a random float via Gaussian distribution; refactor later
+	//! returns a random float via Gaussian distribution
 	static float randGaussian()
 	{
-		static bool  sHaveNextNextGaussian = false;
-		static float sNextNextGaussian;
-
-		if( sHaveNextNextGaussian ) {
-			sHaveNextNextGaussian = false;
-			return sNextNextGaussian;
-		}
-		else {
-			float v1, v2, s;
-			do {
-				v1 = 2.0f * sFloatGen(sBase) - 1.0f;
-				v2 = 2.0f * sFloatGen(sBase) - 1.0f;
-
-				s = v1 * v1 + v2 * v2;
-			}
-			while( s >= 1.0f || s == 0.0f );
-
-			float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
-
-			sNextNextGaussian       = v2 * m;
-			sHaveNextNextGaussian   = true;
-
-			return v1 * m;
-		}
+		static std::normal_distribution<float> dist{};
+		return dist(sBase);
 	}
 
   private:
 	std::mt19937 mBase;
 	std::uniform_real_distribution<float>	mFloatGen;
-	float	mNextNextGaussian;
-	bool	mHaveNextNextGaussian;
+	std::normal_distribution<float>			mNormDist;
 
 	static std::mt19937 sBase;
 	static std::uniform_real_distribution<float> sFloatGen;
