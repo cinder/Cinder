@@ -258,7 +258,7 @@ echoFlags()
 	echo "==================================================================="
 	echo "Environment for ${lower_case}..."
 	echo -e "\t CXX:      ${CXX}"
-	echo -e "\t CC:       ${CC}
+	echo -e "\t CC:       ${CC}"
 	echo -e "\t CFLAGS:   ${CFLAGS}"
 	echo -e "\t CXXFLAGS: ${CXXFLAGS}"
 	echo -e "\t LDFLAGS:  ${LDFLAGS}"
