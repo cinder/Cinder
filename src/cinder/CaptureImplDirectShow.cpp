@@ -74,20 +74,27 @@ class SurfaceCache {
 	SurfaceCache( int32_t width, int32_t height, SurfaceChannelOrder sco, int numSurfaces )
 		: mWidth( width ), mHeight( height ), mSCO( sco )
 	{
+		// create the data blocks, which will be reused throughout the lifetime of the Capture instance.
 		for( int i = 0; i < numSurfaces; ++i ) {
-			mSurfaceData.push_back( std::shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], std::default_delete<uint8_t[]>() ) );
+			mSurfaceData.emplace_back( width * height * sco.getPixelInc() );
 			mSurfaceUsed.push_back( false );
 		}
 	}
 	
 	Surface8uRef getNewSurface()
 	{
-		// try to find an available block of pixel data to wrap a surface around	
+		// Try to find an available block of pixel data to wrap a surface around. We create a non-owning
+		// Surface8u that points at the data block, passing this back to the user. When the last instance
+		// is destroyed, the custom deleter marks that slot as available.
 		for( size_t i = 0; i < mSurfaceData.size(); ++i ) {
 			if( ! mSurfaceUsed[i] ) {
 				mSurfaceUsed[i] = true;
-				auto newSurface = new Surface( mSurfaceData[i].get(), mWidth, mHeight, mWidth * mSCO.getPixelInc(), mSCO );
-				Surface8uRef result = shared_ptr<Surface8u>(newSurface, [=](Surface8u* s) { delete s; mSurfaceUsed[i] = false; });
+				auto newSurface = new Surface8u( mSurfaceData[i].data(), mWidth, mHeight, mWidth * mSCO.getPixelInc(), mSCO );
+				Surface8uRef result = shared_ptr<Surface8u>( newSurface,
+					[this, i]( Surface8u* s ) { 
+					delete s; // this doesn't delete the data, only the Surface8u wrapper
+					mSurfaceUsed[i] = false;
+				} );
 				return result;
 			}
 		}
@@ -97,7 +104,7 @@ class SurfaceCache {
 	}
 
  private:
-	vector<std::shared_ptr<uint8_t>>	mSurfaceData;
+	vector<vector<uint8_t>>				mSurfaceData;
 	vector<bool>						mSurfaceUsed;
 	int32_t								mWidth, mHeight;
 	SurfaceChannelOrder					mSCO;
