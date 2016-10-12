@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType API for validating OpenType tables (specification).         */
 /*                                                                         */
-/*  Copyright 2004-2015 by                                                 */
+/*  Copyright 2004-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -27,8 +27,8 @@
 /***************************************************************************/
 
 
-#ifndef __FTOTVAL_H__
-#define __FTOTVAL_H__
+#ifndef FTOTVAL_H_
+#define FTOTVAL_H_
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -106,12 +106,12 @@ FT_BEGIN_HEADER
 #define FT_VALIDATE_JSTF  0x1000
 #define FT_VALIDATE_MATH  0x2000
 
-#define FT_VALIDATE_OT  FT_VALIDATE_BASE | \
-                        FT_VALIDATE_GDEF | \
-                        FT_VALIDATE_GPOS | \
-                        FT_VALIDATE_GSUB | \
-                        FT_VALIDATE_JSTF | \
-                        FT_VALIDATE_MATH
+#define FT_VALIDATE_OT  ( FT_VALIDATE_BASE | \
+                          FT_VALIDATE_GDEF | \
+                          FT_VALIDATE_GPOS | \
+                          FT_VALIDATE_GSUB | \
+                          FT_VALIDATE_JSTF | \
+                          FT_VALIDATE_MATH )
 
  /**********************************************************************
   *
@@ -198,7 +198,7 @@ FT_BEGIN_HEADER
 
 FT_END_HEADER
 
-#endif /* __FTOTVAL_H__ */
+#endif /* FTOTVAL_H_ */
 
 
 /* END */

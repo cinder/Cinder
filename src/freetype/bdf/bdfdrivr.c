@@ -379,7 +379,8 @@ THE SOFTWARE.
      *      an invalid argument error when the font could be
      *      opened by the specified driver.
      */
-    if ( face_index > 0 ) {
+    if ( face_index > 0 && ( face_index & 0xFFFF ) > 0 )
+    {
       FT_ERROR(( "BDF_Face_Init: invalid face index\n" ));
       BDF_Face_Done( bdfface );
       return FT_THROW( Invalid_Argument );
@@ -615,9 +616,9 @@ THE SOFTWARE.
 
     FT_Select_Metrics( size->face, strike_index );
 
-    size->metrics.ascender    = bdffont->font_ascent << 6;
-    size->metrics.descender   = -bdffont->font_descent << 6;
-    size->metrics.max_advance = bdffont->bbx.width << 6;
+    size->metrics.ascender    = bdffont->font_ascent * 64;
+    size->metrics.descender   = -bdffont->font_descent * 64;
+    size->metrics.max_advance = bdffont->bbx.width * 64;
 
     return FT_Err_Ok;
   }
@@ -734,18 +735,18 @@ THE SOFTWARE.
     slot->bitmap_left = glyph.bbx.x_offset;
     slot->bitmap_top  = glyph.bbx.ascent;
 
-    slot->metrics.horiAdvance  = (FT_Pos)( glyph.dwidth << 6 );
-    slot->metrics.horiBearingX = (FT_Pos)( glyph.bbx.x_offset << 6 );
-    slot->metrics.horiBearingY = (FT_Pos)( glyph.bbx.ascent << 6 );
-    slot->metrics.width        = (FT_Pos)( bitmap->width << 6 );
-    slot->metrics.height       = (FT_Pos)( bitmap->rows << 6 );
+    slot->metrics.horiAdvance  = (FT_Pos)( glyph.dwidth * 64 );
+    slot->metrics.horiBearingX = (FT_Pos)( glyph.bbx.x_offset * 64 );
+    slot->metrics.horiBearingY = (FT_Pos)( glyph.bbx.ascent * 64 );
+    slot->metrics.width        = (FT_Pos)( bitmap->width * 64 );
+    slot->metrics.height       = (FT_Pos)( bitmap->rows * 64 );
 
     /*
      * XXX DWIDTH1 and VVECTOR should be parsed and
      * used here, provided such fonts do exist.
      */
     ft_synthesize_vertical_metrics( &slot->metrics,
-                                    bdf->bdffont->bbx.height << 6 );
+                                    bdf->bdffont->bbx.height * 64 );
 
   Exit:
     return error;
@@ -823,8 +824,8 @@ THE SOFTWARE.
 
   static const FT_Service_BDFRec  bdf_service_bdf =
   {
-    (FT_BDF_GetCharsetIdFunc)bdf_get_charset_id,
-    (FT_BDF_GetPropertyFunc) bdf_get_bdf_property
+    (FT_BDF_GetCharsetIdFunc)bdf_get_charset_id,       /* get_charset_id */
+    (FT_BDF_GetPropertyFunc) bdf_get_bdf_property      /* get_property   */
   };
 
 
@@ -865,32 +866,32 @@ THE SOFTWARE.
       0x10000L,
       0x20000L,
 
-      0,
+      0,    /* module-specific interface */
 
-      0,                        /* FT_Module_Constructor */
-      0,                        /* FT_Module_Destructor  */
-      bdf_driver_requester
+      0,                        /* FT_Module_Constructor  module_init   */
+      0,                        /* FT_Module_Destructor   module_done   */
+      bdf_driver_requester      /* FT_Module_Requester    get_interface */
     },
 
     sizeof ( BDF_FaceRec ),
     sizeof ( FT_SizeRec ),
     sizeof ( FT_GlyphSlotRec ),
 
-    BDF_Face_Init,
-    BDF_Face_Done,
-    0,                          /* FT_Size_InitFunc */
-    0,                          /* FT_Size_DoneFunc */
-    0,                          /* FT_Slot_InitFunc */
-    0,                          /* FT_Slot_DoneFunc */
+    BDF_Face_Init,              /* FT_Face_InitFunc  init_face */
+    BDF_Face_Done,              /* FT_Face_DoneFunc  done_face */
+    0,                          /* FT_Size_InitFunc  init_size */
+    0,                          /* FT_Size_DoneFunc  done_size */
+    0,                          /* FT_Slot_InitFunc  init_slot */
+    0,                          /* FT_Slot_DoneFunc  done_slot */
 
-    BDF_Glyph_Load,
+    BDF_Glyph_Load,             /* FT_Slot_LoadFunc  load_glyph */
 
-    0,                          /* FT_Face_GetKerningFunc  */
-    0,                          /* FT_Face_AttachFunc      */
-    0,                          /* FT_Face_GetAdvancesFunc */
+    0,                          /* FT_Face_GetKerningFunc   get_kerning  */
+    0,                          /* FT_Face_AttachFunc       attach_file  */
+    0,                          /* FT_Face_GetAdvancesFunc  get_advances */
 
-    BDF_Size_Request,
-    BDF_Size_Select
+    BDF_Size_Request,           /* FT_Size_RequestFunc  request_size */
+    BDF_Size_Select             /* FT_Size_SelectFunc   select_size  */
   };
 
 

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    PostScript hinting algorithm (body).                                 */
 /*                                                                         */
-/*  Copyright 2001-2015 by                                                 */
+/*  Copyright 2001-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used        */
@@ -779,7 +779,7 @@
            * It turns out though that minimizing the total number of lit
            * pixels is also important, so position C), with one edge
            * aligned with a pixel boundary is actually preferable
-           * to A).  There are also more possibile positions for C) than
+           * to A).  There are also more possible positions for C) than
            * for A) or B), so it involves less distortion of the overall
            * character shape.
            */
@@ -802,7 +802,7 @@
             }
 
             /* We choose between B) and C) above based on the amount
-             * of fractinal stem width; for small amounts, choose
+             * of fractional stem width; for small amounts, choose
              * C) always, for large amounts, B) always, and inbetween,
              * pick whichever one involves less stem movement.
              */
@@ -916,102 +916,8 @@
   /*************************************************************************/
   /*************************************************************************/
 
-#if 1
-
 #define  psh_corner_is_flat      ft_corner_is_flat
 #define  psh_corner_orientation  ft_corner_orientation
-
-#else
-
-  FT_LOCAL_DEF( FT_Int )
-  psh_corner_is_flat( FT_Pos  x_in,
-                      FT_Pos  y_in,
-                      FT_Pos  x_out,
-                      FT_Pos  y_out )
-  {
-    FT_Pos  ax = x_in;
-    FT_Pos  ay = y_in;
-
-    FT_Pos  d_in, d_out, d_corner;
-
-
-    if ( ax < 0 )
-      ax = -ax;
-    if ( ay < 0 )
-      ay = -ay;
-    d_in = ax + ay;
-
-    ax = x_out;
-    if ( ax < 0 )
-      ax = -ax;
-    ay = y_out;
-    if ( ay < 0 )
-      ay = -ay;
-    d_out = ax + ay;
-
-    ax = x_out + x_in;
-    if ( ax < 0 )
-      ax = -ax;
-    ay = y_out + y_in;
-    if ( ay < 0 )
-      ay = -ay;
-    d_corner = ax + ay;
-
-    return ( d_in + d_out - d_corner ) < ( d_corner >> 4 );
-  }
-
-  static FT_Int
-  psh_corner_orientation( FT_Pos  in_x,
-                          FT_Pos  in_y,
-                          FT_Pos  out_x,
-                          FT_Pos  out_y )
-  {
-    FT_Int  result;
-
-
-    /* deal with the trivial cases quickly */
-    if ( in_y == 0 )
-    {
-      if ( in_x >= 0 )
-        result = out_y;
-      else
-        result = -out_y;
-    }
-    else if ( in_x == 0 )
-    {
-      if ( in_y >= 0 )
-        result = -out_x;
-      else
-        result = out_x;
-    }
-    else if ( out_y == 0 )
-    {
-      if ( out_x >= 0 )
-        result = in_y;
-      else
-        result = -in_y;
-    }
-    else if ( out_x == 0 )
-    {
-      if ( out_y >= 0 )
-        result = -in_x;
-      else
-        result =  in_x;
-    }
-    else /* general case */
-    {
-      long long  delta = (long long)in_x * out_y - (long long)in_y * out_x;
-
-      if ( delta == 0 )
-        result = 0;
-      else
-        result = 1 - 2 * ( delta < 0 );
-    }
-
-    return result;
-  }
-
-#endif /* !1 */
 
 
 #ifdef COMPUTE_INFLEXS

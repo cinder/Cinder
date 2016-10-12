@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Auto-fitter module implementation (specification).                   */
 /*                                                                         */
-/*  Copyright 2003-2015 by                                                 */
+/*  Copyright 2003-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#ifndef __AFMODULE_H__
-#define __AFMODULE_H__
+#ifndef AFMODULE_H_
+#define AFMODULE_H_
 
 #include <ft2build.h>
 #include FT_INTERNAL_OBJECTS_H
@@ -41,6 +41,8 @@ FT_BEGIN_HEADER
 #ifdef AF_CONFIG_OPTION_USE_WARPER
     FT_Bool       warping;
 #endif
+    FT_Bool       no_stem_darkening;
+    FT_Int        darken_params[8];
 
   } AF_ModuleRec, *AF_Module;
 
@@ -50,7 +52,7 @@ FT_DECLARE_MODULE( autofit_module_class )
 
 FT_END_HEADER
 
-#endif /* __AFMODULE_H__ */
+#endif /* AFMODULE_H_ */
 
 
 /* END */

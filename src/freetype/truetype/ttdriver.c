@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    TrueType font driver implementation (body).                          */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -61,23 +61,50 @@
   static FT_Error
   tt_property_set( FT_Module    module,         /* TT_Driver */
                    const char*  property_name,
-                   const void*  value )
+                   const void*  value,
+                   FT_Bool      value_is_string )
   {
     FT_Error   error  = FT_Err_Ok;
     TT_Driver  driver = (TT_Driver)module;
 
+#ifndef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+    FT_UNUSED( value_is_string );
+#endif
+
 
     if ( !ft_strcmp( property_name, "interpreter-version" ) )
     {
-      FT_UInt*  interpreter_version = (FT_UInt*)value;
+      FT_UInt  interpreter_version;
 
 
-#ifndef TT_CONFIG_OPTION_SUBPIXEL_HINTING
-      if ( *interpreter_version != TT_INTERPRETER_VERSION_35 )
-        error = FT_ERR( Unimplemented_Feature );
+#ifdef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+      if ( value_is_string )
+      {
+        const char*  s = (const char*)value;
+
+
+        interpreter_version = (FT_UInt)ft_strtol( s, NULL, 10 );
+      }
       else
 #endif
-        driver->interpreter_version = *interpreter_version;
+      {
+        FT_UInt*  iv = (FT_UInt*)value;
+
+
+        interpreter_version = *iv;
+      }
+
+      if ( interpreter_version == TT_INTERPRETER_VERSION_35
+#ifdef TT_SUPPORT_SUBPIXEL_HINTING_INFINALITY
+           || interpreter_version == TT_INTERPRETER_VERSION_38
+#endif
+#ifdef TT_SUPPORT_SUBPIXEL_HINTING_MINIMAL
+           || interpreter_version == TT_INTERPRETER_VERSION_40
+#endif
+         )
+        driver->interpreter_version = interpreter_version;
+      else
+        error = FT_ERR( Unimplemented_Feature );
 
       return error;
     }
@@ -117,8 +144,8 @@
 
   FT_DEFINE_SERVICE_PROPERTIESREC(
     tt_service_properties,
-    (FT_Properties_SetFunc)tt_property_set,
-    (FT_Properties_GetFunc)tt_property_get )
+    (FT_Properties_SetFunc)tt_property_set,     /* set_property */
+    (FT_Properties_GetFunc)tt_property_get )    /* get_property */
 
 
   /*************************************************************************/
@@ -194,7 +221,7 @@
                    FT_Fixed  *advances )
   {
     FT_UInt  nn;
-    TT_Face  face  = (TT_Face) ttface;
+    TT_Face  face = (TT_Face) ttface;
 
 
     /* XXX: TODO: check for sbits */
@@ -227,6 +254,7 @@
 
     return FT_Err_Ok;
   }
+
 
   /*************************************************************************/
   /*************************************************************************/
@@ -311,6 +339,25 @@
     {
       error = tt_size_reset( ttsize );
       ttsize->root.metrics = ttsize->metrics;
+
+#ifdef TT_USE_BYTECODE_INTERPRETER
+      /* for the `MPS' bytecode instruction we need the point size */
+      {
+        FT_UInt  resolution = ttsize->metrics.x_ppem > ttsize->metrics.y_ppem
+                                ? req->horiResolution
+                                : req->vertResolution;
+
+
+        /* if we don't have a resolution value, assume 72dpi */
+        if ( req->type == FT_SIZE_REQUEST_TYPE_SCALES ||
+             !resolution                              )
+          resolution = 72;
+
+        ttsize->point_size = FT_MulDiv( ttsize->ttmetrics.ppem,
+                                        64 * 72,
+                                        resolution );
+      }
+#endif
     }
 
     return error;
@@ -417,22 +464,19 @@
 #ifdef TT_CONFIG_OPTION_GX_VAR_SUPPORT
   FT_DEFINE_SERVICE_MULTIMASTERSREC(
     tt_service_gx_multi_masters,
-    (FT_Get_MM_Func)        NULL,
-    (FT_Set_MM_Design_Func) NULL,
-    (FT_Set_MM_Blend_Func)  TT_Set_MM_Blend,
-    (FT_Get_MM_Var_Func)    TT_Get_MM_Var,
-    (FT_Set_Var_Design_Func)TT_Set_Var_Design )
+    (FT_Get_MM_Func)        NULL,                   /* get_mm         */
+    (FT_Set_MM_Design_Func) NULL,                   /* set_mm_design  */
+    (FT_Set_MM_Blend_Func)  TT_Set_MM_Blend,        /* set_mm_blend   */
+    (FT_Get_MM_Var_Func)    TT_Get_MM_Var,          /* get_mm_var     */
+    (FT_Set_Var_Design_Func)TT_Set_Var_Design )     /* set_var_design */
 #endif
+
 
   static const FT_Service_TrueTypeEngineRec  tt_service_truetype_engine =
   {
 #ifdef TT_USE_BYTECODE_INTERPRETER
 
-#ifdef TT_CONFIG_OPTION_UNPATENTED_HINTING
-    FT_TRUETYPE_ENGINE_TYPE_UNPATENTED
-#else
     FT_TRUETYPE_ENGINE_TYPE_PATENTED
-#endif
 
 #else /* !TT_USE_BYTECODE_INTERPRETER */
 
@@ -441,9 +485,11 @@
 #endif /* TT_USE_BYTECODE_INTERPRETER */
   };
 
+
   FT_DEFINE_SERVICE_TTGLYFREC(
     tt_service_truetype_glyf,
-    (TT_Glyf_GetLocationFunc)tt_face_get_location )
+    (TT_Glyf_GetLocationFunc)tt_face_get_location )    /* get_location */
+
 
 #ifdef TT_CONFIG_OPTION_GX_VAR_SUPPORT
   FT_DEFINE_SERVICEDESCREC5(
@@ -534,31 +580,31 @@
       0x10000L,        /* driver version == 1.0                 */
       0x20000L,        /* driver requires FreeType 2.0 or above */
 
-      (void*)0,        /* driver specific interface */
+      0,    /* module-specific interface */
 
-      tt_driver_init,
-      tt_driver_done,
-      tt_get_interface,
+      tt_driver_init,           /* FT_Module_Constructor  module_init   */
+      tt_driver_done,           /* FT_Module_Destructor   module_done   */
+      tt_get_interface,         /* FT_Module_Requester    get_interface */
 
     sizeof ( TT_FaceRec ),
     sizeof ( TT_SizeRec ),
     sizeof ( FT_GlyphSlotRec ),
 
-    tt_face_init,
-    tt_face_done,
-    tt_size_init,
-    tt_size_done,
-    tt_slot_init,
-    0,                       /* FT_Slot_DoneFunc */
+    tt_face_init,               /* FT_Face_InitFunc  init_face */
+    tt_face_done,               /* FT_Face_DoneFunc  done_face */
+    tt_size_init,               /* FT_Size_InitFunc  init_size */
+    tt_size_done,               /* FT_Size_DoneFunc  done_size */
+    tt_slot_init,               /* FT_Slot_InitFunc  init_slot */
+    0,                          /* FT_Slot_DoneFunc  done_slot */
 
-    tt_glyph_load,
+    tt_glyph_load,              /* FT_Slot_LoadFunc  load_glyph */
 
-    tt_get_kerning,
-    0,                       /* FT_Face_AttachFunc */
-    tt_get_advances,
+    tt_get_kerning,             /* FT_Face_GetKerningFunc   get_kerning  */
+    0,                          /* FT_Face_AttachFunc       attach_file  */
+    tt_get_advances,            /* FT_Face_GetAdvancesFunc  get_advances */
 
-    tt_size_request,
-    TT_SIZE_SELECT
+    tt_size_request,            /* FT_Size_RequestFunc  request_size */
+    TT_SIZE_SELECT              /* FT_Size_SelectFunc   select_size  */
   )
 
 

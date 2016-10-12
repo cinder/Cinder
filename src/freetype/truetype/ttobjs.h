@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Objects manager (specification).                                     */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#ifndef __TTOBJS_H__
-#define __TTOBJS_H__
+#ifndef TTOBJS_H_
+#define TTOBJS_H_
 
 
 #include <ft2build.h>
@@ -37,17 +37,6 @@ FT_BEGIN_HEADER
   /*    A handle to a TrueType driver object.                              */
   /*                                                                       */
   typedef struct TT_DriverRec_*  TT_Driver;
-
-
-  /*************************************************************************/
-  /*                                                                       */
-  /* <Type>                                                                */
-  /*    TT_Instance                                                        */
-  /*                                                                       */
-  /* <Description>                                                         */
-  /*    A handle to a TrueType size object.                                */
-  /*                                                                       */
-  typedef struct TT_SizeRec_*  TT_Size;
 
 
   /*************************************************************************/
@@ -82,10 +71,6 @@ FT_BEGIN_HEADER
     FT_UnitVector  dualVector;
     FT_UnitVector  projVector;
     FT_UnitVector  freeVector;
-
-#ifdef TT_CONFIG_OPTION_UNPATENTED_HINTING
-    FT_Bool        both_x_axis;
-#endif
 
     FT_Long        loop;
     FT_F26Dot6     minimum_distance;
@@ -301,6 +286,8 @@ FT_BEGIN_HEADER
 
 #ifdef TT_USE_BYTECODE_INTERPRETER
 
+    FT_Long            point_size;    /* for the `MPS' bytecode instruction */
+
     FT_UInt            num_function_defs; /* number of function definitions */
     FT_UInt            max_function_defs;
     TT_DefArray        function_defs;     /* table of function definitions  */
@@ -430,7 +417,7 @@ FT_BEGIN_HEADER
 
 FT_END_HEADER
 
-#endif /* __TTOBJS_H__ */
+#endif /* TTOBJS_H_ */
 
 
 /* END */

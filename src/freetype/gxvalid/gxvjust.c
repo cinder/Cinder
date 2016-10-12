@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    TrueTypeGX/AAT just table validation (body).                         */
 /*                                                                         */
-/*  Copyright 2005-2015 by                                                 */
+/*  Copyright 2005-2016 by                                                 */
 /*  suzuki toshiya, Masatake YAMATO, Red Hat K.K.,                         */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
@@ -152,7 +152,7 @@
                                         FT_Bytes       limit,
                                         GXV_Validator  gxvalid )
   {
-    FT_Bytes  p         = table ;
+    FT_Bytes  p         = table;
     FT_Bytes  wdc_end   = table + GXV_JUST_DATA( wdc_offset_max );
     FT_UInt   i;
 
