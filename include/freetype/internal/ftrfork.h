@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Embedded resource forks accessor (specification).                    */
 /*                                                                         */
-/*  Copyright 2004-2015 by                                                 */
+/*  Copyright 2004-2016 by                                                 */
 /*  Masatake YAMATO and Redhat K.K.                                        */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -21,8 +21,8 @@
 /***************************************************************************/
 
 
-#ifndef __FTRFORK_H__
-#define __FTRFORK_H__
+#ifndef FTRFORK_H_
+#define FTRFORK_H_
 
 
 #include <ft2build.h>
@@ -227,7 +227,7 @@ FT_BEGIN_HEADER
   /*    sort_by_res_id ::                                                  */
   /*      A Boolean to sort the fragmented resource by their ids.          */
   /*      The fragmented resources for `POST' resource should be sorted    */
-  /*      to restore Type1 font properly.  For `snft' resources, sorting   */
+  /*      to restore Type1 font properly.  For `sfnt' resources, sorting   */
   /*      may induce a different order of the faces in comparison to that  */
   /*      by QuickDraw API.                                                */
   /*                                                                       */
@@ -260,7 +260,7 @@ FT_BEGIN_HEADER
 
 FT_END_HEADER
 
-#endif /* __FTRFORK_H__ */
+#endif /* FTRFORK_H_ */
 
 
 /* END */

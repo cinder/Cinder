@@ -5,7 +5,7 @@
 /*    TrueTypeGX/AAT mort table validation                                 */
 /*    body for type1 (Contextual Substitution) subtable.                   */
 /*                                                                         */
-/*  Copyright 2005-2015 by                                                 */
+/*  Copyright 2005-2016 by                                                 */
 /*  suzuki toshiya, Masatake YAMATO, Red Hat K.K.,                         */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
@@ -192,7 +192,7 @@
 
 
     GXV_NAME_ENTER( "validating contents of substitutionTable" );
-    for ( i = 0; i < num_gids ; i ++ )
+    for ( i = 0; i < num_gids; i++ )
     {
       FT_UShort  dst_gid;
 

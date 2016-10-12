@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    OpenType objects manager (body).                                     */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -583,10 +583,18 @@
       if ( error )
         goto Exit;
 
+      /* if we are performing a simple font format check, exit immediately */
+      /* (this is here for pure CFF)                                       */
+      if ( face_index < 0 )
+      {
+        cffface->num_faces = (FT_Long)cff->num_faces;
+        return FT_Err_Ok;
+      }
+
       cff->pshinter = pshinter;
       cff->psnames  = psnames;
 
-      cffface->face_index = face_index;
+      cffface->face_index = face_index & 0xFFFF;
 
       /* Complement the root flags with some interesting information. */
       /* Note that this is only necessary for pure CFF and CEF fonts; */
@@ -617,11 +625,44 @@
         FT_TRACE4(( "SIDs\n" ));
 
         /* dump string index, including default strings for convenience */
-        for ( idx = 0; idx < cff->num_strings + 390; idx++ )
+        for ( idx = 0; idx <= 390; idx++ )
         {
           s = cff_index_get_sid_string( cff, idx );
           if ( s )
-            FT_TRACE4(("  %5d %s\n", idx, s ));
+            FT_TRACE4(( "  %5d %s\n", idx, s ));
+        }
+
+        /* In Multiple Master CFFs, two SIDs hold the Normalize Design  */
+        /* Vector (NDV) and Convert Design Vector (CDV) charstrings,    */
+        /* which may contain NULL bytes in the middle of the data, too. */
+        /* We thus access `cff->strings' directly.                      */
+        for ( idx = 1; idx < cff->num_strings; idx++ )
+        {
+          FT_Byte*    s1    = cff->strings[idx - 1];
+          FT_Byte*    s2    = cff->strings[idx];
+          FT_PtrDist  s1len = s2 - s1 - 1; /* without the final NULL byte */
+          FT_PtrDist  l;
+
+
+          FT_TRACE4(( "  %5d ", idx + 390 ));
+          for ( l = 0; l < s1len; l++ )
+            FT_TRACE4(( "%c", s1[l] ));
+          FT_TRACE4(( "\n" ));
+        }
+
+        /* print last element */
+        if ( cff->num_strings )
+        {
+          FT_Byte*    s1    = cff->strings[cff->num_strings - 1];
+          FT_Byte*    s2    = cff->string_pool + cff->string_pool_size;
+          FT_PtrDist  s1len = s2 - s1 - 1;
+          FT_PtrDist  l;
+
+
+          FT_TRACE4(( "  %5d ", cff->num_strings + 390 ));
+          for ( l = 0; l < s1len; l++ )
+            FT_TRACE4(( "%c", s1[l] ));
+          FT_TRACE4(( "\n" ));
         }
       }
 #endif /* FT_DEBUG_LEVEL_TRACE */
@@ -629,10 +670,11 @@
       if ( !dict->has_font_matrix )
         dict->units_per_em = pure_cff ? 1000 : face->root.units_per_EM;
 
-      /* Normalize the font matrix so that `matrix->xx' is 1; the */
-      /* scaling is done with `units_per_em' then (at this point, */
-      /* it already contains the scaling factor, but without      */
-      /* normalization of the matrix).                            */
+      /* Normalize the font matrix so that `matrix->yy' is 1; if  */
+      /* it is zero, we use `matrix->yx' instead.  The scaling is */
+      /* done with `units_per_em' then (at this point, it already */
+      /* contains the scaling factor, but without normalization   */
+      /* of the matrix).                                          */
       /*                                                          */
       /* Note that the offsets must be expressed in integer font  */
       /* units.                                                   */
@@ -641,8 +683,11 @@
         FT_Matrix*  matrix = &dict->font_matrix;
         FT_Vector*  offset = &dict->font_offset;
         FT_ULong*   upm    = &dict->units_per_em;
-        FT_Fixed    temp   = FT_ABS( matrix->yy );
+        FT_Fixed    temp;
 
+
+        temp = matrix->yy ? FT_ABS( matrix->yy )
+                          : FT_ABS( matrix->yx );
 
         if ( temp != 0x10000L )
         {
@@ -711,7 +756,10 @@
         matrix = &sub->font_matrix;
         offset = &sub->font_offset;
         upm    = &sub->units_per_em;
-        temp   = FT_ABS( matrix->yy );
+
+        temp = matrix->yy ? FT_ABS( matrix->yy )
+                          : FT_ABS( matrix->yx );
+
 
         if ( temp != 0x10000L )
         {
@@ -765,8 +813,9 @@
           (FT_Short)( dict->underline_thickness >> 16 );
 
         /* retrieve font family & style name */
-        cffface->family_name = cff_index_get_name( cff,
-                                                   (FT_UInt)face_index );
+        cffface->family_name = cff_index_get_name(
+                                 cff,
+                                 (FT_UInt)( face_index & 0xFFFF ) );
         if ( cffface->family_name )
         {
           char*  full   = cff_index_get_sid_string( cff,
@@ -1046,7 +1095,7 @@
     driver->hinting_engine = FT_CFF_HINTING_ADOBE;
 #endif
 
-    driver->no_stem_darkening = FALSE;
+    driver->no_stem_darkening = TRUE;
 
     driver->darken_params[0] = CFF_CONFIG_OPTION_DARKENING_PARAMETER_X1;
     driver->darken_params[1] = CFF_CONFIG_OPTION_DARKENING_PARAMETER_Y1;

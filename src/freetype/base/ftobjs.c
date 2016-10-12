@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    The FreeType private base classes (body).                            */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -55,7 +55,18 @@
 #pragma warning( disable : 4244 )
 #endif /* _MSC_VER */
 
-  /* it's easiest to include `md5.c' directly */
+  /* It's easiest to include `md5.c' directly.  However, since OpenSSL */
+  /* also provides the same functions, there might be conflicts if     */
+  /* both FreeType and OpenSSL are built as static libraries.  For     */
+  /* this reason, we put the MD5 stuff into the `FT_' namespace.       */
+#define FT_MD5_u32plus  FT_FT_MD5_u32plus
+#define FT_MD5_CTX      FT_FT_MD5_CTX
+#define FT_MD5_Init     FT_FT_MD5_Init
+#define FT_MD5_Update   FT_FT_MD5_Update
+#define FT_MD5_Final    FT_FT_MD5_Final
+
+#undef  HAVE_OPENSSL
+
 #include "md5.c"
 
 #if defined( _MSC_VER )
@@ -675,8 +686,8 @@
         /* check the size of the `fpgm' and `prep' tables, too --    */
         /* the assumption is that there don't exist real TTFs where  */
         /* both `fpgm' and `prep' tables are missing                 */
-        if ( mode == FT_RENDER_MODE_LIGHT                       ||
-             face->internal->ignore_unpatented_hinter           ||
+        if ( ( mode == FT_RENDER_MODE_LIGHT                   &&
+               !FT_DRIVER_HINTS_LIGHTLY( driver ) )             ||
              ( FT_IS_SFNT( face )                             &&
                ttface->num_locations                          &&
                ttface->max_profile.maxSizeOfInstructions == 0 &&
@@ -1375,13 +1386,13 @@
     }
 
 #ifdef FT_MACINTOSH
-    /* At this point, face_index has served its purpose;      */
+    /* At this point, the face index has served its purpose;  */
     /* whoever calls this function has already used it to     */
     /* locate the correct font data.  We should not propagate */
     /* this index to FT_Open_Face() (unless it is negative).  */
 
     if ( face_index > 0 )
-      face_index = 0;
+      face_index &= 0x7FFF0000L; /* retain GX data */
 #endif
 
     error = FT_Open_Face( library, &args, face_index, aface );
@@ -1407,7 +1418,7 @@
 
   /* Type 1 and CID-keyed font drivers should recognize sfnt-wrapped */
   /* format too.  Here, since we can't expect that the TrueType font */
-  /* driver is loaded unconditially, we must parse the font by       */
+  /* driver is loaded unconditionally, we must parse the font by     */
   /* ourselves.  We are only interested in the name of the table and */
   /* the offset.                                                     */
 
@@ -1472,6 +1483,7 @@
       if ( face_index >= 0 && pstable_index == face_index )
         return FT_Err_Ok;
     }
+
     return FT_THROW( Table_Missing );
   }
 
@@ -1495,6 +1507,10 @@
     FT_UNUSED( params );
 
 
+    /* ignore GX stuff */
+    if ( face_index > 0 )
+      face_index &= 0xFFFFL;
+
     pos = FT_STREAM_POS();
 
     error = ft_lookup_PS_in_sfnt_stream( stream,
@@ -1505,7 +1521,21 @@
     if ( error )
       goto Exit;
 
-    if ( FT_Stream_Seek( stream, pos + offset ) )
+    if ( offset > stream->size )
+    {
+      FT_TRACE2(( "open_face_PS_from_sfnt_stream: invalid table offset\n" ));
+      error = FT_THROW( Invalid_Table );
+      goto Exit;
+    }
+    else if ( length > stream->size - offset )
+    {
+      FT_TRACE2(( "open_face_PS_from_sfnt_stream: invalid table length\n" ));
+      error = FT_THROW( Invalid_Table );
+      goto Exit;
+    }
+
+    error = FT_Stream_Seek( stream, pos + offset );
+    if ( error )
       goto Exit;
 
     if ( FT_ALLOC( sfnt_ps, (FT_Long)length ) )
@@ -1513,7 +1543,10 @@
 
     error = FT_Stream_Read( stream, (FT_Byte *)sfnt_ps, length );
     if ( error )
+    {
+      FT_FREE( sfnt_ps );
       goto Exit;
+    }
 
     error = open_face_from_buffer( library,
                                    sfnt_ps,
@@ -1582,12 +1615,14 @@
       /* FT2 allocator takes signed long buffer length,
        * too large value causing overflow should be checked
        */
-      FT_TRACE4(( "                 POST fragment #%d: length=0x%08x\n",
-                  i, temp));
-      if ( 0x7FFFFFFFUL < temp || pfb_len + temp + 6 < pfb_len )
+      FT_TRACE4(( "                 POST fragment #%d: length=0x%08x"
+                  " total pfb_len=0x%08x\n",
+                  i, temp, pfb_len + temp + 6));
+      if ( FT_MAC_RFORK_MAX_LEN < temp               ||
+           FT_MAC_RFORK_MAX_LEN - temp < pfb_len + 6 )
       {
-        FT_TRACE2(( "             too long fragment length makes"
-                    " pfb_len confused: temp=0x%08x\n", temp ));
+        FT_TRACE2(( "             MacOS resource length cannot exceed"
+                    " 0x%08x\n", FT_MAC_RFORK_MAX_LEN ));
         error = FT_THROW( Invalid_Offset );
         goto Exit;
       }
@@ -1660,7 +1695,7 @@
       else
       {
         FT_TRACE3(( "    Write POST fragment #%d header (4-byte) to buffer"
-                    " 0x%p + 0x%08x\n", i, pfb_data, pfb_lenpos ));
+                    " %p + 0x%08x\n", i, pfb_data, pfb_lenpos ));
         if ( pfb_lenpos + 3 > pfb_len + 2 )
           goto Exit2;
         pfb_data[pfb_lenpos    ] = (FT_Byte)( len );
@@ -1672,7 +1707,7 @@
           break;
 
         FT_TRACE3(( "    Write POST fragment #%d header (6-byte) to buffer"
-                    " 0x%p + 0x%08x\n", i, pfb_data, pfb_pos ));
+                    " %p + 0x%08x\n", i, pfb_data, pfb_pos ));
         if ( pfb_pos + 6 > pfb_len + 2 )
           goto Exit2;
         pfb_data[pfb_pos++] = 0x80;
@@ -1692,7 +1727,7 @@
         goto Exit2;
 
       FT_TRACE3(( "    Load POST fragment #%d (%d byte) to buffer"
-                  " 0x%p + 0x%08x\n", i, rlen, pfb_data, pfb_pos ));
+                  " %p + 0x%08x\n", i, rlen, pfb_data, pfb_pos ));
       error = FT_Stream_Read( stream, (FT_Byte *)pfb_data + pfb_pos, rlen );
       if ( error )
         goto Exit2;
@@ -1737,7 +1772,7 @@
   /* The resource header says we've got resource_cnt `sfnt'      */
   /* (TrueType/OpenType) resources in this file.  Look through   */
   /* them for the one indicated by face_index, load it into mem, */
-  /* pass it on the the truetype driver and return it.           */
+  /* pass it on to the truetype driver, and return it.           */
   /*                                                             */
   static FT_Error
   Mac_Read_sfnt_Resource( FT_Library  library,
@@ -1756,8 +1791,8 @@
     FT_Long    face_index_in_resource = 0;
 
 
-    if ( face_index == -1 )
-      face_index = 0;
+    if ( face_index < 0 )
+      face_index = -face_index - 1;
     if ( face_index >= resource_cnt )
       return FT_THROW( Cannot_Open_Resource );
 
@@ -1770,6 +1805,8 @@
       goto Exit;
     if ( rlen == -1 )
       return FT_THROW( Cannot_Open_Resource );
+    if ( (FT_ULong)rlen > FT_MAC_RFORK_MAX_LEN )
+      return FT_THROW( Invalid_Offset );
 
     error = open_face_PS_from_sfnt_stream( library,
                                            stream,
@@ -1780,14 +1817,17 @@
       goto Exit;
 
     /* rewind sfnt stream before open_face_PS_from_sfnt_stream() */
-    if ( FT_Stream_Seek( stream, flag_offset + 4 ) )
+    error = FT_Stream_Seek( stream, flag_offset + 4 );
+    if ( error )
       goto Exit;
 
     if ( FT_ALLOC( sfnt_data, rlen ) )
       return error;
     error = FT_Stream_Read( stream, (FT_Byte *)sfnt_data, (FT_ULong)rlen );
-    if ( error )
+    if ( error ) {
+      FT_FREE( sfnt_data );
       goto Exit;
+    }
 
     is_cff = rlen > 4 && !ft_memcmp( sfnt_data, "OTTO", 4 );
     error = open_face_from_buffer( library,
@@ -1889,13 +1929,14 @@
     if ( error )
       goto Exit;
 
-    if (            header[ 0] !=  0 ||
-                    header[74] !=  0 ||
-                    header[82] !=  0 ||
-                    header[ 1] ==  0 ||
-                    header[ 1] >  33 ||
-                    header[63] !=  0 ||
-         header[2 + header[1]] !=  0 )
+    if (            header[ 0] !=   0 ||
+                    header[74] !=   0 ||
+                    header[82] !=   0 ||
+                    header[ 1] ==   0 ||
+                    header[ 1] >   33 ||
+                    header[63] !=   0 ||
+         header[2 + header[1]] !=   0 ||
+                  header[0x53] > 0x7F )
       return FT_THROW( Unknown_File_Format );
 
     dlen = ( header[0x53] << 24 ) |
@@ -2032,7 +2073,11 @@
 #undef  FT_COMPONENT
 #define FT_COMPONENT  trace_raccess
 
-      FT_TRACE3(( "Try as dfont: %s ...", args->pathname ));
+#ifdef FT_DEBUG_LEVEL_TRACE
+      FT_TRACE3(( "Try as dfont: " ));
+      if ( !( args->flags & FT_OPEN_MEMORY ) )
+        FT_TRACE3(( "%s ...", args->pathname ));
+#endif
 
       error = IsMacResource( library, stream, 0, face_index, aface );
 
@@ -2154,7 +2199,8 @@
                FT_ERR_EQ( error, Table_Missing )                        )
           {
             /* TrueType but essential tables are missing */
-            if ( FT_Stream_Seek( stream, 0 ) )
+            error = FT_Stream_Seek( stream, 0 );
+            if ( error )
               break;
 
             error = open_face_PS_from_sfnt_stream( library,
@@ -2268,11 +2314,24 @@
 
 
         if ( bsize->height < 0 )
-          bsize->height = (FT_Short)-bsize->height;
+          bsize->height = -bsize->height;
         if ( bsize->x_ppem < 0 )
-          bsize->x_ppem = (FT_Short)-bsize->x_ppem;
+          bsize->x_ppem = -bsize->x_ppem;
         if ( bsize->y_ppem < 0 )
           bsize->y_ppem = -bsize->y_ppem;
+
+        /* check whether negation actually has worked */
+        if ( bsize->height < 0 || bsize->x_ppem < 0 || bsize->y_ppem < 0 )
+        {
+          FT_TRACE0(( "FT_Open_Face:"
+                      " Invalid bitmap dimensions for stroke %d,"
+                      " now disabled\n", i ));
+          bsize->width  = 0;
+          bsize->height = 0;
+          bsize->size   = 0;
+          bsize->x_ppem = 0;
+          bsize->y_ppem = 0;
+        }
       }
     }
 
@@ -3068,18 +3127,37 @@
 
           if ( kern_mode != FT_KERNING_UNFITTED )
           {
+            FT_Pos  orig_x = akerning->x;
+            FT_Pos  orig_y = akerning->y;
+
+
             /* we scale down kerning values for small ppem values */
             /* to avoid that rounding makes them too big.         */
             /* `25' has been determined heuristically.            */
             if ( face->size->metrics.x_ppem < 25 )
-              akerning->x = FT_MulDiv( akerning->x,
+              akerning->x = FT_MulDiv( orig_x,
                                        face->size->metrics.x_ppem, 25 );
             if ( face->size->metrics.y_ppem < 25 )
-              akerning->y = FT_MulDiv( akerning->y,
+              akerning->y = FT_MulDiv( orig_y,
                                        face->size->metrics.y_ppem, 25 );
 
             akerning->x = FT_PIX_ROUND( akerning->x );
             akerning->y = FT_PIX_ROUND( akerning->y );
+
+#ifdef FT_DEBUG_LEVEL_TRACE
+            {
+              FT_Pos  orig_x_rounded = FT_PIX_ROUND( orig_x );
+              FT_Pos  orig_y_rounded = FT_PIX_ROUND( orig_y );
+
+
+              if ( akerning->x != orig_x_rounded ||
+                   akerning->y != orig_y_rounded )
+                FT_TRACE5(( "FT_Get_Kerning: horizontal kerning"
+                            " (%d, %d) scaled down to (%d, %d) pixels\n",
+                            orig_x_rounded / 64, orig_y_rounded / 64,
+                            akerning->x / 64, akerning->y / 64 ));
+            }
+#endif
           }
         }
       }
@@ -3350,8 +3428,12 @@
         FT_TRACE1(( "FT_Get_Char_Index: too large charcode" ));
         FT_TRACE1(( " 0x%x is truncated\n", charcode ));
       }
+
       result = cmap->clazz->char_index( cmap, (FT_UInt32)charcode );
+      if ( result >= (FT_UInt)face->num_glyphs )
+        result = 0;
     }
+
     return result;
   }
 
@@ -3370,7 +3452,7 @@
     if ( face && face->charmap && face->num_glyphs )
     {
       gindex = FT_Get_Char_Index( face, 0 );
-      if ( gindex == 0 || gindex >= (FT_UInt)face->num_glyphs )
+      if ( gindex == 0 )
         result = FT_Get_Next_Char( face, 0, &gindex );
     }
 
@@ -4116,39 +4198,51 @@
 #undef  FT_COMPONENT
 #define FT_COMPONENT  trace_bitmap
 
-    /* we convert to a single bitmap format for computing the checksum */
-    if ( !error )
+    /*
+     * Computing the MD5 checksum is expensive, unnecessarily distorting a
+     * possible profiling of FreeType if compiled with tracing support.  For
+     * this reason, we execute the following code only if explicitly
+     * requested.
+     */
+
+    /* we use FT_TRACE3 in this block */
+    if ( ft_trace_levels[trace_bitmap] >= 3 )
     {
-      FT_Bitmap  bitmap;
-      FT_Error   err;
-
-
-      FT_Bitmap_Init( &bitmap );
-
-      /* this also converts the bitmap flow to `down' (i.e., pitch > 0) */
-      err = FT_Bitmap_Convert( library, &slot->bitmap, &bitmap, 1 );
-      if ( !err )
+      /* we convert to a single bitmap format for computing the checksum */
+      if ( !error )
       {
-        FT_MD5_CTX        ctx;
-        unsigned char  md5[16];
-        int            i;
-        unsigned int   rows  = bitmap.rows;
-        unsigned int   pitch = (unsigned int)bitmap.pitch;
+        FT_Bitmap  bitmap;
+        FT_Error   err;
 
 
-        FT_MD5_Init( &ctx );
-        FT_MD5_Update( &ctx, bitmap.buffer, rows * pitch );
-        FT_MD5_Final( md5, &ctx );
+        FT_Bitmap_Init( &bitmap );
 
-        FT_TRACE3(( "FT_MD5 checksum for %dx%d bitmap:\n"
-                    "  ",
-                    rows, pitch ));
-        for ( i = 0; i < 16; i++ )
-          FT_TRACE3(( "%02X", md5[i] ));
-        FT_TRACE3(( "\n" ));
+        /* this also converts the bitmap flow to `down' (i.e., pitch > 0) */
+        err = FT_Bitmap_Convert( library, &slot->bitmap, &bitmap, 1 );
+        if ( !err )
+        {
+          FT_MD5_CTX        ctx;
+          unsigned char  md5[16];
+          int            i;
+          unsigned int   rows  = bitmap.rows;
+          unsigned int   pitch = (unsigned int)bitmap.pitch;
+
+
+          FT_MD5_Init( &ctx );
+          if ( bitmap.buffer )
+            FT_MD5_Update( &ctx, bitmap.buffer, rows * pitch );
+          FT_MD5_Final( md5, &ctx );
+
+          FT_TRACE3(( "MD5 checksum for %dx%d bitmap:\n"
+                      "  ",
+                      rows, pitch ));
+          for ( i = 0; i < 16; i++ )
+            FT_TRACE3(( "%02X", md5[i] ));
+          FT_TRACE3(( "\n" ));
+        }
+
+        FT_Bitmap_Done( library, &bitmap );
       }
-
-      FT_Bitmap_Done( library, &bitmap );
     }
 
 #undef  FT_COMPONENT
@@ -4242,7 +4336,7 @@
   {
     FT_Error   error;
     FT_Memory  memory;
-    FT_Module  module;
+    FT_Module  module = NULL;
     FT_UInt    nn;
 
 
@@ -4483,7 +4577,8 @@
                   const FT_String*  module_name,
                   const FT_String*  property_name,
                   void*             value,
-                  FT_Bool           set )
+                  FT_Bool           set,
+                  FT_Bool           value_is_string )
   {
     FT_Module*           cur;
     FT_Module*           limit;
@@ -4553,8 +4648,13 @@
       return FT_THROW( Unimplemented_Feature );
     }
 
-    return set ? service->set_property( cur[0], property_name, value )
-               : service->get_property( cur[0], property_name, value );
+    return set ? service->set_property( cur[0],
+                                        property_name,
+                                        value,
+                                        value_is_string )
+               : service->get_property( cur[0],
+                                        property_name,
+                                        value );
   }
 
 
@@ -4570,7 +4670,8 @@
                            module_name,
                            property_name,
                            (void*)value,
-                           TRUE );
+                           TRUE,
+                           FALSE );
   }
 
 
@@ -4586,8 +4687,31 @@
                            module_name,
                            property_name,
                            value,
+                           FALSE,
                            FALSE );
   }
+
+
+#ifdef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+
+  /* this variant is used for handling the FREETYPE_PROPERTIES */
+  /* environment variable                                      */
+
+  FT_BASE_DEF( FT_Error )
+  ft_property_string_set( FT_Library        library,
+                          const FT_String*  module_name,
+                          const FT_String*  property_name,
+                          FT_String*        value )
+  {
+    return ft_property_do( library,
+                           module_name,
+                           property_name,
+                           (void*)value,
+                           TRUE,
+                           TRUE );
+  }
+
+#endif
 
 
   /*************************************************************************/

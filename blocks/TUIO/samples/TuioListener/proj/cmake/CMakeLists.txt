@@ -9,7 +9,7 @@ get_filename_component( APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE )
 include( "${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake" )
 
 ci_make_app(
-	SOURCES     ${APP_PATH}/src/TUIOListenerApp.cpp
+	SOURCES     ${APP_PATH}/src/TuioListenerApp.cpp
 	CINDER_PATH ${CINDER_PATH}
 	BLOCKS		TUIO
 )

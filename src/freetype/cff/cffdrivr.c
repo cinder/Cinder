@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    OpenType font driver implementation (body).                          */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -358,8 +358,8 @@
 
   FT_DEFINE_SERVICE_GLYPHDICTREC(
     cff_service_glyph_dict,
-    (FT_GlyphDict_GetNameFunc)  cff_get_glyph_name,
-    (FT_GlyphDict_NameIndexFunc)cff_get_name_index
+    (FT_GlyphDict_GetNameFunc)  cff_get_glyph_name,      /* get_name   */
+    (FT_GlyphDict_NameIndexFunc)cff_get_name_index       /* name_index */
   )
 
 
@@ -421,11 +421,13 @@
 
   FT_DEFINE_SERVICE_PSINFOREC(
     cff_service_ps_info,
-    (PS_GetFontInfoFunc)   cff_ps_get_font_info,
-    (PS_GetFontExtraFunc)  NULL,
-    (PS_HasGlyphNamesFunc) cff_ps_has_glyph_names,
-    (PS_GetFontPrivateFunc)NULL,        /* unsupported with CFF fonts */
-    (PS_GetFontValueFunc)  NULL         /* not implemented            */
+    (PS_GetFontInfoFunc)   cff_ps_get_font_info,    /* ps_get_font_info    */
+    (PS_GetFontExtraFunc)  NULL,                    /* ps_get_font_extra   */
+    (PS_HasGlyphNamesFunc) cff_ps_has_glyph_names,  /* ps_has_glyph_names  */
+    /* unsupported with CFF fonts */
+    (PS_GetFontPrivateFunc)NULL,                    /* ps_get_font_private */
+    /* not implemented            */
+    (PS_GetFontValueFunc)  NULL                     /* ps_get_font_value   */
   )
 
 
@@ -444,7 +446,7 @@
     /* following the OpenType specification 1.7, we return the name stored */
     /* in the `name' table for a CFF wrapped into an SFNT container        */
 
-    if ( sfnt )
+    if ( FT_IS_SFNT( FT_FACE( face ) ) && sfnt )
     {
       FT_Library             library     = FT_FACE_LIBRARY( face );
       FT_Module              sfnt_module = FT_Get_Module( library, "sfnt" );
@@ -464,7 +466,7 @@
 
   FT_DEFINE_SERVICE_PSFONTNAMEREC(
     cff_service_ps_name,
-    (FT_PsName_GetFunc)cff_get_ps_name
+    (FT_PsName_GetFunc)cff_get_ps_name      /* get_ps_font_name */
   )
 
 
@@ -511,7 +513,7 @@
 
   FT_DEFINE_SERVICE_TTCMAPSREC(
     cff_service_get_cmap_info,
-    (TT_CMap_Info_GetFunc)cff_get_cmap_info
+    (TT_CMap_Info_GetFunc)cff_get_cmap_info    /* get_cmap_info */
   )
 
 
@@ -641,9 +643,12 @@
 
   FT_DEFINE_SERVICE_CIDREC(
     cff_service_cid_info,
-    (FT_CID_GetRegistryOrderingSupplementFunc)cff_get_ros,
-    (FT_CID_GetIsInternallyCIDKeyedFunc)      cff_get_is_cid,
-    (FT_CID_GetCIDFromGlyphIndexFunc)         cff_get_cid_from_glyph_index
+    (FT_CID_GetRegistryOrderingSupplementFunc)
+      cff_get_ros,                             /* get_ros                  */
+    (FT_CID_GetIsInternallyCIDKeyedFunc)
+      cff_get_is_cid,                          /* get_is_cid               */
+    (FT_CID_GetCIDFromGlyphIndexFunc)
+      cff_get_cid_from_glyph_index             /* get_cid_from_glyph_index */
   )
 
 
@@ -654,25 +659,61 @@
   static FT_Error
   cff_property_set( FT_Module    module,         /* CFF_Driver */
                     const char*  property_name,
-                    const void*  value )
+                    const void*  value,
+                    FT_Bool      value_is_string )
   {
     FT_Error    error  = FT_Err_Ok;
     CFF_Driver  driver = (CFF_Driver)module;
 
+#ifndef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+    FT_UNUSED( value_is_string );
+#endif
+
 
     if ( !ft_strcmp( property_name, "darkening-parameters" ) )
     {
-      FT_Int*  darken_params = (FT_Int*)value;
+      FT_Int*  darken_params;
+      FT_Int   x1, y1, x2, y2, x3, y3, x4, y4;
 
-      FT_Int  x1 = darken_params[0];
-      FT_Int  y1 = darken_params[1];
-      FT_Int  x2 = darken_params[2];
-      FT_Int  y2 = darken_params[3];
-      FT_Int  x3 = darken_params[4];
-      FT_Int  y3 = darken_params[5];
-      FT_Int  x4 = darken_params[6];
-      FT_Int  y4 = darken_params[7];
+#ifdef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+      FT_Int   dp[8];
 
+
+      if ( value_is_string )
+      {
+        const char*  s = (const char*)value;
+        char*        ep;
+        int          i;
+
+
+        /* eight comma-separated numbers */
+        for ( i = 0; i < 7; i++ )
+        {
+          dp[i] = (FT_Int)ft_strtol( s, &ep, 10 );
+          if ( *ep != ',' || s == ep )
+            return FT_THROW( Invalid_Argument );
+
+          s = ep + 1;
+        }
+
+        dp[7] = (FT_Int)ft_strtol( s, &ep, 10 );
+        if ( !( *ep == '\0' || *ep == ' ' ) || s == ep )
+          return FT_THROW( Invalid_Argument );
+
+        darken_params = dp;
+      }
+      else
+#endif
+        darken_params = (FT_Int*)value;
+
+      x1 = darken_params[0];
+      y1 = darken_params[1];
+      x2 = darken_params[2];
+      y2 = darken_params[3];
+      x3 = darken_params[4];
+      y3 = darken_params[5];
+      x4 = darken_params[6];
+      y4 = darken_params[7];
 
       if ( x1 < 0   || x2 < 0   || x3 < 0   || x4 < 0   ||
            y1 < 0   || y2 < 0   || y3 < 0   || y4 < 0   ||
@@ -693,24 +734,62 @@
     }
     else if ( !ft_strcmp( property_name, "hinting-engine" ) )
     {
-      FT_UInt*  hinting_engine = (FT_UInt*)value;
+#ifdef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+      if ( value_is_string )
+      {
+        const char*  s = (const char*)value;
 
 
-#ifndef CFF_CONFIG_OPTION_OLD_ENGINE
-      if ( *hinting_engine != FT_CFF_HINTING_ADOBE )
-        error = FT_ERR( Unimplemented_Feature );
+        if ( !ft_strcmp( s, "adobe" ) )
+          driver->hinting_engine = FT_CFF_HINTING_ADOBE;
+#ifdef CFF_CONFIG_OPTION_OLD_ENGINE
+        else if ( !ft_strcmp( s, "freetype" ) )
+          driver->hinting_engine = FT_CFF_HINTING_FREETYPE;
+#endif
+        else
+          return FT_THROW( Invalid_Argument );
+      }
       else
 #endif
-        driver->hinting_engine = *hinting_engine;
+      {
+        FT_UInt*  hinting_engine = (FT_UInt*)value;
 
-      return error;
+        if ( *hinting_engine == FT_CFF_HINTING_ADOBE
+#ifdef CFF_CONFIG_OPTION_OLD_ENGINE
+             || *hinting_engine == FT_CFF_HINTING_FREETYPE
+#endif
+           )
+          driver->hinting_engine = *hinting_engine;
+        else
+          error = FT_ERR( Unimplemented_Feature );
+
+        return error;
+      }
     }
     else if ( !ft_strcmp( property_name, "no-stem-darkening" ) )
     {
-      FT_Bool*  no_stem_darkening = (FT_Bool*)value;
+#ifdef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+      if ( value_is_string )
+      {
+        const char*  s   = (const char*)value;
+        long         nsd = ft_strtol( s, NULL, 10 );
 
 
-      driver->no_stem_darkening = *no_stem_darkening;
+        if ( nsd == 0 )
+          driver->no_stem_darkening = 0;
+        else if ( nsd == 1 )
+          driver->no_stem_darkening = 1;
+        else
+          return FT_THROW( Invalid_Argument );
+      }
+      else
+#endif
+      {
+        FT_Bool*  no_stem_darkening = (FT_Bool*)value;
+
+
+        driver->no_stem_darkening = *no_stem_darkening;
+      }
 
       return error;
     }
@@ -776,8 +855,8 @@
 
   FT_DEFINE_SERVICE_PROPERTIESREC(
     cff_service_properties,
-    (FT_Properties_SetFunc)cff_property_set,
-    (FT_Properties_GetFunc)cff_property_get )
+    (FT_Properties_SetFunc)cff_property_set,      /* set_property */
+    (FT_Properties_GetFunc)cff_property_get )     /* get_property */
 
 
   /*************************************************************************/
@@ -865,9 +944,10 @@
   FT_DEFINE_DRIVER(
     cff_driver_class,
 
-      FT_MODULE_FONT_DRIVER       |
-      FT_MODULE_DRIVER_SCALABLE   |
-      FT_MODULE_DRIVER_HAS_HINTER,
+      FT_MODULE_FONT_DRIVER          |
+      FT_MODULE_DRIVER_SCALABLE      |
+      FT_MODULE_DRIVER_HAS_HINTER    |
+      FT_MODULE_DRIVER_HINTS_LIGHTLY,
 
       sizeof ( CFF_DriverRec ),
       "cff",
@@ -876,31 +956,29 @@
 
       0,   /* module-specific interface */
 
-      cff_driver_init,
-      cff_driver_done,
-      cff_get_interface,
+      cff_driver_init,          /* FT_Module_Constructor  module_init   */
+      cff_driver_done,          /* FT_Module_Destructor   module_done   */
+      cff_get_interface,        /* FT_Module_Requester    get_interface */
 
-    /* now the specific driver fields */
     sizeof ( TT_FaceRec ),
     sizeof ( CFF_SizeRec ),
     sizeof ( CFF_GlyphSlotRec ),
 
-    cff_face_init,
-    cff_face_done,
-    cff_size_init,
-    cff_size_done,
-    cff_slot_init,
-    cff_slot_done,
+    cff_face_init,              /* FT_Face_InitFunc  init_face */
+    cff_face_done,              /* FT_Face_DoneFunc  done_face */
+    cff_size_init,              /* FT_Size_InitFunc  init_size */
+    cff_size_done,              /* FT_Size_DoneFunc  done_size */
+    cff_slot_init,              /* FT_Slot_InitFunc  init_slot */
+    cff_slot_done,              /* FT_Slot_DoneFunc  done_slot */
 
-    cff_glyph_load,
+    cff_glyph_load,             /* FT_Slot_LoadFunc  load_glyph */
 
-    cff_get_kerning,
-    0,                       /* FT_Face_AttachFunc */
-    cff_get_advances,
+    cff_get_kerning,            /* FT_Face_GetKerningFunc   get_kerning  */
+    0,                          /* FT_Face_AttachFunc       attach_file  */
+    cff_get_advances,           /* FT_Face_GetAdvancesFunc  get_advances */
 
-    cff_size_request,
-
-    CFF_SIZE_SELECT
+    cff_size_request,           /* FT_Size_RequestFunc  request_size */
+    CFF_SIZE_SELECT             /* FT_Size_SelectFunc   select_size  */
   )
 
 

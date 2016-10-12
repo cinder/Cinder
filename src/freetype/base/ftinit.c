@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType initialization layer (body).                                */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -23,8 +23,8 @@
   /*  FT_Add_Default_Modules():                                            */
   /*     This function is used to add the set of default modules to a      */
   /*     fresh new library object.  The set is taken from the header file  */
-  /*     `config/ftmodule.h'.  See the document `FreeType 2.0 Build        */
-  /*     System' for more information.                                     */
+  /*     `freetype/config/ftmodule.h'.  See the document `FreeType 2.0     */
+  /*     Build System' for more information.                               */
   /*                                                                       */
   /*  FT_Init_FreeType():                                                  */
   /*     This function creates a system object for the current platform,   */
@@ -226,6 +226,115 @@
   }
 
 
+#ifdef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+
+#define MAX_LENGTH  128
+
+  /*
+   * Set default properties derived from the `FREETYPE_PROPERTIES'
+   * environment variable.
+   *
+   * `FREETYPE_PROPERTIES' has the following syntax form (broken here into
+   * multiple lines for better readability)
+   *
+   *   <optional whitespace>
+   *   <module-name1> ':'
+   *   <property-name1> '=' <property-value1>
+   *   <whitespace>
+   *   <module-name2> ':'
+   *   <property-name2> '=' <property-value2>
+   *   ...
+   *
+   * Example:
+   *
+   *   FREETYPE_PROPERTIES=truetype:interpreter-version=35 \
+   *                       cff:no-stem-darkening=1 \
+   *                       autofitter:warping=1
+   *
+   */
+
+  static void
+  ft_set_default_properties( FT_Library  library )
+  {
+    const char*  env;
+    const char*  p;
+    const char*  q;
+
+    char  module_name[MAX_LENGTH + 1];
+    char  property_name[MAX_LENGTH + 1];
+    char  property_value[MAX_LENGTH + 1];
+
+    int  i;
+
+
+    env = ft_getenv( "FREETYPE_PROPERTIES" );
+    if ( !env )
+      return;
+
+    for ( p = env; *p; p++ )
+    {
+      /* skip leading whitespace and separators */
+      if ( *p == ' ' || *p == '\t' )
+        continue;
+
+      /* read module name, followed by `:' */
+      q = p;
+      for ( i = 0; i < MAX_LENGTH; i++ )
+      {
+        if ( !*p || *p == ':' )
+          break;
+        module_name[i] = *p++;
+      }
+      module_name[i] = '\0';
+
+      if ( !*p || *p != ':' || p == q )
+        break;
+
+      /* read property name, followed by `=' */
+      q = ++p;
+      for ( i = 0; i < MAX_LENGTH; i++ )
+      {
+        if ( !*p || *p == '=' )
+          break;
+        property_name[i] = *p++;
+      }
+      property_name[i] = '\0';
+
+      if ( !*p || *p != '=' || p == q )
+        break;
+
+      /* read property value, followed by whitespace (if any) */
+      q = ++p;
+      for ( i = 0; i < MAX_LENGTH; i++ )
+      {
+        if ( !*p || *p == ' ' || *p == '\t' )
+          break;
+        property_value[i] = *p++;
+      }
+      property_value[i] = '\0';
+
+      if ( !( *p == '\0' || *p == ' ' || *p == '\t' ) || p == q )
+        break;
+
+      /* we completely ignore errors */
+      ft_property_string_set( library,
+                              module_name,
+                              property_name,
+                              property_value );
+    }
+  }
+
+#else
+
+  static void
+  ft_set_default_properties( FT_Library  library )
+  {
+    FT_UNUSED( library );
+  }
+
+#endif
+
+
   /* documentation is in freetype.h */
 
   FT_EXPORT_DEF( FT_Error )
@@ -255,6 +364,8 @@
       FT_Done_Memory( memory );
     else
       FT_Add_Default_Modules( *alibrary );
+
+    ft_set_default_properties( *alibrary );
 
     return error;
   }

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType path stroker (body).                                        */
 /*                                                                         */
-/*  Copyright 2002-2015 by                                                 */
+/*  Copyright 2002-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -23,6 +23,16 @@
 #include FT_INTERNAL_MEMORY_H
 #include FT_INTERNAL_DEBUG_H
 #include FT_INTERNAL_OBJECTS_H
+
+#include "basepic.h"
+
+
+  /* declare an extern to access `ft_outline_glyph_class' globally     */
+  /* allocated  in `ftglyph.c', and use the FT_OUTLINE_GLYPH_CLASS_GET */
+  /* macro to access it when FT_CONFIG_OPTION_PIC is defined           */
+#ifndef FT_CONFIG_OPTION_PIC
+  FT_CALLBACK_TABLE const FT_Glyph_Class  ft_outline_glyph_class;
+#endif
 
 
   /* documentation is in ftstroke.h */
@@ -702,9 +712,10 @@
                            FT_Outline*      outline )
   {
     /* copy point locations */
-    FT_ARRAY_COPY( outline->points + outline->n_points,
-                   border->points,
-                   border->num_points );
+    if ( border->num_points )
+      FT_ARRAY_COPY( outline->points + outline->n_points,
+                     border->points,
+                     border->num_points );
 
     /* copy tags */
     {
@@ -2283,15 +2294,6 @@
   Invalid_Outline:
     return FT_THROW( Invalid_Outline );
   }
-
-
-  /* declare an extern to access `ft_outline_glyph_class' globally     */
-  /* allocated  in `ftglyph.c', and use the FT_OUTLINE_GLYPH_CLASS_GET */
-  /* macro to access it when FT_CONFIG_OPTION_PIC is defined           */
-#ifndef FT_CONFIG_OPTION_PIC
-  extern const FT_Glyph_Class  ft_outline_glyph_class;
-#endif
-#include "basepic.h"
 
 
   /* documentation is in ftstroke.h */
