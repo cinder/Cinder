@@ -5,6 +5,7 @@
 	id="org.libcinder.cairo"
 	author="Cinder Project"
 	summary="Cairo support for Mac OS X and Windows."
+	core="true"
 	>
 	<supports os="msw" />
 	<supports os="macosx" />

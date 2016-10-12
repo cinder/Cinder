@@ -35,7 +35,7 @@ mkdir -p $PREFIX_CAIRO
 
 CINDER_DIR=`pwd`/../../../ 
 CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
-CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/freetype
+CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
 
 #########################
 ## create final path
@@ -61,7 +61,7 @@ buildIos()
   buildLibPng $HOST
   buildPixman $HOST
 
-	OPTIONS="--enable-quartz=yes --enable-quartz-font=yes --enable-quartz-image=yes --without-x --disable-xlib --disable-xlib-xrender --disable-xcb --disable-xlib-xcb --disable-xcb-shm --enable-ft --disable-full-testing" 
+	OPTIONS="--enable-quartz=yes --enable-quartz-font=yes --enable-quartz-image=yes --enable-fc=no --without-x --disable-xlib --disable-xlib-xrender --disable-xcb --disable-xlib-xcb --disable-xcb-shm --enable-ft --disable-full-testing" 
 
 	buildCairo "${OPTIONS}" "${HOST}"
 }
@@ -80,7 +80,7 @@ buildOSX()
 	buildLibPng
 	buildPixman 
 	
-	OPTIONS="--enable-quartz=yes --enable-quartz-surface=yes --enable-quartz-image=yes --without-x --disable-xlib --disable-xlib-xrender --disable-xcb --disable-xlib-xcb --disable-xcb-shm --enable-ft --disable-full-testing" 
+	OPTIONS="--enable-quartz=yes --enable-quartz-surface=yes --enable-quartz-image=yes --enable-fc=no --without-x --disable-xlib --disable-xlib-xrender --disable-xcb --disable-xlib-xcb --disable-xcb-shm --enable-ft --disable-full-testing" 
   
 	buildCairo "${OPTIONS}" 
 }
@@ -289,7 +289,7 @@ export png_CFLAGS="-I${FINAL_INCLUDE_PATH}"
 export pixman_CFLAGS="-I${FINAL_INCLUDE_PATH}/pixman-1"
 export pixman_LIBS="-L${FINAL_LIB_PATH} -lpixman-1"
 export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
-export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}"
+export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
 export PKG_CONFIG_PATH="${PREFIX_LIBPNG}/lib/pkgconfig:${PREFIX_PIXMAN}/lib/pkgconfig"
 
 echo "Building cairo for {$lower_case}"
