@@ -961,7 +961,8 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		}
 		break;
 		case WM_PAINT:
-			impl->draw();
+			if( impl->getAppImpl()->setupHasBeenCalled() )
+				impl->draw();
 		break;
 		case WM_TOUCH:
 			impl->onTouch( mWnd, wParam, lParam );
