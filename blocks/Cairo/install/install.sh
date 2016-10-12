@@ -215,6 +215,9 @@ buildPixman()
 		./configure --host=${HOST} --disable-shared --prefix=${PREFIX} 
 	fi
 
+  sed -i -e 's/region_test_OBJECTS = region-test.$(OBJEXT)/region_test_OBJECTS = region-test.$(OBJEXT) utils.$(OBJEXT)/g' test/Makefile
+  sed -i -e 's/scaling_helpers_test_OBJECTS = scaling-helpers-test.$(OBJEXT)/scaling_helpers_test_OBJECTS = scaling-helpers-test.$(OBJEXT) utils.$(OBJEXT)/g' test/Makefile
+
   make -j 6
 	make install
 	make clean
@@ -287,6 +290,7 @@ export pixman_CFLAGS="-I${FINAL_INCLUDE_PATH}/pixman-1"
 export pixman_LIBS="-L${FINAL_LIB_PATH} -lpixman-1"
 export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
 export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}"
+export PKG_CONFIG_PATH="${PREFIX_LIBPNG}/lib/pkgconfig:${PREFIX_PIXMAN}/lib/pkgconfig"
 
 echo "Building cairo for {$lower_case}"
 if [ "${lower_case}" = "mac" ] || [ "${lower_case}" = "macosx" ]; # Destop OSX path
