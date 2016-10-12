@@ -27,7 +27,8 @@ if( NOT TARGET Cairo )
   target_compile_options( Cairo PUBLIC "-std=c++11" )
 
   get_filename_component( CAIRO_LIBS_PATH "${CAIRO_INCLUDE_PATH}/${CINDER_TARGET_LOWER}" ABSOLUTE )
-  target_link_libraries( Cairo_LIBRARIES 
+  target_link_libraries( Cairo PRIVATE cinder 
+    PUBLIC ${CINDER_PATH}/lib/macosx/libz.a
     PUBLIC ${CAIRO_LIBS_PATH}/libpng.a 
     PUBLIC ${CAIRO_LIBS_PATH}/libpixman-1.a 
     PUBLIC ${CAIRO_LIBS_PATH}/libcairo.a 
