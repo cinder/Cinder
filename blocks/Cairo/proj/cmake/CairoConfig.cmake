@@ -4,32 +4,38 @@ if( NOT TARGET Cairo )
   get_filename_component( CINDER_CAIRO_SOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}/../../src" ABSOLUTE )
   get_filename_component( CINDER_PATH "${CMAKE_CURRENT_LIST_DIR}/../../../.." ABSOLUTE )
 
-  list( APPEND CINDER_CAIRO_SOURCES ${CINDER_CAIRO_SOURCE_PATH}/Cairo.cpp )
+	list( APPEND CINDER_CAIRO_SOURCES ${CINDER_CAIRO_SOURCE_PATH}/Cairo.cpp )
 
-  add_library( Cairo ${CINDER_CAIRO_SOURCES} )
+	add_library( Cairo ${CINDER_CAIRO_SOURCES} )
 	
-  if( NOT TARGET cinder )
+	if( NOT TARGET cinder )
 		include( "${CINDER_PATH}/proj/cmake/configure.cmake" )
 		find_package( cinder REQUIRED PATHS
-			"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
-			"$ENV{CINDER_PATH}/${CINDER_LIB_DIRECTORY}" )
+			"${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/Release"
+			"$ENV{CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/Release" )
+		get_target_property( TEST_VAR cinder IMPORTED_LOCATION )
+		message( STATUS TEST_VAR: "${TEST_VAR}" )
 	endif()
   
-	string( TOLOWER "${CINDER_TARGET}" CINDER_TARGET_LOWER )
+	get_target_property( TEST_VAR cinder IMPORTED_LOCATION_RELEASE )
+	message( STATUS TEST_VAR: "${TEST_VAR}" )
 	
-  target_include_directories( Cairo PUBLIC 
-    ${CINDER_CAIRO_INCLUDE_PATH}/${CINDER_TARGET_LOWER}/cairo 
-    ${CINDER_CAIRO_INCLUDE_PATH} 
-  )
+	string( TOLOWER "${CINDER_TARGET}" CINDER_TARGET_LOWER )
+
+	target_include_directories( Cairo PUBLIC 
+		${CINDER_CAIRO_INCLUDE_PATH}/${CINDER_TARGET_LOWER}/cairo 
+		${CINDER_CAIRO_INCLUDE_PATH} 
+	)
   target_include_directories( Cairo PRIVATE BEFORE "${CINDER_PATH}/include" )
 
-  target_compile_options( Cairo PUBLIC "-std=c++11" )
+	target_compile_options( Cairo PUBLIC "-std=c++11" )
 
-  get_filename_component( CAIRO_LIBS_PATH "${CMAKE_CURRENT_LIST_DIR}/../../lib/${CINDER_TARGET_LOWER}" ABSOLUTE )
-  target_link_libraries( Cairo PRIVATE cinder 
-    PUBLIC ${CAIRO_LIBS_PATH}/libpng.a 
-    PUBLIC ${CAIRO_LIBS_PATH}/libpixman-1.a 
-    PUBLIC ${CAIRO_LIBS_PATH}/libcairo.a 
-  )
+	get_filename_component( CAIRO_LIBS_PATH "${CMAKE_CURRENT_LIST_DIR}/../../lib/${CINDER_TARGET_LOWER}" ABSOLUTE )
+	target_link_libraries( Cairo 
+		PUBLIC ${CAIRO_LIBS_PATH}/libcairo.a 
+		PUBLIC ${CAIRO_LIBS_PATH}/libpixman-1.a 
+		PUBLIC ${CAIRO_LIBS_PATH}/libpng.a 
+		PUBLIC "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/Release/libcinder.a"  
+	)
 
 endif()

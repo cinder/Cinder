@@ -29,14 +29,6 @@ PREFIX_CAIRO=${PREFIX_BASE_DiR}/cairo_install
 rm -rf $PREFIX_CAIRO
 mkdir -p $PREFIX_CAIRO
 
-##################################
-## we use cinder to link freetype
-##################################
-
-CINDER_DIR=`pwd`/../../../ 
-CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
-CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
-
 #########################
 ## create final path
 #########################
@@ -288,8 +280,6 @@ export png_LIBS="-L${FINAL_LIB_PATH} -lpng"
 export png_CFLAGS="-I${FINAL_INCLUDE_PATH}" 
 export pixman_CFLAGS="-I${FINAL_INCLUDE_PATH}/pixman-1"
 export pixman_LIBS="-L${FINAL_LIB_PATH} -lpixman-1"
-export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
-export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
 export PKG_CONFIG_PATH="${PREFIX_LIBPNG}/lib/pkgconfig:${PREFIX_PIXMAN}/lib/pkgconfig"
 
 echo "Building cairo for {$lower_case}"
@@ -301,6 +291,17 @@ then
   export CXXFLAGS="-O3 -pthread ${CXXFLAGS}"
   export LDFLAGS="-stdlib=libc++ -framework CoreText -framework CoreFoundation -framework CoreGraphics  ${LDFLAGS}"
 
+	##################################
+	## we use cinder to link freetype
+	##################################
+
+	CINDER_DIR=`pwd`/../../.. 
+	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/x86_64/ogl/Release
+	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
+
+	export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
+	export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
+
 	echoFlags
 	buildOSX
 elif [ "${lower_case}" = "linux" ]; # Linux path
@@ -310,7 +311,18 @@ then
   export CFLAGS="-O3 -pthread ${CFLAGS}"
   export CXXFLAGS="-O3 -pthread ${CXXFLAGS}"
   export LDFLAGS="-stdlib=libc++  ${LDFLAGS}"
+	
+	##################################
+	## we use cinder to link freetype
+	##################################
 
+	CINDER_DIR=`pwd`/../../.. 
+	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
+	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
+
+	export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
+	export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
+	
 	echoFlags
 	buildLinux
 elif [ "${lower_case}" = "ios" ]; # iOS path
@@ -334,6 +346,17 @@ then
   export LDFLAGS="-stdlib=libc++ -isysroot ${IOS_SDK} -L${FINAL_LIB_PATH} -L${IOS_SDK}/usr/lib -arch ${ARCH} -mios-version-min=8.0 -framework CoreText -framework CoreFoundation -framework CoreGraphics  ${LDFLAGS}"
   export PNG_LIBS="-L${IOS_SDK}/usr/lib ${PNG_LIBS}"
 
+	##################################
+	## we use cinder to link freetype
+	##################################
+
+	CINDER_DIR=`pwd`/../../.. 
+	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
+	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
+	
+	export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
+	export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
+	
 	echoFlags
 	buildIos
 else
