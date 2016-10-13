@@ -315,8 +315,8 @@ uint8_t Serial::readByte()
 
 std::string Serial::readStringUntil( char token, size_t maxLength, double timeoutSeconds )
 {
-	size_t bufferSize = 1024, bufferOffset = 0;
-	shared_ptr<char> buffer( (char*)malloc( bufferSize ), free );
+	std::string buffer;
+	buffer.reserve(1024);
 
 	bool useMaxLength = maxLength > 0;
 	bool useTimer = timeoutSeconds > 0;
@@ -327,29 +327,18 @@ std::string Serial::readStringUntil( char token, size_t maxLength, double timeou
 	bool done = false;
 	while( ! done ) {
 		char v = readChar();
-		buffer.get()[bufferOffset++] = v;
+		buffer.push_back(v);
 		if( v == token ) {
 			done = true;
 		}
-		else if( useMaxLength && ( bufferOffset == maxLength ) ) {
+		else if( useMaxLength && ( buffer.size() >= maxLength ) ) {
 			done = true;
 		}
-		else if( useTimer && ( timer.getSeconds() > timeoutSeconds ) )
+		else if( useTimer && ( timer.getSeconds() > timeoutSeconds ) ) {
 			throw SerialTimeoutExc();
-
-		// we need to reallocate even if this happens to be the last byte, because we need room for a null-terminator
-		if( bufferOffset == bufferSize ) {
-			char *newBuffer = (char*)malloc( bufferSize * 2 );
-			memcpy( newBuffer, buffer.get(), bufferSize );
-			bufferSize *= 2;
-			buffer = shared_ptr<char>( newBuffer, free );
 		}
 	}
-
-	buffer.get()[bufferOffset] = 0; // need to null terminate this thing
-	std::string result( buffer.get() );
-
-	return result;
+	return buffer;
 }
 
 void Serial::writeString( const std::string &str )
