@@ -170,7 +170,7 @@ buildZlib()
  	cd zlib
 	echo "Building zlib, and installing $1"
 	
-	./configure
+	./configure --prefix=${PREFIX_LIBZ}
 
 	make -j 6
 	make install
