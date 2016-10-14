@@ -76,7 +76,11 @@ void checkError();
 bool isExtensionAvailable( const std::string &extName );
 //! Returns the OpenGL version number as a pair<major,minor>
 std::pair<GLint,GLint>	getVersion();
+//! Returns a string describing the active GL context.
+std::string getString( GLenum name );
+//! Returns a string representing the active GL context's version or release number.
 std::string getVersionString();
+//! Returns a string representing the company responsible for this GL implementation.
 std::string getVendorString();
 
 
