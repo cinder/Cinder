@@ -132,6 +132,16 @@ Rectf Shape2d::calcPreciseBoundingBox() const
 	return result;
 }
 
+float Shape2d::calcDistance( const vec2 & pt ) const
+{
+	float distance = FLT_MAX;
+	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
+		distance = math<float>::min( distance, contIt->calcDistance( pt ) );
+	}
+
+	return distance;
+}
+
 bool Shape2d::contains( const vec2 &pt ) const
 {
 	int numPathsInside = 0;
