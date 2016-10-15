@@ -682,7 +682,8 @@ float GstPlayer::getFramerate() const
 
 bool GstPlayer::hasAudio() const
 {
-    if( ! mGstData.pipeline ) return false;
+    if( ! mGstData.pipeline ) 
+        return false;
 
     gint numAudioChannels = 0;
     g_object_get( G_OBJECT( mGstData.pipeline ), "n-audio", &numAudioChannels, nullptr );
@@ -691,7 +692,8 @@ bool GstPlayer::hasAudio() const
 
 bool GstPlayer::hasVisuals() const
 {
-    if( ! mGstData.pipeline ) return false;
+    if( ! mGstData.pipeline ) 
+        return false;
 
     gint numVideoStreams = 0;
     g_object_get( G_OBJECT( mGstData.pipeline ), "n-video", &numVideoStreams, nullptr );
@@ -700,7 +702,8 @@ bool GstPlayer::hasVisuals() const
 
 gint64 GstPlayer::getDurationNanos()
 {
-    if( ! mGstData.pipeline ) return -1;
+    if( ! mGstData.pipeline ) 
+        return -1;
     
     if( ! sEnableAsyncStateChange ) {
         gst_element_get_state( mGstData.pipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE );
@@ -714,7 +717,7 @@ gint64 GstPlayer::getDurationNanos()
         }
         mGstData.duration = duration;
     }
-    else{
+    else {
         mGstData.duration = -1;
         g_warning( "Cannot query duration ! Pipeline is NOT PRE-ROLLED" );
     }
@@ -740,7 +743,8 @@ float GstPlayer::getPixelAspectRatio() const
 
 gint64 GstPlayer::getPositionNanos()
 {
-    if( !mGstData.pipeline ) return -1;
+    if( !mGstData.pipeline ) 
+        return -1;
 
     if( ! sEnableAsyncStateChange ) {
         gst_element_get_state( mGstData.pipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE );
@@ -769,13 +773,17 @@ float GstPlayer::getPositionSeconds()
 
 void GstPlayer::setVolume( float targetVolume )
 {
-    if( ! mGstData.pipeline ) return;
+    if( ! mGstData.pipeline ) 
+        return;
+
     g_object_set( G_OBJECT( mGstData.pipeline ), "volume", (gdouble)targetVolume, nullptr );
 }
 
 float GstPlayer::getVolume()
 {
-    if( ! mGstData.pipeline ) return -1;
+    if( ! mGstData.pipeline )
+        return -1;
+
     float currentVolume;
     g_object_get( G_OBJECT( mGstData.pipeline ), "volume", &currentVolume, nullptr );
     return currentVolume;
@@ -788,7 +796,8 @@ bool GstPlayer::isDone() const
 
 void GstPlayer::seekToTime( float seconds )
 {
-    if( ! mGstData.pipeline ) return;
+    if( ! mGstData.pipeline )
+        return;
 
     auto timeToSeek = seconds*GST_SECOND;
 
@@ -812,7 +821,9 @@ void GstPlayer::seekToTime( float seconds )
 
 void GstPlayer::seekToFrame( int frame )
 {
-    if( ! mGstData.pipeline ) return;
+    if( ! mGstData.pipeline ) 
+        return;
+
     auto timeToSeek = (float)frame * (float)mGstData.fpsDenom / (float)mGstData.fpsNom;
     seekToTime( timeToSeek );
 }
@@ -831,9 +842,11 @@ void GstPlayer::setLoop( bool loop, bool palindrome )
 
 bool GstPlayer::setRate( float rate )
 {
-    if( rate == getRate() ) return true; // Avoid unnecessary rate change;
+    if( rate == getRate() ) {
+        return true; // Avoid unnecessary rate change;
+	}
     // A rate equal to 0 is not valid and has to be handled by pausing the pipeline.
-    if( rate == 0.0f ){
+    if( rate == 0.0f ) {
         return setPipelineState( GST_STATE_PAUSED );
     }
     
@@ -869,7 +882,7 @@ bool GstPlayer::sendSeekEvent( gint64 seekTime )
     GstEvent* seekEvent;
     GstSeekFlags seekFlags = GstSeekFlags( GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE );
     
-    if( getRate() > 0.0 ){
+    if( getRate() > 0.0 ) {
         seekEvent = gst_event_new_seek( getRate(), GST_FORMAT_TIME, seekFlags, GST_SEEK_TYPE_SET, seekTime, GST_SEEK_TYPE_SET, GST_CLOCK_TIME_NONE );
     }
     else {
@@ -878,7 +891,7 @@ bool GstPlayer::sendSeekEvent( gint64 seekTime )
 	
     gboolean successSeek = gst_element_send_event( mGstData.pipeline, seekEvent );
 	
-    if( ! successSeek ){
+    if( ! successSeek ) {
         g_warning("seek failed");
         return false;
     }
