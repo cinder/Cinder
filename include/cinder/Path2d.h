@@ -153,12 +153,6 @@ class Path2d {
 	
 	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known.
 	float	calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const;
-	//! The \a firstPoint parameter can be used as an optimization if known.
-	float	calcDistanceLinear( const vec2 &pt, size_t segment, size_t firstPoint ) const;
-	//! The \a firstPoint parameter can be used as an optimization if known.
-	float	calcDistanceQuadratic( const vec2 &pt, size_t segment, size_t firstPoint ) const;
-	//! The \a firstPoint parameter can be used as an optimization if known.
-	float	calcDistanceCubic( const vec2 &pt, size_t segment, size_t firstPoint ) const;
 	
 	std::vector<vec2>			mPoints;
 	std::vector<SegmentType>	mSegments;

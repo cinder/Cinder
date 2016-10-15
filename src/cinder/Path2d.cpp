@@ -23,6 +23,7 @@
 */
 
 
+#include "cinder/CinderMath.h"
 #include "cinder/Path2d.h"
 
 #include <algorithm>
@@ -1002,12 +1003,13 @@ float Path2d::calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) 
 
 	switch( mSegments[segment] ) {
 		case CUBICTO:
-			return calcDistanceCubic( pt, segment, firstPoint );
+			return glm::distance( pt, getClosestPointCubic( &mPoints[firstPoint], pt ) );
 		case QUADTO:
-			return calcDistanceQuadratic( pt, segment, firstPoint );
+			return glm::distance( pt, getClosestPointQuadratic( &mPoints[firstPoint], pt ) );
 		case LINETO:
+			return glm::distance( pt, getClosestPointLinear( &mPoints[firstPoint], pt ) );
 		case CLOSE:
-			return calcDistanceLinear( pt, segment, firstPoint );
+			return glm::distance( pt, getClosestPointLinear( mPoints[firstPoint], mPoints[0], pt ) );
 		default:
 			return FLT_MAX;
 	}
@@ -1161,105 +1163,6 @@ float Path2d::segmentSolveTimeForDistance( size_t segment, float segmentLength, 
 	// If we failed to converge, hopefully 'p' is close enough
 	
 	return ( p + segment ) / (float)mSegments.size();
-}
-
-float Path2d::calcDistanceLinear( const vec2 &pt, size_t segment, size_t firstPoint ) const
-{
-	if( firstPoint == 0 ) {
-		for( size_t s = 0; s < segment; ++s )
-			firstPoint += sSegmentTypePointCounts[mSegments[s]];
-	}
-
-	const auto &p0 = mPoints[firstPoint + 0];
-	const auto &p1 = mPoints[(firstPoint + 1) % mPoints.size()]; // Allow CLOSE segments.
-	
-	float l = glm::distance2( p1, p0 );
-	if( l > 0.0f ) {
-		float t = glm::clamp( glm::dot( pt - p0, p1 - p0 ) / l, 0.0f, 1.0f );
-		return glm::distance( pt, p0 + t * ( p1 - p0 ) );
-	}
-	else {
-		return glm::distance( pt, p0 );
-	}
-}
-
-float Path2d::calcDistanceQuadratic( const vec2 &pt, size_t segment, size_t firstPoint ) const
-{
-	if( firstPoint == 0 ) {
-		for( size_t s = 0; s < segment; ++s )
-			firstPoint += sSegmentTypePointCounts[mSegments[s]];
-	}
-
-	// see: http://blog.gludion.com/2009/08/distance-to-quadratic-bezier-curve.html
-	const auto &p0 = mPoints[firstPoint + 0];
-	const auto &p1 = mPoints[firstPoint + 1];
-	const auto &p2 = mPoints[firstPoint + 2];
-	auto M = p0 - pt;
-	auto A = p1 - p0;
-	auto B = p2 - p1 - A;
-	float a = glm::dot( B, B );
-	float b = 3 * glm::dot( A, B );
-	float c = 2 * glm::dot( A, A ) + glm::dot( M, B );
-	float d = glm::dot( M, A );
-	float t[3];
-	int solutions = solveCubic( a, b, c, d, t );
-
-	float distance2 = FLT_MAX;
-	for( int i = 0; i < 3; ++i ) {
-		auto p = getSegmentPosition( segment, firstPoint, glm::clamp( t[i], 0.0f, 1.0f ) );
-		distance2 = glm::min( distance2, glm::distance2( pt, p ) );
-	}
-
-	return glm::sqrt( distance2 );
-}
-
-float Path2d::calcDistanceCubic( const vec2 &pt, size_t segment, size_t firstPoint ) const
-{
-	if( firstPoint == 0 ) {
-		for( size_t s = 0; s < segment; ++s )
-			firstPoint += sSegmentTypePointCounts[mSegments[s]];
-	}
-
-	const auto &p0 = mPoints[firstPoint + 0];
-	const auto &p1 = mPoints[firstPoint + 1];
-	const auto &p2 = mPoints[firstPoint + 2];
-	const auto &p3 = mPoints[firstPoint + 3];
-
-	auto M = p0 - pt;
-	auto A = p1 - p0;
-	auto B = p2 - p1 - A;
-	auto C = ( p3 - p2 ) - ( p2 - p1 ) - B;
-
-	// First guess.
-	float distance2 = glm::min( glm::distance2( pt, p0 ), glm::distance2( pt, p3 ) );
-	
-	// Apply Newton's method to optimize.
-	const int kSearchPrecision = 64;
-	const int kSearchSteps = 4;
-	for( int i = 0; i <= kSearchPrecision; ++i ) {
-		float t = (float)i / kSearchPrecision;
-		for( int step = 0;; ++step ) {
-			// Obtain position on curve.
-			//float u = 1 - t;
-			//float t2 = t * t;
-			//float u2 = u * u;
-			auto P = getSegmentPosition( segment, firstPoint, t );// p0 * ( u * u2 ) + p1 * ( 3 * t * u2 ) + p2 * ( 3 * t2 * u ) + p3 * ( t * t2 );
-
-			// Calculate distance.
-			distance2 = glm::min( glm::distance2( pt, P ), distance2 );
-
-			if( step == kSearchSteps )
-				break;
-
-			auto d1 = 3.0f * C * t * t + 6.0f * B * t + 3.0f * A;
-			auto d2 = 6.0f * C * t + 6.0f * B;
-			t -= glm::dot( P, d1 ) / ( glm::dot( d1, d1 ) + glm::dot( P, d2 ) );
-			if( t < 0 || t > 1 )
-				break;
-		}
-	}
-
-	return glm::sqrt( distance2 );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
