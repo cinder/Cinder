@@ -127,7 +127,7 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userData )
 
     GstData & data = *( static_cast<GstData*>( userData ) );
     
-    switch ( GST_MESSAGE_TYPE( message ) )
+    switch( GST_MESSAGE_TYPE( message ) )
     {
         case GST_MESSAGE_ERROR: {
             GError *err = nullptr;
@@ -522,7 +522,7 @@ void GstPlayer::constructPipeline()
         appSinkCallbacks.new_preroll 	= onGstPreroll;
         appSinkCallbacks.new_sample  	= onGstSample;
 
-	std::string capsDescr = "video/x-raw(memory:GLMemory), format=RGBA";
+        std::string capsDescr = "video/x-raw(memory:GLMemory), format=RGBA";
         if( ! sUseGstGl ) {
             capsDescr = "video/x-raw, format=RGBA";
         }
@@ -743,7 +743,7 @@ float GstPlayer::getPixelAspectRatio() const
 
 gint64 GstPlayer::getPositionNanos()
 {
-    if( !mGstData.pipeline ) 
+    if( ! mGstData.pipeline ) 
         return -1;
 
     if( ! sEnableAsyncStateChange ) {
@@ -842,9 +842,9 @@ void GstPlayer::setLoop( bool loop, bool palindrome )
 
 bool GstPlayer::setRate( float rate )
 {
-    if( rate == getRate() ) {
+    if( rate == getRate() ) 
         return true; // Avoid unnecessary rate change;
-	}
+
     // A rate equal to 0 is not valid and has to be handled by pausing the pipeline.
     if( rate == 0.0f ) {
         return setPipelineState( GST_STATE_PAUSED );
@@ -1009,8 +1009,8 @@ GLint GstPlayer::getTextureID( GstBuffer* newBuffer )
 {
     GLint id = 0;
 #if defined( CINDER_GST_HAS_GL )
-    GstMemory *mem = gst_buffer_peek_memory (newBuffer, 0);
-    g_assert (gst_is_gl_memory (mem));
+    GstMemory *mem = gst_buffer_peek_memory( newBuffer, 0 );
+    g_assert( gst_is_gl_memory( mem ) );
     id = ((GstGLMemory *) mem)->tex_id;
 #endif
     return id;
