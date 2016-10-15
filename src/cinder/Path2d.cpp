@@ -996,6 +996,30 @@ float Path2d::calcDistance( const vec2 &pt ) const
 
 float Path2d::calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const
 {
+	return glm::distance( pt, calcClosestPoint( pt, segment, firstPoint ) );
+}
+
+vec2 Path2d::calcClosestPoint( const vec2 &pt ) const
+{
+	vec2 result;
+	float distance2 = FLT_MAX;
+
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		vec2 p = calcClosestPoint( pt, s, firstPoint );
+		float d = glm::distance2( pt, p );
+		if( d < distance2 ) {
+			result = p;
+			distance2 = d;
+		}
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+
+	return result;
+}
+
+vec2 Path2d::calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint ) const
+{
 	if( firstPoint == 0 ) {
 		for( size_t s = 0; s < segment; ++s )
 			firstPoint += sSegmentTypePointCounts[mSegments[s]];
@@ -1003,15 +1027,15 @@ float Path2d::calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) 
 
 	switch( mSegments[segment] ) {
 		case CUBICTO:
-			return glm::distance( pt, getClosestPointCubic( &mPoints[firstPoint], pt ) );
+			return getClosestPointCubic( &mPoints[firstPoint], pt );
 		case QUADTO:
-			return glm::distance( pt, getClosestPointQuadratic( &mPoints[firstPoint], pt ) );
+			return getClosestPointQuadratic( &mPoints[firstPoint], pt );
 		case LINETO:
-			return glm::distance( pt, getClosestPointLinear( &mPoints[firstPoint], pt ) );
+			return getClosestPointLinear( &mPoints[firstPoint], pt );
 		case CLOSE:
-			return glm::distance( pt, getClosestPointLinear( mPoints[firstPoint], mPoints[0], pt ) );
+			return getClosestPointLinear( mPoints[firstPoint], mPoints[0], pt );
 		default:
-			return FLT_MAX;
+			return vec2();
 	}
 }
 

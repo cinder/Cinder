@@ -114,8 +114,13 @@ class Path2d {
 
 	//! Returns the minimum distance from point \a pt to the path
 	float	calcDistance( const vec2 &pt ) const;
-	//! Returns the minimum distance from point \a pt to segment \a segment.
+	//! Returns the minimum distance from point \a pt to segment \a segment
 	float	calcDistance( const vec2 &pt, size_t segment ) const { return calcDistance( pt, segment, 0 ); }
+
+	//! Returns the point on the path closest to \a pt.
+	vec2	calcClosestPoint( const vec2 &pt ) const;
+	//! Returns the point on segment \a segment that is closest to \a pt
+	vec2	calcClosestPoint( const vec2 &pt, size_t segment ) const { return calcClosestPoint( pt, segment, 0 ); }
 
 	//! Calculates the length of the Path2d
 	float	calcLength() const;
@@ -151,8 +156,11 @@ class Path2d {
 	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>. The \a firstPoint parameter can be used as an optimization if known.
 	vec2	getSegmentTangent( size_t segment, size_t firstPoint, float t ) const;
 	
-	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known.
+	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
 	float	calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const;
+
+	//! Returns the point on segment \a segment that is closest to \a pt. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
+	vec2	calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint ) const;
 	
 	std::vector<vec2>			mPoints;
 	std::vector<SegmentType>	mSegments;
