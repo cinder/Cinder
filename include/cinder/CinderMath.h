@@ -289,10 +289,10 @@ int solveCubic( T a, T b, T c, T d, T result[3] );
 //! Returns the closest point to \a testPoint on the boundary of the ellipse defined by \a center, \a axisA and \a axisB. Algorithm due to David Eberly, http://www.geometrictools.com/Documentation/DistancePointEllipseEllipsoid.pdf
 glm::vec2 getClosestPointEllipse( const glm::vec2& center, const glm::vec2& axisA, const glm::vec2& axisB, const glm::vec2& testPoint );
 
-//! Returns the closest point to \a testPoint on the linear curve defined by the 2 \a controlPoints.
+//! Returns the closest point to \a testPoint on the line defined by the 2 \a controlPoints.
 template<typename T>
 glm::tvec2<T, glm::defaultp> getClosestPointLinear( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint );
-//! Returns the closest point to \a testPoint on the linear curve defined by the control points \a p0 and \a p1.
+//! Returns the closest point to \a testPoint on the line defined by the control points \a p0 and \a p1.
 template<typename T>
 glm::tvec2<T, glm::defaultp> getClosestPointLinear( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T, glm::defaultp> &p1, const glm::tvec2<T, glm::defaultp> &testPoint )
 {
@@ -300,10 +300,10 @@ glm::tvec2<T, glm::defaultp> getClosestPointLinear( const glm::tvec2<T, glm::def
 	return getClosestPointLinear<T>( controlPoints, testPoint );
 }
 
-//! Returns the closest point to \a testPoint on the linear curve defined by the 3 \a controlPoints. Algorithm due to Olivier Besson, http://blog.gludion.com/2009/08/distance-to-quadratic-bezier-curve.html
+//! Returns the closest point to \a testPoint on the quadratic curve defined by the 3 \a controlPoints. Algorithm due to Olivier Besson, http://blog.gludion.com/2009/08/distance-to-quadratic-bezier-curve.html
 template<typename T>
 glm::tvec2<T, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint );
-//! Returns the closest point to \a testPoint on the linear curve defined by the control points \a p0, \a p1 and \a p2. Algorithm due to Olivier Besson, http://blog.gludion.com/2009/08/distance-to-quadratic-bezier-curve.html
+//! Returns the closest point to \a testPoint on the quadratic curve defined by the control points \a p0, \a p1 and \a p2. Algorithm due to Olivier Besson, http://blog.gludion.com/2009/08/distance-to-quadratic-bezier-curve.html
 template<typename T>
 glm::tvec2<T, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T, glm::defaultp> &p1, const glm::tvec2<T, glm::defaultp> &p2, const glm::tvec2<T, glm::defaultp> &testPoint )
 {
