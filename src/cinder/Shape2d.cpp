@@ -142,6 +142,23 @@ float Shape2d::calcDistance( const vec2 & pt ) const
 	return distance;
 }
 
+vec2 Shape2d::calcClosestPoint( const vec2 & pt ) const
+{
+	vec2 result;
+	float distance2 = FLT_MAX;
+
+	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
+		vec2 p = contIt->calcClosestPoint( pt );
+		float d = glm::distance2( pt, p );
+		if( d < distance2 ) {
+			result = p;
+			distance2 = d;
+		}
+	}
+
+	return result;
+}
+
 bool Shape2d::contains( const vec2 &pt ) const
 {
 	int numPathsInside = 0;

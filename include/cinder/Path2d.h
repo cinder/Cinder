@@ -117,9 +117,9 @@ class Path2d {
 	//! Returns the minimum distance from point \a pt to segment \a segment
 	float	calcDistance( const vec2 &pt, size_t segment ) const { return calcDistance( pt, segment, 0 ); }
 
-	//! Returns the point on the path closest to \a pt.
+	//! Returns the point on the path closest to point \a pt.
 	vec2	calcClosestPoint( const vec2 &pt ) const;
-	//! Returns the point on segment \a segment that is closest to \a pt
+	//! Returns the point on segment \a segment that is closest to point \a pt
 	vec2	calcClosestPoint( const vec2 &pt, size_t segment ) const { return calcClosestPoint( pt, segment, 0 ); }
 
 	//! Calculates the length of the Path2d

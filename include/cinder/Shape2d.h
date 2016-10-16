@@ -85,6 +85,8 @@ class Shape2d {
 		else
 			return -calcDistance( pt );
 	}
+	//! Returns the point on the shape that is closest to point \a pt.
+	vec2	calcClosestPoint( const vec2 &pt ) const;
 
 	//! Returns whether the point \a pt is contained within the boundaries of the shape
 	bool	contains( const vec2 &pt ) const;
