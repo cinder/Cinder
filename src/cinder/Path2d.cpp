@@ -404,36 +404,33 @@ vec2 Path2d::getTangent( float t ) const
 	return getSegmentTangent( seg, subSeg );
 }
 
-vec2 Path2d::getSegmentPosition( size_t segment, size_t firstPoint, float t ) const
+vec2 Path2d::getSegmentPosition( size_t segment, float t ) const
 {
 	if( mSegments.empty() )
 		return vec2();
 
-	if( firstPoint == 0 ) {
-		for( size_t s = 0; s < segment; ++s )
-			firstPoint += sSegmentTypePointCounts[mSegments[s]];
-	}
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < segment; ++s )
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
 	switch( mSegments[segment] ) {
 		case CUBICTO: {
-			float t2 = t * t;
-			float u = 1 - t;
-			float u2 = u * u;
-			return mPoints[firstPoint]*(u*u2) + mPoints[firstPoint+1]*(3*t*u2) + mPoints[firstPoint+2]*(3*t2*u) + mPoints[firstPoint+3]*(t2*t);
+			float t1 = 1 - t;
+			return mPoints[firstPoint]*(t1*t1*t1) + mPoints[firstPoint+1]*(3*t*t1*t1) + mPoints[firstPoint+2]*(3*t*t*t1) + mPoints[firstPoint+3]*(t*t*t);
 		}
 		break;
 		case QUADTO: {
-			float u = 1 - t;
-			return mPoints[firstPoint]*(u*u) + mPoints[firstPoint+1]*(2*t*u) + mPoints[firstPoint+2]*(t*t);
+			float t1 = 1 - t;
+			return mPoints[firstPoint]*(t1*t1) + mPoints[firstPoint+1]*(2*t*t1) + mPoints[firstPoint+2]*(t*t);
 		}
 		break;
 		case LINETO: {
-			float u = 1 - t;
-			return mPoints[firstPoint]*u + mPoints[firstPoint+1]*t;
+			float t1 = 1 - t;
+			return mPoints[firstPoint]*t1 + mPoints[firstPoint+1]*t;
 		}
 		break;
 		case CLOSE: {
-			float u = 1 - t;
-			return mPoints[firstPoint]*u + mPoints[0]*t;
+			float t1 = 1 - t;
+			return mPoints[firstPoint]*t1 + mPoints[0]*t;
 		}
 		break;
 		default:
@@ -441,15 +438,14 @@ vec2 Path2d::getSegmentPosition( size_t segment, size_t firstPoint, float t ) co
 	}
 }
 
-vec2 Path2d::getSegmentTangent( size_t segment, size_t firstPoint, float t ) const
+vec2 Path2d::getSegmentTangent( size_t segment, float t ) const
 {
 	if( mSegments.empty() )
 		return vec2();
-	
-	if( firstPoint == 0 ) {
-		for( size_t s = 0; s < segment; ++s )
-			firstPoint += sSegmentTypePointCounts[mSegments[s]];
-	}
+
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < segment; ++s )
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
 	switch( mSegments[segment] ) {
 		case CUBICTO:
 			return calcCubicBezierDerivative( &mPoints[firstPoint], t );

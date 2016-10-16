@@ -67,11 +67,11 @@ class Path2d {
 	//! Returns the point on the curve at parameter \a t, which lies in the range <tt>[0,1]</tt>
 	vec2	getPosition( float t ) const;
 	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>
-	vec2	getSegmentPosition( size_t segment, float t ) const { return getSegmentPosition( segment, 0, t ); }
+	vec2	getSegmentPosition( size_t segment, float t ) const;
 	//! Returns the tangent on the curve at parameter \a t, which lies in the range <tt>[0,1]</tt>
 	vec2	getTangent( float t ) const;
 	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>
-	vec2	getSegmentTangent( size_t segment, float t ) const { return getSegmentTangent( segment, 0, t ); }
+	vec2	getSegmentTangent( size_t segment, float t ) const;
 
 	//! Stores into \a segment the segment # associated with \a t, and if \a relativeT is not NULL, the t relative to its segment, in the range <tt>[0,1]</tt>
 	void	getSegmentRelativeT( float t, size_t *segment, float *relativeT ) const;
@@ -150,11 +150,6 @@ class Path2d {
   private:
 	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
-
-	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>. The \a firstPoint parameter can be used as an optimization if known.
-	vec2	getSegmentPosition( size_t segment, size_t firstPoint, float t ) const;
-	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>. The \a firstPoint parameter can be used as an optimization if known.
-	vec2	getSegmentTangent( size_t segment, size_t firstPoint, float t ) const;
 	
 	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
 	float	calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const;
