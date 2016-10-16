@@ -983,7 +983,7 @@ void GstPlayer::createTextureFromMemory()
     mMutex.unlock();
 
     if( mFrontVBuffer ) {
-        mVideoTexture = ci::gl::Texture::create( mFrontVBuffer, GL_RGBA, width(), height() );
+        mVideoTexture = ci::gl::Texture::create( mFrontVBuffer.get(), GL_RGBA, width(), height() );
         if( mVideoTexture ) mVideoTexture->setTopDown();
     }
 }
@@ -1057,14 +1057,12 @@ void GstPlayer::resetSystemMemoryBuffers()
     mMutex.lock();
     // Take care of the front buffer.
     if( mFrontVBuffer ) {
-        delete mFrontVBuffer;
-        mFrontVBuffer = nullptr;
+        mFrontVBuffer.reset();
     }
 
     // Take care of the back buffer.
     if( mBackVBuffer ) {
-        delete mBackVBuffer;
-        mBackVBuffer = nullptr;
+        mBackVBuffer.reset();
     }
     mMutex.unlock();
 }
@@ -1142,20 +1140,22 @@ void GstPlayer::processNewSample( GstSample* sample )
             if( success ) {
                 getVideoInfo( mGstData.videoInfo );
             }
-
+            auto deleter = []( unsigned char* p ) {
+                delete [] p;
+            };
             if( ! mFrontVBuffer ) {
-                mFrontVBuffer = new unsigned char[ mGstData.memoryMapInfo.size ];
+                mFrontVBuffer = std::shared_ptr<unsigned char>( new unsigned char[ mGstData.memoryMapInfo.size ], deleter );
             }
 			
             if( ! mBackVBuffer ) {
-                mBackVBuffer = new unsigned char[ mGstData.memoryMapInfo.size ];
+                mBackVBuffer = std::shared_ptr<unsigned char>( new unsigned char[ mGstData.memoryMapInfo.size ], deleter );
             }
 			
             ///Reset the new video flag .
             mGstData.videoHasChanged = false;
         }
 
-        memcpy( mBackVBuffer, mGstData.memoryMapInfo.data, mGstData.memoryMapInfo.size );
+        memcpy( mBackVBuffer.get(), mGstData.memoryMapInfo.data, mGstData.memoryMapInfo.size );
 		
         gst_buffer_unmap( newBuffer, &mGstData.memoryMapInfo ); 
 

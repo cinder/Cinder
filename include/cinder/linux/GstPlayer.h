@@ -226,8 +226,8 @@ private:
 	
 	ci::gl::Texture2dRef	mVideoTexture;
 
-	unsigned char* 	    	mFrontVBuffer = nullptr;
-	unsigned char* 		mBackVBuffer = nullptr;		
+	std::shared_ptr<unsigned char> 	    	mFrontVBuffer = nullptr;
+	std::shared_ptr<unsigned char> 		mBackVBuffer = nullptr;		
 
 	std::shared_ptr<GstBuffer> mCurrentBuffer;
 	std::shared_ptr<GstBuffer> mNewBuffer;
