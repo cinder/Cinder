@@ -296,8 +296,13 @@ then
 	##################################
 
 	CINDER_DIR=`pwd`/../../.. 
-	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/x86_64/ogl/Release
+	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
 	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
+
+  if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
+    echo "Need to build release version of cinder to run this install. Cairo needs Freetype. Exiting!"
+    exit
+  fi
 
 	export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
 	export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
@@ -317,8 +322,13 @@ then
 	##################################
 
 	CINDER_DIR=`pwd`/../../.. 
-	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
+	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/x86_64/ogl/Release
 	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
+
+  if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
+    echo "Need to build release version of cinder to run this install. Cairo needs Freetype. Exiting!"
+    exit
+  fi
 
 	export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
 	export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
@@ -354,7 +364,12 @@ then
 	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
 	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
 	
-	export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
+  if [ ! -f "${CINDER_LIB_DIR}/libcinder.a" ]; then
+    echo "Need to build release version of cinder to run this install. Cairo needs Freetype. Exiting!"
+    exit
+  fi
+	
+  export FREETYPE_LIBS="-L${CINDER_LIB_DIR} -lcinder"
 	export FREETYPE_CFLAGS="-I${CINDER_FREETYPE_INCLUDE_PATH}/freetype -I${CINDER_FREETYPE_INCLUDE_PATH}"
 	
 	echoFlags
