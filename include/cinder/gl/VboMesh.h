@@ -94,12 +94,8 @@ class VboMesh {
 	void		buildVao( const GlslProgRef &shader, const AttribGlslMap &attributeMapping = AttribGlslMap() );
 	void		buildVao( const GlslProg* shader, const AttribGlslMap &attributeMapping = AttribGlslMap() );
 
-	//! Sets the number of vertices in the mesh
-	void		setNumVertices( uint32_t numVertices ) { mNumVertices = numVertices; }
 	//! Returns the number of vertices in the mesh
 	uint32_t	getNumVertices() const { return mNumVertices; }
-	//! Sets the number of indices for indexed geometry
-	void		setNumIndices( uint32_t numIndices ) { mNumIndices = numIndices; }
 	//! Returns the number of indices for indexed geometry, otherwise 0
 	uint32_t	getNumIndices() const { return mNumIndices; }
 	//! Returns the primitive type, such as GL_TRIANGLES, GL_TRIANGLE_STRIP, etc
@@ -114,6 +110,11 @@ class VboMesh {
 
 	//! Returns the VBO containing the indices of the mesh, or a NULL for non-indexed geometry
 	VboRef		getIndexVbo() { return mIndices; }
+
+	//! Updates internal vertex count to reflect an external change to underlying VBOs. Does NOT reallocate or modify storage.
+	void		updateNumVertices( uint32_t numVertices ) { mNumVertices = numVertices; }
+	//! Updates internal index count to reflect an external change to underlying VBOs. Does NOT reallocate or modify storage.
+	void		updateNumIndices( uint32_t numIndices ) { mNumIndices = numIndices; }
 
 	//! Builds and returns a vector of VboRefs for the vertex data of the mesh
 	std::vector<VboRef>									getVertexArrayVbos();
