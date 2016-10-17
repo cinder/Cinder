@@ -320,7 +320,7 @@ namespace {
 
 //! Given a point and a Bezier curve, generate a 5th-degree Bezier - format equation whose solution finds the point on the curve nearest the user - defined point.
 template<typename T>
-std::vector<glm::tvec2<T, glm::defaultp>> convertToBezierForm( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint )
+void convertToBezierForm( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint, glm::tvec2<T, glm::defaultp> *w )
 {
 	static const T z[3][4] = { { T(1.0), T(0.6), T(0.3), T(0.1) },{ T(0.4), T(0.6), T(0.6), T(0.4) },{ T(0.1), T(0.3), T(0.6), T(1.0) } };
 
@@ -346,7 +346,6 @@ std::vector<glm::tvec2<T, glm::defaultp>> convertToBezierForm( const glm::tvec2<
 	}
 
 	// Now, apply the z's to the dot products, on the skew diagonal. Also, set up the x-values, making these "points".
-	std::vector<glm::tvec2<T, glm::defaultp>> w( 6 );
 	for( int i = 0; i <= 5; i++ ) {
 		w[i].y = 0.0;
 		w[i].x = (T)( i ) / 5;
@@ -362,8 +361,13 @@ std::vector<glm::tvec2<T, glm::defaultp>> convertToBezierForm( const glm::tvec2<
 			w[i + j].y += cdTable[j][i] * z[j][i];
 		}
 	}
+}
 
-	return w;
+//! Returns the sign of the value (-1 if < 0, 0 if == 0, 1 if > 0). Faster than using glm::sign()!
+template <typename T> 
+int sgn( T val )
+{
+	return ( T( 0 ) < val ) - ( val < T( 0 ) );
 }
 
 //! Count the number of times a Bezier control polygon crosses the x-axis. This number is >= the number of roots.
@@ -372,9 +376,9 @@ int crossingCount( const glm::tvec2<T, glm::defaultp> *controlPoints, int degree
 {
 	int n = 0;
 
-	T sign = glm::sign( controlPoints[0].y );
+	int sign = sgn( controlPoints[0].y );
 	for( int i = 1; i <= degree; i++ ) {
-		T s = glm::sign( controlPoints[i].y );
+		int s = sgn( controlPoints[i].y );
 		if( sign != s )
 			n++;
 		sign = s;
@@ -395,30 +399,15 @@ int controlPolygonFlatEnough( const glm::tvec2<T, glm::defaultp> *controlPoints,
 	T max_distance_above{0};
 	T max_distance_below{0};
 
+	T value;
 	for( int i = 1; i < degree; i++ ) {
-		T value = a * controlPoints[i].x + b * controlPoints[i].y + c;
+		value = a * controlPoints[i].x + b * controlPoints[i].y + c;
 		max_distance_above = glm::max( max_distance_above, value );
 		max_distance_below = glm::min( max_distance_below, value );
 	}
 
-	// Implicit equation for zero line.
-	const T a1{0};
-	const T b1{1};
-	const T c1{0};
-
-	// Implicit equation for "above" line.
-	T a2 = a;
-	T b2 = b;
-	T c2 = c - max_distance_above;
-
-	T intercept_1 = ( b1 * c2 - b2 * c1 ) / ( a1 * b2 - a2 * b1 );
-
-	// Implicit equation for "below" line.
-	a2 = a;
-	b2 = b;
-	c2 = c - max_distance_below;
-
-	T intercept_2 = ( b1 * c2 - b2 * c1 ) / ( a1 * b2 - a2 * b1 );
+	T intercept_1 = -( c - max_distance_above ) / a;
+	T intercept_2 = -( c - max_distance_below ) / a;
 
 	// Compute intercepts of bounding box.
 	T error = glm::max( intercept_1, intercept_2 ) - glm::min( intercept_1, intercept_2 );
@@ -439,33 +428,45 @@ T computeXIntercept( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T,
 template<typename T>
 glm::tvec2<T, glm::defaultp> bezier( const glm::tvec2<T, glm::defaultp> *controlPoints, int degree, T t, glm::tvec2<T, glm::defaultp> *left, glm::tvec2<T, glm::defaultp> *right )
 {
-	glm::tvec2<T, glm::defaultp> v[6][6];
+	// Use simple struct instead of glm::tvec2<T, glm::defaultp> v[6][6], to prevent unnecessary initialization.
+	typedef struct { T x; T y; } vector2;
+	vector2 v[6][6];
 
 	// Copy control points.
 	for( int j = 0; j <= degree; j++ ) {
-		v[0][j] = controlPoints[j];
+		v[0][j].x = controlPoints[j].x;
+		v[0][j].y = controlPoints[j].y;
 	}
 
 	// Triangle computation.
 	for( int i = 1; i <= degree; i++ ) {
 		for( int j = 0; j <= degree - i; j++ ) {
-			v[i][j].x = ( 1.0f - t ) * v[i - 1][j].x + t * v[i - 1][j + 1].x;
-			v[i][j].y = ( 1.0f - t ) * v[i - 1][j].y + t * v[i - 1][j + 1].y;
+			auto &d = v[i][j];
+			auto &sa = v[i - 1][j];
+			auto &sb = v[i - 1][j + 1];
+			d.x = sa.x + t * ( sb.x - sa.x );
+			d.y = sa.y + t * ( sb.y - sa.y );
 		}
 	}
 
 	if( left != nullptr ) {
 		for( int j = 0; j <= degree; j++ ) {
-			left[j] = v[j][0];
+			auto &d = left[j];
+			auto &s = v[j][0];
+			d.x = s.x;
+			d.y = s.y;
 		}
 	}
 	if( right != nullptr ) {
 		for( int j = 0; j <= degree; j++ ) {
-			right[j] = v[degree - j][j];
+			auto &d = right[j];
+			auto &s = v[degree - j][j];
+			d.x = s.x;
+			d.y = s.y;
 		}
 	}
 
-	return ( v[degree][0] );
+	return { v[degree][0].x, v[degree][0].y };
 }
 
 //! Given a 5th-degree equation in Bernstein-Bezier form, find all of the roots in the interval[0, 1]. Return the number of roots found.
@@ -565,11 +566,12 @@ template<typename T>
 glm::tvec2<T, glm::defaultp> getClosestPointCubic( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> & testPoint )
 {
 	// Convert problem to 5th-degree Bezier form.
-	auto w = convertToBezierForm<T>( controlPoints, testPoint );
+	glm::tvec2<T, glm::defaultp> w[6];
+	convertToBezierForm<T>( controlPoints, testPoint, w );
 
 	// Find all possible roots of 5th-degree equation.
 	T t_candidate[5];
-	int n_solutions = findRoots<T>( w.data(), 5, t_candidate, 0 );
+	int n_solutions = findRoots<T>( w, 5, t_candidate, 0 );
 
 	// Compare distances of P to all candidates, and to t=0, and t=1.
 	T t{ 0 };
