@@ -94,8 +94,12 @@ class VboMesh {
 	void		buildVao( const GlslProgRef &shader, const AttribGlslMap &attributeMapping = AttribGlslMap() );
 	void		buildVao( const GlslProg* shader, const AttribGlslMap &attributeMapping = AttribGlslMap() );
 
+	//! Sets the number of vertices in the mesh
+	void		setNumVertices( uint32_t numVertices ) { mNumVertices = numVertices; }
 	//! Returns the number of vertices in the mesh
 	uint32_t	getNumVertices() const { return mNumVertices; }
+	//! Sets the number of indices for indexed geometry
+	void		setNumIndices( uint32_t numIndices ) { mNumIndices = numIndices; }
 	//! Returns the number of indices for indexed geometry, otherwise 0
 	uint32_t	getNumIndices() const { return mNumIndices; }
 	//! Returns the primitive type, such as GL_TRIANGLES, GL_TRIANGLE_STRIP, etc
