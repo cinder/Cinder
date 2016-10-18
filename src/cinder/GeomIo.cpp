@@ -3770,11 +3770,12 @@ void WireRoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &r
 // WireRect
 WireRect::WireRect()
 {
-	// upper-left, upper-right, lower-left, lower-right
+	// upper-left, upper-right, lower-right, lower-left & upper-left again to close the loop
 	mPositions[0] = vec2( -0.5f, -0.5f );
 	mPositions[1] = vec2( 0.5f, -0.5f );
-	mPositions[2] = vec2( -0.5f, 0.5f );
-	mPositions[3] = vec2( 0.5f, 0.5f );
+	mPositions[2] = vec2( 0.5f, 0.5f );
+	mPositions[3] = vec2( -0.5f, 0.5f );
+	mPositions[4] = vec2( -0.5f, -0.5f );
 }
 
 WireRect::WireRect( const Rectf &r )
@@ -3786,14 +3787,15 @@ WireRect& WireRect::rect( const Rectf &r )
 {
 	mPositions[0] = r.getUpperLeft();
 	mPositions[1] = r.getUpperRight();
-	mPositions[2] = r.getLowerLeft();
-	mPositions[3] = r.getLowerRight();
+	mPositions[2] = r.getLowerRight();
+	mPositions[3] = r.getLowerLeft();
+	mPositions[4] = r.getUpperLeft();
 	return *this;
 }
 
 void WireRect::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
-	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), 4 );
+	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), 5 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
