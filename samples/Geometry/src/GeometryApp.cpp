@@ -548,7 +548,7 @@ void GeometryApp::createGeometry()
 			break;
 
 		case RECT:
-			loadGeomSource( geom::Rect(), geom::WirePlane() ); break;
+			loadGeomSource( geom::Rect(), geom::WireRect() ); break;
 			break;
 		case ROUNDEDRECT:
 			switch( mQualityCurrent ) {
