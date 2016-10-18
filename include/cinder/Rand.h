@@ -38,7 +38,7 @@ class Rand {
 	//! Re-seeds the random generator
 	void seed( uint32_t seedValue )
 	{
-		mBase.seed(seedValue);
+		mBase.seed( seedValue );
 	}
 
 	//! returns a random boolean value
@@ -82,19 +82,19 @@ class Rand {
 	//! returns a random float in the range [0.0f,1.0f)
 	float nextFloat()
 	{
-		return mFloatGen(mBase);
+		return mFloatGen( mBase );
 	}
 
 	//! returns a random float in the range [0.0f,v)
 	float nextFloat( float v )
 	{
-		return mFloatGen(mBase) * v;
+		return mFloatGen( mBase ) * v;
 	}
 
 	//! returns a random float in the range [a,b)
 	float nextFloat( float a, float b )
 	{
-		return mFloatGen(mBase) * ( b - a ) + a;
+		return mFloatGen( mBase ) * ( b - a ) + a;
 	}
 
 	//! returns a random float in the range [a,b] or the range [-b,-a)
@@ -127,23 +127,23 @@ class Rand {
 		return vec2( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
 
-	//! returns a random float via Gaussian distribution
+	//! returns a random float via Gaussian distribution, with a mean of 0 and a standard deviation of 1.0
 	float nextGaussian()
 	{
-		return mNormDist(mBase);
+		return mNormDist( mBase );
 	}
 
 	// STATICS
 	//! Resets the static random generator to a random seed
 	static void randomize()
 	{
-		sBase.seed(std::random_device{}());
+		sBase.seed( std::random_device{}() );
 	}
 
 	//! Resets the static random generator to the specific seed \a seedValue
 	static void	randSeed( uint32_t seedValue )
 	{
-		sBase.seed(seedValue);
+		sBase.seed( seedValue );
 	}
 
 	//! returns a random boolean value
@@ -187,19 +187,19 @@ class Rand {
 	//! returns a random float in the range [0.0f,1.0f)
 	static float randFloat()
 	{
-		return sFloatGen(sBase);
+		return sFloatGen( sBase );
 	}
 
 	//! returns a random float in the range [0.0f,v)
 	static float randFloat( float v )
 	{
-		return sFloatGen(sBase) * v;
+		return sFloatGen( sBase ) * v;
 	}
 
 	//! returns a random float in the range [a,b)
 	static float randFloat( float a, float b )
 	{
-		return sFloatGen(sBase) * ( b - a ) + a;
+		return sFloatGen( sBase ) * ( b - a ) + a;
 	}
 
 	//! returns a random float in the range [a,b) or the range [-b,-a)
@@ -236,7 +236,7 @@ class Rand {
 	static float randGaussian()
 	{
 		static std::normal_distribution<float> dist{};
-		return dist(sBase);
+		return dist( sBase );
 	}
 
   private:
@@ -281,7 +281,7 @@ inline vec3 randVec3() { return Rand::randVec3(); }
 //! returns a random vec2 that represents a point on the unit circle
 inline vec2 randVec2() { return Rand::randVec2(); }
 
-//! returns a random float via Gaussian distribution
+//! returns a random float via Gaussian distribution with a mean of 0 and a standard deviation of 1.0
 inline float randGaussian() { return Rand::randGaussian(); }
 
 } // namespace cinder
