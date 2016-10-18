@@ -23,37 +23,10 @@
 */
 
 #include "cinder/Rand.h"
-#if defined( CINDER_COCOA )
-#	include <mach/mach.h>
-#	include <mach/mach_time.h>
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
-#	include <windows.h>
-#endif
 
 namespace cinder {
-	
+
 std::mt19937 Rand::sBase( 310u );
 std::uniform_real_distribution<float> Rand::sFloatGen;
-
-void Rand::randomize()
-{
-#if defined( CINDER_COCOA )
-	sBase = std::mt19937( (uint32_t)( mach_absolute_time() & 0xFFFFFFFF ) );
-#elif defined( CINDER_WINRT)
-	sBase = std::mt19937( static_cast<unsigned long>(::GetTickCount64()) );
-#else
-	sBase = std::mt19937( ::GetTickCount() );
-#endif
-}
-
-void Rand::randSeed( uint32_t seed )
-{
-	sBase = std::mt19937( seed );
-}
-
-void Rand::seed( uint32_t seedValue )
-{
-	mBase = std::mt19937( seedValue );
-}
 
 } // ci
