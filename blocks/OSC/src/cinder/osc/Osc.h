@@ -414,7 +414,7 @@ class Bundle {
 	ByteBufferRef getSharedBuffer() const;
 	
 	void initializeBuffer();
-	
+	//! Appends /a data to the internal byte buffer
 	void appendData( const ByteBufferRef& data );
 	
 	friend class SenderBase;
@@ -446,28 +446,30 @@ class PacketFraming {
 class SenderBase {
   public:
 	virtual ~SenderBase() = default;
-	//! Alias function that represents a general error callback for the socket. Note: for some errors
-	//! there'll not be an accompanying oscAddress, or it'll not have a value set. These errors have
-	//! nothing to do with transport but other socket operations like bind and open. To see more about
-	//! asio's error_codes, look at "asio/error.hpp".
-	using SocketTransportErrorFn = std::function<void( const asio::error_code & /*error*/,
-													   const std::string & /*oscAddress*/)>;
+	
+	//! Alias for the send OnErrorFn.
+	using OnErrorFn	= std::function<void( asio::error_code )>;
+	//! Alias for the send OnCompleteFn.
+	using OnCompleteFn = std::function<void()>;
 	
 	//! Binds the underlying network socket. Should be called before trying any communication operations.
+	//! If an error occurs with either the underlying open or bind operations on the socket, throws
+	//! osc::Exception with asio::error_code information.
 	void bind() { bindImpl(); }
-	//! Sends \a message to the destination endpoint.
-	void send( const Message &message ) { sendImpl( message.getSharedBuffer() ); }
-	//! Sends \a bundle to the destination endpoint.
-	void send( const Bundle &bundle ) { sendImpl( bundle.getSharedBuffer() ); }
-	//! Closes the underlying connection to the socket.
+	//! Sends \a message to the destination endpoint. Takes optional /a onErrorFn and /a onCompleteFn.
+	//! If error occurs, and an error callback is provided, it will be called with error_code information.
+	//! If send operation completes and /a onCompleteFn included, it will be called.
+	void send( const Message &message, OnErrorFn onErrorFn = nullptr, OnCompleteFn onCompleteFn = nullptr );
+	//! Sends \a bundle to the destination endpoint. Takes optional /a onErrorFn and /a onCompleteFn.
+	//! If error occurs, and an error callback is provided, it will be called with error_code information.
+	//! If send operation completes and /a onCompleteFn included, it will be called.
+	void send( const Bundle &bundle, OnErrorFn onErrorFn = nullptr, OnCompleteFn onCompleteFn = nullptr );
+	//! Closes the underlying connection to the socket. If an error occurs with either the underlying
+	//! close operations on the socket, throws osc::Exception with asio::error_code information.
 	void close() { closeImpl(); }
 	
-	//! Sets the underlying socket transport error fn with \a errorFn.
-	void setSocketTransportErrorFn( SocketTransportErrorFn errorFn );
-	
   protected:
-	SenderBase( PacketFramingRef packetFraming )
-	: mPacketFraming( packetFraming ) {}
+	SenderBase() = default;
 	
 	SenderBase( const SenderBase &other ) = delete;
 	SenderBase& operator=( const SenderBase &other ) = delete;
@@ -475,19 +477,13 @@ class SenderBase {
 	SenderBase& operator=( SenderBase &&other ) = delete;
 	
 	//! Abstract send function implemented by the network layer.
-	virtual void sendImpl( const ByteBufferRef &byteBuffer ) = 0;
+	virtual void sendImpl( const ByteBufferRef &byteBuffer, OnErrorFn onErrorFn, OnCompleteFn onCompleteFn ) = 0;
 	//! Helper function to extract the address of an osc message if present.
 	static std::string extractOscAddress( const ByteBufferRef &transportData );
-	//! Abstract close function implemented by the network layer
-	virtual void closeImpl() = 0;
 	//! Abstract bind function implemented by the network layer
 	virtual void bindImpl() = 0;
-	//! Handles error
-	virtual void handleError( const asio::error_code &error, const std::string &oscAddress);
-	
-	SocketTransportErrorFn	mSocketTransportErrorFn;
-	std::mutex				mSocketErrorFnMutex;
-	PacketFramingRef		mPacketFraming;
+	//! Abstract close function implemented by the network layer
+	virtual void closeImpl() = 0;
 };
 	
 //! Represents an OSC Sender (called a \a server in the OSC spec) and implements the UDP
@@ -524,14 +520,14 @@ class SenderUdp : public SenderBase {
 	const protocol::endpoint& getRemoteAddress() const { return mRemoteEndpoint; }
 	
   protected:
-	//! Opens and Binds the underlying UDP socket to the protocol and localEndpoint respectively. If an error occurs,
-	//! the SocketTranportErrorFn will be called with a blank oscAddress.
+	//! Opens and Binds the underlying UDP socket to the protocol and localEndpoint respectively. If an
+	//! error occurs, throws osc::Exception.
 	void bindImpl() override;
-	//! Sends the byte buffer /a data to the remote endpoint using the UDP socket, asynchronously. If an error occurs,
-	//! the SocketTransportErrorFn will be called with an oscAddress, if available.
-	void sendImpl( const ByteBufferRef &data ) override;
-	//! Closes the underlying UDP socket. If an error occurs, the SocketTransportErrorFn will be called with a blank
-	//! oscAddress.
+	//! Sends the byte buffer /a data to the remote endpoint using the UDP socket, asynchronously. Takes
+	//! optional /a options. If error occurs, and SenderOptions provides an error callback, it will be
+	//! called with information. If /a options includes a completeFn, it will be called.
+	void sendImpl( const ByteBufferRef &data, OnErrorFn onErrorFn, OnCompleteFn onCompleteFn ) override;
+	//! Closes the underlying UDP socket. If an error occurs, If an error occurs, throws osc::Exception.
 	void closeImpl() override;
 	
 	UdpSocketRef			mSocket;
@@ -555,9 +551,9 @@ class SenderTcp : public SenderBase {
   public:
 	//! Alias protocol for cleaner interfaces
 	using protocol = asio::ip::tcp;
-	//! Alias function representing an on connect callback, receiving the bound and connected underlying
-	//! shared_ptr tcp::socket.
-	using OnConnectFn = std::function<void( TcpSocketRef )>;
+	//! Alias function representing an on connect callback, receiving an error_code and the bound and connected
+	//! underlying shared_ptr tcp::socket.
+	using OnConnectFn = std::function<void( asio::error_code )>;
 	//! Constructs a Sender (called a \a server in the OSC spec) using TCP as transport, whose local endpoint is
 	//! defined by \a localPort and \a protocol, which defaults to v4, and remote endpoint is defined by \a
 	//! destinationHost and \a destinationPort and PacketFraming shared_ptr \a packetFraming, which defaults to
@@ -587,15 +583,13 @@ class SenderTcp : public SenderBase {
 	virtual ~SenderTcp();
 	
 	//! Connects to the remote endpoint using the underlying socket. Has to be called before attempting to
-	//! send anything. If an error occurs, the SocketTranportErrorFn will be called with a blank oscAddress.
-	//! If no error occurs and OnConnectFn present, the OnConnectFn will be called.
-	void connect();
+	//! send anything. /a onConnectFn called after asynchronous operation finishes, with any errors in the
+	//! error_code argument
+	void connect( OnConnectFn onConnectFn );
 	//! Shuts down the underlying socket. Use this function prior to close to clean up the connection and
-	//! end socket linger. If error occurs, it is passed the the SocketErrorFn.
+	//! end socket linger. If an error occurs with the underlying operation on the socket, throws
+	//! osc::Exception with asio::error_code information.
 	void shutdown( asio::socket_base::shutdown_type shutdownType = asio::socket_base::shutdown_both );
-	//! Sets the underlying OnConnectFn. Called after asynchronously connecting to the remote endpoint, if no
-	//! error occurs.
-	void setOnConnectFn( OnConnectFn onConnectFn );
 
 	//! Returns the local address of the endpoint associated with this socket.
 	protocol::endpoint getLocalEndpoint() const { return mSocket->local_endpoint(); }
@@ -603,21 +597,19 @@ class SenderTcp : public SenderBase {
 	const protocol::endpoint& getRemoteEndpoint() const { return mRemoteEndpoint; }
 
   protected:
-	//! Opens and Binds the underlying TCP socket to the protocol and localEndpoint respectively. If an error occurs,
-	//! the SocketTranportErrorFn will be called with a blank oscAddress.
+	//! Opens and Binds the underlying TCP socket to the protocol and localEndpoint respectively. If an
+	//! error occurs, throws osc::Exception.
 	void bindImpl() override;
-	//! Sends the byte buffer /a data to the remote endpoint using the TCP socket, asynchronously. If an error occurs,
-	//! the SocketTranportErrorFn will be called with an oscAddress, if present.
-	void sendImpl( const ByteBufferRef &data ) override;
-	//! Closes the underlying TCP socket. If an error occurs, the SocketTranportErrorFn will be called with a blank
-	//! oscAddress.
+	//! Sends the byte buffer /a data to the remote endpoint using the TCP socket, asynchronously. Takes
+	//! optional /a options. If error occurs, and SenderOptions provides an error callback, it will be
+	//! called with information. If /a options includes a completeFn, it will be called.
+	void sendImpl( const ByteBufferRef &data, OnErrorFn onErrorFn, OnCompleteFn onCompleteFn ) override;
+	//! Closes the underlying TCP socket. If error occurs, throws osc::Exception.
 	void closeImpl() override;
 	
 	TcpSocketRef			mSocket;
+	PacketFramingRef		mPacketFraming;
 	asio::ip::tcp::endpoint mLocalEndpoint, mRemoteEndpoint;
-	OnConnectFn				mOnConnectFn;
-	std::mutex				mOnConnectFnMutex;
-	std::atomic<bool>		mIsConnected;
 	
   public:
 	//! Non-copyable.
@@ -641,11 +633,9 @@ public:
 	using Listeners = std::vector<std::pair<std::string, ListenerFn>>;
 	
 	//! Binds the underlying network socket. Should be called before executing communication operations.
-	void		bind() { bindImpl(); }
-	//! Commits the socket to asynchronously listen and begin to receive from outside connections.
-	void		listen() { listenImpl(); }
+	void	bind() { bindImpl(); }
 	//! Closes the underlying network socket. Should be called on most errors to reset the socket.
-	void		close() { closeImpl(); }
+	void	close() { closeImpl(); }
 	
 	//! Sets a callback, \a listener, to be called when receiving a message with \a address. If a ListenerFn
 	//! does not exist for a specific address, any messages with that address will be disregarded. If a ListenerFn
@@ -655,7 +645,7 @@ public:
 	void		removeListener( const std::string &address );
 	
   protected:
-	ReceiverBase( PacketFramingRef packetFraming ) : mPacketFraming( packetFraming ) {}
+	ReceiverBase() = default;
 	//! Non-copyable.
 	ReceiverBase( const ReceiverBase &other ) = delete;
 	//! Non-copyable.
@@ -665,10 +655,11 @@ public:
 	//! Non-Moveable.
 	ReceiverBase& operator=( ReceiverBase &&other ) = delete;
 	
-	//! Decodes and routes messages from the networking layer stream. Dispatches all messages with an address that
-	//! has an associated listener.
+	//! Decodes and routes messages from the networking layer stream. Dispatches all messages with
+	//! an address that has an associated listener.
 	void dispatchMethods( uint8_t *data, uint32_t size, const asio::ip::address &senderIpAddress );
-	//! Decodes a complete OSC Packet into it's individual parts. \a timetag is ignored within the below implementations.
+	//! Decodes a complete OSC Packet into it's individual parts. \a timetag is ignored within the
+	//! below implementations.
 	bool decodeData( uint8_t *data, uint32_t size, std::vector<Message> &messages, uint64_t timetag = 0 ) const;
 	//! Decodes an individual message. \a timetag is ignored within the below implementations.
 	bool decodeMessage( uint8_t *data, uint32_t size, std::vector<Message> &messages, uint64_t timetag = 0 ) const;
@@ -677,14 +668,11 @@ public:
 	
 	//! Abstract bind implementation function.
 	virtual void bindImpl() = 0;
-	//! Abstract listen implementation function.
-	virtual void listenImpl() = 0;
 	//! Abstract close implementation function.
 	virtual void closeImpl() = 0;
 	
 	Listeners				mListeners;
-	std::mutex				mListenerMutex, mSocketTransportErrorFnMutex;
-	PacketFramingRef		mPacketFraming;
+	std::mutex				mListenerMutex;
 	std::set<std::string>	mDisregardedAddresses;
 };
 	
@@ -694,10 +682,9 @@ class ReceiverUdp : public ReceiverBase {
   public:
 	//! Alias protocol for cleaner interfaces
 	using protocol = asio::ip::udp;
-	//! Alias function that represents a general error callback for the socket, with an error_code and orginating endpoint
-	//! if present. To see more about asio's error_codes, look at "asio/error.hpp".
-	using SocketTransportErrorFn = std::function<void( const asio::error_code &/*error*/,
-													   const protocol::endpoint &/*originator*/)>;
+	//! Alias function that represents a general error callback for the socket, with an error_code and
+	//! orginating endpoint if present. To see more about asio's error_codes, look at "asio/error.hpp".
+	using OnSocketErrorFn = std::function<bool( asio::error_code /*error*/, protocol::endpoint /*originator*/)>;
 	//! Constructs a Receiver (called a \a client in the OSC spec) using UDP for transport, whose local endpoint
 	//! is defined by \a localPort and \a protocol, which defaults to v4. Takes an optional io_service to
 	//! construct the socket from.
@@ -712,40 +699,29 @@ class ReceiverUdp : public ReceiverBase {
 	//! constructed udp::socket shared_ptr \a socket. Use this for extra configuration and or sharing sockets
 	//! between sender and receiver.
 	ReceiverUdp( UdpSocketRef socket );
-	
 	virtual ~ReceiverUdp() = default;
 	
+	//! Commits the socket to asynchronously listen and begin to receive from outside connections.
+	//! /a onSocketErrorFn will be called in the case that any socket error is propagated.
+	void listen( OnSocketErrorFn onSocketErrorFn );
 	//! Sets the amount of bytes to reserve for the datagrams being received.
 	void setAmountToReceive( uint32_t amountToReceive );
 	//! Returns the local udp::endpoint of the underlying socket.
 	asio::ip::udp::endpoint getLocalEndpoint() { return mSocket->local_endpoint(); }
 	
-	//! Sets the underlying SocketTransportErrorFn based on the asio::ip::tcp protocol.
-	void setSocketErrorFn( SocketTransportErrorFn errorFn );
-	
   protected:
 	//! Opens and Binds the underlying UDP socket to the protocol and localEndpoint respectively. If an error occurs,
 	//! the SocketTranportErrorFn will be called with a default constructed endpoint.
 	void bindImpl() override;
-	//! Listens on the UDP network socket for incoming datagrams. Handles the async receive completion operations.
-	//! If an error occurs, the SocketTranportErrorFn will be called with an endpoint if present.
-	void listenImpl() override;
 	//! Closes the underlying UDP socket. If an error occurs, the SocketTranportErrorFn will be called with a
 	//! default constructed endpoint.
 	void closeImpl() override;
-	
-	//! helper that handles locking and dispatching of errors.
-	void handleError( const asio::error_code &error, const protocol::endpoint &originator );
 	
 	UdpSocketRef						mSocket;
 	asio::ip::udp::endpoint				mLocalEndpoint;
 	asio::streambuf						mBuffer;
 	
-	SocketTransportErrorFn				mSocketTransportErrorFn;
-	
-	//! TODO: Should we just make this an atomic?
-	uint32_t							mAmountToReceive;
-	std::mutex							mAmountToReceiveMutex;
+	std::atomic<uint32_t>				mAmountToReceive;
 	
   public:
 	//! Non-copyable.
@@ -764,20 +740,26 @@ class ReceiverTcp : public ReceiverBase {
   public:
 	//! Alias protocol for cleaner interfaces
 	using protocol = asio::ip::tcp;
-	//! Alias function that represents a general error callback for the socket, arguments include the error_code and the
-	//! connectionIdentifier. To see more about asio's error_codes, look at "asio/error.hpp". The connectionIdentifier
-	//! can be used to close the underlying socket and notify the rest of your system.
-	using SocketTransportErrorFn = std::function<void( const asio::error_code &/*error*/,
-													   uint64_t /*connectionIdentifier*/ )>;
-	//! Alias function that represents a general error callback for the underlying tcp::acceptor, arguments include the
-	//! error_code.
-	using AcceptorErrorFn = std::function<void( const asio::error_code &/*error*/ )>;
-	//! Alias function that represents an on accept callback with the constructed tcp::socket and the connectionIdentifier.
-	//! The connectionIdentifier is useful to target closing the underlying socket at a later time.
-	using OnAcceptFn = std::function<void( TcpSocketRef, uint64_t )>;
-	//! Constructs a Receiver (called a \a client in the OSC spec) using TCP for transport, whose local endpoint
-	//! is defined by \a localPort and \a protocol, which defaults to v4, and PacketFraming shared_ptr \a packetFraming,
-	//! which defaults to null. Takes an optional io_service to construct the socket from.
+	//! Alias function that represents a general error callback for the socket, arguments include
+	//! the error_code and the connectionIdentifier. To see more about asio's error_codes, look
+	//! at "asio/error.hpp". The connectionIdentifier can be used to close the underlying socket
+	//! and notify the rest of your system.
+	using ConnectionErrorFn = std::function<void( asio::error_code /*error*/, uint64_t /*connectionId*/ )>;
+	//! Alias function that represents an on accept callback with the constructed tcp::socket and the
+	//! connectionIdentifier. The connectionIdentifier is useful to target closing the underlying
+	//! socket at a later time. Function should return whether the Receiver should or should not cache
+	//! the connection.
+	using OnAcceptFn = std::function<bool( TcpSocketRef /*accepted socket*/, uint64_t /*connectionId*/)>;
+	//! Alias function that represents a general error callback for the underlying tcp::acceptor,
+	//! arguments include the error_code and possible remote endpoint. Function should return whether or
+	//! not the acceptor should continue to accept. To see more about asio's error_codes,
+	//! look at "asio/error.hpp"
+	using OnAcceptErrorFn = std::function<bool( asio::error_code /*error*/,
+											    protocol::endpoint /*remote endpoint*/ )>;
+	//! Constructs a Receiver (called a \a client in the OSC spec) using TCP for transport, whose
+	//! local endpoint is defined by \a localPort and \a protocol, which defaults to v4, and
+	//! PacketFraming shared_ptr \a packetFraming, which defaults to null. Takes an optional io_service
+	//! to construct the socket from.
 	ReceiverTcp( uint16_t port,
 				 const protocol &protocol = protocol::v4(),
 				 asio::io_service &service = ci::app::App::get()->io_service(),
@@ -800,19 +782,17 @@ class ReceiverTcp : public ReceiverBase {
 				 PacketFramingRef packetFraming = nullptr );
 	virtual ~ReceiverTcp();
 	
+	//! Launches acceptor to asynchronously accept connections. If an error occurs, the /a onAcceptErrorFn
+	//! will be called. When a connection is accepted, /a onAcceptFn will be called.
+	void accept( OnAcceptErrorFn onAcceptErrorFn, OnAcceptFn onAcceptFn );
 	//! Sets the underlying SocketTransportErrorFn, called on any errors happening on the underlying sockets.
-	void setSocketTransportErrorFn( SocketTransportErrorFn errorFn );
-	//! Sets the underlying AcceptorErrorFn, called on any errors happening on the underlying acceptor.
-	void setAcceptorErrorFn( AcceptorErrorFn errorFn );
-	//! Sets the underlying OnAcceptFn. Called when the Acceptor receives a connection and before the
-	//! ReceiverTcp::Connection is constructed and read from.
-	void setOnAcceptFn( OnAcceptFn acceptFn );
+	void setConnectionErrorFn( ConnectionErrorFn errorFn );
 	//! Closes the underlying acceptor. Must rebind to listen again after calling this function.
 	void closeAcceptor();
 	//! Closes the Connection associated with the connectionIdentifier. \a connectionIdentifier is the handle
 	//! to the socket, received in the OnAccept method. \a shutdownType sets the shutdown method for the underlying
 	//! socket before closing it. See OnAcceptFn and SocketTransportErrorFn for more.
-	void closeConnection( uint64_t connectionIdentifier, asio::socket_base::shutdown_type shutdownType = asio::socket_base::shutdown_both );
+	asio::error_code closeConnection( uint64_t connectionIdentifier, asio::socket_base::shutdown_type shutdownType = asio::socket_base::shutdown_both );
 	
   protected:
 	//! Handles reading from the socket.
@@ -823,7 +803,7 @@ class ReceiverTcp : public ReceiverBase {
 		
 		//! Implements asynchronous read on the underlying socket. Handles the async receive completion operations.
 		void read();
-		void shutdown( asio::socket_base::shutdown_type shutdownType );
+		asio::error_code shutdown( asio::socket_base::shutdown_type shutdownType );
 		//! Simple alias for asio buffer iterator type.
 		using iterator = asio::buffers_iterator<asio::streambuf::const_buffers_type>;
 		//! Static method which is used to read the stream as it's coming in and notate each packet. Implementation
@@ -852,29 +832,19 @@ class ReceiverTcp : public ReceiverBase {
 	//! Opens and Binds the underlying TCP acceptor to the protocol and localEndpoint respectively. If an error occurs,
 	//! the AccpetorErrorFn will be called.
 	void bindImpl() override;
-	//! Listens on the underlying TCP network socket for incoming connections. If an error occurs,
-	//! the AcceptorErrorFn will be called.
-	void listenImpl() override;
-	//! Launches acceptor to asynchronously accept connections. If an error occurs, the AcceptorErrorFn will be called.
-	void accept();
 	//! Implements the close operation for the underlying sockets and acceptor. For the underlying socket, shutdown is
 	//! called on the prior to close. If an error occurs, the AcceptorErrorFn or the SocketErrorFn will be called
 	//! respectively.
 	void closeImpl() override;
-	//! Helper which handles any errors happening to the acceptor.
-	void handleAcceptorError( const asio::error_code &error );
-	//! Helper which handles any errors with the connection.
-	void handleSocketError( const asio::error_code &error, uint64_t originator, const asio::ip::tcp::endpoint &endpoint );
 	
 	AcceptorRef			mAcceptor;
+	PacketFramingRef	mPacketFraming;
 	protocol::endpoint	mLocalEndpoint;
 	
-	SocketTransportErrorFn				mSocketTransportErrorFn;
-	AcceptorErrorFn						mAcceptorErrorFn;
-	OnAcceptFn							mOnAcceptFn;
+	ConnectionErrorFn	mConnectionErrorFn;
 	
-	std::mutex							mDispatchMutex, mConnectionMutex,
-										mOnAcceptFnMutex, mAcceptorErrorFnMutex;
+	std::mutex			mConnectionMutex, mConnectionErrorFnMutex;
+	
 	//! Alias representing each connection.
 	using UniqueConnection = std::unique_ptr<Connection>;
 	std::vector<UniqueConnection>		mConnections;
@@ -917,6 +887,16 @@ class SLIPPacketFraming : public PacketFraming {
 	size_t encode( const uint8_t* data, size_t size, uint8_t* encodedData );
 	//! Implements the decoding process.
 	size_t decode( const uint8_t* data, size_t size, uint8_t* decodedData );
+};
+	
+class Exception : public ci::Exception {
+public:
+	Exception( asio::error_code error ) : ci::Exception( error.message() ), mError( error ) {}
+	//! Returns system level value of the error for reference online. Very helpful information
+	//! can be found using this number.
+	int32_t value() const { return mError.value(); }
+private:
+	asio::error_code mError;
 };
 
 namespace time {

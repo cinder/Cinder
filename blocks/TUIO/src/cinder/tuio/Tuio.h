@@ -81,25 +81,9 @@ public:
 	template<typename Type>
 	using TypeFn = std::function<void(const Type &)>;
 	
-	//! Constructs a Receiver which uses udp, whose local endpoint is defined by \a
-	//! localPort, which defaults to 3333 (tuio default port), \a protocol, which
-	//! defaults to v4 and \a io as the sockets io_service, which defaults to app's
-	//! io_service.
-	Receiver( uint16_t localPort = DEFAULT_TUIO_PORT,
-		      const asio::ip::udp &protocol = asio::ip::udp::v4(),
-			  asio::io_service &io = ci::app::App::get()->io_service() );
 	//! Constructs a Receiver with an already constructed osc::Receiver. Used for more
 	//! advanced osc socket setup.
 	Receiver( osc::ReceiverBase *ptr );
-	//! Constructs a Receiver which uses udp, whose local endpoint is defined by \a
-	//! localPort, which defaults to 3333 (tuio default port) and \a protocol, which
-	//! defaults to v4. Sets up \a window to receive touchesBegan, Moved, and Ended
-	//! events from corresponding Cursor2d tuio events. Also, uses app's io_service
-	//! by default when constructing the socket. Note: calling setAddedFn, setUpdatedFn
-	//! or setRemovedFn for Cursor2d type when using this constructor does nothing.
-	Receiver( const app::WindowRef &window,
-			  uint16_t localPort = DEFAULT_TUIO_PORT,
-			  const asio::ip::udp &protocol = asio::ip::udp::v4() );
 	//! Constructs a Receiver with an already constructed osc::Receiver. Used for more
 	//! advanced osc socket setup. Sets up \a window to receive touchesBegan, Moved, and Ended
 	//! events from corresponding Cursor2d tuio events. Note: calling setAddedFn, setUpdatedFn
@@ -107,13 +91,6 @@ public:
 	Receiver( const app::WindowRef &window, osc::ReceiverBase *ptr );
 	// Destructor
 	~Receiver();
-	
-	//! Binds the underlying Asio socket. Then listens and accepts incomming traffic associated
-	//! with the underlying Asio socket.
-	void connect();
-	//! Cancels all asynchronous events on this Asio socket and closes the socket. After calling
-	//! this, you should receive no more messages.
-	void disconnect();
 	
 	//! Sets the Added Callback function for \a TuioType and creates a TypeHandler if one isn't
 	//! already available. \a callback called when \a TuioType has been added.
@@ -156,7 +133,6 @@ private:
 	
 	osc::ReceiverBase	*mReceiver;
 	TypeHandlers		mHandlers;
-	bool				mOwnsReceiver;
 };
 	
 namespace detail {

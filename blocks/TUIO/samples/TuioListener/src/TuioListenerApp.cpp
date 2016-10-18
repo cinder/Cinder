@@ -44,18 +44,40 @@ class TuioClientApp : public App {
 	void updated( const tuio::Cursor2d &cursor );
 	void removed( const tuio::Cursor2d &cursor );
 	
-	std::shared_ptr<tuio::Receiver> tuio;
-	std::map<std::string, std::vector<vec2>> mTouches;
+	std::shared_ptr<osc::ReceiverUdp>			mOscReceiver;
+	std::shared_ptr<tuio::Receiver>				mTuio;
+	std::map<std::string, std::vector<vec2>>	mTouches;
 };
 
 void TuioClientApp::setup()
 {
-	tuio = std::shared_ptr<tuio::Receiver>( new tuio::Receiver() );
-	tuio->connect();
-	
-	tuio->setAddedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::added, this, std::placeholders::_1 ) );
-	tuio->setUpdatedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::updated, this, std::placeholders::_1 ) );
-	tuio->setRemovedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::removed, this, std::placeholders::_1 ) );
+	// Create your osc receiver with whatever configuration needed. In this case we'll open it up
+	// with the Default Tuio Port - 3333.
+	mOscReceiver = std::make_shared<osc::ReceiverUdp>( tuio::Receiver::DEFAULT_TUIO_PORT );
+	// Create the Tuio Receiver passing the Osc Receiver's pointer. 
+	mTuio = std::make_shared<tuio::Receiver>( mOscReceiver.get() );
+	// Add your tuio callbacks.
+	mTuio->setAddedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::added, this, std::placeholders::_1 ) );
+	mTuio->setUpdatedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::updated, this, std::placeholders::_1 ) );
+	mTuio->setRemovedFn<tuio::Cursor2d>( std::bind( &TuioClientApp::removed, this, std::placeholders::_1 ) );
+	// Bind the Osc Receiver...
+	try {
+		mOscReceiver->bind();
+	}
+	catch( const ci::Exception &ex ) {
+		CI_LOG_EXCEPTION( "OscReceiver bind", ex );
+		quit();
+	}
+	// And listen for messages.
+	mOscReceiver->listen( 
+	[]( asio::error_code ec, asio::ip::udp::endpoint ep ) -> bool {
+		if( ec ) {
+			CI_LOG_E( "Error on listener: " << ec.message() << " Error Value: " << ec.value() );
+			return false;
+		}
+		else
+			return true;
+	} );
 }
 
 void TuioClientApp::added( const tuio::Cursor2d &cursor )

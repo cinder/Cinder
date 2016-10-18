@@ -1,4 +1,3 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -14,38 +13,38 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="Blocks">
-      <UniqueIdentifier>{6634FB08-F309-40EC-A221-161360233E9F}</UniqueIdentifier>
+      <UniqueIdentifier>{BA88D529-66DE-4C86-8D12-EA13C3B7D835}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC">
-      <UniqueIdentifier>{43BB9F34-B2AE-431F-9D25-2AE1D18B9242}</UniqueIdentifier>
+      <UniqueIdentifier>{614C3C9D-10A2-4FD7-A4A7-2554E6D3B33E}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC\src">
-      <UniqueIdentifier>{E5670CD6-5709-4F07-8BC7-72D5864E217C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Blocks\TUIO">
-      <UniqueIdentifier>{972E866F-EB75-4B9D-A646-601F699E23B4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Blocks\TUIO\src">
-      <UniqueIdentifier>{DF219D27-2390-496D-B89F-D252C1DEA583}</UniqueIdentifier>
+      <UniqueIdentifier>{284F2E59-66A3-4A04-885B-A03DB2033472}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC\src\cinder">
-      <UniqueIdentifier>{4ade2755-f9c6-4a99-b50c-bd84b80a5321}</UniqueIdentifier>
+      <UniqueIdentifier>{11A771FF-184D-4197-B41D-CA0716B55B73}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC\src\cinder\osc">
-      <UniqueIdentifier>{cfbec125-8069-4488-ba8d-0d4f462dff1e}</UniqueIdentifier>
+      <UniqueIdentifier>{0D23F069-2C02-4CC9-96E9-DD60E0F048C7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO">
+      <UniqueIdentifier>{B17863D9-119F-45F0-BB69-C0B437E39B85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\TUIO\src">
+      <UniqueIdentifier>{AFF34008-B623-4847-AFC5-2CD1B1C4CB54}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\TUIO\src\cinder">
-      <UniqueIdentifier>{336e9bf2-560d-4ccb-bb70-2dff83a11e9a}</UniqueIdentifier>
+      <UniqueIdentifier>{79728E07-14B8-4289-B9BC-7D67635EAB2B}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\TUIO\src\cinder\tuio">
-      <UniqueIdentifier>{7a9cda55-6bf7-40e3-b08a-5bf5ee88ceaa}</UniqueIdentifier>
+      <UniqueIdentifier>{7FB37827-E7D0-4C55-940A-2E550CA8C70E}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\TUIOMultiTouchBasicApp.cpp">
+    <ClCompile Include="..\src\TuioMultiTouchBasicApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\TUIOMultiTouchBasicApp.cpp">
+    <ClCompile Include="..\src\TuioMultiTouchBasicApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClInclude Include="..\include\Resources.h">
@@ -54,19 +53,19 @@
     <ClCompile Include="..\..\..\..\OSC\src\cinder\osc\Osc.cpp">
       <Filter>Blocks\OSC\src\cinder\osc</Filter>
     </ClCompile>
+    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
+      <Filter>Blocks\OSC\src\cinder\osc</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\..\src\cinder\tuio\Tuio.cpp">
       <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
     </ClCompile>
+    <ClInclude Include="..\..\..\src\cinder\tuio\Tuio.h">
+      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\OSC\src\cinder\osc\Osc.h">
-      <Filter>Blocks\OSC\src\cinder\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\cinder\tuio\Tuio.h">
-      <Filter>Blocks\TUIO\src\cinder\tuio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
