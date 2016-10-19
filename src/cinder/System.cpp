@@ -638,24 +638,19 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 
 	int success = getifaddrs( &interfaces );
 	if( success == 0 ) {
-		currentInterface = interfaces;
-		while( currentInterface ) {
+		for( currentInterface = interfaces; currentInterface; currentInterface = currentInterface->ifa_next ) {
 			if( currentInterface->ifa_addr->sa_family == AF_INET ) {
 				char host[NI_MAXHOST], subnetMask[NI_MAXHOST];
-				int result = getnameinfo( currentInterface->ifa_addr,
-                           (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
-                           host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
-				if( result != 0 )
-					continue;
-				result = getnameinfo( currentInterface->ifa_netmask,
-                           (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
-                           subnetMask, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
-				if( result != 0 )
-					continue;
-				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host, subnetMask ) );
-
+				int nameResult = getnameinfo( currentInterface->ifa_addr,
+					(currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+					host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
+				int maskResult = getnameinfo( currentInterface->ifa_netmask,
+					(currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+					subnetMask, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
+				if( nameResult == 0 && maskResult == 0 ) {
+					adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host, subnetMask ) );
+				}
 			}
-			currentInterface = currentInterface->ifa_next;
 		}
 	}
 	freeifaddrs( interfaces );
