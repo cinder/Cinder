@@ -8,15 +8,13 @@ if( NOT TARGET Cairo )
 
 	add_library( Cairo ${CINDER_CAIRO_SOURCES} )
 	
-	if( NOT TARGET cinder )
-		include( "${CINDER_PATH}/proj/cmake/configure.cmake" )
-		find_package( cinder REQUIRED PATHS
-			"${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/Release"
-			"$ENV{CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/Release" )
-		get_target_property( TEST_VAR cinder IMPORTED_LOCATION )
-		message( STATUS TEST_VAR: "${TEST_VAR}" )
-	endif()
-  
+  if( NOT TARGET cinder )
+  	include( "${CINDER_PATH}/proj/cmake/configure.cmake" )
+ 		find_package( cinder REQUIRED PATHS
+ 		 	"${CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
+  		"$ENV{CINDER_PATH}/${CINDER_LIB_DIRECTORY}" )
+  endif()
+
 	get_target_property( TEST_VAR cinder IMPORTED_LOCATION_RELEASE )
 	message( STATUS TEST_VAR: "${TEST_VAR}" )
 	
@@ -35,7 +33,7 @@ if( NOT TARGET Cairo )
 		PUBLIC ${CAIRO_LIBS_PATH}/libcairo.a 
 		PUBLIC ${CAIRO_LIBS_PATH}/libpixman-1.a 
 		PUBLIC ${CAIRO_LIBS_PATH}/libpng.a 
-		PUBLIC "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/Release/libcinder.a"  
+		PRIVATE "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}/libcinder.a"
 	)
 
 endif()

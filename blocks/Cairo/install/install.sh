@@ -295,7 +295,7 @@ then
 	## we use cinder to link freetype
 	##################################
 
-	CINDER_DIR=`pwd`/../../.. 
+	CINDER_DIR=`pwd`/../../../..
 	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
 	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
 
@@ -321,7 +321,7 @@ then
 	## we use cinder to link freetype
 	##################################
 
-	CINDER_DIR=`pwd`/../../.. 
+	CINDER_DIR=`pwd`/../../../.. 
 	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/x86_64/ogl/Release
 	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
 
@@ -360,7 +360,7 @@ then
 	## we use cinder to link freetype
 	##################################
 
-	CINDER_DIR=`pwd`/../../.. 
+	CINDER_DIR=`pwd`/../../../..
 	CINDER_LIB_DIR=${CINDER_DIR}/lib/${lower_case}/Release
 	CINDER_FREETYPE_INCLUDE_PATH=${CINDER_DIR}/include/
 	
