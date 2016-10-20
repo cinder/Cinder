@@ -22,21 +22,26 @@ class ShapeTestApp : public App {
 	void setRandomFont();
 	void setRandomGlyph();
 
+	void generateSDF();
+
 	void reposition( const vec2 &point );
 	void calculate();
 	void calculateModelMatrix();
 
-	Font           mFont;
-	Shape2d        mShape;
-	vector<string> mFontNames;
-	int            mFontSize;
-	float          mZoom;
-	float          mDistance;
-	vec2           mMouse, mClick;
-	vec2           mClosest;
-	vec2           mAnchor, mPosition, mOriginal;
-	mat4           mModelMatrix;
-	bool           mIsInside;
+	Font             mFont;
+	Shape2d          mShape;
+	vector<string>   mFontNames;
+	int              mFontSize;
+	float            mZoom;
+	float            mDistance;
+	vec2             mMouse, mClick;
+	vec2             mClosest;
+	vec2             mAnchor, mPosition, mOriginal;
+	mat4             mModelMatrix;
+	bool             mIsInside;
+	Rectf            mBounds;
+	Channel32f       mChannel;
+	gl::Texture2dRef mTexture;
 };
 
 void ShapeTestApp::setup()
@@ -47,11 +52,10 @@ void ShapeTestApp::setup()
 	mIsInside = false;
 
 	mFontNames = Font::getNames();
-	mFontSize = 256;
+	mFontSize = 1024;
 	mFont = Font( "Times", (float)mFontSize );
-	mShape = mFont.getGlyphShape( mFont.getGlyphChar( 'A' ) );
 
-	calculate();
+	setRandomGlyph();
 }
 
 void ShapeTestApp::setRandomFont()
@@ -70,30 +74,80 @@ void ShapeTestApp::setRandomGlyph()
 	catch( FontGlyphFailureExc & ) {
 		console() << "Looks like glyph " << glyphIndex << " doesn't exist in this font." << std::endl;
 	}
+
+	mBounds = mShape.calcBoundingBox();
+	mAnchor = mBounds.getUpperLeft() + 0.5f * mBounds.getSize();
+	mPosition = getWindowCenter();
+	mZoom = 0.9f * glm::min( getWindowWidth() / mBounds.getWidth(), getWindowHeight() / mBounds.getHeight() );
+
+	mTexture.reset();
+
+	calculate();
+}
+
+void ShapeTestApp::generateSDF()
+{
+	// Create a channel large enough for this glyph.
+	mChannel = Channel32f( mBounds.getWidth(), mBounds.getHeight() );
+
+	Timer t( true );
+
+	// For each texel, calculate the signed distance, normalize it and store it.
+	const float kRange = 40.0f;
+
+	auto itr = mChannel.getIter();
+	while( itr.line() ) {
+		while( itr.pixel() ) {
+			auto pt = vec2( itr.getPos() ) + mBounds.getUpperLeft();
+			auto dist = mShape.calcSignedDistance( pt ) / kRange;
+			itr.v() = glm::clamp( dist * 0.5f + 0.5f, 0.0f, 1.0f );
+		}
+	}
+
+	t.stop();
+	console() << "Generate:" << t.getSeconds() << std::endl;
+
+	// Create the texture.
+	mTexture = gl::Texture2d::create( mChannel, gl::Texture2d::Format().magFilter( GL_NEAREST ) );
 }
 
 void ShapeTestApp::draw()
 {
 	gl::clear();
-	gl::pushModelView();
+
+	gl::pushModelMatrix();
 	gl::setModelMatrix( mModelMatrix );
 
+	// Draw SDF texture if available.
+	if( mTexture ) {
+		gl::pushModelMatrix();
+		gl::translate( mBounds.getUpperLeft() );
+
+		gl::color( 1, 1, 1 );
+		gl::draw( mTexture );
+
+		gl::popModelMatrix();
+	}
+
+	// Draw shape outlines.
 	gl::color( mIsInside ? Color( 0.4f, 0.8f, 0.0f ) : Color( 0.8f, 0.4f, 0.0f ) );
 	gl::draw( mShape );
 
-	gl::popModelView();
+	gl::popModelMatrix();
 
-	gl::color( 0, 1, 1 );
+	// Draw closest point on shape.
+	gl::color( 0, 0.5f, 0.5f );
 	gl::drawSolidCircle( mClosest, 5 );
 
-	gl::color( 1, 1, 0 );
+	// Draw distance as a circle.
+	gl::color( 0.5f, 0.5f, 0 );
 	gl::drawStrokedCircle( mMouse, mDistance );
 }
 
 void ShapeTestApp::mouseMove( MouseEvent event )
 {
-	mMouse = event.getPos(); 
-	
+	mMouse = event.getPos();
+
 	calculate();
 }
 
@@ -127,9 +181,17 @@ void ShapeTestApp::mouseWheel( MouseEvent event )
 
 void ShapeTestApp::keyDown( KeyEvent event )
 {
-	setRandomGlyph();
-
-	calculate();
+	switch( event.getCode() ) {
+	case KeyEvent::KEY_ESCAPE:
+		quit();
+		break;
+	case KeyEvent::KEY_s:
+		generateSDF();
+		break;
+	default:
+		setRandomGlyph();
+		break;
+	}
 }
 
 void ShapeTestApp::reposition( const vec2 &mouse )
