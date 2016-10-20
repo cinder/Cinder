@@ -406,11 +406,8 @@ int controlPolygonFlatEnough( const glm::tvec2<T, glm::defaultp> *controlPoints,
 		max_distance_below = glm::min( max_distance_below, value );
 	}
 
-	T intercept_1 = -( c - max_distance_above ) / a;
-	T intercept_2 = -( c - max_distance_below ) / a;
-
 	// Compute intercepts of bounding box.
-	T error = glm::max( intercept_1, intercept_2 ) - glm::min( intercept_1, intercept_2 );
+	T error = glm::abs( ( max_distance_above - max_distance_below ) / a );
 
 	static const T kEpsilon = std::numeric_limits<T>::epsilon();
 	return ( error < kEpsilon ) ? 1 : 0;
@@ -422,6 +419,15 @@ T computeXIntercept( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T,
 {
 	glm::tvec2<T, glm::defaultp> d = p3 - p0;
 	return ( d.x * p0.y - d.y * p0.x ) / ( -d.y );
+}
+
+
+// Evaluate a Bezier curve at a particular parameter value. Assumes the curve is cubic (degree == 3).
+template<typename T>
+glm::tvec2<T, glm::defaultp> bezier( const glm::tvec2<T, glm::defaultp> *controlPoints, T t )
+{
+	T u = T{ 1 } -t;
+	return u * u * ( u * controlPoints[0] + T{ 3 } * t * controlPoints[1] ) + t * t * ( T{ 3 } * u * controlPoints[2] + t * controlPoints[3] );
 }
 
 // Evaluate a Bezier curve at a particular parameter value. Fill in control points for resulting sub-curves if "left" and "right" are non-null.
@@ -580,8 +586,9 @@ glm::tvec2<T, glm::defaultp> getClosestPointCubic( const glm::tvec2<T, glm::defa
 		T dist = glm::distance2( testPoint, controlPoints[0] );
 
 		// Find distances for candidate points.
+		glm::tvec2<T, glm::defaultp> p;
 		for( int i = 0; i < n_solutions; i++ ) {
-			glm::tvec2<T, glm::defaultp> p = bezier<T>( controlPoints, 3, t_candidate[i], nullptr, nullptr );
+			p = bezier<T>( controlPoints, t_candidate[i] );
 			T new_dist = glm::distance2( testPoint, p );
 			if( new_dist < dist ) {
 				dist = new_dist;
@@ -598,7 +605,7 @@ glm::tvec2<T, glm::defaultp> getClosestPointCubic( const glm::tvec2<T, glm::defa
 	}
 
 	// Return the point on the curve at parameter value t.
-	return ( bezier<T>( controlPoints, 3, t, nullptr, nullptr ) );
+	return ( bezier<T>( controlPoints, t ) );
 }
 template glm::tvec2<float, glm::defaultp> getClosestPointCubic<float>( const glm::tvec2<float, glm::defaultp> *controlPoints, const glm::tvec2<float, glm::defaultp> & testPoint );
 template glm::tvec2<double, glm::defaultp> getClosestPointCubic<double>( const glm::tvec2<double, glm::defaultp> *controlPoints, const glm::tvec2<double, glm::defaultp> & testPoint );
