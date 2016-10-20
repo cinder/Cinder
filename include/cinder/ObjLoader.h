@@ -49,17 +49,17 @@ class ObjLoader : public geom::Source {
   public:
 	/**Constructs and does the parsing of the file
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
-	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
+	 * \param includeTexCoords if false normals will be skipped, which can provide a faster load time
 	**/
 	ObjLoader( std::shared_ptr<IStreamCinder> stream, bool includeNormals = true, bool includeTexCoords = true, bool optimize = true );
 	/**Constructs and does the parsing of the file
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
-	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
+	 * \param includeTexCoords if false normals will be skipped, which can provide a faster load time
 	**/
 	ObjLoader( DataSourceRef dataSource, bool includeNormals = true, bool includeTexCoords = true, bool optimize = true );
 	/**Constructs and does the parsing of the file
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
-	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
+	 * \param includeTexCoords if false normals will be skipped, which can provide a faster load time
 	**/
 	ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals = true, bool includeTexCoords = true,  bool optimize = true );
 
