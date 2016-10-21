@@ -64,10 +64,26 @@ void PolyLineT<T>::scale( const T &scaleFactor, T scaleCenter )
 }
 
 template<typename T>
+PolyLineT<T> PolyLineT<T>::scaled( const T &scaleFactor, T scaleCenter ) const
+{
+	PolyLineT<T> result( *this );
+	result.scale( scaleFactor, scaleCenter );
+	return result;
+}
+
+template<typename T>
 void PolyLineT<T>::offset( const T &offsetBy )
 {
 	for( typename std::vector<T>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
 		*ptIt += offsetBy;
+}
+
+template<typename T>
+PolyLineT<T> PolyLineT<T>::getOffset( const T &offsetBy ) const
+{
+	PolyLineT<T> result( *this );
+	result.offset( offsetBy );
+	return result;
 }
 
 template<typename T>

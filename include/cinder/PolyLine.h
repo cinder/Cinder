@@ -54,10 +54,11 @@ class PolyLineT {
 	T			getPosition( float t ) const;
 	T			getDerivative( float t ) const;
 
-	void		scale( const T &scaleFactor, T scaleCenter = T() );
-	void		offset( const T &offsetBy );
-	void		reverse();
-	
+	void			scale( const T &scaleFactor, T scaleCenter = T() );
+	PolyLineT<T>	scaled( const T &scaleFactor, T scaleCenter = T() ) const;
+	void			offset( const T &offsetBy );
+	PolyLineT<T>	getOffset( const T &offsetBy ) const;
+	void			reverse();
 	PolyLineT<T>	reversed() const;
 
 	//! Returns whether the point \a pt is contained within the boundaries of the PolyLine
