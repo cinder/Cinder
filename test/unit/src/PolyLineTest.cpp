@@ -23,8 +23,8 @@ TEST_CASE("PolyLine", "Orientation")
 		REQUIRE( ! p1.isClockwise( &colinear ) );
 		REQUIRE( colinear );
 
-		REQUIRE( ! p1.isCounterClockwise() );
-		REQUIRE( ! p1.isCounterClockwise( &colinear ) );
+		REQUIRE( ! p1.isCounterclockwise() );
+		REQUIRE( ! p1.isCounterclockwise( &colinear ) );
 		REQUIRE( colinear );
 	}
 
@@ -42,8 +42,8 @@ TEST_CASE("PolyLine", "Orientation")
 		REQUIRE( ! p1.isClockwise( &colinear ) );
 		REQUIRE( colinear );
 
-		REQUIRE( ! p1.isCounterClockwise() );
-		REQUIRE( ! p1.isCounterClockwise( &colinear ) );
+		REQUIRE( ! p1.isCounterclockwise() );
+		REQUIRE( ! p1.isCounterclockwise( &colinear ) );
 		REQUIRE( colinear );
 	}
 

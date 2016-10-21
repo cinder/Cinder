@@ -47,7 +47,8 @@ bool PolyLineT<T>::isClockwise( bool *isColinear ) const
 	for( size_t i = 1; i <= last; ++i ) {
 		if( mPoints[i].x < mPoints[smallest].x ) {
 			smallest = i;
-		} else if( mPoints[i].x == mPoints[smallest].x && mPoints[i].y < mPoints[smallest].y ) {
+		}
+		else if( mPoints[i].x == mPoints[smallest].x && mPoints[i].y < mPoints[smallest].y ) {
 			smallest = i;
 		}
 	};
@@ -66,12 +67,12 @@ bool PolyLineT<T>::isClockwise( bool *isColinear ) const
 }
 
 template<typename T>
-bool PolyLineT<T>::isCounterClockwise( bool *isColinear ) const
+bool PolyLineT<T>::isCounterclockwise( bool *isColinear ) const
 {
 	bool colinear;
 	bool clockwise = this->isClockwise( &colinear );
 	if( isColinear != nullptr ) *isColinear = colinear;
-	return colinear ? false : !clockwise;
+	return colinear ? false : ! clockwise;
 }
 
 template<typename T>
