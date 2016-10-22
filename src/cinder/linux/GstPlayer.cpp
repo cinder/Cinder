@@ -982,9 +982,9 @@ bool GstPlayer::checkStateChange( GstStateChangeReturn stateChangeResult )
 
 void GstPlayer::createTextureFromMemory()
 {
-    mMutex.lock();
+    std::unique_lock<std::mutex> guard( mMutex );
     std::swap( mFrontVBuffer, mBackVBuffer );
-    mMutex.unlock();
+    guard.unlock();
 
     if( mFrontVBuffer ) {
         mVideoTexture = ci::gl::Texture::create( mFrontVBuffer.get(), GL_RGBA, width(), height() );
@@ -995,9 +995,9 @@ void GstPlayer::createTextureFromMemory()
 void GstPlayer::createTextureFromID()
 {
 #if defined( CINDER_GST_HAS_GL )
-    mMutex.lock();
+    std::unique_lock<std::mutex> guard( mMutex );
     std::swap( mCurrentBuffer, mNewBuffer );
-    mMutex.unlock();
+    guard.unlock();
 
     GLint textureID = getTextureID( mCurrentBuffer.get() );
 
@@ -1046,19 +1046,18 @@ void GstPlayer::resetVideoBuffers()
 
 void GstPlayer::resetGLBuffers()
 {
-    mMutex.lock();
+    std::lock_guard<std::mutex> guard( mMutex );
     if( mCurrentBuffer ) {
         mCurrentBuffer.reset(); 
     }
     if( mNewBuffer ) {
         mNewBuffer.reset();
     }
-    mMutex.unlock();
 }
 
 void GstPlayer::resetSystemMemoryBuffers()
 {
-    mMutex.lock();
+    std::lock_guard<std::mutex> guard( mMutex );
     // Take care of the front buffer.
     if( mFrontVBuffer ) {
         mFrontVBuffer.reset();
@@ -1068,7 +1067,6 @@ void GstPlayer::resetSystemMemoryBuffers()
     if( mBackVBuffer ) {
         mBackVBuffer.reset();
     }
-    mMutex.unlock();
 }
 
 void GstPlayer::onGstEos( GstAppSink* sink, gpointer userData )
@@ -1109,9 +1107,9 @@ void GstPlayer::processNewSample( GstSample* sample )
     if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
         // Pull the memory buffer from the sample.
-        mMutex.lock();
+        std::unique_lock<std::mutex> guard( mMutex );
         mNewBuffer = std::shared_ptr<GstBuffer>( gst_buffer_ref( gst_sample_get_buffer( sample ) ), &gst_buffer_unref );
-        mMutex.unlock();
+        guard.unlock();
 
         if( newVideo() ) {
             // Grab video info.
@@ -1132,7 +1130,7 @@ void GstPlayer::processNewSample( GstSample* sample )
 #endif
     }
     else {
-        mMutex.lock();
+        std::unique_lock<std::mutex> guard( mMutex );
 
         newBuffer = gst_sample_get_buffer( sample );
         gst_buffer_map( newBuffer, &mGstData.memoryMapInfo, GST_MAP_READ ); // Map the buffer for reading the data.
@@ -1165,7 +1163,7 @@ void GstPlayer::processNewSample( GstSample* sample )
 
         mNewFrame = true;
 
-        mMutex.unlock();
+        guard.unlock();
 
         // Finished working with the sample - unref-it.
         gst_sample_unref( sample );
