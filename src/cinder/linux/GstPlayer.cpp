@@ -378,14 +378,16 @@ void GstPlayer::resetPipeline()
     gst_object_unref( GST_OBJECT( mGstData.pipeline ) );
     mGstData.pipeline = nullptr;
     
+    mGstData.videoBin = nullptr;
     if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
-        mGstData.videoBin = nullptr;
+        gst_object_unref( mGstData.context );	
         mGstData.context = nullptr;
+        gst_object_unref( mGstData.display );
         mGstData.display = nullptr;
+        // Pipeline will unref and destroy its children..
         mGstData.glupload = nullptr;
         mGstData.glcolorconvert = nullptr;
-        resetGLBuffers(); // GstBuffers need to be flushed here if we are destroying the pipeline.
 #endif
     }
 }
