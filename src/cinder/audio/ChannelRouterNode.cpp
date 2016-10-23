@@ -62,7 +62,7 @@ const ChannelRouterNodeRef& operator>>( const NodeRef &input, const ChannelRoute
 	return route.getOutputRouter();
 }
 
-bool ChannelRouterNode::supportsInputNumChannels( size_t numChannels ) const
+bool ChannelRouterNode::supportsInputNumChannels( size_t /*numChannels*/ ) const
 {
 	return true;
 }

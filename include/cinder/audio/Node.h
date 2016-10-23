@@ -183,7 +183,7 @@ class Node : public std::enable_shared_from_this<Node>, private Noncopyable {
 	//! Callled when this Node should disable processing. Initiated from Node::disable().
 	virtual void disableProcessing()		{}
 	//! Override to perform audio processing on \t buffer.
-	virtual void process( Buffer *buffer )	{}
+	virtual void process( Buffer * /*buffer*/ )	{}
 
 	virtual void sumInputs();
 

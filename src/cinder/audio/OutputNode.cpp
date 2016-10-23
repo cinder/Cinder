@@ -43,7 +43,7 @@ OutputNode::OutputNode( const Format &format )
 		setAutoEnabled( false );
 }
 
-void OutputNode::connect( const NodeRef &output )
+void OutputNode::connect( const NodeRef & /*output*/ )
 {
 	CI_ASSERT_MSG( 0, "OutputNode does not support connecting to other outputs" );
 }

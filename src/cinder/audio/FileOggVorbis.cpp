@@ -169,7 +169,7 @@ int SourceFileOggVorbis::seekFn( void *datasource, ogg_int64_t offset, int whenc
 }
 
 // static
-int SourceFileOggVorbis::closeFn( void *datasource )
+int SourceFileOggVorbis::closeFn( void * /*datasource*/ )
 {
 	return 0;
 }
