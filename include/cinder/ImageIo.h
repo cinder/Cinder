@@ -159,7 +159,7 @@ class ImageTarget : public ImageIo {
 	virtual ~ImageTarget() {};
 
 	virtual void*	getRowPointer( int32_t row ) = 0;
-	virtual void	setRow( int32_t row, const void *data ) { throw; }
+	virtual void	setRow( int32_t /*row*/, const void * /*data*/ ) { throw; }
 	virtual void	finalize() { }
 	
 	class Options {

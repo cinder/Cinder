@@ -326,7 +326,7 @@ void Timeline::update( float absTime )
 	stepTo( absTime );
 }
 
-void Timeline::itemTimeChanged( TimelineItem *item )
+void Timeline::itemTimeChanged( TimelineItem * /*item*/ )
 {
 	setDurationDirty();
 }

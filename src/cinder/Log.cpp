@@ -284,7 +284,7 @@ void LoggerFileRotating::write( const Metadata &meta, const string &text )
 // LoggerBreakpoint
 // ----------------------------------------------------------------------------------------------------
 
-void LoggerBreakpoint::write( const Metadata &meta, const string &text )
+void LoggerBreakpoint::write( const Metadata &meta, const string & /*text*/ )
 {
 	if( meta.mLevel >= mTriggerLevel ) {
 		CI_BREAKPOINT();

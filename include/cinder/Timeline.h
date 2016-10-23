@@ -193,7 +193,7 @@ class Timeline : public TimelineItem {
 	}
 
 	//! \cond
-	virtual void	stepTo( float absoluteTime, bool reverse ) { stepTo( absoluteTime ); }
+	virtual void	stepTo( float absoluteTime, bool /*reverse*/ ) { stepTo( absoluteTime ); }
 	//! \endcond
 	
   protected:  
@@ -202,10 +202,10 @@ class Timeline : public TimelineItem {
 	virtual void reverse();
 	virtual TimelineItemRef cloneReverse() const;
 	virtual TimelineItemRef clone() const;
-	virtual void start( bool reverse ) {} // no-op
+	virtual void start( bool /*reverse*/ ) {} // no-op
 	virtual void loopStart();
 	virtual void update( float absTime );
-	virtual void complete( bool reverse ) {} // no-op
+	virtual void complete( bool /*reverse*/ ) {} // no-op
 
 	void						eraseMarked();
 	virtual float				calcDuration() const;
@@ -234,10 +234,10 @@ class Cue : public TimelineItem {
 	virtual TimelineItemRef	cloneReverse() const;
 	virtual TimelineItemRef clone() const;
 
-	virtual void start( bool reverse ) {} // starting is a no-op for Cues
+	virtual void start( bool /*reverse*/ ) {} // starting is a no-op for Cues
 	virtual void loopStart();
-	virtual void update( float relativeTime ) {} // update is a no-op for Cues
-	virtual void complete( bool reverse ) {} // completion is a no-op for Cues
+	virtual void update( float /*relativeTime*/ ) {} // update is a no-op for Cues
+	virtual void complete( bool /*reverse*/ ) {} // completion is a no-op for Cues
 	virtual bool updateAtLoopStart() { return true; }
   
 	std::function<void ()>		mFunction;

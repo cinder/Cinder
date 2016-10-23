@@ -92,7 +92,7 @@ bool ObjLoader::hasGroup( const std::string &groupName ) const
 	return it != mGroups.end();
 }
 
-void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const
+void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet & /*requestedAttribs*/ ) const
 {
 	load();
 	
@@ -722,7 +722,7 @@ void ObjWriteTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideB
 	}
 }
 
-void ObjWriteTarget::copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
+void ObjWriteTarget::copyIndices( geom::Primitive /*primitive*/, const uint32_t *source, size_t numIndices, uint8_t /*requiredBytesPerIndex*/ )
 {
 	for( size_t i = 0; i < numIndices; i += 3 ) {
 		ostringstream os;

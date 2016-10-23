@@ -46,7 +46,7 @@ static void ci_PNG_stream_reader( png_structp mPngPtr, png_bytep data, png_size_
 	}
 }
 
-static void ci_png_warning( png_structp mPngPtr, png_const_charp message )
+static void ci_png_warning( png_structp /*mPngPtr*/, png_const_charp /*message*/ )
 {
 //    fli_png_info_struct *info = mPngPtr ? (fli_png_info_struct*)png_get_io_ptr(mPngPtr) : NULL;
 //    if ( !info || info->verbose )

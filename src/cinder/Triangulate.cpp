@@ -35,7 +35,7 @@ void* stdAlloc( void* userData, unsigned int size )
 	return malloc( size );
 }
 
-void stdFree( void* userData, void* ptr )
+void stdFree( void* /*userData*/, void* ptr )
 {
 	free( ptr );
 }

@@ -138,7 +138,7 @@ FontManager* FontManager::instance()
 }
 
 #if defined( CINDER_MSW )
-int CALLBACK EnumFontFamiliesExProc( ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int FontType, LPARAM lParam )
+int CALLBACK EnumFontFamiliesExProc( ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX * /*lpntme*/, int /*FontType*/, LPARAM lParam )
 {
 	reinterpret_cast<vector<string>*>( lParam )->push_back( toUtf8( (char16_t*)lpelfe->elfFullName ) );
 	return 1;
