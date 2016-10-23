@@ -331,6 +331,13 @@ void FishTornadoApp::setup()
 
 	mCommandBuffers[0] = vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
 	mCommandBuffers[1] = vk::CommandBuffer::create( vk::context()->getDefaultCommandPool()->getCommandPool() );
+
+	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mImageAcquiredSemaphore );
+	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &mRenderingCompleteSemaphore );
+
+	VkFenceCreateInfo fenceCreateInfo = { VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
+	vkCreateFence( vk::context()->getDevice(), &fenceCreateInfo, nullptr, &mImageAcquiredFence );
 }
 
 void FishTornadoApp::resize()
@@ -577,16 +584,14 @@ void FishTornadoApp::generateCommandBuffer( const ci::vk::CommandBufferRef& cmdB
 
 void FishTornadoApp::draw()
 {
-	// Semaphores
-	VkSemaphore imageAcquiredSemaphore = VK_NULL_HANDLE;
-	VkSemaphore renderingCompleteSemaphore = VK_NULL_HANDLE;
-	VkSemaphoreCreateInfo semaphoreCreateInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &imageAcquiredSemaphore );
-	vkCreateSemaphore( vk::context()->getDevice(), &semaphoreCreateInfo, nullptr, &renderingCompleteSemaphore );
-
 	// Get the next image
 	const auto& presenter = vk::context()->getPresenter();
-	uint32_t imageIndex = presenter->acquireNextImage( VK_NULL_HANDLE, imageAcquiredSemaphore );
+	uint32_t imageIndex = presenter->acquireNextImage( mImageAcquiredFence, mImageAcquiredSemaphore );
+
+	VkResult err = vkWaitForFences( vk::context()->getDevice(), 1, &mImageAcquiredFence, VK_TRUE, UINT32_MAX );
+	if( VK_SUCCESS == err ) {
+		vkResetFences( vk::context()->getDevice(), 1, &mImageAcquiredFence );
+	}
 
 	// Build command buffer
 	uint32_t frameIndex = (getElapsedFrames() + 1) % 2;
@@ -596,10 +601,13 @@ void FishTornadoApp::draw()
 
     // Submit command buffer for processing
 	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	vk::context()->getGraphicsQueue()->submit( cmdBuf, imageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, renderingCompleteSemaphore );
+	vk::context()->getGraphicsQueue()->submit( cmdBuf, mImageAcquiredSemaphore, waitDstStageMask, VK_NULL_HANDLE, mRenderingCompleteSemaphore );
 
 	// Submit presentation
-	vk::context()->getGraphicsQueue()->present( renderingCompleteSemaphore, presenter );
+	vk::context()->getGraphicsQueue()->present( mRenderingCompleteSemaphore, presenter );
+
+	// Wait for work to be done
+	vk::context()->getGraphicsQueue()->waitIdle();
 
 	// Wait for work to be done
 	vk::context()->getGraphicsQueue()->waitIdle();

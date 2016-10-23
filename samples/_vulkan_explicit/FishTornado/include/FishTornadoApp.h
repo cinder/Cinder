@@ -136,4 +136,7 @@ private:
 	bool					mDrawOcean;
 
 	ci::vk::CommandBufferRef	mCommandBuffers[2];
+	VkSemaphore					mImageAcquiredSemaphore = VK_NULL_HANDLE;
+	VkSemaphore					mRenderingCompleteSemaphore = VK_NULL_HANDLE;
+	VkFence						mImageAcquiredFence = VK_NULL_HANDLE;
 };
