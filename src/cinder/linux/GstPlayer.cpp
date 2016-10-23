@@ -564,7 +564,7 @@ void GstPlayer::constructPipeline()
         if( ! mGstData.glcolorconvert ) g_printerr( "Failed to create GL convert element!\n" );
 
         mGstData.rawCapsFilter	    = gst_element_factory_make( "capsfilter", "rawcapsfilter" );
-#if defined( CINDER_LINUX_EGL_ONLY )
+#if defined( CINDER_LINUX_EGL_ONLY ) && defined( CINDER_GST_HAS_GL )
         if( mGstData.rawCapsFilter ) g_object_set( G_OBJECT( mGstData.rawCapsFilter ), "caps", gst_caps_from_string( "video/x-raw(memory:GLMemory)" ), nullptr );
 #else
         if( mGstData.rawCapsFilter ) g_object_set( G_OBJECT( mGstData.rawCapsFilter ), "caps", gst_caps_from_string( "video/x-raw" ), nullptr );
