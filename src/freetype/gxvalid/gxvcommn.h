@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    TrueTypeGX/AAT common tables validation (specification).             */
 /*                                                                         */
-/*  Copyright 2004-2015 by                                                 */
+/*  Copyright 2004-2016 by                                                 */
 /*  suzuki toshiya, Masatake YAMATO, Red Hat K.K.,                         */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
@@ -39,8 +39,8 @@
    */
 
 
-#ifndef __GXVCOMMN_H__
-#define __GXVCOMMN_H__
+#ifndef GXVCOMMN_H_
+#define GXVCOMMN_H_
 
 
 #include <ft2build.h>
@@ -338,7 +338,7 @@ FT_BEGIN_HEADER
                                                         \
                                                         \
               for ( b = p; b < (FT_Bytes)p + len; b++ ) \
-                FT_TRACE1(("\\x%02x", *b)) ;            \
+                FT_TRACE1(("\\x%02x", *b));             \
             }                                           \
           FT_END_STMNT
 
@@ -350,9 +350,9 @@ FT_BEGIN_HEADER
                                                         \
               for ( b = p; b < (FT_Bytes)p + len; b++ ) \
                 if ( 0x40 < *b && *b < 0x7E )           \
-                  FT_TRACE1(("%c", *b)) ;               \
+                  FT_TRACE1(("%c", *b));                \
                 else                                    \
-                  FT_TRACE1(("\\x%02x", *b)) ;          \
+                  FT_TRACE1(("\\x%02x", *b));           \
             }                                           \
           FT_END_STMNT
 
@@ -576,7 +576,7 @@ FT_BEGIN_HEADER
 
 FT_END_HEADER
 
-#endif /* __GXVCOMMN_H__ */
+#endif /* GXVCOMMN_H_ */
 
 
 /* END */

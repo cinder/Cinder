@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    TrueType GX Font Variation loader                                    */
 /*                                                                         */
-/*  Copyright 2004-2015 by                                                 */
+/*  Copyright 2004-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, Werner Lemberg, and George Williams.     */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -112,6 +112,8 @@
   /* <Input>                                                               */
   /*    stream    :: The data stream.                                      */
   /*                                                                       */
+  /*    size      :: The size of the table holding the data.               */
+  /*                                                                       */
   /* <Output>                                                              */
   /*    point_cnt :: The number of points read.  A zero value means that   */
   /*                 all points in the glyph will be affected, without     */
@@ -123,6 +125,7 @@
   /*                                                                       */
   static FT_UShort*
   ft_var_readpackedpoints( FT_Stream  stream,
+                           FT_ULong   size,
                            FT_UInt   *point_cnt )
   {
     FT_UShort *points = NULL;
@@ -149,48 +152,55 @@
       n  |= FT_GET_BYTE();
     }
 
-    if ( FT_NEW_ARRAY( points, n ) )
+    if ( n > size )
+    {
+      FT_TRACE1(( "ft_var_readpackedpoints: number of points too large\n" ));
+      return NULL;
+    }
+
+    /* in the nested loops below we increase `i' twice; */
+    /* it is faster to simply allocate one more slot    */
+    /* than to add another test within the loop         */
+    if ( FT_NEW_ARRAY( points, n + 1 ) )
       return NULL;
 
     *point_cnt = n;
 
-    i = 0;
+    first = 0;
+    i     = 0;
     while ( i < n )
     {
       runcnt = FT_GET_BYTE();
       if ( runcnt & GX_PT_POINTS_ARE_WORDS )
       {
         runcnt     &= GX_PT_POINT_RUN_COUNT_MASK;
-        first       = FT_GET_USHORT();
+        first      += FT_GET_USHORT();
         points[i++] = first;
-
-        if ( runcnt < 1 || i + runcnt > n )
-          goto Exit;
 
         /* first point not included in run count */
         for ( j = 0; j < runcnt; j++ )
         {
           first      += FT_GET_USHORT();
           points[i++] = first;
+          if ( i >= n )
+            break;
         }
       }
       else
       {
-        first       = FT_GET_BYTE();
+        first      += FT_GET_BYTE();
         points[i++] = first;
-
-        if ( runcnt < 1 || i + runcnt > n )
-          goto Exit;
 
         for ( j = 0; j < runcnt; j++ )
         {
           first      += FT_GET_BYTE();
           points[i++] = first;
+          if ( i >= n )
+            break;
         }
       }
     }
 
-  Exit:
     return points;
   }
 
@@ -212,6 +222,8 @@
   /* <Input>                                                               */
   /*    stream    :: The data stream.                                      */
   /*                                                                       */
+  /*    size      :: The size of the table holding the data.               */
+  /*                                                                       */
   /*    delta_cnt :: The number of deltas to be read.                      */
   /*                                                                       */
   /* <Return>                                                              */
@@ -222,6 +234,7 @@
   /*                                                                       */
   static FT_Short*
   ft_var_readpackeddeltas( FT_Stream  stream,
+                           FT_ULong   size,
                            FT_UInt    delta_cnt )
   {
     FT_Short  *deltas = NULL;
@@ -232,6 +245,12 @@
 
     FT_UNUSED( error );
 
+
+    if ( delta_cnt > size )
+    {
+      FT_TRACE1(( "ft_var_readpackeddeltas: number of points too large\n" ));
+      return NULL;
+    }
 
     if ( FT_NEW_ARRAY( deltas, delta_cnt ) )
       return NULL;
@@ -341,7 +360,8 @@
       FT_TRACE5(( "  axis %d:\n", i ));
 
       segment->pairCount = FT_GET_USHORT();
-      if ( FT_NEW_ARRAY( segment->correspondence, segment->pairCount ) )
+      if ( (FT_ULong)segment->pairCount * 4 > table_len                ||
+           FT_NEW_ARRAY( segment->correspondence, segment->pairCount ) )
       {
         /* Failure.  Free everything we have done so far.  We must do */
         /* it right now since loading the `avar' table is optional.   */
@@ -357,8 +377,8 @@
       for ( j = 0; j < segment->pairCount; j++ )
       {
         /* convert to Fixed */
-        segment->correspondence[j].fromCoord = FT_GET_SHORT() << 2;
-        segment->correspondence[j].toCoord   = FT_GET_SHORT() << 2;
+        segment->correspondence[j].fromCoord = FT_GET_SHORT() * 4;
+        segment->correspondence[j].toCoord   = FT_GET_SHORT() * 4;
 
         FT_TRACE5(( "    mapping %.4f to %.4f\n",
                     segment->correspondence[j].fromCoord / 65536.0,
@@ -447,18 +467,12 @@
     if ( FT_STREAM_READ_FIELDS( gvar_fields, &gvar_head ) )
       goto Exit;
 
-    blend->tuplecount  = gvar_head.globalCoordCount;
-    blend->gv_glyphcnt = gvar_head.glyphCount;
-    offsetToData       = gvar_start + gvar_head.offsetToData;
-
     if ( gvar_head.version != 0x00010000L )
     {
       FT_TRACE1(( "bad table version\n" ));
       error = FT_THROW( Invalid_Table );
       goto Exit;
     }
-
-    FT_TRACE2(( "loaded\n" ));
 
     if ( gvar_head.axisCount != (FT_UShort)blend->mmvar->num_axis )
     {
@@ -467,6 +481,33 @@
       error = FT_THROW( Invalid_Table );
       goto Exit;
     }
+
+    /* rough sanity check, ignoring offsets */
+    if ( (FT_ULong)gvar_head.globalCoordCount * gvar_head.axisCount >
+           table_len / 2 )
+    {
+      FT_TRACE1(( "ft_var_load_gvar:"
+                  " invalid number of global coordinates\n" ));
+      error = FT_THROW( Invalid_Table );
+      goto Exit;
+    }
+
+    /* rough sanity check: offsets can be either 2 or 4 bytes, */
+    /* and a single variation needs at least 4 bytes per glyph */
+    if ( (FT_ULong)gvar_head.glyphCount *
+           ( ( gvar_head.flags & 1 ) ? 8 : 6 ) > table_len )
+    {
+      FT_TRACE1(( "ft_var_load_gvar: invalid number of glyphs\n" ));
+      error = FT_THROW( Invalid_Table );
+      goto Exit;
+    }
+
+    FT_TRACE2(( "loaded\n" ));
+
+    blend->gvar_size   = table_len;
+    blend->tuplecount  = gvar_head.globalCoordCount;
+    blend->gv_glyphcnt = gvar_head.glyphCount;
+    offsetToData       = gvar_start + gvar_head.offsetToData;
 
     FT_TRACE5(( "gvar: there are %d shared coordinates:\n",
                 blend->tuplecount ));
@@ -511,10 +552,10 @@
       for ( i = 0; i < blend->tuplecount; i++ )
       {
         FT_TRACE5(( "  [ " ));
-        for ( j = 0 ; j < (FT_UInt)gvar_head.axisCount; j++ )
+        for ( j = 0; j < (FT_UInt)gvar_head.axisCount; j++ )
         {
           blend->tuplecoords[i * gvar_head.axisCount + j] =
-            FT_GET_SHORT() << 2;                /* convert to FT_Fixed */
+            FT_GET_SHORT() * 4;                 /* convert to FT_Fixed */
           FT_TRACE5(( "%.4f ",
             blend->tuplecoords[i * gvar_head.axisCount + j] / 65536.0 ));
         }
@@ -573,6 +614,11 @@
     {
       FT_TRACE6(( "    axis coordinate %d (%.4f):\n",
                   i, blend->normalizedcoords[i] / 65536.0 ));
+      if ( !( tupleIndex & GX_TI_INTERMEDIATE_TUPLE ) )
+        FT_TRACE6(( "      intermediate coordinates %d (%.4f, %.4f):\n",
+                    i,
+                    im_start_coords[i] / 65536.0,
+                    im_end_coords[i] / 65536.0 ));
 
       /* It's not clear why (for intermediate tuples) we don't need     */
       /* to check against start/end -- the documentation says we don't. */
@@ -585,62 +631,74 @@
         continue;
       }
 
-      else if ( blend->normalizedcoords[i] == 0 )
+      if ( blend->normalizedcoords[i] == 0 )
       {
         FT_TRACE6(( "      axis coordinate is zero, stop\n" ));
         apply = 0;
         break;
       }
 
-      else if ( ( blend->normalizedcoords[i] < 0 && tuple_coords[i] > 0 ) ||
-                ( blend->normalizedcoords[i] > 0 && tuple_coords[i] < 0 ) )
+      if ( blend->normalizedcoords[i] == tuple_coords[i] )
       {
-        FT_TRACE6(( "      tuple coordinate value %.4f is exceeded, stop\n",
+        FT_TRACE6(( "      tuple coordinate value %.4f fits perfectly\n",
                     tuple_coords[i] / 65536.0 ));
-        apply = 0;
-        break;
+        /* `apply' does not change */
+        continue;
       }
 
-      else if ( !( tupleIndex & GX_TI_INTERMEDIATE_TUPLE ) )
+      if ( !( tupleIndex & GX_TI_INTERMEDIATE_TUPLE ) )
       {
+        /* not an intermediate tuple */
+
+        if ( blend->normalizedcoords[i] < FT_MIN( 0, tuple_coords[i] ) ||
+             blend->normalizedcoords[i] > FT_MAX( 0, tuple_coords[i] ) )
+        {
+          FT_TRACE6(( "      tuple coordinate value %.4f is exceeded, stop\n",
+                      tuple_coords[i] / 65536.0 ));
+          apply = 0;
+          break;
+        }
+
         FT_TRACE6(( "      tuple coordinate value %.4f fits\n",
                     tuple_coords[i] / 65536.0 ));
-        /* not an intermediate tuple */
-        apply = FT_MulFix( apply,
-                           blend->normalizedcoords[i] > 0
-                             ? blend->normalizedcoords[i]
-                             : -blend->normalizedcoords[i] );
-      }
-
-      else if ( blend->normalizedcoords[i] < im_start_coords[i] ||
-                blend->normalizedcoords[i] > im_end_coords[i]   )
-      {
-        FT_TRACE6(( "      intermediate tuple range [%.4f;%.4f] is exceeded,"
-                    " stop\n",
-                    im_start_coords[i] / 65536.0,
-                    im_end_coords[i] / 65536.0 ));
-        apply = 0;
-        break;
-      }
-
-      else if ( blend->normalizedcoords[i] < tuple_coords[i] )
-      {
-        FT_TRACE6(( "      intermediate tuple range [%.4f;%.4f] fits\n",
-                    im_start_coords[i] / 65536.0,
-                    im_end_coords[i] / 65536.0 ));
         apply = FT_MulDiv( apply,
-                           blend->normalizedcoords[i] - im_start_coords[i],
-                           tuple_coords[i] - im_start_coords[i] );
+                           blend->normalizedcoords[i],
+                           tuple_coords[i] );
       }
-
       else
       {
-        FT_TRACE6(( "      intermediate tuple range [%.4f;%.4f] fits\n",
-                    im_start_coords[i] / 65536.0,
-                    im_end_coords[i] / 65536.0 ));
-        apply = FT_MulDiv( apply,
-                           im_end_coords[i] - blend->normalizedcoords[i],
-                           im_end_coords[i] - tuple_coords[i] );
+        /* intermediate tuple */
+
+        if ( blend->normalizedcoords[i] < im_start_coords[i] ||
+             blend->normalizedcoords[i] > im_end_coords[i]   )
+        {
+          FT_TRACE6(( "      intermediate tuple range [%.4f;%.4f] is exceeded,"
+                      " stop\n",
+                      im_start_coords[i] / 65536.0,
+                      im_end_coords[i] / 65536.0 ));
+          apply = 0;
+          break;
+        }
+
+        else if ( blend->normalizedcoords[i] < tuple_coords[i] )
+        {
+          FT_TRACE6(( "      intermediate tuple range [%.4f;%.4f] fits\n",
+                      im_start_coords[i] / 65536.0,
+                      im_end_coords[i] / 65536.0 ));
+          apply = FT_MulDiv( apply,
+                             blend->normalizedcoords[i] - im_start_coords[i],
+                             tuple_coords[i] - im_start_coords[i] );
+        }
+
+        else
+        {
+          FT_TRACE6(( "      intermediate tuple range [%.4f;%.4f] fits\n",
+                      im_start_coords[i] / 65536.0,
+                      im_end_coords[i] / 65536.0 ));
+          apply = FT_MulDiv( apply,
+                             im_end_coords[i] - blend->normalizedcoords[i],
+                             im_end_coords[i] - tuple_coords[i] );
+        }
       }
     }
 
@@ -698,7 +756,8 @@
   /*              TT_Get_MM_Var initializes the blend structure.           */
   /*                                                                       */
   /* <Output>                                                              */
-  /*    master :: The `fvar' data (must be freed by caller).               */
+  /*    master :: The `fvar' data (must be freed by caller).  Can be NULL, */
+  /*              which makes this function simply load MM support.        */
   /*                                                                       */
   /* <Return>                                                              */
   /*    FreeType error code.  0 means success.                             */
@@ -1352,13 +1411,25 @@
       goto FExit;
 
     tupleCount   = FT_GET_USHORT();
-    offsetToData = table_start + FT_GET_USHORT();
+    offsetToData = FT_GET_USHORT();
 
-    /* The documentation implies there are flags packed into the        */
-    /* tuplecount, but John Jenkins says that shared points don't apply */
-    /* to `cvar', and no other flags are defined.                       */
+    /* rough sanity test */
+    if ( offsetToData + tupleCount * 4 > table_len )
+    {
+      FT_TRACE2(( "tt_face_vary_cvt:"
+                  " invalid CVT variation array header\n" ));
 
-    FT_TRACE5(( "cvar: there are %d tuples:\n", tupleCount ));
+      error = FT_THROW( Invalid_Table );
+      goto FExit;
+    }
+
+    offsetToData += table_start;
+
+    /* The documentation implies there are flags packed into              */
+    /* `tupleCount', but John Jenkins says that shared points don't apply */
+    /* to `cvar', and no other flags are defined.                         */
+
+    FT_TRACE5(( "cvar: there are %d tuples:\n", tupleCount & 0xFFF ));
 
     for ( i = 0; i < ( tupleCount & 0xFFF ); i++ )
     {
@@ -1378,7 +1449,7 @@
       if ( tupleIndex & GX_TI_EMBEDDED_TUPLE_COORD )
       {
         for ( j = 0; j < blend->num_axis; j++ )
-          tuple_coords[j] = FT_GET_SHORT() << 2; /* convert from        */
+          tuple_coords[j] = FT_GET_SHORT() * 4;  /* convert from        */
                                                  /* short frac to fixed */
       }
       else
@@ -1396,9 +1467,9 @@
       if ( tupleIndex & GX_TI_INTERMEDIATE_TUPLE )
       {
         for ( j = 0; j < blend->num_axis; j++ )
-          im_start_coords[j] = FT_GET_SHORT() << 2;
+          im_start_coords[j] = FT_GET_SHORT() * 4;
         for ( j = 0; j < blend->num_axis; j++ )
-          im_end_coords[j] = FT_GET_SHORT() << 2;
+          im_end_coords[j] = FT_GET_SHORT() * 4;
       }
 
       apply = ft_var_apply_tuple( blend,
@@ -1420,8 +1491,11 @@
 
       FT_Stream_SeekSet( stream, offsetToData );
 
-      localpoints = ft_var_readpackedpoints( stream, &point_count );
+      localpoints = ft_var_readpackedpoints( stream,
+                                             table_len,
+                                             &point_count );
       deltas      = ft_var_readpackeddeltas( stream,
+                                             table_len,
                                              point_count == 0 ? face->cvt_size
                                                               : point_count );
       if ( localpoints == NULL || deltas == NULL )
@@ -1643,27 +1717,24 @@
   /* modeled after `Ins_IUP */
 
   static void
-  tt_handle_deltas( FT_Outline*  outline,
-                    FT_Vector*   in_points,
-                    FT_Bool*     has_delta )
+  tt_interpolate_deltas( FT_Outline*  outline,
+                         FT_Vector*   out_points,
+                         FT_Vector*   in_points,
+                         FT_Bool*     has_delta )
   {
-    FT_Vector*  out_points;
+    FT_Int  first_point;
+    FT_Int  end_point;
 
-    FT_UInt  first_point;
-    FT_UInt  end_point;
+    FT_Int  first_delta;
+    FT_Int  cur_delta;
 
-    FT_UInt  first_delta;
-    FT_UInt  cur_delta;
-
-    FT_UInt   point;
+    FT_Int    point;
     FT_Short  contour;
 
 
     /* ignore empty outlines */
     if ( !outline->n_contours )
       return;
-
-    out_points = outline->points;
 
     contour = 0;
     point   = 0;
@@ -1768,6 +1839,7 @@
     GX_Blend    blend  = face->blend;
 
     FT_Vector*  points_org = NULL;
+    FT_Vector*  points_out = NULL;
     FT_Bool*    has_delta  = NULL;
 
     FT_Error    error;
@@ -1799,6 +1871,7 @@
     }
 
     if ( FT_NEW_ARRAY( points_org, n_points ) ||
+         FT_NEW_ARRAY( points_out, n_points ) ||
          FT_NEW_ARRAY( has_delta, n_points )  )
       goto Fail1;
 
@@ -1818,7 +1891,20 @@
       goto Fail2;
 
     tupleCount   = FT_GET_USHORT();
-    offsetToData = glyph_start + FT_GET_USHORT();
+    offsetToData = FT_GET_USHORT();
+
+    /* rough sanity test */
+    if ( offsetToData + ( tupleCount & GX_TC_TUPLE_COUNT_MASK ) * 4 >
+           blend->gvar_size )
+    {
+      FT_TRACE2(( "TT_Vary_Apply_Glyph_Deltas:"
+                  " invalid glyph variation array header\n" ));
+
+      error = FT_THROW( Invalid_Table );
+      goto Fail2;
+    }
+
+    offsetToData += glyph_start;
 
     if ( tupleCount & GX_TC_TUPLES_SHARE_POINT_NUMBERS )
     {
@@ -1826,13 +1912,19 @@
 
       FT_Stream_SeekSet( stream, offsetToData );
 
-      sharedpoints = ft_var_readpackedpoints( stream, &spoint_count );
+      sharedpoints = ft_var_readpackedpoints( stream,
+                                              blend->gvar_size,
+                                              &spoint_count );
       offsetToData = FT_Stream_FTell( stream );
 
       FT_Stream_SeekSet( stream, here );
     }
 
-    FT_TRACE5(( "gvar: there are %d tuples:\n", tupleCount ));
+    FT_TRACE5(( "gvar: there are %d tuples:\n",
+                tupleCount & GX_TC_TUPLE_COUNT_MASK ));
+
+    for ( j = 0; j < n_points; j++ )
+      points_org[j] = outline->points[j];
 
     for ( i = 0; i < ( tupleCount & GX_TC_TUPLE_COUNT_MASK ); i++ )
     {
@@ -1849,11 +1941,14 @@
       if ( tupleIndex & GX_TI_EMBEDDED_TUPLE_COORD )
       {
         for ( j = 0; j < blend->num_axis; j++ )
-          tuple_coords[j] = FT_GET_SHORT() << 2;  /* convert from        */
+          tuple_coords[j] = FT_GET_SHORT() * 4;   /* convert from        */
                                                   /* short frac to fixed */
       }
       else if ( ( tupleIndex & GX_TI_TUPLE_INDEX_MASK ) >= blend->tuplecount )
       {
+        FT_TRACE2(( "TT_Vary_Apply_Glyph_Deltas:"
+                    " invalid tuple index\n" ));
+
         error = FT_THROW( Invalid_Table );
         goto Fail2;
       }
@@ -1866,9 +1961,9 @@
       if ( tupleIndex & GX_TI_INTERMEDIATE_TUPLE )
       {
         for ( j = 0; j < blend->num_axis; j++ )
-          im_start_coords[j] = FT_GET_SHORT() << 2;
+          im_start_coords[j] = FT_GET_SHORT() * 4;
         for ( j = 0; j < blend->num_axis; j++ )
-          im_end_coords[j] = FT_GET_SHORT() << 2;
+          im_end_coords[j] = FT_GET_SHORT() * 4;
       }
 
       apply = ft_var_apply_tuple( blend,
@@ -1885,11 +1980,13 @@
 
       here = FT_Stream_FTell( stream );
 
+      FT_Stream_SeekSet( stream, offsetToData );
+
       if ( tupleIndex & GX_TI_PRIVATE_POINT_NUMBERS )
       {
-        FT_Stream_SeekSet( stream, offsetToData );
-
-        localpoints = ft_var_readpackedpoints( stream, &point_count );
+        localpoints = ft_var_readpackedpoints( stream,
+                                               blend->gvar_size,
+                                               &point_count );
         points      = localpoints;
       }
       else
@@ -1899,9 +1996,11 @@
       }
 
       deltas_x = ft_var_readpackeddeltas( stream,
+                                          blend->gvar_size,
                                           point_count == 0 ? n_points
                                                            : point_count );
       deltas_y = ft_var_readpackeddeltas( stream,
+                                          blend->gvar_size,
                                           point_count == 0 ? n_points
                                                            : point_count );
 
@@ -1920,22 +2019,20 @@
         /* this means that there are deltas for every point in the glyph */
         for ( j = 0; j < n_points; j++ )
         {
+          FT_Pos  delta_x = FT_MulFix( deltas_x[j], apply );
+          FT_Pos  delta_y = FT_MulFix( deltas_y[j], apply );
+
+
+          outline->points[j].x += delta_x;
+          outline->points[j].y += delta_y;
+
 #ifdef FT_DEBUG_LEVEL_TRACE
-          FT_Vector  point_org = outline->points[j];
-#endif
-
-
-          outline->points[j].x += FT_MulFix( deltas_x[j], apply );
-          outline->points[j].y += FT_MulFix( deltas_y[j], apply );
-
-#ifdef FT_DEBUG_LEVEL_TRACE
-          if ( ( point_org.x != outline->points[j].x ) ||
-               ( point_org.y != outline->points[j].y ) )
+          if ( delta_x || delta_y )
           {
             FT_TRACE7(( "      %d: (%d, %d) -> (%d, %d)\n",
                         j,
-                        point_org.x,
-                        point_org.y,
+                        outline->points[j].x - delta_x,
+                        outline->points[j].y - delta_y,
                         outline->points[j].x,
                         outline->points[j].y ));
             count++;
@@ -1960,13 +2057,13 @@
         /* IUP bytecode instruction                                 */
         for ( j = 0; j < n_points; j++ )
         {
-          points_org[j] = outline->points[j];
           has_delta[j]  = FALSE;
+          points_out[j] = points_org[j];
         }
 
         for ( j = 0; j < point_count; j++ )
         {
-          FT_UShort  idx = localpoints[j];
+          FT_UShort  idx = points[j];
 
 
           if ( idx >= n_points )
@@ -1974,34 +2071,43 @@
 
           has_delta[idx] = TRUE;
 
-          outline->points[idx].x += FT_MulFix( deltas_x[j], apply );
-          outline->points[idx].y += FT_MulFix( deltas_y[j], apply );
+          points_out[idx].x += FT_MulFix( deltas_x[j], apply );
+          points_out[idx].y += FT_MulFix( deltas_y[j], apply );
         }
 
         /* no need to handle phantom points here,      */
         /* since solitary points can't be interpolated */
-        tt_handle_deltas( outline,
-                          points_org,
-                          has_delta );
+        tt_interpolate_deltas( outline,
+                               points_out,
+                               points_org,
+                               has_delta );
 
-#ifdef FT_DEBUG_LEVEL_TRACE
         FT_TRACE7(( "    point deltas:\n" ));
 
-        for ( j = 0; j < n_points; j++)
+        for ( j = 0; j < n_points; j++ )
         {
-          if ( ( points_org[j].x != outline->points[j].x ) ||
-               ( points_org[j].y != outline->points[j].y ) )
+          FT_Pos  delta_x = points_out[j].x - points_org[j].x;
+          FT_Pos  delta_y = points_out[j].y - points_org[j].y;
+
+
+          outline->points[j].x += delta_x;
+          outline->points[j].y += delta_y;
+
+#ifdef FT_DEBUG_LEVEL_TRACE
+          if ( delta_x || delta_y )
           {
             FT_TRACE7(( "      %d: (%d, %d) -> (%d, %d)\n",
                         j,
-                        points_org[j].x,
-                        points_org[j].y,
+                        outline->points[j].x - delta_x,
+                        outline->points[j].y - delta_y,
                         outline->points[j].x,
                         outline->points[j].y ));
             count++;
           }
+#endif
         }
 
+#ifdef FT_DEBUG_LEVEL_TRACE
         if ( !count )
           FT_TRACE7(( "      none\n" ));
 #endif
@@ -2020,6 +2126,8 @@
     FT_TRACE5(( "\n" ));
 
   Fail2:
+    if ( sharedpoints != ALL_POINTS )
+      FT_FREE( sharedpoints );
     FT_FREE( tuple_coords );
     FT_FREE( im_start_coords );
     FT_FREE( im_end_coords );
@@ -2028,6 +2136,7 @@
 
   Fail1:
     FT_FREE( points_org );
+    FT_FREE( points_out );
     FT_FREE( has_delta );
 
     return error;

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Arithmetic computations (specification).                             */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#ifndef __FTCALC_H__
-#define __FTCALC_H__
+#ifndef FTCALC_H_
+#define FTCALC_H_
 
 
 #include <ft2build.h>
@@ -47,7 +47,7 @@ FT_BEGIN_HEADER
   FT_MulFix_arm( FT_Int32  a,
                  FT_Int32  b )
   {
-    register FT_Int32  t, t2;
+    FT_Int32  t, t2;
 
 
     __asm
@@ -80,7 +80,7 @@ FT_BEGIN_HEADER
   FT_MulFix_arm( FT_Int32  a,
                  FT_Int32  b )
   {
-    register FT_Int32  t, t2;
+    FT_Int32  t, t2;
 
 
     __asm__ __volatile__ (
@@ -116,7 +116,7 @@ FT_BEGIN_HEADER
   FT_MulFix_i386( FT_Int32  a,
                   FT_Int32  b )
   {
-    register FT_Int32  result;
+    FT_Int32  result;
 
 
     __asm__ __volatile__ (
@@ -152,7 +152,7 @@ FT_BEGIN_HEADER
   FT_MulFix_i386( FT_Int32  a,
                   FT_Int32  b )
   {
-    register FT_Int32  result;
+    FT_Int32  result;
 
     __asm
     {
@@ -300,6 +300,18 @@ FT_BEGIN_HEADER
 
 
   /*
+   *  This function normalizes a vector and returns its original length.
+   *  The normalized vector is a 16.16 fixed-point unit vector with length
+   *  close to 0x10000.  The accuracy of the returned length is limited to
+   *  16 bits also.  The function utilizes quick inverse square root
+   *  approximation without divisions and square roots relying on Newton's
+   *  iterations instead.
+   */
+  FT_BASE( FT_UInt32 )
+  FT_Vector_NormLen( FT_Vector*  vector );
+
+
+  /*
    *  Return -1, 0, or +1, depending on the orientation of a given corner.
    *  We use the Cartesian coordinate system, with positive vertical values
    *  going upwards.  The function returns +1 if the corner turns to the
@@ -400,7 +412,7 @@ FT_BEGIN_HEADER
 
 FT_END_HEADER
 
-#endif /* __FTCALC_H__ */
+#endif /* FTCALC_H_ */
 
 
 /* END */

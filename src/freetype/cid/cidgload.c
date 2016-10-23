@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    CID-keyed Type1 Glyph Loader (body).                                 */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -100,7 +100,7 @@
     /* and charstring offset from the CIDMap.                */
     {
       FT_UInt   entry_len = (FT_UInt)( cid->fd_bytes + cid->gd_bytes );
-      FT_ULong  off1;
+      FT_ULong  off1, off2;
 
 
       if ( FT_STREAM_SEEK( cid->data_offset + cid->cidmap_offset +
@@ -108,18 +108,23 @@
            FT_FRAME_ENTER( 2 * entry_len )                         )
         goto Exit;
 
-      p            = (FT_Byte*)stream->cursor;
-      fd_select    = cid_get_offset( &p, (FT_Byte)cid->fd_bytes );
-      off1         = cid_get_offset( &p, (FT_Byte)cid->gd_bytes );
-      p           += cid->fd_bytes;
-      glyph_length = cid_get_offset( &p, (FT_Byte)cid->gd_bytes ) - off1;
+      p         = (FT_Byte*)stream->cursor;
+      fd_select = cid_get_offset( &p, (FT_Byte)cid->fd_bytes );
+      off1      = cid_get_offset( &p, (FT_Byte)cid->gd_bytes );
+      p        += cid->fd_bytes;
+      off2      = cid_get_offset( &p, (FT_Byte)cid->gd_bytes );
       FT_FRAME_EXIT();
 
-      if ( fd_select >= (FT_ULong)cid->num_dicts )
+      if ( fd_select >= (FT_ULong)cid->num_dicts ||
+           off2 > stream->size                   ||
+           off1 > off2                           )
       {
+        FT_TRACE0(( "cid_load_glyph: invalid glyph stream offsets\n" ));
         error = FT_THROW( Invalid_Offset );
         goto Exit;
       }
+
+      glyph_length = off2 - off1;
       if ( glyph_length == 0 )
         goto Exit;
       if ( FT_ALLOC( charstring, glyph_length ) )
@@ -137,9 +142,10 @@
 
 
       /* Set up subrs */
-      decoder->num_subrs = cid_subrs->num_subrs;
-      decoder->subrs     = cid_subrs->code;
-      decoder->subrs_len = 0;
+      decoder->num_subrs  = cid_subrs->num_subrs;
+      decoder->subrs      = cid_subrs->code;
+      decoder->subrs_len  = 0;
+      decoder->subrs_hash = NULL;
 
       /* Set up font matrix */
       dict                 = cid->font_dicts + fd_select;
@@ -152,6 +158,12 @@
 
       /* Adjustment for seed bytes. */
       cs_offset = decoder->lenIV >= 0 ? (FT_UInt)decoder->lenIV : 0;
+      if ( cs_offset > glyph_length )
+      {
+        FT_TRACE0(( "cid_load_glyph: invalid glyph stream offsets\n" ));
+        error = FT_THROW( Invalid_Offset );
+        goto Exit;
+      }
 
       /* Decrypt only if lenIV >= 0. */
       if ( decoder->lenIV >= 0 )
@@ -161,8 +173,6 @@
                 decoder, charstring + cs_offset,
                 glyph_length - cs_offset );
     }
-
-    FT_FREE( charstring );
 
 #ifdef FT_CONFIG_OPTION_INCREMENTAL
 
@@ -188,6 +198,8 @@
 #endif /* FT_CONFIG_OPTION_INCREMENTAL */
 
   Exit:
+    FT_FREE( charstring );
+
     return error;
   }
 
@@ -357,7 +369,6 @@
     {
       FT_BBox            cbox;
       FT_Glyph_Metrics*  metrics = &cidglyph->metrics;
-      FT_Vector          advance;
 
 
       /* copy the _unscaled_ advance width */
@@ -377,22 +388,27 @@
       if ( cidsize->metrics.y_ppem < 24 )
         cidglyph->outline.flags |= FT_OUTLINE_HIGH_PRECISION;
 
-      /* apply the font matrix */
-      FT_Outline_Transform( &cidglyph->outline, &font_matrix );
+      /* apply the font matrix, if any */
+      if ( font_matrix.xx != 0x10000L || font_matrix.yy != 0x10000L ||
+           font_matrix.xy != 0        || font_matrix.yx != 0        )
+      {
+        FT_Outline_Transform( &cidglyph->outline, &font_matrix );
 
-      FT_Outline_Translate( &cidglyph->outline,
-                            font_offset.x,
-                            font_offset.y );
+        metrics->horiAdvance = FT_MulFix( metrics->horiAdvance,
+                                          font_matrix.xx );
+        metrics->vertAdvance = FT_MulFix( metrics->vertAdvance,
+                                          font_matrix.yy );
+      }
 
-      advance.x = metrics->horiAdvance;
-      advance.y = 0;
-      FT_Vector_Transform( &advance, &font_matrix );
-      metrics->horiAdvance = advance.x + font_offset.x;
+      if ( font_offset.x || font_offset.y )
+      {
+        FT_Outline_Translate( &cidglyph->outline,
+                              font_offset.x,
+                              font_offset.y );
 
-      advance.x = 0;
-      advance.y = metrics->vertAdvance;
-      FT_Vector_Transform( &advance, &font_matrix );
-      metrics->vertAdvance = advance.y + font_offset.y;
+        metrics->horiAdvance += font_offset.x;
+        metrics->vertAdvance += font_offset.y;
+      }
 
       if ( ( load_flags & FT_LOAD_NO_SCALE ) == 0 )
       {

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType PFR object methods (body).                                  */
 /*                                                                         */
-/*  Copyright 2002-2015 by                                                 */
+/*  Copyright 2002-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -109,7 +109,7 @@
     if ( face_index < 0 )
       goto Exit;
 
-    if ( face_index >= pfrface->num_faces )
+    if ( ( face_index & 0xFFFF ) >= pfrface->num_faces )
     {
       FT_ERROR(( "pfr_face_init: invalid face index\n" ));
       error = FT_THROW( Invalid_Argument );
@@ -118,9 +118,11 @@
 
     /* load the face */
     error = pfr_log_font_load(
-               &face->log_font, stream, (FT_UInt)face_index,
-               face->header.log_dir_offset,
-               FT_BOOL( face->header.phy_font_max_size_high != 0 ) );
+              &face->log_font,
+              stream,
+              (FT_UInt)( face_index & 0xFFFF ),
+              face->header.log_dir_offset,
+              FT_BOOL( face->header.phy_font_max_size_high != 0 ) );
     if ( error )
       goto Exit;
 
@@ -136,13 +138,13 @@
       PFR_PhyFont  phy_font = &face->phy_font;
 
 
-      pfrface->face_index = face_index;
+      pfrface->face_index = face_index & 0xFFFF;
       pfrface->num_glyphs = (FT_Long)phy_font->num_chars + 1;
 
       pfrface->face_flags |= FT_FACE_FLAG_SCALABLE;
 
-      /* if all characters point to the same gps_offset 0, we */
-      /* assume that the font only contains bitmaps           */
+      /* if gps_offset == 0 for all characters, we  */
+      /* assume that the font only contains bitmaps */
       {
         FT_UInt  nn;
 
@@ -164,7 +166,7 @@
         }
       }
 
-      if ( (phy_font->flags & PFR_PHY_PROPORTIONAL) == 0 )
+      if ( ( phy_font->flags & PFR_PHY_PROPORTIONAL ) == 0 )
         pfrface->face_flags |= FT_FACE_FLAG_FIXED_WIDTH;
 
       if ( phy_font->flags & PFR_PHY_VERTICAL )
@@ -178,7 +180,7 @@
       if ( phy_font->num_kern_pairs > 0 )
         pfrface->face_flags |= FT_FACE_FLAG_KERNING;
 
-      /* If no family name was found in the "undocumented" auxiliary
+      /* If no family name was found in the `undocumented' auxiliary
        * data, use the font ID instead.  This sucks but is better than
        * nothing.
        */
@@ -187,7 +189,7 @@
         pfrface->family_name = phy_font->font_id;
 
       /* note that the style name can be NULL in certain PFR fonts,
-       * probably meaning "Regular"
+       * probably meaning `Regular'
        */
       pfrface->style_name = phy_font->style_name;
 
@@ -264,13 +266,13 @@
         error = FT_CMap_New( &pfr_cmap_class_rec, NULL, &charmap, NULL );
 
 #if 0
-        /* Select default charmap */
+        /* select default charmap */
         if ( pfrface->num_charmaps )
           pfrface->charmap = pfrface->charmaps[0];
 #endif
       }
 
-      /* check whether we've loaded any kerning pairs */
+      /* check whether we have loaded any kerning pairs */
       if ( phy_font->num_kern_pairs )
         pfrface->face_flags |= FT_FACE_FLAG_KERNING;
     }
@@ -402,7 +404,7 @@
       pfrslot->linearHoriAdvance = metrics->horiAdvance;
       pfrslot->linearVertAdvance = metrics->vertAdvance;
 
-      /* make-up vertical metrics(?) */
+      /* make up vertical metrics(?) */
       metrics->vertBearingX = 0;
       metrics->vertBearingY = 0;
 
@@ -522,8 +524,8 @@
         FT_UInt    probe       = power * size;
         FT_UInt    extra       = count - power;
         FT_Byte*   base        = stream->cursor;
-        FT_Bool    twobytes    = FT_BOOL( item->flags & 1 );
-        FT_Bool    twobyte_adj = FT_BOOL( item->flags & 2 );
+        FT_Bool    twobytes    = FT_BOOL( item->flags & PFR_KERN_2BYTE_CHAR );
+        FT_Bool    twobyte_adj = FT_BOOL( item->flags & PFR_KERN_2BYTE_ADJ  );
         FT_Byte*   p;
         FT_UInt32  cpair;
 
@@ -595,5 +597,6 @@
   Exit:
     return error;
   }
+
 
 /* END */

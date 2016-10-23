@@ -5,7 +5,7 @@
 /*    Basic SFNT/TrueType type definitions and interface (specification    */
 /*    only).                                                               */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -17,8 +17,8 @@
 /***************************************************************************/
 
 
-#ifndef __TTTYPES_H__
-#define __TTTYPES_H__
+#ifndef TTTYPES_H_
+#define TTTYPES_H_
 
 
 #include <ft2build.h>
@@ -185,7 +185,7 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /*    CompLength :: Compressed table length (in bytes).                  */
   /*                                                                       */
-  /*    OrigLength :: Unompressed table length (in bytes).                 */
+  /*    OrigLength :: Uncompressed table length (in bytes).                */
   /*                                                                       */
   /*    CheckSum   :: The table checksum.  This value can be ignored.      */
   /*                                                                       */
@@ -1233,9 +1233,6 @@ FT_BEGIN_HEADER
   /*                            interpreters field is also used to hook    */
   /*                            the debugger in `ttdebug'.                 */
   /*                                                                       */
-  /*    unpatented_hinting   :: If true, use only unpatented methods in    */
-  /*                            the bytecode interpreter.                  */
-  /*                                                                       */
   /*    doblend              :: A boolean which is set if the font should  */
   /*                            be blended (this is for GX var).           */
   /*                                                                       */
@@ -1334,10 +1331,6 @@ FT_BEGIN_HEADER
     /* used to hook the debugger for the `ttdebug' utility.        */
     TT_Interpreter        interpreter;
 
-#ifdef TT_CONFIG_OPTION_UNPATENTED_HINTING
-    /* Use unpatented hinting only. */
-    FT_Bool               unpatented_hinting;
-#endif
 
     /***********************************************************************/
     /*                                                                     */
@@ -1393,12 +1386,18 @@ FT_BEGIN_HEADER
     FT_ULong              horz_metrics_offset;
     FT_ULong              vert_metrics_offset;
 
-#ifdef TT_CONFIG_OPTION_SUBPIXEL_HINTING
+#ifdef TT_SUPPORT_SUBPIXEL_HINTING_INFINALITY
     /* since 2.4.12 */
     FT_ULong              sph_found_func_flags; /* special functions found */
                                                 /* for this face           */
     FT_Bool               sph_compatibility_mode;
-#endif /* TT_CONFIG_OPTION_SUBPIXEL_HINTING */
+#endif /* TT_SUPPORT_SUBPIXEL_HINTING_INFINALITY */
+
+#ifdef TT_CONFIG_OPTION_EMBEDDED_BITMAPS
+    /* since 2.7 */
+    FT_ULong              ebdt_start;  /* either `CBDT', `EBDT', or `bdat' */
+    FT_ULong              ebdt_size;
+#endif
 
   } TT_FaceRec;
 
@@ -1457,11 +1456,23 @@ FT_BEGIN_HEADER
   /* handle to execution context */
   typedef struct TT_ExecContextRec_*  TT_ExecContext;
 
+
+  /*************************************************************************/
+  /*                                                                       */
+  /* <Type>                                                                */
+  /*    TT_Size                                                            */
+  /*                                                                       */
+  /* <Description>                                                         */
+  /*    A handle to a TrueType size object.                                */
+  /*                                                                       */
+  typedef struct TT_SizeRec_*  TT_Size;
+
+
   /* glyph loader structure */
   typedef struct  TT_LoaderRec_
   {
-    FT_Face          face;
-    FT_Size          size;
+    TT_Face          face;
+    TT_Size          size;
     FT_GlyphSlot     glyph;
     FT_GlyphLoader   gloader;
 
@@ -1503,12 +1514,15 @@ FT_BEGIN_HEADER
     FT_Byte*         cursor;
     FT_Byte*         limit;
 
+    /* since version 2.6.2 */
+    FT_ListRec       composites;
+
   } TT_LoaderRec;
 
 
 FT_END_HEADER
 
-#endif /* __TTTYPES_H__ */
+#endif /* TTTYPES_H_ */
 
 
 /* END */

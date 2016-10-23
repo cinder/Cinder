@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Type 1 objects manager (body).                                       */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -67,7 +67,7 @@
                             "pshinter" );
     return ( module && pshinter && pshinter->get_globals_funcs )
            ? pshinter->get_globals_funcs( module )
-           : 0 ;
+           : 0;
   }
 
 
@@ -247,6 +247,9 @@
     FT_FREE( type1->subrs );
     FT_FREE( type1->subrs_len );
 
+    ft_hash_num_free( type1->subrs_hash, memory );
+    FT_FREE( type1->subrs_hash );
+
     FT_FREE( type1->subrs_block );
     FT_FREE( type1->charstrings_block );
     FT_FREE( type1->glyph_names_block );
@@ -345,7 +348,7 @@
       goto Exit;
 
     /* check the face index */
-    if ( face_index > 0 )
+    if ( ( face_index & 0xFFFF ) > 0 )
     {
       FT_ERROR(( "T1_Face_Init: invalid face index\n" ));
       error = FT_THROW( Invalid_Argument );
@@ -374,9 +377,6 @@
 
       if ( face->blend )
         root->face_flags |= FT_FACE_FLAG_MULTIPLE_MASTERS;
-
-      /* XXX: TODO -- add kerning with .afm support */
-
 
       /* The following code to extract the family and the style is very   */
       /* simplistic and might get some things wrong.  For a full-featured */

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Type 1 driver interface (body).                                      */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -29,6 +29,7 @@
 
 #include FT_INTERNAL_DEBUG_H
 #include FT_INTERNAL_STREAM_H
+#include FT_INTERNAL_HASH_H
 
 #include FT_SERVICE_MULTIPLE_MASTERS_H
 #include FT_SERVICE_GLYPH_DICT_H
@@ -87,8 +88,8 @@
 
   static const FT_Service_GlyphDictRec  t1_service_glyph_dict =
   {
-    (FT_GlyphDict_GetNameFunc)  t1_get_glyph_name,
-    (FT_GlyphDict_NameIndexFunc)t1_get_name_index
+    (FT_GlyphDict_GetNameFunc)  t1_get_glyph_name,    /* get_name   */
+    (FT_GlyphDict_NameIndexFunc)t1_get_name_index     /* name_index */
   };
 
 
@@ -106,7 +107,7 @@
 
   static const FT_Service_PsFontNameRec  t1_service_ps_name =
   {
-    (FT_PsName_GetFunc)t1_get_ps_name
+    (FT_PsName_GetFunc)t1_get_ps_name     /* get_ps_font_name */
   };
 
 
@@ -118,11 +119,11 @@
 #ifndef T1_CONFIG_OPTION_NO_MM_SUPPORT
   static const FT_Service_MultiMastersRec  t1_service_multi_masters =
   {
-    (FT_Get_MM_Func)        T1_Get_Multi_Master,
-    (FT_Set_MM_Design_Func) T1_Set_MM_Design,
-    (FT_Set_MM_Blend_Func)  T1_Set_MM_Blend,
-    (FT_Get_MM_Var_Func)    T1_Get_MM_Var,
-    (FT_Set_Var_Design_Func)T1_Set_Var_Design
+    (FT_Get_MM_Func)        T1_Get_Multi_Master,   /* get_mm         */
+    (FT_Set_MM_Design_Func) T1_Set_MM_Design,      /* set_mm_design  */
+    (FT_Set_MM_Blend_Func)  T1_Set_MM_Blend,       /* set_mm_blend   */
+    (FT_Get_MM_Var_Func)    T1_Get_MM_Var,         /* get_mm_var     */
+    (FT_Set_Var_Design_Func)T1_Set_Var_Design      /* set_var_design */
   };
 #endif
 
@@ -329,13 +330,37 @@
       break;
 
     case PS_DICT_SUBR:
-      if ( idx < (FT_UInt)type1->num_subrs )
       {
-        retval = type1->subrs_len[idx] + 1;
-        if ( value && value_len >= retval )
+        FT_Bool  ok = 0;
+
+
+        if ( type1->subrs_hash )
         {
-          ft_memcpy( value, (void *)( type1->subrs[idx] ), retval - 1 );
-          ((FT_Char *)value)[retval - 1] = (FT_Char)'\0';
+          /* convert subr index to array index */
+          size_t*  val = ft_hash_num_lookup( (FT_Int)idx,
+                                             type1->subrs_hash );
+
+
+          if ( val )
+          {
+            idx = *val;
+            ok  = 1;
+          }
+        }
+        else
+        {
+          if ( idx < (FT_UInt)type1->num_subrs )
+            ok = 1;
+        }
+
+        if ( ok )
+        {
+          retval = type1->subrs_len[idx] + 1;
+          if ( value && value_len >= retval )
+          {
+            ft_memcpy( value, (void *)( type1->subrs[idx] ), retval - 1 );
+            ((FT_Char *)value)[retval - 1] = (FT_Char)'\0';
+          }
         }
       }
       break;
@@ -567,18 +592,18 @@
 
   static const FT_Service_PsInfoRec  t1_service_ps_info =
   {
-    (PS_GetFontInfoFunc)   t1_ps_get_font_info,
-    (PS_GetFontExtraFunc)  t1_ps_get_font_extra,
-    (PS_HasGlyphNamesFunc) t1_ps_has_glyph_names,
-    (PS_GetFontPrivateFunc)t1_ps_get_font_private,
-    (PS_GetFontValueFunc)  t1_ps_get_font_value,
+    (PS_GetFontInfoFunc)   t1_ps_get_font_info,    /* ps_get_font_info    */
+    (PS_GetFontExtraFunc)  t1_ps_get_font_extra,   /* ps_get_font_extra   */
+    (PS_HasGlyphNamesFunc) t1_ps_has_glyph_names,  /* ps_has_glyph_names  */
+    (PS_GetFontPrivateFunc)t1_ps_get_font_private, /* ps_get_font_private */
+    (PS_GetFontValueFunc)  t1_ps_get_font_value,   /* ps_get_font_value   */
   };
 
 
 #ifndef T1_CONFIG_OPTION_NO_AFM
   static const FT_Service_KerningRec  t1_service_kerning =
   {
-    T1_Get_Track_Kerning,
+    T1_Get_Track_Kerning,       /* get_track */
   };
 #endif
 
@@ -689,36 +714,37 @@
       0x10000L,
       0x20000L,
 
-      0,   /* format interface */
+      0,    /* module-specific interface */
 
-      T1_Driver_Init,
-      T1_Driver_Done,
-      Get_Interface,
+      T1_Driver_Init,           /* FT_Module_Constructor  module_init   */
+      T1_Driver_Done,           /* FT_Module_Destructor   module_done   */
+      Get_Interface,            /* FT_Module_Requester    get_interface */
     },
 
     sizeof ( T1_FaceRec ),
     sizeof ( T1_SizeRec ),
     sizeof ( T1_GlyphSlotRec ),
 
-    T1_Face_Init,
-    T1_Face_Done,
-    T1_Size_Init,
-    T1_Size_Done,
-    T1_GlyphSlot_Init,
-    T1_GlyphSlot_Done,
+    T1_Face_Init,               /* FT_Face_InitFunc  init_face */
+    T1_Face_Done,               /* FT_Face_DoneFunc  done_face */
+    T1_Size_Init,               /* FT_Size_InitFunc  init_size */
+    T1_Size_Done,               /* FT_Size_DoneFunc  done_size */
+    T1_GlyphSlot_Init,          /* FT_Slot_InitFunc  init_slot */
+    T1_GlyphSlot_Done,          /* FT_Slot_DoneFunc  done_slot */
 
-    T1_Load_Glyph,
+    T1_Load_Glyph,              /* FT_Slot_LoadFunc  load_glyph */
 
 #ifdef T1_CONFIG_OPTION_NO_AFM
-    0,                     /* FT_Face_GetKerningFunc */
-    0,                     /* FT_Face_AttachFunc     */
+    0,                          /* FT_Face_GetKerningFunc   get_kerning  */
+    0,                          /* FT_Face_AttachFunc       attach_file  */
 #else
-    Get_Kerning,
-    T1_Read_Metrics,
+    Get_Kerning,                /* FT_Face_GetKerningFunc   get_kerning  */
+    T1_Read_Metrics,            /* FT_Face_AttachFunc       attach_file  */
 #endif
-    T1_Get_Advances,
-    T1_Size_Request,
-    0                      /* FT_Size_SelectFunc     */
+    T1_Get_Advances,            /* FT_Face_GetAdvancesFunc  get_advances */
+
+    T1_Size_Request,            /* FT_Size_RequestFunc  request_size */
+    0                           /* FT_Size_SelectFunc   select_size  */
   };
 
 

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Auto-fitter hinting routines (body).                                 */
 /*                                                                         */
-/*  Copyright 2003-2015 by                                                 */
+/*  Copyright 2003-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -99,6 +99,7 @@
   af_axis_hints_new_edge( AF_AxisHints  axis,
                           FT_Int        fpos,
                           AF_Direction  dir,
+                          FT_Bool       top_to_bottom_hinting,
                           FT_Memory     memory,
                           AF_Edge      *anedge )
   {
@@ -153,7 +154,8 @@
 
     while ( edge > edges )
     {
-      if ( edge[-1].fpos < fpos )
+      if ( top_to_bottom_hinting ? ( edge[-1].fpos > fpos )
+                                 : ( edge[-1].fpos < fpos ) )
         break;
 
       /* we want the edge with same position and minor direction */
@@ -219,6 +221,82 @@
 #define AF_INDEX_NUM( ptr, base )  (int)( (ptr) ? ( (ptr) - (base) ) : -1 )
 
 
+  static char*
+  af_print_idx( char* p,
+                int   idx )
+  {
+    if ( idx == -1 )
+    {
+      p[0] = '-';
+      p[1] = '-';
+      p[2] = '\0';
+    }
+    else
+      ft_sprintf( p, "%d", idx );
+
+    return p;
+  }
+
+
+  static int
+  af_get_segment_index( AF_GlyphHints  hints,
+                        int            point_idx,
+                        int            dimension )
+  {
+    AF_AxisHints  axis     = &hints->axis[dimension];
+    AF_Point      point    = hints->points + point_idx;
+    AF_Segment    segments = axis->segments;
+    AF_Segment    limit    = segments + axis->num_segments;
+    AF_Segment    segment;
+
+
+    for ( segment = segments; segment < limit; segment++ )
+    {
+      if ( segment->first <= segment->last )
+      {
+        if ( point >= segment->first && point <= segment->last )
+          break;
+      }
+      else
+      {
+        AF_Point  p = segment->first;
+
+
+        for (;;)
+        {
+          if ( point == p )
+            goto Exit;
+
+          if ( p == segment->last )
+            break;
+
+          p = p->next;
+        }
+      }
+    }
+
+  Exit:
+    if ( segment == limit )
+      return -1;
+
+    return (int)( segment - segments );
+  }
+
+
+  static int
+  af_get_edge_index( AF_GlyphHints  hints,
+                     int            segment_idx,
+                     int            dimension )
+  {
+    AF_AxisHints  axis    = &hints->axis[dimension];
+    AF_Edge       edges   = axis->edges;
+    AF_Segment    segment = axis->segments + segment_idx;
+
+
+    return segment_idx == -1 ? -1 : AF_INDEX_NUM( segment->edge, edges );
+  }
+
+
 #ifdef __cplusplus
   extern "C" {
 #endif
@@ -226,30 +304,59 @@
   af_glyph_hints_dump_points( AF_GlyphHints  hints,
                               FT_Bool        to_stdout )
   {
-    AF_Point  points = hints->points;
-    AF_Point  limit  = points + hints->num_points;
-    AF_Point  point;
+    AF_Point   points  = hints->points;
+    AF_Point   limit   = points + hints->num_points;
+    AF_Point*  contour = hints->contours;
+    AF_Point*  climit  = contour + hints->num_contours;
+    AF_Point   point;
 
 
     AF_DUMP(( "Table of points:\n" ));
 
     if ( hints->num_points )
-      AF_DUMP(( "  [ index |  xorg |  yorg | xscale | yscale"
-                " |  xfit |  yfit |  flags ]\n" ));
+      AF_DUMP(( "  index  hedge  hseg  vedge  vseg  flags "
+                "  xorg  yorg  xscale  yscale   xfit    yfit" ));
     else
       AF_DUMP(( "  (none)\n" ));
 
     for ( point = points; point < limit; point++ )
-      AF_DUMP(( "  [ %5d | %5d | %5d | %6.2f | %6.2f"
-                " | %5.2f | %5.2f | %c ]\n",
-                AF_INDEX_NUM( point, points ),
+    {
+      int  point_idx     = AF_INDEX_NUM( point, points );
+      int  segment_idx_0 = af_get_segment_index( hints, point_idx, 0 );
+      int  segment_idx_1 = af_get_segment_index( hints, point_idx, 1 );
+
+      char  buf1[16], buf2[16], buf3[16], buf4[16];
+
+
+      /* insert extra newline at the beginning of a contour */
+      if ( contour < climit && *contour == point )
+      {
+        AF_DUMP(( "\n" ));
+        contour++;
+      }
+
+      AF_DUMP(( "  %5d  %5s %5s  %5s %5s  %s"
+                " %5d %5d %7.2f %7.2f %7.2f %7.2f\n",
+                point_idx,
+                af_print_idx( buf1,
+                              af_get_edge_index( hints, segment_idx_1, 1 ) ),
+                af_print_idx( buf2, segment_idx_1 ),
+                af_print_idx( buf3,
+                              af_get_edge_index( hints, segment_idx_0, 0 ) ),
+                af_print_idx( buf4, segment_idx_0 ),
+                ( point->flags & AF_FLAG_NEAR )
+                  ? " near "
+                  : ( point->flags & AF_FLAG_WEAK_INTERPOLATION )
+                    ? " weak "
+                    : "strong",
+
                 point->fx,
                 point->fy,
                 point->ox / 64.0,
                 point->oy / 64.0,
                 point->x / 64.0,
-                point->y / 64.0,
-                ( point->flags & AF_FLAG_WEAK_INTERPOLATION ) ? 'w' : ' '));
+                point->y / 64.0 ));
+    }
     AF_DUMP(( "\n" ));
   }
 #ifdef __cplusplus
@@ -306,31 +413,34 @@
       AF_Segment    limit    = segments + axis->num_segments;
       AF_Segment    seg;
 
+      char  buf1[16], buf2[16], buf3[16];
+
 
       AF_DUMP(( "Table of %s segments:\n",
                 dimension == AF_DIMENSION_HORZ ? "vertical"
                                                : "horizontal" ));
       if ( axis->num_segments )
-        AF_DUMP(( "  [ index |  pos  |  dir  | from"
-                  " |  to  | link | serif | edge"
-                  " | height | extra |    flags    ]\n" ));
+        AF_DUMP(( "  index   pos   delta   dir   from   to "
+                  "  link  serif  edge"
+                  "  height  extra     flags\n" ));
       else
         AF_DUMP(( "  (none)\n" ));
 
       for ( seg = segments; seg < limit; seg++ )
-        AF_DUMP(( "  [ %5d | %5.2g | %5s | %4d"
-                  " | %4d | %4d | %5d | %4d"
-                  " | %6d | %5d | %11s ]\n",
+        AF_DUMP(( "  %5d  %5d  %5d  %5s  %4d  %4d"
+                  "  %4s  %5s  %4s"
+                  "  %6d  %5d  %11s\n",
                   AF_INDEX_NUM( seg, segments ),
-                  dimension == AF_DIMENSION_HORZ
-                               ? (int)seg->first->ox / 64.0
-                               : (int)seg->first->oy / 64.0,
+                  seg->pos,
+                  seg->delta,
                   af_dir_str( (AF_Direction)seg->dir ),
                   AF_INDEX_NUM( seg->first, points ),
                   AF_INDEX_NUM( seg->last, points ),
-                  AF_INDEX_NUM( seg->link, segments ),
-                  AF_INDEX_NUM( seg->serif, segments ),
-                  AF_INDEX_NUM( seg->edge, edges ),
+
+                  af_print_idx( buf1, AF_INDEX_NUM( seg->link, segments ) ),
+                  af_print_idx( buf2, AF_INDEX_NUM( seg->serif, segments ) ),
+                  af_print_idx( buf3, AF_INDEX_NUM( seg->edge, edges ) ),
+
                   seg->height,
                   seg->height - ( seg->max_coord - seg->min_coord ),
                   af_edge_flags_to_string( seg->flags ) ));
@@ -435,28 +545,39 @@
       AF_Edge       limit = edges + axis->num_edges;
       AF_Edge       edge;
 
+      char  buf1[16], buf2[16];
+
 
       /*
        *  note: AF_DIMENSION_HORZ corresponds to _vertical_ edges
        *        since they have a constant X coordinate.
        */
-      AF_DUMP(( "Table of %s edges:\n",
-                dimension == AF_DIMENSION_HORZ ? "vertical"
-                                               : "horizontal" ));
+      if ( dimension == AF_DIMENSION_HORZ )
+        AF_DUMP(( "Table of %s edges (1px=%.2fu, 10u=%.2fpx):\n",
+                  "vertical",
+                  65536.0 * 64.0 / hints->x_scale,
+                  10.0 * hints->x_scale / 65536.0 / 64.0 ));
+      else
+        AF_DUMP(( "Table of %s edges (1px=%.2fu, 10u=%.2fpx):\n",
+                  "horizontal",
+                  65536.0 * 64.0 / hints->y_scale,
+                  10.0 * hints->y_scale / 65536.0 / 64.0 ));
+
       if ( axis->num_edges )
-        AF_DUMP(( "  [ index |  pos  |  dir  | link"
-                  " | serif | blue | opos  |  pos  |    flags    ]\n" ));
+        AF_DUMP(( "  index    pos     dir   link  serif"
+                  "  blue    opos     pos       flags\n" ));
       else
         AF_DUMP(( "  (none)\n" ));
 
       for ( edge = edges; edge < limit; edge++ )
-        AF_DUMP(( "  [ %5d | %5.2g | %5s | %4d"
-                  " | %5d |   %c  | %5.2f | %5.2f | %11s ]\n",
+        AF_DUMP(( "  %5d  %7.2f  %5s  %4s  %5s"
+                  "    %c   %7.2f  %7.2f  %11s\n",
                   AF_INDEX_NUM( edge, edges ),
                   (int)edge->opos / 64.0,
                   af_dir_str( (AF_Direction)edge->dir ),
-                  AF_INDEX_NUM( edge->link, edges ),
-                  AF_INDEX_NUM( edge->serif, edges ),
+                  af_print_idx( buf1, AF_INDEX_NUM( edge->link, edges ) ),
+                  af_print_idx( buf2, AF_INDEX_NUM( edge->serif, edges ) ),
+
                   edge->blue_edge ? 'y' : 'n',
                   edge->opos / 64.0,
                   edge->pos / 64.0,
@@ -702,18 +823,26 @@
       AF_Point  point;
       AF_Point  point_limit = points + hints->num_points;
 
+      /* value 20 in `near_limit' is heuristic */
+      FT_UInt  units_per_em = hints->metrics->scaler.face->units_per_EM;
+      FT_Int   near_limit   = 20 * units_per_em / 2048;
+
 
       /* compute coordinates & Bezier flags, next and prev */
       {
         FT_Vector*  vec           = outline->points;
         char*       tag           = outline->tags;
-        AF_Point    end           = points + outline->contours[0];
+        FT_Short    endpoint      = outline->contours[0];
+        AF_Point    end           = points + endpoint;
         AF_Point    prev          = end;
         FT_Int      contour_index = 0;
 
 
         for ( point = points; point < point_limit; point++, vec++, tag++ )
         {
+          FT_Pos  out_x, out_y;
+
+
           point->in_dir  = (FT_Char)AF_DIR_NONE;
           point->out_dir = (FT_Char)AF_DIR_NONE;
 
@@ -721,6 +850,9 @@
           point->fy = (FT_Short)vec->y;
           point->ox = point->x = FT_MulFix( vec->x, x_scale ) + x_delta;
           point->oy = point->y = FT_MulFix( vec->y, y_scale ) + y_delta;
+
+          end->fx = (FT_Short)outline->points[endpoint].x;
+          end->fy = (FT_Short)outline->points[endpoint].y;
 
           switch ( FT_CURVE_TAG( *tag ) )
           {
@@ -734,6 +866,12 @@
             point->flags = AF_FLAG_NONE;
           }
 
+          out_x = point->fx - prev->fx;
+          out_y = point->fy - prev->fy;
+
+          if ( FT_ABS( out_x ) + FT_ABS( out_y ) < near_limit )
+            prev->flags |= AF_FLAG_NEAR;
+
           point->prev = prev;
           prev->next  = point;
           prev        = point;
@@ -742,8 +880,9 @@
           {
             if ( ++contour_index < outline->n_contours )
             {
-              end  = points + outline->contours[contour_index];
-              prev = end;
+              endpoint = outline->contours[contour_index];
+              end      = points + endpoint;
+              prev     = end;
             }
           }
         }
@@ -769,17 +908,15 @@
          *  Compute directions of `in' and `out' vectors.
          *
          *  Note that distances between points that are very near to each
-         *  other are accumulated.  In other words, the auto-hinter
+         *  other are accumulated.  In other words, the auto-hinter either
          *  prepends the small vectors between near points to the first
-         *  non-near vector.  All intermediate points are tagged as
-         *  weak; the directions are adjusted also to be equal to the
-         *  accumulated one.
+         *  non-near vector, or the sum of small vector lengths exceeds a
+         *  threshold, thus `grouping' the small vectors.  All intermediate
+         *  points are tagged as weak; the directions are adjusted also to
+         *  be equal to the accumulated one.
          */
 
-        /* value 20 in `near_limit' is heuristic */
-        FT_UInt  units_per_em = hints->metrics->scaler.face->units_per_EM;
-        FT_Int   near_limit   = 20 * units_per_em / 2048;
-        FT_Int   near_limit2  = 2 * near_limit - 1;
+        FT_Int  near_limit2 = 2 * near_limit - 1;
 
         AF_Point*  contour;
         AF_Point*  contour_limit = hints->contours + hints->num_contours;
@@ -826,7 +963,7 @@
           /* now loop over all points of the contour to get */
           /* `in' and `out' vector directions               */
 
-          curr  = first;
+          curr = first;
 
           /*
            *  We abuse the `u' and `v' fields to store index deltas to the
@@ -849,7 +986,7 @@
 
 
             point = next;
-            next = point->next;
+            next  = point->next;
 
             out_x += next->fx - point->fx;
             out_y += next->fy - point->fy;

@@ -5,7 +5,7 @@
 /*    FreeType glyph image formats and default raster interface            */
 /*    (specification).                                                     */
 /*                                                                         */
-/*  Copyright 1996-2015 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -24,12 +24,12 @@
   /*************************************************************************/
 
 
-#ifndef __FTIMAGE_H__
-#define __FTIMAGE_H__
+#ifndef FTIMAGE_H_
+#define FTIMAGE_H_
 
 
-  /* _STANDALONE_ is from ftgrays.c */
-#ifndef _STANDALONE_
+  /* STANDALONE_ is from ftgrays.c */
+#ifndef STANDALONE_
 #include <ft2build.h>
 #endif
 
@@ -747,7 +747,7 @@ FT_BEGIN_HEADER
   /*************************************************************************/
   /*                                                                       */
   /* A raster is a scan converter, in charge of rendering an outline into  */
-  /* a a bitmap.  This section contains the public API for rasters.        */
+  /* a bitmap.  This section contains the public API for rasters.          */
   /*                                                                       */
   /* Note that in FreeType 2, all rasters are now encapsulated within      */
   /* specific modules called `renderers'.  See `ftrender.h' for more       */
@@ -859,16 +859,6 @@ FT_BEGIN_HEADER
   /*                                                                       */
   /*    This can be used to write anti-aliased outlines directly to a      */
   /*    given background bitmap, and even perform translucency.            */
-  /*                                                                       */
-  /*    Note that the `count' field cannot be greater than a fixed value   */
-  /*    defined by the `FT_MAX_GRAY_SPANS' configuration macro in          */
-  /*    `ftoption.h'.  By default, this value is set to~32, which means    */
-  /*    that if there are more than 32~spans on a given scanline, the      */
-  /*    callback is called several times with the same `y' parameter in    */
-  /*    order to draw all callbacks.                                       */
-  /*                                                                       */
-  /*    Otherwise, the callback is only called once per scan-line, and     */
-  /*    only for those scanlines that do have `gray' pixels on them.       */
   /*                                                                       */
   typedef void
   (*FT_SpanFunc)( int             y,
@@ -1203,7 +1193,7 @@ FT_BEGIN_HEADER
 
 FT_END_HEADER
 
-#endif /* __FTIMAGE_H__ */
+#endif /* FTIMAGE_H_ */
 
 
 /* END */

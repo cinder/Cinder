@@ -220,7 +220,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = (
-					"$(CINDER_PATH)/lib/libcinder_d.a",
+					"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a",
 					"-lcurl",
 				);
 				PRODUCT_NAME = SystemTest;
@@ -248,7 +248,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = (
-					"$(CINDER_PATH)/lib/libcinder.a",
+					"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a",
 					"-lcurl",
 				);
 				PRODUCT_NAME = SystemTest;
