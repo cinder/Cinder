@@ -123,7 +123,7 @@ void VaoImplCore::reassignImpl( Context *newContext )
 	glBindBuffer( GL_ARRAY_BUFFER, oldBuffer );
 }
 
-void VaoImplCore::unbindImpl( Context *context )
+void VaoImplCore::unbindImpl( Context * /*context*/ )
 {
 	glBindVertexArray( 0 );
 	

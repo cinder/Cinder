@@ -2094,9 +2094,9 @@ int debugSeverityToOrd( GLenum severity )
 } // anonymous namespace
 
 #if defined( CINDER_MSW )
-void __stdcall Context::debugMessageCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, void *userParam )
+void __stdcall	Context::debugMessageCallback(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity, GLsizei /*length*/, const GLchar *message, void *userParam)
 #else
-void Context::debugMessageCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, void *userParam )
+void			Context::debugMessageCallback(GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity, GLsizei /*length*/, const GLchar *message, void *userParam)
 #endif
 {
 	Context *ctx = reinterpret_cast<Context*>( userParam );

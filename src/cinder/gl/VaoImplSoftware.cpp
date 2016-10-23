@@ -113,7 +113,7 @@ void VaoImplSoftware::bindImpl( Context *context )
 	context->bindBuffer( GL_ARRAY_BUFFER, oldBuffer );
 }
 
-void VaoImplSoftware::unbindImpl( Context *context )
+void VaoImplSoftware::unbindImpl( Context * /*context*/ )
 {
 	for( auto attribIt = mLayout.mVertexAttribs.begin(); attribIt != mLayout.mVertexAttribs.end(); ++attribIt ) {
 		if( attribIt->second.mEnabled ) {

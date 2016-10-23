@@ -574,7 +574,7 @@ class DefaultVboTarget : public geom::Target {
 		mReceivedAttribs.push_back( attr );
 	}
 
-	void copyIndices( geom::Primitive primitive, const uint32_t *sourceData, size_t numIndices, uint8_t requiredBytesPerIndex ) override
+	void copyIndices( geom::Primitive /*primitive*/, const uint32_t *sourceData, size_t numIndices, uint8_t requiredBytesPerIndex ) override
 	{
 		if( numIndices == 0 )
 			return;
@@ -908,12 +908,12 @@ void drawVerticalCross( const gl::TextureCubeMapRef &texture, const Rectf &rect,
 	drawCrossImpl( texture, positions, texCoords, lod );
 }
 
-void drawSolid( const Path2d &path, float approximationScale )
+void drawSolid( const Path2d &path, float /*approximationScale*/ )
 {
 	draw( Triangulator( path ).calcMesh() );
 }
 
-void drawSolid( const Shape2d &shape, float approximationScale )
+void drawSolid( const Shape2d &shape, float /*approximationScale*/ )
 {
 	draw( Triangulator( shape ).calcMesh() );
 }
