@@ -108,7 +108,6 @@ struct GstData {
 	GstPlayer*			player 		= nullptr;
 #if defined( CINDER_GST_HAS_GL )
 	GstGLContext* 			context 	= nullptr;
-	GstGLDisplay* 			display 	= nullptr;
 
 	GstElement* 			glupload 	= nullptr;
 	GstElement* 			glcolorconvert  = nullptr;

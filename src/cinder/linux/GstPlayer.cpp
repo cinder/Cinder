@@ -21,6 +21,8 @@
 
 namespace gst { namespace video {
 
+static GstGLDisplay* sGstGLDisplay = nullptr;
+
 static bool         sUseGstGl = false;
 static const int    sEnableAsyncStateChange = false;
 
@@ -171,7 +173,7 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userData )
             GstContext* context = nullptr;
             if( g_strcmp0( context_type, GST_GL_DISPLAY_CONTEXT_TYPE ) == 0 ) {
                 context = gst_context_new( GST_GL_DISPLAY_CONTEXT_TYPE, TRUE );
-                gst_context_set_gl_display( context, data.display );
+                gst_context_set_gl_display( context, sGstGLDisplay );
                 gst_element_set_context( GST_ELEMENT( message->src ), context );
             }
             else if( g_strcmp0( context_type, "gst.gl.app_context" ) == 0 ) {
@@ -383,8 +385,7 @@ void GstPlayer::resetPipeline()
 #if defined( CINDER_GST_HAS_GL )
         gst_object_unref( mGstData.context );	
         mGstData.context = nullptr;
-        gst_object_unref( mGstData.display );
-        mGstData.display = nullptr;
+        gst_object_unref( sGstGLDisplay );
         // Pipeline will unref and destroy its children..
         mGstData.glupload = nullptr;
         mGstData.glcolorconvert = nullptr;
@@ -461,24 +462,41 @@ bool GstPlayer::initialize()
 {		
 #if defined( CINDER_GST_HAS_GL ) 
     if( sUseGstGl ) {
+        // On the first run ref count = 1, from then on we need to ref it in order to keep
+        // the display alive until the last object is destroyed.
+        bool holdDisplayRef = false;
 #if defined( CINDER_LINUX )
-        auto platformData   = std::dynamic_pointer_cast<ci::gl::PlatformDataLinux>( ci::gl::context()->getPlatformData() );
+        auto platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataLinux>( ci::gl::context()->getPlatformData() );
 #if defined( CINDER_LINUX_EGL_ONLY )
-        mGstData.display    = (GstGLDisplay*) gst_gl_display_egl_new_with_egl_display( platformData->mDisplay );
-        mGstData.context    = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.display, (guintptr)platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
+        if( ! sGstGLDisplay ) 
+            sGstGLDisplay = (GstGLDisplay*) gst_gl_display_egl_new_with_egl_display( platformData->mDisplay );
+        else 
+            holdDisplayRef = true;
+
+        mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mContext, GST_GL_PLATFORM_EGL, GST_GL_API_GLES2 );
 #else
-        mGstData.display    = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
+        if( ! sGstGLDisplay ) 
+            sGstGLDisplay = (GstGLDisplay*) gst_gl_display_x11_new_with_display( ::glfwGetX11Display() );
+        else 
+            holdDisplayRef = true;
   #if defined( CINDER_GL_ES )
-        mGstData.context    = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.display, (guintptr)::glfwGetEGLContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_GLES2 );
+        mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)::glfwGetEGLContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_GLES2 );
   #else
-        mGstData.context    = gst_gl_context_new_wrapped( (GstGLDisplay*)mGstData.display, (guintptr)::glfwGetGLXContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
+        mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)::glfwGetGLXContext( platformData->mContext ), GST_GL_PLATFORM_GLX, GST_GL_API_OPENGL );
   #endif 
 #endif 
 #elif defined( CINDER_MAC )
-   	 mGstData.display   = gst_gl_display_new ();
-	 auto platformData  = std::dynamic_pointer_cast<ci::gl::PlatformDataMac>( ci::gl::context()->getPlatformData() );
-	 mGstData.context   = gst_gl_context_new_wrapped( GST_GL_DISPLAY( mGstData.display ), (guintptr)platformData->mCglContext, GST_GL_PLATFORM_CGL, GST_GL_API_OPENGL );
+        if( ! sGstGLDisplay ) 
+            sGstGLDisplay = gst_gl_display_new ();
+        else 
+            holdDisplayRef = true;
+
+        auto platformData = std::dynamic_pointer_cast<ci::gl::PlatformDataMac>( ci::gl::context()->getPlatformData() );
+        mGstData.context  = gst_gl_context_new_wrapped( sGstGLDisplay, (guintptr)platformData->mCglContext, GST_GL_PLATFORM_CGL, GST_GL_API_OPENGL );
 #endif
+        if( holdDisplayRef ) {
+            gst_object_ref( sGstGLDisplay );
+        }
     }
 #endif // defined( CINDER_GST_HAS_GL )
     return true;
