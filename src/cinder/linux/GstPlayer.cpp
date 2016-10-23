@@ -1021,9 +1021,8 @@ void GstPlayer::createTextureFromID()
 
     GLint textureID = getTextureID( mCurrentBuffer.get() );
 
-    mVideoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, textureID, mGstData.width, mGstData.height, true );
-
-    if( mVideoTexture ) {
+    if( textureID != 0 ) {
+        mVideoTexture = ci::gl::Texture::create( GL_TEXTURE_2D, textureID, mGstData.width, mGstData.height, true );
         mVideoTexture->setTopDown();
     }
 #endif
@@ -1032,6 +1031,8 @@ void GstPlayer::createTextureFromID()
 GLint GstPlayer::getTextureID( GstBuffer* newBuffer )
 {
     GLint id = 0;
+    if( ! newBuffer ) 
+        return id;
 #if defined( CINDER_GST_HAS_GL )
     GstMemory *mem = gst_buffer_peek_memory( newBuffer, 0 );
     g_assert( gst_is_gl_memory( mem ) );
