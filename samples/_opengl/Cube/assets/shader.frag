@@ -12,5 +12,5 @@ void main( void )
 {
 	vec3 normal = normalize( -Normal );
 	float diffuse = max( dot( normal, vec3( 0, 0, -1 ) ), 0 );
-	oColor = vec4( Normal, 1 ); //vec4( normal, 1 ); //texture( uTex0, TexCoord.st ) * Color * diffuse;
+	oColor = texture( uTex0, TexCoord.st ) * Color * diffuse;
 }
