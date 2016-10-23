@@ -64,8 +64,10 @@ int solveCubic( T a, T b, T c, T d, T result[3] )
 	if( a == 0 )
 		return solveQuadratic( b, c, d, result );
 
-	T f = ((3 * c / a) - ((b * b) / (a * a))) / 3;
-	T g = ((2 * b * b * b) / (a * a * a) - (9 * b * c) / (a * a) + (27 * d) / (a)) / 27;
+	T a2 = a * a;
+	T b2 = b * b;
+	T f = ((3 * c / a) - (b2 / a2)) / 3;
+	T g = ((2 * b2 * b) / (a2 * a) - (9 * b * c) / a2 + (27 * d) / a) / 27;
 	T h = g * g / 4 + f * f * f / 27;
 
 	if( f == 0 && g == 0 && h == 0 ) {
@@ -74,9 +76,10 @@ int solveCubic( T a, T b, T c, T d, T result[3] )
 	}
 	else if( h > 0 ) {
 		// 1 root
-		T r = -( g / 2 ) + math<T>::sqrt( h );
+		T hr = math<T>::sqrt( h );
+		T r = -( g / 2 ) + hr;
 		T s = math<T>::cbrt( r );
-		T t = -(g / 2) - math<T>::sqrt( h );
+		T t = -(g / 2) - hr;
 		T u = math<T>::cbrt( t );
 
 		result[0] = (s + u) - (b / (3 * a));
@@ -90,7 +93,7 @@ int solveCubic( T a, T b, T c, T d, T result[3] )
 		T m = math<T>::cos( k / 3 );
 		T n = math<T>::sqrt(3) * math<T>::sin( k / 3 );
 		T p = -b / (3 * a);
-		result[0] = 2 * j * math<T>::cos(k / 3) - (b / (3 * a));
+		result[0] = 2 * j * m - (b / (3 * a));
 		result[1] = l * (m + n) + p;
 		result[2] = l * (m - n) + p;
 		return 3;
@@ -358,7 +361,7 @@ void convertToBezierForm( const glm::tvec2<T, glm::defaultp> *controlPoints, con
 		int ub = glm::min( k, n );
 		for( int i = lb; i <= ub; i++ ) {
 			int j = k - i;
-			w[i + j].y += cdTable[j][i] * z[j][i];
+			w[k].y += cdTable[j][i] * z[j][i];
 		}
 	}
 }
@@ -430,49 +433,36 @@ glm::tvec2<T, glm::defaultp> bezier( const glm::tvec2<T, glm::defaultp> *control
 	return u * u * ( u * controlPoints[0] + T{ 3 } * t * controlPoints[1] ) + t * t * ( T{ 3 } * u * controlPoints[2] + t * controlPoints[3] );
 }
 
-// Evaluate a Bezier curve at a particular parameter value. Fill in control points for resulting sub-curves if "left" and "right" are non-null.
+// Evaluate a Bezier curve at a particular parameter value. Fill in control points for resulting sub-curves in \a left and \a right.
 template<typename T>
 glm::tvec2<T, glm::defaultp> bezier( const glm::tvec2<T, glm::defaultp> *controlPoints, int degree, T t, glm::tvec2<T, glm::defaultp> *left, glm::tvec2<T, glm::defaultp> *right )
 {
-	// Use simple struct instead of glm::tvec2<T, glm::defaultp> v[6][6], to prevent unnecessary initialization.
-	typedef struct { T x; T y; } vector2;
-	vector2 v[6][6];
+	assert( nullptr != left );
+	assert( nullptr != right );
+	assert( degree <= 5 );
+
+	glm::tvec2<T, glm::defaultp> value[6];
 
 	// Copy control points.
-	for( int j = 0; j <= degree; j++ ) {
-		v[0][j].x = controlPoints[j].x;
-		v[0][j].y = controlPoints[j].y;
-	}
+	memcpy( value, controlPoints, sizeof( value ) );
+
+	// Initialize the first sub-curve.
+	left[0] = controlPoints[0];
 
 	// Triangle computation.
 	for( int i = 1; i <= degree; i++ ) {
 		for( int j = 0; j <= degree - i; j++ ) {
-			auto &d = v[i][j];
-			auto &sa = v[i - 1][j];
-			auto &sb = v[i - 1][j + 1];
-			d.x = sa.x + t * ( sb.x - sa.x );
-			d.y = sa.y + t * ( sb.y - sa.y );
+			value[j] += t * ( value[j + 1] - value[j] );
 		}
+
+		// Copy parameters for the first sub-curve.
+		left[i] = value[0];
 	}
 
-	if( left != nullptr ) {
-		for( int j = 0; j <= degree; j++ ) {
-			auto &d = left[j];
-			auto &s = v[j][0];
-			d.x = s.x;
-			d.y = s.y;
-		}
-	}
-	if( right != nullptr ) {
-		for( int j = 0; j <= degree; j++ ) {
-			auto &d = right[j];
-			auto &s = v[degree - j][j];
-			d.x = s.x;
-			d.y = s.y;
-		}
-	}
+	// Copy parameters for the second sub-curve.
+	memcpy( right, value, sizeof( value ) );
 
-	return { v[degree][0].x, v[degree][0].y };
+	return value[degree];
 }
 
 //! Given a 5th-degree equation in Bernstein-Bezier form, find all of the roots in the interval[0, 1]. Return the number of roots found.
