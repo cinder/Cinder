@@ -82,7 +82,7 @@ Primitive Modifier::getPrimitive( const Modifier::Params &upstreamParams ) const
 	return upstreamParams.getPrimitive();
 }
 
-uint8_t	Modifier::getAttribDims( Attrib attr, uint8_t upstreamDims ) const
+uint8_t	Modifier::getAttribDims( Attrib /*attr*/, uint8_t upstreamDims ) const
 {
 	return upstreamDims;
 }
@@ -1171,7 +1171,7 @@ AttribSet Icosahedron::getAvailableAttribs() const
 	return { Attrib::POSITION, Attrib::NORMAL, Attrib::COLOR, Attrib::TEX_COORD_0 };
 }
 
-void Icosahedron::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+void Icosahedron::loadInto( Target *target, const AttribSet & /*requestedAttribs*/ ) const
 {
 	vector<vec3> positions, normals, colors;
 	vector<vec2> texcoords;
@@ -3567,7 +3567,7 @@ AttribSet BSpline::getAvailableAttribs() const
 	return { Attrib::POSITION, Attrib::NORMAL };
 }
 
-void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+void BSpline::loadInto( Target *target, const AttribSet & /*requestedAttribs*/ ) const
 {
 	target->copyAttrib( Attrib::POSITION, mPositionDims, 0, mPositions.data(), mNumVertices );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
@@ -3806,7 +3806,7 @@ WireRect& WireRect::rect( const Rectf &r )
 	return *this;
 }
 
-void WireRect::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+void WireRect::loadInto( Target *target, const AttribSet & /*requestedAttribs*/ ) const
 {
 	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), 5 );
 }
