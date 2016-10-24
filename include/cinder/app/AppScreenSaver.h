@@ -74,7 +74,7 @@ class AppScreenSaver : public AppBase {
 #endif
 
 		//! Prevents the screensaver from quitting in response to anything but clicks in its window, and from being the top-most window. Currenty ignored on Mac.
-		void	enableDebug( bool enable = true ) { mEnableDebug = true; }
+		void	enableDebug( bool enable = true ) { mEnableDebug = enable; }
 		bool	isDebugEnabled() const { return mEnableDebug; }
 
 	  protected:
