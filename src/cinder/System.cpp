@@ -633,12 +633,10 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 	vector<System::NetworkAdapter> adapters;
 
 #if defined( CINDER_COCOA )
-	struct ifaddrs *interfaces = NULL;
-	struct ifaddrs *currentInterface = NULL;
+	struct ifaddrs *interfaces = nullptr;
 
-	int success = getifaddrs( &interfaces );
-	if( success == 0 ) {
-		for( currentInterface = interfaces; currentInterface; currentInterface = currentInterface->ifa_next ) {
+	if( getifaddrs( &interfaces ) == 0 ) {
+		for( auto currentInterface = interfaces; currentInterface; currentInterface = currentInterface->ifa_next ) {
 			if( currentInterface->ifa_addr->sa_family == AF_INET ) {
 				char host[NI_MAXHOST], subnetMask[NI_MAXHOST];
 				int nameResult = getnameinfo( currentInterface->ifa_addr,
