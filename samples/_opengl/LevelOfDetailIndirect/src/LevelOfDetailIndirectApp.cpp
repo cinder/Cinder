@@ -13,12 +13,9 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-enum {
-	ATOMIC_COUNTER = 0,
-	QUERY_BUFFER_OBJECT = 1
-};
-
-#define TECHNIQUE QUERY_BUFFER_OBJECT
+#define ATOMIC_COUNTER			0
+#define QUERY_BUFFER_OBJECT		1
+#define TECHNIQUE				QUERY_BUFFER_OBJECT
 
 struct TeapotInstIn {
 	vec3 mPosition;
