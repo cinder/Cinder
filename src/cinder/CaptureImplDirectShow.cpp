@@ -140,7 +140,7 @@ CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, con
 	mWidth = CaptureMgr::instanceVI()->getWidth( mDeviceID );
 	mHeight = CaptureMgr::instanceVI()->getHeight( mDeviceID );
 	mIsCapturing = true;
-	mSurfaceCache = std::shared_ptr<SurfaceCache>( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::BGR, 4 ) );
+	mSurfaceCache.reset( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::BGR, 4 ) );
 
 	mMgrPtr = CaptureMgr::instance();
 }
