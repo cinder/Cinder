@@ -13,6 +13,8 @@
 			buildPhases = (
 			);
 			dependencies = (
+				006425021DBFE790007AAB2A /* PBXTargetDependency */,
+				006425041DBFE790007AAB2A /* PBXTargetDependency */,
 				0043089F1BBCE30C00B72510 /* PBXTargetDependency */,
 				004308A11BBCE30C00B72510 /* PBXTargetDependency */,
 				004308A31BBCE30C00B72510 /* PBXTargetDependency */,
@@ -596,6 +598,34 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = NodeSubclassing;
+		};
+		006424FC1DBFE782007AAB2A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00BFB1C31D4EB65E00EE4CA7 /* ArcballDemo.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ArcballDemo;
+		};
+		006424FF1DBFE782007AAB2A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006424F81DBFE782007AAB2A /* LevelOfDetailBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = LevelOfDetailBasic;
+		};
+		006425011DBFE790007AAB2A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006424F81DBFE782007AAB2A /* LevelOfDetailBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = LevelOfDetailBasic;
+		};
+		006425031DBFE790007AAB2A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00BFB1C31D4EB65E00EE4CA7 /* ArcballDemo.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ArcballDemo;
 		};
 		006D7149199528BB008149E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1467,6 +1497,7 @@
 		0043082A1BBCE28F00B72510 /* TessellationBezier.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TessellationBezier.xcodeproj; path = ../../_opengl/TessellationBezier/xcode/TessellationBezier.xcodeproj; sourceTree = "<group>"; };
 		004308301BBCE2A200B72510 /* VboMesh.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VboMesh.xcodeproj; path = ../../_opengl/VboMesh/xcode/VboMesh.xcodeproj; sourceTree = "<group>"; };
 		004308361BBCE2D500B72510 /* NodeSubclassing.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NodeSubclassing.xcodeproj; path = ../../_audio/NodeSubclassing/xcode/NodeSubclassing.xcodeproj; sourceTree = "<group>"; };
+		006424F81DBFE782007AAB2A /* LevelOfDetailBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LevelOfDetailBasic.xcodeproj; path = ../../_opengl/LevelOfDetailBasic/xcode/LevelOfDetailBasic.xcodeproj; sourceTree = "<group>"; };
 		006D7145199528BA008149E2 /* Cube.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Cube.xcodeproj; path = ../../_opengl/Cube/xcode/Cube.xcodeproj; sourceTree = "<group>"; };
 		006D714B199528C4008149E2 /* CubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CubeMapping.xcodeproj; path = ../../_opengl/CubeMapping/xcode/CubeMapping.xcodeproj; sourceTree = "<group>"; };
 		006D7151199528CC008149E2 /* DynamicCubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DynamicCubeMapping.xcodeproj; path = ../../_opengl/DynamicCubeMapping/xcode/DynamicCubeMapping.xcodeproj; sourceTree = "<group>"; };
@@ -1535,6 +1566,7 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				006424F81DBFE782007AAB2A /* LevelOfDetailBasic.xcodeproj */,
 				006D7144199528A4008149E2 /* _opengl */,
 				11754415193596440075AF60 /* _audio */,
 				0029329B1530F5480022B1BF /* _svg */,
@@ -1863,6 +1895,14 @@
 			isa = PBXGroup;
 			children = (
 				0043083B1BBCE2D500B72510 /* NodeSubclassing.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006424F91DBFE782007AAB2A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006425001DBFE782007AAB2A /* LevelOfDetailBasic.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2228,6 +2268,9 @@
 		};
 		00BFB1C41D4EB65E00EE4CA7 /* Products */ = {
 			isa = PBXGroup;
+			children = (
+				006424FD1DBFE782007AAB2A /* ArcballDemo.app */,
+			);
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -2607,6 +2650,10 @@
 				{
 					ProductGroup = 00712F451627A45A005FC5A0 /* Products */;
 					ProjectRef = 00712F441627A45A005FC5A0 /* Instascope.xcodeproj */;
+				},
+				{
+					ProductGroup = 006424F91DBFE782007AAB2A /* Products */;
+					ProjectRef = 006424F81DBFE782007AAB2A /* LevelOfDetailBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 009709CF16CC6741005DC014 /* Products */;
@@ -3069,6 +3116,20 @@
 			fileType = wrapper.application;
 			path = NodeSubclassing.app;
 			remoteRef = 0043083A1BBCE2D500B72510 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006424FD1DBFE782007AAB2A /* ArcballDemo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ArcballDemo.app;
+			remoteRef = 006424FC1DBFE782007AAB2A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006425001DBFE782007AAB2A /* LevelOfDetailBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = LevelOfDetailBasic.app;
+			remoteRef = 006424FF1DBFE782007AAB2A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		006D714A199528BB008149E2 /* Cube.app */ = {
@@ -3668,6 +3729,16 @@
 			isa = PBXTargetDependency;
 			name = NodeSubclassing;
 			targetProxy = 004308BC1BBCE30C00B72510 /* PBXContainerItemProxy */;
+		};
+		006425021DBFE790007AAB2A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LevelOfDetailBasic;
+			targetProxy = 006425011DBFE790007AAB2A /* PBXContainerItemProxy */;
+		};
+		006425041DBFE790007AAB2A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ArcballDemo;
+			targetProxy = 006425031DBFE790007AAB2A /* PBXContainerItemProxy */;
 		};
 		006D71B91995295E008149E2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
