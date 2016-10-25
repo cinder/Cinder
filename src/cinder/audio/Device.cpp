@@ -42,7 +42,7 @@ using namespace std;
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Device
+// Device
 // ----------------------------------------------------------------------------------------------------
 
 DeviceRef Device::getDefaultOutput()
@@ -172,7 +172,7 @@ string Device::printDevicesToString()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - DeviceManager
+// DeviceManager
 // ----------------------------------------------------------------------------------------------------
 
 DeviceRef DeviceManager::findDeviceByName( const string &name )

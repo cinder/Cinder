@@ -37,7 +37,7 @@ using namespace std;
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Node
+// Node
 // ----------------------------------------------------------------------------------------------------
 
 Node::Node( const Format &format )
@@ -506,7 +506,7 @@ std::string Node::getName()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - NodeAutoPullable
+// NodeAutoPullable
 // ----------------------------------------------------------------------------------------------------
 
 NodeAutoPullable::NodeAutoPullable( const Format &format )
@@ -571,7 +571,7 @@ void NodeAutoPullable::updatePullMethod()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - ScopedEnableNode
+// ScopedEnableNode
 // ----------------------------------------------------------------------------------------------------
 
 ScopedEnableNode::ScopedEnableNode( const NodeRef &node )
@@ -598,7 +598,7 @@ ScopedEnableNode::~ScopedEnableNode()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Exceptions
+// Exceptions
 // ----------------------------------------------------------------------------------------------------
 
 NodeCycleExc::NodeCycleExc( const NodeRef &sourceNode, const NodeRef &destNode )

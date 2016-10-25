@@ -34,7 +34,7 @@ using namespace ci;
 namespace cinder { namespace audio { namespace dsp {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Windowing functions
+// Windowing functions
 // ----------------------------------------------------------------------------------------------------
 
 void generateBlackmanWindow( float *window, size_t length )
@@ -94,7 +94,7 @@ void generateWindow( WindowType windowType, float *window, size_t length )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Vector based math routines
+// Vector based math routines
 // ----------------------------------------------------------------------------------------------------
 
 #if defined( CINDER_AUDIO_VDSP )

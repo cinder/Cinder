@@ -121,7 +121,7 @@ struct WasapiCaptureClientImpl : public WasapiAudioClientImpl {
 };
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - WasapiAudioClientImpl
+// WasapiAudioClientImpl
 // ----------------------------------------------------------------------------------------------------
 
 WasapiAudioClientImpl::WasapiAudioClientImpl()
@@ -194,7 +194,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - WasapiRenderClientImpl
+// WasapiRenderClientImpl
 // ----------------------------------------------------------------------------------------------------
 
 WasapiRenderClientImpl::WasapiRenderClientImpl( OutputDeviceNodeWasapi *outputDeviceNode )
@@ -333,7 +333,7 @@ void WasapiRenderClientImpl::increaseThreadPriority()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - WasapiCaptureClientImpl
+// WasapiCaptureClientImpl
 // ----------------------------------------------------------------------------------------------------
 
 WasapiCaptureClientImpl::WasapiCaptureClientImpl( InputDeviceNodeWasapi *inputDeviceNode )
@@ -440,7 +440,7 @@ void WasapiCaptureClientImpl::captureAudio()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - OutputDeviceNodeWasapi
+// OutputDeviceNodeWasapi
 // ----------------------------------------------------------------------------------------------------
 
 OutputDeviceNodeWasapi::OutputDeviceNodeWasapi( const DeviceRef &device, const Format &format )
@@ -512,7 +512,7 @@ void OutputDeviceNodeWasapi::renderInputs()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - InputDeviceNodeWasapi
+// InputDeviceNodeWasapi
 // ----------------------------------------------------------------------------------------------------
 
 InputDeviceNodeWasapi::InputDeviceNodeWasapi( const DeviceRef &device, const Format &format )
@@ -565,7 +565,7 @@ void InputDeviceNodeWasapi::process( Buffer *buffer )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - ContextWasapi
+// ContextWasapi
 // ----------------------------------------------------------------------------------------------------
 
 OutputDeviceNodeRef ContextWasapi::createOutputDeviceNode( const DeviceRef &device, const Node::Format &format )

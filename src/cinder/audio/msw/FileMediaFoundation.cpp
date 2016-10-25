@@ -85,7 +85,7 @@ size_t getBytesPerSample( SampleType sampleType )
 } // anonymous namespace
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - SourceFileMediaFoundation
+// SourceFileMediaFoundation
 // ----------------------------------------------------------------------------------------------------
 
 SourceFileMediaFoundation::SourceFileMediaFoundation()
@@ -403,7 +403,7 @@ vector<std::string> SourceFileMediaFoundation::getSupportedExtensions()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - TargetFileMediaFoundation
+// TargetFileMediaFoundation
 // ----------------------------------------------------------------------------------------------------
 
 TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
@@ -551,7 +551,7 @@ void TargetFileMediaFoundation::performWrite( const Buffer *buffer, size_t numFr
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - MediaFoundationImpl (Startup / Shutdown)
+// MediaFoundationImpl (Startup / Shutdown)
 // ----------------------------------------------------------------------------------------------------
 
 // static

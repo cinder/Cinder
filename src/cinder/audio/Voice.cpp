@@ -34,7 +34,7 @@ using namespace ci;
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - MixerImpl
+// MixerImpl
 // ----------------------------------------------------------------------------------------------------
 
 // A private mixer implementation, which adds gain and panning to each voice with Node composition.
@@ -183,7 +183,7 @@ NodeRef MixerImpl::getOutputNode( size_t busId ) const
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Voice
+// Voice
 // ----------------------------------------------------------------------------------------------------
 
 VoiceRef Voice::create( const CallbackProcessorFn &callbackFn, const Options &options )
@@ -258,7 +258,7 @@ NodeRef Voice::getOutputNode() const
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - VoiceSamplePlayerNode
+// VoiceSamplePlayerNode
 // ----------------------------------------------------------------------------------------------------
 
 VoiceSamplePlayerNode::VoiceSamplePlayerNode( const SourceFileRef &sourceFile, const Options &options )
@@ -288,7 +288,7 @@ void VoiceSamplePlayerNode::stop()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - VoiceCallbackProcessor
+// VoiceCallbackProcessor
 // ----------------------------------------------------------------------------------------------------
 
 VoiceCallbackProcessor::VoiceCallbackProcessor( const CallbackProcessorFn &callbackFn, const Options &options )

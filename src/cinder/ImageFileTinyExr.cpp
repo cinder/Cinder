@@ -31,7 +31,7 @@ using namespace std;
 namespace cinder {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - ImageSourceFileTinyExr
+// ImageSourceFileTinyExr
 // ----------------------------------------------------------------------------------------------------
 
 ImageSourceRef ImageSourceFileTinyExr::create( DataSourceRef dataSourceRef, ImageSource::Options options )
@@ -162,7 +162,7 @@ void ImageSourceFileTinyExr::load( ImageTargetRef target )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - ImageTargetFileTinyExr
+// ImageTargetFileTinyExr
 // ----------------------------------------------------------------------------------------------------
 
 void ImageTargetFileTinyExr::registerSelf()

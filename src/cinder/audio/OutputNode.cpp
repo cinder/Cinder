@@ -33,7 +33,7 @@ using namespace std;
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - OutputNode
+// OutputNode
 // ----------------------------------------------------------------------------------------------------
 
 OutputNode::OutputNode( const Format &format )
@@ -77,7 +77,7 @@ bool OutputNode::checkNotClipping()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - OutputDeviceNode
+// OutputDeviceNode
 // ----------------------------------------------------------------------------------------------------
 
 OutputDeviceNode::OutputDeviceNode( const DeviceRef &device, const Format &format )

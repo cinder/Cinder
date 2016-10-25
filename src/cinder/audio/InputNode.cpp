@@ -29,7 +29,7 @@ using namespace std;
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - InputNode
+// InputNode
 // ----------------------------------------------------------------------------------------------------
 
 InputNode::InputNode( const Format &format )
@@ -52,7 +52,7 @@ void InputNode::connectInput( const NodeRef &input )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - InputDeviceNode
+// InputDeviceNode
 // ----------------------------------------------------------------------------------------------------
 
 InputDeviceNode::InputDeviceNode( const DeviceRef &device, const Format &format )
@@ -116,7 +116,7 @@ void InputDeviceNode::markOverrun()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - CallbackProcessorNode
+// CallbackProcessorNode
 // ----------------------------------------------------------------------------------------------------
 
 CallbackProcessorNode::CallbackProcessorNode( const CallbackProcessorFn &callbackFn, const Format &format )

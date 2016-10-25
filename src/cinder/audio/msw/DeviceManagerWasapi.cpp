@@ -49,7 +49,7 @@ using namespace std;
 namespace cinder { namespace audio { namespace msw {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - DeviceManagerWasapi
+// DeviceManagerWasapi
 // ----------------------------------------------------------------------------------------------------
 
 DeviceRef DeviceManagerWasapi::getDefaultOutput()
@@ -186,7 +186,7 @@ shared_ptr<::IMMDevice> DeviceManagerWasapi::getIMMDevice( const DeviceRef &devi
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Private
+// Private
 // ----------------------------------------------------------------------------------------------------
 
 DeviceManagerWasapi::DeviceInfo& DeviceManagerWasapi::getDeviceInfo( const DeviceRef &device )
