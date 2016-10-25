@@ -7,6 +7,21 @@ if [ -z $1 ]; then
 	exit 
 fi 
 
+WITH_PANGO=false
+if [ -z $2 ]; then
+  echo Building without Glib functionality.
+  else
+    if [ -z "${GLIB_LIBS:?false}" ]; then
+      echo "Chose with-pango but GLIB flags not present. Use Cinder-Pango to get Glib in the correct place. Exiting!"
+      exit
+    fi
+    export glib_CFLAGS=$GLIB_CFLAGS
+    export glib_LIBS=$GLIB_LIBS
+
+  echo "Configured to run with Pango"
+  WITH_PANGO=true
+fi
+
 #########################
 ## create prefix dirs
 #########################
@@ -34,13 +49,21 @@ mkdir -p $PREFIX_CAIRO
 #########################
 
 FINAL_PATH=`pwd`/..
+if [ $WITH_PANGO = true ]; then
+  FINAL_PATH=`pwd`/../../Cinder-Pango
+fi
+
 FINAL_LIB_PATH=${FINAL_PATH}/lib/${lower_case}
-rm -rf ${FINAL_LIB_PATH}
-mkdir -p ${FINAL_LIB_PATH}
+if [ $WITH_PANGO = false ]; then
+  rm -rf ${FINAL_LIB_PATH}
+  mkdir -p ${FINAL_LIB_PATH}
+fi
 
 FINAL_INCLUDE_PATH=${FINAL_PATH}/include/${lower_case}
-rm -rf ${FINAL_INCLUDE_PATH}
-mkdir -p ${FINAL_INCLUDE_PATH}
+if [ $WITH_PANGO = false ]; then
+  rm -rf ${FINAL_INCLUDE_PATH}
+  mkdir -p ${FINAL_INCLUDE_PATH}
+fi
 
 export PATH="${PREFIX_LIBPNG}/bin:${PREFIX_PIXMAN}/bin:$PATH" 
 
@@ -67,12 +90,14 @@ buildOSX()
 	echo Setting up OSX environment...
 	
   # On osx, i want to make sure the zlib version, we use
+if [ $WITH_PANGO = false ]; then
   downloadZlib
 	buildZlib
+fi
 	buildLibPng
 	buildPixman 
 	
-	OPTIONS="--enable-quartz=yes --enable-quartz-surface=yes --enable-quartz-image=yes --enable-fc=no --without-x --disable-xlib --disable-xlib-xrender --disable-xcb --disable-xlib-xcb --disable-xcb-shm --enable-ft --disable-full-testing" 
+	OPTIONS="--enable-quartz=yes --enable-quartz-surface=yes --enable-quartz-image=yes --without-x --disable-xlib --disable-xlib-xrender --disable-xcb --disable-xlib-xcb --disable-xcb-shm --enable-ft --disable-full-testing" 
   
 	buildCairo "${OPTIONS}" 
 }
@@ -109,7 +134,7 @@ downloadZlib()
 downloadLibPng() 
 {
 	echo Downloading libpng...
-	curl ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/libpng-1.6.25.tar.gz -o libpng.tar.gz > /dev/null
+	curl ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/libpng-1.6.26.tar.gz -o libpng.tar.gz > /dev/null
 	tar -xf libpng.tar.gz 
 	mv libpng-* libpng
 	rm libpng.tar.gz 

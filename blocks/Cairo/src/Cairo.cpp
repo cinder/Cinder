@@ -2046,7 +2046,7 @@ class SvgRendererCairo : public svg::Renderer {
 
 		mCtx.moveTo( mTextPenStack.back() );
 		// we can use a text path when the rotate is empty
-		if( abs(mTextRotationStack.back()) < 0.0001f ) {
+		if( glm::abs(mTextRotationStack.back()) < 0.0001f ) {
 			mCtx.textPath( span.getString() );
 			mTextPenStack.back() = mCtx.getCurrentPoint();
 		}
@@ -2059,7 +2059,7 @@ class SvgRendererCairo : public svg::Renderer {
 			fontMatrix *= rotationMatrix;
 			mCtx.setFontMatrix( fontMatrix );
 			TextBox tbox = TextBox().font( *font ).text( span.getString() );
-			std::vector<std::pair<uint32_t, vec2> > glyphs = tbox.measureGlyphs();
+			std::vector<std::pair<Font::Glyph, vec2> > glyphs = tbox.measureGlyphs();
 			vec2 curPoint = mCtx.getCurrentPoint();
 			for( size_t g = 0; g < glyphs.size(); ++g ) {
 				mCtx.save();
