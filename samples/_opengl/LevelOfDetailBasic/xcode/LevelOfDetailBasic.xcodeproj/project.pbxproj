@@ -43,7 +43,6 @@
 		8AC2DE8DCD63406794D4C880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* LevelOfDetailBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LevelOfDetailBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E62D6EB41D8943EA9587CB72 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
-		E7F94582FFC24574886E71E6 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,7 +113,6 @@
 		29B97314FDCFA39411CA2CEA /* LevelOfDetailBasic */ = {
 			isa = PBXGroup;
 			children = (
-				006ABE1A1D2B357100BEBC6A /* CinderApp.icns */,
 				006ABE181D2B304700BEBC6A /* assets */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
@@ -137,7 +135,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E7F94582FFC24574886E71E6 /* CinderApp.icns */,
+				006ABE1A1D2B357100BEBC6A /* CinderApp.icns */,
 				8AC2DE8DCD63406794D4C880 /* Info.plist */,
 			);
 			name = Resources;
@@ -240,7 +238,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = LevelOfDetailBasic;
 				SYMROOT = ./build;
@@ -267,7 +265,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = LevelOfDetailBasic;
 				STRIP_INSTALLED_PRODUCT = YES;
