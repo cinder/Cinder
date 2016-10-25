@@ -29,9 +29,6 @@ using namespace std;
 
 namespace cinder {
 
-bool CaptureImplDirectShow::sDevicesEnumerated = false;
-vector<Capture::DeviceRef> CaptureImplDirectShow::sDevices;
-
 class SurfaceCache {
  public:
 	SurfaceCache( int32_t width, int32_t height, SurfaceChannelOrder sco, int numSurfaces )
@@ -82,7 +79,7 @@ static videoInput& getVideoInput()
 
 bool CaptureImplDirectShow::Device::checkAvailable() const
 {
-	return ( mUniqueId >=0 ) && ( mUniqueId < CaptureImplDirectShow::sDevices.size() ) && ( ! getVideoInput().isDeviceSetup( mUniqueId ) );
+	return ( mUniqueId >=0 ) && ( mUniqueId < CaptureImplDirectShow::getDevices().size() ) && ( ! getVideoInput().isDeviceSetup( mUniqueId ) );
 }
 
 bool CaptureImplDirectShow::Device::isConnected() const
@@ -92,18 +89,19 @@ bool CaptureImplDirectShow::Device::isConnected() const
 
 const vector<Capture::DeviceRef>& CaptureImplDirectShow::getDevices( bool forceRefresh )
 {
-	if( sDevicesEnumerated && ( ! forceRefresh ) )
-		return sDevices;
+	static bool firstCall = true;
+	static std::vector<Capture::DeviceRef>	devices;
 
-	sDevices.clear();
+	if( firstCall || forceRefresh ) {
+		const int devCnt = getVideoInput().listDevices(true);
+		devices.resize(devCnt);
+		for ( int i = 0; i < devCnt; ++i ) {
+			devices[i] = std::make_shared<CaptureImplDirectShow::Device>( videoInput::getDeviceName( i ), i );
+		}
 
-	int devCnt = getVideoInput().listDevices( true );
-	for( int i = 0; i < devCnt; ++i ) {
-		sDevices.push_back( std::make_shared<CaptureImplDirectShow::Device>( videoInput::getDeviceName( i ), i ) );
+		firstCall = false;
 	}
-
-	sDevicesEnumerated = true;
-	return sDevices;
+	return devices;
 }
 
 CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, const Capture::DeviceRef device )

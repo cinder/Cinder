@@ -70,9 +70,6 @@ class CaptureImplDirectShow {
 	int32_t					mWidth, mHeight;
 	mutable Surface8uRef	mCurrentFrame;
 	Capture::DeviceRef		mDevice;
-
-	static bool							sDevicesEnumerated;
-	static std::vector<Capture::DeviceRef>	sDevices;
 };
 
 } //namespace
