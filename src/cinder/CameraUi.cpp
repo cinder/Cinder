@@ -70,8 +70,7 @@ CameraUi& CameraUi::operator=( const CameraUi &rhs )
 void CameraUi::connect( const app::WindowRef &window, int signalPriority )
 {
 	if( ! mMouseConnections.empty() ) {
-		for( auto &conn : mMouseConnections )
-			conn.disconnect();
+		disconnect();
 	}
 
 	mWindow = window;
@@ -93,9 +92,7 @@ void CameraUi::connect( const app::WindowRef &window, int signalPriority )
 			}
 		) );
 	}
-	else
-		disconnect();
-		
+
 	mLastAction = ACTION_NONE;
 }
 
@@ -104,6 +101,7 @@ void CameraUi::disconnect()
 {
 	for( auto &conn : mMouseConnections )
 		conn.disconnect();
+	mMouseConnections.clear();
 
 	mWindow.reset();
 }
