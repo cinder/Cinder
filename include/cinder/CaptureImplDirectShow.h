@@ -35,20 +35,20 @@ class CaptureImplDirectShow {
 
 	CaptureImplDirectShow( int32_t width, int32_t height, const Capture::DeviceRef device );
 	~CaptureImplDirectShow();
-	
+
 	void start();
 	void stop();
-	
+
 	bool		isCapturing();
 	bool		checkNewFrame() const;
 
 	int32_t		getWidth() const { return mWidth; }
 	int32_t		getHeight() const { return mHeight; }
-	
+
 	Surface8uRef	getSurface() const;
-	
+
 	const Capture::DeviceRef getDevice() const { return mDevice; }
-	
+
 	static const std::vector<Capture::DeviceRef>&	getDevices( bool forceRefresh = false );
 
 	class Device : public Capture::Device {
@@ -61,8 +61,8 @@ class CaptureImplDirectShow {
 	 protected:
 		int				mUniqueId;
 	};
- protected:
 
+ protected:
 	int									mDeviceID;
 	bool								mIsCapturing;
 	std::unique_ptr<class SurfaceCache>	mSurfaceCache;
