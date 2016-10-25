@@ -63,10 +63,7 @@ class CaptureImplDirectShow {
 	};
  protected:
 
-	int								mDeviceID;
-	// this maintains a reference to the mgr so that we don't destroy it before
-	// the last Capture is destroyed
-	std::shared_ptr<class CaptureMgr>	mMgrPtr;
+	int									mDeviceID;
 	bool								mIsCapturing;
 	std::unique_ptr<class SurfaceCache>	mSurfaceCache;
 

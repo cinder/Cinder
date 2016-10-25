@@ -32,43 +32,6 @@ namespace cinder {
 bool CaptureImplDirectShow::sDevicesEnumerated = false;
 vector<Capture::DeviceRef> CaptureImplDirectShow::sDevices;
 
-class CaptureMgr : private boost::noncopyable
-{
- public:
-	CaptureMgr();
-	~CaptureMgr();
-
-	static std::shared_ptr<CaptureMgr>	instance();
-	static videoInput*	instanceVI() { return instance()->mVideoInput; }
-
-	static std::shared_ptr<CaptureMgr>	sInstance;
-	static int						sTotalDevices;
-	
- private:	
-	videoInput			*mVideoInput;
-};
-std::shared_ptr<CaptureMgr>	CaptureMgr::sInstance;
-int							CaptureMgr::sTotalDevices = 0;
-
-CaptureMgr::CaptureMgr()
-{
-	mVideoInput = new videoInput;
-	mVideoInput->setUseCallback( true );
-}
-
-CaptureMgr::~CaptureMgr()
-{
-	delete mVideoInput;
-}
-
-std::shared_ptr<CaptureMgr> CaptureMgr::instance()
-{
-	if( ! sInstance ) {
-		sInstance = std::shared_ptr<CaptureMgr>( new CaptureMgr );
-	}
-	return sInstance;
-}
-
 class SurfaceCache {
  public:
 	SurfaceCache( int32_t width, int32_t height, SurfaceChannelOrder sco, int numSurfaces )
@@ -102,14 +65,29 @@ class SurfaceCache {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CaptureImplDirectShow
 
+namespace impl {
+	static videoInput& setupVideoInput()
+	{
+		static videoInput inst;
+		inst.setUseCallback( true );
+		return inst;
+	}
+}
+
+static videoInput& getVideoInput()
+{
+	static videoInput& instance = impl::setupVideoInput();
+	return instance;
+}
+
 bool CaptureImplDirectShow::Device::checkAvailable() const
 {
-	return ( mUniqueId < CaptureMgr::sTotalDevices ) && ( ! CaptureMgr::instanceVI()->isDeviceSetup( mUniqueId ) );
+	return ( mUniqueId >=0 ) && ( mUniqueId < CaptureImplDirectShow::sDevices.size() ) && ( ! getVideoInput().isDeviceSetup( mUniqueId ) );
 }
 
 bool CaptureImplDirectShow::Device::isConnected() const
 {
-	return CaptureMgr::instanceVI()->isDeviceConnected( mUniqueId );
+	return getVideoInput().isDeviceConnected( mUniqueId );
 }
 
 const vector<Capture::DeviceRef>& CaptureImplDirectShow::getDevices( bool forceRefresh )
@@ -119,9 +97,9 @@ const vector<Capture::DeviceRef>& CaptureImplDirectShow::getDevices( bool forceR
 
 	sDevices.clear();
 
-	CaptureMgr::instance()->sTotalDevices = CaptureMgr::instanceVI()->listDevices( true );
-	for( int i = 0; i < CaptureMgr::instance()->sTotalDevices; ++i ) {
-		sDevices.push_back( Capture::DeviceRef( new CaptureImplDirectShow::Device( videoInput::getDeviceName( i ), i ) ) );
+	int devCnt = getVideoInput().listDevices( true );
+	for( int i = 0; i < devCnt; ++i ) {
+		sDevices.push_back( std::make_shared<CaptureImplDirectShow::Device>( videoInput::getDeviceName( i ), i ) );
 	}
 
 	sDevicesEnumerated = true;
@@ -135,31 +113,29 @@ CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, con
 	if( mDevice ) {
 		mDeviceID = device->getUniqueId();
 	}
-	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight ) )
+	if( ! getVideoInput().setupDevice( mDeviceID, mWidth, mHeight ) )
 		throw CaptureExcInitFail();
-	mWidth = CaptureMgr::instanceVI()->getWidth( mDeviceID );
-	mHeight = CaptureMgr::instanceVI()->getHeight( mDeviceID );
+	mWidth = getVideoInput().getWidth( mDeviceID );
+	mHeight = getVideoInput().getHeight( mDeviceID );
 	mIsCapturing = true;
 	mSurfaceCache.reset( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::BGR, 4 ) );
-
-	mMgrPtr = CaptureMgr::instance();
 }
 
 CaptureImplDirectShow::~CaptureImplDirectShow()
 {
-	CaptureMgr::instanceVI()->stopDevice( mDeviceID );
+	getVideoInput().stopDevice( mDeviceID );
 }
 
 void CaptureImplDirectShow::start()
 {
 	if( mIsCapturing ) return;
-	
-	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight ) )
+
+	if( ! getVideoInput().setupDevice( mDeviceID, mWidth, mHeight ) )
 		throw CaptureExcInitFail();
-	if( ! CaptureMgr::instanceVI()->isDeviceSetup( mDeviceID ) )
+	if( ! getVideoInput().isDeviceSetup( mDeviceID ) )
 		throw CaptureExcInitFail();
-	mWidth = CaptureMgr::instanceVI()->getWidth( mDeviceID );
-	mHeight = CaptureMgr::instanceVI()->getHeight( mDeviceID );
+	mWidth = getVideoInput().getWidth( mDeviceID );
+	mHeight = getVideoInput().getHeight( mDeviceID );
 	mIsCapturing = true;
 }
 
@@ -167,7 +143,7 @@ void CaptureImplDirectShow::stop()
 {
 	if( ! mIsCapturing ) return;
 
-	CaptureMgr::instanceVI()->stopDevice( mDeviceID );
+	getVideoInput().stopDevice( mDeviceID );
 	mIsCapturing = false;
 }
 
@@ -178,16 +154,16 @@ bool CaptureImplDirectShow::isCapturing()
 
 bool CaptureImplDirectShow::checkNewFrame() const
 {
-	return CaptureMgr::instanceVI()->isFrameNew( mDeviceID );
+	return getVideoInput().isFrameNew( mDeviceID );
 }
 
 Surface8uRef CaptureImplDirectShow::getSurface() const
 {
-	if( CaptureMgr::instanceVI()->isFrameNew( mDeviceID ) ) {
+	if( getVideoInput().isFrameNew( mDeviceID ) ) {
 		mCurrentFrame = mSurfaceCache->getNewSurface();
-		CaptureMgr::instanceVI()->getPixels( mDeviceID, mCurrentFrame->getData(), false, true );
+		getVideoInput().getPixels( mDeviceID, mCurrentFrame->getData(), false, true );
 	}
-	
+
 	return mCurrentFrame;
 }
 
