@@ -793,6 +793,8 @@ class ExtrudeSpline : public Source {
 	ExtrudeSpline&		backCap( bool cap ) { mBackCap = cap; return *this; }
 	//! Sets the number of subdivisions along the axis of extrusion
 	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
+	//! Sets the function used to calculate the width of the Shape2d at each subdivision
+	ExtrudeSpline&		thickness( const std::function<float(float)> &fn ) { mThicknessFn = fn; return *this; }
 
 	size_t			getNumVertices() const override;
 	size_t			getNumIndices() const override;
@@ -809,13 +811,15 @@ class ExtrudeSpline : public Source {
 	std::vector<Path2d>				mPaths;
 	std::vector<mat4>				mSplineFrames;
 	std::vector<float>				mSplineTimes;
-	float							mApproximationScale;
+	float							mApproximationScale, mSplineLength;
 	bool							mFrontCap, mBackCap;
 	int								mSubdivisions;
 	std::shared_ptr<TriMesh>		mCap;
 	Rectf							mCapBounds;
-
+	std::function<float(float)>		mThicknessFn;
+	
 	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
+	std::vector<float>				mPathSubdivisionLengths;
 };
 
 //! Converts a BSpline into a \c LINE_STRIP
