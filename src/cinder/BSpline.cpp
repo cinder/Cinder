@@ -131,7 +131,7 @@ void BSplineBasis::create( int iNumCtrlPoints, int iDegree, bool bOpen )
 
 BSplineBasis::BSplineBasis( int aNumCtrlPoints, int iDegree, const float *afKnot )
 {
-    create( mNumCtrlPoints, iDegree, afKnot );
+    create( aNumCtrlPoints, iDegree, afKnot );
 }
 
 void BSplineBasis::create( int aNumCtrlPoints, int iDegree, const float *afKnot )
