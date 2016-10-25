@@ -33,13 +33,12 @@ namespace cinder { namespace audio {
 //! General audio exception.
 class AudioExc : public Exception {
   public:
-	AudioExc( const std::string &description, int32_t errorCode = 0 ) : Exception( description )	{}
+	AudioExc( const std::string &description, int32_t errorCode = 0 ) : Exception( description ), mErrorCode( errorCode ) {}
 
 	//! Returns a platform-specific error code. Could return 0 (meaning none was available).
 	int32_t getCode() const						{ return mErrorCode; }
 
   protected:
-	std::string	mDescription;
 	int32_t		mErrorCode;
 };
 
@@ -64,7 +63,7 @@ class AudioFormatExc : public AudioExc {
 //! Audio exception related to file i/o.
 class AudioFileExc : public AudioExc {
   public:
-	AudioFileExc( const std::string &description, int32_t errorCode = 0 ) : AudioExc( description )	{}
+	AudioFileExc( const std::string &description, int32_t errorCode = 0 ) : AudioExc( description, errorCode )	{}
 };
 
 } } // namespace cinder::audio
