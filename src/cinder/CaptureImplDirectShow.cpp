@@ -46,13 +46,13 @@ class SurfaceCache {
 		// try to find a surface that isn't used by anyone else
 		auto it = std::find_if( mSurfaces.begin(), mSurfaces.end(), [](const Surface8uRef& s) { return s.unique(); } );
 
-		if( it != mSurfaces.end() ) {
-			//reuse existing surface
-			return *it;
-		} else {
-			// we couldn't find an available surface, so we'll need to allocate one
-			return Surface8u::create(mWidth, mHeight, mSCO.hasAlpha(), mSCO);
+		// if no free surface is found, create a new one and add it to the cache set
+		if( it == mSurfaces.end() ) {
+			mSurfaces.push_back( Surface8u::create( mWidth, mHeight, mSCO.hasAlpha(), mSCO ) );
+			it = mSurfaces.end() - 1;
 		}
+
+		return *it;
 	}
 
  private:
