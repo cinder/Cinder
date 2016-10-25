@@ -72,33 +72,29 @@ std::shared_ptr<CaptureMgr> CaptureMgr::instance()
 class SurfaceCache {
  public:
 	SurfaceCache( int32_t width, int32_t height, SurfaceChannelOrder sco, int numSurfaces )
-		: mWidth( width ), mHeight( height ), mSCO( sco )
+		: mSurfaces( numSurfaces, nullptr ), mWidth( width ), mHeight( height ), mSCO( sco )
 	{
-		for( int i = 0; i < numSurfaces; ++i ) {
-			mSurfaceData.push_back( std::shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], std::default_delete<uint8_t[]>() ) );
-			mSurfaceUsed.push_back( false );
+		for (auto& surf : mSurfaces) {
+			surf = Surface8u::create(mWidth, mHeight, mSCO.hasAlpha(), mSCO);
 		}
 	}
-	
+
 	Surface8uRef getNewSurface()
 	{
-		// try to find an available block of pixel data to wrap a surface around	
-		for( size_t i = 0; i < mSurfaceData.size(); ++i ) {
-			if( ! mSurfaceUsed[i] ) {
-				mSurfaceUsed[i] = true;
-				auto newSurface = new Surface( mSurfaceData[i].get(), mWidth, mHeight, mWidth * mSCO.getPixelInc(), mSCO );
-				Surface8uRef result = shared_ptr<Surface8u>(newSurface, [=](Surface8u* s) { delete s; mSurfaceUsed[i] = false; });
-				return result;
-			}
-		}
+		// try to find a surface that isn't used by anyone else
+		auto it = std::find_if( mSurfaces.begin(), mSurfaces.end(), [](const Surface8uRef& s) { return s.unique(); } );
 
-		// we couldn't find an available surface, so we'll need to allocate one
-		return Surface8u::create( mWidth, mHeight, mSCO.hasAlpha(), mSCO );
+		if( it != mSurfaces.end() ) {
+			//reuse existing surface
+			return *it;
+		} else {
+			// we couldn't find an available surface, so we'll need to allocate one
+			return Surface8u::create(mWidth, mHeight, mSCO.hasAlpha(), mSCO);
+		}
 	}
 
  private:
-	vector<std::shared_ptr<uint8_t>>	mSurfaceData;
-	vector<bool>						mSurfaceUsed;
+	std::vector<Surface8uRef>			mSurfaces;
 	int32_t								mWidth, mHeight;
 	SurfaceChannelOrder					mSCO;
 };
