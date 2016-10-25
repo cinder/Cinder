@@ -61,6 +61,15 @@ class Query {
 	//! Returns the value of the underlying query with GLuint64 precision.
 	GLuint64	getValueUInt64() const;
 	
+	//! Writes the value of the query to the buffer bound to \c GL_QUERY_BUFFER, offset by \a params. Writes to address \a params when none is bound.
+	void		getValueInt( GLint* params ) const;
+	//! Writes the value of the query to the buffer bound to \c GL_QUERY_BUFFER, offset by \a params. Writes to address \a params when none is bound.
+	void		getValueUInt( GLuint* params ) const;
+	//! Writes the value of the query to the buffer bound to \c GL_QUERY_BUFFER, offset by \a params. Writes to address \a params when none is bound.
+	void		getValueInt64( GLint64* params ) const;
+	//! Writes the value of the query to the buffer bound to \c GL_QUERY_BUFFER, offset by \a params. Writes to address \a params when none is bound.
+	void		getValueUInt64( GLuint64* params ) const;
+
 	//! Returns whether the query object is ready.
 	bool		isReady() const;
 	//! Returns whether the query's id is valid (corresponds to an actual query object).

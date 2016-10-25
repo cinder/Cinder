@@ -94,6 +94,26 @@ GLuint64 Query::getValueUInt64() const
 	return value;
 }
 
+void Query::getValueInt( GLint* params ) const
+{
+	glGetQueryObjectiv( mId, GL_QUERY_RESULT, params );
+}
+
+void Query::getValueUInt( GLuint* params ) const
+{
+	glGetQueryObjectuiv( mId, GL_QUERY_RESULT, params );
+}
+
+void Query::getValueInt64( GLint64* params ) const
+{
+	glGetQueryObjecti64v( mId, GL_QUERY_RESULT, params );
+}
+
+void Query::getValueUInt64( GLuint64* params ) const
+{
+	glGetQueryObjectui64v( mId, GL_QUERY_RESULT, params );
+}
+
 QueryRef Query::create( GLenum target )
 {
 	return QueryRef( new Query( target ) );

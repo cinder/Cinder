@@ -245,6 +245,10 @@ class VboMesh {
 	//! Issues a glDraw*Instanced call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
 	void		drawInstancedImpl( GLsizei instanceCount );
 #endif
+#if defined( CINDER_GL_HAS_DRAW_INDIRECT )
+	//! Issues a glDraw*Indirect call, but without binding a VAO or sending shader vars. Knows whether to call glDrawArrays of glDrawElements
+	void		drawIndirectImpl( const GLvoid *indirect );
+#endif
 
 #if ! defined( CINDER_GL_ES )
 	//! Returns a geom::Source which references 'this'. Inefficient - primarily useful for debugging. The returned geom::SourceRef should not outlive 'this' (not a shared_ptr).
