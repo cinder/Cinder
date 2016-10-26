@@ -530,7 +530,7 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, I
 				try {
 					return (*(sourcesIt->second))( dataSource, options );
 				}
-				catch( ImageIoException &exc ) {
+				catch( ImageIoException & ) {
 					// if we're out of handlers, rethrow the exception, otherwise continue on
 					if( options.getThrowOnFirstException() || ( boost::next( sourcesIt ) == sIt->second.end() && mGenericSources.empty() ) )
 						throw;
@@ -544,7 +544,7 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, I
 		try {
 			return (*(genericIt->second))( dataSource, options );
 		}
-		catch( ImageIoException &exc ) {
+		catch( ImageIoException & ) {
 			// if we're out of handlers, rethrow the exception, otherwise continue on
 			if( options.getThrowOnFirstException() || boost::next( genericIt ) == mGenericSources.end() )
 				throw;

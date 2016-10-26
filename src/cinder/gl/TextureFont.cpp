@@ -222,7 +222,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			glyphExtents.x = std::max<int>( glyphExtents.x, bb.getWidth() );
 			glyphExtents.y = std::max<int>( glyphExtents.y, bb.getHeight() );
 		}
-		catch( FontGlyphFailureExc &e ) {
+		catch( FontGlyphFailureExc & ) {
 		}
 	}
 
