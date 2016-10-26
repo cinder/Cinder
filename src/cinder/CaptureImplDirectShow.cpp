@@ -26,110 +26,87 @@
 #include <set>
 using namespace std;
 
-
 namespace cinder {
 
-bool CaptureImplDirectShow::sDevicesEnumerated = false;
-vector<Capture::DeviceRef> CaptureImplDirectShow::sDevices;
-
-class CaptureMgr : private boost::noncopyable
-{
- public:
-	CaptureMgr();
-	~CaptureMgr();
-
-	static std::shared_ptr<CaptureMgr>	instance();
-	static videoInput*	instanceVI() { return instance()->mVideoInput; }
-
-	static std::shared_ptr<CaptureMgr>	sInstance;
-	static int						sTotalDevices;
-	
- private:	
-	videoInput			*mVideoInput;
-};
-std::shared_ptr<CaptureMgr>	CaptureMgr::sInstance;
-int							CaptureMgr::sTotalDevices = 0;
-
-CaptureMgr::CaptureMgr()
-{
-	mVideoInput = new videoInput;
-	mVideoInput->setUseCallback( true );
-}
-
-CaptureMgr::~CaptureMgr()
-{
-	delete mVideoInput;
-}
-
-std::shared_ptr<CaptureMgr> CaptureMgr::instance()
-{
-	if( ! sInstance ) {
-		sInstance = std::shared_ptr<CaptureMgr>( new CaptureMgr );
-	}
-	return sInstance;
-}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SurfaceCache
 
 class SurfaceCache {
  public:
 	SurfaceCache( int32_t width, int32_t height, SurfaceChannelOrder sco, int numSurfaces )
-		: mWidth( width ), mHeight( height ), mSCO( sco )
+		: mSurfaces( numSurfaces, nullptr ), mWidth( width ), mHeight( height ), mSCO( sco )
 	{
-		for( int i = 0; i < numSurfaces; ++i ) {
-			mSurfaceData.push_back( std::shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], std::default_delete<uint8_t[]>() ) );
-			mSurfaceUsed.push_back( false );
+		for (auto& surf : mSurfaces) {
+			surf = Surface8u::create(mWidth, mHeight, mSCO.hasAlpha(), mSCO);
 		}
 	}
-	
+
 	Surface8uRef getNewSurface()
 	{
-		// try to find an available block of pixel data to wrap a surface around	
-		for( size_t i = 0; i < mSurfaceData.size(); ++i ) {
-			if( ! mSurfaceUsed[i] ) {
-				mSurfaceUsed[i] = true;
-				auto newSurface = new Surface( mSurfaceData[i].get(), mWidth, mHeight, mWidth * mSCO.getPixelInc(), mSCO );
-				Surface8uRef result = shared_ptr<Surface8u>(newSurface, [=](Surface8u* s) { delete s; mSurfaceUsed[i] = false; });
-				return result;
-			}
+		// try to find a surface that isn't used by anyone else
+		auto it = std::find_if( mSurfaces.begin(), mSurfaces.end(), [](const Surface8uRef& s) { return s.unique(); } );
+
+		// if no free surface is found, create a new one and add it to the cache set
+		if( it == mSurfaces.end() ) {
+			mSurfaces.push_back( Surface8u::create( mWidth, mHeight, mSCO.hasAlpha(), mSCO ) );
+			it = mSurfaces.end() - 1;
 		}
 
-		// we couldn't find an available surface, so we'll need to allocate one
-		return Surface8u::create( mWidth, mHeight, mSCO.hasAlpha(), mSCO );
+		return *it;
 	}
 
  private:
-	vector<std::shared_ptr<uint8_t>>	mSurfaceData;
-	vector<bool>						mSurfaceUsed;
+	std::vector<Surface8uRef>			mSurfaces;
 	int32_t								mWidth, mHeight;
 	SurfaceChannelOrder					mSCO;
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// videoInput
+
+namespace impl {
+	static videoInput& setupVideoInput()
+	{
+		static videoInput inst;
+		inst.setUseCallback( true );
+		return inst;
+	}
+}
+
+static videoInput& getVideoInput()
+{
+	static videoInput& instance = impl::setupVideoInput();
+	return instance;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CaptureImplDirectShow
 
 bool CaptureImplDirectShow::Device::checkAvailable() const
 {
-	return ( mUniqueId < CaptureMgr::sTotalDevices ) && ( ! CaptureMgr::instanceVI()->isDeviceSetup( mUniqueId ) );
+	return ( mUniqueId >=0 ) && ( mUniqueId < CaptureImplDirectShow::getDevices().size() ) && ( ! getVideoInput().isDeviceSetup( mUniqueId ) );
 }
 
 bool CaptureImplDirectShow::Device::isConnected() const
 {
-	return CaptureMgr::instanceVI()->isDeviceConnected( mUniqueId );
+	return getVideoInput().isDeviceConnected( mUniqueId );
 }
 
 const vector<Capture::DeviceRef>& CaptureImplDirectShow::getDevices( bool forceRefresh )
 {
-	if( sDevicesEnumerated && ( ! forceRefresh ) )
-		return sDevices;
+	static bool firstCall = true;
+	static std::vector<Capture::DeviceRef>	devices;
 
-	sDevices.clear();
+	if( firstCall || forceRefresh ) {
+		const int devCnt = getVideoInput().listDevices(true);
+		devices.resize(devCnt);
+		for ( int i = 0; i < devCnt; ++i ) {
+			devices[i] = std::make_shared<CaptureImplDirectShow::Device>( videoInput::getDeviceName( i ), i );
+		}
 
-	CaptureMgr::instance()->sTotalDevices = CaptureMgr::instanceVI()->listDevices( true );
-	for( int i = 0; i < CaptureMgr::instance()->sTotalDevices; ++i ) {
-		sDevices.push_back( Capture::DeviceRef( new CaptureImplDirectShow::Device( videoInput::getDeviceName( i ), i ) ) );
+		firstCall = false;
 	}
-
-	sDevicesEnumerated = true;
-	return sDevices;
+	return devices;
 }
 
 CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, const Capture::DeviceRef device )
@@ -139,31 +116,29 @@ CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, con
 	if( mDevice ) {
 		mDeviceID = device->getUniqueId();
 	}
-	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight ) )
+	if( ! getVideoInput().setupDevice( mDeviceID, mWidth, mHeight ) )
 		throw CaptureExcInitFail();
-	mWidth = CaptureMgr::instanceVI()->getWidth( mDeviceID );
-	mHeight = CaptureMgr::instanceVI()->getHeight( mDeviceID );
+	mWidth = getVideoInput().getWidth( mDeviceID );
+	mHeight = getVideoInput().getHeight( mDeviceID );
 	mIsCapturing = true;
-	mSurfaceCache = std::shared_ptr<SurfaceCache>( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::BGR, 4 ) );
-
-	mMgrPtr = CaptureMgr::instance();
+	mSurfaceCache.reset( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::BGR, 4 ) );
 }
 
 CaptureImplDirectShow::~CaptureImplDirectShow()
 {
-	CaptureMgr::instanceVI()->stopDevice( mDeviceID );
+	getVideoInput().stopDevice( mDeviceID );
 }
 
 void CaptureImplDirectShow::start()
 {
 	if( mIsCapturing ) return;
-	
-	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight ) )
+
+	if( ! getVideoInput().setupDevice( mDeviceID, mWidth, mHeight ) )
 		throw CaptureExcInitFail();
-	if( ! CaptureMgr::instanceVI()->isDeviceSetup( mDeviceID ) )
+	if( ! getVideoInput().isDeviceSetup( mDeviceID ) )
 		throw CaptureExcInitFail();
-	mWidth = CaptureMgr::instanceVI()->getWidth( mDeviceID );
-	mHeight = CaptureMgr::instanceVI()->getHeight( mDeviceID );
+	mWidth = getVideoInput().getWidth( mDeviceID );
+	mHeight = getVideoInput().getHeight( mDeviceID );
 	mIsCapturing = true;
 }
 
@@ -171,7 +146,7 @@ void CaptureImplDirectShow::stop()
 {
 	if( ! mIsCapturing ) return;
 
-	CaptureMgr::instanceVI()->stopDevice( mDeviceID );
+	getVideoInput().stopDevice( mDeviceID );
 	mIsCapturing = false;
 }
 
@@ -182,16 +157,16 @@ bool CaptureImplDirectShow::isCapturing()
 
 bool CaptureImplDirectShow::checkNewFrame() const
 {
-	return CaptureMgr::instanceVI()->isFrameNew( mDeviceID );
+	return getVideoInput().isFrameNew( mDeviceID );
 }
 
 Surface8uRef CaptureImplDirectShow::getSurface() const
 {
-	if( CaptureMgr::instanceVI()->isFrameNew( mDeviceID ) ) {
+	if( getVideoInput().isFrameNew( mDeviceID ) ) {
 		mCurrentFrame = mSurfaceCache->getNewSurface();
-		CaptureMgr::instanceVI()->getPixels( mDeviceID, mCurrentFrame->getData(), false, true );
+		getVideoInput().getPixels( mDeviceID, mCurrentFrame->getData(), false, true );
 	}
-	
+
 	return mCurrentFrame;
 }
 
