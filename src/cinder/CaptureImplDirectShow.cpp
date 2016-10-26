@@ -32,12 +32,12 @@ namespace cinder {
 // SurfaceCache
 
 class SurfaceCache {
- public:
+  public:
 	SurfaceCache( int32_t width, int32_t height, SurfaceChannelOrder sco, int numSurfaces )
 		: mSurfaces( numSurfaces, nullptr ), mWidth( width ), mHeight( height ), mSCO( sco )
 	{
-		for (auto& surf : mSurfaces) {
-			surf = Surface8u::create(mWidth, mHeight, mSCO.hasAlpha(), mSCO);
+		for( auto& surf : mSurfaces ) {
+			surf = Surface8u::create( mWidth, mHeight, mSCO.hasAlpha(), mSCO );
 		}
 	}
 
@@ -55,7 +55,7 @@ class SurfaceCache {
 		return *it;
 	}
 
- private:
+  private:
 	std::vector<Surface8uRef>			mSurfaces;
 	int32_t								mWidth, mHeight;
 	SurfaceChannelOrder					mSCO;
