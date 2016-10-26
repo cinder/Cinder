@@ -69,22 +69,22 @@ CameraUi& CameraUi::operator=( const CameraUi &rhs )
 //! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
 void CameraUi::connect( const app::WindowRef &window, int signalPriority )
 {
-	if( ! mMouseConnections.empty() ) {
+	if( ! mConnections.empty() ) {
 		disconnect();
 	}
 
 	mWindow = window;
 	mSignalPriority = signalPriority;
 	if( window ) {
-		mMouseConnections.push_back( window->getSignalMouseDown().connect( signalPriority,
+		mConnections.push_back( window->getSignalMouseDown().connect( signalPriority,
 			[this]( app::MouseEvent &event ) { mouseDown( event ); } ) );
-		mMouseConnections.push_back( window->getSignalMouseUp().connect( signalPriority,
+		mConnections.push_back( window->getSignalMouseUp().connect( signalPriority,
 			[this]( app::MouseEvent &event ) { mouseUp( event ); } ) );
-		mMouseConnections.push_back( window->getSignalMouseDrag().connect( signalPriority,
+		mConnections.push_back( window->getSignalMouseDrag().connect( signalPriority,
 			[this]( app::MouseEvent &event ) { mouseDrag( event ); } ) );
-		mMouseConnections.push_back( window->getSignalMouseWheel().connect( signalPriority,
+		mConnections.push_back( window->getSignalMouseWheel().connect( signalPriority,
 			[this]( app::MouseEvent &event ) { mouseWheel( event ); } ) );
-		mMouseConnections.push_back( window->getSignalResize().connect( signalPriority,
+		mConnections.push_back( window->getSignalResize().connect( signalPriority,
 			[this]() {
 				setWindowSize( mWindow->getSize() );
 				if( mCamera )
@@ -99,9 +99,9 @@ void CameraUi::connect( const app::WindowRef &window, int signalPriority )
 //! Disconnects all signal handlers
 void CameraUi::disconnect()
 {
-	for( auto &conn : mMouseConnections )
+	for( auto &conn : mConnections )
 		conn.disconnect();
-	mMouseConnections.clear();
+	mConnections.clear();
 
 	mWindow.reset();
 }
