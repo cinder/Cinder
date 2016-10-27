@@ -124,24 +124,24 @@ function( ci_make_app )
 			MACOSX_BUNDLE_BUNDLE_NAME ${ARG_APP_NAME}
 			MACOSX_BUNDLE_ICON_FILE ${ICON_NAME}
 		)
-	elseif( CINDER_LINUX )
-		# If an assets directory exists, symlink it next to the executable
-		get_filename_component( ASSETS_SYMLINK_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ABSOLUTE )
+	endif()
 
-		if( EXISTS "${ARG_ASSETS_PATH}" AND IS_DIRECTORY "${ARG_ASSETS_PATH}" )
-			# Need to ensure that the runtime output dir already exists before symlinking something into it
-			if( NOT EXISTS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-				file( MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} )
-			endif()
+	# If an assets directory exists, symlink it next to the executable
+	get_filename_component( ASSETS_SYMLINK_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ABSOLUTE )
 
-			execute_process(
-					COMMAND "${CMAKE_COMMAND}" "-E" "create_symlink" "${ARG_ASSETS_PATH}" "${ASSETS_SYMLINK_PATH}"
-					RESULT_VARIABLE resultCode
-			)
+	if( EXISTS "${ARG_ASSETS_PATH}" AND IS_DIRECTORY "${ARG_ASSETS_PATH}" )
+		# Need to ensure that the runtime output dir already exists before symlinking something into it
+		if( NOT EXISTS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+			file( MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} )
+		endif()
 
-			if( NOT resultCode EQUAL 0 )
-			  	message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_SYMLINK_PATH}', result: ${resultCode}" )
-			endif()
+		execute_process(
+				COMMAND "${CMAKE_COMMAND}" "-E" "create_symlink" "${ARG_ASSETS_PATH}" "${ASSETS_SYMLINK_PATH}"
+				RESULT_VARIABLE resultCode
+		)
+
+		if( NOT resultCode EQUAL 0 )
+		    message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_SYMLINK_PATH}', result: ${resultCode}" )
 		endif()
 	endif()
 
