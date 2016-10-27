@@ -274,6 +274,7 @@ int getMonitorBitsPerPixel( HMONITOR hMonitor )
 	MONITORINFOEX mix;
 	memset( &mix, 0, sizeof( MONITORINFOEX ) );
 	mix.cbSize = sizeof( MONITORINFOEX );
+	::GetMonitorInfo(hMonitor, &mix);
 	HDC hMonitorDC = ::CreateDC( TEXT("DISPLAY"), mix.szDevice, NULL, NULL );
 	if( hMonitorDC ) {
 		result = ::GetDeviceCaps( hMonitorDC, BITSPIXEL );
