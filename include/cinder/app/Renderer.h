@@ -86,7 +86,7 @@ class Renderer {
 	#endif
 	virtual CGContextRef	getCgContext() { throw; } // the default behavior is failure
 
-	virtual void	setFrameSize( int width, int height ) {}		
+	virtual void	setFrameSize( int /*width*/, int /*height*/ ) {}
 
 #elif defined( CINDER_MSW )
 	virtual void setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
@@ -105,7 +105,7 @@ class Renderer {
 
 	virtual void startDraw() {}
 	virtual void finishDraw() {}
-	virtual void makeCurrentContext( bool force = false ) {}
+	virtual void makeCurrentContext( bool /*force*/ = false ) {}
 	virtual void swapBuffers() {}
 	virtual void defaultResize() {}
 
@@ -138,7 +138,7 @@ class Renderer2d : public Renderer {
 	void			makeCurrentContext( bool force = false ) override;
 	void			setFrameSize( int width, int height ) override;
 	Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
-	
+
   protected:
 	Renderer2d( const Renderer2d &renderer );
 

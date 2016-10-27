@@ -108,7 +108,7 @@ class AppScreenSaver : public AppBase {
 	void		showCursor() override {}
 
 	//! \note no-op and returns an empty WindowRef, screensavers only have one window
-	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override	{ return WindowRef(); }
+	WindowRef	createWindow( const Window::Format &/*format*/ = Window::Format() ) override	{ return WindowRef(); }
 	WindowRef	getForegroundWindow() const override	{ return getWindow(); }
 
 	//! ignored on screensavers
@@ -122,7 +122,7 @@ class AppScreenSaver : public AppBase {
 
 #elif defined( CINDER_MSW )
 	//! Static method designed to be overridden in order to handle MSW messages for a configuration dialog
-	static BOOL doConfigureDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam ) {
+	static BOOL doConfigureDialog( HWND /*hDlg*/, UINT /*message*/, WPARAM /*wParam*/, LPARAM /*lParam*/ ) {
 		return FALSE;
 	}
 #endif

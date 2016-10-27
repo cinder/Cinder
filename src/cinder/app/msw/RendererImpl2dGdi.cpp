@@ -54,7 +54,7 @@ void RendererImpl2dGdi::swapBuffers() const
 		::ReleaseDC( mWnd, mPaintDc );
 }
 
-void RendererImpl2dGdi::makeCurrentContext( bool force )
+void RendererImpl2dGdi::makeCurrentContext( bool /*force*/ )
 {
 	if( mPaintEvents )
 		mPaintDc = ::BeginPaint( mWnd, &mPaintStruct );
@@ -79,7 +79,7 @@ void RendererImpl2dGdi::makeCurrentContext( bool force )
 	}
 }
 
-bool RendererImpl2dGdi::initialize( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
+bool RendererImpl2dGdi::initialize( HWND wnd, HDC /*dc*/, RendererRef /*sharedRenderer*/ )
 {
 	mWnd = wnd;
 	return true;
