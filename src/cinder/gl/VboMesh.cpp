@@ -148,8 +148,10 @@ void VboMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t stri
 void VboMeshGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
 {
 	mVboMesh->mNumIndices = (uint32_t)numIndices;
-
-	if( requiredBytesPerIndex <= 2 ) {
+	if( mVboMesh->mNumIndices == 0 ) {
+		mVboMesh->mIndices.reset();
+	}
+	else if( requiredBytesPerIndex <= 2 ) {
 		mVboMesh->mIndexType = GL_UNSIGNED_SHORT;
 		std::unique_ptr<uint16_t[]> indices( new uint16_t[numIndices] );
 		copyIndexData( source, numIndices, indices.get() );
