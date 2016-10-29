@@ -45,20 +45,16 @@ using namespace cinder::app;
 	mApp->privateSetup__();
 	mAppImpl->mSetupHasFired = YES;
 
-	[mAppImpl startAnimation];
-
 	return YES;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-	[mAppImpl stopAnimation];
 	mApp->emitDidEnterBackground();
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-	[mAppImpl startAnimation];
 	mApp->emitWillEnterForeground();
 }
 
