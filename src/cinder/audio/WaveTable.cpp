@@ -79,7 +79,7 @@ inline float tableLookup( const float *table, size_t tableSize, float phase )
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - WaveTable
+// WaveTable
 // ----------------------------------------------------------------------------------------------------
 
 WaveTable::WaveTable( size_t sampleRate, size_t tableSize )
@@ -175,7 +175,7 @@ void WaveTable::copyFrom( const float *array )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - WaveTable2d
+// WaveTable2d
 // ----------------------------------------------------------------------------------------------------
 
 WaveTable2d::WaveTable2d( size_t sampleRate, size_t tableSize, size_t numTables )

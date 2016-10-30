@@ -113,7 +113,7 @@ struct Disconnector : private Noncopyable {
 } // namespace detail
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Connection and ScopedConnection
+// Connection and ScopedConnection
 // ----------------------------------------------------------------------------------------------------
 
 //! Connection is returned from Signal::connect(), which can be used to disconnect the callback slot.
@@ -411,7 +411,7 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 // namespace cinder
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Signal
+// Signal
 // ----------------------------------------------------------------------------------------------------
 
 //! \brief Signal is a template type providing an interface for arbitrary callback lists.
@@ -447,7 +447,7 @@ struct Signal : detail::SignalProto<Signature, Collector> {
 };
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - slot
+// slot
 // ----------------------------------------------------------------------------------------------------
 
 //! Creates a std::function by binding \a object to the member function pointer \a method.
@@ -465,7 +465,7 @@ std::function<R ( Args... )> slot( Class *object, R ( Class::*method )( Args... 
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Collectors
+// Collectors
 // ----------------------------------------------------------------------------------------------------
 
 //! Keep signal emissions going until any handler returns false.

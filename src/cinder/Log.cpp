@@ -83,7 +83,7 @@ const std::string getDailyLogString( const std::string& format )
 } // anonymous namespace
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LogManager
+// LogManager
 // ----------------------------------------------------------------------------------------------------
 
 LogManager*	LogManager::sInstance = new LogManager;	// note: leaks to enable logging during shutdown
@@ -150,7 +150,7 @@ void LogManager::write( const Metadata &meta, const std::string &text )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Entry
+// Entry
 // ----------------------------------------------------------------------------------------------------
 
 Entry::Entry( Level level, const Location &location )
@@ -172,7 +172,7 @@ void Entry::writeToLog()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Logger
+// Logger
 // ----------------------------------------------------------------------------------------------------
 
 void Logger::writeDefault( std::ostream &stream, const Metadata &meta, const std::string &text )
@@ -186,7 +186,7 @@ void Logger::writeDefault( std::ostream &stream, const Metadata &meta, const std
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerConsole
+// LoggerConsole
 // ----------------------------------------------------------------------------------------------------
 
 void LoggerConsole::write( const Metadata &meta, const string &text )
@@ -195,7 +195,7 @@ void LoggerConsole::write( const Metadata &meta, const string &text )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerFile
+// LoggerFile
 // ----------------------------------------------------------------------------------------------------
 
 LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
@@ -245,7 +245,7 @@ void LoggerFile::ensureDirectoryExists()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerFileRotating
+// LoggerFileRotating
 // ----------------------------------------------------------------------------------------------------
 
 LoggerFileRotating::LoggerFileRotating( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
@@ -281,7 +281,7 @@ void LoggerFileRotating::write( const Metadata &meta, const string &text )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerBreakpoint
+// LoggerBreakpoint
 // ----------------------------------------------------------------------------------------------------
 
 void LoggerBreakpoint::write( const Metadata &meta, const string &text )
@@ -294,7 +294,7 @@ void LoggerBreakpoint::write( const Metadata &meta, const string &text )
 #if defined( CINDER_COCOA )
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - ImplSysLog
+// ImplSysLog
 // ----------------------------------------------------------------------------------------------------
 
 class LoggerSystem::ImplSysLog : public Logger {
@@ -341,7 +341,7 @@ protected:
 #elif defined( CINDER_MSW )
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - ImplEventLog
+// ImplEventLog
 // ----------------------------------------------------------------------------------------------------
 
 class LoggerSystem::ImplEventLog : public Logger {
@@ -416,9 +416,8 @@ protected:
 
 #endif
 
-	
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerSystem
+// LoggerSystem
 // ----------------------------------------------------------------------------------------------------
 
 LoggerSystem::LoggerSystem()
@@ -445,7 +444,7 @@ void LoggerSystem::write( const Metadata &meta, const std::string &text )
 }
 	
 // ----------------------------------------------------------------------------------------------------
-// MARK: - Helper Classes
+// Helper Classes
 // ----------------------------------------------------------------------------------------------------
 
 string Metadata::toString() const

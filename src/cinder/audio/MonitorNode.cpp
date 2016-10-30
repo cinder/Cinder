@@ -32,7 +32,7 @@ using namespace ci;
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - MonitorNode
+// MonitorNode
 // ----------------------------------------------------------------------------------------------------
 
 MonitorNode::MonitorNode( const Format &format )
@@ -91,7 +91,7 @@ void MonitorNode::fillCopiedBuffer()
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - MonitorSpectralNode
+// MonitorSpectralNode
 // ----------------------------------------------------------------------------------------------------
 
 MonitorSpectralNode::MonitorSpectralNode( const Format &format )

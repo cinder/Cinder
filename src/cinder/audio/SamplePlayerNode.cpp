@@ -31,7 +31,7 @@ using namespace std;
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - SamplePlayerNode
+// SamplePlayerNode
 // ----------------------------------------------------------------------------------------------------
 
 SamplePlayerNode::SamplePlayerNode( const Format &format )
@@ -112,7 +112,7 @@ double SamplePlayerNode::getNumSeconds() const
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - BufferPlayerNode
+// BufferPlayerNode
 // ----------------------------------------------------------------------------------------------------
 
 BufferPlayerNode::BufferPlayerNode( const Format &format )
@@ -213,7 +213,7 @@ void BufferPlayerNode::process( Buffer *buffer )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - FilePlayerNode
+// FilePlayerNode
 // ----------------------------------------------------------------------------------------------------
 
 FilePlayerNode::FilePlayerNode( const Format &format )

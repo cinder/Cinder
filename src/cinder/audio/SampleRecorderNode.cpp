@@ -74,7 +74,7 @@ void resizeBufferAndShuffleChannels( BufferDynamic *buffer, size_t resultNumFram
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - SampleRecorderNode
+// SampleRecorderNode
 // ----------------------------------------------------------------------------------------------------
 
 SampleRecorderNode::SampleRecorderNode( const Format &format )
@@ -83,7 +83,7 @@ SampleRecorderNode::SampleRecorderNode( const Format &format )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - BufferRecorderNode
+// BufferRecorderNode
 // ----------------------------------------------------------------------------------------------------
 
 BufferRecorderNode::BufferRecorderNode( const Format &format )
