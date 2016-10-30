@@ -324,7 +324,7 @@ void draw( const Path2d &path, float approximationScale )
 void draw( const Shape2d &shape, float approximationScale )
 {
 	for( const auto &path : shape.getContours() )
-		gl::draw( path );
+		gl::draw( path, approximationScale );
 }
 
 void draw( const PolyLine2 &polyLine )

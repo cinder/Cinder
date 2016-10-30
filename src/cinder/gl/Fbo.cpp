@@ -160,9 +160,9 @@ Fbo::Format::Format()
 GLint Fbo::Format::getDefaultColorInternalFormat( bool alpha )
 {
 #if defined( CINDER_GL_ES_2 )
-	return GL_RGBA;
+	return alpha ? GL_RGBA : GL_RGB;
 #else
-	return GL_RGBA8;
+	return alpha ? GL_RGBA8 : GL_RGB8;
 #endif
 }
 
