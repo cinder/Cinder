@@ -80,7 +80,6 @@ list( APPEND CINDER_SRC_FILES
 list( APPEND CINDER_LIBS_DEPENDS
     ${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_system.a
     ${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/libboost_filesystem.a
-    ${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}/libz.a
 )
 
 # link in system frameworks
@@ -115,7 +114,7 @@ source_group( "cinder\\app\\cocoa"      FILES ${SRC_SET_APP_COCOA} )
 source_group( "cinder\\audio\\cocoa"    FILES ${SRC_SET_AUDIO_COCOA} )
 
 set( MACOS_SUBFOLDER            "${CINDER_PATH}/lib/${CINDER_TARGET_SUBFOLDER}" )
-set( CINDER_STATIC_LIBS_DEPENDS "${MACOS_SUBFOLDER}/libboost_filesystem.a ${MACOS_SUBFOLDER}/libboost_system.a ${MACOS_SUBFOLDER}/libz.a" )
+set( CINDER_STATIC_LIBS_DEPENDS "${MACOS_SUBFOLDER}/libboost_filesystem.a ${MACOS_SUBFOLDER}/libboost_system.a" )
 
 if( NOT ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
 	if(NOT CMAKE_LIBTOOL)
