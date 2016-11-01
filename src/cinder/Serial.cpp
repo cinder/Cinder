@@ -118,7 +118,7 @@ Serial::Impl::Impl( const Serial::Device &device, int baudRate )
 	::DWORD configSize = sizeof( ::COMMCONFIG );
 	::GetCommConfig( mDeviceHandle, &config, &configSize );
 	
-	string settingsStr = string("baud=") + toString( baudRate ) + " parity=N data=8 stop=1";
+	string settingsStr = "baud=" + toString( baudRate ) + " parity=N data=8 stop=1";
 	if( ! ::BuildCommDCBA( settingsStr.c_str(), &config.dcb ) ) {
 		throw SerialExcOpenFailed();	
 	}	
@@ -151,23 +151,21 @@ Serial::Impl::~Impl()
 
 Serial::Device Serial::findDeviceByName( const std::string &name, bool forceRefresh )
 {
-	const std::vector<Serial::Device> &devices = getDevices( forceRefresh );
-	for( std::vector<Serial::Device>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
-		if( deviceIt->getName() == name )
-			return *deviceIt;
+	for( const auto& device : getDevices( forceRefresh ) ) {
+		if ( device.getName() == name )
+			return device;
 	}
-	
+
 	return Serial::Device();
 }
 
 Serial::Device Serial::findDeviceByNameContains( const std::string &searchString, bool forceRefresh )
 {
-	const std::vector<Serial::Device> &devices = getDevices( forceRefresh );
-	for( std::vector<Serial::Device>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
-		if( deviceIt->getName().find( searchString ) != std::string::npos )
-			return *deviceIt;
+	for( const auto& device : getDevices( forceRefresh ) ) {
+		if( device.getName().find( searchString ) != std::string::npos )
+			return device;
 	}
-	
+
 	return Serial::Device();
 }
 	
@@ -320,9 +318,7 @@ std::string Serial::readStringUntil( char token, size_t maxLength, double timeou
 
 	bool useMaxLength = maxLength > 0;
 	bool useTimer = timeoutSeconds > 0;
-	Timer timer;
-	if( useTimer )
-		timer.start();
+	Timer timer( useTimer );
 
 	bool done = false;
 	while( ! done ) {
@@ -343,8 +339,7 @@ std::string Serial::readStringUntil( char token, size_t maxLength, double timeou
 
 void Serial::writeString( const std::string &str )
 {
-	for( string::const_iterator strIt = str.begin(); strIt != str.end(); ++strIt )
-		writeByte( *strIt );
+	writeBytes( str.data(), str.size() );
 }
 
 size_t Serial::getNumBytesAvailable() const
