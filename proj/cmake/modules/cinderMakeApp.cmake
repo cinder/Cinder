@@ -19,6 +19,7 @@ function( ci_make_app )
 		message( WARNING "unhandled arguments: ${ARG_UNPARSED_ARGUMENTS}" )
 	endif()
 
+	option( CINDER_COPY_ASSETS "Copy assets to a folder next to the application. Default is OFF, and a symlink is created that points to the original assets folder." OFF )
 	include( "${ARG_CINDER_PATH}/proj/cmake/configure.cmake" )
 
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
@@ -57,6 +58,11 @@ function( ci_make_app )
 			"${ARG_CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
 			"$ENV{CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
 		)
+	endif()
+
+	# ensure the runtime output directory exists, in case we need to copy other files to it
+	if( NOT EXISTS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+		file( MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} )
 	endif()
 
 	if( CINDER_MAC )
@@ -126,22 +132,32 @@ function( ci_make_app )
 		)
 	endif()
 
-	# If an assets directory exists, symlink it next to the executable
-	get_filename_component( ASSETS_SYMLINK_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ABSOLUTE )
-
+	# Handle assets directory so that it can be found relative to the application.
+	get_filename_component( ASSETS_DEST_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ABSOLUTE )
 	if( EXISTS "${ARG_ASSETS_PATH}" AND IS_DIRECTORY "${ARG_ASSETS_PATH}" )
-		# Need to ensure that the runtime output dir already exists before symlinking something into it
-		if( NOT EXISTS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-			file( MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} )
+
+		message( "ARG_ASSETS_PATH: ${ARG_ASSETS_PATH}, ASSETS_DEST_PATH: ${ASSETS_DEST_PATH}" )
+
+		if( EXISTS "${ASSETS_DEST_PATH}" )
+			message( STATUS "assets destination path already exists, removing first." )
+			file( REMOVE_RECURSE "${ASSETS_DEST_PATH}" )
 		endif()
 
-		execute_process(
-				COMMAND "${CMAKE_COMMAND}" "-E" "create_symlink" "${ARG_ASSETS_PATH}" "${ASSETS_SYMLINK_PATH}"
-				RESULT_VARIABLE resultCode
-		)
+		if( CINDER_COPY_ASSETS )
+			# make a hard copy. Skipping the extra 'assets' folder as it we're copying the entire folder over
+			get_filename_component( ASSETS_DEST_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" ABSOLUTE )
 
-		if( NOT resultCode EQUAL 0 )
-		    message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_SYMLINK_PATH}', result: ${resultCode}" )
+			file( COPY "${ARG_ASSETS_PATH}" DESTINATION "${ASSETS_DEST_PATH}" )
+		else()
+			# make a symlink
+			execute_process(
+					COMMAND "${CMAKE_COMMAND}" "-E" "create_symlink" "${ARG_ASSETS_PATH}" "${ASSETS_DEST_PATH}"
+					RESULT_VARIABLE resultCode
+			)
+
+			if( NOT resultCode EQUAL 0 )
+			    message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_DEST_PATH}', result: ${resultCode}" )
+			endif()
 		endif()
 	endif()
 
