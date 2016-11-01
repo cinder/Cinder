@@ -30,11 +30,6 @@ using namespace std;
 
 namespace cinder {
 
-geom::SourceRef	loadGeom( const fs::path &path )
-{
-	return geom::SourceRef();
-}
-
 ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool includeNormals, bool includeTexCoords, bool optimize )
 	: mStream( stream ), mOutputCached( false ), mOptimizeVertices( optimize ), mGroupIndex( numeric_limits<size_t>::max() )
 {
@@ -53,7 +48,7 @@ ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bo
 	parseMaterial( materialSource->createStream() );
 	parse( includeNormals, includeTexCoords );
 }
-	
+
 ObjLoader& ObjLoader::groupIndex( size_t groupIndex )
 {
 	if ( groupIndex < mGroups.size() ) {
@@ -71,7 +66,7 @@ ObjLoader& ObjLoader::groupName( const std::string &groupName )
 	auto it = std::find_if( mGroups.begin(), mGroups.end(), [&] ( const Group &group ) {
 		return group.mName == groupName;
 	} );
-	
+
 	if ( it != mGroups.end() ) {
 		size_t groupIndex = std::distance( mGroups.begin(), it );
 		if ( groupIndex != mGroupIndex ) {
@@ -79,7 +74,7 @@ ObjLoader& ObjLoader::groupName( const std::string &groupName )
 			mOutputCached = false;
 		}
 	}
-	
+
 	return *this;
 }
 
@@ -95,7 +90,7 @@ bool ObjLoader::hasGroup( const std::string &groupName ) const
 void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet & /*requestedAttribs*/ ) const
 {
 	load();
-	
+
 	// copy attributes
 	if( getAttribDims( geom::Attrib::POSITION ) )
 		target->copyAttrib( geom::Attrib::POSITION, getAttribDims( geom::Attrib::POSITION ), 0, (const float*)mOutputVertices.data(), getNumVertices() );
@@ -105,7 +100,7 @@ void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet & /*reques
 		target->copyAttrib( geom::Attrib::TEX_COORD_0, getAttribDims( geom::Attrib::TEX_COORD_0 ), 0, (const float*)mOutputTexCoords.data(), std::min( mOutputTexCoords.size(), mOutputVertices.size() ) );
 	if( getAttribDims( geom::Attrib::COLOR ) )
 		target->copyAttrib( geom::Attrib::COLOR, getAttribDims( geom::Attrib::COLOR ), 0, (const float*)mOutputColors.data(), std::min( mOutputColors.size(), mOutputVertices.size() ) );
-	
+
 	// copy indices
 	if( getNumIndices() )
 		target->copyIndices( geom::Primitive::TRIANGLES, mOutputIndices.data(), getNumIndices(), 4 /* bytes per index */ );
@@ -114,7 +109,7 @@ void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet & /*reques
 uint8_t	ObjLoader::getAttribDims( geom::Attrib attr ) const
 {
 	load();
-	
+
 	switch( attr ) {
 		case geom::Attrib::POSITION: return mOutputVertices.empty() ? 0 : 3;
 		case geom::Attrib::NORMAL: return mOutputNormals.empty() ? 0 : 3;
@@ -130,7 +125,7 @@ geom::AttribSet	ObjLoader::getAvailableAttribs() const
 	load();
 
 	geom::AttribSet result;
-	
+
 	if( ! mOutputVertices.empty() )
 		result.insert( geom::Attrib::POSITION );
 	if( ! mOutputNormals.empty() )
@@ -139,7 +134,7 @@ geom::AttribSet	ObjLoader::getAvailableAttribs() const
 		result.insert( geom::Attrib::TEX_COORD_0 );
 	if( ! mOutputColors.empty() )
 		result.insert( geom::Attrib::COLOR );
-	
+
 	return result;
 }
 
@@ -165,7 +160,7 @@ void ObjLoader::parseMaterial( std::shared_ptr<IStreamCinder> material )
         if( tag == "newmtl" ) {
             if( m.mName.length() > 0 )
                 mMaterials[m.mName] = m;
-            
+
             ss >> m.mName;
             m.Ka[0] = m.Ka[1] = m.Ka[2] = 1.0f;
             m.Kd[0] = m.Kd[1] = m.Kd[2] = 1.0f;
@@ -189,7 +184,7 @@ void ObjLoader::parse( bool includeNormals, bool includeTexCoords )
 	currentGroup->mBaseVertexOffset = currentGroup->mBaseTexCoordOffset = currentGroup->mBaseNormalOffset = 0;
 
     const Material *currentMaterial = 0;
-    
+
 	size_t lineNumber = 0;
 	while( ! mStream->isEof() ) {
 		lineNumber++;
@@ -256,10 +251,10 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 	size_t length = s.length();
 	while( offset < length ) {
 		size_t endOfTriple, firstSlashOffset, secondSlashOffset;
-	
+
 		while( s[offset] == ' ' )
 			++offset;
-	
+
 		// find the end of this triple "v/vt/vn"
 		endOfTriple = s.find( ' ', offset );
 		if( endOfTriple == string::npos ) endOfTriple = length;
@@ -270,17 +265,17 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 		}
 		else
 			secondSlashOffset = string::npos;
-		
+
 		// process the vertex index
-		int vertexIndex = (firstSlashOffset != string::npos) ? 
+		int vertexIndex = (firstSlashOffset != string::npos) ?
             stoi( s.substr( offset, firstSlashOffset - offset ) ) :
             stoi( s.substr( offset, endOfTriple - offset));
-        
+
 		if( vertexIndex < 0 )
 			result.mVertexIndices.push_back( group->mBaseVertexOffset + vertexIndex );
 		else
 			result.mVertexIndices.push_back( vertexIndex - 1 );
-			
+
 		// process the tex coord index
 		if( includeTexCoords && ( firstSlashOffset != string::npos ) ) {
 			size_t numSize = ( secondSlashOffset == string::npos ) ? ( endOfTriple - firstSlashOffset - 1 ) : secondSlashOffset - firstSlashOffset - 1;
@@ -298,7 +293,7 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 		}
 		else if( group->mFaces.empty() ) // if this is the first face, let's note that this group has no tex coords
 			group->mHasTexCoords = false;
-			
+
 		// process the normal index
 		if( includeNormals && ( secondSlashOffset != string::npos ) ) {
 			int normalIndex = stoi( s.substr( secondSlashOffset + 1, endOfTriple - secondSlashOffset - 1 ) );
@@ -310,14 +305,14 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 		}
 		else if( group->mFaces.empty() ) // if this is the first face, let's note that this group has no normals
 			group->mHasNormals = false;
-		
+
 		offset = endOfTriple + 1;
 		result.mNumVertices++;
 	}
-	
+
 	group->mFaces.push_back( result );
 }
-	
+
 void ObjLoader::load() const
 {
 	if( mOutputCached )
@@ -328,7 +323,7 @@ void ObjLoader::load() const
 	mOutputTexCoords.clear();
 	mOutputColors.clear();
 	mOutputIndices.clear();
-	
+
 	bool hasGroupIndex = ( mGroupIndex != numeric_limits<size_t>::max() );
 
 	bool texCoords;
@@ -344,7 +339,7 @@ void ObjLoader::load() const
 			}
 		}
 	}
-	
+
 	bool normals;
 	if( hasGroupIndex ) {
 		normals = mGroups[mGroupIndex].mHasNormals;
@@ -358,7 +353,7 @@ void ObjLoader::load() const
 			}
 		}
 	}
-	
+
 	if( normals && texCoords ) {
 		if( hasGroupIndex ) {
 			map<VertexTriple,int> uniqueVerts;
@@ -403,7 +398,7 @@ void ObjLoader::load() const
 				loadGroup( *groupIt, uniqueVerts );
 		}
 	}
-	
+
 	mOutputCached = true;
 }
 
@@ -433,10 +428,10 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 			inferredNormal = normalize( cross( edge1, edge2 ) );
 			forceUnique = true;
 		}
-		
+
 		if( group.mFaces[f].mTexCoordIndices.empty() )
 			forceUnique = true;
-		
+
 		vector<int> faceIndices;
 		faceIndices.reserve( group.mFaces[f].mNumVertices );
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
@@ -474,7 +469,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 		for( int t = 0; t < triangles; ++t ) {
 			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
-	}	
+	}
 }
 
 void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqueVerts ) const
@@ -503,7 +498,7 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 			inferredNormal = normalize( cross( edge1, edge2 ) );
 			forceUnique = true;
 		}
-		
+
 		vector<int> faceIndices;
 		faceIndices.reserve( group.mFaces[f].mNumVertices );
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
@@ -536,7 +531,7 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 		for( int t = 0; t < triangles; ++t ) {
 			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
-	}	
+	}
 }
 
 void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniqueVerts ) const
@@ -560,7 +555,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 		bool forceUnique = ! mOptimizeVertices;
 		if( group.mFaces[f].mTexCoordIndices.empty() )
 			forceUnique = true;
-		
+
 		vector<int32_t> faceIndices;
 		faceIndices.reserve( group.mFaces[f].mNumVertices );
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
@@ -593,7 +588,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 		for( int t = 0; t < triangles; ++t ) {
 			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
-	}	
+	}
 }
 
 void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts ) const
@@ -631,7 +626,7 @@ void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts ) const
 		for( int t = 0; t < triangles; ++t ) {
 			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
-	}	
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -644,11 +639,11 @@ class ObjWriteTarget : public geom::Target {
 	{
 		mHasNormals = mHasTexCoords = false;
 	}
-	
+
 	uint8_t	getAttribDims( geom::Attrib attr ) const override;
 	void	copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
 	void	copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
-	
+
   protected:
 	void	writeData( const std::string &typeSpecifier, uint8_t dims, size_t strideBytes, const float *srcData, size_t count );
 
@@ -745,7 +740,7 @@ void ObjWriteTarget::copyIndices( geom::Primitive /*primitive*/, const uint32_t 
 		else { // just verts
 			os << source[i+0]+1 << " ";
 			os << source[i+1]+1 << " ";
-			os << source[i+2]+1 << " ";			
+			os << source[i+2]+1 << " ";
 		}
 		os << std::endl;
 		mStream->writeData( os.str().c_str(), os.str().length() );
@@ -756,7 +751,7 @@ void ObjWriteTarget::copyIndices( geom::Primitive /*primitive*/, const uint32_t 
 void writeObj( const DataTargetRef &dataTarget, const geom::Source &source, bool includeNormals, bool includeTexCoords )
 {
 	OStreamRef stream = dataTarget->getStream();
-	
+
 	unique_ptr<ObjWriteTarget> target( new ObjWriteTarget( stream, includeNormals, includeTexCoords ) );
 
 	geom::AttribSet requestedAttribs;
