@@ -5,23 +5,33 @@
 	id="org.libcinder.cairo"
 	author="Cinder Project"
 	summary="Cairo support for Mac OS X and Windows."
+	core="true"
 	>
 	<supports os="msw" />
 	<supports os="macosx" />
+	<supports os="ios" />
+
 	<includePath>include</includePath>
 	<source>src/Cairo.cpp</source>
 	<header>include/cinder/cairo/Cairo.h</header>
+	
+	<platform os="ios">
+		<staticLibrary>lib/ios/libcairo.a</staticLibrary>
+		<staticLibrary>lib/ios/libpixman-1.a</staticLibrary>
+		<staticLibrary>lib/ios/libpng16.a</staticLibrary>		
+		<includePath system="true">include/ios/cairo</includePath>	
+	</platform>
 	<platform os="macosx">
 		<staticLibrary>lib/macosx/libcairo.a</staticLibrary>
 		<staticLibrary>lib/macosx/libpixman-1.a</staticLibrary>
 		<staticLibrary>lib/macosx/libpng16.a</staticLibrary>		
-		<includePath system="true">include/macosx</includePath>
+		<includePath system="true">include/macosx/cairo</includePath>
 	</platform>
 	<platform os="msw">
-		<staticLibrary>lib/msw/x86/cairo-static.lib</staticLibrary>
-		<staticLibrary>lib/msw/x86/pixman-1.lib</staticLibrary>
-		<staticLibrary absolute="true">libpng.lib</staticLibrary>
-		<includePath>include/msw</includePath>	
+		<staticLibrary>lib/msw/cairo-static.lib</staticLibrary>
+		<staticLibrary>lib/msw/pixman-1.lib</staticLibrary>
+    <staticLibrary>lib/msw/libpng.lib</staticLibrary>
+    <includePath system="true">include/msw/cairo</includePath>	
 	</platform>
 </block>
 </cinder>
