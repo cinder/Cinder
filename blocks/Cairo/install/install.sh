@@ -8,6 +8,7 @@ if [ -z $1 ]; then
 fi 
 
 WITH_PANGO=false
+PANGO_DIR=""
 if [ -z $2 ]; then
   echo Building without Glib functionality.
   else
@@ -17,10 +18,20 @@ if [ -z $2 ]; then
     fi
     export glib_CFLAGS=$GLIB_CFLAGS
     export glib_LIBS=$GLIB_LIBS
-
+  if [ -z $3  ]; then
+    echo "Error: Need Pango lib location. Exiting!"
+    exit
+  fi
+  PANGO_DIR=${3}
+  if [ ! -d ${PANGO_DIR} ]; then
+    echo "Can't find pango at...${PANGO_DIR}. Exiting!"
+    exit
+  fi
   echo "Configured to run with Pango"
   WITH_PANGO=true
 fi
+
+
 
 #########################
 ## create prefix dirs
@@ -50,7 +61,7 @@ mkdir -p $PREFIX_CAIRO
 
 FINAL_PATH=`pwd`/..
 if [ $WITH_PANGO = true ]; then
-  FINAL_PATH=`pwd`/../../Cinder-Pango
+  FINAL_PATH=${PANGO_DIR}
 fi
 
 FINAL_LIB_PATH=${FINAL_PATH}/lib/${lower_case}
