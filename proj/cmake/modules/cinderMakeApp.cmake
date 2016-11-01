@@ -1,7 +1,7 @@
 include( CMakeParseArguments )
 
 function( ci_make_app )
-	set( oneValueArgs APP_NAME CINDER_PATH )
+	set( oneValueArgs APP_NAME CINDER_PATH ASSETS_PATH )
 	set( multiValueArgs SOURCES INCLUDES LIBRARIES RESOURCES BLOCKS )
 
 	cmake_parse_arguments( ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
@@ -10,10 +10,16 @@ function( ci_make_app )
 		set( ARG_APP_NAME "${PROJECT_NAME}" )
 	endif()
 
+	if( NOT ARG_ASSETS_PATH )
+		# Set the default assets path to be in the standard app location (next to proj folder)
+		get_filename_component( ARG_ASSETS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../assets" ABSOLUTE )
+	endif()
+
 	if( ARG_UNPARSED_ARGUMENTS )
 		message( WARNING "unhandled arguments: ${ARG_UNPARSED_ARGUMENTS}" )
 	endif()
 
+	option( CINDER_COPY_ASSETS "Copy assets to a folder next to the application. Default is OFF, and a symlink is created that points to the original assets folder." OFF )
 	include( "${ARG_CINDER_PATH}/proj/cmake/configure.cmake" )
 
 	if( "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" STREQUAL "" )
@@ -33,6 +39,9 @@ function( ci_make_app )
 		endif()
 	endif()
 
+	set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ARG_APP_NAME} )
+
+
 	if( CINDER_VERBOSE )
 		message( STATUS "APP_NAME: ${ARG_APP_NAME}" )
 		message( STATUS "SOURCES: ${ARG_SOURCES}" )
@@ -44,6 +53,7 @@ function( ci_make_app )
 		message( STATUS "CINDER_TARGET: ${CINDER_TARGET}" )
 		message( STATUS "CINDER_LIB_DIRECTORY: ${CINDER_LIB_DIRECTORY}" )
 		message( STATUS "CINDER BLOCKS: ${ARG_BLOCKS}" )
+		message( STATUS "ASSETS_PATH: ${ARG_ASSETS_PATH}" )
 	endif()
 
 	# pull in cinder's exported configuration
@@ -52,6 +62,11 @@ function( ci_make_app )
 			"${ARG_CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
 			"$ENV{CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
 		)
+	endif()
+
+	# ensure the runtime output directory exists, in case we need to copy other files to it
+	if( NOT EXISTS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+		file( MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} )
 	endif()
 
 	if( CINDER_MAC )
@@ -149,6 +164,35 @@ function( ci_make_app )
 			MACOSX_BUNDLE_BUNDLE_NAME ${ARG_APP_NAME}
 			MACOSX_BUNDLE_ICON_FILE ${ICON_NAME}
 		)
+	endif()
+
+	# Handle assets directory so that it can be found relative to the application.
+	get_filename_component( ASSETS_DEST_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets" ABSOLUTE )
+	if( EXISTS "${ARG_ASSETS_PATH}" AND IS_DIRECTORY "${ARG_ASSETS_PATH}" )
+
+		message( "ARG_ASSETS_PATH: ${ARG_ASSETS_PATH}, ASSETS_DEST_PATH: ${ASSETS_DEST_PATH}" )
+
+		if( EXISTS "${ASSETS_DEST_PATH}" )
+			message( STATUS "assets destination path already exists, removing first." )
+			file( REMOVE_RECURSE "${ASSETS_DEST_PATH}" )
+		endif()
+
+		if( CINDER_COPY_ASSETS )
+			# make a hard copy. Skipping the extra 'assets' folder as it we're copying the entire folder over
+			get_filename_component( ASSETS_DEST_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" ABSOLUTE )
+
+			file( COPY "${ARG_ASSETS_PATH}" DESTINATION "${ASSETS_DEST_PATH}" )
+		else()
+			# make a symlink
+			execute_process(
+					COMMAND "${CMAKE_COMMAND}" "-E" "create_symlink" "${ARG_ASSETS_PATH}" "${ASSETS_DEST_PATH}"
+					RESULT_VARIABLE resultCode
+			)
+
+			if( NOT resultCode EQUAL 0 )
+			    message( WARNING "Failed to symlink '${ARG_ASSETS_PATH}' to '${ASSETS_DEST_PATH}', result: ${resultCode}" )
+			endif()
+		endif()
 	endif()
 
 endfunction()
