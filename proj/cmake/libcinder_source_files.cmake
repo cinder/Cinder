@@ -372,6 +372,27 @@ if( NOT CINDER_FREETYPE_USE_SYSTEM )
 
 endif() # ! CINDER_FREETYPE_USE_SYSTEM
 
+list( APPEND SRC_SET_ZLIB
+	${CINDER_SRC_DIR}/zlib-1.2.8/adler32.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/compress.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/crc32.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/deflate.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/gzclose.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/gzlib.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/gzread.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/gzwrite.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/infback.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/inffast.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/inflate.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/inftrees.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/trees.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/uncompr.c
+	${CINDER_SRC_DIR}/zlib-1.2.8/zutil.c
+)
+
+list( APPEND CINDER_SRC_FILES           ${SRC_SET_ZLIB}	)
+source_group( "thirdparty\\zlib" FILES  ${SRC_SET_ZLIB} )
+
 # ----------------------------------------------------------------------------------------------------------------------
 # r8brain
 # ----------------------------------------------------------------------------------------------------------------------
