@@ -9,16 +9,14 @@ include( ${CMAKE_CURRENT_LIST_DIR}/utilities.cmake )
 
 # Set default build type to Debug
 if( NOT CMAKE_BUILD_TYPE )
-	if( CINDER_VERBOSE )
-		message( STATUS "CMAKE_BUILD_TYPE not specified, defaulting to Debug" )
-	endif()
+	ci_log_v( "CMAKE_BUILD_TYPE not specified, defaulting to Debug" )
 	set( CMAKE_BUILD_TYPE Debug CACHE STRING
 		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel. "
 		FORCE
 	)
-elseif( CINDER_VERBOSE )
-	message( STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}" )
 endif()
+
+ci_log_v( "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}" )
 
 # If there's a target specified, try to build for that. Otherwise, build based on the current host OS.
 if( CINDER_TARGET )
@@ -62,9 +60,7 @@ endif()
 set( CINDER_TARGET_GL ${CINDER_TARGET_GL_DEFAULT} CACHE STRING "Target GL for the system. Valid options : ogl, es2, es3, es31, es32, es2-rpi" )
 
 if( CINDER_TARGET_GL )
-	if( CINDER_VERBOSE )
-		message( STATUS "CINDER_TARGET_GL: ${CINDER_TARGET_GL}" )
-	endif()
+	ci_log_v( "CINDER_TARGET_GL: ${CINDER_TARGET_GL}" )
 
 	string( TOLOWER "${CINDER_TARGET_GL}" CINDER_TARGET_GL_LOWER )
 	if( "ogl" STREQUAL "${CINDER_TARGET_GL_LOWER}" )
@@ -89,9 +85,7 @@ if( CINDER_TARGET_GL )
 		set( CINDER_GL_CORE TRUE )
 	endif()
 else()
-	if( CINDER_VERBOSE )
-		message( STATUS "No target GL has been set. Defaulting to Core Profile.")
-	endif()
+	ci_log_v( "No target GL has been set. Defaulting to Core Profile.")
 	set( CINDER_GL_CORE TRUE )
 endif()
 
