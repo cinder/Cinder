@@ -939,7 +939,7 @@ Texture2d::Texture2d( const Channel8u &channel, Format format )
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 #if defined( CINDER_GL_ES )
-	initParams( format, GL_LUMINANCE, GL_LUNIMANCE, GL_UNSIGNED_BYTE );
+	initParams( format, GL_LUMINANCE, GL_LUMINANCE, GL_UNSIGNED_BYTE );
 #else
 	if( ! format.mSwizzleSpecified ) {
 		std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
@@ -1630,12 +1630,12 @@ Texture3dRef Texture3d::create( GLint width, GLint height, GLint depth, const Fo
 		return Texture3dRef( new Texture3d( width, height, depth, format ) );
 }
 
-Texture3dRef Texture3d::create( const void *data, GLenum dataFormat, int width, int height, int depth, const Format &format )
+Texture3dRef Texture3d::create( const void *data, int width, int height, int depth, const Format &format )
 {
 	if( format.mDeleter )
-		return Texture3dRef( new Texture3d( data, dataFormat, width, height, depth, format ), format.mDeleter );
+		return Texture3dRef( new Texture3d( data, width, height, depth, format ), format.mDeleter );
 	else
-		return Texture3dRef( new Texture3d( data, dataFormat, width, height, depth, format ) );
+		return Texture3dRef( new Texture3d( data, width, height, depth, format ) );
 }
 
 Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
@@ -1650,7 +1650,7 @@ Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
 	env()->allocateTexStorage3d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage(), format.getDataFormat(), format.getDataType() );
 }
 
-Texture3d::Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format )
+Texture3d::Texture3d( const void *data, int width, int height, int depth, Format format )
 	: mWidth( width ), mHeight( height ), mDepth( depth )
 {
 	glGenTextures( 1, &mTextureId );
@@ -1658,7 +1658,7 @@ Texture3d::Texture3d( const void *data, GLenum dataFormat, int width, int height
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	TextureBase::initParams( format, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE );
 
-	glTexImage3D( mTarget, 0, mInternalFormat, mWidth, mHeight, mDepth, 0, dataFormat, format.getDataType(), data );
+	glTexImage3D( mTarget, 0, mInternalFormat, mWidth, mHeight, mDepth, 0, format.getDataFormat(), format.getDataType(), data );
 }
 
 void Texture3d::update( const Surface8u &surface, int depth, int mipLevel )

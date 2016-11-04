@@ -423,6 +423,8 @@ class Texture1d : public TextureBase {
 		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
+		Format& dataType( GLint dataType ) { mDataType = dataType; return *this; }
+		Format& dataFormat( GLint dataFormat ) { mDataFormat = dataFormat; return *this; }
 		Format& wrap( GLenum wrap ) { mWrapS = wrap; return *this; }
 		Format& wrapS( GLenum wrapS ) { mWrapS = wrapS; return *this; }
 		Format& minFilter( GLenum minFilter ) { setMinFilter( minFilter ); return *this; }
@@ -445,7 +447,7 @@ class Texture1d : public TextureBase {
 	//! Constructs a Texture1d using the top row of \a surface
 	static Texture1dRef create( const Surface8u &surface, const Format &format = Format() );
 	//! Constructs a Texture1d using the data pointed to by \a data, in format \a dataFormat. For a dataType other than \c GL_UNSIGNED_CHAR use \a format.setDataType()
-	static Texture1dRef	create( const void *data, int width, const Format &format = Format() );
+	static Texture1dRef	create( const void *data, int width, const Format &format );
 	
 	//! Updates the Texture1d using the top row of \a surface.
 	void	update( const Surface8u &surface, int mipLevel = 0 );
@@ -486,6 +488,8 @@ class Texture2d : public TextureBase {
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
 		//! Specifies the data type parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination. Primary use is to pass \c GL_FLOAT or \c GL_HALF_FLOAT to create 32F or 16F textures on ES 2 when OES_texture_float is available.
 		Format& dataType( GLint dataType ) { mDataType = dataType; return *this; }
+		//! Specifies the data format parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination.
+		Format& dataFormat( GLint dataFormat ) { mDataFormat = dataFormat; return *this; }
 		Format& wrap( GLenum wrap ) { mWrapS = mWrapT = mWrapR = wrap; return *this; }
 		Format& wrapS( GLenum wrapS ) { mWrapS = wrapS; return *this; }
 		Format& wrapT( GLenum wrapT ) { mWrapT = wrapT; return *this; }
@@ -519,7 +523,7 @@ class Texture2d : public TextureBase {
 	
 	//! Constructs a texture of size(\a width, \a height) and allocates storage.
 	static Texture2dRef	create( int width, int height, const Format &format = Format() );
-	//! Constructs a texture of size(\a width, \a height). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR. Ignores \a format.loadTopDown().
+	//! Constructs a texture of size(\a width, \a height). Use \a format.setDataFormat() to specify a data format other than \c GL_RGBA. Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR. Ignores \a format.loadTopDown().
 	static Texture2dRef	create( const void *data, int width, int height, const Format &format = Format() );
 	//! Constructs a Texture based on the contents of \a surface.
 	static Texture2dRef	create( const Surface8u &surface, const Format &format = Format() );
@@ -656,6 +660,8 @@ class Texture3d : public TextureBase {
 		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
+		Format& dataType( GLint dataType ) { mDataType = dataType; return *this; }
+		Format& dataFormat( GLint dataFormat ) { mDataFormat = dataFormat; return *this; }
 		Format& wrap( GLenum wrap ) { mWrapS = mWrapT = mWrapR = wrap; return *this; }
 		Format& wrapS( GLenum wrapS ) { mWrapS = wrapS; return *this; }
 		Format& wrapT( GLenum wrapT ) { mWrapT = wrapT; return *this; }
@@ -680,8 +686,8 @@ class Texture3d : public TextureBase {
 
 	//! Constructs a texture of size(\a width, \a height, \a depth).
 	static Texture3dRef create( GLint width, GLint height, GLint depth, const Format &format = Format() );
-	//! Constructs a texture of size(\a width, \a height, \a depth). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR.
-	static Texture3dRef create( const void *data, GLenum dataFormat, int width, int height, int depth, const Format &format = Format() );
+	//! Constructs a texture of size(\a width, \a height, \a depth). Use \a format.setDataFormat() to specify a dataType other than \c GL_RGBA. Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR.
+	static Texture3dRef create( const void *data, int width, int height, int depth, const Format &format = Format() );
   
 	void	update( const Surface &surface, int depth, int mipLevel = 0 );
 
@@ -696,7 +702,7 @@ class Texture3d : public TextureBase {
 
   protected:
   	Texture3d( GLint width, GLint height, GLint depth, Format format );
-	Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format );
+	Texture3d( const void *data, int width, int height, int depth, Format format );
 
 	void	printDims( std::ostream &os ) const override;
 
@@ -717,6 +723,8 @@ class TextureCubeMap : public TextureBase
 		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
+		Format& dataType( GLint dataType ) { mDataType = dataType; return *this; }
+		Format& dataFormat( GLint dataFormat ) { mDataFormat = dataFormat; return *this; }
 		Format& wrap( GLenum wrap ) { mWrapS = mWrapT = mWrapR = wrap; return *this; }
 		Format& wrapS( GLenum wrapS ) { mWrapS = wrapS; return *this; }
 		Format& wrapT( GLenum wrapT ) { mWrapT = wrapT; return *this; }
