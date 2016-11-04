@@ -261,8 +261,10 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 {
 	const fs::path fullPath = findFullPath( path, currentDirectory );
 
-	if( includeTree.count( fullPath ) )
-		throw ShaderPreprocessorExc( "circular include found, path: " + fullPath.string() );
+	if( includeTree.count( fullPath ) ) {
+		// circular include, skip it as it has already been appended.
+		return "";
+	}
 
 	includeTree.insert( fullPath );
 
