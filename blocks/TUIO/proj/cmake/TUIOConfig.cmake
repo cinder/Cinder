@@ -3,7 +3,6 @@ if( NOT TARGET TUIO )
 
 	add_library( TUIO ${TUIO_SOURCE_PATH}/cinder/tuio/Tuio.cpp )
 
-	target_compile_options( TUIO PUBLIC "-std=c++11" )
 	target_include_directories( TUIO PUBLIC "${TUIO_SOURCE_PATH}" )
 
 	if( NOT TARGET cinder )
