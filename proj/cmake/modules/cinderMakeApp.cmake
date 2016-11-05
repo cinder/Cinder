@@ -128,7 +128,7 @@ function( ci_make_app )
 		elseif( IS_DIRECTORY ${block} )
 		  	get_filename_component( blockName ${block} NAME )
 			set( blockModuleDir "${block}/proj/cmake" )
-    	else()
+    		else()
 			message( ERROR " Could not find block: ${block}, checked in cinder/blocks and at path: ${blockModuleDir}" )
 		endif()
 
