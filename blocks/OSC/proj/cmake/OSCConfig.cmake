@@ -4,8 +4,6 @@ if( NOT TARGET OSC )
 
 	add_library( OSC ${OSC_SOURCE_PATH}/cinder/osc/Osc.cpp )
 
-	target_compile_options( OSC PUBLIC "-std=c++11" )
-
 	target_include_directories( OSC PUBLIC "${OSC_SOURCE_PATH}" )
 	target_include_directories( OSC SYSTEM BEFORE PUBLIC "${CINDER_PATH}/include" )
 
@@ -15,7 +13,7 @@ if( NOT TARGET OSC )
 		        "${CINDER_PATH}/${CINDER_LIB_DIRECTORY}"
 		        "$ENV{CINDER_PATH}/${CINDER_LIB_DIRECTORY}" )
 	endif()
-	target_link_libraries( OSC  PRIVATE cinder )
+	target_link_libraries( OSC PRIVATE cinder )
 	
 endif()
 
