@@ -455,14 +455,94 @@ std::vector<std::string> PlatformLinux::stackTrace()
 	return std::vector<std::string>();	
 }
 
-const std::vector<DisplayRef>& PlatformLinux::getDisplays()
+std::string DisplayLinux::getName() const
 {
-	if( ! mDisplaysInitialized ) {
-		// @TODO: Implement fuller
+	return glfwGetMonitorName( mMonitor );
+}
 
-		mDisplaysInitialized = true;
+DisplayRef PlatformLinux::findDisplayFromGlfwMonitor( GlfwMonitor *monitor )
+{
+	for( auto &display : mDisplays ) {
+		if( display->getGlfwMonitor() == monitor )
+			return display;
 	}
 
+	return DisplayRef();
+}
+
+void DisplayLinux::displayReconfiguredCallback( GLFWmonitor* monitor, int event )
+{
+	auto platform = app::PlatformCocoa::get();
+	if( event == GLFW_DISCONNECTED ) {
+		auto display = platform->findDisplayFromGlfwMonitor( monitor );
+		if( display )
+			platform->removeDisplay( display ); // this will signal
+		else
+			CI_LOG_W( "Received removed from displayReconfiguredCallback() on unknown display" );		
+	}
+	else if( event == GLFW_CONNECTED ) {
+		auto display = platform->findFromCgDirectDisplayId( displayId );
+		if( ! display ) {
+			auto newDisplay = std::make_shared<DisplayMac>();
+
+			const auto *videoMode = glfwGetVideoMode( newDisplay.get() );
+			auto size = ivec2( videoMode->width, videoMode->height );
+			ivec2 pos;
+			glfwGetMonitorPos(monitor, &pos.x, &pos.y);
+
+			newDisplay->mArea = Area( pos.x, pos.y, 
+				pos.x + size.x, pos.y + size.y );
+
+			newDisplay->mBitsPerPixel = videoMode->redBits + videoMode->greenBits + videoMode->blueBits;
+
+			// TODO: figure out content scaling.
+			//const double dpi = mode->width / (widthMM / 25.4);
+			newDisplay->mContentScale = 1.0;
+			platform->addDisplay( DisplayRef( newDisplay ) ); // this will signal
+		}
+		else
+			CI_LOG_W( "Received add from CGDisplayRegisterReconfigurationCallback() for already known display" );				
+	}
+}
+
+const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
+{
+	if( ! mDisplaysInitialized && ::glfwInit() ) {
+		// this is our first call; register a callback with CoreGraphics for any 
+		// display changes. Note that this only works with a run loop
+		::glfwSetMonitorCallback( DisplayLinux::displayReconfiguredCallback );
+
+		int32_t numMonitors, nonPrimaryIndex = 1;
+		GlfwMonitors **monitors = ::glfwGetMonitors( &numMonitors );
+		GlfwMonitors *mainScreen = ::glfwGetPrimaryMonitor();
+		mDisplays.resize( numMonitors );
+		for( size_t i = 0; i < numMonitors; ++i ) {
+			GlfwMonitors *monitor = monitors[i];
+
+			auto newDisplay = std::make_shared<DisplayMac>();
+
+			const auto *videoMode = glfwGetVideoMode( newDisplay.get() );
+			auto size = ivec2( videoMode->width, videoMode->height );
+			ivec2 pos;
+			glfwGetMonitorPos(monitor, &pos.x, &pos.y);
+
+			newDisplay->mArea = Area( pos.x, pos.y, 
+				pos.x + size.x, pos.y + size.y );
+
+			newDisplay->mBitsPerPixel = videoMode->redBits + videoMode->greenBits + videoMode->blueBits;
+
+			// TODO: figure out content scaling.
+			//const double dpi = mode->width / (widthMM / 25.4);
+			newDisplay->mContentScale = 1.0;
+			if( mainScreen == monitor )
+				mDisplays[0] = std::move( newDisplay );
+			else
+				mDisplays[nonPrimaryIndex++] = std::move( newDisplay );
+		}
+
+		mDisplaysInitialized = true;	
+	}
+	
 	return mDisplays;
 }
 

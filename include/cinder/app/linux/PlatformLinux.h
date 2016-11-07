@@ -60,12 +60,35 @@ class PlatformLinux : public Platform {
 	virtual std::vector<std::string>		stackTrace() override;
 	virtual const std::vector<DisplayRef>&	getDisplays() override;
 
+	//! Returns the Display which corresponds to \a hMonitor. Returns main display on failure.
+	DisplayRef						findDisplayFromGlfwMonitor( GlfwMonitor *monitor );
+
+	// Display-specific callbacks
+	//! Makes a record of \a display and signals appropriately. Generally only useful for Cinder internals.
+	void		addDisplay( const DisplayRef &display );
+	//! Removes record of \a display from mDisplays and signals appropriately. Generally only useful for Cinder internals.
+	void		removeDisplay( const DisplayRef &display );
+
  private:
 	bool							mDisplaysInitialized = false;
 	std::vector<DisplayRef>			mDisplays;
 
 	mutable std::vector<fs::path>	mResourceDirectories;
 	mutable bool					mResourceDirsInitialized = false;
+};
+
+//! Represents a monitor/display on OS X
+class DisplayLinux : public Display {
+  public:
+	GlfwMonitor*		getGlfwMonitor() const;
+	std::string			getName() const override;
+
+  protected:	
+	static void	displayReconfiguredCallback( GLFWmonitor* monitor, int event );
+
+	GlfwMonitor* mMonitor;
+	
+	friend app::PlatformCocoa;
 };
 
 }} // namespace cinder::app
