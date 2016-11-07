@@ -133,6 +133,45 @@ public:
 		return modifiers;
 	}
 
+	static int8_t modifyChar( int key, uint32_t modifiers )
+	{
+		// Limit char8 to ASCII input for now.
+		int8_t ret = ( key <= 127 ) ? (char)key : 0;
+		if( ret ) {
+			// a letter key
+			if( ! ( modifiers & KeyEvent::SHIFT_DOWN ) && ret > 64 && ret < 91 ) {
+				ret += 32;
+			}
+			// other modifiable keys
+			else if( ret > 47 && ret < 58 ) {
+				switch ( ret ) {
+					case '1': ret = '!'; break;
+					case '2': ret = '@'; break;
+					case '3': ret = '#'; break;
+					case '4': ret = '$'; break;
+					case '5': ret = '%'; break;
+					case '6': ret = '^'; break;
+					case '7': ret = '&'; break;
+					case '8': ret = '*'; break;
+					case '9': ret = '('; break;
+					case '0': ret = ')'; break;
+					case '`': ret = '~'; break;
+					case '-': ret = '_'; break;
+					case '=': ret = '+'; break;
+					case '[': ret = '{'; break;
+					case ']': ret = '}'; break;
+					case '\\': ret = '|'; break;
+					case ';': ret = ':'; break;
+					case '\'': ret = '"'; break;
+					case ',': ret = '<'; break;
+					case '.': ret = '>'; break;
+					case '/': ret = '?'; break;
+					default: CI_LOG_E("Number key not found: " << ret); break;
+				};
+			}
+		}
+		return ret;
+	}
 
 	static void onKeyboard( GLFWwindow *glfwWindow, int key, int scancode, int action, int mods ) {
 		auto iter = sWindowMapping.find( glfwWindow );
@@ -141,12 +180,13 @@ public:
 			auto& cinderWindow = iter->second.second;
 			cinderAppImpl->setWindow( cinderWindow );
 
-			int nativeKeyCode = KeyEvent::translateNativeKeyCode( key );
+			int32_t nativeKeyCode = KeyEvent::translateNativeKeyCode( key );
 			uint32_t char32 = 0;
-			// Limit char8 to ASCII input for now.
-			char char8 = ( key <= 127 ) ? (char)key : 0;
 
-			KeyEvent event( cinderWindow, nativeKeyCode, char32, char8, extractKeyModifiers( mods ), scancode );
+			auto modifiers = extractKeyModifiers( mods );
+			auto convertedChar = modifyChar( key, modifiers );
+
+			KeyEvent event( cinderWindow, nativeKeyCode, char32, convertedChar, modifiers, scancode );
 			if( GLFW_PRESS == action ) {
 				cinderWindow->emitKeyDown( &event );
 			}
