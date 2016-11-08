@@ -24,6 +24,10 @@
 #pragma once
 
 #include "cinder/app/Platform.h"
+#include "cinder/Display.h"
+
+// Forward declaration
+struct GLFWmonitor;
 
 namespace cinder { namespace app {
 
@@ -61,7 +65,7 @@ class PlatformLinux : public Platform {
 	virtual const std::vector<DisplayRef>&	getDisplays() override;
 
 	//! Returns the Display which corresponds to \a hMonitor. Returns main display on failure.
-	DisplayRef						findDisplayFromGlfwMonitor( GlfwMonitor *monitor );
+	DisplayRef						findDisplayFromGlfwMonitor( GLFWmonitor *monitor );
 
 	// Display-specific callbacks
 	//! Makes a record of \a display and signals appropriately. Generally only useful for Cinder internals.
@@ -80,15 +84,15 @@ class PlatformLinux : public Platform {
 //! Represents a monitor/display on OS X
 class DisplayLinux : public Display {
   public:
-	GlfwMonitor*		getGlfwMonitor() const;
+	GLFWmonitor*		getGlfwMonitor() const;
 	std::string			getName() const override;
 
   protected:	
 	static void	displayReconfiguredCallback( GLFWmonitor* monitor, int event );
 
-	GlfwMonitor* mMonitor;
+	GLFWmonitor* mMonitor;
 	
-	friend app::PlatformCocoa;
+	friend app::PlatformLinux;
 };
 
 }} // namespace cinder::app

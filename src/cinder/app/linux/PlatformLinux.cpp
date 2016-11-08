@@ -22,10 +22,14 @@
 */
 
 #include "cinder/app/linux/PlatformLinux.h"
+#include "cinder/app/App.h"
 #include "cinder/ImageSourceFileRadiance.h"
 #include "cinder/ImageSourceFileStbImage.h"
 #include "cinder/ImageTargetFileStbImage.h"
 #include "cinder/Utilities.h"
+#include "cinder/Log.h"
+
+#include "glfw/glfw3.h"
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -455,15 +459,38 @@ std::vector<std::string> PlatformLinux::stackTrace()
 	return std::vector<std::string>();	
 }
 
+void PlatformLinux::addDisplay( const DisplayRef &display )
+{
+		mDisplays.push_back( display );
+
+			if( app::AppBase::get() )
+						app::AppBase::get()->emitDisplayConnected( display );
+}
+
+void PlatformLinux::removeDisplay( const DisplayRef &display )
+{
+		DisplayRef displayCopy = display;
+		mDisplays.erase( std::remove( mDisplays.begin(), mDisplays.end(), displayCopy ), mDisplays.end() );
+				
+		if( app::AppBase::get() )
+				app::AppBase::get()->emitDisplayDisconnected( displayCopy );
+}
+
 std::string DisplayLinux::getName() const
 {
 	return glfwGetMonitorName( mMonitor );
 }
 
-DisplayRef PlatformLinux::findDisplayFromGlfwMonitor( GlfwMonitor *monitor )
+GLFWmonitor* DisplayLinux::getGlfwMonitor() const
+{
+	return mMonitor;
+}
+
+DisplayRef PlatformLinux::findDisplayFromGlfwMonitor( GLFWmonitor *monitor )
 {
 	for( auto &display : mDisplays ) {
-		if( display->getGlfwMonitor() == monitor )
+		const auto displayLinux ( dynamic_cast<const DisplayLinux*>( display.get() ) );
+		if( displayLinux->getGlfwMonitor() == monitor )
 			return display;
 	}
 
@@ -472,7 +499,7 @@ DisplayRef PlatformLinux::findDisplayFromGlfwMonitor( GlfwMonitor *monitor )
 
 void DisplayLinux::displayReconfiguredCallback( GLFWmonitor* monitor, int event )
 {
-	auto platform = app::PlatformCocoa::get();
+	auto platform = app::PlatformLinux::get();
 	if( event == GLFW_DISCONNECTED ) {
 		auto display = platform->findDisplayFromGlfwMonitor( monitor );
 		if( display )
@@ -481,11 +508,11 @@ void DisplayLinux::displayReconfiguredCallback( GLFWmonitor* monitor, int event 
 			CI_LOG_W( "Received removed from displayReconfiguredCallback() on unknown display" );		
 	}
 	else if( event == GLFW_CONNECTED ) {
-		auto display = platform->findFromCgDirectDisplayId( displayId );
+		auto display = platform->findDisplayFromGlfwMonitor( monitor );
 		if( ! display ) {
-			auto newDisplay = std::make_shared<DisplayMac>();
+			auto newDisplay = std::make_shared<DisplayLinux>();
 
-			const auto *videoMode = glfwGetVideoMode( newDisplay.get() );
+			const auto *videoMode = glfwGetVideoMode( monitor  );
 			auto size = ivec2( videoMode->width, videoMode->height );
 			ivec2 pos;
 			glfwGetMonitorPos(monitor, &pos.x, &pos.y);
@@ -505,35 +532,39 @@ void DisplayLinux::displayReconfiguredCallback( GLFWmonitor* monitor, int event 
 	}
 }
 
-const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
+const std::vector<DisplayRef>& app::PlatformLinux::getDisplays()
 {
-	if( ! mDisplaysInitialized && ::glfwInit() ) {
+	auto glfwInitialized = ::glfwInit();
+	CI_LOG_W( "in getDisplays and " << mDisplaysInitialized << " and " << glfwInitialized	);
+	if( ! mDisplaysInitialized && glfwInitialized ) {
 		// this is our first call; register a callback with CoreGraphics for any 
 		// display changes. Note that this only works with a run loop
 		::glfwSetMonitorCallback( DisplayLinux::displayReconfiguredCallback );
-
+		CI_LOG_W( "About to cache monitors" ); 
 		int32_t numMonitors, nonPrimaryIndex = 1;
-		GlfwMonitors **monitors = ::glfwGetMonitors( &numMonitors );
-		GlfwMonitors *mainScreen = ::glfwGetPrimaryMonitor();
+		GLFWmonitor **monitors = ::glfwGetMonitors( &numMonitors );
+		GLFWmonitor *mainScreen = ::glfwGetPrimaryMonitor();
 		mDisplays.resize( numMonitors );
+		CI_LOG_W( numMonitors );
 		for( size_t i = 0; i < numMonitors; ++i ) {
-			GlfwMonitors *monitor = monitors[i];
-
-			auto newDisplay = std::make_shared<DisplayMac>();
-
-			const auto *videoMode = glfwGetVideoMode( newDisplay.get() );
+			GLFWmonitor *monitor = monitors[i];
+			CI_LOG_W( "caching monitor" );
+			auto newDisplay = std::make_shared<DisplayLinux>();
+			
+			const auto *videoMode = glfwGetVideoMode( monitor );
 			auto size = ivec2( videoMode->width, videoMode->height );
 			ivec2 pos;
 			glfwGetMonitorPos(monitor, &pos.x, &pos.y);
 
 			newDisplay->mArea = Area( pos.x, pos.y, 
 				pos.x + size.x, pos.y + size.y );
-
+			CI_LOG_W( newDisplay->mArea );
 			newDisplay->mBitsPerPixel = videoMode->redBits + videoMode->greenBits + videoMode->blueBits;
 
 			// TODO: figure out content scaling.
 			//const double dpi = mode->width / (widthMM / 25.4);
 			newDisplay->mContentScale = 1.0;
+			newDisplay->mMonitor = monitor;
 			if( mainScreen == monitor )
 				mDisplays[0] = std::move( newDisplay );
 			else
