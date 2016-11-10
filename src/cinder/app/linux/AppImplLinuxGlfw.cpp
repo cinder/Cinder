@@ -25,6 +25,8 @@
 #include "cinder/app/linux/AppLinux.h"
 #include "cinder/app/linux/WindowImplLinux.h"
 
+#include "cinder/Log.h"
+
 #include <iostream>
 
 namespace cinder { namespace app {
@@ -33,7 +35,8 @@ class GlfwCallbacks {
 public:
 	
 	static std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> sWindowMapping;
-
+	static bool sCapsLockDown, sNumLockDown, sScrollLockDown;
+		
 	static void registerWindowEvents( GLFWwindow *glfwWindow, AppImplLinux* cinderAppImpl, const WindowRef& cinderWindow ) {
 		sWindowMapping[glfwWindow] = std::make_pair( cinderAppImpl, cinderWindow );
 
@@ -133,17 +136,18 @@ public:
 		return modifiers;
 	}
 
-	static int8_t modifyChar( int key, uint32_t modifiers )
+	static int8_t modifyChar( int key, uint32_t modifiers, bool capsLockIsDown )
 	{
 		// Limit char8 to ASCII input for now.
 		int8_t ret = ( key <= 127 ) ? (char)key : 0;
 		if( ret ) {
 			// a letter key
-			if( ! ( modifiers & KeyEvent::SHIFT_DOWN ) && ret > 64 && ret < 91 ) {
-				ret += 32;
+			bool shiftIsDown = modifiers & KeyEvent::SHIFT_DOWN;
+			if( ret > 64 && ret < 91 && ! ( shiftIsDown ^ capsLockIsDown ) ) {
+					ret += 32;
 			}
 			// other modifiable keys
-			else if( ret > 47 && ret < 58 ) {
+			else if( shiftIsDown ) {
 				switch ( ret ) {
 					case '1': ret = '!'; break;
 					case '2': ret = '@'; break;
@@ -166,7 +170,7 @@ public:
 					case ',': ret = '<'; break;
 					case '.': ret = '>'; break;
 					case '/': ret = '?'; break;
-					default: CI_LOG_E("Number key not found: " << ret); break;
+					default: break;
 				};
 			}
 		}
@@ -182,9 +186,16 @@ public:
 
 			int32_t nativeKeyCode = KeyEvent::translateNativeKeyCode( key );
 			uint32_t char32 = 0;
+			
+			if( glfwGetKey( glfwWindow, GLFW_KEY_CAPS_LOCK ) )
+				sCapsLockDown = ! sCapsLockDown;
+			if( glfwGetKey( glfwWindow, GLFW_KEY_NUM_LOCK ) )
+				sNumLockDown = ! sNumLockDown;
+			if( glfwGetKey( glfwWindow, GLFW_KEY_SCROLL_LOCK ) )
+				sScrollLockDown = !sScrollLockDown;
 
 			auto modifiers = extractKeyModifiers( mods );
-			auto convertedChar = modifyChar( key, modifiers );
+			auto convertedChar = modifyChar( key, modifiers, sCapsLockDown );
 
 			KeyEvent event( cinderWindow, nativeKeyCode, char32, convertedChar, modifiers, scancode );
 			if( GLFW_PRESS == action ) {
@@ -265,6 +276,9 @@ public:
 };
 
 std::map<GLFWwindow*, std::pair<AppImplLinux*,WindowRef>> GlfwCallbacks::sWindowMapping;
+bool GlfwCallbacks::sCapsLockDown = false;
+bool GlfwCallbacks::sNumLockDown = false;
+bool GlfwCallbacks::sScrollLockDown = false;
 
 ////////////////////////////////////////////////////////////////////////////////
 // AppImplLinux
