@@ -64,7 +64,7 @@ class PlatformLinux : public Platform {
 	virtual std::vector<std::string>		stackTrace() override;
 	virtual const std::vector<DisplayRef>&	getDisplays() override;
 
-	//! Returns the Display which corresponds to \a hMonitor. Returns main display on failure.
+	//! Returns the Display which corresponds to a GLFWmonitor \a monitor. Returns main display on failure.
 	DisplayRef						findDisplayFromGlfwMonitor( GLFWmonitor *monitor );
 
 	// Display-specific callbacks
@@ -81,7 +81,7 @@ class PlatformLinux : public Platform {
 	mutable bool					mResourceDirsInitialized = false;
 };
 
-//! Represents a monitor/display on OS X
+//! Represents a monitor/display on Linux
 class DisplayLinux : public Display {
   public:
 	GLFWmonitor*		getGlfwMonitor() const;
