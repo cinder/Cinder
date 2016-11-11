@@ -49,7 +49,7 @@ namespace cinder { namespace app {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderer
-Renderer::Renderer( const Renderer &renderer )
+Renderer::Renderer( const Renderer & /*renderer*/ )
 {
 }
 
@@ -195,7 +195,7 @@ void Renderer2d::defaultResize()
 	mImpl->defaultResize();
 }
 
-Surface	Renderer2d::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
+Surface	Renderer2d::copyWindowSurface( const Area &area, int32_t /*windowHeightPixels*/ )
 {
 	return mImpl->copyWindowContents( area );
 }

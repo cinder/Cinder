@@ -44,8 +44,8 @@ class AppImplMswScreenSaver : public AppImplMsw {
 	//! do nothing, we can't really force a quit
 	void		quit() override {}
 	//! do nothing, can't control frame rate
-	void        setFrameRate( float frameRate ) override {}
-		
+	void        setFrameRate( float /*frameRate*/ ) override {}
+
 	LRESULT eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 	
 	WindowRef	getWindow() const override;
@@ -57,7 +57,7 @@ class AppImplMswScreenSaver : public AppImplMsw {
 	bool				isPreview() const;
 
 	// ignore
-	void		closeWindow( class WindowImplMsw *windowImpl ) override {}
+	void		closeWindow( class WindowImplMsw * /*windowImpl*/ ) override {}
 	// ignore
 	void		setForegroundWindow( WindowRef window ) override {}
 

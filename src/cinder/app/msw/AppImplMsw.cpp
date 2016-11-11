@@ -168,10 +168,10 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 namespace {
 
 // see http://support.microsoft.com/kb/179378 "How To Browse for Folders from the Current Directory"
-INT CALLBACK getFolderPathBrowseCallbackProc( HWND hwnd, UINT uMsg, LPARAM lp, LPARAM pData ) 
+INT CALLBACK getFolderPathBrowseCallbackProc( HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData )
 {
 	switch( uMsg ) {
-		case BFFM_INITIALIZED: 
+		case BFFM_INITIALIZED:
 			// WParam is TRUE since you are passing a path.
 			// It would be FALSE if you were passing a pidl.
 			// pData is a pointer to the wide string containing our initial path back at the original call site

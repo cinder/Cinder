@@ -154,8 +154,8 @@ LRESULT AppImplMswScreenSaver::eventHandler( HWND hWnd, UINT message, WPARAM wPa
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 
-void WindowImplMswScreenSaver::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
+//
+void WindowImplMswScreenSaver::setFullScreen( bool /*fullScreen*/ , const app::FullScreenOptions & /*options*/ )
 {
 	// no-op
 }

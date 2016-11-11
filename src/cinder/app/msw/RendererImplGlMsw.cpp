@@ -258,7 +258,7 @@ FOUND:
 	return true;
 }
 
-bool initializeGl( HWND wnd, HDC dc, HGLRC sharedRC, const RendererGl::Options &options, HGLRC *resultRc )
+bool initializeGl( HWND /*wnd*/, HDC dc, HGLRC sharedRC, const RendererGl::Options &options, HGLRC *resultRc )
 {
 	if( ! setPixelFormat( dc, options ) )
 		throw ExcRendererAllocation( "Failed to find suitable WGL pixel format" );

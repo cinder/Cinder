@@ -202,9 +202,9 @@ class CinderStackWalker : public StackWalker {
 	CinderStackWalker()
 		: StackWalker()
 	{ ShowCallstack(); }
-	
-	virtual void OnSymInit( LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName ) {}
-	virtual void OnLoadModule( LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD size, DWORD result, LPCSTR symType, LPCSTR pdbName, ULONGLONG fileVersion ) {}
+
+	virtual void OnSymInit( LPCSTR /*szSearchPath*/, DWORD /*symOptions*/, LPCSTR /*szUserName*/ ) {}
+	virtual void OnLoadModule( LPCSTR /*img*/, LPCSTR /*mod*/, DWORD64 /*baseAddr*/, DWORD /*size*/, DWORD /*result*/, LPCSTR /*symType*/, LPCSTR /*pdbName*/, ULONGLONG /*fileVersion*/ ) {}
 	virtual void OnCallstackEntry( CallstackEntryType eType, CallstackEntry &entry )
 	{
 		CHAR buffer[STACKWALK_MAX_NAMELEN];
@@ -227,11 +227,11 @@ class CinderStackWalker : public StackWalker {
 		}
 
 	}
-	virtual void OnDbgHelpErr( LPCSTR szFuncName, DWORD gle, DWORD64 addr ) {}
-	virtual void OnOutput( LPCSTR szText ) {}
-	
+	virtual void OnDbgHelpErr( LPCSTR /*szFuncName*/, DWORD /*gle*/, DWORD64 /*addr*/ ) {}
+	virtual void OnOutput( LPCSTR /*szText*/ ) {}
+
 	const std::vector<std::string>&	getEntries() { return mEntries; }
-	
+
   protected:
 	std::vector<std::string>	mEntries;
 };
@@ -304,7 +304,7 @@ std::string DisplayMsw::getName() const
 	return mName;
 }
 
-BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
+BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC /*hdc*/, LPRECT rect, LPARAM lParam )
 {
 	vector<DisplayRef> *displaysVector = reinterpret_cast<vector<DisplayRef>*>( lParam );
 	
