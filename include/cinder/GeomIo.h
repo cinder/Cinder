@@ -1247,11 +1247,11 @@ class Twist : public Modifier {
 class Lines : public Modifier {
   public:
 	Modifier*	clone() const override { return new Lines(); }
-	
+
 	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
-	Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const override { return geom::LINES; }
+	Primitive	getPrimitive( const Modifier::Params &/*upstreamParams*/ ) const override { return geom::LINES; }
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
+
   protected:
 	static size_t	calcNumIndices( Primitive primitive, size_t upstreamNumIndices, size_t upstreamNumVertices );
 };
@@ -1344,14 +1344,14 @@ class VertexNormalLines : public Modifier {
 	VertexNormalLines&	length( float len ) { mLength = len; return *this; }
 
 	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
-	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override				{ return 0; }
-	Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const override				{ return geom::LINES; }
+	size_t		getNumIndices( const Modifier::Params &/*upstreamParams*/ ) const override				{ return 0; }
+	Primitive	getPrimitive( const Modifier::Params &/*upstreamParams*/ ) const override				{ return geom::LINES; }
 	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
 	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
-	
+
 	Modifier*	clone() const override { return new VertexNormalLines( mLength, mAttrib ); }
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
+
   protected:
 	float					mLength;
 	Attrib					mAttrib;

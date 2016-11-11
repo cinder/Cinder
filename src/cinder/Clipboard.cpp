@@ -223,10 +223,12 @@ void Clipboard::setImage( ImageSourceRef imageSource, ImageTarget::Options optio
 	[[NSPasteboard generalPasteboard] setData:[image TIFFRepresentation] forType:NSTIFFPboardType];	
 	[image release];
 #elif defined( CINDER_COCOA_TOUCH )
+	(void) options;
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	cocoa::SafeUiImage uiImage = cocoa::createUiImage( imageSource );
 	pasteboard.image = (UIImage*)uiImage;
 #elif defined( CINDER_MSW )
+	(void) options;
 	if( ! ::OpenClipboard( NULL ) ) {
 		CI_LOG_E( "Failed to open clipboard" );
 		return;

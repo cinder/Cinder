@@ -48,10 +48,10 @@ void ImageSourceFileRadiance::registerSelf()
 	ImageIoRegistrar::registerSourceType( "hdr", sourceFunc, 1 );
 }
 
-ImageSourceFileRadiance::ImageSourceFileRadiance( DataSourceRef dataSourceRef, ImageSource::Options options )
+ImageSourceFileRadiance::ImageSourceFileRadiance( DataSourceRef dataSourceRef, ImageSource::Options /*options*/ )
 {
 	IStreamRef stream = dataSourceRef->createStream();
-	
+
 	loadStream( stream );
 }
 

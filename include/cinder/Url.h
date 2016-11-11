@@ -137,8 +137,8 @@ class IStreamUrl : public IStreamCinder {
 
 	virtual void		IORead( void *t, size_t size ) { mImpl->IORead( t, size ); }
 	//! IStreamURL does not yet support writing
-	virtual void		IOWrite( const void *t, size_t size ) { throw Exception(); }
-	
+	virtual void		IOWrite( const void * /*t*/, size_t /*size*/ ) { throw Exception(); }
+
 	std::shared_ptr<IStreamUrlImpl>	mImpl;
 };
 
