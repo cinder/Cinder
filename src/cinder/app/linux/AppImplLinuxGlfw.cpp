@@ -326,6 +326,7 @@ AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 
 AppImplLinux::~AppImplLinux()
 {
+	::glfwTerminate();
 }
 
 AppLinux *AppImplLinux::getApp()
@@ -400,11 +401,10 @@ void AppImplLinux::run()
 	}
 
   terminate:
+	mApp->emitCleanup();
 	// Destroy the main window - this should resolve to
 	// a call for ::glfwDestroyWindow( ... );
 	mMainWindow.reset();
-
-	::glfwTerminate();
 }
 
 RendererRef AppImplLinux::findSharedRenderer( const RendererRef &searchRenderer )
