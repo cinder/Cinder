@@ -314,7 +314,7 @@ uint8_t Serial::readByte()
 std::string Serial::readStringUntil( char token, size_t maxLength, double timeoutSeconds )
 {
 	std::string buffer;
-	buffer.reserve(1024);
+	buffer.reserve( 1024 );
 
 	bool useMaxLength = maxLength > 0;
 	bool useTimer = timeoutSeconds > 0;
@@ -323,7 +323,7 @@ std::string Serial::readStringUntil( char token, size_t maxLength, double timeou
 	bool done = false;
 	while( ! done ) {
 		char v = readChar();
-		buffer.push_back(v);
+		buffer.push_back( v );
 		if( v == token ) {
 			done = true;
 		}
