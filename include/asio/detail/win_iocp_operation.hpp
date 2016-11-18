@@ -2,7 +2,7 @@
 // detail/win_iocp_operation.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -38,12 +38,11 @@ class win_iocp_operation
     ASIO_ALSO_INHERIT_TRACKED_HANDLER
 {
 public:
-  typedef win_iocp_operation operation_type;
-
-  void complete(void* owner, const asio::error_code& ec,
+  void complete(win_iocp_io_service& owner,
+      const asio::error_code& ec,
       std::size_t bytes_transferred)
   {
-    func_(owner, this, ec, bytes_transferred);
+    func_(&owner, this, ec, bytes_transferred);
   }
 
   void destroy()
@@ -53,7 +52,7 @@ public:
 
 protected:
   typedef void (*func_type)(
-      void*, win_iocp_operation*,
+      win_iocp_io_service*, win_iocp_operation*,
       const asio::error_code&, std::size_t);
 
   win_iocp_operation(func_type func)

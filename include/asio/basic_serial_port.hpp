@@ -2,7 +2,7 @@
 // basic_serial_port.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -48,6 +48,10 @@ class basic_serial_port
     public serial_port_base
 {
 public:
+  /// (Deprecated: Use native_handle_type.) The native representation of a
+  /// serial port.
+  typedef typename SerialPortService::native_handle_type native_type;
+
   /// The native representation of a serial port.
   typedef typename SerialPortService::native_handle_type native_handle_type;
 
@@ -286,6 +290,18 @@ public:
     return this->get_service().close(this->get_implementation(), ec);
   }
 
+  /// (Deprecated: Use native_handle().) Get the native serial port
+  /// representation.
+  /**
+   * This function may be used to obtain the underlying representation of the
+   * serial port. This is intended to allow access to native serial port
+   * functionality that is not otherwise provided.
+   */
+  native_type native()
+  {
+    return this->get_service().native_handle(this->get_implementation());
+  }
+
   /// Get the native serial port representation.
   /**
    * This function may be used to obtain the underlying representation of the
@@ -428,7 +444,7 @@ public:
    *
    * @param option The option value to be obtained from the serial port.
    *
-   * @param ec Set to indicate what error occured, if any.
+   * @param ec Set to indicate what error occurred, if any.
    *
    * @sa GettableSerialPortOption @n
    * asio::serial_port_base::baud_rate @n

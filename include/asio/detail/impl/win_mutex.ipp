@@ -2,7 +2,7 @@
 // detail/impl/win_mutex.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -43,6 +43,8 @@ int win_mutex::do_init()
   // we'll just call the Windows API and hope.
 # if defined(UNDER_CE)
   ::InitializeCriticalSection(&crit_section_);
+# elif defined(ASIO_WINDOWS_APP)
+  ::InitializeCriticalSectionEx(&crit_section_, 0x80000000, 0);
 # else
   if (!::InitializeCriticalSectionAndSpinCount(&crit_section_, 0x80000000))
     return ::GetLastError();
@@ -53,6 +55,9 @@ int win_mutex::do_init()
   {
 # if defined(UNDER_CE)
     ::InitializeCriticalSection(&crit_section_);
+# elif defined(ASIO_WINDOWS_APP)
+    if (!::InitializeCriticalSectionEx(&crit_section_, 0, 0))
+	  return ::GetLastError();
 # else
     if (!::InitializeCriticalSectionAndSpinCount(&crit_section_, 0x80000000))
       return ::GetLastError();

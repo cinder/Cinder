@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_io_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,6 +20,7 @@
 #if defined(ASIO_HAS_IOCP)
 
 #include "asio/error.hpp"
+#include "asio/io_service.hpp"
 #include "asio/detail/cstdint.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
@@ -62,8 +63,8 @@ struct win_iocp_io_service::timer_thread_function
 };
 
 win_iocp_io_service::win_iocp_io_service(
-    asio::execution_context& ctx, size_t concurrency_hint)
-  : execution_context_service_base<win_iocp_io_service>(ctx),
+    asio::io_service& io_service, size_t concurrency_hint)
+  : asio::detail::service_base<win_iocp_io_service>(io_service),
     iocp_(),
     outstanding_work_(0),
     stopped_(0),
@@ -400,7 +401,7 @@ size_t win_iocp_io_service::do_one(bool block, asio::error_code& ec)
         work_finished_on_block_exit on_exit = { this };
         (void)on_exit;
 
-        op->complete(this, result_ec, bytes_transferred);
+        op->complete(*this, result_ec, bytes_transferred);
         ec = asio::error_code();
         return 1;
       }

@@ -2,7 +2,7 @@
 // detail/null_reactor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,10 +17,9 @@
 
 #include "asio/detail/config.hpp"
 
-#if defined(ASIO_HAS_IOCP) || defined(ASIO_WINDOWS_RUNTIME)
+#if defined(ASIO_WINDOWS_RUNTIME)
 
-#include "asio/detail/scheduler_operation.hpp"
-#include "asio/execution_context.hpp"
+#include "asio/io_service.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -28,12 +27,12 @@ namespace asio {
 namespace detail {
 
 class null_reactor
-  : public execution_context_service_base<null_reactor>
+  : public asio::detail::service_base<null_reactor>
 {
 public:
   // Constructor.
-  null_reactor(asio::execution_context& ctx)
-    : execution_context_service_base<null_reactor>(ctx)
+  null_reactor(asio::io_service& io_service)
+    : asio::detail::service_base<null_reactor>(io_service)
   {
   }
 
@@ -48,7 +47,7 @@ public:
   }
 
   // No-op because should never be called.
-  void run(bool /*block*/, op_queue<scheduler_operation>& /*ops*/)
+  void run(bool /*block*/, op_queue<operation>& /*ops*/)
   {
   }
 
@@ -63,6 +62,6 @@ public:
 
 #include "asio/detail/pop_options.hpp"
 
-#endif // defined(ASIO_HAS_IOCP) || defined(ASIO_WINDOWS_RUNTIME)
+#endif // defined(ASIO_WINDOWS_RUNTIME)
 
 #endif // ASIO_DETAIL_NULL_REACTOR_HPP

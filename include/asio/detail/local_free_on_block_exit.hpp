@@ -2,7 +2,7 @@
 // detail/local_free_on_block_exit.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,6 +18,7 @@
 #include "asio/detail/config.hpp"
 
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#if !defined(ASIO_WINDOWS_APP)
 
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/socket_types.hpp"
@@ -52,6 +53,7 @@ private:
 
 #include "asio/detail/pop_options.hpp"
 
+#endif // !defined(ASIO_WINDOWS_APP)
 #endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
 
 #endif // ASIO_DETAIL_LOCAL_FREE_ON_BLOCK_EXIT_HPP

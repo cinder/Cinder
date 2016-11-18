@@ -2,7 +2,7 @@
 // basic_socket_streambuf.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -56,14 +56,13 @@
 # define ASIO_PRIVATE_CONNECT_DEF(n) \
   template <ASIO_VARIADIC_TPARAMS(n)> \
   basic_socket_streambuf<Protocol, StreamSocketService, \
-    Time, TimeTraits, TimerService>* connect( \
-      ASIO_VARIADIC_BYVAL_PARAMS(n)) \
+    Time, TimeTraits, TimerService>* connect(ASIO_VARIADIC_PARAMS(n)) \
   { \
     init_buffers(); \
     this->basic_socket<Protocol, StreamSocketService>::close(ec_); \
     typedef typename Protocol::resolver resolver_type; \
     typedef typename resolver_type::query resolver_query; \
-    resolver_query query(ASIO_VARIADIC_BYVAL_ARGS(n)); \
+    resolver_query query(ASIO_VARIADIC_ARGS(n)); \
     resolve_and_connect(query); \
     return !ec_ ? this : 0; \
   } \
@@ -118,24 +117,14 @@ public:
   typedef typename Protocol::endpoint endpoint_type;
 
 #if defined(GENERATING_DOCUMENTATION)
-  /// (Deprecated: Use time_point.) The time type.
+  /// The time type.
   typedef typename TimeTraits::time_type time_type;
 
-  /// The time type.
-  typedef typename TimeTraits::time_point time_point;
-
-  /// (Deprecated: Use duration.) The duration type.
-  typedef typename TimeTraits::duration_type duration_type;
-
   /// The duration type.
-  typedef typename TimeTraits::duration duration;
+  typedef typename TimeTraits::duration_type duration_type;
 #else
-# if !defined(ASIO_NO_DEPRECATED)
   typedef typename traits_helper::time_type time_type;
   typedef typename traits_helper::duration_type duration_type;
-# endif // !defined(ASIO_NO_DEPRECATED)
-  typedef typename traits_helper::time_type time_point;
-  typedef typename traits_helper::duration_type duration;
 #endif
 
   /// Construct a basic_socket_streambuf without establishing a connection.
@@ -184,7 +173,7 @@ public:
         endpoint, handler);
 
     ec_ = asio::error::would_block;
-    this->get_service().get_io_service().restart();
+    this->get_service().get_io_service().reset();
     do this->get_service().get_io_service().run_one();
     while (ec_ == asio::error::would_block);
 
@@ -246,35 +235,16 @@ public:
     return error();
   }
 
-#if !defined(ASIO_NO_DEPRECATED)
-  /// (Deprecated: Use expiry().) Get the stream buffer's expiry time as an
-  /// absolute time.
-  /**
-   * @return An absolute time value representing the stream buffer's expiry
-   * time.
-   */
-  time_point expires_at() const
-  {
-    return timer_service_
-      ? timer_service_->expires_at(timer_implementation_)
-      : time_point();
-  }
-#endif // !defined(ASIO_NO_DEPRECATED)
-
   /// Get the stream buffer's expiry time as an absolute time.
   /**
    * @return An absolute time value representing the stream buffer's expiry
    * time.
    */
-  time_point expiry() const
+  time_type expires_at() const
   {
     return timer_service_
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
       ? timer_service_->expires_at(timer_implementation_)
-#else // defined(ASIO_HAS_BOOST_DATE_TIME)
-      ? timer_service_->expiry(timer_implementation_)
-#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
-      : time_point();
+      : time_type();
   }
 
   /// Set the stream buffer's expiry time as an absolute time.
@@ -286,7 +256,7 @@ public:
    *
    * @param expiry_time The expiry time to be used for the stream.
    */
-  void expires_at(const time_point& expiry_time)
+  void expires_at(const time_type& expiry_time)
   {
     construct_timer();
 
@@ -297,63 +267,16 @@ public:
     start_timer();
   }
 
-  /// Set the stream buffer's expiry time relative to now.
-  /**
-   * This function sets the expiry time associated with the stream. Stream
-   * operations performed after this time (where the operations cannot be
-   * completed using the internal buffers) will fail with the error
-   * asio::error::operation_aborted.
-   *
-   * @param expiry_time The expiry time to be used for the timer.
-   */
-  void expires_at(const duration& expiry_time)
-  {
-    construct_timer();
-
-    asio::error_code ec;
-    timer_service_->expires_from_now(timer_implementation_, expiry_time, ec);
-    asio::detail::throw_error(ec, "expires_from_now");
-
-    start_timer();
-  }
-
-  /// Set the stream buffer's expiry time relative to now.
-  /**
-   * This function sets the expiry time associated with the stream. Stream
-   * operations performed after this time (where the operations cannot be
-   * completed using the internal buffers) will fail with the error
-   * asio::error::operation_aborted.
-   *
-   * @param expiry_time The expiry time to be used for the timer.
-   */
-  void expires_after(const duration& expiry_time)
-  {
-    construct_timer();
-
-    asio::error_code ec;
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
-    timer_service_->expires_from_now(timer_implementation_, expiry_time, ec);
-#else // defined(ASIO_HAS_BOOST_DATE_TIME)
-    timer_service_->expires_after(timer_implementation_, expiry_time, ec);
-#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
-    asio::detail::throw_error(ec, "after");
-
-    start_timer();
-  }
-
-#if !defined(ASIO_NO_DEPRECATED)
-  /// (Deprecated: Use expiry().) Get the stream buffer's expiry time relative
-  /// to now.
+  /// Get the stream buffer's expiry time relative to now.
   /**
    * @return A relative time value representing the stream buffer's expiry time.
    */
-  duration expires_from_now() const
+  duration_type expires_from_now() const
   {
     return traits_helper::subtract(expires_at(), traits_helper::now());
   }
 
-  /// (Deprecated: Use expires_after().) Set the stream buffer's expiry time
-  /// relative to now.
+  /// Set the stream buffer's expiry time relative to now.
   /**
    * This function sets the expiry time associated with the stream. Stream
    * operations performed after this time (where the operations cannot be
@@ -362,7 +285,7 @@ public:
    *
    * @param expiry_time The expiry time to be used for the timer.
    */
-  void expires_from_now(const duration& expiry_time)
+  void expires_from_now(const duration_type& expiry_time)
   {
     construct_timer();
 
@@ -372,7 +295,6 @@ public:
 
     start_timer();
   }
-#endif // !defined(ASIO_NO_DEPRECATED)
 
 protected:
   int_type underflow()
@@ -391,7 +313,7 @@ protected:
           0, handler);
 
       ec_ = asio::error::would_block;
-      this->get_service().get_io_service().restart();
+      this->get_service().get_io_service().reset();
       do this->get_service().get_io_service().run_one();
       while (ec_ == asio::error::would_block);
       if (ec_)
@@ -431,7 +353,7 @@ protected:
             asio::buffer(&ch, sizeof(char_type)), 0, handler);
 
         ec_ = asio::error::would_block;
-        this->get_service().get_io_service().restart();
+        this->get_service().get_io_service().reset();
         do this->get_service().get_io_service().run_one();
         while (ec_ == asio::error::would_block);
         if (ec_)
@@ -458,7 +380,7 @@ protected:
             asio::buffer(buffer), 0, handler);
 
         ec_ = asio::error::would_block;
-        this->get_service().get_io_service().restart();
+        this->get_service().get_io_service().reset();
         do this->get_service().get_io_service().run_one();
         while (ec_ == asio::error::would_block);
         if (ec_)
@@ -544,7 +466,7 @@ private:
             *i, handler);
 
         ec_ = asio::error::would_block;
-        this->get_service().get_io_service().restart();
+        this->get_service().get_io_service().reset();
         do this->get_service().get_io_service().run_one();
         while (ec_ == asio::error::would_block);
 
@@ -575,15 +497,10 @@ private:
 
     void operator()(const asio::error_code&)
     {
-      time_point now = traits_helper::now();
+      time_type now = traits_helper::now();
 
-#if defined(ASIO_HAS_BOOST_DATE_TIME)
-      time_point expiry_time = this_->timer_service_->expires_at(
+      time_type expiry_time = this_->timer_service_->expires_at(
             this_->timer_implementation_);
-#else // defined(ASIO_HAS_BOOST_DATE_TIME)
-      time_point expiry_time = this_->timer_service_->expiry(
-            this_->timer_implementation_);
-#endif // defined(ASIO_HAS_BOOST_DATE_TIME)
 
       if (traits_helper::less_than(now, expiry_time))
       {

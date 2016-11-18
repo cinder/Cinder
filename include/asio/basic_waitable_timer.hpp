@@ -2,7 +2,7 @@
 // basic_waitable_timer.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -54,7 +54,7 @@ namespace asio {
  * asio::steady_timer timer(io_service);
  *
  * // Set an expiry time relative to now.
- * timer.expires_after(std::chrono::seconds(5));
+ * timer.expires_from_now(std::chrono::seconds(5));
  *
  * // Wait for the timer to expire.
  * timer.wait();
@@ -91,7 +91,7 @@ namespace asio {
  * @code
  * void on_some_event()
  * {
- *   if (my_timer.expires_after(seconds(5)) > 0)
+ *   if (my_timer.expires_from_now(seconds(5)) > 0)
  *   {
  *     // We managed to cancel the timer. Start new asynchronous wait.
  *     my_timer.async_wait(on_timeout);
@@ -111,7 +111,7 @@ namespace asio {
  * }
  * @endcode
  *
- * @li The asio::basic_waitable_timer::expires_after() function
+ * @li The asio::basic_waitable_timer::expires_from_now() function
  * cancels any pending asynchronous waits, and returns the number of
  * asynchronous waits that were cancelled. If it returns 0 then you were too
  * late and the wait handler has already been executed, or will soon be
@@ -142,8 +142,8 @@ public:
   /// Constructor.
   /**
    * This constructor creates a timer without setting an expiry time. The
-   * expires_at() or expires_after() functions must be called to set an expiry
-   * time before the timer can be waited on.
+   * expires_at() or expires_from_now() functions must be called to set an
+   * expiry time before the timer can be waited on.
    *
    * @param io_service The io_service object that the timer will use to dispatch
    * handlers for any asynchronous operations performed on the timer.
@@ -168,7 +168,7 @@ public:
     : basic_io_object<WaitableTimerService>(io_service)
   {
     asio::error_code ec;
-    this->get_service().expires_at(this->get_implementation(), expiry_time, ec);
+    this->service.expires_at(this->implementation, expiry_time, ec);
     asio::detail::throw_error(ec, "expires_at");
   }
 
@@ -187,45 +187,9 @@ public:
     : basic_io_object<WaitableTimerService>(io_service)
   {
     asio::error_code ec;
-    this->get_service().expires_after(
-        this->get_implementation(), expiry_time, ec);
-    asio::detail::throw_error(ec, "expires_after");
+    this->service.expires_from_now(this->implementation, expiry_time, ec);
+    asio::detail::throw_error(ec, "expires_from_now");
   }
-
-#if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
-  /// Move-construct a basic_waitable_timer from another.
-  /**
-   * This constructor moves a timer from one object to another.
-   *
-   * @param other The other basic_waitable_timer object from which the move will
-   * occur.
-   *
-   * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_waitable_timer(io_service&) constructor.
-   */
-  basic_waitable_timer(basic_waitable_timer&& other)
-    : basic_io_object<WaitableTimerService>(
-        ASIO_MOVE_CAST(basic_waitable_timer)(other))
-  {
-  }
-
-  /// Move-assign a basic_waitable_timer from another.
-  /**
-   * This assignment operator moves a timer from one object to another.
-   *
-   * @param other The other basic_waitable_timer object from which the move will
-   * occur.
-   *
-   * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_waitable_timer(io_service&) constructor.
-   */
-  basic_waitable_timer& operator=(basic_waitable_timer&& other)
-  {
-    basic_io_object<WaitableTimerService>::operator=(
-        ASIO_MOVE_CAST(basic_waitable_timer)(other));
-    return *this;
-  }
-#endif // defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
 
   /// Cancel any asynchronous operations that are waiting on the timer.
   /**
@@ -252,7 +216,7 @@ public:
   std::size_t cancel()
   {
     asio::error_code ec;
-    std::size_t s = this->get_service().cancel(this->get_implementation(), ec);
+    std::size_t s = this->service.cancel(this->implementation, ec);
     asio::detail::throw_error(ec, "cancel");
     return s;
   }
@@ -281,7 +245,7 @@ public:
    */
   std::size_t cancel(asio::error_code& ec)
   {
-    return this->get_service().cancel(this->get_implementation(), ec);
+    return this->service.cancel(this->implementation, ec);
   }
 
   /// Cancels one asynchronous operation that is waiting on the timer.
@@ -311,8 +275,7 @@ public:
   std::size_t cancel_one()
   {
     asio::error_code ec;
-    std::size_t s = this->get_service().cancel_one(
-        this->get_implementation(), ec);
+    std::size_t s = this->service.cancel_one(this->implementation, ec);
     asio::detail::throw_error(ec, "cancel_one");
     return s;
   }
@@ -343,30 +306,17 @@ public:
    */
   std::size_t cancel_one(asio::error_code& ec)
   {
-    return this->get_service().cancel_one(this->get_implementation(), ec);
+    return this->service.cancel_one(this->implementation, ec);
   }
-
-#if !defined(ASIO_NO_DEPRECATED)
-  /// (Deprecated: Use expiry().) Get the timer's expiry time as an absolute
-  /// time.
-  /**
-   * This function may be used to obtain the timer's current expiry time.
-   * Whether the timer has expired or not does not affect this value.
-   */
-  time_point expires_at() const
-  {
-    return this->get_service().expires_at(this->get_implementation());
-  }
-#endif // !defined(ASIO_NO_DEPRECATED)
 
   /// Get the timer's expiry time as an absolute time.
   /**
    * This function may be used to obtain the timer's current expiry time.
    * Whether the timer has expired or not does not affect this value.
    */
-  time_point expiry() const
+  time_point expires_at() const
   {
-    return this->get_service().expiry(this->get_implementation());
+    return this->service.expires_at(this->implementation);
   }
 
   /// Set the timer's expiry time as an absolute time.
@@ -394,8 +344,8 @@ public:
   std::size_t expires_at(const time_point& expiry_time)
   {
     asio::error_code ec;
-    std::size_t s = this->get_service().expires_at(
-        this->get_implementation(), expiry_time, ec);
+    std::size_t s = this->service.expires_at(
+        this->implementation, expiry_time, ec);
     asio::detail::throw_error(ec, "expires_at");
     return s;
   }
@@ -425,83 +375,20 @@ public:
   std::size_t expires_at(const time_point& expiry_time,
       asio::error_code& ec)
   {
-    return this->get_service().expires_at(
-        this->get_implementation(), expiry_time, ec);
+    return this->service.expires_at(this->implementation, expiry_time, ec);
   }
 
-  /// Set the timer's expiry time relative to now.
-  /**
-   * This function sets the expiry time. Any pending asynchronous wait
-   * operations will be cancelled. The handler for each cancelled operation will
-   * be invoked with the asio::error::operation_aborted error code.
-   *
-   * @param expiry_time The expiry time to be used for the timer.
-   *
-   * @return The number of asynchronous operations that were cancelled.
-   *
-   * @throws asio::system_error Thrown on failure.
-   *
-   * @note If the timer has already expired when expires_after() is called,
-   * then the handlers for asynchronous wait operations will:
-   *
-   * @li have already been invoked; or
-   *
-   * @li have been queued for invocation in the near future.
-   *
-   * These handlers can no longer be cancelled, and therefore are passed an
-   * error code that indicates the successful completion of the wait operation.
-   */
-  std::size_t expires_after(const duration& expiry_time)
-  {
-    asio::error_code ec;
-    std::size_t s = this->get_service().expires_after(
-        this->get_implementation(), expiry_time, ec);
-    asio::detail::throw_error(ec, "expires_after");
-    return s;
-  }
-
-  /// Set the timer's expiry time relative to now.
-  /**
-   * This function sets the expiry time. Any pending asynchronous wait
-   * operations will be cancelled. The handler for each cancelled operation will
-   * be invoked with the asio::error::operation_aborted error code.
-   *
-   * @param expiry_time The expiry time to be used for the timer.
-   *
-   * @param ec Set to indicate what error occurred, if any.
-   *
-   * @return The number of asynchronous operations that were cancelled.
-   *
-   * @note If the timer has already expired when expires_after() is called,
-   * then the handlers for asynchronous wait operations will:
-   *
-   * @li have already been invoked; or
-   *
-   * @li have been queued for invocation in the near future.
-   *
-   * These handlers can no longer be cancelled, and therefore are passed an
-   * error code that indicates the successful completion of the wait operation.
-   */
-  std::size_t expires_after(const duration& expiry_time,
-      asio::error_code& ec)
-  {
-    return this->get_service().expires_after(
-        this->get_implementation(), expiry_time, ec);
-  }
-
-#if !defined(ASIO_NO_DEPRECATED)
-  /// (Deprecated: Use expiry().) Get the timer's expiry time relative to now.
+  /// Get the timer's expiry time relative to now.
   /**
    * This function may be used to obtain the timer's current expiry time.
    * Whether the timer has expired or not does not affect this value.
    */
   duration expires_from_now() const
   {
-    return this->get_service().expires_from_now(this->get_implementation());
+    return this->service.expires_from_now(this->implementation);
   }
 
-  /// (Deprecated: Use expires_after().) Set the timer's expiry time relative
-  /// to now.
+  /// Set the timer's expiry time relative to now.
   /**
    * This function sets the expiry time. Any pending asynchronous wait
    * operations will be cancelled. The handler for each cancelled operation will
@@ -526,14 +413,13 @@ public:
   std::size_t expires_from_now(const duration& expiry_time)
   {
     asio::error_code ec;
-    std::size_t s = this->get_service().expires_from_now(
-        this->get_implementation(), expiry_time, ec);
+    std::size_t s = this->service.expires_from_now(
+        this->implementation, expiry_time, ec);
     asio::detail::throw_error(ec, "expires_from_now");
     return s;
   }
 
-  /// (Deprecated: Use expires_after().) Set the timer's expiry time relative
-  /// to now.
+  /// Set the timer's expiry time relative to now.
   /**
    * This function sets the expiry time. Any pending asynchronous wait
    * operations will be cancelled. The handler for each cancelled operation will
@@ -558,10 +444,9 @@ public:
   std::size_t expires_from_now(const duration& expiry_time,
       asio::error_code& ec)
   {
-    return this->get_service().expires_from_now(
-        this->get_implementation(), expiry_time, ec);
+    return this->service.expires_from_now(
+        this->implementation, expiry_time, ec);
   }
-#endif // !defined(ASIO_NO_DEPRECATED)
 
   /// Perform a blocking wait on the timer.
   /**
@@ -573,7 +458,7 @@ public:
   void wait()
   {
     asio::error_code ec;
-    this->get_service().wait(this->get_implementation(), ec);
+    this->service.wait(this->implementation, ec);
     asio::detail::throw_error(ec, "wait");
   }
 
@@ -586,7 +471,7 @@ public:
    */
   void wait(asio::error_code& ec)
   {
-    this->get_service().wait(this->get_implementation(), ec);
+    this->service.wait(this->implementation, ec);
   }
 
   /// Start an asynchronous wait on the timer.
@@ -622,7 +507,7 @@ public:
     // not meet the documented type requirements for a WaitHandler.
     ASIO_WAIT_HANDLER_CHECK(WaitHandler, handler) type_check;
 
-    return this->get_service().async_wait(this->get_implementation(),
+    return this->service.async_wait(this->implementation,
         ASIO_MOVE_CAST(WaitHandler)(handler));
   }
 };

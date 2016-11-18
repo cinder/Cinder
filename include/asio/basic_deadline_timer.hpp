@@ -2,7 +2,7 @@
 // basic_deadline_timer.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -164,7 +164,7 @@ public:
     : basic_io_object<TimerService>(io_service)
   {
     asio::error_code ec;
-    this->get_service().expires_at(this->get_implementation(), expiry_time, ec);
+    this->service.expires_at(this->implementation, expiry_time, ec);
     asio::detail::throw_error(ec, "expires_at");
   }
 
@@ -183,8 +183,7 @@ public:
     : basic_io_object<TimerService>(io_service)
   {
     asio::error_code ec;
-    this->get_service().expires_from_now(
-        this->get_implementation(), expiry_time, ec);
+    this->service.expires_from_now(this->implementation, expiry_time, ec);
     asio::detail::throw_error(ec, "expires_from_now");
   }
 
@@ -213,7 +212,7 @@ public:
   std::size_t cancel()
   {
     asio::error_code ec;
-    std::size_t s = this->get_service().cancel(this->get_implementation(), ec);
+    std::size_t s = this->service.cancel(this->implementation, ec);
     asio::detail::throw_error(ec, "cancel");
     return s;
   }
@@ -242,7 +241,7 @@ public:
    */
   std::size_t cancel(asio::error_code& ec)
   {
-    return this->get_service().cancel(this->get_implementation(), ec);
+    return this->service.cancel(this->implementation, ec);
   }
 
   /// Cancels one asynchronous operation that is waiting on the timer.
@@ -272,8 +271,7 @@ public:
   std::size_t cancel_one()
   {
     asio::error_code ec;
-    std::size_t s = this->get_service().cancel_one(
-        this->get_implementation(), ec);
+    std::size_t s = this->service.cancel_one(this->implementation, ec);
     asio::detail::throw_error(ec, "cancel_one");
     return s;
   }
@@ -304,7 +302,7 @@ public:
    */
   std::size_t cancel_one(asio::error_code& ec)
   {
-    return this->get_service().cancel_one(this->get_implementation(), ec);
+    return this->service.cancel_one(this->implementation, ec);
   }
 
   /// Get the timer's expiry time as an absolute time.
@@ -314,7 +312,7 @@ public:
    */
   time_type expires_at() const
   {
-    return this->get_service().expires_at(this->get_implementation());
+    return this->service.expires_at(this->implementation);
   }
 
   /// Set the timer's expiry time as an absolute time.
@@ -342,8 +340,8 @@ public:
   std::size_t expires_at(const time_type& expiry_time)
   {
     asio::error_code ec;
-    std::size_t s = this->get_service().expires_at(
-        this->get_implementation(), expiry_time, ec);
+    std::size_t s = this->service.expires_at(
+        this->implementation, expiry_time, ec);
     asio::detail::throw_error(ec, "expires_at");
     return s;
   }
@@ -373,8 +371,7 @@ public:
   std::size_t expires_at(const time_type& expiry_time,
       asio::error_code& ec)
   {
-    return this->get_service().expires_at(
-        this->get_implementation(), expiry_time, ec);
+    return this->service.expires_at(this->implementation, expiry_time, ec);
   }
 
   /// Get the timer's expiry time relative to now.
@@ -384,7 +381,7 @@ public:
    */
   duration_type expires_from_now() const
   {
-    return this->get_service().expires_from_now(this->get_implementation());
+    return this->service.expires_from_now(this->implementation);
   }
 
   /// Set the timer's expiry time relative to now.
@@ -412,8 +409,8 @@ public:
   std::size_t expires_from_now(const duration_type& expiry_time)
   {
     asio::error_code ec;
-    std::size_t s = this->get_service().expires_from_now(
-        this->get_implementation(), expiry_time, ec);
+    std::size_t s = this->service.expires_from_now(
+        this->implementation, expiry_time, ec);
     asio::detail::throw_error(ec, "expires_from_now");
     return s;
   }
@@ -443,8 +440,8 @@ public:
   std::size_t expires_from_now(const duration_type& expiry_time,
       asio::error_code& ec)
   {
-    return this->get_service().expires_from_now(
-        this->get_implementation(), expiry_time, ec);
+    return this->service.expires_from_now(
+        this->implementation, expiry_time, ec);
   }
 
   /// Perform a blocking wait on the timer.
@@ -457,7 +454,7 @@ public:
   void wait()
   {
     asio::error_code ec;
-    this->get_service().wait(this->get_implementation(), ec);
+    this->service.wait(this->implementation, ec);
     asio::detail::throw_error(ec, "wait");
   }
 
@@ -470,7 +467,7 @@ public:
    */
   void wait(asio::error_code& ec)
   {
-    this->get_service().wait(this->get_implementation(), ec);
+    this->service.wait(this->implementation, ec);
   }
 
   /// Start an asynchronous wait on the timer.
@@ -506,7 +503,7 @@ public:
     // not meet the documented type requirements for a WaitHandler.
     ASIO_WAIT_HANDLER_CHECK(WaitHandler, handler) type_check;
 
-    return this->get_service().async_wait(this->get_implementation(),
+    return this->service.async_wait(this->implementation,
         ASIO_MOVE_CAST(WaitHandler)(handler));
   }
 };

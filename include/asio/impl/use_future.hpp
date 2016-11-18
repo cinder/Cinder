@@ -2,7 +2,7 @@
 // impl/use_future.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -33,10 +33,12 @@ namespace detail {
   {
   public:
     // Construct from use_future special value.
-    template <typename Allocator>
-    promise_handler(use_future_t<Allocator> uf)
+    template <typename Alloc>
+    promise_handler(use_future_t<Alloc> uf)
       : promise_(std::allocate_shared<std::promise<T> >(
-            uf.get_allocator(), std::allocator_arg, uf.get_allocator()))
+            typename Alloc::template rebind<char>::other(uf.get_allocator()),
+            std::allocator_arg,
+            typename Alloc::template rebind<char>::other(uf.get_allocator())))
     {
     }
 
@@ -65,10 +67,12 @@ namespace detail {
   {
   public:
     // Construct from use_future special value. Used during rebinding.
-    template <typename Allocator>
-    promise_handler(use_future_t<Allocator> uf)
+    template <typename Alloc>
+    promise_handler(use_future_t<Alloc> uf)
       : promise_(std::allocate_shared<std::promise<void> >(
-            uf.get_allocator(), std::allocator_arg, uf.get_allocator()))
+            typename Alloc::template rebind<char>::other(uf.get_allocator()),
+            std::allocator_arg,
+            typename Alloc::template rebind<char>::other(uf.get_allocator())))
     {
     }
 

@@ -2,7 +2,7 @@
 // detail/config.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -110,7 +110,6 @@
 // references and perfect forwarding.
 #if defined(ASIO_HAS_MOVE) && !defined(ASIO_MOVE_CAST)
 # define ASIO_MOVE_ARG(type) type&&
-# define ASIO_MOVE_ARG2(type1, type2) type1, type2&&
 # define ASIO_MOVE_CAST(type) static_cast<type&&>
 # define ASIO_MOVE_CAST2(type1, type2) static_cast<type1, type2&&>
 #endif // defined(ASIO_HAS_MOVE) && !defined(ASIO_MOVE_CAST)
@@ -158,25 +157,6 @@
 # endif // !defined(ASIO_DISABLE_VARIADIC_TEMPLATES)
 #endif // !defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
-// Support deleted functions on compilers known to allow it.
-#if !defined(ASIO_DELETED)
-# if defined(__GNUC__)
-#  if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
-#   if defined(__GXX_EXPERIMENTAL_CXX0X__)
-#    define ASIO_DELETED = delete
-#   endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
-#  endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
-# endif // defined(__GNUC__)
-# if defined(__clang__)
-#  if __has_feature(__cxx_deleted_functions__)
-#   define ASIO_DELETED = delete
-#  endif // __has_feature(__cxx_deleted_functions__)
-# endif // defined(__clang__)
-# if !defined(ASIO_DELETED)
-#  define ASIO_DELETED
-# endif // !defined(ASIO_DELETED)
-#endif // !defined(ASIO_DELETED)
-
 // Support constexpr on compilers known to allow it.
 #if !defined(ASIO_HAS_CONSTEXPR)
 # if !defined(ASIO_DISABLE_CONSTEXPR)
@@ -201,57 +181,6 @@
 #  define ASIO_CONSTEXPR
 # endif // defined(ASIO_HAS_CONSTEXPR)
 #endif // !defined(ASIO_CONSTEXPR)
-
-// Support noexcept on compilers known to allow it.
-#if !defined(ASIO_NOEXCEPT)
-# if !defined(ASIO_DISABLE_NOEXCEPT)
-#  if (BOOST_VERSION >= 105300)
-#   define ASIO_NOEXCEPT BOOST_NOEXCEPT
-#   define ASIO_NOEXCEPT_OR_NOTHROW BOOST_NOEXCEPT_OR_NOTHROW
-#  elif defined(__clang__)
-#   if __has_feature(__cxx_noexcept__)
-#    define ASIO_NOEXCEPT noexcept(true)
-#    define ASIO_NOEXCEPT_OR_NOTHROW noexcept(true)
-#   endif // __has_feature(__cxx_noexcept__)
-#  elif defined(__GNUC__)
-#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
-#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
-#      define ASIO_NOEXCEPT noexcept(true)
-#      define ASIO_NOEXCEPT_OR_NOTHROW noexcept(true)
-#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
-#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
-#  endif // defined(__GNUC__)
-# endif // !defined(ASIO_DISABLE_NOEXCEPT)
-# if !defined(ASIO_NOEXCEPT)
-#  define ASIO_NOEXCEPT
-# endif // !defined(ASIO_NOEXCEPT)
-# if !defined(ASIO_NOEXCEPT_OR_NOTHROW)
-#  define ASIO_NOEXCEPT_OR_NOTHROW throw()
-# endif // !defined(ASIO_NOEXCEPT_OR_NOTHROW)
-#endif // !defined(ASIO_NOEXCEPT)
-
-// Support automatic type deduction on compilers known to support it.
-#if !defined(ASIO_HAS_DECLTYPE)
-# if !defined(ASIO_DISABLE_DECLTYPE)
-#  if defined(__clang__)
-#   if __has_feature(__cxx_decltype__)
-#    define ASIO_HAS_DECLTYPE 1
-#   endif // __has_feature(__cxx_decltype__)
-#  endif // defined(__clang__)
-#  if defined(__GNUC__)
-#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) || (__GNUC__ > 4)
-#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
-#     define ASIO_HAS_DECLTYPE 1
-#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
-#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) || (__GNUC__ > 4)
-#  endif // defined(__GNUC__)
-#  if defined(ASIO_MSVC)
-#   if (_MSC_VER >= 1700)
-#    define ASIO_HAS_DECLTYPE 1
-#   endif // (_MSC_VER >= 1700)
-#  endif // defined(ASIO_MSVC)
-# endif // !defined(ASIO_DISABLE_DECLTYPE)
-#endif // !defined(ASIO_HAS_DECLTYPE)
 
 // Standard library support for system errors.
 #if !defined(ASIO_HAS_STD_SYSTEM_ERROR)
@@ -294,8 +223,7 @@
 #     define ASIO_ERROR_CATEGORY_NOEXCEPT noexcept(true)
 #   endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
 #  endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
-# endif // defined(__GNUC__)
-# if defined(ASIO_MSVC)
+# elif defined(ASIO_MSVC)
 #  if (_MSC_VER >= 1900)
 #   define ASIO_ERROR_CATEGORY_NOEXCEPT noexcept(true)
 #  endif // (_MSC_VER >= 1900)
@@ -356,31 +284,6 @@
 #  endif // defined(ASIO_MSVC)
 # endif // !defined(ASIO_DISABLE_STD_SHARED_PTR)
 #endif // !defined(ASIO_HAS_STD_SHARED_PTR)
-
-// Standard library support for allocator_arg_t.
-#if !defined(ASIO_HAS_STD_ALLOCATOR_ARG)
-# if !defined(ASIO_DISABLE_STD_ALLOCATOR_ARG)
-#  if defined(__clang__)
-#   if defined(ASIO_HAS_CLANG_LIBCXX)
-#    define ASIO_HAS_STD_ALLOCATOR_ARG 1
-#   elif (__cplusplus >= 201103)
-#    define ASIO_HAS_STD_ALLOCATOR_ARG 1
-#   endif // (__cplusplus >= 201103)
-#  endif // defined(__clang__)
-#  if defined(__GNUC__)
-#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) || (__GNUC__ > 4)
-#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
-#     define ASIO_HAS_STD_ALLOCATOR_ARG 1
-#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
-#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) || (__GNUC__ > 4)
-#  endif // defined(__GNUC__)
-#  if defined(ASIO_MSVC)
-#   if (_MSC_VER >= 1600)
-#    define ASIO_HAS_STD_ALLOCATOR_ARG 1
-#   endif // (_MSC_VER >= 1600)
-#  endif // defined(ASIO_MSVC)
-# endif // !defined(ASIO_DISABLE_STD_ALLOCATOR_ARG)
-#endif // !defined(ASIO_HAS_STD_ALLOCATOR_ARG)
 
 // Standard library support for atomic operations.
 #if !defined(ASIO_HAS_STD_ATOMIC)
@@ -534,28 +437,6 @@
 # endif // !defined(ASIO_DISABLE_STD_TYPE_TRAITS)
 #endif // !defined(ASIO_HAS_STD_TYPE_TRAITS)
 
-// Standard library support for the nullptr_t type.
-#if !defined(ASIO_HAS_NULLPTR)
-# if !defined(ASIO_DISABLE_NULLPTR)
-#  if defined(__clang__)
-#   if __has_feature(__cxx_nullptr__)
-#    define ASIO_HAS_NULLPTR 1
-#   endif // __has_feature(__cxx_rvalue_references__)
-#  elif defined(__GNUC__)
-#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) || (__GNUC__ > 4)
-#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
-#     define ASIO_HAS_NULLPTR 1
-#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
-#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) || (__GNUC__ > 4)
-#  endif // defined(__GNUC__)
-#  if defined(ASIO_MSVC)
-#   if (_MSC_VER >= 1700)
-#    define ASIO_HAS_NULLPTR 1
-#   endif // (_MSC_VER >= 1700)
-#  endif // defined(ASIO_MSVC)
-# endif // !defined(ASIO_DISABLE_NULLPTR)
-#endif // !defined(ASIO_HAS_NULLPTR)
-
 // Standard library support for the cstdint header.
 #if !defined(ASIO_HAS_CSTDINT)
 # if !defined(ASIO_DISABLE_CSTDINT)
@@ -635,49 +516,40 @@
 # endif // !defined(ASIO_DISABLE_STD_MUTEX_AND_CONDVAR)
 #endif // !defined(ASIO_HAS_STD_MUTEX_AND_CONDVAR)
 
-// Standard library support for the call_once function.
-#if !defined(ASIO_HAS_STD_CALL_ONCE)
-# if !defined(ASIO_DISABLE_STD_CALL_ONCE)
-#  if defined(__clang__)
-#   if defined(ASIO_HAS_CLANG_LIBCXX)
-#    define ASIO_HAS_STD_CALL_ONCE 1
-#   elif (__cplusplus >= 201103)
-#    if __has_include(<mutex>)
-#     define ASIO_HAS_STD_CALL_ONCE 1
-#    endif // __has_include(<mutex>)
-#   endif // (__cplusplus >= 201103)
-#  endif // defined(__clang__)
-#  if defined(__GNUC__)
-#   if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
-#    if defined(__GXX_EXPERIMENTAL_CXX0X__)
-#     define ASIO_HAS_STD_CALL_ONCE 1
-#    endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
-#   endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
-#  endif // defined(__GNUC__)
-#  if defined(ASIO_MSVC)
-#   if (_MSC_VER >= 1700)
-#    define ASIO_HAS_STD_CALL_ONCE 1
-#   endif // (_MSC_VER >= 1700)
-#  endif // defined(ASIO_MSVC)
-# endif // !defined(ASIO_DISABLE_STD_CALL_ONCE)
-#endif // !defined(ASIO_HAS_STD_CALL_ONCE)
-
-// WinRT target.
-#if !defined(ASIO_WINDOWS_RUNTIME)
-# if defined(__cplusplus_winrt)
+// Windows App target. Windows but with a limited API.
+#if !defined(ASIO_WINDOWS_APP)
+# if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0603)
 #  include <winapifamily.h>
-#  if WINAPI_FAMILY_ONE_PARTITION(WINAPI_FAMILY, WINAPI_PARTITION_APP)
-#   define ASIO_WINDOWS_RUNTIME 1
-#  endif // WINAPI_FAMILY_ONE_PARTITION(WINAPI_FAMILY, WINAPI_PARTITION_APP)
-# endif // defined(__cplusplus_winrt)
+#  if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP) \
+   && !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+#   define ASIO_WINDOWS_APP 1
+#  endif // WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+         // && !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+# endif // defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0603)
+#endif // !defined(ASIO_WINDOWS_APP)
+
+// Legacy WinRT target. Windows App is preferred.
+#if !defined(ASIO_WINDOWS_RUNTIME)
+# if !defined(ASIO_WINDOWS_APP)
+#  if defined(__cplusplus_winrt)
+#   include <winapifamily.h>
+#   if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP) \
+    && !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+#    define ASIO_WINDOWS_RUNTIME 1
+#   endif // WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+          // && !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+#  endif // defined(__cplusplus_winrt)
+# endif // !defined(ASIO_WINDOWS_APP)
 #endif // !defined(ASIO_WINDOWS_RUNTIME)
 
-// Windows target. Excludes WinRT.
+// Windows target. Excludes WinRT but includes Windows App targets.
 #if !defined(ASIO_WINDOWS)
 # if !defined(ASIO_WINDOWS_RUNTIME)
 #  if defined(ASIO_HAS_BOOST_CONFIG) && defined(BOOST_WINDOWS)
 #   define ASIO_WINDOWS 1
 #  elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
+#   define ASIO_WINDOWS 1
+#  elif defined(ASIO_WINDOWS_APP)
 #   define ASIO_WINDOWS 1
 #  endif // defined(ASIO_HAS_BOOST_CONFIG) && defined(BOOST_WINDOWS)
 # endif // !defined(ASIO_WINDOWS_RUNTIME)
@@ -746,11 +618,11 @@
 #if !defined(ASIO_HAS_IOCP)
 # if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
 #  if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0400)
-#   if !defined(UNDER_CE)
+#   if !defined(UNDER_CE) && !defined(ASIO_WINDOWS_APP)
 #    if !defined(ASIO_DISABLE_IOCP)
 #     define ASIO_HAS_IOCP 1
 #    endif // !defined(ASIO_DISABLE_IOCP)
-#   endif // !defined(UNDER_CE)
+#   endif // !defined(UNDER_CE) && !defined(ASIO_WINDOWS_APP)
 #  endif // defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0400)
 # endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
 #endif // !defined(ASIO_HAS_IOCP)
@@ -866,9 +738,9 @@
 #if !defined(ASIO_HAS_WINDOWS_OBJECT_HANDLE)
 # if !defined(ASIO_DISABLE_WINDOWS_OBJECT_HANDLE)
 #  if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-#   if !defined(UNDER_CE)
+#   if !defined(UNDER_CE) && !defined(ASIO_WINDOWS_APP)
 #    define ASIO_HAS_WINDOWS_OBJECT_HANDLE 1
-#   endif // !defined(UNDER_CE)
+#   endif // !defined(UNDER_CE) && !defined(ASIO_WINDOWS_APP)
 #  endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
 # endif // !defined(ASIO_DISABLE_WINDOWS_OBJECT_HANDLE)
 #endif // !defined(ASIO_HAS_WINDOWS_OBJECT_HANDLE)
@@ -932,15 +804,25 @@
 
 // Can use getaddrinfo() and getnameinfo().
 #if !defined(ASIO_HAS_GETADDRINFO)
-# if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-#  if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501)
+# if !defined(ASIO_DISABLE_GETADDRINFO)
+#  if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
+#   if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501)
+#    define ASIO_HAS_GETADDRINFO 1
+#   elif defined(UNDER_CE)
+#    define ASIO_HAS_GETADDRINFO 1
+#   endif // defined(UNDER_CE)
+#  elif defined(__MACH__) && defined(__APPLE__)
+#   if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
+#    if (__MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
+#     define ASIO_HAS_GETADDRINFO 1
+#    endif // (__MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
+#   else // defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
+#    define ASIO_HAS_GETADDRINFO 1
+#   endif // defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
+#  else // defined(__MACH__) && defined(__APPLE__)
 #   define ASIO_HAS_GETADDRINFO 1
-#  elif defined(UNDER_CE)
-#   define ASIO_HAS_GETADDRINFO 1
-#  endif // defined(UNDER_CE)
-# elif !(defined(__MACH__) && defined(__APPLE__))
-#  define ASIO_HAS_GETADDRINFO 1
-# endif // !(defined(__MACH__) && defined(__APPLE__))
+#  endif // defined(__MACH__) && defined(__APPLE__)
+# endif // !defined(ASIO_DISABLE_GETADDRINFO)
 #endif // !defined(ASIO_HAS_GETADDRINFO)
 
 // Whether standard iostreams are disabled.
