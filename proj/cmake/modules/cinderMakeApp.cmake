@@ -76,7 +76,18 @@ function( ci_make_app )
 		# copy any other resources specified by user
 		set_source_files_properties( ${ARG_RESOURCES} PROPERTIES HEADER_FILE_ONLY ON MACOSX_PACKAGE_LOCATION Resources )
 	elseif( CINDER_LINUX )
-		unset( ARG_RESOURCES ) # Don't allow resources to be added to the executable on linux
+		if( ARG_RESOURCES )
+			# copy resources to a folder next to the app names 'resources'. note the folder is flat, so duplicates will be overwritten
+			get_filename_component( RESOURCES_DEST_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources" ABSOLUTE )
+			message( "copying resources to: ${RESOURCES_DEST_PATH}" )
+			if( EXISTS "${RESOURCES_DEST_PATH}" )
+				message( "resources destination path exists, removing old first." )
+			endif()
+
+			file( COPY "${ARG_RESOURCES}" DESTINATION "${RESOURCES_DEST_PATH}" )
+
+			unset( ARG_RESOURCES ) # Don't allow resources to be added to the executable on linux
+		endif()
 	elseif( CINDER_MSW )		
 		if( MSVC )
 			# Override the default /MD with /MT
