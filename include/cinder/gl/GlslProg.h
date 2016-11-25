@@ -137,7 +137,8 @@ class GlslProg {
 		
 	  private:
 		std::string				mName;
-		GLint					mDataSize = 0, mLoc = -1, mBlockBinding;
+		GLint					mDataSize = 0, mLoc = -1;
+		mutable GLint			mBlockBinding;
 		std::vector<Uniform>	mActiveUniforms;
 		std::map<GLenum, std::vector<GLint>> mActiveUniformInfo;
 		
@@ -443,9 +444,9 @@ class GlslProg {
 
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	//! Analogous to glUniformBlockBinding()
-	void	uniformBlock( const std::string &name, GLint binding );
+	void	uniformBlock( const std::string &name, GLint binding ) const;
 	//! Analogous to glUniformBlockBinding()
-	void	uniformBlock( GLint loc, GLint binding );
+	void	uniformBlock( GLint loc, GLint binding ) const;
 	//!	Returns the uniform block location of the Uniform Block that matches \a name.
 	GLint	getUniformBlockLocation( const std::string &name ) const;
 	//! Returns the size of the Uniform block matching \a blockIndex.

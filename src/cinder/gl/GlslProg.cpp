@@ -1165,7 +1165,7 @@ const GlslProg::UniformBlock* GlslProg::findUniformBlock( const std::string &nam
 	return ret;
 }
 
-void GlslProg::uniformBlock( int loc, int binding )
+void GlslProg::uniformBlock( int loc, int binding ) const
 {
 	auto found = find_if( mUniformBlocks.begin(), mUniformBlocks.end(),
 						 [loc]( const UniformBlock &block ) {
@@ -1183,7 +1183,7 @@ void GlslProg::uniformBlock( int loc, int binding )
 	}
 }
 
-void GlslProg::uniformBlock( const std::string &name, GLint binding )
+void GlslProg::uniformBlock( const std::string &name, GLint binding ) const
 {
 	auto found = findUniformBlock( name );
 	if( found ) {
