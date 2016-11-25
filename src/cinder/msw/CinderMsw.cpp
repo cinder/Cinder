@@ -246,7 +246,7 @@ HRESULT STDMETHODCALLTYPE ComIStream::Seek( LARGE_INTEGER liDistanceToMove, DWOR
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE ComIStream::Stat( STATSTG* pStatstg, DWORD grfStatFlag)
+HRESULT STDMETHODCALLTYPE ComIStream::Stat( STATSTG* pStatstg, DWORD /*grfStatFlag*/)
 {
 	pStatstg->pwcsName = NULL;
 	pStatstg->cbSize.QuadPart = (ULONGLONG)mIStream->size();
