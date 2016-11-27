@@ -476,7 +476,7 @@ bool Message::operator==( const Message &message ) const
 	auto sameDataViewSize = message.mDataViews.size() == mDataViews.size();
 	if( ! sameDataViewSize )
 		return false;
-	for( int i = 0; i < mDataViews.size(); i++ ) {
+	for( size_t i = 0; i < mDataViews.size(); i++ ) {
 		auto sameDataView = message.mDataViews[i] == mDataViews[i];
 		if( ! sameDataView )
 			return false;
