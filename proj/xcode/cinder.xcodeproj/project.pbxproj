@@ -269,6 +269,10 @@
 		00D92FE10EB8CC7200EE9D75 /* Url.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D92FE00EB8CC7200EE9D75 /* Url.h */; };
 		00E0B4B20F605D64002C8FBD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00E0B4B10F605D64002C8FBD /* CoreGraphics.framework */; };
 		00E0B60D0F60DE8B002C8FBD /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00E0B60C0F60DE8B002C8FBD /* ApplicationServices.framework */; };
+		00E2444E1DEA8B8200AAE4A8 /* raster.c in Sources */ = {isa = PBXBuildFile; fileRef = 00E2444A1DEA8B8200AAE4A8 /* raster.c */; };
+		00E2444F1DEA8B8200AAE4A8 /* rastpic.c in Sources */ = {isa = PBXBuildFile; fileRef = 00E2444B1DEA8B8200AAE4A8 /* rastpic.c */; };
+		00E244501DEA8BF000AAE4A8 /* raster.c in Sources */ = {isa = PBXBuildFile; fileRef = 00E2444A1DEA8B8200AAE4A8 /* raster.c */; };
+		00E244511DEA8BF000AAE4A8 /* raster.c in Sources */ = {isa = PBXBuildFile; fileRef = 00E2444A1DEA8B8200AAE4A8 /* raster.c */; };
 		00F3BD1D0EBF88AA00382AC1 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00F3BD1C0EBF88AA00382AC1 /* Utilities.cpp */; };
 		00F3BD200EBF89B700382AC1 /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		00F601C819F6C9DD00C83781 /* Ubo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00F601C719F6C9DD00C83781 /* Ubo.cpp */; };
@@ -1860,6 +1864,8 @@
 		00D92FE00EB8CC7200EE9D75 /* Url.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Url.h; sourceTree = "<group>"; };
 		00E0B4B10F605D64002C8FBD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00E0B60C0F60DE8B002C8FBD /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		00E2444A1DEA8B8200AAE4A8 /* raster.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = raster.c; path = ../../src/freetype/raster/raster.c; sourceTree = "<group>"; };
+		00E2444B1DEA8B8200AAE4A8 /* rastpic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rastpic.c; path = ../../src/freetype/raster/rastpic.c; sourceTree = "<group>"; };
 		00E5A41B163F5A2B00AACB3A /* CaptureImplCocoaDummy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplCocoaDummy.h; sourceTree = "<group>"; };
 		00E5A41D163F5AC500AACB3A /* CaptureImplCocoaDummy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureImplCocoaDummy.mm; sourceTree = "<group>"; };
 		00F3BD1C0EBF88AA00382AC1 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
@@ -2898,6 +2904,15 @@
 			name = gl;
 			sourceTree = "<group>";
 		};
+		00E244471DEA8B5D00AAE4A8 /* raster */ = {
+			isa = PBXGroup;
+			children = (
+				00E2444A1DEA8B8200AAE4A8 /* raster.c */,
+				00E2444B1DEA8B8200AAE4A8 /* rastpic.c */,
+			);
+			name = raster;
+			sourceTree = "<group>";
+		};
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -3429,6 +3444,7 @@
 				B3EA40E91DD0F0E100E34348 /* psaux */,
 				B3EA40EE1DD0F0F300E34348 /* pshinter */,
 				B3EA40F31DD0F10A00E34348 /* psnames */,
+				00E244471DEA8B5D00AAE4A8 /* raster */,
 				B3EA40531DD0EF2600E34348 /* sfnt */,
 				B3EA40C11DD0F01C00E34348 /* smooth */,
 				B3EA40581DD0EF3900E34348 /* truetype */,
@@ -4740,6 +4756,7 @@
 				B322C4631DC7DC7100D2E661 /* deflate.c in Sources */,
 				27C100361BD16D4800AF387F /* BandedMatrix.cpp in Sources */,
 				B3EA40B41DD0F00900E34348 /* ftstroke.c in Sources */,
+				00E244511DEA8BF000AAE4A8 /* raster.c in Sources */,
 				27C100371BD16D4800AF387F /* BSplineFit.cpp in Sources */,
 				B322C46F1DC7DC7100D2E661 /* gzlib.c in Sources */,
 				B322C4841DC7DC7100D2E661 /* inflate.c in Sources */,
@@ -4991,6 +5008,7 @@
 				B322C4621DC7DC7100D2E661 /* deflate.c in Sources */,
 				27C1FEE01BD0AE3400AF387F /* BandedMatrix.cpp in Sources */,
 				B3EA40B31DD0F00900E34348 /* ftstroke.c in Sources */,
+				00E244501DEA8BF000AAE4A8 /* raster.c in Sources */,
 				27C1FEE11BD0AE3400AF387F /* BSplineFit.cpp in Sources */,
 				B322C46E1DC7DC7100D2E661 /* gzlib.c in Sources */,
 				B322C4831DC7DC7100D2E661 /* inflate.c in Sources */,
@@ -5313,6 +5331,7 @@
 				009FD54C10C9AEA100D63B1B /* ImageIo.cpp in Sources */,
 				009FD55710CAB8B700D63B1B /* ImageSourceFileQuartz.cpp in Sources */,
 				00BC898B10D2BE9400D6DC59 /* DataTarget.cpp in Sources */,
+				00E2444E1DEA8B8200AAE4A8 /* raster.c in Sources */,
 				B3EA40941DD0F00900E34348 /* ftfstype.c in Sources */,
 				B3EA40AF1DD0F00900E34348 /* ftpfr.c in Sources */,
 				B322C4821DC7DC7100D2E661 /* inflate.c in Sources */,
@@ -5374,6 +5393,7 @@
 				0003F40B1992D64100647C8B /* TransformFeedbackObj.cpp in Sources */,
 				B3EA408B1DD0F00900E34348 /* ftbitmap.c in Sources */,
 				B322C46D1DC7DC7100D2E661 /* gzlib.c in Sources */,
+				00E2444F1DEA8B8200AAE4A8 /* rastpic.c in Sources */,
 				B3EA40A01DD0F00900E34348 /* ftinit.c in Sources */,
 				00A114091355369A00081873 /* geom.c in Sources */,
 				B322C49D1DC7DC7100D2E661 /* zutil.c in Sources */,
