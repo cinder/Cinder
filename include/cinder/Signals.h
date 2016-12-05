@@ -152,6 +152,22 @@ class ScopedConnection : public Connection, private Noncopyable {
 	ScopedConnection& operator=( ScopedConnection &&rhs );
 };
 
+//! Maintains a list of Connections and calls disconnect on them when it is destroyed. Non-copyable.
+class ConnectionList : private Noncopyable {
+  public:
+	~ConnectionList();
+
+	//! Add a Connection to the list
+	void add( Connection &&target );
+	//! Disconnects and clears all Connections.
+	void clear();
+	//! Same as add()
+	void operator+=( Connection &&target ) { add( std::move( target ) ); }
+
+  private:
+	std::vector<Connection>	mConnections;
+};
+
 namespace detail {
 
 //! The template implementation for callback list.

@@ -111,6 +111,22 @@ ScopedConnection& ScopedConnection::operator=( ScopedConnection &&rhs )
 	return *this;
 }
 
+ConnectionList::~ConnectionList()
+{
+	clear();
+}
+
+void ConnectionList::add( Connection &&target )
+{
+	mConnections.emplace_back( target );
+}
+
+void ConnectionList::clear()
+{
+	for( auto &conn : mConnections )
+		conn.disconnect();
+}
+
 namespace detail {
 
 Disconnector::Disconnector( SignalBase *signal )
