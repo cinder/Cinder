@@ -50,9 +50,11 @@ TEST_CASE( "audio/Fft" )
 
 SECTION( "round trip error" )
 {
+#if defined( CINDER_MAC )
 	CI_LOG_I( "... Fft round trip max acceptable error: " << ACCEPTABLE_FLOAT_ERROR );
 	for( size_t i = 0; i < 14; i ++ )
 		computeRoundTrip( 2 << i );
+#endif
 }
 
 } // "audio/Fft"
