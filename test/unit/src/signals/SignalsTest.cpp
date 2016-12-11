@@ -325,9 +325,42 @@ TEST_CASE( "signals/Signals" )
 		REQUIRE( accum == 2 );
 	}
 
-	SECTION("Signal result collection")
+	SECTION( "ConnectionList" )
 	{
-		SECTION("TestCollectorVector")
+		Signal<void ()> sig;
+		ConnectionList connections;
+
+		int accum = 0;
+		auto slot = [&] { accum++; };
+
+		connections += sig.connect( slot );
+		REQUIRE( sig.getNumSlots() == 1 );
+
+		{
+			ConnectionList connections2;
+
+			connections += sig.connect( slot );
+			connections2 += sig.connect( slot );
+
+			REQUIRE( sig.getNumSlots() == 3 );
+		}
+
+		REQUIRE( sig.getNumSlots() == 2 );
+
+		sig.emit();
+		REQUIRE( accum == 2 );
+
+		connections.clear();
+		REQUIRE( sig.getNumSlots() == 0 );
+
+		accum = 0;
+		sig.emit();
+		REQUIRE( accum == 0 );
+	}
+
+	SECTION( "Signal result collection" )
+	{
+		SECTION( "TestCollectorVector" )
 		{
 			auto handler1 = [] { return 1; };
 			auto handler42 = []  { return 42; };
@@ -528,4 +561,5 @@ TEST_CASE( "signals/Signals" )
 			REQUIRE( sum == 10 );
 		}
 	}
+
 } // Signals
