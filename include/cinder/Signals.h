@@ -145,10 +145,8 @@ class ScopedConnection : public Connection, private Noncopyable {
   public:
 	ScopedConnection();
 	~ScopedConnection();
-	ScopedConnection( const Connection &other );
 	ScopedConnection( ScopedConnection &&other );
 	ScopedConnection( Connection &&other );
-	ScopedConnection& operator=( const Connection &rhs );
 	ScopedConnection& operator=( ScopedConnection &&rhs );
 };
 

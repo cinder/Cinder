@@ -83,11 +83,6 @@ ScopedConnection::~ScopedConnection()
 	disconnect();
 }
 
-ScopedConnection::ScopedConnection( const Connection &other )
-	: Connection( other )
-{
-}
-
 ScopedConnection::ScopedConnection( ScopedConnection &&other )
 	: Connection( std::move( other ) )
 {
@@ -96,13 +91,6 @@ ScopedConnection::ScopedConnection( ScopedConnection &&other )
 ScopedConnection::ScopedConnection( Connection &&other )
 	: Connection( std::move( other ) )
 {
-}
-
-ScopedConnection& ScopedConnection::operator=( const Connection &rhs )
-{
-	disconnect();
-	Connection::operator=( rhs );
-	return *this;
 }
 
 ScopedConnection& ScopedConnection::operator=( ScopedConnection &&rhs )
