@@ -37,6 +37,7 @@
 #include "cinder/gl/Query.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/ShaderPreprocessor.h"
+#include "cinder/gl/Ssbo.h"
 #include "cinder/gl/Sync.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/TextureFont.h"
