@@ -111,13 +111,12 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
-			GLint dataFormat;
 #if defined( CINDER_GL_ES )
-			dataFormat = GL_LUMINANCE_ALPHA;
-			textureFormat.setInternalFormat( dataFormat );
+			textureFormat.setDataFormat( GL_LUMINANCE_ALPHA );
+			textureFormat.setInternalFormat( GL_LUMINANCE_ALPHA );
 #else
-			dataFormat = GL_RG;
-			textureFormat.setInternalFormat( dataFormat );
+			textureFormat.setDataFormat( GL_RG );
+			textureFormat.setInternalFormat( GL_RG );
 			textureFormat.setSwizzleMask( { GL_RED, GL_RED, GL_RED, GL_GREEN } );
 #endif
 			if( mFormat.hasMipmapping() )
@@ -133,7 +132,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 					offset += 2;
 				}
 			}
-			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), dataFormat, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
+			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 			mTextures.back()->setTopDown( true );
 
 			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
@@ -302,13 +301,15 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			}
 
 #if defined( CINDER_GL_ES )
+			textureFormat.setDataFormat( GL_LUMINANCE_ALPHA );
 			textureFormat.setInternalFormat( GL_LUMINANCE_ALPHA );
 #else
+			textureFormat.setDataFormat( GL_RG );
 			textureFormat.setInternalFormat( GL_RG );
 			array<GLint,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_GREEN };
 			textureFormat.setSwizzleMask( swizzleMask );
 #endif
-			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), textureFormat.getInternalFormat(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
+			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 			mTextures.back()->setTopDown( true );
 			ip::fill<uint8_t>( &channel, 0 );			
 			curOffset = ivec2( 0, 0 );
