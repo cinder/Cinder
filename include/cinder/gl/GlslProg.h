@@ -271,6 +271,8 @@ class GlslProg {
 		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
 		//! Adds a custom search directory to the ShaderPreprocessor's search list.
 		Format&	addPreprocessorSearchDirectory( const fs::path &dir )	{ mPreprocessorSearchDirectories.push_back( dir ); return *this; }
+		//! TODO: need to return the signal's Connection, but how?
+		Format& addPreprocessorIncludeHandler( const std::function<bool ( const fs::path &,std::string * )> &handler ) { mPreprocessorIncludeHanders.push_back( handler ); return *this; }
 		
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
@@ -328,6 +330,7 @@ class GlslProg {
 		bool							mPreprocessingEnabled;
 		std::string						mLabel;
 		std::vector<fs::path>			mPreprocessorSearchDirectories;
+		std::vector<std::function<bool ( const fs::path &,std::string * )>>	mPreprocessorIncludeHanders;
 
 		friend class		GlslProg;
 	};

@@ -473,6 +473,10 @@ GlslProg::GlslProg( const Format &format )
 		for( const auto &dir : format.mPreprocessorSearchDirectories )
 			mShaderPreprocessor->addSearchDirectory( dir );
 
+		// copy include handlers
+		for( const auto &fn : format.mPreprocessorIncludeHanders )
+			mShaderPreprocessor->getSignalInclude().connect( fn );
+
 		if( format.getVersion() )
 			mShaderPreprocessor->setVersion( format.getVersion() );
 	}
