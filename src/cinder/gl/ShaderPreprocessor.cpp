@@ -31,8 +31,6 @@ using namespace std;
 
 namespace cinder { namespace gl {
 
-signals::Signal<bool(const fs::path&,std::string*)> ShaderPreprocessor::sSignalInclude;
-
 namespace {
 // due to null or the rest of the line being a comment (//)
 bool isTerminated( const char *c )
@@ -284,11 +282,13 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 {	
 	string output;
 	string signalIncludeResult;
-	if( sSignalInclude.emit( path, &signalIncludeResult ) ){
+	if( mSignalInclude.emit( path, &signalIncludeResult ) ) {
 		
-		if( includeTree.count( path ) )
-			throw ShaderPreprocessorExc( "circular include found, path: " + path.string() );
-
+		if( includeTree.count( path ) ) {
+			// circular include, skip it as it has already been appended.
+			return "";
+		}
+	
 		includeTree.insert( path );
 		istringstream input( signalIncludeResult );
 		output = readStream( input, path, includeTree );

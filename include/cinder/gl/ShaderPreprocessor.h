@@ -65,7 +65,8 @@ class ShaderPreprocessor {
 	//! Specifies the #version directive to add to the shader sources
 	void	setVersion( int version )	{ mVersion = version; }
 
-	static signals::Signal<bool(const fs::path&,std::string*)>& getSignalInclude() { return sSignalInclude; }
+
+	signals::Signal<bool ( const fs::path &,std::string * )>& getSignalInclude()	{ return mSignalInclude; }
 	
   private:
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
@@ -73,10 +74,12 @@ class ShaderPreprocessor {
 	std::string		readStream( std::istream &stream, const fs::path &path, std::set<fs::path> &includeTree );
 	std::string		parseDirectives( const std::string &source );
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
+	
 	int								mVersion;
 	std::vector<std::string>		mDefineDirectives;
 	std::vector<fs::path>			mSearchDirectories;
-	static signals::Signal<bool(const fs::path&, std::string*)> sSignalInclude;
+	
+	signals::Signal<bool ( const fs::path &, std::string * )> mSignalInclude;
 };
 
 //! Exception thrown when there is an error preprocessing the shader source in `ShaderPreprocessor`.
