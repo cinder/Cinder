@@ -1,7 +1,7 @@
 #include "cinder/Cinder.h"
 
 // FIXME: OOURA roundtrip FFT seems to be broken on windows for sizeFft = 4 (https://github.com/cinder/Cinder/issues/1263)
-#if ! defined( CINDER_MSW )
+#if defined( CINDER_MAC )
 
 #include "catch.hpp"
 #include "utils.h"
@@ -50,11 +50,9 @@ TEST_CASE( "audio/Fft" )
 
 SECTION( "round trip error" )
 {
-#if defined( CINDER_MAC )
 	CI_LOG_I( "... Fft round trip max acceptable error: " << ACCEPTABLE_FLOAT_ERROR );
 	for( size_t i = 0; i < 14; i ++ )
 		computeRoundTrip( 2 << i );
-#endif
 }
 
 } // "audio/Fft"
