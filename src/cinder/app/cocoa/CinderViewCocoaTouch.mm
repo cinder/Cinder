@@ -52,8 +52,10 @@ static bool sIsEaglLayer;
 		mRenderer = renderer;
 
 		renderer->setup( cocoa::CgRectToArea( frame ), self, sharedRenderer );
-		
+
+		#ifndef CINDER_TVOS
 		self.multipleTouchEnabled = mApp->isMultiTouchEnabled();
+		#endif
 	}
 
 	mDelegate = nil;

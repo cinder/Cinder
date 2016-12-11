@@ -75,6 +75,10 @@ using std::uint64_t;
 	#include <AvailabilityMacros.h>
 	#if TARGET_OS_IPHONE
 		#define CINDER_COCOA_TOUCH
+		#if TARGET_OS_TV
+			#define CINDER_TVOS
+			#define CINDER_GL_ES_3
+		#endif
 		#if TARGET_IPHONE_SIMULATOR
 			#define CINDER_COCOA_TOUCH_SIMULATOR
 		#else

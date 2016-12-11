@@ -87,6 +87,7 @@ SafeUiImage createUiImage( const ImageSourceRef imageSource )
 	return result;
 }
 
+#ifndef CINDER_TVOS
 void writeToSavedPhotosAlbum( const ImageSourceRef imageSource )
 {
 	cocoa::SafeUiImage uiImage = cocoa::createUiImage( imageSource );
@@ -96,5 +97,6 @@ void writeToSavedPhotosAlbum( const ImageSourceRef imageSource )
 		::UIImageWriteToSavedPhotosAlbum( uiImage, saveFinishedDelegate, @selector(image:didFinishSavingWithError:contextInfo:), new cocoa::SafeUiImage( uiImage ) );
 	}
 }
+#endif // ! CINDER_TVOS
 
 } } // namespace cinder::cocoa

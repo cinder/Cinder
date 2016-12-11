@@ -36,8 +36,9 @@ using namespace cinder::app;
 {
 	mApp = AppCocoaTouch::get();
 	mAppImpl = mApp->privateGetImpl();
-
+#ifndef CINDER_TVOS
 	[UIApplication sharedApplication].statusBarHidden = mAppImpl->mStatusBarShouldHide;
+#endif
 
 	for( auto &windowImpl : mAppImpl->mWindows )
 		[windowImpl finishLoad];
@@ -152,6 +153,7 @@ using namespace cinder::app;
 	mApp->emitSignalProximitySensor( mProximityStateIsClose );
 }
 
+#ifndef CINDER_TVOS
 - (void)batteryStateChange:(NSNotificationCenter *)notification
 {
 	bool unplugged = [UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnplugged;
@@ -165,6 +167,7 @@ using namespace cinder::app;
 {
 	mBatteryLevel = [UIDevice currentDevice].batteryLevel;
 }
+#endif // ! CINDER_TVOS
 
 - (void)startAnimation
 {
@@ -310,6 +313,7 @@ using namespace cinder::app;
 	return NULL;
 }
 
+#ifndef CINDER_TVOS
 - (void)showStatusBar:(UIStatusBarAnimation)anim
 {
 	if( [UIApplication sharedApplication].statusBarHidden != NO ) {
@@ -338,6 +342,7 @@ using namespace cinder::app;
 		default:												return InterfaceOrientation::Unknown;
 	}
 }
+#endif // ! CINDER_TVOS
 
 @end // AppImplCocoaTouch
 
@@ -353,7 +358,9 @@ using namespace cinder::app;
 {
 	self = [super initWithNibName:nil bundle:nil];
 
+#ifndef CINDER_TVOS
 	self.wantsFullScreenLayout = YES;
+#endif
 
 	mAppImpl = appImpl;
 	mResizeHasFired = NO;
@@ -398,8 +405,10 @@ using namespace cinder::app;
 - (void)dealloc
 {
 	if( mKeyboardTextView ) {
+#ifndef CINDER_TVOS
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+#endif
 		[mKeyboardTextView release];
 	}
 
@@ -418,6 +427,7 @@ using namespace cinder::app;
 	return mAppImpl->mStatusBarShouldHide;
 }
 
+#ifndef CINDER_TVOS
 // pre iOS 6
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
@@ -431,6 +441,7 @@ using namespace cinder::app;
 
 	return ( ( supportedOrientations & orientation ) != 0 );
 }
+#endif // ! CINDER_TVOS
 
 // iOS 6+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
@@ -533,9 +544,10 @@ using namespace cinder::app;
 		mKeyboardTextView.autocorrectionType = UITextAutocorrectionTypeNo;
 
 		[mCinderView addSubview:mKeyboardTextView];
-
+#if ! defined(CINDER_TVOS)
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+#endif
 	}
 
 	return mKeyboardTextView;

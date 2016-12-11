@@ -78,15 +78,19 @@
 - (const std::string &)getKeyboardString;
 - (void)setKeyboardString:(const std::string &)keyboardString;
 - (UITextView *)getKeyboardTextView;
+#ifndef CINDER_TVOS
 - (void)showStatusBar:(UIStatusBarAnimation)anim;
 - (void)hideStatusBar:(UIStatusBarAnimation)anim;
+#endif
 - (void)displayLinkDraw:(id)sender;
 - (void)proximityStateChange:(NSNotificationCenter *)notification;
 - (void)batteryStateChange:(NSNotificationCenter *)notification;
 - (void)batteryLevelChange:(NSNotificationCenter *)notification;
 - (void)startAnimation;
 - (void)stopAnimation;
+#ifndef CINDER_TVOS
 - (cinder::app::InterfaceOrientation)convertInterfaceOrientation:(UIInterfaceOrientation)orientation;
+#endif
 
 @end // AppImplCocoaTouch
 

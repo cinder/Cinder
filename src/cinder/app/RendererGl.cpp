@@ -155,7 +155,11 @@ EAGLContext* RendererGl::getEaglContext() const
 
 void RendererGl::startDraw()
 {
+#if defined( CINDER_TVOS )
+	[mImpl makeCurrentContext:true];
+#else
 	[mImpl makeCurrentContext:false];
+#endif
 }
 
 void RendererGl::finishDraw()
