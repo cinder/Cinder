@@ -125,6 +125,8 @@ void ConnectionList::clear()
 {
 	for( auto &conn : mConnections )
 		conn.disconnect();
+
+	mConnections.clear();
 }
 
 namespace detail {
