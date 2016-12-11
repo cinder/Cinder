@@ -38,6 +38,7 @@
 		#import <CoreVideo/CoreVideo.h>
 	#else
 		#import <CoreVideo/CVDisplayLink.h>
+		#import <VideoToolbox/VideoToolbox.h>
 	#endif
 #endif
 
@@ -506,6 +507,12 @@ void MovieBase::stop()
 
 void MovieBase::init()
 {
+#if defined( CINDER_MAC )
+	// ON OS X, these calls enable extra codecs for reading and writing.
+	VTRegisterProfessionalVideoWorkflowVideoEncoders();
+	VTRegisterProfessionalVideoWorkflowVideoDecoders();
+#endif
+	
 	mHasAudio = mHasVideo = false;
 	mPlayThroughOk = mPlayable = mProtected = false;
 	mPlaying = false;
@@ -520,6 +527,12 @@ void MovieBase::init()
 	
 void MovieBase::initFromUrl( const Url& url )
 {
+#if defined( CINDER_MAC )
+	// ON OS X, these calls enable extra codecs for reading and writing.
+	VTRegisterProfessionalVideoWorkflowVideoEncoders();
+	VTRegisterProfessionalVideoWorkflowVideoDecoders();
+#endif
+
 	NSURL* asset_url = [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]];
 	if( ! asset_url )
 		throw AvfUrlInvalidExc();
@@ -536,6 +549,12 @@ void MovieBase::initFromUrl( const Url& url )
 
 void MovieBase::initFromPath( const fs::path& filePath )
 {
+#if defined( CINDER_MAC )
+	// ON OS X, these calls enable extra codecs for reading and writing.
+	VTRegisterProfessionalVideoWorkflowVideoEncoders();
+	VTRegisterProfessionalVideoWorkflowVideoDecoders();
+#endif
+
 	NSURL* asset_url = [NSURL fileURLWithPath:[NSString stringWithUTF8String:filePath.c_str()]];
 	if( ! asset_url )
 		throw AvfPathInvalidExc();
@@ -556,6 +575,13 @@ void MovieBase::initFromPath( const fs::path& filePath )
 
 void MovieBase::initFromLoader( const MovieLoader& loader )
 {
+
+#if defined( CINDER_MAC )
+	// ON OS X, these calls enable extra codecs for reading and writing.
+	VTRegisterProfessionalVideoWorkflowVideoEncoders();
+	VTRegisterProfessionalVideoWorkflowVideoDecoders();
+#endif
+
 	if( ! loader.ownsMovie() )
 		return;
 	
@@ -857,7 +883,7 @@ void MovieSurface::releaseFrame()
 MovieLoader::MovieLoader( const Url &url )
 	:mUrl(url), mBufferFull(false), mBufferEmpty(false), mLoaded(false),
 		mPlayable(false), mPlayThroughOK(false), mProtected(false), mOwnsMovie(true)
-{
+{	
 	NSURL* asset_url = [NSURL URLWithString:[NSString stringWithCString:mUrl.c_str() encoding:[NSString defaultCStringEncoding]]];
 	if( ! asset_url )
 		throw AvfUrlInvalidExc();
