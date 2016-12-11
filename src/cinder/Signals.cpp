@@ -118,7 +118,7 @@ ConnectionList::~ConnectionList()
 
 void ConnectionList::add( Connection &&target )
 {
-	mConnections.emplace_back( target );
+	mConnections.emplace_back( std::move( target ) );
 }
 
 void ConnectionList::clear()
