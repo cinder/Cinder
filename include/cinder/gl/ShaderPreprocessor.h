@@ -68,6 +68,8 @@ class ShaderPreprocessor {
 	void	setDefineDirectives( const std::vector<std::string> &defines );
 	//! Specifies the #version directive to add to the shader sources
 	void	setVersion( int version )	{ mVersion = version; }
+	//! Returns the version used for #version directives that was added with setVersion().
+	int		getVersion() const			{ return mVersion; }
 
 	//! Returns a Signal that the user can connect to in order to handle custom includes.
 	SignalIncludeHandler& getSignalInclude()	{ return mSignalInclude; }
