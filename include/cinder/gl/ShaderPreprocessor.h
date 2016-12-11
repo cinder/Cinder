@@ -32,6 +32,10 @@
 
 namespace cinder { namespace gl {
 
+//! The Signal type used for for ShaderPreprocessor::getSignalInclude().
+//! The Connection interprets a path and, if it can handle the file then sets the contents of the string and returns true. Returns false if it cannot handle the specified path.
+typedef signals::Signal<bool ( const fs::path &,std::string * )>	SignalIncludeHandler;
+
 //! \brief Class for parsing and processing GLSL preprocessor directives.
 //!
 //! Detected files that need to be included, via the `#include` directive, are first searched for relative
@@ -65,8 +69,8 @@ class ShaderPreprocessor {
 	//! Specifies the #version directive to add to the shader sources
 	void	setVersion( int version )	{ mVersion = version; }
 
-
-	signals::Signal<bool ( const fs::path &,std::string * )>& getSignalInclude()	{ return mSignalInclude; }
+	//! Returns a Signal that the user can connect to in order to handle custom includes.
+	SignalIncludeHandler& getSignalInclude()	{ return mSignalInclude; }
 	
   private:
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
@@ -78,8 +82,7 @@ class ShaderPreprocessor {
 	int								mVersion;
 	std::vector<std::string>		mDefineDirectives;
 	std::vector<fs::path>			mSearchDirectories;
-	
-	signals::Signal<bool ( const fs::path &, std::string * )> mSignalInclude;
+	SignalIncludeHandler			mSignalInclude;
 };
 
 //! Exception thrown when there is an error preprocessing the shader source in `ShaderPreprocessor`.
