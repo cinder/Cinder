@@ -152,6 +152,10 @@ class ScopedConnection : public Connection, private Noncopyable {
 	ScopedConnection& operator=( ScopedConnection &&rhs );
 };
 
+// ----------------------------------------------------------------------------------------------------
+// ConnectionList
+// ----------------------------------------------------------------------------------------------------
+
 //! Maintains a list of Connections and calls disconnect on them when it is destroyed. Non-copyable.
 class ConnectionList : private Noncopyable {
   public:
@@ -167,6 +171,10 @@ class ConnectionList : private Noncopyable {
   private:
 	std::vector<Connection>	mConnections;
 };
+
+// ----------------------------------------------------------------------------------------------------
+// Collectors
+// ----------------------------------------------------------------------------------------------------
 
 namespace detail {
 
@@ -224,6 +232,10 @@ struct CollectorInvocation<Collector, void( Args... )> : public SignalBase {
 		return collector();
 	}
 };
+
+// ----------------------------------------------------------------------------------------------------
+// SignalProto
+// ----------------------------------------------------------------------------------------------------
 
 //! SignalProto template, the parent class of Signal, specialised for the callback signature and collector.
 template<class Collector, class R, class... Args>
