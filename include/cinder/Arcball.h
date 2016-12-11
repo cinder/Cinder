@@ -41,86 +41,87 @@ class Arcball {
 		setNoConstraintAxis();
 	}
 
-	Arcball( CameraPersp *camera, const Sphere &sphere )
-		: mCamera( camera ), mUseConstraint( false ), mSphere( sphere )
+	Arcball( CameraPersp *camera )
+		: mCamera(camera), mUseConstraint(false), mZoomSpeed(0.1f), mMinCamDistance2Center(0.1f)
 	{
 	}
-	
+	Arcball(CameraPersp *camera,vec3 center)
+		: mCamera(camera), mUseConstraint(false), mCenter(center), mZoomSpeed(0.1f), mMinCamDistance2Center(0.1f)
+	{
+	}
 	void mouseDown( const app::MouseEvent &event )
 	{
+		if (!mCamera) return;
 		mouseDown( event.getPos(), event.getWindow()->getSize() );
 	}
 	
 	void mouseDown( const vec2 &mousePos, const ivec2 &windowSize )
 	{
 		mInitialMousePos = mousePos;
-		mInitialQuat = mCurrentQuat;
-		float temp;
-		mouseOnSphere( mInitialMousePos, windowSize, &mFromVector, &temp );
+		mouseOnSphere( mInitialMousePos, windowSize, &mFromVector );
 	}
 
 	void mouseDrag( const app::MouseEvent &event )
 	{
-		mouseDrag( event.getPos(), event.getWindow()->getSize() );
+		if (!mCamera) return;
+		mouseDrag(event.getPos(), event.getWindow()->getSize());
 	}
 	
-	void mouseDrag( const vec2 &mousePos, const ivec2 &windowSize )
+	void mouseDrag(const ivec2 &mousePos, const ivec2 &windowSize)
 	{
-		float addition;
-		mouseOnSphere( mousePos, windowSize, &mToVector, &addition );
+		mouseOnSphere(mousePos, windowSize, &mToVector);
 		vec3 from = mFromVector, to = mToVector;
-		if( mUseConstraint ) {
-			from = constrainToAxis( from, mConstraintAxis );
-			to = constrainToAxis( to, mConstraintAxis );
+		if (mUseConstraint) {
+			from = constrainToAxis(from, mConstraintAxis);
+			to = constrainToAxis(to, mConstraintAxis);
 		}
-
-		quat rotation = glm::rotation( from, to );
-		vec3 axis = glm::axis( rotation );
-		float angle = glm::angle( rotation );
-		rotation = glm::angleAxis( angle + addition, axis );
-
-		mCurrentQuat = normalize( rotation * mInitialQuat );
+		//the axis to rotate around in view space
+		vec3 axis = cross(from, to);
+		float angle = acos(glm::min(dot(from, to), 1.0f));
+		vec3 eye = mCamera->getEyePoint();
+		mat3 view2World = mat3(glm::inverse(mCamera->getViewMatrix()));
+		//axis in world space
+		vec3 worldAxis = view2World*axis;
+		//rotate the eye around the point mCenter 
+		mat4 tarnslation = glm::translate(mCenter);
+		mat4 tarnslationinv = glm::translate(-mCenter);
+		quat rotation = glm::angleAxis(-angle, normalize(worldAxis));
+		mat4 finalmat = tarnslation*glm::toMat4(rotation)*tarnslationinv;
+		mCamera->setEyePoint(vec3(finalmat*vec4(eye, 1)));
+		mCamera->setViewDirection(rotation*mCamera->getViewDirection());
+		mCamera->setWorldUp(rotation*mCamera->getWorldUp());
+		mFromVector = mToVector;
 	}
-	
-	void			resetQuat()						{ mCurrentQuat = mInitialQuat = quat(); }
-	const quat& 	getQuat() const					{ return mCurrentQuat; }
-	void			setQuat( const quat &q )		{ mCurrentQuat = q; }
-	void			setSphere( const Sphere &s )	{ mSphere = s; }
-	const Sphere&	getSphere() const				{ return mSphere; }
-	
+	void mouseWheel(const app::MouseEvent &event)
+	{
+		if (!mCamera) return;
+		vec3 eye = mCamera->getEyePoint();
+		float factor = mZoomSpeed*event.getWheelIncrement();
+		vec3 newEye = eye + (mCenter - eye)*factor;
+		if (distance(newEye, mCenter) < mMinCamDistance2Center)
+			newEye = eye;
+		mCamera->setEyePoint(newEye);
+	}
+
+	void setCameraOnSphere(const Sphere &s)
+	{
+		if (!mCamera)return;
+		mCenter = s.getCenter();
+		vec3 view = mCamera->getViewDirection();
+		vec3 eye = mCenter - s.getRadius()*normalize(view);
+		mCamera->setEyePoint(eye);
+		mCamera->setPivotDistance(s.getRadius());
+
+	}
+
+	void		setZoomSpeed(float zoomSpeed)						{ mZoomSpeed = zoomSpeed; }
+	void		setMinDistance2Center(float minDistance)			{ mMinCamDistance2Center = minDistance; }
 	void		setConstraintAxis( const vec3 &constraintAxis )		{ mConstraintAxis = normalize( constraintAxis ); mUseConstraint = true; }
 	void		setNoConstraintAxis()								{ mUseConstraint = false; }
 	bool		isUsingConstraint() const							{ return mUseConstraint; }
 	const vec3&	getConstraintAxis() const							{ return mConstraintAxis; }
-	
-	void mouseOnSphere( const vec2 &point, const ivec2 &windowSize, vec3 *resultVector, float *resultAngleAddition )
-	{
-		float rayT;
-		Ray ray = mCamera->generateRay( point, windowSize );
-		if( mSphere.intersect( ray, &rayT ) > 0 ) { // is click inside the sphere?
-			// trace a ray through the pixel to the sphere
-			*resultVector = normalize( ray.calcPosition( rayT ) - mSphere.getCenter() );
-			*resultAngleAddition = 0;
-		}
-		else { // not inside the sphere
-			// first project the sphere according to the camera, resulting in an ellipse (possible a circle)
-			Sphere cameraSpaceSphere( vec3( mCamera->getViewMatrix() * vec4( mSphere.getCenter(), 1 ) ), mSphere.getRadius() );
-			vec2 center, axisA, axisB;
-			cameraSpaceSphere.calcProjection( mCamera->getFocalLength(), windowSize, &center, &axisA, &axisB );
-			// find the point closest on the screen-projected ellipse to the mouse
-			vec2 screenSpaceClosest = getClosestPointEllipse( center, axisA, axisB, point );
-			// and send a ray through that point, finding the closest point on the sphere to it
-			Ray newRay = mCamera->generateRay( screenSpaceClosest, windowSize );
-			vec3 closestPointOnSphere = mSphere.closestPoint( newRay );
-			// our result point is the vector between this closest point on the sphere and its center
-			*resultVector = normalize( closestPointOnSphere - mSphere.getCenter() );
-			
-			// our angle addition is the screen-space distance between the mouse and the closest point on the sphere, divided into
-			// the screen-space radius of the sphere's projected ellipse, multiplied by pi
-			float screenRadius = std::max( length( axisA ), length( axisB ) );
-			*resultAngleAddition = distance( vec2(point), screenSpaceClosest ) / screenRadius * (float)M_PI;
-		}
-	}
+	float		getZoomSpeed() const								{ return mZoomSpeed; }
+	float		getMinDistance2Center() const						{ return mMinCamDistance2Center; }
 
 	vec3 getFromVector() const
 	{
@@ -133,6 +134,21 @@ class Arcball {
 	}
 
  private:
+	 void mouseOnSphere(const ivec2 &point, const ivec2 &windowSize, vec3 *resultVector)
+	 {
+
+		 glm::vec3 p = glm::vec3(1.0*point.x / windowSize.x * 2 - 1.0,
+			 1.0*point.y / windowSize.y * 2 - 1.0, 0);
+		 p.y = -p.y;
+		 float opSquared = p.x*p.x + p.y*p.y;
+		 if (opSquared < 1)
+		 {
+			 p.z = sqrt(1 - opSquared);
+		 }
+		 else
+			 p = normalize(p);
+		 *resultVector = p;
+	 }
 	// Force sphere point to be perpendicular to axis
 	vec3 constrainToAxis( const vec3 &loose, const vec3 &axis )
 	{
@@ -155,9 +171,10 @@ class Arcball {
 
 	CameraPersp	*mCamera;
 	vec2		mInitialMousePos;
-	quat		mCurrentQuat, mInitialQuat;
-	Sphere		mSphere;
 	vec3		mFromVector, mToVector, mConstraintAxis;
+	vec3		mCenter;
+	float		mZoomSpeed;
+	float		mMinCamDistance2Center;
 	bool		mUseConstraint;
 };
 

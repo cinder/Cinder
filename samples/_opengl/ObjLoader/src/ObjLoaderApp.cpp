@@ -20,7 +20,8 @@ class ObjLoaderApp : public App {
 	void	setup() override;
 
 	void	mouseDown( MouseEvent event ) override;
-	void	mouseDrag( MouseEvent event ) override;
+	void	mouseDrag(MouseEvent event) override;
+	void	mouseWheel(MouseEvent event) override;
 	void	keyDown( KeyEvent event ) override;
 
 	void	loadObj( const DataSourceRef &dataSource );
@@ -53,9 +54,10 @@ void ObjLoaderApp::setup()
 	mCheckerTexture = gl::Texture::create( ip::checkerboard( 512, 512, 32 ) );
 	mCheckerTexture->bind( 0 );
 
-	loadObj( loadResource( RES_8LBS_OBJ ) );
+	mArcball = Arcball(&mCam);
 
-	mArcball = Arcball( &mCam, mBoundingSphere );
+	loadObj(loadResource(RES_8LBS_OBJ));
+
 }
 
 void ObjLoaderApp::mouseDown( MouseEvent event )
@@ -64,6 +66,11 @@ void ObjLoaderApp::mouseDown( MouseEvent event )
 		mCamUi.mouseDown( event );
 	else
 		mArcball.mouseDown( event );
+}
+
+void ObjLoaderApp::mouseWheel(MouseEvent event)
+{
+	mArcball.mouseWheel(event);
 }
 
 void ObjLoaderApp::mouseDrag( MouseEvent event )
@@ -85,7 +92,8 @@ void ObjLoaderApp::loadObj( const DataSourceRef &dataSource )
 	mBatch = gl::Batch::create( *mMesh, mGlsl );
 	
 	mBoundingSphere = Sphere::calculateBoundingSphere( mMesh->getPositions<3>(), mMesh->getNumVertices() );
-	mArcball.setSphere( mBoundingSphere );
+	mBoundingSphere.setRadius(mBoundingSphere.getRadius()*2);
+	mArcball.setCameraOnSphere( mBoundingSphere );
 }
 
 void ObjLoaderApp::writeObj()
@@ -127,10 +135,7 @@ void ObjLoaderApp::draw()
 
 	gl::setMatrices( mCam );
 
-	gl::pushMatrices();
-		gl::rotate( mArcball.getQuat() );
-		mBatch->draw();
-	gl::popMatrices();
+	mBatch->draw();
 }
 
 

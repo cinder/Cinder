@@ -14,7 +14,8 @@ class ArcballDemoApp : public App {
 	void setup() override;
 	void resize() override;
 	void mouseDown( MouseEvent event ) override;
-	void mouseDrag( MouseEvent event ) override;
+	void mouseDrag(MouseEvent event) override;
+	void mouseWheel(MouseEvent event) override;
 	void draw() override;
 	
 	Arcball			mArcball;
@@ -37,7 +38,7 @@ void ArcballDemoApp::setup()
 	mEarth = gl::Batch::create( geom::Sphere( mEarthSphere ).subdivisions( 50 ), gl::getStockShader( gl::ShaderDef().texture() ) );
 	mEarthTex = gl::Texture::create( loadImage( loadResource( EARTH_TEX_RES ) ) );
 
-	mArcball = Arcball( &mCamera, mEarthSphere );
+	mArcball = Arcball( &mCamera,vec3(0) );
 }
 
 void ArcballDemoApp::resize()
@@ -50,6 +51,11 @@ void ArcballDemoApp::mouseDown( MouseEvent event )
 	mArcball.mouseDown( event );
 }
 
+void ArcballDemoApp::mouseWheel(MouseEvent event)
+{
+	mArcball.mouseWheel(event);
+}
+
 void ArcballDemoApp::mouseDrag( MouseEvent event )
 {
 	mArcball.mouseDrag( event );
@@ -60,7 +66,6 @@ void ArcballDemoApp::draw()
 	gl::clear( Color( 0, 0.0f, 0.15f ) );
 	gl::setMatrices( mCamera );
 
-	gl::rotate( mArcball.getQuat() );
 	mEarthTex->bind();
 	mEarth->draw();
 }
