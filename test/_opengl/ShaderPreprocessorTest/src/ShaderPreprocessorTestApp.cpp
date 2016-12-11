@@ -18,6 +18,7 @@ class ShaderPreprocessorTestApp : public App {
 
 	void testGlslProgInclude();
 	void testSeparateShaderPreprocessor();
+	void testIncludeHandler();
 
 	gl::GlslProgRef			mGlslProg;
 	gl::ShaderPreprocessor  mPreprocessor;
@@ -25,8 +26,9 @@ class ShaderPreprocessorTestApp : public App {
 
 void ShaderPreprocessorTestApp::setup()
 {
-	testGlslProgInclude();
+//	testGlslProgInclude();
 //	testSeparateShaderPreprocessor();
+	testIncludeHandler();
 }
 
 void ShaderPreprocessorTestApp::keyDown( KeyEvent event )
@@ -43,7 +45,7 @@ void ShaderPreprocessorTestApp::testGlslProgInclude()
 		auto format = gl::GlslProg::Format()
 							.vertex(  loadAsset( "passthrough.vert" ) )
 							.fragment( loadAsset( "shaderWithInclude.frag" ) )
-        //                    .define( "COLOR_RED", "vec4( 0, 0, 1, 1 )" )
+                            .define( "COLOR_RED", "vec4( 0, 0, 1, 1 )" )
                             .define( "WRONG_HASH" )
         ;
 
@@ -64,7 +66,8 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 		auto format = gl::GlslProg::Format()
 							.preprocess( false )
 							.vertex( vert )
-							.fragment( fragSource );
+							.fragment( fragSource )
+		;
 
 		mGlslProg = gl::GlslProg::create( format );
 	}
@@ -72,6 +75,38 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
 	}
 
+}
+
+const std::string hashGlsl = R"(
+float hash( float n )
+{
+	return 0.5f; // should result in the pattern being solid, no noise
+}
+)";
+
+void ShaderPreprocessorTestApp::testIncludeHandler()
+{
+	auto includeCustomHash = []( const fs::path &path,std::string *source ) -> bool {
+		if( path == fs::path( "hash.glsl" ) ) {
+			*source = hashGlsl;
+			return true;
+		}
+
+		return false;
+	};
+
+	try {
+		auto format = gl::GlslProg::Format()
+			.vertex(  loadAsset( "passthrough.vert" ) )
+			.fragment( loadAsset( "shaderWithInclude.frag" ) )
+			.addPreprocessorIncludeHandler( includeCustomHash )
+		;
+
+		mGlslProg = gl::GlslProg::create( format );
+	}
+	catch( std::exception &exc ) {
+		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
+	}
 }
 
 void ShaderPreprocessorTestApp::update()
