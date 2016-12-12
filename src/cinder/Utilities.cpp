@@ -89,6 +89,23 @@ string loadString( const DataSourceRef &dataSource )
 	return string( data, data + buffer->getSize() );
 }
 
+void writeString( const fs::path &path, const std::string &str )
+{
+	writeString( (DataTargetRef)writeFile( path ), str );
+}
+
+void writeString( const DataTargetRef &dataTarget, const std::string &str )
+{
+	fs::path outPath = dataTarget->getFilePath();
+	if( outPath.empty() ) {
+		throw ci::Exception( "writeString can only write to file." );
+	}
+
+	std::ofstream ofs( outPath.string(), std::ofstream::binary );
+	ofs << str;
+	ofs.close();
+}
+
 void sleep( float milliseconds )
 {
 	app::Platform::get()->sleep( milliseconds );

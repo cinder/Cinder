@@ -31,6 +31,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
+#include "cinder/DataTarget.h"
 #undef check
 #include <boost/lexical_cast.hpp>
 
@@ -53,6 +54,8 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 
 //! Loads the contents of \a dataSource and returns it as a std::string
 std::string loadString( const DataSourceRef &dataSource );
+void writeString( const fs::path &path, const std::string &str );
+void writeString( const DataTargetRef &dataTarget, const std::string &str );
 
 //! Suspends the execution of the current thread until \a milliseconds have passed. Supports sub-millisecond precision only on Mac OS X.
 void sleep( float milliseconds );
