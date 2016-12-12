@@ -268,10 +268,10 @@ GlslProg::Format& GlslProg::Format::compute( const string &computeShader )
 void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string *shaderSourceDest, fs::path *shaderPathDest )
 {
 	if( dataSource ) {
-		Buffer buffer( dataSource );
-		shaderSourceDest->resize( buffer.getSize() + 1 );
-		memcpy( (void *)shaderSourceDest->data(), buffer.getData(), buffer.getSize() );
-		(*shaderSourceDest)[buffer.getSize()] = 0;
+		auto buffer = dataSource->getBuffer();
+		const char *data = static_cast<const char *>( buffer->getData() );
+		*shaderSourceDest = string( data, data + buffer->getSize() );
+
 		if( dataSource->isFilePath() )
 			*shaderPathDest = dataSource->getFilePath();
 		else
