@@ -168,7 +168,7 @@ TEST_CASE("Json", "[noisy]")
 
 		console() << doc;
 		
-		doc.write( writeFile( getDocumentsDirectory() / "testoutput.json" ), JsonTree::WriteOptions() );
-		doc.write( writeFile( getDocumentsDirectory() / "testoutput_fast.json" ), JsonTree::WriteOptions().indented( false ) );
+		doc.write( writeFile( "/tmp/testoutput.json" ), JsonTree::WriteOptions() );
+		doc.write( writeFile( "/tmp/testoutput_fast.json" ), JsonTree::WriteOptions().indented( false ) );
 	}
 } // json
