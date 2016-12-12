@@ -54,6 +54,9 @@
     <ClCompile Include="..\src\audio\RingBufferUnit.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\catch.hpp">
