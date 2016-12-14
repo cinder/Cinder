@@ -52,14 +52,14 @@ matrix:
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       tools/linux/scripts/"$TARGET"-install-deps.sh;
-    elif [[ "$TRAVIS_OS_NAME" == "osx" and "$TOOL" != "xcode" ]]; then
+    elif [[ "$TRAVIS_OS_NAME" == "osx" && "$TOOL" != "xcode" ]]; then
       tools/osx/scripts/cmake-brew-install.sh;
     fi
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       tools/ci/cmake_test.sh;
-    elif [[ "$TRAVIS_OS_NAME" == "osx" and "$TOOL" != "xcode" ]]; then
+    elif [[ "$TRAVIS_OS_NAME" == "osx" && "$TOOL" == "xcode" ]]; then
       tools/ci/xcode_test.sh
     elif  [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       tools/ci/cmake_test.sh
