@@ -28,11 +28,6 @@ ci_make_app(
 	INCLUDES    "${UNIT_DIR}/src"    # for catch.hpp
 )
 
-target_compile_definitions(
-	UnitTests
-	PRIVATE -DUNIT_DIR_ASSETS="${UNIT_DIR}/assets"
-)
-
 if( APPLE )
 	set( TESTBINDIR ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/UnitTests/UnitTests.app/Contents/MacOS )
 else()
