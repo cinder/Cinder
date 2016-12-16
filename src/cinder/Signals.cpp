@@ -80,7 +80,8 @@ ScopedConnection::ScopedConnection()
 
 ScopedConnection::~ScopedConnection()
 {
-	disconnect();
+	if( mShouldDisconnect )
+		disconnect();
 }
 
 ScopedConnection::ScopedConnection( ScopedConnection &&other )
@@ -95,6 +96,9 @@ ScopedConnection::ScopedConnection( Connection &&other )
 
 ScopedConnection& ScopedConnection::operator=( ScopedConnection &&rhs )
 {
+	disconnect(); // first disconnect from existing
+	rhs.mShouldDisconnect = false; // mark that rhs shouldn't disconnect as it is about to be moved to this
+
 	Connection::operator=( std::move( rhs ) );
 	return *this;
 }

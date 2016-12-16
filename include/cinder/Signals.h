@@ -148,6 +148,9 @@ class ScopedConnection : public Connection, private Noncopyable {
 	ScopedConnection( ScopedConnection &&other );
 	ScopedConnection( Connection &&other );
 	ScopedConnection& operator=( ScopedConnection &&rhs );
+
+  private:
+	bool	mShouldDisconnect = true; // only set to false when move assignment operator is invoked.
 };
 
 // ----------------------------------------------------------------------------------------------------
