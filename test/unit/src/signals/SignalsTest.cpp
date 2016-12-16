@@ -305,7 +305,7 @@ TEST_CASE( "signals/Signals" )
 		}
 	}
 
-	SECTION( "Scoped connections" )
+	SECTION( "ScopedConnection" )
 	{
 		Signal<void ()> sig;
 		int accum = 0;
@@ -313,16 +313,58 @@ TEST_CASE( "signals/Signals" )
 
 		sig.connect( slot );
 		ScopedConnection conn1 = sig.connect( slot );
+		sig.emit();
+
+		REQUIRE( sig.getNumSlots() == 2 );
+		REQUIRE( accum == 2 );
+		accum = 0;
 
 		{
 			ScopedConnection conn2 = sig.connect( slot );
+			sig.emit();
+
 			REQUIRE( sig.getNumSlots() == 3 );
+			REQUIRE( accum == 3 );
+			accum = 0;
 		}
 
-		REQUIRE( sig.getNumSlots() == 2 );
-
 		sig.emit();
+
+		REQUIRE( sig.getNumSlots() == 2 );
 		REQUIRE( accum == 2 );
+
+	}
+
+	SECTION( "ScopedConnection member variable" )
+	{
+		Signal<void ()>		sig;
+
+		struct Object {
+			ScopedConnection	mScopedConnection;
+
+			Object( Signal<void ()> &sig )
+			{
+				int accum = 0;
+				auto slot = [&] { accum++; };
+
+				mScopedConnection = sig.connect( slot );
+				sig.emit();
+
+				REQUIRE( sig.getNumSlots() == 1 );
+				REQUIRE( accum == 1 );
+			}
+		};
+
+		{
+			Object obj( sig );
+		}
+		// obj now destroyed..
+
+		int accum = 0;
+		sig.emit();
+
+		REQUIRE( sig.getNumSlots() == 0 );
+		REQUIRE( accum == 0 );
 	}
 
 	SECTION( "ConnectionList" )
