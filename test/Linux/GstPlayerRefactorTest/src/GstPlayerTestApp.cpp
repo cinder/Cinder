@@ -93,13 +93,11 @@ void GstPlayerTestApp::setup()
 	
 	CI_LOG_I( "\n--- TESTING LEVELS END----\n\n");
 
-	fs::path moviePath = getAssetPath( "bbb.mp4" );
-	if( ! moviePath.empty() )
-		loadMovieFile( moviePath );
-    mReloadPaths.push_back( getAssetPath( "bbb.mp4" ) );
-    mReloadPaths.push_back( "http://docs.gstreamer.com/media/sintel_trailer-480p.webm" );
-	mTriggerTimer.start();
-	mTimeLastPlayPauseTrigger = mTriggerTimer.getSeconds();
+    loadMovieFile( "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4" );
+    mReloadPaths.push_back( "http://pdl.warnerbros.com/wbol/us/dd/med/northbynorthwest/quicktime_page/nbnf_airplane_explosion_qt_500.mov" );
+    mReloadPaths.push_back( "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4" );
+    mTriggerTimer.start();
+    mTimeLastPlayPauseTrigger = mTriggerTimer.getSeconds();
 }
 
 void GstPlayerTestApp::testCurrentCase() 
@@ -194,7 +192,7 @@ void GstPlayerTestApp::testReload()
     if( now - mTimeLastReloadTrigger >= mTriggerReloadRate ) {
         newLoad();
         mTimeLastReloadTrigger = now;
-        if( mRandomizeReloadRate ) mTriggerReloadRate = randFloat( 31.5f, 61.f );
+        if( mRandomizeReloadRate ) mTriggerReloadRate = randFloat( 23.5f, 45.f );
     }
 }
 
