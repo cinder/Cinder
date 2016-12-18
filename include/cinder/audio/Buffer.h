@@ -237,8 +237,15 @@ class BufferDynamicT : public BufferTT {
 	//! Shrinks the allocated size to match the specified size, freeing any extra memory.
 	void shrinkToFit()
 	{
-		mAllocatedSize = this->getSize();
-		this->mData.resize( mAllocatedSize );
+		size_t size = this->getSize();
+		if ( mAllocatedSize > size ) {
+			mAllocatedSize = this->getSize();
+
+			// NOTE: std::vector::shrink_to_fit() is not guaranteed to free.
+			// To force a free we create a temporary empty vector and swap its contents into mData.
+			auto tmpData = std::vector<typename BufferTT::SampleType>( this->mData.begin(), this->mData.begin() + mAllocatedSize );
+			tmpData.swap( this->mData );
+		}
 	}
 
 	//! Returns the number of samples allocated in this buffer (may be larger than getSize()).
