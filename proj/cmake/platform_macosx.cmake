@@ -74,7 +74,6 @@ list( APPEND CINDER_SRC_FILES
 	${SRC_SET_COCOA}
 	${SRC_SET_APP_COCOA}
 	${SRC_SET_AUDIO_COCOA}
-	${SRC_SET_QTIME}
 )
 
 list( APPEND CINDER_LIBS_DEPENDS
@@ -94,6 +93,21 @@ find_library( COREVIDEO_FRAMEWORK CoreVideo REQUIRED )
 find_library( ACCELERATE_FRAMEWORK Accelerate REQUIRED )
 find_library( IOSURFACE_FRAMEWORK IOSurface REQUIRED )
 find_library( IOKIT_FRAMEWORK IOKit REQUIRED )
+
+# Option for using GStreamer under OS X.
+if( CINDER_MAC )
+	option( CINDER_MAC_USE_GSTREAMER "Use GStreamer for video playback." OFF )
+endif()
+
+if( CINDER_MAC_USE_GSTREAMER )
+	find_library( GSTREAMER_FRAMEWORK GStreamer REQUIRED )
+	list( APPEND CINDER_LIBS_DEPENDS ${GSTREAMER_FRAMEWORK} ${GSTREAMER_FRAMEWORK}/Versions/Current/lib/libgstgl-1.0.dylib )
+	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE ${GSTREAMER_FRAMEWORK}/Headers ${CINDER_INC_DIR}/cinder/linux )
+	list( APPEND CINDER_SRC_FILES ${CINDER_SRC_DIR}/cinder/linux/GstPlayer.cpp ${CINDER_SRC_DIR}/cinder/linux/Movie.cpp )
+	list( APPEND CINDER_DEFINES CINDER_MAC_USE_GSTREAMER )
+else()
+        list( APPEND CINDER_SRC_FILES ${SRC_SET_QTIME} )
+endif()
 
 list( APPEND CINDER_LIBS_DEPENDS
     ${COCOA_FRAMEWORK}
