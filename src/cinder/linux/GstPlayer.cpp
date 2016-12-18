@@ -1002,10 +1002,10 @@ bool GstPlayer::checkStateChange( GstStateChangeReturn stateChangeResult )
 
 void GstPlayer::createTextureFromMemory()
 {
-    std::unique_lock<std::mutex> guard( mMutex );
-    std::swap( mFrontVBuffer, mBackVBuffer );
-    guard.unlock();
-
+    {
+        std::lock_guard<std::mutex> guard( mMutex );
+        std::swap( mFrontVBuffer, mBackVBuffer );
+    }
     if( mFrontVBuffer ) {
         mVideoTexture = ci::gl::Texture::create( mFrontVBuffer.get(), GL_RGBA, width(), height() );
         if( mVideoTexture ) mVideoTexture->setTopDown();
@@ -1015,10 +1015,10 @@ void GstPlayer::createTextureFromMemory()
 void GstPlayer::createTextureFromID()
 {
 #if defined( CINDER_GST_HAS_GL )
-    std::unique_lock<std::mutex> guard( mMutex );
-    std::swap( mCurrentBuffer, mNewBuffer );
-    guard.unlock();
-
+    {
+        std::lock_guard<std::mutex> guard( mMutex );
+        std::swap( mCurrentBuffer, mNewBuffer );
+    }
     GLint textureID = getTextureID( mCurrentBuffer.get() );
 
     if( textureID != 0 ) {
@@ -1128,10 +1128,10 @@ void GstPlayer::processNewSample( GstSample* sample )
     if( sUseGstGl ) {
 #if defined( CINDER_GST_HAS_GL )
         // Pull the memory buffer from the sample.
-        std::unique_lock<std::mutex> guard( mMutex );
-        mNewBuffer = std::shared_ptr<GstBuffer>( gst_buffer_ref( gst_sample_get_buffer( sample ) ), &gst_buffer_unref );
-        guard.unlock();
-
+        {
+            std::lock_guard<std::mutex> guard( mMutex );
+            mNewBuffer = std::shared_ptr<GstBuffer>( gst_buffer_ref( gst_sample_get_buffer( sample ) ), &gst_buffer_unref );
+        }
         if( newVideo() ) {
             // Grab video info.
             GstCaps* currentCaps    = gst_sample_get_caps( sample );
@@ -1151,7 +1151,7 @@ void GstPlayer::processNewSample( GstSample* sample )
 #endif
     }
     else {
-        std::unique_lock<std::mutex> guard( mMutex );
+        std::lock_guard<std::mutex> guard( mMutex );
 
         newBuffer = gst_sample_get_buffer( sample );
         gst_buffer_map( newBuffer, &mGstData.memoryMapInfo, GST_MAP_READ ); // Map the buffer for reading the data.
@@ -1183,8 +1183,6 @@ void GstPlayer::processNewSample( GstSample* sample )
         gst_buffer_unmap( newBuffer, &mGstData.memoryMapInfo ); 
 
         mNewFrame = true;
-
-        guard.unlock();
 
         // Finished working with the sample - unref-it.
         gst_sample_unref( sample );
