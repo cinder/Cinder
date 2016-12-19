@@ -27,6 +27,14 @@
 //for threading
 #include <process.h>
 
+#if defined( __clang__ ) || defined( __GCC__ )
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-parameter"
+#elif defined( _MSC_VER )
+    #pragma warning( push )
+    #pragma warning( disable : 4100)
+#endif
+
 // Due to a missing qedit.h in recent Platform SDKs, we've replicated the relevant contents here
 // #include <qedit.h>
 MIDL_INTERFACE("0579154A-2B53-4994-B0D0-E773148EFF85")
@@ -2414,4 +2422,10 @@ HRESULT videoInput::routeCrossbar(ICaptureGraphBuilder2 **ppBuild, IBaseFilter *
 	
 	return hr;
 }
-   
+
+#if defined( __clang__ ) || defined( __GCC__ )
+    #pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+    #pragma warning(pop)
+#endif
+
