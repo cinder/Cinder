@@ -18,36 +18,53 @@ matrix:
           packages:
             - g++-4.9
       sudo: required
-      env: TARGET="trusty"
+      env: 
+        - TARGET="trusty"
+        - DESCRIPTION="Ubuntu Trusty build/test via CMake"
 
     # OS X cmake
     - os: osx
       osx_image: xcode8.2
-      env: TOOL="xcode"
+      env: 
+        - TOOL="xcode"
+        - DESCRIPTION="OS X build/test and iOS build via Xcode"
     - os: osx
       osx_image: xcode8.1
-      env: TOOL="xcode"
+      env:
+        - TOOL="xcode"
+        - DESCRIPTION=OS X build/test and iOS build via Xcode"
     - os: osx
       osx_image: xcode8
-      env: TOOL="xcode"
+      env:
+        - TOOL="xcode"
+        - DESCRIPTION=OS X build/test and iOS build via Xcode"
     - os: osx
       osx_image: xcode7.3
-      env: TOOL="xcode"
+      env:
+        - TOOL="xcode"
+        - DESCRIPTION=OS X build/test and iOS build via Xcode"
     - os: osx
       osx_image: xcode6.4
-      env: TOOL="xcode"
+      env:
+        - TOOL="xcode"
+        - DESCRIPTION=OS X build/test and iOS build via Xcode"
 
     # OS X xcode
     - os: osx
       osx_image: xcode8.2
+      env: DESCRIPTION="OS X build/test via CMake"
     - os: osx
       osx_image: xcode8.1
+      env: DESCRIPTION="OS X build/test via CMake"
     - os: osx
       osx_image: xcode8
+      env: DESCRIPTION="OS X build/test via CMake"
     - os: osx
       osx_image: xcode7.3
+      env: DESCRIPTION="OS X build/test via CMake"
     - os: osx
       osx_image: xcode6.4
+      env: DESCRIPTION="OS X build/test via CMake"
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
