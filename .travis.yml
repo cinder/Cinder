@@ -20,6 +20,24 @@ matrix:
       sudo: required
       env: TARGET="trusty"
 
+    # OS X cmake
+    - os: osx
+      osx_image: xcode8.2
+      env: TOOL="xcode"
+    - os: osx
+      osx_image: xcode8.1
+      env: TOOL="xcode"
+    - os: osx
+      osx_image: xcode8
+      env: TOOL="xcode"
+    - os: osx
+      osx_image: xcode7.3
+      env: TOOL="xcode"
+    - os: osx
+      osx_image: xcode6.4
+      env: TOOL="xcode"
+
+    # OS X xcode
     - os: osx
       osx_image: xcode8.2
     - os: osx
@@ -34,14 +52,16 @@ matrix:
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       tools/linux/scripts/"$TARGET"-install-deps.sh;
-    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" != "xcode" ]]; then
       tools/osx/scripts/cmake-brew-install.sh;
     fi
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       tools/ci/cmake_test.sh;
-    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      tools/ci/cmake_test.sh && proj/xcode/iosbuild-xcpretty.sh;
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode" ]]; then
+      tools/ci/xcode_test.sh;
+    elif  [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      tools/ci/cmake_test.sh;
     fi
     

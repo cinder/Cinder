@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+# meant to be run from the root directory of Cinder
+
 # build debug
 mkdir build-debug
 cd build-debug
