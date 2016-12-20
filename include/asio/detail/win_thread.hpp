@@ -2,7 +2,7 @@
 // detail/win_thread.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,9 +17,10 @@
 
 #include "asio/detail/config.hpp"
 
-#if defined(ASIO_WINDOWS) && !defined(UNDER_CE)
+#if defined(ASIO_WINDOWS) \
+  && !defined(ASIO_WINDOWS_APP) \
+  && !defined(UNDER_CE)
 
-#include <cstddef>
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/socket_types.hpp"
 
@@ -76,9 +77,6 @@ public:
 
   // Wait for the thread to exit.
   ASIO_DECL void join();
-
-  // Get number of CPUs.
-  ASIO_DECL static std::size_t hardware_concurrency();
 
 private:
   friend ASIO_DECL unsigned int __stdcall win_thread_function(void* arg);
@@ -138,6 +136,8 @@ private:
 # include "asio/detail/impl/win_thread.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
 
-#endif // defined(ASIO_WINDOWS) && !defined(UNDER_CE)
+#endif // defined(ASIO_WINDOWS)
+       // && !defined(ASIO_WINDOWS_APP)
+       // && !defined(UNDER_CE)
 
 #endif // ASIO_DETAIL_WIN_THREAD_HPP

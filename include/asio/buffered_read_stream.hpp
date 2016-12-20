@@ -2,7 +2,7 @@
 // buffered_read_stream.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -139,8 +139,9 @@ public:
   async_write_some(const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
-    async_completion<WriteHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+    detail::async_result_init<
+      WriteHandler, void (asio::error_code, std::size_t)> init(
+        ASIO_MOVE_CAST(WriteHandler)(handler));
 
     next_layer_.async_write_some(buffers,
         ASIO_MOVE_CAST(ASIO_HANDLER_TYPE(WriteHandler,

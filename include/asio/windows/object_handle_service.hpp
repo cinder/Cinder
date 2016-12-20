@@ -2,7 +2,7 @@
 // windows/object_handle_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2011 Boris Schaeling (boris@highscore.de)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -146,8 +146,9 @@ public:
   async_wait(implementation_type& impl,
       ASIO_MOVE_ARG(WaitHandler) handler)
   {
-    asio::async_completion<WaitHandler,
-      void (asio::error_code)> init(handler);
+    asio::detail::async_result_init<
+      WaitHandler, void (asio::error_code)> init(
+        ASIO_MOVE_CAST(WaitHandler)(handler));
 
     service_impl_.async_wait(impl, init.handler);
 

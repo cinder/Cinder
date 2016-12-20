@@ -2,7 +2,7 @@
 // ssl/impl/rfc2818_verification.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,16 +17,20 @@
 
 #include "asio/detail/config.hpp"
 
-#include <cctype>
-#include <cstring>
-#include "asio/ip/address.hpp"
-#include "asio/ssl/rfc2818_verification.hpp"
-#include "asio/ssl/detail/openssl_types.hpp"
+#if !defined(ASIO_ENABLE_OLD_SSL)
+# include <cctype>
+# include <cstring>
+# include "asio/ip/address.hpp"
+# include "asio/ssl/rfc2818_verification.hpp"
+# include "asio/ssl/detail/openssl_types.hpp"
+#endif // !defined(ASIO_ENABLE_OLD_SSL)
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace ssl {
+
+#if !defined(ASIO_ENABLE_OLD_SSL)
 
 bool rfc2818_verification::operator()(
     bool preverified, verify_context& ctx) const
@@ -45,7 +49,7 @@ bool rfc2818_verification::operator()(
   // Try converting the host name to an address. If it is an address then we
   // need to look for an IP address in the certificate rather than a host name.
   asio::error_code ec;
-  ip::address address = ip::make_address(host_, ec);
+  ip::address address = ip::address::from_string(host_, ec);
   bool is_address = !ec;
 
   X509* cert = X509_STORE_CTX_get_current_cert(ctx.native_handle());
@@ -78,8 +82,7 @@ bool rfc2818_verification::operator()(
       {
         if (address.is_v4() && ip_address->length == 4)
         {
-          ip::address_v4::bytes_type bytes =
-            ip::address_cast<ip::address_v4>(address).to_bytes();
+          ip::address_v4::bytes_type bytes = address.to_v4().to_bytes();
           if (memcmp(bytes.data(), ip_address->data, 4) == 0)
           {
             GENERAL_NAMES_free(gens);
@@ -88,8 +91,7 @@ bool rfc2818_verification::operator()(
         }
         else if (address.is_v6() && ip_address->length == 16)
         {
-          ip::address_v6::bytes_type bytes =
-            ip::address_cast<ip::address_v6>(address).to_bytes();
+          ip::address_v6::bytes_type bytes = address.to_v6().to_bytes();
           if (memcmp(bytes.data(), ip_address->data, 16) == 0)
           {
             GENERAL_NAMES_free(gens);
@@ -153,6 +155,8 @@ bool rfc2818_verification::match_pattern(const char* pattern,
 
   return p == p_end && !*h;
 }
+
+#endif // !defined(ASIO_ENABLE_OLD_SSL)
 
 } // namespace ssl
 } // namespace asio

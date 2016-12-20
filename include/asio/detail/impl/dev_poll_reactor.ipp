@@ -2,7 +2,7 @@
 // detail/impl/dev_poll_reactor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -29,9 +29,9 @@
 namespace asio {
 namespace detail {
 
-dev_poll_reactor::dev_poll_reactor(asio::execution_context& ctx)
-  : asio::detail::service_base<dev_poll_reactor>(ctx),
-    scheduler_(use_service<scheduler>(ctx)),
+dev_poll_reactor::dev_poll_reactor(asio::io_service& io_service)
+  : asio::detail::service_base<dev_poll_reactor>(io_service),
+    io_service_(use_service<io_service_impl>(io_service)),
     mutex_(),
     dev_poll_fd_(do_dev_poll_create()),
     interrupter_(),
@@ -64,34 +64,12 @@ void dev_poll_reactor::shutdown_service()
 
   timer_queues_.get_all_timers(ops);
 
-  scheduler_.abandon_operations(ops);
+  io_service_.abandon_operations(ops);
 } 
 
-// Helper class to re-register all descriptors with /dev/poll.
-class dev_poll_reactor::fork_helper
+void dev_poll_reactor::fork_service(asio::io_service::fork_event fork_ev)
 {
-public:
-  fork_helper(dev_poll_reactor* reactor, short events)
-    : reactor_(reactor), events_(events)
-  {
-  }
-
-  bool set(int descriptor)
-  {
-    ::pollfd& ev = reactor_->add_pending_event_change(descriptor);
-    ev.events = events_;
-    return true;
-  }
-
-private:
-  dev_poll_reactor* reactor_;
-  short events_;
-};
-
-void dev_poll_reactor::fork_service(
-    asio::execution_context::fork_event fork_ev)
-{
-  if (fork_ev == asio::execution_context::fork_child)
+  if (fork_ev == asio::io_service::fork_child)
   {
     detail::mutex::scoped_lock lock(mutex_);
 
@@ -111,24 +89,30 @@ void dev_poll_reactor::fork_service(
 
     // Re-register all descriptors with /dev/poll. The changes will be written
     // to the /dev/poll descriptor the next time the reactor is run.
-    op_queue<operation> ops;
-    fork_helper read_op_helper(this, POLLERR | POLLHUP | POLLIN);
-    op_queue_[read_op].get_descriptors(read_op_helper, ops);
-    fork_helper write_op_helper(this, POLLERR | POLLHUP | POLLOUT);
-    op_queue_[write_op].get_descriptors(write_op_helper, ops);
-    fork_helper except_op_helper(this, POLLERR | POLLHUP | POLLPRI);
-    op_queue_[except_op].get_descriptors(except_op_helper, ops);
+    for (int i = 0; i < max_ops; ++i)
+    {
+      reactor_op_queue<socket_type>::iterator iter = op_queue_[i].begin();
+      reactor_op_queue<socket_type>::iterator end = op_queue_[i].end();
+      for (; iter != end; ++iter)
+      {
+        ::pollfd& pending_ev = add_pending_event_change(iter->first);
+        pending_ev.events |= POLLERR | POLLHUP;
+        switch (i)
+        {
+        case read_op: pending_ev.events |= POLLIN; break;
+        case write_op: pending_ev.events |= POLLOUT; break;
+        case except_op: pending_ev.events |= POLLPRI; break;
+        default: break;
+        }
+      }
+    }
     interrupter_.interrupt();
-
-    // The ops op_queue will always be empty because the fork_helper's set()
-    // member function never returns false.
-    ASIO_ASSERT(ops.empty());
   }
 }
 
 void dev_poll_reactor::init_task()
 {
-  scheduler_.init_task();
+  io_service_.init_task();
 }
 
 int dev_poll_reactor::register_descriptor(socket_type, per_descriptor_data&)
@@ -183,7 +167,7 @@ void dev_poll_reactor::start_op(int op_type, socket_type descriptor,
         if (op->perform())
         {
           lock.unlock();
-          scheduler_.post_immediate_completion(op, is_continuation);
+          io_service_.post_immediate_completion(op, is_continuation);
           return;
         }
       }
@@ -191,7 +175,7 @@ void dev_poll_reactor::start_op(int op_type, socket_type descriptor,
   }
 
   bool first = op_queue_[op_type].enqueue_operation(descriptor, op);
-  scheduler_.work_started();
+  io_service_.work_started();
   if (first)
   {
     ::pollfd& ev = add_pending_event_change(descriptor);
@@ -411,7 +395,7 @@ void dev_poll_reactor::cancel_ops_unlocked(socket_type descriptor,
   for (int i = 0; i < max_ops; ++i)
     need_interrupt = op_queue_[i].cancel_operations(
         descriptor, ops, ec) || need_interrupt;
-  scheduler_.post_deferred_completions(ops);
+  io_service_.post_deferred_completions(ops);
   if (need_interrupt)
     interrupter_.interrupt();
 }

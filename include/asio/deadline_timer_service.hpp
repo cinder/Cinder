@@ -2,7 +2,7 @@
 // deadline_timer_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -105,7 +105,7 @@ public:
   /// Get the expiry time for the timer as an absolute time.
   time_type expires_at(const implementation_type& impl) const
   {
-    return service_impl_.expiry(impl);
+    return service_impl_.expires_at(impl);
   }
 
   /// Set the expiry time for the timer as an absolute time.
@@ -118,14 +118,14 @@ public:
   /// Get the expiry time for the timer relative to now.
   duration_type expires_from_now(const implementation_type& impl) const
   {
-    return TimeTraits::subtract(service_impl_.expiry(impl), TimeTraits::now());
+    return service_impl_.expires_from_now(impl);
   }
 
   /// Set the expiry time for the timer relative to now.
   std::size_t expires_from_now(implementation_type& impl,
       const duration_type& expiry_time, asio::error_code& ec)
   {
-    return service_impl_.expires_after(impl, expiry_time, ec);
+    return service_impl_.expires_from_now(impl, expiry_time, ec);
   }
 
   // Perform a blocking wait on the timer.
@@ -141,8 +141,9 @@ public:
   async_wait(implementation_type& impl,
       ASIO_MOVE_ARG(WaitHandler) handler)
   {
-    async_completion<WaitHandler,
-      void (asio::error_code)> init(handler);
+    detail::async_result_init<
+      WaitHandler, void (asio::error_code)> init(
+        ASIO_MOVE_CAST(WaitHandler)(handler));
 
     service_impl_.async_wait(impl, init.handler);
 
