@@ -163,8 +163,8 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw\zlib;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\tools\vulkan\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib-1.2.8;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -179,7 +179,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -191,8 +191,8 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw\zlib;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib-1.2.8;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;CINDER_GL_ANGLE;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -207,7 +207,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -219,8 +219,8 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw\zlib;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\tools\vulkan\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib-1.2.8;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -235,7 +235,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -247,8 +247,8 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw\zlib;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib-1.2.8;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;CINDER_GL_ANGLE;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -263,7 +263,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -277,8 +277,8 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw\zlib;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\tools\vulkan\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib-1.2.8;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -294,7 +294,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -307,8 +307,8 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw\zlib;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib-1.2.8;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;CINDER_GL_ANGLE;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -324,7 +324,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -337,8 +337,8 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw\zlib;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\tools\vulkan\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib-1.2.8;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -354,7 +354,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -367,8 +367,8 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw\zlib;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\msw\png;..\..\include\msw;..\..\include\oggvorbis;..\..\blocks\QuickTime\include\msw;..\..\src\AntTweakBar;..\..\src\libtess2;..\..\src\linebreak;..\..\src\r8brain;..\..\include\ANGLE;..\..\include\tinyexr;..\..\src\zlib-1.2.8;..\..\include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);FT2_BUILD_LIBRARY=1;FT_DEBUG_LEVEL_TRACE=1</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -384,7 +384,7 @@
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;shlwapi.lib;OpenGL32.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\..\lib\msw\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -407,7 +407,6 @@
     <ClCompile Include="..\..\src\cinder\app\msw\RendererImplGlMsw.cpp" />
     <ClCompile Include="..\..\src\cinder\app\Platform.cpp" />
     <ClCompile Include="..\..\src\cinder\app\RendererGl.cpp" />
-    <ClCompile Include="..\..\src\cinder\app\RendererVk.cpp" />
     <ClCompile Include="..\..\src\cinder\app\Window.cpp" />
     <ClCompile Include="..\..\src\cinder\app\winrt\AppImplWinRT.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -595,46 +594,6 @@
     <ClCompile Include="..\..\src\cinder\Url.cpp" />
     <ClCompile Include="..\..\src\cinder\UrlImplWinInet.cpp" />
     <ClCompile Include="..\..\src\cinder\Utilities.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Allocator.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Batch.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Buffer.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\CommandBuffer.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\CommandPool.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\ConstantConversion.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Context.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Descriptor.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Device.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\draw.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Environment.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Framebuffer.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\func.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\glsl_types.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Image.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\ImageView.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\IndexBuffer.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\ObjectTracker.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Pipeline.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\PipelineSelector.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Presenter.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Queue.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\RenderPass.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\scoped.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\ShaderProg.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\spir2cross\spir2cpp.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\spir2cross\spir2cross.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\spir2cross\spir2glsl.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\StateManager.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Surface.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Swapchain.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Texture.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\TextureFont.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\UniformBuffer.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\UniformLayout.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\Util.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\util\farmhash.cc" />
-    <ClCompile Include="..\..\src\cinder\vk\VertexBuffer.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\VertexBufferMesh.cpp" />
-    <ClCompile Include="..\..\src\cinder\vk\wrapper.cpp" />
     <ClCompile Include="..\..\src\cinder\Xml.cpp" />
     <ClCompile Include="..\..\src\cinder\app\KeyEvent.cpp" />
     <ClCompile Include="..\..\src\cinder\app\Renderer.cpp" />
@@ -658,6 +617,50 @@
     <ClCompile Include="..\..\src\AntTweakBar\TwMgr.cpp" />
     <ClCompile Include="..\..\src\AntTweakBar\TwOpenGL.cpp" />
     <ClCompile Include="..\..\src\AntTweakBar\TwPrecomp.cpp" />
+    <ClCompile Include="..\..\src\freetype\autofit\autofit.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftbase.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftbbox.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftbdf.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftbitmap.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftcid.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftdebug.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftfstype.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftgasp.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftglyph.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftgxval.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftinit.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftlcdfil.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftmm.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftotval.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftpatent.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftpfr.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftstroke.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftsynth.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftsystem.c" />
+    <ClCompile Include="..\..\src\freetype\base\fttype1.c" />
+    <ClCompile Include="..\..\src\freetype\base\ftwinfnt.c" />
+    <ClCompile Include="..\..\src\freetype\bdf\bdf.c" />
+    <ClCompile Include="..\..\src\freetype\bdf\bdflib.c" />
+    <ClCompile Include="..\..\src\freetype\bzip2\ftbzip2.c" />
+    <ClCompile Include="..\..\src\freetype\cache\ftcache.c" />
+    <ClCompile Include="..\..\src\freetype\cff\cff.c" />
+    <ClCompile Include="..\..\src\freetype\cid\type1cid.c" />
+    <ClCompile Include="..\..\src\freetype\gxvalid\gxvalid.c" />
+    <ClCompile Include="..\..\src\freetype\gzip\ftgzip.c" />
+    <ClCompile Include="..\..\src\freetype\lzw\ftlzw.c" />
+    <ClCompile Include="..\..\src\freetype\otvalid\otvalid.c" />
+    <ClCompile Include="..\..\src\freetype\pcf\pcf.c" />
+    <ClCompile Include="..\..\src\freetype\pfr\pfr.c" />
+    <ClCompile Include="..\..\src\freetype\psaux\psaux.c" />
+    <ClCompile Include="..\..\src\freetype\pshinter\pshinter.c" />
+    <ClCompile Include="..\..\src\freetype\psnames\psnames.c" />
+    <ClCompile Include="..\..\src\freetype\raster\raster.c" />
+    <ClCompile Include="..\..\src\freetype\sfnt\sfnt.c" />
+    <ClCompile Include="..\..\src\freetype\smooth\smooth.c" />
+    <ClCompile Include="..\..\src\freetype\truetype\truetype.c" />
+    <ClCompile Include="..\..\src\freetype\type1\type1.c" />
+    <ClCompile Include="..\..\src\freetype\type42\type42.c" />
+    <ClCompile Include="..\..\src\freetype\winfonts\winfnt.c" />
     <ClCompile Include="..\..\src\glload\gl_load.c" />
     <ClCompile Include="..\..\src\glload\gl_load_cpp.cpp" />
     <ClCompile Include="..\..\src\glload\wgl_load.c" />
@@ -709,6 +712,21 @@
     <ClCompile Include="..\..\src\r8brain\r8bbase.cpp" />
     <ClCompile Include="..\..\src\tinyexr\tinyexr.cc" />
     <ClCompile Include="..\..\src\videoInput\videoInput.cpp" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\adler32.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\compress.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\crc32.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\deflate.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\gzclose.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\gzlib.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\gzread.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\gzwrite.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\infback.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\inffast.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\inflate.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\inftrees.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\trees.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\uncompr.c" />
+    <ClCompile Include="..\..\src\zlib-1.2.8\zutil.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\cinder\app\App.h" />
@@ -732,7 +750,6 @@
     <ClInclude Include="..\..\include\cinder\app\Renderer.h" />
     <ClInclude Include="..\..\include\cinder\app\RendererDx.h" />
     <ClInclude Include="..\..\include\cinder\app\RendererGl.h" />
-    <ClInclude Include="..\..\include\cinder\app\RendererVk.h" />
     <ClInclude Include="..\..\include\cinder\app\TouchEvent.h" />
     <ClInclude Include="..\..\include\cinder\app\Window.h" />
     <ClInclude Include="..\..\include\cinder\app\winrt\AppImplWinRT.h" />
@@ -856,46 +873,95 @@
     <ClInclude Include="..\..\include\cinder\Tween.h" />
     <ClInclude Include="..\..\include\cinder\Unicode.h" />
     <ClInclude Include="..\..\include\cinder\UrlImplWinInet.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Allocator.h" />
-    <ClInclude Include="..\..\include\cinder\vk\BaseVkObject.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Batch.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Buffer.h" />
-    <ClInclude Include="..\..\include\cinder\vk\CommandBuffer.h" />
-    <ClInclude Include="..\..\include\cinder\vk\CommandPool.h" />
-    <ClInclude Include="..\..\include\cinder\vk\ConstantConversion.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Context.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Descriptor.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Device.h" />
-    <ClInclude Include="..\..\include\cinder\vk\draw.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Environment.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Framebuffer.h" />
-    <ClInclude Include="..\..\include\cinder\vk\func.h" />
-    <ClInclude Include="..\..\include\cinder\vk\glsl_types.h" />
-    <ClInclude Include="..\..\include\cinder\vk\gl_types.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Image.h" />
-    <ClInclude Include="..\..\include\cinder\vk\ImageView.h" />
-    <ClInclude Include="..\..\include\cinder\vk\IndexBuffer.h" />
-    <ClInclude Include="..\..\include\cinder\vk\ObjectTracker.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Pipeline.h" />
-    <ClInclude Include="..\..\include\cinder\vk\PipelineSelector.h" />
-    <ClInclude Include="..\..\include\cinder\vk\platform.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Presenter.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Queue.h" />
-    <ClInclude Include="..\..\include\cinder\vk\RenderPass.h" />
-    <ClInclude Include="..\..\include\cinder\vk\scoped.h" />
-    <ClInclude Include="..\..\include\cinder\vk\ShaderProg.h" />
-    <ClInclude Include="..\..\include\cinder\vk\StageManager.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Surface.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Swapchain.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Texture.h" />
-    <ClInclude Include="..\..\include\cinder\vk\TextureFont.h" />
-    <ClInclude Include="..\..\include\cinder\vk\UniformBuffer.h" />
-    <ClInclude Include="..\..\include\cinder\vk\UniformLayout.h" />
-    <ClInclude Include="..\..\include\cinder\vk\Util.h" />
-    <ClInclude Include="..\..\include\cinder\vk\VertexBuffer.h" />
-    <ClInclude Include="..\..\include\cinder\vk\VertexBufferMesh.h" />
-    <ClInclude Include="..\..\include\cinder\vk\vk.h" />
-    <ClInclude Include="..\..\include\cinder\vk\wrapper.h" />
+    <ClInclude Include="..\..\include\freetype\config\ftconfig.h" />
+    <ClInclude Include="..\..\include\freetype\config\ftheader.h" />
+    <ClInclude Include="..\..\include\freetype\config\ftmodule.h" />
+    <ClInclude Include="..\..\include\freetype\config\ftoption.h" />
+    <ClInclude Include="..\..\include\freetype\config\ftstdlib.h" />
+    <ClInclude Include="..\..\include\freetype\freetype.h" />
+    <ClInclude Include="..\..\include\freetype\ft2build.h" />
+    <ClInclude Include="..\..\include\freetype\ftadvanc.h" />
+    <ClInclude Include="..\..\include\freetype\ftautoh.h" />
+    <ClInclude Include="..\..\include\freetype\ftbbox.h" />
+    <ClInclude Include="..\..\include\freetype\ftbdf.h" />
+    <ClInclude Include="..\..\include\freetype\ftbitmap.h" />
+    <ClInclude Include="..\..\include\freetype\ftbzip2.h" />
+    <ClInclude Include="..\..\include\freetype\ftcache.h" />
+    <ClInclude Include="..\..\include\freetype\ftcffdrv.h" />
+    <ClInclude Include="..\..\include\freetype\ftchapters.h" />
+    <ClInclude Include="..\..\include\freetype\ftcid.h" />
+    <ClInclude Include="..\..\include\freetype\fterrdef.h" />
+    <ClInclude Include="..\..\include\freetype\fterrors.h" />
+    <ClInclude Include="..\..\include\freetype\ftfntfmt.h" />
+    <ClInclude Include="..\..\include\freetype\ftgasp.h" />
+    <ClInclude Include="..\..\include\freetype\ftglyph.h" />
+    <ClInclude Include="..\..\include\freetype\ftgxval.h" />
+    <ClInclude Include="..\..\include\freetype\ftgzip.h" />
+    <ClInclude Include="..\..\include\freetype\ftimage.h" />
+    <ClInclude Include="..\..\include\freetype\ftincrem.h" />
+    <ClInclude Include="..\..\include\freetype\ftlcdfil.h" />
+    <ClInclude Include="..\..\include\freetype\ftlist.h" />
+    <ClInclude Include="..\..\include\freetype\ftlzw.h" />
+    <ClInclude Include="..\..\include\freetype\ftmac.h" />
+    <ClInclude Include="..\..\include\freetype\ftmm.h" />
+    <ClInclude Include="..\..\include\freetype\ftmodapi.h" />
+    <ClInclude Include="..\..\include\freetype\ftmoderr.h" />
+    <ClInclude Include="..\..\include\freetype\ftotval.h" />
+    <ClInclude Include="..\..\include\freetype\ftoutln.h" />
+    <ClInclude Include="..\..\include\freetype\ftpfr.h" />
+    <ClInclude Include="..\..\include\freetype\ftrender.h" />
+    <ClInclude Include="..\..\include\freetype\ftsizes.h" />
+    <ClInclude Include="..\..\include\freetype\ftsnames.h" />
+    <ClInclude Include="..\..\include\freetype\ftstroke.h" />
+    <ClInclude Include="..\..\include\freetype\ftsynth.h" />
+    <ClInclude Include="..\..\include\freetype\ftsystem.h" />
+    <ClInclude Include="..\..\include\freetype\fttrigon.h" />
+    <ClInclude Include="..\..\include\freetype\ftttdrv.h" />
+    <ClInclude Include="..\..\include\freetype\fttypes.h" />
+    <ClInclude Include="..\..\include\freetype\ftwinfnt.h" />
+    <ClInclude Include="..\..\include\freetype\internal\autohint.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftcalc.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftdebug.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftdriver.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="..\..\include\freetype\internal\fthash.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftmemory.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftobjs.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftpic.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftrfork.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftserv.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftstream.h" />
+    <ClInclude Include="..\..\include\freetype\internal\fttrace.h" />
+    <ClInclude Include="..\..\include\freetype\internal\ftvalid.h" />
+    <ClInclude Include="..\..\include\freetype\internal\internal.h" />
+    <ClInclude Include="..\..\include\freetype\internal\psaux.h" />
+    <ClInclude Include="..\..\include\freetype\internal\pshints.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svbdf.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svcid.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svfntfmt.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svgldict.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svgxval.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svkern.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svmm.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svotval.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svpfr.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svpostnm.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svprop.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svpscmap.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svpsinfo.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svsfnt.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svttcmap.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svtteng.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svttglyf.h" />
+    <ClInclude Include="..\..\include\freetype\internal\services\svwinfnt.h" />
+    <ClInclude Include="..\..\include\freetype\internal\sfnt.h" />
+    <ClInclude Include="..\..\include\freetype\internal\t1types.h" />
+    <ClInclude Include="..\..\include\freetype\internal\tttypes.h" />
+    <ClInclude Include="..\..\include\freetype\t1tables.h" />
+    <ClInclude Include="..\..\include\freetype\ttnameid.h" />
+    <ClInclude Include="..\..\include\freetype\tttables.h" />
+    <ClInclude Include="..\..\include\freetype\tttags.h" />
+    <ClInclude Include="..\..\include\freetype\ttunpat.h" />
     <ClInclude Include="..\..\include\jsoncpp\json\json-forwards.h" />
     <ClInclude Include="..\..\include\jsoncpp\json\json.h" />
     <ClInclude Include="..\..\include\rapidxml\rapidxml.hpp" />
@@ -981,13 +1047,6 @@
     <ClInclude Include="..\..\include\cinder\msw\OutputDebugStringStream.h" />
     <ClInclude Include="..\..\include\cinder\params\Params.h" />
     <ClInclude Include="..\..\include\msw\videoInput\videoInput.h" />
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\GLSL.std.450.h" />
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spir2common.hpp" />
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spir2cpp.hpp" />
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spir2cross.hpp" />
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spir2glsl.hpp" />
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spirv.hpp" />
-    <ClInclude Include="..\..\src\cinder\vk\util\farmhash.h" />
     <ClInclude Include="..\..\src\libtess2\bucketalloc.h" />
     <ClInclude Include="..\..\src\libtess2\dict.h" />
     <ClInclude Include="..\..\src\libtess2\geom.h" />
@@ -1047,6 +1106,17 @@
     <ClInclude Include="..\..\src\r8brain\fft4g.h" />
     <ClInclude Include="..\..\src\r8brain\r8bbase.h" />
     <ClInclude Include="..\..\src\r8brain\r8bconf.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\crc32.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\deflate.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\gzguts.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\inffast.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\inffixed.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\inflate.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\inftrees.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\trees.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\zconf.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\zlib.h" />
+    <ClInclude Include="..\..\src\zlib-1.2.8\zutil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

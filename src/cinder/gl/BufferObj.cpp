@@ -73,6 +73,11 @@ void BufferObj::bind() const
 	context()->bindBuffer( mTarget, mId );
 }
 
+void BufferObj::bind( GLenum target ) const
+{
+	context()->bindBuffer( target, mId );
+}
+
 void BufferObj::bufferData( GLsizeiptr size, const GLvoid *data, GLenum usage )
 {
 	ScopedBuffer bufferBind( mTarget, mId );
@@ -215,6 +220,12 @@ GLuint BufferObj::getBindingConstantForTarget( GLenum target )
 			return GL_TRANSFORM_FEEDBACK_BUFFER_BINDING;
 		case GL_UNIFORM_BUFFER:
 			return GL_UNIFORM_BUFFER_BINDING;
+		case GL_DRAW_INDIRECT_BUFFER:
+			return GL_DRAW_INDIRECT_BUFFER_BINDING;
+		case GL_QUERY_BUFFER:
+			return GL_QUERY_BUFFER_BINDING;
+		case GL_ATOMIC_COUNTER_BUFFER:
+			return GL_ATOMIC_COUNTER_BUFFER_BINDING;
 #endif
 		default:
 			return 0;

@@ -1,8 +1,6 @@
 cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 
-if( CINDER_VERBOSE )
-	message( "Building Cinder for ${CINDER_TARGET}" )
-endif()
+ci_log_v( "Building Cinder for ${CINDER_TARGET}" )
 
 set( CINDER_SRC_DIR 	"${CINDER_PATH}/src" )
 set( CINDER_INC_DIR		"${CINDER_PATH}/include" )
@@ -57,7 +55,7 @@ if( CINDER_FREETYPE_USE_SYSTEM )
 	#	list( APPEND CINDER_LIBS_DEPENDS 	${FREETYPE2_LIBRARIES} )
 else()
 	# use freetype copy that ships with cinder
-	message( "using freetype copy that ships with cinder" )
+	ci_log_v( "using freetype copy that ships with cinder" )
 	list( APPEND CINDER_INCLUDE_SYSTEM_PRIVATE
 		${CINDER_INC_DIR}/freetype
 	)

@@ -182,11 +182,14 @@
  	// Android, Linux
 	#if ( CINDER_GL_ES_VERSION >= CINDER_GL_ES_VERSION_3_1 )
  		#define CINDER_GL_HAS_COMPUTE_SHADER
+		#define CINDER_GL_HAS_DRAW_INDIRECT
  	#endif
 
 #else // OpenGL Desktop
 	#define CINDER_GL_HAS_UNIFORM_BLOCKS
 	#define CINDER_GL_HAS_DRAW_INSTANCED
+	#define CINDER_GL_HAS_MULTI_DRAW
+	#define CINDER_GL_HAS_DRAW_INDIRECT
 	#define CINDER_GL_HAS_FBO_MULTISAMPLING
 	#define CINDER_GL_HAS_TRANSFORM_FEEDBACK
 	#define CINDER_GL_HAS_WRAP_R
@@ -201,17 +204,15 @@
 	#define CINDER_GL_HAS_REQUIRED_INTERNALFORMAT
 
 	#define CINDER_GL_HAS_TEXTURE_NORM16
-
- 	#if defined( CINDER_LINUX )
- 		#define CINDER_GL_HAS_COMPUTE_SHADER
- 	#endif
+	
+	#if defined( CINDER_LINUX ) || defined( CINDER_MSW )
+		#define CINDER_GL_HAS_COMPUTE_SHADER
+		#define CINDER_GL_HAS_DEBUG_OUTPUT
+		#define CINDER_GL_HAS_MULTI_DRAW_INDIRECT
+	#endif
 #endif
 
 #if defined( CINDER_MSW_DESKTOP )
-	#if ! defined( CINDER_GL_ANGLE ) // MSW Desktop Only
-		#define CINDER_GL_HAS_COMPUTE_SHADER
-		#define CINDER_GL_HAS_DEBUG_OUTPUT
-	#endif
 	// both ANGLE and desktop have FBO Multisampling
 	#define CINDER_GL_HAS_FBO_MULTISAMPLING
 	// platform-specific synonyms

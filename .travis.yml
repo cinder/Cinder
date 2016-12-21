@@ -1,0 +1,84 @@
+language: cpp
+git:
+  depth: 1
+
+fast_finish: false
+
+matrix:
+  include:
+
+    # linux version have unique dependencies, so we set them up individually
+    - os: linux
+      dist: trusty
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      sudo: required
+      env: 
+        - TARGET="trusty"
+        - DESCRIPTION="Ubuntu Trusty build/test via CMake"
+
+    # OS X cmake
+    - os: osx
+      osx_image: xcode8.2
+      env: 
+        - TOOL="xcode"
+        - DESCRIPTION="OS X build/test and iOS build via Xcode"
+    - os: osx
+      osx_image: xcode8.1
+      env:
+        - TOOL="xcode"
+        - DESCRIPTION=OS X build/test and iOS build via Xcode"
+    - os: osx
+      osx_image: xcode8
+      env:
+        - TOOL="xcode"
+        - DESCRIPTION=OS X build/test and iOS build via Xcode"
+    - os: osx
+      osx_image: xcode7.3
+      env:
+        - TOOL="xcode"
+        - DESCRIPTION=OS X build/test and iOS build via Xcode"
+    - os: osx
+      osx_image: xcode6.4
+      env:
+        - TOOL="xcode"
+        - DESCRIPTION=OS X build/test and iOS build via Xcode"
+
+    # OS X xcode
+    - os: osx
+      osx_image: xcode8.2
+      env: DESCRIPTION="OS X build/test via CMake"
+    - os: osx
+      osx_image: xcode8.1
+      env: DESCRIPTION="OS X build/test via CMake"
+    - os: osx
+      osx_image: xcode8
+      env: DESCRIPTION="OS X build/test via CMake"
+    - os: osx
+      osx_image: xcode7.3
+      env: DESCRIPTION="OS X build/test via CMake"
+    - os: osx
+      osx_image: xcode6.4
+      env: DESCRIPTION="OS X build/test via CMake"
+
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      tools/linux/scripts/"$TARGET"-install-deps.sh;
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" != "xcode" ]]; then
+      tools/osx/scripts/cmake-brew-install.sh;
+    fi
+
+script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      tools/ci/cmake_test.sh;
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode" ]]; then
+      tools/ci/xcode_test.sh;
+    elif  [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      tools/ci/cmake_test.sh;
+    fi
+    

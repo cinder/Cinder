@@ -49,12 +49,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "posix_time.h"
 #include "linux_joystick.h"
 #include "xkb_unicode.h"
-
-#if defined(_GLFW_EGL)
- #include "egl_context.h"
-#else
- #error "The Wayland backend depends on EGL platform support"
-#endif
+#include "egl_context.h"
 
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
@@ -71,11 +66,13 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWayland wl
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWayland  wl
 
+#define _GLFW_PLATFORM_CONTEXT_STATE
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
+
 
 // Wayland-specific video mode data
 //
 typedef struct _GLFWvidmodeWayland _GLFWvidmodeWayland;
-
 
 // Wayland-specific per-window data
 //
@@ -83,6 +80,7 @@ typedef struct _GLFWwindowWayland
 {
     int                         width, height;
     GLFWbool                    visible;
+    GLFWbool                    maximized;
     struct wl_surface*          surface;
     struct wl_egl_window*       native;
     struct wl_shell_surface*    shell_surface;
@@ -90,6 +88,8 @@ typedef struct _GLFWwindowWayland
 
     _GLFWcursor*                currentCursor;
     double                      cursorPosX, cursorPosY;
+
+    char*                       title;
 
     // We need to track the monitors the window spans on to calculate the
     // optimal scaling factor.
@@ -103,7 +103,6 @@ typedef struct _GLFWwindowWayland
         struct zwp_locked_pointer_v1*      lockedPointer;
     } pointerLock;
 } _GLFWwindowWayland;
-
 
 // Wayland-specific global data
 //
@@ -148,7 +147,6 @@ typedef struct _GLFWlibraryWayland
 
 } _GLFWlibraryWayland;
 
-
 // Wayland-specific per-monitor data
 //
 typedef struct _GLFWmonitorWayland
@@ -164,7 +162,6 @@ typedef struct _GLFWmonitorWayland
     int                         y;
     int                         scale;
 } _GLFWmonitorWayland;
-
 
 // Wayland-specific per-cursor data
 //

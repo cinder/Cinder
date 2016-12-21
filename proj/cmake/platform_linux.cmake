@@ -11,6 +11,7 @@ list( APPEND SRC_SET_GLFW
 	${CINDER_SRC_DIR}/glfw/src/monitor.c
 	${CINDER_SRC_DIR}/glfw/src/window.c
 
+	${CINDER_SRC_DIR}/glfw/src/egl_context.c
 	${CINDER_SRC_DIR}/glfw/src/window.c
 	${CINDER_SRC_DIR}/glfw/src/x11_init.c
 	${CINDER_SRC_DIR}/glfw/src/x11_monitor.c
@@ -19,6 +20,7 @@ list( APPEND SRC_SET_GLFW
 	${CINDER_SRC_DIR}/glfw/src/linux_joystick.c
 	${CINDER_SRC_DIR}/glfw/src/posix_time.c
 	${CINDER_SRC_DIR}/glfw/src/posix_tls.c
+	${CINDER_SRC_DIR}/glfw/src/vulkan.c
 )
 
 list( APPEND SRC_SET_CINDER_APP_LINUX 

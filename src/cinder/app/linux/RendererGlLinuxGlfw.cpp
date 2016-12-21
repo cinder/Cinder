@@ -54,6 +54,9 @@ bool RendererGlLinux::initialize( void *window, RendererRef sharedRenderer )
 	gl::env()->initializeFunctionPointers();
 
 	std::shared_ptr<gl::PlatformDataLinux> platformData( new gl::PlatformDataLinux( mContext ) );
+	platformData->mDebug = mRenderer->getOptions().getDebug();
+	platformData->mDebugLogSeverity = mRenderer->getOptions().getDebugLogSeverity();
+	platformData->mDebugBreakSeverity = mRenderer->getOptions().getDebugBreakSeverity();
 	platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
 
 	mCinderContext = gl::Context::createFromExisting( platformData );

@@ -2,7 +2,7 @@
 // GLFW 3.2 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2010 Camilla Berglund <elmindreda@elmindreda.org>
+// Copyright (c) 2006-2016 Camilla Berglund <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -87,20 +87,15 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #include "posix_time.h"
 #include "linux_joystick.h"
 #include "xkb_unicode.h"
-
-#if defined(_GLFW_GLX)
- #include "glx_context.h"
-#elif defined(_GLFW_EGL)
- #define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->x11.handle)
- #define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.x11.display)
- #include "egl_context.h"
-#else
- #error "No supported context creation API selected"
-#endif
+#include "glx_context.h"
+#include "egl_context.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
+
+#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->x11.handle)
+#define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.x11.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
@@ -123,18 +118,15 @@ typedef struct _GLFWwindowX11
     int             xpos, ypos;
 
     // The last received cursor position, regardless of source
-    double          cursorPosX, cursorPosY;
+    int             lastCursorPosX, lastCursorPosY;
     // The last position the cursor was warped to by GLFW
-    int             warpPosX, warpPosY;
+    int             warpCursorPosX, warpCursorPosY;
 
     // The information from the last KeyPress event
-    struct {
-        unsigned int keycode;
-        Time         time;
-    } last;
+    unsigned int    lastKeyCode;
+    Time            lastKeyTime;
 
 } _GLFWwindowX11;
-
 
 // X11-specific global data
 //
@@ -160,6 +152,10 @@ typedef struct _GLFWlibraryX11
     short int       publicKeys[256];
     // GLFW key to X11 keycode LUT
     short int       nativeKeys[GLFW_KEY_LAST + 1];
+    // Where to place the cursor when re-enabled
+    double          restoreCursorPosX, restoreCursorPosY;
+    // The window whose disabled cursor mode is active
+    _GLFWwindow*    disabledCursorWindow;
 
     // Window manager atoms
     Atom            WM_PROTOCOLS;
@@ -167,8 +163,11 @@ typedef struct _GLFWlibraryX11
     Atom            WM_DELETE_WINDOW;
     Atom            NET_WM_NAME;
     Atom            NET_WM_ICON_NAME;
+    Atom            NET_WM_ICON;
     Atom            NET_WM_PID;
     Atom            NET_WM_PING;
+    Atom            NET_WM_WINDOW_TYPE;
+    Atom            NET_WM_WINDOW_TYPE_NORMAL;
     Atom            NET_WM_STATE;
     Atom            NET_WM_STATE_ABOVE;
     Atom            NET_WM_STATE_FULLSCREEN;
@@ -257,7 +256,6 @@ typedef struct _GLFWlibraryX11
 
 } _GLFWlibraryX11;
 
-
 // X11-specific per-monitor data
 //
 typedef struct _GLFWmonitorX11
@@ -271,7 +269,6 @@ typedef struct _GLFWmonitorX11
     int             index;
 
 } _GLFWmonitorX11;
-
 
 // X11-specific per-cursor data
 //

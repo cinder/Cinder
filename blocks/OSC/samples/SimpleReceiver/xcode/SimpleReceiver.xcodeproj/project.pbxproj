@@ -16,11 +16,11 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
+		1A9A6E92BE02458DB2F03B6F /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = AFBF04D690574F86B3A7FD62 /* CinderApp.icns */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
-		734FC070F96D4F21B1203481 /* SimpleReceiverApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B28A232A327C404AB60D0AF6 /* SimpleReceiverApp.cpp */; };
+		88FCF9838B424FB8B2935911 /* SimpleReceiverApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E0F3E7FC1534043899D8895 /* SimpleReceiverApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		B3253C031D4C5BC400CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253C011D4C5BC400CDF15F /* Osc.cpp */; };
-		B37BB9BA1BD2031C00311784 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = B37BB9B91BD2031C00311784 /* CinderApp.icns */; };
+		DDF73E1C9E6E42BF97D9E62C /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D465EC42A2D435091E8DA9E /* Osc.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,18 +33,18 @@
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		0E0F3E7FC1534043899D8895 /* SimpleReceiverApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SimpleReceiverApp.cpp; path = ../src/SimpleReceiverApp.cpp; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		14923CD671174971AB167ED8 /* SimpleReceiver_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = SimpleReceiver_Prefix.pch; sourceTree = "<group>"; };
-		16D258740A29403AAF5BC45F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		2D8B378A4F7B4524AA712E85 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
-		64B18EB25E034945B5F9A325 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		6D465EC42A2D435091E8DA9E /* Osc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Osc.cpp; path = ../../../src/cinder/osc/Osc.cpp; sourceTree = "<group>"; };
+		8C501FC40EDB4E76AD0F4458 /* SimpleReceiver_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = SimpleReceiver_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* SimpleReceiver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleReceiver.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B28A232A327C404AB60D0AF6 /* SimpleReceiverApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SimpleReceiverApp.cpp; path = ../src/SimpleReceiverApp.cpp; sourceTree = "<group>"; };
-		B3253C011D4C5BC400CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
-		B3253C021D4C5BC400CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
-		B37BB9B91BD2031C00311784 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
+		98D0F2840F004333B8DD0EE1 /* Osc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Osc.h; path = ../../../src/cinder/osc/Osc.h; sourceTree = "<group>"; };
+		AFBF04D690574F86B3A7FD62 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
+		F0A57C74BC6B4011852C26DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,15 +72,23 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				D7EC5074022B4898A72EABCE /* OSC */,
+				039D7FA1AD624E5CBD603111 /* OSC */,
 			);
 			name = Blocks;
+			sourceTree = "<group>";
+		};
+		039D7FA1AD624E5CBD603111 /* OSC */ = {
+			isa = PBXGroup;
+			children = (
+				1AB94D894E9D4BCEB6FEFABB /* src */,
+			);
+			name = OSC;
 			sourceTree = "<group>";
 		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				B28A232A327C404AB60D0AF6 /* SimpleReceiverApp.cpp */,
+				0E0F3E7FC1534043899D8895 /* SimpleReceiverApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -120,6 +128,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1AB94D894E9D4BCEB6FEFABB /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A45CDFA4B49B4E988D039A29 /* cinder */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
 		29B97314FDCFA39411CA2CEA /* SimpleReceiver */ = {
 			isa = PBXGroup;
 			children = (
@@ -136,8 +152,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				64B18EB25E034945B5F9A325 /* Resources.h */,
-				14923CD671174971AB167ED8 /* SimpleReceiver_Prefix.pch */,
+				2D8B378A4F7B4524AA712E85 /* Resources.h */,
+				8C501FC40EDB4E76AD0F4458 /* SimpleReceiver_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -145,8 +161,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B37BB9B91BD2031C00311784 /* CinderApp.icns */,
-				16D258740A29403AAF5BC45F /* Info.plist */,
+				AFBF04D690574F86B3A7FD62 /* CinderApp.icns */,
+				F0A57C74BC6B4011852C26DF /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -160,38 +176,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B3253BFE1D4C5BC400CDF15F /* src */ = {
+		A45CDFA4B49B4E988D039A29 /* cinder */ = {
 			isa = PBXGroup;
 			children = (
-				B3253BFF1D4C5BC400CDF15F /* cinder */,
+				ED7120B4D53C4192BCDB37FE /* osc */,
 			);
-			name = src;
-			path = ../../../src;
+			name = cinder;
 			sourceTree = "<group>";
 		};
-		B3253BFF1D4C5BC400CDF15F /* cinder */ = {
+		ED7120B4D53C4192BCDB37FE /* osc */ = {
 			isa = PBXGroup;
 			children = (
-				B3253C001D4C5BC400CDF15F /* osc */,
+				6D465EC42A2D435091E8DA9E /* Osc.cpp */,
+				98D0F2840F004333B8DD0EE1 /* Osc.h */,
 			);
-			path = cinder;
-			sourceTree = "<group>";
-		};
-		B3253C001D4C5BC400CDF15F /* osc */ = {
-			isa = PBXGroup;
-			children = (
-				B3253C011D4C5BC400CDF15F /* Osc.cpp */,
-				B3253C021D4C5BC400CDF15F /* Osc.h */,
-			);
-			path = osc;
-			sourceTree = "<group>";
-		};
-		D7EC5074022B4898A72EABCE /* OSC */ = {
-			isa = PBXGroup;
-			children = (
-				B3253BFE1D4C5BC400CDF15F /* src */,
-			);
-			name = OSC;
+			name = osc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -246,7 +245,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B37BB9BA1BD2031C00311784 /* CinderApp.icns in Resources */,
+				1A9A6E92BE02458DB2F03B6F /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,8 +256,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				734FC070F96D4F21B1203481 /* SimpleReceiverApp.cpp in Sources */,
-				B3253C031D4C5BC400CDF15F /* Osc.cpp in Sources */,
+				88FCF9838B424FB8B2935911 /* SimpleReceiverApp.cpp in Sources */,
+				DDF73E1C9E6E42BF97D9E62C /* Osc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,7 +282,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = SimpleReceiver;
 				SYMROOT = ./build;
@@ -310,7 +309,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = SimpleReceiver;
 				STRIP_INSTALLED_PRODUCT = YES;

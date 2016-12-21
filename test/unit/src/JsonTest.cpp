@@ -11,8 +11,6 @@ using namespace std;
 
 TEST_CASE("Json", "[noisy]")
 {
-	app::Platform::get()->addAssetDirectory( UNIT_DIR_ASSETS );
-
 	SECTION("Basic JSON Parsing")
 	{
 		console() << "jsoncpp version: " << JSONCPP_VERSION_STRING << endl;
@@ -168,7 +166,7 @@ TEST_CASE("Json", "[noisy]")
 
 		console() << doc;
 		
-		doc.write( writeFile( getDocumentsDirectory() / "testoutput.json" ), JsonTree::WriteOptions() );
-		doc.write( writeFile( getDocumentsDirectory() / "testoutput_fast.json" ), JsonTree::WriteOptions().indented( false ) );
+		doc.write( writeFile( "/tmp/testoutput.json" ), JsonTree::WriteOptions() );
+		doc.write( writeFile( "/tmp/testoutput_fast.json" ), JsonTree::WriteOptions().indented( false ) );
 	}
 } // json

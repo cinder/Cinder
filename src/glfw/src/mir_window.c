@@ -160,10 +160,15 @@ static void handlePointerButton(_GLFWwindow* window,
                               int pressed,
                               const MirPointerEvent* pointer_event)
 {
-    MirPointerButton button = mir_pointer_event_buttons  (pointer_event);
     int mods                = mir_pointer_event_modifiers(pointer_event);
     const int publicMods    = mirModToGLFWMod(mods);
-    int publicButton;
+    MirPointerButton button = mir_pointer_button_primary;
+    static uint32_t oldButtonStates = 0;
+    uint32_t newButtonStates        = mir_pointer_event_buttons(pointer_event);
+    int publicButton                = GLFW_MOUSE_BUTTON_LEFT;
+
+    // XOR our old button states our new states to figure out what was added or removed
+    button = newButtonStates ^ oldButtonStates;
 
     switch (button)
     {
@@ -188,21 +193,22 @@ static void handlePointerButton(_GLFWwindow* window,
             break;
     }
 
+    oldButtonStates = newButtonStates;
+
     _glfwInputMouseClick(window, publicButton, pressed, publicMods);
 }
 
 static void handlePointerMotion(_GLFWwindow* window,
                                 const MirPointerEvent* pointer_event)
 {
-    int current_x = window->cursorPosX;
-    int current_y = window->cursorPosY;
+    int current_x = window->virtualCursorPosX;
+    int current_y = window->virtualCursorPosY;
     int x  = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_x);
     int y  = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_y);
     int dx = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_hscroll);
     int dy = mir_pointer_event_axis_value(pointer_event, mir_pointer_axis_vscroll);
 
-    if (current_x != x || current_y != y)
-      _glfwInputCursorMotion(window, x, y);
+    _glfwInputCursorPos(window, x, y);
     if (dx != 0 || dy != 0)
       _glfwInputScroll(window, dx, dy);
 }
@@ -345,16 +351,10 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    if (ctxconfig->api != GLFW_NO_API)
-    {
-        if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
-            return GLFW_FALSE;
-    }
-
-    if (wndconfig->monitor)
+    if (window->monitor)
     {
         GLFWvidmode mode;
-        _glfwPlatformGetVideoMode(wndconfig->monitor, &mode);
+        _glfwPlatformGetVideoMode(window->monitor, &mode);
 
         mir_surface_set_state(window->mir.surface, mir_surface_state_fullscreen);
 
@@ -377,6 +377,14 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     window->mir.window = mir_buffer_stream_get_egl_native_window(
                                    mir_surface_get_buffer_stream(window->mir.surface));
 
+    if (ctxconfig->client != GLFW_NO_API)
+    {
+        if (!_glfwInitEGL())
+            return GLFW_FALSE;
+        if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+            return GLFW_FALSE;
+    }
+
     return GLFW_TRUE;
 }
 
@@ -388,7 +396,8 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->mir.surface = NULL;
     }
 
-    _glfwDestroyContextEGL(window);
+    if (window->context.destroy)
+        window->context.destroy(window);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -401,6 +410,13 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 
     mir_surface_apply_spec(window->mir.surface, spec);
     mir_surface_spec_release(spec);
+}
+
+void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
+                                int count, const GLFWimage* images)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
@@ -501,6 +517,16 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
+void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
+                                   _GLFWmonitor* monitor,
+                                   int xpos, int ypos,
+                                   int width, int height,
+                                   int refreshRate)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+}
+
 int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -544,6 +570,24 @@ void _glfwPlatformWaitEvents(void)
 
     if (emptyEventQueue(_glfw.mir.event_queue))
         pthread_cond_wait(&_glfw.mir.event_cond, &_glfw.mir.event_mutex);
+
+    pthread_mutex_unlock(&_glfw.mir.event_mutex);
+
+    _glfwPlatformPollEvents();
+}
+
+void _glfwPlatformWaitEventsTimeout(double timeout)
+{
+    pthread_mutex_lock(&_glfw.mir.event_mutex);
+
+    if (emptyEventQueue(_glfw.mir.event_queue))
+    {
+        struct timespec time;
+        clock_gettime(CLOCK_REALTIME, &time);
+        time.tv_sec += (long) timeout;
+        time.tv_nsec += (long) ((timeout - (long) timeout) * 1e9);
+        pthread_cond_timedwait(&_glfw.mir.event_cond, &_glfw.mir.event_mutex, &time);
+    }
 
     pthread_mutex_unlock(&_glfw.mir.event_mutex);
 
@@ -666,11 +710,6 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
         mir_wait_for(mir_surface_configure_cursor(window->mir.surface, cursor->mir.conf));
         if (cursor->mir.custom_cursor)
         {
-            /* FIXME Bug https://bugs.launchpad.net/mir/+bug/1477285
-                     Requires a triple buffer swap to get the cursor buffer on top! (since mir is tripled buffered)
-            */
-            mir_buffer_stream_swap_buffers_sync(cursor->mir.custom_cursor);
-            mir_buffer_stream_swap_buffers_sync(cursor->mir.custom_cursor);
             mir_buffer_stream_swap_buffers_sync(cursor->mir.custom_cursor);
         }
     }
@@ -719,7 +758,7 @@ const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
     return NULL;
 }
 
-char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
+char** _glfwPlatformGetRequiredInstanceExtensions(uint32_t* count)
 {
     char** extensions;
 
@@ -738,7 +777,7 @@ char** _glfwPlatformGetRequiredInstanceExtensions(unsigned int* count)
 
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                       VkPhysicalDevice device,
-                                                      unsigned int queuefamily)
+                                                      uint32_t queuefamily)
 {
     PFN_vkGetPhysicalDeviceMirPresentationSupportKHR vkGetPhysicalDeviceMirPresentationSupportKHR =
         (PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)

@@ -154,17 +154,95 @@
     <Filter Include="Header Files\tinyexr">
       <UniqueIdentifier>{7db91fc3-293a-46f9-a07c-f55c2de26b5b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\vk">
-      <UniqueIdentifier>{7143c378-04ef-46d9-8e20-2fba80535f8d}</UniqueIdentifier>
+    <Filter Include="Header Files\zlib">
+      <UniqueIdentifier>{6b19afa4-11d8-4d20-b38e-9ea11b3013c5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\vk">
-      <UniqueIdentifier>{55259b0d-30f8-4316-8c0a-2b48b87a8ecb}</UniqueIdentifier>
+    <Filter Include="Source Files\zlib">
+      <UniqueIdentifier>{33463340-601d-4e08-9c4d-c0c1f915ea29}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\vk\util">
-      <UniqueIdentifier>{f48b2797-855c-49c0-9250-fbd2d8c7a0bc}</UniqueIdentifier>
+    <Filter Include="Header Files\freetype">
+      <UniqueIdentifier>{307148d8-e986-4ea6-95ed-22f81cdafede}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\vk\spir2cross">
-      <UniqueIdentifier>{cd964705-b875-43be-a8a4-19d6642fa5a4}</UniqueIdentifier>
+    <Filter Include="Header Files\freetype\internal">
+      <UniqueIdentifier>{e9cbe2ab-fac5-4799-ba19-a624f482f1a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\freetype\config">
+      <UniqueIdentifier>{4a4cfe13-99ab-431c-bd37-74cc20fb4ad9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\freetype\internal\services">
+      <UniqueIdentifier>{312b8fe9-8308-4929-8ca0-865972a3f2b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype">
+      <UniqueIdentifier>{8a3e93ec-5ecf-43d7-b29d-bb6b0b417b80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\bdf">
+      <UniqueIdentifier>{b0cff140-a128-44e1-92db-20fb6620878d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\cff">
+      <UniqueIdentifier>{9e749c80-53da-4684-9bcb-ba96a0084e07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\pcf">
+      <UniqueIdentifier>{042dbce0-bfe7-40ef-9e18-fa8385261482}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\pfr">
+      <UniqueIdentifier>{1fefb4b7-128d-46f6-abb4-1d29db9d1aea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\sfnt">
+      <UniqueIdentifier>{9943ed24-70ad-44e6-8210-c5d8d1b6f879}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\truetype">
+      <UniqueIdentifier>{f923dc31-6945-47a8-829d-3d2cf8bf82a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\type1">
+      <UniqueIdentifier>{ebed8589-3993-4df6-9cac-3b6a4293744a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\type42">
+      <UniqueIdentifier>{a7994860-7dc7-4866-84da-192af6a650dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\winfonts">
+      <UniqueIdentifier>{c2abb15c-10e2-45d2-a269-80f94862d97f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\base">
+      <UniqueIdentifier>{c77ac3d6-5d8e-4f03-8e9b-601c600afa5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\raster">
+      <UniqueIdentifier>{87fe5124-674d-461e-aa00-abedc757f23f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\smooth">
+      <UniqueIdentifier>{b2e11836-c962-46fc-9cb4-3d5b0ace9890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\autofit">
+      <UniqueIdentifier>{53f6f254-9eb0-40d4-ab1e-d5756f7605ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\bzip2">
+      <UniqueIdentifier>{98aa4e48-10fe-4427-b805-0b3fae6e4e1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\cache">
+      <UniqueIdentifier>{8e9bef8c-bd8b-433d-833f-906e10ff1401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\gzip">
+      <UniqueIdentifier>{67381e9b-6f0f-43ff-b2aa-963b8f4f3697}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\lzw">
+      <UniqueIdentifier>{3ea1194e-e803-453e-b900-a4d2ff712ccb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\gxvalid">
+      <UniqueIdentifier>{32f2fde4-b2f5-40ae-85ce-519f58865c05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\otvalid">
+      <UniqueIdentifier>{6b3feee9-a143-4df2-862d-981d685fdbed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\psaux">
+      <UniqueIdentifier>{13f8eb3d-4831-4062-9258-c1791087a3fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\pshinter">
+      <UniqueIdentifier>{5cf3788e-a859-4740-a0dd-2ed303041353}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\psnames">
+      <UniqueIdentifier>{747e283b-2b23-4de5-9ad2-0afd8bf08fc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\freetype\cid">
+      <UniqueIdentifier>{e6801720-6c42-446f-8833-c4ec2360bab8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -807,128 +885,182 @@
     <ClCompile Include="..\..\src\cinder\ImageSourceFileStbImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Allocator.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\zutil.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Batch.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\uncompr.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Buffer.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\trees.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\CommandBuffer.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\inftrees.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\CommandPool.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\inflate.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\ConstantConversion.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\inffast.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Context.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\infback.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Descriptor.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\gzwrite.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Device.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\gzread.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\draw.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\gzlib.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Environment.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\gzclose.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Framebuffer.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\deflate.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\func.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\crc32.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\glsl_types.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\compress.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Image.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\zlib-1.2.8\adler32.c">
+      <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\ImageView.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\bdf\bdf.c">
+      <Filter>Source Files\freetype\bdf</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\IndexBuffer.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\cff\cff.c">
+      <Filter>Source Files\freetype\cff</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\ObjectTracker.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\pcf\pcf.c">
+      <Filter>Source Files\freetype\pcf</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Pipeline.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\pfr\pfr.c">
+      <Filter>Source Files\freetype\pfr</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\PipelineSelector.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\sfnt\sfnt.c">
+      <Filter>Source Files\freetype\sfnt</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Presenter.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\truetype\truetype.c">
+      <Filter>Source Files\freetype\truetype</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Queue.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\type1\type1.c">
+      <Filter>Source Files\freetype\type1</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\RenderPass.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\type42\type42.c">
+      <Filter>Source Files\freetype\type42</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\scoped.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\winfonts\winfnt.c">
+      <Filter>Source Files\freetype\winfonts</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\ShaderProg.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftbase.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\StateManager.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftbbox.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Surface.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftbdf.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Swapchain.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftbitmap.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Texture.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftcid.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\TextureFont.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftdebug.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\UniformBuffer.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftfstype.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\UniformLayout.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftgasp.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\Util.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftglyph.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\VertexBuffer.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftgxval.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\VertexBufferMesh.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftinit.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\wrapper.cpp">
-      <Filter>Source Files\vk</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftlcdfil.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\spir2cross\spir2cpp.cpp">
-      <Filter>Source Files\vk\spir2cross</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftmm.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\spir2cross\spir2cross.cpp">
-      <Filter>Source Files\vk\spir2cross</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftotval.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\spir2cross\spir2glsl.cpp">
-      <Filter>Source Files\vk\spir2cross</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftpatent.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\vk\util\farmhash.cc">
-      <Filter>Source Files\vk\util</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftpfr.c">
+      <Filter>Source Files\freetype\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\cinder\app\RendererVk.cpp">
-      <Filter>Source Files\app</Filter>
+    <ClCompile Include="..\..\src\freetype\base\ftstroke.c">
+      <Filter>Source Files\freetype\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\base\ftsynth.c">
+      <Filter>Source Files\freetype\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\base\ftsystem.c">
+      <Filter>Source Files\freetype\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\base\fttype1.c">
+      <Filter>Source Files\freetype\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\base\ftwinfnt.c">
+      <Filter>Source Files\freetype\base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\raster\raster.c">
+      <Filter>Source Files\freetype\raster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\smooth\smooth.c">
+      <Filter>Source Files\freetype\smooth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\autofit\autofit.c">
+      <Filter>Source Files\freetype\autofit</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\bzip2\ftbzip2.c">
+      <Filter>Source Files\freetype\bzip2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\cache\ftcache.c">
+      <Filter>Source Files\freetype\cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\gzip\ftgzip.c">
+      <Filter>Source Files\freetype\gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\lzw\ftlzw.c">
+      <Filter>Source Files\freetype\lzw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\gxvalid\gxvalid.c">
+      <Filter>Source Files\freetype\gxvalid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\otvalid\otvalid.c">
+      <Filter>Source Files\freetype\otvalid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\psaux\psaux.c">
+      <Filter>Source Files\freetype\psaux</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\pshinter\pshinter.c">
+      <Filter>Source Files\freetype\pshinter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\psnames\psnames.c">
+      <Filter>Source Files\freetype\psnames</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\cid\type1cid.c">
+      <Filter>Source Files\freetype\cid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\bdf\bdflib.c">
+      <Filter>Source Files\freetype\bdf</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1799,149 +1931,305 @@
     <ClInclude Include="..\..\include\cinder\ImageSourceFileStbImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\ConstantConversion.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\zutil.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Context.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\zlib.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Descriptor.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\zconf.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Device.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\trees.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\draw.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\inftrees.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Environment.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\inflate.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Framebuffer.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\inffixed.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\func.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\inffast.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\gl_types.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\gzguts.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\glsl_types.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\deflate.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Image.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\src\zlib-1.2.8\crc32.h">
+      <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\ImageView.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\freetype.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\IndexBuffer.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ft2build.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\ObjectTracker.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftadvanc.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Pipeline.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftautoh.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\PipelineSelector.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftbbox.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\platform.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftbdf.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Presenter.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftbitmap.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Queue.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftbzip2.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\RenderPass.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftcache.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\scoped.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftcffdrv.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\ShaderProg.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftchapters.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\StageManager.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftcid.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Surface.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\fterrdef.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Swapchain.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\fterrors.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Texture.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftfntfmt.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\TextureFont.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftgasp.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\UniformBuffer.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftglyph.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\UniformLayout.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftgxval.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Util.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftgzip.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\VertexBuffer.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftimage.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\VertexBufferMesh.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftincrem.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\vk.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftlcdfil.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\wrapper.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftlist.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Allocator.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftlzw.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\BaseVkObject.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftmac.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Batch.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftmm.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\Buffer.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftmodapi.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\CommandBuffer.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftmoderr.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\vk\CommandPool.h">
-      <Filter>Header Files\vk</Filter>
+    <ClInclude Include="..\..\include\freetype\ftotval.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\GLSL.std.450.h">
-      <Filter>Source Files\vk\spir2cross</Filter>
+    <ClInclude Include="..\..\include\freetype\ftoutln.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spir2common.hpp">
-      <Filter>Source Files\vk\spir2cross</Filter>
+    <ClInclude Include="..\..\include\freetype\ftpfr.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spir2cpp.hpp">
-      <Filter>Source Files\vk\spir2cross</Filter>
+    <ClInclude Include="..\..\include\freetype\ftrender.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spir2cross.hpp">
-      <Filter>Source Files\vk\spir2cross</Filter>
+    <ClInclude Include="..\..\include\freetype\ftsizes.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spir2glsl.hpp">
-      <Filter>Source Files\vk\spir2cross</Filter>
+    <ClInclude Include="..\..\include\freetype\ftsnames.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\cinder\vk\spir2cross\spirv.hpp">
-      <Filter>Source Files\vk\spir2cross</Filter>
+    <ClInclude Include="..\..\include\freetype\ftstroke.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\cinder\vk\util\farmhash.h">
-      <Filter>Source Files\vk\util</Filter>
+    <ClInclude Include="..\..\include\freetype\ftsynth.h">
+      <Filter>Header Files\freetype</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\cinder\app\RendererVk.h">
-      <Filter>Header Files\app</Filter>
+    <ClInclude Include="..\..\include\freetype\ftsystem.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\fttrigon.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\ftttdrv.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\fttypes.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\ftwinfnt.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\t1tables.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\ttnameid.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\tttables.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\tttags.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\ttunpat.h">
+      <Filter>Header Files\freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\autohint.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftcalc.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftdebug.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftdriver.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftgloadr.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\fthash.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftmemory.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftobjs.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftpic.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftrfork.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftserv.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftstream.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\fttrace.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\ftvalid.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\internal.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\psaux.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\pshints.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\sfnt.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\t1types.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\tttypes.h">
+      <Filter>Header Files\freetype\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svbdf.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svcid.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svfntfmt.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svgldict.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svgxval.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svkern.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svmm.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svotval.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svpfr.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svpostnm.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svprop.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svpscmap.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svpsinfo.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svsfnt.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svttcmap.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svtteng.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svttglyf.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\internal\services\svwinfnt.h">
+      <Filter>Header Files\freetype\internal\services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\config\ftconfig.h">
+      <Filter>Header Files\freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\config\ftheader.h">
+      <Filter>Header Files\freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\config\ftmodule.h">
+      <Filter>Header Files\freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\config\ftoption.h">
+      <Filter>Header Files\freetype\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\freetype\config\ftstdlib.h">
+      <Filter>Header Files\freetype\config</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

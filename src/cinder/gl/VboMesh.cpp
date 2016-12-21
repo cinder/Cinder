@@ -526,6 +526,17 @@ void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 }
 #endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
+#if defined( CINDER_GL_HAS_DRAW_INDIRECT )
+void VboMesh::drawIndirectImpl( const GLvoid *indirect )
+{
+	auto ctx = gl::context();
+	if( mNumIndices )
+		ctx->drawElementsIndirect( mGlPrimitive, mIndexType, indirect );
+	else
+		ctx->drawArraysIndirect( mGlPrimitive, indirect );
+}
+#endif // defined( CINDER_GL_HAS_DRAW_INDIRECT )
+
 std::pair<geom::BufferLayout,VboRef>* VboMesh::findAttrib( geom::Attrib attr )
 {
 	for( auto &vertexArrayVbo : mVertexArrayVbos ) {

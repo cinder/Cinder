@@ -1,7 +1,7 @@
 #include "cinder/Cinder.h"
 
 // FIXME: OOURA roundtrip FFT seems to be broken on windows for sizeFft = 4 (https://github.com/cinder/Cinder/issues/1263)
-#if ! defined( CINDER_MSW )
+#if defined( CINDER_MAC )
 
 #include "catch.hpp"
 #include "utils.h"

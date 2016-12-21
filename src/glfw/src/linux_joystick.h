@@ -46,7 +46,6 @@ typedef struct _GLFWjoystickLinux
     char*           path;
 } _GLFWjoystickLinux;
 
-
 // Linux-specific joystick API data
 //
 typedef struct _GLFWjoylistLinux
@@ -63,5 +62,7 @@ typedef struct _GLFWjoylistLinux
 
 GLFWbool _glfwInitJoysticksLinux(void);
 void _glfwTerminateJoysticksLinux(void);
+
+void _glfwPollJoystickEvents(void);
 
 #endif // _glfw3_linux_joystick_h_
