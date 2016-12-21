@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType sbits manager (body).                                       */
 /*                                                                         */
-/*  Copyright 2000-2001, 2002, 2003, 2004, 2005, 2006, 2009, 2010, 2011 by */
+/*  Copyright 2000-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -52,7 +52,9 @@
     if ( pitch < 0 )
       pitch = -pitch;
 
-    size = (FT_ULong)( pitch * bitmap->rows );
+    size = (FT_ULong)pitch * bitmap->rows;
+    if ( !size )
+      return FT_Err_Ok;
 
     if ( !FT_ALLOC( sbit->buffer, size ) )
       FT_MEM_COPY( sbit->buffer, bitmap->buffer, size );
@@ -116,7 +118,7 @@
     if ( (FT_UInt)(gindex - gnode->gindex) >= snode->count )
     {
       FT_ERROR(( "ftc_snode_load: invalid glyph index" ));
-      return FTC_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
     }
 
     sbit  = snode->sbits + ( gindex - gnode->gindex );
@@ -142,12 +144,12 @@
         goto BadGlyph;
       }
 
-      /* Check that our values fit into 8-bit containers!       */
+      /* Check whether our values fit into 8-bit containers!    */
       /* If this is not the case, our bitmap is too large       */
       /* and we will leave it as `missing' with sbit.buffer = 0 */
 
-#define CHECK_CHAR( d )  ( temp = (FT_Char)d, temp == d )
-#define CHECK_BYTE( d )  ( temp = (FT_Byte)d, temp == d )
+#define CHECK_CHAR( d )  ( temp = (FT_Char)d, (FT_Int) temp == (FT_Int) d )
+#define CHECK_BYTE( d )  ( temp = (FT_Byte)d, (FT_UInt)temp == (FT_UInt)d )
 
       /* horizontal advance in pixels */
       xadvance = ( slot->advance.x + 32 ) >> 6;
@@ -181,7 +183,7 @@
 
       /* now, compute size */
       if ( asize )
-        *asize = FT_ABS( sbit->pitch ) * sbit->height;
+        *asize = (FT_ULong)FT_ABS( sbit->pitch ) * sbit->height;
 
     } /* glyph loading successful */
 
@@ -189,13 +191,13 @@
     /* we mark unloaded glyphs with `sbit.buffer == 0' */
     /* and `width == 255', `height == 0'               */
     /*                                                 */
-    if ( error && error != FTC_Err_Out_Of_Memory )
+    if ( error && FT_ERR_NEQ( error, Out_Of_Memory ) )
     {
     BadGlyph:
       sbit->width  = 255;
       sbit->height = 0;
       sbit->buffer = NULL;
-      error        = FTC_Err_Ok;
+      error        = FT_Err_Ok;
       if ( asize )
         *asize = 0;
     }
@@ -215,7 +217,7 @@
     FT_UInt     gindex = gquery->gindex;
     FTC_Family  family = gquery->family;
 
-    FTC_SFamilyClass  clazz = FTC_CACHE__SFAMILY_CLASS( cache );
+    FTC_SFamilyClass  clazz = FTC_CACHE_SFAMILY_CLASS( cache );
     FT_UInt           total;
     FT_UInt           node_count;
 
@@ -223,7 +225,7 @@
     total = clazz->family_get_count( family, cache->manager );
     if ( total == 0 || gindex >= total )
     {
-      error = FTC_Err_Invalid_Argument;
+      error = FT_THROW( Invalid_Argument );
       goto Exit;
     }
 
@@ -302,7 +304,7 @@
           pitch = -pitch;
 
         /* add the size of a given glyph image */
-        size += pitch * sbit->height;
+        size += (FT_Offset)pitch * sbit->height;
       }
     }
 

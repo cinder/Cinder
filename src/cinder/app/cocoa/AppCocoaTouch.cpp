@@ -229,6 +229,7 @@ void AppCocoaTouch::setFullScreen( bool fullScreen, const FullScreenOptions &opt
 
 void AppCocoaTouch::quit()
 {
+	CI_LOG_W( "quit() has no effect on iOS" );
 	return; // no effect on iOS
 }
 

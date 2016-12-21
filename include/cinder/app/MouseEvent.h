@@ -82,7 +82,7 @@ class MouseEvent : public Event {
 		ALT_DOWN	= 0x0010,
 		CTRL_DOWN	= 0x0020,
 		META_DOWN	= 0x0040,
-#if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 		ACCEL_DOWN	= CTRL_DOWN
 #else
 		ACCEL_DOWN	= META_DOWN

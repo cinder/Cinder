@@ -2,7 +2,7 @@
 // io_service.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,6 +23,8 @@
 #include "asio/detail/noncopyable.hpp"
 #include "asio/detail/wrapped_handler.hpp"
 #include "asio/error_code.hpp"
+#include "asio/execution_context.hpp"
+#include "asio/is_executor.hpp"
 
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
 # include "asio/detail/winsock_init.hpp"
@@ -35,19 +37,13 @@
 
 namespace asio {
 
-class io_service;
-template <typename Service> Service& use_service(io_service& ios);
-template <typename Service> void add_service(io_service& ios, Service* svc);
-template <typename Service> bool has_service(io_service& ios);
-
 namespace detail {
 #if defined(ASIO_HAS_IOCP)
   typedef class win_iocp_io_service io_service_impl;
   class win_iocp_overlapped_ptr;
 #else
-  typedef class task_io_service io_service_impl;
+  typedef class scheduler io_service_impl;
 #endif
-  class service_registry;
 } // namespace detail
 
 /// Provides core I/O functionality.
@@ -65,8 +61,8 @@ namespace detail {
  *
  * @par Thread Safety
  * @e Distinct @e objects: Safe.@n
- * @e Shared @e objects: Safe, with the specific exceptions of the reset() and
- * notify_fork() functions. Calling reset() while there are unfinished run(),
+ * @e Shared @e objects: Safe, with the specific exceptions of the restart() and
+ * notify_fork() functions. Calling restart() while there are unfinished run(),
  * run_one(), poll() or poll_one() calls results in undefined behaviour. The
  * notify_fork() function should not be called while any io_service function,
  * or any function on an I/O object that is associated with the io_service, is
@@ -96,7 +92,7 @@ namespace detail {
  *
  * After the exception has been caught, the run(), run_one(), poll() or
  * poll_one() call may be restarted @em without the need for an intervening
- * call to reset(). This allows the thread to rejoin the io_service object's
+ * call to restart(). This allows the thread to rejoin the io_service object's
  * thread pool without impacting any other threads in the pool.
  *
  * For example:
@@ -143,46 +139,9 @@ namespace detail {
  *     new asio::io_service::work(io_service));
  * ...
  * work.reset(); // Allow run() to exit. @endcode
- *
- * @par The io_service class and I/O services
- *
- * Class io_service implements an extensible, type-safe, polymorphic set of I/O
- * services, indexed by service type. An object of class io_service must be
- * initialised before I/O objects such as sockets, resolvers and timers can be
- * used. These I/O objects are distinguished by having constructors that accept
- * an @c io_service& parameter.
- *
- * I/O services exist to manage the logical interface to the operating system on
- * behalf of the I/O objects. In particular, there are resources that are shared
- * across a class of I/O objects. For example, timers may be implemented in
- * terms of a single timer queue. The I/O services manage these shared
- * resources.
- *
- * Access to the services of an io_service is via three function templates,
- * use_service(), add_service() and has_service().
- *
- * In a call to @c use_service<Service>(), the type argument chooses a service,
- * making available all members of the named type. If @c Service is not present
- * in an io_service, an object of type @c Service is created and added to the
- * io_service. A C++ program can check if an io_service implements a
- * particular service with the function template @c has_service<Service>().
- *
- * Service objects may be explicitly added to an io_service using the function
- * template @c add_service<Service>(). If the @c Service is already present, the
- * service_already_exists exception is thrown. If the owner of the service is
- * not the same object as the io_service parameter, the invalid_service_owner
- * exception is thrown.
- *
- * Once a service reference is obtained from an io_service object by calling
- * use_service(), that reference remains usable as long as the owning io_service
- * object exists.
- *
- * All I/O service implementations have io_service::service as a public base
- * class. Custom I/O services may be implemented by deriving from this class and
- * then added to an io_service using the facilities described above.
  */
 class io_service
-  : private noncopyable
+  : public execution_context
 {
 private:
   typedef detail::io_service_impl impl_type;
@@ -191,10 +150,11 @@ private:
 #endif
 
 public:
+  class executor_type;
+  friend class executor_type;
+
   class work;
   friend class work;
-
-  class id;
 
   class service;
 
@@ -246,6 +206,9 @@ public:
    */
   ASIO_DECL ~io_service();
 
+  /// Obtains the executor associated with the io_service.
+  executor_type get_executor() ASIO_NOEXCEPT;
+
   /// Run the io_service object's event processing loop.
   /**
    * The run() function blocks until all work has finished and there are no
@@ -259,7 +222,7 @@ public:
    * A normal exit from the run() function implies that the io_service object
    * is stopped (the stopped() function returns @c true). Subsequent calls to
    * run(), run_one(), poll() or poll_one() will return immediately unless there
-   * is a prior call to reset().
+   * is a prior call to restart().
    *
    * @return The number of handlers that were executed.
    *
@@ -287,7 +250,7 @@ public:
    * A normal exit from the run() function implies that the io_service object
    * is stopped (the stopped() function returns @c true). Subsequent calls to
    * run(), run_one(), poll() or poll_one() will return immediately unless there
-   * is a prior call to reset().
+   * is a prior call to restart().
    *
    * @param ec Set to indicate what error occurred, if any.
    *
@@ -312,7 +275,7 @@ public:
    * implies that the io_service object is stopped (the stopped() function
    * returns @c true). Subsequent calls to run(), run_one(), poll() or
    * poll_one() will return immediately unless there is a prior call to
-   * reset().
+   * restart().
    *
    * @throws asio::system_error Thrown on failure.
    */
@@ -328,7 +291,7 @@ public:
    * implies that the io_service object is stopped (the stopped() function
    * returns @c true). Subsequent calls to run(), run_one(), poll() or
    * poll_one() will return immediately unless there is a prior call to
-   * reset().
+   * restart().
    *
    * @return The number of handlers that were executed.
    */
@@ -387,7 +350,7 @@ public:
    * This function does not block, but instead simply signals the io_service to
    * stop. All invocations of its run() or run_one() member functions should
    * return as soon as possible. Subsequent calls to run(), run_one(), poll()
-   * or poll_one() will return immediately until reset() is called.
+   * or poll_one() will return immediately until restart() is called.
    */
   ASIO_DECL void stop();
 
@@ -403,20 +366,36 @@ public:
    */
   ASIO_DECL bool stopped() const;
 
-  /// Reset the io_service in preparation for a subsequent run() invocation.
+  /// Restart the io_service in preparation for a subsequent run() invocation.
   /**
    * This function must be called prior to any second or later set of
    * invocations of the run(), run_one(), poll() or poll_one() functions when a
    * previous invocation of these functions returned due to the io_service
-   * being stopped or running out of work. After a call to reset(), the
+   * being stopped or running out of work. After a call to restart(), the
    * io_service object's stopped() function will return @c false.
    *
    * This function must not be called while there are any unfinished calls to
    * the run(), run_one(), poll() or poll_one() functions.
    */
-  ASIO_DECL void reset();
+  ASIO_DECL void restart();
 
-  /// Request the io_service to invoke the given handler.
+#if !defined(ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use restart().) Reset the io_service in preparation for a
+  /// subsequent run() invocation.
+  /**
+   * This function must be called prior to any second or later set of
+   * invocations of the run(), run_one(), poll() or poll_one() functions when a
+   * previous invocation of these functions returned due to the io_service
+   * being stopped or running out of work. After a call to restart(), the
+   * io_service object's stopped() function will return @c false.
+   *
+   * This function must not be called while there are any unfinished calls to
+   * the run(), run_one(), poll() or poll_one() functions.
+   */
+  void reset();
+
+  /// (Deprecated: Use asio::dispatch().) Request the io_service to
+  /// invoke the given handler.
   /**
    * This function is used to ask the io_service to execute the given handler.
    *
@@ -441,7 +420,8 @@ public:
   ASIO_INITFN_RESULT_TYPE(CompletionHandler, void ())
   dispatch(ASIO_MOVE_ARG(CompletionHandler) handler);
 
-  /// Request the io_service to invoke the given handler and return immediately.
+  /// (Deprecated: Use asio::post().) Request the io_service to invoke
+  /// the given handler and return immediately.
   /**
    * This function is used to ask the io_service to execute the given handler,
    * but without allowing the io_service to call the handler from inside this
@@ -467,8 +447,8 @@ public:
   ASIO_INITFN_RESULT_TYPE(CompletionHandler, void ())
   post(ASIO_MOVE_ARG(CompletionHandler) handler);
 
-  /// Create a new handler that automatically dispatches the wrapped handler
-  /// on the io_service.
+  /// (Deprecated: Use asio::wrap().) Create a new handler that
+  /// automatically dispatches the wrapped handler on the io_service.
   /**
    * This function is used to create a new handler function object that, when
    * invoked, will automatically pass the wrapped handler to the io_service
@@ -496,109 +476,17 @@ public:
   detail::wrapped_handler<io_service&, Handler>
 #endif
   wrap(Handler handler);
+#endif // !defined(ASIO_NO_DEPRECATED)
 
-  /// Fork-related event notifications.
-  enum fork_event
-  {
-    /// Notify the io_service that the process is about to fork.
-    fork_prepare,
+private:
+  // Helper function to create the implementation.
+  ASIO_DECL impl_type& create_impl(std::size_t concurrency_hint = 0);
 
-    /// Notify the io_service that the process has forked and is the parent.
-    fork_parent,
-
-    /// Notify the io_service that the process has forked and is the child.
-    fork_child
-  };
-
-  /// Notify the io_service of a fork-related event.
-  /**
-   * This function is used to inform the io_service that the process is about
-   * to fork, or has just forked. This allows the io_service, and the services
-   * it contains, to perform any necessary housekeeping to ensure correct
-   * operation following a fork.
-   *
-   * This function must not be called while any other io_service function, or
-   * any function on an I/O object associated with the io_service, is being
-   * called in another thread. It is, however, safe to call this function from
-   * within a completion handler, provided no other thread is accessing the
-   * io_service.
-   *
-   * @param event A fork-related event.
-   *
-   * @throws asio::system_error Thrown on failure. If the notification
-   * fails the io_service object should no longer be used and should be
-   * destroyed.
-   *
-   * @par Example
-   * The following code illustrates how to incorporate the notify_fork()
-   * function:
-   * @code my_io_service.notify_fork(asio::io_service::fork_prepare);
-   * if (fork() == 0)
-   * {
-   *   // This is the child process.
-   *   my_io_service.notify_fork(asio::io_service::fork_child);
-   * }
-   * else
-   * {
-   *   // This is the parent process.
-   *   my_io_service.notify_fork(asio::io_service::fork_parent);
-   * } @endcode
-   *
-   * @note For each service object @c svc in the io_service set, performs
-   * <tt>svc->fork_service();</tt>. When processing the fork_prepare event,
-   * services are visited in reverse order of the beginning of service object
-   * lifetime. Otherwise, services are visited in order of the beginning of
-   * service object lifetime.
-   */
-  ASIO_DECL void notify_fork(asio::io_service::fork_event event);
-
-  /// Obtain the service object corresponding to the given type.
-  /**
-   * This function is used to locate a service object that corresponds to
-   * the given service type. If there is no existing implementation of the
-   * service, then the io_service will create a new instance of the service.
-   *
-   * @param ios The io_service object that owns the service.
-   *
-   * @return The service interface implementing the specified service type.
-   * Ownership of the service interface is not transferred to the caller.
-   */
+  // Backwards compatible overload for use with services derived from
+  // io_service::service.
   template <typename Service>
   friend Service& use_service(io_service& ios);
 
-  /// Add a service object to the io_service.
-  /**
-   * This function is used to add a service to the io_service.
-   *
-   * @param ios The io_service object that owns the service.
-   *
-   * @param svc The service object. On success, ownership of the service object
-   * is transferred to the io_service. When the io_service object is destroyed,
-   * it will destroy the service object by performing:
-   * @code delete static_cast<io_service::service*>(svc) @endcode
-   *
-   * @throws asio::service_already_exists Thrown if a service of the
-   * given type is already present in the io_service.
-   *
-   * @throws asio::invalid_service_owner Thrown if the service's owning
-   * io_service is not the io_service object specified by the ios parameter.
-   */
-  template <typename Service>
-  friend void add_service(io_service& ios, Service* svc);
-
-  /// Determine if an io_service contains a specified service type.
-  /**
-   * This function is used to determine whether the io_service contains a
-   * service object corresponding to the given service type.
-   *
-   * @param ios The io_service object that owns the service.
-   *
-   * @return A boolean indicating whether the io_service contains the service.
-   */
-  template <typename Service>
-  friend bool has_service(io_service& ios);
-
-private:
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
   detail::winsock_init<> init_;
 #elif defined(__sun) || defined(__QNX__) || defined(__hpux) || defined(_AIX) \
@@ -606,14 +494,130 @@ private:
   detail::signal_init<> init_;
 #endif
 
-  // The service registry.
-  asio::detail::service_registry* service_registry_;
-
   // The implementation.
   impl_type& impl_;
 };
 
-/// Class to inform the io_service when it has work to do.
+/// Executor used to submit functions to an io_service.
+class io_service::executor_type
+{
+public:
+  /// Obtain the underlying execution context.
+  io_service& context() ASIO_NOEXCEPT;
+
+  /// Inform the io_service that it has some outstanding work to do.
+  /**
+   * This function is used to inform the io_service that some work has begun.
+   * This ensures that the io_service's run() and run_one() functions do not
+   * exit while the work is underway.
+   */
+  void on_work_started() ASIO_NOEXCEPT;
+
+  /// Inform the io_service that some work is no longer outstanding.
+  /**
+   * This function is used to inform the io_service that some work has
+   * finished. Once the count of unfinished work reaches zero, the io_service
+   * is stopped and the run() and run_one() functions may exit.
+   */
+  void on_work_finished() ASIO_NOEXCEPT;
+
+  /// Request the io_service to invoke the given function object.
+  /**
+   * This function is used to ask the io_service to execute the given function
+   * object. If the current thread is running the io_service, @c dispatch()
+   * executes the function before returning. Otherwise, the function will be
+   * scheduled to run on the io_service.
+   *
+   * @param f The function object to be called. The executor will make a copy
+   * of the handler object as required. The function signature of the function
+   * object must be: @code void function(); @endcode
+   *
+   * @param a An allocator that may be used by the executor to allocate the
+   * internal storage needed for function invocation.
+   */
+  template <typename Function, typename Allocator>
+  void dispatch(ASIO_MOVE_ARG(Function) f, const Allocator& a);
+
+  /// Request the io_service to invoke the given function object.
+  /**
+   * This function is used to ask the io_service to execute the given function
+   * object. The function object will never be executed inside @c post().
+   * Instead, it will be scheduled to run on the io_service.
+   *
+   * @param f The function object to be called. The executor will make a copy
+   * of the handler object as required. The function signature of the function
+   * object must be: @code void function(); @endcode
+   *
+   * @param a An allocator that may be used by the executor to allocate the
+   * internal storage needed for function invocation.
+   */
+  template <typename Function, typename Allocator>
+  void post(ASIO_MOVE_ARG(Function) f, const Allocator& a);
+
+  /// Request the io_service to invoke the given function object.
+  /**
+   * This function is used to ask the io_service to execute the given function
+   * object. The function object will never be executed inside @c defer().
+   * Instead, it will be scheduled to run on the io_service.
+   *
+   * If the current thread belongs to the io_service, @c defer() will delay
+   * scheduling the function object until the current thread returns control to
+   * the pool.
+   *
+   * @param f The function object to be called. The executor will make a copy
+   * of the handler object as required. The function signature of the function
+   * object must be: @code void function(); @endcode
+   *
+   * @param a An allocator that may be used by the executor to allocate the
+   * internal storage needed for function invocation.
+   */
+  template <typename Function, typename Allocator>
+  void defer(ASIO_MOVE_ARG(Function) f, const Allocator& a);
+
+  /// Determine whether the io_service is running in the current thread.
+  /**
+   * @return @c true if the current thread is running the io_service. Otherwise
+   * returns @c false.
+   */
+  bool running_in_this_thread() const ASIO_NOEXCEPT;
+
+  /// Compare two executors for equality.
+  /**
+   * Two executors are equal if they refer to the same underlying io_service.
+   */
+  friend bool operator==(const executor_type& a,
+      const executor_type& b) ASIO_NOEXCEPT
+  {
+    return &a.io_service_ == &b.io_service_;
+  }
+
+  /// Compare two executors for inequality.
+  /**
+   * Two executors are equal if they refer to the same underlying io_service.
+   */
+  friend bool operator!=(const executor_type& a,
+      const executor_type& b) ASIO_NOEXCEPT
+  {
+    return &a.io_service_ != &b.io_service_;
+  }
+
+private:
+  friend class io_service;
+
+  // Constructor.
+  explicit executor_type(io_service& i) : io_service_(i) {}
+
+  // The underlying io_service.
+  io_service& io_service_;
+};
+
+#if !defined(GENERATING_DOCUMENTATION)
+template <> struct is_executor<io_service::executor_type> : true_type {};
+#endif // !defined(GENERATING_DOCUMENTATION)
+
+
+/// (Deprecated: Use executor_work.) Class to inform the io_service when it has
+/// work to do.
 /**
  * The work class is used to inform the io_service when work starts and
  * finishes. This ensures that the io_service object's run() function will not
@@ -661,18 +665,9 @@ private:
   detail::io_service_impl& io_service_impl_;
 };
 
-/// Class used to uniquely identify a service.
-class io_service::id
-  : private noncopyable
-{
-public:
-  /// Constructor.
-  id() {}
-};
-
 /// Base class for all io_service services.
 class io_service::service
-  : private noncopyable
+  : public execution_context::service
 {
 public:
   /// Get the io_service object that owns the service.
@@ -687,57 +682,9 @@ protected:
 
   /// Destructor.
   ASIO_DECL virtual ~service();
-
-private:
-  /// Destroy all user-defined handler objects owned by the service.
-  virtual void shutdown_service() = 0;
-
-  /// Handle notification of a fork-related event to perform any necessary
-  /// housekeeping.
-  /**
-   * This function is not a pure virtual so that services only have to
-   * implement it if necessary. The default implementation does nothing.
-   */
-  ASIO_DECL virtual void fork_service(
-      asio::io_service::fork_event event);
-
-  friend class asio::detail::service_registry;
-  struct key
-  {
-    key() : type_info_(0), id_(0) {}
-    const std::type_info* type_info_;
-    const asio::io_service::id* id_;
-  } key_;
-
-  asio::io_service& owner_;
-  service* next_;
-};
-
-/// Exception thrown when trying to add a duplicate service to an io_service.
-class service_already_exists
-  : public std::logic_error
-{
-public:
-  ASIO_DECL service_already_exists();
-};
-
-/// Exception thrown when trying to add a service object to an io_service where
-/// the service has a different owner.
-class invalid_service_owner
-  : public std::logic_error
-{
-public:
-  ASIO_DECL invalid_service_owner();
 };
 
 namespace detail {
-
-// Special derived service id type to keep classes header-file only.
-template <typename Type>
-class service_id
-  : public asio::io_service::id
-{
-};
 
 // Special service base class to keep classes header-file only.
 template <typename Type>
@@ -766,5 +713,11 @@ asio::detail::service_id<Type> service_base<Type>::id;
 #if defined(ASIO_HEADER_ONLY)
 # include "asio/impl/io_service.ipp"
 #endif // defined(ASIO_HEADER_ONLY)
+
+// If both io_service.hpp and strand.hpp have been included, automatically
+// include the header file needed for the io_service::strand class.
+#if defined(ASIO_STRAND_HPP)
+# include "asio/io_service_strand.hpp"
+#endif // defined(ASIO_STRAND_HPP)
 
 #endif // ASIO_IO_SERVICE_HPP

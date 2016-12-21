@@ -17,10 +17,10 @@
 		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
+		84411BE25D124654B9DC7AC8 /* SimpleMultiThreadedReceiverApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56C35C5C8C7644F98E0B3957 /* SimpleMultiThreadedReceiverApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		B3253BE51D4C589000CDF15F /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3253BE31D4C589000CDF15F /* Osc.cpp */; };
-		B37BB9BC1BD64CC100311784 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = B37BB9BB1BD64CC100311784 /* CinderApp.icns */; };
-		E894EFA248B4485581F0E3BC /* SimpleMultiThreadedReceiverApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F27C5A9C89B74CFEB8170CD5 /* SimpleMultiThreadedReceiverApp.cpp */; };
+		AB1BE2D735884AC09604BE56 /* Osc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA5C74AB580545C0B2971505 /* Osc.cpp */; };
+		EDED989C57D44D37B5671EB1 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 72875E2196F54AB6A7C989D2 /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,18 +33,18 @@
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
-		0941A317FCF54CE988EE34EE /* SimpleMultiThreadedReceiver_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = SimpleMultiThreadedReceiver_Prefix.pch; sourceTree = "<group>"; };
+		050F2BDA59C74BEA8F358776 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0F2890F224C74725B3B40300 /* SimpleMultiThreadedReceiver_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = SimpleMultiThreadedReceiver_Prefix.pch; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		3C9E048B51A24347BA57D996 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
-		4C96F8368D8944248713FA22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
+		56C35C5C8C7644F98E0B3957 /* SimpleMultiThreadedReceiverApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SimpleMultiThreadedReceiverApp.cpp; path = ../src/SimpleMultiThreadedReceiverApp.cpp; sourceTree = "<group>"; };
+		72875E2196F54AB6A7C989D2 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* SimpleMultiThreadedReceiver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleMultiThreadedReceiver.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B3253BE31D4C589000CDF15F /* Osc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Osc.cpp; sourceTree = "<group>"; };
-		B3253BE41D4C589000CDF15F /* Osc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Osc.h; sourceTree = "<group>"; };
-		B37BB9BB1BD64CC100311784 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
-		F27C5A9C89B74CFEB8170CD5 /* SimpleMultiThreadedReceiverApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SimpleMultiThreadedReceiverApp.cpp; path = ../src/SimpleMultiThreadedReceiverApp.cpp; sourceTree = "<group>"; };
+		9967946F30A24F108CA7AE48 /* Osc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Osc.h; path = ../../../src/cinder/osc/Osc.h; sourceTree = "<group>"; };
+		CA5C74AB580545C0B2971505 /* Osc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Osc.cpp; path = ../../../src/cinder/osc/Osc.cpp; sourceTree = "<group>"; };
+		F22D2AA784A5457E8117902F /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,7 +72,7 @@
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				2088B566C69F4444BA951E38 /* OSC */,
+				AA7063CB0D0142B7B6C6066F /* OSC */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
@@ -80,7 +80,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				F27C5A9C89B74CFEB8170CD5 /* SimpleMultiThreadedReceiverApp.cpp */,
+				56C35C5C8C7644F98E0B3957 /* SimpleMultiThreadedReceiverApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -120,14 +120,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2088B566C69F4444BA951E38 /* OSC */ = {
-			isa = PBXGroup;
-			children = (
-				B3253BE01D4C589000CDF15F /* src */,
-			);
-			name = OSC;
-			sourceTree = "<group>";
-		};
 		29B97314FDCFA39411CA2CEA /* SimpleMultiThreadedReceiver */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,8 +136,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				3C9E048B51A24347BA57D996 /* Resources.h */,
-				0941A317FCF54CE988EE34EE /* SimpleMultiThreadedReceiver_Prefix.pch */,
+				F22D2AA784A5457E8117902F /* Resources.h */,
+				0F2890F224C74725B3B40300 /* SimpleMultiThreadedReceiver_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -153,8 +145,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B37BB9BB1BD64CC100311784 /* CinderApp.icns */,
-				4C96F8368D8944248713FA22 /* Info.plist */,
+				72875E2196F54AB6A7C989D2 /* CinderApp.icns */,
+				050F2BDA59C74BEA8F358776 /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -168,30 +160,37 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B3253BE01D4C589000CDF15F /* src */ = {
+		43C9CBF324484A4494536AF4 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				B3253BE11D4C589000CDF15F /* cinder */,
+				590232AA8D984D0F9BE64DB6 /* cinder */,
 			);
 			name = src;
-			path = ../../../src;
 			sourceTree = "<group>";
 		};
-		B3253BE11D4C589000CDF15F /* cinder */ = {
+		590232AA8D984D0F9BE64DB6 /* cinder */ = {
 			isa = PBXGroup;
 			children = (
-				B3253BE21D4C589000CDF15F /* osc */,
+				CAA67CA8C2604D13A73AE4DF /* osc */,
 			);
-			path = cinder;
+			name = cinder;
 			sourceTree = "<group>";
 		};
-		B3253BE21D4C589000CDF15F /* osc */ = {
+		AA7063CB0D0142B7B6C6066F /* OSC */ = {
 			isa = PBXGroup;
 			children = (
-				B3253BE31D4C589000CDF15F /* Osc.cpp */,
-				B3253BE41D4C589000CDF15F /* Osc.h */,
+				43C9CBF324484A4494536AF4 /* src */,
 			);
-			path = osc;
+			name = OSC;
+			sourceTree = "<group>";
+		};
+		CAA67CA8C2604D13A73AE4DF /* osc */ = {
+			isa = PBXGroup;
+			children = (
+				CA5C74AB580545C0B2971505 /* Osc.cpp */,
+				9967946F30A24F108CA7AE48 /* Osc.h */,
+			);
+			name = osc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -246,7 +245,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B37BB9BC1BD64CC100311784 /* CinderApp.icns in Resources */,
+				EDED989C57D44D37B5671EB1 /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,8 +256,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E894EFA248B4485581F0E3BC /* SimpleMultiThreadedReceiverApp.cpp in Sources */,
-				B3253BE51D4C589000CDF15F /* Osc.cpp in Sources */,
+				84411BE25D124654B9DC7AC8 /* SimpleMultiThreadedReceiverApp.cpp in Sources */,
+				AB1BE2D735884AC09604BE56 /* Osc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,7 +282,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = SimpleMultiThreadedReceiver;
 				SYMROOT = ./build;
@@ -310,7 +309,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = SimpleMultiThreadedReceiver;
 				STRIP_INSTALLED_PRODUCT = YES;

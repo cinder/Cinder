@@ -1,0 +1,2 @@
+#!/bin/sh
+_TBOX_CINDER_PATH_/tools/linux/cibuilder -app "$@"

@@ -30,7 +30,11 @@ using namespace std;
 namespace cinder { namespace gl {
 
 ShaderDef::ShaderDef()
+#if defined( CINDER_ANDROID ) 
+	: mTextureMapping( false ), mTextureMappingRectangleArb( false ), mTextureMappingExternalOes( false ), mColor( false ), mLambert(false), mUniformBasedPosAndTexCoord( false )
+#else
 	: mTextureMapping( false ), mTextureMappingRectangleArb( false ), mColor( false ), mLambert( false ), mUniformBasedPosAndTexCoord( false )
+#endif	
 {
 	mTextureSwizzleMask[0] = GL_RED;
 	mTextureSwizzleMask[1] = GL_GREEN; 
@@ -44,6 +48,10 @@ ShaderDef& ShaderDef::texture( const TextureRef &texture )
 #if ! defined( CINDER_GL_ES )
 	if( texture && texture->getTarget() == GL_TEXTURE_RECTANGLE_ARB )
 		mTextureMappingRectangleArb = true;
+#elif defined( CINDER_ANDROID )
+	if( texture && ( texture->getTarget() == GL_TEXTURE_EXTERNAL_OES ) ) {
+		mTextureMappingExternalOes = true;
+	}
 #endif
 	if( texture && ( ! TextureBase::supportsHardwareSwizzle() ) )
 		mTextureSwizzleMask = texture->getSwizzleMask();
@@ -57,6 +65,10 @@ ShaderDef& ShaderDef::texture( GLenum target )
 #if ! defined( CINDER_GL_ES )
 	if( target == GL_TEXTURE_RECTANGLE_ARB )
 		mTextureMappingRectangleArb = true;
+#elif defined( CINDER_ANDROID )
+	if( target == GL_TEXTURE_EXTERNAL_OES ) {
+		mTextureMappingExternalOes = true;
+	}
 #endif
 	return *this;
 }
@@ -113,6 +125,9 @@ bool ShaderDef::operator<( const ShaderDef &rhs ) const
 #if ! defined( CINDER_GL_ES )
 	if( rhs.mTextureMappingRectangleArb != mTextureMappingRectangleArb )
 		return rhs.mTextureMappingRectangleArb;
+#elif defined( CINDER_ANDROID )
+	if( rhs.mTextureMappingExternalOes != mTextureMappingExternalOes )
+		return rhs.mTextureMappingExternalOes;
 #endif
 	if( rhs.mUniformBasedPosAndTexCoord != mUniformBasedPosAndTexCoord )
 		return rhs.mUniformBasedPosAndTexCoord;

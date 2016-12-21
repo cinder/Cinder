@@ -169,7 +169,7 @@ class FilterBesselBlackman : public FilterBase {
 	FilterBesselBlackman( float aSupport = 3.2383f ) : FilterBase( aSupport ) {}
 	
 	virtual float operator()( float x ) const {
-#if (defined (CINDER_MSW) || defined( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 		// According to VS.Net 2K5, j1 was depcreated, use _j1 instead. 
 		float v( ( x == 0.0f ) ? ( 3.14159265358979323846f / 4.0f ) : static_cast<float>( _j1( 3.14159265358979323846f * x ) ) / ( 2.0f * x ) );
 #else 

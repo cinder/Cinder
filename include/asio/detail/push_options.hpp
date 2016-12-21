@@ -2,7 +2,7 @@
 // detail/push_options.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -107,6 +107,10 @@
 # pragma warning (disable:4512)
 # pragma warning (disable:4610)
 # pragma warning (disable:4675)
+# if (_MSC_VER < 1600)
+// Visual Studio 2008 generates spurious warnings about unused parameters.
+#  pragma warning (disable:4100)
+# endif // (_MSC_VER < 1600)
 # if defined(_M_IX86) && defined(_Wp64)
 // The /Wp64 option is broken. If you want to check 64 bit portability, use a
 // 64 bit compiler!

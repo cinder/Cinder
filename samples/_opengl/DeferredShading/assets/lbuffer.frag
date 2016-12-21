@@ -1,4 +1,7 @@
-#include "precision.glsl"
+#if __VERSION__ == 300
+	precision highp float;
+	precision highp sampler2DShadow;
+#endif
 
 uniform sampler2D		uSamplerAlbedo;
 uniform sampler2D		uSamplerNormalEmissive;
@@ -18,11 +21,7 @@ uniform mat4 	uShadowMatrix;
 uniform mat4 	uViewMatrixInverse;
 uniform vec2	uWindowSize;
 
-in Vertex
-{
-	vec2 	uv;
-} vertex;
-
+in vec2     uv;
 out vec4 	oColor;
 
 void main( void )

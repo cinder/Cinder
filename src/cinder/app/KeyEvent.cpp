@@ -25,6 +25,10 @@
 #include "cinder/Cinder.h"
 #include "cinder/app/KeyEvent.h"
 
+#if defined( CINDER_LINUX_EGL_ONLY )
+	#include "cinder/linux/input_redef.h"
+#endif
+
 #include <map>
 using std::map;
 
@@ -188,7 +192,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 }
 #endif
 
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 
 #include <windows.h>
 	
@@ -333,7 +337,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 	else
 		return sKeyTable[nativeKeyCode];
 }
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 
 using namespace Windows::System;
 
@@ -480,7 +484,333 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 		return sKeyTable[nativeKeyCode];
 }
 
+#elif defined( CINDER_LINUX )
 
-#endif // defined( CINDER_WINRT )
+#if defined( CINDER_LINUX_EGL_ONLY )
+
+static bool sTableInited = false;
+static const int MAX_KEYCODE = 1024;
+int sKeyTable[MAX_KEYCODE];
+
+static void initKeyTable()
+{
+	for( int c = 0; c < MAX_KEYCODE; ++c ) {
+		sKeyTable[c] = KeyEvent::KEY_UNKNOWN;
+	}
+
+	sKeyTable[ci::linux::KEY_BACKSPACE] = KeyEvent::KEY_BACKSPACE;
+	sKeyTable[ci::linux::KEY_TAB]       = KeyEvent::KEY_TAB;
+	// CLEAR
+	sKeyTable[ci::linux::KEY_ENTER]     = KeyEvent::KEY_RETURN;
+	sKeyTable[ci::linux::KEY_PAUSE]     = KeyEvent::KEY_PAUSE;
+	sKeyTable[ci::linux::KEY_ESC]       = KeyEvent::KEY_ESCAPE;
+	sKeyTable[ci::linux::KEY_SPACE]     = KeyEvent::KEY_SPACE;
+	// EXCLAIM
+	// QUOTEDBL
+	// HASH
+	sKeyTable[ci::linux::KEY_DOLLAR]     = KeyEvent::KEY_DOLLAR;
+	// AMPERSAND
+	sKeyTable[ci::linux::KEY_APOSTROPHE] = KeyEvent::KEY_QUOTE;
+	// LEFTPAREN
+	// RIGHTPAREN
+	// ASTERIK
+	// PLUS
+	sKeyTable[ci::linux::KEY_COMMA]      = KeyEvent::KEY_COMMA;
+	sKeyTable[ci::linux::KEY_MINUS]      = KeyEvent::KEY_MINUS;
+	sKeyTable[ci::linux::KEY_DOT]        = KeyEvent::KEY_PERIOD;
+	sKeyTable[ci::linux::KEY_SLASH]      = KeyEvent::KEY_SLASH;
+
+	sKeyTable[ci::linux::KEY_0] = KeyEvent::KEY_0;
+	sKeyTable[ci::linux::KEY_1] = KeyEvent::KEY_1;
+	sKeyTable[ci::linux::KEY_2] = KeyEvent::KEY_2;
+	sKeyTable[ci::linux::KEY_3] = KeyEvent::KEY_3;
+	sKeyTable[ci::linux::KEY_4] = KeyEvent::KEY_4;
+	sKeyTable[ci::linux::KEY_5] = KeyEvent::KEY_5;
+	sKeyTable[ci::linux::KEY_6] = KeyEvent::KEY_6;
+	sKeyTable[ci::linux::KEY_7] = KeyEvent::KEY_7;
+	sKeyTable[ci::linux::KEY_8] = KeyEvent::KEY_8;
+	sKeyTable[ci::linux::KEY_9] = KeyEvent::KEY_9;
+	// COLON
+	sKeyTable[ci::linux::KEY_SEMICOLON] = KeyEvent::KEY_SEMICOLON;
+	// LESS
+	sKeyTable[ci::linux::KEY_EQUAL] = KeyEvent::KEY_EQUALS;
+	// CREATER
+	// QUESTION
+	// AT
+
+	sKeyTable[ci::linux::KEY_LEFTBRACE]  = KeyEvent::KEY_LEFTBRACKET;
+	sKeyTable[ci::linux::KEY_BACKSLASH]  = KeyEvent::KEY_BACKSLASH;
+	sKeyTable[ci::linux::KEY_RIGHTBRACE] = KeyEvent::KEY_RIGHTBRACKET;
+	// CARET
+	// UNDERSCORE
+	sKeyTable[ci::linux::KEY_GRAVE]      = KeyEvent::KEY_BACKQUOTE;
+
+	sKeyTable[ci::linux::KEY_A] = KeyEvent::KEY_a;
+	sKeyTable[ci::linux::KEY_B] = KeyEvent::KEY_b;
+	sKeyTable[ci::linux::KEY_C] = KeyEvent::KEY_c;
+	sKeyTable[ci::linux::KEY_D] = KeyEvent::KEY_d;
+	sKeyTable[ci::linux::KEY_E] = KeyEvent::KEY_e;
+	sKeyTable[ci::linux::KEY_F] = KeyEvent::KEY_f;
+	sKeyTable[ci::linux::KEY_G] = KeyEvent::KEY_g;
+	sKeyTable[ci::linux::KEY_H] = KeyEvent::KEY_h;
+	sKeyTable[ci::linux::KEY_I] = KeyEvent::KEY_i;
+	sKeyTable[ci::linux::KEY_J] = KeyEvent::KEY_j;
+	sKeyTable[ci::linux::KEY_K] = KeyEvent::KEY_k;
+	sKeyTable[ci::linux::KEY_L] = KeyEvent::KEY_l;
+	sKeyTable[ci::linux::KEY_M] = KeyEvent::KEY_m;
+	sKeyTable[ci::linux::KEY_N] = KeyEvent::KEY_n;
+	sKeyTable[ci::linux::KEY_O] = KeyEvent::KEY_o;
+	sKeyTable[ci::linux::KEY_P] = KeyEvent::KEY_p;
+	sKeyTable[ci::linux::KEY_Q] = KeyEvent::KEY_q;
+	sKeyTable[ci::linux::KEY_R] = KeyEvent::KEY_r;
+	sKeyTable[ci::linux::KEY_S] = KeyEvent::KEY_s;
+	sKeyTable[ci::linux::KEY_T] = KeyEvent::KEY_t;
+	sKeyTable[ci::linux::KEY_U] = KeyEvent::KEY_u;
+	sKeyTable[ci::linux::KEY_V] = KeyEvent::KEY_v;
+	sKeyTable[ci::linux::KEY_W] = KeyEvent::KEY_w;
+	sKeyTable[ci::linux::KEY_X] = KeyEvent::KEY_x;
+	sKeyTable[ci::linux::KEY_Y] = KeyEvent::KEY_y;
+	sKeyTable[ci::linux::KEY_Z] = KeyEvent::KEY_z;
+	sKeyTable[ci::linux::KEY_DELETE] = KeyEvent::KEY_DELETE;
+
+	sKeyTable[ci::linux::KEY_KP0]        = KeyEvent::KEY_KP0;
+	sKeyTable[ci::linux::KEY_KP1]        = KeyEvent::KEY_KP1;
+	sKeyTable[ci::linux::KEY_KP2]        = KeyEvent::KEY_KP2;
+	sKeyTable[ci::linux::KEY_KP3]        = KeyEvent::KEY_KP3;
+	sKeyTable[ci::linux::KEY_KP4]        = KeyEvent::KEY_KP4;
+	sKeyTable[ci::linux::KEY_KP5]        = KeyEvent::KEY_KP5;
+	sKeyTable[ci::linux::KEY_KP6]        = KeyEvent::KEY_KP6;
+	sKeyTable[ci::linux::KEY_KP7]        = KeyEvent::KEY_KP7;
+	sKeyTable[ci::linux::KEY_KP8]        = KeyEvent::KEY_KP8;
+	sKeyTable[ci::linux::KEY_KP9]        = KeyEvent::KEY_KP9;
+	sKeyTable[ci::linux::KEY_KPDOT]      = KeyEvent::KEY_KP_PERIOD;
+	sKeyTable[ci::linux::KEY_KPSLASH]    = KeyEvent::KEY_KP_DIVIDE;
+	sKeyTable[ci::linux::KEY_KPASTERISK] = KeyEvent::KEY_KP_MULTIPLY;
+	sKeyTable[ci::linux::KEY_KPMINUS]    = KeyEvent::KEY_KP_MINUS;
+	sKeyTable[ci::linux::KEY_KPPLUS]     = KeyEvent::KEY_KP_PLUS;
+	sKeyTable[ci::linux::KEY_KPENTER]    = KeyEvent::KEY_KP_ENTER;
+	sKeyTable[ci::linux::KEY_KPEQUAL]    = KeyEvent::KEY_KP_EQUALS;
+
+	sKeyTable[ci::linux::KEY_UP]         = KeyEvent::KEY_UP;
+	sKeyTable[ci::linux::KEY_DOWN]       = KeyEvent::KEY_DOWN;
+	sKeyTable[ci::linux::KEY_RIGHT]      = KeyEvent::KEY_RIGHT;
+	sKeyTable[ci::linux::KEY_LEFT]       = KeyEvent::KEY_LEFT;
+	sKeyTable[ci::linux::KEY_INSERT]     = KeyEvent::KEY_INSERT;
+	sKeyTable[ci::linux::KEY_HOME]       = KeyEvent::KEY_HOME;
+	sKeyTable[ci::linux::KEY_END]        = KeyEvent::KEY_END;
+	sKeyTable[ci::linux::KEY_PAGEUP]     = KeyEvent::KEY_PAGEUP;
+	sKeyTable[ci::linux::KEY_PAGEDOWN]   = KeyEvent::KEY_PAGEDOWN;
+
+	sKeyTable[ci::linux::KEY_F1]  = KeyEvent::KEY_F1;
+	sKeyTable[ci::linux::KEY_F2]  = KeyEvent::KEY_F2;
+	sKeyTable[ci::linux::KEY_F3]  = KeyEvent::KEY_F3;
+	sKeyTable[ci::linux::KEY_F4]  = KeyEvent::KEY_F4;
+	sKeyTable[ci::linux::KEY_F5]  = KeyEvent::KEY_F5;
+	sKeyTable[ci::linux::KEY_F6]  = KeyEvent::KEY_F6;
+	sKeyTable[ci::linux::KEY_F7]  = KeyEvent::KEY_F7;
+	sKeyTable[ci::linux::KEY_F8]  = KeyEvent::KEY_F8;
+	sKeyTable[ci::linux::KEY_F9]  = KeyEvent::KEY_F9;
+	sKeyTable[ci::linux::KEY_F10] = KeyEvent::KEY_F10;
+	sKeyTable[ci::linux::KEY_F11] = KeyEvent::KEY_F11;
+	sKeyTable[ci::linux::KEY_F12] = KeyEvent::KEY_F12;
+	sKeyTable[ci::linux::KEY_F13] = KeyEvent::KEY_F13;
+	sKeyTable[ci::linux::KEY_F14] = KeyEvent::KEY_F14;
+	sKeyTable[ci::linux::KEY_F15] = KeyEvent::KEY_F15; 
+
+	sKeyTable[ci::linux::KEY_CAPSLOCK]   = KeyEvent::KEY_CAPSLOCK;
+	sKeyTable[ci::linux::KEY_NUMLOCK]    = KeyEvent::KEY_NUMLOCK;
+	sKeyTable[ci::linux::KEY_SCROLLLOCK] = KeyEvent::KEY_SCROLLOCK;
+	sKeyTable[ci::linux::KEY_RIGHTSHIFT] = KeyEvent::KEY_RSHIFT;
+	sKeyTable[ci::linux::KEY_LEFTSHIFT]  = KeyEvent::KEY_LSHIFT;
+	sKeyTable[ci::linux::KEY_RIGHTCTRL]  = KeyEvent::KEY_RCTRL;
+	sKeyTable[ci::linux::KEY_LEFTCTRL]   = KeyEvent::KEY_LCTRL;
+	sKeyTable[ci::linux::KEY_RIGHTALT]   = KeyEvent::KEY_RALT;
+	sKeyTable[ci::linux::KEY_LEFTALT]    = KeyEvent::KEY_LALT;
+	sKeyTable[ci::linux::KEY_RIGHTMETA]  = KeyEvent::KEY_RMETA;
+	sKeyTable[ci::linux::KEY_LEFTMETA]   = KeyEvent::KEY_LMETA;
+	// LSUPER
+	// RSUPER
+	// MODE
+	sKeyTable[ci::linux::KEY_COMPOSE]    = KeyEvent::KEY_COMPOSE;
+
+	sKeyTable[ci::linux::KEY_HELP]  = KeyEvent::KEY_HELP;
+	sKeyTable[ci::linux::KEY_PRINT] = KeyEvent::KEY_PRINT;
+	sKeyTable[ci::linux::KEY_SYSRQ] = KeyEvent::KEY_SYSREQ;
+	sKeyTable[ci::linux::KEY_BREAK] = KeyEvent::KEY_BREAK;
+	sKeyTable[ci::linux::KEY_MENU]	= KeyEvent::KEY_MENU;
+	sKeyTable[ci::linux::KEY_POWER] = KeyEvent::KEY_POWER;
+	sKeyTable[ci::linux::KEY_EURO]  = KeyEvent::KEY_EURO;
+	sKeyTable[ci::linux::KEY_UNDO]  = KeyEvent::KEY_UNDO;
+}
+
+int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
+{
+	if( ! sTableInited )
+		initKeyTable();
+	
+	if( nativeKeyCode < 0 || nativeKeyCode >= MAX_KEYCODE )
+		return KeyEvent::KEY_UNKNOWN;
+	else
+		return sKeyTable[nativeKeyCode];
+}
+
+#else
+
+#include "glfw/glfw3.h"
+static bool sTableInited = false;
+static const int MAX_KEYCODE = GLFW_KEY_LAST + 1;
+int sKeyTable[MAX_KEYCODE];
+
+static void initKeyTable()
+{
+	for( int c = 0; c < MAX_KEYCODE; ++c ) {
+		sKeyTable[c] = KeyEvent::KEY_UNKNOWN;
+	}
+
+	sKeyTable[GLFW_KEY_SPACE] = KeyEvent::KEY_SPACE;
+	sKeyTable[GLFW_KEY_APOSTROPHE] = KeyEvent::KEY_QUOTE;  
+	sKeyTable[GLFW_KEY_COMMA] = KeyEvent::KEY_COMMA;  
+	sKeyTable[GLFW_KEY_MINUS] = KeyEvent::KEY_MINUS;  
+	sKeyTable[GLFW_KEY_PERIOD] = KeyEvent::KEY_PERIOD;  
+	sKeyTable[GLFW_KEY_SLASH] = KeyEvent::KEY_SLASH;  
+
+	sKeyTable[GLFW_KEY_0] = KeyEvent::KEY_0;
+	sKeyTable[GLFW_KEY_1] = KeyEvent::KEY_1;
+	sKeyTable[GLFW_KEY_2] = KeyEvent::KEY_2;
+	sKeyTable[GLFW_KEY_3] = KeyEvent::KEY_3;
+	sKeyTable[GLFW_KEY_4] = KeyEvent::KEY_4;
+	sKeyTable[GLFW_KEY_5] = KeyEvent::KEY_5;
+	sKeyTable[GLFW_KEY_6] = KeyEvent::KEY_6;
+	sKeyTable[GLFW_KEY_7] = KeyEvent::KEY_7;
+	sKeyTable[GLFW_KEY_8] = KeyEvent::KEY_8;
+	sKeyTable[GLFW_KEY_9] = KeyEvent::KEY_9;
+
+	sKeyTable[GLFW_KEY_SEMICOLON] = KeyEvent::KEY_SEMICOLON;  
+	sKeyTable[GLFW_KEY_EQUAL] = KeyEvent::KEY_EQUALS;  
+
+	sKeyTable[GLFW_KEY_A] = KeyEvent::KEY_a;
+	sKeyTable[GLFW_KEY_B] = KeyEvent::KEY_b;
+	sKeyTable[GLFW_KEY_C] = KeyEvent::KEY_c;
+	sKeyTable[GLFW_KEY_D] = KeyEvent::KEY_d;
+	sKeyTable[GLFW_KEY_E] = KeyEvent::KEY_e;
+	sKeyTable[GLFW_KEY_F] = KeyEvent::KEY_f;
+	sKeyTable[GLFW_KEY_G] = KeyEvent::KEY_g;
+	sKeyTable[GLFW_KEY_H] = KeyEvent::KEY_h;
+	sKeyTable[GLFW_KEY_I] = KeyEvent::KEY_i;
+	sKeyTable[GLFW_KEY_J] = KeyEvent::KEY_j;
+	sKeyTable[GLFW_KEY_K] = KeyEvent::KEY_k;
+	sKeyTable[GLFW_KEY_L] = KeyEvent::KEY_l;
+	sKeyTable[GLFW_KEY_M] = KeyEvent::KEY_m;
+	sKeyTable[GLFW_KEY_N] = KeyEvent::KEY_n;
+	sKeyTable[GLFW_KEY_O] = KeyEvent::KEY_o;
+	sKeyTable[GLFW_KEY_P] = KeyEvent::KEY_p;
+	sKeyTable[GLFW_KEY_Q] = KeyEvent::KEY_q;
+	sKeyTable[GLFW_KEY_R] = KeyEvent::KEY_r;
+	sKeyTable[GLFW_KEY_S] = KeyEvent::KEY_s;
+	sKeyTable[GLFW_KEY_T] = KeyEvent::KEY_t;
+	sKeyTable[GLFW_KEY_U] = KeyEvent::KEY_u;
+	sKeyTable[GLFW_KEY_V] = KeyEvent::KEY_v;
+	sKeyTable[GLFW_KEY_W] = KeyEvent::KEY_w;
+	sKeyTable[GLFW_KEY_X] = KeyEvent::KEY_x;
+	sKeyTable[GLFW_KEY_Y] = KeyEvent::KEY_y;
+	sKeyTable[GLFW_KEY_Z] = KeyEvent::KEY_z;
+
+	sKeyTable[GLFW_KEY_BACKSLASH]     = KeyEvent::KEY_BACKSLASH;  
+	sKeyTable[GLFW_KEY_LEFT_BRACKET]  = KeyEvent::KEY_LEFTBRACKET;  
+	sKeyTable[GLFW_KEY_RIGHT_BRACKET] = KeyEvent::KEY_RIGHTBRACKET;  
+	sKeyTable[GLFW_KEY_GRAVE_ACCENT]  = KeyEvent::KEY_BACKQUOTE;  
+	// sKeyTable[GLFW_KEY_WORLD_1]       = KeyEvent::KEY_WORLD_1; 
+	// sKeyTable[GLFW_KEY_WORLD_2]       = KeyEvent::KEY_WORLD_2; 
+	sKeyTable[GLFW_KEY_ESCAPE]        = KeyEvent::KEY_ESCAPE;
+	sKeyTable[GLFW_KEY_ENTER]         = KeyEvent::KEY_RETURN;
+	sKeyTable[GLFW_KEY_TAB]           = KeyEvent::KEY_TAB;
+	sKeyTable[GLFW_KEY_BACKSPACE]     = KeyEvent::KEY_BACKSPACE;
+	sKeyTable[GLFW_KEY_INSERT]        = KeyEvent::KEY_INSERT;
+	sKeyTable[GLFW_KEY_DELETE]        = KeyEvent::KEY_DELETE;
+	sKeyTable[GLFW_KEY_RIGHT]         = KeyEvent::KEY_RIGHT;
+	sKeyTable[GLFW_KEY_LEFT]          = KeyEvent::KEY_LEFT;
+	sKeyTable[GLFW_KEY_DOWN]          = KeyEvent::KEY_DOWN;
+	sKeyTable[GLFW_KEY_UP]            = KeyEvent::KEY_UP;
+	sKeyTable[GLFW_KEY_PAGE_UP]       = KeyEvent::KEY_PAGEUP;
+	sKeyTable[GLFW_KEY_PAGE_DOWN]     = KeyEvent::KEY_PAGEDOWN;
+	sKeyTable[GLFW_KEY_HOME]          = KeyEvent::KEY_HOME;
+	sKeyTable[GLFW_KEY_END]           = KeyEvent::KEY_END;
+	sKeyTable[GLFW_KEY_CAPS_LOCK]     = KeyEvent::KEY_CAPSLOCK;
+	sKeyTable[GLFW_KEY_SCROLL_LOCK]   = KeyEvent::KEY_SCROLLOCK;
+	sKeyTable[GLFW_KEY_NUM_LOCK]      = KeyEvent::KEY_NUMLOCK;
+	sKeyTable[GLFW_KEY_PRINT_SCREEN]  = KeyEvent::KEY_PRINT;
+	sKeyTable[GLFW_KEY_PAUSE]         = KeyEvent::KEY_PAUSE;
+
+	sKeyTable[GLFW_KEY_F1] = KeyEvent::KEY_F1;
+	sKeyTable[GLFW_KEY_F2] = KeyEvent::KEY_F2;
+	sKeyTable[GLFW_KEY_F3] = KeyEvent::KEY_F3;
+	sKeyTable[GLFW_KEY_F4] = KeyEvent::KEY_F4;
+	sKeyTable[GLFW_KEY_F5] = KeyEvent::KEY_F5;
+	sKeyTable[GLFW_KEY_F6] = KeyEvent::KEY_F6;
+	sKeyTable[GLFW_KEY_F7] = KeyEvent::KEY_F7;
+	sKeyTable[GLFW_KEY_F8] = KeyEvent::KEY_F8;
+	sKeyTable[GLFW_KEY_F9] = KeyEvent::KEY_F9;
+	sKeyTable[GLFW_KEY_F10] = KeyEvent::KEY_F10;
+	sKeyTable[GLFW_KEY_F11] = KeyEvent::KEY_F11;
+	sKeyTable[GLFW_KEY_F12] = KeyEvent::KEY_F12;
+	sKeyTable[GLFW_KEY_F13] = KeyEvent::KEY_F13;
+	sKeyTable[GLFW_KEY_F14] = KeyEvent::KEY_F14;
+	sKeyTable[GLFW_KEY_F15] = KeyEvent::KEY_F15;
+	// sKeyTable[GLFW_KEY_F16] = KeyEvent::KEY_F16;
+	// sKeyTable[GLFW_KEY_F17] = KeyEvent::KEY_F17;
+	// sKeyTable[GLFW_KEY_F18] = KeyEvent::KEY_F18;
+	// sKeyTable[GLFW_KEY_F19] = KeyEvent::KEY_F19;
+	// sKeyTable[GLFW_KEY_F20] = KeyEvent::KEY_F20;
+	// sKeyTable[GLFW_KEY_F21] = KeyEvent::KEY_F21;
+	// sKeyTable[GLFW_KEY_F22] = KeyEvent::KEY_F22;
+	// sKeyTable[GLFW_KEY_F23] = KeyEvent::KEY_F23;
+	// sKeyTable[GLFW_KEY_F24] = KeyEvent::KEY_F24;
+	// sKeyTable[GLFW_KEY_F25] = KeyEvent::KEY_F25;
+
+	sKeyTable[GLFW_KEY_KP_0] = KeyEvent::KEY_KP0;
+	sKeyTable[GLFW_KEY_KP_1] = KeyEvent::KEY_KP1;
+	sKeyTable[GLFW_KEY_KP_2] = KeyEvent::KEY_KP2;
+	sKeyTable[GLFW_KEY_KP_3] = KeyEvent::KEY_KP3;
+	sKeyTable[GLFW_KEY_KP_4] = KeyEvent::KEY_KP4;
+	sKeyTable[GLFW_KEY_KP_5] = KeyEvent::KEY_KP5;
+	sKeyTable[GLFW_KEY_KP_6] = KeyEvent::KEY_KP6;
+	sKeyTable[GLFW_KEY_KP_7] = KeyEvent::KEY_KP7;
+	sKeyTable[GLFW_KEY_KP_8] = KeyEvent::KEY_KP8;
+	sKeyTable[GLFW_KEY_KP_9] = KeyEvent::KEY_KP9;
+
+	sKeyTable[GLFW_KEY_KP_DECIMAL]  = KeyEvent::KEY_KP_PERIOD;
+	sKeyTable[GLFW_KEY_KP_DIVIDE]   = KeyEvent::KEY_KP_DIVIDE;
+	sKeyTable[GLFW_KEY_KP_MULTIPLY] = KeyEvent::KEY_KP_MULTIPLY;
+	sKeyTable[GLFW_KEY_KP_SUBTRACT] = KeyEvent::KEY_KP_MINUS;
+	sKeyTable[GLFW_KEY_KP_ADD]      = KeyEvent::KEY_KP_PLUS;
+	sKeyTable[GLFW_KEY_KP_ENTER]    = KeyEvent::KEY_KP_ENTER;
+	sKeyTable[GLFW_KEY_KP_EQUAL]    = KeyEvent::KEY_KP_EQUALS;
+
+	sKeyTable[GLFW_KEY_LEFT_SHIFT]   = KeyEvent::KEY_LSHIFT;
+	sKeyTable[GLFW_KEY_LEFT_CONTROL] = KeyEvent::KEY_LCTRL;
+	sKeyTable[GLFW_KEY_LEFT_ALT]     = KeyEvent::KEY_LALT;
+	sKeyTable[GLFW_KEY_LEFT_SUPER]   = KeyEvent::KEY_LSUPER;
+
+	sKeyTable[GLFW_KEY_RIGHT_SHIFT]   = KeyEvent::KEY_RSHIFT;
+	sKeyTable[GLFW_KEY_RIGHT_CONTROL] = KeyEvent::KEY_RCTRL;
+	sKeyTable[GLFW_KEY_RIGHT_ALT]     = KeyEvent::KEY_RALT;
+	sKeyTable[GLFW_KEY_RIGHT_SUPER]   = KeyEvent::KEY_RSUPER;
+
+	sKeyTable[GLFW_KEY_MENU] = KeyEvent::KEY_MENU;
+}
+
+int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
+{
+	if( ! sTableInited )
+		initKeyTable();
+	
+	if( nativeKeyCode < 0 || nativeKeyCode >= MAX_KEYCODE )
+		return KeyEvent::KEY_UNKNOWN;
+	else
+		return sKeyTable[nativeKeyCode];
+}
+#endif
+
+#endif // defined( CINDER_LINUX )
 	
 } } // namespace cinder::app

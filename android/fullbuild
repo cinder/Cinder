@@ -1,0 +1,8 @@
+#!/bin/bash
+sh fullbuild-armeabi "$@"
+sh fullbuild-armeabi-v7a "$@"
+sh fullbuild-x86 "$@"
+sh fullbuild-mips "$@"
+sh fullbuild-arm64-v8a "$@"
+sh fullbuild-x86_64 "$@"
+sh fullbuild-mips64 "$@"

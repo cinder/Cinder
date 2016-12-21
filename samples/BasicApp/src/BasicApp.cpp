@@ -24,6 +24,11 @@ class BasicApp : public App {
 	std::vector<vec2> mPoints;
 };
 
+void prepareSettings( BasicApp::Settings* settings )
+{
+	settings->setMultiTouchEnabled( false );
+}
+
 void BasicApp::mouseDrag( MouseEvent event )
 {
 	// Store the current mouse position in the list.
@@ -32,6 +37,9 @@ void BasicApp::mouseDrag( MouseEvent event )
 
 void BasicApp::keyDown( KeyEvent event )
 {
+	std::cout << event.getCode() << " : " << event.getChar() << std::endl;
+
+/*
 	if( event.getChar() == 'f' ) {
 		// Toggle full screen when the user presses the 'f' key.
 		setFullScreen( ! isFullScreen() );
@@ -47,6 +55,7 @@ void BasicApp::keyDown( KeyEvent event )
 		else
 			quit();
 	}
+*/
 }
 
 void BasicApp::draw()
@@ -72,4 +81,4 @@ void BasicApp::draw()
 }
 
 // This line tells Cinder to actually create and run the application.
-CINDER_APP( BasicApp, RendererGl )
+CINDER_APP( BasicApp, RendererGl, prepareSettings )

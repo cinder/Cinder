@@ -26,17 +26,7 @@
 #include "cinder/Shape2d.h"
 #include "cinder/Exception.h"
 #include "cinder/DataSource.h"
-#if defined( CINDER_WINRT )
-	#include <ft2build.h>
-
-	// Note: generic is a reserved word in winrt c++/cx
-	// need to redefine it for freetype.h
-	#define generic GenericFromFreeTypeLibrary
-	#include FT_FREETYPE_H
-	#include FT_OUTLINE_H
-	#undef generic
-
-	#include FT_GLYPH_H
+#if defined( CINDER_UWP )
 #endif
 
 #include <string>
@@ -47,12 +37,14 @@
 	#if defined( CINDER_COCOA )
 		typedef const struct __CTFont * CTFontRef;
 	#endif
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#include "cinder/msw/CinderWindowsFwd.h"
 
 	namespace Gdiplus {
 		class Font;
 	}
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	typedef struct FT_FaceRec_* FT_Face;
 #endif
 
 namespace cinder {
@@ -62,7 +54,15 @@ class FontObj;
 //! Represents an instance of a font at a point size. \ImplShared
 class Font {
  public:
-	typedef uint16_t		Glyph;		
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )	
+	typedef uint32_t		Glyph;
+	struct GlyphMetrics {
+		ivec2				advance;
+	};
+#else
+	typedef uint16_t		Glyph;	
+	struct GlyphMetrics {};
+#endif
 
 	/** \brief constructs a null Font **/
 	Font() {}
@@ -77,6 +77,9 @@ class Font {
 	std::string				getFullName() const;
 	float					getSize() const;
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	float 					getLinespace() const;
+#endif
 	float					getLeading() const;
 	float					getAscent() const;
 	float					getDescent() const;
@@ -90,7 +93,7 @@ class Font {
 	//! Returns the bounding box of a Glyph, relative to the baseline as the origin
 	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 	FT_Face					getFreetypeFace() const;
 #endif
 	
@@ -100,7 +103,7 @@ class Font {
 #if defined( CINDER_COCOA )
 	CGFontRef				getCgFontRef() const;
 	CTFontRef				getCtFontRef() const;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	//! Returns the underlying LOGFONTW on MSW
 	const void*				getLogfont() const;
 	::HFONT					getHfont() const;
@@ -110,7 +113,7 @@ class Font {
 
  private:
 	std::shared_ptr<FontObj>			mObj;
-	
+
   public:
  	//@{
 	//! Emulates shared_ptr-like behavior
@@ -118,6 +121,15 @@ class Font {
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Font::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
+};
+
+class FontLoadFailedExc : public cinder::Exception {
+  public:
+	FontLoadFailedExc() throw() {}
+	FontLoadFailedExc( const std::string &fontName ) throw();
+	virtual const char* what() const throw() { return mMessage; }	
+  private:
+	char mMessage[2048];	
 };
 
 class FontInvalidNameExc : public cinder::Exception {

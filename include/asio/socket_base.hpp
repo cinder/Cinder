@@ -2,7 +2,7 @@
 // socket_base.hpp
 // ~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -74,6 +74,22 @@ public:
   ASIO_STATIC_CONSTANT(int,
       message_end_of_record = ASIO_OS_DEF(MSG_EOR));
 #endif
+
+  /// Wait types.
+  /**
+   * For use with basic_socket::wait() and basic_socket::async_wait().
+   */
+  enum wait_type
+  {
+    /// Wait for a socket to become ready to read.
+    wait_read,
+
+    /// Wait for a socket to become ready to write.
+    wait_write,
+
+    /// Wait for a socket to have error conditions pending.
+    wait_error
+  };
 
   /// Socket option to permit sending of broadcast messages.
   /**
@@ -451,28 +467,6 @@ public:
     asio::detail::custom_socket_option_level,
     asio::detail::enable_connection_aborted_option>
     enable_connection_aborted;
-#endif
-
-  /// (Deprecated: Use non_blocking().) IO control command to
-  /// set the blocking mode of the socket.
-  /**
-   * Implements the FIONBIO IO control command.
-   *
-   * @par Example
-   * @code
-   * asio::ip::tcp::socket socket(io_service); 
-   * ...
-   * asio::socket_base::non_blocking_io command(true);
-   * socket.io_control(command);
-   * @endcode
-   *
-   * @par Concepts:
-   * IO_Control_Command, Boolean_IO_Control_Command.
-   */
-#if defined(GENERATING_DOCUMENTATION)
-  typedef implementation_defined non_blocking_io;
-#else
-  typedef asio::detail::io_control::non_blocking_io non_blocking_io;
 #endif
 
   /// IO control command to get the amount of data that can be read without

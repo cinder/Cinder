@@ -28,6 +28,13 @@
 #include "cinder/Utilities.h"
 #include "cinder/Noncopyable.h"
 
+#if defined( CINDER_UWP )
+	#define generic GenericFromFreeTypeLibrary
+	#include <ft2build.h>
+	#include <freetype.h>
+	#undef generic
+#endif
+
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
@@ -35,7 +42,7 @@
 	#elif defined( CINDER_COCOA_TOUCH )
 		#include <CoreText/CoreText.h>
 	#endif
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#include <Windows.h>
 	#define max(a, b) (((a) > (b)) ? (a) : (b))
 	#define min(a, b) (((a) < (b)) ? (a) : (b))
@@ -47,11 +54,16 @@
 	#pragma comment(lib, "gdiplus")
 	#include "cinder/Unicode.h"
 
-static const float MAX_SIZE = 1000000.0f;
+	static const float MAX_SIZE = 1000000.0f;
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	#include "cinder/linux/FreeTypeUtil.h"
 
+	static const float MAX_SIZE = 1000000.0f;
 #endif
 
 #include <limits.h>
+
+#include "cinder/app/App.h"
 
 using namespace std;
 
@@ -67,7 +79,7 @@ class TextManager : private Noncopyable
 	static TextManager*		instance();
 
 #if defined( CINDER_MAC )
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	HDC					getDc() { return mDummyDC; }
 	Gdiplus::Graphics*	getGraphics() { return mGraphics; }
 #endif
@@ -76,7 +88,7 @@ class TextManager : private Noncopyable
 	static TextManager	*sInstance;
 
 #if defined( CINDER_MAC )
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	HDC					mDummyDC;
 	Gdiplus::Graphics	*mGraphics;
 #endif
@@ -87,7 +99,7 @@ TextManager *TextManager::sInstance = 0;
 TextManager::TextManager()
 {
 #if defined( CINDER_MAC )
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	mDummyDC = ::CreateCompatibleDC( 0 );
 	mGraphics = new Gdiplus::Graphics( mDummyDC );
 #endif
@@ -96,7 +108,7 @@ TextManager::TextManager()
 TextManager::~TextManager()
 {
 #if defined( CINDER_MAC )
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	::DeleteDC( mDummyDC );
 #endif
 }
@@ -115,7 +127,7 @@ struct Run {
 	Run( const string &aText, const Font &aFont, const ColorA &aColor )
 		: mText( aText ), mFont( aFont ), mColor( aColor )
 	{
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 		mWideText = toUtf16( mText );
 #endif
 	}
@@ -123,7 +135,7 @@ struct Run {
 	string		mText;
 	Font		mFont;
 	ColorA		mColor;
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 	std::u16string		mWideText;
 	// in GDI+ rendering we need to know each run's typographic metrics
 	float				mWidth;
@@ -143,10 +155,12 @@ class Line {
 	void calcExtents();
 #if defined( CINDER_COCOA )
 	void render( CGContextRef &cgContext, float currentY, float xBorder, float maxWidth );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	void render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth );
-#elif defined( CINDER_WINRT )
+#elif 0 //defined( CINDER_UWP )
 	void render(Channel &channel, float currentY, float xBorder, float maxWidth);
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	void render( Surface &surface, float currentY, float xBorder, float maxWidth );
 #endif
 
 	enum { LEFT, RIGHT, CENTERED };
@@ -203,7 +217,7 @@ void Line::calcExtents()
 	mDescent = descentCG;
 	mLeading = leadingCG;
 	mHeight = 0;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		Gdiplus::StringFormat format;
@@ -223,7 +237,7 @@ void Line::calcExtents()
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
 		mHeight = std::max( mHeight, sizeRect.Height );
 	}
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		FT_Face face = runIt->mFont.getFreetypeFace();
@@ -240,9 +254,26 @@ void Line::calcExtents()
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
 		mHeight = std::max( mHeight, face->bbox.yMax / 64.0f );
 	}
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
+	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
+		FT_Face face = runIt->mFont.getFreetypeFace();
+
+		auto measure = ci::linux::ftutil::MeasureString( runIt->mText, face );
+
+		mWidth   += measure.getWidth();
+		mAscent  = std::max( runIt->mFont.getAscent(),     mAscent  );
+		mDescent = std::max( runIt->mFont.getDescent(),    mDescent );
+		mLeading = std::max( runIt->mFont.getLeading(),    mLeading );
+		mHeight  = std::max( (float)(measure.getHeight()), mHeight  );
+	}
 #endif
 
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	//mWidth += 0.5f;
+#else
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
+#endif
 }
 
 #if defined( CINDER_COCOA )
@@ -257,7 +288,7 @@ void Line::render( CGContextRef &cgContext, float currentY, float xBorder, float
 	::CTLineDraw( mCTLineRef, cgContext );
 }
 
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 
 void Line::render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth )
 {
@@ -275,7 +306,7 @@ void Line::render( Gdiplus::Graphics *graphics, float currentY, float xBorder, f
 	}
 }
 
-#elif defined( CINDER_WINRT )
+#elif 0//defined( CINDER_UWP )
 
 void Line::render(Channel &channel, float currentY, float xBorder, float maxWidth)
 {
@@ -295,6 +326,87 @@ void Line::render(Channel &channel, float currentY, float xBorder, float maxWidt
 			Channel glyphChannel( metrics.width >> 6, metrics.height >> 6, alignedRowBytes, 1, pBuff );
 			channel.copyFrom( glyphChannel, glyphChannel.getBounds(), ivec2((int)currentX + (metrics.horiBearingX >> 6), (int)currentY + ((face->height - metrics.horiBearingY) >> 6)) );
 		}
+	}
+}
+
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+
+void draw_bitmap( FT_Int x, FT_Int y, FT_Bitmap* bitmap, const ColorA8u& color, uint8_t *dstData, size_t dstPixelInc, size_t dstRowBytes, const ivec2& dstSize )
+{
+	FT_Int i, j, p, q;
+	FT_Int x_max = x + bitmap->width;
+	FT_Int y_max = y + bitmap->rows;
+
+	for( j = y, q = 0; j < y_max; ++j, ++q ) {
+		for( i = x, p = 0; i < x_max; ++i, ++p ) {
+		 	if( i < 0 || j < 0 || i >= dstSize.x || j >= dstSize.y ) {
+				continue;
+			}
+			
+			size_t index = j*dstRowBytes + i*dstPixelInc;
+			uint8_t *data = dstData + index;
+			int dr = *(data + 0);
+			int dg = *(data + 1);
+			int db = *(data + 2);
+			int da = *(data + 3);
+
+			int val = (bitmap->buffer[q * bitmap->width + p]);
+	  		int alpha = val + 1;
+			int invAlpha = 256 - val;
+			int r = (color.r*alpha + dr*invAlpha) >> 8;
+			int g = (color.g*alpha + dg*invAlpha) >> 8;
+			int b = (color.b*alpha + db*invAlpha) >> 8;
+			int a = (color.a*alpha + da*invAlpha) >> 8;
+			*(data + 0) = r;
+			*(data + 1) = g;
+			*(data + 2) = b;
+			*(data + 3) = a;
+		}
+	}
+}
+
+void Line::render( Surface &surface, float currentY, float xBorder, float maxWidth )
+{
+	uint8_t* surfaceData   = surface.getData();
+	size_t surfacePixelInc = surface.getPixelInc();
+	size_t surfaceRowBytes = surface.getRowBytes();
+	ivec2 surfaceSize      = surface.getSize();
+
+	float currentX = xBorder;
+	if( mJustification == CENTERED ) {
+		currentX = ( maxWidth - mWidth ) / 2.0f;
+	}
+	else if( mJustification == RIGHT ) {
+  #if defined( CINDER_ANDROID )
+		currentX = maxWidth - (mWidth + 1.0f) - xBorder;
+  #else
+		currentX = maxWidth - mWidth - xBorder;
+  #endif		
+	}
+
+	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
+		ColorA8u color = runIt->mColor;
+
+		FT_Face face = runIt->mFont.getFreetypeFace();
+		FT_Vector pen = { (int)currentX * 64, (int)(surfaceSize.y - currentY) * 64 };
+
+		std::u32string strU32 = ci::toUtf32( runIt->mText );
+		for( const auto& ch : strU32 ) {
+			FT_Set_Transform( face, nullptr, &pen );
+
+			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+			FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+
+			FT_GlyphSlot slot = face->glyph;
+			ivec2 offset = ivec2( slot->bitmap_left, surfaceSize.y - slot->bitmap_top );
+
+			draw_bitmap( offset.x, offset.y, &(slot->bitmap), color, surfaceData, surfacePixelInc, surfaceRowBytes, surfaceSize );
+
+			pen.x += slot->advance.x;
+			pen.y += slot->advance.y;
+		}
+
+		currentX = (pen.x / 64.0f) + 0.5f;
 	}
 }
 
@@ -390,6 +502,24 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	Surface result;
 	
 	// determine the extents for all the lines and the result surface
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	float totalHeight = (float)mVerticalBorder;
+	float maxWidth = 0;
+	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		(*lineIt)->calcExtents();
+		//totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight + (*lineIt)->mLeadingOffset );
+		totalHeight = std::max( totalHeight, totalHeight + (*lineIt)->mHeight );
+		if( (*lineIt)->mWidth > maxWidth ) {
+			maxWidth = (*lineIt)->mWidth;;
+		}
+	}
+
+	maxWidth += 0.5f;
+
+  #if defined( CINDER_ANDROID )
+	totalHeight += 1.0f;
+  #endif
+#else
 	float totalHeight = 0, maxWidth = 0;
 	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		(*lineIt)->calcExtents();
@@ -397,6 +527,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 		if( (*lineIt)->mWidth > maxWidth )
 			maxWidth = (*lineIt)->mWidth;
 	}
+#endif
 	// for the last line, instead of using the font info, we'll use the true height
 /*	if( ! mLines.empty() ) {
 		totalHeight = currentY - (mLines.back()->mAscent - mLines.back()->mDescent - mLines.back()->mLeadingOffset - mLines.back()->mLeading );
@@ -432,7 +563,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	// since CGContextBitmaps are always premultiplied, if the caller didn't want that we'll have to undo it
 	if( ! premultiplied )
 		ip::unpremultiply( &result );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	// I don't have a great explanation for this other than it seems to be necessary
 	pixelHeight += 1;
 	// prep our GDI and GDI+ resources
@@ -462,7 +593,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 
 	delete offscreenBitmap;
 	delete offscreenGraphics;
-#elif defined( CINDER_WINRT )
+#elif 0 //defined( CINDER_UWP )
 	Channel channel( pixelWidth, pixelHeight );
 	ip::fill<uint8_t>( &channel, 0 );
 	float currentY = (float)mVerticalBorder;
@@ -473,6 +604,20 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	}
 	result = Surface(channel, SurfaceConstraintsDefault(), true);
 	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	result = Surface( pixelWidth, pixelHeight, true, SurfaceConstraintsDefault() );
+	ip::fill( &result, mBackgroundColor );
+
+	float currentY = (float)mVerticalBorder;
+	for( deque<shared_ptr<Line>>::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		float adjCurrentY = currentY + (*lineIt)->mAscent + (*lineIt)->mLeadingOffset;
+		(*lineIt)->render( result, adjCurrentY, (float)mHorizontalBorder, (float)pixelWidth );	
+		currentY += (*lineIt)->mHeight;
+	}
+
+	if( ! premultiplied ) {
+		ip::unpremultiply( &result );
+	}
 #endif
 
 	return result;
@@ -515,7 +660,7 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 	::CGContextRelease( cgContext );
 	return result;
 }
-#elif defined( CINDER_MAC) || defined( CINDER_MSW ) || defined( CINDER_WINRT )
+#elif defined( CINDER_MAC) || defined( CINDER_MSW_DESKTOP ) || defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
 Surface renderString( const string &str, const Font &font, const ColorA &color, float *baselineOffset )
 {
 	Line line;
@@ -547,7 +692,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	::CGContextRelease( cgContext );
 
 	ip::unpremultiply( &result );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	// I don't have a great explanation for this other than it seems to be necessary
 	pixelHeight += 1;
 	// prep our GDI and GDI+ resources
@@ -571,23 +716,12 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 
 	delete offscreenBitmap;
 	delete offscreenGraphics;
-#elif defined( CINDER_WINRT )
-	Channel channel( pixelWidth, pixelHeight );
-	ip::fill<uint8_t>( &channel, 0 );
-	FT_Face face = font.getFreetypeFace();
-	int offset = 0;
-	for(string::const_iterator strIt = str.begin(); strIt != str.end(); ++strIt)
-	{
-		FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
-		uint8_t *pBuff = face->glyph->bitmap.buffer;
-		FT_Glyph_Metrics &metrics = face->glyph->metrics;
-		int32_t alignedRowBytes = face->glyph->bitmap.pitch;
-		Channel glyphChannel( face->glyph->bitmap.width, face->glyph->bitmap.rows, alignedRowBytes, 1, pBuff );
-		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), ivec2(offset + (metrics.horiBearingX >> 6), (face->ascender + face->descender - metrics.horiBearingY) >> 6) );
-		offset += metrics.horiAdvance >> 6;
-	}
-	Surface result(channel, SurfaceConstraintsDefault(), true);
-	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
+#elif defined( CINDER_UWP ) || defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	Surface result = Surface( pixelWidth, pixelHeight, true, SurfaceConstraintsDefault() );
+	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
+
+	float currentY = line.mAscent + line.mLeadingOffset;
+	line.render( result, currentY, (float)0, (float)pixelWidth );	
 #endif	
 
 	if( baselineOffset )
@@ -704,7 +838,8 @@ Surface	TextBox::render( vec2 offset )
 
 	return result;
 }
-#elif defined( CINDER_MSW )
+
+#elif defined( CINDER_MSW_DESKTOP )
 
 void TextBox::calculate() const
 {
@@ -889,6 +1024,221 @@ Surface	TextBox::render( vec2 offset )
 
 	return result;
 }
+
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+
+void TextBox::calculate() const
+{
+	if( ! mInvalid ) {	
+		return;
+	}
+
+	if( mText.empty() ) {
+		mCalculatedSize = vec2();
+		return;
+	}	
+
+	mCalculatedSize = vec2();
+	FT_Face face = mFont.getFreetypeFace();
+
+	vector<string> lines = calculateLineBreaks( nullptr );
+	for( const auto& text : lines ) {
+		auto measure = ci::linux::ftutil::MeasureString( text, face );
+		float fullWidth = measure.getBaseline().x + measure.getWidth();
+		mCalculatedSize.x = std::max( mCalculatedSize.x, fullWidth );
+		mCalculatedSize.y += measure.getHeight();
+	}
+
+	mInvalid = false;
+}
+
+vec2 TextBox::measure() const
+{
+	calculate();
+	return mCalculatedSize;
+}
+
+vector<string> TextBox::calculateLineBreaks( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics ) const
+{
+	vector<string> result;
+
+	vector<string> strings;
+	struct LineProcessor {
+		LineProcessor( vector<string> *strings ) : mStrings( strings ) {}
+		void operator()( const char *line, size_t len ) const { mStrings->push_back( string( line, len ) ); }
+		mutable vector<string> *mStrings;
+	};
+	struct LineMeasure {
+		LineMeasure( int maxWidth, const Font &font, const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics = nullptr ) 
+			: mMaxWidth( maxWidth ), mFont( font.getFreetypeFace() ), mCachedGlyphMerics( cachedGlyphMetrics ) {}
+		bool operator()( const char *line, size_t len ) const {
+			if( mMaxWidth >= MAX_SIZE ) {
+				// too big anyway so just return true
+				return true;
+			}
+
+			std::u32string utf32Chars = ci::toUtf32( std::string( line, len ) );
+			int measuredWidth = 0;
+			FT_Vector pen = { 0, 0 };
+			for( const auto& ch : utf32Chars ) {
+				ivec2 advance = { 0, 0 };
+				FT_UInt glyphIndex = FT_Get_Char_Index( mFont, ch );
+				if( nullptr != mCachedGlyphMerics ) {
+					auto iter = mCachedGlyphMerics->find( glyphIndex );
+					advance = iter->second.advance;		
+				}
+				else  {
+					FT_Load_Glyph( mFont, glyphIndex, FT_LOAD_DEFAULT );
+					const FT_GlyphSlot& slot = mFont->glyph;
+					advance = ivec2( slot->advance.x, slot->advance.y );
+				}
+
+				pen.x += advance.x;
+				pen.y += advance.y;
+
+				measuredWidth = (pen.x >> 6);
+			}
+
+			bool result = (measuredWidth <= mMaxWidth);
+			return result;
+		}
+
+		int													mMaxWidth;
+		FT_Face												mFont;
+		const std::map<Font::Glyph, Font::GlyphMetrics>* 	mCachedGlyphMerics;
+	};
+	std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );		
+	lineBreakUtf8( mText.c_str(), LineMeasure( ( mSize.x > 0 ) ? mSize.x : MAX_SIZE, mFont, cachedGlyphMetrics ), lineFn );
+
+	return result;
+}
+
+vector<pair<uint32_t,vec2>> TextBox::measureGlyphs( const std::map<Font::Glyph, Font::GlyphMetrics>* cachedGlyphMetrics ) const
+{
+	vector<pair<uint32_t,vec2> > result;
+
+	if( mText.empty() ) {
+		return result;
+	}
+
+	FT_Face face = mFont.getFreetypeFace();
+	vector<string> mLines = calculateLineBreaks( cachedGlyphMetrics );
+
+	float curY = 0;
+	for( vector<string>::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		std::u32string utf32Chars = ci::toUtf32( *lineIt );
+
+		FT_Vector pen = { 0, 0 };
+		for( const auto& ch : utf32Chars ) {
+			ivec2 advance = { 0, 0 };
+			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+			if( nullptr != cachedGlyphMetrics ) {
+				auto iter = cachedGlyphMetrics->find( glyphIndex );
+				advance = iter->second.advance;
+			}
+			else {
+				FT_Load_Glyph( face, glyphIndex, FT_LOAD_DEFAULT );
+				const FT_GlyphSlot& slot = face->glyph;
+				advance = ivec2( slot->advance.x, slot->advance.y );
+			}
+
+			float xPos = (pen.x / 64.0f) + 0.5f;
+			result.push_back( std::make_pair( (uint32_t)glyphIndex, vec2( xPos, curY ) ) );
+
+			pen.x += advance.x;
+			pen.y += advance.y;	
+		}
+
+		curY += mFont.getAscent() + mFont.getDescent();
+	}
+
+	return result;
+}
+
+Surface TextBox::render( vec2 offset )
+{
+	mCalculatedSize = vec2();
+	FT_Face face = mFont.getFreetypeFace();
+
+	std::vector<ci::linux::ftutil::Measure> measures;
+	std::vector<string> lines = calculateLineBreaks( nullptr );
+	for( const auto& text : lines ) {
+		auto measure = ci::linux::ftutil::MeasureString( text, face );
+		measures.push_back( measure );
+
+		float fullWidth = measure.getBaseline().x + measure.getWidth();
+		mCalculatedSize.x = std::max( mCalculatedSize.x, fullWidth );
+		mCalculatedSize.y += measure.getHeight();		
+	}
+
+	float sizeX = ( mSize.x <= 0 ) ? mCalculatedSize.x : mSize.x;
+	float sizeY = ( mSize.y <= 0 ) ? mCalculatedSize.y : mSize.y;
+	sizeX = math<float>::ceil( sizeX );
+	sizeY = math<float>::ceil( sizeY );
+	sizeX += offset.x;
+	sizeY += offset.y;
+	sizeY += 1.0f;	
+
+	// Give Android a bit of padding on the right	
+#if defined( CINDER_ANDROID )	
+	sizeX += 3.0f;
+#endif
+
+	Surface result( (int)sizeX, (int)sizeY, true );
+	ip::fill( &result, mBackgroundColor );
+
+	uint8_t*	dstData = result.getData(); 
+	size_t 		dstPixelInc = result.getPixelInc();
+	size_t 		dstRowBytes = result.getRowBytes();
+	ivec2 		dstSize = result.getSize();
+
+	int curY = 0;
+	for( size_t i = 0; i < lines.size(); ++i ) {
+		const auto& text = lines[i];
+		const auto& measure = measures[i];
+
+		vec2 baseline = measure.getBaseline();
+		float penX = baseline.x + offset.x;
+		float penY = dstSize.y - (baseline.y + offset.y + curY);
+		if( TextBox::RIGHT == mAlign ) {
+			penX = dstSize.x - (measure.getWidth() + offset.x + 3.0f);
+		}
+		else if( TextBox::CENTER == mAlign ) {
+			penX = 0.5f*(dstSize.x - measure.getWidth());		
+		}
+
+		FT_Vector pen = { (int)(penX*64.0f), (int)(penY*64.0f) };
+
+		std::u32string utf32Chars = ci::toUtf32( text );		
+		for( const auto& ch : utf32Chars ) {
+			FT_Set_Transform( face, nullptr, &pen );
+
+			FT_UInt glyphIndex = FT_Get_Char_Index( face, ch );
+			FT_Load_Glyph( face, glyphIndex, FT_LOAD_RENDER );
+			const FT_GlyphSlot& slot = face->glyph;
+
+			if( '\n' != (char)ch ) {
+				ivec2 drawOffset = ivec2( slot->bitmap_left, dstSize.y - slot->bitmap_top );
+				ci::linux::ftutil::DrawBitmap( drawOffset, &(slot->bitmap), mColor, dstData, dstPixelInc, dstRowBytes, dstSize );
+			}
+
+			pen.x += slot->advance.x;
+			pen.y += slot->advance.y;	
+		}
+
+		curY += measure.getHeight();
+	}
+
+	if( ! mPremultiplied ) {
+		ip::unpremultiply( &result );
+	}
+	else {
+		result.setPremultiplied( true );		
+	}
+
+	return result;
+}
+
 #endif
 
 } // namespace cinder

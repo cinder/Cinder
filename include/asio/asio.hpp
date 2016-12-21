@@ -2,7 +2,7 @@
 // asio.hpp
 // ~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,8 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/associated_allocator.hpp"
+#include "asio/associated_executor.hpp"
 #include "asio/async_result.hpp"
 #include "asio/basic_datagram_socket.hpp"
 #include "asio/basic_deadline_timer.hpp"
@@ -43,8 +45,13 @@
 #include "asio/datagram_socket_service.hpp"
 #include "asio/deadline_timer_service.hpp"
 #include "asio/deadline_timer.hpp"
+#include "asio/defer.hpp"
+#include "asio/dispatch.hpp"
 #include "asio/error.hpp"
 #include "asio/error_code.hpp"
+#include "asio/execution_context.hpp"
+#include "asio/executor.hpp"
+#include "asio/executor_work.hpp"
 #include "asio/generic/basic_endpoint.hpp"
 #include "asio/generic/datagram_protocol.hpp"
 #include "asio/generic/raw_protocol.hpp"
@@ -55,9 +62,13 @@
 #include "asio/handler_invoke_hook.hpp"
 #include "asio/handler_type.hpp"
 #include "asio/io_service.hpp"
+#include "asio/io_service_strand.hpp"
 #include "asio/ip/address.hpp"
+#include "asio/ip/address_iterator_v4.hpp"
+#include "asio/ip/address_range_v4.hpp"
 #include "asio/ip/address_v4.hpp"
 #include "asio/ip/address_v6.hpp"
+#include "asio/ip/bad_address_cast.hpp"
 #include "asio/ip/basic_endpoint.hpp"
 #include "asio/ip/basic_resolver.hpp"
 #include "asio/ip/basic_resolver_entry.hpp"
@@ -72,6 +83,7 @@
 #include "asio/ip/udp.hpp"
 #include "asio/ip/unicast.hpp"
 #include "asio/ip/v6_only.hpp"
+#include "asio/is_executor.hpp"
 #include "asio/is_read_buffered.hpp"
 #include "asio/is_write_buffered.hpp"
 #include "asio/local/basic_endpoint.hpp"
@@ -84,6 +96,7 @@
 #include "asio/posix/descriptor_base.hpp"
 #include "asio/posix/stream_descriptor.hpp"
 #include "asio/posix/stream_descriptor_service.hpp"
+#include "asio/post.hpp"
 #include "asio/raw_socket_service.hpp"
 #include "asio/read.hpp"
 #include "asio/read_at.hpp"
@@ -100,8 +113,11 @@
 #include "asio/stream_socket_service.hpp"
 #include "asio/streambuf.hpp"
 #include "asio/system_error.hpp"
+#include "asio/system_executor.hpp"
 #include "asio/thread.hpp"
+#include "asio/thread_pool.hpp"
 #include "asio/time_traits.hpp"
+#include "asio/uses_executor.hpp"
 #include "asio/version.hpp"
 #include "asio/wait_traits.hpp"
 #include "asio/waitable_timer_service.hpp"
@@ -116,6 +132,7 @@
 #include "asio/windows/random_access_handle_service.hpp"
 #include "asio/windows/stream_handle.hpp"
 #include "asio/windows/stream_handle_service.hpp"
+#include "asio/wrap.hpp"
 #include "asio/write.hpp"
 #include "asio/write_at.hpp"
 

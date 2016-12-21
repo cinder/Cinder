@@ -39,20 +39,6 @@ namespace cinder { namespace app {
 
 struct AppCocoaTouchState;
 
-enum InterfaceOrientation {
-	Unknown					= 0,
-	Portrait				= 1 << 0,
-	PortraitUpsideDown		= 1 << 1,
-	LandscapeLeft			= 1 << 2,
-	LandscapeRight			= 1 << 3,
-	PortraitAll				= (Portrait | PortraitUpsideDown),
-	LandscapeAll			= (LandscapeLeft | LandscapeRight),
-	All						= (PortraitAll | LandscapeAll)
-};
-
-//! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
-typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t> >		EventSignalSupportedOrientations;
-
 class AppCocoaTouch : public AppBase {
   public:
 	class Settings : public AppBase::Settings {

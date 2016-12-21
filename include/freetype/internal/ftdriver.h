@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType font driver interface (specification).                      */
 /*                                                                         */
-/*  Copyright 1996-2003, 2006, 2008, 2011-2012 by                          */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#ifndef __FTDRIVER_H__
-#define __FTDRIVER_H__
+#ifndef FTDRIVER_H_
+#define FTDRIVER_H_
 
 
 #include <ft2build.h>
@@ -60,36 +60,11 @@ FT_BEGIN_HEADER
   (*FT_Size_SelectFunc)( FT_Size   size,
                          FT_ULong  size_index );
 
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-
-  typedef FT_Error
-  (*FT_Size_ResetPointsFunc)( FT_Size     size,
-                              FT_F26Dot6  char_width,
-                              FT_F26Dot6  char_height,
-                              FT_UInt     horz_resolution,
-                              FT_UInt     vert_resolution );
-
-  typedef FT_Error
-  (*FT_Size_ResetPixelsFunc)( FT_Size  size,
-                              FT_UInt  pixel_width,
-                              FT_UInt  pixel_height );
-
-#endif /* FT_CONFIG_OPTION_OLD_INTERNALS */
-
   typedef FT_Error
   (*FT_Slot_LoadFunc)( FT_GlyphSlot  slot,
                        FT_Size       size,
                        FT_UInt       glyph_index,
                        FT_Int32      load_flags );
-
-
-  typedef FT_UInt
-  (*FT_CharMap_CharIndexFunc)( FT_CharMap  charmap,
-                               FT_Long     charcode );
-
-  typedef FT_Long
-  (*FT_CharMap_CharNextFunc)( FT_CharMap  charmap,
-                              FT_Long     charcode );
 
 
   typedef FT_Error
@@ -196,13 +171,6 @@ FT_BEGIN_HEADER
     FT_Slot_InitFunc         init_slot;
     FT_Slot_DoneFunc         done_slot;
 
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-
-    FT_Size_ResetPointsFunc  set_char_sizes;
-    FT_Size_ResetPixelsFunc  set_pixel_sizes;
-
-#endif /* FT_CONFIG_OPTION_OLD_INTERNALS */
-
     FT_Slot_LoadFunc         load_glyph;
 
     FT_Face_GetKerningFunc   get_kerning;
@@ -214,30 +182,6 @@ FT_BEGIN_HEADER
     FT_Size_SelectFunc       select_size;
 
   } FT_Driver_ClassRec, *FT_Driver_Class;
-
-
-  /*
-   *  The following functions are used as stubs for `set_char_sizes' and
-   *  `set_pixel_sizes'; the code uses `request_size' and `select_size'
-   *  functions instead.
-   *
-   *  Implementation is in `src/base/ftobjs.c'.
-   */
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-
-  FT_BASE( FT_Error )
-  ft_stub_set_char_sizes( FT_Size     size,
-                          FT_F26Dot6  width,
-                          FT_F26Dot6  height,
-                          FT_UInt     horz_res,
-                          FT_UInt     vert_res );
-
-  FT_BASE( FT_Error )
-  ft_stub_set_pixel_sizes( FT_Size  size,
-                           FT_UInt  width,
-                           FT_UInt  height );
-
-#endif /* FT_CONFIG_OPTION_OLD_INTERNALS */
 
 
   /*************************************************************************/
@@ -260,7 +204,7 @@ FT_BEGIN_HEADER
   /*    And when it is no longer needed a `destroy' function needs to be   */
   /*    called to release that allocation.                                 */
   /*                                                                       */
-  /*    `fcinit.c' (ft_create_default_module_classes) already contains a   */
+  /*    `ftinit.c' (ft_create_default_module_classes) already contains a   */
   /*    mechanism to call these functions for the default modules          */
   /*    described in `ftmodule.h'.                                         */
   /*                                                                       */
@@ -279,93 +223,73 @@ FT_BEGIN_HEADER
   /*                                                                       */
 #ifndef FT_CONFIG_OPTION_PIC
 
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-#define FT_DEFINE_DRIVERS_OLD_INTERNALS( a_, b_ ) \
-          a_, b_,
-#else
-#define FT_DEFINE_DRIVERS_OLD_INTERNALS( a_, b_ )  /* empty */
-#endif
-
 #define FT_DECLARE_DRIVER( class_ )  \
-  FT_CALLBACK_TABLE                   \
+  FT_CALLBACK_TABLE                  \
   const FT_Driver_ClassRec  class_;
 
-#define FT_DEFINE_DRIVER(                                    \
-          class_,                                            \
-          flags_,                                            \
-          size_,                                             \
-          name_,                                             \
-          version_,                                          \
-          requires_,                                         \
-          interface_,                                        \
-          init_,                                             \
-          done_,                                             \
-          get_interface_,                                    \
-          face_object_size_,                                 \
-          size_object_size_,                                 \
-          slot_object_size_,                                 \
-          init_face_,                                        \
-          done_face_,                                        \
-          init_size_,                                        \
-          done_size_,                                        \
-          init_slot_,                                        \
-          done_slot_,                                        \
-          old_set_char_sizes_,                               \
-          old_set_pixel_sizes_,                              \
-          load_glyph_,                                       \
-          get_kerning_,                                      \
-          attach_file_,                                      \
-          get_advances_,                                     \
-          request_size_,                                     \
-          select_size_ )                                     \
-  FT_CALLBACK_TABLE_DEF                                      \
-  const FT_Driver_ClassRec  class_ =                         \
-  {                                                          \
-    FT_DEFINE_ROOT_MODULE( flags_,                           \
-                           size_,                            \
-                           name_,                            \
-                           version_,                         \
-                           requires_,                        \
-                           interface_,                       \
-                           init_,                            \
-                           done_,                            \
-                           get_interface_ )                  \
-                                                             \
-    face_object_size_,                                       \
-    size_object_size_,                                       \
-    slot_object_size_,                                       \
-                                                             \
-    init_face_,                                              \
-    done_face_,                                              \
-                                                             \
-    init_size_,                                              \
-    done_size_,                                              \
-                                                             \
-    init_slot_,                                              \
-    done_slot_,                                              \
-                                                             \
-    FT_DEFINE_DRIVERS_OLD_INTERNALS( old_set_char_sizes_,    \
-                                     old_set_pixel_sizes_ )  \
-                                                             \
-    load_glyph_,                                             \
-                                                             \
-    get_kerning_,                                            \
-    attach_file_,                                            \
-    get_advances_,                                           \
-                                                             \
-    request_size_,                                           \
-    select_size_                                             \
+#define FT_DEFINE_DRIVER(                    \
+          class_,                            \
+          flags_,                            \
+          size_,                             \
+          name_,                             \
+          version_,                          \
+          requires_,                         \
+          interface_,                        \
+          init_,                             \
+          done_,                             \
+          get_interface_,                    \
+          face_object_size_,                 \
+          size_object_size_,                 \
+          slot_object_size_,                 \
+          init_face_,                        \
+          done_face_,                        \
+          init_size_,                        \
+          done_size_,                        \
+          init_slot_,                        \
+          done_slot_,                        \
+          load_glyph_,                       \
+          get_kerning_,                      \
+          attach_file_,                      \
+          get_advances_,                     \
+          request_size_,                     \
+          select_size_ )                     \
+  FT_CALLBACK_TABLE_DEF                      \
+  const FT_Driver_ClassRec  class_ =         \
+  {                                          \
+    FT_DEFINE_ROOT_MODULE( flags_,           \
+                           size_,            \
+                           name_,            \
+                           version_,         \
+                           requires_,        \
+                           interface_,       \
+                           init_,            \
+                           done_,            \
+                           get_interface_ )  \
+                                             \
+    face_object_size_,                       \
+    size_object_size_,                       \
+    slot_object_size_,                       \
+                                             \
+    init_face_,                              \
+    done_face_,                              \
+                                             \
+    init_size_,                              \
+    done_size_,                              \
+                                             \
+    init_slot_,                              \
+    done_slot_,                              \
+                                             \
+    load_glyph_,                             \
+                                             \
+    get_kerning_,                            \
+    attach_file_,                            \
+    get_advances_,                           \
+                                             \
+    request_size_,                           \
+    select_size_                             \
   };
 
 #else /* FT_CONFIG_OPTION_PIC */
-
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-#define FT_DEFINE_DRIVERS_OLD_INTERNALS( a_, b_ )  \
-          clazz->set_char_sizes  = a_;             \
-          clazz->set_pixel_sizes = b_;
-#else
-#define FT_DEFINE_DRIVERS_OLD_INTERNALS( a_, b_ )  /* empty */
-#endif
 
 #define FT_DECLARE_DRIVER( class_ )  FT_DECLARE_MODULE( class_ )
 
@@ -389,8 +313,6 @@ FT_BEGIN_HEADER
           done_size_,                                            \
           init_slot_,                                            \
           done_slot_,                                            \
-          old_set_char_sizes_,                                   \
-          old_set_pixel_sizes_,                                  \
           load_glyph_,                                           \
           get_kerning_,                                          \
           attach_file_,                                          \
@@ -453,9 +375,6 @@ FT_BEGIN_HEADER
     clazz->init_slot        = init_slot_;                        \
     clazz->done_slot        = done_slot_;                        \
                                                                  \
-    FT_DEFINE_DRIVERS_OLD_INTERNALS( old_set_char_sizes_,        \
-                                     old_set_pixel_sizes_ )      \
-                                                                 \
     clazz->load_glyph       = load_glyph_;                       \
                                                                  \
     clazz->get_kerning      = get_kerning_;                      \
@@ -475,7 +394,7 @@ FT_BEGIN_HEADER
 
 FT_END_HEADER
 
-#endif /* __FTDRIVER_H__ */
+#endif /* FTDRIVER_H_ */
 
 
 /* END */

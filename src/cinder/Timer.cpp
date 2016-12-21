@@ -24,24 +24,39 @@
 
 #include "cinder/Timer.h"
 
-#if (defined( CINDER_MSW ) || defined( CINDER_WINRT))
+#if defined( CINDER_MSW )
 	#include <windows.h>
 #elif defined( CINDER_COCOA )
 	#include <CoreFoundation/CoreFoundation.h>
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+ 	#include <sys/time.h>
+ 	#include <time.h>
 #endif
 
 namespace cinder {
+
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+static double LinuxGetElapsedSeconds() 
+{
+	struct timespec now;
+	::clock_gettime(CLOCK_MONOTONIC, &now);
+	return (double)((now.tv_sec * 1000000000LL) + now.tv_nsec)/1000000000.0;
+} 
+#endif
+
 
 Timer::Timer()
 	: mIsStopped( true )
 {
 #if defined( CINDER_COCOA )
 	mEndTime = mStartTime = -1;
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT))
+#elif defined( CINDER_MSW )
 	::LARGE_INTEGER nativeFreq;
 	::QueryPerformanceFrequency( &nativeFreq );
 	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mEndTime = mStartTime = -1;
 #endif
 }
 
@@ -50,11 +65,13 @@ Timer::Timer( bool startOnConstruction )
 {
 #if defined( CINDER_COCOA )
 		mEndTime = mStartTime = -1;
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT))
+#elif defined( CINDER_MSW )
 	::LARGE_INTEGER nativeFreq;
 	::QueryPerformanceFrequency( &nativeFreq );
 	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mEndTime = mStartTime = -1;	
 #endif
 	if( startOnConstruction ) {
 		start();
@@ -65,10 +82,12 @@ void Timer::start( double offsetSeconds )
 {	
 #if defined( CINDER_COCOA )
 	mStartTime = ::CFAbsoluteTimeGetCurrent() - offsetSeconds;
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT))
+#elif defined( CINDER_MSW )
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
 	mStartTime = rawTime.QuadPart * mInvNativeFreq - offsetSeconds;
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mStartTime = LinuxGetElapsedSeconds();
 #endif
 
 	mIsStopped = false;
@@ -81,10 +100,12 @@ double Timer::getSeconds() const
 	else {
 #if defined( CINDER_COCOA )
 		return ::CFAbsoluteTimeGetCurrent() - mStartTime;
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
+#elif defined( CINDER_MSW )
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
 	return (rawTime.QuadPart * mInvNativeFreq) - mStartTime;
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	return LinuxGetElapsedSeconds() - mStartTime;
 #endif
 	}
 }
@@ -94,10 +115,12 @@ void Timer::stop()
 	if( ! mIsStopped ) {
 #if defined( CINDER_COCOA )
 		mEndTime = ::CFAbsoluteTimeGetCurrent();
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT))
+#elif defined( CINDER_MSW )
 		::LARGE_INTEGER rawTime;
 		::QueryPerformanceCounter( &rawTime );
 		mEndTime = rawTime.QuadPart * mInvNativeFreq;
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+		mEndTime = LinuxGetElapsedSeconds();
 #endif
 		mIsStopped = true;
 	}

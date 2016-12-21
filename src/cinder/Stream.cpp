@@ -35,7 +35,7 @@ using std::string;
 
 namespace cinder {
 
-#if defined ( CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#pragma warning(push) 
 	#pragma warning(disable:4996) 
 #endif
@@ -257,9 +257,140 @@ bool IStreamFile::isEof() const
 void IStreamFile::IORead( void *t, size_t size )
 {
 	size_t bytesRead = readDataImpl( t, size );
-	if( bytesRead != size )
+	if( bytesRead != size ) {
+#if defined( CINDER_ANDROID )
+		throw StreamExc( "(IStreamFile::IORead num bytes read different from requested size" );
+#else		
 		throw StreamExc();
+#endif	
+	}
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+// IStreamAndroidAsset
+#if defined( CINDER_ANDROID )
+
+#define afs_fopen     cinder::app::android::AssetFileSystem_fopen
+#define afs_fclose    cinder::app::android::AssetFileSystem_fclose
+#define afs_fseek     cinder::app::android::AssetFileSystem_fseek
+#define afs_ftell     cinder::app::android::AssetFileSystem_ftell
+#define afs_fread     cinder::app::android::AssetFileSystem_fread
+#define afs_feof      cinder::app::android::AssetFileSystem_feof
+#define afs_flength   cinder::app::android::AssetFileSystem_flength
+
+IStreamAndroidAssetRef IStreamAndroidAsset::create( AAsset *asset, bool ownsFile, int32_t defaultBufferSize )
+{
+	return IStreamAndroidAssetRef( new IStreamAndroidAsset( asset, ownsFile, defaultBufferSize ) );
+}
+
+IStreamAndroidAsset::IStreamAndroidAsset( AAsset *asset, bool aOwnsFile, int32_t aDefaultBufferSize )
+	: IStreamCinder(), mAsset( asset ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
+{
+	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], std::default_delete<uint8_t[]>() );
+	mBufferFileOffset = std::numeric_limits<off_t>::min();
+	mBufferOffset = 0;
+	mBufferSize = 0;
+}
+
+IStreamAndroidAsset::~IStreamAndroidAsset()
+{
+	if( mOwnsFile ) {
+		afs_fclose( mAsset );
+	}
+}
+
+size_t IStreamAndroidAsset::readDataAvailable( void *dest, size_t maxSize )
+{
+	return readDataImpl( dest, maxSize );
+}
+
+size_t IStreamAndroidAsset::readDataImpl( void *t, size_t size )
+{
+	if( ( mBufferOffset >= mBufferFileOffset ) && ( mBufferOffset + static_cast<int32_t>( size ) < mBufferFileOffset + (off_t)mBufferSize ) ) { // entirely inside the buffer
+		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), size );
+		mBufferOffset += size;
+		return size;
+	}
+	else if ( ( mBufferFileOffset < mBufferOffset ) && ( mBufferOffset < mBufferFileOffset + (off_t)mBufferSize ) ) { // partially inside
+		size_t amountInBuffer = ( mBufferFileOffset + mBufferSize ) - mBufferOffset;
+		memcpy( t, mBuffer.get() + ( mBufferOffset - mBufferFileOffset ), amountInBuffer );
+		mBufferOffset += amountInBuffer;
+		return amountInBuffer + readDataImpl( reinterpret_cast<uint8_t*>( t ) + amountInBuffer, size - amountInBuffer );
+	}
+	else if( size > mDefaultBufferSize ) { // entirely outside of buffer, and too big to buffer anyway
+		afs_fseek( mAsset, static_cast<long>( mBufferOffset ), SEEK_SET );
+		size_t bytesRead = afs_fread( t, 1, size, mAsset );
+		mBufferOffset += bytesRead;
+		return bytesRead;
+	}
+	else { // outside the current buffer, but not too big
+		afs_fseek( mAsset, static_cast<long>( mBufferOffset ), SEEK_SET );
+		mBufferFileOffset = mBufferOffset;
+		mBufferSize = afs_fread( mBuffer.get(), 1, mDefaultBufferSize, mAsset );
+		memcpy( t, mBuffer.get(), size );
+		mBufferOffset = mBufferFileOffset + size;
+		return size;
+	}
+}
+
+void IStreamAndroidAsset::seekAbsolute( off_t absoluteOffset )
+{
+	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
+	absoluteOffset = std::abs( absoluteOffset );
+	if( afs_fseek( mAsset, static_cast<long>( absoluteOffset ), dir ) < 0 ) {
+		throw StreamExc( "AAsset_seek failed" );
+	}
+	mBufferOffset = absoluteOffset;
+}
+
+void IStreamAndroidAsset::seekRelative( off_t relativeOffset )
+{
+	if( afs_fseek( mAsset, static_cast<long>( mBufferOffset + relativeOffset ), SEEK_SET ) < 0 ) {
+		throw StreamExc( "AAsset_seek failed" );
+	}
+	mBufferOffset = afs_ftell( mAsset );
+}
+
+off_t IStreamAndroidAsset::tell() const
+{
+	return mBufferOffset;
+}
+
+off_t IStreamAndroidAsset::size() const
+{
+	if ( ! mSizeCached ) {
+		mSize = afs_flength( mAsset );
+		mSizeCached = true;
+	}
+	
+	return mSize;
+}
+
+bool IStreamAndroidAsset::isEof() const
+{
+	bool result = ( ( mBufferOffset >= mBufferFileOffset + (off_t)mBufferSize ) && ( 0 != afs_feof( mAsset ) ) );
+	return result;
+}
+
+void IStreamAndroidAsset::IORead( void *t, size_t size )
+{
+	size_t bytesRead = readDataImpl( t, size );
+	if( bytesRead != size ) {
+		throw StreamExc();
+	}
+}
+
+#undef afs_fopen
+#undef afs_fclose
+#undef afs_fseek
+#undef afs_ftell
+#undef afs_fread
+#undef afs_feof
+#undef afs_flength
+
+#endif // defined( CINDER_ANDROID )
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // OStreamFile
@@ -532,6 +663,13 @@ IStreamFileRef loadFileStream( const fs::path &path )
 #else
 	FILE *f = fopen( path.string().c_str(), "rb" );
 #endif
+
+#if defined( CINDER_ANDROID )
+	if( nullptr == f ) {
+		throw StreamExc( "(loadFileStream) couldn't open: " + path.string() );
+	}
+#endif	
+
 	if( f ) {
 		IStreamFileRef s = IStreamFile::create( f, true );
 		s->setFileName( path );
@@ -628,6 +766,30 @@ BufferRef loadStreamBuffer( IStreamRef is )
 	}
 }
 
+#if defined( CINDER_ANDROID )
+IStreamAndroidAssetRef loadAndroidAssetStream( const fs::path &path )
+{
+	AAsset *f = ci::app::android::AssetFileSystem_fopen( path.string().c_str(), "rb" );
+
+	if( f ) {
+		IStreamAndroidAssetRef s = IStreamAndroidAsset::create( f, true );
+		s->setFileName( path );
+		return s;
+	}
+	else
+		return IStreamAndroidAssetRef();
+}
+#endif // defined( CINDER_ANDROID )
+
+StreamExc::StreamExc( const std::string &fontName ) throw()
+{
+#if defined( CINDER_MSW )
+	sprintf_s( mMessage, "%s", fontName.c_str() );
+#else
+	sprintf( mMessage, "%s", fontName.c_str() );
+#endif
+}
+
 /////////////////////////////////////////////////////////////////////
 
 #define STREAM_PROTOTYPES(r,data,T)\
@@ -642,7 +804,7 @@ BufferRef loadStreamBuffer( IStreamRef is )
 
 BOOST_PP_SEQ_FOR_EACH( STREAM_PROTOTYPES, ~, (int8_t)(uint8_t)(int16_t)(uint16_t)(int32_t)(uint32_t)(float)(double) )
 
-#if defined (CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#pragma warning(pop) 
 #endif
 

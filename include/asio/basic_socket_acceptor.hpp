@@ -2,7 +2,7 @@
 // basic_socket_acceptor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -56,10 +56,6 @@ class basic_socket_acceptor
     public socket_base
 {
 public:
-  /// (Deprecated: Use native_handle_type.) The native representation of an
-  /// acceptor.
-  typedef typename SocketAcceptorService::native_handle_type native_type;
-
   /// The native representation of an acceptor.
   typedef typename SocketAcceptorService::native_handle_type native_handle_type;
 
@@ -231,7 +227,8 @@ public:
   basic_socket_acceptor(
       basic_socket_acceptor<Protocol1, SocketAcceptorService1>&& other,
       typename enable_if<is_convertible<Protocol1, Protocol>::value>::type* = 0)
-    : basic_io_object<SocketAcceptorService>(other.get_io_service())
+    : basic_io_object<SocketAcceptorService>(
+        other.get_service().get_io_service())
   {
     this->get_service().template converting_move_construct<Protocol1>(
         this->get_implementation(), other.get_implementation());
@@ -491,17 +488,6 @@ public:
   asio::error_code close(asio::error_code& ec)
   {
     return this->get_service().close(this->get_implementation(), ec);
-  }
-
-  /// (Deprecated: Use native_handle().) Get the native acceptor representation.
-  /**
-   * This function may be used to obtain the underlying representation of the
-   * acceptor. This is intended to allow access to native acceptor functionality
-   * that is not otherwise provided.
-   */
-  native_type native()
-  {
-    return this->get_service().native_handle(this->get_implementation());
   }
 
   /// Get the native acceptor representation.
@@ -901,6 +887,104 @@ public:
   endpoint_type local_endpoint(asio::error_code& ec) const
   {
     return this->get_service().local_endpoint(this->get_implementation(), ec);
+  }
+
+  /// Wait for the acceptor to become ready to read, ready to write, or to have
+  /// pending error conditions.
+  /**
+   * This function is used to perform a blocking wait for an acceptor to enter
+   * a ready to read, write or error condition state.
+   *
+   * @param w Specifies the desired acceptor state.
+   *
+   * @par Example
+   * Waiting for an acceptor to become readable.
+   * @code
+   * asio::ip::tcp::acceptor acceptor(io_service);
+   * ...
+   * acceptor.wait(asio::ip::tcp::acceptor::wait_read);
+   * @endcode
+   */
+  void wait(wait_type w)
+  {
+    asio::error_code ec;
+    this->get_service().wait(this->get_implementation(), w, ec);
+    asio::detail::throw_error(ec, "wait");
+  }
+
+  /// Wait for the acceptor to become ready to read, ready to write, or to have
+  /// pending error conditions.
+  /**
+   * This function is used to perform a blocking wait for an acceptor to enter
+   * a ready to read, write or error condition state.
+   *
+   * @param w Specifies the desired acceptor state.
+   *
+   * @param ec Set to indicate what error occurred, if any.
+   *
+   * @par Example
+   * Waiting for an acceptor to become readable.
+   * @code
+   * asio::ip::tcp::acceptor acceptor(io_service);
+   * ...
+   * asio::error_code ec;
+   * acceptor.wait(asio::ip::tcp::acceptor::wait_read, ec);
+   * @endcode
+   */
+  asio::error_code wait(wait_type w, asio::error_code& ec)
+  {
+    return this->get_service().wait(this->get_implementation(), w, ec);
+  }
+
+  /// Asynchronously wait for the acceptor to become ready to read, ready to
+  /// write, or to have pending error conditions.
+  /**
+   * This function is used to perform an asynchronous wait for an acceptor to
+   * enter a ready to read, write or error condition state.
+   *
+   * @param w Specifies the desired acceptor state.
+   *
+   * @param handler The handler to be called when the wait operation completes.
+   * Copies will be made of the handler as required. The function signature of
+   * the handler must be:
+   * @code void handler(
+   *   const asio::error_code& error // Result of operation
+   * ); @endcode
+   * Regardless of whether the asynchronous operation completes immediately or
+   * not, the handler will not be invoked from within this function. Invocation
+   * of the handler will be performed in a manner equivalent to using
+   * asio::io_service::post().
+   *
+   * @par Example
+   * @code
+   * void wait_handler(const asio::error_code& error)
+   * {
+   *   if (!error)
+   *   {
+   *     // Wait succeeded.
+   *   }
+   * }
+   *
+   * ...
+   *
+   * asio::ip::tcp::acceptor acceptor(io_service);
+   * ...
+   * acceptor.async_wait(
+   *     asio::ip::tcp::acceptor::wait_read,
+   *     wait_handler);
+   * @endcode
+   */
+  template <typename WaitHandler>
+  ASIO_INITFN_RESULT_TYPE(WaitHandler,
+      void (asio::error_code))
+  async_wait(wait_type w, ASIO_MOVE_ARG(WaitHandler) handler)
+  {
+    // If you get an error on the following line it means that your handler does
+    // not meet the documented type requirements for a WaitHandler.
+    ASIO_WAIT_HANDLER_CHECK(WaitHandler, handler) type_check;
+
+    return this->get_service().async_wait(this->get_implementation(),
+        w, ASIO_MOVE_CAST(WaitHandler)(handler));
   }
 
   /// Accept a new connection.

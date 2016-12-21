@@ -2,7 +2,7 @@
 // error.hpp
 // ~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -145,6 +145,11 @@ enum basic_errors
 
   /// Protocol not available.
   no_protocol_option = ASIO_SOCKET_ERROR(ENOPROTOOPT),
+
+  /// No such device.
+  no_such_device = ASIO_WIN_OR_POSIX(
+      ASIO_NATIVE_ERROR(ERROR_BAD_UNIT),
+      ASIO_NATIVE_ERROR(ENODEV)),
 
   /// Transport endpoint is not connected.
   not_connected = ASIO_SOCKET_ERROR(ENOTCONN),
@@ -314,6 +319,22 @@ inline asio::error_code make_error_code(misc_errors e)
 }
 
 } // namespace error
+namespace stream_errc {
+  // Simulates the proposed stream_errc scoped enum.
+  using error::eof;
+  using error::not_found;
+} // namespace stream_errc
+namespace socket_errc {
+  // Simulates the proposed socket_errc scoped enum.
+  using error::already_open;
+  using error::not_found;
+} // namespace socket_errc
+namespace resolver_errc {
+  // Simulates the proposed resolver_errc scoped enum.
+  using error::host_not_found;
+  using error::host_not_found_try_again;
+  using error::service_not_found;
+} // namespace resolver_errc
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

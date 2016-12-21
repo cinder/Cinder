@@ -24,16 +24,16 @@
 
 #include "cinder/Surface.h"
 
-#if defined( CINDER_WINRT )
-#include <ppltasks.h>
-#include "cinder/winrt/WinRTUtils.h"
-#include "cinder/Utilities.h"
-#include "cinder/msw/CinderMsw.h"
-using namespace Windows::Storage;
-using namespace Concurrency;
-#undef max
-using namespace Windows::Storage;
-using namespace Concurrency;
+#if defined( CINDER_UWP )
+	#include <ppltasks.h>
+	#include "cinder/winrt/WinRTUtils.h"
+	#include "cinder/Utilities.h"
+	#include "cinder/msw/CinderMsw.h"
+	using namespace Windows::Storage;
+	using namespace Concurrency;
+	#undef max
+	using namespace Windows::Storage;
+	using namespace Concurrency;
 #endif
 
 #include "cinder/ChanTraits.h"
@@ -43,7 +43,6 @@ using namespace Concurrency;
 #include <boost/preprocessor/seq.hpp>
 #include <boost/type_traits/is_same.hpp>
 using boost::tribool;
-
 
 
 namespace cinder {
@@ -269,7 +268,7 @@ SurfaceT<T>::SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &con
 	init( imageSource, constraints, alpha );
 }
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 
 template<typename T>
 void SurfaceT<T>::loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate )

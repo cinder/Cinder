@@ -414,12 +414,34 @@ class Context {
 	void		drawArrays( GLenum mode, GLint first, GLsizei count );
 	//! Analogous to glDrawElements()
 	void		drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
+
+#if defined( CINDER_GL_HAS_MULTI_DRAW )
+	//! Analogous to glMultiDrawArrays()
+	void		multiDrawArrays( GLenum mode, GLint *first, GLsizei *count, GLsizei primcount );
+	//! Analogous to glMultiDrawElements()
+	void		multiDrawElements( GLenum mode, GLsizei *count, GLenum type, const GLvoid * const *indices, GLsizei primcount );
+#endif // defined( CINDER_GL_HAS_MULTI_DRAW )
+
 #if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 	//! Analogous to glDrawArraysInstanced()
 	void		drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount );
 	//! Analogous to glDrawElementsInstanced()
 	void		drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei primcount );
 #endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
+
+#if defined( CINDER_GL_HAS_DRAW_INDIRECT )
+	//! Analogous to glDrawArraysIndirect()
+	void		drawArraysIndirect( GLenum mode, const GLvoid *indirect );
+	//! Analogous to glDrawElementsIndirect()
+	void		drawElementsIndirect( GLenum mode, GLenum type, const GLvoid *indirect );
+#endif // defined( CINDER_GL_HAS_DRAW_INDIRECT )
+
+#if defined( CINDER_GL_HAS_MULTI_DRAW_INDIRECT )
+	//! Analogous to glMultiDrawArraysIndirect()
+	void		multiDrawArraysIndirect( GLenum mode, const GLvoid *indirect, GLsizei drawcount, GLsizei stride );
+	//! Analogous to glMultiDrawElementsIndirect()
+	void		multiDrawElementsIndirect( GLenum mode, GLenum type, const GLvoid *indirect, GLsizei drawcount, GLsizei stride );
+#endif // defined( CINDER_GL_HAS_MULTI_DRAW_INDIRECT )
 
 	//! Returns the current active color, used in immediate-mode emulation and as UNIFORM_COLOR
 	const ColorAf&		getCurrentColor() const { return mColor; }
@@ -442,7 +464,11 @@ class Context {
 	VertBatch&		immediate() { return *mImmediateMode; }
 
 #if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
-	static void	 __stdcall debugMessageCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, void *userParam );
+  #if defined( CINDER_MSW )
+	static void __stdcall 	debugMessageCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, void *userParam );
+  #else
+	static void 		debugMessageCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, void *userParam );
+#endif
 #endif
 
   protected:
@@ -476,10 +502,15 @@ class Context {
 	std::vector<GLint>					mBlendSrcRgbStack, mBlendDstRgbStack;
 	std::vector<GLint>					mBlendSrcAlphaStack, mBlendDstAlphaStack;
 
-#if defined( CINDER_GL_ES_2 ) && (! defined( CINDER_COCOA_TOUCH )) && (! defined( CINDER_GL_ANGLE ))
-	std::vector<GLint>			mFramebufferStack;
-#else
+// #if defined( CINDER_GL_ES_2 ) && (! defined( CINDER_COCOA_TOUCH )) && (! defined( CINDER_GL_ANGLE ))
+// 	std::vector<GLint>			mFramebufferStack;
+// #else
+// 	std::vector<GLint>			mReadFramebufferStack, mDrawFramebufferStack;
+// #endif
+#if defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	std::vector<GLint>			mReadFramebufferStack, mDrawFramebufferStack;
+#else
+	std::vector<GLint>			mFramebufferStack;
 #endif
 
 	std::vector<GLenum>			mCullFaceStack;

@@ -142,7 +142,7 @@ class SurfaceT {
 	static std::shared_ptr<SurfaceT<T>>	create( const SurfaceT<T> &surface )
 	{ return std::make_shared<SurfaceT<T>>( surface ); }
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 	/** \brief Constructs asynchronously a Surface from an images located at \a path. The loaded Surface is returned in \a surface.
 		If you are creating a Surface from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
 	**/

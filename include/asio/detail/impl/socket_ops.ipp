@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -524,13 +524,33 @@ void sync_connect(socket_type s, const socket_addr_type* addr,
 
 void complete_iocp_connect(socket_type s, asio::error_code& ec)
 {
+  // Map non-portable errors to their portable counterparts.
+  switch (ec.value())
+  {
+  case ERROR_CONNECTION_REFUSED:
+    ec = asio::error::connection_refused;
+    break;
+  case ERROR_NETWORK_UNREACHABLE:
+    ec = asio::error::network_unreachable;
+    break;
+  case ERROR_HOST_UNREACHABLE:
+    ec = asio::error::host_unreachable;
+    break;
+  case ERROR_SEM_TIMEOUT:
+    ec = asio::error::timed_out;
+    break;
+  default:
+    break;
+  }
+
   if (!ec)
   {
     // Need to set the SO_UPDATE_CONNECT_CONTEXT option so that getsockname
     // and getpeername will work on the connected socket.
     socket_ops::state_type state = 0;
+    const int so_update_connect_context = 0x7010;
     socket_ops::setsockopt(s, state, SOL_SOCKET,
-        SO_UPDATE_CONNECT_CONTEXT, 0, 0, ec);
+        so_update_connect_context, 0, 0, ec);
   }
 }
 
@@ -1357,7 +1377,7 @@ socket_type socket(int af, int type, int protocol,
 {
   clear_last_error();
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-  socket_type s = error_wrapper(::WSASocket(af, type, protocol, 0, 0,
+  socket_type s = error_wrapper(::WSASocketW(af, type, protocol, 0, 0,
         WSA_FLAG_OVERLAPPED), ec);
   if (s == invalid_socket)
     return s;
@@ -1843,6 +1863,47 @@ int poll_write(socket_type s, state_type state, asio::error_code& ec)
   return result;
 }
 
+int poll_error(socket_type s, state_type state, asio::error_code& ec)
+{
+  if (s == invalid_socket)
+  {
+    ec = asio::error::bad_descriptor;
+    return socket_error_retval;
+  }
+
+#if defined(ASIO_WINDOWS) \
+  || defined(__CYGWIN__) \
+  || defined(__SYMBIAN32__)
+  fd_set fds;
+  FD_ZERO(&fds);
+  FD_SET(s, &fds);
+  timeval zero_timeout;
+  zero_timeout.tv_sec = 0;
+  zero_timeout.tv_usec = 0;
+  timeval* timeout = (state & user_set_non_blocking) ? &zero_timeout : 0;
+  clear_last_error();
+  int result = error_wrapper(::select(s + 1, 0, 0, &fds, timeout), ec);
+#else // defined(ASIO_WINDOWS)
+      // || defined(__CYGWIN__)
+      // || defined(__SYMBIAN32__)
+  pollfd fds;
+  fds.fd = s;
+  fds.events = POLLPRI | POLLERR | POLLHUP;
+  fds.revents = 0;
+  int timeout = (state & user_set_non_blocking) ? 0 : -1;
+  clear_last_error();
+  int result = error_wrapper(::poll(&fds, 1, timeout), ec);
+#endif // defined(ASIO_WINDOWS)
+       // || defined(__CYGWIN__)
+       // || defined(__SYMBIAN32__)
+  if (result == 0)
+    ec = (state & user_set_non_blocking)
+      ? asio::error::would_block : asio::error_code();
+  else if (result > 0)
+    ec = asio::error_code();
+  return result;
+}
+
 int poll_connect(socket_type s, asio::error_code& ec)
 {
   if (s == invalid_socket)
@@ -1959,11 +2020,12 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
   }
 
   DWORD string_length = static_cast<DWORD>(length);
-#if defined(BOOST_NO_ANSI_APIS)
+#if defined(BOOST_NO_ANSI_APIS) || (defined(_MSC_VER) && (_MSC_VER >= 1800))
   LPWSTR string_buffer = (LPWSTR)_alloca(length * sizeof(WCHAR));
   int result = error_wrapper(::WSAAddressToStringW(&address.base,
         address_length, 0, string_buffer, &string_length), ec);
-  ::WideCharToMultiByte(CP_ACP, 0, string_buffer, -1, dest, length, 0, 0);
+  ::WideCharToMultiByte(CP_ACP, 0, string_buffer, -1,
+      dest, static_cast<int>(length), 0, 0);
 #else
   int result = error_wrapper(::WSAAddressToStringA(
         &address.base, address_length, 0, dest, &string_length), ec);
@@ -2166,8 +2228,8 @@ int inet_pton(int af, const char* src, void* dest,
     sockaddr_in6_type v6;
   } address;
   int address_length = sizeof(sockaddr_storage_type);
-#if defined(BOOST_NO_ANSI_APIS)
-  int num_wide_chars = strlen(src) + 1;
+#if defined(BOOST_NO_ANSI_APIS) || (defined(_MSC_VER) && (_MSC_VER >= 1800))
+  int num_wide_chars = static_cast<int>(strlen(src)) + 1;
   LPWSTR wide_buffer = (LPWSTR)_alloca(num_wide_chars * sizeof(WCHAR));
   ::MultiByteToWideChar(CP_ACP, 0, src, -1, wide_buffer, num_wide_chars);
   int result = error_wrapper(::WSAStringToAddressW(
@@ -2278,8 +2340,7 @@ int gethostname(char* name, int namelen, asio::error_code& ec)
 
 #if !defined(ASIO_WINDOWS_RUNTIME)
 
-#if defined(ASIO_WINDOWS) || defined(__CYGWIN__) \
-  || defined(__MACH__) && defined(__APPLE__)
+#if !defined(ASIO_HAS_GETADDRINFO)
 
 // The following functions are only needed for emulation of getaddrinfo and
 // getnameinfo.
@@ -3120,8 +3181,7 @@ inline asio::error_code getnameinfo_emulation(
   return ec;
 }
 
-#endif // defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-       //   || defined(__MACH__) && defined(__APPLE__)
+#endif // !defined(ASIO_HAS_GETADDRINFO)
 
 inline asio::error_code translate_addrinfo_error(int error)
 {
@@ -3170,7 +3230,7 @@ asio::error_code getaddrinfo(const char* host,
   service = (service && *service) ? service : 0;
   clear_last_error();
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-# if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501) || defined(UNDER_CE)
+# if defined(ASIO_HAS_GETADDRINFO)
   // Building for Windows XP, Windows Server 2003, or later.
   int error = ::getaddrinfo(host, service, &hints, result);
   return ec = translate_addrinfo_error(error);
@@ -3189,7 +3249,7 @@ asio::error_code getaddrinfo(const char* host,
   int error = getaddrinfo_emulation(host, service, &hints, result);
   return ec = translate_addrinfo_error(error);
 # endif
-#elif defined(__MACH__) && defined(__APPLE__)
+#elif !defined(ASIO_HAS_GETADDRINFO)
   int error = getaddrinfo_emulation(host, service, &hints, result);
   return ec = translate_addrinfo_error(error);
 #else
@@ -3213,7 +3273,7 @@ asio::error_code background_getaddrinfo(
 void freeaddrinfo(addrinfo_type* ai)
 {
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-# if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501) || defined(UNDER_CE)
+# if defined(ASIO_HAS_GETADDRINFO)
   // Building for Windows XP, Windows Server 2003, or later.
   ::freeaddrinfo(ai);
 # else
@@ -3229,7 +3289,7 @@ void freeaddrinfo(addrinfo_type* ai)
   }
   freeaddrinfo_emulation(ai);
 # endif
-#elif defined(__MACH__) && defined(__APPLE__)
+#elif !defined(ASIO_HAS_GETADDRINFO)
   freeaddrinfo_emulation(ai);
 #else
   ::freeaddrinfo(ai);
@@ -3241,7 +3301,7 @@ asio::error_code getnameinfo(const socket_addr_type* addr,
     char* serv, std::size_t servlen, int flags, asio::error_code& ec)
 {
 #if defined(ASIO_WINDOWS) || defined(__CYGWIN__)
-# if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501) || defined(UNDER_CE)
+# if defined(ASIO_HAS_GETADDRINFO)
   // Building for Windows XP, Windows Server 2003, or later.
   clear_last_error();
   int error = ::getnameinfo(addr, static_cast<socklen_t>(addrlen),
@@ -3267,7 +3327,7 @@ asio::error_code getnameinfo(const socket_addr_type* addr,
   return getnameinfo_emulation(addr, addrlen,
       host, hostlen, serv, servlen, flags, ec);
 # endif
-#elif defined(__MACH__) && defined(__APPLE__)
+#elif !defined(ASIO_HAS_GETADDRINFO)
   using namespace std; // For memcpy.
   sockaddr_storage_type tmp_addr;
   memcpy(&tmp_addr, addr, addrlen);

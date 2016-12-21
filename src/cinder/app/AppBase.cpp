@@ -23,10 +23,50 @@
 */
 
 #include "cinder/Cinder.h"
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#define ASIO_WINDOWS_RUNTIME 1
 #endif
-#include "asio/asio.hpp"
+
+#if defined( __ANDROID__ ) && defined( __clang__ )
+ 	#if defined( __GNUC__ )
+ 		#define SAVED__GNUC__ __GNUC__
+ 		#undef __GNUC__
+ 	#endif
+
+ 	#if defined( __GNUC_MINOR__ )
+ 		#define SAVED__GNUC_MINOR__ __GNUC_MINOR__
+ 		#undef __GNUC_MINOR__
+ 	#endif
+
+ 	#define __GNUC__ 		4
+ 	#define __GNUC_MINOR__	9
+	#include "asio/asio.hpp"
+
+ 	#if defined( SAVED__GNUC__ )
+ 		#undef  __GNUC__
+ 		#define __GNUC__ SAVED__GNUC__
+ 		#undef  SAVED__GNUC__
+ 	#else
+		#undef __GNUC__
+ 	#endif 
+
+ 	#if defined( SAVED__GNUC_MINOR__ )
+ 		#undef  __GNUC_MINOR__
+ 		#define __GNUC_MINOR__ SAVED__GNUC_MINOR__
+ 		#undef  SAVED__GNUC_MINOR__
+ 	#else
+		#undef __GNUC_MINOR__
+ 	#endif
+#else
+  #if defined( linux ) || defined( __linux ) || defined( __linux__ )
+    #define CINDER_ASIO_CLANG_BUILTIN_OFFSETOF
+  #endif
+ 	#if defined( __ANDROID__ )
+ 		#include "cinder/android/libc_helper.h"
+ 	#endif
+	#define NOMINMAX
+	#include "asio/asio.hpp"
+#endif
 
 #include "cinder/app/AppBase.h"
 #include "cinder/app/Renderer.h"
@@ -39,6 +79,12 @@
 
 using namespace std;
 
+
+#if defined( CINDER_ANDROID )
+#include "cinder/android/AndroidDevLog.h"
+using namespace ci::android;
+#endif
+
 namespace cinder { namespace app {
 
 AppBase*					AppBase::sInstance = nullptr;			// Static instance of App, effectively a singleton
@@ -48,9 +94,15 @@ static std::thread::id		sPrimaryThreadId = std::this_thread::get_id();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AppBase::Settings
 
+#if defined( CINDER_ANDROID )
 AppBase::Settings::Settings()
 	: mShouldQuit( false ), mQuitOnLastWindowClose( true ), mPowerManagementEnabled( false ),
-		mFrameRate( 60 ), mFrameRateEnabled( true ), mHighDensityDisplayEnabled( false ), mMultiTouchEnabled( false )
+	  mFrameRate( 60 ), mFrameRateEnabled( true ), mHighDensityDisplayEnabled( false ), mMultiTouchEnabled( true )
+#else
+AppBase::Settings::Settings()
+	: mShouldQuit( false ), mQuitOnLastWindowClose( true ), mPowerManagementEnabled( false ),
+	  mFrameRate( 60 ), mFrameRateEnabled( true ), mHighDensityDisplayEnabled( false ), mMultiTouchEnabled( false )
+#endif		
 {
 }
 
@@ -89,7 +141,7 @@ void AppBase::Settings::setShouldQuit( bool shouldQuit )
 
 AppBase::AppBase()
 	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() ),
-		mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 )
+		mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 ), mLaunchCalled( false ), mQuitRequested( false )
 {
 	sInstance = this;
 
@@ -103,7 +155,7 @@ AppBase::AppBase()
 
 	// due to an issue with boost::filesystem's static initialization on Windows, 
 	// it's necessary to create a fs::path here in case of secondary threads doing the same thing simultaneously
-#if (defined( CINDER_MSW ) || defined ( CINDER_WINRT ))
+#if defined( CINDER_MSW )
 	fs::path dummyPath( "dummy" );
 #endif
 }
@@ -116,7 +168,7 @@ AppBase::~AppBase()
 // These are called by application instantiation main functions
 // static
 void AppBase::prepareLaunch()
-{
+{	
 	Platform::get()->prepareLaunch();
 }
 
@@ -131,6 +183,10 @@ void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer
 void AppBase::executeLaunch()
 {
 	try {
+		// a quit() was called from the app constructor; don't launch
+		if( mQuitRequested )
+			return;
+		mLaunchCalled = true;
 		launch();
 	}
 	catch( std::exception &exc ) {
@@ -143,6 +199,12 @@ void AppBase::executeLaunch()
 void AppBase::cleanupLaunch()
 {
 	Platform::get()->cleanupLaunch();
+
+#if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	// This will delete Platform::sInstance if it's not null. 
+	// Afterwards Platform::sInstance will be set to null.
+	Platform::set( nullptr );
+#endif 	
 }
 
 void AppBase::privateSetup__()

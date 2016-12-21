@@ -49,8 +49,10 @@ class ClothSimulationApp : public App {
 	float								mCurrentCamRotation;
 	uint32_t							mIterationsPerFrame, mIterationIndex;
 	bool								mDrawPoints, mDrawLines, mUpdate;
-	
+
+#if ! defined( CINDER_LINUX )	
 	ci::params::InterfaceGlRef			mParams;
+#endif
 };
 
 ClothSimulationApp::ClothSimulationApp()
@@ -252,7 +254,10 @@ void ClothSimulationApp::draw()
 		gl::ScopedBuffer scopeBuffer( mLineIndices );
 		gl::drawElements( GL_LINES, CONNECTIONS_TOTAL * 2, GL_UNSIGNED_INT, nullptr );
 	}
+
+#if ! defined( CINDER_LINUX )
 	mParams->draw();
+#endif
 }
 
 void ClothSimulationApp::mouseDown( MouseEvent event )
@@ -290,7 +295,8 @@ void ClothSimulationApp::setupParams()
 	static float restLength = 0.88;
 	static float dampingConst = 2.8;
 	static float springConstant = 7.1;
-	
+
+#if ! defined( CINDER_LINUX )	
 	mParams = params::InterfaceGl::create( "Cloth Simulation", ivec2( 250, 250 ) );
 	mParams->addText( "Update Params" );
 	mParams->addParam( "Update", &mUpdate );
@@ -337,6 +343,7 @@ void ClothSimulationApp::setupParams()
 	mParams->addParam( "Draw Lines", &mDrawLines );
 	mParams->addParam( "Draw Points", &mDrawPoints );
 	mParams->addText( "Right Mouse Button Rotates" );
+#endif
 }
 
 CINDER_APP( ClothSimulationApp, RendererGl(),

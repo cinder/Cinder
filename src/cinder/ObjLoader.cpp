@@ -28,6 +28,11 @@
 #include <sstream>
 using namespace std;
 
+// For stoi
+#if defined( CINDER_ANDROID )
+	#include "cinder/android/CinderAndroid.h"
+#endif
+
 namespace cinder {
 
 ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool includeNormals, bool includeTexCoords, bool optimize )

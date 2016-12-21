@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType module error offsets (specification).                       */
 /*                                                                         */
-/*  Copyright 2001, 2002, 2003, 2004, 2005, 2010 by                        */
+/*  Copyright 2001-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -18,23 +18,63 @@
 
   /*************************************************************************/
   /*                                                                       */
-  /* This file is used to define the FreeType module error offsets.        */
+  /* This file is used to define the FreeType module error codes.          */
   /*                                                                       */
-  /* The lower byte gives the error code, the higher byte gives the        */
-  /* module.  The base module has error offset 0.  For example, the error  */
-  /* `FT_Err_Invalid_File_Format' has value 0x003, the error               */
-  /* `TT_Err_Invalid_File_Format' has value 0x1103, the error              */
-  /* `T1_Err_Invalid_File_Format' has value 0x1203, etc.                   */
+  /* If the macro FT_CONFIG_OPTION_USE_MODULE_ERRORS in `ftoption.h' is    */
+  /* set, the lower byte of an error value identifies the error code as    */
+  /* usual.  In addition, the higher byte identifies the module.  For      */
+  /* example, the error `FT_Err_Invalid_File_Format' has value 0x0003, the */
+  /* error `TT_Err_Invalid_File_Format' has value 0x1303, the error        */
+  /* `T1_Err_Invalid_File_Format' has value 0x1403, etc.                   */
   /*                                                                       */
-  /* Undefine the macro FT_CONFIG_OPTION_USE_MODULE_ERRORS in ftoption.h   */
-  /* to make the higher byte always zero (disabling the module error       */
-  /* mechanism).                                                           */
+  /* Note that `FT_Err_Ok', `TT_Err_Ok', etc. are always equal to zero,    */
+  /* including the high byte.                                              */
+  /*                                                                       */
+  /* If FT_CONFIG_OPTION_USE_MODULE_ERRORS isn't set, the higher byte of   */
+  /* an error value is set to zero.                                        */
+  /*                                                                       */
+  /* To hide the various `XXX_Err_' prefixes in the source code, FreeType  */
+  /* provides some macros in `fttypes.h'.                                  */
+  /*                                                                       */
+  /*   FT_ERR( err )                                                       */
+  /*     Add current error module prefix (as defined with the              */
+  /*     `FT_ERR_PREFIX' macro) to `err'.  For example, in the BDF module  */
+  /*     the line                                                          */
+  /*                                                                       */
+  /*       error = FT_ERR( Invalid_Outline );                              */
+  /*                                                                       */
+  /*     expands to                                                        */
+  /*                                                                       */
+  /*       error = BDF_Err_Invalid_Outline;                                */
+  /*                                                                       */
+  /*     For simplicity, you can always use `FT_Err_Ok' directly instead   */
+  /*     of `FT_ERR( Ok )'.                                                */
+  /*                                                                       */
+  /*   FT_ERR_EQ( errcode, err )                                           */
+  /*   FT_ERR_NEQ( errcode, err )                                          */
+  /*     Compare error code `errcode' with the error `err' for equality    */
+  /*     and inequality, respectively.  Example:                           */
+  /*                                                                       */
+  /*       if ( FT_ERR_EQ( error, Invalid_Outline ) )                      */
+  /*         ...                                                           */
+  /*                                                                       */
+  /*     Using this macro you don't have to think about error prefixes.    */
+  /*     Of course, if module errors are not active, the above example is  */
+  /*     the same as                                                       */
+  /*                                                                       */
+  /*       if ( error == FT_Err_Invalid_Outline )                          */
+  /*         ...                                                           */
+  /*                                                                       */
+  /*   FT_ERROR_BASE( errcode )                                            */
+  /*   FT_ERROR_MODULE( errcode )                                          */
+  /*     Get base error and module error code, respectively.               */
+  /*                                                                       */
   /*                                                                       */
   /* It can also be used to create a module error message table easily     */
   /* with something like                                                   */
   /*                                                                       */
   /*   {                                                                   */
-  /*     #undef __FTMODERR_H__                                             */
+  /*     #undef FTMODERR_H_                                                */
   /*     #define FT_MODERRDEF( e, v, s )  { FT_Mod_Err_ ## e, s },         */
   /*     #define FT_MODERR_START_LIST     {                                */
   /*     #define FT_MODERR_END_LIST       { 0, 0 } };                      */
@@ -48,14 +88,11 @@
   /*     #include FT_MODULE_ERRORS_H                                       */
   /*   }                                                                   */
   /*                                                                       */
-  /* To use such a table, all errors must be ANDed with 0xFF00 to remove   */
-  /* the error code.                                                       */
-  /*                                                                       */
   /*************************************************************************/
 
 
-#ifndef __FTMODERR_H__
-#define __FTMODERR_H__
+#ifndef FTMODERR_H_
+#define FTMODERR_H_
 
 
   /*******************************************************************/
@@ -124,6 +161,7 @@
   FT_MODERRDEF( Type1,    0x1300, "Type 1 module" )
   FT_MODERRDEF( Type42,   0x1400, "Type 42 module" )
   FT_MODERRDEF( Winfonts, 0x1500, "Windows FON/FNT module" )
+  FT_MODERRDEF( GXvalid,  0x1600, "GX validation module" )
 
 
 #ifdef FT_MODERR_END_LIST
@@ -150,7 +188,7 @@
 #undef FT_NEED_EXTERN_C
 
 
-#endif /* __FTMODERR_H__ */
+#endif /* FTMODERR_H_ */
 
 
 /* END */

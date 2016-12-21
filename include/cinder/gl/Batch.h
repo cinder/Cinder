@@ -51,7 +51,12 @@ class Batch {
 	//! Draws the Batch. Optionally specify a \a first vertex/element and a \a count. Otherwise the entire geometry will be drawn.
 	void			draw( GLint first = 0, GLsizei count = -1 );
 #if defined( CINDER_GL_HAS_DRAW_INSTANCED )
+	//! Draws the Batch, analogous to glDraw*Instanced().
 	void			drawInstanced( GLsizei instanceCount );
+#endif
+#if defined( CINDER_GL_HAS_DRAW_INDIRECT )
+	//! Draws the Batch, analogous to glDraw*Indirect().
+	void			drawIndirect( const GLvoid *indirect );
 #endif
 	void			bind();
 

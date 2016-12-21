@@ -39,7 +39,30 @@ docs/doxygen/cinder.tag
 docs/*/node_modules
 *.pyc
 
+# Android cruft
+*.swp
+.idea
+lib/android/android-19/armeabi-v7a/libcinder*.a
+lib/android/android-19/armeabi/libcinder*.a
+lib/android/android-19/mips/libcinder*.a
+lib/android/android-19/x86/libcinder*.a
+lib/android/android-21/arm64-v8a/libcinder*.a
+lib/android/android-21/armeabi-v7a/libcinder*.a
+lib/android/android-21/armeabi/libcinder*.a
+lib/android/android-21/mips/libcinder*.a
+lib/android/android-21/mips64/libcinder*.a
+lib/android/android-21/x86/libcinder*.a
+lib/android/android-21/x86_64/libcinder*.a
+
+*.iml
+local.properties
+proguard-rules.pro
+.gradle/
+jniLibs/
+
+# cmake generated files
+cinderConfig.cmake
+
 # CinderBlocks
 blocks/
 !blocks/[__AppTemplates,Box2D,Cairo,FMOD,LocationManager,MotionManager,OSC,QuickTime,TUIO]
-

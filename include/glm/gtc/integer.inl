@@ -61,14 +61,5 @@ namespace detail
 			}
 		};
 #	endif//GLM_HAS_BITSCAN_WINDOWS
-
-	template <typename T, precision P, template <class, precision> class vecType, typename genType>
-	struct compute_mod<T, P, vecType, genType, false>
-	{
-		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & a, genType const & b)
-		{
-			return a % b;
-		}
-	};
 }//namespace detail
 }//namespace glm
