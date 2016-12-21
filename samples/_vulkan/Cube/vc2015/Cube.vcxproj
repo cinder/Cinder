@@ -43,47 +43,47 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'" Label="Configuration">
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'" Label="Configuration">
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -139,7 +139,7 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -169,7 +169,7 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -200,7 +200,7 @@
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -236,7 +236,7 @@ xcopy /y "..\..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -271,7 +271,7 @@ xcopy /y "..\..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -301,7 +301,7 @@ xcopy /y "..\..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <AdditionalIncludeDirectories>"..\..\..\..\include";..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -322,7 +322,7 @@ xcopy /y "..\..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -351,7 +351,7 @@ xcopy /y "..\..\..\..\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Command>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\vulkan-1.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\glslang.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OGLCompiler.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\OSDependent.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\SPIRV.lib;..\..\..\..\tools\vulkan\lib\msw\$(PlatformTarget)\$(PlatformToolset)\$(Configuration)\HLSL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib\msw\$(PlatformTarget);..\..\..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>

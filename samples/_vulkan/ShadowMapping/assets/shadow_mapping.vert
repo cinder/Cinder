@@ -24,12 +24,14 @@ layout(location = 4) out vec3	vModelNormal;
 // Coordinate to be used for shadow map lookup
 layout(location = 5) out vec4	vShadowCoord;
 
-/* Bias matrix alters the clip coordinates so that x & y
- * lie between 0.0 and 1.0 for texture sampling. */
+// Bias matrix alters the clip coordinates so that x & y
+// lie between 0.0 and 1.0 for texture sampling. 
+
 const mat4 biasMat  = mat4(	0.5, 0.0, 0.0, 0.0,
 							0.0, 0.5, 0.0, 0.0,
 							0.0, 0.0, 1.0, 0.0,
 							0.5, 0.5, 0.0, 1.0 );
+
 void main() {
 	vColor			= ciColor;
 	vPosition		= ciBlock0.ciModelView * ciPosition;

@@ -499,7 +499,7 @@ void Pipeline::initialize( const Pipeline::Options& options, const vk::PipelineC
 	rs.polygonMode										= VK_POLYGON_MODE_FILL;
 	rs.cullMode											= VK_CULL_MODE_NONE; //VK_CULL_MODE_BACK_BIT;
 	rs.frontFace										= VK_FRONT_FACE_COUNTER_CLOCKWISE; //VK_FRONT_FACE_CLOCKWISE;
-	rs.depthClampEnable									= VK_FALSE; //true; //include_depth;
+	rs.depthClampEnable									= VK_TRUE; //VK_FALSE; //true; //include_depth;
 	rs.rasterizerDiscardEnable							= VK_FALSE;
 	rs.depthBiasEnable									= VK_FALSE;
 	rs.depthBiasConstantFactor							= 0.0f;
