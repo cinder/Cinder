@@ -1,0 +1,20 @@
+# VK_LAYER_LUNARG_standard_validation Settings
+lunarg_standard_validation.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_standard_validation.report_flags = info,warn,perf,error,debug
+lunarg_standard_validation.log_filename = stdout
+
+# VK_LAYER_LUNARG_core_validation Settings
+lunarg_core_validation.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_core_validation.report_flags = info,warn,perf,error,debug
+lunarg_core_validation.log_filename = stdout
+
+# VK_LAYER_LUNARG_parameter_validation Settings
+lunarg_parameter_validation.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_parameter_validation.report_flags = info,warn,perf,error,debug
+lunarg_parameter_validation.log_filename = stdout
+
+# VK_LAYER_LUNARG_object_tracker Settings
+lunarg_object_tracker.debug_action = VK_DBG_LAYER_ACTION_LOG_MSG
+lunarg_object_tracker.report_flags = info,warn,perf,error,debug
+lunarg_object_tracker.log_filename = stdout
+

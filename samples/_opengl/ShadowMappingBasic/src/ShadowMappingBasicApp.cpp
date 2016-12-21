@@ -168,7 +168,7 @@ void ShadowMappingBasic::drawScene( bool shadowMap )
 {
 	gl::pushModelMatrix();
 	gl::color( Color( 0.4f, 0.6f, 0.9f ) );
-	gl::rotate( mTime * 2.0f, 1.0f, 1.0f, 1.0f );
+	//gl::rotate( mTime * 2.0f, 1.0f, 1.0f, 1.0f );
 
 	if( shadowMap )
 		mTeapotBatch->draw();
@@ -195,9 +195,13 @@ void ShadowMappingBasic::draw()
 
 	gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );
 
+
 	vec3 mvLightPos	= vec3( gl::getModelView() * vec4( mLightPos, 1.0f ) ) ;
 	mat4 shadowMatrix = mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
-
+	if( getElapsedFrames() < 10 ) {
+		console () << gl::getModelView() << "\n" << mLightPos << "\n" << mvLightPos << "\n" << std::endl;
+	}
+	
 	mGlsl->uniform( "uShadowMap", 0 );
 	mGlsl->uniform( "uLightPos", mvLightPos );
 	mGlsl->uniform( "uShadowMatrix", shadowMatrix );
@@ -205,12 +209,12 @@ void ShadowMappingBasic::draw()
 	drawScene( false );
     
     // Uncomment for debug
-    /*
+
     gl::setMatricesWindow( getWindowSize() );
-    gl::color( 1.0f, 1.0f, 1.0f );
+    gl::color( 0.0f, 1.0f, 1.0f );
     float size = 0.5f*std::min( getWindowWidth(), getWindowHeight() );
     gl::draw( mShadowMapTex, Rectf( 0, 0, size, size ) );
-    */
+	
 }
 
 CINDER_APP( ShadowMappingBasic, RendererGl, ShadowMappingBasic::prepareSettings )

@@ -25,6 +25,7 @@
 #include "cinder/ImageSourceFileWic.h"
 #include "cinder/Utilities.h"
 #include "cinder/msw/CinderMsw.h"
+#include "cinder/Thread.h"
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
 	#include <D2D1.h>
@@ -37,6 +38,8 @@ namespace cinder {
 
 ///////////////////////////////////////////////////////////////////////////////
 // ImageSourceFileWic
+static std::mutex sGetFactoryMutex;
+
 void ImageSourceFileWic::registerSelf()
 {
 	const int32_t SOURCE_PRIORITY = 2;
@@ -89,8 +92,17 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	msw::initializeCom();
 	
     // Create WIC factory
-	IWICImagingFactory* factory = getFactory();
-	
+	IWICImagingFactory* factory = nullptr; 
+	{
+		// Ensure that IWICImagingFactory gets fully created so null isn't accidentally returned
+		// if the c'tor gets called from multiple threads.
+		std::lock_guard<std::mutex> lock( sGetFactoryMutex );
+		factory = getFactory();
+	}
+	if( nullptr == factory ) {
+		throw ImageIoException( "Could not get WIC Image Factory." );
+	}
+		
     // Create a decoder
 	IWICBitmapDecoder *decoderP = NULL;
 #if defined( CINDER_UWP )

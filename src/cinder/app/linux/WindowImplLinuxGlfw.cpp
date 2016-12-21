@@ -33,7 +33,6 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
 
-	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
 #if defined( CINDER_GL_ES )
 	::glfwDefaultWindowHints();
 	::glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
@@ -54,8 +53,12 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0 );
 	std::cout << "Rendering with OpenGL ES 2.0" << std::endl;	
   #endif
-
 #else // Desktop
+  #if defined( CINDER_VULKAN )
+	::glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	std::cout << "Rendering with Vulkan" << std::endl;
+  #else 	
+	const auto& options = std::dynamic_pointer_cast<RendererGl>( mRenderer )->getOptions();
 	int32_t majorVersion = options.getVersion().first;
 	int32_t minorVersion = options.getVersion().second;
 	::glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, majorVersion );
@@ -67,8 +70,10 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
 	else {
 		std::cout << "Rendering with OpenGL " << majorVersion << "." << minorVersion << std::endl;		
 	}
-	if( options.getDebug() )
+  #endif	
+	if( options.getDebug() ) {
 		::glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE );
+	}
 #endif
 
     ::glfwWindowHint( GLFW_SAMPLES, options.getMsaa() );

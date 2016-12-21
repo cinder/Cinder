@@ -161,7 +161,7 @@ class TextureBase {
 #endif
 		
 		//! Enables or disables mipmapping. Default is disabled.
-		void	enableMipmapping( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; mMipmappingSpecified = true; }
+		void	mipmap( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; mMipmappingSpecified = true; }
 		//! Specifies the index of the lowest defined mipmap level. Default is \c 0. Ignored on ES 2.
 		void	setBaseMipmapLevel( GLuint level ) { mBaseMipmapLevel = level; }
 		//! Sets the max mipmap level. Default (expressed as \c -1) is derived from the size of the texture. Ignored on ES 2.

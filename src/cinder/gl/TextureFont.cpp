@@ -114,7 +114,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 				ip::unpremultiply( &surface );
 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
+			textureFormat.mipmap( mFormat.hasMipmapping() );
 			GLint dataFormat;
 #if defined( CINDER_GL_ES )
 			dataFormat = GL_LUMINANCE_ALPHA;
@@ -293,7 +293,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				ip::unpremultiply( &tempSurface );
 			
 			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
+			textureFormat.mipmap( mFormat.hasMipmapping() );
 
 			Surface8u::ConstIter iter( tempSurface, tempSurface.getBounds() );
 			size_t offset = 0;
@@ -414,7 +414,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			}
 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
+			textureFormat.mipmap( mFormat.hasMipmapping() );
 			GLint dataFormat;
 #if defined( CINDER_GL_ES )
 			dataFormat = GL_LUMINANCE_ALPHA;

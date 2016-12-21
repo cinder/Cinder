@@ -435,6 +435,8 @@ class AppBase {
 	//! Returns a pointer to the active App
 	static AppBase*			get() { return sInstance; }
 
+	const std::string&		getName() const { return mName; }
+
   protected:
 	AppBase();
 
@@ -450,6 +452,9 @@ class AppBase {
 	//! \endcond
 
   private:
+
+	//! Set from window title from app instantiation. Immutable.
+	std::string				mName;
 
 	Timer					mTimer;
 	uint32_t				mFrameCount;

@@ -216,8 +216,8 @@ class Modifier {
 class Rect : public Source {
   public:
 	//! Equivalent to Rectf( -0.5, -0.5, 0.5, 0.5 )
-	Rect();
-	Rect( const Rectf &r );
+	Rect( bool upperLeftOrigin = false );
+	Rect( const Rectf &r, bool upperLeftOrigin = false  );
 
 	Rect&		rect( const Rectf &r );
 	//! Enables default colors. Disabled by default.
@@ -238,6 +238,7 @@ class Rect : public Source {
   protected:
 	void					setDefaultColors();
 	void					setDefaultTexCoords();
+	bool					mUpperLeftOrigin = false;
 	std::array<vec2,4>		mPositions, mTexCoords;
 	std::array<ColorAf,4>	mColors;
 	bool					mHasColors;
@@ -461,6 +462,7 @@ class Sphere : public Source {
 	Sphere&		radius( float radius ) { mRadius = radius; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the sphere.
 	Sphere&		subdivisions( int subdiv ) { mSubdivisions = subdiv; return *this; }
+	Sphere&		texCoordsUpperLeft( bool value = true ) { mTexCoordsUpperLeft = value; return *this; }
 
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
@@ -477,6 +479,7 @@ class Sphere : public Source {
 	float		mRadius;
 	int			mSubdivisions;
 	bool		mHasColors;
+	bool		mTexCoordsUpperLeft;
 };
 
 class Capsule : public Source {

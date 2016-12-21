@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<template name="Basic Vulkan"
+	id = "org.libcinder.apptemplates.basicvulkan"
+	>
+	<supports os="msw" />
+	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
+	<header replaceContents="true" isResourceHeader="true">include/Resources.h</header>
+	<platform os="msw">
+		<resource type="ICON" id="1">resources/cinder_app_icon.ico</resource>
+		<includePath cinder="true">tools/vulkan/include</includePath>
+		<staticLibrary cinder="true">tools/vulkan/lib/msw/$(PlatformTarget)/$(Configuration)/glslang.lib</staticLibrary>
+		<staticLibrary cinder="true">tools/vulkan/lib/msw/$(PlatformTarget)/$(Configuration)/OGLCompiler.lib</staticLibrary>
+		<staticLibrary cinder="true">tools/vulkan/lib/msw/$(PlatformTarget)/$(Configuration)/OSDependent.lib</staticLibrary>
+		<staticLibrary cinder="true">tools/vulkan/lib/msw/$(PlatformTarget)/$(Configuration)/SPIRV.lib</staticLibrary>
+		<staticLibrary cinder="true">tools/vulkan/lib/msw/$(PlatformTarget)/vulkan-1.lib</staticLibrary>
+	</platform>
+</template>
+</cinder>

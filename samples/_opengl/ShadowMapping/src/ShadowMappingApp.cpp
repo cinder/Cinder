@@ -293,6 +293,7 @@ void ShadowMappingApp::draw()
 	
 	// Render scene into shadow map
 	gl::setMatrices( mLight.camera );
+console() << gl::getModelViewProjection() << std::endl;
 	gl::viewport( mShadowMap->getSize() );
 	{
 		gl::ScopedFramebuffer bindFbo( mShadowMap->getFbo() );
@@ -342,6 +343,14 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 	}
 }
 
+<<<<<<< HEAD
+CINDER_APP( ShadowMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ), []( App::Settings *settings ) {
+//#if ! defined( CINDER_GL_ES )
+	//settings->enableHighDensityDisplay();
+	settings->setWindowSize( 900, 900 );
+//#endif
+} )
+=======
 void prepareSettings( App::Settings *settings )
 {
 #if ! defined( CINDER_GL_ES )
@@ -351,3 +360,4 @@ void prepareSettings( App::Settings *settings )
 }
 
 CINDER_APP( ShadowMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ), prepareSettings )
+>>>>>>> android_linux
