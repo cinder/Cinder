@@ -21,7 +21,9 @@
 
 namespace gst { namespace video {
 
+#if defined( CINDER_GST_HAS_GL )
 static GstGLDisplay* sGstGLDisplay = nullptr;
+#endif
 
 static bool         sUseGstGl = false;
 static const int    sEnableAsyncStateChange = false;
