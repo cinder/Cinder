@@ -32,7 +32,7 @@ namespace cinder {
 
 class AxisAlignedBox;
 
-class Sphere {
+class CI_API Sphere {
  public:
 	Sphere() {}
 	Sphere( const vec3 &center, float radius )

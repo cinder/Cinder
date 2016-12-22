@@ -31,7 +31,7 @@ namespace cinder { namespace gl {
 typedef std::shared_ptr<class Pbo>			PboRef;
 
 //! Represents an OpenGL Pixel Buffer Object
-class Pbo : public BufferObj {
+class CI_API Pbo : public BufferObj {
   public:
 	//! Creates a PBO with no memory allocated
 	static PboRef	create( GLenum target );

@@ -39,9 +39,9 @@ namespace cinder { namespace gl {
 typedef std::shared_ptr<class TextureFont>	TextureFontRef;
 typedef std::shared_ptr<class GlslProg>		GlslProgRef;
 
-class TextureFont {
+class CI_API TextureFont {
   public:
-	class Format {
+	class CI_API Format {
 	  public:
 		Format() : mTextureWidth( 1024 ), mTextureHeight( 1024 ), mPremultiply( false ), mMipmapping( false )
 		{}
@@ -71,7 +71,7 @@ class TextureFont {
 		bool		mMipmapping;
 	};
 
-	struct DrawOptions {
+	struct CI_API DrawOptions {
 		DrawOptions() : mClipHorizontal( true ), mClipVertical( true ), mPixelSnap( true ), mLigate( false ), mScale( 1 ) {}
 
 		//! Returns whether the output clips horizontally

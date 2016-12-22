@@ -25,12 +25,12 @@
 
 namespace cinder { namespace ip {
 
-Surface8u	checkerboard( int32_t width, int32_t height, int32_t tileSize = 16, const Color8u &evenColor = Color8u( 0, 0, 0 ), const Color8u &oddColor = Color8u( 255, 255, 255 ) );
-Surface16u	checkerboard16u( int32_t width, int32_t height, int32_t tileSize = 16, const ColorT<uint16_t> &evenColor = ColorT<uint16_t>( 0, 0, 0 ), const ColorT<uint16_t> &oddColor = ColorT<uint16_t>( 65535, 65535, 65535 ) );
-Surface32f	checkerboard32f( int32_t width, int32_t height, int32_t tileSize = 16, const Colorf &evenColor = Colorf( 0, 0, 0 ), const Colorf &oddColor = Colorf( 1, 1, 1 ) );
+CI_API Surface8u	checkerboard( int32_t width, int32_t height, int32_t tileSize = 16, const Color8u &evenColor = Color8u( 0, 0, 0 ), const Color8u &oddColor = Color8u( 255, 255, 255 ) );
+CI_API Surface16u	checkerboard16u( int32_t width, int32_t height, int32_t tileSize = 16, const ColorT<uint16_t> &evenColor = ColorT<uint16_t>( 0, 0, 0 ), const ColorT<uint16_t> &oddColor = ColorT<uint16_t>( 65535, 65535, 65535 ) );
+CI_API Surface32f	checkerboard32f( int32_t width, int32_t height, int32_t tileSize = 16, const Colorf &evenColor = Colorf( 0, 0, 0 ), const Colorf &oddColor = Colorf( 1, 1, 1 ) );
 
-void	checkerboard( Surface8u *surface, const Area &area, int32_t tileSize = 16, const ColorA8u &evenColor = ColorA8u( 0, 0, 0, 255 ), const ColorA8u &oddColor = ColorA8u( 255, 255, 255, 255 ) );
-void	checkerboard( Surface16u *surface, const Area &area, int32_t tileSize = 16, const ColorAT<uint16_t> &evenColor = ColorAT<uint16_t>( 0, 0, 0, 65535 ), const ColorAT<uint16_t> &oddColor = ColorAT<uint16_t>( 65535, 65535, 65535, 65535 ) );
-void	checkerboard( Surface32f *surface, const Area &area, int32_t tileSize = 16, const ColorAf &evenColor = ColorAf( 0, 0, 0, 1 ), const ColorAf &oddColor = ColorAf( 1, 1, 1, 1 ) );
+CI_API void	checkerboard( Surface8u *surface, const Area &area, int32_t tileSize = 16, const ColorA8u &evenColor = ColorA8u( 0, 0, 0, 255 ), const ColorA8u &oddColor = ColorA8u( 255, 255, 255, 255 ) );
+CI_API void	checkerboard( Surface16u *surface, const Area &area, int32_t tileSize = 16, const ColorAT<uint16_t> &evenColor = ColorAT<uint16_t>( 0, 0, 0, 65535 ), const ColorAT<uint16_t> &oddColor = ColorAT<uint16_t>( 65535, 65535, 65535, 65535 ) );
+CI_API void	checkerboard( Surface32f *surface, const Area &area, int32_t tileSize = 16, const ColorAf &evenColor = ColorAf( 0, 0, 0, 1 ), const ColorAf &oddColor = ColorAf( 1, 1, 1, 1 ) );
 
 } } // namespace cinder::ip

@@ -32,7 +32,7 @@
 
 namespace cinder {
 
-class Path2d {
+class CI_API Path2d {
  public:
 	Path2d() {}
 	explicit Path2d( const BSpline2f &spline, float subdivisionStep = 0.01f );
@@ -176,7 +176,7 @@ inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 }
 
 //! Accelerates the calculation of various operations on Path2d. Useful if doing repeated calculations, otherwise just use Path2d member functions.
-class Path2dCalcCache {
+class CI_API Path2dCalcCache {
   public:
 	Path2dCalcCache( const Path2d &path );
 	
@@ -196,7 +196,7 @@ class Path2dCalcCache {
 	std::vector<float>	mSegmentLengths;
 };
 
-class Path2dExc : public Exception {
+class CI_API Path2dExc : public Exception {
 };
 
 } // namespace cinder

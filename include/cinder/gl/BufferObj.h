@@ -32,7 +32,7 @@ namespace cinder { namespace gl {
 
 typedef std::shared_ptr<class BufferObj>	BufferObjRef;
 
-class BufferObj {
+class CI_API BufferObj {
   public:
 	~BufferObj();
 	

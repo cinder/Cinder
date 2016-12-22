@@ -30,6 +30,6 @@
 namespace cinder {
 
 template<int D, typename T>
-BSpline<D, T> fitBSpline( const std::vector<typename BSpline<D, T>::VecT> &samples, int degree, int outputSamples );
+CI_API BSpline<D, T> fitBSpline( const std::vector<typename BSpline<D, T>::VecT> &samples, int degree, int outputSamples );
 
 } // namespace cinder

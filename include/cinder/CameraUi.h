@@ -30,7 +30,7 @@
 namespace cinder {
 
 //! Enables user interaction with a CameraPersp via the mouse
-class CameraUi {
+class CI_API CameraUi {
  public:
 	CameraUi();
 	//! Constructs a CameraUi which manipulates \a camera directly (and consequently expects its pointer to remain valid). Optionally attaches to mouse/window signals of \a window, with priority \a signalPriority.

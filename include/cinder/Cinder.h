@@ -96,6 +96,21 @@ using std::uint64_t;
 	#error "cinder compile error: Unknown platform"
 #endif
 
+#if defined( CINDER_DLL )
+	#ifdef  CINDER_EXPORTS
+		#define CI_API __declspec(dllexport)
+		#define CI_API_TEMPLATE
+		// "needs to have dll-interface to be used by clients of class" warning
+		#pragma warning (disable: 4251)
+	#else
+		#define CI_API __declspec(dllimport)
+		#define CI_API_TEMPLATE extern
+	#endif
+#else
+	#define CI_API
+	#define CI_API_TEMPLATE
+#endif
+
 #define CINDER_LITTLE_ENDIAN
 
 } // namespace cinder

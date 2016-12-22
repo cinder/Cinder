@@ -29,6 +29,6 @@ namespace cinder { namespace ip {
 
 /** Finds the bounding rectangle of the area \a bounds inside of \a surface which contains non-zero alpha **/
 template<typename T>
-Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &bounds );
+CI_API Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &bounds );
 
 } } // namespace cinder::ip

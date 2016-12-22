@@ -39,7 +39,7 @@
 namespace cinder {
 
 template<typename T>
-struct math
+struct CI_API math
 {
 	static T	acos  (T x)		{return ::acos (double(x));}
 	static T	asin  (T x)		{return ::asin (double(x));}
@@ -81,7 +81,7 @@ struct math
 
 
 template<>
-struct math<float>
+struct CI_API math<float>
 {
 	static float	acos  (float x)			{return ::acosf (x);}
 	static float	asin  (float x)			{return ::asinf (x);}
@@ -284,10 +284,10 @@ T rombergIntegral( T a, T b, const std::function<T(T)> &SPEEDFN )
 }
 
 template<typename T>
-int solveCubic( T a, T b, T c, T d, T result[3] );
+CI_API int solveCubic( T a, T b, T c, T d, T result[3] );
 
 //! Returns the closest point to \a testPoint on the boundary of the ellipse defined by \a center, \a axisA and \a axisB. Algorithm due to David Eberly, http://www.geometrictools.com/Documentation/DistancePointEllipseEllipsoid.pdf
-glm::vec2 getClosestPointEllipse( const glm::vec2& center, const glm::vec2& axisA, const glm::vec2& axisB, const glm::vec2& testPoint );
+CI_API glm::vec2 getClosestPointEllipse( const glm::vec2& center, const glm::vec2& axisA, const glm::vec2& axisB, const glm::vec2& testPoint );
 
 union half_float
 {
@@ -299,8 +299,8 @@ union half_float
 	};
 };
 
-half_float floatToHalf( float f );
-float halfToFloat( half_float h );
+CI_API half_float floatToHalf( float f );
+CI_API float halfToFloat( half_float h );
 
 } // namespace cinder
 

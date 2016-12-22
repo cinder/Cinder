@@ -36,7 +36,7 @@ typedef uint32_t CallbackId;
 
 //! Implements a utility class for maintaining a list of callbacks
 template<typename SIG>
-class CallbackMgr {
+class CI_API CallbackMgr {
   public:
 	typedef typename std::vector<std::pair<CallbackId,std::function<SIG> > >	collection;
 	typedef typename collection::iterator										iterator;

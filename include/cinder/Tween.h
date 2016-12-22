@@ -74,7 +74,7 @@ inline dquat tweenLerp( const dquat &start, const dquat &end, float time )
 }
 
 
-class TweenBase : public TimelineItem {
+class CI_API TweenBase : public TimelineItem {
   public:
 	typedef std::function<void ()>		StartFn;
 	typedef std::function<void ()>		FinishFn;
@@ -102,7 +102,7 @@ class TweenBase : public TimelineItem {
 	void			setReverseFinishFn( FinishFn reverseFinishFn ) { mReverseFinishFunction = reverseFinishFn; }
 	FinishFn		getReverseFinishFn() const { return mReverseFinishFunction; }
 	
-	class Options {
+	class CI_API Options {
 	  protected:
 		Options( TimelineRef timeline )
 			: mTimeline( timeline )
@@ -139,7 +139,7 @@ class TweenBase : public TimelineItem {
 };
 
 template<typename T>
-class TweenRef : public std::shared_ptr<Tween<T> > {
+class CI_API TweenRef : public std::shared_ptr<Tween<T> > {
   public:
 	TweenRef( const std::shared_ptr<Tween<T> > &sp )
 		: std::shared_ptr<Tween<T> >( sp )
@@ -153,7 +153,7 @@ class TweenRef : public std::shared_ptr<Tween<T> > {
 };
 		
 template<typename T>
-class Tween : public TweenBase {
+class CI_API Tween : public TweenBase {
   public:
 	typedef std::function<T (const T&, const T&, float)>	LerpFn;
 
@@ -186,7 +186,7 @@ class Tween : public TweenBase {
 	TweenRef<T>		getThisRef(){ return TweenRef<T>( std::static_pointer_cast<Tween<T> >( shared_from_this() ) ); }
 
 
-	class Options : public TweenBase::Options {
+	class CI_API Options : public TweenBase::Options {
 	  public:
 		Options&	startFn( const TweenBase::StartFn &startFn ) { mTweenRef->setStartFn( startFn ); return *this; }
 		Options&	reverseStartFn( const TweenBase::StartFn &reverseStartFn ) { mTweenRef->setReverseStartFn( reverseStartFn ); return *this; }
@@ -264,7 +264,7 @@ class Tween : public TweenBase {
 };
 
 template<typename T>
-class FnTween : public Tween<T> {
+class CI_API FnTween : public Tween<T> {
   public:
 	FnTween( std::function<void (T)> fn, T startValue, T endValue, float startTime, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> )
 		: Tween<T>( &mValue, startValue, endValue, startTime, duration, easeFunction, lerpFunction ), mFn( fn ), mValue( startValue )
@@ -283,7 +283,7 @@ class FnTween : public Tween<T> {
 };
 
 template<typename T>
-class FnTweenRef : public TweenRef<T> {
+class CI_API FnTweenRef : public TweenRef<T> {
   public:
 	FnTweenRef( const std::shared_ptr<FnTween<T> > &sp )
 		: TweenRef<T>( sp )
@@ -296,7 +296,7 @@ class FnTweenRef : public TweenRef<T> {
 	{}
 };
 
-class AnimBase {
+class CI_API AnimBase {
   public:
   	//! removes self from Timeline
 	void 	stop();
@@ -322,7 +322,7 @@ class AnimBase {
 };
 
 template<typename T>
-class Anim : public AnimBase {
+class CI_API Anim : public AnimBase {
   public:
 	Anim()
 		: AnimBase( &mValue )

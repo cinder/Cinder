@@ -71,10 +71,10 @@ typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t>>		Ev
 typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>						EventSignalShouldQuit;
 
 //! Base class that all apps derive from.
-class AppBase {
+class CI_API AppBase {
  public:
 	//! Startup settings, used during App construction. They are modified before the app is created by passing a SettingsFn to the app instanciation macros.
-	class Settings {
+	class CI_API Settings {
 	  public:
 		Settings();
 		virtual ~Settings() {}

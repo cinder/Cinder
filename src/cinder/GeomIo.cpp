@@ -5127,9 +5127,9 @@ void SourceModsContext::clearIndices()
 ///////////////////////////////////////////////////////////////////////////////////////
 // Modifier
 
-template class AttribFn<float,float>;	template class AttribFn<float,vec2>;	template class AttribFn<float,vec3>;	template class AttribFn<float,vec4>;
-template class AttribFn<vec2,float>;	template class AttribFn<vec2,vec2>;		template class AttribFn<vec2,vec3>;		template class AttribFn<vec2,vec4>;
-template class AttribFn<vec3,float>;	template class AttribFn<vec3,vec2>;		template class AttribFn<vec3,vec3>;		template class AttribFn<vec3,vec4>;
-template class AttribFn<vec4,float>;	template class AttribFn<vec4,vec2>;		template class AttribFn<vec4,vec3>;		template class AttribFn<vec4,vec4>;
+CI_API_TEMPLATE template class CI_API AttribFn<float,float>;	CI_API_TEMPLATE template class CI_API AttribFn<float,vec2>;		CI_API_TEMPLATE template class CI_API AttribFn<float,vec3>;		CI_API_TEMPLATE template class CI_API AttribFn<float,vec4>;
+CI_API_TEMPLATE template class CI_API AttribFn<vec2,float>;		CI_API_TEMPLATE template class CI_API AttribFn<vec2,vec2>;		CI_API_TEMPLATE template class CI_API AttribFn<vec2,vec3>;		CI_API_TEMPLATE template class CI_API AttribFn<vec2,vec4>;
+CI_API_TEMPLATE template class CI_API AttribFn<vec3,float>;		CI_API_TEMPLATE template class CI_API AttribFn<vec3,vec2>;		CI_API_TEMPLATE template class CI_API AttribFn<vec3,vec3>;		CI_API_TEMPLATE template class CI_API AttribFn<vec3,vec4>;
+CI_API_TEMPLATE template class CI_API AttribFn<vec4,float>;		CI_API_TEMPLATE template class CI_API AttribFn<vec4,vec2>;		CI_API_TEMPLATE template class CI_API AttribFn<vec4,vec3>;		CI_API_TEMPLATE template class CI_API AttribFn<vec4,vec4>;
 
 } } // namespace cinder::geom

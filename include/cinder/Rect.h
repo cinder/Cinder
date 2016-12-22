@@ -30,7 +30,7 @@
 namespace cinder {
 
 template<typename T>
-class RectT {
+class CI_API RectT {
  public:
 	typedef glm::tvec2<T, glm::defaultp>	Vec2T;
 	typedef glm::tvec3<T, glm::defaultp>	Vec3T;
@@ -151,7 +151,7 @@ typedef RectT<double>	Rectd;
 
 
 // This class maps a rectangle into another rectangle
-class RectMapping {
+class CI_API RectMapping {
  public:
     RectMapping()
         : mSrcRect( 0, 0, 0, 0 ), mDstRect( 0, 0, 0, 0 ) {}

@@ -32,7 +32,7 @@ namespace cinder { namespace gl {
 typedef std::shared_ptr<class BufferTexture> BufferTextureRef;
 
 //! Represents a Buffer Texture, or GL_TEXTURE_BUFFER.
-class BufferTexture : private Noncopyable {
+class CI_API BufferTexture : private Noncopyable {
   public:
 	//! Creates and returns a shared BufferTexture object according to \a internalFormat
 	static BufferTextureRef create( const BufferObjRef &buffer, GLenum internalFormat );

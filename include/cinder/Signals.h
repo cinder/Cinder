@@ -28,6 +28,7 @@
 
 #include "cinder/CinderAssert.h"
 #include "cinder/Noncopyable.h"
+#include "cinder/Cinder.h"
 
 #include <functional>
 #include <memory>
@@ -39,7 +40,7 @@ namespace cinder { namespace signals {
 namespace detail {
 
 //! Base class for signal links, which manages reference counting and provides a concrete type to be passed to Connection
-struct SignalLinkBase {
+struct CI_API SignalLinkBase {
   public:
 	SignalLinkBase()
 		: mRefCount( 1 ), mEnabled( true )
@@ -92,7 +93,7 @@ struct SignalLinkBase {
 };
 
 //! Base Signal class, which provides a concrete type that can be stored by the Disconnector
-struct SignalBase : private Noncopyable {
+struct CI_API SignalBase : private Noncopyable {
 	//! abstract method to disconnect \a link from the callback chain, which resides in the priority group \a priority.
 	virtual bool disconnect( SignalLinkBase *link, int priority ) = 0;
 
@@ -100,7 +101,7 @@ struct SignalBase : private Noncopyable {
 };
 
 //! Helper class for disconnecting Connections.
-struct Disconnector : private Noncopyable {
+struct CI_API Disconnector : private Noncopyable {
 	//! Constructs a new Disconnector, which is owned by \a signal.
 	Disconnector( SignalBase *signal );
 	//! Instructs the owning signal to disconnect \a link, which resides within priority group \a priority.
@@ -117,7 +118,7 @@ struct Disconnector : private Noncopyable {
 // ----------------------------------------------------------------------------------------------------
 
 //! Connection is returned from Signal::connect(), which can be used to disconnect the callback slot.
-class Connection {
+class CI_API Connection {
   public:
 	Connection();
 	Connection( const std::shared_ptr<detail::Disconnector> &disconnector, detail::SignalLinkBase *link, int priority );
@@ -141,7 +142,7 @@ class Connection {
 };
 
 //! ScopedConnection can be captured from Signal::connect() to limit the connection lifetime to the current scope, after which Connection::disconnect() will be called.
-class ScopedConnection : public Connection, private Noncopyable {
+class CI_API ScopedConnection : public Connection, private Noncopyable {
   public:
 	ScopedConnection();
 	~ScopedConnection();
@@ -162,7 +163,7 @@ template<typename, typename> struct	CollectorInvocation;
 
 //! Returns the result of the last signal handler from a signal emission.
 template<typename ResultT>
-struct CollectorLast {
+struct CI_API CollectorLast {
 	typedef ResultT CollectorResult;
 
 	explicit CollectorLast() : mLast()	{}
@@ -176,12 +177,12 @@ private:
 
 //! Implements the default signal handler collection behaviour.
 template<typename ResultT>
-struct CollectorDefault : CollectorLast<ResultT> {
+struct CI_API CollectorDefault : CollectorLast<ResultT> {
 };
 
 //! CollectorDefault specialisation for signals with void return type.
 template<>
-struct CollectorDefault<void> {
+struct CI_API CollectorDefault<void> {
 	typedef void CollectorResult;
 
 	void getResult() const		{}
@@ -190,7 +191,7 @@ struct CollectorDefault<void> {
 
 //! CollectorInvocation specialisation for regular signals.
 template<class Collector, class R, class... Args>
-struct CollectorInvocation<Collector, R ( Args... )> : public SignalBase {
+struct CI_API CollectorInvocation<Collector, R ( Args... )> : public SignalBase {
 
 	bool invoke( Collector &collector, const std::function<R ( Args... )> &callback, Args... args )
 	{
@@ -200,7 +201,7 @@ struct CollectorInvocation<Collector, R ( Args... )> : public SignalBase {
 
 //! CollectorInvocation specialisation for signals with void return type.
 template<class Collector, class... Args>
-struct CollectorInvocation<Collector, void( Args... )> : public SignalBase {
+struct CI_API CollectorInvocation<Collector, void( Args... )> : public SignalBase {
 
 	bool invoke( Collector &collector, const std::function<void( Args... )> &callback, Args... args )
 	{
@@ -211,7 +212,7 @@ struct CollectorInvocation<Collector, void( Args... )> : public SignalBase {
 
 //! SignalProto template, the parent class of Signal, specialised for the callback signature and collector.
 template<class Collector, class R, class... Args>
-class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collector, R ( Args... )> {
+class CI_API SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collector, R ( Args... )> {
   protected:
 	typedef std::function<R ( Args... )>		CallbackFn;
 	typedef typename CallbackFn::result_type	Result;
@@ -440,7 +441,7 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 //!
 //! \note Signals are non-copyable.
 template <typename Signature, class Collector = detail::CollectorDefault<typename std::function<Signature>::result_type> >
-struct Signal : detail::SignalProto<Signature, Collector> {
+struct CI_API Signal : detail::SignalProto<Signature, Collector> {
 
 	typedef detail::SignalProto<Signature, Collector>	SignalProto;
 	typedef typename SignalProto::CallbackFn			CallbackFn;
@@ -452,14 +453,14 @@ struct Signal : detail::SignalProto<Signature, Collector> {
 
 //! Creates a std::function by binding \a object to the member function pointer \a method.
 template<class Instance, class Class, class R, class... Args>
-std::function<R ( Args... )> slot( Instance &object, R (Class::*method)( Args... ) )
+CI_API std::function<R ( Args... )> slot( Instance &object, R (Class::*method)( Args... ) )
 {
 	return [&object, method] ( Args... args )	{ return ( object .* method )( args... ); };
 }
 
 //! Creates a std::function by binding \a object to the member function pointer \a method.
 template<class Class, class R, class... Args>
-std::function<R ( Args... )> slot( Class *object, R ( Class::*method )( Args... ) )
+CI_API std::function<R ( Args... )> slot( Class *object, R ( Class::*method )( Args... ) )
 {
 	return [object, method] ( Args... args )	{ return ( object ->* method )( args... ); };
 }
@@ -470,7 +471,7 @@ std::function<R ( Args... )> slot( Class *object, R ( Class::*method )( Args... 
 
 //! Keep signal emissions going until any handler returns false.
 template<typename ResultT>
-struct CollectorUntil0 {
+struct CI_API CollectorUntil0 {
 	typedef ResultT	CollectorResult;
 
 	explicit CollectorUntil0() : mResult() {}
@@ -489,7 +490,7 @@ private:
 
 //! Keep signal emissions going while all handlers return 0 false.
 template<typename ResultT>
-struct CollectorWhile0 {
+struct CI_API CollectorWhile0 {
 	typedef ResultT CollectorResult;
 
 	explicit CollectorWhile0() : mResult() {}
@@ -507,7 +508,7 @@ private:
 };
 
 //! Returns true if all slots return true, else false. Does not short-circuit. Returns true if there are no slots.
-struct CollectorBooleanAnd {
+struct CI_API CollectorBooleanAnd {
 	typedef bool CollectorResult;
 
 	explicit CollectorBooleanAnd() : mResult( true ) {}
@@ -526,7 +527,7 @@ private:
 
 //! Returns a bitmask where in order for the bit in type T to be be 1, it has to be 1 from all slots. Returns 0 if there are no slots.
 template<typename ResultT>
-struct CollectorBitwiseAnd {
+struct CI_API CollectorBitwiseAnd {
 	typedef ResultT	CollectorResult;
 
 	explicit CollectorBitwiseAnd() : mResult( 0 ), mFirst( true ) {}
@@ -552,7 +553,7 @@ private:
 
 //! CollectorVector returns the result of all signal handlers from a signal emission in a std::vector.
 template<typename ResultT>
-struct CollectorVector {
+struct CI_API CollectorVector {
 	typedef std::vector<ResultT> CollectorResult;
 
 	const CollectorResult& getResult() const	{ return mResult; }

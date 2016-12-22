@@ -50,9 +50,9 @@ typedef std::shared_ptr<class GlslProg> GlslProgRef;
 class UniformValueCache;
 class ShaderPreprocessor;
 
-class GlslProg {
+class CI_API GlslProg {
   public:
-	struct Attribute {
+	struct CI_API Attribute {
 		//! Returns a const reference of the name as defined in the Vertex Shader.
 		const std::string&	getName() const { return mName; }
 		//! Returns the number of attributes expected by the Vertex Shader. mCount will be
@@ -76,7 +76,7 @@ class GlslProg {
 		friend class GlslProg;
 	};
 	
-	struct Uniform {
+	struct CI_API Uniform {
 		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string&	getName() const { return mName; }
 		//! Returns the number of uniforms expected by the Glsl. mCount will be
@@ -109,7 +109,7 @@ class GlslProg {
 	
 #if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 
-	struct UniformBlock {
+	struct CI_API UniformBlock {
 		
 		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string&	getName() const { return mName; }
@@ -149,7 +149,7 @@ class GlslProg {
 
 #if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
-	struct TransformFeedbackVaryings {
+	struct CI_API TransformFeedbackVaryings {
 		
 		//! Returns a const reference of the name as defined inside the Glsl.
 		const std::string&	getName() const { return mName; }
@@ -169,7 +169,7 @@ class GlslProg {
 
 #endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
-	struct Format {
+	struct CI_API Format {
 		//! Defaults to specifying location 0 for the \c geom::Attrib::POSITION semantic
 		Format();
 		
@@ -574,23 +574,23 @@ class GlslProg {
 	friend std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
 };
 
-class GlslProgExc : public cinder::gl::Exception {
+class CI_API GlslProgExc : public cinder::gl::Exception {
   public:
 	GlslProgExc()	{}
 	GlslProgExc( const std::string &description ) : cinder::gl::Exception( description )	{}
 };
 
-class GlslProgCompileExc : public GlslProgExc {
+class CI_API GlslProgCompileExc : public GlslProgExc {
   public:
 	GlslProgCompileExc( const std::string &log, GLint shaderType );
 };
 
-class GlslProgLinkExc : public GlslProgExc {
+class CI_API GlslProgLinkExc : public GlslProgExc {
   public:
 	GlslProgLinkExc( const std::string &log ) : GlslProgExc( log ) {}
 };
 
-class GlslNullProgramExc : public GlslProgExc {
+class CI_API GlslNullProgramExc : public GlslProgExc {
   public:
 	virtual const char* what() const throw()
 	{

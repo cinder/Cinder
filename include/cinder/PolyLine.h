@@ -28,7 +28,7 @@
 namespace cinder {
 
 template<typename T>
-class PolyLineT {
+class CI_API PolyLineT {
   public:
 	PolyLineT() : mClosed( false ) {}
 	PolyLineT( const std::vector<T> &aPoints, bool closed = false ) : mPoints( aPoints ), mClosed( closed ) {}

@@ -93,7 +93,7 @@ Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &unclippedBo
 }
 
 #define TRIM_PROTOTYPES(r,data,T)\
-	template Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &unclippedBounds );
+	CI_API_TEMPLATE template CI_API Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &unclippedBounds );
 
 BOOST_PP_SEQ_FOR_EACH( TRIM_PROTOTYPES, ~, CHANNEL_TYPES )
 

@@ -272,8 +272,8 @@ T ChannelT<T>::areaAverage( const Area &area ) const
 	return static_cast<T>( sum / ( clipped.getWidth() * clipped.getHeight() ) );
 }
 
-template class ChannelT<uint8_t>;
-template class ChannelT<uint16_t>;
-template class ChannelT<float>;
+CI_API_TEMPLATE template class CI_API ChannelT<uint8_t>;
+CI_API_TEMPLATE template class CI_API ChannelT<uint16_t>;
+CI_API_TEMPLATE template class CI_API ChannelT<float>;
 
 } // namespace cinder

@@ -92,9 +92,9 @@ void grayscale( const Surface8u &srcSurface, Channel8u *dstChannel )
 }
 
 #define grayscale_PROTOTYPES(r,data,T)\
-	template void grayscale( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );
+	CI_API_TEMPLATE template CI_API void grayscale( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );
 	
-template void grayscale( const SurfaceT<float> &srcSurface, ChannelT<float> *dstChannel );
+CI_API_TEMPLATE template CI_API void grayscale( const SurfaceT<float> &srcSurface, ChannelT<float> *dstChannel );
 
 BOOST_PP_SEQ_FOR_EACH( grayscale_PROTOTYPES, ~, CHANNEL_TYPES )
 

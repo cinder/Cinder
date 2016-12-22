@@ -196,7 +196,7 @@ bool FrustumT<T>::intersects( const AxisAlignedBox &box ) const
 	return true;
 }
 
-template class FrustumT<float>;
-template class FrustumT<double>;
+CI_API_TEMPLATE template class CI_API FrustumT<float>;
+CI_API_TEMPLATE template class CI_API FrustumT<double>;
 
 } // namespace cinder

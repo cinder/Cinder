@@ -28,12 +28,12 @@
 namespace cinder {
 
 template<typename T>
-struct CHANTRAIT 
+struct CI_API CHANTRAIT 
 {
 };
 
 template<>
-struct CHANTRAIT<uint8_t>
+struct CI_API CHANTRAIT<uint8_t>
 {
 	typedef uint32_t Sum;
 	typedef uint32_t Accum;
@@ -50,7 +50,7 @@ struct CHANTRAIT<uint8_t>
 };
 
 template<>
-struct CHANTRAIT<uint16_t>
+struct CI_API CHANTRAIT<uint16_t>
 {
 	typedef uint32_t Sum;
 	typedef uint32_t Accum;
@@ -64,7 +64,7 @@ struct CHANTRAIT<uint16_t>
 };
 
 template<>
-struct CHANTRAIT<float>
+struct CI_API CHANTRAIT<float>
 {
 	typedef float Sum;
 	typedef float Accum;
@@ -81,7 +81,7 @@ struct CHANTRAIT<float>
 };
 
 template<>
-struct CHANTRAIT<half_float>
+struct CI_API CHANTRAIT<half_float>
 {
 	typedef float Sum;
 	typedef float Accum;

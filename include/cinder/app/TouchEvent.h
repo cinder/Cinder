@@ -31,9 +31,9 @@
 namespace cinder { namespace app {
 
 //! Represents a touch event
-class TouchEvent : public Event {
+class CI_API TouchEvent : public Event {
   public:
-	class Touch {
+	class CI_API Touch {
 	  public:
 		Touch() {}
 		Touch( const vec2 &pos, const vec2 &prevPos, uint32_t id, double time, void *native )

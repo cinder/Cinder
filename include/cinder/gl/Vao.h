@@ -36,7 +36,7 @@ namespace cinder { namespace gl {
 class Context;
 typedef std::shared_ptr<class Vao> VaoRef;
 
-class Vao : public std::enable_shared_from_this<Vao> {
+class CI_API Vao : public std::enable_shared_from_this<Vao> {
   public:
 	struct Layout;
 	

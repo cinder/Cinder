@@ -35,7 +35,7 @@ namespace cinder {
 template<typename T>
 class RectT;
 
-class Area {
+class CI_API Area {
  public:
 	Area() {}
 	Area( const ivec2 &UL, const ivec2 &LR );
@@ -130,6 +130,6 @@ class Area {
 	}	
 };
 
-extern std::pair<Area,ivec2> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const ivec2 &dstLT );
+extern CI_API std::pair<Area,ivec2> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const ivec2 &dstLT );
 
 } // namespace cinder

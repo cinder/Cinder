@@ -95,8 +95,8 @@ int solveCubic( T a, T b, T c, T d, T result[3] )
 		return 3;
 	}
 }
-template int solveCubic( float a, float b, float c, float d, float result[3] );
-template int solveCubic( double a, double b, double c, double d, double result[3] );
+CI_API_TEMPLATE template CI_API int solveCubic( float a, float b, float c, float d, float result[3] );
+CI_API_TEMPLATE template CI_API int solveCubic( double a, double b, double c, double d, double result[3] );
 
 namespace {
 float PointOnEllipseBisector( int numComponents, const vec2 &extents, const vec2 &y, vec2& x )

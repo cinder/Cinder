@@ -37,7 +37,7 @@ namespace cinder {
 
 typedef std::shared_ptr<class Display> 	DisplayRef;
 
-class Display {
+class CI_API Display {
   public:
 	Display() : mArea( Area::zero() ), mBitsPerPixel( 0 ), mContentScale( 1.0f ), mName( "" ), mNameDirty ( true ) {}
 	virtual ~Display() {}

@@ -40,7 +40,6 @@
 #include "cinder/ImageIo.h"
 #include "cinder/ip/Fill.h"
 
-#include <boost/preprocessor/seq.hpp>
 #include <boost/type_traits/is_same.hpp>
 using boost::tribool;
 
@@ -612,9 +611,8 @@ void* ImageTargetSurface<T>::getRowPointer( int32_t row )
 	return reinterpret_cast<void*>( mSurface->getData( ivec2( 0, row ) ) );
 }
 
-#define Surface_PROTOTYPES(r,data,T)\
-	template class SurfaceT<T>;
-
-BOOST_PP_SEQ_FOR_EACH( Surface_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
+CI_API_TEMPLATE template class CI_API SurfaceT<uint8_t>;
+CI_API_TEMPLATE template class CI_API SurfaceT<uint16_t>;
+CI_API_TEMPLATE template class CI_API SurfaceT<float>;
 
 } // namespace cinder

@@ -37,7 +37,7 @@
 
 namespace cinder {
 //! Create an instance of this class at the beginning of any multithreaded code that makes use of Cinder functionality
-class ThreadSetup {
+class CI_API ThreadSetup {
   public:
 	ThreadSetup() {
 #if defined( CINDER_MAC )

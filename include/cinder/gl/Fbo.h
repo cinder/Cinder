@@ -42,7 +42,7 @@ class FboCubeMap;
 typedef std::shared_ptr<FboCubeMap>		FboCubeMapRef;
 
 //! Represents an OpenGL Renderbuffer, used primarily in conjunction with FBOs. Supported on OpenGL ES but multisampling is currently ignored. \ImplShared
-class Renderbuffer {
+class CI_API Renderbuffer {
   public:
 	//! Create a Renderbuffer \a width pixels wide and \a heigh pixels high, with an internal format of \a internalFormat, defaulting to GL_RGBA8, MSAA samples \a msaaSamples, and CSAA samples \a coverageSamples
 #if defined( CINDER_GL_ES_2 )
@@ -305,9 +305,9 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 
 
 //! Helper class for implementing dynamic cube mapping
-class FboCubeMap : public Fbo {
+class CI_API FboCubeMap : public Fbo {
   public:
-	struct Format : private Fbo::Format {
+	struct CI_API Format : private Fbo::Format {
 		// Default constructor. Enables a depth RenderBuffer and a color CubeMap
 		Format();
 		
@@ -344,13 +344,13 @@ class FboCubeMap : public Fbo {
 	TextureCubeMapRef		mTextureCubeMap;
 };
 
-class FboException : public Exception {
+class CI_API FboException : public Exception {
   public:
 	FboException()	{}
 	FboException( const std::string &description ) : Exception( description )	{}
 };
 
-class FboExceptionInvalidSpecification : public FboException {
+class CI_API FboExceptionInvalidSpecification : public FboException {
   public:
 	FboExceptionInvalidSpecification()	{}
 	FboExceptionInvalidSpecification( const std::string &description ) : FboException( description )	{}
