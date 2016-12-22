@@ -252,7 +252,7 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 		//! Returns the debugging label associated with the Fbo.
 		const std::string&	getLabel() const { return mLabel; }
 		//! Sets the debugging label associated with the Fbo. Calls glObjectLabel() when available.
-		void				setLabel( const std::string &label );
+		void				setLabel( const std::string &label ) { mLabel = label; }
 		//! Sets the debugging label associated with the Fbo. Calls glObjectLabel() when available.
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
 		
