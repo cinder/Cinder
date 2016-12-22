@@ -96,7 +96,7 @@ class CI_API Renderbuffer {
 std::ostream& operator<<( std::ostream &os, const Renderbuffer &rhs );
 
 //! Represents an OpenGL Framebuffer Object.
-class Fbo : public std::enable_shared_from_this<Fbo> {
+class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
   public:
 	struct Format;
 
@@ -177,7 +177,7 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	//! \brief Defines the Format of the Fbo, which is passed in via create().
 	//!
 	//! The default provides an 8-bit RGBA color texture attachment and a 24-bit depth renderbuffer attachment, multi-sampling and stencil disabled.
-	struct Format {
+	struct CI_API Format {
 	  public:
 		//! Default constructor, sets the target to \c GL_TEXTURE_2D with an 8-bit color+alpha, a 24-bit depth texture, and no multisampling or mipmapping
 		Format();
@@ -297,8 +297,6 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	std::string			mLabel; // debugging label
 
 	mutable bool		mNeedsResolve, mNeedsMipmapUpdate;
-	
-	static GLint		sMaxSamples, sMaxAttachments;
 	
 	friend std::ostream& operator<<( std::ostream &os, const Fbo &rhs );
 };
