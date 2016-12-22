@@ -180,7 +180,7 @@ class CI_API Paint {
 };
 
 //! SVG Style for a node. Corresponds to SVG Styling: http://www.w3.org/TR/SVG/styling.html
-class CI_API Style {
+class Style {
   public:
 	Style();
 	Style( const XmlTree &xml, const Node *parent );
