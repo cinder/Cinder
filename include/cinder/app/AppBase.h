@@ -433,7 +433,7 @@ class CI_API AppBase {
 	virtual bool		receivesEvents() const { return true; }
 
 	//! Returns a pointer to the active App
-	static AppBase*			get() { return sInstance; }
+	static AppBase*			get();
 
   protected:
 	AppBase();

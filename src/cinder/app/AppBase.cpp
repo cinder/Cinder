@@ -165,6 +165,11 @@ AppBase::~AppBase()
 	mIo->stop();
 }
 
+AppBase* AppBase::get() 
+{ 
+	return sInstance; 
+}
+
 // These are called by application instantiation main functions
 // static
 void AppBase::prepareLaunch()
