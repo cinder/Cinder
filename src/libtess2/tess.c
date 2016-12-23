@@ -490,6 +490,7 @@ TESStesselator* tessNewTess( TESSalloc* alloc )
 	if ( tess == NULL ) {
 		return 0;          /* out of memory */
 	}
+	tess->outOfMemory = 0;
 	tess->alloc = *alloc;
 	/* Check and set defaults. */
 	if (tess->alloc.meshEdgeBucketSize == 0)
