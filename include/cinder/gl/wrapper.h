@@ -62,8 +62,8 @@ enum UniformSemantic {
 	UNIFORM_USER_DEFINED
 };
 
-class Context* context();
-class Environment* env();
+CI_API class Context* context();
+CI_API class Environment* env();
 
 CI_API void enableVerticalSync( bool enable = true );
 CI_API bool isVerticalSyncEnabled();
