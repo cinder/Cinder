@@ -1,0 +1,519 @@
+#
+# Put this in your home directory!
+#
+
+import os ;
+
+########################################################################
+########################################################################
+########################################################################
+
+local NDK_PLATFORM = 19 ;
+local NDK_ROOT = [ os.environ NDK_ROOT ] ;
+
+#########################################################################
+# armeabi (android-19)
+#########################################################################
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = armeabi ;
+local NDK_TOOLCHAIN = arm-linux-androideabi ;
+local NDK_TOOLCHAIN_PREFIX = arm-linux-androideabi ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-arm ;
+
+using gcc : android_$(NDK_PLATFORM)_armeabi : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD
+  <compileflags>-MP
+  <compileflags>-MF
+  <compileflags>-fpic
+  <compileflags>-ffunction-sections
+  <compileflags>-funwind-tables
+  <compileflags>-fstack-protector
+  <compileflags>-no-canonical-prefixes
+  <compileflags>-march=armv5te
+  <compileflags>-mtune=xscale
+  <compileflags>-msoft-float
+  <compileflags>-mthumb
+  <compileflags>-Os
+  <compileflags>-DNDEBUG
+  <compileflags>-fomit-frame-pointer
+  <compileflags>-fno-strict-aliasing
+  <compileflags>-finline-limit=64
+  <compileflags>-DANDROID
+  <compileflags>-Wa,--noexecstack
+  <compileflags>-Wformat
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+#########################################################################
+# armeabi-v7a (android-19)
+#########################################################################
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = armeabi-v7a ;
+local NDK_TOOLCHAIN = arm-linux-androideabi ;
+local NDK_TOOLCHAIN_PREFIX = arm-linux-androideabi ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-arm ;
+
+using gcc : android_$(NDK_PLATFORM)_armeabi_v7a : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD
+  <compileflags>-MP 
+  <compileflags>-MF 
+  <compileflags>-fpic 
+  <compileflags>-ffunction-sections 
+  <compileflags>-funwind-tables 
+  <compileflags>-fstack-protector 
+  <compileflags>-no-canonical-prefixes 
+  <compileflags>-march=armv7-a 
+  <compileflags>-mfpu=vfpv3-d16 
+  <compileflags>-mfloat-abi=softfp 
+  <compileflags>-mthumb
+  <compileflags>-Os 
+  <compileflags>-DNDEBUG 
+  <compileflags>-fomit-frame-pointer 
+  <compileflags>-fno-strict-aliasing 
+  <compileflags>-finline-limit=64 
+  <compileflags>-DANDROID  
+  <compileflags>-Wa,--noexecstack 
+  <compileflags>-Wformat 
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+#########################################################################
+# mips (android-19)
+#########################################################################
+
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = mips ;
+local NDK_TOOLCHAIN = mipsel-linux-android ;
+local NDK_TOOLCHAIN_PREFIX = mipsel-linux-android ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-mips ;
+
+using gcc : android_$(NDK_PLATFORM)_mips : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD 
+  <compileflags>-MP 
+  <compileflags>-MF 
+  <compileflags>-fpic 
+  <compileflags>-fno-strict-aliasing 
+  <compileflags>-finline-functions 
+  <compileflags>-ffunction-sections 
+  <compileflags>-funwind-tables 
+  <compileflags>-fmessage-length=0 
+  <compileflags>-fno-inline-functions-called-once 
+  <compileflags>-fgcse-after-reload 
+  <compileflags>-frerun-cse-after-loop 
+  <compileflags>-frename-registers 
+  <compileflags>-no-canonical-prefixes 
+  <compileflags>-Os 
+  <compileflags>-DNDEBUG 
+  <compileflags>-fomit-frame-pointer 
+  <compileflags>-funswitch-loops 
+  <compileflags>-finline-limit=300 
+  <compileflags>-DANDROID
+  <compileflags>-Wa,--noexecstack 
+  <compileflags>-Wformat 
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+#########################################################################
+# x86 (android-19)
+#########################################################################
+
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = x86 ;
+local NDK_TOOLCHAIN = x86 ;
+local NDK_TOOLCHAIN_PREFIX = i686-linux-android ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-x86 ;
+
+using gcc : android_$(NDK_PLATFORM)_x86 : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD 
+  <compileflags>-MP 
+  <compileflags>-MF
+  <compileflags>-ffunction-sections 
+  <compileflags>-funwind-tables 
+  <compileflags>-no-canonical-prefixes 
+  <compileflags>-fstack-protector 
+  <compileflags>-Os 
+  <compileflags>-DNDEBUG 
+  <compileflags>-fomit-frame-pointer 
+  <compileflags>-fstrict-aliasing 
+  <compileflags>-funswitch-loops 
+  <compileflags>-finline-limit=300 
+  <compileflags>-DANDROID  
+  <compileflags>-Wa,--noexecstack 
+  <compileflags>-Wformat 
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+########################################################################
+########################################################################
+########################################################################
+
+local NDK_PLATFORM = 21 ;
+
+#########################################################################
+# armeabi (android-21)
+#########################################################################
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = armeabi ;
+local NDK_TOOLCHAIN = arm-linux-androideabi ;
+local NDK_TOOLCHAIN_PREFIX = arm-linux-androideabi ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-arm ;
+
+using gcc : android_$(NDK_PLATFORM)_armeabi : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD
+  <compileflags>-MP
+  <compileflags>-MF
+  <compileflags>-fpic
+  <compileflags>-ffunction-sections
+  <compileflags>-funwind-tables
+  <compileflags>-fstack-protector
+  <compileflags>-no-canonical-prefixes
+  <compileflags>-march=armv5te
+  <compileflags>-mtune=xscale
+  <compileflags>-msoft-float
+  <compileflags>-mthumb
+  <compileflags>-Os
+  <compileflags>-DNDEBUG
+  <compileflags>-fomit-frame-pointer
+  <compileflags>-fno-strict-aliasing
+  <compileflags>-finline-limit=64
+  <compileflags>-DANDROID
+  <compileflags>-Wa,--noexecstack
+  <compileflags>-Wformat
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+#########################################################################
+# armeabi-v7a (android-21)
+#########################################################################
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = armeabi-v7a ;
+local NDK_TOOLCHAIN = arm-linux-androideabi ;
+local NDK_TOOLCHAIN_PREFIX = arm-linux-androideabi ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-arm ;
+
+using gcc : android_$(NDK_PLATFORM)_armeabi_v7a : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD
+  <compileflags>-MP 
+  <compileflags>-MF 
+  <compileflags>-fpic 
+  <compileflags>-ffunction-sections 
+  <compileflags>-funwind-tables 
+  <compileflags>-fstack-protector 
+  <compileflags>-no-canonical-prefixes 
+  <compileflags>-march=armv7-a 
+  <compileflags>-mfpu=vfpv3-d16 
+  <compileflags>-mfloat-abi=softfp 
+  <compileflags>-mthumb
+  <compileflags>-Os 
+  <compileflags>-DNDEBUG 
+  <compileflags>-fomit-frame-pointer 
+  <compileflags>-fno-strict-aliasing 
+  <compileflags>-finline-limit=64 
+  <compileflags>-DANDROID  
+  <compileflags>-Wa,--noexecstack 
+  <compileflags>-Wformat 
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+#########################################################################
+# mips (android-21)
+#########################################################################
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = mips ;
+local NDK_TOOLCHAIN = mipsel-linux-android ;
+local NDK_TOOLCHAIN_PREFIX = mipsel-linux-android ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-mips ;
+
+using gcc : android_$(NDK_PLATFORM)_mips : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD 
+  <compileflags>-MP 
+  <compileflags>-MF 
+  <compileflags>-fpic 
+  <compileflags>-fno-strict-aliasing 
+  <compileflags>-finline-functions 
+  <compileflags>-ffunction-sections 
+  <compileflags>-funwind-tables 
+  <compileflags>-fmessage-length=0 
+  <compileflags>-fno-inline-functions-called-once 
+  <compileflags>-fgcse-after-reload 
+  <compileflags>-frerun-cse-after-loop 
+  <compileflags>-frename-registers 
+  <compileflags>-no-canonical-prefixes 
+  <compileflags>-Os 
+  <compileflags>-DNDEBUG 
+  <compileflags>-fomit-frame-pointer 
+  <compileflags>-funswitch-loops 
+  <compileflags>-finline-limit=300 
+  <compileflags>-DANDROID
+  <compileflags>-Wa,--noexecstack 
+  <compileflags>-Wformat 
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+#########################################################################
+# x86 (android-21)
+#########################################################################
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = x86 ;
+local NDK_TOOLCHAIN = x86 ;
+local NDK_TOOLCHAIN_PREFIX = i686-linux-android ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-x86 ;
+
+using gcc : android_$(NDK_PLATFORM)_x86 : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD 
+  <compileflags>-MP 
+  <compileflags>-MF
+  <compileflags>-ffunction-sections 
+  <compileflags>-funwind-tables 
+  <compileflags>-no-canonical-prefixes 
+  <compileflags>-fstack-protector 
+  <compileflags>-Os 
+  <compileflags>-DNDEBUG 
+  <compileflags>-fomit-frame-pointer 
+  <compileflags>-fstrict-aliasing 
+  <compileflags>-funswitch-loops 
+  <compileflags>-finline-limit=300 
+  <compileflags>-DANDROID  
+  <compileflags>-Wa,--noexecstack 
+  <compileflags>-Wformat 
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+
+#########################################################################
+# arm64-v8a (android-21)
+#########################################################################
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = arm64-v8a ;
+local NDK_TOOLCHAIN = aarch64-linux-android ;
+local NDK_TOOLCHAIN_PREFIX = aarch64-linux-android ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-arm64 ;
+
+using gcc : android_$(NDK_PLATFORM)_arm64_v8a : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD
+  <compileflags>-MP
+  <compileflags>-MF
+  <compileflags>-fpic
+  <compileflags>-ffunction-sections
+  <compileflags>-funwind-tables
+  <compileflags>-fstack-protector
+  <compileflags>-no-canonical-prefixes
+  <compileflags>-Os
+  <compileflags>-DNDEBUG
+  <compileflags>-fomit-frame-pointer 
+  <compileflags>-fstrict-aliasing 
+  <compileflags>-funswitch-loops 
+  <compileflags>-finline-limit=300
+  <compileflags>-DANDROID
+  <compileflags>-Wa,--noexecstack 
+  <compileflags>-Wformat
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+
+#########################################################################
+# x86_64 (android-21)
+#########################################################################
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = x86_64 ;
+local NDK_TOOLCHAIN = x86_64 ;
+local NDK_TOOLCHAIN_PREFIX = x86_64-linux-android ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-$(NDK_ARCH) ;
+
+using gcc : android_$(NDK_PLATFORM)_x86_64 : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD
+  <compileflags>-MP
+  <compileflags>-MF
+  <compileflags>-ffunction-sections
+  <compileflags>-funwind-tables
+  <compileflags>-fstack-protector
+  <compileflags>-no-canonical-prefixes
+  <compileflags>-Os
+  <compileflags>-DNDEBUG
+  <compileflags>-fomit-frame-pointer
+  <compileflags>-fstrict-aliasing
+  <compileflags>-funswitch-loops
+  <compileflags>-finline-limit=300
+  <compileflags>-DANDROID
+  <compileflags>-Wa,--noexecstack
+  <compileflags>-Wformat
+  <compileflags>-Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;
+
+
+#########################################################################
+# mips64 (android-21)
+#########################################################################
+local NDK_HOST_PLATFORM = darwin-x86_64 ;
+local NDK_ARCH = mips64 ;
+local NDK_TOOLCHAIN = mips64el-linux-android ;
+local NDK_TOOLCHAIN_PREFIX = mips64el-linux-android ;
+local NDK_GCC_VERSION = 4.9 ;
+local NDK_GCC = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-g++ ;
+local NDK_AR = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ar ;
+local NDK_RANLIB = $(NDK_ROOT)/toolchains/$(NDK_TOOLCHAIN)-$(NDK_GCC_VERSION)/prebuilt/$(NDK_HOST_PLATFORM)/bin/$(NDK_TOOLCHAIN_PREFIX)-ranlib ;
+local NDK_SYSROOT = $(NDK_ROOT)/platforms/android-$(NDK_PLATFORM)/arch-$(NDK_ARCH) ;
+
+using gcc : android_$(NDK_PLATFORM)_mips64 : 
+  $(NDK_GCC) :
+  <archiver>$(NDK_AR)
+  <ranlib>$(NDK_RANLIB)
+  <compileflags>--sysroot=$(NDK_SYSROOT)
+  <compileflags>-D__GLIBC__
+  <compileflags>-std=c++11
+  <compileflags>-MMD
+  <compileflags>-MP
+  <compileflags>-MF
+  <compileflags>-fpic
+  <compileflags>-fno-strict-aliasing
+  <compileflags>-finline-functions
+  <compileflags>-ffunction-sections
+  <compileflags>-funwind-tables
+  <compileflags>-fmessage-length=0
+  <compileflags>-fno-inline-functions-called-once
+  <compileflags>-fgcse-after-reload
+  <compileflags>-frerun-cse-after-loop
+  <compileflags>-frename-registers
+  <compileflags>-no-canonical-prefixes
+  <compileflags>-Os
+  <compileflags>-DNDEBUG
+  <compileflags>-fomit-frame-pointer
+  <compileflags>-funswitch-loops
+  <compileflags>-finline-limit=300
+  <compileflags>-DANDROID
+  <compileflags>-Wa,--noexecstack
+  <compileflags>-Wformat -Werror=format-security
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/include
+  <compileflags>-I$(NDK_ROOT)/sources/cxx-stl/gnu-libstdc++/$(NDK_GCC_VERSION)/libs/$(NDK_ARCH)/include
+  <compileflags>-DBOOST_FILESYSTEM_VERSION=3  
+  ;

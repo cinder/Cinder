@@ -31,13 +31,15 @@
 
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	#include <ppltasks.h>
 	#include "cinder/winrt/WinRTUtils.h"
 	#include "cinder/Utilities.h"
 	#include "cinder/msw/CinderMsw.h"
 	using namespace Windows::Storage;
 	using namespace Concurrency;
+#elif defined( CINDER_ANDROID )
+	#include "cinder/app/android/PlatformAndroid.h"	
 #endif
 
 using namespace std;
@@ -378,7 +380,7 @@ ImageSource::RowFunc ImageSource::setupRowFunc( ImageTargetRef target )
 }
 
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 void loadImageAsync(const fs::path path, std::function<void (ImageSourceRef)> callback, ImageSource::Options options, std::string extension)
 {
 	auto loadImageTask = create_task([path, options, extension]() -> ImageSourceRef
@@ -412,7 +414,16 @@ void loadImageAsync(const fs::path path, std::function<void (ImageSourceRef)> ca
 ///////////////////////////////////////////////////////////////////////////////
 ImageSourceRef loadImage( const fs::path &path, ImageSource::Options options, string extension )
 {
+#if defined( CINDER_ANDROID )
+	if( ci::app::PlatformAndroid::isAssetPath( path ) ) {
+		return loadImage( (DataSourceRef)DataSourceAndroidAsset::create( path ), options, extension );			
+	}
+	else {
+		return loadImage( (DataSourceRef)DataSourcePath::create( path ), options, extension );
+	}
+#else	
 	return loadImage( (DataSourceRef)DataSourcePath::create( path ), options, extension );
+#endif	
 }
 
 ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options, string extension )
@@ -422,7 +433,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 #endif
 
 	if( extension.empty() ) // this is necessary to limit the lifetime of the objc-based loader's allocations
-#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
+#if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 		extension = dataSource->getFilePathHint().extension().string();
 #else
 		extension = dataSource->getFilePathHint().extension();
@@ -442,7 +453,7 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 #endif
 
 	if( extension.empty() ) {
-#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
+#if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 		extension = dataTarget->getFilePathHint().extension().string();
 #else
 		extension = dataTarget->getFilePathHint().extension();

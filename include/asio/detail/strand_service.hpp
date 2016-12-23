@@ -2,7 +2,7 @@
 // detail/strand_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -104,7 +104,7 @@ private:
   ASIO_DECL void do_post(implementation_type& impl,
       operation* op, bool is_continuation);
 
-  ASIO_DECL static void do_complete(io_service_impl* owner,
+  ASIO_DECL static void do_complete(void* owner,
       operation* base, const asio::error_code& ec,
       std::size_t bytes_transferred);
 

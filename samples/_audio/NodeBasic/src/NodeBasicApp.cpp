@@ -24,6 +24,8 @@ void NodeBasic::setup()
 {
 	// You use the audio::Context to make new audio::Node instances (audio::master() is the speaker-facing Context).
 	auto ctx = audio::master();
+	//auto output = ctx->getOutput();
+
 	mGen = ctx->makeNode( new audio::GenSineNode );
 	mGain = ctx->makeNode( new audio::GainNode );
 

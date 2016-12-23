@@ -173,6 +173,11 @@ quat MotionImplCoreMotion::getRotation( app::InterfaceOrientation orientation )
 	return q;
 }
 
+ci::mat4 MotionImplCoreMotion::getRotationMatrix( app::InterfaceOrientation orientation ) 
+{ 
+	return glm::toMat4( getRotation( orientation ) ); 
+}
+
 vec3 MotionImplCoreMotion::getRotationRate( app::InterfaceOrientation orientation )
 {
 	if( ! isMotionDataAvailable() )

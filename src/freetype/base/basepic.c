@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    The FreeType position independent code services for base.            */
 /*                                                                         */
-/*  Copyright 2009, 2012 by                                                */
+/*  Copyright 2009-2016 by                                                 */
 /*  Oran Agra and Mickey Gabel.                                            */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -35,7 +35,7 @@
   /* forward declaration of PIC init function from ftrfork.c */
   /* (not modularized)                                       */
   void
-  FT_Init_Table_raccess_guess_table( ft_raccess_guess_rec*  record );
+  FT_Init_Table_ft_raccess_guess_table( ft_raccess_guess_rec*  record );
 #endif
 
   /* forward declaration of PIC init functions from ftinit.c */
@@ -75,7 +75,7 @@
 
 
     /* allocate pointer, clear and set global container pointer */
-    if ( FT_ALLOC ( container, sizeof ( *container ) ) )
+    if ( FT_ALLOC( container, sizeof ( *container ) ) )
       return error;
     FT_MEM_SET( container, 0, sizeof ( *container ) );
     pic_container->base = container;
@@ -92,16 +92,15 @@
     FT_Init_Class_ft_bitmap_glyph_class(
       &container->ft_bitmap_glyph_class );
 #ifdef FT_CONFIG_OPTION_MAC_FONTS
-    FT_Init_Table_raccess_guess_table(
+    FT_Init_Table_ft_raccess_guess_table(
       (ft_raccess_guess_rec*)&container->ft_raccess_guess_table );
 #endif
 
-Exit:
-    if( error )
+  Exit:
+    if ( error )
       ft_base_pic_free( library );
     return error;
   }
-
 
 #endif /* FT_CONFIG_OPTION_PIC */
 

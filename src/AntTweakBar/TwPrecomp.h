@@ -101,7 +101,7 @@
 	#define CINDER_ANT_TW_BAR_IGNORE
 #endif
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 #include "cinder/WinRTUtils.h"
 #endif
 

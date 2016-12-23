@@ -52,8 +52,10 @@ class Timer {
 	bool	mIsStopped;
 #if defined( CINDER_COCOA )
 	double	mStartTime, mEndTime;
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
-	double				mStartTime, mEndTime, mInvNativeFreq;
+#elif defined( CINDER_MSW )
+	double	mStartTime, mEndTime, mInvNativeFreq;
+#elif defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	double	mStartTime, mEndTime;
 #endif
 };
 

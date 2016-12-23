@@ -2,7 +2,7 @@
 // ip/impl/address_v4.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -95,35 +95,6 @@ std::string address_v4::to_string(asio::error_code& ec) const
   return addr;
 }
 
-address_v4 address_v4::from_string(const char* str)
-{
-  asio::error_code ec;
-  address_v4 addr = from_string(str, ec);
-  asio::detail::throw_error(ec);
-  return addr;
-}
-
-address_v4 address_v4::from_string(
-    const char* str, asio::error_code& ec)
-{
-  address_v4 tmp;
-  if (asio::detail::socket_ops::inet_pton(
-        ASIO_OS_DEF(AF_INET), str, &tmp.addr_, 0, ec) <= 0)
-    return address_v4();
-  return tmp;
-}
-
-address_v4 address_v4::from_string(const std::string& str)
-{
-  return from_string(str.c_str());
-}
-
-address_v4 address_v4::from_string(
-    const std::string& str, asio::error_code& ec)
-{
-  return from_string(str.c_str(), ec);
-}
-
 bool address_v4::is_loopback() const
 {
   return (to_ulong() & 0xFF000000) == 0x7F000000;
@@ -168,6 +139,35 @@ address_v4 address_v4::netmask(const address_v4& addr)
   if (addr.is_class_c())
     return address_v4(0xFFFFFF00);
   return address_v4(0xFFFFFFFF);
+}
+
+address_v4 make_address_v4(const char* str)
+{
+  asio::error_code ec;
+  address_v4 addr = make_address_v4(str, ec);
+  asio::detail::throw_error(ec);
+  return addr;
+}
+
+address_v4 make_address_v4(
+    const char* str, asio::error_code& ec)
+{
+  address_v4::bytes_type bytes;
+  if (asio::detail::socket_ops::inet_pton(
+        ASIO_OS_DEF(AF_INET), str, &bytes, 0, ec) <= 0)
+    return address_v4();
+  return address_v4(bytes);
+}
+
+address_v4 make_address_v4(const std::string& str)
+{
+  return make_address_v4(str.c_str());
+}
+
+address_v4 make_address_v4(
+    const std::string& str, asio::error_code& ec)
+{
+  return make_address_v4(str.c_str(), ec);
 }
 
 } // namespace ip

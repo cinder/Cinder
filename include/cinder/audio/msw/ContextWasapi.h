@@ -24,8 +24,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-
-#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0600 ) // requires Windows Vista+
+#if defined( CINDER_UWP ) || ( _WIN32_WINNT >= 0x0600 ) // requires Windows Vista+
 
 #include "cinder/audio/Context.h"
 
@@ -80,4 +79,4 @@ class ContextWasapi : public Context {
 
 } } } // namespace cinder::audio::msw
 
-#endif // defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0600 )
+#endif // defined( CINDER_UWP ) || ( _WIN32_WINNT >= 0x0600 )

@@ -237,7 +237,7 @@
 				GCC_PREFIX_HEADER = SerialCommunication_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/libcinder_d.a ";
+				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a ";
 				PRODUCT_NAME = SerialCommunication;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -258,7 +258,7 @@
 				GCC_PREFIX_HEADER = SerialCommunication_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/libcinder.a ";
+				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/macosx/$(CONFIGURATION)/libcinder.a ";
 				PRODUCT_NAME = SerialCommunication;
 				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;

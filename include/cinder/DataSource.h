@@ -82,9 +82,33 @@ class DataSourcePath : public DataSource {
 	IStreamFileRef	mStream;	
 };
 
+
+#if defined( CINDER_ANDROID )
+typedef std::shared_ptr<class DataSourceAndroidAsset>	DataSourceAndroidAssetRef;
+
+class DataSourceAndroidAsset : public DataSource {
+ public:
+
+ 	static DataSourceAndroidAssetRef	create( const fs::path &path );
+
+	virtual bool	isFilePath() { return true; }
+	virtual bool	isUrl() { return false; }
+
+	virtual IStreamRef	createStream();
+
+  protected:
+	explicit DataSourceAndroidAsset( const fs::path &path );
+	
+	virtual	void	createBuffer();
+	
+	IStreamAndroidAssetRef	mStream;
+};
+#endif
+
+
 DataSourceRef	loadFile( const fs::path &path );
 
-#if !defined( CINDER_WINRT )
+#if ! defined( CINDER_UWP )
 typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
 class DataSourceUrl : public DataSource {
@@ -106,7 +130,7 @@ class DataSourceUrl : public DataSource {
 	UrlOptions		mOptions;
 	IStreamUrlRef	mStream;
 };
-#endif // if !defined( CINDER_WINRT )
+#endif // if !defined( CINDER_UWP )
 
 DataSourceRef			loadUrl( const Url &Url, const UrlOptions &options = UrlOptions() );
 inline DataSourceRef	loadUrl( const std::string &urlString, const UrlOptions &options = UrlOptions() ) { return loadUrl( Url( urlString ), options ); }

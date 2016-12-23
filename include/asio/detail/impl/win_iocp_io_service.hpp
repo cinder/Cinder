@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_io_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,56 +19,16 @@
 
 #if defined(ASIO_HAS_IOCP)
 
-#include "asio/detail/addressof.hpp"
 #include "asio/detail/completion_handler.hpp"
 #include "asio/detail/fenced_block.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
 #include "asio/detail/handler_invoke_helpers.hpp"
+#include "asio/detail/memory.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace detail {
-
-template <typename Handler>
-void win_iocp_io_service::dispatch(Handler& handler)
-{
-  if (thread_call_stack::contains(this))
-  {
-    fenced_block b(fenced_block::full);
-    asio_handler_invoke_helpers::invoke(handler, handler);
-  }
-  else
-  {
-    // Allocate and construct an operation to wrap the handler.
-    typedef completion_handler<Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
-      asio_handler_alloc_helpers::allocate(
-        sizeof(op), handler), 0 };
-    p.p = new (p.v) op(handler);
-
-    ASIO_HANDLER_CREATION((p.p, "io_service", this, "dispatch"));
-
-    post_immediate_completion(p.p, false);
-    p.v = p.p = 0;
-  }
-}
-
-template <typename Handler>
-void win_iocp_io_service::post(Handler& handler)
-{
-  // Allocate and construct an operation to wrap the handler.
-  typedef completion_handler<Handler> op;
-  typename op::ptr p = { asio::detail::addressof(handler),
-    asio_handler_alloc_helpers::allocate(
-      sizeof(op), handler), 0 };
-  p.p = new (p.v) op(handler);
-
-  ASIO_HANDLER_CREATION((p.p, "io_service", this, "post"));
-
-  post_immediate_completion(p.p, false);
-  p.v = p.p = 0;
-}
 
 template <typename Time_Traits>
 void win_iocp_io_service::add_timer_queue(
@@ -118,6 +78,19 @@ std::size_t win_iocp_io_service::cancel_timer(timer_queue<Time_Traits>& queue,
   std::size_t n = queue.cancel_timer(timer, ops, max_cancelled);
   post_deferred_completions(ops);
   return n;
+}
+
+template <typename Time_Traits>
+void win_iocp_io_service::move_timer(timer_queue<Time_Traits>& queue,
+    typename timer_queue<Time_Traits>::per_timer_data& to,
+    typename timer_queue<Time_Traits>::per_timer_data& from)
+{
+  asio::detail::mutex::scoped_lock lock(dispatch_mutex_);
+  op_queue<operation> ops;
+  queue.cancel_timer(to, ops);
+  queue.move_timer(to, from);
+  lock.unlock();
+  post_deferred_completions(ops);
 }
 
 } // namespace detail

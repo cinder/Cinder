@@ -2,7 +2,7 @@
 // posix/basic_descriptor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -45,10 +45,6 @@ class basic_descriptor
     public descriptor_base
 {
 public:
-  /// (Deprecated: Use native_handle_type.) The native representation of a
-  /// descriptor.
-  typedef typename DescriptorService::native_handle_type native_type;
-
   /// The native representation of a descriptor.
   typedef typename DescriptorService::native_handle_type native_handle_type;
 
@@ -188,7 +184,7 @@ public:
   /// Determine whether the descriptor is open.
   bool is_open() const
   {
-    return this->get_service().is_open(this->implementation);
+    return this->get_service().is_open(this->get_implementation());
   }
 
   /// Close the descriptor.
@@ -221,18 +217,6 @@ public:
     return this->get_service().close(this->get_implementation(), ec);
   }
 
-  /// (Deprecated: Use native_handle().) Get the native descriptor
-  /// representation.
-  /**
-   * This function may be used to obtain the underlying representation of the
-   * descriptor. This is intended to allow access to native descriptor
-   * functionality that is not otherwise provided.
-   */
-  native_type native()
-  {
-    return this->get_service().native_handle(this->implementation);
-  }
-
   /// Get the native descriptor representation.
   /**
    * This function may be used to obtain the underlying representation of the
@@ -241,7 +225,7 @@ public:
    */
   native_handle_type native_handle()
   {
-    return this->get_service().native_handle(this->implementation);
+    return this->get_service().native_handle(this->get_implementation());
   }
 
   /// Release ownership of the native descriptor implementation.
@@ -256,7 +240,7 @@ public:
    */
   native_handle_type release()
   {
-    return this->get_service().release(this->implementation);
+    return this->get_service().release(this->get_implementation());
   }
 
   /// Cancel all asynchronous operations associated with the descriptor.
@@ -365,7 +349,7 @@ public:
    */
   bool non_blocking() const
   {
-    return this->get_service().non_blocking(this->implementation);
+    return this->get_service().non_blocking(this->get_implementation());
   }
 
   /// Sets the non-blocking mode of the descriptor.
@@ -424,7 +408,8 @@ public:
    */
   bool native_non_blocking() const
   {
-    return this->get_service().native_non_blocking(this->implementation);
+    return this->get_service().native_non_blocking(
+        this->get_implementation());
   }
 
   /// Sets the non-blocking mode of the native descriptor implementation.
@@ -470,6 +455,104 @@ public:
   {
     return this->get_service().native_non_blocking(
         this->get_implementation(), mode, ec);
+  }
+
+  /// Wait for the descriptor to become ready to read, ready to write, or to
+  /// have pending error conditions.
+  /**
+   * This function is used to perform a blocking wait for a descriptor to enter
+   * a ready to read, write or error condition state.
+   *
+   * @param w Specifies the desired descriptor state.
+   *
+   * @par Example
+   * Waiting for a descriptor to become readable.
+   * @code
+   * asio::posix::stream_descriptor descriptor(io_service);
+   * ...
+   * descriptor.wait(asio::posix::stream_descriptor::wait_read);
+   * @endcode
+   */
+  void wait(wait_type w)
+  {
+    asio::error_code ec;
+    this->get_service().wait(this->get_implementation(), w, ec);
+    asio::detail::throw_error(ec, "wait");
+  }
+
+  /// Wait for the descriptor to become ready to read, ready to write, or to
+  /// have pending error conditions.
+  /**
+   * This function is used to perform a blocking wait for a descriptor to enter
+   * a ready to read, write or error condition state.
+   *
+   * @param w Specifies the desired descriptor state.
+   *
+   * @param ec Set to indicate what error occurred, if any.
+   *
+   * @par Example
+   * Waiting for a descriptor to become readable.
+   * @code
+   * asio::posix::stream_descriptor descriptor(io_service);
+   * ...
+   * asio::error_code ec;
+   * descriptor.wait(asio::posix::stream_descriptor::wait_read, ec);
+   * @endcode
+   */
+  asio::error_code wait(wait_type w, asio::error_code& ec)
+  {
+    return this->get_service().wait(this->get_implementation(), w, ec);
+  }
+
+  /// Asynchronously wait for the descriptor to become ready to read, ready to
+  /// write, or to have pending error conditions.
+  /**
+   * This function is used to perform an asynchronous wait for a descriptor to
+   * enter a ready to read, write or error condition state.
+   *
+   * @param w Specifies the desired descriptor state.
+   *
+   * @param handler The handler to be called when the wait operation completes.
+   * Copies will be made of the handler as required. The function signature of
+   * the handler must be:
+   * @code void handler(
+   *   const asio::error_code& error // Result of operation
+   * ); @endcode
+   * Regardless of whether the asynchronous operation completes immediately or
+   * not, the handler will not be invoked from within this function. Invocation
+   * of the handler will be performed in a manner equivalent to using
+   * asio::io_service::post().
+   *
+   * @par Example
+   * @code
+   * void wait_handler(const asio::error_code& error)
+   * {
+   *   if (!error)
+   *   {
+   *     // Wait succeeded.
+   *   }
+   * }
+   *
+   * ...
+   *
+   * asio::posix::stream_descriptor descriptor(io_service);
+   * ...
+   * descriptor.async_wait(
+   *     asio::posix::stream_descriptor::wait_read,
+   *     wait_handler);
+   * @endcode
+   */
+  template <typename WaitHandler>
+  ASIO_INITFN_RESULT_TYPE(WaitHandler,
+      void (asio::error_code))
+  async_wait(wait_type w, ASIO_MOVE_ARG(WaitHandler) handler)
+  {
+    // If you get an error on the following line it means that your handler does
+    // not meet the documented type requirements for a WaitHandler.
+    ASIO_WAIT_HANDLER_CHECK(WaitHandler, handler) type_check;
+
+    return this->get_service().async_wait(this->get_implementation(),
+        w, ASIO_MOVE_CAST(WaitHandler)(handler));
   }
 
 protected:

@@ -23,7 +23,7 @@
     #include <windows.h>
     #include <tchar.h>
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_UWP )
 	#include "cinder/WinRTUtils.h"
 #endif
 
@@ -32,9 +32,9 @@
         inline        PerfTimer()
 		{
 			if( !QueryPerformanceFrequency(&Freq) )
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW_DESKTOP )
 				MessageBox(NULL, _T("Precision timer not supported"), _T("Problem"), MB_ICONEXCLAMATION);
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 				cinder::winrt::WinRTMessageBox("Precision timer not supported", "OK");
 #endif
 			Reset();

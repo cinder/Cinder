@@ -36,7 +36,11 @@ BufferObjRef BufferObj::create( GLenum target, GLsizeiptr allocationSize, const 
 BufferObj::BufferObj( GLenum target )
 	: mId( 0 ), mSize( 0 ), mTarget( target ),
 #if defined( CINDER_GL_ES )
+  #if defined( CINDER_ANDROID ) || defined( CINDER_LINUX )
+	mUsage( GL_DYNAMIC_DRAW )
+  #else	
 	mUsage( 0 ) /* GL ES default buffer usage is undefined(?) */
+  #endif	
 #else
 	mUsage( GL_READ_WRITE )
 #endif
@@ -67,6 +71,11 @@ BufferObj::~BufferObj()
 void BufferObj::bind() const
 {
 	context()->bindBuffer( mTarget, mId );
+}
+
+void BufferObj::bind( GLenum target ) const
+{
+	context()->bindBuffer( target, mId );
 }
 
 void BufferObj::bufferData( GLsizeiptr size, const GLvoid *data, GLenum usage )
@@ -112,69 +121,61 @@ void BufferObj::ensureMinimumSize( GLsizeiptr minimumSize )
 	}
 }
 
-#if ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
+#if defined( CINDER_GL_HAS_MAP_BUFFER )
 void* BufferObj::map( GLenum access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES_2 )
-	return reinterpret_cast<void*>( glMapBufferOES( mTarget, access ) );
-#else
 	return reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
-#endif
 }
 #endif
 
-#if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
+#if defined( CINDER_GL_HAS_MAP_BUFFER ) || defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 void* BufferObj::mapWriteOnly()
 {
+	void* result = nullptr;
 	ScopedBuffer bufferBind( mTarget, mId );
-	// iOS ES 2 only has glMapBufferOES()
-#if defined( CINDER_GL_ES_2 )
-	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
-#else	
-	// ES 3 has only glMapBufferRange
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 	GLbitfield access = GL_MAP_WRITE_BIT;
-	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+	result = reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+#elif defined( CINDER_GL_HAS_MAP_BUFFER )
+	result = reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY ) );
 #endif
+	return result;
 }
 
 void* BufferObj::mapReplace()
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-	// iOS ES 2 only has glMapBufferOES()
-#if defined( CINDER_GL_ES_2 )
-	glBufferData( mTarget, mSize, nullptr, mUsage );
-	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
-#else	
-	// ES 3 has only glMapBufferRange
+	void* result = nullptr;
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 	GLbitfield access = GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT;
-	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+	result = reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
+#elif defined( CINDER_GL_HAS_MAP_BUFFER )
+	glBufferData( mTarget, mSize, nullptr, mUsage );
+	result = reinterpret_cast<void*>( glMapBuffer( mTarget, GL_WRITE_ONLY ) );
 #endif
+	return result;
 }
+#endif
 
+#if defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES_2 )
-	return reinterpret_cast<void*>( glMapBufferRangeEXT( mTarget, offset, length, access ) );
-#else
-	return reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
-#endif
+    return reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
 }
+#endif
 
+#if defined( CINDER_GL_HAS_MAP_BUFFER ) || defined( CINDER_GL_HAS_MAP_BUFFER_RANGE )
 void BufferObj::unmap() const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES_2 )	
-	GLboolean result = glUnmapBufferOES( mTarget );
-#else
-	GLboolean result = glUnmapBuffer( mTarget );
-#endif
-	if ( result != GL_TRUE ) {
-		//throw BufferFailedUnmapExc();
-	}
+    GLboolean result = glUnmapBuffer( mTarget );
+    if ( GL_TRUE != result ) {
+        //throw BufferFailedUnmapExc();
+    }
 }
-#endif // #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
+#endif
 
 size_t BufferObj::getSize() const
 {
@@ -219,6 +220,12 @@ GLuint BufferObj::getBindingConstantForTarget( GLenum target )
 			return GL_TRANSFORM_FEEDBACK_BUFFER_BINDING;
 		case GL_UNIFORM_BUFFER:
 			return GL_UNIFORM_BUFFER_BINDING;
+		case GL_DRAW_INDIRECT_BUFFER:
+			return GL_DRAW_INDIRECT_BUFFER_BINDING;
+		case GL_QUERY_BUFFER:
+			return GL_QUERY_BUFFER_BINDING;
+		case GL_ATOMIC_COUNTER_BUFFER:
+			return GL_ATOMIC_COUNTER_BUFFER_BINDING;
 #endif
 		default:
 			return 0;
@@ -228,10 +235,10 @@ GLuint BufferObj::getBindingConstantForTarget( GLenum target )
 void BufferObj::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DEBUG_LABEL )
 	env()->objectLabel( GL_BUFFER_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
-#else
-	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );	
+#elif defined( CINDER_HAS_KHR_DEBUG )
+	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );
 #endif
 }
 

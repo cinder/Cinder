@@ -2,7 +2,7 @@
 // ip/resolver_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -119,9 +119,8 @@ public:
   async_resolve(implementation_type& impl, const query_type& query,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
-    asio::detail::async_result_init<
-      ResolveHandler, void (asio::error_code, iterator_type)> init(
-        ASIO_MOVE_CAST(ResolveHandler)(handler));
+    asio::async_completion<ResolveHandler,
+      void (asio::error_code, iterator_type)> init(handler);
 
     service_impl_.async_resolve(impl, query, init.handler);
 
@@ -142,9 +141,8 @@ public:
   async_resolve(implementation_type& impl, const endpoint_type& endpoint,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
-    asio::detail::async_result_init<
-      ResolveHandler, void (asio::error_code, iterator_type)> init(
-        ASIO_MOVE_CAST(ResolveHandler)(handler));
+    asio::async_completion<ResolveHandler,
+      void (asio::error_code, iterator_type)> init(handler);
 
     service_impl_.async_resolve(impl, endpoint, init.handler);
 

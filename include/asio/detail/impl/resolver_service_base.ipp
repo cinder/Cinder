@@ -2,7 +2,7 @@
 // detail/impl/resolver_service_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -76,7 +76,7 @@ void resolver_service_base::fork_service(
     }
     else
     {
-      work_io_service_->reset();
+      work_io_service_->restart();
       work_thread_.reset(new asio::detail::thread(
             work_io_service_runner(*work_io_service_)));
     }

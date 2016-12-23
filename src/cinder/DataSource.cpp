@@ -23,6 +23,10 @@
 */
 
 #include "cinder/DataSource.h"
+#if defined( CINDER_ANDROID )
+  #include "cinder/app/android/AssetFileSystem.h"
+  #include "cinder/app/android/PlatformAndroid.h"
+#endif
 
 namespace cinder {
 
@@ -84,12 +88,56 @@ IStreamRef DataSourcePath::createStream()
 	return loadFileStream( mFilePath );
 }
 
-DataSourceRef loadFile( const fs::path &path )
+
+#if defined( CINDER_ANDROID )
+/////////////////////////////////////////////////////////////////////////////
+// DataSourceAndroidAsset
+DataSourceAndroidAssetRef DataSourceAndroidAsset::create( const fs::path &path )
 {
-	return DataSourcePath::create( path );
+	return DataSourceAndroidAssetRef( new DataSourceAndroidAsset( path ) );
 }
 
-#if !defined( CINDER_WINRT )
+DataSourceAndroidAsset::DataSourceAndroidAsset( const fs::path &path )
+	: DataSource( path, Url() )
+{
+	setFilePathHint( path );
+}
+
+void DataSourceAndroidAsset::createBuffer()
+{
+	// no-op - we already supplied the buffer in the constructor
+	IStreamAndroidAssetRef stream = loadAndroidAssetStream( mFilePath );
+ 	if( ! stream ) {
+		throw StreamExc( "loadAndroidAssetStream failed for " + mFilePath.string() );
+ 	}
+	mBuffer = loadStreamBuffer( stream );
+}
+
+IStreamRef DataSourceAndroidAsset::createStream()
+{
+	return loadAndroidAssetStream( mFilePath );
+}
+#endif // defined( CINDER_ANDROID )
+
+
+DataSourceRef loadFile( const fs::path &path )
+{
+#if defined( CINDER_ANDROID )
+	if( ci::app::PlatformAndroid::isAssetPath( path ) ) {
+		DataSourceRef result = DataSourceAndroidAsset::create( path );
+		return result;
+	}
+	else {
+		DataSourceRef result = DataSourcePath::create( path );
+		return result;		
+	}
+#else 
+	return DataSourcePath::create( path );
+#endif	
+}
+
+
+#if ! defined( CINDER_UWP )
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceUrl
 DataSourceUrlRef DataSourceUrl::create( const Url &url, const UrlOptions &options )
@@ -118,7 +166,7 @@ DataSourceRef loadUrl( const Url &url, const UrlOptions &options )
 {
 	return DataSourceUrl::create( url, options );
 }
-#endif //!defined( CINDER_WINRT )
+#endif // ! defined( CINDER_UWP )
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceBuffer

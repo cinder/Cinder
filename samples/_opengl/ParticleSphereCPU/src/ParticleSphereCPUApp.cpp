@@ -141,7 +141,7 @@ void ParticleSphereCPUApp::update()
 void ParticleSphereCPUApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
-	gl::setMatricesWindowPersp( getWindowSize() );
+	gl::setMatricesWindowPersp( getWindowSize(), 60.0f, 1.0f, 10000.0f );
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 

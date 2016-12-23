@@ -188,6 +188,8 @@ namespace glm
 	template <typename CTy, typename CTr, typename T, precision P>
 	GLM_FUNC_DECL std::basic_ostream<CTy,CTr>& operator<<(std::basic_ostream<CTy,CTr>&, tquat<T,P> const&);
 	template <typename CTy, typename CTr, typename T, precision P>
+	GLM_FUNC_DECL std::basic_ostream<CTy,CTr>& operator<<(std::basic_ostream<CTy,CTr>&, tvec1<T,P> const&);
+	template <typename CTy, typename CTr, typename T, precision P>
 	GLM_FUNC_DECL std::basic_ostream<CTy,CTr>& operator<<(std::basic_ostream<CTy,CTr>&, tvec2<T,P> const&);
 	template <typename CTy, typename CTr, typename T, precision P>
 	GLM_FUNC_DECL std::basic_ostream<CTy,CTr>& operator<<(std::basic_ostream<CTy,CTr>&, tvec3<T,P> const&);
@@ -217,6 +219,12 @@ namespace glm
 		std::basic_ostream<CTy,CTr> &,
 		std::pair<tmat4x4<T,P> const,
 		tmat4x4<T,P> const> const &);
+
+	template <typename CTy, typename CTr, typename T, precision P>
+	GLM_FUNC_DECL std::basic_ostream<CTy,CTr> & operator<<(
+		std::basic_ostream<CTy,CTr> &,
+		std::pair<tmat4x4<T,P>,
+		tmat4x4<T,P> > const &);
 
 	/// @}
 }//namespace glm

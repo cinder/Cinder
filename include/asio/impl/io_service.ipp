@@ -2,7 +2,7 @@
 // impl/io_service.ipp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -25,7 +25,7 @@
 #if defined(ASIO_HAS_IOCP)
 # include "asio/detail/win_iocp_io_service.hpp"
 #else
-# include "asio/detail/task_io_service.hpp"
+# include "asio/detail/scheduler.hpp"
 #endif
 
 #include "asio/detail/push_options.hpp"
@@ -33,23 +33,25 @@
 namespace asio {
 
 io_service::io_service()
-  : service_registry_(new asio::detail::service_registry(
-        *this, static_cast<impl_type*>(0),
-        (std::numeric_limits<std::size_t>::max)())),
-    impl_(service_registry_->first_service<impl_type>())
+  : impl_(create_impl())
 {
 }
 
 io_service::io_service(std::size_t concurrency_hint)
-  : service_registry_(new asio::detail::service_registry(
-        *this, static_cast<impl_type*>(0), concurrency_hint)),
-    impl_(service_registry_->first_service<impl_type>())
+  : impl_(create_impl(concurrency_hint))
 {
+}
+
+io_service::impl_type& io_service::create_impl(std::size_t concurrency_hint)
+{
+  asio::detail::scoped_ptr<impl_type> impl(
+      new impl_type(*this, concurrency_hint));
+  asio::add_service<impl_type>(*this, impl.get());
+  return *impl.release();
 }
 
 io_service::~io_service()
 {
-  delete service_registry_;
 }
 
 std::size_t io_service::run()
@@ -114,37 +116,17 @@ bool io_service::stopped() const
   return impl_.stopped();
 }
 
-void io_service::reset()
+void io_service::restart()
 {
-  impl_.reset();
-}
-
-void io_service::notify_fork(asio::io_service::fork_event event)
-{
-  service_registry_->notify_fork(event);
+  impl_.restart();
 }
 
 io_service::service::service(asio::io_service& owner)
-  : owner_(owner),
-    next_(0)
+  : execution_context::service(owner)
 {
 }
 
 io_service::service::~service()
-{
-}
-
-void io_service::service::fork_service(asio::io_service::fork_event)
-{
-}
-
-service_already_exists::service_already_exists()
-  : std::logic_error("Service already exists.")
-{
-}
-
-invalid_service_owner::invalid_service_owner()
-  : std::logic_error("Invalid service owner.")
 {
 }
 

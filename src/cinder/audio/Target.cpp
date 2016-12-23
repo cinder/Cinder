@@ -28,7 +28,7 @@
 
 #if defined( CINDER_COCOA )
 	#include "cinder/audio/cocoa/FileCoreAudio.h"
-#elif defined( CINDER_MSW ) || defined( CINDER_WINRT )
+#elif defined( CINDER_MSW )
 	#include "cinder/audio/msw/FileMediaFoundation.h"
 #endif
 
@@ -40,7 +40,7 @@ namespace cinder { namespace audio {
 
 std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
 {
-#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
+#if ! defined( CINDER_UWP ) || ( _MSC_VER > 1800 )
 	std::string ext = dataTarget->getFilePathHint().extension().string();
 #else
 	std::string ext = dataTarget->getFilePathHint().extension();
@@ -49,7 +49,7 @@ std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget,
 
 #if defined( CINDER_COCOA )
 	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, ext ) );
-#elif defined( CINDER_MSW ) || defined( CINDER_WINRT )
+#elif defined( CINDER_MSW )
 	return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
 #endif
 }

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    FreeType initialization layer (body).                                */
 /*                                                                         */
-/*  Copyright 1996-2002, 2005, 2007, 2009, 2012 by                         */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -138,7 +138,7 @@
 #include FT_CONFIG_MODULES_H
 
     FT_FREE( classes );
-    pic_container->default_module_classes = 0;
+    pic_container->default_module_classes = NULL;
   }
 
 
@@ -164,16 +164,16 @@
 
     memory = library->memory;
 
-    pic_container->default_module_classes = 0;
+    pic_container->default_module_classes = NULL;
 
-    if ( FT_ALLOC( classes, sizeof ( FT_Module_Class* ) * 
+    if ( FT_ALLOC( classes, sizeof ( FT_Module_Class* ) *
                               ( FT_NUM_MODULE_CLASSES + 1 ) ) )
       return error;
 
     /* initialize all pointers to 0, especially the last one */
     for ( i = 0; i < FT_NUM_MODULE_CLASSES; i++ )
-      classes[i] = 0;
-    classes[FT_NUM_MODULE_CLASSES] = 0;
+      classes[i] = NULL;
+    classes[FT_NUM_MODULE_CLASSES] = NULL;
 
     i = 0;
 
@@ -226,6 +226,115 @@
   }
 
 
+#ifdef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+
+#define MAX_LENGTH  128
+
+  /*
+   * Set default properties derived from the `FREETYPE_PROPERTIES'
+   * environment variable.
+   *
+   * `FREETYPE_PROPERTIES' has the following syntax form (broken here into
+   * multiple lines for better readability)
+   *
+   *   <optional whitespace>
+   *   <module-name1> ':'
+   *   <property-name1> '=' <property-value1>
+   *   <whitespace>
+   *   <module-name2> ':'
+   *   <property-name2> '=' <property-value2>
+   *   ...
+   *
+   * Example:
+   *
+   *   FREETYPE_PROPERTIES=truetype:interpreter-version=35 \
+   *                       cff:no-stem-darkening=1 \
+   *                       autofitter:warping=1
+   *
+   */
+
+  static void
+  ft_set_default_properties( FT_Library  library )
+  {
+    const char*  env;
+    const char*  p;
+    const char*  q;
+
+    char  module_name[MAX_LENGTH + 1];
+    char  property_name[MAX_LENGTH + 1];
+    char  property_value[MAX_LENGTH + 1];
+
+    int  i;
+
+
+    env = ft_getenv( "FREETYPE_PROPERTIES" );
+    if ( !env )
+      return;
+
+    for ( p = env; *p; p++ )
+    {
+      /* skip leading whitespace and separators */
+      if ( *p == ' ' || *p == '\t' )
+        continue;
+
+      /* read module name, followed by `:' */
+      q = p;
+      for ( i = 0; i < MAX_LENGTH; i++ )
+      {
+        if ( !*p || *p == ':' )
+          break;
+        module_name[i] = *p++;
+      }
+      module_name[i] = '\0';
+
+      if ( !*p || *p != ':' || p == q )
+        break;
+
+      /* read property name, followed by `=' */
+      q = ++p;
+      for ( i = 0; i < MAX_LENGTH; i++ )
+      {
+        if ( !*p || *p == '=' )
+          break;
+        property_name[i] = *p++;
+      }
+      property_name[i] = '\0';
+
+      if ( !*p || *p != '=' || p == q )
+        break;
+
+      /* read property value, followed by whitespace (if any) */
+      q = ++p;
+      for ( i = 0; i < MAX_LENGTH; i++ )
+      {
+        if ( !*p || *p == ' ' || *p == '\t' )
+          break;
+        property_value[i] = *p++;
+      }
+      property_value[i] = '\0';
+
+      if ( !( *p == '\0' || *p == ' ' || *p == '\t' ) || p == q )
+        break;
+
+      /* we completely ignore errors */
+      ft_property_string_set( library,
+                              module_name,
+                              property_name,
+                              property_value );
+    }
+  }
+
+#else
+
+  static void
+  ft_set_default_properties( FT_Library  library )
+  {
+    FT_UNUSED( library );
+  }
+
+#endif
+
+
   /* documentation is in freetype.h */
 
   FT_EXPORT_DEF( FT_Error )
@@ -235,6 +344,8 @@
     FT_Memory  memory;
 
 
+    /* check of `alibrary' delayed to `FT_New_Library' */
+
     /* First of all, allocate a new system object -- this function is part */
     /* of the system-specific component, i.e. `ftsystem.c'.                */
 
@@ -242,7 +353,7 @@
     if ( !memory )
     {
       FT_ERROR(( "FT_Init_FreeType: cannot find memory manager\n" ));
-      return FT_Err_Unimplemented_Feature;
+      return FT_THROW( Unimplemented_Feature );
     }
 
     /* build a library out of it, then fill it with the set of */
@@ -254,6 +365,8 @@
     else
       FT_Add_Default_Modules( *alibrary );
 
+    ft_set_default_properties( *alibrary );
+
     return error;
   }
 
@@ -263,17 +376,19 @@
   FT_EXPORT_DEF( FT_Error )
   FT_Done_FreeType( FT_Library  library )
   {
-    if ( library )
-    {
-      FT_Memory  memory = library->memory;
+    FT_Memory  memory;
 
 
-      /* Discard the library object */
-      FT_Done_Library( library );
+    if ( !library )
+      return FT_THROW( Invalid_Library_Handle );
 
-      /* discard memory manager */
-      FT_Done_Memory( memory );
-    }
+    memory = library->memory;
+
+    /* Discard the library object */
+    FT_Done_Library( library );
+
+    /* discard memory manager */
+    FT_Done_Memory( memory );
 
     return FT_Err_Ok;
   }

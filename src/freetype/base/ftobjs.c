@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    The FreeType private base classes (body).                            */
 /*                                                                         */
-/*  Copyright 1996-2012 by                                                 */
+/*  Copyright 1996-2016 by                                                 */
 /*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
@@ -40,6 +40,41 @@
 #ifdef FT_CONFIG_OPTION_MAC_FONTS
 #include "ftbase.h"
 #endif
+
+
+#ifdef FT_DEBUG_LEVEL_TRACE
+
+#include FT_BITMAP_H
+
+#if defined( _MSC_VER )      /* Visual C++ (and Intel C++)   */
+  /* We disable the warning `conversion from XXX to YYY,     */
+  /* possible loss of data' in order to compile cleanly with */
+  /* the maximum level of warnings: `md5.c' is non-FreeType  */
+  /* code, and it gets used during development builds only.  */
+#pragma warning( push )
+#pragma warning( disable : 4244 )
+#endif /* _MSC_VER */
+
+  /* It's easiest to include `md5.c' directly.  However, since OpenSSL */
+  /* also provides the same functions, there might be conflicts if     */
+  /* both FreeType and OpenSSL are built as static libraries.  For     */
+  /* this reason, we put the MD5 stuff into the `FT_' namespace.       */
+#define FT_MD5_u32plus  FT_FT_MD5_u32plus
+#define FT_MD5_CTX      FT_FT_MD5_CTX
+#define FT_MD5_Init     FT_FT_MD5_Init
+#define FT_MD5_Update   FT_FT_MD5_Update
+#define FT_MD5_Final    FT_FT_MD5_Final
+
+#undef  HAVE_OPENSSL
+
+#include "md5.c"
+
+#if defined( _MSC_VER )
+#pragma warning( pop )
+#endif
+
+#endif /* FT_DEBUG_LEVEL_TRACE */
+
 
 #define GRID_FIT_METRICS
 
@@ -134,13 +169,13 @@
     FT_Stream  stream = NULL;
 
 
-    *astream = 0;
+    *astream = NULL;
 
     if ( !library )
-      return FT_Err_Invalid_Library_Handle;
+      return FT_THROW( Invalid_Library_Handle );
 
     if ( !args )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     memory = library->memory;
 
@@ -154,7 +189,7 @@
       /* create a memory-based stream */
       FT_Stream_OpenMemory( stream,
                             (const FT_Byte*)args->memory_base,
-                            args->memory_size );
+                            (FT_ULong)args->memory_size );
     }
 
 #ifndef FT_CONFIG_OPTION_DISABLE_STREAM_SUPPORT
@@ -178,7 +213,7 @@
 #endif
 
     else
-      error = FT_Err_Invalid_Argument;
+      error = FT_THROW( Invalid_Argument );
 
     if ( error )
       FT_FREE( stream );
@@ -329,10 +364,10 @@
     slot->bitmap_left   = 0;
     slot->bitmap_top    = 0;
     slot->num_subglyphs = 0;
-    slot->subglyphs     = 0;
-    slot->control_data  = 0;
+    slot->subglyphs     = NULL;
+    slot->control_data  = NULL;
     slot->control_len   = 0;
-    slot->other         = 0;
+    slot->other         = NULL;
     slot->format        = FT_GLYPH_FORMAT_NONE;
 
     slot->linearHoriAdvance = 0;
@@ -363,7 +398,7 @@
       if ( FT_DRIVER_USES_OUTLINES( driver ) )
       {
         FT_GlyphLoader_Done( slot->internal->loader );
-        slot->internal->loader = 0;
+        slot->internal->loader = NULL;
       }
 
       FT_FREE( slot->internal );
@@ -384,8 +419,11 @@
     FT_GlyphSlot     slot = NULL;
 
 
-    if ( !face || !face->driver )
-      return FT_Err_Invalid_Argument;
+    if ( !face )
+      return FT_THROW( Invalid_Face_Handle );
+
+    if ( !face->driver )
+      return FT_THROW( Invalid_Argument );
 
     driver = face->driver;
     clazz  = driver->clazz;
@@ -411,7 +449,7 @@
         *aslot = slot;
     }
     else if ( aslot )
-      *aslot = 0;
+      *aslot = NULL;
 
 
   Exit:
@@ -484,6 +522,7 @@
       internal->transform_matrix.xy = 0;
       internal->transform_matrix.yx = 0;
       internal->transform_matrix.yy = 0x10000L;
+
       matrix = &internal->transform_matrix;
     }
     else
@@ -499,6 +538,7 @@
     {
       internal->transform_delta.x = 0;
       internal->transform_delta.y = 0;
+
       delta = &internal->transform_delta;
     }
     else
@@ -575,7 +615,7 @@
 
 
     if ( !face || !face->size || !face->glyph )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     /* The validity test for `glyph_index' is performed by the */
     /* font drivers.                                           */
@@ -641,11 +681,18 @@
 
         /* the check for `num_locations' assures that we actually    */
         /* test for instructions in a TTF and not in a CFF-based OTF */
-        if ( mode == FT_RENDER_MODE_LIGHT                       ||
-             face->internal->ignore_unpatented_hinter           ||
+        /*                                                           */
+        /* since `maxSizeOfInstructions' might be unreliable, we     */
+        /* check the size of the `fpgm' and `prep' tables, too --    */
+        /* the assumption is that there don't exist real TTFs where  */
+        /* both `fpgm' and `prep' tables are missing                 */
+        if ( ( mode == FT_RENDER_MODE_LIGHT                   &&
+               !FT_DRIVER_HINTS_LIGHTLY( driver ) )             ||
              ( FT_IS_SFNT( face )                             &&
                ttface->num_locations                          &&
-               ttface->max_profile.maxSizeOfInstructions == 0 ) )
+               ttface->max_profile.maxSizeOfInstructions == 0 &&
+               ttface->font_program_size == 0                 &&
+               ttface->cvt_program_size == 0                  ) )
           autohint = TRUE;
       }
     }
@@ -815,7 +862,7 @@
 
 
     if ( !face )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     glyph_index = (FT_UInt)char_code;
     if ( face->charmap )
@@ -896,7 +943,7 @@
                       (FT_List_Destructor)destroy_size,
                       memory,
                       driver );
-    face->size = 0;
+    face->size = NULL;
 
     /* now discard client data */
     if ( face->generic.finalizer )
@@ -914,7 +961,7 @@
       face->stream,
       ( face->face_flags & FT_FACE_FLAG_EXTERNAL_STREAM ) != 0 );
 
-    face->stream = 0;
+    face->stream = NULL;
 
     /* get rid of it */
     if ( face->internal )
@@ -932,10 +979,6 @@
                       (FT_List_Destructor)destroy_face,
                       driver->root.memory,
                       driver );
-
-    /* check whether we need to drop the driver's glyph loader */
-    if ( FT_DRIVER_USES_OUTLINES( driver ) )
-      FT_GlyphLoader_Done( driver->glyph_loader );
   }
 
 
@@ -966,7 +1009,7 @@
     first = face->charmaps;
 
     if ( !first )
-      return FT_Err_Invalid_CharMap_Handle;
+      return FT_THROW( Invalid_CharMap_Handle );
 
     /*
      *  The original TrueType specification(s) only specified charmap
@@ -1009,14 +1052,6 @@
              ( cur[0]->platform_id == TT_PLATFORM_APPLE_UNICODE &&
                cur[0]->encoding_id == TT_APPLE_ID_UNICODE_32    ) )
         {
-#ifdef FT_MAX_CHARMAP_CACHEABLE
-          if ( cur - first > FT_MAX_CHARMAP_CACHEABLE )
-          {
-            FT_ERROR(( "find_unicode_charmap: UCS-4 cmap is found "
-                       "at too late position (%d)\n", cur - first ));
-            continue;
-          }
-#endif
           face->charmap = cur[0];
           return FT_Err_Ok;
         }
@@ -1031,20 +1066,12 @@
     {
       if ( cur[0]->encoding == FT_ENCODING_UNICODE )
       {
-#ifdef FT_MAX_CHARMAP_CACHEABLE
-        if ( cur - first > FT_MAX_CHARMAP_CACHEABLE )
-        {
-          FT_ERROR(( "find_unicode_charmap: UCS-2 cmap is found "
-                     "at too late position (%d)\n", cur - first ));
-          continue;
-        }
-#endif
         face->charmap = cur[0];
         return FT_Err_Ok;
       }
     }
 
-    return FT_Err_Invalid_CharMap_Handle;
+    return FT_THROW( Invalid_CharMap_Handle );
   }
 
 
@@ -1080,17 +1107,7 @@
       if ( cur[0]->platform_id == TT_PLATFORM_APPLE_UNICODE    &&
            cur[0]->encoding_id == TT_APPLE_ID_VARIANT_SELECTOR &&
            FT_Get_CMap_Format( cur[0] ) == 14                  )
-      {
-#ifdef FT_MAX_CHARMAP_CACHEABLE
-        if ( cur - first > FT_MAX_CHARMAP_CACHEABLE )
-        {
-          FT_ERROR(( "find_unicode_charmap: UVS cmap is found "
-                     "at too late position (%d)\n", cur - first ));
-          continue;
-        }
-#endif
         return cur[0];
-      }
     }
 
     return NULL;
@@ -1107,7 +1124,8 @@
   /*                                                                       */
   static FT_Error
   open_face( FT_Driver      driver,
-             FT_Stream      stream,
+             FT_Stream      *astream,
+             FT_Bool        external_stream,
              FT_Long        face_index,
              FT_Int         num_params,
              FT_Parameter*  params,
@@ -1115,9 +1133,10 @@
   {
     FT_Memory         memory;
     FT_Driver_Class   clazz;
-    FT_Face           face = 0;
-    FT_Error          error, error2;
+    FT_Face           face     = NULL;
     FT_Face_Internal  internal = NULL;
+
+    FT_Error          error, error2;
 
 
     clazz  = driver->clazz;
@@ -1127,21 +1146,25 @@
     if ( FT_ALLOC( face, clazz->face_object_size ) )
       goto Fail;
 
+    face->driver = driver;
+    face->memory = memory;
+    face->stream = *astream;
+
+    /* set the FT_FACE_FLAG_EXTERNAL_STREAM bit for FT_Done_Face */
+    if ( external_stream )
+      face->face_flags |= FT_FACE_FLAG_EXTERNAL_STREAM;
+
     if ( FT_NEW( internal ) )
       goto Fail;
 
     face->internal = internal;
-
-    face->driver   = driver;
-    face->memory   = memory;
-    face->stream   = stream;
 
 #ifdef FT_CONFIG_OPTION_INCREMENTAL
     {
       int  i;
 
 
-      face->internal->incremental_interface = 0;
+      face->internal->incremental_interface = NULL;
       for ( i = 0; i < num_params && !face->internal->incremental_interface;
             i++ )
         if ( params[i].tag == FT_PARAM_TAG_INCREMENTAL )
@@ -1151,11 +1174,12 @@
 #endif
 
     if ( clazz->init_face )
-      error = clazz->init_face( stream,
+      error = clazz->init_face( *astream,
                                 face,
                                 (FT_Int)face_index,
                                 num_params,
                                 params );
+    *astream = face->stream; /* Stream may have been changed. */
     if ( error )
       goto Fail;
 
@@ -1166,7 +1190,7 @@
     /* is returned.                                                      */
 
     /* no error should happen, but we want to play safe */
-    if ( error2 && error2 != FT_Err_Invalid_CharMap_Handle )
+    if ( error2 && FT_ERR_NEQ( error2, Invalid_CharMap_Handle ) )
     {
       error = error2;
       goto Fail;
@@ -1182,7 +1206,7 @@
         clazz->done_face( face );
       FT_FREE( internal );
       FT_FREE( face );
-      *aface = 0;
+      *aface = NULL;
     }
 
     return error;
@@ -1205,9 +1229,9 @@
     FT_Open_Args  args;
 
 
-    /* test for valid `library' and `aface' delayed to FT_Open_Face() */
+    /* test for valid `library' and `aface' delayed to `FT_Open_Face' */
     if ( !pathname )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     args.flags    = FT_OPEN_PATHNAME;
     args.pathname = (char*)pathname;
@@ -1231,9 +1255,9 @@
     FT_Open_Args  args;
 
 
-    /* test for valid `library' and `face' delayed to FT_Open_Face() */
+    /* test for valid `library' and `face' delayed to `FT_Open_Face' */
     if ( !file_base )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     args.flags       = FT_OPEN_MEMORY;
     args.memory_base = file_base;
@@ -1285,8 +1309,8 @@
     FT_FREE( stream->base );
 
     stream->size  = 0;
-    stream->base  = 0;
-    stream->close = 0;
+    stream->base  = NULL;
+    stream->close = NULL;
   }
 
 
@@ -1305,12 +1329,12 @@
 
 
     if ( !library )
-      return FT_Err_Invalid_Library_Handle;
+      return FT_THROW( Invalid_Library_Handle );
 
     if ( !base )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
-    *astream = 0;
+    *astream = NULL;
     memory = library->memory;
     if ( FT_NEW( stream ) )
       goto Exit;
@@ -1362,13 +1386,13 @@
     }
 
 #ifdef FT_MACINTOSH
-    /* At this point, face_index has served its purpose;      */
+    /* At this point, the face index has served its purpose;  */
     /* whoever calls this function has already used it to     */
     /* locate the correct font data.  We should not propagate */
     /* this index to FT_Open_Face() (unless it is negative).  */
 
     if ( face_index > 0 )
-      face_index = 0;
+      face_index &= 0x7FFF0000L; /* retain GX data */
 #endif
 
     error = FT_Open_Face( library, &args, face_index, aface );
@@ -1394,7 +1418,7 @@
 
   /* Type 1 and CID-keyed font drivers should recognize sfnt-wrapped */
   /* format too.  Here, since we can't expect that the TrueType font */
-  /* driver is loaded unconditially, we must parse the font by       */
+  /* driver is loaded unconditionally, we must parse the font by     */
   /* ourselves.  We are only interested in the name of the table and */
   /* the offset.                                                     */
 
@@ -1422,7 +1446,7 @@
     if ( FT_READ_ULONG( tag ) )
       return error;
     if ( tag != TTAG_typ1 )
-      return FT_Err_Unknown_File_Format;
+      return FT_THROW( Unknown_File_Format );
 
     if ( FT_READ_USHORT( numTables ) )
       return error;
@@ -1459,7 +1483,8 @@
       if ( face_index >= 0 && pstable_index == face_index )
         return FT_Err_Ok;
     }
-    return FT_Err_Table_Missing;
+
+    return FT_THROW( Table_Missing );
   }
 
 
@@ -1474,7 +1499,7 @@
     FT_Error   error;
     FT_Memory  memory = library->memory;
     FT_ULong   offset, length;
-    FT_Long    pos;
+    FT_ULong   pos;
     FT_Bool    is_sfnt_cid;
     FT_Byte*   sfnt_ps = NULL;
 
@@ -1482,7 +1507,11 @@
     FT_UNUSED( params );
 
 
-    pos = FT_Stream_Pos( stream );
+    /* ignore GX stuff */
+    if ( face_index > 0 )
+      face_index &= 0xFFFFL;
+
+    pos = FT_STREAM_POS();
 
     error = ft_lookup_PS_in_sfnt_stream( stream,
                                          face_index,
@@ -1492,7 +1521,21 @@
     if ( error )
       goto Exit;
 
-    if ( FT_Stream_Seek( stream, pos + offset ) )
+    if ( offset > stream->size )
+    {
+      FT_TRACE2(( "open_face_PS_from_sfnt_stream: invalid table offset\n" ));
+      error = FT_THROW( Invalid_Table );
+      goto Exit;
+    }
+    else if ( length > stream->size - offset )
+    {
+      FT_TRACE2(( "open_face_PS_from_sfnt_stream: invalid table length\n" ));
+      error = FT_THROW( Invalid_Table );
+      goto Exit;
+    }
+
+    error = FT_Stream_Seek( stream, pos + offset );
+    if ( error )
       goto Exit;
 
     if ( FT_ALLOC( sfnt_ps, (FT_Long)length ) )
@@ -1500,12 +1543,15 @@
 
     error = FT_Stream_Read( stream, (FT_Byte *)sfnt_ps, length );
     if ( error )
+    {
+      FT_FREE( sfnt_ps );
       goto Exit;
+    }
 
     error = open_face_from_buffer( library,
                                    sfnt_ps,
                                    length,
-                                   face_index < 0 ? face_index : 0,
+                                   FT_MIN( face_index, 0 ),
                                    is_sfnt_cid ? "cid" : "type1",
                                    aface );
   Exit:
@@ -1513,7 +1559,7 @@
       FT_Error  error1;
 
 
-      if ( error == FT_Err_Unknown_File_Format )
+      if ( FT_ERR_EQ( error, Unknown_File_Format ) )
       {
         error1 = FT_Stream_Seek( stream, pos );
         if ( error1 )
@@ -1541,13 +1587,13 @@
                           FT_Long     face_index,
                           FT_Face    *aface )
   {
-    FT_Error   error  = FT_Err_Cannot_Open_Resource;
+    FT_Error   error  = FT_ERR( Cannot_Open_Resource );
     FT_Memory  memory = library->memory;
     FT_Byte*   pfb_data = NULL;
     int        i, type, flags;
-    FT_Long    len;
-    FT_Long    pfb_len, pfb_pos, pfb_lenpos;
-    FT_Long    rlen, temp;
+    FT_ULong   len;
+    FT_ULong   pfb_len, pfb_pos, pfb_lenpos;
+    FT_ULong   rlen, temp;
 
 
     if ( face_index == -1 )
@@ -1560,14 +1606,39 @@
     pfb_len = 0;
     for ( i = 0; i < resource_cnt; ++i )
     {
-      error = FT_Stream_Seek( stream, offsets[i] );
+      error = FT_Stream_Seek( stream, (FT_ULong)offsets[i] );
       if ( error )
         goto Exit;
-      if ( FT_READ_LONG( temp ) )
+      if ( FT_READ_ULONG( temp ) )
         goto Exit;
+
+      /* FT2 allocator takes signed long buffer length,
+       * too large value causing overflow should be checked
+       */
+      FT_TRACE4(( "                 POST fragment #%d: length=0x%08x"
+                  " total pfb_len=0x%08x\n",
+                  i, temp, pfb_len + temp + 6));
+      if ( FT_MAC_RFORK_MAX_LEN < temp               ||
+           FT_MAC_RFORK_MAX_LEN - temp < pfb_len + 6 )
+      {
+        FT_TRACE2(( "             MacOS resource length cannot exceed"
+                    " 0x%08x\n", FT_MAC_RFORK_MAX_LEN ));
+        error = FT_THROW( Invalid_Offset );
+        goto Exit;
+      }
+
       pfb_len += temp + 6;
     }
 
+    FT_TRACE2(( "             total buffer size to concatenate %d"
+                " POST fragments: 0x%08x\n",
+                 resource_cnt, pfb_len + 2));
+    if ( pfb_len + 2 < 6 ) {
+      FT_TRACE2(( "             too long fragment length makes"
+                  " pfb_len confused: pfb_len=0x%08x\n", pfb_len ));
+      error = FT_THROW( Array_Too_Large );
+      goto Exit;
+    }
     if ( FT_ALLOC( pfb_data, (FT_Long)pfb_len + 2 ) )
       goto Exit;
 
@@ -1584,19 +1655,33 @@
     type = 1;
     for ( i = 0; i < resource_cnt; ++i )
     {
-      error = FT_Stream_Seek( stream, offsets[i] );
+      error = FT_Stream_Seek( stream, (FT_ULong)offsets[i] );
       if ( error )
         goto Exit2;
-      if ( FT_READ_LONG( rlen ) )
-        goto Exit;
+      if ( FT_READ_ULONG( rlen ) )
+        goto Exit2;
+
+      /* FT2 allocator takes signed long buffer length,
+       * too large fragment length causing overflow should be checked
+       */
+      if ( 0x7FFFFFFFUL < rlen )
+      {
+        error = FT_THROW( Invalid_Offset );
+        goto Exit2;
+      }
+
       if ( FT_READ_USHORT( flags ) )
-        goto Exit;
+        goto Exit2;
       FT_TRACE3(( "POST fragment[%d]: offsets=0x%08x, rlen=0x%08x, flags=0x%04x\n",
                    i, offsets[i], rlen, flags ));
 
+      error = FT_ERR( Array_Too_Large );
       /* postpone the check of rlen longer than buffer until FT_Stream_Read() */
       if ( ( flags >> 8 ) == 0 )        /* Comment, should not be loaded */
+      {
+        FT_TRACE3(( "    Skip POST fragment #%d because it is a comment\n", i ));
         continue;
+      }
 
       /* the flags are part of the resource, so rlen >= 2.  */
       /* but some fonts declare rlen = 0 for empty fragment */
@@ -1609,6 +1694,8 @@
         len += rlen;
       else
       {
+        FT_TRACE3(( "    Write POST fragment #%d header (4-byte) to buffer"
+                    " %p + 0x%08x\n", i, pfb_data, pfb_lenpos ));
         if ( pfb_lenpos + 3 > pfb_len + 2 )
           goto Exit2;
         pfb_data[pfb_lenpos    ] = (FT_Byte)( len );
@@ -1619,6 +1706,8 @@
         if ( ( flags >> 8 ) == 5 )      /* End of font mark */
           break;
 
+        FT_TRACE3(( "    Write POST fragment #%d header (6-byte) to buffer"
+                    " %p + 0x%08x\n", i, pfb_data, pfb_pos ));
         if ( pfb_pos + 6 > pfb_len + 2 )
           goto Exit2;
         pfb_data[pfb_pos++] = 0x80;
@@ -1634,16 +1723,18 @@
         pfb_data[pfb_pos++] = 0;
       }
 
-      error = FT_Err_Cannot_Open_Resource;
       if ( pfb_pos > pfb_len || pfb_pos + rlen > pfb_len )
         goto Exit2;
 
+      FT_TRACE3(( "    Load POST fragment #%d (%d byte) to buffer"
+                  " %p + 0x%08x\n", i, rlen, pfb_data, pfb_pos ));
       error = FT_Stream_Read( stream, (FT_Byte *)pfb_data + pfb_pos, rlen );
       if ( error )
         goto Exit2;
       pfb_pos += rlen;
     }
 
+    error = FT_ERR( Array_Too_Large );
     if ( pfb_pos + 2 > pfb_len + 2 )
       goto Exit2;
     pfb_data[pfb_pos++] = 0x80;
@@ -1664,6 +1755,13 @@
                                   aface );
 
   Exit2:
+    if ( error == FT_ERR( Array_Too_Large ) )
+      FT_TRACE2(( "  Abort due to too-short buffer to store"
+                  " all POST fragments\n" ));
+    else if ( error == FT_ERR( Invalid_Offset ) )
+      FT_TRACE2(( "  Abort due to invalid offset in a POST fragment\n" ));
+    if ( error )
+      error = FT_ERR( Cannot_Open_Resource );
     FT_FREE( pfb_data );
 
   Exit:
@@ -1674,7 +1772,7 @@
   /* The resource header says we've got resource_cnt `sfnt'      */
   /* (TrueType/OpenType) resources in this file.  Look through   */
   /* them for the one indicated by face_index, load it into mem, */
-  /* pass it on the the truetype driver and return it.           */
+  /* pass it on to the truetype driver, and return it.           */
   /*                                                             */
   static FT_Error
   Mac_Read_sfnt_Resource( FT_Library  library,
@@ -1687,18 +1785,18 @@
     FT_Memory  memory = library->memory;
     FT_Byte*   sfnt_data = NULL;
     FT_Error   error;
-    FT_Long    flag_offset;
+    FT_ULong   flag_offset;
     FT_Long    rlen;
     int        is_cff;
     FT_Long    face_index_in_resource = 0;
 
 
-    if ( face_index == -1 )
-      face_index = 0;
+    if ( face_index < 0 )
+      face_index = -face_index - 1;
     if ( face_index >= resource_cnt )
-      return FT_Err_Cannot_Open_Resource;
+      return FT_THROW( Cannot_Open_Resource );
 
-    flag_offset = offsets[face_index];
+    flag_offset = (FT_ULong)offsets[face_index];
     error = FT_Stream_Seek( stream, flag_offset );
     if ( error )
       goto Exit;
@@ -1706,7 +1804,9 @@
     if ( FT_READ_LONG( rlen ) )
       goto Exit;
     if ( rlen == -1 )
-      return FT_Err_Cannot_Open_Resource;
+      return FT_THROW( Cannot_Open_Resource );
+    if ( (FT_ULong)rlen > FT_MAC_RFORK_MAX_LEN )
+      return FT_THROW( Invalid_Offset );
 
     error = open_face_PS_from_sfnt_stream( library,
                                            stream,
@@ -1717,19 +1817,22 @@
       goto Exit;
 
     /* rewind sfnt stream before open_face_PS_from_sfnt_stream() */
-    if ( FT_Stream_Seek( stream, flag_offset + 4 ) )
-      goto Exit;
-
-    if ( FT_ALLOC( sfnt_data, (FT_Long)rlen ) )
-      return error;
-    error = FT_Stream_Read( stream, (FT_Byte *)sfnt_data, rlen );
+    error = FT_Stream_Seek( stream, flag_offset + 4 );
     if ( error )
       goto Exit;
+
+    if ( FT_ALLOC( sfnt_data, rlen ) )
+      return error;
+    error = FT_Stream_Read( stream, (FT_Byte *)sfnt_data, (FT_ULong)rlen );
+    if ( error ) {
+      FT_FREE( sfnt_data );
+      goto Exit;
+    }
 
     is_cff = rlen > 4 && !ft_memcmp( sfnt_data, "OTTO", 4 );
     error = open_face_from_buffer( library,
                                    sfnt_data,
-                                   rlen,
+                                   (FT_ULong)rlen,
                                    face_index_in_resource,
                                    is_cff ? "cff" : "truetype",
                                    aface );
@@ -1763,9 +1866,10 @@
     if ( error )
       return error;
 
+    /* POST resources must be sorted to concatenate properly */
     error = FT_Raccess_Get_DataOffsets( library, stream,
                                         map_offset, rdara_pos,
-                                        TTAG_POST,
+                                        TTAG_POST, TRUE,
                                         &data_offsets, &count );
     if ( !error )
     {
@@ -1778,9 +1882,11 @@
       return error;
     }
 
+    /* sfnt resources should not be sorted to preserve the face order by
+       QuickDraw API */
     error = FT_Raccess_Get_DataOffsets( library, stream,
                                         map_offset, rdara_pos,
-                                        TTAG_sfnt,
+                                        TTAG_sfnt, FALSE,
                                         &data_offsets, &count );
     if ( !error )
     {
@@ -1813,7 +1919,7 @@
 
 
     if ( NULL == stream )
-      return FT_Err_Invalid_Stream_Operation;
+      return FT_THROW( Invalid_Stream_Operation );
 
     error = FT_Stream_Seek( stream, 0 );
     if ( error )
@@ -1823,14 +1929,15 @@
     if ( error )
       goto Exit;
 
-    if (            header[ 0] !=  0 ||
-                    header[74] !=  0 ||
-                    header[82] !=  0 ||
-                    header[ 1] ==  0 ||
-                    header[ 1] >  33 ||
-                    header[63] !=  0 ||
-         header[2 + header[1]] !=  0 )
-      return FT_Err_Unknown_File_Format;
+    if (            header[ 0] !=   0 ||
+                    header[74] !=   0 ||
+                    header[82] !=   0 ||
+                    header[ 1] ==   0 ||
+                    header[ 1] >   33 ||
+                    header[63] !=   0 ||
+         header[2 + header[1]] !=   0 ||
+                  header[0x53] > 0x7F )
+      return FT_THROW( Unknown_File_Format );
 
     dlen = ( header[0x53] << 24 ) |
            ( header[0x54] << 16 ) |
@@ -1840,7 +1947,7 @@
     rlen = ( header[0x57] << 24 ) |
            ( header[0x58] << 16 ) |
            ( header[0x59] <<  8 ) |
-             header[0x5a];
+             header[0x5A];
 #endif /* 0 */
     offset = 128 + ( ( dlen + 127 ) & ~127 );
 
@@ -1863,8 +1970,8 @@
 #define FT_COMPONENT  trace_raccess
 
     FT_Memory  memory = library->memory;
-    FT_Error   error  = FT_Err_Unknown_File_Format;
-    int        i;
+    FT_Error   error  = FT_ERR( Unknown_File_Format );
+    FT_UInt    i;
 
     char *     file_names[FT_RACCESS_N_RULES];
     FT_Long    offsets[FT_RACCESS_N_RULES];
@@ -1872,7 +1979,7 @@
     FT_Bool    is_darwin_vfs, vfs_rfork_has_no_font = FALSE; /* not tested */
 
     FT_Open_Args  args2;
-    FT_Stream     stream2 = 0;
+    FT_Stream     stream2 = NULL;
 
 
     FT_Raccess_Guess( library, stream,
@@ -1902,7 +2009,7 @@
                   i, args2.pathname, offsets[i] ));
 
       error = FT_Stream_New( library, &args2, &stream2 );
-      if ( is_darwin_vfs && error == FT_Err_Cannot_Open_Stream )
+      if ( is_darwin_vfs && FT_ERR_EQ( error, Cannot_Open_Stream ) )
         vfs_rfork_has_no_font = TRUE;
 
       if ( error )
@@ -1931,7 +2038,7 @@
 
     /* Caller (load_mac_face) requires FT_Err_Unknown_File_Format. */
     if ( error )
-      error = FT_Err_Unknown_File_Format;
+      error = FT_ERR( Unknown_File_Format );
 
     return error;
 
@@ -1960,13 +2067,17 @@
 
 
     error = IsMacBinary( library, stream, face_index, aface );
-    if ( FT_ERROR_BASE( error ) == FT_Err_Unknown_File_Format )
+    if ( FT_ERR_EQ( error, Unknown_File_Format ) )
     {
 
 #undef  FT_COMPONENT
 #define FT_COMPONENT  trace_raccess
 
-      FT_TRACE3(( "Try as dfont: %s ...", args->pathname ));
+#ifdef FT_DEBUG_LEVEL_TRACE
+      FT_TRACE3(( "Try as dfont: " ));
+      if ( !( args->flags & FT_OPEN_MEMORY ) )
+        FT_TRACE3(( "%s ...", args->pathname ));
+#endif
 
       error = IsMacResource( library, stream, 0, face_index, aface );
 
@@ -1977,9 +2088,9 @@
 
     }
 
-    if ( ( FT_ERROR_BASE( error ) == FT_Err_Unknown_File_Format      ||
-           FT_ERROR_BASE( error ) == FT_Err_Invalid_Stream_Operation ) &&
-         ( args->flags & FT_OPEN_PATHNAME )                            )
+    if ( ( FT_ERR_EQ( error, Unknown_File_Format )      ||
+           FT_ERR_EQ( error, Invalid_Stream_Operation ) ) &&
+         ( args->flags & FT_OPEN_PATHNAME )               )
       error = load_face_in_embedded_rfork( library, stream,
                                            face_index, aface, args );
     return error;
@@ -1998,8 +2109,8 @@
                 FT_Face             *aface )
   {
     FT_Error     error;
-    FT_Driver    driver;
-    FT_Memory    memory;
+    FT_Driver    driver = NULL;
+    FT_Memory    memory = NULL;
     FT_Stream    stream = NULL;
     FT_Face      face   = NULL;
     FT_ListNode  node   = NULL;
@@ -2008,11 +2119,10 @@
     FT_Module*   limit;
 
 
-    /* test for valid `library' delayed to */
-    /* FT_Stream_New()                     */
+    /* test for valid `library' delayed to `FT_Stream_New' */
 
     if ( ( !aface && face_index >= 0 ) || !args )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     external_stream = FT_BOOL( ( args->flags & FT_OPEN_STREAM ) &&
                                args->stream                     );
@@ -2034,7 +2144,7 @@
       if ( FT_MODULE_IS_DRIVER( driver ) )
       {
         FT_Int         num_params = 0;
-        FT_Parameter*  params     = 0;
+        FT_Parameter*  params     = NULL;
 
 
         if ( args->flags & FT_OPEN_PARAMS )
@@ -2043,20 +2153,20 @@
           params     = args->params;
         }
 
-        error = open_face( driver, stream, face_index,
+        error = open_face( driver, &stream, external_stream, face_index,
                            num_params, params, &face );
         if ( !error )
           goto Success;
       }
       else
-        error = FT_Err_Invalid_Handle;
+        error = FT_THROW( Invalid_Handle );
 
       FT_Stream_Free( stream, external_stream );
       goto Fail;
     }
     else
     {
-      error = FT_Err_Missing_Module;
+      error = FT_ERR( Missing_Module );
 
       /* check each font driver for an appropriate format */
       cur   = library->modules;
@@ -2068,7 +2178,7 @@
         if ( FT_MODULE_IS_DRIVER( cur[0] ) )
         {
           FT_Int         num_params = 0;
-          FT_Parameter*  params     = 0;
+          FT_Parameter*  params     = NULL;
 
 
           driver = FT_DRIVER( cur[0] );
@@ -2079,17 +2189,18 @@
             params     = args->params;
           }
 
-          error = open_face( driver, stream, face_index,
+          error = open_face( driver, &stream, external_stream, face_index,
                              num_params, params, &face );
           if ( !error )
             goto Success;
 
 #ifdef FT_CONFIG_OPTION_MAC_FONTS
           if ( ft_strcmp( cur[0]->clazz->module_name, "truetype" ) == 0 &&
-               FT_ERROR_BASE( error ) == FT_Err_Table_Missing           )
+               FT_ERR_EQ( error, Table_Missing )                        )
           {
             /* TrueType but essential tables are missing */
-            if ( FT_Stream_Seek( stream, 0 ) )
+            error = FT_Stream_Seek( stream, 0 );
+            if ( error )
               break;
 
             error = open_face_PS_from_sfnt_stream( library,
@@ -2106,7 +2217,7 @@
           }
 #endif
 
-          if ( FT_ERROR_BASE( error ) != FT_Err_Unknown_File_Format )
+          if ( FT_ERR_NEQ( error, Unknown_File_Format ) )
             goto Fail3;
         }
       }
@@ -2115,9 +2226,9 @@
       /* If we are on the mac, and we get an                          */
       /* FT_Err_Invalid_Stream_Operation it may be because we have an */
       /* empty data fork, so we need to check the resource fork.      */
-      if ( FT_ERROR_BASE( error ) != FT_Err_Cannot_Open_Stream       &&
-           FT_ERROR_BASE( error ) != FT_Err_Unknown_File_Format      &&
-           FT_ERROR_BASE( error ) != FT_Err_Invalid_Stream_Operation )
+      if ( FT_ERR_NEQ( error, Cannot_Open_Stream )       &&
+           FT_ERR_NEQ( error, Unknown_File_Format )      &&
+           FT_ERR_NEQ( error, Invalid_Stream_Operation ) )
         goto Fail2;
 
 #if !defined( FT_MACINTOSH ) && defined( FT_CONFIG_OPTION_MAC_FONTS )
@@ -2133,12 +2244,12 @@
         return error;
       }
 
-      if ( FT_ERROR_BASE( error ) != FT_Err_Unknown_File_Format )
+      if ( FT_ERR_NEQ( error, Unknown_File_Format ) )
         goto Fail2;
 #endif  /* !FT_MACINTOSH && FT_CONFIG_OPTION_MAC_FONTS */
 
       /* no driver is able to handle this format */
-      error = FT_Err_Unknown_File_Format;
+      error = FT_THROW( Unknown_File_Format );
 
   Fail2:
       FT_Stream_Free( stream, external_stream );
@@ -2147,10 +2258,6 @@
 
   Success:
     FT_TRACE4(( "FT_Open_Face: New face object, adding to list\n" ));
-
-    /* set the FT_FACE_FLAG_EXTERNAL_STREAM bit for FT_Done_Face */
-    if ( external_stream )
-      face->face_flags |= FT_FACE_FLAG_EXTERNAL_STREAM;
 
     /* add the face object to its driver's list */
     if ( FT_NEW( node ) )
@@ -2207,11 +2314,24 @@
 
 
         if ( bsize->height < 0 )
-          bsize->height = (FT_Short)-bsize->height;
+          bsize->height = -bsize->height;
         if ( bsize->x_ppem < 0 )
-          bsize->x_ppem = (FT_Short)-bsize->x_ppem;
+          bsize->x_ppem = -bsize->x_ppem;
         if ( bsize->y_ppem < 0 )
           bsize->y_ppem = -bsize->y_ppem;
+
+        /* check whether negation actually has worked */
+        if ( bsize->height < 0 || bsize->x_ppem < 0 || bsize->y_ppem < 0 )
+        {
+          FT_TRACE0(( "FT_Open_Face:"
+                      " Invalid bitmap dimensions for stroke %d,"
+                      " now disabled\n", i ));
+          bsize->width  = 0;
+          bsize->height = 0;
+          bsize->size   = 0;
+          bsize->x_ppem = 0;
+          bsize->y_ppem = 0;
+        }
       }
     }
 
@@ -2239,7 +2359,10 @@
     goto Exit;
 
   Fail:
-    FT_Done_Face( face );
+    if ( node )
+      FT_Done_Face( face );    /* face must be in the driver's list */
+    else if ( face )
+      destroy_face( memory, face, driver );
 
   Exit:
     FT_TRACE4(( "FT_Open_Face: Return %d\n", error ));
@@ -2257,10 +2380,10 @@
     FT_Open_Args  open;
 
 
-    /* test for valid `face' delayed to FT_Attach_Stream() */
+    /* test for valid `face' delayed to `FT_Attach_Stream' */
 
     if ( !filepathname )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     open.stream   = NULL;
     open.flags    = FT_OPEN_PATHNAME;
@@ -2283,14 +2406,14 @@
     FT_Driver_Class  clazz;
 
 
-    /* test for valid `parameters' delayed to FT_Stream_New() */
+    /* test for valid `parameters' delayed to `FT_Stream_New' */
 
     if ( !face )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     driver = face->driver;
     if ( !driver )
-      return FT_Err_Invalid_Driver_Handle;
+      return FT_THROW( Invalid_Driver_Handle );
 
     error = FT_Stream_New( driver->root.library, parameters, &stream );
     if ( error )
@@ -2299,7 +2422,7 @@
     /* we implement FT_Attach_Stream in each driver through the */
     /* `attach_file' interface                                  */
 
-    error = FT_Err_Unimplemented_Feature;
+    error = FT_ERR( Unimplemented_Feature );
     clazz = driver->clazz;
     if ( clazz->attach_file )
       error = clazz->attach_file( face, stream );
@@ -2319,6 +2442,9 @@
   FT_EXPORT_DEF( FT_Error )
   FT_Reference_Face( FT_Face  face )
   {
+    if ( !face )
+      return FT_THROW( Invalid_Face_Handle );
+
     face->internal->refcount++;
 
     return FT_Err_Ok;
@@ -2336,7 +2462,7 @@
     FT_ListNode  node;
 
 
-    error = FT_Err_Invalid_Face_Handle;
+    error = FT_ERR( Invalid_Face_Handle );
     if ( face && face->driver )
     {
       face->internal->refcount--;
@@ -2377,20 +2503,20 @@
     FT_Driver        driver;
     FT_Driver_Class  clazz;
 
-    FT_Size          size = 0;
-    FT_ListNode      node = 0;
+    FT_Size          size = NULL;
+    FT_ListNode      node = NULL;
 
 
     if ( !face )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     if ( !asize )
-      return FT_Err_Invalid_Size_Handle;
+      return FT_THROW( Invalid_Argument );
 
     if ( !face->driver )
-      return FT_Err_Invalid_Driver_Handle;
+      return FT_THROW( Invalid_Driver_Handle );
 
-    *asize = 0;
+    *asize = NULL;
 
     driver = face->driver;
     clazz  = driver->clazz;
@@ -2403,7 +2529,7 @@
     size->face = face;
 
     /* for now, do not use any internal fields in size objects */
-    size->internal = 0;
+    size->internal = NULL;
 
     if ( clazz->init_size )
       error = clazz->init_size( size );
@@ -2440,15 +2566,15 @@
 
 
     if ( !size )
-      return FT_Err_Invalid_Size_Handle;
+      return FT_THROW( Invalid_Size_Handle );
 
     face = size->face;
     if ( !face )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     driver = face->driver;
     if ( !driver )
-      return FT_Err_Invalid_Driver_Handle;
+      return FT_THROW( Invalid_Driver_Handle );
 
     memory = driver->root.memory;
 
@@ -2461,7 +2587,7 @@
 
       if ( face->size == size )
       {
-        face->size = 0;
+        face->size = NULL;
         if ( face->sizes_list.head )
           face->size = (FT_Size)(face->sizes_list.head->data);
       }
@@ -2469,7 +2595,7 @@
       destroy_size( memory, size, driver );
     }
     else
-      error = FT_Err_Invalid_Size_Handle;
+      error = FT_THROW( Invalid_Size_Handle );
 
     return error;
   }
@@ -2488,11 +2614,11 @@
 
 
     if ( !FT_HAS_FIXED_SIZES( face ) )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     /* FT_Bitmap_Size doesn't provide enough info... */
     if ( req->type != FT_SIZE_REQUEST_TYPE_NOMINAL )
-      return FT_Err_Unimplemented_Feature;
+      return FT_THROW( Unimplemented_Feature );
 
     w = FT_REQUEST_WIDTH ( req );
     h = FT_REQUEST_HEIGHT( req );
@@ -2515,6 +2641,8 @@
 
       if ( w == FT_PIX_ROUND( bsize->x_ppem ) || ignore_width )
       {
+        FT_TRACE3(( "FT_Match_Size: bitmap strike %d matches\n", i ));
+
         if ( size_index )
           *size_index = (FT_ULong)i;
 
@@ -2522,7 +2650,7 @@
       }
     }
 
-    return FT_Err_Invalid_Pixel_Size;
+    return FT_THROW( Invalid_Pixel_Size );
   }
 
 
@@ -2765,10 +2893,10 @@
 
 
     if ( !face || !FT_HAS_FIXED_SIZES( face ) )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     if ( strike_index < 0 || strike_index >= face->num_fixed_sizes )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     clazz = face->driver->clazz;
 
@@ -2818,11 +2946,11 @@
 
 
     if ( !face )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     if ( !req || req->width < 0 || req->height < 0 ||
          req->type >= FT_SIZE_REQUEST_TYPE_MAX )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     clazz = face->driver->clazz;
 
@@ -2871,9 +2999,6 @@
       if ( error )
         return error;
 
-      FT_TRACE3(( "FT_Request_Size: bitmap strike %lu matched\n",
-                  strike_index ));
-
       return FT_Select_Size( face, (FT_Int)strike_index );
     }
 
@@ -2894,6 +3019,8 @@
   {
     FT_Size_RequestRec  req;
 
+
+    /* check of `face' delayed to `FT_Request_Size' */
 
     if ( !char_width )
       char_width = char_height;
@@ -2933,6 +3060,8 @@
     FT_Size_RequestRec  req;
 
 
+    /* check of `face' delayed to `FT_Request_Size' */
+
     if ( pixel_width == 0 )
       pixel_width = pixel_height;
     else if ( pixel_height == 0 )
@@ -2944,14 +3073,14 @@
       pixel_height = 1;
 
     /* use `>=' to avoid potential compiler warning on 16bit platforms */
-    if ( pixel_width  >= 0xFFFFU )
-      pixel_width  = 0xFFFFU;
+    if ( pixel_width >= 0xFFFFU )
+      pixel_width = 0xFFFFU;
     if ( pixel_height >= 0xFFFFU )
       pixel_height = 0xFFFFU;
 
     req.type           = FT_SIZE_REQUEST_TYPE_NOMINAL;
-    req.width          = pixel_width << 6;
-    req.height         = pixel_height << 6;
+    req.width          = (FT_Long)( pixel_width << 6 );
+    req.height         = (FT_Long)( pixel_height << 6 );
     req.horiResolution = 0;
     req.vertResolution = 0;
 
@@ -2973,10 +3102,10 @@
 
 
     if ( !face )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     if ( !akerning )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     driver = face->driver;
 
@@ -2998,18 +3127,37 @@
 
           if ( kern_mode != FT_KERNING_UNFITTED )
           {
+            FT_Pos  orig_x = akerning->x;
+            FT_Pos  orig_y = akerning->y;
+
+
             /* we scale down kerning values for small ppem values */
             /* to avoid that rounding makes them too big.         */
             /* `25' has been determined heuristically.            */
             if ( face->size->metrics.x_ppem < 25 )
-              akerning->x = FT_MulDiv( akerning->x,
+              akerning->x = FT_MulDiv( orig_x,
                                        face->size->metrics.x_ppem, 25 );
             if ( face->size->metrics.y_ppem < 25 )
-              akerning->y = FT_MulDiv( akerning->y,
+              akerning->y = FT_MulDiv( orig_y,
                                        face->size->metrics.y_ppem, 25 );
 
             akerning->x = FT_PIX_ROUND( akerning->x );
             akerning->y = FT_PIX_ROUND( akerning->y );
+
+#ifdef FT_DEBUG_LEVEL_TRACE
+            {
+              FT_Pos  orig_x_rounded = FT_PIX_ROUND( orig_x );
+              FT_Pos  orig_y_rounded = FT_PIX_ROUND( orig_y );
+
+
+              if ( akerning->x != orig_x_rounded ||
+                   akerning->y != orig_y_rounded )
+                FT_TRACE5(( "FT_Get_Kerning: horizontal kerning"
+                            " (%d, %d) scaled down to (%d, %d) pixels\n",
+                            orig_x_rounded / 64, orig_y_rounded / 64,
+                            akerning->x / 64, akerning->y / 64 ));
+            }
+#endif
           }
         }
       }
@@ -3032,14 +3180,14 @@
 
 
     if ( !face )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     if ( !akerning )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     FT_FACE_FIND_SERVICE( face, service, KERNING );
     if ( !service )
-      return FT_Err_Unimplemented_Feature;
+      return FT_THROW( Unimplemented_Feature );
 
     error = service->get_track( face,
                                 point_size,
@@ -3061,10 +3209,10 @@
 
 
     if ( !face )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     if ( encoding == FT_ENCODING_NONE )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     /* FT_ENCODING_UNICODE is special.  We try to find the `best' Unicode */
     /* charmap available, i.e., one with UCS-4 characters, if possible.   */
@@ -3075,7 +3223,7 @@
 
     cur = face->charmaps;
     if ( !cur )
-      return FT_Err_Invalid_CharMap_Handle;
+      return FT_THROW( Invalid_CharMap_Handle );
 
     limit = cur + face->num_charmaps;
 
@@ -3083,21 +3231,12 @@
     {
       if ( cur[0]->encoding == encoding )
       {
-#ifdef FT_MAX_CHARMAP_CACHEABLE
-        if ( cur - face->charmaps > FT_MAX_CHARMAP_CACHEABLE )
-        {
-          FT_ERROR(( "FT_Select_Charmap: requested charmap is found (%d), "
-                     "but in too late position to cache\n",
-                     cur - face->charmaps ));
-          continue;
-        }
-#endif
         face->charmap = cur[0];
         return 0;
       }
     }
 
-    return FT_Err_Invalid_Argument;
+    return FT_THROW( Invalid_Argument );
   }
 
 
@@ -3112,13 +3251,14 @@
 
 
     if ( !face )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     cur = face->charmaps;
-    if ( !cur )
-      return FT_Err_Invalid_CharMap_Handle;
+    if ( !cur || !charmap )
+      return FT_THROW( Invalid_CharMap_Handle );
+
     if ( FT_Get_CMap_Format( charmap ) == 14 )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     limit = cur + face->num_charmaps;
 
@@ -3126,20 +3266,12 @@
     {
       if ( cur[0] == charmap )
       {
-#ifdef FT_MAX_CHARMAP_CACHEABLE
-        if ( cur - face->charmaps > FT_MAX_CHARMAP_CACHEABLE )
-        {
-          FT_ERROR(( "FT_Set_Charmap: requested charmap is found (%d), "
-                     "but in too late position to cache\n",
-                     cur - face->charmaps ));
-          continue;
-        }
-#endif
         face->charmap = cur[0];
-        return 0;
+        return FT_Err_Ok;
       }
     }
-    return FT_Err_Invalid_Argument;
+
+    return FT_THROW( Invalid_Argument );
   }
 
 
@@ -3160,15 +3292,6 @@
 
     FT_ASSERT( i < charmap->face->num_charmaps );
 
-#ifdef FT_MAX_CHARMAP_CACHEABLE
-    if ( i > FT_MAX_CHARMAP_CACHEABLE )
-    {
-      FT_ERROR(( "FT_Get_Charmap_Index: requested charmap is found (%d), "
-                 "but in too late position to cache\n",
-                 i ));
-      return -i;
-    }
-#endif
     return i;
   }
 
@@ -3178,7 +3301,7 @@
   {
     FT_CMap_Class  clazz  = cmap->clazz;
     FT_Face        face   = cmap->charmap.face;
-    FT_Memory      memory = FT_FACE_MEMORY(face);
+    FT_Memory      memory = FT_FACE_MEMORY( face );
 
 
     if ( clazz->done )
@@ -3247,7 +3370,7 @@
 
 
     if ( clazz == NULL || charmap == NULL || charmap->face == NULL )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     face   = charmap->face;
     memory = FT_FACE_MEMORY( face );
@@ -3305,8 +3428,12 @@
         FT_TRACE1(( "FT_Get_Char_Index: too large charcode" ));
         FT_TRACE1(( " 0x%x is truncated\n", charcode ));
       }
+
       result = cmap->clazz->char_index( cmap, (FT_UInt32)charcode );
+      if ( result >= (FT_UInt)face->num_glyphs )
+        result = 0;
     }
+
     return result;
   }
 
@@ -3321,10 +3448,11 @@
     FT_UInt   gindex = 0;
 
 
+    /* only do something if we have a charmap, and we have glyphs at all */
     if ( face && face->charmap && face->num_glyphs )
     {
       gindex = FT_Get_Char_Index( face, 0 );
-      if ( gindex == 0 || gindex >= (FT_UInt)face->num_glyphs )
+      if ( gindex == 0 )
         result = FT_Get_Next_Char( face, 0, &gindex );
     }
 
@@ -3352,8 +3480,10 @@
       FT_CMap    cmap = FT_CMAP( face->charmap );
 
 
-      do {
+      do
+      {
         gindex = cmap->clazz->char_next( cmap, &code );
+
       } while ( gindex >= (FT_UInt)face->num_glyphs );
 
       result = ( gindex == 0 ) ? 0 : code;
@@ -3376,8 +3506,9 @@
     FT_UInt  result = 0;
 
 
-    if ( face && face->charmap &&
-        face->charmap->encoding == FT_ENCODING_UNICODE )
+    if ( face                                           &&
+         face->charmap                                  &&
+         face->charmap->encoding == FT_ENCODING_UNICODE )
     {
       FT_CharMap  charmap = find_variant_selector_charmap( face );
       FT_CMap     ucmap = FT_CMAP( face->charmap );
@@ -3555,7 +3686,9 @@
     FT_UInt  result = 0;
 
 
-    if ( face && FT_HAS_GLYPH_NAMES( face ) )
+    if ( face                       &&
+         FT_HAS_GLYPH_NAMES( face ) &&
+         glyph_name                 )
     {
       FT_Service_GlyphDict  service;
 
@@ -3580,27 +3713,30 @@
                      FT_Pointer  buffer,
                      FT_UInt     buffer_max )
   {
-    FT_Error  error = FT_Err_Invalid_Argument;
+    FT_Error              error;
+    FT_Service_GlyphDict  service;
 
+
+    if ( !face )
+      return FT_THROW( Invalid_Face_Handle );
+
+    if ( !buffer || buffer_max == 0 )
+      return FT_THROW( Invalid_Argument );
 
     /* clean up buffer */
-    if ( buffer && buffer_max > 0 )
-      ((FT_Byte*)buffer)[0] = 0;
+    ((FT_Byte*)buffer)[0] = '\0';
 
-    if ( face                                     &&
-         (FT_Long)glyph_index <= face->num_glyphs &&
-         FT_HAS_GLYPH_NAMES( face )               )
-    {
-      FT_Service_GlyphDict  service;
+    if ( (FT_Long)glyph_index >= face->num_glyphs )
+      return FT_THROW( Invalid_Glyph_Index );
 
+    if ( !FT_HAS_GLYPH_NAMES( face ) )
+      return FT_THROW( Invalid_Argument );
 
-      FT_FACE_LOOKUP_SERVICE( face,
-                              service,
-                              GLYPH_DICT );
-
-      if ( service && service->get_name )
-        error = service->get_name( face, glyph_index, buffer, buffer_max );
-    }
+    FT_FACE_LOOKUP_SERVICE( face, service, GLYPH_DICT );
+    if ( service && service->get_name )
+      error = service->get_name( face, glyph_index, buffer, buffer_max );
+    else
+      error = FT_THROW( Invalid_Argument );
 
     return error;
   }
@@ -3641,7 +3777,7 @@
   FT_Get_Sfnt_Table( FT_Face      face,
                      FT_Sfnt_Tag  tag )
   {
-    void*                  table = 0;
+    void*                  table = NULL;
     FT_Service_SFNT_Table  service;
 
 
@@ -3669,11 +3805,11 @@
 
 
     if ( !face || !FT_IS_SFNT( face ) )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     FT_FACE_FIND_SERVICE( face, service, SFNT_TABLE );
     if ( service == NULL )
-      return FT_Err_Unimplemented_Feature;
+      return FT_THROW( Unimplemented_Feature );
 
     return service->load_table( face, tag, offset, buffer, length );
   }
@@ -3691,12 +3827,14 @@
     FT_ULong               offset;
 
 
+    /* test for valid `length' delayed to `service->table_info' */
+
     if ( !face || !FT_IS_SFNT( face ) )
-      return FT_Err_Invalid_Face_Handle;
+      return FT_THROW( Invalid_Face_Handle );
 
     FT_FACE_FIND_SERVICE( face, service, SFNT_TABLE );
     if ( service == NULL )
-      return FT_Err_Unimplemented_Feature;
+      return FT_THROW( Unimplemented_Feature );
 
     return service->table_info( face, table_index, tag, &offset, length );
   }
@@ -3758,12 +3896,12 @@
     FT_Face  face;
 
 
-    if ( size == NULL )
-      return FT_Err_Invalid_Argument;
+    if ( !size )
+      return FT_THROW( Invalid_Size_Handle );
 
     face = size->face;
-    if ( face == NULL || face->driver == NULL )
-      return FT_Err_Invalid_Argument;
+    if ( !face || !face->driver )
+      return FT_THROW( Invalid_Face_Handle );
 
     /* we don't need anything more complex than that; all size objects */
     /* are already listed by the face                                  */
@@ -3792,7 +3930,7 @@
                       FT_ListNode*     node )
   {
     FT_ListNode  cur;
-    FT_Renderer  result = 0;
+    FT_Renderer  result = NULL;
 
 
     if ( !library )
@@ -3804,7 +3942,7 @@
     {
       if ( *node )
         cur = (*node)->next;
-      *node = 0;
+      *node = NULL;
     }
 
     while ( cur )
@@ -3905,10 +4043,16 @@
   static void
   ft_remove_renderer( FT_Module  module )
   {
-    FT_Library   library = module->library;
-    FT_Memory    memory  = library->memory;
+    FT_Library   library;
+    FT_Memory    memory;
     FT_ListNode  node;
 
+
+    library = module->library;
+    if ( !library )
+      return;
+
+    memory = library->memory;
 
     node = FT_List_Find( &library->renderers, module );
     if ( node )
@@ -3936,7 +4080,7 @@
   FT_Get_Renderer( FT_Library       library,
                    FT_Glyph_Format  format )
   {
-    /* test for valid `library' delayed to FT_Lookup_Renderer() */
+    /* test for valid `library' delayed to `FT_Lookup_Renderer' */
 
     return FT_Lookup_Renderer( library, format, 0 );
   }
@@ -3953,17 +4097,31 @@
     FT_ListNode  node;
     FT_Error     error = FT_Err_Ok;
 
+    FT_Renderer_SetModeFunc  set_mode;
+
 
     if ( !library )
-      return FT_Err_Invalid_Library_Handle;
+    {
+      error = FT_THROW( Invalid_Library_Handle );
+      goto Exit;
+    }
 
     if ( !renderer )
-      return FT_Err_Invalid_Argument;
+    {
+      error = FT_THROW( Invalid_Argument );
+      goto Exit;
+    }
+
+    if ( num_params > 0 && !parameters )
+    {
+      error = FT_THROW( Invalid_Argument );
+      goto Exit;
+    }
 
     node = FT_List_Find( &library->renderers, renderer );
     if ( !node )
     {
-      error = FT_Err_Invalid_Argument;
+      error = FT_THROW( Invalid_Argument );
       goto Exit;
     }
 
@@ -3972,18 +4130,14 @@
     if ( renderer->glyph_format == FT_GLYPH_FORMAT_OUTLINE )
       library->cur_renderer = renderer;
 
-    if ( num_params > 0 )
+    set_mode = renderer->clazz->set_mode;
+
+    for ( ; num_params > 0; num_params-- )
     {
-      FT_Renderer_SetModeFunc  set_mode = renderer->clazz->set_mode;
-
-
-      for ( ; num_params > 0; num_params-- )
-      {
-        error = set_mode( renderer, parameters->tag, parameters->data );
-        if ( error )
-          break;
-        parameters++;
-      }
+      error = set_mode( renderer, parameters->tag, parameters->data );
+      if ( error )
+        break;
+      parameters++;
     }
 
   Exit:
@@ -4008,8 +4162,7 @@
 
     default:
       {
-        FT_ListNode  node   = 0;
-        FT_Bool      update = 0;
+        FT_ListNode  node = NULL;
 
 
         /* small shortcut for the very common case */
@@ -4021,12 +4174,12 @@
         else
           renderer = FT_Lookup_Renderer( library, slot->format, &node );
 
-        error = FT_Err_Unimplemented_Feature;
+        error = FT_ERR( Unimplemented_Feature );
         while ( renderer )
         {
           error = renderer->render( renderer, slot, render_mode, NULL );
-          if ( !error                                               ||
-               FT_ERROR_BASE( error ) != FT_Err_Cannot_Render_Glyph )
+          if ( !error                                   ||
+               FT_ERR_NEQ( error, Cannot_Render_Glyph ) )
             break;
 
           /* FT_Err_Cannot_Render_Glyph is returned if the render mode   */
@@ -4036,15 +4189,66 @@
           /* now, look for another renderer that supports the same */
           /* format.                                               */
           renderer = FT_Lookup_Renderer( library, slot->format, &node );
-          update   = 1;
         }
-
-        /* if we changed the current renderer for the glyph image format */
-        /* we need to select it as the next current one                  */
-        if ( !error && update && renderer )
-          FT_Set_Renderer( library, renderer, 0, 0 );
       }
     }
+
+#ifdef FT_DEBUG_LEVEL_TRACE
+
+#undef  FT_COMPONENT
+#define FT_COMPONENT  trace_bitmap
+
+    /*
+     * Computing the MD5 checksum is expensive, unnecessarily distorting a
+     * possible profiling of FreeType if compiled with tracing support.  For
+     * this reason, we execute the following code only if explicitly
+     * requested.
+     */
+
+    /* we use FT_TRACE3 in this block */
+    if ( ft_trace_levels[trace_bitmap] >= 3 )
+    {
+      /* we convert to a single bitmap format for computing the checksum */
+      if ( !error )
+      {
+        FT_Bitmap  bitmap;
+        FT_Error   err;
+
+
+        FT_Bitmap_Init( &bitmap );
+
+        /* this also converts the bitmap flow to `down' (i.e., pitch > 0) */
+        err = FT_Bitmap_Convert( library, &slot->bitmap, &bitmap, 1 );
+        if ( !err )
+        {
+          FT_MD5_CTX        ctx;
+          unsigned char  md5[16];
+          int            i;
+          unsigned int   rows  = bitmap.rows;
+          unsigned int   pitch = (unsigned int)bitmap.pitch;
+
+
+          FT_MD5_Init( &ctx );
+          if ( bitmap.buffer )
+            FT_MD5_Update( &ctx, bitmap.buffer, rows * pitch );
+          FT_MD5_Final( md5, &ctx );
+
+          FT_TRACE3(( "MD5 checksum for %dx%d bitmap:\n"
+                      "  ",
+                      rows, pitch ));
+          for ( i = 0; i < 16; i++ )
+            FT_TRACE3(( "%02X", md5[i] ));
+          FT_TRACE3(( "\n" ));
+        }
+
+        FT_Bitmap_Done( library, &bitmap );
+      }
+    }
+
+#undef  FT_COMPONENT
+#define FT_COMPONENT  trace_objs
+
+#endif /* FT_DEBUG_LEVEL_TRACE */
 
     return error;
   }
@@ -4060,7 +4264,7 @@
 
 
     if ( !slot || !slot->face )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     library = FT_FACE_LIBRARY( slot->face );
 
@@ -4105,7 +4309,7 @@
 
 
     if ( library && library->auto_hinter == module )
-      library->auto_hinter = 0;
+      library->auto_hinter = NULL;
 
     /* if the module is a renderer */
     if ( FT_MODULE_IS_RENDERER( module ) )
@@ -4132,7 +4336,7 @@
   {
     FT_Error   error;
     FT_Memory  memory;
-    FT_Module  module;
+    FT_Module  module = NULL;
     FT_UInt    nn;
 
 
@@ -4140,14 +4344,14 @@
                                 FREETYPE_MINOR                  )
 
     if ( !library )
-      return FT_Err_Invalid_Library_Handle;
+      return FT_THROW( Invalid_Library_Handle );
 
     if ( !clazz )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     /* check freetype version */
     if ( clazz->module_requires > FREETYPE_VER_FIXED )
-      return FT_Err_Invalid_Version;
+      return FT_THROW( Invalid_Version );
 
     /* look for a module with the same name in the library's table */
     for ( nn = 0; nn < library->num_modules; nn++ )
@@ -4157,7 +4361,7 @@
       {
         /* this installed module has the same name, compare their versions */
         if ( clazz->module_version <= module->clazz->module_version )
-          return FT_Err_Lower_Module_Version;
+          return FT_THROW( Lower_Module_Version );
 
         /* remove the module from our list, then exit the loop to replace */
         /* it by our new version..                                        */
@@ -4171,7 +4375,7 @@
 
     if ( library->num_modules >= FT_MAX_MODULES )
     {
-      error = FT_Err_Too_Many_Drivers;
+      error = FT_THROW( Too_Many_Drivers );
       goto Exit;
     }
 
@@ -4201,17 +4405,10 @@
     /* if the module is a font driver */
     if ( FT_MODULE_IS_DRIVER( module ) )
     {
-      /* allocate glyph loader if needed */
       FT_Driver  driver = FT_DRIVER( module );
 
 
       driver->clazz = (FT_Driver_Class)module->clazz;
-      if ( FT_DRIVER_USES_OUTLINES( driver ) )
-      {
-        error = FT_GlyphLoader_New( memory, &driver->glyph_loader );
-        if ( error )
-          goto Fail;
-      }
     }
 
     if ( clazz->module_init )
@@ -4228,21 +4425,13 @@
     return error;
 
   Fail:
-    if ( FT_MODULE_IS_DRIVER( module ) )
-    {
-      FT_Driver  driver = FT_DRIVER( module );
-
-
-      if ( FT_DRIVER_USES_OUTLINES( driver ) )
-        FT_GlyphLoader_Done( driver->glyph_loader );
-    }
-
     if ( FT_MODULE_IS_RENDERER( module ) )
     {
       FT_Renderer  renderer = FT_RENDERER( module );
 
 
-      if ( renderer->clazz->glyph_format == FT_GLYPH_FORMAT_OUTLINE &&
+      if ( renderer->clazz                                          &&
+           renderer->clazz->glyph_format == FT_GLYPH_FORMAT_OUTLINE &&
            renderer->raster                                         )
         renderer->clazz->raster_class->raster_done( renderer->raster );
     }
@@ -4258,7 +4447,7 @@
   FT_Get_Module( FT_Library   library,
                  const char*  module_name )
   {
-    FT_Module   result = 0;
+    FT_Module   result = NULL;
     FT_Module*  cur;
     FT_Module*  limit;
 
@@ -4350,7 +4539,7 @@
     /* try to find the module from the table, then remove it from there */
 
     if ( !library )
-      return FT_Err_Invalid_Library_Handle;
+      return FT_THROW( Invalid_Library_Handle );
 
     if ( module )
     {
@@ -4370,7 +4559,7 @@
             cur[0] = cur[1];
             cur++;
           }
-          limit[0] = 0;
+          limit[0] = NULL;
 
           /* destroy the module */
           Destroy_Module( module );
@@ -4379,16 +4568,17 @@
         }
       }
     }
-    return FT_Err_Invalid_Driver_Handle;
+    return FT_THROW( Invalid_Driver_Handle );
   }
 
 
-  FT_Error
+  static FT_Error
   ft_property_do( FT_Library        library,
                   const FT_String*  module_name,
                   const FT_String*  property_name,
                   void*             value,
-                  FT_Bool           set )
+                  FT_Bool           set,
+                  FT_Bool           value_is_string )
   {
     FT_Module*           cur;
     FT_Module*           limit;
@@ -4406,10 +4596,10 @@
 
 
     if ( !library )
-      return FT_Err_Invalid_Library_Handle;
+      return FT_THROW( Invalid_Library_Handle );
 
     if ( !module_name || !property_name || !value )
-      return FT_Err_Invalid_Argument;
+      return FT_THROW( Invalid_Argument );
 
     cur   = library->modules;
     limit = cur + library->num_modules;
@@ -4423,7 +4613,7 @@
     {
       FT_ERROR(( "%s: can't find module `%s'\n",
                  func_name, module_name ));
-      return FT_Err_Missing_Module;
+      return FT_THROW( Missing_Module );
     }
 
     /* check whether we have a service interface */
@@ -4431,7 +4621,7 @@
     {
       FT_ERROR(( "%s: module `%s' doesn't support properties\n",
                  func_name, module_name ));
-      return FT_Err_Unimplemented_Feature;
+      return FT_THROW( Unimplemented_Feature );
     }
 
     /* search property service */
@@ -4441,31 +4631,36 @@
     {
       FT_ERROR(( "%s: module `%s' doesn't support properties\n",
                  func_name, module_name ));
-      return FT_Err_Unimplemented_Feature;
+      return FT_THROW( Unimplemented_Feature );
     }
 
     service = (FT_Service_Properties)interface;
 
     if ( set )
-      missing_func = !service->set_property;
+      missing_func = (FT_Bool)( !service->set_property );
     else
-      missing_func = !service->get_property;
+      missing_func = (FT_Bool)( !service->get_property );
 
     if ( missing_func )
     {
       FT_ERROR(( "%s: property service of module `%s' is broken\n",
                  func_name, module_name ));
-      return FT_Err_Unimplemented_Feature;
+      return FT_THROW( Unimplemented_Feature );
     }
 
-    return set ? service->set_property( cur[0], property_name, value )
-               : service->get_property( cur[0], property_name, value );
+    return set ? service->set_property( cur[0],
+                                        property_name,
+                                        value,
+                                        value_is_string )
+               : service->get_property( cur[0],
+                                        property_name,
+                                        value );
   }
 
 
   /* documentation is in ftmodapi.h */
 
-  FT_Error
+  FT_EXPORT_DEF( FT_Error )
   FT_Property_Set( FT_Library        library,
                    const FT_String*  module_name,
                    const FT_String*  property_name,
@@ -4475,13 +4670,14 @@
                            module_name,
                            property_name,
                            (void*)value,
-                           TRUE );
+                           TRUE,
+                           FALSE );
   }
 
 
   /* documentation is in ftmodapi.h */
 
-  FT_Error
+  FT_EXPORT_DEF( FT_Error )
   FT_Property_Get( FT_Library        library,
                    const FT_String*  module_name,
                    const FT_String*  property_name,
@@ -4491,8 +4687,31 @@
                            module_name,
                            property_name,
                            value,
+                           FALSE,
                            FALSE );
   }
+
+
+#ifdef FT_CONFIG_OPTION_ENVIRONMENT_PROPERTIES
+
+  /* this variant is used for handling the FREETYPE_PROPERTIES */
+  /* environment variable                                      */
+
+  FT_BASE_DEF( FT_Error )
+  ft_property_string_set( FT_Library        library,
+                          const FT_String*  module_name,
+                          const FT_String*  property_name,
+                          FT_String*        value )
+  {
+    return ft_property_do( library,
+                           module_name,
+                           property_name,
+                           (void*)value,
+                           TRUE,
+                           TRUE );
+  }
+
+#endif
 
 
   /*************************************************************************/
@@ -4513,6 +4732,9 @@
   FT_EXPORT_DEF( FT_Error )
   FT_Reference_Library( FT_Library  library )
   {
+    if ( !library )
+      return FT_THROW( Invalid_Library_Handle );
+
     library->refcount++;
 
     return FT_Err_Ok;
@@ -4529,8 +4751,8 @@
     FT_Error    error;
 
 
-    if ( !memory )
-      return FT_Err_Invalid_Argument;
+    if ( !memory || !alibrary )
+      return FT_THROW( Invalid_Argument );
 
 #ifdef FT_DEBUG_LEVEL_ERROR
     /* init debugging support */
@@ -4550,12 +4772,9 @@
       goto Fail;
 #endif
 
-    /* allocate the render pool */
-    library->raster_pool_size = FT_RENDER_POOL_SIZE;
-#if FT_RENDER_POOL_SIZE > 0
-    if ( FT_ALLOC( library->raster_pool, FT_RENDER_POOL_SIZE ) )
-      goto Fail;
-#endif
+    /* we don't use raster_pool anymore. */
+    library->raster_pool_size = 0;
+    library->raster_pool      = NULL;
 
     library->version_major = FREETYPE_MAJOR;
     library->version_minor = FREETYPE_MINOR;
@@ -4568,8 +4787,8 @@
 
     return FT_Err_Ok;
 
-  Fail:
 #ifdef FT_CONFIG_OPTION_PIC
+  Fail:
     ft_pic_container_destroy( library );
 #endif
     FT_FREE( library );
@@ -4617,7 +4836,7 @@
 
 
     if ( !library )
-      return FT_Err_Invalid_Library_Handle;
+      return FT_THROW( Invalid_Library_Handle );
 
     library->refcount--;
     if ( library->refcount > 0 )
@@ -4698,15 +4917,11 @@
         if ( module )
         {
           Destroy_Module( module );
-          library->modules[n] = 0;
+          library->modules[n] = NULL;
         }
       }
     }
 #endif
-
-    /* Destroy raster objects */
-    FT_FREE( library->raster_pool );
-    library->raster_pool_size = 0;
 
 #ifdef FT_CONFIG_OPTION_PIC
     /* Destroy pic container contents */
@@ -4764,70 +4979,6 @@
   }
 
 
-#ifdef FT_CONFIG_OPTION_OLD_INTERNALS
-
-  FT_BASE_DEF( FT_Error )
-  ft_stub_set_char_sizes( FT_Size     size,
-                          FT_F26Dot6  width,
-                          FT_F26Dot6  height,
-                          FT_UInt     horz_res,
-                          FT_UInt     vert_res )
-  {
-    FT_Size_RequestRec  req;
-    FT_Driver           driver = size->face->driver;
-
-
-    if ( driver->clazz->request_size )
-    {
-      req.type   = FT_SIZE_REQUEST_TYPE_NOMINAL;
-      req.width  = width;
-      req.height = height;
-
-      if ( horz_res == 0 )
-        horz_res = vert_res;
-
-      if ( vert_res == 0 )
-        vert_res = horz_res;
-
-      if ( horz_res == 0 )
-        horz_res = vert_res = 72;
-
-      req.horiResolution = horz_res;
-      req.vertResolution = vert_res;
-
-      return driver->clazz->request_size( size, &req );
-    }
-
-    return 0;
-  }
-
-
-  FT_BASE_DEF( FT_Error )
-  ft_stub_set_pixel_sizes( FT_Size  size,
-                           FT_UInt  width,
-                           FT_UInt  height )
-  {
-    FT_Size_RequestRec  req;
-    FT_Driver           driver = size->face->driver;
-
-
-    if ( driver->clazz->request_size )
-    {
-      req.type           = FT_SIZE_REQUEST_TYPE_NOMINAL;
-      req.width          = width  << 6;
-      req.height         = height << 6;
-      req.horiResolution = 0;
-      req.vertResolution = 0;
-
-      return driver->clazz->request_size( size, &req );
-    }
-
-    return 0;
-  }
-
-#endif /* FT_CONFIG_OPTION_OLD_INTERNALS */
-
-
   /* documentation is in freetype.h */
 
   FT_EXPORT_DEF( FT_Error )
@@ -4839,7 +4990,7 @@
                         FT_Int       *p_arg2,
                         FT_Matrix    *p_transform )
   {
-    FT_Error  error = FT_Err_Invalid_Argument;
+    FT_Error  error = FT_ERR( Invalid_Argument );
 
 
     if ( glyph                                      &&
@@ -4855,6 +5006,8 @@
       *p_arg1      = subg->arg1;
       *p_arg2      = subg->arg2;
       *p_transform = subg->transform;
+
+      error = FT_Err_Ok;
     }
 
     return error;

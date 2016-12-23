@@ -46,6 +46,8 @@
 		class RendererImplGlCocoaTouch;
 		class EAGLContext;
 	#endif
+#elif defined( CINDER_LINUX )
+	typedef struct GLFWwindow 	GLFWwindow;
 #endif
 
 namespace cinder { namespace gl {
@@ -99,7 +101,7 @@ class RendererGl : public Renderer {
 		int			getMsaa() const { return mMsaaSamples; }
 
 #if ! defined( CINDER_GL_ES )
-		//! Enables a debug context (per \c ARB_debug_output). Currently only implemented by MSW GL implementations. By default this is made GL_DEBUG_OUTPUT_SYNCHRONOUS
+		//! Enables a debug context (per \c ARB_debug_output). Currently only implemented by MSW and Linux GL implementations. By default this is made \c GL_DEBUG_OUTPUT_SYNCHRONOUS
 		Options&	debug() { mDebugContext = true; return *this; }
 		//! Returns whether the context has debug enabled
 		bool		getDebug() const { return mDebugContext; }
@@ -170,17 +172,21 @@ class RendererGl : public Renderer {
 		EAGLContext*				getEaglContext() const;
 	#endif
 	void	setFrameSize( int width, int height ) override;
-#elif defined( CINDER_MSW )
-	void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
-	void	kill() override;
-	HWND	getHwnd() override { return mWnd; }
-	HDC		getDc() override;
-	void	prepareToggleFullScreen();
-	void	finishToggleFullScreen();
-#elif defined( CINDER_WINRT )
-	void	setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
-	void	prepareToggleFullScreen();
-	void	finishToggleFullScreen();
+#elif defined( CINDER_MSW_DESKTOP )
+	virtual void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void	kill();
+	virtual HWND	getHwnd() override { return mWnd; }
+	virtual HDC		getDc() override;
+	virtual void	prepareToggleFullScreen();
+	virtual void	finishToggleFullScreen();
+#elif defined( CINDER_UWP )
+	void			setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
+	void			prepareToggleFullScreen();
+	void			finishToggleFullScreen();	
+#elif defined( CINDER_ANDROID )
+	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) override;
+#elif defined( CINDER_LINUX )
+	virtual void	setup( void* nativeWindow, RendererRef sharedRenderer ) override;
 #endif
 
 	const Options&	getOptions() const { return mOptions; }
@@ -205,7 +211,7 @@ protected:
 	RendererImplGlMac		*mImpl;
 #elif defined( CINDER_COCOA_TOUCH )
 	RendererImplGlCocoaTouch	*mImpl;
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW_DESKTOP )
 	#if defined( CINDER_GL_ANGLE )
 		class RendererImplGlAngle	*mImpl;
 		friend class				RendererImplGlAngle;
@@ -214,10 +220,18 @@ protected:
 		friend class				RendererImplGlMsw;
 	#endif
 	HWND						mWnd;
-#elif defined( CINDER_WINRT )
+#elif defined( CINDER_UWP )
 	class RendererImplGlAngle	*mImpl;
 	friend class				RendererImplGlAngle;
 	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
+#elif defined( CINDER_ANDROID )
+	class RendererGlAndroid  	*mImpl;
+	RendererGlAndroid         *getImpl() { return mImpl; }
+	friend class WindowImplAndroid;
+#elif defined( CINDER_LINUX )
+	class RendererGlLinux  	*mImpl;
+	RendererGlLinux         *getImpl() { return mImpl; }
+	friend class WindowImplLinux;
 #endif
 
 	std::function<void( Renderer* )> mStartDrawFn;

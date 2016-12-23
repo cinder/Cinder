@@ -2,7 +2,7 @@
 // ssl/detail/io.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,19 +17,15 @@
 
 #include "asio/detail/config.hpp"
 
-#if !defined(ASIO_ENABLE_OLD_SSL)
-# include "asio/ssl/detail/engine.hpp"
-# include "asio/ssl/detail/stream_core.hpp"
-# include "asio/write.hpp"
-#endif // !defined(ASIO_ENABLE_OLD_SSL)
+#include "asio/ssl/detail/engine.hpp"
+#include "asio/ssl/detail/stream_core.hpp"
+#include "asio/write.hpp"
 
 #include "asio/detail/push_options.hpp"
 
 namespace asio {
 namespace ssl {
 namespace detail {
-
-#if !defined(ASIO_ENABLE_OLD_SSL)
 
 template <typename Stream, typename Operation>
 std::size_t io(Stream& next_layer, stream_core& core,
@@ -152,7 +148,7 @@ public:
           // cannot allow more than one read operation at a time on the
           // underlying transport. The pending_read_ timer's expiry is set to
           // pos_infin if a read is in progress, and neg_infin otherwise.
-          if (core_.pending_read_.expires_at() == core_.neg_infin())
+          if (core_.expiry(core_.pending_read_) == core_.neg_infin())
           {
             // Prevent other read operations from being started.
             core_.pending_read_.expires_at(core_.pos_infin());
@@ -179,7 +175,7 @@ public:
           // cannot allow more than one write operation at a time on the
           // underlying transport. The pending_write_ timer's expiry is set to
           // pos_infin if a write is in progress, and neg_infin otherwise.
-          if (core_.pending_write_.expires_at() == core_.neg_infin())
+          if (core_.expiry(core_.pending_write_) == core_.neg_infin())
           {
             // Prevent other write operations from being started.
             core_.pending_write_.expires_at(core_.pos_infin());
@@ -224,7 +220,9 @@ public:
         }
 
         default:
-        if (bytes_transferred != ~std::size_t(0) && !ec_)
+        if (bytes_transferred == ~std::size_t(0))
+          bytes_transferred = 0; // Timer cancellation, no data transferred.
+        else if (!ec_)
           ec_ = ec;
 
         switch (want_)
@@ -285,7 +283,7 @@ public:
   Handler handler_;
 };
 
-template <typename Stream, typename Operation,  typename Handler>
+template <typename Stream, typename Operation, typename Handler>
 inline void* asio_handler_allocate(std::size_t size,
     io_op<Stream, Operation, Handler>* this_handler)
 {
@@ -336,10 +334,37 @@ inline void async_io(Stream& next_layer, stream_core& core,
       asio::error_code(), 0, 1);
 }
 
-#endif // !defined(ASIO_ENABLE_OLD_SSL)
-
 } // namespace detail
 } // namespace ssl
+
+template <typename Stream, typename Operation,
+    typename Handler, typename Allocator>
+struct associated_allocator<
+    ssl::detail::io_op<Stream, Operation, Handler>, Allocator>
+{
+  typedef typename associated_allocator<Handler, Allocator>::type type;
+
+  static type get(const ssl::detail::io_op<Stream, Operation, Handler>& h,
+      const Allocator& a = Allocator()) ASIO_NOEXCEPT
+  {
+    return associated_allocator<Handler, Allocator>::get(h.handler_, a);
+  }
+};
+
+template <typename Stream, typename Operation,
+    typename Handler, typename Executor>
+struct associated_executor<
+    ssl::detail::io_op<Stream, Operation, Handler>, Executor>
+{
+  typedef typename associated_executor<Handler, Executor>::type type;
+
+  static type get(const ssl::detail::io_op<Stream, Operation, Handler>& h,
+      const Executor& ex = Executor()) ASIO_NOEXCEPT
+  {
+    return associated_executor<Handler, Executor>::get(h.handler_, ex);
+  }
+};
+
 } // namespace asio
 
 #include "asio/detail/pop_options.hpp"

@@ -46,7 +46,10 @@ void main()
 
 	highp vec3	vToCamera = normalize(-vVertex.xyz);
 
-	for(int i=0; i<uNumOfLights; ++i)
+	// Use a constant on ES2 since some GPUs do not support
+	// loops using uniforms in conditionals
+	//for(int i=0; i<uNumOfLights; ++i)
+	for(int i=0; i<2; ++i)
 	{
 		// calculate view space light vectors
 		highp vec3	vToLight = normalize(uLights[i].position.xyz - vVertex.xyz); 

@@ -2318,12 +2318,13 @@ def fill_group_content(tree, module_config):
 
     # submodules ---------------------------------------- #
     subgroups = []
-    for subgroup in group_def.subgroups:
-        subgroup_obj = {
-            "label": subgroup.name,
-            "link": subgroup.path
-        }
-        subgroups.append(subgroup_obj)
+    if group_def is not None:
+        for subgroup in group_def.subgroups:
+            subgroup_obj = {
+                "label": subgroup.name,
+                "link": subgroup.path
+            }
+            subgroups.append(subgroup_obj)
     file_data.subgroups = subgroups
 
     # typedefs ------------------------------------------ #
@@ -2335,8 +2336,9 @@ def fill_group_content(tree, module_config):
 
     # ci prefix / description --------------------------- #
     # if the group has a prefix, add it here
-    if group_def.prefix_content is not None:
-        file_data.prefix = group_def.prefix_content
+    if group_def is not None:
+        if group_def.prefix_content is not None:
+            file_data.prefix = group_def.prefix_content
 
     # # enumerations -------------------------------------- #
     # enumerations = []

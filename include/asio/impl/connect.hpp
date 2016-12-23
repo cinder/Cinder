@@ -2,7 +2,7 @@
 // impl/connect.hpp
 // ~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,8 @@
 # pragma once
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
+#include "asio/associated_allocator.hpp"
+#include "asio/associated_executor.hpp"
 #include "asio/detail/bind_handler.hpp"
 #include "asio/detail/consuming_buffers.hpp"
 #include "asio/detail/handler_alloc_helpers.hpp"
@@ -23,6 +25,7 @@
 #include "asio/detail/handler_type_requirements.hpp"
 #include "asio/detail/throw_error.hpp"
 #include "asio/error.hpp"
+#include "asio/post.hpp"
 
 #include "asio/detail/push_options.hpp"
 
@@ -231,7 +234,8 @@ namespace detail
           if (start)
           {
             ec = asio::error::not_found;
-            socket_.get_io_service().post(detail::bind_handler(*this, ec));
+            asio::post(socket_.get_executor(),
+                detail::bind_handler(*this, ec));
             return;
           }
 
@@ -318,6 +322,52 @@ namespace detail
   }
 } // namespace detail
 
+#if !defined(GENERATING_DOCUMENTATION)
+
+template <typename Protocol, typename SocketService,
+    typename Iterator, typename ConnectCondition,
+    typename ComposedConnectHandler, typename Allocator>
+struct associated_allocator<
+    detail::connect_op<Protocol, SocketService, Iterator,
+      ConnectCondition, ComposedConnectHandler>,
+    Allocator>
+{
+  typedef typename associated_allocator<
+      ComposedConnectHandler, Allocator>::type type;
+
+  static type get(
+      const detail::connect_op<Protocol, SocketService,
+        Iterator, ConnectCondition, ComposedConnectHandler>& h,
+      const Allocator& a = Allocator()) ASIO_NOEXCEPT
+  {
+    return associated_allocator<ComposedConnectHandler,
+        Allocator>::get(h.handler_, a);
+  }
+};
+
+template <typename Protocol, typename SocketService,
+    typename Iterator, typename ConnectCondition,
+    typename ComposedConnectHandler, typename Executor>
+struct associated_executor<
+    detail::connect_op<Protocol, SocketService, Iterator,
+      ConnectCondition, ComposedConnectHandler>,
+    Executor>
+{
+  typedef typename associated_executor<
+      ComposedConnectHandler, Executor>::type type;
+
+  static type get(
+      const detail::connect_op<Protocol, SocketService,
+        Iterator, ConnectCondition, ComposedConnectHandler>& h,
+      const Executor& ex = Executor()) ASIO_NOEXCEPT
+  {
+    return associated_executor<ComposedConnectHandler,
+        Executor>::get(h.handler_, ex);
+  }
+};
+
+#endif // !defined(GENERATING_DOCUMENTATION)
+
 template <typename Protocol, typename SocketService,
     typename Iterator, typename ComposedConnectHandler>
 inline ASIO_INITFN_RESULT_TYPE(ComposedConnectHandler,
@@ -330,9 +380,8 @@ async_connect(basic_socket<Protocol, SocketService>& s,
   ASIO_COMPOSED_CONNECT_HANDLER_CHECK(
       ComposedConnectHandler, handler, Iterator) type_check;
 
-  detail::async_result_init<ComposedConnectHandler,
-    void (asio::error_code, Iterator)> init(
-      ASIO_MOVE_CAST(ComposedConnectHandler)(handler));
+  async_completion<ComposedConnectHandler,
+    void (asio::error_code, Iterator)> init(handler);
 
   detail::connect_op<Protocol, SocketService, Iterator,
     detail::default_connect_condition, ASIO_HANDLER_TYPE(
@@ -356,9 +405,8 @@ async_connect(basic_socket<Protocol, SocketService>& s,
   ASIO_COMPOSED_CONNECT_HANDLER_CHECK(
       ComposedConnectHandler, handler, Iterator) type_check;
 
-  detail::async_result_init<ComposedConnectHandler,
-    void (asio::error_code, Iterator)> init(
-      ASIO_MOVE_CAST(ComposedConnectHandler)(handler));
+  async_completion<ComposedConnectHandler,
+    void (asio::error_code, Iterator)> init(handler);
 
   detail::connect_op<Protocol, SocketService, Iterator,
     detail::default_connect_condition, ASIO_HANDLER_TYPE(
@@ -382,9 +430,8 @@ async_connect(basic_socket<Protocol, SocketService>& s,
   ASIO_COMPOSED_CONNECT_HANDLER_CHECK(
       ComposedConnectHandler, handler, Iterator) type_check;
 
-  detail::async_result_init<ComposedConnectHandler,
-    void (asio::error_code, Iterator)> init(
-      ASIO_MOVE_CAST(ComposedConnectHandler)(handler));
+  async_completion<ComposedConnectHandler,
+    void (asio::error_code, Iterator)> init(handler);
 
   detail::connect_op<Protocol, SocketService, Iterator,
     ConnectCondition, ASIO_HANDLER_TYPE(
@@ -408,9 +455,8 @@ async_connect(basic_socket<Protocol, SocketService>& s,
   ASIO_COMPOSED_CONNECT_HANDLER_CHECK(
       ComposedConnectHandler, handler, Iterator) type_check;
 
-  detail::async_result_init<ComposedConnectHandler,
-    void (asio::error_code, Iterator)> init(
-      ASIO_MOVE_CAST(ComposedConnectHandler)(handler));
+  async_completion<ComposedConnectHandler,
+    void (asio::error_code, Iterator)> init(handler);
 
   detail::connect_op<Protocol, SocketService, Iterator,
     ConnectCondition, ASIO_HANDLER_TYPE(

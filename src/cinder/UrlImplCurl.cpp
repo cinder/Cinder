@@ -21,54 +21,59 @@
 */
 
 #include "cinder/UrlImplCurl.h"
-
 #include <curl/curl.h>
-#include <boost/noncopyable.hpp>
 
 namespace cinder {
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// CURLLib
-class CURLLib : private boost::noncopyable
-{
-public:
-	CURLLib();
-	~CURLLib();
+// -------------------------------------------------------------------------------------------------
+// CurlLib
+// -------------------------------------------------------------------------------------------------
+class CurlLib {
+  public:
+	CurlLib();
+	~CurlLib();
 
-	static CURLLib*		instance();
+	static CurlLib*		instance();
 
-	static CURLLib	*sInstance;
+  private:
+	CurlLib( const CurlLib& );
+	CurlLib& operator=( const CurlLib& );
+
+	static std::unique_ptr<CurlLib> sInstance;
 };
 
-CURLLib *CURLLib::sInstance = 0;
+std::unique_ptr<CurlLib> CurlLib::sInstance;
 
-CURLLib::CURLLib()
+CurlLib::CurlLib()
 {
-#if defined( CINDER_MSW )
-	curl_global_init( CURL_GLOBAL_WIN32 );
-#else
 	curl_global_init( CURL_GLOBAL_NOTHING );
-#endif	
 }
 
-CURLLib::~CURLLib()
+CurlLib::~CurlLib()
 {
 	curl_global_cleanup();	
 }
 
-CURLLib* CURLLib::instance()
+CurlLib* CurlLib::instance()
 {
-	if( ! sInstance )
-		sInstance = new CURLLib;
-	return sInstance;
+	if( ! sInstance ) {
+		sInstance.reset( new CurlLib() );
+	}
+
+	return sInstance.get();
 }
 
-IStreamUrlImplCurl::IStreamUrlImplCurl( const std::string &url, const std::string &user, const std::string &password )
-	: IStreamUrlImpl( user, password ), still_running( 1 ), mSizeCached( false ), mBufferFileOffset( 0 ), mStartedRead( false ),
+
+// -------------------------------------------------------------------------------------------------
+// IStreamUrlImplCurl
+// -------------------------------------------------------------------------------------------------
+IStreamUrlImplCurl::IStreamUrlImplCurl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
+	: IStreamUrlImpl( user, password, options ), still_running( 1 ), mSizeCached( false ), mBufferFileOffset( 0 ), mStartedRead( false ),
 	mEffectiveUrl( 0 ), mResponseCode( 0 )
 {	
-	if( ! CURLLib::instance() )
-		throw StreamExc(); // for some reason the curl lib isn't initialized, and we're screwed
+	if( ! CurlLib::instance() ) {
+		throw StreamExc(); // for some reason the CurlLib isn't initialized
+	}
 	
 	mMulti = curl_multi_init();
 
@@ -137,8 +142,9 @@ IStreamUrlImplCurl::~IStreamUrlImplCurl()
 	curl_multi_remove_handle( mMulti, mCurl );
 	curl_easy_cleanup( mCurl );
 
-	if( mMulti )
+	if( mMulti ) {
 		curl_multi_cleanup( mMulti );
+	}
 }
 
 bool IStreamUrlImplCurl::isEof() const
@@ -215,16 +221,15 @@ void IStreamUrlImplCurl::fillBuffer( int wantBytes ) const
 		mStartedRead = true;
 	}
 	
-
     // only attempt to fill buffer if transactions still running and buffer
     // doesnt exceed required size already
     if( ( ! still_running ) || ( bufferRemaining() >= wantBytes ) )
         return;
 
 	// if we want more bytes than will fit in the rest of the buffer, let's make some room
-	if( mBufferSize - mBufferedBytes < wantBytes ) {
+	if( ( mBufferSize - mBufferedBytes ) < wantBytes ) {
 		int bytesCulled = mBufferOffset;
-		memmove( mBuffer, &mBuffer[mBufferOffset], mBufferedBytes - bytesCulled );
+		std::memmove( mBuffer, &mBuffer[mBufferOffset], mBufferedBytes - bytesCulled );
 		mBufferedBytes -= bytesCulled;
 		mBufferOffset = 0;
 		mBufferFileOffset += bytesCulled;
@@ -235,34 +240,59 @@ void IStreamUrlImplCurl::fillBuffer( int wantBytes ) const
 		fd_set fdread;
 		fd_set fdwrite;
 		fd_set fdexcep;
-		int maxfd;
-		struct timeval timeout;
-
 		FD_ZERO( &fdread );
 		FD_ZERO( &fdwrite );
 		FD_ZERO( &fdexcep );
 
+		struct timeval timeout;
 		// set a suitable timeout to fail on
-		timeout.tv_sec = 60; /* 1 minute */
+		timeout.tv_sec  = 60; // 1 minute
 		timeout.tv_usec = 0;
 
+		long curl_timeout = -1;
+		curl_multi_timeout( mMulti, &curl_timeout );
+		if( curl_timeout >= 0 ) {
+			timeout.tv_sec = curl_timeout / 1000;
+			if( timeout.tv_sec > 1 ) {
+				timeout.tv_sec = 1;
+			}
+			else {
+				timeout.tv_usec = ( curl_timeout % 1000 ) * 1000;
+			}
+		}
+
 		// get file descriptors from the transfers
-		curl_multi_fdset( mMulti, &fdread, &fdwrite, &fdexcep, &maxfd );
+		int maxfd = -1;
+		CURLMcode error = curl_multi_fdset( mMulti, &fdread, &fdwrite, &fdexcep, &maxfd );
+		if( CURLM_OK != error ) {
+			const char* errorStr = curl_multi_strerror( error );
+			throw StreamExc( std::string( errorStr ) );
+		}
 
-		int rc = select( maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout );
-
+		int rc; 
+		if( -1 == maxfd ) {
+			struct timeval wait = { 0, 100 * 1000 };
+			rc = select( 0, nullptr, nullptr, nullptr, &wait );
+		}
+		else {
+			rc = select( maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout );
+		}
+		
 		switch( rc ) {
+			// error
 			case -1:
 				throw StreamExc();
 			break;
+
+			// timeout
 			case 0:
-			break;
+			// action
 			default:
 				// timeout or readable/writable sockets
 				// note we *could* be more efficient and not wait for
 				// CURLM_CALL_MULTI_PERFORM to clear here and check it on re-entry
 				// but that gets messy
-				while( curl_multi_perform( mMulti, &still_running ) == CURLM_CALL_MULTI_PERFORM );
+				while( CURLM_CALL_MULTI_PERFORM == curl_multi_perform( mMulti, &still_running ) );
 			break;
 		}
     } while( still_running && ( bufferRemaining() < wantBytes ) );

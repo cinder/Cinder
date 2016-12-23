@@ -1,0 +1,3 @@
+#!/bin/bash
+ARCH=arm64-v8a
+bash cbuilder "$@" -a ${ARCH}

@@ -29,8 +29,14 @@
 // The "Legacy" path is used for Mac Deployment Target 10.7+ 32-bit and Windows (32-bit only).
 #if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
 	#include "cinder/qtime/QuickTimeGlImplLegacy.h"
-#elif ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || defined( CINDER_COCOA_TOUCH )
+#elif ( ! defined( CINDER_MAC_USE_GSTREAMER ) && defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || defined( CINDER_COCOA_TOUCH )
 	#include "cinder/qtime/QuickTimeGlImplAvf.h"
+#elif defined( CINDER_MAC_USE_GSTREAMER )
+	#include "cinder/linux/Movie.h" 
+#elif defined( CINDER_ANDROID )
+	#include "cinder/android/MovieGl.h" 
+#elif defined( CINDER_LINUX ) 
+	#include "cinder/linux/Movie.h" 
 #else
 	// QuickTime is not supported on 10.7 64-bit or Windows 64-bit
 #endif
