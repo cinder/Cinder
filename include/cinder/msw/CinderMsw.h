@@ -64,14 +64,14 @@ using ManagedComRef = std::shared_ptr<T>;
 
 //! Creates a shared_ptr whose deleter will properly decrement the reference count of a COM object
 template<typename T>
-CI_API ManagedComRef<T> makeComShared( T *p )		{ return ManagedComRef<T>( p, &ComDelete ); }
+ManagedComRef<T> makeComShared( T *p )		{ return ManagedComRef<T>( p, &ComDelete ); }
 
 template<typename T>
 using ManagedComPtr = std::unique_ptr<T, ComDeleter>;
 
 //! Creates a unique_ptr whose deleter will properly decrement the reference count of a COM object
 template<typename T>
-CI_API ManagedComPtr<T> makeComUnique( T *p )		{ return ManagedComPtr<T>( p ); }
+ManagedComPtr<T> makeComUnique( T *p )		{ return ManagedComPtr<T>( p ); }
 
 //! Wraps a cinder::OStream with a COM ::IStream
 class CI_API ComOStream : public ::IStream
