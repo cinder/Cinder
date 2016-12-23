@@ -68,12 +68,12 @@ inline char getPathSeparator() { return '/'; }
 CI_API std::map<std::string, std::string> getEnvironmentVariables();
 
 template<typename T>
-CI_API inline std::string toString( const T &t ) { return boost::lexical_cast<std::string>( t ); }
+inline std::string toString( const T &t ) { return boost::lexical_cast<std::string>( t ); }
 template<typename T>
-CI_API inline T fromString( const std::string &s ) { return boost::lexical_cast<T>( s ); }
+inline T fromString( const std::string &s ) { return boost::lexical_cast<T>( s ); }
 // This specialization seems to only be necessary with more recent versions of Boost
 template<>
-CI_API inline Url fromString( const std::string &s ) { return Url( s ); }
+inline Url fromString( const std::string &s ) { return Url( s ); }
 #if defined(CINDER_COCOA_TOUCH)
 // Necessary because boost::lexical_cast crashes when trying to convert a string to a double on iOS
 template<>

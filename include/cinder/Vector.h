@@ -60,7 +60,7 @@ using glm::dvec4;
 
 //! Returns a vector which is orthogonal to \a vec
 template<typename T, glm::precision P>
-CI_API glm::tvec3<T, P> orthogonal( const glm::tvec3<T, P> &vec )
+glm::tvec3<T, P> orthogonal( const glm::tvec3<T, P> &vec )
 {
 	if( math<T>::abs( vec.y ) < (T)0.99 ) // abs(dot(u, Y)), somewhat arbitrary epsilon
 		return glm::tvec3<T, P>( -vec.z, 0, vec.x ); // cross( this, Y )

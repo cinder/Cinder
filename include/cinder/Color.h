@@ -318,8 +318,8 @@ class CI_API ColorAT {
 };
 
 // Operators
-template<typename T, typename Y> CI_API inline ColorT<T>  operator*( Y s, const ColorT<T>& c )  { return ColorT<T>( s*c.r, s*c.g, s*c.b ); }
-template<typename T, typename Y> CI_API inline ColorAT<T> operator*( Y s, const ColorAT<T>& c ) { return ColorAT<T>( s*c.r, s*c.g, s*c.b, s*c.a ); }
+template<typename T, typename Y> inline ColorT<T>  operator*( Y s, const ColorT<T>& c )  { return ColorT<T>( s*c.r, s*c.g, s*c.b ); }
+template<typename T, typename Y> inline ColorAT<T> operator*( Y s, const ColorAT<T>& c ) { return ColorAT<T>( s*c.r, s*c.g, s*c.b, s*c.a ); }
 
 // Free Functions
 extern CI_API ColorT<float> hsvToRgb( const vec3 &hsv );

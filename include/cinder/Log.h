@@ -265,7 +265,7 @@ CI_API LogManager* manager();
 
 //! Creates and returns a new logger of type LoggerT, adding it to the current Logger stack.
 template<typename LoggerT, typename... Args>
-CI_API std::shared_ptr<LoggerT> makeLogger( Args&&... args )
+std::shared_ptr<LoggerT> makeLogger( Args&&... args )
 {
 	return manager()->makeLogger<LoggerT>( std::forward<Args>( args )... );
 }
@@ -273,7 +273,7 @@ CI_API std::shared_ptr<LoggerT> makeLogger( Args&&... args )
 //! If a logger of type LoggerT exists, it will return that logger.  Otherwise creates and
 //! returns a new logger of type LoggerT, adding it to the current Logger stack.
 template<typename LoggerT, typename... Args>
-CI_API std::shared_ptr<LoggerT> makeOrGetLogger( Args&&... args )
+std::shared_ptr<LoggerT> makeOrGetLogger( Args&&... args )
 {
 	return manager()->makeOrGetLogger<LoggerT>( std::forward<Args>( args )... );
 }

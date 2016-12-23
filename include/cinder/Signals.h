@@ -453,14 +453,14 @@ struct CI_API Signal : detail::SignalProto<Signature, Collector> {
 
 //! Creates a std::function by binding \a object to the member function pointer \a method.
 template<class Instance, class Class, class R, class... Args>
-CI_API std::function<R ( Args... )> slot( Instance &object, R (Class::*method)( Args... ) )
+std::function<R ( Args... )> slot( Instance &object, R (Class::*method)( Args... ) )
 {
 	return [&object, method] ( Args... args )	{ return ( object .* method )( args... ); };
 }
 
 //! Creates a std::function by binding \a object to the member function pointer \a method.
 template<class Class, class R, class... Args>
-CI_API std::function<R ( Args... )> slot( Class *object, R ( Class::*method )( Args... ) )
+std::function<R ( Args... )> slot( Class *object, R ( Class::*method )( Args... ) )
 {
 	return [object, method] ( Args... args )	{ return ( object ->* method )( args... ); };
 }
