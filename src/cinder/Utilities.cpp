@@ -83,10 +83,27 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 
 string loadString( const DataSourceRef &dataSource )
 {
-	Buffer buffer( dataSource );
-	const char *data = static_cast<const char *>( buffer.getData() );
+	auto buffer = dataSource->getBuffer();
+	const char *data = static_cast<const char *>( buffer->getData() );
 
-	return string( data, data + buffer.getSize() );
+	return string( data, data + buffer->getSize() );
+}
+
+void writeString( const fs::path &path, const std::string &str )
+{
+	writeString( (DataTargetRef)writeFile( path ), str );
+}
+
+void writeString( const DataTargetRef &dataTarget, const std::string &str )
+{
+	fs::path outPath = dataTarget->getFilePath();
+	if( outPath.empty() ) {
+		throw ci::Exception( "writeString can only write to file." );
+	}
+
+	std::ofstream ofs( outPath.string(), std::ofstream::binary );
+	ofs << str;
+	ofs.close();
 }
 
 void sleep( float milliseconds )

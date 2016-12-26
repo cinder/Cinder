@@ -271,6 +271,7 @@
     <ClCompile Include="..\src\SystemTest.cpp" />
     <ClCompile Include="..\src\TestMain.cpp" />
     <ClCompile Include="..\src\UnicodeTest.cpp" />
+    <ClCompile Include="..\src\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\audio\utils.h" />
