@@ -32,6 +32,7 @@
 #endif
 
 #include <vector>
+#include <fstream>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
 
