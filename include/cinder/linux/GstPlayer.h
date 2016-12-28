@@ -53,7 +53,7 @@
 #define CINDER_USE_PLAYBIN
 
 namespace gst { namespace video {
- 
+
 struct GstCustomPipelineData {
     std::string pipeline;
     std::string video_sink;
@@ -61,7 +61,7 @@ struct GstCustomPipelineData {
     std::string caps;
     std::string uri;
 };
-    
+
 class GstPlayer;
 
 struct GstData {
@@ -102,9 +102,9 @@ struct GstData {
 
     GstMapInfo                      memoryMapInfo; // Memory map that holds the incoming frame.
     GstVideoInfo                    videoInfo; // For retrieving video info.
-    GstElement*                     pipeline        = nullptr; 
-    GstElement*                     appSink         = nullptr; 
-    GstElement*                     videoBin        = nullptr;      
+    GstElement*                     pipeline        = nullptr;
+    GstElement*                     appSink         = nullptr;
+    GstElement*                     videoBin        = nullptr;
     GstPlayer*                      player          = nullptr;
 #if defined( CINDER_GST_HAS_GL )
     GstGLContext*                   context         = nullptr;
@@ -119,18 +119,18 @@ struct GstData {
 class GstPlayer {
     public:
         GstPlayer();
-        virtual ~GstPlayer();       
-        
+        virtual ~GstPlayer();
+
         bool                                initialize();
-        
+
         void                                setCustomPipeline( const GstCustomPipelineData &customPipeline );
-        
+
         void                                load( const std::string& path );
         bool                                newVideo() const;
-        
+
         void                                play();
         void                                stop();
-        
+
         int                                 width() const;
         int                                 height() const;
 
@@ -144,11 +144,11 @@ class GstPlayer {
         void                                setLoop( bool loop = true, bool palindrome = false );
         bool                                setRate( float rate );
         bool                                stepForward();
-        
+
         float                               getRate() const;
-        
+
         bool                                hasNewFrame() const;
-        
+
         GstVideoFormat                      format() const;
 
         gint64                              getPositionNanos();
@@ -158,38 +158,38 @@ class GstPlayer {
         float                               getFramerate() const;
         float                               getPixelAspectRatio() const;
         int                                 getNumFrames();
-        
+
         bool                                hasAudio() const;
         bool                                hasVisuals() const;
 
         void                                setVolume( float targetVolume );
         float                               getVolume();
-        
+
         bool                                isDone() const;
-        
+
         GstElement*                         getPipeline();
-        
+
         void                                seekToTime( float seconds );
         void                                seekToFrame( int frame );
-        
+
         bool                                isStream() const;
 
         ci::gl::Texture2dRef                getVideoTexture();
 
-    private:        
+    private:
         bool                                initializeGStreamer();
 
         void                                constructPipeline();
 
         void                                startGMainLoopThread();
         void                                startGMainLoop( GMainLoop* loop );
-        
+
         static void                         onGstEos( GstAppSink* sink, gpointer userData );
         static GstFlowReturn                onGstSample( GstAppSink* sink, gpointer userData );
         static GstFlowReturn                onGstPreroll( GstAppSink* sink, gpointer userData );
         void                                processNewSample( GstSample* sample );
         void                                getVideoInfo( const GstVideoInfo& videoInfo );
-        
+
         bool                                setPipelineState( GstState targetState );
         bool                                checkStateChange( GstStateChangeReturn stateChangeResult );
         GstStateChangeReturn                getStateChange();
@@ -198,7 +198,7 @@ class GstPlayer {
         GstState                            getPendingState();
 
         bool                                sendSeekEvent( gint64 seekTime );
-        
+
         void                                addBusWatch( GstElement* pipeline );
 
         void                                resetCustomPipeline();
@@ -217,16 +217,16 @@ class GstPlayer {
         GstBus*                             mGstBus; // Delivers the messages.
         int                                 mBusId; // Save the id of the bus for releasing when not needed.
         std::thread                         mGMainLoopThread; // Seperate thread for GMainLoop.
-        
+
         std::mutex                          mMutex; // Protect  since the appsink callbacks are executed from the streaming thread internally from GStreamer.
 
         bool                                mUsingCustomPipeline;
         GstData                             mGstData; // Data that describe the current state of the pipeline.
-        
+
         ci::gl::Texture2dRef                mVideoTexture;
 
         std::shared_ptr<unsigned char>      mFrontVBuffer = nullptr;
-        std::shared_ptr<unsigned char>      mBackVBuffer = nullptr;     
+        std::shared_ptr<unsigned char>      mBackVBuffer = nullptr;
 
         std::shared_ptr<GstBuffer>          mCurrentBuffer;
         std::shared_ptr<GstBuffer>          mNewBuffer;
@@ -235,5 +235,5 @@ class GstPlayer {
 
         std::atomic<bool>                   mNewFrame;
 };
-    
+
 }} // namespace gst::video
