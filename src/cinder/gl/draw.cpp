@@ -580,7 +580,7 @@ class DefaultVboTarget : public geom::Target {
 			return;
 
 		mIndexType = GL_UNSIGNED_INT;
-		mElementVbo->bufferSubData( 0, numIndices * requiredBytesPerIndex, sourceData );
+		mElementVbo->bufferSubData( 0, numIndices * 4, sourceData );
 	}
 
 	const geom::Source*		mSource;
