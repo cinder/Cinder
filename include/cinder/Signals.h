@@ -40,7 +40,7 @@ namespace cinder { namespace signals {
 namespace detail {
 
 //! Base class for signal links, which manages reference counting and provides a concrete type to be passed to Connection
-struct CI_API SignalLinkBase {
+struct SignalLinkBase {
   public:
 	SignalLinkBase()
 		: mRefCount( 1 ), mEnabled( true )
@@ -93,7 +93,7 @@ struct CI_API SignalLinkBase {
 };
 
 //! Base Signal class, which provides a concrete type that can be stored by the Disconnector
-struct CI_API SignalBase : private Noncopyable {
+struct SignalBase : private Noncopyable {
 	//! abstract method to disconnect \a link from the callback chain, which resides in the priority group \a priority.
 	virtual bool disconnect( SignalLinkBase *link, int priority ) = 0;
 
@@ -163,7 +163,7 @@ template<typename, typename> struct	CollectorInvocation;
 
 //! Returns the result of the last signal handler from a signal emission.
 template<typename ResultT>
-struct CI_API CollectorLast {
+struct CollectorLast {
 	typedef ResultT CollectorResult;
 
 	explicit CollectorLast() : mLast()	{}
@@ -177,12 +177,12 @@ private:
 
 //! Implements the default signal handler collection behaviour.
 template<typename ResultT>
-struct CI_API CollectorDefault : CollectorLast<ResultT> {
+struct CollectorDefault : CollectorLast<ResultT> {
 };
 
 //! CollectorDefault specialisation for signals with void return type.
 template<>
-struct CI_API CollectorDefault<void> {
+struct CollectorDefault<void> {
 	typedef void CollectorResult;
 
 	void getResult() const		{}
@@ -191,7 +191,7 @@ struct CI_API CollectorDefault<void> {
 
 //! CollectorInvocation specialisation for regular signals.
 template<class Collector, class R, class... Args>
-struct CI_API CollectorInvocation<Collector, R ( Args... )> : public SignalBase {
+struct CollectorInvocation<Collector, R ( Args... )> : public SignalBase {
 
 	bool invoke( Collector &collector, const std::function<R ( Args... )> &callback, Args... args )
 	{
@@ -201,7 +201,7 @@ struct CI_API CollectorInvocation<Collector, R ( Args... )> : public SignalBase 
 
 //! CollectorInvocation specialisation for signals with void return type.
 template<class Collector, class... Args>
-struct CI_API CollectorInvocation<Collector, void( Args... )> : public SignalBase {
+struct CollectorInvocation<Collector, void( Args... )> : public SignalBase {
 
 	bool invoke( Collector &collector, const std::function<void( Args... )> &callback, Args... args )
 	{
@@ -212,7 +212,7 @@ struct CI_API CollectorInvocation<Collector, void( Args... )> : public SignalBas
 
 //! SignalProto template, the parent class of Signal, specialised for the callback signature and collector.
 template<class Collector, class R, class... Args>
-class CI_API SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collector, R ( Args... )> {
+class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collector, R ( Args... )> {
   protected:
 	typedef std::function<R ( Args... )>		CallbackFn;
 	typedef typename CallbackFn::result_type	Result;
@@ -441,7 +441,7 @@ class CI_API SignalProto<R ( Args... ), Collector> : private CollectorInvocation
 //!
 //! \note Signals are non-copyable.
 template <typename Signature, class Collector = detail::CollectorDefault<typename std::function<Signature>::result_type> >
-struct CI_API Signal : detail::SignalProto<Signature, Collector> {
+struct Signal : detail::SignalProto<Signature, Collector> {
 
 	typedef detail::SignalProto<Signature, Collector>	SignalProto;
 	typedef typename SignalProto::CallbackFn			CallbackFn;
@@ -471,7 +471,7 @@ std::function<R ( Args... )> slot( Class *object, R ( Class::*method )( Args... 
 
 //! Keep signal emissions going until any handler returns false.
 template<typename ResultT>
-struct CI_API CollectorUntil0 {
+struct CollectorUntil0 {
 	typedef ResultT	CollectorResult;
 
 	explicit CollectorUntil0() : mResult() {}
@@ -490,7 +490,7 @@ private:
 
 //! Keep signal emissions going while all handlers return 0 false.
 template<typename ResultT>
-struct CI_API CollectorWhile0 {
+struct CollectorWhile0 {
 	typedef ResultT CollectorResult;
 
 	explicit CollectorWhile0() : mResult() {}
@@ -508,7 +508,7 @@ private:
 };
 
 //! Returns true if all slots return true, else false. Does not short-circuit. Returns true if there are no slots.
-struct CI_API CollectorBooleanAnd {
+struct CollectorBooleanAnd {
 	typedef bool CollectorResult;
 
 	explicit CollectorBooleanAnd() : mResult( true ) {}
@@ -527,7 +527,7 @@ private:
 
 //! Returns a bitmask where in order for the bit in type T to be be 1, it has to be 1 from all slots. Returns 0 if there are no slots.
 template<typename ResultT>
-struct CI_API CollectorBitwiseAnd {
+struct CollectorBitwiseAnd {
 	typedef ResultT	CollectorResult;
 
 	explicit CollectorBitwiseAnd() : mResult( 0 ), mFirst( true ) {}
@@ -553,7 +553,7 @@ private:
 
 //! CollectorVector returns the result of all signal handlers from a signal emission in a std::vector.
 template<typename ResultT>
-struct CI_API CollectorVector {
+struct CollectorVector {
 	typedef std::vector<ResultT> CollectorResult;
 
 	const CollectorResult& getResult() const	{ return mResult; }
