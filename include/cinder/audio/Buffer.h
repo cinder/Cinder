@@ -265,7 +265,7 @@ struct FreeDeleter {
 
 //! Returns an array of \a size elements of type \a T, aligned by \a alignment.
 template<typename T>
-std::unique_ptr<T, FreeDeleter<T> > makeAlignedArray( size_t size, size_t alignment = 16 )
+std::unique_ptr<T, FreeDeleter<T> > makeAlignedArray( size_t size, size_t /* alignment */ = 16 )
 {
 	void *ptr = std::calloc( size, sizeof( T ) );
 
