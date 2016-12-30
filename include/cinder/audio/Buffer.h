@@ -239,12 +239,9 @@ class BufferDynamicT : public BufferTT {
 	{
 		size_t size = this->getSize();
 		if ( mAllocatedSize > size ) {
-			mAllocatedSize = this->getSize();
-
-			// NOTE: std::vector::shrink_to_fit() is not guaranteed to free.
-			// To force a free we create a temporary empty vector and swap its contents into mData.
-			auto tmpData = std::vector<typename BufferTT::SampleType>( this->mData.begin(), this->mData.begin() + mAllocatedSize );
-			tmpData.swap( this->mData );
+			mAllocatedSize = size;
+			this->mData.resize( mAllocatedSize );
+			this->mData.shrink_to_fit();
 		}
 	}
 
