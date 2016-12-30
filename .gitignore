@@ -30,6 +30,8 @@ Debug/
 Release/
 Debug_ANGLE/
 Release_ANGLE/
+Debug_DLL/
+Release_DLL/
 ipch/
 
 # doxygen generated files
