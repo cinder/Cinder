@@ -183,6 +183,11 @@ endif()
 # Defaults... dl and pthread
 list( APPEND CINDER_LIBS_DEPENDS dl pthread )
 
+# Workaround for gcc bug on versions > 5.3.1 when building as a shared lib.
+if( CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.3.1 AND BUILD_SHARED_LIBS )
+    list( APPEND CINDER_LIBS_DEPENDS gcc )
+endif()
+
 source_group( "cinder\\linux"           FILES ${SRC_SET_CINDER_LINUX} )
 source_group( "cinder\\app\\linux"      FILES ${SRC_SET_CINDER_APP_LINUX} )
 
@@ -211,5 +216,9 @@ endif()
 list( APPEND CINDER_DEFINES "-D_UNIX" ${GLFW_FLAGS}  )
 
 if( NOT CINDER_BOOST_USE_SYSTEM )
-	list( APPEND CINDER_DEFINES "-D_GLIBCXX_USE_CXX11_ABI=0" )
+    execute_process( COMMAND gcc -dumpversion OUTPUT_VARIABLE GCC_VERSION )
+    if( GCC_VERSION VERSION_GREATER 5.1 OR GCC_VERSION VERSION_EQUAL 5.1 )
+        message( STATUS "Version >= 5.1 -- Disabling _GLIBCXX_USE_CXX11_ABI." )
+        list( APPEND CINDER_DEFINES "-D_GLIBCXX_USE_CXX11_ABI=0" )
+    endif()
 endif()
