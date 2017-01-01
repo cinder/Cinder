@@ -28,6 +28,8 @@ lib/winrt/x64/cinder*.lib
 *.opensdf
 Debug/
 Release/
+Debug_DLL/
+Release_DLL/
 Debug_ANGLE/
 Release_ANGLE/
 ipch/
