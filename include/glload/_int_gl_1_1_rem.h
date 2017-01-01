@@ -344,37 +344,37 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPUSHCLIENTATTRIBPROC)(GLbitfield mask);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXCOORDPOINTERPROC)(GLint size, GLenum type, GLsizei stride, const GLvoid * pointer);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXPOINTERPROC)(GLint size, GLenum type, GLsizei stride, const GLvoid * pointer);
 
-extern PFNGLARETEXTURESRESIDENTPROC _funcptr_glAreTexturesResident;
+CI_API extern PFNGLARETEXTURESRESIDENTPROC _funcptr_glAreTexturesResident;
 #define glAreTexturesResident _funcptr_glAreTexturesResident
-extern PFNGLARRAYELEMENTPROC _funcptr_glArrayElement;
+CI_API extern PFNGLARRAYELEMENTPROC _funcptr_glArrayElement;
 #define glArrayElement _funcptr_glArrayElement
-extern PFNGLCOLORPOINTERPROC _funcptr_glColorPointer;
+CI_API extern PFNGLCOLORPOINTERPROC _funcptr_glColorPointer;
 #define glColorPointer _funcptr_glColorPointer
-extern PFNGLDISABLECLIENTSTATEPROC _funcptr_glDisableClientState;
+CI_API extern PFNGLDISABLECLIENTSTATEPROC _funcptr_glDisableClientState;
 #define glDisableClientState _funcptr_glDisableClientState
-extern PFNGLEDGEFLAGPOINTERPROC _funcptr_glEdgeFlagPointer;
+CI_API extern PFNGLEDGEFLAGPOINTERPROC _funcptr_glEdgeFlagPointer;
 #define glEdgeFlagPointer _funcptr_glEdgeFlagPointer
-extern PFNGLENABLECLIENTSTATEPROC _funcptr_glEnableClientState;
+CI_API extern PFNGLENABLECLIENTSTATEPROC _funcptr_glEnableClientState;
 #define glEnableClientState _funcptr_glEnableClientState
-extern PFNGLINDEXPOINTERPROC _funcptr_glIndexPointer;
+CI_API extern PFNGLINDEXPOINTERPROC _funcptr_glIndexPointer;
 #define glIndexPointer _funcptr_glIndexPointer
-extern PFNGLINDEXUBPROC _funcptr_glIndexub;
+CI_API extern PFNGLINDEXUBPROC _funcptr_glIndexub;
 #define glIndexub _funcptr_glIndexub
-extern PFNGLINDEXUBVPROC _funcptr_glIndexubv;
+CI_API extern PFNGLINDEXUBVPROC _funcptr_glIndexubv;
 #define glIndexubv _funcptr_glIndexubv
-extern PFNGLINTERLEAVEDARRAYSPROC _funcptr_glInterleavedArrays;
+CI_API extern PFNGLINTERLEAVEDARRAYSPROC _funcptr_glInterleavedArrays;
 #define glInterleavedArrays _funcptr_glInterleavedArrays
-extern PFNGLNORMALPOINTERPROC _funcptr_glNormalPointer;
+CI_API extern PFNGLNORMALPOINTERPROC _funcptr_glNormalPointer;
 #define glNormalPointer _funcptr_glNormalPointer
-extern PFNGLPOPCLIENTATTRIBPROC _funcptr_glPopClientAttrib;
+CI_API extern PFNGLPOPCLIENTATTRIBPROC _funcptr_glPopClientAttrib;
 #define glPopClientAttrib _funcptr_glPopClientAttrib
-extern PFNGLPRIORITIZETEXTURESPROC _funcptr_glPrioritizeTextures;
+CI_API extern PFNGLPRIORITIZETEXTURESPROC _funcptr_glPrioritizeTextures;
 #define glPrioritizeTextures _funcptr_glPrioritizeTextures
-extern PFNGLPUSHCLIENTATTRIBPROC _funcptr_glPushClientAttrib;
+CI_API extern PFNGLPUSHCLIENTATTRIBPROC _funcptr_glPushClientAttrib;
 #define glPushClientAttrib _funcptr_glPushClientAttrib
-extern PFNGLTEXCOORDPOINTERPROC _funcptr_glTexCoordPointer;
+CI_API extern PFNGLTEXCOORDPOINTERPROC _funcptr_glTexCoordPointer;
 #define glTexCoordPointer _funcptr_glTexCoordPointer
-extern PFNGLVERTEXPOINTERPROC _funcptr_glVertexPointer;
+CI_API extern PFNGLVERTEXPOINTERPROC _funcptr_glVertexPointer;
 #define glVertexPointer _funcptr_glVertexPointer
 
 #ifdef __cplusplus

@@ -45,17 +45,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDRAWRANGEELEMENTSPROC)(GLenum mode, GLuint 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXIMAGE3DPROC)(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid * pixels);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSUBIMAGE3DPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid * pixels);
 
-extern PFNGLBLENDCOLORPROC _funcptr_glBlendColor;
+CI_API extern PFNGLBLENDCOLORPROC _funcptr_glBlendColor;
 #define glBlendColor _funcptr_glBlendColor
-extern PFNGLBLENDEQUATIONPROC _funcptr_glBlendEquation;
+CI_API extern PFNGLBLENDEQUATIONPROC _funcptr_glBlendEquation;
 #define glBlendEquation _funcptr_glBlendEquation
-extern PFNGLCOPYTEXSUBIMAGE3DPROC _funcptr_glCopyTexSubImage3D;
+CI_API extern PFNGLCOPYTEXSUBIMAGE3DPROC _funcptr_glCopyTexSubImage3D;
 #define glCopyTexSubImage3D _funcptr_glCopyTexSubImage3D
-extern PFNGLDRAWRANGEELEMENTSPROC _funcptr_glDrawRangeElements;
+CI_API extern PFNGLDRAWRANGEELEMENTSPROC _funcptr_glDrawRangeElements;
 #define glDrawRangeElements _funcptr_glDrawRangeElements
-extern PFNGLTEXIMAGE3DPROC _funcptr_glTexImage3D;
+CI_API extern PFNGLTEXIMAGE3DPROC _funcptr_glTexImage3D;
 #define glTexImage3D _funcptr_glTexImage3D
-extern PFNGLTEXSUBIMAGE3DPROC _funcptr_glTexSubImage3D;
+CI_API extern PFNGLTEXSUBIMAGE3DPROC _funcptr_glTexSubImage3D;
 #define glTexSubImage3D _funcptr_glTexSubImage3D
 
 #ifdef __cplusplus

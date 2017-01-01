@@ -584,69 +584,69 @@ typedef void (CODEGEN_FUNCPTR * PFNGLRESETHISTOGRAMPROC)(GLenum target);
 typedef void (CODEGEN_FUNCPTR * PFNGLRESETMINMAXPROC)(GLenum target);
 typedef void (CODEGEN_FUNCPTR * PFNGLSEPARABLEFILTER2DPROC)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid * row, const GLvoid * column);
 
-extern PFNGLCOLORSUBTABLEPROC _funcptr_glColorSubTable;
+CI_API extern PFNGLCOLORSUBTABLEPROC _funcptr_glColorSubTable;
 #define glColorSubTable _funcptr_glColorSubTable
-extern PFNGLCOLORTABLEPROC _funcptr_glColorTable;
+CI_API extern PFNGLCOLORTABLEPROC _funcptr_glColorTable;
 #define glColorTable _funcptr_glColorTable
-extern PFNGLCOLORTABLEPARAMETERFVPROC _funcptr_glColorTableParameterfv;
+CI_API extern PFNGLCOLORTABLEPARAMETERFVPROC _funcptr_glColorTableParameterfv;
 #define glColorTableParameterfv _funcptr_glColorTableParameterfv
-extern PFNGLCOLORTABLEPARAMETERIVPROC _funcptr_glColorTableParameteriv;
+CI_API extern PFNGLCOLORTABLEPARAMETERIVPROC _funcptr_glColorTableParameteriv;
 #define glColorTableParameteriv _funcptr_glColorTableParameteriv
-extern PFNGLCONVOLUTIONFILTER1DPROC _funcptr_glConvolutionFilter1D;
+CI_API extern PFNGLCONVOLUTIONFILTER1DPROC _funcptr_glConvolutionFilter1D;
 #define glConvolutionFilter1D _funcptr_glConvolutionFilter1D
-extern PFNGLCONVOLUTIONFILTER2DPROC _funcptr_glConvolutionFilter2D;
+CI_API extern PFNGLCONVOLUTIONFILTER2DPROC _funcptr_glConvolutionFilter2D;
 #define glConvolutionFilter2D _funcptr_glConvolutionFilter2D
-extern PFNGLCONVOLUTIONPARAMETERFPROC _funcptr_glConvolutionParameterf;
+CI_API extern PFNGLCONVOLUTIONPARAMETERFPROC _funcptr_glConvolutionParameterf;
 #define glConvolutionParameterf _funcptr_glConvolutionParameterf
-extern PFNGLCONVOLUTIONPARAMETERFVPROC _funcptr_glConvolutionParameterfv;
+CI_API extern PFNGLCONVOLUTIONPARAMETERFVPROC _funcptr_glConvolutionParameterfv;
 #define glConvolutionParameterfv _funcptr_glConvolutionParameterfv
-extern PFNGLCONVOLUTIONPARAMETERIPROC _funcptr_glConvolutionParameteri;
+CI_API extern PFNGLCONVOLUTIONPARAMETERIPROC _funcptr_glConvolutionParameteri;
 #define glConvolutionParameteri _funcptr_glConvolutionParameteri
-extern PFNGLCONVOLUTIONPARAMETERIVPROC _funcptr_glConvolutionParameteriv;
+CI_API extern PFNGLCONVOLUTIONPARAMETERIVPROC _funcptr_glConvolutionParameteriv;
 #define glConvolutionParameteriv _funcptr_glConvolutionParameteriv
-extern PFNGLCOPYCOLORSUBTABLEPROC _funcptr_glCopyColorSubTable;
+CI_API extern PFNGLCOPYCOLORSUBTABLEPROC _funcptr_glCopyColorSubTable;
 #define glCopyColorSubTable _funcptr_glCopyColorSubTable
-extern PFNGLCOPYCOLORTABLEPROC _funcptr_glCopyColorTable;
+CI_API extern PFNGLCOPYCOLORTABLEPROC _funcptr_glCopyColorTable;
 #define glCopyColorTable _funcptr_glCopyColorTable
-extern PFNGLCOPYCONVOLUTIONFILTER1DPROC _funcptr_glCopyConvolutionFilter1D;
+CI_API extern PFNGLCOPYCONVOLUTIONFILTER1DPROC _funcptr_glCopyConvolutionFilter1D;
 #define glCopyConvolutionFilter1D _funcptr_glCopyConvolutionFilter1D
-extern PFNGLCOPYCONVOLUTIONFILTER2DPROC _funcptr_glCopyConvolutionFilter2D;
+CI_API extern PFNGLCOPYCONVOLUTIONFILTER2DPROC _funcptr_glCopyConvolutionFilter2D;
 #define glCopyConvolutionFilter2D _funcptr_glCopyConvolutionFilter2D
-extern PFNGLGETCOLORTABLEPROC _funcptr_glGetColorTable;
+CI_API extern PFNGLGETCOLORTABLEPROC _funcptr_glGetColorTable;
 #define glGetColorTable _funcptr_glGetColorTable
-extern PFNGLGETCOLORTABLEPARAMETERFVPROC _funcptr_glGetColorTableParameterfv;
+CI_API extern PFNGLGETCOLORTABLEPARAMETERFVPROC _funcptr_glGetColorTableParameterfv;
 #define glGetColorTableParameterfv _funcptr_glGetColorTableParameterfv
-extern PFNGLGETCOLORTABLEPARAMETERIVPROC _funcptr_glGetColorTableParameteriv;
+CI_API extern PFNGLGETCOLORTABLEPARAMETERIVPROC _funcptr_glGetColorTableParameteriv;
 #define glGetColorTableParameteriv _funcptr_glGetColorTableParameteriv
-extern PFNGLGETCONVOLUTIONFILTERPROC _funcptr_glGetConvolutionFilter;
+CI_API extern PFNGLGETCONVOLUTIONFILTERPROC _funcptr_glGetConvolutionFilter;
 #define glGetConvolutionFilter _funcptr_glGetConvolutionFilter
-extern PFNGLGETCONVOLUTIONPARAMETERFVPROC _funcptr_glGetConvolutionParameterfv;
+CI_API extern PFNGLGETCONVOLUTIONPARAMETERFVPROC _funcptr_glGetConvolutionParameterfv;
 #define glGetConvolutionParameterfv _funcptr_glGetConvolutionParameterfv
-extern PFNGLGETCONVOLUTIONPARAMETERIVPROC _funcptr_glGetConvolutionParameteriv;
+CI_API extern PFNGLGETCONVOLUTIONPARAMETERIVPROC _funcptr_glGetConvolutionParameteriv;
 #define glGetConvolutionParameteriv _funcptr_glGetConvolutionParameteriv
-extern PFNGLGETHISTOGRAMPROC _funcptr_glGetHistogram;
+CI_API extern PFNGLGETHISTOGRAMPROC _funcptr_glGetHistogram;
 #define glGetHistogram _funcptr_glGetHistogram
-extern PFNGLGETHISTOGRAMPARAMETERFVPROC _funcptr_glGetHistogramParameterfv;
+CI_API extern PFNGLGETHISTOGRAMPARAMETERFVPROC _funcptr_glGetHistogramParameterfv;
 #define glGetHistogramParameterfv _funcptr_glGetHistogramParameterfv
-extern PFNGLGETHISTOGRAMPARAMETERIVPROC _funcptr_glGetHistogramParameteriv;
+CI_API extern PFNGLGETHISTOGRAMPARAMETERIVPROC _funcptr_glGetHistogramParameteriv;
 #define glGetHistogramParameteriv _funcptr_glGetHistogramParameteriv
-extern PFNGLGETMINMAXPROC _funcptr_glGetMinmax;
+CI_API extern PFNGLGETMINMAXPROC _funcptr_glGetMinmax;
 #define glGetMinmax _funcptr_glGetMinmax
-extern PFNGLGETMINMAXPARAMETERFVPROC _funcptr_glGetMinmaxParameterfv;
+CI_API extern PFNGLGETMINMAXPARAMETERFVPROC _funcptr_glGetMinmaxParameterfv;
 #define glGetMinmaxParameterfv _funcptr_glGetMinmaxParameterfv
-extern PFNGLGETMINMAXPARAMETERIVPROC _funcptr_glGetMinmaxParameteriv;
+CI_API extern PFNGLGETMINMAXPARAMETERIVPROC _funcptr_glGetMinmaxParameteriv;
 #define glGetMinmaxParameteriv _funcptr_glGetMinmaxParameteriv
-extern PFNGLGETSEPARABLEFILTERPROC _funcptr_glGetSeparableFilter;
+CI_API extern PFNGLGETSEPARABLEFILTERPROC _funcptr_glGetSeparableFilter;
 #define glGetSeparableFilter _funcptr_glGetSeparableFilter
-extern PFNGLHISTOGRAMPROC _funcptr_glHistogram;
+CI_API extern PFNGLHISTOGRAMPROC _funcptr_glHistogram;
 #define glHistogram _funcptr_glHistogram
-extern PFNGLMINMAXPROC _funcptr_glMinmax;
+CI_API extern PFNGLMINMAXPROC _funcptr_glMinmax;
 #define glMinmax _funcptr_glMinmax
-extern PFNGLRESETHISTOGRAMPROC _funcptr_glResetHistogram;
+CI_API extern PFNGLRESETHISTOGRAMPROC _funcptr_glResetHistogram;
 #define glResetHistogram _funcptr_glResetHistogram
-extern PFNGLRESETMINMAXPROC _funcptr_glResetMinmax;
+CI_API extern PFNGLRESETMINMAXPROC _funcptr_glResetMinmax;
 #define glResetMinmax _funcptr_glResetMinmax
-extern PFNGLSEPARABLEFILTER2DPROC _funcptr_glSeparableFilter2D;
+CI_API extern PFNGLSEPARABLEFILTER2DPROC _funcptr_glSeparableFilter2D;
 #define glSeparableFilter2D _funcptr_glSeparableFilter2D
 
 #define GL_VERTEX_ARRAY_BINDING 0x85B5
@@ -656,13 +656,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDELETEVERTEXARRAYSPROC)(GLsizei n, const GL
 typedef void (CODEGEN_FUNCPTR * PFNGLGENVERTEXARRAYSPROC)(GLsizei n, GLuint * arrays);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISVERTEXARRAYPROC)(GLuint ren_array);
 
-extern PFNGLBINDVERTEXARRAYPROC _funcptr_glBindVertexArray;
+CI_API extern PFNGLBINDVERTEXARRAYPROC _funcptr_glBindVertexArray;
 #define glBindVertexArray _funcptr_glBindVertexArray
-extern PFNGLDELETEVERTEXARRAYSPROC _funcptr_glDeleteVertexArrays;
+CI_API extern PFNGLDELETEVERTEXARRAYSPROC _funcptr_glDeleteVertexArrays;
 #define glDeleteVertexArrays _funcptr_glDeleteVertexArrays
-extern PFNGLGENVERTEXARRAYSPROC _funcptr_glGenVertexArrays;
+CI_API extern PFNGLGENVERTEXARRAYSPROC _funcptr_glGenVertexArrays;
 #define glGenVertexArrays _funcptr_glGenVertexArrays
-extern PFNGLISVERTEXARRAYPROC _funcptr_glIsVertexArray;
+CI_API extern PFNGLISVERTEXARRAYPROC _funcptr_glIsVertexArray;
 #define glIsVertexArray _funcptr_glIsVertexArray
 
 #define GL_R16 0x822A
@@ -703,9 +703,9 @@ extern PFNGLISVERTEXARRAYPROC _funcptr_glIsVertexArray;
 typedef void (CODEGEN_FUNCPTR * PFNGLFLUSHMAPPEDBUFFERRANGEPROC)(GLenum target, GLintptr offset, GLsizeiptr length);
 typedef void * (CODEGEN_FUNCPTR * PFNGLMAPBUFFERRANGEPROC)(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
 
-extern PFNGLFLUSHMAPPEDBUFFERRANGEPROC _funcptr_glFlushMappedBufferRange;
+CI_API extern PFNGLFLUSHMAPPEDBUFFERRANGEPROC _funcptr_glFlushMappedBufferRange;
 #define glFlushMappedBufferRange _funcptr_glFlushMappedBufferRange
-extern PFNGLMAPBUFFERRANGEPROC _funcptr_glMapBufferRange;
+CI_API extern PFNGLMAPBUFFERRANGEPROC _funcptr_glMapBufferRange;
 #define glMapBufferRange _funcptr_glMapBufferRange
 
 #define GL_HALF_FLOAT 0x140B
@@ -814,45 +814,45 @@ typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISRENDERBUFFERPROC)(GLuint renderbuffe
 typedef void (CODEGEN_FUNCPTR * PFNGLRENDERBUFFERSTORAGEPROC)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
 typedef void (CODEGEN_FUNCPTR * PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
 
-extern PFNGLBINDFRAMEBUFFERPROC _funcptr_glBindFramebuffer;
+CI_API extern PFNGLBINDFRAMEBUFFERPROC _funcptr_glBindFramebuffer;
 #define glBindFramebuffer _funcptr_glBindFramebuffer
-extern PFNGLBINDRENDERBUFFERPROC _funcptr_glBindRenderbuffer;
+CI_API extern PFNGLBINDRENDERBUFFERPROC _funcptr_glBindRenderbuffer;
 #define glBindRenderbuffer _funcptr_glBindRenderbuffer
-extern PFNGLBLITFRAMEBUFFERPROC _funcptr_glBlitFramebuffer;
+CI_API extern PFNGLBLITFRAMEBUFFERPROC _funcptr_glBlitFramebuffer;
 #define glBlitFramebuffer _funcptr_glBlitFramebuffer
-extern PFNGLCHECKFRAMEBUFFERSTATUSPROC _funcptr_glCheckFramebufferStatus;
+CI_API extern PFNGLCHECKFRAMEBUFFERSTATUSPROC _funcptr_glCheckFramebufferStatus;
 #define glCheckFramebufferStatus _funcptr_glCheckFramebufferStatus
-extern PFNGLDELETEFRAMEBUFFERSPROC _funcptr_glDeleteFramebuffers;
+CI_API extern PFNGLDELETEFRAMEBUFFERSPROC _funcptr_glDeleteFramebuffers;
 #define glDeleteFramebuffers _funcptr_glDeleteFramebuffers
-extern PFNGLDELETERENDERBUFFERSPROC _funcptr_glDeleteRenderbuffers;
+CI_API extern PFNGLDELETERENDERBUFFERSPROC _funcptr_glDeleteRenderbuffers;
 #define glDeleteRenderbuffers _funcptr_glDeleteRenderbuffers
-extern PFNGLFRAMEBUFFERRENDERBUFFERPROC _funcptr_glFramebufferRenderbuffer;
+CI_API extern PFNGLFRAMEBUFFERRENDERBUFFERPROC _funcptr_glFramebufferRenderbuffer;
 #define glFramebufferRenderbuffer _funcptr_glFramebufferRenderbuffer
-extern PFNGLFRAMEBUFFERTEXTURE1DPROC _funcptr_glFramebufferTexture1D;
+CI_API extern PFNGLFRAMEBUFFERTEXTURE1DPROC _funcptr_glFramebufferTexture1D;
 #define glFramebufferTexture1D _funcptr_glFramebufferTexture1D
-extern PFNGLFRAMEBUFFERTEXTURE2DPROC _funcptr_glFramebufferTexture2D;
+CI_API extern PFNGLFRAMEBUFFERTEXTURE2DPROC _funcptr_glFramebufferTexture2D;
 #define glFramebufferTexture2D _funcptr_glFramebufferTexture2D
-extern PFNGLFRAMEBUFFERTEXTURE3DPROC _funcptr_glFramebufferTexture3D;
+CI_API extern PFNGLFRAMEBUFFERTEXTURE3DPROC _funcptr_glFramebufferTexture3D;
 #define glFramebufferTexture3D _funcptr_glFramebufferTexture3D
-extern PFNGLFRAMEBUFFERTEXTURELAYERPROC _funcptr_glFramebufferTextureLayer;
+CI_API extern PFNGLFRAMEBUFFERTEXTURELAYERPROC _funcptr_glFramebufferTextureLayer;
 #define glFramebufferTextureLayer _funcptr_glFramebufferTextureLayer
-extern PFNGLGENFRAMEBUFFERSPROC _funcptr_glGenFramebuffers;
+CI_API extern PFNGLGENFRAMEBUFFERSPROC _funcptr_glGenFramebuffers;
 #define glGenFramebuffers _funcptr_glGenFramebuffers
-extern PFNGLGENRENDERBUFFERSPROC _funcptr_glGenRenderbuffers;
+CI_API extern PFNGLGENRENDERBUFFERSPROC _funcptr_glGenRenderbuffers;
 #define glGenRenderbuffers _funcptr_glGenRenderbuffers
-extern PFNGLGENERATEMIPMAPPROC _funcptr_glGenerateMipmap;
+CI_API extern PFNGLGENERATEMIPMAPPROC _funcptr_glGenerateMipmap;
 #define glGenerateMipmap _funcptr_glGenerateMipmap
-extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC _funcptr_glGetFramebufferAttachmentParameteriv;
+CI_API extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC _funcptr_glGetFramebufferAttachmentParameteriv;
 #define glGetFramebufferAttachmentParameteriv _funcptr_glGetFramebufferAttachmentParameteriv
-extern PFNGLGETRENDERBUFFERPARAMETERIVPROC _funcptr_glGetRenderbufferParameteriv;
+CI_API extern PFNGLGETRENDERBUFFERPARAMETERIVPROC _funcptr_glGetRenderbufferParameteriv;
 #define glGetRenderbufferParameteriv _funcptr_glGetRenderbufferParameteriv
-extern PFNGLISFRAMEBUFFERPROC _funcptr_glIsFramebuffer;
+CI_API extern PFNGLISFRAMEBUFFERPROC _funcptr_glIsFramebuffer;
 #define glIsFramebuffer _funcptr_glIsFramebuffer
-extern PFNGLISRENDERBUFFERPROC _funcptr_glIsRenderbuffer;
+CI_API extern PFNGLISRENDERBUFFERPROC _funcptr_glIsRenderbuffer;
 #define glIsRenderbuffer _funcptr_glIsRenderbuffer
-extern PFNGLRENDERBUFFERSTORAGEPROC _funcptr_glRenderbufferStorage;
+CI_API extern PFNGLRENDERBUFFERSTORAGEPROC _funcptr_glRenderbufferStorage;
 #define glRenderbufferStorage _funcptr_glRenderbufferStorage
-extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC _funcptr_glRenderbufferStorageMultisample;
+CI_API extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC _funcptr_glRenderbufferStorageMultisample;
 #define glRenderbufferStorageMultisample _funcptr_glRenderbufferStorageMultisample
 
 #define GL_DEPTH32F_STENCIL8 0x8CAD
@@ -901,19 +901,19 @@ typedef GLuint (CODEGEN_FUNCPTR * PFNGLGETUNIFORMBLOCKINDEXPROC)(GLuint program,
 typedef void (CODEGEN_FUNCPTR * PFNGLGETUNIFORMINDICESPROC)(GLuint program, GLsizei uniformCount, const GLchar *const* uniformNames, GLuint * uniformIndices);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMBLOCKBINDINGPROC)(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
 
-extern PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC _funcptr_glGetActiveUniformBlockName;
+CI_API extern PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC _funcptr_glGetActiveUniformBlockName;
 #define glGetActiveUniformBlockName _funcptr_glGetActiveUniformBlockName
-extern PFNGLGETACTIVEUNIFORMBLOCKIVPROC _funcptr_glGetActiveUniformBlockiv;
+CI_API extern PFNGLGETACTIVEUNIFORMBLOCKIVPROC _funcptr_glGetActiveUniformBlockiv;
 #define glGetActiveUniformBlockiv _funcptr_glGetActiveUniformBlockiv
-extern PFNGLGETACTIVEUNIFORMNAMEPROC _funcptr_glGetActiveUniformName;
+CI_API extern PFNGLGETACTIVEUNIFORMNAMEPROC _funcptr_glGetActiveUniformName;
 #define glGetActiveUniformName _funcptr_glGetActiveUniformName
-extern PFNGLGETACTIVEUNIFORMSIVPROC _funcptr_glGetActiveUniformsiv;
+CI_API extern PFNGLGETACTIVEUNIFORMSIVPROC _funcptr_glGetActiveUniformsiv;
 #define glGetActiveUniformsiv _funcptr_glGetActiveUniformsiv
-extern PFNGLGETUNIFORMBLOCKINDEXPROC _funcptr_glGetUniformBlockIndex;
+CI_API extern PFNGLGETUNIFORMBLOCKINDEXPROC _funcptr_glGetUniformBlockIndex;
 #define glGetUniformBlockIndex _funcptr_glGetUniformBlockIndex
-extern PFNGLGETUNIFORMINDICESPROC _funcptr_glGetUniformIndices;
+CI_API extern PFNGLGETUNIFORMINDICESPROC _funcptr_glGetUniformIndices;
 #define glGetUniformIndices _funcptr_glGetUniformIndices
-extern PFNGLUNIFORMBLOCKBINDINGPROC _funcptr_glUniformBlockBinding;
+CI_API extern PFNGLUNIFORMBLOCKBINDINGPROC _funcptr_glUniformBlockBinding;
 #define glUniformBlockBinding _funcptr_glUniformBlockBinding
 
 #define GL_COPY_READ_BUFFER 0x8F36
@@ -923,7 +923,7 @@ extern PFNGLUNIFORMBLOCKBINDINGPROC _funcptr_glUniformBlockBinding;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLCOPYBUFFERSUBDATAPROC)(GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
 
-extern PFNGLCOPYBUFFERSUBDATAPROC _funcptr_glCopyBufferSubData;
+CI_API extern PFNGLCOPYBUFFERSUBDATAPROC _funcptr_glCopyBufferSubData;
 #define glCopyBufferSubData _funcptr_glCopyBufferSubData
 
 #define GL_DEPTH_CLAMP 0x864F
@@ -933,13 +933,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC)(GLenum
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC)(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid * indices, GLint basevertex);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC)(GLenum mode, const GLsizei * count, GLenum type, const GLvoid *const* indices, GLsizei drawcount, const GLint * basevertex);
 
-extern PFNGLDRAWELEMENTSBASEVERTEXPROC _funcptr_glDrawElementsBaseVertex;
+CI_API extern PFNGLDRAWELEMENTSBASEVERTEXPROC _funcptr_glDrawElementsBaseVertex;
 #define glDrawElementsBaseVertex _funcptr_glDrawElementsBaseVertex
-extern PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC _funcptr_glDrawElementsInstancedBaseVertex;
+CI_API extern PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC _funcptr_glDrawElementsInstancedBaseVertex;
 #define glDrawElementsInstancedBaseVertex _funcptr_glDrawElementsInstancedBaseVertex
-extern PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC _funcptr_glDrawRangeElementsBaseVertex;
+CI_API extern PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC _funcptr_glDrawRangeElementsBaseVertex;
 #define glDrawRangeElementsBaseVertex _funcptr_glDrawRangeElementsBaseVertex
-extern PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC _funcptr_glMultiDrawElementsBaseVertex;
+CI_API extern PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC _funcptr_glMultiDrawElementsBaseVertex;
 #define glMultiDrawElementsBaseVertex _funcptr_glMultiDrawElementsBaseVertex
 
 #define GL_FIRST_VERTEX_CONVENTION 0x8E4D
@@ -949,7 +949,7 @@ extern PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC _funcptr_glMultiDrawElementsBaseVert
 
 typedef void (CODEGEN_FUNCPTR * PFNGLPROVOKINGVERTEXPROC)(GLenum mode);
 
-extern PFNGLPROVOKINGVERTEXPROC _funcptr_glProvokingVertex;
+CI_API extern PFNGLPROVOKINGVERTEXPROC _funcptr_glProvokingVertex;
 #define glProvokingVertex _funcptr_glProvokingVertex
 
 #define GL_TEXTURE_CUBE_MAP_SEAMLESS 0x884F
@@ -978,19 +978,19 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETSYNCIVPROC)(GLsync sync, GLenum pname, G
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISSYNCPROC)(GLsync sync);
 typedef void (CODEGEN_FUNCPTR * PFNGLWAITSYNCPROC)(GLsync sync, GLbitfield flags, GLuint64 timeout);
 
-extern PFNGLCLIENTWAITSYNCPROC _funcptr_glClientWaitSync;
+CI_API extern PFNGLCLIENTWAITSYNCPROC _funcptr_glClientWaitSync;
 #define glClientWaitSync _funcptr_glClientWaitSync
-extern PFNGLDELETESYNCPROC _funcptr_glDeleteSync;
+CI_API extern PFNGLDELETESYNCPROC _funcptr_glDeleteSync;
 #define glDeleteSync _funcptr_glDeleteSync
-extern PFNGLFENCESYNCPROC _funcptr_glFenceSync;
+CI_API extern PFNGLFENCESYNCPROC _funcptr_glFenceSync;
 #define glFenceSync _funcptr_glFenceSync
-extern PFNGLGETINTEGER64VPROC _funcptr_glGetInteger64v;
+CI_API extern PFNGLGETINTEGER64VPROC _funcptr_glGetInteger64v;
 #define glGetInteger64v _funcptr_glGetInteger64v
-extern PFNGLGETSYNCIVPROC _funcptr_glGetSynciv;
+CI_API extern PFNGLGETSYNCIVPROC _funcptr_glGetSynciv;
 #define glGetSynciv _funcptr_glGetSynciv
-extern PFNGLISSYNCPROC _funcptr_glIsSync;
+CI_API extern PFNGLISSYNCPROC _funcptr_glIsSync;
 #define glIsSync _funcptr_glIsSync
-extern PFNGLWAITSYNCPROC _funcptr_glWaitSync;
+CI_API extern PFNGLWAITSYNCPROC _funcptr_glWaitSync;
 #define glWaitSync _funcptr_glWaitSync
 
 #define GL_INT_SAMPLER_2D_MULTISAMPLE 0x9109
@@ -1020,13 +1020,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLEMASKIPROC)(GLuint index, GLbitfield m
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXIMAGE2DMULTISAMPLEPROC)(GLenum target, GLsizei samples, GLint internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXIMAGE3DMULTISAMPLEPROC)(GLenum target, GLsizei samples, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
 
-extern PFNGLGETMULTISAMPLEFVPROC _funcptr_glGetMultisamplefv;
+CI_API extern PFNGLGETMULTISAMPLEFVPROC _funcptr_glGetMultisamplefv;
 #define glGetMultisamplefv _funcptr_glGetMultisamplefv
-extern PFNGLSAMPLEMASKIPROC _funcptr_glSampleMaski;
+CI_API extern PFNGLSAMPLEMASKIPROC _funcptr_glSampleMaski;
 #define glSampleMaski _funcptr_glSampleMaski
-extern PFNGLTEXIMAGE2DMULTISAMPLEPROC _funcptr_glTexImage2DMultisample;
+CI_API extern PFNGLTEXIMAGE2DMULTISAMPLEPROC _funcptr_glTexImage2DMultisample;
 #define glTexImage2DMultisample _funcptr_glTexImage2DMultisample
-extern PFNGLTEXIMAGE3DMULTISAMPLEPROC _funcptr_glTexImage3DMultisample;
+CI_API extern PFNGLTEXIMAGE3DMULTISAMPLEPROC _funcptr_glTexImage3DMultisample;
 #define glTexImage3DMultisample _funcptr_glTexImage3DMultisample
 
 #define GL_BGRA 0x80E1
@@ -1046,11 +1046,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETQUERYOBJECTI64VPROC)(GLuint id, GLenum p
 typedef void (CODEGEN_FUNCPTR * PFNGLGETQUERYOBJECTUI64VPROC)(GLuint id, GLenum pname, GLuint64 * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLQUERYCOUNTERPROC)(GLuint id, GLenum target);
 
-extern PFNGLGETQUERYOBJECTI64VPROC _funcptr_glGetQueryObjecti64v;
+CI_API extern PFNGLGETQUERYOBJECTI64VPROC _funcptr_glGetQueryObjecti64v;
 #define glGetQueryObjecti64v _funcptr_glGetQueryObjecti64v
-extern PFNGLGETQUERYOBJECTUI64VPROC _funcptr_glGetQueryObjectui64v;
+CI_API extern PFNGLGETQUERYOBJECTUI64VPROC _funcptr_glGetQueryObjectui64v;
 #define glGetQueryObjectui64v _funcptr_glGetQueryObjectui64v
-extern PFNGLQUERYCOUNTERPROC _funcptr_glQueryCounter;
+CI_API extern PFNGLQUERYCOUNTERPROC _funcptr_glQueryCounter;
 #define glQueryCounter _funcptr_glQueryCounter
 
 #define GL_INT_2_10_10_10_REV 0x8D9F
@@ -1095,81 +1095,81 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXP3UIVPROC)(GLenum type, const GLuint 
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXP4UIPROC)(GLenum type, GLuint value);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXP4UIVPROC)(GLenum type, const GLuint * value);
 
-extern PFNGLCOLORP3UIPROC _funcptr_glColorP3ui;
+CI_API extern PFNGLCOLORP3UIPROC _funcptr_glColorP3ui;
 #define glColorP3ui _funcptr_glColorP3ui
-extern PFNGLCOLORP3UIVPROC _funcptr_glColorP3uiv;
+CI_API extern PFNGLCOLORP3UIVPROC _funcptr_glColorP3uiv;
 #define glColorP3uiv _funcptr_glColorP3uiv
-extern PFNGLCOLORP4UIPROC _funcptr_glColorP4ui;
+CI_API extern PFNGLCOLORP4UIPROC _funcptr_glColorP4ui;
 #define glColorP4ui _funcptr_glColorP4ui
-extern PFNGLCOLORP4UIVPROC _funcptr_glColorP4uiv;
+CI_API extern PFNGLCOLORP4UIVPROC _funcptr_glColorP4uiv;
 #define glColorP4uiv _funcptr_glColorP4uiv
-extern PFNGLMULTITEXCOORDP1UIPROC _funcptr_glMultiTexCoordP1ui;
+CI_API extern PFNGLMULTITEXCOORDP1UIPROC _funcptr_glMultiTexCoordP1ui;
 #define glMultiTexCoordP1ui _funcptr_glMultiTexCoordP1ui
-extern PFNGLMULTITEXCOORDP1UIVPROC _funcptr_glMultiTexCoordP1uiv;
+CI_API extern PFNGLMULTITEXCOORDP1UIVPROC _funcptr_glMultiTexCoordP1uiv;
 #define glMultiTexCoordP1uiv _funcptr_glMultiTexCoordP1uiv
-extern PFNGLMULTITEXCOORDP2UIPROC _funcptr_glMultiTexCoordP2ui;
+CI_API extern PFNGLMULTITEXCOORDP2UIPROC _funcptr_glMultiTexCoordP2ui;
 #define glMultiTexCoordP2ui _funcptr_glMultiTexCoordP2ui
-extern PFNGLMULTITEXCOORDP2UIVPROC _funcptr_glMultiTexCoordP2uiv;
+CI_API extern PFNGLMULTITEXCOORDP2UIVPROC _funcptr_glMultiTexCoordP2uiv;
 #define glMultiTexCoordP2uiv _funcptr_glMultiTexCoordP2uiv
-extern PFNGLMULTITEXCOORDP3UIPROC _funcptr_glMultiTexCoordP3ui;
+CI_API extern PFNGLMULTITEXCOORDP3UIPROC _funcptr_glMultiTexCoordP3ui;
 #define glMultiTexCoordP3ui _funcptr_glMultiTexCoordP3ui
-extern PFNGLMULTITEXCOORDP3UIVPROC _funcptr_glMultiTexCoordP3uiv;
+CI_API extern PFNGLMULTITEXCOORDP3UIVPROC _funcptr_glMultiTexCoordP3uiv;
 #define glMultiTexCoordP3uiv _funcptr_glMultiTexCoordP3uiv
-extern PFNGLMULTITEXCOORDP4UIPROC _funcptr_glMultiTexCoordP4ui;
+CI_API extern PFNGLMULTITEXCOORDP4UIPROC _funcptr_glMultiTexCoordP4ui;
 #define glMultiTexCoordP4ui _funcptr_glMultiTexCoordP4ui
-extern PFNGLMULTITEXCOORDP4UIVPROC _funcptr_glMultiTexCoordP4uiv;
+CI_API extern PFNGLMULTITEXCOORDP4UIVPROC _funcptr_glMultiTexCoordP4uiv;
 #define glMultiTexCoordP4uiv _funcptr_glMultiTexCoordP4uiv
-extern PFNGLNORMALP3UIPROC _funcptr_glNormalP3ui;
+CI_API extern PFNGLNORMALP3UIPROC _funcptr_glNormalP3ui;
 #define glNormalP3ui _funcptr_glNormalP3ui
-extern PFNGLNORMALP3UIVPROC _funcptr_glNormalP3uiv;
+CI_API extern PFNGLNORMALP3UIVPROC _funcptr_glNormalP3uiv;
 #define glNormalP3uiv _funcptr_glNormalP3uiv
-extern PFNGLSECONDARYCOLORP3UIPROC _funcptr_glSecondaryColorP3ui;
+CI_API extern PFNGLSECONDARYCOLORP3UIPROC _funcptr_glSecondaryColorP3ui;
 #define glSecondaryColorP3ui _funcptr_glSecondaryColorP3ui
-extern PFNGLSECONDARYCOLORP3UIVPROC _funcptr_glSecondaryColorP3uiv;
+CI_API extern PFNGLSECONDARYCOLORP3UIVPROC _funcptr_glSecondaryColorP3uiv;
 #define glSecondaryColorP3uiv _funcptr_glSecondaryColorP3uiv
-extern PFNGLTEXCOORDP1UIPROC _funcptr_glTexCoordP1ui;
+CI_API extern PFNGLTEXCOORDP1UIPROC _funcptr_glTexCoordP1ui;
 #define glTexCoordP1ui _funcptr_glTexCoordP1ui
-extern PFNGLTEXCOORDP1UIVPROC _funcptr_glTexCoordP1uiv;
+CI_API extern PFNGLTEXCOORDP1UIVPROC _funcptr_glTexCoordP1uiv;
 #define glTexCoordP1uiv _funcptr_glTexCoordP1uiv
-extern PFNGLTEXCOORDP2UIPROC _funcptr_glTexCoordP2ui;
+CI_API extern PFNGLTEXCOORDP2UIPROC _funcptr_glTexCoordP2ui;
 #define glTexCoordP2ui _funcptr_glTexCoordP2ui
-extern PFNGLTEXCOORDP2UIVPROC _funcptr_glTexCoordP2uiv;
+CI_API extern PFNGLTEXCOORDP2UIVPROC _funcptr_glTexCoordP2uiv;
 #define glTexCoordP2uiv _funcptr_glTexCoordP2uiv
-extern PFNGLTEXCOORDP3UIPROC _funcptr_glTexCoordP3ui;
+CI_API extern PFNGLTEXCOORDP3UIPROC _funcptr_glTexCoordP3ui;
 #define glTexCoordP3ui _funcptr_glTexCoordP3ui
-extern PFNGLTEXCOORDP3UIVPROC _funcptr_glTexCoordP3uiv;
+CI_API extern PFNGLTEXCOORDP3UIVPROC _funcptr_glTexCoordP3uiv;
 #define glTexCoordP3uiv _funcptr_glTexCoordP3uiv
-extern PFNGLTEXCOORDP4UIPROC _funcptr_glTexCoordP4ui;
+CI_API extern PFNGLTEXCOORDP4UIPROC _funcptr_glTexCoordP4ui;
 #define glTexCoordP4ui _funcptr_glTexCoordP4ui
-extern PFNGLTEXCOORDP4UIVPROC _funcptr_glTexCoordP4uiv;
+CI_API extern PFNGLTEXCOORDP4UIVPROC _funcptr_glTexCoordP4uiv;
 #define glTexCoordP4uiv _funcptr_glTexCoordP4uiv
-extern PFNGLVERTEXATTRIBP1UIPROC _funcptr_glVertexAttribP1ui;
+CI_API extern PFNGLVERTEXATTRIBP1UIPROC _funcptr_glVertexAttribP1ui;
 #define glVertexAttribP1ui _funcptr_glVertexAttribP1ui
-extern PFNGLVERTEXATTRIBP1UIVPROC _funcptr_glVertexAttribP1uiv;
+CI_API extern PFNGLVERTEXATTRIBP1UIVPROC _funcptr_glVertexAttribP1uiv;
 #define glVertexAttribP1uiv _funcptr_glVertexAttribP1uiv
-extern PFNGLVERTEXATTRIBP2UIPROC _funcptr_glVertexAttribP2ui;
+CI_API extern PFNGLVERTEXATTRIBP2UIPROC _funcptr_glVertexAttribP2ui;
 #define glVertexAttribP2ui _funcptr_glVertexAttribP2ui
-extern PFNGLVERTEXATTRIBP2UIVPROC _funcptr_glVertexAttribP2uiv;
+CI_API extern PFNGLVERTEXATTRIBP2UIVPROC _funcptr_glVertexAttribP2uiv;
 #define glVertexAttribP2uiv _funcptr_glVertexAttribP2uiv
-extern PFNGLVERTEXATTRIBP3UIPROC _funcptr_glVertexAttribP3ui;
+CI_API extern PFNGLVERTEXATTRIBP3UIPROC _funcptr_glVertexAttribP3ui;
 #define glVertexAttribP3ui _funcptr_glVertexAttribP3ui
-extern PFNGLVERTEXATTRIBP3UIVPROC _funcptr_glVertexAttribP3uiv;
+CI_API extern PFNGLVERTEXATTRIBP3UIVPROC _funcptr_glVertexAttribP3uiv;
 #define glVertexAttribP3uiv _funcptr_glVertexAttribP3uiv
-extern PFNGLVERTEXATTRIBP4UIPROC _funcptr_glVertexAttribP4ui;
+CI_API extern PFNGLVERTEXATTRIBP4UIPROC _funcptr_glVertexAttribP4ui;
 #define glVertexAttribP4ui _funcptr_glVertexAttribP4ui
-extern PFNGLVERTEXATTRIBP4UIVPROC _funcptr_glVertexAttribP4uiv;
+CI_API extern PFNGLVERTEXATTRIBP4UIVPROC _funcptr_glVertexAttribP4uiv;
 #define glVertexAttribP4uiv _funcptr_glVertexAttribP4uiv
-extern PFNGLVERTEXP2UIPROC _funcptr_glVertexP2ui;
+CI_API extern PFNGLVERTEXP2UIPROC _funcptr_glVertexP2ui;
 #define glVertexP2ui _funcptr_glVertexP2ui
-extern PFNGLVERTEXP2UIVPROC _funcptr_glVertexP2uiv;
+CI_API extern PFNGLVERTEXP2UIVPROC _funcptr_glVertexP2uiv;
 #define glVertexP2uiv _funcptr_glVertexP2uiv
-extern PFNGLVERTEXP3UIPROC _funcptr_glVertexP3ui;
+CI_API extern PFNGLVERTEXP3UIPROC _funcptr_glVertexP3ui;
 #define glVertexP3ui _funcptr_glVertexP3ui
-extern PFNGLVERTEXP3UIVPROC _funcptr_glVertexP3uiv;
+CI_API extern PFNGLVERTEXP3UIVPROC _funcptr_glVertexP3uiv;
 #define glVertexP3uiv _funcptr_glVertexP3uiv
-extern PFNGLVERTEXP4UIPROC _funcptr_glVertexP4ui;
+CI_API extern PFNGLVERTEXP4UIPROC _funcptr_glVertexP4ui;
 #define glVertexP4ui _funcptr_glVertexP4ui
-extern PFNGLVERTEXP4UIVPROC _funcptr_glVertexP4uiv;
+CI_API extern PFNGLVERTEXP4UIVPROC _funcptr_glVertexP4uiv;
 #define glVertexP4uiv _funcptr_glVertexP4uiv
 
 #define GL_MAX_DUAL_SOURCE_DRAW_BUFFERS 0x88FC
@@ -1181,9 +1181,9 @@ extern PFNGLVERTEXP4UIVPROC _funcptr_glVertexP4uiv;
 typedef void (CODEGEN_FUNCPTR * PFNGLBINDFRAGDATALOCATIONINDEXEDPROC)(GLuint program, GLuint colorNumber, GLuint index, const GLchar * name);
 typedef GLint (CODEGEN_FUNCPTR * PFNGLGETFRAGDATAINDEXPROC)(GLuint program, const GLchar * name);
 
-extern PFNGLBINDFRAGDATALOCATIONINDEXEDPROC _funcptr_glBindFragDataLocationIndexed;
+CI_API extern PFNGLBINDFRAGDATALOCATIONINDEXEDPROC _funcptr_glBindFragDataLocationIndexed;
 #define glBindFragDataLocationIndexed _funcptr_glBindFragDataLocationIndexed
-extern PFNGLGETFRAGDATAINDEXPROC _funcptr_glGetFragDataIndex;
+CI_API extern PFNGLGETFRAGDATAINDEXPROC _funcptr_glGetFragDataIndex;
 #define glGetFragDataIndex _funcptr_glGetFragDataIndex
 
 #define GL_ANY_SAMPLES_PASSED 0x8C2F
@@ -1205,33 +1205,33 @@ typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLERPARAMETERFVPROC)(GLuint sampler, GLe
 typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLERPARAMETERIPROC)(GLuint sampler, GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLERPARAMETERIVPROC)(GLuint sampler, GLenum pname, const GLint * param);
 
-extern PFNGLBINDSAMPLERPROC _funcptr_glBindSampler;
+CI_API extern PFNGLBINDSAMPLERPROC _funcptr_glBindSampler;
 #define glBindSampler _funcptr_glBindSampler
-extern PFNGLDELETESAMPLERSPROC _funcptr_glDeleteSamplers;
+CI_API extern PFNGLDELETESAMPLERSPROC _funcptr_glDeleteSamplers;
 #define glDeleteSamplers _funcptr_glDeleteSamplers
-extern PFNGLGENSAMPLERSPROC _funcptr_glGenSamplers;
+CI_API extern PFNGLGENSAMPLERSPROC _funcptr_glGenSamplers;
 #define glGenSamplers _funcptr_glGenSamplers
-extern PFNGLGETSAMPLERPARAMETERIIVPROC _funcptr_glGetSamplerParameterIiv;
+CI_API extern PFNGLGETSAMPLERPARAMETERIIVPROC _funcptr_glGetSamplerParameterIiv;
 #define glGetSamplerParameterIiv _funcptr_glGetSamplerParameterIiv
-extern PFNGLGETSAMPLERPARAMETERIUIVPROC _funcptr_glGetSamplerParameterIuiv;
+CI_API extern PFNGLGETSAMPLERPARAMETERIUIVPROC _funcptr_glGetSamplerParameterIuiv;
 #define glGetSamplerParameterIuiv _funcptr_glGetSamplerParameterIuiv
-extern PFNGLGETSAMPLERPARAMETERFVPROC _funcptr_glGetSamplerParameterfv;
+CI_API extern PFNGLGETSAMPLERPARAMETERFVPROC _funcptr_glGetSamplerParameterfv;
 #define glGetSamplerParameterfv _funcptr_glGetSamplerParameterfv
-extern PFNGLGETSAMPLERPARAMETERIVPROC _funcptr_glGetSamplerParameteriv;
+CI_API extern PFNGLGETSAMPLERPARAMETERIVPROC _funcptr_glGetSamplerParameteriv;
 #define glGetSamplerParameteriv _funcptr_glGetSamplerParameteriv
-extern PFNGLISSAMPLERPROC _funcptr_glIsSampler;
+CI_API extern PFNGLISSAMPLERPROC _funcptr_glIsSampler;
 #define glIsSampler _funcptr_glIsSampler
-extern PFNGLSAMPLERPARAMETERIIVPROC _funcptr_glSamplerParameterIiv;
+CI_API extern PFNGLSAMPLERPARAMETERIIVPROC _funcptr_glSamplerParameterIiv;
 #define glSamplerParameterIiv _funcptr_glSamplerParameterIiv
-extern PFNGLSAMPLERPARAMETERIUIVPROC _funcptr_glSamplerParameterIuiv;
+CI_API extern PFNGLSAMPLERPARAMETERIUIVPROC _funcptr_glSamplerParameterIuiv;
 #define glSamplerParameterIuiv _funcptr_glSamplerParameterIuiv
-extern PFNGLSAMPLERPARAMETERFPROC _funcptr_glSamplerParameterf;
+CI_API extern PFNGLSAMPLERPARAMETERFPROC _funcptr_glSamplerParameterf;
 #define glSamplerParameterf _funcptr_glSamplerParameterf
-extern PFNGLSAMPLERPARAMETERFVPROC _funcptr_glSamplerParameterfv;
+CI_API extern PFNGLSAMPLERPARAMETERFVPROC _funcptr_glSamplerParameterfv;
 #define glSamplerParameterfv _funcptr_glSamplerParameterfv
-extern PFNGLSAMPLERPARAMETERIPROC _funcptr_glSamplerParameteri;
+CI_API extern PFNGLSAMPLERPARAMETERIPROC _funcptr_glSamplerParameteri;
 #define glSamplerParameteri _funcptr_glSamplerParameteri
-extern PFNGLSAMPLERPARAMETERIVPROC _funcptr_glSamplerParameteriv;
+CI_API extern PFNGLSAMPLERPARAMETERIVPROC _funcptr_glSamplerParameteriv;
 #define glSamplerParameteriv _funcptr_glSamplerParameteriv
 
 #define GL_DRAW_INDIRECT_BUFFER 0x8F3F
@@ -1240,9 +1240,9 @@ extern PFNGLSAMPLERPARAMETERIVPROC _funcptr_glSamplerParameteriv;
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWARRAYSINDIRECTPROC)(GLenum mode, const GLvoid * indirect);
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWELEMENTSINDIRECTPROC)(GLenum mode, GLenum type, const GLvoid * indirect);
 
-extern PFNGLDRAWARRAYSINDIRECTPROC _funcptr_glDrawArraysIndirect;
+CI_API extern PFNGLDRAWARRAYSINDIRECTPROC _funcptr_glDrawArraysIndirect;
 #define glDrawArraysIndirect _funcptr_glDrawArraysIndirect
-extern PFNGLDRAWELEMENTSINDIRECTPROC _funcptr_glDrawElementsIndirect;
+CI_API extern PFNGLDRAWELEMENTSINDIRECTPROC _funcptr_glDrawElementsIndirect;
 #define glDrawElementsIndirect _funcptr_glDrawElementsIndirect
 
 #define GL_FRAGMENT_INTERPOLATION_OFFSET_BITS 0x8E5D
@@ -1285,41 +1285,41 @@ typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMMATRIX4DVPROC)(GLint location, GLsiz
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMMATRIX4X2DVPROC)(GLint location, GLsizei count, GLboolean transpose, const GLdouble * value);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMMATRIX4X3DVPROC)(GLint location, GLsizei count, GLboolean transpose, const GLdouble * value);
 
-extern PFNGLGETUNIFORMDVPROC _funcptr_glGetUniformdv;
+CI_API extern PFNGLGETUNIFORMDVPROC _funcptr_glGetUniformdv;
 #define glGetUniformdv _funcptr_glGetUniformdv
-extern PFNGLUNIFORM1DPROC _funcptr_glUniform1d;
+CI_API extern PFNGLUNIFORM1DPROC _funcptr_glUniform1d;
 #define glUniform1d _funcptr_glUniform1d
-extern PFNGLUNIFORM1DVPROC _funcptr_glUniform1dv;
+CI_API extern PFNGLUNIFORM1DVPROC _funcptr_glUniform1dv;
 #define glUniform1dv _funcptr_glUniform1dv
-extern PFNGLUNIFORM2DPROC _funcptr_glUniform2d;
+CI_API extern PFNGLUNIFORM2DPROC _funcptr_glUniform2d;
 #define glUniform2d _funcptr_glUniform2d
-extern PFNGLUNIFORM2DVPROC _funcptr_glUniform2dv;
+CI_API extern PFNGLUNIFORM2DVPROC _funcptr_glUniform2dv;
 #define glUniform2dv _funcptr_glUniform2dv
-extern PFNGLUNIFORM3DPROC _funcptr_glUniform3d;
+CI_API extern PFNGLUNIFORM3DPROC _funcptr_glUniform3d;
 #define glUniform3d _funcptr_glUniform3d
-extern PFNGLUNIFORM3DVPROC _funcptr_glUniform3dv;
+CI_API extern PFNGLUNIFORM3DVPROC _funcptr_glUniform3dv;
 #define glUniform3dv _funcptr_glUniform3dv
-extern PFNGLUNIFORM4DPROC _funcptr_glUniform4d;
+CI_API extern PFNGLUNIFORM4DPROC _funcptr_glUniform4d;
 #define glUniform4d _funcptr_glUniform4d
-extern PFNGLUNIFORM4DVPROC _funcptr_glUniform4dv;
+CI_API extern PFNGLUNIFORM4DVPROC _funcptr_glUniform4dv;
 #define glUniform4dv _funcptr_glUniform4dv
-extern PFNGLUNIFORMMATRIX2DVPROC _funcptr_glUniformMatrix2dv;
+CI_API extern PFNGLUNIFORMMATRIX2DVPROC _funcptr_glUniformMatrix2dv;
 #define glUniformMatrix2dv _funcptr_glUniformMatrix2dv
-extern PFNGLUNIFORMMATRIX2X3DVPROC _funcptr_glUniformMatrix2x3dv;
+CI_API extern PFNGLUNIFORMMATRIX2X3DVPROC _funcptr_glUniformMatrix2x3dv;
 #define glUniformMatrix2x3dv _funcptr_glUniformMatrix2x3dv
-extern PFNGLUNIFORMMATRIX2X4DVPROC _funcptr_glUniformMatrix2x4dv;
+CI_API extern PFNGLUNIFORMMATRIX2X4DVPROC _funcptr_glUniformMatrix2x4dv;
 #define glUniformMatrix2x4dv _funcptr_glUniformMatrix2x4dv
-extern PFNGLUNIFORMMATRIX3DVPROC _funcptr_glUniformMatrix3dv;
+CI_API extern PFNGLUNIFORMMATRIX3DVPROC _funcptr_glUniformMatrix3dv;
 #define glUniformMatrix3dv _funcptr_glUniformMatrix3dv
-extern PFNGLUNIFORMMATRIX3X2DVPROC _funcptr_glUniformMatrix3x2dv;
+CI_API extern PFNGLUNIFORMMATRIX3X2DVPROC _funcptr_glUniformMatrix3x2dv;
 #define glUniformMatrix3x2dv _funcptr_glUniformMatrix3x2dv
-extern PFNGLUNIFORMMATRIX3X4DVPROC _funcptr_glUniformMatrix3x4dv;
+CI_API extern PFNGLUNIFORMMATRIX3X4DVPROC _funcptr_glUniformMatrix3x4dv;
 #define glUniformMatrix3x4dv _funcptr_glUniformMatrix3x4dv
-extern PFNGLUNIFORMMATRIX4DVPROC _funcptr_glUniformMatrix4dv;
+CI_API extern PFNGLUNIFORMMATRIX4DVPROC _funcptr_glUniformMatrix4dv;
 #define glUniformMatrix4dv _funcptr_glUniformMatrix4dv
-extern PFNGLUNIFORMMATRIX4X2DVPROC _funcptr_glUniformMatrix4x2dv;
+CI_API extern PFNGLUNIFORMMATRIX4X2DVPROC _funcptr_glUniformMatrix4x2dv;
 #define glUniformMatrix4x2dv _funcptr_glUniformMatrix4x2dv
-extern PFNGLUNIFORMMATRIX4X3DVPROC _funcptr_glUniformMatrix4x3dv;
+CI_API extern PFNGLUNIFORMMATRIX4X3DVPROC _funcptr_glUniformMatrix4x3dv;
 #define glUniformMatrix4x3dv _funcptr_glUniformMatrix4x3dv
 
 #define GL_ACTIVE_SUBROUTINES 0x8DE5
@@ -1343,21 +1343,21 @@ typedef GLint (CODEGEN_FUNCPTR * PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC)(GLuint p
 typedef void (CODEGEN_FUNCPTR * PFNGLGETUNIFORMSUBROUTINEUIVPROC)(GLenum shadertype, GLint location, GLuint * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMSUBROUTINESUIVPROC)(GLenum shadertype, GLsizei count, const GLuint * indices);
 
-extern PFNGLGETACTIVESUBROUTINENAMEPROC _funcptr_glGetActiveSubroutineName;
+CI_API extern PFNGLGETACTIVESUBROUTINENAMEPROC _funcptr_glGetActiveSubroutineName;
 #define glGetActiveSubroutineName _funcptr_glGetActiveSubroutineName
-extern PFNGLGETACTIVESUBROUTINEUNIFORMNAMEPROC _funcptr_glGetActiveSubroutineUniformName;
+CI_API extern PFNGLGETACTIVESUBROUTINEUNIFORMNAMEPROC _funcptr_glGetActiveSubroutineUniformName;
 #define glGetActiveSubroutineUniformName _funcptr_glGetActiveSubroutineUniformName
-extern PFNGLGETACTIVESUBROUTINEUNIFORMIVPROC _funcptr_glGetActiveSubroutineUniformiv;
+CI_API extern PFNGLGETACTIVESUBROUTINEUNIFORMIVPROC _funcptr_glGetActiveSubroutineUniformiv;
 #define glGetActiveSubroutineUniformiv _funcptr_glGetActiveSubroutineUniformiv
-extern PFNGLGETPROGRAMSTAGEIVPROC _funcptr_glGetProgramStageiv;
+CI_API extern PFNGLGETPROGRAMSTAGEIVPROC _funcptr_glGetProgramStageiv;
 #define glGetProgramStageiv _funcptr_glGetProgramStageiv
-extern PFNGLGETSUBROUTINEINDEXPROC _funcptr_glGetSubroutineIndex;
+CI_API extern PFNGLGETSUBROUTINEINDEXPROC _funcptr_glGetSubroutineIndex;
 #define glGetSubroutineIndex _funcptr_glGetSubroutineIndex
-extern PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC _funcptr_glGetSubroutineUniformLocation;
+CI_API extern PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC _funcptr_glGetSubroutineUniformLocation;
 #define glGetSubroutineUniformLocation _funcptr_glGetSubroutineUniformLocation
-extern PFNGLGETUNIFORMSUBROUTINEUIVPROC _funcptr_glGetUniformSubroutineuiv;
+CI_API extern PFNGLGETUNIFORMSUBROUTINEUIVPROC _funcptr_glGetUniformSubroutineuiv;
 #define glGetUniformSubroutineuiv _funcptr_glGetUniformSubroutineuiv
-extern PFNGLUNIFORMSUBROUTINESUIVPROC _funcptr_glUniformSubroutinesuiv;
+CI_API extern PFNGLUNIFORMSUBROUTINESUIVPROC _funcptr_glUniformSubroutinesuiv;
 #define glUniformSubroutinesuiv _funcptr_glUniformSubroutinesuiv
 
 #define GL_CCW 0x0901
@@ -1401,9 +1401,9 @@ extern PFNGLUNIFORMSUBROUTINESUIVPROC _funcptr_glUniformSubroutinesuiv;
 typedef void (CODEGEN_FUNCPTR * PFNGLPATCHPARAMETERFVPROC)(GLenum pname, const GLfloat * values);
 typedef void (CODEGEN_FUNCPTR * PFNGLPATCHPARAMETERIPROC)(GLenum pname, GLint value);
 
-extern PFNGLPATCHPARAMETERFVPROC _funcptr_glPatchParameterfv;
+CI_API extern PFNGLPATCHPARAMETERFVPROC _funcptr_glPatchParameterfv;
 #define glPatchParameterfv _funcptr_glPatchParameterfv
-extern PFNGLPATCHPARAMETERIPROC _funcptr_glPatchParameteri;
+CI_API extern PFNGLPATCHPARAMETERIPROC _funcptr_glPatchParameteri;
 #define glPatchParameteri _funcptr_glPatchParameteri
 
 #define GL_TRANSFORM_FEEDBACK 0x8E22
@@ -1421,19 +1421,19 @@ typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISTRANSFORMFEEDBACKPROC)(GLuint id);
 typedef void (CODEGEN_FUNCPTR * PFNGLPAUSETRANSFORMFEEDBACKPROC)();
 typedef void (CODEGEN_FUNCPTR * PFNGLRESUMETRANSFORMFEEDBACKPROC)();
 
-extern PFNGLBINDTRANSFORMFEEDBACKPROC _funcptr_glBindTransformFeedback;
+CI_API extern PFNGLBINDTRANSFORMFEEDBACKPROC _funcptr_glBindTransformFeedback;
 #define glBindTransformFeedback _funcptr_glBindTransformFeedback
-extern PFNGLDELETETRANSFORMFEEDBACKSPROC _funcptr_glDeleteTransformFeedbacks;
+CI_API extern PFNGLDELETETRANSFORMFEEDBACKSPROC _funcptr_glDeleteTransformFeedbacks;
 #define glDeleteTransformFeedbacks _funcptr_glDeleteTransformFeedbacks
-extern PFNGLDRAWTRANSFORMFEEDBACKPROC _funcptr_glDrawTransformFeedback;
+CI_API extern PFNGLDRAWTRANSFORMFEEDBACKPROC _funcptr_glDrawTransformFeedback;
 #define glDrawTransformFeedback _funcptr_glDrawTransformFeedback
-extern PFNGLGENTRANSFORMFEEDBACKSPROC _funcptr_glGenTransformFeedbacks;
+CI_API extern PFNGLGENTRANSFORMFEEDBACKSPROC _funcptr_glGenTransformFeedbacks;
 #define glGenTransformFeedbacks _funcptr_glGenTransformFeedbacks
-extern PFNGLISTRANSFORMFEEDBACKPROC _funcptr_glIsTransformFeedback;
+CI_API extern PFNGLISTRANSFORMFEEDBACKPROC _funcptr_glIsTransformFeedback;
 #define glIsTransformFeedback _funcptr_glIsTransformFeedback
-extern PFNGLPAUSETRANSFORMFEEDBACKPROC _funcptr_glPauseTransformFeedback;
+CI_API extern PFNGLPAUSETRANSFORMFEEDBACKPROC _funcptr_glPauseTransformFeedback;
 #define glPauseTransformFeedback _funcptr_glPauseTransformFeedback
-extern PFNGLRESUMETRANSFORMFEEDBACKPROC _funcptr_glResumeTransformFeedback;
+CI_API extern PFNGLRESUMETRANSFORMFEEDBACKPROC _funcptr_glResumeTransformFeedback;
 #define glResumeTransformFeedback _funcptr_glResumeTransformFeedback
 
 #define GL_MAX_TRANSFORM_FEEDBACK_BUFFERS 0x8E70
@@ -1444,13 +1444,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC)(GLenum mod
 typedef void (CODEGEN_FUNCPTR * PFNGLENDQUERYINDEXEDPROC)(GLenum target, GLuint index);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETQUERYINDEXEDIVPROC)(GLenum target, GLuint index, GLenum pname, GLint * params);
 
-extern PFNGLBEGINQUERYINDEXEDPROC _funcptr_glBeginQueryIndexed;
+CI_API extern PFNGLBEGINQUERYINDEXEDPROC _funcptr_glBeginQueryIndexed;
 #define glBeginQueryIndexed _funcptr_glBeginQueryIndexed
-extern PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC _funcptr_glDrawTransformFeedbackStream;
+CI_API extern PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC _funcptr_glDrawTransformFeedbackStream;
 #define glDrawTransformFeedbackStream _funcptr_glDrawTransformFeedbackStream
-extern PFNGLENDQUERYINDEXEDPROC _funcptr_glEndQueryIndexed;
+CI_API extern PFNGLENDQUERYINDEXEDPROC _funcptr_glEndQueryIndexed;
 #define glEndQueryIndexed _funcptr_glEndQueryIndexed
-extern PFNGLGETQUERYINDEXEDIVPROC _funcptr_glGetQueryIndexediv;
+CI_API extern PFNGLGETQUERYINDEXEDIVPROC _funcptr_glGetQueryIndexediv;
 #define glGetQueryIndexediv _funcptr_glGetQueryIndexediv
 
 #define GL_FIXED 0x140C
@@ -1476,15 +1476,15 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETSHADERPRECISIONFORMATPROC)(GLenum shader
 typedef void (CODEGEN_FUNCPTR * PFNGLRELEASESHADERCOMPILERPROC)();
 typedef void (CODEGEN_FUNCPTR * PFNGLSHADERBINARYPROC)(GLsizei count, const GLuint * shaders, GLenum binaryformat, const GLvoid * binary, GLsizei length);
 
-extern PFNGLCLEARDEPTHFPROC _funcptr_glClearDepthf;
+CI_API extern PFNGLCLEARDEPTHFPROC _funcptr_glClearDepthf;
 #define glClearDepthf _funcptr_glClearDepthf
-extern PFNGLDEPTHRANGEFPROC _funcptr_glDepthRangef;
+CI_API extern PFNGLDEPTHRANGEFPROC _funcptr_glDepthRangef;
 #define glDepthRangef _funcptr_glDepthRangef
-extern PFNGLGETSHADERPRECISIONFORMATPROC _funcptr_glGetShaderPrecisionFormat;
+CI_API extern PFNGLGETSHADERPRECISIONFORMATPROC _funcptr_glGetShaderPrecisionFormat;
 #define glGetShaderPrecisionFormat _funcptr_glGetShaderPrecisionFormat
-extern PFNGLRELEASESHADERCOMPILERPROC _funcptr_glReleaseShaderCompiler;
+CI_API extern PFNGLRELEASESHADERCOMPILERPROC _funcptr_glReleaseShaderCompiler;
 #define glReleaseShaderCompiler _funcptr_glReleaseShaderCompiler
-extern PFNGLSHADERBINARYPROC _funcptr_glShaderBinary;
+CI_API extern PFNGLSHADERBINARYPROC _funcptr_glShaderBinary;
 #define glShaderBinary _funcptr_glShaderBinary
 
 #define GL_NUM_PROGRAM_BINARY_FORMATS 0x87FE
@@ -1496,11 +1496,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETPROGRAMBINARYPROC)(GLuint program, GLsiz
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMBINARYPROC)(GLuint program, GLenum binaryFormat, const GLvoid * binary, GLsizei length);
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMPARAMETERIPROC)(GLuint program, GLenum pname, GLint value);
 
-extern PFNGLGETPROGRAMBINARYPROC _funcptr_glGetProgramBinary;
+CI_API extern PFNGLGETPROGRAMBINARYPROC _funcptr_glGetProgramBinary;
 #define glGetProgramBinary _funcptr_glGetProgramBinary
-extern PFNGLPROGRAMBINARYPROC _funcptr_glProgramBinary;
+CI_API extern PFNGLPROGRAMBINARYPROC _funcptr_glProgramBinary;
 #define glProgramBinary _funcptr_glProgramBinary
-extern PFNGLPROGRAMPARAMETERIPROC _funcptr_glProgramParameteri;
+CI_API extern PFNGLPROGRAMPARAMETERIPROC _funcptr_glProgramParameteri;
 #define glProgramParameteri _funcptr_glProgramParameteri
 
 #define GL_ACTIVE_PROGRAM 0x8259
@@ -1574,125 +1574,125 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC)(GLuint progr
 typedef void (CODEGEN_FUNCPTR * PFNGLUSEPROGRAMSTAGESPROC)(GLuint pipeline, GLbitfield stages, GLuint program);
 typedef void (CODEGEN_FUNCPTR * PFNGLVALIDATEPROGRAMPIPELINEPROC)(GLuint pipeline);
 
-extern PFNGLACTIVESHADERPROGRAMPROC _funcptr_glActiveShaderProgram;
+CI_API extern PFNGLACTIVESHADERPROGRAMPROC _funcptr_glActiveShaderProgram;
 #define glActiveShaderProgram _funcptr_glActiveShaderProgram
-extern PFNGLBINDPROGRAMPIPELINEPROC _funcptr_glBindProgramPipeline;
+CI_API extern PFNGLBINDPROGRAMPIPELINEPROC _funcptr_glBindProgramPipeline;
 #define glBindProgramPipeline _funcptr_glBindProgramPipeline
-extern PFNGLCREATESHADERPROGRAMVPROC _funcptr_glCreateShaderProgramv;
+CI_API extern PFNGLCREATESHADERPROGRAMVPROC _funcptr_glCreateShaderProgramv;
 #define glCreateShaderProgramv _funcptr_glCreateShaderProgramv
-extern PFNGLDELETEPROGRAMPIPELINESPROC _funcptr_glDeleteProgramPipelines;
+CI_API extern PFNGLDELETEPROGRAMPIPELINESPROC _funcptr_glDeleteProgramPipelines;
 #define glDeleteProgramPipelines _funcptr_glDeleteProgramPipelines
-extern PFNGLGENPROGRAMPIPELINESPROC _funcptr_glGenProgramPipelines;
+CI_API extern PFNGLGENPROGRAMPIPELINESPROC _funcptr_glGenProgramPipelines;
 #define glGenProgramPipelines _funcptr_glGenProgramPipelines
-extern PFNGLGETPROGRAMPIPELINEINFOLOGPROC _funcptr_glGetProgramPipelineInfoLog;
+CI_API extern PFNGLGETPROGRAMPIPELINEINFOLOGPROC _funcptr_glGetProgramPipelineInfoLog;
 #define glGetProgramPipelineInfoLog _funcptr_glGetProgramPipelineInfoLog
-extern PFNGLGETPROGRAMPIPELINEIVPROC _funcptr_glGetProgramPipelineiv;
+CI_API extern PFNGLGETPROGRAMPIPELINEIVPROC _funcptr_glGetProgramPipelineiv;
 #define glGetProgramPipelineiv _funcptr_glGetProgramPipelineiv
-extern PFNGLISPROGRAMPIPELINEPROC _funcptr_glIsProgramPipeline;
+CI_API extern PFNGLISPROGRAMPIPELINEPROC _funcptr_glIsProgramPipeline;
 #define glIsProgramPipeline _funcptr_glIsProgramPipeline
-extern PFNGLPROGRAMUNIFORM1DPROC _funcptr_glProgramUniform1d;
+CI_API extern PFNGLPROGRAMUNIFORM1DPROC _funcptr_glProgramUniform1d;
 #define glProgramUniform1d _funcptr_glProgramUniform1d
-extern PFNGLPROGRAMUNIFORM1DVPROC _funcptr_glProgramUniform1dv;
+CI_API extern PFNGLPROGRAMUNIFORM1DVPROC _funcptr_glProgramUniform1dv;
 #define glProgramUniform1dv _funcptr_glProgramUniform1dv
-extern PFNGLPROGRAMUNIFORM1FPROC _funcptr_glProgramUniform1f;
+CI_API extern PFNGLPROGRAMUNIFORM1FPROC _funcptr_glProgramUniform1f;
 #define glProgramUniform1f _funcptr_glProgramUniform1f
-extern PFNGLPROGRAMUNIFORM1FVPROC _funcptr_glProgramUniform1fv;
+CI_API extern PFNGLPROGRAMUNIFORM1FVPROC _funcptr_glProgramUniform1fv;
 #define glProgramUniform1fv _funcptr_glProgramUniform1fv
-extern PFNGLPROGRAMUNIFORM1IPROC _funcptr_glProgramUniform1i;
+CI_API extern PFNGLPROGRAMUNIFORM1IPROC _funcptr_glProgramUniform1i;
 #define glProgramUniform1i _funcptr_glProgramUniform1i
-extern PFNGLPROGRAMUNIFORM1IVPROC _funcptr_glProgramUniform1iv;
+CI_API extern PFNGLPROGRAMUNIFORM1IVPROC _funcptr_glProgramUniform1iv;
 #define glProgramUniform1iv _funcptr_glProgramUniform1iv
-extern PFNGLPROGRAMUNIFORM1UIPROC _funcptr_glProgramUniform1ui;
+CI_API extern PFNGLPROGRAMUNIFORM1UIPROC _funcptr_glProgramUniform1ui;
 #define glProgramUniform1ui _funcptr_glProgramUniform1ui
-extern PFNGLPROGRAMUNIFORM1UIVPROC _funcptr_glProgramUniform1uiv;
+CI_API extern PFNGLPROGRAMUNIFORM1UIVPROC _funcptr_glProgramUniform1uiv;
 #define glProgramUniform1uiv _funcptr_glProgramUniform1uiv
-extern PFNGLPROGRAMUNIFORM2DPROC _funcptr_glProgramUniform2d;
+CI_API extern PFNGLPROGRAMUNIFORM2DPROC _funcptr_glProgramUniform2d;
 #define glProgramUniform2d _funcptr_glProgramUniform2d
-extern PFNGLPROGRAMUNIFORM2DVPROC _funcptr_glProgramUniform2dv;
+CI_API extern PFNGLPROGRAMUNIFORM2DVPROC _funcptr_glProgramUniform2dv;
 #define glProgramUniform2dv _funcptr_glProgramUniform2dv
-extern PFNGLPROGRAMUNIFORM2FPROC _funcptr_glProgramUniform2f;
+CI_API extern PFNGLPROGRAMUNIFORM2FPROC _funcptr_glProgramUniform2f;
 #define glProgramUniform2f _funcptr_glProgramUniform2f
-extern PFNGLPROGRAMUNIFORM2FVPROC _funcptr_glProgramUniform2fv;
+CI_API extern PFNGLPROGRAMUNIFORM2FVPROC _funcptr_glProgramUniform2fv;
 #define glProgramUniform2fv _funcptr_glProgramUniform2fv
-extern PFNGLPROGRAMUNIFORM2IPROC _funcptr_glProgramUniform2i;
+CI_API extern PFNGLPROGRAMUNIFORM2IPROC _funcptr_glProgramUniform2i;
 #define glProgramUniform2i _funcptr_glProgramUniform2i
-extern PFNGLPROGRAMUNIFORM2IVPROC _funcptr_glProgramUniform2iv;
+CI_API extern PFNGLPROGRAMUNIFORM2IVPROC _funcptr_glProgramUniform2iv;
 #define glProgramUniform2iv _funcptr_glProgramUniform2iv
-extern PFNGLPROGRAMUNIFORM2UIPROC _funcptr_glProgramUniform2ui;
+CI_API extern PFNGLPROGRAMUNIFORM2UIPROC _funcptr_glProgramUniform2ui;
 #define glProgramUniform2ui _funcptr_glProgramUniform2ui
-extern PFNGLPROGRAMUNIFORM2UIVPROC _funcptr_glProgramUniform2uiv;
+CI_API extern PFNGLPROGRAMUNIFORM2UIVPROC _funcptr_glProgramUniform2uiv;
 #define glProgramUniform2uiv _funcptr_glProgramUniform2uiv
-extern PFNGLPROGRAMUNIFORM3DPROC _funcptr_glProgramUniform3d;
+CI_API extern PFNGLPROGRAMUNIFORM3DPROC _funcptr_glProgramUniform3d;
 #define glProgramUniform3d _funcptr_glProgramUniform3d
-extern PFNGLPROGRAMUNIFORM3DVPROC _funcptr_glProgramUniform3dv;
+CI_API extern PFNGLPROGRAMUNIFORM3DVPROC _funcptr_glProgramUniform3dv;
 #define glProgramUniform3dv _funcptr_glProgramUniform3dv
-extern PFNGLPROGRAMUNIFORM3FPROC _funcptr_glProgramUniform3f;
+CI_API extern PFNGLPROGRAMUNIFORM3FPROC _funcptr_glProgramUniform3f;
 #define glProgramUniform3f _funcptr_glProgramUniform3f
-extern PFNGLPROGRAMUNIFORM3FVPROC _funcptr_glProgramUniform3fv;
+CI_API extern PFNGLPROGRAMUNIFORM3FVPROC _funcptr_glProgramUniform3fv;
 #define glProgramUniform3fv _funcptr_glProgramUniform3fv
-extern PFNGLPROGRAMUNIFORM3IPROC _funcptr_glProgramUniform3i;
+CI_API extern PFNGLPROGRAMUNIFORM3IPROC _funcptr_glProgramUniform3i;
 #define glProgramUniform3i _funcptr_glProgramUniform3i
-extern PFNGLPROGRAMUNIFORM3IVPROC _funcptr_glProgramUniform3iv;
+CI_API extern PFNGLPROGRAMUNIFORM3IVPROC _funcptr_glProgramUniform3iv;
 #define glProgramUniform3iv _funcptr_glProgramUniform3iv
-extern PFNGLPROGRAMUNIFORM3UIPROC _funcptr_glProgramUniform3ui;
+CI_API extern PFNGLPROGRAMUNIFORM3UIPROC _funcptr_glProgramUniform3ui;
 #define glProgramUniform3ui _funcptr_glProgramUniform3ui
-extern PFNGLPROGRAMUNIFORM3UIVPROC _funcptr_glProgramUniform3uiv;
+CI_API extern PFNGLPROGRAMUNIFORM3UIVPROC _funcptr_glProgramUniform3uiv;
 #define glProgramUniform3uiv _funcptr_glProgramUniform3uiv
-extern PFNGLPROGRAMUNIFORM4DPROC _funcptr_glProgramUniform4d;
+CI_API extern PFNGLPROGRAMUNIFORM4DPROC _funcptr_glProgramUniform4d;
 #define glProgramUniform4d _funcptr_glProgramUniform4d
-extern PFNGLPROGRAMUNIFORM4DVPROC _funcptr_glProgramUniform4dv;
+CI_API extern PFNGLPROGRAMUNIFORM4DVPROC _funcptr_glProgramUniform4dv;
 #define glProgramUniform4dv _funcptr_glProgramUniform4dv
-extern PFNGLPROGRAMUNIFORM4FPROC _funcptr_glProgramUniform4f;
+CI_API extern PFNGLPROGRAMUNIFORM4FPROC _funcptr_glProgramUniform4f;
 #define glProgramUniform4f _funcptr_glProgramUniform4f
-extern PFNGLPROGRAMUNIFORM4FVPROC _funcptr_glProgramUniform4fv;
+CI_API extern PFNGLPROGRAMUNIFORM4FVPROC _funcptr_glProgramUniform4fv;
 #define glProgramUniform4fv _funcptr_glProgramUniform4fv
-extern PFNGLPROGRAMUNIFORM4IPROC _funcptr_glProgramUniform4i;
+CI_API extern PFNGLPROGRAMUNIFORM4IPROC _funcptr_glProgramUniform4i;
 #define glProgramUniform4i _funcptr_glProgramUniform4i
-extern PFNGLPROGRAMUNIFORM4IVPROC _funcptr_glProgramUniform4iv;
+CI_API extern PFNGLPROGRAMUNIFORM4IVPROC _funcptr_glProgramUniform4iv;
 #define glProgramUniform4iv _funcptr_glProgramUniform4iv
-extern PFNGLPROGRAMUNIFORM4UIPROC _funcptr_glProgramUniform4ui;
+CI_API extern PFNGLPROGRAMUNIFORM4UIPROC _funcptr_glProgramUniform4ui;
 #define glProgramUniform4ui _funcptr_glProgramUniform4ui
-extern PFNGLPROGRAMUNIFORM4UIVPROC _funcptr_glProgramUniform4uiv;
+CI_API extern PFNGLPROGRAMUNIFORM4UIVPROC _funcptr_glProgramUniform4uiv;
 #define glProgramUniform4uiv _funcptr_glProgramUniform4uiv
-extern PFNGLPROGRAMUNIFORMMATRIX2DVPROC _funcptr_glProgramUniformMatrix2dv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2DVPROC _funcptr_glProgramUniformMatrix2dv;
 #define glProgramUniformMatrix2dv _funcptr_glProgramUniformMatrix2dv
-extern PFNGLPROGRAMUNIFORMMATRIX2FVPROC _funcptr_glProgramUniformMatrix2fv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2FVPROC _funcptr_glProgramUniformMatrix2fv;
 #define glProgramUniformMatrix2fv _funcptr_glProgramUniformMatrix2fv
-extern PFNGLPROGRAMUNIFORMMATRIX2X3DVPROC _funcptr_glProgramUniformMatrix2x3dv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2X3DVPROC _funcptr_glProgramUniformMatrix2x3dv;
 #define glProgramUniformMatrix2x3dv _funcptr_glProgramUniformMatrix2x3dv
-extern PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC _funcptr_glProgramUniformMatrix2x3fv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC _funcptr_glProgramUniformMatrix2x3fv;
 #define glProgramUniformMatrix2x3fv _funcptr_glProgramUniformMatrix2x3fv
-extern PFNGLPROGRAMUNIFORMMATRIX2X4DVPROC _funcptr_glProgramUniformMatrix2x4dv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2X4DVPROC _funcptr_glProgramUniformMatrix2x4dv;
 #define glProgramUniformMatrix2x4dv _funcptr_glProgramUniformMatrix2x4dv
-extern PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC _funcptr_glProgramUniformMatrix2x4fv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC _funcptr_glProgramUniformMatrix2x4fv;
 #define glProgramUniformMatrix2x4fv _funcptr_glProgramUniformMatrix2x4fv
-extern PFNGLPROGRAMUNIFORMMATRIX3DVPROC _funcptr_glProgramUniformMatrix3dv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3DVPROC _funcptr_glProgramUniformMatrix3dv;
 #define glProgramUniformMatrix3dv _funcptr_glProgramUniformMatrix3dv
-extern PFNGLPROGRAMUNIFORMMATRIX3FVPROC _funcptr_glProgramUniformMatrix3fv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3FVPROC _funcptr_glProgramUniformMatrix3fv;
 #define glProgramUniformMatrix3fv _funcptr_glProgramUniformMatrix3fv
-extern PFNGLPROGRAMUNIFORMMATRIX3X2DVPROC _funcptr_glProgramUniformMatrix3x2dv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3X2DVPROC _funcptr_glProgramUniformMatrix3x2dv;
 #define glProgramUniformMatrix3x2dv _funcptr_glProgramUniformMatrix3x2dv
-extern PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC _funcptr_glProgramUniformMatrix3x2fv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC _funcptr_glProgramUniformMatrix3x2fv;
 #define glProgramUniformMatrix3x2fv _funcptr_glProgramUniformMatrix3x2fv
-extern PFNGLPROGRAMUNIFORMMATRIX3X4DVPROC _funcptr_glProgramUniformMatrix3x4dv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3X4DVPROC _funcptr_glProgramUniformMatrix3x4dv;
 #define glProgramUniformMatrix3x4dv _funcptr_glProgramUniformMatrix3x4dv
-extern PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC _funcptr_glProgramUniformMatrix3x4fv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC _funcptr_glProgramUniformMatrix3x4fv;
 #define glProgramUniformMatrix3x4fv _funcptr_glProgramUniformMatrix3x4fv
-extern PFNGLPROGRAMUNIFORMMATRIX4DVPROC _funcptr_glProgramUniformMatrix4dv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4DVPROC _funcptr_glProgramUniformMatrix4dv;
 #define glProgramUniformMatrix4dv _funcptr_glProgramUniformMatrix4dv
-extern PFNGLPROGRAMUNIFORMMATRIX4FVPROC _funcptr_glProgramUniformMatrix4fv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4FVPROC _funcptr_glProgramUniformMatrix4fv;
 #define glProgramUniformMatrix4fv _funcptr_glProgramUniformMatrix4fv
-extern PFNGLPROGRAMUNIFORMMATRIX4X2DVPROC _funcptr_glProgramUniformMatrix4x2dv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4X2DVPROC _funcptr_glProgramUniformMatrix4x2dv;
 #define glProgramUniformMatrix4x2dv _funcptr_glProgramUniformMatrix4x2dv
-extern PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC _funcptr_glProgramUniformMatrix4x2fv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC _funcptr_glProgramUniformMatrix4x2fv;
 #define glProgramUniformMatrix4x2fv _funcptr_glProgramUniformMatrix4x2fv
-extern PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC _funcptr_glProgramUniformMatrix4x3dv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC _funcptr_glProgramUniformMatrix4x3dv;
 #define glProgramUniformMatrix4x3dv _funcptr_glProgramUniformMatrix4x3dv
-extern PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC _funcptr_glProgramUniformMatrix4x3fv;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC _funcptr_glProgramUniformMatrix4x3fv;
 #define glProgramUniformMatrix4x3fv _funcptr_glProgramUniformMatrix4x3fv
-extern PFNGLUSEPROGRAMSTAGESPROC _funcptr_glUseProgramStages;
+CI_API extern PFNGLUSEPROGRAMSTAGESPROC _funcptr_glUseProgramStages;
 #define glUseProgramStages _funcptr_glUseProgramStages
-extern PFNGLVALIDATEPROGRAMPIPELINEPROC _funcptr_glValidateProgramPipeline;
+CI_API extern PFNGLVALIDATEPROGRAMPIPELINEPROC _funcptr_glValidateProgramPipeline;
 #define glValidateProgramPipeline _funcptr_glValidateProgramPipeline
 
 #define GL_DOUBLE_MAT2 0x8F46
@@ -1720,25 +1720,25 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBL4DPROC)(GLuint index, GLdouble
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBL4DVPROC)(GLuint index, const GLdouble * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBLPOINTERPROC)(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid * pointer);
 
-extern PFNGLGETVERTEXATTRIBLDVPROC _funcptr_glGetVertexAttribLdv;
+CI_API extern PFNGLGETVERTEXATTRIBLDVPROC _funcptr_glGetVertexAttribLdv;
 #define glGetVertexAttribLdv _funcptr_glGetVertexAttribLdv
-extern PFNGLVERTEXATTRIBL1DPROC _funcptr_glVertexAttribL1d;
+CI_API extern PFNGLVERTEXATTRIBL1DPROC _funcptr_glVertexAttribL1d;
 #define glVertexAttribL1d _funcptr_glVertexAttribL1d
-extern PFNGLVERTEXATTRIBL1DVPROC _funcptr_glVertexAttribL1dv;
+CI_API extern PFNGLVERTEXATTRIBL1DVPROC _funcptr_glVertexAttribL1dv;
 #define glVertexAttribL1dv _funcptr_glVertexAttribL1dv
-extern PFNGLVERTEXATTRIBL2DPROC _funcptr_glVertexAttribL2d;
+CI_API extern PFNGLVERTEXATTRIBL2DPROC _funcptr_glVertexAttribL2d;
 #define glVertexAttribL2d _funcptr_glVertexAttribL2d
-extern PFNGLVERTEXATTRIBL2DVPROC _funcptr_glVertexAttribL2dv;
+CI_API extern PFNGLVERTEXATTRIBL2DVPROC _funcptr_glVertexAttribL2dv;
 #define glVertexAttribL2dv _funcptr_glVertexAttribL2dv
-extern PFNGLVERTEXATTRIBL3DPROC _funcptr_glVertexAttribL3d;
+CI_API extern PFNGLVERTEXATTRIBL3DPROC _funcptr_glVertexAttribL3d;
 #define glVertexAttribL3d _funcptr_glVertexAttribL3d
-extern PFNGLVERTEXATTRIBL3DVPROC _funcptr_glVertexAttribL3dv;
+CI_API extern PFNGLVERTEXATTRIBL3DVPROC _funcptr_glVertexAttribL3dv;
 #define glVertexAttribL3dv _funcptr_glVertexAttribL3dv
-extern PFNGLVERTEXATTRIBL4DPROC _funcptr_glVertexAttribL4d;
+CI_API extern PFNGLVERTEXATTRIBL4DPROC _funcptr_glVertexAttribL4d;
 #define glVertexAttribL4d _funcptr_glVertexAttribL4d
-extern PFNGLVERTEXATTRIBL4DVPROC _funcptr_glVertexAttribL4dv;
+CI_API extern PFNGLVERTEXATTRIBL4DVPROC _funcptr_glVertexAttribL4dv;
 #define glVertexAttribL4dv _funcptr_glVertexAttribL4dv
-extern PFNGLVERTEXATTRIBLPOINTERPROC _funcptr_glVertexAttribLPointer;
+CI_API extern PFNGLVERTEXATTRIBLPOINTERPROC _funcptr_glVertexAttribLPointer;
 #define glVertexAttribLPointer _funcptr_glVertexAttribLPointer
 
 #define GL_DEPTH_RANGE 0x0B70
@@ -1766,44 +1766,44 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVIEWPORTARRAYVPROC)(GLuint first, GLsizei c
 typedef void (CODEGEN_FUNCPTR * PFNGLVIEWPORTINDEXEDFPROC)(GLuint index, GLfloat x, GLfloat y, GLfloat w, GLfloat h);
 typedef void (CODEGEN_FUNCPTR * PFNGLVIEWPORTINDEXEDFVPROC)(GLuint index, const GLfloat * v);
 
-extern PFNGLDEPTHRANGEARRAYVPROC _funcptr_glDepthRangeArrayv;
+CI_API extern PFNGLDEPTHRANGEARRAYVPROC _funcptr_glDepthRangeArrayv;
 #define glDepthRangeArrayv _funcptr_glDepthRangeArrayv
-extern PFNGLDEPTHRANGEINDEXEDPROC _funcptr_glDepthRangeIndexed;
+CI_API extern PFNGLDEPTHRANGEINDEXEDPROC _funcptr_glDepthRangeIndexed;
 #define glDepthRangeIndexed _funcptr_glDepthRangeIndexed
-extern PFNGLGETDOUBLEI_VPROC _funcptr_glGetDoublei_v;
+CI_API extern PFNGLGETDOUBLEI_VPROC _funcptr_glGetDoublei_v;
 #define glGetDoublei_v _funcptr_glGetDoublei_v
-extern PFNGLGETFLOATI_VPROC _funcptr_glGetFloati_v;
+CI_API extern PFNGLGETFLOATI_VPROC _funcptr_glGetFloati_v;
 #define glGetFloati_v _funcptr_glGetFloati_v
-extern PFNGLSCISSORARRAYVPROC _funcptr_glScissorArrayv;
+CI_API extern PFNGLSCISSORARRAYVPROC _funcptr_glScissorArrayv;
 #define glScissorArrayv _funcptr_glScissorArrayv
-extern PFNGLSCISSORINDEXEDPROC _funcptr_glScissorIndexed;
+CI_API extern PFNGLSCISSORINDEXEDPROC _funcptr_glScissorIndexed;
 #define glScissorIndexed _funcptr_glScissorIndexed
-extern PFNGLSCISSORINDEXEDVPROC _funcptr_glScissorIndexedv;
+CI_API extern PFNGLSCISSORINDEXEDVPROC _funcptr_glScissorIndexedv;
 #define glScissorIndexedv _funcptr_glScissorIndexedv
-extern PFNGLVIEWPORTARRAYVPROC _funcptr_glViewportArrayv;
+CI_API extern PFNGLVIEWPORTARRAYVPROC _funcptr_glViewportArrayv;
 #define glViewportArrayv _funcptr_glViewportArrayv
-extern PFNGLVIEWPORTINDEXEDFPROC _funcptr_glViewportIndexedf;
+CI_API extern PFNGLVIEWPORTINDEXEDFPROC _funcptr_glViewportIndexedf;
 #define glViewportIndexedf _funcptr_glViewportIndexedf
-extern PFNGLVIEWPORTINDEXEDFVPROC _funcptr_glViewportIndexedfv;
+CI_API extern PFNGLVIEWPORTINDEXEDFVPROC _funcptr_glViewportIndexedfv;
 #define glViewportIndexedfv _funcptr_glViewportIndexedfv
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC)(GLenum mode, GLint first, GLsizei count, GLsizei instancecount, GLuint baseinstance);
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEPROC)(GLenum mode, GLsizei count, GLenum type, const void * indices, GLsizei instancecount, GLuint baseinstance);
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC)(GLenum mode, GLsizei count, GLenum type, const void * indices, GLsizei instancecount, GLint basevertex, GLuint baseinstance);
 
-extern PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC _funcptr_glDrawArraysInstancedBaseInstance;
+CI_API extern PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC _funcptr_glDrawArraysInstancedBaseInstance;
 #define glDrawArraysInstancedBaseInstance _funcptr_glDrawArraysInstancedBaseInstance
-extern PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEPROC _funcptr_glDrawElementsInstancedBaseInstance;
+CI_API extern PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEPROC _funcptr_glDrawElementsInstancedBaseInstance;
 #define glDrawElementsInstancedBaseInstance _funcptr_glDrawElementsInstancedBaseInstance
-extern PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC _funcptr_glDrawElementsInstancedBaseVertexBaseInstance;
+CI_API extern PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC _funcptr_glDrawElementsInstancedBaseVertexBaseInstance;
 #define glDrawElementsInstancedBaseVertexBaseInstance _funcptr_glDrawElementsInstancedBaseVertexBaseInstance
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC)(GLenum mode, GLuint id, GLsizei instancecount);
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC)(GLenum mode, GLuint id, GLuint stream, GLsizei instancecount);
 
-extern PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC _funcptr_glDrawTransformFeedbackInstanced;
+CI_API extern PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC _funcptr_glDrawTransformFeedbackInstanced;
 #define glDrawTransformFeedbackInstanced _funcptr_glDrawTransformFeedbackInstanced
-extern PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC _funcptr_glDrawTransformFeedbackStreamInstanced;
+CI_API extern PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC _funcptr_glDrawTransformFeedbackStreamInstanced;
 #define glDrawTransformFeedbackStreamInstanced _funcptr_glDrawTransformFeedbackStreamInstanced
 
 #define GL_PACK_COMPRESSED_BLOCK_DEPTH 0x912D
@@ -1819,7 +1819,7 @@ extern PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC _funcptr_glDrawTransformFee
 
 typedef void (CODEGEN_FUNCPTR * PFNGLGETINTERNALFORMATIVPROC)(GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint * params);
 
-extern PFNGLGETINTERNALFORMATIVPROC _funcptr_glGetInternalformativ;
+CI_API extern PFNGLGETINTERNALFORMATIVPROC _funcptr_glGetInternalformativ;
 #define glGetInternalformativ _funcptr_glGetInternalformativ
 
 #define GL_MIN_MAP_BUFFER_ALIGNMENT 0x90BC
@@ -1856,7 +1856,7 @@ extern PFNGLGETINTERNALFORMATIVPROC _funcptr_glGetInternalformativ;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLGETACTIVEATOMICCOUNTERBUFFERIVPROC)(GLuint program, GLuint bufferIndex, GLenum pname, GLint * params);
 
-extern PFNGLGETACTIVEATOMICCOUNTERBUFFERIVPROC _funcptr_glGetActiveAtomicCounterBufferiv;
+CI_API extern PFNGLGETACTIVEATOMICCOUNTERBUFFERIVPROC _funcptr_glGetActiveAtomicCounterBufferiv;
 #define glGetActiveAtomicCounterBufferiv _funcptr_glGetActiveAtomicCounterBufferiv
 
 #define GL_ALL_BARRIER_BITS 0xFFFFFFFF
@@ -1927,9 +1927,9 @@ extern PFNGLGETACTIVEATOMICCOUNTERBUFFERIVPROC _funcptr_glGetActiveAtomicCounter
 typedef void (CODEGEN_FUNCPTR * PFNGLBINDIMAGETEXTUREPROC)(GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format);
 typedef void (CODEGEN_FUNCPTR * PFNGLMEMORYBARRIERPROC)(GLbitfield barriers);
 
-extern PFNGLBINDIMAGETEXTUREPROC _funcptr_glBindImageTexture;
+CI_API extern PFNGLBINDIMAGETEXTUREPROC _funcptr_glBindImageTexture;
 #define glBindImageTexture _funcptr_glBindImageTexture
-extern PFNGLMEMORYBARRIERPROC _funcptr_glMemoryBarrier;
+CI_API extern PFNGLMEMORYBARRIERPROC _funcptr_glMemoryBarrier;
 #define glMemoryBarrier _funcptr_glMemoryBarrier
 
 #define GL_TEXTURE_IMMUTABLE_FORMAT 0x912F
@@ -1938,11 +1938,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLTEXSTORAGE1DPROC)(GLenum target, GLsizei le
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSTORAGE2DPROC)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSTORAGE3DPROC)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth);
 
-extern PFNGLTEXSTORAGE1DPROC _funcptr_glTexStorage1D;
+CI_API extern PFNGLTEXSTORAGE1DPROC _funcptr_glTexStorage1D;
 #define glTexStorage1D _funcptr_glTexStorage1D
-extern PFNGLTEXSTORAGE2DPROC _funcptr_glTexStorage2D;
+CI_API extern PFNGLTEXSTORAGE2DPROC _funcptr_glTexStorage2D;
 #define glTexStorage2D _funcptr_glTexStorage2D
-extern PFNGLTEXSTORAGE3DPROC _funcptr_glTexStorage3D;
+CI_API extern PFNGLTEXSTORAGE3DPROC _funcptr_glTexStorage3D;
 #define glTexStorage3D _funcptr_glTexStorage3D
 
 #define GL_BUFFER 0x82E0
@@ -1999,35 +1999,35 @@ typedef void (CODEGEN_FUNCPTR * PFNGLOBJECTPTRLABELPROC)(const void * ptr, GLsiz
 typedef void (CODEGEN_FUNCPTR * PFNGLPOPDEBUGGROUPPROC)();
 typedef void (CODEGEN_FUNCPTR * PFNGLPUSHDEBUGGROUPPROC)(GLenum source, GLuint id, GLsizei length, const GLchar * message);
 
-extern PFNGLDEBUGMESSAGECALLBACKPROC _funcptr_glDebugMessageCallback;
+CI_API extern PFNGLDEBUGMESSAGECALLBACKPROC _funcptr_glDebugMessageCallback;
 #define glDebugMessageCallback _funcptr_glDebugMessageCallback
-extern PFNGLDEBUGMESSAGECONTROLPROC _funcptr_glDebugMessageControl;
+CI_API extern PFNGLDEBUGMESSAGECONTROLPROC _funcptr_glDebugMessageControl;
 #define glDebugMessageControl _funcptr_glDebugMessageControl
-extern PFNGLDEBUGMESSAGEINSERTPROC _funcptr_glDebugMessageInsert;
+CI_API extern PFNGLDEBUGMESSAGEINSERTPROC _funcptr_glDebugMessageInsert;
 #define glDebugMessageInsert _funcptr_glDebugMessageInsert
-extern PFNGLGETDEBUGMESSAGELOGPROC _funcptr_glGetDebugMessageLog;
+CI_API extern PFNGLGETDEBUGMESSAGELOGPROC _funcptr_glGetDebugMessageLog;
 #define glGetDebugMessageLog _funcptr_glGetDebugMessageLog
-extern PFNGLGETOBJECTLABELPROC _funcptr_glGetObjectLabel;
+CI_API extern PFNGLGETOBJECTLABELPROC _funcptr_glGetObjectLabel;
 #define glGetObjectLabel _funcptr_glGetObjectLabel
-extern PFNGLGETOBJECTPTRLABELPROC _funcptr_glGetObjectPtrLabel;
+CI_API extern PFNGLGETOBJECTPTRLABELPROC _funcptr_glGetObjectPtrLabel;
 #define glGetObjectPtrLabel _funcptr_glGetObjectPtrLabel
-extern PFNGLGETPOINTERVPROC _funcptr_glGetPointerv;
+CI_API extern PFNGLGETPOINTERVPROC _funcptr_glGetPointerv;
 #define glGetPointerv _funcptr_glGetPointerv
-extern PFNGLOBJECTLABELPROC _funcptr_glObjectLabel;
+CI_API extern PFNGLOBJECTLABELPROC _funcptr_glObjectLabel;
 #define glObjectLabel _funcptr_glObjectLabel
-extern PFNGLOBJECTPTRLABELPROC _funcptr_glObjectPtrLabel;
+CI_API extern PFNGLOBJECTPTRLABELPROC _funcptr_glObjectPtrLabel;
 #define glObjectPtrLabel _funcptr_glObjectPtrLabel
-extern PFNGLPOPDEBUGGROUPPROC _funcptr_glPopDebugGroup;
+CI_API extern PFNGLPOPDEBUGGROUPPROC _funcptr_glPopDebugGroup;
 #define glPopDebugGroup _funcptr_glPopDebugGroup
-extern PFNGLPUSHDEBUGGROUPPROC _funcptr_glPushDebugGroup;
+CI_API extern PFNGLPUSHDEBUGGROUPPROC _funcptr_glPushDebugGroup;
 #define glPushDebugGroup _funcptr_glPushDebugGroup
 
 typedef void (CODEGEN_FUNCPTR * PFNGLCLEARBUFFERDATAPROC)(GLenum target, GLenum internalformat, GLenum format, GLenum type, const void * data);
 typedef void (CODEGEN_FUNCPTR * PFNGLCLEARBUFFERSUBDATAPROC)(GLenum target, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const void * data);
 
-extern PFNGLCLEARBUFFERDATAPROC _funcptr_glClearBufferData;
+CI_API extern PFNGLCLEARBUFFERDATAPROC _funcptr_glClearBufferData;
 #define glClearBufferData _funcptr_glClearBufferData
-extern PFNGLCLEARBUFFERSUBDATAPROC _funcptr_glClearBufferSubData;
+CI_API extern PFNGLCLEARBUFFERSUBDATAPROC _funcptr_glClearBufferSubData;
 #define glClearBufferSubData _funcptr_glClearBufferSubData
 
 #define GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER 0x90ED
@@ -2052,14 +2052,14 @@ extern PFNGLCLEARBUFFERSUBDATAPROC _funcptr_glClearBufferSubData;
 typedef void (CODEGEN_FUNCPTR * PFNGLDISPATCHCOMPUTEPROC)(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);
 typedef void (CODEGEN_FUNCPTR * PFNGLDISPATCHCOMPUTEINDIRECTPROC)(GLintptr indirect);
 
-extern PFNGLDISPATCHCOMPUTEPROC _funcptr_glDispatchCompute;
+CI_API extern PFNGLDISPATCHCOMPUTEPROC _funcptr_glDispatchCompute;
 #define glDispatchCompute _funcptr_glDispatchCompute
-extern PFNGLDISPATCHCOMPUTEINDIRECTPROC _funcptr_glDispatchComputeIndirect;
+CI_API extern PFNGLDISPATCHCOMPUTEINDIRECTPROC _funcptr_glDispatchComputeIndirect;
 #define glDispatchComputeIndirect _funcptr_glDispatchComputeIndirect
 
 typedef void (CODEGEN_FUNCPTR * PFNGLCOPYIMAGESUBDATAPROC)(GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth);
 
-extern PFNGLCOPYIMAGESUBDATAPROC _funcptr_glCopyImageSubData;
+CI_API extern PFNGLCOPYIMAGESUBDATAPROC _funcptr_glCopyImageSubData;
 #define glCopyImageSubData _funcptr_glCopyImageSubData
 
 #define GL_ANY_SAMPLES_PASSED_CONSERVATIVE 0x8D6A
@@ -2091,9 +2091,9 @@ extern PFNGLCOPYIMAGESUBDATAPROC _funcptr_glCopyImageSubData;
 typedef void (CODEGEN_FUNCPTR * PFNGLFRAMEBUFFERPARAMETERIPROC)(GLenum target, GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETFRAMEBUFFERPARAMETERIVPROC)(GLenum target, GLenum pname, GLint * params);
 
-extern PFNGLFRAMEBUFFERPARAMETERIPROC _funcptr_glFramebufferParameteri;
+CI_API extern PFNGLFRAMEBUFFERPARAMETERIPROC _funcptr_glFramebufferParameteri;
 #define glFramebufferParameteri _funcptr_glFramebufferParameteri
-extern PFNGLGETFRAMEBUFFERPARAMETERIVPROC _funcptr_glGetFramebufferParameteriv;
+CI_API extern PFNGLGETFRAMEBUFFERPARAMETERIVPROC _funcptr_glGetFramebufferParameteriv;
 #define glGetFramebufferParameteriv _funcptr_glGetFramebufferParameteriv
 
 #define GL_AUTO_GENERATE_MIPMAP 0x8295
@@ -2214,7 +2214,7 @@ extern PFNGLGETFRAMEBUFFERPARAMETERIVPROC _funcptr_glGetFramebufferParameteriv;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLGETINTERNALFORMATI64VPROC)(GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint64 * params);
 
-extern PFNGLGETINTERNALFORMATI64VPROC _funcptr_glGetInternalformati64v;
+CI_API extern PFNGLGETINTERNALFORMATI64VPROC _funcptr_glGetInternalformati64v;
 #define glGetInternalformati64v _funcptr_glGetInternalformati64v
 
 typedef void (CODEGEN_FUNCPTR * PFNGLINVALIDATEBUFFERDATAPROC)(GLuint buffer);
@@ -2224,25 +2224,25 @@ typedef void (CODEGEN_FUNCPTR * PFNGLINVALIDATESUBFRAMEBUFFERPROC)(GLenum target
 typedef void (CODEGEN_FUNCPTR * PFNGLINVALIDATETEXIMAGEPROC)(GLuint texture, GLint level);
 typedef void (CODEGEN_FUNCPTR * PFNGLINVALIDATETEXSUBIMAGEPROC)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth);
 
-extern PFNGLINVALIDATEBUFFERDATAPROC _funcptr_glInvalidateBufferData;
+CI_API extern PFNGLINVALIDATEBUFFERDATAPROC _funcptr_glInvalidateBufferData;
 #define glInvalidateBufferData _funcptr_glInvalidateBufferData
-extern PFNGLINVALIDATEBUFFERSUBDATAPROC _funcptr_glInvalidateBufferSubData;
+CI_API extern PFNGLINVALIDATEBUFFERSUBDATAPROC _funcptr_glInvalidateBufferSubData;
 #define glInvalidateBufferSubData _funcptr_glInvalidateBufferSubData
-extern PFNGLINVALIDATEFRAMEBUFFERPROC _funcptr_glInvalidateFramebuffer;
+CI_API extern PFNGLINVALIDATEFRAMEBUFFERPROC _funcptr_glInvalidateFramebuffer;
 #define glInvalidateFramebuffer _funcptr_glInvalidateFramebuffer
-extern PFNGLINVALIDATESUBFRAMEBUFFERPROC _funcptr_glInvalidateSubFramebuffer;
+CI_API extern PFNGLINVALIDATESUBFRAMEBUFFERPROC _funcptr_glInvalidateSubFramebuffer;
 #define glInvalidateSubFramebuffer _funcptr_glInvalidateSubFramebuffer
-extern PFNGLINVALIDATETEXIMAGEPROC _funcptr_glInvalidateTexImage;
+CI_API extern PFNGLINVALIDATETEXIMAGEPROC _funcptr_glInvalidateTexImage;
 #define glInvalidateTexImage _funcptr_glInvalidateTexImage
-extern PFNGLINVALIDATETEXSUBIMAGEPROC _funcptr_glInvalidateTexSubImage;
+CI_API extern PFNGLINVALIDATETEXSUBIMAGEPROC _funcptr_glInvalidateTexSubImage;
 #define glInvalidateTexSubImage _funcptr_glInvalidateTexSubImage
 
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWARRAYSINDIRECTPROC)(GLenum mode, const void * indirect, GLsizei drawcount, GLsizei stride);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWELEMENTSINDIRECTPROC)(GLenum mode, GLenum type, const void * indirect, GLsizei drawcount, GLsizei stride);
 
-extern PFNGLMULTIDRAWARRAYSINDIRECTPROC _funcptr_glMultiDrawArraysIndirect;
+CI_API extern PFNGLMULTIDRAWARRAYSINDIRECTPROC _funcptr_glMultiDrawArraysIndirect;
 #define glMultiDrawArraysIndirect _funcptr_glMultiDrawArraysIndirect
-extern PFNGLMULTIDRAWELEMENTSINDIRECTPROC _funcptr_glMultiDrawElementsIndirect;
+CI_API extern PFNGLMULTIDRAWELEMENTSINDIRECTPROC _funcptr_glMultiDrawElementsIndirect;
 #define glMultiDrawElementsIndirect _funcptr_glMultiDrawElementsIndirect
 
 #define GL_ACTIVE_RESOURCES 0x92F5
@@ -2303,17 +2303,17 @@ typedef GLint (CODEGEN_FUNCPTR * PFNGLGETPROGRAMRESOURCELOCATIONINDEXPROC)(GLuin
 typedef void (CODEGEN_FUNCPTR * PFNGLGETPROGRAMRESOURCENAMEPROC)(GLuint program, GLenum programInterface, GLuint index, GLsizei bufSize, GLsizei * length, GLchar * name);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETPROGRAMRESOURCEIVPROC)(GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, const GLenum * props, GLsizei bufSize, GLsizei * length, GLint * params);
 
-extern PFNGLGETPROGRAMINTERFACEIVPROC _funcptr_glGetProgramInterfaceiv;
+CI_API extern PFNGLGETPROGRAMINTERFACEIVPROC _funcptr_glGetProgramInterfaceiv;
 #define glGetProgramInterfaceiv _funcptr_glGetProgramInterfaceiv
-extern PFNGLGETPROGRAMRESOURCEINDEXPROC _funcptr_glGetProgramResourceIndex;
+CI_API extern PFNGLGETPROGRAMRESOURCEINDEXPROC _funcptr_glGetProgramResourceIndex;
 #define glGetProgramResourceIndex _funcptr_glGetProgramResourceIndex
-extern PFNGLGETPROGRAMRESOURCELOCATIONPROC _funcptr_glGetProgramResourceLocation;
+CI_API extern PFNGLGETPROGRAMRESOURCELOCATIONPROC _funcptr_glGetProgramResourceLocation;
 #define glGetProgramResourceLocation _funcptr_glGetProgramResourceLocation
-extern PFNGLGETPROGRAMRESOURCELOCATIONINDEXPROC _funcptr_glGetProgramResourceLocationIndex;
+CI_API extern PFNGLGETPROGRAMRESOURCELOCATIONINDEXPROC _funcptr_glGetProgramResourceLocationIndex;
 #define glGetProgramResourceLocationIndex _funcptr_glGetProgramResourceLocationIndex
-extern PFNGLGETPROGRAMRESOURCENAMEPROC _funcptr_glGetProgramResourceName;
+CI_API extern PFNGLGETPROGRAMRESOURCENAMEPROC _funcptr_glGetProgramResourceName;
 #define glGetProgramResourceName _funcptr_glGetProgramResourceName
-extern PFNGLGETPROGRAMRESOURCEIVPROC _funcptr_glGetProgramResourceiv;
+CI_API extern PFNGLGETPROGRAMRESOURCEIVPROC _funcptr_glGetProgramResourceiv;
 #define glGetProgramResourceiv _funcptr_glGetProgramResourceiv
 
 #define GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS 0x8F39
@@ -2336,7 +2336,7 @@ extern PFNGLGETPROGRAMRESOURCEIVPROC _funcptr_glGetProgramResourceiv;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLSHADERSTORAGEBLOCKBINDINGPROC)(GLuint program, GLuint storageBlockIndex, GLuint storageBlockBinding);
 
-extern PFNGLSHADERSTORAGEBLOCKBINDINGPROC _funcptr_glShaderStorageBlockBinding;
+CI_API extern PFNGLSHADERSTORAGEBLOCKBINDINGPROC _funcptr_glShaderStorageBlockBinding;
 #define glShaderStorageBlockBinding _funcptr_glShaderStorageBlockBinding
 
 #define GL_DEPTH_STENCIL_TEXTURE_MODE 0x90EA
@@ -2347,15 +2347,15 @@ extern PFNGLSHADERSTORAGEBLOCKBINDINGPROC _funcptr_glShaderStorageBlockBinding;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXBUFFERRANGEPROC)(GLenum target, GLenum internalformat, GLuint buffer, GLintptr offset, GLsizeiptr size);
 
-extern PFNGLTEXBUFFERRANGEPROC _funcptr_glTexBufferRange;
+CI_API extern PFNGLTEXBUFFERRANGEPROC _funcptr_glTexBufferRange;
 #define glTexBufferRange _funcptr_glTexBufferRange
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSTORAGE2DMULTISAMPLEPROC)(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSTORAGE3DMULTISAMPLEPROC)(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
 
-extern PFNGLTEXSTORAGE2DMULTISAMPLEPROC _funcptr_glTexStorage2DMultisample;
+CI_API extern PFNGLTEXSTORAGE2DMULTISAMPLEPROC _funcptr_glTexStorage2DMultisample;
 #define glTexStorage2DMultisample _funcptr_glTexStorage2DMultisample
-extern PFNGLTEXSTORAGE3DMULTISAMPLEPROC _funcptr_glTexStorage3DMultisample;
+CI_API extern PFNGLTEXSTORAGE3DMULTISAMPLEPROC _funcptr_glTexStorage3DMultisample;
 #define glTexStorage3DMultisample _funcptr_glTexStorage3DMultisample
 
 #define GL_TEXTURE_IMMUTABLE_LEVELS 0x82DF
@@ -2366,7 +2366,7 @@ extern PFNGLTEXSTORAGE3DMULTISAMPLEPROC _funcptr_glTexStorage3DMultisample;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTUREVIEWPROC)(GLuint texture, GLenum target, GLuint origtexture, GLenum internalformat, GLuint minlevel, GLuint numlevels, GLuint minlayer, GLuint numlayers);
 
-extern PFNGLTEXTUREVIEWPROC _funcptr_glTextureView;
+CI_API extern PFNGLTEXTUREVIEWPROC _funcptr_glTextureView;
 #define glTextureView _funcptr_glTextureView
 
 #define GL_MAX_VERTEX_ATTRIB_BINDINGS 0x82DA
@@ -2384,17 +2384,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBIFORMATPROC)(GLuint attribindex
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBLFORMATPROC)(GLuint attribindex, GLint size, GLenum type, GLuint relativeoffset);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXBINDINGDIVISORPROC)(GLuint bindingindex, GLuint divisor);
 
-extern PFNGLBINDVERTEXBUFFERPROC _funcptr_glBindVertexBuffer;
+CI_API extern PFNGLBINDVERTEXBUFFERPROC _funcptr_glBindVertexBuffer;
 #define glBindVertexBuffer _funcptr_glBindVertexBuffer
-extern PFNGLVERTEXATTRIBBINDINGPROC _funcptr_glVertexAttribBinding;
+CI_API extern PFNGLVERTEXATTRIBBINDINGPROC _funcptr_glVertexAttribBinding;
 #define glVertexAttribBinding _funcptr_glVertexAttribBinding
-extern PFNGLVERTEXATTRIBFORMATPROC _funcptr_glVertexAttribFormat;
+CI_API extern PFNGLVERTEXATTRIBFORMATPROC _funcptr_glVertexAttribFormat;
 #define glVertexAttribFormat _funcptr_glVertexAttribFormat
-extern PFNGLVERTEXATTRIBIFORMATPROC _funcptr_glVertexAttribIFormat;
+CI_API extern PFNGLVERTEXATTRIBIFORMATPROC _funcptr_glVertexAttribIFormat;
 #define glVertexAttribIFormat _funcptr_glVertexAttribIFormat
-extern PFNGLVERTEXATTRIBLFORMATPROC _funcptr_glVertexAttribLFormat;
+CI_API extern PFNGLVERTEXATTRIBLFORMATPROC _funcptr_glVertexAttribLFormat;
 #define glVertexAttribLFormat _funcptr_glVertexAttribLFormat
-extern PFNGLVERTEXBINDINGDIVISORPROC _funcptr_glVertexBindingDivisor;
+CI_API extern PFNGLVERTEXBINDINGDIVISORPROC _funcptr_glVertexBindingDivisor;
 #define glVertexBindingDivisor _funcptr_glVertexBindingDivisor
 
 #define GL_BUFFER_IMMUTABLE_STORAGE 0x821F
@@ -2409,7 +2409,7 @@ extern PFNGLVERTEXBINDINGDIVISORPROC _funcptr_glVertexBindingDivisor;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLBUFFERSTORAGEPROC)(GLenum target, GLsizeiptr size, const void * data, GLbitfield flags);
 
-extern PFNGLBUFFERSTORAGEPROC _funcptr_glBufferStorage;
+CI_API extern PFNGLBUFFERSTORAGEPROC _funcptr_glBufferStorage;
 #define glBufferStorage _funcptr_glBufferStorage
 
 #define GL_CLEAR_TEXTURE 0x9365
@@ -2417,9 +2417,9 @@ extern PFNGLBUFFERSTORAGEPROC _funcptr_glBufferStorage;
 typedef void (CODEGEN_FUNCPTR * PFNGLCLEARTEXIMAGEPROC)(GLuint texture, GLint level, GLenum format, GLenum type, const void * data);
 typedef void (CODEGEN_FUNCPTR * PFNGLCLEARTEXSUBIMAGEPROC)(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void * data);
 
-extern PFNGLCLEARTEXIMAGEPROC _funcptr_glClearTexImage;
+CI_API extern PFNGLCLEARTEXIMAGEPROC _funcptr_glClearTexImage;
 #define glClearTexImage _funcptr_glClearTexImage
-extern PFNGLCLEARTEXSUBIMAGEPROC _funcptr_glClearTexSubImage;
+CI_API extern PFNGLCLEARTEXSUBIMAGEPROC _funcptr_glClearTexSubImage;
 #define glClearTexSubImage _funcptr_glClearTexSubImage
 
 #define GL_LOCATION_COMPONENT 0x934A
@@ -2434,17 +2434,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLBINDSAMPLERSPROC)(GLuint first, GLsizei cou
 typedef void (CODEGEN_FUNCPTR * PFNGLBINDTEXTURESPROC)(GLuint first, GLsizei count, const GLuint * textures);
 typedef void (CODEGEN_FUNCPTR * PFNGLBINDVERTEXBUFFERSPROC)(GLuint first, GLsizei count, const GLuint * buffers, const GLintptr * offsets, const GLsizei * strides);
 
-extern PFNGLBINDBUFFERSBASEPROC _funcptr_glBindBuffersBase;
+CI_API extern PFNGLBINDBUFFERSBASEPROC _funcptr_glBindBuffersBase;
 #define glBindBuffersBase _funcptr_glBindBuffersBase
-extern PFNGLBINDBUFFERSRANGEPROC _funcptr_glBindBuffersRange;
+CI_API extern PFNGLBINDBUFFERSRANGEPROC _funcptr_glBindBuffersRange;
 #define glBindBuffersRange _funcptr_glBindBuffersRange
-extern PFNGLBINDIMAGETEXTURESPROC _funcptr_glBindImageTextures;
+CI_API extern PFNGLBINDIMAGETEXTURESPROC _funcptr_glBindImageTextures;
 #define glBindImageTextures _funcptr_glBindImageTextures
-extern PFNGLBINDSAMPLERSPROC _funcptr_glBindSamplers;
+CI_API extern PFNGLBINDSAMPLERSPROC _funcptr_glBindSamplers;
 #define glBindSamplers _funcptr_glBindSamplers
-extern PFNGLBINDTEXTURESPROC _funcptr_glBindTextures;
+CI_API extern PFNGLBINDTEXTURESPROC _funcptr_glBindTextures;
 #define glBindTextures _funcptr_glBindTextures
-extern PFNGLBINDVERTEXBUFFERSPROC _funcptr_glBindVertexBuffers;
+CI_API extern PFNGLBINDVERTEXBUFFERSPROC _funcptr_glBindVertexBuffers;
 #define glBindVertexBuffers _funcptr_glBindVertexBuffers
 
 #define GL_QUERY_BUFFER 0x9192
@@ -2466,7 +2466,7 @@ extern PFNGLBINDVERTEXBUFFERSPROC _funcptr_glBindVertexBuffers;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTBUFFERMASK3DFXPROC)(GLuint mask);
 
-extern PFNGLTBUFFERMASK3DFXPROC _funcptr_glTbufferMask3DFX;
+CI_API extern PFNGLTBUFFERMASK3DFXPROC _funcptr_glTbufferMask3DFX;
 #define glTbufferMask3DFX _funcptr_glTbufferMask3DFX
 
 #define GL_COMPRESSED_RGBA_FXT1_3DFX 0x86B1
@@ -2495,13 +2495,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDEBUGMESSAGEENABLEAMDPROC)(GLenum category,
 typedef void (CODEGEN_FUNCPTR * PFNGLDEBUGMESSAGEINSERTAMDPROC)(GLenum category, GLenum severity, GLuint id, GLsizei length, const GLchar * buf);
 typedef GLuint (CODEGEN_FUNCPTR * PFNGLGETDEBUGMESSAGELOGAMDPROC)(GLuint count, GLsizei bufsize, GLenum * categories, GLuint * severities, GLuint * ids, GLsizei * lengths, GLchar * message);
 
-extern PFNGLDEBUGMESSAGECALLBACKAMDPROC _funcptr_glDebugMessageCallbackAMD;
+CI_API extern PFNGLDEBUGMESSAGECALLBACKAMDPROC _funcptr_glDebugMessageCallbackAMD;
 #define glDebugMessageCallbackAMD _funcptr_glDebugMessageCallbackAMD
-extern PFNGLDEBUGMESSAGEENABLEAMDPROC _funcptr_glDebugMessageEnableAMD;
+CI_API extern PFNGLDEBUGMESSAGEENABLEAMDPROC _funcptr_glDebugMessageEnableAMD;
 #define glDebugMessageEnableAMD _funcptr_glDebugMessageEnableAMD
-extern PFNGLDEBUGMESSAGEINSERTAMDPROC _funcptr_glDebugMessageInsertAMD;
+CI_API extern PFNGLDEBUGMESSAGEINSERTAMDPROC _funcptr_glDebugMessageInsertAMD;
 #define glDebugMessageInsertAMD _funcptr_glDebugMessageInsertAMD
-extern PFNGLGETDEBUGMESSAGELOGAMDPROC _funcptr_glGetDebugMessageLogAMD;
+CI_API extern PFNGLGETDEBUGMESSAGELOGAMDPROC _funcptr_glGetDebugMessageLogAMD;
 #define glGetDebugMessageLogAMD _funcptr_glGetDebugMessageLogAMD
 
 #define GL_DEPTH_CLAMP_FAR_AMD 0x901F
@@ -2512,13 +2512,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLBLENDEQUATIONSEPARATEINDEXEDAMDPROC)(GLuint
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDFUNCINDEXEDAMDPROC)(GLuint buf, GLenum src, GLenum dst);
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDFUNCSEPARATEINDEXEDAMDPROC)(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
 
-extern PFNGLBLENDEQUATIONINDEXEDAMDPROC _funcptr_glBlendEquationIndexedAMD;
+CI_API extern PFNGLBLENDEQUATIONINDEXEDAMDPROC _funcptr_glBlendEquationIndexedAMD;
 #define glBlendEquationIndexedAMD _funcptr_glBlendEquationIndexedAMD
-extern PFNGLBLENDEQUATIONSEPARATEINDEXEDAMDPROC _funcptr_glBlendEquationSeparateIndexedAMD;
+CI_API extern PFNGLBLENDEQUATIONSEPARATEINDEXEDAMDPROC _funcptr_glBlendEquationSeparateIndexedAMD;
 #define glBlendEquationSeparateIndexedAMD _funcptr_glBlendEquationSeparateIndexedAMD
-extern PFNGLBLENDFUNCINDEXEDAMDPROC _funcptr_glBlendFuncIndexedAMD;
+CI_API extern PFNGLBLENDFUNCINDEXEDAMDPROC _funcptr_glBlendFuncIndexedAMD;
 #define glBlendFuncIndexedAMD _funcptr_glBlendFuncIndexedAMD
-extern PFNGLBLENDFUNCSEPARATEINDEXEDAMDPROC _funcptr_glBlendFuncSeparateIndexedAMD;
+CI_API extern PFNGLBLENDFUNCSEPARATEINDEXEDAMDPROC _funcptr_glBlendFuncSeparateIndexedAMD;
 #define glBlendFuncSeparateIndexedAMD _funcptr_glBlendFuncSeparateIndexedAMD
 
 #define GL_ALPHA 0x1906
@@ -2533,15 +2533,15 @@ extern PFNGLBLENDFUNCSEPARATEINDEXEDAMDPROC _funcptr_glBlendFuncSeparateIndexedA
 
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBPARAMETERIAMDPROC)(GLuint index, GLenum pname, GLint param);
 
-extern PFNGLVERTEXATTRIBPARAMETERIAMDPROC _funcptr_glVertexAttribParameteriAMD;
+CI_API extern PFNGLVERTEXATTRIBPARAMETERIAMDPROC _funcptr_glVertexAttribParameteriAMD;
 #define glVertexAttribParameteriAMD _funcptr_glVertexAttribParameteriAMD
 
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWARRAYSINDIRECTAMDPROC)(GLenum mode, const GLvoid * indirect, GLsizei primcount, GLsizei stride);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWELEMENTSINDIRECTAMDPROC)(GLenum mode, GLenum type, const GLvoid * indirect, GLsizei primcount, GLsizei stride);
 
-extern PFNGLMULTIDRAWARRAYSINDIRECTAMDPROC _funcptr_glMultiDrawArraysIndirectAMD;
+CI_API extern PFNGLMULTIDRAWARRAYSINDIRECTAMDPROC _funcptr_glMultiDrawArraysIndirectAMD;
 #define glMultiDrawArraysIndirectAMD _funcptr_glMultiDrawArraysIndirectAMD
-extern PFNGLMULTIDRAWELEMENTSINDIRECTAMDPROC _funcptr_glMultiDrawElementsIndirectAMD;
+CI_API extern PFNGLMULTIDRAWELEMENTSINDIRECTAMDPROC _funcptr_glMultiDrawElementsIndirectAMD;
 #define glMultiDrawElementsIndirectAMD _funcptr_glMultiDrawElementsIndirectAMD
 
 #define GL_DATA_BUFFER_AMD 0x9151
@@ -2554,11 +2554,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDELETENAMESAMDPROC)(GLenum identifier, GLui
 typedef void (CODEGEN_FUNCPTR * PFNGLGENNAMESAMDPROC)(GLenum identifier, GLuint num, GLuint * names);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISNAMEAMDPROC)(GLenum identifier, GLuint name);
 
-extern PFNGLDELETENAMESAMDPROC _funcptr_glDeleteNamesAMD;
+CI_API extern PFNGLDELETENAMESAMDPROC _funcptr_glDeleteNamesAMD;
 #define glDeleteNamesAMD _funcptr_glDeleteNamesAMD
-extern PFNGLGENNAMESAMDPROC _funcptr_glGenNamesAMD;
+CI_API extern PFNGLGENNAMESAMDPROC _funcptr_glGenNamesAMD;
 #define glGenNamesAMD _funcptr_glGenNamesAMD
-extern PFNGLISNAMEAMDPROC _funcptr_glIsNameAMD;
+CI_API extern PFNGLISNAMEAMDPROC _funcptr_glIsNameAMD;
 #define glIsNameAMD _funcptr_glIsNameAMD
 
 #define GL_COUNTER_RANGE_AMD 0x8BC1
@@ -2581,27 +2581,27 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETPERFMONITORGROUPSTRINGAMDPROC)(GLuint gr
 typedef void (CODEGEN_FUNCPTR * PFNGLGETPERFMONITORGROUPSAMDPROC)(GLint * numGroups, GLsizei groupsSize, GLuint * groups);
 typedef void (CODEGEN_FUNCPTR * PFNGLSELECTPERFMONITORCOUNTERSAMDPROC)(GLuint monitor, GLboolean enable, GLuint group, GLint numCounters, GLuint * counterList);
 
-extern PFNGLBEGINPERFMONITORAMDPROC _funcptr_glBeginPerfMonitorAMD;
+CI_API extern PFNGLBEGINPERFMONITORAMDPROC _funcptr_glBeginPerfMonitorAMD;
 #define glBeginPerfMonitorAMD _funcptr_glBeginPerfMonitorAMD
-extern PFNGLDELETEPERFMONITORSAMDPROC _funcptr_glDeletePerfMonitorsAMD;
+CI_API extern PFNGLDELETEPERFMONITORSAMDPROC _funcptr_glDeletePerfMonitorsAMD;
 #define glDeletePerfMonitorsAMD _funcptr_glDeletePerfMonitorsAMD
-extern PFNGLENDPERFMONITORAMDPROC _funcptr_glEndPerfMonitorAMD;
+CI_API extern PFNGLENDPERFMONITORAMDPROC _funcptr_glEndPerfMonitorAMD;
 #define glEndPerfMonitorAMD _funcptr_glEndPerfMonitorAMD
-extern PFNGLGENPERFMONITORSAMDPROC _funcptr_glGenPerfMonitorsAMD;
+CI_API extern PFNGLGENPERFMONITORSAMDPROC _funcptr_glGenPerfMonitorsAMD;
 #define glGenPerfMonitorsAMD _funcptr_glGenPerfMonitorsAMD
-extern PFNGLGETPERFMONITORCOUNTERDATAAMDPROC _funcptr_glGetPerfMonitorCounterDataAMD;
+CI_API extern PFNGLGETPERFMONITORCOUNTERDATAAMDPROC _funcptr_glGetPerfMonitorCounterDataAMD;
 #define glGetPerfMonitorCounterDataAMD _funcptr_glGetPerfMonitorCounterDataAMD
-extern PFNGLGETPERFMONITORCOUNTERINFOAMDPROC _funcptr_glGetPerfMonitorCounterInfoAMD;
+CI_API extern PFNGLGETPERFMONITORCOUNTERINFOAMDPROC _funcptr_glGetPerfMonitorCounterInfoAMD;
 #define glGetPerfMonitorCounterInfoAMD _funcptr_glGetPerfMonitorCounterInfoAMD
-extern PFNGLGETPERFMONITORCOUNTERSTRINGAMDPROC _funcptr_glGetPerfMonitorCounterStringAMD;
+CI_API extern PFNGLGETPERFMONITORCOUNTERSTRINGAMDPROC _funcptr_glGetPerfMonitorCounterStringAMD;
 #define glGetPerfMonitorCounterStringAMD _funcptr_glGetPerfMonitorCounterStringAMD
-extern PFNGLGETPERFMONITORCOUNTERSAMDPROC _funcptr_glGetPerfMonitorCountersAMD;
+CI_API extern PFNGLGETPERFMONITORCOUNTERSAMDPROC _funcptr_glGetPerfMonitorCountersAMD;
 #define glGetPerfMonitorCountersAMD _funcptr_glGetPerfMonitorCountersAMD
-extern PFNGLGETPERFMONITORGROUPSTRINGAMDPROC _funcptr_glGetPerfMonitorGroupStringAMD;
+CI_API extern PFNGLGETPERFMONITORGROUPSTRINGAMDPROC _funcptr_glGetPerfMonitorGroupStringAMD;
 #define glGetPerfMonitorGroupStringAMD _funcptr_glGetPerfMonitorGroupStringAMD
-extern PFNGLGETPERFMONITORGROUPSAMDPROC _funcptr_glGetPerfMonitorGroupsAMD;
+CI_API extern PFNGLGETPERFMONITORGROUPSAMDPROC _funcptr_glGetPerfMonitorGroupsAMD;
 #define glGetPerfMonitorGroupsAMD _funcptr_glGetPerfMonitorGroupsAMD
-extern PFNGLSELECTPERFMONITORCOUNTERSAMDPROC _funcptr_glSelectPerfMonitorCountersAMD;
+CI_API extern PFNGLSELECTPERFMONITORCOUNTERSAMDPROC _funcptr_glSelectPerfMonitorCountersAMD;
 #define glSelectPerfMonitorCountersAMD _funcptr_glSelectPerfMonitorCountersAMD
 
 #define GL_EXTERNAL_VIRTUAL_MEMORY_BUFFER_AMD 0x9160
@@ -2614,7 +2614,7 @@ extern PFNGLSELECTPERFMONITORCOUNTERSAMDPROC _funcptr_glSelectPerfMonitorCounter
 
 typedef void (CODEGEN_FUNCPTR * PFNGLSETMULTISAMPLEFVAMDPROC)(GLenum pname, GLuint index, const GLfloat * val);
 
-extern PFNGLSETMULTISAMPLEFVAMDPROC _funcptr_glSetMultisamplefvAMD;
+CI_API extern PFNGLSETMULTISAMPLEFVAMDPROC _funcptr_glSetMultisamplefvAMD;
 #define glSetMultisamplefvAMD _funcptr_glSetMultisamplefvAMD
 
 #define GL_TEXTURE_CUBE_MAP_SEAMLESS 0x884F
@@ -2632,9 +2632,9 @@ extern PFNGLSETMULTISAMPLEFVAMDPROC _funcptr_glSetMultisamplefvAMD;
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSTORAGESPARSEAMDPROC)(GLenum target, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLsizei layers, GLbitfield flags);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTURESTORAGESPARSEAMDPROC)(GLuint texture, GLenum target, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLsizei layers, GLbitfield flags);
 
-extern PFNGLTEXSTORAGESPARSEAMDPROC _funcptr_glTexStorageSparseAMD;
+CI_API extern PFNGLTEXSTORAGESPARSEAMDPROC _funcptr_glTexStorageSparseAMD;
 #define glTexStorageSparseAMD _funcptr_glTexStorageSparseAMD
-extern PFNGLTEXTURESTORAGESPARSEAMDPROC _funcptr_glTextureStorageSparseAMD;
+CI_API extern PFNGLTEXTURESTORAGESPARSEAMDPROC _funcptr_glTextureStorageSparseAMD;
 #define glTextureStorageSparseAMD _funcptr_glTextureStorageSparseAMD
 
 #define GL_REPLACE_VALUE_AMD 0x874B
@@ -2644,7 +2644,7 @@ extern PFNGLTEXTURESTORAGESPARSEAMDPROC _funcptr_glTextureStorageSparseAMD;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLSTENCILOPVALUEAMDPROC)(GLenum face, GLuint value);
 
-extern PFNGLSTENCILOPVALUEAMDPROC _funcptr_glStencilOpValueAMD;
+CI_API extern PFNGLSTENCILOPVALUEAMDPROC _funcptr_glStencilOpValueAMD;
 #define glStencilOpValueAMD _funcptr_glStencilOpValueAMD
 
 #define GL_CONTINUOUS_AMD 0x9007
@@ -2658,9 +2658,9 @@ extern PFNGLSTENCILOPVALUEAMDPROC _funcptr_glStencilOpValueAMD;
 typedef void (CODEGEN_FUNCPTR * PFNGLTESSELLATIONFACTORAMDPROC)(GLfloat factor);
 typedef void (CODEGEN_FUNCPTR * PFNGLTESSELLATIONMODEAMDPROC)(GLenum mode);
 
-extern PFNGLTESSELLATIONFACTORAMDPROC _funcptr_glTessellationFactorAMD;
+CI_API extern PFNGLTESSELLATIONFACTORAMDPROC _funcptr_glTessellationFactorAMD;
 #define glTessellationFactorAMD _funcptr_glTessellationFactorAMD
-extern PFNGLTESSELLATIONMODEAMDPROC _funcptr_glTessellationModeAMD;
+CI_API extern PFNGLTESSELLATIONMODEAMDPROC _funcptr_glTessellationModeAMD;
 #define glTessellationModeAMD _funcptr_glTessellationModeAMD
 
 #define GL_AUX_DEPTH_STENCIL_APPLE 0x8A14
@@ -2677,15 +2677,15 @@ typedef void (CODEGEN_FUNCPTR * PFNGLELEMENTPOINTERAPPLEPROC)(GLenum type, const
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWELEMENTARRAYAPPLEPROC)(GLenum mode, const GLint * first, const GLsizei * count, GLsizei primcount);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWRANGEELEMENTARRAYAPPLEPROC)(GLenum mode, GLuint start, GLuint end, const GLint * first, const GLsizei * count, GLsizei primcount);
 
-extern PFNGLDRAWELEMENTARRAYAPPLEPROC _funcptr_glDrawElementArrayAPPLE;
+CI_API extern PFNGLDRAWELEMENTARRAYAPPLEPROC _funcptr_glDrawElementArrayAPPLE;
 #define glDrawElementArrayAPPLE _funcptr_glDrawElementArrayAPPLE
-extern PFNGLDRAWRANGEELEMENTARRAYAPPLEPROC _funcptr_glDrawRangeElementArrayAPPLE;
+CI_API extern PFNGLDRAWRANGEELEMENTARRAYAPPLEPROC _funcptr_glDrawRangeElementArrayAPPLE;
 #define glDrawRangeElementArrayAPPLE _funcptr_glDrawRangeElementArrayAPPLE
-extern PFNGLELEMENTPOINTERAPPLEPROC _funcptr_glElementPointerAPPLE;
+CI_API extern PFNGLELEMENTPOINTERAPPLEPROC _funcptr_glElementPointerAPPLE;
 #define glElementPointerAPPLE _funcptr_glElementPointerAPPLE
-extern PFNGLMULTIDRAWELEMENTARRAYAPPLEPROC _funcptr_glMultiDrawElementArrayAPPLE;
+CI_API extern PFNGLMULTIDRAWELEMENTARRAYAPPLEPROC _funcptr_glMultiDrawElementArrayAPPLE;
 #define glMultiDrawElementArrayAPPLE _funcptr_glMultiDrawElementArrayAPPLE
-extern PFNGLMULTIDRAWRANGEELEMENTARRAYAPPLEPROC _funcptr_glMultiDrawRangeElementArrayAPPLE;
+CI_API extern PFNGLMULTIDRAWRANGEELEMENTARRAYAPPLEPROC _funcptr_glMultiDrawRangeElementArrayAPPLE;
 #define glMultiDrawRangeElementArrayAPPLE _funcptr_glMultiDrawRangeElementArrayAPPLE
 
 #define GL_DRAW_PIXELS_APPLE 0x8A0A
@@ -2700,21 +2700,21 @@ typedef void (CODEGEN_FUNCPTR * PFNGLSETFENCEAPPLEPROC)(GLuint fence);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLTESTFENCEAPPLEPROC)(GLuint fence);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLTESTOBJECTAPPLEPROC)(GLenum object, GLuint name);
 
-extern PFNGLDELETEFENCESAPPLEPROC _funcptr_glDeleteFencesAPPLE;
+CI_API extern PFNGLDELETEFENCESAPPLEPROC _funcptr_glDeleteFencesAPPLE;
 #define glDeleteFencesAPPLE _funcptr_glDeleteFencesAPPLE
-extern PFNGLFINISHFENCEAPPLEPROC _funcptr_glFinishFenceAPPLE;
+CI_API extern PFNGLFINISHFENCEAPPLEPROC _funcptr_glFinishFenceAPPLE;
 #define glFinishFenceAPPLE _funcptr_glFinishFenceAPPLE
-extern PFNGLFINISHOBJECTAPPLEPROC _funcptr_glFinishObjectAPPLE;
+CI_API extern PFNGLFINISHOBJECTAPPLEPROC _funcptr_glFinishObjectAPPLE;
 #define glFinishObjectAPPLE _funcptr_glFinishObjectAPPLE
-extern PFNGLGENFENCESAPPLEPROC _funcptr_glGenFencesAPPLE;
+CI_API extern PFNGLGENFENCESAPPLEPROC _funcptr_glGenFencesAPPLE;
 #define glGenFencesAPPLE _funcptr_glGenFencesAPPLE
-extern PFNGLISFENCEAPPLEPROC _funcptr_glIsFenceAPPLE;
+CI_API extern PFNGLISFENCEAPPLEPROC _funcptr_glIsFenceAPPLE;
 #define glIsFenceAPPLE _funcptr_glIsFenceAPPLE
-extern PFNGLSETFENCEAPPLEPROC _funcptr_glSetFenceAPPLE;
+CI_API extern PFNGLSETFENCEAPPLEPROC _funcptr_glSetFenceAPPLE;
 #define glSetFenceAPPLE _funcptr_glSetFenceAPPLE
-extern PFNGLTESTFENCEAPPLEPROC _funcptr_glTestFenceAPPLE;
+CI_API extern PFNGLTESTFENCEAPPLEPROC _funcptr_glTestFenceAPPLE;
 #define glTestFenceAPPLE _funcptr_glTestFenceAPPLE
-extern PFNGLTESTOBJECTAPPLEPROC _funcptr_glTestObjectAPPLE;
+CI_API extern PFNGLTESTOBJECTAPPLEPROC _funcptr_glTestObjectAPPLE;
 #define glTestObjectAPPLE _funcptr_glTestObjectAPPLE
 
 #define GL_ALPHA_FLOAT16_APPLE 0x881C
@@ -2738,9 +2738,9 @@ extern PFNGLTESTOBJECTAPPLEPROC _funcptr_glTestObjectAPPLE;
 typedef void (CODEGEN_FUNCPTR * PFNGLBUFFERPARAMETERIAPPLEPROC)(GLenum target, GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLFLUSHMAPPEDBUFFERRANGEAPPLEPROC)(GLenum target, GLintptr offset, GLsizeiptr size);
 
-extern PFNGLBUFFERPARAMETERIAPPLEPROC _funcptr_glBufferParameteriAPPLE;
+CI_API extern PFNGLBUFFERPARAMETERIAPPLEPROC _funcptr_glBufferParameteriAPPLE;
 #define glBufferParameteriAPPLE _funcptr_glBufferParameteriAPPLE
-extern PFNGLFLUSHMAPPEDBUFFERRANGEAPPLEPROC _funcptr_glFlushMappedBufferRangeAPPLE;
+CI_API extern PFNGLFLUSHMAPPEDBUFFERRANGEAPPLEPROC _funcptr_glFlushMappedBufferRangeAPPLE;
 #define glFlushMappedBufferRangeAPPLE _funcptr_glFlushMappedBufferRangeAPPLE
 
 #define GL_BUFFER_OBJECT_APPLE 0x85B3
@@ -2754,11 +2754,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETOBJECTPARAMETERIVAPPLEPROC)(GLenum objec
 typedef GLenum (CODEGEN_FUNCPTR * PFNGLOBJECTPURGEABLEAPPLEPROC)(GLenum objectType, GLuint name, GLenum option);
 typedef GLenum (CODEGEN_FUNCPTR * PFNGLOBJECTUNPURGEABLEAPPLEPROC)(GLenum objectType, GLuint name, GLenum option);
 
-extern PFNGLGETOBJECTPARAMETERIVAPPLEPROC _funcptr_glGetObjectParameterivAPPLE;
+CI_API extern PFNGLGETOBJECTPARAMETERIVAPPLEPROC _funcptr_glGetObjectParameterivAPPLE;
 #define glGetObjectParameterivAPPLE _funcptr_glGetObjectParameterivAPPLE
-extern PFNGLOBJECTPURGEABLEAPPLEPROC _funcptr_glObjectPurgeableAPPLE;
+CI_API extern PFNGLOBJECTPURGEABLEAPPLEPROC _funcptr_glObjectPurgeableAPPLE;
 #define glObjectPurgeableAPPLE _funcptr_glObjectPurgeableAPPLE
-extern PFNGLOBJECTUNPURGEABLEAPPLEPROC _funcptr_glObjectUnpurgeableAPPLE;
+CI_API extern PFNGLOBJECTUNPURGEABLEAPPLEPROC _funcptr_glObjectUnpurgeableAPPLE;
 #define glObjectUnpurgeableAPPLE _funcptr_glObjectUnpurgeableAPPLE
 
 #define GL_RGB_422_APPLE 0x8A1F
@@ -2780,9 +2780,9 @@ extern PFNGLOBJECTUNPURGEABLEAPPLEPROC _funcptr_glObjectUnpurgeableAPPLE;
 typedef void (CODEGEN_FUNCPTR * PFNGLGETTEXPARAMETERPOINTERVAPPLEPROC)(GLenum target, GLenum pname, GLvoid ** params);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTURERANGEAPPLEPROC)(GLenum target, GLsizei length, const GLvoid * pointer);
 
-extern PFNGLGETTEXPARAMETERPOINTERVAPPLEPROC _funcptr_glGetTexParameterPointervAPPLE;
+CI_API extern PFNGLGETTEXPARAMETERPOINTERVAPPLEPROC _funcptr_glGetTexParameterPointervAPPLE;
 #define glGetTexParameterPointervAPPLE _funcptr_glGetTexParameterPointervAPPLE
-extern PFNGLTEXTURERANGEAPPLEPROC _funcptr_glTextureRangeAPPLE;
+CI_API extern PFNGLTEXTURERANGEAPPLEPROC _funcptr_glTextureRangeAPPLE;
 #define glTextureRangeAPPLE _funcptr_glTextureRangeAPPLE
 
 #define GL_TRANSFORM_HINT_APPLE 0x85B1
@@ -2794,13 +2794,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDELETEVERTEXARRAYSAPPLEPROC)(GLsizei n, con
 typedef void (CODEGEN_FUNCPTR * PFNGLGENVERTEXARRAYSAPPLEPROC)(GLsizei n, GLuint * arrays);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISVERTEXARRAYAPPLEPROC)(GLuint ren_array);
 
-extern PFNGLBINDVERTEXARRAYAPPLEPROC _funcptr_glBindVertexArrayAPPLE;
+CI_API extern PFNGLBINDVERTEXARRAYAPPLEPROC _funcptr_glBindVertexArrayAPPLE;
 #define glBindVertexArrayAPPLE _funcptr_glBindVertexArrayAPPLE
-extern PFNGLDELETEVERTEXARRAYSAPPLEPROC _funcptr_glDeleteVertexArraysAPPLE;
+CI_API extern PFNGLDELETEVERTEXARRAYSAPPLEPROC _funcptr_glDeleteVertexArraysAPPLE;
 #define glDeleteVertexArraysAPPLE _funcptr_glDeleteVertexArraysAPPLE
-extern PFNGLGENVERTEXARRAYSAPPLEPROC _funcptr_glGenVertexArraysAPPLE;
+CI_API extern PFNGLGENVERTEXARRAYSAPPLEPROC _funcptr_glGenVertexArraysAPPLE;
 #define glGenVertexArraysAPPLE _funcptr_glGenVertexArraysAPPLE
-extern PFNGLISVERTEXARRAYAPPLEPROC _funcptr_glIsVertexArrayAPPLE;
+CI_API extern PFNGLISVERTEXARRAYAPPLEPROC _funcptr_glIsVertexArrayAPPLE;
 #define glIsVertexArrayAPPLE _funcptr_glIsVertexArrayAPPLE
 
 #define GL_STORAGE_CACHED_APPLE 0x85BE
@@ -2815,11 +2815,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLFLUSHVERTEXARRAYRANGEAPPLEPROC)(GLsizei len
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXARRAYPARAMETERIAPPLEPROC)(GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXARRAYRANGEAPPLEPROC)(GLsizei length, GLvoid * pointer);
 
-extern PFNGLFLUSHVERTEXARRAYRANGEAPPLEPROC _funcptr_glFlushVertexArrayRangeAPPLE;
+CI_API extern PFNGLFLUSHVERTEXARRAYRANGEAPPLEPROC _funcptr_glFlushVertexArrayRangeAPPLE;
 #define glFlushVertexArrayRangeAPPLE _funcptr_glFlushVertexArrayRangeAPPLE
-extern PFNGLVERTEXARRAYPARAMETERIAPPLEPROC _funcptr_glVertexArrayParameteriAPPLE;
+CI_API extern PFNGLVERTEXARRAYPARAMETERIAPPLEPROC _funcptr_glVertexArrayParameteriAPPLE;
 #define glVertexArrayParameteriAPPLE _funcptr_glVertexArrayParameteriAPPLE
-extern PFNGLVERTEXARRAYRANGEAPPLEPROC _funcptr_glVertexArrayRangeAPPLE;
+CI_API extern PFNGLVERTEXARRAYRANGEAPPLEPROC _funcptr_glVertexArrayRangeAPPLE;
 #define glVertexArrayRangeAPPLE _funcptr_glVertexArrayRangeAPPLE
 
 #define GL_VERTEX_ATTRIB_MAP1_APPLE 0x8A00
@@ -2841,19 +2841,19 @@ typedef void (CODEGEN_FUNCPTR * PFNGLMAPVERTEXATTRIB1FAPPLEPROC)(GLuint index, G
 typedef void (CODEGEN_FUNCPTR * PFNGLMAPVERTEXATTRIB2DAPPLEPROC)(GLuint index, GLuint size, GLdouble u1, GLdouble u2, GLint ustride, GLint uorder, GLdouble v1, GLdouble v2, GLint vstride, GLint vorder, const GLdouble * points);
 typedef void (CODEGEN_FUNCPTR * PFNGLMAPVERTEXATTRIB2FAPPLEPROC)(GLuint index, GLuint size, GLfloat u1, GLfloat u2, GLint ustride, GLint uorder, GLfloat v1, GLfloat v2, GLint vstride, GLint vorder, const GLfloat * points);
 
-extern PFNGLDISABLEVERTEXATTRIBAPPLEPROC _funcptr_glDisableVertexAttribAPPLE;
+CI_API extern PFNGLDISABLEVERTEXATTRIBAPPLEPROC _funcptr_glDisableVertexAttribAPPLE;
 #define glDisableVertexAttribAPPLE _funcptr_glDisableVertexAttribAPPLE
-extern PFNGLENABLEVERTEXATTRIBAPPLEPROC _funcptr_glEnableVertexAttribAPPLE;
+CI_API extern PFNGLENABLEVERTEXATTRIBAPPLEPROC _funcptr_glEnableVertexAttribAPPLE;
 #define glEnableVertexAttribAPPLE _funcptr_glEnableVertexAttribAPPLE
-extern PFNGLISVERTEXATTRIBENABLEDAPPLEPROC _funcptr_glIsVertexAttribEnabledAPPLE;
+CI_API extern PFNGLISVERTEXATTRIBENABLEDAPPLEPROC _funcptr_glIsVertexAttribEnabledAPPLE;
 #define glIsVertexAttribEnabledAPPLE _funcptr_glIsVertexAttribEnabledAPPLE
-extern PFNGLMAPVERTEXATTRIB1DAPPLEPROC _funcptr_glMapVertexAttrib1dAPPLE;
+CI_API extern PFNGLMAPVERTEXATTRIB1DAPPLEPROC _funcptr_glMapVertexAttrib1dAPPLE;
 #define glMapVertexAttrib1dAPPLE _funcptr_glMapVertexAttrib1dAPPLE
-extern PFNGLMAPVERTEXATTRIB1FAPPLEPROC _funcptr_glMapVertexAttrib1fAPPLE;
+CI_API extern PFNGLMAPVERTEXATTRIB1FAPPLEPROC _funcptr_glMapVertexAttrib1fAPPLE;
 #define glMapVertexAttrib1fAPPLE _funcptr_glMapVertexAttrib1fAPPLE
-extern PFNGLMAPVERTEXATTRIB2DAPPLEPROC _funcptr_glMapVertexAttrib2dAPPLE;
+CI_API extern PFNGLMAPVERTEXATTRIB2DAPPLEPROC _funcptr_glMapVertexAttrib2dAPPLE;
 #define glMapVertexAttrib2dAPPLE _funcptr_glMapVertexAttrib2dAPPLE
-extern PFNGLMAPVERTEXATTRIB2FAPPLEPROC _funcptr_glMapVertexAttrib2fAPPLE;
+CI_API extern PFNGLMAPVERTEXATTRIB2FAPPLEPROC _funcptr_glMapVertexAttrib2fAPPLE;
 #define glMapVertexAttrib2fAPPLE _funcptr_glMapVertexAttrib2fAPPLE
 
 #define GL_UNSIGNED_SHORT_8_8_APPLE 0x85BA
@@ -2879,37 +2879,37 @@ typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMHANDLEUI64VARBPROC)(GLint location, 
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBL1UI64ARBPROC)(GLuint index, GLuint64EXT x);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBL1UI64VARBPROC)(GLuint index, const GLuint64EXT * v);
 
-extern PFNGLGETIMAGEHANDLEARBPROC _funcptr_glGetImageHandleARB;
+CI_API extern PFNGLGETIMAGEHANDLEARBPROC _funcptr_glGetImageHandleARB;
 #define glGetImageHandleARB _funcptr_glGetImageHandleARB
-extern PFNGLGETTEXTUREHANDLEARBPROC _funcptr_glGetTextureHandleARB;
+CI_API extern PFNGLGETTEXTUREHANDLEARBPROC _funcptr_glGetTextureHandleARB;
 #define glGetTextureHandleARB _funcptr_glGetTextureHandleARB
-extern PFNGLGETTEXTURESAMPLERHANDLEARBPROC _funcptr_glGetTextureSamplerHandleARB;
+CI_API extern PFNGLGETTEXTURESAMPLERHANDLEARBPROC _funcptr_glGetTextureSamplerHandleARB;
 #define glGetTextureSamplerHandleARB _funcptr_glGetTextureSamplerHandleARB
-extern PFNGLGETVERTEXATTRIBLUI64VARBPROC _funcptr_glGetVertexAttribLui64vARB;
+CI_API extern PFNGLGETVERTEXATTRIBLUI64VARBPROC _funcptr_glGetVertexAttribLui64vARB;
 #define glGetVertexAttribLui64vARB _funcptr_glGetVertexAttribLui64vARB
-extern PFNGLISIMAGEHANDLERESIDENTARBPROC _funcptr_glIsImageHandleResidentARB;
+CI_API extern PFNGLISIMAGEHANDLERESIDENTARBPROC _funcptr_glIsImageHandleResidentARB;
 #define glIsImageHandleResidentARB _funcptr_glIsImageHandleResidentARB
-extern PFNGLISTEXTUREHANDLERESIDENTARBPROC _funcptr_glIsTextureHandleResidentARB;
+CI_API extern PFNGLISTEXTUREHANDLERESIDENTARBPROC _funcptr_glIsTextureHandleResidentARB;
 #define glIsTextureHandleResidentARB _funcptr_glIsTextureHandleResidentARB
-extern PFNGLMAKEIMAGEHANDLENONRESIDENTARBPROC _funcptr_glMakeImageHandleNonResidentARB;
+CI_API extern PFNGLMAKEIMAGEHANDLENONRESIDENTARBPROC _funcptr_glMakeImageHandleNonResidentARB;
 #define glMakeImageHandleNonResidentARB _funcptr_glMakeImageHandleNonResidentARB
-extern PFNGLMAKEIMAGEHANDLERESIDENTARBPROC _funcptr_glMakeImageHandleResidentARB;
+CI_API extern PFNGLMAKEIMAGEHANDLERESIDENTARBPROC _funcptr_glMakeImageHandleResidentARB;
 #define glMakeImageHandleResidentARB _funcptr_glMakeImageHandleResidentARB
-extern PFNGLMAKETEXTUREHANDLENONRESIDENTARBPROC _funcptr_glMakeTextureHandleNonResidentARB;
+CI_API extern PFNGLMAKETEXTUREHANDLENONRESIDENTARBPROC _funcptr_glMakeTextureHandleNonResidentARB;
 #define glMakeTextureHandleNonResidentARB _funcptr_glMakeTextureHandleNonResidentARB
-extern PFNGLMAKETEXTUREHANDLERESIDENTARBPROC _funcptr_glMakeTextureHandleResidentARB;
+CI_API extern PFNGLMAKETEXTUREHANDLERESIDENTARBPROC _funcptr_glMakeTextureHandleResidentARB;
 #define glMakeTextureHandleResidentARB _funcptr_glMakeTextureHandleResidentARB
-extern PFNGLPROGRAMUNIFORMHANDLEUI64ARBPROC _funcptr_glProgramUniformHandleui64ARB;
+CI_API extern PFNGLPROGRAMUNIFORMHANDLEUI64ARBPROC _funcptr_glProgramUniformHandleui64ARB;
 #define glProgramUniformHandleui64ARB _funcptr_glProgramUniformHandleui64ARB
-extern PFNGLPROGRAMUNIFORMHANDLEUI64VARBPROC _funcptr_glProgramUniformHandleui64vARB;
+CI_API extern PFNGLPROGRAMUNIFORMHANDLEUI64VARBPROC _funcptr_glProgramUniformHandleui64vARB;
 #define glProgramUniformHandleui64vARB _funcptr_glProgramUniformHandleui64vARB
-extern PFNGLUNIFORMHANDLEUI64ARBPROC _funcptr_glUniformHandleui64ARB;
+CI_API extern PFNGLUNIFORMHANDLEUI64ARBPROC _funcptr_glUniformHandleui64ARB;
 #define glUniformHandleui64ARB _funcptr_glUniformHandleui64ARB
-extern PFNGLUNIFORMHANDLEUI64VARBPROC _funcptr_glUniformHandleui64vARB;
+CI_API extern PFNGLUNIFORMHANDLEUI64VARBPROC _funcptr_glUniformHandleui64vARB;
 #define glUniformHandleui64vARB _funcptr_glUniformHandleui64vARB
-extern PFNGLVERTEXATTRIBL1UI64ARBPROC _funcptr_glVertexAttribL1ui64ARB;
+CI_API extern PFNGLVERTEXATTRIBL1UI64ARBPROC _funcptr_glVertexAttribL1ui64ARB;
 #define glVertexAttribL1ui64ARB _funcptr_glVertexAttribL1ui64ARB
-extern PFNGLVERTEXATTRIBL1UI64VARBPROC _funcptr_glVertexAttribL1ui64vARB;
+CI_API extern PFNGLVERTEXATTRIBL1UI64VARBPROC _funcptr_glVertexAttribL1ui64vARB;
 #define glVertexAttribL1ui64vARB _funcptr_glVertexAttribL1ui64vARB
 
 #define GL_SYNC_CL_EVENT_ARB 0x8240
@@ -2917,7 +2917,7 @@ extern PFNGLVERTEXATTRIBL1UI64VARBPROC _funcptr_glVertexAttribL1ui64vARB;
 
 typedef GLsync (CODEGEN_FUNCPTR * PFNGLCREATESYNCFROMCLEVENTARBPROC)(struct _cl_context * context, struct _cl_event * event, GLbitfield flags);
 
-extern PFNGLCREATESYNCFROMCLEVENTARBPROC _funcptr_glCreateSyncFromCLeventARB;
+CI_API extern PFNGLCREATESYNCFROMCLEVENTARBPROC _funcptr_glCreateSyncFromCLeventARB;
 #define glCreateSyncFromCLeventARB _funcptr_glCreateSyncFromCLeventARB
 
 #define GL_CLAMP_FRAGMENT_COLOR_ARB 0x891B
@@ -2928,7 +2928,7 @@ extern PFNGLCREATESYNCFROMCLEVENTARBPROC _funcptr_glCreateSyncFromCLeventARB;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLCLAMPCOLORARBPROC)(GLenum target, GLenum clamp);
 
-extern PFNGLCLAMPCOLORARBPROC _funcptr_glClampColorARB;
+CI_API extern PFNGLCLAMPCOLORARBPROC _funcptr_glClampColorARB;
 #define glClampColorARB _funcptr_glClampColorARB
 
 #define GL_MAX_COMPUTE_FIXED_GROUP_INVOCATIONS_ARB 0x90EB
@@ -2938,7 +2938,7 @@ extern PFNGLCLAMPCOLORARBPROC _funcptr_glClampColorARB;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDISPATCHCOMPUTEGROUPSIZEARBPROC)(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z, GLuint group_size_x, GLuint group_size_y, GLuint group_size_z);
 
-extern PFNGLDISPATCHCOMPUTEGROUPSIZEARBPROC _funcptr_glDispatchComputeGroupSizeARB;
+CI_API extern PFNGLDISPATCHCOMPUTEGROUPSIZEARBPROC _funcptr_glDispatchComputeGroupSizeARB;
 #define glDispatchComputeGroupSizeARB _funcptr_glDispatchComputeGroupSizeARB
 
 #define GL_DEBUG_CALLBACK_FUNCTION_ARB 0x8244
@@ -2969,13 +2969,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDEBUGMESSAGECONTROLARBPROC)(GLenum source, 
 typedef void (CODEGEN_FUNCPTR * PFNGLDEBUGMESSAGEINSERTARBPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * buf);
 typedef GLuint (CODEGEN_FUNCPTR * PFNGLGETDEBUGMESSAGELOGARBPROC)(GLuint count, GLsizei bufsize, GLenum * sources, GLenum * types, GLuint * ids, GLenum * severities, GLsizei * lengths, GLchar * messageLog);
 
-extern PFNGLDEBUGMESSAGECALLBACKARBPROC _funcptr_glDebugMessageCallbackARB;
+CI_API extern PFNGLDEBUGMESSAGECALLBACKARBPROC _funcptr_glDebugMessageCallbackARB;
 #define glDebugMessageCallbackARB _funcptr_glDebugMessageCallbackARB
-extern PFNGLDEBUGMESSAGECONTROLARBPROC _funcptr_glDebugMessageControlARB;
+CI_API extern PFNGLDEBUGMESSAGECONTROLARBPROC _funcptr_glDebugMessageControlARB;
 #define glDebugMessageControlARB _funcptr_glDebugMessageControlARB
-extern PFNGLDEBUGMESSAGEINSERTARBPROC _funcptr_glDebugMessageInsertARB;
+CI_API extern PFNGLDEBUGMESSAGEINSERTARBPROC _funcptr_glDebugMessageInsertARB;
 #define glDebugMessageInsertARB _funcptr_glDebugMessageInsertARB
-extern PFNGLGETDEBUGMESSAGELOGARBPROC _funcptr_glGetDebugMessageLogARB;
+CI_API extern PFNGLGETDEBUGMESSAGELOGARBPROC _funcptr_glGetDebugMessageLogARB;
 #define glGetDebugMessageLogARB _funcptr_glGetDebugMessageLogARB
 
 #define GL_DEPTH_COMPONENT16_ARB 0x81A5
@@ -3004,7 +3004,7 @@ extern PFNGLGETDEBUGMESSAGELOGARBPROC _funcptr_glGetDebugMessageLogARB;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWBUFFERSARBPROC)(GLsizei n, const GLenum * bufs);
 
-extern PFNGLDRAWBUFFERSARBPROC _funcptr_glDrawBuffersARB;
+CI_API extern PFNGLDRAWBUFFERSARBPROC _funcptr_glDrawBuffersARB;
 #define glDrawBuffersARB _funcptr_glDrawBuffersARB
 
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDEQUATIONSEPARATEIARBPROC)(GLuint buf, GLenum modeRGB, GLenum modeAlpha);
@@ -3012,21 +3012,21 @@ typedef void (CODEGEN_FUNCPTR * PFNGLBLENDEQUATIONIARBPROC)(GLuint buf, GLenum m
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDFUNCSEPARATEIARBPROC)(GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDFUNCIARBPROC)(GLuint buf, GLenum src, GLenum dst);
 
-extern PFNGLBLENDEQUATIONSEPARATEIARBPROC _funcptr_glBlendEquationSeparateiARB;
+CI_API extern PFNGLBLENDEQUATIONSEPARATEIARBPROC _funcptr_glBlendEquationSeparateiARB;
 #define glBlendEquationSeparateiARB _funcptr_glBlendEquationSeparateiARB
-extern PFNGLBLENDEQUATIONIARBPROC _funcptr_glBlendEquationiARB;
+CI_API extern PFNGLBLENDEQUATIONIARBPROC _funcptr_glBlendEquationiARB;
 #define glBlendEquationiARB _funcptr_glBlendEquationiARB
-extern PFNGLBLENDFUNCSEPARATEIARBPROC _funcptr_glBlendFuncSeparateiARB;
+CI_API extern PFNGLBLENDFUNCSEPARATEIARBPROC _funcptr_glBlendFuncSeparateiARB;
 #define glBlendFuncSeparateiARB _funcptr_glBlendFuncSeparateiARB
-extern PFNGLBLENDFUNCIARBPROC _funcptr_glBlendFunciARB;
+CI_API extern PFNGLBLENDFUNCIARBPROC _funcptr_glBlendFunciARB;
 #define glBlendFunciARB _funcptr_glBlendFunciARB
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWARRAYSINSTANCEDARBPROC)(GLenum mode, GLint first, GLsizei count, GLsizei primcount);
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWELEMENTSINSTANCEDARBPROC)(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices, GLsizei primcount);
 
-extern PFNGLDRAWARRAYSINSTANCEDARBPROC _funcptr_glDrawArraysInstancedARB;
+CI_API extern PFNGLDRAWARRAYSINSTANCEDARBPROC _funcptr_glDrawArraysInstancedARB;
 #define glDrawArraysInstancedARB _funcptr_glDrawArraysInstancedARB
-extern PFNGLDRAWELEMENTSINSTANCEDARBPROC _funcptr_glDrawElementsInstancedARB;
+CI_API extern PFNGLDRAWELEMENTSINSTANCEDARBPROC _funcptr_glDrawElementsInstancedARB;
 #define glDrawElementsInstancedARB _funcptr_glDrawElementsInstancedARB
 
 #define GL_CURRENT_MATRIX_ARB 0x8641
@@ -3128,43 +3128,43 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMLOCALPARAMETER4FARBPROC)(GLenum targ
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMLOCALPARAMETER4FVARBPROC)(GLenum target, GLuint index, const GLfloat * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMSTRINGARBPROC)(GLenum target, GLenum format, GLsizei len, const GLvoid * string);
 
-extern PFNGLBINDPROGRAMARBPROC _funcptr_glBindProgramARB;
+CI_API extern PFNGLBINDPROGRAMARBPROC _funcptr_glBindProgramARB;
 #define glBindProgramARB _funcptr_glBindProgramARB
-extern PFNGLDELETEPROGRAMSARBPROC _funcptr_glDeleteProgramsARB;
+CI_API extern PFNGLDELETEPROGRAMSARBPROC _funcptr_glDeleteProgramsARB;
 #define glDeleteProgramsARB _funcptr_glDeleteProgramsARB
-extern PFNGLGENPROGRAMSARBPROC _funcptr_glGenProgramsARB;
+CI_API extern PFNGLGENPROGRAMSARBPROC _funcptr_glGenProgramsARB;
 #define glGenProgramsARB _funcptr_glGenProgramsARB
-extern PFNGLGETPROGRAMENVPARAMETERDVARBPROC _funcptr_glGetProgramEnvParameterdvARB;
+CI_API extern PFNGLGETPROGRAMENVPARAMETERDVARBPROC _funcptr_glGetProgramEnvParameterdvARB;
 #define glGetProgramEnvParameterdvARB _funcptr_glGetProgramEnvParameterdvARB
-extern PFNGLGETPROGRAMENVPARAMETERFVARBPROC _funcptr_glGetProgramEnvParameterfvARB;
+CI_API extern PFNGLGETPROGRAMENVPARAMETERFVARBPROC _funcptr_glGetProgramEnvParameterfvARB;
 #define glGetProgramEnvParameterfvARB _funcptr_glGetProgramEnvParameterfvARB
-extern PFNGLGETPROGRAMLOCALPARAMETERDVARBPROC _funcptr_glGetProgramLocalParameterdvARB;
+CI_API extern PFNGLGETPROGRAMLOCALPARAMETERDVARBPROC _funcptr_glGetProgramLocalParameterdvARB;
 #define glGetProgramLocalParameterdvARB _funcptr_glGetProgramLocalParameterdvARB
-extern PFNGLGETPROGRAMLOCALPARAMETERFVARBPROC _funcptr_glGetProgramLocalParameterfvARB;
+CI_API extern PFNGLGETPROGRAMLOCALPARAMETERFVARBPROC _funcptr_glGetProgramLocalParameterfvARB;
 #define glGetProgramLocalParameterfvARB _funcptr_glGetProgramLocalParameterfvARB
-extern PFNGLGETPROGRAMSTRINGARBPROC _funcptr_glGetProgramStringARB;
+CI_API extern PFNGLGETPROGRAMSTRINGARBPROC _funcptr_glGetProgramStringARB;
 #define glGetProgramStringARB _funcptr_glGetProgramStringARB
-extern PFNGLGETPROGRAMIVARBPROC _funcptr_glGetProgramivARB;
+CI_API extern PFNGLGETPROGRAMIVARBPROC _funcptr_glGetProgramivARB;
 #define glGetProgramivARB _funcptr_glGetProgramivARB
-extern PFNGLISPROGRAMARBPROC _funcptr_glIsProgramARB;
+CI_API extern PFNGLISPROGRAMARBPROC _funcptr_glIsProgramARB;
 #define glIsProgramARB _funcptr_glIsProgramARB
-extern PFNGLPROGRAMENVPARAMETER4DARBPROC _funcptr_glProgramEnvParameter4dARB;
+CI_API extern PFNGLPROGRAMENVPARAMETER4DARBPROC _funcptr_glProgramEnvParameter4dARB;
 #define glProgramEnvParameter4dARB _funcptr_glProgramEnvParameter4dARB
-extern PFNGLPROGRAMENVPARAMETER4DVARBPROC _funcptr_glProgramEnvParameter4dvARB;
+CI_API extern PFNGLPROGRAMENVPARAMETER4DVARBPROC _funcptr_glProgramEnvParameter4dvARB;
 #define glProgramEnvParameter4dvARB _funcptr_glProgramEnvParameter4dvARB
-extern PFNGLPROGRAMENVPARAMETER4FARBPROC _funcptr_glProgramEnvParameter4fARB;
+CI_API extern PFNGLPROGRAMENVPARAMETER4FARBPROC _funcptr_glProgramEnvParameter4fARB;
 #define glProgramEnvParameter4fARB _funcptr_glProgramEnvParameter4fARB
-extern PFNGLPROGRAMENVPARAMETER4FVARBPROC _funcptr_glProgramEnvParameter4fvARB;
+CI_API extern PFNGLPROGRAMENVPARAMETER4FVARBPROC _funcptr_glProgramEnvParameter4fvARB;
 #define glProgramEnvParameter4fvARB _funcptr_glProgramEnvParameter4fvARB
-extern PFNGLPROGRAMLOCALPARAMETER4DARBPROC _funcptr_glProgramLocalParameter4dARB;
+CI_API extern PFNGLPROGRAMLOCALPARAMETER4DARBPROC _funcptr_glProgramLocalParameter4dARB;
 #define glProgramLocalParameter4dARB _funcptr_glProgramLocalParameter4dARB
-extern PFNGLPROGRAMLOCALPARAMETER4DVARBPROC _funcptr_glProgramLocalParameter4dvARB;
+CI_API extern PFNGLPROGRAMLOCALPARAMETER4DVARBPROC _funcptr_glProgramLocalParameter4dvARB;
 #define glProgramLocalParameter4dvARB _funcptr_glProgramLocalParameter4dvARB
-extern PFNGLPROGRAMLOCALPARAMETER4FARBPROC _funcptr_glProgramLocalParameter4fARB;
+CI_API extern PFNGLPROGRAMLOCALPARAMETER4FARBPROC _funcptr_glProgramLocalParameter4fARB;
 #define glProgramLocalParameter4fARB _funcptr_glProgramLocalParameter4fARB
-extern PFNGLPROGRAMLOCALPARAMETER4FVARBPROC _funcptr_glProgramLocalParameter4fvARB;
+CI_API extern PFNGLPROGRAMLOCALPARAMETER4FVARBPROC _funcptr_glProgramLocalParameter4fvARB;
 #define glProgramLocalParameter4fvARB _funcptr_glProgramLocalParameter4fvARB
-extern PFNGLPROGRAMSTRINGARBPROC _funcptr_glProgramStringARB;
+CI_API extern PFNGLPROGRAMSTRINGARBPROC _funcptr_glProgramStringARB;
 #define glProgramStringARB _funcptr_glProgramStringARB
 
 #define GL_FRAGMENT_SHADER_ARB 0x8B30
@@ -3197,13 +3197,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLFRAMEBUFFERTEXTUREFACEARBPROC)(GLenum targe
 typedef void (CODEGEN_FUNCPTR * PFNGLFRAMEBUFFERTEXTURELAYERARBPROC)(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer);
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMPARAMETERIARBPROC)(GLuint program, GLenum pname, GLint value);
 
-extern PFNGLFRAMEBUFFERTEXTUREARBPROC _funcptr_glFramebufferTextureARB;
+CI_API extern PFNGLFRAMEBUFFERTEXTUREARBPROC _funcptr_glFramebufferTextureARB;
 #define glFramebufferTextureARB _funcptr_glFramebufferTextureARB
-extern PFNGLFRAMEBUFFERTEXTUREFACEARBPROC _funcptr_glFramebufferTextureFaceARB;
+CI_API extern PFNGLFRAMEBUFFERTEXTUREFACEARBPROC _funcptr_glFramebufferTextureFaceARB;
 #define glFramebufferTextureFaceARB _funcptr_glFramebufferTextureFaceARB
-extern PFNGLFRAMEBUFFERTEXTURELAYERARBPROC _funcptr_glFramebufferTextureLayerARB;
+CI_API extern PFNGLFRAMEBUFFERTEXTURELAYERARBPROC _funcptr_glFramebufferTextureLayerARB;
 #define glFramebufferTextureLayerARB _funcptr_glFramebufferTextureLayerARB
-extern PFNGLPROGRAMPARAMETERIARBPROC _funcptr_glProgramParameteriARB;
+CI_API extern PFNGLPROGRAMPARAMETERIARBPROC _funcptr_glProgramParameteriARB;
 #define glProgramParameteriARB _funcptr_glProgramParameteriARB
 
 #define GL_HALF_FLOAT_ARB 0x140B
@@ -3214,16 +3214,16 @@ extern PFNGLPROGRAMPARAMETERIARBPROC _funcptr_glProgramParameteriARB;
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWARRAYSINDIRECTCOUNTARBPROC)(GLenum mode, GLintptr indirect, GLintptr drawcount, GLsizei maxdrawcount, GLsizei stride);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWELEMENTSINDIRECTCOUNTARBPROC)(GLenum mode, GLenum type, GLintptr indirect, GLintptr drawcount, GLsizei maxdrawcount, GLsizei stride);
 
-extern PFNGLMULTIDRAWARRAYSINDIRECTCOUNTARBPROC _funcptr_glMultiDrawArraysIndirectCountARB;
+CI_API extern PFNGLMULTIDRAWARRAYSINDIRECTCOUNTARBPROC _funcptr_glMultiDrawArraysIndirectCountARB;
 #define glMultiDrawArraysIndirectCountARB _funcptr_glMultiDrawArraysIndirectCountARB
-extern PFNGLMULTIDRAWELEMENTSINDIRECTCOUNTARBPROC _funcptr_glMultiDrawElementsIndirectCountARB;
+CI_API extern PFNGLMULTIDRAWELEMENTSINDIRECTCOUNTARBPROC _funcptr_glMultiDrawElementsIndirectCountARB;
 #define glMultiDrawElementsIndirectCountARB _funcptr_glMultiDrawElementsIndirectCountARB
 
 #define GL_VERTEX_ATTRIB_ARRAY_DIVISOR_ARB 0x88FE
 
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBDIVISORARBPROC)(GLuint index, GLuint divisor);
 
-extern PFNGLVERTEXATTRIBDIVISORARBPROC _funcptr_glVertexAttribDivisorARB;
+CI_API extern PFNGLVERTEXATTRIBDIVISORARBPROC _funcptr_glVertexAttribDivisorARB;
 #define glVertexAttribDivisorARB _funcptr_glVertexAttribDivisorARB
 
 #define GL_CURRENT_MATRIX_INDEX_ARB 0x8845
@@ -3243,15 +3243,15 @@ typedef void (CODEGEN_FUNCPTR * PFNGLMATRIXINDEXUBVARBPROC)(GLint size, const GL
 typedef void (CODEGEN_FUNCPTR * PFNGLMATRIXINDEXUIVARBPROC)(GLint size, const GLuint * indices);
 typedef void (CODEGEN_FUNCPTR * PFNGLMATRIXINDEXUSVARBPROC)(GLint size, const GLushort * indices);
 
-extern PFNGLCURRENTPALETTEMATRIXARBPROC _funcptr_glCurrentPaletteMatrixARB;
+CI_API extern PFNGLCURRENTPALETTEMATRIXARBPROC _funcptr_glCurrentPaletteMatrixARB;
 #define glCurrentPaletteMatrixARB _funcptr_glCurrentPaletteMatrixARB
-extern PFNGLMATRIXINDEXPOINTERARBPROC _funcptr_glMatrixIndexPointerARB;
+CI_API extern PFNGLMATRIXINDEXPOINTERARBPROC _funcptr_glMatrixIndexPointerARB;
 #define glMatrixIndexPointerARB _funcptr_glMatrixIndexPointerARB
-extern PFNGLMATRIXINDEXUBVARBPROC _funcptr_glMatrixIndexubvARB;
+CI_API extern PFNGLMATRIXINDEXUBVARBPROC _funcptr_glMatrixIndexubvARB;
 #define glMatrixIndexubvARB _funcptr_glMatrixIndexubvARB
-extern PFNGLMATRIXINDEXUIVARBPROC _funcptr_glMatrixIndexuivARB;
+CI_API extern PFNGLMATRIXINDEXUIVARBPROC _funcptr_glMatrixIndexuivARB;
 #define glMatrixIndexuivARB _funcptr_glMatrixIndexuivARB
-extern PFNGLMATRIXINDEXUSVARBPROC _funcptr_glMatrixIndexusvARB;
+CI_API extern PFNGLMATRIXINDEXUSVARBPROC _funcptr_glMatrixIndexusvARB;
 #define glMatrixIndexusvARB _funcptr_glMatrixIndexusvARB
 
 #define GL_MULTISAMPLE_ARB 0x809D
@@ -3266,7 +3266,7 @@ extern PFNGLMATRIXINDEXUSVARBPROC _funcptr_glMatrixIndexusvARB;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLECOVERAGEARBPROC)(GLfloat value, GLboolean invert);
 
-extern PFNGLSAMPLECOVERAGEARBPROC _funcptr_glSampleCoverageARB;
+CI_API extern PFNGLSAMPLECOVERAGEARBPROC _funcptr_glSampleCoverageARB;
 #define glSampleCoverageARB _funcptr_glSampleCoverageARB
 
 #define GL_ACTIVE_TEXTURE_ARB 0x84E0
@@ -3340,73 +3340,73 @@ typedef void (CODEGEN_FUNCPTR * PFNGLMULTITEXCOORD4IVARBPROC)(GLenum target, con
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTITEXCOORD4SARBPROC)(GLenum target, GLshort s, GLshort t, GLshort r, GLshort q);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTITEXCOORD4SVARBPROC)(GLenum target, const GLshort * v);
 
-extern PFNGLACTIVETEXTUREARBPROC _funcptr_glActiveTextureARB;
+CI_API extern PFNGLACTIVETEXTUREARBPROC _funcptr_glActiveTextureARB;
 #define glActiveTextureARB _funcptr_glActiveTextureARB
-extern PFNGLCLIENTACTIVETEXTUREARBPROC _funcptr_glClientActiveTextureARB;
+CI_API extern PFNGLCLIENTACTIVETEXTUREARBPROC _funcptr_glClientActiveTextureARB;
 #define glClientActiveTextureARB _funcptr_glClientActiveTextureARB
-extern PFNGLMULTITEXCOORD1DARBPROC _funcptr_glMultiTexCoord1dARB;
+CI_API extern PFNGLMULTITEXCOORD1DARBPROC _funcptr_glMultiTexCoord1dARB;
 #define glMultiTexCoord1dARB _funcptr_glMultiTexCoord1dARB
-extern PFNGLMULTITEXCOORD1DVARBPROC _funcptr_glMultiTexCoord1dvARB;
+CI_API extern PFNGLMULTITEXCOORD1DVARBPROC _funcptr_glMultiTexCoord1dvARB;
 #define glMultiTexCoord1dvARB _funcptr_glMultiTexCoord1dvARB
-extern PFNGLMULTITEXCOORD1FARBPROC _funcptr_glMultiTexCoord1fARB;
+CI_API extern PFNGLMULTITEXCOORD1FARBPROC _funcptr_glMultiTexCoord1fARB;
 #define glMultiTexCoord1fARB _funcptr_glMultiTexCoord1fARB
-extern PFNGLMULTITEXCOORD1FVARBPROC _funcptr_glMultiTexCoord1fvARB;
+CI_API extern PFNGLMULTITEXCOORD1FVARBPROC _funcptr_glMultiTexCoord1fvARB;
 #define glMultiTexCoord1fvARB _funcptr_glMultiTexCoord1fvARB
-extern PFNGLMULTITEXCOORD1IARBPROC _funcptr_glMultiTexCoord1iARB;
+CI_API extern PFNGLMULTITEXCOORD1IARBPROC _funcptr_glMultiTexCoord1iARB;
 #define glMultiTexCoord1iARB _funcptr_glMultiTexCoord1iARB
-extern PFNGLMULTITEXCOORD1IVARBPROC _funcptr_glMultiTexCoord1ivARB;
+CI_API extern PFNGLMULTITEXCOORD1IVARBPROC _funcptr_glMultiTexCoord1ivARB;
 #define glMultiTexCoord1ivARB _funcptr_glMultiTexCoord1ivARB
-extern PFNGLMULTITEXCOORD1SARBPROC _funcptr_glMultiTexCoord1sARB;
+CI_API extern PFNGLMULTITEXCOORD1SARBPROC _funcptr_glMultiTexCoord1sARB;
 #define glMultiTexCoord1sARB _funcptr_glMultiTexCoord1sARB
-extern PFNGLMULTITEXCOORD1SVARBPROC _funcptr_glMultiTexCoord1svARB;
+CI_API extern PFNGLMULTITEXCOORD1SVARBPROC _funcptr_glMultiTexCoord1svARB;
 #define glMultiTexCoord1svARB _funcptr_glMultiTexCoord1svARB
-extern PFNGLMULTITEXCOORD2DARBPROC _funcptr_glMultiTexCoord2dARB;
+CI_API extern PFNGLMULTITEXCOORD2DARBPROC _funcptr_glMultiTexCoord2dARB;
 #define glMultiTexCoord2dARB _funcptr_glMultiTexCoord2dARB
-extern PFNGLMULTITEXCOORD2DVARBPROC _funcptr_glMultiTexCoord2dvARB;
+CI_API extern PFNGLMULTITEXCOORD2DVARBPROC _funcptr_glMultiTexCoord2dvARB;
 #define glMultiTexCoord2dvARB _funcptr_glMultiTexCoord2dvARB
-extern PFNGLMULTITEXCOORD2FARBPROC _funcptr_glMultiTexCoord2fARB;
+CI_API extern PFNGLMULTITEXCOORD2FARBPROC _funcptr_glMultiTexCoord2fARB;
 #define glMultiTexCoord2fARB _funcptr_glMultiTexCoord2fARB
-extern PFNGLMULTITEXCOORD2FVARBPROC _funcptr_glMultiTexCoord2fvARB;
+CI_API extern PFNGLMULTITEXCOORD2FVARBPROC _funcptr_glMultiTexCoord2fvARB;
 #define glMultiTexCoord2fvARB _funcptr_glMultiTexCoord2fvARB
-extern PFNGLMULTITEXCOORD2IARBPROC _funcptr_glMultiTexCoord2iARB;
+CI_API extern PFNGLMULTITEXCOORD2IARBPROC _funcptr_glMultiTexCoord2iARB;
 #define glMultiTexCoord2iARB _funcptr_glMultiTexCoord2iARB
-extern PFNGLMULTITEXCOORD2IVARBPROC _funcptr_glMultiTexCoord2ivARB;
+CI_API extern PFNGLMULTITEXCOORD2IVARBPROC _funcptr_glMultiTexCoord2ivARB;
 #define glMultiTexCoord2ivARB _funcptr_glMultiTexCoord2ivARB
-extern PFNGLMULTITEXCOORD2SARBPROC _funcptr_glMultiTexCoord2sARB;
+CI_API extern PFNGLMULTITEXCOORD2SARBPROC _funcptr_glMultiTexCoord2sARB;
 #define glMultiTexCoord2sARB _funcptr_glMultiTexCoord2sARB
-extern PFNGLMULTITEXCOORD2SVARBPROC _funcptr_glMultiTexCoord2svARB;
+CI_API extern PFNGLMULTITEXCOORD2SVARBPROC _funcptr_glMultiTexCoord2svARB;
 #define glMultiTexCoord2svARB _funcptr_glMultiTexCoord2svARB
-extern PFNGLMULTITEXCOORD3DARBPROC _funcptr_glMultiTexCoord3dARB;
+CI_API extern PFNGLMULTITEXCOORD3DARBPROC _funcptr_glMultiTexCoord3dARB;
 #define glMultiTexCoord3dARB _funcptr_glMultiTexCoord3dARB
-extern PFNGLMULTITEXCOORD3DVARBPROC _funcptr_glMultiTexCoord3dvARB;
+CI_API extern PFNGLMULTITEXCOORD3DVARBPROC _funcptr_glMultiTexCoord3dvARB;
 #define glMultiTexCoord3dvARB _funcptr_glMultiTexCoord3dvARB
-extern PFNGLMULTITEXCOORD3FARBPROC _funcptr_glMultiTexCoord3fARB;
+CI_API extern PFNGLMULTITEXCOORD3FARBPROC _funcptr_glMultiTexCoord3fARB;
 #define glMultiTexCoord3fARB _funcptr_glMultiTexCoord3fARB
-extern PFNGLMULTITEXCOORD3FVARBPROC _funcptr_glMultiTexCoord3fvARB;
+CI_API extern PFNGLMULTITEXCOORD3FVARBPROC _funcptr_glMultiTexCoord3fvARB;
 #define glMultiTexCoord3fvARB _funcptr_glMultiTexCoord3fvARB
-extern PFNGLMULTITEXCOORD3IARBPROC _funcptr_glMultiTexCoord3iARB;
+CI_API extern PFNGLMULTITEXCOORD3IARBPROC _funcptr_glMultiTexCoord3iARB;
 #define glMultiTexCoord3iARB _funcptr_glMultiTexCoord3iARB
-extern PFNGLMULTITEXCOORD3IVARBPROC _funcptr_glMultiTexCoord3ivARB;
+CI_API extern PFNGLMULTITEXCOORD3IVARBPROC _funcptr_glMultiTexCoord3ivARB;
 #define glMultiTexCoord3ivARB _funcptr_glMultiTexCoord3ivARB
-extern PFNGLMULTITEXCOORD3SARBPROC _funcptr_glMultiTexCoord3sARB;
+CI_API extern PFNGLMULTITEXCOORD3SARBPROC _funcptr_glMultiTexCoord3sARB;
 #define glMultiTexCoord3sARB _funcptr_glMultiTexCoord3sARB
-extern PFNGLMULTITEXCOORD3SVARBPROC _funcptr_glMultiTexCoord3svARB;
+CI_API extern PFNGLMULTITEXCOORD3SVARBPROC _funcptr_glMultiTexCoord3svARB;
 #define glMultiTexCoord3svARB _funcptr_glMultiTexCoord3svARB
-extern PFNGLMULTITEXCOORD4DARBPROC _funcptr_glMultiTexCoord4dARB;
+CI_API extern PFNGLMULTITEXCOORD4DARBPROC _funcptr_glMultiTexCoord4dARB;
 #define glMultiTexCoord4dARB _funcptr_glMultiTexCoord4dARB
-extern PFNGLMULTITEXCOORD4DVARBPROC _funcptr_glMultiTexCoord4dvARB;
+CI_API extern PFNGLMULTITEXCOORD4DVARBPROC _funcptr_glMultiTexCoord4dvARB;
 #define glMultiTexCoord4dvARB _funcptr_glMultiTexCoord4dvARB
-extern PFNGLMULTITEXCOORD4FARBPROC _funcptr_glMultiTexCoord4fARB;
+CI_API extern PFNGLMULTITEXCOORD4FARBPROC _funcptr_glMultiTexCoord4fARB;
 #define glMultiTexCoord4fARB _funcptr_glMultiTexCoord4fARB
-extern PFNGLMULTITEXCOORD4FVARBPROC _funcptr_glMultiTexCoord4fvARB;
+CI_API extern PFNGLMULTITEXCOORD4FVARBPROC _funcptr_glMultiTexCoord4fvARB;
 #define glMultiTexCoord4fvARB _funcptr_glMultiTexCoord4fvARB
-extern PFNGLMULTITEXCOORD4IARBPROC _funcptr_glMultiTexCoord4iARB;
+CI_API extern PFNGLMULTITEXCOORD4IARBPROC _funcptr_glMultiTexCoord4iARB;
 #define glMultiTexCoord4iARB _funcptr_glMultiTexCoord4iARB
-extern PFNGLMULTITEXCOORD4IVARBPROC _funcptr_glMultiTexCoord4ivARB;
+CI_API extern PFNGLMULTITEXCOORD4IVARBPROC _funcptr_glMultiTexCoord4ivARB;
 #define glMultiTexCoord4ivARB _funcptr_glMultiTexCoord4ivARB
-extern PFNGLMULTITEXCOORD4SARBPROC _funcptr_glMultiTexCoord4sARB;
+CI_API extern PFNGLMULTITEXCOORD4SARBPROC _funcptr_glMultiTexCoord4sARB;
 #define glMultiTexCoord4sARB _funcptr_glMultiTexCoord4sARB
-extern PFNGLMULTITEXCOORD4SVARBPROC _funcptr_glMultiTexCoord4svARB;
+CI_API extern PFNGLMULTITEXCOORD4SVARBPROC _funcptr_glMultiTexCoord4svARB;
 #define glMultiTexCoord4svARB _funcptr_glMultiTexCoord4svARB
 
 #define GL_CURRENT_QUERY_ARB 0x8865
@@ -3424,21 +3424,21 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETQUERYOBJECTUIVARBPROC)(GLuint id, GLenum
 typedef void (CODEGEN_FUNCPTR * PFNGLGETQUERYIVARBPROC)(GLenum target, GLenum pname, GLint * params);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISQUERYARBPROC)(GLuint id);
 
-extern PFNGLBEGINQUERYARBPROC _funcptr_glBeginQueryARB;
+CI_API extern PFNGLBEGINQUERYARBPROC _funcptr_glBeginQueryARB;
 #define glBeginQueryARB _funcptr_glBeginQueryARB
-extern PFNGLDELETEQUERIESARBPROC _funcptr_glDeleteQueriesARB;
+CI_API extern PFNGLDELETEQUERIESARBPROC _funcptr_glDeleteQueriesARB;
 #define glDeleteQueriesARB _funcptr_glDeleteQueriesARB
-extern PFNGLENDQUERYARBPROC _funcptr_glEndQueryARB;
+CI_API extern PFNGLENDQUERYARBPROC _funcptr_glEndQueryARB;
 #define glEndQueryARB _funcptr_glEndQueryARB
-extern PFNGLGENQUERIESARBPROC _funcptr_glGenQueriesARB;
+CI_API extern PFNGLGENQUERIESARBPROC _funcptr_glGenQueriesARB;
 #define glGenQueriesARB _funcptr_glGenQueriesARB
-extern PFNGLGETQUERYOBJECTIVARBPROC _funcptr_glGetQueryObjectivARB;
+CI_API extern PFNGLGETQUERYOBJECTIVARBPROC _funcptr_glGetQueryObjectivARB;
 #define glGetQueryObjectivARB _funcptr_glGetQueryObjectivARB
-extern PFNGLGETQUERYOBJECTUIVARBPROC _funcptr_glGetQueryObjectuivARB;
+CI_API extern PFNGLGETQUERYOBJECTUIVARBPROC _funcptr_glGetQueryObjectuivARB;
 #define glGetQueryObjectuivARB _funcptr_glGetQueryObjectuivARB
-extern PFNGLGETQUERYIVARBPROC _funcptr_glGetQueryivARB;
+CI_API extern PFNGLGETQUERYIVARBPROC _funcptr_glGetQueryivARB;
 #define glGetQueryivARB _funcptr_glGetQueryivARB
-extern PFNGLISQUERYARBPROC _funcptr_glIsQueryARB;
+CI_API extern PFNGLISQUERYARBPROC _funcptr_glIsQueryARB;
 #define glIsQueryARB _funcptr_glIsQueryARB
 
 #define GL_PIXEL_PACK_BUFFER_ARB 0x88EB
@@ -3454,9 +3454,9 @@ extern PFNGLISQUERYARBPROC _funcptr_glIsQueryARB;
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERFARBPROC)(GLenum pname, GLfloat param);
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERFVARBPROC)(GLenum pname, const GLfloat * params);
 
-extern PFNGLPOINTPARAMETERFARBPROC _funcptr_glPointParameterfARB;
+CI_API extern PFNGLPOINTPARAMETERFARBPROC _funcptr_glPointParameterfARB;
 #define glPointParameterfARB _funcptr_glPointParameterfARB
-extern PFNGLPOINTPARAMETERFVARBPROC _funcptr_glPointParameterfvARB;
+CI_API extern PFNGLPOINTPARAMETERFVARBPROC _funcptr_glPointParameterfvARB;
 #define glPointParameterfvARB _funcptr_glPointParameterfvARB
 
 #define GL_COORD_REPLACE_ARB 0x8862
@@ -3492,45 +3492,45 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETNUNIFORMIVARBPROC)(GLuint program, GLint
 typedef void (CODEGEN_FUNCPTR * PFNGLGETNUNIFORMUIVARBPROC)(GLuint program, GLint location, GLsizei bufSize, GLuint * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLREADNPIXELSARBPROC)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLsizei bufSize, GLvoid * data);
 
-extern PFNGLGETGRAPHICSRESETSTATUSARBPROC _funcptr_glGetGraphicsResetStatusARB;
+CI_API extern PFNGLGETGRAPHICSRESETSTATUSARBPROC _funcptr_glGetGraphicsResetStatusARB;
 #define glGetGraphicsResetStatusARB _funcptr_glGetGraphicsResetStatusARB
-extern PFNGLGETNCOLORTABLEARBPROC _funcptr_glGetnColorTableARB;
+CI_API extern PFNGLGETNCOLORTABLEARBPROC _funcptr_glGetnColorTableARB;
 #define glGetnColorTableARB _funcptr_glGetnColorTableARB
-extern PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC _funcptr_glGetnCompressedTexImageARB;
+CI_API extern PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC _funcptr_glGetnCompressedTexImageARB;
 #define glGetnCompressedTexImageARB _funcptr_glGetnCompressedTexImageARB
-extern PFNGLGETNCONVOLUTIONFILTERARBPROC _funcptr_glGetnConvolutionFilterARB;
+CI_API extern PFNGLGETNCONVOLUTIONFILTERARBPROC _funcptr_glGetnConvolutionFilterARB;
 #define glGetnConvolutionFilterARB _funcptr_glGetnConvolutionFilterARB
-extern PFNGLGETNHISTOGRAMARBPROC _funcptr_glGetnHistogramARB;
+CI_API extern PFNGLGETNHISTOGRAMARBPROC _funcptr_glGetnHistogramARB;
 #define glGetnHistogramARB _funcptr_glGetnHistogramARB
-extern PFNGLGETNMAPDVARBPROC _funcptr_glGetnMapdvARB;
+CI_API extern PFNGLGETNMAPDVARBPROC _funcptr_glGetnMapdvARB;
 #define glGetnMapdvARB _funcptr_glGetnMapdvARB
-extern PFNGLGETNMAPFVARBPROC _funcptr_glGetnMapfvARB;
+CI_API extern PFNGLGETNMAPFVARBPROC _funcptr_glGetnMapfvARB;
 #define glGetnMapfvARB _funcptr_glGetnMapfvARB
-extern PFNGLGETNMAPIVARBPROC _funcptr_glGetnMapivARB;
+CI_API extern PFNGLGETNMAPIVARBPROC _funcptr_glGetnMapivARB;
 #define glGetnMapivARB _funcptr_glGetnMapivARB
-extern PFNGLGETNMINMAXARBPROC _funcptr_glGetnMinmaxARB;
+CI_API extern PFNGLGETNMINMAXARBPROC _funcptr_glGetnMinmaxARB;
 #define glGetnMinmaxARB _funcptr_glGetnMinmaxARB
-extern PFNGLGETNPIXELMAPFVARBPROC _funcptr_glGetnPixelMapfvARB;
+CI_API extern PFNGLGETNPIXELMAPFVARBPROC _funcptr_glGetnPixelMapfvARB;
 #define glGetnPixelMapfvARB _funcptr_glGetnPixelMapfvARB
-extern PFNGLGETNPIXELMAPUIVARBPROC _funcptr_glGetnPixelMapuivARB;
+CI_API extern PFNGLGETNPIXELMAPUIVARBPROC _funcptr_glGetnPixelMapuivARB;
 #define glGetnPixelMapuivARB _funcptr_glGetnPixelMapuivARB
-extern PFNGLGETNPIXELMAPUSVARBPROC _funcptr_glGetnPixelMapusvARB;
+CI_API extern PFNGLGETNPIXELMAPUSVARBPROC _funcptr_glGetnPixelMapusvARB;
 #define glGetnPixelMapusvARB _funcptr_glGetnPixelMapusvARB
-extern PFNGLGETNPOLYGONSTIPPLEARBPROC _funcptr_glGetnPolygonStippleARB;
+CI_API extern PFNGLGETNPOLYGONSTIPPLEARBPROC _funcptr_glGetnPolygonStippleARB;
 #define glGetnPolygonStippleARB _funcptr_glGetnPolygonStippleARB
-extern PFNGLGETNSEPARABLEFILTERARBPROC _funcptr_glGetnSeparableFilterARB;
+CI_API extern PFNGLGETNSEPARABLEFILTERARBPROC _funcptr_glGetnSeparableFilterARB;
 #define glGetnSeparableFilterARB _funcptr_glGetnSeparableFilterARB
-extern PFNGLGETNTEXIMAGEARBPROC _funcptr_glGetnTexImageARB;
+CI_API extern PFNGLGETNTEXIMAGEARBPROC _funcptr_glGetnTexImageARB;
 #define glGetnTexImageARB _funcptr_glGetnTexImageARB
-extern PFNGLGETNUNIFORMDVARBPROC _funcptr_glGetnUniformdvARB;
+CI_API extern PFNGLGETNUNIFORMDVARBPROC _funcptr_glGetnUniformdvARB;
 #define glGetnUniformdvARB _funcptr_glGetnUniformdvARB
-extern PFNGLGETNUNIFORMFVARBPROC _funcptr_glGetnUniformfvARB;
+CI_API extern PFNGLGETNUNIFORMFVARBPROC _funcptr_glGetnUniformfvARB;
 #define glGetnUniformfvARB _funcptr_glGetnUniformfvARB
-extern PFNGLGETNUNIFORMIVARBPROC _funcptr_glGetnUniformivARB;
+CI_API extern PFNGLGETNUNIFORMIVARBPROC _funcptr_glGetnUniformivARB;
 #define glGetnUniformivARB _funcptr_glGetnUniformivARB
-extern PFNGLGETNUNIFORMUIVARBPROC _funcptr_glGetnUniformuivARB;
+CI_API extern PFNGLGETNUNIFORMUIVARBPROC _funcptr_glGetnUniformuivARB;
 #define glGetnUniformuivARB _funcptr_glGetnUniformuivARB
-extern PFNGLREADNPIXELSARBPROC _funcptr_glReadnPixelsARB;
+CI_API extern PFNGLREADNPIXELSARBPROC _funcptr_glReadnPixelsARB;
 #define glReadnPixelsARB _funcptr_glReadnPixelsARB
 
 #define GL_MIN_SAMPLE_SHADING_VALUE_ARB 0x8C37
@@ -3538,7 +3538,7 @@ extern PFNGLREADNPIXELSARBPROC _funcptr_glReadnPixelsARB;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLMINSAMPLESHADINGARBPROC)(GLfloat value);
 
-extern PFNGLMINSAMPLESHADINGARBPROC _funcptr_glMinSampleShadingARB;
+CI_API extern PFNGLMINSAMPLESHADINGARBPROC _funcptr_glMinSampleShadingARB;
 #define glMinSampleShadingARB _funcptr_glMinSampleShadingARB
 
 #define GL_TEXTURE_CUBE_MAP_SEAMLESS 0x884F
@@ -3618,83 +3618,83 @@ typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMMATRIX4FVARBPROC)(GLint location, GL
 typedef void (CODEGEN_FUNCPTR * PFNGLUSEPROGRAMOBJECTARBPROC)(GLhandleARB programObj);
 typedef void (CODEGEN_FUNCPTR * PFNGLVALIDATEPROGRAMARBPROC)(GLhandleARB programObj);
 
-extern PFNGLATTACHOBJECTARBPROC _funcptr_glAttachObjectARB;
+CI_API extern PFNGLATTACHOBJECTARBPROC _funcptr_glAttachObjectARB;
 #define glAttachObjectARB _funcptr_glAttachObjectARB
-extern PFNGLCOMPILESHADERARBPROC _funcptr_glCompileShaderARB;
+CI_API extern PFNGLCOMPILESHADERARBPROC _funcptr_glCompileShaderARB;
 #define glCompileShaderARB _funcptr_glCompileShaderARB
-extern PFNGLCREATEPROGRAMOBJECTARBPROC _funcptr_glCreateProgramObjectARB;
+CI_API extern PFNGLCREATEPROGRAMOBJECTARBPROC _funcptr_glCreateProgramObjectARB;
 #define glCreateProgramObjectARB _funcptr_glCreateProgramObjectARB
-extern PFNGLCREATESHADEROBJECTARBPROC _funcptr_glCreateShaderObjectARB;
+CI_API extern PFNGLCREATESHADEROBJECTARBPROC _funcptr_glCreateShaderObjectARB;
 #define glCreateShaderObjectARB _funcptr_glCreateShaderObjectARB
-extern PFNGLDELETEOBJECTARBPROC _funcptr_glDeleteObjectARB;
+CI_API extern PFNGLDELETEOBJECTARBPROC _funcptr_glDeleteObjectARB;
 #define glDeleteObjectARB _funcptr_glDeleteObjectARB
-extern PFNGLDETACHOBJECTARBPROC _funcptr_glDetachObjectARB;
+CI_API extern PFNGLDETACHOBJECTARBPROC _funcptr_glDetachObjectARB;
 #define glDetachObjectARB _funcptr_glDetachObjectARB
-extern PFNGLGETACTIVEUNIFORMARBPROC _funcptr_glGetActiveUniformARB;
+CI_API extern PFNGLGETACTIVEUNIFORMARBPROC _funcptr_glGetActiveUniformARB;
 #define glGetActiveUniformARB _funcptr_glGetActiveUniformARB
-extern PFNGLGETATTACHEDOBJECTSARBPROC _funcptr_glGetAttachedObjectsARB;
+CI_API extern PFNGLGETATTACHEDOBJECTSARBPROC _funcptr_glGetAttachedObjectsARB;
 #define glGetAttachedObjectsARB _funcptr_glGetAttachedObjectsARB
-extern PFNGLGETHANDLEARBPROC _funcptr_glGetHandleARB;
+CI_API extern PFNGLGETHANDLEARBPROC _funcptr_glGetHandleARB;
 #define glGetHandleARB _funcptr_glGetHandleARB
-extern PFNGLGETINFOLOGARBPROC _funcptr_glGetInfoLogARB;
+CI_API extern PFNGLGETINFOLOGARBPROC _funcptr_glGetInfoLogARB;
 #define glGetInfoLogARB _funcptr_glGetInfoLogARB
-extern PFNGLGETOBJECTPARAMETERFVARBPROC _funcptr_glGetObjectParameterfvARB;
+CI_API extern PFNGLGETOBJECTPARAMETERFVARBPROC _funcptr_glGetObjectParameterfvARB;
 #define glGetObjectParameterfvARB _funcptr_glGetObjectParameterfvARB
-extern PFNGLGETOBJECTPARAMETERIVARBPROC _funcptr_glGetObjectParameterivARB;
+CI_API extern PFNGLGETOBJECTPARAMETERIVARBPROC _funcptr_glGetObjectParameterivARB;
 #define glGetObjectParameterivARB _funcptr_glGetObjectParameterivARB
-extern PFNGLGETSHADERSOURCEARBPROC _funcptr_glGetShaderSourceARB;
+CI_API extern PFNGLGETSHADERSOURCEARBPROC _funcptr_glGetShaderSourceARB;
 #define glGetShaderSourceARB _funcptr_glGetShaderSourceARB
-extern PFNGLGETUNIFORMLOCATIONARBPROC _funcptr_glGetUniformLocationARB;
+CI_API extern PFNGLGETUNIFORMLOCATIONARBPROC _funcptr_glGetUniformLocationARB;
 #define glGetUniformLocationARB _funcptr_glGetUniformLocationARB
-extern PFNGLGETUNIFORMFVARBPROC _funcptr_glGetUniformfvARB;
+CI_API extern PFNGLGETUNIFORMFVARBPROC _funcptr_glGetUniformfvARB;
 #define glGetUniformfvARB _funcptr_glGetUniformfvARB
-extern PFNGLGETUNIFORMIVARBPROC _funcptr_glGetUniformivARB;
+CI_API extern PFNGLGETUNIFORMIVARBPROC _funcptr_glGetUniformivARB;
 #define glGetUniformivARB _funcptr_glGetUniformivARB
-extern PFNGLLINKPROGRAMARBPROC _funcptr_glLinkProgramARB;
+CI_API extern PFNGLLINKPROGRAMARBPROC _funcptr_glLinkProgramARB;
 #define glLinkProgramARB _funcptr_glLinkProgramARB
-extern PFNGLSHADERSOURCEARBPROC _funcptr_glShaderSourceARB;
+CI_API extern PFNGLSHADERSOURCEARBPROC _funcptr_glShaderSourceARB;
 #define glShaderSourceARB _funcptr_glShaderSourceARB
-extern PFNGLUNIFORM1FARBPROC _funcptr_glUniform1fARB;
+CI_API extern PFNGLUNIFORM1FARBPROC _funcptr_glUniform1fARB;
 #define glUniform1fARB _funcptr_glUniform1fARB
-extern PFNGLUNIFORM1FVARBPROC _funcptr_glUniform1fvARB;
+CI_API extern PFNGLUNIFORM1FVARBPROC _funcptr_glUniform1fvARB;
 #define glUniform1fvARB _funcptr_glUniform1fvARB
-extern PFNGLUNIFORM1IARBPROC _funcptr_glUniform1iARB;
+CI_API extern PFNGLUNIFORM1IARBPROC _funcptr_glUniform1iARB;
 #define glUniform1iARB _funcptr_glUniform1iARB
-extern PFNGLUNIFORM1IVARBPROC _funcptr_glUniform1ivARB;
+CI_API extern PFNGLUNIFORM1IVARBPROC _funcptr_glUniform1ivARB;
 #define glUniform1ivARB _funcptr_glUniform1ivARB
-extern PFNGLUNIFORM2FARBPROC _funcptr_glUniform2fARB;
+CI_API extern PFNGLUNIFORM2FARBPROC _funcptr_glUniform2fARB;
 #define glUniform2fARB _funcptr_glUniform2fARB
-extern PFNGLUNIFORM2FVARBPROC _funcptr_glUniform2fvARB;
+CI_API extern PFNGLUNIFORM2FVARBPROC _funcptr_glUniform2fvARB;
 #define glUniform2fvARB _funcptr_glUniform2fvARB
-extern PFNGLUNIFORM2IARBPROC _funcptr_glUniform2iARB;
+CI_API extern PFNGLUNIFORM2IARBPROC _funcptr_glUniform2iARB;
 #define glUniform2iARB _funcptr_glUniform2iARB
-extern PFNGLUNIFORM2IVARBPROC _funcptr_glUniform2ivARB;
+CI_API extern PFNGLUNIFORM2IVARBPROC _funcptr_glUniform2ivARB;
 #define glUniform2ivARB _funcptr_glUniform2ivARB
-extern PFNGLUNIFORM3FARBPROC _funcptr_glUniform3fARB;
+CI_API extern PFNGLUNIFORM3FARBPROC _funcptr_glUniform3fARB;
 #define glUniform3fARB _funcptr_glUniform3fARB
-extern PFNGLUNIFORM3FVARBPROC _funcptr_glUniform3fvARB;
+CI_API extern PFNGLUNIFORM3FVARBPROC _funcptr_glUniform3fvARB;
 #define glUniform3fvARB _funcptr_glUniform3fvARB
-extern PFNGLUNIFORM3IARBPROC _funcptr_glUniform3iARB;
+CI_API extern PFNGLUNIFORM3IARBPROC _funcptr_glUniform3iARB;
 #define glUniform3iARB _funcptr_glUniform3iARB
-extern PFNGLUNIFORM3IVARBPROC _funcptr_glUniform3ivARB;
+CI_API extern PFNGLUNIFORM3IVARBPROC _funcptr_glUniform3ivARB;
 #define glUniform3ivARB _funcptr_glUniform3ivARB
-extern PFNGLUNIFORM4FARBPROC _funcptr_glUniform4fARB;
+CI_API extern PFNGLUNIFORM4FARBPROC _funcptr_glUniform4fARB;
 #define glUniform4fARB _funcptr_glUniform4fARB
-extern PFNGLUNIFORM4FVARBPROC _funcptr_glUniform4fvARB;
+CI_API extern PFNGLUNIFORM4FVARBPROC _funcptr_glUniform4fvARB;
 #define glUniform4fvARB _funcptr_glUniform4fvARB
-extern PFNGLUNIFORM4IARBPROC _funcptr_glUniform4iARB;
+CI_API extern PFNGLUNIFORM4IARBPROC _funcptr_glUniform4iARB;
 #define glUniform4iARB _funcptr_glUniform4iARB
-extern PFNGLUNIFORM4IVARBPROC _funcptr_glUniform4ivARB;
+CI_API extern PFNGLUNIFORM4IVARBPROC _funcptr_glUniform4ivARB;
 #define glUniform4ivARB _funcptr_glUniform4ivARB
-extern PFNGLUNIFORMMATRIX2FVARBPROC _funcptr_glUniformMatrix2fvARB;
+CI_API extern PFNGLUNIFORMMATRIX2FVARBPROC _funcptr_glUniformMatrix2fvARB;
 #define glUniformMatrix2fvARB _funcptr_glUniformMatrix2fvARB
-extern PFNGLUNIFORMMATRIX3FVARBPROC _funcptr_glUniformMatrix3fvARB;
+CI_API extern PFNGLUNIFORMMATRIX3FVARBPROC _funcptr_glUniformMatrix3fvARB;
 #define glUniformMatrix3fvARB _funcptr_glUniformMatrix3fvARB
-extern PFNGLUNIFORMMATRIX4FVARBPROC _funcptr_glUniformMatrix4fvARB;
+CI_API extern PFNGLUNIFORMMATRIX4FVARBPROC _funcptr_glUniformMatrix4fvARB;
 #define glUniformMatrix4fvARB _funcptr_glUniformMatrix4fvARB
-extern PFNGLUSEPROGRAMOBJECTARBPROC _funcptr_glUseProgramObjectARB;
+CI_API extern PFNGLUSEPROGRAMOBJECTARBPROC _funcptr_glUseProgramObjectARB;
 #define glUseProgramObjectARB _funcptr_glUseProgramObjectARB
-extern PFNGLVALIDATEPROGRAMARBPROC _funcptr_glValidateProgramARB;
+CI_API extern PFNGLVALIDATEPROGRAMARBPROC _funcptr_glValidateProgramARB;
 #define glValidateProgramARB _funcptr_glValidateProgramARB
 
 #define GL_SHADING_LANGUAGE_VERSION_ARB 0x8B8C
@@ -3710,17 +3710,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETNAMEDSTRINGIVARBPROC)(GLint namelen, con
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISNAMEDSTRINGARBPROC)(GLint namelen, const GLchar * name);
 typedef void (CODEGEN_FUNCPTR * PFNGLNAMEDSTRINGARBPROC)(GLenum type, GLint namelen, const GLchar * name, GLint stringlen, const GLchar * string);
 
-extern PFNGLCOMPILESHADERINCLUDEARBPROC _funcptr_glCompileShaderIncludeARB;
+CI_API extern PFNGLCOMPILESHADERINCLUDEARBPROC _funcptr_glCompileShaderIncludeARB;
 #define glCompileShaderIncludeARB _funcptr_glCompileShaderIncludeARB
-extern PFNGLDELETENAMEDSTRINGARBPROC _funcptr_glDeleteNamedStringARB;
+CI_API extern PFNGLDELETENAMEDSTRINGARBPROC _funcptr_glDeleteNamedStringARB;
 #define glDeleteNamedStringARB _funcptr_glDeleteNamedStringARB
-extern PFNGLGETNAMEDSTRINGARBPROC _funcptr_glGetNamedStringARB;
+CI_API extern PFNGLGETNAMEDSTRINGARBPROC _funcptr_glGetNamedStringARB;
 #define glGetNamedStringARB _funcptr_glGetNamedStringARB
-extern PFNGLGETNAMEDSTRINGIVARBPROC _funcptr_glGetNamedStringivARB;
+CI_API extern PFNGLGETNAMEDSTRINGIVARBPROC _funcptr_glGetNamedStringivARB;
 #define glGetNamedStringivARB _funcptr_glGetNamedStringivARB
-extern PFNGLISNAMEDSTRINGARBPROC _funcptr_glIsNamedStringARB;
+CI_API extern PFNGLISNAMEDSTRINGARBPROC _funcptr_glIsNamedStringARB;
 #define glIsNamedStringARB _funcptr_glIsNamedStringARB
-extern PFNGLNAMEDSTRINGARBPROC _funcptr_glNamedStringARB;
+CI_API extern PFNGLNAMEDSTRINGARBPROC _funcptr_glNamedStringARB;
 #define glNamedStringARB _funcptr_glNamedStringARB
 
 #define GL_COMPARE_R_TO_TEXTURE_ARB 0x884E
@@ -3743,7 +3743,7 @@ extern PFNGLNAMEDSTRINGARBPROC _funcptr_glNamedStringARB;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXPAGECOMMITMENTARBPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLboolean resident);
 
-extern PFNGLTEXPAGECOMMITMENTARBPROC _funcptr_glTexPageCommitmentARB;
+CI_API extern PFNGLTEXPAGECOMMITMENTARBPROC _funcptr_glTexPageCommitmentARB;
 #define glTexPageCommitmentARB _funcptr_glTexPageCommitmentARB
 
 #define GL_CLAMP_TO_BORDER_ARB 0x812D
@@ -3756,7 +3756,7 @@ extern PFNGLTEXPAGECOMMITMENTARBPROC _funcptr_glTexPageCommitmentARB;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXBUFFERARBPROC)(GLenum target, GLenum internalformat, GLuint buffer);
 
-extern PFNGLTEXBUFFERARBPROC _funcptr_glTexBufferARB;
+CI_API extern PFNGLTEXBUFFERARBPROC _funcptr_glTexBufferARB;
 #define glTexBufferARB _funcptr_glTexBufferARB
 
 #define GL_RGB32F 0x8815
@@ -3783,19 +3783,19 @@ typedef void (CODEGEN_FUNCPTR * PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC)(GLenum targ
 typedef void (CODEGEN_FUNCPTR * PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const GLvoid * data);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETCOMPRESSEDTEXIMAGEARBPROC)(GLenum target, GLint level, GLvoid * img);
 
-extern PFNGLCOMPRESSEDTEXIMAGE1DARBPROC _funcptr_glCompressedTexImage1DARB;
+CI_API extern PFNGLCOMPRESSEDTEXIMAGE1DARBPROC _funcptr_glCompressedTexImage1DARB;
 #define glCompressedTexImage1DARB _funcptr_glCompressedTexImage1DARB
-extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC _funcptr_glCompressedTexImage2DARB;
+CI_API extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC _funcptr_glCompressedTexImage2DARB;
 #define glCompressedTexImage2DARB _funcptr_glCompressedTexImage2DARB
-extern PFNGLCOMPRESSEDTEXIMAGE3DARBPROC _funcptr_glCompressedTexImage3DARB;
+CI_API extern PFNGLCOMPRESSEDTEXIMAGE3DARBPROC _funcptr_glCompressedTexImage3DARB;
 #define glCompressedTexImage3DARB _funcptr_glCompressedTexImage3DARB
-extern PFNGLCOMPRESSEDTEXSUBIMAGE1DARBPROC _funcptr_glCompressedTexSubImage1DARB;
+CI_API extern PFNGLCOMPRESSEDTEXSUBIMAGE1DARBPROC _funcptr_glCompressedTexSubImage1DARB;
 #define glCompressedTexSubImage1DARB _funcptr_glCompressedTexSubImage1DARB
-extern PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC _funcptr_glCompressedTexSubImage2DARB;
+CI_API extern PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC _funcptr_glCompressedTexSubImage2DARB;
 #define glCompressedTexSubImage2DARB _funcptr_glCompressedTexSubImage2DARB
-extern PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC _funcptr_glCompressedTexSubImage3DARB;
+CI_API extern PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC _funcptr_glCompressedTexSubImage3DARB;
 #define glCompressedTexSubImage3DARB _funcptr_glCompressedTexSubImage3DARB
-extern PFNGLGETCOMPRESSEDTEXIMAGEARBPROC _funcptr_glGetCompressedTexImageARB;
+CI_API extern PFNGLGETCOMPRESSEDTEXIMAGEARBPROC _funcptr_glGetCompressedTexImageARB;
 #define glGetCompressedTexImageARB _funcptr_glGetCompressedTexImageARB
 
 #define GL_COMPRESSED_RGBA_BPTC_UNORM_ARB 0x8E8C
@@ -3892,13 +3892,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLLOADTRANSPOSEMATRIXFARBPROC)(const GLfloat 
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTTRANSPOSEMATRIXDARBPROC)(const GLdouble * m);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTTRANSPOSEMATRIXFARBPROC)(const GLfloat * m);
 
-extern PFNGLLOADTRANSPOSEMATRIXDARBPROC _funcptr_glLoadTransposeMatrixdARB;
+CI_API extern PFNGLLOADTRANSPOSEMATRIXDARBPROC _funcptr_glLoadTransposeMatrixdARB;
 #define glLoadTransposeMatrixdARB _funcptr_glLoadTransposeMatrixdARB
-extern PFNGLLOADTRANSPOSEMATRIXFARBPROC _funcptr_glLoadTransposeMatrixfARB;
+CI_API extern PFNGLLOADTRANSPOSEMATRIXFARBPROC _funcptr_glLoadTransposeMatrixfARB;
 #define glLoadTransposeMatrixfARB _funcptr_glLoadTransposeMatrixfARB
-extern PFNGLMULTTRANSPOSEMATRIXDARBPROC _funcptr_glMultTransposeMatrixdARB;
+CI_API extern PFNGLMULTTRANSPOSEMATRIXDARBPROC _funcptr_glMultTransposeMatrixdARB;
 #define glMultTransposeMatrixdARB _funcptr_glMultTransposeMatrixdARB
-extern PFNGLMULTTRANSPOSEMATRIXFARBPROC _funcptr_glMultTransposeMatrixfARB;
+CI_API extern PFNGLMULTTRANSPOSEMATRIXFARBPROC _funcptr_glMultTransposeMatrixfARB;
 #define glMultTransposeMatrixfARB _funcptr_glMultTransposeMatrixfARB
 
 #define GL_ACTIVE_VERTEX_UNITS_ARB 0x86A5
@@ -3955,25 +3955,25 @@ typedef void (CODEGEN_FUNCPTR * PFNGLWEIGHTUBVARBPROC)(GLint size, const GLubyte
 typedef void (CODEGEN_FUNCPTR * PFNGLWEIGHTUIVARBPROC)(GLint size, const GLuint * weights);
 typedef void (CODEGEN_FUNCPTR * PFNGLWEIGHTUSVARBPROC)(GLint size, const GLushort * weights);
 
-extern PFNGLVERTEXBLENDARBPROC _funcptr_glVertexBlendARB;
+CI_API extern PFNGLVERTEXBLENDARBPROC _funcptr_glVertexBlendARB;
 #define glVertexBlendARB _funcptr_glVertexBlendARB
-extern PFNGLWEIGHTPOINTERARBPROC _funcptr_glWeightPointerARB;
+CI_API extern PFNGLWEIGHTPOINTERARBPROC _funcptr_glWeightPointerARB;
 #define glWeightPointerARB _funcptr_glWeightPointerARB
-extern PFNGLWEIGHTBVARBPROC _funcptr_glWeightbvARB;
+CI_API extern PFNGLWEIGHTBVARBPROC _funcptr_glWeightbvARB;
 #define glWeightbvARB _funcptr_glWeightbvARB
-extern PFNGLWEIGHTDVARBPROC _funcptr_glWeightdvARB;
+CI_API extern PFNGLWEIGHTDVARBPROC _funcptr_glWeightdvARB;
 #define glWeightdvARB _funcptr_glWeightdvARB
-extern PFNGLWEIGHTFVARBPROC _funcptr_glWeightfvARB;
+CI_API extern PFNGLWEIGHTFVARBPROC _funcptr_glWeightfvARB;
 #define glWeightfvARB _funcptr_glWeightfvARB
-extern PFNGLWEIGHTIVARBPROC _funcptr_glWeightivARB;
+CI_API extern PFNGLWEIGHTIVARBPROC _funcptr_glWeightivARB;
 #define glWeightivARB _funcptr_glWeightivARB
-extern PFNGLWEIGHTSVARBPROC _funcptr_glWeightsvARB;
+CI_API extern PFNGLWEIGHTSVARBPROC _funcptr_glWeightsvARB;
 #define glWeightsvARB _funcptr_glWeightsvARB
-extern PFNGLWEIGHTUBVARBPROC _funcptr_glWeightubvARB;
+CI_API extern PFNGLWEIGHTUBVARBPROC _funcptr_glWeightubvARB;
 #define glWeightubvARB _funcptr_glWeightubvARB
-extern PFNGLWEIGHTUIVARBPROC _funcptr_glWeightuivARB;
+CI_API extern PFNGLWEIGHTUIVARBPROC _funcptr_glWeightuivARB;
 #define glWeightuivARB _funcptr_glWeightuivARB
-extern PFNGLWEIGHTUSVARBPROC _funcptr_glWeightusvARB;
+CI_API extern PFNGLWEIGHTUSVARBPROC _funcptr_glWeightusvARB;
 #define glWeightusvARB _funcptr_glWeightusvARB
 
 #define GL_ARRAY_BUFFER_ARB 0x8892
@@ -4020,27 +4020,27 @@ typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISBUFFERARBPROC)(GLuint buffer);
 typedef void * (CODEGEN_FUNCPTR * PFNGLMAPBUFFERARBPROC)(GLenum target, GLenum access);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLUNMAPBUFFERARBPROC)(GLenum target);
 
-extern PFNGLBINDBUFFERARBPROC _funcptr_glBindBufferARB;
+CI_API extern PFNGLBINDBUFFERARBPROC _funcptr_glBindBufferARB;
 #define glBindBufferARB _funcptr_glBindBufferARB
-extern PFNGLBUFFERDATAARBPROC _funcptr_glBufferDataARB;
+CI_API extern PFNGLBUFFERDATAARBPROC _funcptr_glBufferDataARB;
 #define glBufferDataARB _funcptr_glBufferDataARB
-extern PFNGLBUFFERSUBDATAARBPROC _funcptr_glBufferSubDataARB;
+CI_API extern PFNGLBUFFERSUBDATAARBPROC _funcptr_glBufferSubDataARB;
 #define glBufferSubDataARB _funcptr_glBufferSubDataARB
-extern PFNGLDELETEBUFFERSARBPROC _funcptr_glDeleteBuffersARB;
+CI_API extern PFNGLDELETEBUFFERSARBPROC _funcptr_glDeleteBuffersARB;
 #define glDeleteBuffersARB _funcptr_glDeleteBuffersARB
-extern PFNGLGENBUFFERSARBPROC _funcptr_glGenBuffersARB;
+CI_API extern PFNGLGENBUFFERSARBPROC _funcptr_glGenBuffersARB;
 #define glGenBuffersARB _funcptr_glGenBuffersARB
-extern PFNGLGETBUFFERPARAMETERIVARBPROC _funcptr_glGetBufferParameterivARB;
+CI_API extern PFNGLGETBUFFERPARAMETERIVARBPROC _funcptr_glGetBufferParameterivARB;
 #define glGetBufferParameterivARB _funcptr_glGetBufferParameterivARB
-extern PFNGLGETBUFFERPOINTERVARBPROC _funcptr_glGetBufferPointervARB;
+CI_API extern PFNGLGETBUFFERPOINTERVARBPROC _funcptr_glGetBufferPointervARB;
 #define glGetBufferPointervARB _funcptr_glGetBufferPointervARB
-extern PFNGLGETBUFFERSUBDATAARBPROC _funcptr_glGetBufferSubDataARB;
+CI_API extern PFNGLGETBUFFERSUBDATAARBPROC _funcptr_glGetBufferSubDataARB;
 #define glGetBufferSubDataARB _funcptr_glGetBufferSubDataARB
-extern PFNGLISBUFFERARBPROC _funcptr_glIsBufferARB;
+CI_API extern PFNGLISBUFFERARBPROC _funcptr_glIsBufferARB;
 #define glIsBufferARB _funcptr_glIsBufferARB
-extern PFNGLMAPBUFFERARBPROC _funcptr_glMapBufferARB;
+CI_API extern PFNGLMAPBUFFERARBPROC _funcptr_glMapBufferARB;
 #define glMapBufferARB _funcptr_glMapBufferARB
-extern PFNGLUNMAPBUFFERARBPROC _funcptr_glUnmapBufferARB;
+CI_API extern PFNGLUNMAPBUFFERARBPROC _funcptr_glUnmapBufferARB;
 #define glUnmapBufferARB _funcptr_glUnmapBufferARB
 
 #define GL_COLOR_SUM_ARB 0x8458
@@ -4186,129 +4186,129 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIB4UIVARBPROC)(GLuint index, cons
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIB4USVARBPROC)(GLuint index, const GLushort * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBPOINTERARBPROC)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid * pointer);
 
-extern PFNGLBINDPROGRAMARBPROC _funcptr_glBindProgramARB;
+CI_API extern PFNGLBINDPROGRAMARBPROC _funcptr_glBindProgramARB;
 #define glBindProgramARB _funcptr_glBindProgramARB
-extern PFNGLDELETEPROGRAMSARBPROC _funcptr_glDeleteProgramsARB;
+CI_API extern PFNGLDELETEPROGRAMSARBPROC _funcptr_glDeleteProgramsARB;
 #define glDeleteProgramsARB _funcptr_glDeleteProgramsARB
-extern PFNGLDISABLEVERTEXATTRIBARRAYARBPROC _funcptr_glDisableVertexAttribArrayARB;
+CI_API extern PFNGLDISABLEVERTEXATTRIBARRAYARBPROC _funcptr_glDisableVertexAttribArrayARB;
 #define glDisableVertexAttribArrayARB _funcptr_glDisableVertexAttribArrayARB
-extern PFNGLENABLEVERTEXATTRIBARRAYARBPROC _funcptr_glEnableVertexAttribArrayARB;
+CI_API extern PFNGLENABLEVERTEXATTRIBARRAYARBPROC _funcptr_glEnableVertexAttribArrayARB;
 #define glEnableVertexAttribArrayARB _funcptr_glEnableVertexAttribArrayARB
-extern PFNGLGENPROGRAMSARBPROC _funcptr_glGenProgramsARB;
+CI_API extern PFNGLGENPROGRAMSARBPROC _funcptr_glGenProgramsARB;
 #define glGenProgramsARB _funcptr_glGenProgramsARB
-extern PFNGLGETPROGRAMENVPARAMETERDVARBPROC _funcptr_glGetProgramEnvParameterdvARB;
+CI_API extern PFNGLGETPROGRAMENVPARAMETERDVARBPROC _funcptr_glGetProgramEnvParameterdvARB;
 #define glGetProgramEnvParameterdvARB _funcptr_glGetProgramEnvParameterdvARB
-extern PFNGLGETPROGRAMENVPARAMETERFVARBPROC _funcptr_glGetProgramEnvParameterfvARB;
+CI_API extern PFNGLGETPROGRAMENVPARAMETERFVARBPROC _funcptr_glGetProgramEnvParameterfvARB;
 #define glGetProgramEnvParameterfvARB _funcptr_glGetProgramEnvParameterfvARB
-extern PFNGLGETPROGRAMLOCALPARAMETERDVARBPROC _funcptr_glGetProgramLocalParameterdvARB;
+CI_API extern PFNGLGETPROGRAMLOCALPARAMETERDVARBPROC _funcptr_glGetProgramLocalParameterdvARB;
 #define glGetProgramLocalParameterdvARB _funcptr_glGetProgramLocalParameterdvARB
-extern PFNGLGETPROGRAMLOCALPARAMETERFVARBPROC _funcptr_glGetProgramLocalParameterfvARB;
+CI_API extern PFNGLGETPROGRAMLOCALPARAMETERFVARBPROC _funcptr_glGetProgramLocalParameterfvARB;
 #define glGetProgramLocalParameterfvARB _funcptr_glGetProgramLocalParameterfvARB
-extern PFNGLGETPROGRAMSTRINGARBPROC _funcptr_glGetProgramStringARB;
+CI_API extern PFNGLGETPROGRAMSTRINGARBPROC _funcptr_glGetProgramStringARB;
 #define glGetProgramStringARB _funcptr_glGetProgramStringARB
-extern PFNGLGETPROGRAMIVARBPROC _funcptr_glGetProgramivARB;
+CI_API extern PFNGLGETPROGRAMIVARBPROC _funcptr_glGetProgramivARB;
 #define glGetProgramivARB _funcptr_glGetProgramivARB
-extern PFNGLGETVERTEXATTRIBPOINTERVARBPROC _funcptr_glGetVertexAttribPointervARB;
+CI_API extern PFNGLGETVERTEXATTRIBPOINTERVARBPROC _funcptr_glGetVertexAttribPointervARB;
 #define glGetVertexAttribPointervARB _funcptr_glGetVertexAttribPointervARB
-extern PFNGLGETVERTEXATTRIBDVARBPROC _funcptr_glGetVertexAttribdvARB;
+CI_API extern PFNGLGETVERTEXATTRIBDVARBPROC _funcptr_glGetVertexAttribdvARB;
 #define glGetVertexAttribdvARB _funcptr_glGetVertexAttribdvARB
-extern PFNGLGETVERTEXATTRIBFVARBPROC _funcptr_glGetVertexAttribfvARB;
+CI_API extern PFNGLGETVERTEXATTRIBFVARBPROC _funcptr_glGetVertexAttribfvARB;
 #define glGetVertexAttribfvARB _funcptr_glGetVertexAttribfvARB
-extern PFNGLGETVERTEXATTRIBIVARBPROC _funcptr_glGetVertexAttribivARB;
+CI_API extern PFNGLGETVERTEXATTRIBIVARBPROC _funcptr_glGetVertexAttribivARB;
 #define glGetVertexAttribivARB _funcptr_glGetVertexAttribivARB
-extern PFNGLISPROGRAMARBPROC _funcptr_glIsProgramARB;
+CI_API extern PFNGLISPROGRAMARBPROC _funcptr_glIsProgramARB;
 #define glIsProgramARB _funcptr_glIsProgramARB
-extern PFNGLPROGRAMENVPARAMETER4DARBPROC _funcptr_glProgramEnvParameter4dARB;
+CI_API extern PFNGLPROGRAMENVPARAMETER4DARBPROC _funcptr_glProgramEnvParameter4dARB;
 #define glProgramEnvParameter4dARB _funcptr_glProgramEnvParameter4dARB
-extern PFNGLPROGRAMENVPARAMETER4DVARBPROC _funcptr_glProgramEnvParameter4dvARB;
+CI_API extern PFNGLPROGRAMENVPARAMETER4DVARBPROC _funcptr_glProgramEnvParameter4dvARB;
 #define glProgramEnvParameter4dvARB _funcptr_glProgramEnvParameter4dvARB
-extern PFNGLPROGRAMENVPARAMETER4FARBPROC _funcptr_glProgramEnvParameter4fARB;
+CI_API extern PFNGLPROGRAMENVPARAMETER4FARBPROC _funcptr_glProgramEnvParameter4fARB;
 #define glProgramEnvParameter4fARB _funcptr_glProgramEnvParameter4fARB
-extern PFNGLPROGRAMENVPARAMETER4FVARBPROC _funcptr_glProgramEnvParameter4fvARB;
+CI_API extern PFNGLPROGRAMENVPARAMETER4FVARBPROC _funcptr_glProgramEnvParameter4fvARB;
 #define glProgramEnvParameter4fvARB _funcptr_glProgramEnvParameter4fvARB
-extern PFNGLPROGRAMLOCALPARAMETER4DARBPROC _funcptr_glProgramLocalParameter4dARB;
+CI_API extern PFNGLPROGRAMLOCALPARAMETER4DARBPROC _funcptr_glProgramLocalParameter4dARB;
 #define glProgramLocalParameter4dARB _funcptr_glProgramLocalParameter4dARB
-extern PFNGLPROGRAMLOCALPARAMETER4DVARBPROC _funcptr_glProgramLocalParameter4dvARB;
+CI_API extern PFNGLPROGRAMLOCALPARAMETER4DVARBPROC _funcptr_glProgramLocalParameter4dvARB;
 #define glProgramLocalParameter4dvARB _funcptr_glProgramLocalParameter4dvARB
-extern PFNGLPROGRAMLOCALPARAMETER4FARBPROC _funcptr_glProgramLocalParameter4fARB;
+CI_API extern PFNGLPROGRAMLOCALPARAMETER4FARBPROC _funcptr_glProgramLocalParameter4fARB;
 #define glProgramLocalParameter4fARB _funcptr_glProgramLocalParameter4fARB
-extern PFNGLPROGRAMLOCALPARAMETER4FVARBPROC _funcptr_glProgramLocalParameter4fvARB;
+CI_API extern PFNGLPROGRAMLOCALPARAMETER4FVARBPROC _funcptr_glProgramLocalParameter4fvARB;
 #define glProgramLocalParameter4fvARB _funcptr_glProgramLocalParameter4fvARB
-extern PFNGLPROGRAMSTRINGARBPROC _funcptr_glProgramStringARB;
+CI_API extern PFNGLPROGRAMSTRINGARBPROC _funcptr_glProgramStringARB;
 #define glProgramStringARB _funcptr_glProgramStringARB
-extern PFNGLVERTEXATTRIB1DARBPROC _funcptr_glVertexAttrib1dARB;
+CI_API extern PFNGLVERTEXATTRIB1DARBPROC _funcptr_glVertexAttrib1dARB;
 #define glVertexAttrib1dARB _funcptr_glVertexAttrib1dARB
-extern PFNGLVERTEXATTRIB1DVARBPROC _funcptr_glVertexAttrib1dvARB;
+CI_API extern PFNGLVERTEXATTRIB1DVARBPROC _funcptr_glVertexAttrib1dvARB;
 #define glVertexAttrib1dvARB _funcptr_glVertexAttrib1dvARB
-extern PFNGLVERTEXATTRIB1FARBPROC _funcptr_glVertexAttrib1fARB;
+CI_API extern PFNGLVERTEXATTRIB1FARBPROC _funcptr_glVertexAttrib1fARB;
 #define glVertexAttrib1fARB _funcptr_glVertexAttrib1fARB
-extern PFNGLVERTEXATTRIB1FVARBPROC _funcptr_glVertexAttrib1fvARB;
+CI_API extern PFNGLVERTEXATTRIB1FVARBPROC _funcptr_glVertexAttrib1fvARB;
 #define glVertexAttrib1fvARB _funcptr_glVertexAttrib1fvARB
-extern PFNGLVERTEXATTRIB1SARBPROC _funcptr_glVertexAttrib1sARB;
+CI_API extern PFNGLVERTEXATTRIB1SARBPROC _funcptr_glVertexAttrib1sARB;
 #define glVertexAttrib1sARB _funcptr_glVertexAttrib1sARB
-extern PFNGLVERTEXATTRIB1SVARBPROC _funcptr_glVertexAttrib1svARB;
+CI_API extern PFNGLVERTEXATTRIB1SVARBPROC _funcptr_glVertexAttrib1svARB;
 #define glVertexAttrib1svARB _funcptr_glVertexAttrib1svARB
-extern PFNGLVERTEXATTRIB2DARBPROC _funcptr_glVertexAttrib2dARB;
+CI_API extern PFNGLVERTEXATTRIB2DARBPROC _funcptr_glVertexAttrib2dARB;
 #define glVertexAttrib2dARB _funcptr_glVertexAttrib2dARB
-extern PFNGLVERTEXATTRIB2DVARBPROC _funcptr_glVertexAttrib2dvARB;
+CI_API extern PFNGLVERTEXATTRIB2DVARBPROC _funcptr_glVertexAttrib2dvARB;
 #define glVertexAttrib2dvARB _funcptr_glVertexAttrib2dvARB
-extern PFNGLVERTEXATTRIB2FARBPROC _funcptr_glVertexAttrib2fARB;
+CI_API extern PFNGLVERTEXATTRIB2FARBPROC _funcptr_glVertexAttrib2fARB;
 #define glVertexAttrib2fARB _funcptr_glVertexAttrib2fARB
-extern PFNGLVERTEXATTRIB2FVARBPROC _funcptr_glVertexAttrib2fvARB;
+CI_API extern PFNGLVERTEXATTRIB2FVARBPROC _funcptr_glVertexAttrib2fvARB;
 #define glVertexAttrib2fvARB _funcptr_glVertexAttrib2fvARB
-extern PFNGLVERTEXATTRIB2SARBPROC _funcptr_glVertexAttrib2sARB;
+CI_API extern PFNGLVERTEXATTRIB2SARBPROC _funcptr_glVertexAttrib2sARB;
 #define glVertexAttrib2sARB _funcptr_glVertexAttrib2sARB
-extern PFNGLVERTEXATTRIB2SVARBPROC _funcptr_glVertexAttrib2svARB;
+CI_API extern PFNGLVERTEXATTRIB2SVARBPROC _funcptr_glVertexAttrib2svARB;
 #define glVertexAttrib2svARB _funcptr_glVertexAttrib2svARB
-extern PFNGLVERTEXATTRIB3DARBPROC _funcptr_glVertexAttrib3dARB;
+CI_API extern PFNGLVERTEXATTRIB3DARBPROC _funcptr_glVertexAttrib3dARB;
 #define glVertexAttrib3dARB _funcptr_glVertexAttrib3dARB
-extern PFNGLVERTEXATTRIB3DVARBPROC _funcptr_glVertexAttrib3dvARB;
+CI_API extern PFNGLVERTEXATTRIB3DVARBPROC _funcptr_glVertexAttrib3dvARB;
 #define glVertexAttrib3dvARB _funcptr_glVertexAttrib3dvARB
-extern PFNGLVERTEXATTRIB3FARBPROC _funcptr_glVertexAttrib3fARB;
+CI_API extern PFNGLVERTEXATTRIB3FARBPROC _funcptr_glVertexAttrib3fARB;
 #define glVertexAttrib3fARB _funcptr_glVertexAttrib3fARB
-extern PFNGLVERTEXATTRIB3FVARBPROC _funcptr_glVertexAttrib3fvARB;
+CI_API extern PFNGLVERTEXATTRIB3FVARBPROC _funcptr_glVertexAttrib3fvARB;
 #define glVertexAttrib3fvARB _funcptr_glVertexAttrib3fvARB
-extern PFNGLVERTEXATTRIB3SARBPROC _funcptr_glVertexAttrib3sARB;
+CI_API extern PFNGLVERTEXATTRIB3SARBPROC _funcptr_glVertexAttrib3sARB;
 #define glVertexAttrib3sARB _funcptr_glVertexAttrib3sARB
-extern PFNGLVERTEXATTRIB3SVARBPROC _funcptr_glVertexAttrib3svARB;
+CI_API extern PFNGLVERTEXATTRIB3SVARBPROC _funcptr_glVertexAttrib3svARB;
 #define glVertexAttrib3svARB _funcptr_glVertexAttrib3svARB
-extern PFNGLVERTEXATTRIB4NBVARBPROC _funcptr_glVertexAttrib4NbvARB;
+CI_API extern PFNGLVERTEXATTRIB4NBVARBPROC _funcptr_glVertexAttrib4NbvARB;
 #define glVertexAttrib4NbvARB _funcptr_glVertexAttrib4NbvARB
-extern PFNGLVERTEXATTRIB4NIVARBPROC _funcptr_glVertexAttrib4NivARB;
+CI_API extern PFNGLVERTEXATTRIB4NIVARBPROC _funcptr_glVertexAttrib4NivARB;
 #define glVertexAttrib4NivARB _funcptr_glVertexAttrib4NivARB
-extern PFNGLVERTEXATTRIB4NSVARBPROC _funcptr_glVertexAttrib4NsvARB;
+CI_API extern PFNGLVERTEXATTRIB4NSVARBPROC _funcptr_glVertexAttrib4NsvARB;
 #define glVertexAttrib4NsvARB _funcptr_glVertexAttrib4NsvARB
-extern PFNGLVERTEXATTRIB4NUBARBPROC _funcptr_glVertexAttrib4NubARB;
+CI_API extern PFNGLVERTEXATTRIB4NUBARBPROC _funcptr_glVertexAttrib4NubARB;
 #define glVertexAttrib4NubARB _funcptr_glVertexAttrib4NubARB
-extern PFNGLVERTEXATTRIB4NUBVARBPROC _funcptr_glVertexAttrib4NubvARB;
+CI_API extern PFNGLVERTEXATTRIB4NUBVARBPROC _funcptr_glVertexAttrib4NubvARB;
 #define glVertexAttrib4NubvARB _funcptr_glVertexAttrib4NubvARB
-extern PFNGLVERTEXATTRIB4NUIVARBPROC _funcptr_glVertexAttrib4NuivARB;
+CI_API extern PFNGLVERTEXATTRIB4NUIVARBPROC _funcptr_glVertexAttrib4NuivARB;
 #define glVertexAttrib4NuivARB _funcptr_glVertexAttrib4NuivARB
-extern PFNGLVERTEXATTRIB4NUSVARBPROC _funcptr_glVertexAttrib4NusvARB;
+CI_API extern PFNGLVERTEXATTRIB4NUSVARBPROC _funcptr_glVertexAttrib4NusvARB;
 #define glVertexAttrib4NusvARB _funcptr_glVertexAttrib4NusvARB
-extern PFNGLVERTEXATTRIB4BVARBPROC _funcptr_glVertexAttrib4bvARB;
+CI_API extern PFNGLVERTEXATTRIB4BVARBPROC _funcptr_glVertexAttrib4bvARB;
 #define glVertexAttrib4bvARB _funcptr_glVertexAttrib4bvARB
-extern PFNGLVERTEXATTRIB4DARBPROC _funcptr_glVertexAttrib4dARB;
+CI_API extern PFNGLVERTEXATTRIB4DARBPROC _funcptr_glVertexAttrib4dARB;
 #define glVertexAttrib4dARB _funcptr_glVertexAttrib4dARB
-extern PFNGLVERTEXATTRIB4DVARBPROC _funcptr_glVertexAttrib4dvARB;
+CI_API extern PFNGLVERTEXATTRIB4DVARBPROC _funcptr_glVertexAttrib4dvARB;
 #define glVertexAttrib4dvARB _funcptr_glVertexAttrib4dvARB
-extern PFNGLVERTEXATTRIB4FARBPROC _funcptr_glVertexAttrib4fARB;
+CI_API extern PFNGLVERTEXATTRIB4FARBPROC _funcptr_glVertexAttrib4fARB;
 #define glVertexAttrib4fARB _funcptr_glVertexAttrib4fARB
-extern PFNGLVERTEXATTRIB4FVARBPROC _funcptr_glVertexAttrib4fvARB;
+CI_API extern PFNGLVERTEXATTRIB4FVARBPROC _funcptr_glVertexAttrib4fvARB;
 #define glVertexAttrib4fvARB _funcptr_glVertexAttrib4fvARB
-extern PFNGLVERTEXATTRIB4IVARBPROC _funcptr_glVertexAttrib4ivARB;
+CI_API extern PFNGLVERTEXATTRIB4IVARBPROC _funcptr_glVertexAttrib4ivARB;
 #define glVertexAttrib4ivARB _funcptr_glVertexAttrib4ivARB
-extern PFNGLVERTEXATTRIB4SARBPROC _funcptr_glVertexAttrib4sARB;
+CI_API extern PFNGLVERTEXATTRIB4SARBPROC _funcptr_glVertexAttrib4sARB;
 #define glVertexAttrib4sARB _funcptr_glVertexAttrib4sARB
-extern PFNGLVERTEXATTRIB4SVARBPROC _funcptr_glVertexAttrib4svARB;
+CI_API extern PFNGLVERTEXATTRIB4SVARBPROC _funcptr_glVertexAttrib4svARB;
 #define glVertexAttrib4svARB _funcptr_glVertexAttrib4svARB
-extern PFNGLVERTEXATTRIB4UBVARBPROC _funcptr_glVertexAttrib4ubvARB;
+CI_API extern PFNGLVERTEXATTRIB4UBVARBPROC _funcptr_glVertexAttrib4ubvARB;
 #define glVertexAttrib4ubvARB _funcptr_glVertexAttrib4ubvARB
-extern PFNGLVERTEXATTRIB4UIVARBPROC _funcptr_glVertexAttrib4uivARB;
+CI_API extern PFNGLVERTEXATTRIB4UIVARBPROC _funcptr_glVertexAttrib4uivARB;
 #define glVertexAttrib4uivARB _funcptr_glVertexAttrib4uivARB
-extern PFNGLVERTEXATTRIB4USVARBPROC _funcptr_glVertexAttrib4usvARB;
+CI_API extern PFNGLVERTEXATTRIB4USVARBPROC _funcptr_glVertexAttrib4usvARB;
 #define glVertexAttrib4usvARB _funcptr_glVertexAttrib4usvARB
-extern PFNGLVERTEXATTRIBPOINTERARBPROC _funcptr_glVertexAttribPointerARB;
+CI_API extern PFNGLVERTEXATTRIBPOINTERARBPROC _funcptr_glVertexAttribPointerARB;
 #define glVertexAttribPointerARB _funcptr_glVertexAttribPointerARB
 
 #define GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB 0x8B4D
@@ -4323,11 +4323,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLBINDATTRIBLOCATIONARBPROC)(GLhandleARB prog
 typedef void (CODEGEN_FUNCPTR * PFNGLGETACTIVEATTRIBARBPROC)(GLhandleARB programObj, GLuint index, GLsizei maxLength, GLsizei * length, GLint * size, GLenum * type, GLcharARB * name);
 typedef GLint (CODEGEN_FUNCPTR * PFNGLGETATTRIBLOCATIONARBPROC)(GLhandleARB programObj, const GLcharARB * name);
 
-extern PFNGLBINDATTRIBLOCATIONARBPROC _funcptr_glBindAttribLocationARB;
+CI_API extern PFNGLBINDATTRIBLOCATIONARBPROC _funcptr_glBindAttribLocationARB;
 #define glBindAttribLocationARB _funcptr_glBindAttribLocationARB
-extern PFNGLGETACTIVEATTRIBARBPROC _funcptr_glGetActiveAttribARB;
+CI_API extern PFNGLGETACTIVEATTRIBARBPROC _funcptr_glGetActiveAttribARB;
 #define glGetActiveAttribARB _funcptr_glGetActiveAttribARB
-extern PFNGLGETATTRIBLOCATIONARBPROC _funcptr_glGetAttribLocationARB;
+CI_API extern PFNGLGETATTRIBLOCATIONARBPROC _funcptr_glGetAttribLocationARB;
 #define glGetAttribLocationARB _funcptr_glGetAttribLocationARB
 
 typedef void (CODEGEN_FUNCPTR * PFNGLWINDOWPOS2DARBPROC)(GLdouble x, GLdouble y);
@@ -4347,37 +4347,37 @@ typedef void (CODEGEN_FUNCPTR * PFNGLWINDOWPOS3IVARBPROC)(const GLint * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLWINDOWPOS3SARBPROC)(GLshort x, GLshort y, GLshort z);
 typedef void (CODEGEN_FUNCPTR * PFNGLWINDOWPOS3SVARBPROC)(const GLshort * v);
 
-extern PFNGLWINDOWPOS2DARBPROC _funcptr_glWindowPos2dARB;
+CI_API extern PFNGLWINDOWPOS2DARBPROC _funcptr_glWindowPos2dARB;
 #define glWindowPos2dARB _funcptr_glWindowPos2dARB
-extern PFNGLWINDOWPOS2DVARBPROC _funcptr_glWindowPos2dvARB;
+CI_API extern PFNGLWINDOWPOS2DVARBPROC _funcptr_glWindowPos2dvARB;
 #define glWindowPos2dvARB _funcptr_glWindowPos2dvARB
-extern PFNGLWINDOWPOS2FARBPROC _funcptr_glWindowPos2fARB;
+CI_API extern PFNGLWINDOWPOS2FARBPROC _funcptr_glWindowPos2fARB;
 #define glWindowPos2fARB _funcptr_glWindowPos2fARB
-extern PFNGLWINDOWPOS2FVARBPROC _funcptr_glWindowPos2fvARB;
+CI_API extern PFNGLWINDOWPOS2FVARBPROC _funcptr_glWindowPos2fvARB;
 #define glWindowPos2fvARB _funcptr_glWindowPos2fvARB
-extern PFNGLWINDOWPOS2IARBPROC _funcptr_glWindowPos2iARB;
+CI_API extern PFNGLWINDOWPOS2IARBPROC _funcptr_glWindowPos2iARB;
 #define glWindowPos2iARB _funcptr_glWindowPos2iARB
-extern PFNGLWINDOWPOS2IVARBPROC _funcptr_glWindowPos2ivARB;
+CI_API extern PFNGLWINDOWPOS2IVARBPROC _funcptr_glWindowPos2ivARB;
 #define glWindowPos2ivARB _funcptr_glWindowPos2ivARB
-extern PFNGLWINDOWPOS2SARBPROC _funcptr_glWindowPos2sARB;
+CI_API extern PFNGLWINDOWPOS2SARBPROC _funcptr_glWindowPos2sARB;
 #define glWindowPos2sARB _funcptr_glWindowPos2sARB
-extern PFNGLWINDOWPOS2SVARBPROC _funcptr_glWindowPos2svARB;
+CI_API extern PFNGLWINDOWPOS2SVARBPROC _funcptr_glWindowPos2svARB;
 #define glWindowPos2svARB _funcptr_glWindowPos2svARB
-extern PFNGLWINDOWPOS3DARBPROC _funcptr_glWindowPos3dARB;
+CI_API extern PFNGLWINDOWPOS3DARBPROC _funcptr_glWindowPos3dARB;
 #define glWindowPos3dARB _funcptr_glWindowPos3dARB
-extern PFNGLWINDOWPOS3DVARBPROC _funcptr_glWindowPos3dvARB;
+CI_API extern PFNGLWINDOWPOS3DVARBPROC _funcptr_glWindowPos3dvARB;
 #define glWindowPos3dvARB _funcptr_glWindowPos3dvARB
-extern PFNGLWINDOWPOS3FARBPROC _funcptr_glWindowPos3fARB;
+CI_API extern PFNGLWINDOWPOS3FARBPROC _funcptr_glWindowPos3fARB;
 #define glWindowPos3fARB _funcptr_glWindowPos3fARB
-extern PFNGLWINDOWPOS3FVARBPROC _funcptr_glWindowPos3fvARB;
+CI_API extern PFNGLWINDOWPOS3FVARBPROC _funcptr_glWindowPos3fvARB;
 #define glWindowPos3fvARB _funcptr_glWindowPos3fvARB
-extern PFNGLWINDOWPOS3IARBPROC _funcptr_glWindowPos3iARB;
+CI_API extern PFNGLWINDOWPOS3IARBPROC _funcptr_glWindowPos3iARB;
 #define glWindowPos3iARB _funcptr_glWindowPos3iARB
-extern PFNGLWINDOWPOS3IVARBPROC _funcptr_glWindowPos3ivARB;
+CI_API extern PFNGLWINDOWPOS3IVARBPROC _funcptr_glWindowPos3ivARB;
 #define glWindowPos3ivARB _funcptr_glWindowPos3ivARB
-extern PFNGLWINDOWPOS3SARBPROC _funcptr_glWindowPos3sARB;
+CI_API extern PFNGLWINDOWPOS3SARBPROC _funcptr_glWindowPos3sARB;
 #define glWindowPos3sARB _funcptr_glWindowPos3sARB
-extern PFNGLWINDOWPOS3SVARBPROC _funcptr_glWindowPos3svARB;
+CI_API extern PFNGLWINDOWPOS3SVARBPROC _funcptr_glWindowPos3svARB;
 #define glWindowPos3svARB _funcptr_glWindowPos3svARB
 
 #define GL_DRAW_BUFFER0_ATI 0x8825
@@ -4400,7 +4400,7 @@ extern PFNGLWINDOWPOS3SVARBPROC _funcptr_glWindowPos3svARB;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWBUFFERSATIPROC)(GLsizei n, const GLenum * bufs);
 
-extern PFNGLDRAWBUFFERSATIPROC _funcptr_glDrawBuffersATI;
+CI_API extern PFNGLDRAWBUFFERSATIPROC _funcptr_glDrawBuffersATI;
 #define glDrawBuffersATI _funcptr_glDrawBuffersATI
 
 #define GL_ELEMENT_ARRAY_ATI 0x8768
@@ -4411,11 +4411,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDRAWELEMENTARRAYATIPROC)(GLenum mode, GLsiz
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWRANGEELEMENTARRAYATIPROC)(GLenum mode, GLuint start, GLuint end, GLsizei count);
 typedef void (CODEGEN_FUNCPTR * PFNGLELEMENTPOINTERATIPROC)(GLenum type, const GLvoid * pointer);
 
-extern PFNGLDRAWELEMENTARRAYATIPROC _funcptr_glDrawElementArrayATI;
+CI_API extern PFNGLDRAWELEMENTARRAYATIPROC _funcptr_glDrawElementArrayATI;
 #define glDrawElementArrayATI _funcptr_glDrawElementArrayATI
-extern PFNGLDRAWRANGEELEMENTARRAYATIPROC _funcptr_glDrawRangeElementArrayATI;
+CI_API extern PFNGLDRAWRANGEELEMENTARRAYATIPROC _funcptr_glDrawRangeElementArrayATI;
 #define glDrawRangeElementArrayATI _funcptr_glDrawRangeElementArrayATI
-extern PFNGLELEMENTPOINTERATIPROC _funcptr_glElementPointerATI;
+CI_API extern PFNGLELEMENTPOINTERATIPROC _funcptr_glElementPointerATI;
 #define glElementPointerATI _funcptr_glElementPointerATI
 
 #define GL_BUMP_ENVMAP_ATI 0x877B
@@ -4432,13 +4432,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETTEXBUMPPARAMETERIVATIPROC)(GLenum pname,
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXBUMPPARAMETERFVATIPROC)(GLenum pname, const GLfloat * param);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXBUMPPARAMETERIVATIPROC)(GLenum pname, const GLint * param);
 
-extern PFNGLGETTEXBUMPPARAMETERFVATIPROC _funcptr_glGetTexBumpParameterfvATI;
+CI_API extern PFNGLGETTEXBUMPPARAMETERFVATIPROC _funcptr_glGetTexBumpParameterfvATI;
 #define glGetTexBumpParameterfvATI _funcptr_glGetTexBumpParameterfvATI
-extern PFNGLGETTEXBUMPPARAMETERIVATIPROC _funcptr_glGetTexBumpParameterivATI;
+CI_API extern PFNGLGETTEXBUMPPARAMETERIVATIPROC _funcptr_glGetTexBumpParameterivATI;
 #define glGetTexBumpParameterivATI _funcptr_glGetTexBumpParameterivATI
-extern PFNGLTEXBUMPPARAMETERFVATIPROC _funcptr_glTexBumpParameterfvATI;
+CI_API extern PFNGLTEXBUMPPARAMETERFVATIPROC _funcptr_glTexBumpParameterfvATI;
 #define glTexBumpParameterfvATI _funcptr_glTexBumpParameterfvATI
-extern PFNGLTEXBUMPPARAMETERIVATIPROC _funcptr_glTexBumpParameterivATI;
+CI_API extern PFNGLTEXBUMPPARAMETERIVATIPROC _funcptr_glTexBumpParameterivATI;
 #define glTexBumpParameterivATI _funcptr_glTexBumpParameterivATI
 
 #define GL_2X_BIT_ATI 0x00000001
@@ -4561,41 +4561,41 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPASSTEXCOORDATIPROC)(GLuint dst, GLuint coo
 typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLEMAPATIPROC)(GLuint dst, GLuint interp, GLenum swizzle);
 typedef void (CODEGEN_FUNCPTR * PFNGLSETFRAGMENTSHADERCONSTANTATIPROC)(GLuint dst, const GLfloat * value);
 
-extern PFNGLALPHAFRAGMENTOP1ATIPROC _funcptr_glAlphaFragmentOp1ATI;
+CI_API extern PFNGLALPHAFRAGMENTOP1ATIPROC _funcptr_glAlphaFragmentOp1ATI;
 #define glAlphaFragmentOp1ATI _funcptr_glAlphaFragmentOp1ATI
-extern PFNGLALPHAFRAGMENTOP2ATIPROC _funcptr_glAlphaFragmentOp2ATI;
+CI_API extern PFNGLALPHAFRAGMENTOP2ATIPROC _funcptr_glAlphaFragmentOp2ATI;
 #define glAlphaFragmentOp2ATI _funcptr_glAlphaFragmentOp2ATI
-extern PFNGLALPHAFRAGMENTOP3ATIPROC _funcptr_glAlphaFragmentOp3ATI;
+CI_API extern PFNGLALPHAFRAGMENTOP3ATIPROC _funcptr_glAlphaFragmentOp3ATI;
 #define glAlphaFragmentOp3ATI _funcptr_glAlphaFragmentOp3ATI
-extern PFNGLBEGINFRAGMENTSHADERATIPROC _funcptr_glBeginFragmentShaderATI;
+CI_API extern PFNGLBEGINFRAGMENTSHADERATIPROC _funcptr_glBeginFragmentShaderATI;
 #define glBeginFragmentShaderATI _funcptr_glBeginFragmentShaderATI
-extern PFNGLBINDFRAGMENTSHADERATIPROC _funcptr_glBindFragmentShaderATI;
+CI_API extern PFNGLBINDFRAGMENTSHADERATIPROC _funcptr_glBindFragmentShaderATI;
 #define glBindFragmentShaderATI _funcptr_glBindFragmentShaderATI
-extern PFNGLCOLORFRAGMENTOP1ATIPROC _funcptr_glColorFragmentOp1ATI;
+CI_API extern PFNGLCOLORFRAGMENTOP1ATIPROC _funcptr_glColorFragmentOp1ATI;
 #define glColorFragmentOp1ATI _funcptr_glColorFragmentOp1ATI
-extern PFNGLCOLORFRAGMENTOP2ATIPROC _funcptr_glColorFragmentOp2ATI;
+CI_API extern PFNGLCOLORFRAGMENTOP2ATIPROC _funcptr_glColorFragmentOp2ATI;
 #define glColorFragmentOp2ATI _funcptr_glColorFragmentOp2ATI
-extern PFNGLCOLORFRAGMENTOP3ATIPROC _funcptr_glColorFragmentOp3ATI;
+CI_API extern PFNGLCOLORFRAGMENTOP3ATIPROC _funcptr_glColorFragmentOp3ATI;
 #define glColorFragmentOp3ATI _funcptr_glColorFragmentOp3ATI
-extern PFNGLDELETEFRAGMENTSHADERATIPROC _funcptr_glDeleteFragmentShaderATI;
+CI_API extern PFNGLDELETEFRAGMENTSHADERATIPROC _funcptr_glDeleteFragmentShaderATI;
 #define glDeleteFragmentShaderATI _funcptr_glDeleteFragmentShaderATI
-extern PFNGLENDFRAGMENTSHADERATIPROC _funcptr_glEndFragmentShaderATI;
+CI_API extern PFNGLENDFRAGMENTSHADERATIPROC _funcptr_glEndFragmentShaderATI;
 #define glEndFragmentShaderATI _funcptr_glEndFragmentShaderATI
-extern PFNGLGENFRAGMENTSHADERSATIPROC _funcptr_glGenFragmentShadersATI;
+CI_API extern PFNGLGENFRAGMENTSHADERSATIPROC _funcptr_glGenFragmentShadersATI;
 #define glGenFragmentShadersATI _funcptr_glGenFragmentShadersATI
-extern PFNGLPASSTEXCOORDATIPROC _funcptr_glPassTexCoordATI;
+CI_API extern PFNGLPASSTEXCOORDATIPROC _funcptr_glPassTexCoordATI;
 #define glPassTexCoordATI _funcptr_glPassTexCoordATI
-extern PFNGLSAMPLEMAPATIPROC _funcptr_glSampleMapATI;
+CI_API extern PFNGLSAMPLEMAPATIPROC _funcptr_glSampleMapATI;
 #define glSampleMapATI _funcptr_glSampleMapATI
-extern PFNGLSETFRAGMENTSHADERCONSTANTATIPROC _funcptr_glSetFragmentShaderConstantATI;
+CI_API extern PFNGLSETFRAGMENTSHADERCONSTANTATIPROC _funcptr_glSetFragmentShaderConstantATI;
 #define glSetFragmentShaderConstantATI _funcptr_glSetFragmentShaderConstantATI
 
 typedef void * (CODEGEN_FUNCPTR * PFNGLMAPOBJECTBUFFERATIPROC)(GLuint buffer);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNMAPOBJECTBUFFERATIPROC)(GLuint buffer);
 
-extern PFNGLMAPOBJECTBUFFERATIPROC _funcptr_glMapObjectBufferATI;
+CI_API extern PFNGLMAPOBJECTBUFFERATIPROC _funcptr_glMapObjectBufferATI;
 #define glMapObjectBufferATI _funcptr_glMapObjectBufferATI
-extern PFNGLUNMAPOBJECTBUFFERATIPROC _funcptr_glUnmapObjectBufferATI;
+CI_API extern PFNGLUNMAPOBJECTBUFFERATIPROC _funcptr_glUnmapObjectBufferATI;
 #define glUnmapObjectBufferATI _funcptr_glUnmapObjectBufferATI
 
 #define GL_RENDERBUFFER_FREE_MEMORY_ATI 0x87FD
@@ -4618,9 +4618,9 @@ extern PFNGLUNMAPOBJECTBUFFERATIPROC _funcptr_glUnmapObjectBufferATI;
 typedef void (CODEGEN_FUNCPTR * PFNGLPNTRIANGLESFATIPROC)(GLenum pname, GLfloat param);
 typedef void (CODEGEN_FUNCPTR * PFNGLPNTRIANGLESIATIPROC)(GLenum pname, GLint param);
 
-extern PFNGLPNTRIANGLESFATIPROC _funcptr_glPNTrianglesfATI;
+CI_API extern PFNGLPNTRIANGLESFATIPROC _funcptr_glPNTrianglesfATI;
 #define glPNTrianglesfATI _funcptr_glPNTrianglesfATI
-extern PFNGLPNTRIANGLESIATIPROC _funcptr_glPNTrianglesiATI;
+CI_API extern PFNGLPNTRIANGLESIATIPROC _funcptr_glPNTrianglesiATI;
 #define glPNTrianglesiATI _funcptr_glPNTrianglesiATI
 
 #define GL_STENCIL_BACK_FAIL_ATI 0x8801
@@ -4631,9 +4631,9 @@ extern PFNGLPNTRIANGLESIATIPROC _funcptr_glPNTrianglesiATI;
 typedef void (CODEGEN_FUNCPTR * PFNGLSTENCILFUNCSEPARATEATIPROC)(GLenum frontfunc, GLenum backfunc, GLint ref, GLuint mask);
 typedef void (CODEGEN_FUNCPTR * PFNGLSTENCILOPSEPARATEATIPROC)(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);
 
-extern PFNGLSTENCILFUNCSEPARATEATIPROC _funcptr_glStencilFuncSeparateATI;
+CI_API extern PFNGLSTENCILFUNCSEPARATEATIPROC _funcptr_glStencilFuncSeparateATI;
 #define glStencilFuncSeparateATI _funcptr_glStencilFuncSeparateATI
-extern PFNGLSTENCILOPSEPARATEATIPROC _funcptr_glStencilOpSeparateATI;
+CI_API extern PFNGLSTENCILOPSEPARATEATIPROC _funcptr_glStencilOpSeparateATI;
 #define glStencilOpSeparateATI _funcptr_glStencilOpSeparateATI
 
 #define GL_TEXT_FRAGMENT_SHADER_ATI 0x8200
@@ -4680,40 +4680,40 @@ typedef GLuint (CODEGEN_FUNCPTR * PFNGLNEWOBJECTBUFFERATIPROC)(GLsizei size, con
 typedef void (CODEGEN_FUNCPTR * PFNGLUPDATEOBJECTBUFFERATIPROC)(GLuint buffer, GLuint offset, GLsizei size, const GLvoid * pointer, GLenum preserve);
 typedef void (CODEGEN_FUNCPTR * PFNGLVARIANTARRAYOBJECTATIPROC)(GLuint id, GLenum type, GLsizei stride, GLuint buffer, GLuint offset);
 
-extern PFNGLARRAYOBJECTATIPROC _funcptr_glArrayObjectATI;
+CI_API extern PFNGLARRAYOBJECTATIPROC _funcptr_glArrayObjectATI;
 #define glArrayObjectATI _funcptr_glArrayObjectATI
-extern PFNGLFREEOBJECTBUFFERATIPROC _funcptr_glFreeObjectBufferATI;
+CI_API extern PFNGLFREEOBJECTBUFFERATIPROC _funcptr_glFreeObjectBufferATI;
 #define glFreeObjectBufferATI _funcptr_glFreeObjectBufferATI
-extern PFNGLGETARRAYOBJECTFVATIPROC _funcptr_glGetArrayObjectfvATI;
+CI_API extern PFNGLGETARRAYOBJECTFVATIPROC _funcptr_glGetArrayObjectfvATI;
 #define glGetArrayObjectfvATI _funcptr_glGetArrayObjectfvATI
-extern PFNGLGETARRAYOBJECTIVATIPROC _funcptr_glGetArrayObjectivATI;
+CI_API extern PFNGLGETARRAYOBJECTIVATIPROC _funcptr_glGetArrayObjectivATI;
 #define glGetArrayObjectivATI _funcptr_glGetArrayObjectivATI
-extern PFNGLGETOBJECTBUFFERFVATIPROC _funcptr_glGetObjectBufferfvATI;
+CI_API extern PFNGLGETOBJECTBUFFERFVATIPROC _funcptr_glGetObjectBufferfvATI;
 #define glGetObjectBufferfvATI _funcptr_glGetObjectBufferfvATI
-extern PFNGLGETOBJECTBUFFERIVATIPROC _funcptr_glGetObjectBufferivATI;
+CI_API extern PFNGLGETOBJECTBUFFERIVATIPROC _funcptr_glGetObjectBufferivATI;
 #define glGetObjectBufferivATI _funcptr_glGetObjectBufferivATI
-extern PFNGLGETVARIANTARRAYOBJECTFVATIPROC _funcptr_glGetVariantArrayObjectfvATI;
+CI_API extern PFNGLGETVARIANTARRAYOBJECTFVATIPROC _funcptr_glGetVariantArrayObjectfvATI;
 #define glGetVariantArrayObjectfvATI _funcptr_glGetVariantArrayObjectfvATI
-extern PFNGLGETVARIANTARRAYOBJECTIVATIPROC _funcptr_glGetVariantArrayObjectivATI;
+CI_API extern PFNGLGETVARIANTARRAYOBJECTIVATIPROC _funcptr_glGetVariantArrayObjectivATI;
 #define glGetVariantArrayObjectivATI _funcptr_glGetVariantArrayObjectivATI
-extern PFNGLISOBJECTBUFFERATIPROC _funcptr_glIsObjectBufferATI;
+CI_API extern PFNGLISOBJECTBUFFERATIPROC _funcptr_glIsObjectBufferATI;
 #define glIsObjectBufferATI _funcptr_glIsObjectBufferATI
-extern PFNGLNEWOBJECTBUFFERATIPROC _funcptr_glNewObjectBufferATI;
+CI_API extern PFNGLNEWOBJECTBUFFERATIPROC _funcptr_glNewObjectBufferATI;
 #define glNewObjectBufferATI _funcptr_glNewObjectBufferATI
-extern PFNGLUPDATEOBJECTBUFFERATIPROC _funcptr_glUpdateObjectBufferATI;
+CI_API extern PFNGLUPDATEOBJECTBUFFERATIPROC _funcptr_glUpdateObjectBufferATI;
 #define glUpdateObjectBufferATI _funcptr_glUpdateObjectBufferATI
-extern PFNGLVARIANTARRAYOBJECTATIPROC _funcptr_glVariantArrayObjectATI;
+CI_API extern PFNGLVARIANTARRAYOBJECTATIPROC _funcptr_glVariantArrayObjectATI;
 #define glVariantArrayObjectATI _funcptr_glVariantArrayObjectATI
 
 typedef void (CODEGEN_FUNCPTR * PFNGLGETVERTEXATTRIBARRAYOBJECTFVATIPROC)(GLuint index, GLenum pname, GLfloat * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETVERTEXATTRIBARRAYOBJECTIVATIPROC)(GLuint index, GLenum pname, GLint * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBARRAYOBJECTATIPROC)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLuint buffer, GLuint offset);
 
-extern PFNGLGETVERTEXATTRIBARRAYOBJECTFVATIPROC _funcptr_glGetVertexAttribArrayObjectfvATI;
+CI_API extern PFNGLGETVERTEXATTRIBARRAYOBJECTFVATIPROC _funcptr_glGetVertexAttribArrayObjectfvATI;
 #define glGetVertexAttribArrayObjectfvATI _funcptr_glGetVertexAttribArrayObjectfvATI
-extern PFNGLGETVERTEXATTRIBARRAYOBJECTIVATIPROC _funcptr_glGetVertexAttribArrayObjectivATI;
+CI_API extern PFNGLGETVERTEXATTRIBARRAYOBJECTIVATIPROC _funcptr_glGetVertexAttribArrayObjectivATI;
 #define glGetVertexAttribArrayObjectivATI _funcptr_glGetVertexAttribArrayObjectivATI
-extern PFNGLVERTEXATTRIBARRAYOBJECTATIPROC _funcptr_glVertexAttribArrayObjectATI;
+CI_API extern PFNGLVERTEXATTRIBARRAYOBJECTATIPROC _funcptr_glVertexAttribArrayObjectATI;
 #define glVertexAttribArrayObjectATI _funcptr_glVertexAttribArrayObjectATI
 
 #define GL_MAX_VERTEX_STREAMS_ATI 0x876B
@@ -4773,95 +4773,95 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXSTREAM4IVATIPROC)(GLenum stream, cons
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXSTREAM4SATIPROC)(GLenum stream, GLshort x, GLshort y, GLshort z, GLshort w);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXSTREAM4SVATIPROC)(GLenum stream, const GLshort * coords);
 
-extern PFNGLCLIENTACTIVEVERTEXSTREAMATIPROC _funcptr_glClientActiveVertexStreamATI;
+CI_API extern PFNGLCLIENTACTIVEVERTEXSTREAMATIPROC _funcptr_glClientActiveVertexStreamATI;
 #define glClientActiveVertexStreamATI _funcptr_glClientActiveVertexStreamATI
-extern PFNGLNORMALSTREAM3BATIPROC _funcptr_glNormalStream3bATI;
+CI_API extern PFNGLNORMALSTREAM3BATIPROC _funcptr_glNormalStream3bATI;
 #define glNormalStream3bATI _funcptr_glNormalStream3bATI
-extern PFNGLNORMALSTREAM3BVATIPROC _funcptr_glNormalStream3bvATI;
+CI_API extern PFNGLNORMALSTREAM3BVATIPROC _funcptr_glNormalStream3bvATI;
 #define glNormalStream3bvATI _funcptr_glNormalStream3bvATI
-extern PFNGLNORMALSTREAM3DATIPROC _funcptr_glNormalStream3dATI;
+CI_API extern PFNGLNORMALSTREAM3DATIPROC _funcptr_glNormalStream3dATI;
 #define glNormalStream3dATI _funcptr_glNormalStream3dATI
-extern PFNGLNORMALSTREAM3DVATIPROC _funcptr_glNormalStream3dvATI;
+CI_API extern PFNGLNORMALSTREAM3DVATIPROC _funcptr_glNormalStream3dvATI;
 #define glNormalStream3dvATI _funcptr_glNormalStream3dvATI
-extern PFNGLNORMALSTREAM3FATIPROC _funcptr_glNormalStream3fATI;
+CI_API extern PFNGLNORMALSTREAM3FATIPROC _funcptr_glNormalStream3fATI;
 #define glNormalStream3fATI _funcptr_glNormalStream3fATI
-extern PFNGLNORMALSTREAM3FVATIPROC _funcptr_glNormalStream3fvATI;
+CI_API extern PFNGLNORMALSTREAM3FVATIPROC _funcptr_glNormalStream3fvATI;
 #define glNormalStream3fvATI _funcptr_glNormalStream3fvATI
-extern PFNGLNORMALSTREAM3IATIPROC _funcptr_glNormalStream3iATI;
+CI_API extern PFNGLNORMALSTREAM3IATIPROC _funcptr_glNormalStream3iATI;
 #define glNormalStream3iATI _funcptr_glNormalStream3iATI
-extern PFNGLNORMALSTREAM3IVATIPROC _funcptr_glNormalStream3ivATI;
+CI_API extern PFNGLNORMALSTREAM3IVATIPROC _funcptr_glNormalStream3ivATI;
 #define glNormalStream3ivATI _funcptr_glNormalStream3ivATI
-extern PFNGLNORMALSTREAM3SATIPROC _funcptr_glNormalStream3sATI;
+CI_API extern PFNGLNORMALSTREAM3SATIPROC _funcptr_glNormalStream3sATI;
 #define glNormalStream3sATI _funcptr_glNormalStream3sATI
-extern PFNGLNORMALSTREAM3SVATIPROC _funcptr_glNormalStream3svATI;
+CI_API extern PFNGLNORMALSTREAM3SVATIPROC _funcptr_glNormalStream3svATI;
 #define glNormalStream3svATI _funcptr_glNormalStream3svATI
-extern PFNGLVERTEXBLENDENVFATIPROC _funcptr_glVertexBlendEnvfATI;
+CI_API extern PFNGLVERTEXBLENDENVFATIPROC _funcptr_glVertexBlendEnvfATI;
 #define glVertexBlendEnvfATI _funcptr_glVertexBlendEnvfATI
-extern PFNGLVERTEXBLENDENVIATIPROC _funcptr_glVertexBlendEnviATI;
+CI_API extern PFNGLVERTEXBLENDENVIATIPROC _funcptr_glVertexBlendEnviATI;
 #define glVertexBlendEnviATI _funcptr_glVertexBlendEnviATI
-extern PFNGLVERTEXSTREAM1DATIPROC _funcptr_glVertexStream1dATI;
+CI_API extern PFNGLVERTEXSTREAM1DATIPROC _funcptr_glVertexStream1dATI;
 #define glVertexStream1dATI _funcptr_glVertexStream1dATI
-extern PFNGLVERTEXSTREAM1DVATIPROC _funcptr_glVertexStream1dvATI;
+CI_API extern PFNGLVERTEXSTREAM1DVATIPROC _funcptr_glVertexStream1dvATI;
 #define glVertexStream1dvATI _funcptr_glVertexStream1dvATI
-extern PFNGLVERTEXSTREAM1FATIPROC _funcptr_glVertexStream1fATI;
+CI_API extern PFNGLVERTEXSTREAM1FATIPROC _funcptr_glVertexStream1fATI;
 #define glVertexStream1fATI _funcptr_glVertexStream1fATI
-extern PFNGLVERTEXSTREAM1FVATIPROC _funcptr_glVertexStream1fvATI;
+CI_API extern PFNGLVERTEXSTREAM1FVATIPROC _funcptr_glVertexStream1fvATI;
 #define glVertexStream1fvATI _funcptr_glVertexStream1fvATI
-extern PFNGLVERTEXSTREAM1IATIPROC _funcptr_glVertexStream1iATI;
+CI_API extern PFNGLVERTEXSTREAM1IATIPROC _funcptr_glVertexStream1iATI;
 #define glVertexStream1iATI _funcptr_glVertexStream1iATI
-extern PFNGLVERTEXSTREAM1IVATIPROC _funcptr_glVertexStream1ivATI;
+CI_API extern PFNGLVERTEXSTREAM1IVATIPROC _funcptr_glVertexStream1ivATI;
 #define glVertexStream1ivATI _funcptr_glVertexStream1ivATI
-extern PFNGLVERTEXSTREAM1SATIPROC _funcptr_glVertexStream1sATI;
+CI_API extern PFNGLVERTEXSTREAM1SATIPROC _funcptr_glVertexStream1sATI;
 #define glVertexStream1sATI _funcptr_glVertexStream1sATI
-extern PFNGLVERTEXSTREAM1SVATIPROC _funcptr_glVertexStream1svATI;
+CI_API extern PFNGLVERTEXSTREAM1SVATIPROC _funcptr_glVertexStream1svATI;
 #define glVertexStream1svATI _funcptr_glVertexStream1svATI
-extern PFNGLVERTEXSTREAM2DATIPROC _funcptr_glVertexStream2dATI;
+CI_API extern PFNGLVERTEXSTREAM2DATIPROC _funcptr_glVertexStream2dATI;
 #define glVertexStream2dATI _funcptr_glVertexStream2dATI
-extern PFNGLVERTEXSTREAM2DVATIPROC _funcptr_glVertexStream2dvATI;
+CI_API extern PFNGLVERTEXSTREAM2DVATIPROC _funcptr_glVertexStream2dvATI;
 #define glVertexStream2dvATI _funcptr_glVertexStream2dvATI
-extern PFNGLVERTEXSTREAM2FATIPROC _funcptr_glVertexStream2fATI;
+CI_API extern PFNGLVERTEXSTREAM2FATIPROC _funcptr_glVertexStream2fATI;
 #define glVertexStream2fATI _funcptr_glVertexStream2fATI
-extern PFNGLVERTEXSTREAM2FVATIPROC _funcptr_glVertexStream2fvATI;
+CI_API extern PFNGLVERTEXSTREAM2FVATIPROC _funcptr_glVertexStream2fvATI;
 #define glVertexStream2fvATI _funcptr_glVertexStream2fvATI
-extern PFNGLVERTEXSTREAM2IATIPROC _funcptr_glVertexStream2iATI;
+CI_API extern PFNGLVERTEXSTREAM2IATIPROC _funcptr_glVertexStream2iATI;
 #define glVertexStream2iATI _funcptr_glVertexStream2iATI
-extern PFNGLVERTEXSTREAM2IVATIPROC _funcptr_glVertexStream2ivATI;
+CI_API extern PFNGLVERTEXSTREAM2IVATIPROC _funcptr_glVertexStream2ivATI;
 #define glVertexStream2ivATI _funcptr_glVertexStream2ivATI
-extern PFNGLVERTEXSTREAM2SATIPROC _funcptr_glVertexStream2sATI;
+CI_API extern PFNGLVERTEXSTREAM2SATIPROC _funcptr_glVertexStream2sATI;
 #define glVertexStream2sATI _funcptr_glVertexStream2sATI
-extern PFNGLVERTEXSTREAM2SVATIPROC _funcptr_glVertexStream2svATI;
+CI_API extern PFNGLVERTEXSTREAM2SVATIPROC _funcptr_glVertexStream2svATI;
 #define glVertexStream2svATI _funcptr_glVertexStream2svATI
-extern PFNGLVERTEXSTREAM3DATIPROC _funcptr_glVertexStream3dATI;
+CI_API extern PFNGLVERTEXSTREAM3DATIPROC _funcptr_glVertexStream3dATI;
 #define glVertexStream3dATI _funcptr_glVertexStream3dATI
-extern PFNGLVERTEXSTREAM3DVATIPROC _funcptr_glVertexStream3dvATI;
+CI_API extern PFNGLVERTEXSTREAM3DVATIPROC _funcptr_glVertexStream3dvATI;
 #define glVertexStream3dvATI _funcptr_glVertexStream3dvATI
-extern PFNGLVERTEXSTREAM3FATIPROC _funcptr_glVertexStream3fATI;
+CI_API extern PFNGLVERTEXSTREAM3FATIPROC _funcptr_glVertexStream3fATI;
 #define glVertexStream3fATI _funcptr_glVertexStream3fATI
-extern PFNGLVERTEXSTREAM3FVATIPROC _funcptr_glVertexStream3fvATI;
+CI_API extern PFNGLVERTEXSTREAM3FVATIPROC _funcptr_glVertexStream3fvATI;
 #define glVertexStream3fvATI _funcptr_glVertexStream3fvATI
-extern PFNGLVERTEXSTREAM3IATIPROC _funcptr_glVertexStream3iATI;
+CI_API extern PFNGLVERTEXSTREAM3IATIPROC _funcptr_glVertexStream3iATI;
 #define glVertexStream3iATI _funcptr_glVertexStream3iATI
-extern PFNGLVERTEXSTREAM3IVATIPROC _funcptr_glVertexStream3ivATI;
+CI_API extern PFNGLVERTEXSTREAM3IVATIPROC _funcptr_glVertexStream3ivATI;
 #define glVertexStream3ivATI _funcptr_glVertexStream3ivATI
-extern PFNGLVERTEXSTREAM3SATIPROC _funcptr_glVertexStream3sATI;
+CI_API extern PFNGLVERTEXSTREAM3SATIPROC _funcptr_glVertexStream3sATI;
 #define glVertexStream3sATI _funcptr_glVertexStream3sATI
-extern PFNGLVERTEXSTREAM3SVATIPROC _funcptr_glVertexStream3svATI;
+CI_API extern PFNGLVERTEXSTREAM3SVATIPROC _funcptr_glVertexStream3svATI;
 #define glVertexStream3svATI _funcptr_glVertexStream3svATI
-extern PFNGLVERTEXSTREAM4DATIPROC _funcptr_glVertexStream4dATI;
+CI_API extern PFNGLVERTEXSTREAM4DATIPROC _funcptr_glVertexStream4dATI;
 #define glVertexStream4dATI _funcptr_glVertexStream4dATI
-extern PFNGLVERTEXSTREAM4DVATIPROC _funcptr_glVertexStream4dvATI;
+CI_API extern PFNGLVERTEXSTREAM4DVATIPROC _funcptr_glVertexStream4dvATI;
 #define glVertexStream4dvATI _funcptr_glVertexStream4dvATI
-extern PFNGLVERTEXSTREAM4FATIPROC _funcptr_glVertexStream4fATI;
+CI_API extern PFNGLVERTEXSTREAM4FATIPROC _funcptr_glVertexStream4fATI;
 #define glVertexStream4fATI _funcptr_glVertexStream4fATI
-extern PFNGLVERTEXSTREAM4FVATIPROC _funcptr_glVertexStream4fvATI;
+CI_API extern PFNGLVERTEXSTREAM4FVATIPROC _funcptr_glVertexStream4fvATI;
 #define glVertexStream4fvATI _funcptr_glVertexStream4fvATI
-extern PFNGLVERTEXSTREAM4IATIPROC _funcptr_glVertexStream4iATI;
+CI_API extern PFNGLVERTEXSTREAM4IATIPROC _funcptr_glVertexStream4iATI;
 #define glVertexStream4iATI _funcptr_glVertexStream4iATI
-extern PFNGLVERTEXSTREAM4IVATIPROC _funcptr_glVertexStream4ivATI;
+CI_API extern PFNGLVERTEXSTREAM4IVATIPROC _funcptr_glVertexStream4ivATI;
 #define glVertexStream4ivATI _funcptr_glVertexStream4ivATI
-extern PFNGLVERTEXSTREAM4SATIPROC _funcptr_glVertexStream4sATI;
+CI_API extern PFNGLVERTEXSTREAM4SATIPROC _funcptr_glVertexStream4sATI;
 #define glVertexStream4sATI _funcptr_glVertexStream4sATI
-extern PFNGLVERTEXSTREAM4SVATIPROC _funcptr_glVertexStream4svATI;
+CI_API extern PFNGLVERTEXSTREAM4SVATIPROC _funcptr_glVertexStream4svATI;
 #define glVertexStream4svATI _funcptr_glVertexStream4svATI
 
 #define GL_422_AVERAGE_EXT 0x80CE
@@ -4885,11 +4885,11 @@ typedef GLint (CODEGEN_FUNCPTR * PFNGLGETUNIFORMBUFFERSIZEEXTPROC)(GLuint progra
 typedef GLintptr (CODEGEN_FUNCPTR * PFNGLGETUNIFORMOFFSETEXTPROC)(GLuint program, GLint location);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMBUFFEREXTPROC)(GLuint program, GLint location, GLuint buffer);
 
-extern PFNGLGETUNIFORMBUFFERSIZEEXTPROC _funcptr_glGetUniformBufferSizeEXT;
+CI_API extern PFNGLGETUNIFORMBUFFERSIZEEXTPROC _funcptr_glGetUniformBufferSizeEXT;
 #define glGetUniformBufferSizeEXT _funcptr_glGetUniformBufferSizeEXT
-extern PFNGLGETUNIFORMOFFSETEXTPROC _funcptr_glGetUniformOffsetEXT;
+CI_API extern PFNGLGETUNIFORMOFFSETEXTPROC _funcptr_glGetUniformOffsetEXT;
 #define glGetUniformOffsetEXT _funcptr_glGetUniformOffsetEXT
-extern PFNGLUNIFORMBUFFEREXTPROC _funcptr_glUniformBufferEXT;
+CI_API extern PFNGLUNIFORMBUFFEREXTPROC _funcptr_glUniformBufferEXT;
 #define glUniformBufferEXT _funcptr_glUniformBufferEXT
 
 #define GL_BLEND_COLOR_EXT 0x8005
@@ -4900,7 +4900,7 @@ extern PFNGLUNIFORMBUFFEREXTPROC _funcptr_glUniformBufferEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDCOLOREXTPROC)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 
-extern PFNGLBLENDCOLOREXTPROC _funcptr_glBlendColorEXT;
+CI_API extern PFNGLBLENDCOLOREXTPROC _funcptr_glBlendColorEXT;
 #define glBlendColorEXT _funcptr_glBlendColorEXT
 
 #define GL_BLEND_EQUATION_ALPHA_EXT 0x883D
@@ -4908,7 +4908,7 @@ extern PFNGLBLENDCOLOREXTPROC _funcptr_glBlendColorEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDEQUATIONSEPARATEEXTPROC)(GLenum modeRGB, GLenum modeAlpha);
 
-extern PFNGLBLENDEQUATIONSEPARATEEXTPROC _funcptr_glBlendEquationSeparateEXT;
+CI_API extern PFNGLBLENDEQUATIONSEPARATEEXTPROC _funcptr_glBlendEquationSeparateEXT;
 #define glBlendEquationSeparateEXT _funcptr_glBlendEquationSeparateEXT
 
 #define GL_BLEND_DST_ALPHA_EXT 0x80CA
@@ -4918,7 +4918,7 @@ extern PFNGLBLENDEQUATIONSEPARATEEXTPROC _funcptr_glBlendEquationSeparateEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDFUNCSEPARATEEXTPROC)(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
 
-extern PFNGLBLENDFUNCSEPARATEEXTPROC _funcptr_glBlendFuncSeparateEXT;
+CI_API extern PFNGLBLENDFUNCSEPARATEEXTPROC _funcptr_glBlendFuncSeparateEXT;
 #define glBlendFuncSeparateEXT _funcptr_glBlendFuncSeparateEXT
 
 #define GL_BLEND_EQUATION_EXT 0x8009
@@ -4928,7 +4928,7 @@ extern PFNGLBLENDFUNCSEPARATEEXTPROC _funcptr_glBlendFuncSeparateEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDEQUATIONEXTPROC)(GLenum mode);
 
-extern PFNGLBLENDEQUATIONEXTPROC _funcptr_glBlendEquationEXT;
+CI_API extern PFNGLBLENDEQUATIONEXTPROC _funcptr_glBlendEquationEXT;
 #define glBlendEquationEXT _funcptr_glBlendEquationEXT
 
 #define GL_FUNC_REVERSE_SUBTRACT_EXT 0x800B
@@ -4944,9 +4944,9 @@ extern PFNGLBLENDEQUATIONEXTPROC _funcptr_glBlendEquationEXT;
 typedef void (CODEGEN_FUNCPTR * PFNGLCOLORSUBTABLEEXTPROC)(GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, const GLvoid * data);
 typedef void (CODEGEN_FUNCPTR * PFNGLCOPYCOLORSUBTABLEEXTPROC)(GLenum target, GLsizei start, GLint x, GLint y, GLsizei width);
 
-extern PFNGLCOLORSUBTABLEEXTPROC _funcptr_glColorSubTableEXT;
+CI_API extern PFNGLCOLORSUBTABLEEXTPROC _funcptr_glColorSubTableEXT;
 #define glColorSubTableEXT _funcptr_glColorSubTableEXT
-extern PFNGLCOPYCOLORSUBTABLEEXTPROC _funcptr_glCopyColorSubTableEXT;
+CI_API extern PFNGLCOPYCOLORSUBTABLEEXTPROC _funcptr_glCopyColorSubTableEXT;
 #define glCopyColorSubTableEXT _funcptr_glCopyColorSubTableEXT
 
 #define GL_ARRAY_ELEMENT_LOCK_COUNT_EXT 0x81A9
@@ -4955,9 +4955,9 @@ extern PFNGLCOPYCOLORSUBTABLEEXTPROC _funcptr_glCopyColorSubTableEXT;
 typedef void (CODEGEN_FUNCPTR * PFNGLLOCKARRAYSEXTPROC)(GLint first, GLsizei count);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNLOCKARRAYSEXTPROC)();
 
-extern PFNGLLOCKARRAYSEXTPROC _funcptr_glLockArraysEXT;
+CI_API extern PFNGLLOCKARRAYSEXTPROC _funcptr_glLockArraysEXT;
 #define glLockArraysEXT _funcptr_glLockArraysEXT
-extern PFNGLUNLOCKARRAYSEXTPROC _funcptr_glUnlockArraysEXT;
+CI_API extern PFNGLUNLOCKARRAYSEXTPROC _funcptr_glUnlockArraysEXT;
 #define glUnlockArraysEXT _funcptr_glUnlockArraysEXT
 
 #define GL_CONVOLUTION_1D_EXT 0x8010
@@ -4995,31 +4995,31 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETCONVOLUTIONPARAMETERIVEXTPROC)(GLenum ta
 typedef void (CODEGEN_FUNCPTR * PFNGLGETSEPARABLEFILTEREXTPROC)(GLenum target, GLenum format, GLenum type, GLvoid * row, GLvoid * column, GLvoid * span);
 typedef void (CODEGEN_FUNCPTR * PFNGLSEPARABLEFILTER2DEXTPROC)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid * row, const GLvoid * column);
 
-extern PFNGLCONVOLUTIONFILTER1DEXTPROC _funcptr_glConvolutionFilter1DEXT;
+CI_API extern PFNGLCONVOLUTIONFILTER1DEXTPROC _funcptr_glConvolutionFilter1DEXT;
 #define glConvolutionFilter1DEXT _funcptr_glConvolutionFilter1DEXT
-extern PFNGLCONVOLUTIONFILTER2DEXTPROC _funcptr_glConvolutionFilter2DEXT;
+CI_API extern PFNGLCONVOLUTIONFILTER2DEXTPROC _funcptr_glConvolutionFilter2DEXT;
 #define glConvolutionFilter2DEXT _funcptr_glConvolutionFilter2DEXT
-extern PFNGLCONVOLUTIONPARAMETERFEXTPROC _funcptr_glConvolutionParameterfEXT;
+CI_API extern PFNGLCONVOLUTIONPARAMETERFEXTPROC _funcptr_glConvolutionParameterfEXT;
 #define glConvolutionParameterfEXT _funcptr_glConvolutionParameterfEXT
-extern PFNGLCONVOLUTIONPARAMETERFVEXTPROC _funcptr_glConvolutionParameterfvEXT;
+CI_API extern PFNGLCONVOLUTIONPARAMETERFVEXTPROC _funcptr_glConvolutionParameterfvEXT;
 #define glConvolutionParameterfvEXT _funcptr_glConvolutionParameterfvEXT
-extern PFNGLCONVOLUTIONPARAMETERIEXTPROC _funcptr_glConvolutionParameteriEXT;
+CI_API extern PFNGLCONVOLUTIONPARAMETERIEXTPROC _funcptr_glConvolutionParameteriEXT;
 #define glConvolutionParameteriEXT _funcptr_glConvolutionParameteriEXT
-extern PFNGLCONVOLUTIONPARAMETERIVEXTPROC _funcptr_glConvolutionParameterivEXT;
+CI_API extern PFNGLCONVOLUTIONPARAMETERIVEXTPROC _funcptr_glConvolutionParameterivEXT;
 #define glConvolutionParameterivEXT _funcptr_glConvolutionParameterivEXT
-extern PFNGLCOPYCONVOLUTIONFILTER1DEXTPROC _funcptr_glCopyConvolutionFilter1DEXT;
+CI_API extern PFNGLCOPYCONVOLUTIONFILTER1DEXTPROC _funcptr_glCopyConvolutionFilter1DEXT;
 #define glCopyConvolutionFilter1DEXT _funcptr_glCopyConvolutionFilter1DEXT
-extern PFNGLCOPYCONVOLUTIONFILTER2DEXTPROC _funcptr_glCopyConvolutionFilter2DEXT;
+CI_API extern PFNGLCOPYCONVOLUTIONFILTER2DEXTPROC _funcptr_glCopyConvolutionFilter2DEXT;
 #define glCopyConvolutionFilter2DEXT _funcptr_glCopyConvolutionFilter2DEXT
-extern PFNGLGETCONVOLUTIONFILTEREXTPROC _funcptr_glGetConvolutionFilterEXT;
+CI_API extern PFNGLGETCONVOLUTIONFILTEREXTPROC _funcptr_glGetConvolutionFilterEXT;
 #define glGetConvolutionFilterEXT _funcptr_glGetConvolutionFilterEXT
-extern PFNGLGETCONVOLUTIONPARAMETERFVEXTPROC _funcptr_glGetConvolutionParameterfvEXT;
+CI_API extern PFNGLGETCONVOLUTIONPARAMETERFVEXTPROC _funcptr_glGetConvolutionParameterfvEXT;
 #define glGetConvolutionParameterfvEXT _funcptr_glGetConvolutionParameterfvEXT
-extern PFNGLGETCONVOLUTIONPARAMETERIVEXTPROC _funcptr_glGetConvolutionParameterivEXT;
+CI_API extern PFNGLGETCONVOLUTIONPARAMETERIVEXTPROC _funcptr_glGetConvolutionParameterivEXT;
 #define glGetConvolutionParameterivEXT _funcptr_glGetConvolutionParameterivEXT
-extern PFNGLGETSEPARABLEFILTEREXTPROC _funcptr_glGetSeparableFilterEXT;
+CI_API extern PFNGLGETSEPARABLEFILTEREXTPROC _funcptr_glGetSeparableFilterEXT;
 #define glGetSeparableFilterEXT _funcptr_glGetSeparableFilterEXT
-extern PFNGLSEPARABLEFILTER2DEXTPROC _funcptr_glSeparableFilter2DEXT;
+CI_API extern PFNGLSEPARABLEFILTER2DEXTPROC _funcptr_glSeparableFilter2DEXT;
 #define glSeparableFilter2DEXT _funcptr_glSeparableFilter2DEXT
 
 #define GL_BINORMAL_ARRAY_EXT 0x843A
@@ -5060,49 +5060,49 @@ typedef void (CODEGEN_FUNCPTR * PFNGLTANGENT3SEXTPROC)(GLshort tx, GLshort ty, G
 typedef void (CODEGEN_FUNCPTR * PFNGLTANGENT3SVEXTPROC)(const GLshort * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLTANGENTPOINTEREXTPROC)(GLenum type, GLsizei stride, const GLvoid * pointer);
 
-extern PFNGLBINORMAL3BEXTPROC _funcptr_glBinormal3bEXT;
+CI_API extern PFNGLBINORMAL3BEXTPROC _funcptr_glBinormal3bEXT;
 #define glBinormal3bEXT _funcptr_glBinormal3bEXT
-extern PFNGLBINORMAL3BVEXTPROC _funcptr_glBinormal3bvEXT;
+CI_API extern PFNGLBINORMAL3BVEXTPROC _funcptr_glBinormal3bvEXT;
 #define glBinormal3bvEXT _funcptr_glBinormal3bvEXT
-extern PFNGLBINORMAL3DEXTPROC _funcptr_glBinormal3dEXT;
+CI_API extern PFNGLBINORMAL3DEXTPROC _funcptr_glBinormal3dEXT;
 #define glBinormal3dEXT _funcptr_glBinormal3dEXT
-extern PFNGLBINORMAL3DVEXTPROC _funcptr_glBinormal3dvEXT;
+CI_API extern PFNGLBINORMAL3DVEXTPROC _funcptr_glBinormal3dvEXT;
 #define glBinormal3dvEXT _funcptr_glBinormal3dvEXT
-extern PFNGLBINORMAL3FEXTPROC _funcptr_glBinormal3fEXT;
+CI_API extern PFNGLBINORMAL3FEXTPROC _funcptr_glBinormal3fEXT;
 #define glBinormal3fEXT _funcptr_glBinormal3fEXT
-extern PFNGLBINORMAL3FVEXTPROC _funcptr_glBinormal3fvEXT;
+CI_API extern PFNGLBINORMAL3FVEXTPROC _funcptr_glBinormal3fvEXT;
 #define glBinormal3fvEXT _funcptr_glBinormal3fvEXT
-extern PFNGLBINORMAL3IEXTPROC _funcptr_glBinormal3iEXT;
+CI_API extern PFNGLBINORMAL3IEXTPROC _funcptr_glBinormal3iEXT;
 #define glBinormal3iEXT _funcptr_glBinormal3iEXT
-extern PFNGLBINORMAL3IVEXTPROC _funcptr_glBinormal3ivEXT;
+CI_API extern PFNGLBINORMAL3IVEXTPROC _funcptr_glBinormal3ivEXT;
 #define glBinormal3ivEXT _funcptr_glBinormal3ivEXT
-extern PFNGLBINORMAL3SEXTPROC _funcptr_glBinormal3sEXT;
+CI_API extern PFNGLBINORMAL3SEXTPROC _funcptr_glBinormal3sEXT;
 #define glBinormal3sEXT _funcptr_glBinormal3sEXT
-extern PFNGLBINORMAL3SVEXTPROC _funcptr_glBinormal3svEXT;
+CI_API extern PFNGLBINORMAL3SVEXTPROC _funcptr_glBinormal3svEXT;
 #define glBinormal3svEXT _funcptr_glBinormal3svEXT
-extern PFNGLBINORMALPOINTEREXTPROC _funcptr_glBinormalPointerEXT;
+CI_API extern PFNGLBINORMALPOINTEREXTPROC _funcptr_glBinormalPointerEXT;
 #define glBinormalPointerEXT _funcptr_glBinormalPointerEXT
-extern PFNGLTANGENT3BEXTPROC _funcptr_glTangent3bEXT;
+CI_API extern PFNGLTANGENT3BEXTPROC _funcptr_glTangent3bEXT;
 #define glTangent3bEXT _funcptr_glTangent3bEXT
-extern PFNGLTANGENT3BVEXTPROC _funcptr_glTangent3bvEXT;
+CI_API extern PFNGLTANGENT3BVEXTPROC _funcptr_glTangent3bvEXT;
 #define glTangent3bvEXT _funcptr_glTangent3bvEXT
-extern PFNGLTANGENT3DEXTPROC _funcptr_glTangent3dEXT;
+CI_API extern PFNGLTANGENT3DEXTPROC _funcptr_glTangent3dEXT;
 #define glTangent3dEXT _funcptr_glTangent3dEXT
-extern PFNGLTANGENT3DVEXTPROC _funcptr_glTangent3dvEXT;
+CI_API extern PFNGLTANGENT3DVEXTPROC _funcptr_glTangent3dvEXT;
 #define glTangent3dvEXT _funcptr_glTangent3dvEXT
-extern PFNGLTANGENT3FEXTPROC _funcptr_glTangent3fEXT;
+CI_API extern PFNGLTANGENT3FEXTPROC _funcptr_glTangent3fEXT;
 #define glTangent3fEXT _funcptr_glTangent3fEXT
-extern PFNGLTANGENT3FVEXTPROC _funcptr_glTangent3fvEXT;
+CI_API extern PFNGLTANGENT3FVEXTPROC _funcptr_glTangent3fvEXT;
 #define glTangent3fvEXT _funcptr_glTangent3fvEXT
-extern PFNGLTANGENT3IEXTPROC _funcptr_glTangent3iEXT;
+CI_API extern PFNGLTANGENT3IEXTPROC _funcptr_glTangent3iEXT;
 #define glTangent3iEXT _funcptr_glTangent3iEXT
-extern PFNGLTANGENT3IVEXTPROC _funcptr_glTangent3ivEXT;
+CI_API extern PFNGLTANGENT3IVEXTPROC _funcptr_glTangent3ivEXT;
 #define glTangent3ivEXT _funcptr_glTangent3ivEXT
-extern PFNGLTANGENT3SEXTPROC _funcptr_glTangent3sEXT;
+CI_API extern PFNGLTANGENT3SEXTPROC _funcptr_glTangent3sEXT;
 #define glTangent3sEXT _funcptr_glTangent3sEXT
-extern PFNGLTANGENT3SVEXTPROC _funcptr_glTangent3svEXT;
+CI_API extern PFNGLTANGENT3SVEXTPROC _funcptr_glTangent3svEXT;
 #define glTangent3svEXT _funcptr_glTangent3svEXT
-extern PFNGLTANGENTPOINTEREXTPROC _funcptr_glTangentPointerEXT;
+CI_API extern PFNGLTANGENTPOINTEREXTPROC _funcptr_glTangentPointerEXT;
 #define glTangentPointerEXT _funcptr_glTangentPointerEXT
 
 typedef void (CODEGEN_FUNCPTR * PFNGLCOPYTEXIMAGE1DEXTPROC)(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLint border);
@@ -5111,15 +5111,15 @@ typedef void (CODEGEN_FUNCPTR * PFNGLCOPYTEXSUBIMAGE1DEXTPROC)(GLenum target, GL
 typedef void (CODEGEN_FUNCPTR * PFNGLCOPYTEXSUBIMAGE2DEXTPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
 typedef void (CODEGEN_FUNCPTR * PFNGLCOPYTEXSUBIMAGE3DEXTPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
 
-extern PFNGLCOPYTEXIMAGE1DEXTPROC _funcptr_glCopyTexImage1DEXT;
+CI_API extern PFNGLCOPYTEXIMAGE1DEXTPROC _funcptr_glCopyTexImage1DEXT;
 #define glCopyTexImage1DEXT _funcptr_glCopyTexImage1DEXT
-extern PFNGLCOPYTEXIMAGE2DEXTPROC _funcptr_glCopyTexImage2DEXT;
+CI_API extern PFNGLCOPYTEXIMAGE2DEXTPROC _funcptr_glCopyTexImage2DEXT;
 #define glCopyTexImage2DEXT _funcptr_glCopyTexImage2DEXT
-extern PFNGLCOPYTEXSUBIMAGE1DEXTPROC _funcptr_glCopyTexSubImage1DEXT;
+CI_API extern PFNGLCOPYTEXSUBIMAGE1DEXTPROC _funcptr_glCopyTexSubImage1DEXT;
 #define glCopyTexSubImage1DEXT _funcptr_glCopyTexSubImage1DEXT
-extern PFNGLCOPYTEXSUBIMAGE2DEXTPROC _funcptr_glCopyTexSubImage2DEXT;
+CI_API extern PFNGLCOPYTEXSUBIMAGE2DEXTPROC _funcptr_glCopyTexSubImage2DEXT;
 #define glCopyTexSubImage2DEXT _funcptr_glCopyTexSubImage2DEXT
-extern PFNGLCOPYTEXSUBIMAGE3DEXTPROC _funcptr_glCopyTexSubImage3DEXT;
+CI_API extern PFNGLCOPYTEXSUBIMAGE3DEXTPROC _funcptr_glCopyTexSubImage3DEXT;
 #define glCopyTexSubImage3DEXT _funcptr_glCopyTexSubImage3DEXT
 
 #define GL_CULL_VERTEX_EXT 0x81AA
@@ -5129,9 +5129,9 @@ extern PFNGLCOPYTEXSUBIMAGE3DEXTPROC _funcptr_glCopyTexSubImage3DEXT;
 typedef void (CODEGEN_FUNCPTR * PFNGLCULLPARAMETERDVEXTPROC)(GLenum pname, GLdouble * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLCULLPARAMETERFVEXTPROC)(GLenum pname, GLfloat * params);
 
-extern PFNGLCULLPARAMETERDVEXTPROC _funcptr_glCullParameterdvEXT;
+CI_API extern PFNGLCULLPARAMETERDVEXTPROC _funcptr_glCullParameterdvEXT;
 #define glCullParameterdvEXT _funcptr_glCullParameterdvEXT
-extern PFNGLCULLPARAMETERFVEXTPROC _funcptr_glCullParameterfvEXT;
+CI_API extern PFNGLCULLPARAMETERFVEXTPROC _funcptr_glCullParameterfvEXT;
 #define glCullParameterfvEXT _funcptr_glCullParameterfvEXT
 
 #define GL_DEPTH_BOUNDS_EXT 0x8891
@@ -5139,7 +5139,7 @@ extern PFNGLCULLPARAMETERFVEXTPROC _funcptr_glCullParameterfvEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDEPTHBOUNDSEXTPROC)(GLclampd zmin, GLclampd zmax);
 
-extern PFNGLDEPTHBOUNDSEXTPROC _funcptr_glDepthBoundsEXT;
+CI_API extern PFNGLDEPTHBOUNDSEXTPROC _funcptr_glDepthBoundsEXT;
 #define glDepthBoundsEXT _funcptr_glDepthBoundsEXT
 
 #define GL_PROGRAM_MATRIX_EXT 0x8E2D
@@ -5400,511 +5400,511 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXARRAYVERTEXATTRIBOFFSETEXTPROC)(GLuin
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXARRAYVERTEXBINDINGDIVISOREXTPROC)(GLuint vaobj, GLuint bindingindex, GLuint divisor);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXARRAYVERTEXOFFSETEXTPROC)(GLuint vaobj, GLuint buffer, GLint size, GLenum type, GLsizei stride, GLintptr offset);
 
-extern PFNGLBINDMULTITEXTUREEXTPROC _funcptr_glBindMultiTextureEXT;
+CI_API extern PFNGLBINDMULTITEXTUREEXTPROC _funcptr_glBindMultiTextureEXT;
 #define glBindMultiTextureEXT _funcptr_glBindMultiTextureEXT
-extern PFNGLCHECKNAMEDFRAMEBUFFERSTATUSEXTPROC _funcptr_glCheckNamedFramebufferStatusEXT;
+CI_API extern PFNGLCHECKNAMEDFRAMEBUFFERSTATUSEXTPROC _funcptr_glCheckNamedFramebufferStatusEXT;
 #define glCheckNamedFramebufferStatusEXT _funcptr_glCheckNamedFramebufferStatusEXT
-extern PFNGLCLEARNAMEDBUFFERDATAEXTPROC _funcptr_glClearNamedBufferDataEXT;
+CI_API extern PFNGLCLEARNAMEDBUFFERDATAEXTPROC _funcptr_glClearNamedBufferDataEXT;
 #define glClearNamedBufferDataEXT _funcptr_glClearNamedBufferDataEXT
-extern PFNGLCLEARNAMEDBUFFERSUBDATAEXTPROC _funcptr_glClearNamedBufferSubDataEXT;
+CI_API extern PFNGLCLEARNAMEDBUFFERSUBDATAEXTPROC _funcptr_glClearNamedBufferSubDataEXT;
 #define glClearNamedBufferSubDataEXT _funcptr_glClearNamedBufferSubDataEXT
-extern PFNGLCLIENTATTRIBDEFAULTEXTPROC _funcptr_glClientAttribDefaultEXT;
+CI_API extern PFNGLCLIENTATTRIBDEFAULTEXTPROC _funcptr_glClientAttribDefaultEXT;
 #define glClientAttribDefaultEXT _funcptr_glClientAttribDefaultEXT
-extern PFNGLCOMPRESSEDMULTITEXIMAGE1DEXTPROC _funcptr_glCompressedMultiTexImage1DEXT;
+CI_API extern PFNGLCOMPRESSEDMULTITEXIMAGE1DEXTPROC _funcptr_glCompressedMultiTexImage1DEXT;
 #define glCompressedMultiTexImage1DEXT _funcptr_glCompressedMultiTexImage1DEXT
-extern PFNGLCOMPRESSEDMULTITEXIMAGE2DEXTPROC _funcptr_glCompressedMultiTexImage2DEXT;
+CI_API extern PFNGLCOMPRESSEDMULTITEXIMAGE2DEXTPROC _funcptr_glCompressedMultiTexImage2DEXT;
 #define glCompressedMultiTexImage2DEXT _funcptr_glCompressedMultiTexImage2DEXT
-extern PFNGLCOMPRESSEDMULTITEXIMAGE3DEXTPROC _funcptr_glCompressedMultiTexImage3DEXT;
+CI_API extern PFNGLCOMPRESSEDMULTITEXIMAGE3DEXTPROC _funcptr_glCompressedMultiTexImage3DEXT;
 #define glCompressedMultiTexImage3DEXT _funcptr_glCompressedMultiTexImage3DEXT
-extern PFNGLCOMPRESSEDMULTITEXSUBIMAGE1DEXTPROC _funcptr_glCompressedMultiTexSubImage1DEXT;
+CI_API extern PFNGLCOMPRESSEDMULTITEXSUBIMAGE1DEXTPROC _funcptr_glCompressedMultiTexSubImage1DEXT;
 #define glCompressedMultiTexSubImage1DEXT _funcptr_glCompressedMultiTexSubImage1DEXT
-extern PFNGLCOMPRESSEDMULTITEXSUBIMAGE2DEXTPROC _funcptr_glCompressedMultiTexSubImage2DEXT;
+CI_API extern PFNGLCOMPRESSEDMULTITEXSUBIMAGE2DEXTPROC _funcptr_glCompressedMultiTexSubImage2DEXT;
 #define glCompressedMultiTexSubImage2DEXT _funcptr_glCompressedMultiTexSubImage2DEXT
-extern PFNGLCOMPRESSEDMULTITEXSUBIMAGE3DEXTPROC _funcptr_glCompressedMultiTexSubImage3DEXT;
+CI_API extern PFNGLCOMPRESSEDMULTITEXSUBIMAGE3DEXTPROC _funcptr_glCompressedMultiTexSubImage3DEXT;
 #define glCompressedMultiTexSubImage3DEXT _funcptr_glCompressedMultiTexSubImage3DEXT
-extern PFNGLCOMPRESSEDTEXTUREIMAGE1DEXTPROC _funcptr_glCompressedTextureImage1DEXT;
+CI_API extern PFNGLCOMPRESSEDTEXTUREIMAGE1DEXTPROC _funcptr_glCompressedTextureImage1DEXT;
 #define glCompressedTextureImage1DEXT _funcptr_glCompressedTextureImage1DEXT
-extern PFNGLCOMPRESSEDTEXTUREIMAGE2DEXTPROC _funcptr_glCompressedTextureImage2DEXT;
+CI_API extern PFNGLCOMPRESSEDTEXTUREIMAGE2DEXTPROC _funcptr_glCompressedTextureImage2DEXT;
 #define glCompressedTextureImage2DEXT _funcptr_glCompressedTextureImage2DEXT
-extern PFNGLCOMPRESSEDTEXTUREIMAGE3DEXTPROC _funcptr_glCompressedTextureImage3DEXT;
+CI_API extern PFNGLCOMPRESSEDTEXTUREIMAGE3DEXTPROC _funcptr_glCompressedTextureImage3DEXT;
 #define glCompressedTextureImage3DEXT _funcptr_glCompressedTextureImage3DEXT
-extern PFNGLCOMPRESSEDTEXTURESUBIMAGE1DEXTPROC _funcptr_glCompressedTextureSubImage1DEXT;
+CI_API extern PFNGLCOMPRESSEDTEXTURESUBIMAGE1DEXTPROC _funcptr_glCompressedTextureSubImage1DEXT;
 #define glCompressedTextureSubImage1DEXT _funcptr_glCompressedTextureSubImage1DEXT
-extern PFNGLCOMPRESSEDTEXTURESUBIMAGE2DEXTPROC _funcptr_glCompressedTextureSubImage2DEXT;
+CI_API extern PFNGLCOMPRESSEDTEXTURESUBIMAGE2DEXTPROC _funcptr_glCompressedTextureSubImage2DEXT;
 #define glCompressedTextureSubImage2DEXT _funcptr_glCompressedTextureSubImage2DEXT
-extern PFNGLCOMPRESSEDTEXTURESUBIMAGE3DEXTPROC _funcptr_glCompressedTextureSubImage3DEXT;
+CI_API extern PFNGLCOMPRESSEDTEXTURESUBIMAGE3DEXTPROC _funcptr_glCompressedTextureSubImage3DEXT;
 #define glCompressedTextureSubImage3DEXT _funcptr_glCompressedTextureSubImage3DEXT
-extern PFNGLCOPYMULTITEXIMAGE1DEXTPROC _funcptr_glCopyMultiTexImage1DEXT;
+CI_API extern PFNGLCOPYMULTITEXIMAGE1DEXTPROC _funcptr_glCopyMultiTexImage1DEXT;
 #define glCopyMultiTexImage1DEXT _funcptr_glCopyMultiTexImage1DEXT
-extern PFNGLCOPYMULTITEXIMAGE2DEXTPROC _funcptr_glCopyMultiTexImage2DEXT;
+CI_API extern PFNGLCOPYMULTITEXIMAGE2DEXTPROC _funcptr_glCopyMultiTexImage2DEXT;
 #define glCopyMultiTexImage2DEXT _funcptr_glCopyMultiTexImage2DEXT
-extern PFNGLCOPYMULTITEXSUBIMAGE1DEXTPROC _funcptr_glCopyMultiTexSubImage1DEXT;
+CI_API extern PFNGLCOPYMULTITEXSUBIMAGE1DEXTPROC _funcptr_glCopyMultiTexSubImage1DEXT;
 #define glCopyMultiTexSubImage1DEXT _funcptr_glCopyMultiTexSubImage1DEXT
-extern PFNGLCOPYMULTITEXSUBIMAGE2DEXTPROC _funcptr_glCopyMultiTexSubImage2DEXT;
+CI_API extern PFNGLCOPYMULTITEXSUBIMAGE2DEXTPROC _funcptr_glCopyMultiTexSubImage2DEXT;
 #define glCopyMultiTexSubImage2DEXT _funcptr_glCopyMultiTexSubImage2DEXT
-extern PFNGLCOPYMULTITEXSUBIMAGE3DEXTPROC _funcptr_glCopyMultiTexSubImage3DEXT;
+CI_API extern PFNGLCOPYMULTITEXSUBIMAGE3DEXTPROC _funcptr_glCopyMultiTexSubImage3DEXT;
 #define glCopyMultiTexSubImage3DEXT _funcptr_glCopyMultiTexSubImage3DEXT
-extern PFNGLCOPYTEXTUREIMAGE1DEXTPROC _funcptr_glCopyTextureImage1DEXT;
+CI_API extern PFNGLCOPYTEXTUREIMAGE1DEXTPROC _funcptr_glCopyTextureImage1DEXT;
 #define glCopyTextureImage1DEXT _funcptr_glCopyTextureImage1DEXT
-extern PFNGLCOPYTEXTUREIMAGE2DEXTPROC _funcptr_glCopyTextureImage2DEXT;
+CI_API extern PFNGLCOPYTEXTUREIMAGE2DEXTPROC _funcptr_glCopyTextureImage2DEXT;
 #define glCopyTextureImage2DEXT _funcptr_glCopyTextureImage2DEXT
-extern PFNGLCOPYTEXTURESUBIMAGE1DEXTPROC _funcptr_glCopyTextureSubImage1DEXT;
+CI_API extern PFNGLCOPYTEXTURESUBIMAGE1DEXTPROC _funcptr_glCopyTextureSubImage1DEXT;
 #define glCopyTextureSubImage1DEXT _funcptr_glCopyTextureSubImage1DEXT
-extern PFNGLCOPYTEXTURESUBIMAGE2DEXTPROC _funcptr_glCopyTextureSubImage2DEXT;
+CI_API extern PFNGLCOPYTEXTURESUBIMAGE2DEXTPROC _funcptr_glCopyTextureSubImage2DEXT;
 #define glCopyTextureSubImage2DEXT _funcptr_glCopyTextureSubImage2DEXT
-extern PFNGLCOPYTEXTURESUBIMAGE3DEXTPROC _funcptr_glCopyTextureSubImage3DEXT;
+CI_API extern PFNGLCOPYTEXTURESUBIMAGE3DEXTPROC _funcptr_glCopyTextureSubImage3DEXT;
 #define glCopyTextureSubImage3DEXT _funcptr_glCopyTextureSubImage3DEXT
-extern PFNGLDISABLECLIENTSTATEINDEXEDEXTPROC _funcptr_glDisableClientStateIndexedEXT;
+CI_API extern PFNGLDISABLECLIENTSTATEINDEXEDEXTPROC _funcptr_glDisableClientStateIndexedEXT;
 #define glDisableClientStateIndexedEXT _funcptr_glDisableClientStateIndexedEXT
-extern PFNGLDISABLECLIENTSTATEIEXTPROC _funcptr_glDisableClientStateiEXT;
+CI_API extern PFNGLDISABLECLIENTSTATEIEXTPROC _funcptr_glDisableClientStateiEXT;
 #define glDisableClientStateiEXT _funcptr_glDisableClientStateiEXT
-extern PFNGLDISABLEINDEXEDEXTPROC _funcptr_glDisableIndexedEXT;
+CI_API extern PFNGLDISABLEINDEXEDEXTPROC _funcptr_glDisableIndexedEXT;
 #define glDisableIndexedEXT _funcptr_glDisableIndexedEXT
-extern PFNGLDISABLEVERTEXARRAYATTRIBEXTPROC _funcptr_glDisableVertexArrayAttribEXT;
+CI_API extern PFNGLDISABLEVERTEXARRAYATTRIBEXTPROC _funcptr_glDisableVertexArrayAttribEXT;
 #define glDisableVertexArrayAttribEXT _funcptr_glDisableVertexArrayAttribEXT
-extern PFNGLDISABLEVERTEXARRAYEXTPROC _funcptr_glDisableVertexArrayEXT;
+CI_API extern PFNGLDISABLEVERTEXARRAYEXTPROC _funcptr_glDisableVertexArrayEXT;
 #define glDisableVertexArrayEXT _funcptr_glDisableVertexArrayEXT
-extern PFNGLENABLECLIENTSTATEINDEXEDEXTPROC _funcptr_glEnableClientStateIndexedEXT;
+CI_API extern PFNGLENABLECLIENTSTATEINDEXEDEXTPROC _funcptr_glEnableClientStateIndexedEXT;
 #define glEnableClientStateIndexedEXT _funcptr_glEnableClientStateIndexedEXT
-extern PFNGLENABLECLIENTSTATEIEXTPROC _funcptr_glEnableClientStateiEXT;
+CI_API extern PFNGLENABLECLIENTSTATEIEXTPROC _funcptr_glEnableClientStateiEXT;
 #define glEnableClientStateiEXT _funcptr_glEnableClientStateiEXT
-extern PFNGLENABLEINDEXEDEXTPROC _funcptr_glEnableIndexedEXT;
+CI_API extern PFNGLENABLEINDEXEDEXTPROC _funcptr_glEnableIndexedEXT;
 #define glEnableIndexedEXT _funcptr_glEnableIndexedEXT
-extern PFNGLENABLEVERTEXARRAYATTRIBEXTPROC _funcptr_glEnableVertexArrayAttribEXT;
+CI_API extern PFNGLENABLEVERTEXARRAYATTRIBEXTPROC _funcptr_glEnableVertexArrayAttribEXT;
 #define glEnableVertexArrayAttribEXT _funcptr_glEnableVertexArrayAttribEXT
-extern PFNGLENABLEVERTEXARRAYEXTPROC _funcptr_glEnableVertexArrayEXT;
+CI_API extern PFNGLENABLEVERTEXARRAYEXTPROC _funcptr_glEnableVertexArrayEXT;
 #define glEnableVertexArrayEXT _funcptr_glEnableVertexArrayEXT
-extern PFNGLFLUSHMAPPEDNAMEDBUFFERRANGEEXTPROC _funcptr_glFlushMappedNamedBufferRangeEXT;
+CI_API extern PFNGLFLUSHMAPPEDNAMEDBUFFERRANGEEXTPROC _funcptr_glFlushMappedNamedBufferRangeEXT;
 #define glFlushMappedNamedBufferRangeEXT _funcptr_glFlushMappedNamedBufferRangeEXT
-extern PFNGLFRAMEBUFFERDRAWBUFFEREXTPROC _funcptr_glFramebufferDrawBufferEXT;
+CI_API extern PFNGLFRAMEBUFFERDRAWBUFFEREXTPROC _funcptr_glFramebufferDrawBufferEXT;
 #define glFramebufferDrawBufferEXT _funcptr_glFramebufferDrawBufferEXT
-extern PFNGLFRAMEBUFFERDRAWBUFFERSEXTPROC _funcptr_glFramebufferDrawBuffersEXT;
+CI_API extern PFNGLFRAMEBUFFERDRAWBUFFERSEXTPROC _funcptr_glFramebufferDrawBuffersEXT;
 #define glFramebufferDrawBuffersEXT _funcptr_glFramebufferDrawBuffersEXT
-extern PFNGLFRAMEBUFFERREADBUFFEREXTPROC _funcptr_glFramebufferReadBufferEXT;
+CI_API extern PFNGLFRAMEBUFFERREADBUFFEREXTPROC _funcptr_glFramebufferReadBufferEXT;
 #define glFramebufferReadBufferEXT _funcptr_glFramebufferReadBufferEXT
-extern PFNGLGENERATEMULTITEXMIPMAPEXTPROC _funcptr_glGenerateMultiTexMipmapEXT;
+CI_API extern PFNGLGENERATEMULTITEXMIPMAPEXTPROC _funcptr_glGenerateMultiTexMipmapEXT;
 #define glGenerateMultiTexMipmapEXT _funcptr_glGenerateMultiTexMipmapEXT
-extern PFNGLGENERATETEXTUREMIPMAPEXTPROC _funcptr_glGenerateTextureMipmapEXT;
+CI_API extern PFNGLGENERATETEXTUREMIPMAPEXTPROC _funcptr_glGenerateTextureMipmapEXT;
 #define glGenerateTextureMipmapEXT _funcptr_glGenerateTextureMipmapEXT
-extern PFNGLGETBOOLEANINDEXEDVEXTPROC _funcptr_glGetBooleanIndexedvEXT;
+CI_API extern PFNGLGETBOOLEANINDEXEDVEXTPROC _funcptr_glGetBooleanIndexedvEXT;
 #define glGetBooleanIndexedvEXT _funcptr_glGetBooleanIndexedvEXT
-extern PFNGLGETCOMPRESSEDMULTITEXIMAGEEXTPROC _funcptr_glGetCompressedMultiTexImageEXT;
+CI_API extern PFNGLGETCOMPRESSEDMULTITEXIMAGEEXTPROC _funcptr_glGetCompressedMultiTexImageEXT;
 #define glGetCompressedMultiTexImageEXT _funcptr_glGetCompressedMultiTexImageEXT
-extern PFNGLGETCOMPRESSEDTEXTUREIMAGEEXTPROC _funcptr_glGetCompressedTextureImageEXT;
+CI_API extern PFNGLGETCOMPRESSEDTEXTUREIMAGEEXTPROC _funcptr_glGetCompressedTextureImageEXT;
 #define glGetCompressedTextureImageEXT _funcptr_glGetCompressedTextureImageEXT
-extern PFNGLGETDOUBLEINDEXEDVEXTPROC _funcptr_glGetDoubleIndexedvEXT;
+CI_API extern PFNGLGETDOUBLEINDEXEDVEXTPROC _funcptr_glGetDoubleIndexedvEXT;
 #define glGetDoubleIndexedvEXT _funcptr_glGetDoubleIndexedvEXT
-extern PFNGLGETDOUBLEI_VEXTPROC _funcptr_glGetDoublei_vEXT;
+CI_API extern PFNGLGETDOUBLEI_VEXTPROC _funcptr_glGetDoublei_vEXT;
 #define glGetDoublei_vEXT _funcptr_glGetDoublei_vEXT
-extern PFNGLGETFLOATINDEXEDVEXTPROC _funcptr_glGetFloatIndexedvEXT;
+CI_API extern PFNGLGETFLOATINDEXEDVEXTPROC _funcptr_glGetFloatIndexedvEXT;
 #define glGetFloatIndexedvEXT _funcptr_glGetFloatIndexedvEXT
-extern PFNGLGETFLOATI_VEXTPROC _funcptr_glGetFloati_vEXT;
+CI_API extern PFNGLGETFLOATI_VEXTPROC _funcptr_glGetFloati_vEXT;
 #define glGetFloati_vEXT _funcptr_glGetFloati_vEXT
-extern PFNGLGETFRAMEBUFFERPARAMETERIVEXTPROC _funcptr_glGetFramebufferParameterivEXT;
+CI_API extern PFNGLGETFRAMEBUFFERPARAMETERIVEXTPROC _funcptr_glGetFramebufferParameterivEXT;
 #define glGetFramebufferParameterivEXT _funcptr_glGetFramebufferParameterivEXT
-extern PFNGLGETINTEGERINDEXEDVEXTPROC _funcptr_glGetIntegerIndexedvEXT;
+CI_API extern PFNGLGETINTEGERINDEXEDVEXTPROC _funcptr_glGetIntegerIndexedvEXT;
 #define glGetIntegerIndexedvEXT _funcptr_glGetIntegerIndexedvEXT
-extern PFNGLGETMULTITEXENVFVEXTPROC _funcptr_glGetMultiTexEnvfvEXT;
+CI_API extern PFNGLGETMULTITEXENVFVEXTPROC _funcptr_glGetMultiTexEnvfvEXT;
 #define glGetMultiTexEnvfvEXT _funcptr_glGetMultiTexEnvfvEXT
-extern PFNGLGETMULTITEXENVIVEXTPROC _funcptr_glGetMultiTexEnvivEXT;
+CI_API extern PFNGLGETMULTITEXENVIVEXTPROC _funcptr_glGetMultiTexEnvivEXT;
 #define glGetMultiTexEnvivEXT _funcptr_glGetMultiTexEnvivEXT
-extern PFNGLGETMULTITEXGENDVEXTPROC _funcptr_glGetMultiTexGendvEXT;
+CI_API extern PFNGLGETMULTITEXGENDVEXTPROC _funcptr_glGetMultiTexGendvEXT;
 #define glGetMultiTexGendvEXT _funcptr_glGetMultiTexGendvEXT
-extern PFNGLGETMULTITEXGENFVEXTPROC _funcptr_glGetMultiTexGenfvEXT;
+CI_API extern PFNGLGETMULTITEXGENFVEXTPROC _funcptr_glGetMultiTexGenfvEXT;
 #define glGetMultiTexGenfvEXT _funcptr_glGetMultiTexGenfvEXT
-extern PFNGLGETMULTITEXGENIVEXTPROC _funcptr_glGetMultiTexGenivEXT;
+CI_API extern PFNGLGETMULTITEXGENIVEXTPROC _funcptr_glGetMultiTexGenivEXT;
 #define glGetMultiTexGenivEXT _funcptr_glGetMultiTexGenivEXT
-extern PFNGLGETMULTITEXIMAGEEXTPROC _funcptr_glGetMultiTexImageEXT;
+CI_API extern PFNGLGETMULTITEXIMAGEEXTPROC _funcptr_glGetMultiTexImageEXT;
 #define glGetMultiTexImageEXT _funcptr_glGetMultiTexImageEXT
-extern PFNGLGETMULTITEXLEVELPARAMETERFVEXTPROC _funcptr_glGetMultiTexLevelParameterfvEXT;
+CI_API extern PFNGLGETMULTITEXLEVELPARAMETERFVEXTPROC _funcptr_glGetMultiTexLevelParameterfvEXT;
 #define glGetMultiTexLevelParameterfvEXT _funcptr_glGetMultiTexLevelParameterfvEXT
-extern PFNGLGETMULTITEXLEVELPARAMETERIVEXTPROC _funcptr_glGetMultiTexLevelParameterivEXT;
+CI_API extern PFNGLGETMULTITEXLEVELPARAMETERIVEXTPROC _funcptr_glGetMultiTexLevelParameterivEXT;
 #define glGetMultiTexLevelParameterivEXT _funcptr_glGetMultiTexLevelParameterivEXT
-extern PFNGLGETMULTITEXPARAMETERIIVEXTPROC _funcptr_glGetMultiTexParameterIivEXT;
+CI_API extern PFNGLGETMULTITEXPARAMETERIIVEXTPROC _funcptr_glGetMultiTexParameterIivEXT;
 #define glGetMultiTexParameterIivEXT _funcptr_glGetMultiTexParameterIivEXT
-extern PFNGLGETMULTITEXPARAMETERIUIVEXTPROC _funcptr_glGetMultiTexParameterIuivEXT;
+CI_API extern PFNGLGETMULTITEXPARAMETERIUIVEXTPROC _funcptr_glGetMultiTexParameterIuivEXT;
 #define glGetMultiTexParameterIuivEXT _funcptr_glGetMultiTexParameterIuivEXT
-extern PFNGLGETMULTITEXPARAMETERFVEXTPROC _funcptr_glGetMultiTexParameterfvEXT;
+CI_API extern PFNGLGETMULTITEXPARAMETERFVEXTPROC _funcptr_glGetMultiTexParameterfvEXT;
 #define glGetMultiTexParameterfvEXT _funcptr_glGetMultiTexParameterfvEXT
-extern PFNGLGETMULTITEXPARAMETERIVEXTPROC _funcptr_glGetMultiTexParameterivEXT;
+CI_API extern PFNGLGETMULTITEXPARAMETERIVEXTPROC _funcptr_glGetMultiTexParameterivEXT;
 #define glGetMultiTexParameterivEXT _funcptr_glGetMultiTexParameterivEXT
-extern PFNGLGETNAMEDBUFFERPARAMETERIVEXTPROC _funcptr_glGetNamedBufferParameterivEXT;
+CI_API extern PFNGLGETNAMEDBUFFERPARAMETERIVEXTPROC _funcptr_glGetNamedBufferParameterivEXT;
 #define glGetNamedBufferParameterivEXT _funcptr_glGetNamedBufferParameterivEXT
-extern PFNGLGETNAMEDBUFFERPOINTERVEXTPROC _funcptr_glGetNamedBufferPointervEXT;
+CI_API extern PFNGLGETNAMEDBUFFERPOINTERVEXTPROC _funcptr_glGetNamedBufferPointervEXT;
 #define glGetNamedBufferPointervEXT _funcptr_glGetNamedBufferPointervEXT
-extern PFNGLGETNAMEDBUFFERSUBDATAEXTPROC _funcptr_glGetNamedBufferSubDataEXT;
+CI_API extern PFNGLGETNAMEDBUFFERSUBDATAEXTPROC _funcptr_glGetNamedBufferSubDataEXT;
 #define glGetNamedBufferSubDataEXT _funcptr_glGetNamedBufferSubDataEXT
-extern PFNGLGETNAMEDFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC _funcptr_glGetNamedFramebufferAttachmentParameterivEXT;
+CI_API extern PFNGLGETNAMEDFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC _funcptr_glGetNamedFramebufferAttachmentParameterivEXT;
 #define glGetNamedFramebufferAttachmentParameterivEXT _funcptr_glGetNamedFramebufferAttachmentParameterivEXT
-extern PFNGLGETNAMEDFRAMEBUFFERPARAMETERIVEXTPROC _funcptr_glGetNamedFramebufferParameterivEXT;
+CI_API extern PFNGLGETNAMEDFRAMEBUFFERPARAMETERIVEXTPROC _funcptr_glGetNamedFramebufferParameterivEXT;
 #define glGetNamedFramebufferParameterivEXT _funcptr_glGetNamedFramebufferParameterivEXT
-extern PFNGLGETNAMEDPROGRAMLOCALPARAMETERIIVEXTPROC _funcptr_glGetNamedProgramLocalParameterIivEXT;
+CI_API extern PFNGLGETNAMEDPROGRAMLOCALPARAMETERIIVEXTPROC _funcptr_glGetNamedProgramLocalParameterIivEXT;
 #define glGetNamedProgramLocalParameterIivEXT _funcptr_glGetNamedProgramLocalParameterIivEXT
-extern PFNGLGETNAMEDPROGRAMLOCALPARAMETERIUIVEXTPROC _funcptr_glGetNamedProgramLocalParameterIuivEXT;
+CI_API extern PFNGLGETNAMEDPROGRAMLOCALPARAMETERIUIVEXTPROC _funcptr_glGetNamedProgramLocalParameterIuivEXT;
 #define glGetNamedProgramLocalParameterIuivEXT _funcptr_glGetNamedProgramLocalParameterIuivEXT
-extern PFNGLGETNAMEDPROGRAMLOCALPARAMETERDVEXTPROC _funcptr_glGetNamedProgramLocalParameterdvEXT;
+CI_API extern PFNGLGETNAMEDPROGRAMLOCALPARAMETERDVEXTPROC _funcptr_glGetNamedProgramLocalParameterdvEXT;
 #define glGetNamedProgramLocalParameterdvEXT _funcptr_glGetNamedProgramLocalParameterdvEXT
-extern PFNGLGETNAMEDPROGRAMLOCALPARAMETERFVEXTPROC _funcptr_glGetNamedProgramLocalParameterfvEXT;
+CI_API extern PFNGLGETNAMEDPROGRAMLOCALPARAMETERFVEXTPROC _funcptr_glGetNamedProgramLocalParameterfvEXT;
 #define glGetNamedProgramLocalParameterfvEXT _funcptr_glGetNamedProgramLocalParameterfvEXT
-extern PFNGLGETNAMEDPROGRAMSTRINGEXTPROC _funcptr_glGetNamedProgramStringEXT;
+CI_API extern PFNGLGETNAMEDPROGRAMSTRINGEXTPROC _funcptr_glGetNamedProgramStringEXT;
 #define glGetNamedProgramStringEXT _funcptr_glGetNamedProgramStringEXT
-extern PFNGLGETNAMEDPROGRAMIVEXTPROC _funcptr_glGetNamedProgramivEXT;
+CI_API extern PFNGLGETNAMEDPROGRAMIVEXTPROC _funcptr_glGetNamedProgramivEXT;
 #define glGetNamedProgramivEXT _funcptr_glGetNamedProgramivEXT
-extern PFNGLGETNAMEDRENDERBUFFERPARAMETERIVEXTPROC _funcptr_glGetNamedRenderbufferParameterivEXT;
+CI_API extern PFNGLGETNAMEDRENDERBUFFERPARAMETERIVEXTPROC _funcptr_glGetNamedRenderbufferParameterivEXT;
 #define glGetNamedRenderbufferParameterivEXT _funcptr_glGetNamedRenderbufferParameterivEXT
-extern PFNGLGETPOINTERINDEXEDVEXTPROC _funcptr_glGetPointerIndexedvEXT;
+CI_API extern PFNGLGETPOINTERINDEXEDVEXTPROC _funcptr_glGetPointerIndexedvEXT;
 #define glGetPointerIndexedvEXT _funcptr_glGetPointerIndexedvEXT
-extern PFNGLGETPOINTERI_VEXTPROC _funcptr_glGetPointeri_vEXT;
+CI_API extern PFNGLGETPOINTERI_VEXTPROC _funcptr_glGetPointeri_vEXT;
 #define glGetPointeri_vEXT _funcptr_glGetPointeri_vEXT
-extern PFNGLGETTEXTUREIMAGEEXTPROC _funcptr_glGetTextureImageEXT;
+CI_API extern PFNGLGETTEXTUREIMAGEEXTPROC _funcptr_glGetTextureImageEXT;
 #define glGetTextureImageEXT _funcptr_glGetTextureImageEXT
-extern PFNGLGETTEXTURELEVELPARAMETERFVEXTPROC _funcptr_glGetTextureLevelParameterfvEXT;
+CI_API extern PFNGLGETTEXTURELEVELPARAMETERFVEXTPROC _funcptr_glGetTextureLevelParameterfvEXT;
 #define glGetTextureLevelParameterfvEXT _funcptr_glGetTextureLevelParameterfvEXT
-extern PFNGLGETTEXTURELEVELPARAMETERIVEXTPROC _funcptr_glGetTextureLevelParameterivEXT;
+CI_API extern PFNGLGETTEXTURELEVELPARAMETERIVEXTPROC _funcptr_glGetTextureLevelParameterivEXT;
 #define glGetTextureLevelParameterivEXT _funcptr_glGetTextureLevelParameterivEXT
-extern PFNGLGETTEXTUREPARAMETERIIVEXTPROC _funcptr_glGetTextureParameterIivEXT;
+CI_API extern PFNGLGETTEXTUREPARAMETERIIVEXTPROC _funcptr_glGetTextureParameterIivEXT;
 #define glGetTextureParameterIivEXT _funcptr_glGetTextureParameterIivEXT
-extern PFNGLGETTEXTUREPARAMETERIUIVEXTPROC _funcptr_glGetTextureParameterIuivEXT;
+CI_API extern PFNGLGETTEXTUREPARAMETERIUIVEXTPROC _funcptr_glGetTextureParameterIuivEXT;
 #define glGetTextureParameterIuivEXT _funcptr_glGetTextureParameterIuivEXT
-extern PFNGLGETTEXTUREPARAMETERFVEXTPROC _funcptr_glGetTextureParameterfvEXT;
+CI_API extern PFNGLGETTEXTUREPARAMETERFVEXTPROC _funcptr_glGetTextureParameterfvEXT;
 #define glGetTextureParameterfvEXT _funcptr_glGetTextureParameterfvEXT
-extern PFNGLGETTEXTUREPARAMETERIVEXTPROC _funcptr_glGetTextureParameterivEXT;
+CI_API extern PFNGLGETTEXTUREPARAMETERIVEXTPROC _funcptr_glGetTextureParameterivEXT;
 #define glGetTextureParameterivEXT _funcptr_glGetTextureParameterivEXT
-extern PFNGLGETVERTEXARRAYINTEGERI_VEXTPROC _funcptr_glGetVertexArrayIntegeri_vEXT;
+CI_API extern PFNGLGETVERTEXARRAYINTEGERI_VEXTPROC _funcptr_glGetVertexArrayIntegeri_vEXT;
 #define glGetVertexArrayIntegeri_vEXT _funcptr_glGetVertexArrayIntegeri_vEXT
-extern PFNGLGETVERTEXARRAYINTEGERVEXTPROC _funcptr_glGetVertexArrayIntegervEXT;
+CI_API extern PFNGLGETVERTEXARRAYINTEGERVEXTPROC _funcptr_glGetVertexArrayIntegervEXT;
 #define glGetVertexArrayIntegervEXT _funcptr_glGetVertexArrayIntegervEXT
-extern PFNGLGETVERTEXARRAYPOINTERI_VEXTPROC _funcptr_glGetVertexArrayPointeri_vEXT;
+CI_API extern PFNGLGETVERTEXARRAYPOINTERI_VEXTPROC _funcptr_glGetVertexArrayPointeri_vEXT;
 #define glGetVertexArrayPointeri_vEXT _funcptr_glGetVertexArrayPointeri_vEXT
-extern PFNGLGETVERTEXARRAYPOINTERVEXTPROC _funcptr_glGetVertexArrayPointervEXT;
+CI_API extern PFNGLGETVERTEXARRAYPOINTERVEXTPROC _funcptr_glGetVertexArrayPointervEXT;
 #define glGetVertexArrayPointervEXT _funcptr_glGetVertexArrayPointervEXT
-extern PFNGLISENABLEDINDEXEDEXTPROC _funcptr_glIsEnabledIndexedEXT;
+CI_API extern PFNGLISENABLEDINDEXEDEXTPROC _funcptr_glIsEnabledIndexedEXT;
 #define glIsEnabledIndexedEXT _funcptr_glIsEnabledIndexedEXT
-extern PFNGLMAPNAMEDBUFFEREXTPROC _funcptr_glMapNamedBufferEXT;
+CI_API extern PFNGLMAPNAMEDBUFFEREXTPROC _funcptr_glMapNamedBufferEXT;
 #define glMapNamedBufferEXT _funcptr_glMapNamedBufferEXT
-extern PFNGLMAPNAMEDBUFFERRANGEEXTPROC _funcptr_glMapNamedBufferRangeEXT;
+CI_API extern PFNGLMAPNAMEDBUFFERRANGEEXTPROC _funcptr_glMapNamedBufferRangeEXT;
 #define glMapNamedBufferRangeEXT _funcptr_glMapNamedBufferRangeEXT
-extern PFNGLMATRIXFRUSTUMEXTPROC _funcptr_glMatrixFrustumEXT;
+CI_API extern PFNGLMATRIXFRUSTUMEXTPROC _funcptr_glMatrixFrustumEXT;
 #define glMatrixFrustumEXT _funcptr_glMatrixFrustumEXT
-extern PFNGLMATRIXLOADIDENTITYEXTPROC _funcptr_glMatrixLoadIdentityEXT;
+CI_API extern PFNGLMATRIXLOADIDENTITYEXTPROC _funcptr_glMatrixLoadIdentityEXT;
 #define glMatrixLoadIdentityEXT _funcptr_glMatrixLoadIdentityEXT
-extern PFNGLMATRIXLOADTRANSPOSEDEXTPROC _funcptr_glMatrixLoadTransposedEXT;
+CI_API extern PFNGLMATRIXLOADTRANSPOSEDEXTPROC _funcptr_glMatrixLoadTransposedEXT;
 #define glMatrixLoadTransposedEXT _funcptr_glMatrixLoadTransposedEXT
-extern PFNGLMATRIXLOADTRANSPOSEFEXTPROC _funcptr_glMatrixLoadTransposefEXT;
+CI_API extern PFNGLMATRIXLOADTRANSPOSEFEXTPROC _funcptr_glMatrixLoadTransposefEXT;
 #define glMatrixLoadTransposefEXT _funcptr_glMatrixLoadTransposefEXT
-extern PFNGLMATRIXLOADDEXTPROC _funcptr_glMatrixLoaddEXT;
+CI_API extern PFNGLMATRIXLOADDEXTPROC _funcptr_glMatrixLoaddEXT;
 #define glMatrixLoaddEXT _funcptr_glMatrixLoaddEXT
-extern PFNGLMATRIXLOADFEXTPROC _funcptr_glMatrixLoadfEXT;
+CI_API extern PFNGLMATRIXLOADFEXTPROC _funcptr_glMatrixLoadfEXT;
 #define glMatrixLoadfEXT _funcptr_glMatrixLoadfEXT
-extern PFNGLMATRIXMULTTRANSPOSEDEXTPROC _funcptr_glMatrixMultTransposedEXT;
+CI_API extern PFNGLMATRIXMULTTRANSPOSEDEXTPROC _funcptr_glMatrixMultTransposedEXT;
 #define glMatrixMultTransposedEXT _funcptr_glMatrixMultTransposedEXT
-extern PFNGLMATRIXMULTTRANSPOSEFEXTPROC _funcptr_glMatrixMultTransposefEXT;
+CI_API extern PFNGLMATRIXMULTTRANSPOSEFEXTPROC _funcptr_glMatrixMultTransposefEXT;
 #define glMatrixMultTransposefEXT _funcptr_glMatrixMultTransposefEXT
-extern PFNGLMATRIXMULTDEXTPROC _funcptr_glMatrixMultdEXT;
+CI_API extern PFNGLMATRIXMULTDEXTPROC _funcptr_glMatrixMultdEXT;
 #define glMatrixMultdEXT _funcptr_glMatrixMultdEXT
-extern PFNGLMATRIXMULTFEXTPROC _funcptr_glMatrixMultfEXT;
+CI_API extern PFNGLMATRIXMULTFEXTPROC _funcptr_glMatrixMultfEXT;
 #define glMatrixMultfEXT _funcptr_glMatrixMultfEXT
-extern PFNGLMATRIXORTHOEXTPROC _funcptr_glMatrixOrthoEXT;
+CI_API extern PFNGLMATRIXORTHOEXTPROC _funcptr_glMatrixOrthoEXT;
 #define glMatrixOrthoEXT _funcptr_glMatrixOrthoEXT
-extern PFNGLMATRIXPOPEXTPROC _funcptr_glMatrixPopEXT;
+CI_API extern PFNGLMATRIXPOPEXTPROC _funcptr_glMatrixPopEXT;
 #define glMatrixPopEXT _funcptr_glMatrixPopEXT
-extern PFNGLMATRIXPUSHEXTPROC _funcptr_glMatrixPushEXT;
+CI_API extern PFNGLMATRIXPUSHEXTPROC _funcptr_glMatrixPushEXT;
 #define glMatrixPushEXT _funcptr_glMatrixPushEXT
-extern PFNGLMATRIXROTATEDEXTPROC _funcptr_glMatrixRotatedEXT;
+CI_API extern PFNGLMATRIXROTATEDEXTPROC _funcptr_glMatrixRotatedEXT;
 #define glMatrixRotatedEXT _funcptr_glMatrixRotatedEXT
-extern PFNGLMATRIXROTATEFEXTPROC _funcptr_glMatrixRotatefEXT;
+CI_API extern PFNGLMATRIXROTATEFEXTPROC _funcptr_glMatrixRotatefEXT;
 #define glMatrixRotatefEXT _funcptr_glMatrixRotatefEXT
-extern PFNGLMATRIXSCALEDEXTPROC _funcptr_glMatrixScaledEXT;
+CI_API extern PFNGLMATRIXSCALEDEXTPROC _funcptr_glMatrixScaledEXT;
 #define glMatrixScaledEXT _funcptr_glMatrixScaledEXT
-extern PFNGLMATRIXSCALEFEXTPROC _funcptr_glMatrixScalefEXT;
+CI_API extern PFNGLMATRIXSCALEFEXTPROC _funcptr_glMatrixScalefEXT;
 #define glMatrixScalefEXT _funcptr_glMatrixScalefEXT
-extern PFNGLMATRIXTRANSLATEDEXTPROC _funcptr_glMatrixTranslatedEXT;
+CI_API extern PFNGLMATRIXTRANSLATEDEXTPROC _funcptr_glMatrixTranslatedEXT;
 #define glMatrixTranslatedEXT _funcptr_glMatrixTranslatedEXT
-extern PFNGLMATRIXTRANSLATEFEXTPROC _funcptr_glMatrixTranslatefEXT;
+CI_API extern PFNGLMATRIXTRANSLATEFEXTPROC _funcptr_glMatrixTranslatefEXT;
 #define glMatrixTranslatefEXT _funcptr_glMatrixTranslatefEXT
-extern PFNGLMULTITEXBUFFEREXTPROC _funcptr_glMultiTexBufferEXT;
+CI_API extern PFNGLMULTITEXBUFFEREXTPROC _funcptr_glMultiTexBufferEXT;
 #define glMultiTexBufferEXT _funcptr_glMultiTexBufferEXT
-extern PFNGLMULTITEXCOORDPOINTEREXTPROC _funcptr_glMultiTexCoordPointerEXT;
+CI_API extern PFNGLMULTITEXCOORDPOINTEREXTPROC _funcptr_glMultiTexCoordPointerEXT;
 #define glMultiTexCoordPointerEXT _funcptr_glMultiTexCoordPointerEXT
-extern PFNGLMULTITEXENVFEXTPROC _funcptr_glMultiTexEnvfEXT;
+CI_API extern PFNGLMULTITEXENVFEXTPROC _funcptr_glMultiTexEnvfEXT;
 #define glMultiTexEnvfEXT _funcptr_glMultiTexEnvfEXT
-extern PFNGLMULTITEXENVFVEXTPROC _funcptr_glMultiTexEnvfvEXT;
+CI_API extern PFNGLMULTITEXENVFVEXTPROC _funcptr_glMultiTexEnvfvEXT;
 #define glMultiTexEnvfvEXT _funcptr_glMultiTexEnvfvEXT
-extern PFNGLMULTITEXENVIEXTPROC _funcptr_glMultiTexEnviEXT;
+CI_API extern PFNGLMULTITEXENVIEXTPROC _funcptr_glMultiTexEnviEXT;
 #define glMultiTexEnviEXT _funcptr_glMultiTexEnviEXT
-extern PFNGLMULTITEXENVIVEXTPROC _funcptr_glMultiTexEnvivEXT;
+CI_API extern PFNGLMULTITEXENVIVEXTPROC _funcptr_glMultiTexEnvivEXT;
 #define glMultiTexEnvivEXT _funcptr_glMultiTexEnvivEXT
-extern PFNGLMULTITEXGENDEXTPROC _funcptr_glMultiTexGendEXT;
+CI_API extern PFNGLMULTITEXGENDEXTPROC _funcptr_glMultiTexGendEXT;
 #define glMultiTexGendEXT _funcptr_glMultiTexGendEXT
-extern PFNGLMULTITEXGENDVEXTPROC _funcptr_glMultiTexGendvEXT;
+CI_API extern PFNGLMULTITEXGENDVEXTPROC _funcptr_glMultiTexGendvEXT;
 #define glMultiTexGendvEXT _funcptr_glMultiTexGendvEXT
-extern PFNGLMULTITEXGENFEXTPROC _funcptr_glMultiTexGenfEXT;
+CI_API extern PFNGLMULTITEXGENFEXTPROC _funcptr_glMultiTexGenfEXT;
 #define glMultiTexGenfEXT _funcptr_glMultiTexGenfEXT
-extern PFNGLMULTITEXGENFVEXTPROC _funcptr_glMultiTexGenfvEXT;
+CI_API extern PFNGLMULTITEXGENFVEXTPROC _funcptr_glMultiTexGenfvEXT;
 #define glMultiTexGenfvEXT _funcptr_glMultiTexGenfvEXT
-extern PFNGLMULTITEXGENIEXTPROC _funcptr_glMultiTexGeniEXT;
+CI_API extern PFNGLMULTITEXGENIEXTPROC _funcptr_glMultiTexGeniEXT;
 #define glMultiTexGeniEXT _funcptr_glMultiTexGeniEXT
-extern PFNGLMULTITEXGENIVEXTPROC _funcptr_glMultiTexGenivEXT;
+CI_API extern PFNGLMULTITEXGENIVEXTPROC _funcptr_glMultiTexGenivEXT;
 #define glMultiTexGenivEXT _funcptr_glMultiTexGenivEXT
-extern PFNGLMULTITEXIMAGE1DEXTPROC _funcptr_glMultiTexImage1DEXT;
+CI_API extern PFNGLMULTITEXIMAGE1DEXTPROC _funcptr_glMultiTexImage1DEXT;
 #define glMultiTexImage1DEXT _funcptr_glMultiTexImage1DEXT
-extern PFNGLMULTITEXIMAGE2DEXTPROC _funcptr_glMultiTexImage2DEXT;
+CI_API extern PFNGLMULTITEXIMAGE2DEXTPROC _funcptr_glMultiTexImage2DEXT;
 #define glMultiTexImage2DEXT _funcptr_glMultiTexImage2DEXT
-extern PFNGLMULTITEXIMAGE3DEXTPROC _funcptr_glMultiTexImage3DEXT;
+CI_API extern PFNGLMULTITEXIMAGE3DEXTPROC _funcptr_glMultiTexImage3DEXT;
 #define glMultiTexImage3DEXT _funcptr_glMultiTexImage3DEXT
-extern PFNGLMULTITEXPARAMETERIIVEXTPROC _funcptr_glMultiTexParameterIivEXT;
+CI_API extern PFNGLMULTITEXPARAMETERIIVEXTPROC _funcptr_glMultiTexParameterIivEXT;
 #define glMultiTexParameterIivEXT _funcptr_glMultiTexParameterIivEXT
-extern PFNGLMULTITEXPARAMETERIUIVEXTPROC _funcptr_glMultiTexParameterIuivEXT;
+CI_API extern PFNGLMULTITEXPARAMETERIUIVEXTPROC _funcptr_glMultiTexParameterIuivEXT;
 #define glMultiTexParameterIuivEXT _funcptr_glMultiTexParameterIuivEXT
-extern PFNGLMULTITEXPARAMETERFEXTPROC _funcptr_glMultiTexParameterfEXT;
+CI_API extern PFNGLMULTITEXPARAMETERFEXTPROC _funcptr_glMultiTexParameterfEXT;
 #define glMultiTexParameterfEXT _funcptr_glMultiTexParameterfEXT
-extern PFNGLMULTITEXPARAMETERFVEXTPROC _funcptr_glMultiTexParameterfvEXT;
+CI_API extern PFNGLMULTITEXPARAMETERFVEXTPROC _funcptr_glMultiTexParameterfvEXT;
 #define glMultiTexParameterfvEXT _funcptr_glMultiTexParameterfvEXT
-extern PFNGLMULTITEXPARAMETERIEXTPROC _funcptr_glMultiTexParameteriEXT;
+CI_API extern PFNGLMULTITEXPARAMETERIEXTPROC _funcptr_glMultiTexParameteriEXT;
 #define glMultiTexParameteriEXT _funcptr_glMultiTexParameteriEXT
-extern PFNGLMULTITEXPARAMETERIVEXTPROC _funcptr_glMultiTexParameterivEXT;
+CI_API extern PFNGLMULTITEXPARAMETERIVEXTPROC _funcptr_glMultiTexParameterivEXT;
 #define glMultiTexParameterivEXT _funcptr_glMultiTexParameterivEXT
-extern PFNGLMULTITEXRENDERBUFFEREXTPROC _funcptr_glMultiTexRenderbufferEXT;
+CI_API extern PFNGLMULTITEXRENDERBUFFEREXTPROC _funcptr_glMultiTexRenderbufferEXT;
 #define glMultiTexRenderbufferEXT _funcptr_glMultiTexRenderbufferEXT
-extern PFNGLMULTITEXSUBIMAGE1DEXTPROC _funcptr_glMultiTexSubImage1DEXT;
+CI_API extern PFNGLMULTITEXSUBIMAGE1DEXTPROC _funcptr_glMultiTexSubImage1DEXT;
 #define glMultiTexSubImage1DEXT _funcptr_glMultiTexSubImage1DEXT
-extern PFNGLMULTITEXSUBIMAGE2DEXTPROC _funcptr_glMultiTexSubImage2DEXT;
+CI_API extern PFNGLMULTITEXSUBIMAGE2DEXTPROC _funcptr_glMultiTexSubImage2DEXT;
 #define glMultiTexSubImage2DEXT _funcptr_glMultiTexSubImage2DEXT
-extern PFNGLMULTITEXSUBIMAGE3DEXTPROC _funcptr_glMultiTexSubImage3DEXT;
+CI_API extern PFNGLMULTITEXSUBIMAGE3DEXTPROC _funcptr_glMultiTexSubImage3DEXT;
 #define glMultiTexSubImage3DEXT _funcptr_glMultiTexSubImage3DEXT
-extern PFNGLNAMEDBUFFERDATAEXTPROC _funcptr_glNamedBufferDataEXT;
+CI_API extern PFNGLNAMEDBUFFERDATAEXTPROC _funcptr_glNamedBufferDataEXT;
 #define glNamedBufferDataEXT _funcptr_glNamedBufferDataEXT
-extern PFNGLNAMEDBUFFERSUBDATAEXTPROC _funcptr_glNamedBufferSubDataEXT;
+CI_API extern PFNGLNAMEDBUFFERSUBDATAEXTPROC _funcptr_glNamedBufferSubDataEXT;
 #define glNamedBufferSubDataEXT _funcptr_glNamedBufferSubDataEXT
-extern PFNGLNAMEDCOPYBUFFERSUBDATAEXTPROC _funcptr_glNamedCopyBufferSubDataEXT;
+CI_API extern PFNGLNAMEDCOPYBUFFERSUBDATAEXTPROC _funcptr_glNamedCopyBufferSubDataEXT;
 #define glNamedCopyBufferSubDataEXT _funcptr_glNamedCopyBufferSubDataEXT
-extern PFNGLNAMEDFRAMEBUFFERPARAMETERIEXTPROC _funcptr_glNamedFramebufferParameteriEXT;
+CI_API extern PFNGLNAMEDFRAMEBUFFERPARAMETERIEXTPROC _funcptr_glNamedFramebufferParameteriEXT;
 #define glNamedFramebufferParameteriEXT _funcptr_glNamedFramebufferParameteriEXT
-extern PFNGLNAMEDFRAMEBUFFERRENDERBUFFEREXTPROC _funcptr_glNamedFramebufferRenderbufferEXT;
+CI_API extern PFNGLNAMEDFRAMEBUFFERRENDERBUFFEREXTPROC _funcptr_glNamedFramebufferRenderbufferEXT;
 #define glNamedFramebufferRenderbufferEXT _funcptr_glNamedFramebufferRenderbufferEXT
-extern PFNGLNAMEDFRAMEBUFFERTEXTURE1DEXTPROC _funcptr_glNamedFramebufferTexture1DEXT;
+CI_API extern PFNGLNAMEDFRAMEBUFFERTEXTURE1DEXTPROC _funcptr_glNamedFramebufferTexture1DEXT;
 #define glNamedFramebufferTexture1DEXT _funcptr_glNamedFramebufferTexture1DEXT
-extern PFNGLNAMEDFRAMEBUFFERTEXTURE2DEXTPROC _funcptr_glNamedFramebufferTexture2DEXT;
+CI_API extern PFNGLNAMEDFRAMEBUFFERTEXTURE2DEXTPROC _funcptr_glNamedFramebufferTexture2DEXT;
 #define glNamedFramebufferTexture2DEXT _funcptr_glNamedFramebufferTexture2DEXT
-extern PFNGLNAMEDFRAMEBUFFERTEXTURE3DEXTPROC _funcptr_glNamedFramebufferTexture3DEXT;
+CI_API extern PFNGLNAMEDFRAMEBUFFERTEXTURE3DEXTPROC _funcptr_glNamedFramebufferTexture3DEXT;
 #define glNamedFramebufferTexture3DEXT _funcptr_glNamedFramebufferTexture3DEXT
-extern PFNGLNAMEDFRAMEBUFFERTEXTUREEXTPROC _funcptr_glNamedFramebufferTextureEXT;
+CI_API extern PFNGLNAMEDFRAMEBUFFERTEXTUREEXTPROC _funcptr_glNamedFramebufferTextureEXT;
 #define glNamedFramebufferTextureEXT _funcptr_glNamedFramebufferTextureEXT
-extern PFNGLNAMEDFRAMEBUFFERTEXTUREFACEEXTPROC _funcptr_glNamedFramebufferTextureFaceEXT;
+CI_API extern PFNGLNAMEDFRAMEBUFFERTEXTUREFACEEXTPROC _funcptr_glNamedFramebufferTextureFaceEXT;
 #define glNamedFramebufferTextureFaceEXT _funcptr_glNamedFramebufferTextureFaceEXT
-extern PFNGLNAMEDFRAMEBUFFERTEXTURELAYEREXTPROC _funcptr_glNamedFramebufferTextureLayerEXT;
+CI_API extern PFNGLNAMEDFRAMEBUFFERTEXTURELAYEREXTPROC _funcptr_glNamedFramebufferTextureLayerEXT;
 #define glNamedFramebufferTextureLayerEXT _funcptr_glNamedFramebufferTextureLayerEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETER4DEXTPROC _funcptr_glNamedProgramLocalParameter4dEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETER4DEXTPROC _funcptr_glNamedProgramLocalParameter4dEXT;
 #define glNamedProgramLocalParameter4dEXT _funcptr_glNamedProgramLocalParameter4dEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETER4DVEXTPROC _funcptr_glNamedProgramLocalParameter4dvEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETER4DVEXTPROC _funcptr_glNamedProgramLocalParameter4dvEXT;
 #define glNamedProgramLocalParameter4dvEXT _funcptr_glNamedProgramLocalParameter4dvEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETER4FEXTPROC _funcptr_glNamedProgramLocalParameter4fEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETER4FEXTPROC _funcptr_glNamedProgramLocalParameter4fEXT;
 #define glNamedProgramLocalParameter4fEXT _funcptr_glNamedProgramLocalParameter4fEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETER4FVEXTPROC _funcptr_glNamedProgramLocalParameter4fvEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETER4FVEXTPROC _funcptr_glNamedProgramLocalParameter4fvEXT;
 #define glNamedProgramLocalParameter4fvEXT _funcptr_glNamedProgramLocalParameter4fvEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETERI4IEXTPROC _funcptr_glNamedProgramLocalParameterI4iEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETERI4IEXTPROC _funcptr_glNamedProgramLocalParameterI4iEXT;
 #define glNamedProgramLocalParameterI4iEXT _funcptr_glNamedProgramLocalParameterI4iEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETERI4IVEXTPROC _funcptr_glNamedProgramLocalParameterI4ivEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETERI4IVEXTPROC _funcptr_glNamedProgramLocalParameterI4ivEXT;
 #define glNamedProgramLocalParameterI4ivEXT _funcptr_glNamedProgramLocalParameterI4ivEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETERI4UIEXTPROC _funcptr_glNamedProgramLocalParameterI4uiEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETERI4UIEXTPROC _funcptr_glNamedProgramLocalParameterI4uiEXT;
 #define glNamedProgramLocalParameterI4uiEXT _funcptr_glNamedProgramLocalParameterI4uiEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETERI4UIVEXTPROC _funcptr_glNamedProgramLocalParameterI4uivEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETERI4UIVEXTPROC _funcptr_glNamedProgramLocalParameterI4uivEXT;
 #define glNamedProgramLocalParameterI4uivEXT _funcptr_glNamedProgramLocalParameterI4uivEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETERS4FVEXTPROC _funcptr_glNamedProgramLocalParameters4fvEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETERS4FVEXTPROC _funcptr_glNamedProgramLocalParameters4fvEXT;
 #define glNamedProgramLocalParameters4fvEXT _funcptr_glNamedProgramLocalParameters4fvEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETERSI4IVEXTPROC _funcptr_glNamedProgramLocalParametersI4ivEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETERSI4IVEXTPROC _funcptr_glNamedProgramLocalParametersI4ivEXT;
 #define glNamedProgramLocalParametersI4ivEXT _funcptr_glNamedProgramLocalParametersI4ivEXT
-extern PFNGLNAMEDPROGRAMLOCALPARAMETERSI4UIVEXTPROC _funcptr_glNamedProgramLocalParametersI4uivEXT;
+CI_API extern PFNGLNAMEDPROGRAMLOCALPARAMETERSI4UIVEXTPROC _funcptr_glNamedProgramLocalParametersI4uivEXT;
 #define glNamedProgramLocalParametersI4uivEXT _funcptr_glNamedProgramLocalParametersI4uivEXT
-extern PFNGLNAMEDPROGRAMSTRINGEXTPROC _funcptr_glNamedProgramStringEXT;
+CI_API extern PFNGLNAMEDPROGRAMSTRINGEXTPROC _funcptr_glNamedProgramStringEXT;
 #define glNamedProgramStringEXT _funcptr_glNamedProgramStringEXT
-extern PFNGLNAMEDRENDERBUFFERSTORAGEEXTPROC _funcptr_glNamedRenderbufferStorageEXT;
+CI_API extern PFNGLNAMEDRENDERBUFFERSTORAGEEXTPROC _funcptr_glNamedRenderbufferStorageEXT;
 #define glNamedRenderbufferStorageEXT _funcptr_glNamedRenderbufferStorageEXT
-extern PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLECOVERAGEEXTPROC _funcptr_glNamedRenderbufferStorageMultisampleCoverageEXT;
+CI_API extern PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLECOVERAGEEXTPROC _funcptr_glNamedRenderbufferStorageMultisampleCoverageEXT;
 #define glNamedRenderbufferStorageMultisampleCoverageEXT _funcptr_glNamedRenderbufferStorageMultisampleCoverageEXT
-extern PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC _funcptr_glNamedRenderbufferStorageMultisampleEXT;
+CI_API extern PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC _funcptr_glNamedRenderbufferStorageMultisampleEXT;
 #define glNamedRenderbufferStorageMultisampleEXT _funcptr_glNamedRenderbufferStorageMultisampleEXT
-extern PFNGLPROGRAMUNIFORM1DEXTPROC _funcptr_glProgramUniform1dEXT;
+CI_API extern PFNGLPROGRAMUNIFORM1DEXTPROC _funcptr_glProgramUniform1dEXT;
 #define glProgramUniform1dEXT _funcptr_glProgramUniform1dEXT
-extern PFNGLPROGRAMUNIFORM1DVEXTPROC _funcptr_glProgramUniform1dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORM1DVEXTPROC _funcptr_glProgramUniform1dvEXT;
 #define glProgramUniform1dvEXT _funcptr_glProgramUniform1dvEXT
-extern PFNGLPROGRAMUNIFORM1FEXTPROC _funcptr_glProgramUniform1fEXT;
+CI_API extern PFNGLPROGRAMUNIFORM1FEXTPROC _funcptr_glProgramUniform1fEXT;
 #define glProgramUniform1fEXT _funcptr_glProgramUniform1fEXT
-extern PFNGLPROGRAMUNIFORM1FVEXTPROC _funcptr_glProgramUniform1fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORM1FVEXTPROC _funcptr_glProgramUniform1fvEXT;
 #define glProgramUniform1fvEXT _funcptr_glProgramUniform1fvEXT
-extern PFNGLPROGRAMUNIFORM1IEXTPROC _funcptr_glProgramUniform1iEXT;
+CI_API extern PFNGLPROGRAMUNIFORM1IEXTPROC _funcptr_glProgramUniform1iEXT;
 #define glProgramUniform1iEXT _funcptr_glProgramUniform1iEXT
-extern PFNGLPROGRAMUNIFORM1IVEXTPROC _funcptr_glProgramUniform1ivEXT;
+CI_API extern PFNGLPROGRAMUNIFORM1IVEXTPROC _funcptr_glProgramUniform1ivEXT;
 #define glProgramUniform1ivEXT _funcptr_glProgramUniform1ivEXT
-extern PFNGLPROGRAMUNIFORM1UIEXTPROC _funcptr_glProgramUniform1uiEXT;
+CI_API extern PFNGLPROGRAMUNIFORM1UIEXTPROC _funcptr_glProgramUniform1uiEXT;
 #define glProgramUniform1uiEXT _funcptr_glProgramUniform1uiEXT
-extern PFNGLPROGRAMUNIFORM1UIVEXTPROC _funcptr_glProgramUniform1uivEXT;
+CI_API extern PFNGLPROGRAMUNIFORM1UIVEXTPROC _funcptr_glProgramUniform1uivEXT;
 #define glProgramUniform1uivEXT _funcptr_glProgramUniform1uivEXT
-extern PFNGLPROGRAMUNIFORM2DEXTPROC _funcptr_glProgramUniform2dEXT;
+CI_API extern PFNGLPROGRAMUNIFORM2DEXTPROC _funcptr_glProgramUniform2dEXT;
 #define glProgramUniform2dEXT _funcptr_glProgramUniform2dEXT
-extern PFNGLPROGRAMUNIFORM2DVEXTPROC _funcptr_glProgramUniform2dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORM2DVEXTPROC _funcptr_glProgramUniform2dvEXT;
 #define glProgramUniform2dvEXT _funcptr_glProgramUniform2dvEXT
-extern PFNGLPROGRAMUNIFORM2FEXTPROC _funcptr_glProgramUniform2fEXT;
+CI_API extern PFNGLPROGRAMUNIFORM2FEXTPROC _funcptr_glProgramUniform2fEXT;
 #define glProgramUniform2fEXT _funcptr_glProgramUniform2fEXT
-extern PFNGLPROGRAMUNIFORM2FVEXTPROC _funcptr_glProgramUniform2fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORM2FVEXTPROC _funcptr_glProgramUniform2fvEXT;
 #define glProgramUniform2fvEXT _funcptr_glProgramUniform2fvEXT
-extern PFNGLPROGRAMUNIFORM2IEXTPROC _funcptr_glProgramUniform2iEXT;
+CI_API extern PFNGLPROGRAMUNIFORM2IEXTPROC _funcptr_glProgramUniform2iEXT;
 #define glProgramUniform2iEXT _funcptr_glProgramUniform2iEXT
-extern PFNGLPROGRAMUNIFORM2IVEXTPROC _funcptr_glProgramUniform2ivEXT;
+CI_API extern PFNGLPROGRAMUNIFORM2IVEXTPROC _funcptr_glProgramUniform2ivEXT;
 #define glProgramUniform2ivEXT _funcptr_glProgramUniform2ivEXT
-extern PFNGLPROGRAMUNIFORM2UIEXTPROC _funcptr_glProgramUniform2uiEXT;
+CI_API extern PFNGLPROGRAMUNIFORM2UIEXTPROC _funcptr_glProgramUniform2uiEXT;
 #define glProgramUniform2uiEXT _funcptr_glProgramUniform2uiEXT
-extern PFNGLPROGRAMUNIFORM2UIVEXTPROC _funcptr_glProgramUniform2uivEXT;
+CI_API extern PFNGLPROGRAMUNIFORM2UIVEXTPROC _funcptr_glProgramUniform2uivEXT;
 #define glProgramUniform2uivEXT _funcptr_glProgramUniform2uivEXT
-extern PFNGLPROGRAMUNIFORM3DEXTPROC _funcptr_glProgramUniform3dEXT;
+CI_API extern PFNGLPROGRAMUNIFORM3DEXTPROC _funcptr_glProgramUniform3dEXT;
 #define glProgramUniform3dEXT _funcptr_glProgramUniform3dEXT
-extern PFNGLPROGRAMUNIFORM3DVEXTPROC _funcptr_glProgramUniform3dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORM3DVEXTPROC _funcptr_glProgramUniform3dvEXT;
 #define glProgramUniform3dvEXT _funcptr_glProgramUniform3dvEXT
-extern PFNGLPROGRAMUNIFORM3FEXTPROC _funcptr_glProgramUniform3fEXT;
+CI_API extern PFNGLPROGRAMUNIFORM3FEXTPROC _funcptr_glProgramUniform3fEXT;
 #define glProgramUniform3fEXT _funcptr_glProgramUniform3fEXT
-extern PFNGLPROGRAMUNIFORM3FVEXTPROC _funcptr_glProgramUniform3fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORM3FVEXTPROC _funcptr_glProgramUniform3fvEXT;
 #define glProgramUniform3fvEXT _funcptr_glProgramUniform3fvEXT
-extern PFNGLPROGRAMUNIFORM3IEXTPROC _funcptr_glProgramUniform3iEXT;
+CI_API extern PFNGLPROGRAMUNIFORM3IEXTPROC _funcptr_glProgramUniform3iEXT;
 #define glProgramUniform3iEXT _funcptr_glProgramUniform3iEXT
-extern PFNGLPROGRAMUNIFORM3IVEXTPROC _funcptr_glProgramUniform3ivEXT;
+CI_API extern PFNGLPROGRAMUNIFORM3IVEXTPROC _funcptr_glProgramUniform3ivEXT;
 #define glProgramUniform3ivEXT _funcptr_glProgramUniform3ivEXT
-extern PFNGLPROGRAMUNIFORM3UIEXTPROC _funcptr_glProgramUniform3uiEXT;
+CI_API extern PFNGLPROGRAMUNIFORM3UIEXTPROC _funcptr_glProgramUniform3uiEXT;
 #define glProgramUniform3uiEXT _funcptr_glProgramUniform3uiEXT
-extern PFNGLPROGRAMUNIFORM3UIVEXTPROC _funcptr_glProgramUniform3uivEXT;
+CI_API extern PFNGLPROGRAMUNIFORM3UIVEXTPROC _funcptr_glProgramUniform3uivEXT;
 #define glProgramUniform3uivEXT _funcptr_glProgramUniform3uivEXT
-extern PFNGLPROGRAMUNIFORM4DEXTPROC _funcptr_glProgramUniform4dEXT;
+CI_API extern PFNGLPROGRAMUNIFORM4DEXTPROC _funcptr_glProgramUniform4dEXT;
 #define glProgramUniform4dEXT _funcptr_glProgramUniform4dEXT
-extern PFNGLPROGRAMUNIFORM4DVEXTPROC _funcptr_glProgramUniform4dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORM4DVEXTPROC _funcptr_glProgramUniform4dvEXT;
 #define glProgramUniform4dvEXT _funcptr_glProgramUniform4dvEXT
-extern PFNGLPROGRAMUNIFORM4FEXTPROC _funcptr_glProgramUniform4fEXT;
+CI_API extern PFNGLPROGRAMUNIFORM4FEXTPROC _funcptr_glProgramUniform4fEXT;
 #define glProgramUniform4fEXT _funcptr_glProgramUniform4fEXT
-extern PFNGLPROGRAMUNIFORM4FVEXTPROC _funcptr_glProgramUniform4fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORM4FVEXTPROC _funcptr_glProgramUniform4fvEXT;
 #define glProgramUniform4fvEXT _funcptr_glProgramUniform4fvEXT
-extern PFNGLPROGRAMUNIFORM4IEXTPROC _funcptr_glProgramUniform4iEXT;
+CI_API extern PFNGLPROGRAMUNIFORM4IEXTPROC _funcptr_glProgramUniform4iEXT;
 #define glProgramUniform4iEXT _funcptr_glProgramUniform4iEXT
-extern PFNGLPROGRAMUNIFORM4IVEXTPROC _funcptr_glProgramUniform4ivEXT;
+CI_API extern PFNGLPROGRAMUNIFORM4IVEXTPROC _funcptr_glProgramUniform4ivEXT;
 #define glProgramUniform4ivEXT _funcptr_glProgramUniform4ivEXT
-extern PFNGLPROGRAMUNIFORM4UIEXTPROC _funcptr_glProgramUniform4uiEXT;
+CI_API extern PFNGLPROGRAMUNIFORM4UIEXTPROC _funcptr_glProgramUniform4uiEXT;
 #define glProgramUniform4uiEXT _funcptr_glProgramUniform4uiEXT
-extern PFNGLPROGRAMUNIFORM4UIVEXTPROC _funcptr_glProgramUniform4uivEXT;
+CI_API extern PFNGLPROGRAMUNIFORM4UIVEXTPROC _funcptr_glProgramUniform4uivEXT;
 #define glProgramUniform4uivEXT _funcptr_glProgramUniform4uivEXT
-extern PFNGLPROGRAMUNIFORMMATRIX2DVEXTPROC _funcptr_glProgramUniformMatrix2dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2DVEXTPROC _funcptr_glProgramUniformMatrix2dvEXT;
 #define glProgramUniformMatrix2dvEXT _funcptr_glProgramUniformMatrix2dvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX2FVEXTPROC _funcptr_glProgramUniformMatrix2fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2FVEXTPROC _funcptr_glProgramUniformMatrix2fvEXT;
 #define glProgramUniformMatrix2fvEXT _funcptr_glProgramUniformMatrix2fvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX2X3DVEXTPROC _funcptr_glProgramUniformMatrix2x3dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2X3DVEXTPROC _funcptr_glProgramUniformMatrix2x3dvEXT;
 #define glProgramUniformMatrix2x3dvEXT _funcptr_glProgramUniformMatrix2x3dvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX2X3FVEXTPROC _funcptr_glProgramUniformMatrix2x3fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2X3FVEXTPROC _funcptr_glProgramUniformMatrix2x3fvEXT;
 #define glProgramUniformMatrix2x3fvEXT _funcptr_glProgramUniformMatrix2x3fvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX2X4DVEXTPROC _funcptr_glProgramUniformMatrix2x4dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2X4DVEXTPROC _funcptr_glProgramUniformMatrix2x4dvEXT;
 #define glProgramUniformMatrix2x4dvEXT _funcptr_glProgramUniformMatrix2x4dvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX2X4FVEXTPROC _funcptr_glProgramUniformMatrix2x4fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX2X4FVEXTPROC _funcptr_glProgramUniformMatrix2x4fvEXT;
 #define glProgramUniformMatrix2x4fvEXT _funcptr_glProgramUniformMatrix2x4fvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX3DVEXTPROC _funcptr_glProgramUniformMatrix3dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3DVEXTPROC _funcptr_glProgramUniformMatrix3dvEXT;
 #define glProgramUniformMatrix3dvEXT _funcptr_glProgramUniformMatrix3dvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX3FVEXTPROC _funcptr_glProgramUniformMatrix3fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3FVEXTPROC _funcptr_glProgramUniformMatrix3fvEXT;
 #define glProgramUniformMatrix3fvEXT _funcptr_glProgramUniformMatrix3fvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX3X2DVEXTPROC _funcptr_glProgramUniformMatrix3x2dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3X2DVEXTPROC _funcptr_glProgramUniformMatrix3x2dvEXT;
 #define glProgramUniformMatrix3x2dvEXT _funcptr_glProgramUniformMatrix3x2dvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX3X2FVEXTPROC _funcptr_glProgramUniformMatrix3x2fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3X2FVEXTPROC _funcptr_glProgramUniformMatrix3x2fvEXT;
 #define glProgramUniformMatrix3x2fvEXT _funcptr_glProgramUniformMatrix3x2fvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX3X4DVEXTPROC _funcptr_glProgramUniformMatrix3x4dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3X4DVEXTPROC _funcptr_glProgramUniformMatrix3x4dvEXT;
 #define glProgramUniformMatrix3x4dvEXT _funcptr_glProgramUniformMatrix3x4dvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX3X4FVEXTPROC _funcptr_glProgramUniformMatrix3x4fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX3X4FVEXTPROC _funcptr_glProgramUniformMatrix3x4fvEXT;
 #define glProgramUniformMatrix3x4fvEXT _funcptr_glProgramUniformMatrix3x4fvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX4DVEXTPROC _funcptr_glProgramUniformMatrix4dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4DVEXTPROC _funcptr_glProgramUniformMatrix4dvEXT;
 #define glProgramUniformMatrix4dvEXT _funcptr_glProgramUniformMatrix4dvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX4FVEXTPROC _funcptr_glProgramUniformMatrix4fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4FVEXTPROC _funcptr_glProgramUniformMatrix4fvEXT;
 #define glProgramUniformMatrix4fvEXT _funcptr_glProgramUniformMatrix4fvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX4X2DVEXTPROC _funcptr_glProgramUniformMatrix4x2dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4X2DVEXTPROC _funcptr_glProgramUniformMatrix4x2dvEXT;
 #define glProgramUniformMatrix4x2dvEXT _funcptr_glProgramUniformMatrix4x2dvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX4X2FVEXTPROC _funcptr_glProgramUniformMatrix4x2fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4X2FVEXTPROC _funcptr_glProgramUniformMatrix4x2fvEXT;
 #define glProgramUniformMatrix4x2fvEXT _funcptr_glProgramUniformMatrix4x2fvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX4X3DVEXTPROC _funcptr_glProgramUniformMatrix4x3dvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4X3DVEXTPROC _funcptr_glProgramUniformMatrix4x3dvEXT;
 #define glProgramUniformMatrix4x3dvEXT _funcptr_glProgramUniformMatrix4x3dvEXT
-extern PFNGLPROGRAMUNIFORMMATRIX4X3FVEXTPROC _funcptr_glProgramUniformMatrix4x3fvEXT;
+CI_API extern PFNGLPROGRAMUNIFORMMATRIX4X3FVEXTPROC _funcptr_glProgramUniformMatrix4x3fvEXT;
 #define glProgramUniformMatrix4x3fvEXT _funcptr_glProgramUniformMatrix4x3fvEXT
-extern PFNGLPUSHCLIENTATTRIBDEFAULTEXTPROC _funcptr_glPushClientAttribDefaultEXT;
+CI_API extern PFNGLPUSHCLIENTATTRIBDEFAULTEXTPROC _funcptr_glPushClientAttribDefaultEXT;
 #define glPushClientAttribDefaultEXT _funcptr_glPushClientAttribDefaultEXT
-extern PFNGLTEXTUREBUFFEREXTPROC _funcptr_glTextureBufferEXT;
+CI_API extern PFNGLTEXTUREBUFFEREXTPROC _funcptr_glTextureBufferEXT;
 #define glTextureBufferEXT _funcptr_glTextureBufferEXT
-extern PFNGLTEXTUREBUFFERRANGEEXTPROC _funcptr_glTextureBufferRangeEXT;
+CI_API extern PFNGLTEXTUREBUFFERRANGEEXTPROC _funcptr_glTextureBufferRangeEXT;
 #define glTextureBufferRangeEXT _funcptr_glTextureBufferRangeEXT
-extern PFNGLTEXTUREIMAGE1DEXTPROC _funcptr_glTextureImage1DEXT;
+CI_API extern PFNGLTEXTUREIMAGE1DEXTPROC _funcptr_glTextureImage1DEXT;
 #define glTextureImage1DEXT _funcptr_glTextureImage1DEXT
-extern PFNGLTEXTUREIMAGE2DEXTPROC _funcptr_glTextureImage2DEXT;
+CI_API extern PFNGLTEXTUREIMAGE2DEXTPROC _funcptr_glTextureImage2DEXT;
 #define glTextureImage2DEXT _funcptr_glTextureImage2DEXT
-extern PFNGLTEXTUREIMAGE3DEXTPROC _funcptr_glTextureImage3DEXT;
+CI_API extern PFNGLTEXTUREIMAGE3DEXTPROC _funcptr_glTextureImage3DEXT;
 #define glTextureImage3DEXT _funcptr_glTextureImage3DEXT
-extern PFNGLTEXTUREPAGECOMMITMENTEXTPROC _funcptr_glTexturePageCommitmentEXT;
+CI_API extern PFNGLTEXTUREPAGECOMMITMENTEXTPROC _funcptr_glTexturePageCommitmentEXT;
 #define glTexturePageCommitmentEXT _funcptr_glTexturePageCommitmentEXT
-extern PFNGLTEXTUREPARAMETERIIVEXTPROC _funcptr_glTextureParameterIivEXT;
+CI_API extern PFNGLTEXTUREPARAMETERIIVEXTPROC _funcptr_glTextureParameterIivEXT;
 #define glTextureParameterIivEXT _funcptr_glTextureParameterIivEXT
-extern PFNGLTEXTUREPARAMETERIUIVEXTPROC _funcptr_glTextureParameterIuivEXT;
+CI_API extern PFNGLTEXTUREPARAMETERIUIVEXTPROC _funcptr_glTextureParameterIuivEXT;
 #define glTextureParameterIuivEXT _funcptr_glTextureParameterIuivEXT
-extern PFNGLTEXTUREPARAMETERFEXTPROC _funcptr_glTextureParameterfEXT;
+CI_API extern PFNGLTEXTUREPARAMETERFEXTPROC _funcptr_glTextureParameterfEXT;
 #define glTextureParameterfEXT _funcptr_glTextureParameterfEXT
-extern PFNGLTEXTUREPARAMETERFVEXTPROC _funcptr_glTextureParameterfvEXT;
+CI_API extern PFNGLTEXTUREPARAMETERFVEXTPROC _funcptr_glTextureParameterfvEXT;
 #define glTextureParameterfvEXT _funcptr_glTextureParameterfvEXT
-extern PFNGLTEXTUREPARAMETERIEXTPROC _funcptr_glTextureParameteriEXT;
+CI_API extern PFNGLTEXTUREPARAMETERIEXTPROC _funcptr_glTextureParameteriEXT;
 #define glTextureParameteriEXT _funcptr_glTextureParameteriEXT
-extern PFNGLTEXTUREPARAMETERIVEXTPROC _funcptr_glTextureParameterivEXT;
+CI_API extern PFNGLTEXTUREPARAMETERIVEXTPROC _funcptr_glTextureParameterivEXT;
 #define glTextureParameterivEXT _funcptr_glTextureParameterivEXT
-extern PFNGLTEXTURERENDERBUFFEREXTPROC _funcptr_glTextureRenderbufferEXT;
+CI_API extern PFNGLTEXTURERENDERBUFFEREXTPROC _funcptr_glTextureRenderbufferEXT;
 #define glTextureRenderbufferEXT _funcptr_glTextureRenderbufferEXT
-extern PFNGLTEXTURESTORAGE1DEXTPROC _funcptr_glTextureStorage1DEXT;
+CI_API extern PFNGLTEXTURESTORAGE1DEXTPROC _funcptr_glTextureStorage1DEXT;
 #define glTextureStorage1DEXT _funcptr_glTextureStorage1DEXT
-extern PFNGLTEXTURESTORAGE2DEXTPROC _funcptr_glTextureStorage2DEXT;
+CI_API extern PFNGLTEXTURESTORAGE2DEXTPROC _funcptr_glTextureStorage2DEXT;
 #define glTextureStorage2DEXT _funcptr_glTextureStorage2DEXT
-extern PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC _funcptr_glTextureStorage2DMultisampleEXT;
+CI_API extern PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC _funcptr_glTextureStorage2DMultisampleEXT;
 #define glTextureStorage2DMultisampleEXT _funcptr_glTextureStorage2DMultisampleEXT
-extern PFNGLTEXTURESTORAGE3DEXTPROC _funcptr_glTextureStorage3DEXT;
+CI_API extern PFNGLTEXTURESTORAGE3DEXTPROC _funcptr_glTextureStorage3DEXT;
 #define glTextureStorage3DEXT _funcptr_glTextureStorage3DEXT
-extern PFNGLTEXTURESTORAGE3DMULTISAMPLEEXTPROC _funcptr_glTextureStorage3DMultisampleEXT;
+CI_API extern PFNGLTEXTURESTORAGE3DMULTISAMPLEEXTPROC _funcptr_glTextureStorage3DMultisampleEXT;
 #define glTextureStorage3DMultisampleEXT _funcptr_glTextureStorage3DMultisampleEXT
-extern PFNGLTEXTURESUBIMAGE1DEXTPROC _funcptr_glTextureSubImage1DEXT;
+CI_API extern PFNGLTEXTURESUBIMAGE1DEXTPROC _funcptr_glTextureSubImage1DEXT;
 #define glTextureSubImage1DEXT _funcptr_glTextureSubImage1DEXT
-extern PFNGLTEXTURESUBIMAGE2DEXTPROC _funcptr_glTextureSubImage2DEXT;
+CI_API extern PFNGLTEXTURESUBIMAGE2DEXTPROC _funcptr_glTextureSubImage2DEXT;
 #define glTextureSubImage2DEXT _funcptr_glTextureSubImage2DEXT
-extern PFNGLTEXTURESUBIMAGE3DEXTPROC _funcptr_glTextureSubImage3DEXT;
+CI_API extern PFNGLTEXTURESUBIMAGE3DEXTPROC _funcptr_glTextureSubImage3DEXT;
 #define glTextureSubImage3DEXT _funcptr_glTextureSubImage3DEXT
-extern PFNGLUNMAPNAMEDBUFFEREXTPROC _funcptr_glUnmapNamedBufferEXT;
+CI_API extern PFNGLUNMAPNAMEDBUFFEREXTPROC _funcptr_glUnmapNamedBufferEXT;
 #define glUnmapNamedBufferEXT _funcptr_glUnmapNamedBufferEXT
-extern PFNGLVERTEXARRAYBINDVERTEXBUFFEREXTPROC _funcptr_glVertexArrayBindVertexBufferEXT;
+CI_API extern PFNGLVERTEXARRAYBINDVERTEXBUFFEREXTPROC _funcptr_glVertexArrayBindVertexBufferEXT;
 #define glVertexArrayBindVertexBufferEXT _funcptr_glVertexArrayBindVertexBufferEXT
-extern PFNGLVERTEXARRAYCOLOROFFSETEXTPROC _funcptr_glVertexArrayColorOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYCOLOROFFSETEXTPROC _funcptr_glVertexArrayColorOffsetEXT;
 #define glVertexArrayColorOffsetEXT _funcptr_glVertexArrayColorOffsetEXT
-extern PFNGLVERTEXARRAYEDGEFLAGOFFSETEXTPROC _funcptr_glVertexArrayEdgeFlagOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYEDGEFLAGOFFSETEXTPROC _funcptr_glVertexArrayEdgeFlagOffsetEXT;
 #define glVertexArrayEdgeFlagOffsetEXT _funcptr_glVertexArrayEdgeFlagOffsetEXT
-extern PFNGLVERTEXARRAYFOGCOORDOFFSETEXTPROC _funcptr_glVertexArrayFogCoordOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYFOGCOORDOFFSETEXTPROC _funcptr_glVertexArrayFogCoordOffsetEXT;
 #define glVertexArrayFogCoordOffsetEXT _funcptr_glVertexArrayFogCoordOffsetEXT
-extern PFNGLVERTEXARRAYINDEXOFFSETEXTPROC _funcptr_glVertexArrayIndexOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYINDEXOFFSETEXTPROC _funcptr_glVertexArrayIndexOffsetEXT;
 #define glVertexArrayIndexOffsetEXT _funcptr_glVertexArrayIndexOffsetEXT
-extern PFNGLVERTEXARRAYMULTITEXCOORDOFFSETEXTPROC _funcptr_glVertexArrayMultiTexCoordOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYMULTITEXCOORDOFFSETEXTPROC _funcptr_glVertexArrayMultiTexCoordOffsetEXT;
 #define glVertexArrayMultiTexCoordOffsetEXT _funcptr_glVertexArrayMultiTexCoordOffsetEXT
-extern PFNGLVERTEXARRAYNORMALOFFSETEXTPROC _funcptr_glVertexArrayNormalOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYNORMALOFFSETEXTPROC _funcptr_glVertexArrayNormalOffsetEXT;
 #define glVertexArrayNormalOffsetEXT _funcptr_glVertexArrayNormalOffsetEXT
-extern PFNGLVERTEXARRAYSECONDARYCOLOROFFSETEXTPROC _funcptr_glVertexArraySecondaryColorOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYSECONDARYCOLOROFFSETEXTPROC _funcptr_glVertexArraySecondaryColorOffsetEXT;
 #define glVertexArraySecondaryColorOffsetEXT _funcptr_glVertexArraySecondaryColorOffsetEXT
-extern PFNGLVERTEXARRAYTEXCOORDOFFSETEXTPROC _funcptr_glVertexArrayTexCoordOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYTEXCOORDOFFSETEXTPROC _funcptr_glVertexArrayTexCoordOffsetEXT;
 #define glVertexArrayTexCoordOffsetEXT _funcptr_glVertexArrayTexCoordOffsetEXT
-extern PFNGLVERTEXARRAYVERTEXATTRIBBINDINGEXTPROC _funcptr_glVertexArrayVertexAttribBindingEXT;
+CI_API extern PFNGLVERTEXARRAYVERTEXATTRIBBINDINGEXTPROC _funcptr_glVertexArrayVertexAttribBindingEXT;
 #define glVertexArrayVertexAttribBindingEXT _funcptr_glVertexArrayVertexAttribBindingEXT
-extern PFNGLVERTEXARRAYVERTEXATTRIBFORMATEXTPROC _funcptr_glVertexArrayVertexAttribFormatEXT;
+CI_API extern PFNGLVERTEXARRAYVERTEXATTRIBFORMATEXTPROC _funcptr_glVertexArrayVertexAttribFormatEXT;
 #define glVertexArrayVertexAttribFormatEXT _funcptr_glVertexArrayVertexAttribFormatEXT
-extern PFNGLVERTEXARRAYVERTEXATTRIBIFORMATEXTPROC _funcptr_glVertexArrayVertexAttribIFormatEXT;
+CI_API extern PFNGLVERTEXARRAYVERTEXATTRIBIFORMATEXTPROC _funcptr_glVertexArrayVertexAttribIFormatEXT;
 #define glVertexArrayVertexAttribIFormatEXT _funcptr_glVertexArrayVertexAttribIFormatEXT
-extern PFNGLVERTEXARRAYVERTEXATTRIBIOFFSETEXTPROC _funcptr_glVertexArrayVertexAttribIOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYVERTEXATTRIBIOFFSETEXTPROC _funcptr_glVertexArrayVertexAttribIOffsetEXT;
 #define glVertexArrayVertexAttribIOffsetEXT _funcptr_glVertexArrayVertexAttribIOffsetEXT
-extern PFNGLVERTEXARRAYVERTEXATTRIBLFORMATEXTPROC _funcptr_glVertexArrayVertexAttribLFormatEXT;
+CI_API extern PFNGLVERTEXARRAYVERTEXATTRIBLFORMATEXTPROC _funcptr_glVertexArrayVertexAttribLFormatEXT;
 #define glVertexArrayVertexAttribLFormatEXT _funcptr_glVertexArrayVertexAttribLFormatEXT
-extern PFNGLVERTEXARRAYVERTEXATTRIBLOFFSETEXTPROC _funcptr_glVertexArrayVertexAttribLOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYVERTEXATTRIBLOFFSETEXTPROC _funcptr_glVertexArrayVertexAttribLOffsetEXT;
 #define glVertexArrayVertexAttribLOffsetEXT _funcptr_glVertexArrayVertexAttribLOffsetEXT
-extern PFNGLVERTEXARRAYVERTEXATTRIBOFFSETEXTPROC _funcptr_glVertexArrayVertexAttribOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYVERTEXATTRIBOFFSETEXTPROC _funcptr_glVertexArrayVertexAttribOffsetEXT;
 #define glVertexArrayVertexAttribOffsetEXT _funcptr_glVertexArrayVertexAttribOffsetEXT
-extern PFNGLVERTEXARRAYVERTEXBINDINGDIVISOREXTPROC _funcptr_glVertexArrayVertexBindingDivisorEXT;
+CI_API extern PFNGLVERTEXARRAYVERTEXBINDINGDIVISOREXTPROC _funcptr_glVertexArrayVertexBindingDivisorEXT;
 #define glVertexArrayVertexBindingDivisorEXT _funcptr_glVertexArrayVertexBindingDivisorEXT
-extern PFNGLVERTEXARRAYVERTEXOFFSETEXTPROC _funcptr_glVertexArrayVertexOffsetEXT;
+CI_API extern PFNGLVERTEXARRAYVERTEXOFFSETEXTPROC _funcptr_glVertexArrayVertexOffsetEXT;
 #define glVertexArrayVertexOffsetEXT _funcptr_glVertexArrayVertexOffsetEXT
 
 typedef void (CODEGEN_FUNCPTR * PFNGLCOLORMASKINDEXEDEXTPROC)(GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
@@ -5914,25 +5914,25 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETBOOLEANINDEXEDVEXTPROC)(GLenum target, G
 typedef void (CODEGEN_FUNCPTR * PFNGLGETINTEGERINDEXEDVEXTPROC)(GLenum target, GLuint index, GLint * data);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISENABLEDINDEXEDEXTPROC)(GLenum target, GLuint index);
 
-extern PFNGLCOLORMASKINDEXEDEXTPROC _funcptr_glColorMaskIndexedEXT;
+CI_API extern PFNGLCOLORMASKINDEXEDEXTPROC _funcptr_glColorMaskIndexedEXT;
 #define glColorMaskIndexedEXT _funcptr_glColorMaskIndexedEXT
-extern PFNGLDISABLEINDEXEDEXTPROC _funcptr_glDisableIndexedEXT;
+CI_API extern PFNGLDISABLEINDEXEDEXTPROC _funcptr_glDisableIndexedEXT;
 #define glDisableIndexedEXT _funcptr_glDisableIndexedEXT
-extern PFNGLENABLEINDEXEDEXTPROC _funcptr_glEnableIndexedEXT;
+CI_API extern PFNGLENABLEINDEXEDEXTPROC _funcptr_glEnableIndexedEXT;
 #define glEnableIndexedEXT _funcptr_glEnableIndexedEXT
-extern PFNGLGETBOOLEANINDEXEDVEXTPROC _funcptr_glGetBooleanIndexedvEXT;
+CI_API extern PFNGLGETBOOLEANINDEXEDVEXTPROC _funcptr_glGetBooleanIndexedvEXT;
 #define glGetBooleanIndexedvEXT _funcptr_glGetBooleanIndexedvEXT
-extern PFNGLGETINTEGERINDEXEDVEXTPROC _funcptr_glGetIntegerIndexedvEXT;
+CI_API extern PFNGLGETINTEGERINDEXEDVEXTPROC _funcptr_glGetIntegerIndexedvEXT;
 #define glGetIntegerIndexedvEXT _funcptr_glGetIntegerIndexedvEXT
-extern PFNGLISENABLEDINDEXEDEXTPROC _funcptr_glIsEnabledIndexedEXT;
+CI_API extern PFNGLISENABLEDINDEXEDEXTPROC _funcptr_glIsEnabledIndexedEXT;
 #define glIsEnabledIndexedEXT _funcptr_glIsEnabledIndexedEXT
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWARRAYSINSTANCEDEXTPROC)(GLenum mode, GLint start, GLsizei count, GLsizei primcount);
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWELEMENTSINSTANCEDEXTPROC)(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices, GLsizei primcount);
 
-extern PFNGLDRAWARRAYSINSTANCEDEXTPROC _funcptr_glDrawArraysInstancedEXT;
+CI_API extern PFNGLDRAWARRAYSINSTANCEDEXTPROC _funcptr_glDrawArraysInstancedEXT;
 #define glDrawArraysInstancedEXT _funcptr_glDrawArraysInstancedEXT
-extern PFNGLDRAWELEMENTSINSTANCEDEXTPROC _funcptr_glDrawElementsInstancedEXT;
+CI_API extern PFNGLDRAWELEMENTSINSTANCEDEXTPROC _funcptr_glDrawElementsInstancedEXT;
 #define glDrawElementsInstancedEXT _funcptr_glDrawElementsInstancedEXT
 
 #define GL_MAX_ELEMENTS_INDICES_EXT 0x80E9
@@ -5940,7 +5940,7 @@ extern PFNGLDRAWELEMENTSINSTANCEDEXTPROC _funcptr_glDrawElementsInstancedEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWRANGEELEMENTSEXTPROC)(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid * indices);
 
-extern PFNGLDRAWRANGEELEMENTSEXTPROC _funcptr_glDrawRangeElementsEXT;
+CI_API extern PFNGLDRAWRANGEELEMENTSEXTPROC _funcptr_glDrawRangeElementsEXT;
 #define glDrawRangeElementsEXT _funcptr_glDrawRangeElementsEXT
 
 #define GL_CURRENT_FOG_COORDINATE_EXT 0x8453
@@ -5958,15 +5958,15 @@ typedef void (CODEGEN_FUNCPTR * PFNGLFOGCOORDDVEXTPROC)(const GLdouble * coord);
 typedef void (CODEGEN_FUNCPTR * PFNGLFOGCOORDFEXTPROC)(GLfloat coord);
 typedef void (CODEGEN_FUNCPTR * PFNGLFOGCOORDFVEXTPROC)(const GLfloat * coord);
 
-extern PFNGLFOGCOORDPOINTEREXTPROC _funcptr_glFogCoordPointerEXT;
+CI_API extern PFNGLFOGCOORDPOINTEREXTPROC _funcptr_glFogCoordPointerEXT;
 #define glFogCoordPointerEXT _funcptr_glFogCoordPointerEXT
-extern PFNGLFOGCOORDDEXTPROC _funcptr_glFogCoorddEXT;
+CI_API extern PFNGLFOGCOORDDEXTPROC _funcptr_glFogCoorddEXT;
 #define glFogCoorddEXT _funcptr_glFogCoorddEXT
-extern PFNGLFOGCOORDDVEXTPROC _funcptr_glFogCoorddvEXT;
+CI_API extern PFNGLFOGCOORDDVEXTPROC _funcptr_glFogCoorddvEXT;
 #define glFogCoorddvEXT _funcptr_glFogCoorddvEXT
-extern PFNGLFOGCOORDFEXTPROC _funcptr_glFogCoordfEXT;
+CI_API extern PFNGLFOGCOORDFEXTPROC _funcptr_glFogCoordfEXT;
 #define glFogCoordfEXT _funcptr_glFogCoordfEXT
-extern PFNGLFOGCOORDFVEXTPROC _funcptr_glFogCoordfvEXT;
+CI_API extern PFNGLFOGCOORDFVEXTPROC _funcptr_glFogCoordfvEXT;
 #define glFogCoordfvEXT _funcptr_glFogCoordfvEXT
 
 #define GL_DRAW_FRAMEBUFFER_BINDING_EXT 0x8CA6
@@ -5976,7 +5976,7 @@ extern PFNGLFOGCOORDFVEXTPROC _funcptr_glFogCoordfvEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLBLITFRAMEBUFFEREXTPROC)(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 
-extern PFNGLBLITFRAMEBUFFEREXTPROC _funcptr_glBlitFramebufferEXT;
+CI_API extern PFNGLBLITFRAMEBUFFEREXTPROC _funcptr_glBlitFramebufferEXT;
 #define glBlitFramebufferEXT _funcptr_glBlitFramebufferEXT
 
 #define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT 0x8D56
@@ -5985,7 +5985,7 @@ extern PFNGLBLITFRAMEBUFFEREXTPROC _funcptr_glBlitFramebufferEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC)(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
 
-extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC _funcptr_glRenderbufferStorageMultisampleEXT;
+CI_API extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC _funcptr_glRenderbufferStorageMultisampleEXT;
 #define glRenderbufferStorageMultisampleEXT _funcptr_glRenderbufferStorageMultisampleEXT
 
 #define GL_SCALED_RESOLVE_FASTEST_EXT 0x90BA
@@ -6061,39 +6061,39 @@ typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISFRAMEBUFFEREXTPROC)(GLuint framebuff
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISRENDERBUFFEREXTPROC)(GLuint renderbuffer);
 typedef void (CODEGEN_FUNCPTR * PFNGLRENDERBUFFERSTORAGEEXTPROC)(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
 
-extern PFNGLBINDFRAMEBUFFEREXTPROC _funcptr_glBindFramebufferEXT;
+CI_API extern PFNGLBINDFRAMEBUFFEREXTPROC _funcptr_glBindFramebufferEXT;
 #define glBindFramebufferEXT _funcptr_glBindFramebufferEXT
-extern PFNGLBINDRENDERBUFFEREXTPROC _funcptr_glBindRenderbufferEXT;
+CI_API extern PFNGLBINDRENDERBUFFEREXTPROC _funcptr_glBindRenderbufferEXT;
 #define glBindRenderbufferEXT _funcptr_glBindRenderbufferEXT
-extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC _funcptr_glCheckFramebufferStatusEXT;
+CI_API extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC _funcptr_glCheckFramebufferStatusEXT;
 #define glCheckFramebufferStatusEXT _funcptr_glCheckFramebufferStatusEXT
-extern PFNGLDELETEFRAMEBUFFERSEXTPROC _funcptr_glDeleteFramebuffersEXT;
+CI_API extern PFNGLDELETEFRAMEBUFFERSEXTPROC _funcptr_glDeleteFramebuffersEXT;
 #define glDeleteFramebuffersEXT _funcptr_glDeleteFramebuffersEXT
-extern PFNGLDELETERENDERBUFFERSEXTPROC _funcptr_glDeleteRenderbuffersEXT;
+CI_API extern PFNGLDELETERENDERBUFFERSEXTPROC _funcptr_glDeleteRenderbuffersEXT;
 #define glDeleteRenderbuffersEXT _funcptr_glDeleteRenderbuffersEXT
-extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC _funcptr_glFramebufferRenderbufferEXT;
+CI_API extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC _funcptr_glFramebufferRenderbufferEXT;
 #define glFramebufferRenderbufferEXT _funcptr_glFramebufferRenderbufferEXT
-extern PFNGLFRAMEBUFFERTEXTURE1DEXTPROC _funcptr_glFramebufferTexture1DEXT;
+CI_API extern PFNGLFRAMEBUFFERTEXTURE1DEXTPROC _funcptr_glFramebufferTexture1DEXT;
 #define glFramebufferTexture1DEXT _funcptr_glFramebufferTexture1DEXT
-extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC _funcptr_glFramebufferTexture2DEXT;
+CI_API extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC _funcptr_glFramebufferTexture2DEXT;
 #define glFramebufferTexture2DEXT _funcptr_glFramebufferTexture2DEXT
-extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC _funcptr_glFramebufferTexture3DEXT;
+CI_API extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC _funcptr_glFramebufferTexture3DEXT;
 #define glFramebufferTexture3DEXT _funcptr_glFramebufferTexture3DEXT
-extern PFNGLGENFRAMEBUFFERSEXTPROC _funcptr_glGenFramebuffersEXT;
+CI_API extern PFNGLGENFRAMEBUFFERSEXTPROC _funcptr_glGenFramebuffersEXT;
 #define glGenFramebuffersEXT _funcptr_glGenFramebuffersEXT
-extern PFNGLGENRENDERBUFFERSEXTPROC _funcptr_glGenRenderbuffersEXT;
+CI_API extern PFNGLGENRENDERBUFFERSEXTPROC _funcptr_glGenRenderbuffersEXT;
 #define glGenRenderbuffersEXT _funcptr_glGenRenderbuffersEXT
-extern PFNGLGENERATEMIPMAPEXTPROC _funcptr_glGenerateMipmapEXT;
+CI_API extern PFNGLGENERATEMIPMAPEXTPROC _funcptr_glGenerateMipmapEXT;
 #define glGenerateMipmapEXT _funcptr_glGenerateMipmapEXT
-extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC _funcptr_glGetFramebufferAttachmentParameterivEXT;
+CI_API extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC _funcptr_glGetFramebufferAttachmentParameterivEXT;
 #define glGetFramebufferAttachmentParameterivEXT _funcptr_glGetFramebufferAttachmentParameterivEXT
-extern PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC _funcptr_glGetRenderbufferParameterivEXT;
+CI_API extern PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC _funcptr_glGetRenderbufferParameterivEXT;
 #define glGetRenderbufferParameterivEXT _funcptr_glGetRenderbufferParameterivEXT
-extern PFNGLISFRAMEBUFFEREXTPROC _funcptr_glIsFramebufferEXT;
+CI_API extern PFNGLISFRAMEBUFFEREXTPROC _funcptr_glIsFramebufferEXT;
 #define glIsFramebufferEXT _funcptr_glIsFramebufferEXT
-extern PFNGLISRENDERBUFFEREXTPROC _funcptr_glIsRenderbufferEXT;
+CI_API extern PFNGLISRENDERBUFFEREXTPROC _funcptr_glIsRenderbufferEXT;
 #define glIsRenderbufferEXT _funcptr_glIsRenderbufferEXT
-extern PFNGLRENDERBUFFERSTORAGEEXTPROC _funcptr_glRenderbufferStorageEXT;
+CI_API extern PFNGLRENDERBUFFERSTORAGEEXTPROC _funcptr_glRenderbufferStorageEXT;
 #define glRenderbufferStorageEXT _funcptr_glRenderbufferStorageEXT
 
 #define GL_FRAMEBUFFER_SRGB_CAPABLE_EXT 0x8DBA
@@ -6122,15 +6122,15 @@ extern PFNGLRENDERBUFFERSTORAGEEXTPROC _funcptr_glRenderbufferStorageEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMPARAMETERIEXTPROC)(GLuint program, GLenum pname, GLint value);
 
-extern PFNGLPROGRAMPARAMETERIEXTPROC _funcptr_glProgramParameteriEXT;
+CI_API extern PFNGLPROGRAMPARAMETERIEXTPROC _funcptr_glProgramParameteriEXT;
 #define glProgramParameteriEXT _funcptr_glProgramParameteriEXT
 
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMENVPARAMETERS4FVEXTPROC)(GLenum target, GLuint index, GLsizei count, const GLfloat * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMLOCALPARAMETERS4FVEXTPROC)(GLenum target, GLuint index, GLsizei count, const GLfloat * params);
 
-extern PFNGLPROGRAMENVPARAMETERS4FVEXTPROC _funcptr_glProgramEnvParameters4fvEXT;
+CI_API extern PFNGLPROGRAMENVPARAMETERS4FVEXTPROC _funcptr_glProgramEnvParameters4fvEXT;
 #define glProgramEnvParameters4fvEXT _funcptr_glProgramEnvParameters4fvEXT
-extern PFNGLPROGRAMLOCALPARAMETERS4FVEXTPROC _funcptr_glProgramLocalParameters4fvEXT;
+CI_API extern PFNGLPROGRAMLOCALPARAMETERS4FVEXTPROC _funcptr_glProgramLocalParameters4fvEXT;
 #define glProgramLocalParameters4fvEXT _funcptr_glProgramLocalParameters4fvEXT
 
 #define GL_INT_SAMPLER_1D_ARRAY_EXT 0x8DCE
@@ -6174,27 +6174,27 @@ typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORM3UIVEXTPROC)(GLint location, GLsizei
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORM4UIEXTPROC)(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORM4UIVEXTPROC)(GLint location, GLsizei count, const GLuint * value);
 
-extern PFNGLBINDFRAGDATALOCATIONEXTPROC _funcptr_glBindFragDataLocationEXT;
+CI_API extern PFNGLBINDFRAGDATALOCATIONEXTPROC _funcptr_glBindFragDataLocationEXT;
 #define glBindFragDataLocationEXT _funcptr_glBindFragDataLocationEXT
-extern PFNGLGETFRAGDATALOCATIONEXTPROC _funcptr_glGetFragDataLocationEXT;
+CI_API extern PFNGLGETFRAGDATALOCATIONEXTPROC _funcptr_glGetFragDataLocationEXT;
 #define glGetFragDataLocationEXT _funcptr_glGetFragDataLocationEXT
-extern PFNGLGETUNIFORMUIVEXTPROC _funcptr_glGetUniformuivEXT;
+CI_API extern PFNGLGETUNIFORMUIVEXTPROC _funcptr_glGetUniformuivEXT;
 #define glGetUniformuivEXT _funcptr_glGetUniformuivEXT
-extern PFNGLUNIFORM1UIEXTPROC _funcptr_glUniform1uiEXT;
+CI_API extern PFNGLUNIFORM1UIEXTPROC _funcptr_glUniform1uiEXT;
 #define glUniform1uiEXT _funcptr_glUniform1uiEXT
-extern PFNGLUNIFORM1UIVEXTPROC _funcptr_glUniform1uivEXT;
+CI_API extern PFNGLUNIFORM1UIVEXTPROC _funcptr_glUniform1uivEXT;
 #define glUniform1uivEXT _funcptr_glUniform1uivEXT
-extern PFNGLUNIFORM2UIEXTPROC _funcptr_glUniform2uiEXT;
+CI_API extern PFNGLUNIFORM2UIEXTPROC _funcptr_glUniform2uiEXT;
 #define glUniform2uiEXT _funcptr_glUniform2uiEXT
-extern PFNGLUNIFORM2UIVEXTPROC _funcptr_glUniform2uivEXT;
+CI_API extern PFNGLUNIFORM2UIVEXTPROC _funcptr_glUniform2uivEXT;
 #define glUniform2uivEXT _funcptr_glUniform2uivEXT
-extern PFNGLUNIFORM3UIEXTPROC _funcptr_glUniform3uiEXT;
+CI_API extern PFNGLUNIFORM3UIEXTPROC _funcptr_glUniform3uiEXT;
 #define glUniform3uiEXT _funcptr_glUniform3uiEXT
-extern PFNGLUNIFORM3UIVEXTPROC _funcptr_glUniform3uivEXT;
+CI_API extern PFNGLUNIFORM3UIVEXTPROC _funcptr_glUniform3uivEXT;
 #define glUniform3uivEXT _funcptr_glUniform3uivEXT
-extern PFNGLUNIFORM4UIEXTPROC _funcptr_glUniform4uiEXT;
+CI_API extern PFNGLUNIFORM4UIEXTPROC _funcptr_glUniform4uiEXT;
 #define glUniform4uiEXT _funcptr_glUniform4uiEXT
-extern PFNGLUNIFORM4UIVEXTPROC _funcptr_glUniform4uivEXT;
+CI_API extern PFNGLUNIFORM4UIVEXTPROC _funcptr_glUniform4uivEXT;
 #define glUniform4uivEXT _funcptr_glUniform4uivEXT
 
 #define GL_HISTOGRAM_ALPHA_SIZE_EXT 0x802B
@@ -6223,25 +6223,25 @@ typedef void (CODEGEN_FUNCPTR * PFNGLMINMAXEXTPROC)(GLenum target, GLenum intern
 typedef void (CODEGEN_FUNCPTR * PFNGLRESETHISTOGRAMEXTPROC)(GLenum target);
 typedef void (CODEGEN_FUNCPTR * PFNGLRESETMINMAXEXTPROC)(GLenum target);
 
-extern PFNGLGETHISTOGRAMEXTPROC _funcptr_glGetHistogramEXT;
+CI_API extern PFNGLGETHISTOGRAMEXTPROC _funcptr_glGetHistogramEXT;
 #define glGetHistogramEXT _funcptr_glGetHistogramEXT
-extern PFNGLGETHISTOGRAMPARAMETERFVEXTPROC _funcptr_glGetHistogramParameterfvEXT;
+CI_API extern PFNGLGETHISTOGRAMPARAMETERFVEXTPROC _funcptr_glGetHistogramParameterfvEXT;
 #define glGetHistogramParameterfvEXT _funcptr_glGetHistogramParameterfvEXT
-extern PFNGLGETHISTOGRAMPARAMETERIVEXTPROC _funcptr_glGetHistogramParameterivEXT;
+CI_API extern PFNGLGETHISTOGRAMPARAMETERIVEXTPROC _funcptr_glGetHistogramParameterivEXT;
 #define glGetHistogramParameterivEXT _funcptr_glGetHistogramParameterivEXT
-extern PFNGLGETMINMAXEXTPROC _funcptr_glGetMinmaxEXT;
+CI_API extern PFNGLGETMINMAXEXTPROC _funcptr_glGetMinmaxEXT;
 #define glGetMinmaxEXT _funcptr_glGetMinmaxEXT
-extern PFNGLGETMINMAXPARAMETERFVEXTPROC _funcptr_glGetMinmaxParameterfvEXT;
+CI_API extern PFNGLGETMINMAXPARAMETERFVEXTPROC _funcptr_glGetMinmaxParameterfvEXT;
 #define glGetMinmaxParameterfvEXT _funcptr_glGetMinmaxParameterfvEXT
-extern PFNGLGETMINMAXPARAMETERIVEXTPROC _funcptr_glGetMinmaxParameterivEXT;
+CI_API extern PFNGLGETMINMAXPARAMETERIVEXTPROC _funcptr_glGetMinmaxParameterivEXT;
 #define glGetMinmaxParameterivEXT _funcptr_glGetMinmaxParameterivEXT
-extern PFNGLHISTOGRAMEXTPROC _funcptr_glHistogramEXT;
+CI_API extern PFNGLHISTOGRAMEXTPROC _funcptr_glHistogramEXT;
 #define glHistogramEXT _funcptr_glHistogramEXT
-extern PFNGLMINMAXEXTPROC _funcptr_glMinmaxEXT;
+CI_API extern PFNGLMINMAXEXTPROC _funcptr_glMinmaxEXT;
 #define glMinmaxEXT _funcptr_glMinmaxEXT
-extern PFNGLRESETHISTOGRAMEXTPROC _funcptr_glResetHistogramEXT;
+CI_API extern PFNGLRESETHISTOGRAMEXTPROC _funcptr_glResetHistogramEXT;
 #define glResetHistogramEXT _funcptr_glResetHistogramEXT
-extern PFNGLRESETMINMAXEXTPROC _funcptr_glResetMinmaxEXT;
+CI_API extern PFNGLRESETMINMAXEXTPROC _funcptr_glResetMinmaxEXT;
 #define glResetMinmaxEXT _funcptr_glResetMinmaxEXT
 
 #define GL_IUI_N3F_V2F_EXT 0x81AF
@@ -6259,7 +6259,7 @@ extern PFNGLRESETMINMAXEXTPROC _funcptr_glResetMinmaxEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLINDEXFUNCEXTPROC)(GLenum func, GLclampf ref);
 
-extern PFNGLINDEXFUNCEXTPROC _funcptr_glIndexFuncEXT;
+CI_API extern PFNGLINDEXFUNCEXTPROC _funcptr_glIndexFuncEXT;
 #define glIndexFuncEXT _funcptr_glIndexFuncEXT
 
 #define GL_INDEX_MATERIAL_EXT 0x81B8
@@ -6268,7 +6268,7 @@ extern PFNGLINDEXFUNCEXTPROC _funcptr_glIndexFuncEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLINDEXMATERIALEXTPROC)(GLenum face, GLenum mode);
 
-extern PFNGLINDEXMATERIALEXTPROC _funcptr_glIndexMaterialEXT;
+CI_API extern PFNGLINDEXMATERIALEXTPROC _funcptr_glIndexMaterialEXT;
 #define glIndexMaterialEXT _funcptr_glIndexMaterialEXT
 
 #define GL_ATTENUATION_EXT 0x834D
@@ -6286,19 +6286,19 @@ typedef void (CODEGEN_FUNCPTR * PFNGLAPPLYTEXTUREEXTPROC)(GLenum mode);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTURELIGHTEXTPROC)(GLenum pname);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTUREMATERIALEXTPROC)(GLenum face, GLenum mode);
 
-extern PFNGLAPPLYTEXTUREEXTPROC _funcptr_glApplyTextureEXT;
+CI_API extern PFNGLAPPLYTEXTUREEXTPROC _funcptr_glApplyTextureEXT;
 #define glApplyTextureEXT _funcptr_glApplyTextureEXT
-extern PFNGLTEXTURELIGHTEXTPROC _funcptr_glTextureLightEXT;
+CI_API extern PFNGLTEXTURELIGHTEXTPROC _funcptr_glTextureLightEXT;
 #define glTextureLightEXT _funcptr_glTextureLightEXT
-extern PFNGLTEXTUREMATERIALEXTPROC _funcptr_glTextureMaterialEXT;
+CI_API extern PFNGLTEXTUREMATERIALEXTPROC _funcptr_glTextureMaterialEXT;
 #define glTextureMaterialEXT _funcptr_glTextureMaterialEXT
 
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWARRAYSEXTPROC)(GLenum mode, const GLint * first, const GLsizei * count, GLsizei primcount);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWELEMENTSEXTPROC)(GLenum mode, const GLsizei * count, GLenum type, const GLvoid *const* indices, GLsizei primcount);
 
-extern PFNGLMULTIDRAWARRAYSEXTPROC _funcptr_glMultiDrawArraysEXT;
+CI_API extern PFNGLMULTIDRAWARRAYSEXTPROC _funcptr_glMultiDrawArraysEXT;
 #define glMultiDrawArraysEXT _funcptr_glMultiDrawArraysEXT
-extern PFNGLMULTIDRAWELEMENTSEXTPROC _funcptr_glMultiDrawElementsEXT;
+CI_API extern PFNGLMULTIDRAWELEMENTSEXTPROC _funcptr_glMultiDrawElementsEXT;
 #define glMultiDrawElementsEXT _funcptr_glMultiDrawElementsEXT
 
 #define GL_1PASS_EXT 0x80A1
@@ -6322,9 +6322,9 @@ extern PFNGLMULTIDRAWELEMENTSEXTPROC _funcptr_glMultiDrawElementsEXT;
 typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLEMASKEXTPROC)(GLclampf value, GLboolean invert);
 typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLEPATTERNEXTPROC)(GLenum pattern);
 
-extern PFNGLSAMPLEMASKEXTPROC _funcptr_glSampleMaskEXT;
+CI_API extern PFNGLSAMPLEMASKEXTPROC _funcptr_glSampleMaskEXT;
 #define glSampleMaskEXT _funcptr_glSampleMaskEXT
-extern PFNGLSAMPLEPATTERNEXTPROC _funcptr_glSamplePatternEXT;
+CI_API extern PFNGLSAMPLEPATTERNEXTPROC _funcptr_glSamplePatternEXT;
 #define glSamplePatternEXT _funcptr_glSamplePatternEXT
 
 #define GL_DEPTH24_STENCIL8_EXT 0x88F0
@@ -6355,13 +6355,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETCOLORTABLEEXTPROC)(GLenum target, GLenum
 typedef void (CODEGEN_FUNCPTR * PFNGLGETCOLORTABLEPARAMETERFVEXTPROC)(GLenum target, GLenum pname, GLfloat * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETCOLORTABLEPARAMETERIVEXTPROC)(GLenum target, GLenum pname, GLint * params);
 
-extern PFNGLCOLORTABLEEXTPROC _funcptr_glColorTableEXT;
+CI_API extern PFNGLCOLORTABLEEXTPROC _funcptr_glColorTableEXT;
 #define glColorTableEXT _funcptr_glColorTableEXT
-extern PFNGLGETCOLORTABLEEXTPROC _funcptr_glGetColorTableEXT;
+CI_API extern PFNGLGETCOLORTABLEEXTPROC _funcptr_glGetColorTableEXT;
 #define glGetColorTableEXT _funcptr_glGetColorTableEXT
-extern PFNGLGETCOLORTABLEPARAMETERFVEXTPROC _funcptr_glGetColorTableParameterfvEXT;
+CI_API extern PFNGLGETCOLORTABLEPARAMETERFVEXTPROC _funcptr_glGetColorTableParameterfvEXT;
 #define glGetColorTableParameterfvEXT _funcptr_glGetColorTableParameterfvEXT
-extern PFNGLGETCOLORTABLEPARAMETERIVEXTPROC _funcptr_glGetColorTableParameterivEXT;
+CI_API extern PFNGLGETCOLORTABLEPARAMETERIVEXTPROC _funcptr_glGetColorTableParameterivEXT;
 #define glGetColorTableParameterivEXT _funcptr_glGetColorTableParameterivEXT
 
 #define GL_PIXEL_PACK_BUFFER_BINDING_EXT 0x88ED
@@ -6386,17 +6386,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPIXELTRANSFORMPARAMETERFVEXTPROC)(GLenum ta
 typedef void (CODEGEN_FUNCPTR * PFNGLPIXELTRANSFORMPARAMETERIEXTPROC)(GLenum target, GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLPIXELTRANSFORMPARAMETERIVEXTPROC)(GLenum target, GLenum pname, const GLint * params);
 
-extern PFNGLGETPIXELTRANSFORMPARAMETERFVEXTPROC _funcptr_glGetPixelTransformParameterfvEXT;
+CI_API extern PFNGLGETPIXELTRANSFORMPARAMETERFVEXTPROC _funcptr_glGetPixelTransformParameterfvEXT;
 #define glGetPixelTransformParameterfvEXT _funcptr_glGetPixelTransformParameterfvEXT
-extern PFNGLGETPIXELTRANSFORMPARAMETERIVEXTPROC _funcptr_glGetPixelTransformParameterivEXT;
+CI_API extern PFNGLGETPIXELTRANSFORMPARAMETERIVEXTPROC _funcptr_glGetPixelTransformParameterivEXT;
 #define glGetPixelTransformParameterivEXT _funcptr_glGetPixelTransformParameterivEXT
-extern PFNGLPIXELTRANSFORMPARAMETERFEXTPROC _funcptr_glPixelTransformParameterfEXT;
+CI_API extern PFNGLPIXELTRANSFORMPARAMETERFEXTPROC _funcptr_glPixelTransformParameterfEXT;
 #define glPixelTransformParameterfEXT _funcptr_glPixelTransformParameterfEXT
-extern PFNGLPIXELTRANSFORMPARAMETERFVEXTPROC _funcptr_glPixelTransformParameterfvEXT;
+CI_API extern PFNGLPIXELTRANSFORMPARAMETERFVEXTPROC _funcptr_glPixelTransformParameterfvEXT;
 #define glPixelTransformParameterfvEXT _funcptr_glPixelTransformParameterfvEXT
-extern PFNGLPIXELTRANSFORMPARAMETERIEXTPROC _funcptr_glPixelTransformParameteriEXT;
+CI_API extern PFNGLPIXELTRANSFORMPARAMETERIEXTPROC _funcptr_glPixelTransformParameteriEXT;
 #define glPixelTransformParameteriEXT _funcptr_glPixelTransformParameteriEXT
-extern PFNGLPIXELTRANSFORMPARAMETERIVEXTPROC _funcptr_glPixelTransformParameterivEXT;
+CI_API extern PFNGLPIXELTRANSFORMPARAMETERIVEXTPROC _funcptr_glPixelTransformParameterivEXT;
 #define glPixelTransformParameterivEXT _funcptr_glPixelTransformParameterivEXT
 
 #define GL_DISTANCE_ATTENUATION_EXT 0x8129
@@ -6407,9 +6407,9 @@ extern PFNGLPIXELTRANSFORMPARAMETERIVEXTPROC _funcptr_glPixelTransformParameteri
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERFEXTPROC)(GLenum pname, GLfloat param);
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERFVEXTPROC)(GLenum pname, const GLfloat * params);
 
-extern PFNGLPOINTPARAMETERFEXTPROC _funcptr_glPointParameterfEXT;
+CI_API extern PFNGLPOINTPARAMETERFEXTPROC _funcptr_glPointParameterfEXT;
 #define glPointParameterfEXT _funcptr_glPointParameterfEXT
-extern PFNGLPOINTPARAMETERFVEXTPROC _funcptr_glPointParameterfvEXT;
+CI_API extern PFNGLPOINTPARAMETERFVEXTPROC _funcptr_glPointParameterfvEXT;
 #define glPointParameterfvEXT _funcptr_glPointParameterfvEXT
 
 #define GL_POLYGON_OFFSET_BIAS_EXT 0x8039
@@ -6418,7 +6418,7 @@ extern PFNGLPOINTPARAMETERFVEXTPROC _funcptr_glPointParameterfvEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLPOLYGONOFFSETEXTPROC)(GLfloat factor, GLfloat bias);
 
-extern PFNGLPOLYGONOFFSETEXTPROC _funcptr_glPolygonOffsetEXT;
+CI_API extern PFNGLPOLYGONOFFSETEXTPROC _funcptr_glPolygonOffsetEXT;
 #define glPolygonOffsetEXT _funcptr_glPolygonOffsetEXT
 
 #define GL_FIRST_VERTEX_CONVENTION_EXT 0x8E4D
@@ -6428,7 +6428,7 @@ extern PFNGLPOLYGONOFFSETEXTPROC _funcptr_glPolygonOffsetEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLPROVOKINGVERTEXEXTPROC)(GLenum mode);
 
-extern PFNGLPROVOKINGVERTEXEXTPROC _funcptr_glProvokingVertexEXT;
+CI_API extern PFNGLPROVOKINGVERTEXEXTPROC _funcptr_glProvokingVertexEXT;
 #define glProvokingVertexEXT _funcptr_glProvokingVertexEXT
 
 #define GL_RESCALE_NORMAL_EXT 0x803A
@@ -6459,39 +6459,39 @@ typedef void (CODEGEN_FUNCPTR * PFNGLSECONDARYCOLOR3USEXTPROC)(GLushort red, GLu
 typedef void (CODEGEN_FUNCPTR * PFNGLSECONDARYCOLOR3USVEXTPROC)(const GLushort * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLSECONDARYCOLORPOINTEREXTPROC)(GLint size, GLenum type, GLsizei stride, const GLvoid * pointer);
 
-extern PFNGLSECONDARYCOLOR3BEXTPROC _funcptr_glSecondaryColor3bEXT;
+CI_API extern PFNGLSECONDARYCOLOR3BEXTPROC _funcptr_glSecondaryColor3bEXT;
 #define glSecondaryColor3bEXT _funcptr_glSecondaryColor3bEXT
-extern PFNGLSECONDARYCOLOR3BVEXTPROC _funcptr_glSecondaryColor3bvEXT;
+CI_API extern PFNGLSECONDARYCOLOR3BVEXTPROC _funcptr_glSecondaryColor3bvEXT;
 #define glSecondaryColor3bvEXT _funcptr_glSecondaryColor3bvEXT
-extern PFNGLSECONDARYCOLOR3DEXTPROC _funcptr_glSecondaryColor3dEXT;
+CI_API extern PFNGLSECONDARYCOLOR3DEXTPROC _funcptr_glSecondaryColor3dEXT;
 #define glSecondaryColor3dEXT _funcptr_glSecondaryColor3dEXT
-extern PFNGLSECONDARYCOLOR3DVEXTPROC _funcptr_glSecondaryColor3dvEXT;
+CI_API extern PFNGLSECONDARYCOLOR3DVEXTPROC _funcptr_glSecondaryColor3dvEXT;
 #define glSecondaryColor3dvEXT _funcptr_glSecondaryColor3dvEXT
-extern PFNGLSECONDARYCOLOR3FEXTPROC _funcptr_glSecondaryColor3fEXT;
+CI_API extern PFNGLSECONDARYCOLOR3FEXTPROC _funcptr_glSecondaryColor3fEXT;
 #define glSecondaryColor3fEXT _funcptr_glSecondaryColor3fEXT
-extern PFNGLSECONDARYCOLOR3FVEXTPROC _funcptr_glSecondaryColor3fvEXT;
+CI_API extern PFNGLSECONDARYCOLOR3FVEXTPROC _funcptr_glSecondaryColor3fvEXT;
 #define glSecondaryColor3fvEXT _funcptr_glSecondaryColor3fvEXT
-extern PFNGLSECONDARYCOLOR3IEXTPROC _funcptr_glSecondaryColor3iEXT;
+CI_API extern PFNGLSECONDARYCOLOR3IEXTPROC _funcptr_glSecondaryColor3iEXT;
 #define glSecondaryColor3iEXT _funcptr_glSecondaryColor3iEXT
-extern PFNGLSECONDARYCOLOR3IVEXTPROC _funcptr_glSecondaryColor3ivEXT;
+CI_API extern PFNGLSECONDARYCOLOR3IVEXTPROC _funcptr_glSecondaryColor3ivEXT;
 #define glSecondaryColor3ivEXT _funcptr_glSecondaryColor3ivEXT
-extern PFNGLSECONDARYCOLOR3SEXTPROC _funcptr_glSecondaryColor3sEXT;
+CI_API extern PFNGLSECONDARYCOLOR3SEXTPROC _funcptr_glSecondaryColor3sEXT;
 #define glSecondaryColor3sEXT _funcptr_glSecondaryColor3sEXT
-extern PFNGLSECONDARYCOLOR3SVEXTPROC _funcptr_glSecondaryColor3svEXT;
+CI_API extern PFNGLSECONDARYCOLOR3SVEXTPROC _funcptr_glSecondaryColor3svEXT;
 #define glSecondaryColor3svEXT _funcptr_glSecondaryColor3svEXT
-extern PFNGLSECONDARYCOLOR3UBEXTPROC _funcptr_glSecondaryColor3ubEXT;
+CI_API extern PFNGLSECONDARYCOLOR3UBEXTPROC _funcptr_glSecondaryColor3ubEXT;
 #define glSecondaryColor3ubEXT _funcptr_glSecondaryColor3ubEXT
-extern PFNGLSECONDARYCOLOR3UBVEXTPROC _funcptr_glSecondaryColor3ubvEXT;
+CI_API extern PFNGLSECONDARYCOLOR3UBVEXTPROC _funcptr_glSecondaryColor3ubvEXT;
 #define glSecondaryColor3ubvEXT _funcptr_glSecondaryColor3ubvEXT
-extern PFNGLSECONDARYCOLOR3UIEXTPROC _funcptr_glSecondaryColor3uiEXT;
+CI_API extern PFNGLSECONDARYCOLOR3UIEXTPROC _funcptr_glSecondaryColor3uiEXT;
 #define glSecondaryColor3uiEXT _funcptr_glSecondaryColor3uiEXT
-extern PFNGLSECONDARYCOLOR3UIVEXTPROC _funcptr_glSecondaryColor3uivEXT;
+CI_API extern PFNGLSECONDARYCOLOR3UIVEXTPROC _funcptr_glSecondaryColor3uivEXT;
 #define glSecondaryColor3uivEXT _funcptr_glSecondaryColor3uivEXT
-extern PFNGLSECONDARYCOLOR3USEXTPROC _funcptr_glSecondaryColor3usEXT;
+CI_API extern PFNGLSECONDARYCOLOR3USEXTPROC _funcptr_glSecondaryColor3usEXT;
 #define glSecondaryColor3usEXT _funcptr_glSecondaryColor3usEXT
-extern PFNGLSECONDARYCOLOR3USVEXTPROC _funcptr_glSecondaryColor3usvEXT;
+CI_API extern PFNGLSECONDARYCOLOR3USVEXTPROC _funcptr_glSecondaryColor3usvEXT;
 #define glSecondaryColor3usvEXT _funcptr_glSecondaryColor3usvEXT
-extern PFNGLSECONDARYCOLORPOINTEREXTPROC _funcptr_glSecondaryColorPointerEXT;
+CI_API extern PFNGLSECONDARYCOLORPOINTEREXTPROC _funcptr_glSecondaryColorPointerEXT;
 #define glSecondaryColorPointerEXT _funcptr_glSecondaryColorPointerEXT
 
 #define GL_ACTIVE_PROGRAM_EXT 0x8B8D
@@ -6500,11 +6500,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLACTIVEPROGRAMEXTPROC)(GLuint program);
 typedef GLuint (CODEGEN_FUNCPTR * PFNGLCREATESHADERPROGRAMEXTPROC)(GLenum type, const GLchar * string);
 typedef void (CODEGEN_FUNCPTR * PFNGLUSESHADERPROGRAMEXTPROC)(GLenum type, GLuint program);
 
-extern PFNGLACTIVEPROGRAMEXTPROC _funcptr_glActiveProgramEXT;
+CI_API extern PFNGLACTIVEPROGRAMEXTPROC _funcptr_glActiveProgramEXT;
 #define glActiveProgramEXT _funcptr_glActiveProgramEXT
-extern PFNGLCREATESHADERPROGRAMEXTPROC _funcptr_glCreateShaderProgramEXT;
+CI_API extern PFNGLCREATESHADERPROGRAMEXTPROC _funcptr_glCreateShaderProgramEXT;
 #define glCreateShaderProgramEXT _funcptr_glCreateShaderProgramEXT
-extern PFNGLUSESHADERPROGRAMEXTPROC _funcptr_glUseShaderProgramEXT;
+CI_API extern PFNGLUSESHADERPROGRAMEXTPROC _funcptr_glUseShaderProgramEXT;
 #define glUseShaderProgramEXT _funcptr_glUseShaderProgramEXT
 
 #define GL_LIGHT_MODEL_COLOR_CONTROL_EXT 0x81F8
@@ -6570,9 +6570,9 @@ extern PFNGLUSESHADERPROGRAMEXTPROC _funcptr_glUseShaderProgramEXT;
 typedef void (CODEGEN_FUNCPTR * PFNGLBINDIMAGETEXTUREEXTPROC)(GLuint index, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLint format);
 typedef void (CODEGEN_FUNCPTR * PFNGLMEMORYBARRIEREXTPROC)(GLbitfield barriers);
 
-extern PFNGLBINDIMAGETEXTUREEXTPROC _funcptr_glBindImageTextureEXT;
+CI_API extern PFNGLBINDIMAGETEXTUREEXTPROC _funcptr_glBindImageTextureEXT;
 #define glBindImageTextureEXT _funcptr_glBindImageTextureEXT
-extern PFNGLMEMORYBARRIEREXTPROC _funcptr_glMemoryBarrierEXT;
+CI_API extern PFNGLMEMORYBARRIEREXTPROC _funcptr_glMemoryBarrierEXT;
 #define glMemoryBarrierEXT _funcptr_glMemoryBarrierEXT
 
 #define GL_SHARED_TEXTURE_PALETTE_EXT 0x81FB
@@ -6582,7 +6582,7 @@ extern PFNGLMEMORYBARRIEREXTPROC _funcptr_glMemoryBarrierEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLSTENCILCLEARTAGEXTPROC)(GLsizei stencilTagBits, GLuint stencilClearTag);
 
-extern PFNGLSTENCILCLEARTAGEXTPROC _funcptr_glStencilClearTagEXT;
+CI_API extern PFNGLSTENCILCLEARTAGEXTPROC _funcptr_glStencilClearTagEXT;
 #define glStencilClearTagEXT _funcptr_glStencilClearTagEXT
 
 #define GL_ACTIVE_STENCIL_FACE_EXT 0x8911
@@ -6590,7 +6590,7 @@ extern PFNGLSTENCILCLEARTAGEXTPROC _funcptr_glStencilClearTagEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLACTIVESTENCILFACEEXTPROC)(GLenum face);
 
-extern PFNGLACTIVESTENCILFACEEXTPROC _funcptr_glActiveStencilFaceEXT;
+CI_API extern PFNGLACTIVESTENCILFACEEXTPROC _funcptr_glActiveStencilFaceEXT;
 #define glActiveStencilFaceEXT _funcptr_glActiveStencilFaceEXT
 
 #define GL_DECR_WRAP_EXT 0x8508
@@ -6599,9 +6599,9 @@ extern PFNGLACTIVESTENCILFACEEXTPROC _funcptr_glActiveStencilFaceEXT;
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSUBIMAGE1DEXTPROC)(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const GLvoid * pixels);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSUBIMAGE2DEXTPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const GLvoid * pixels);
 
-extern PFNGLTEXSUBIMAGE1DEXTPROC _funcptr_glTexSubImage1DEXT;
+CI_API extern PFNGLTEXSUBIMAGE1DEXTPROC _funcptr_glTexSubImage1DEXT;
 #define glTexSubImage1DEXT _funcptr_glTexSubImage1DEXT
-extern PFNGLTEXSUBIMAGE2DEXTPROC _funcptr_glTexSubImage2DEXT;
+CI_API extern PFNGLTEXSUBIMAGE2DEXTPROC _funcptr_glTexSubImage2DEXT;
 #define glTexSubImage2DEXT _funcptr_glTexSubImage2DEXT
 
 #define GL_ALPHA12_EXT 0x803D
@@ -6661,9 +6661,9 @@ extern PFNGLTEXSUBIMAGE2DEXTPROC _funcptr_glTexSubImage2DEXT;
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXIMAGE3DEXTPROC)(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid * pixels);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSUBIMAGE3DEXTPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid * pixels);
 
-extern PFNGLTEXIMAGE3DEXTPROC _funcptr_glTexImage3DEXT;
+CI_API extern PFNGLTEXIMAGE3DEXTPROC _funcptr_glTexImage3DEXT;
 #define glTexImage3DEXT _funcptr_glTexImage3DEXT
-extern PFNGLTEXSUBIMAGE3DEXTPROC _funcptr_glTexSubImage3DEXT;
+CI_API extern PFNGLTEXSUBIMAGE3DEXTPROC _funcptr_glTexSubImage3DEXT;
 #define glTexSubImage3DEXT _funcptr_glTexSubImage3DEXT
 
 #define GL_COMPARE_REF_DEPTH_TO_TEXTURE_EXT 0x884E
@@ -6684,7 +6684,7 @@ extern PFNGLTEXSUBIMAGE3DEXTPROC _funcptr_glTexSubImage3DEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXBUFFEREXTPROC)(GLenum target, GLenum internalformat, GLuint buffer);
 
-extern PFNGLTEXBUFFEREXTPROC _funcptr_glTexBufferEXT;
+CI_API extern PFNGLTEXBUFFEREXTPROC _funcptr_glTexBufferEXT;
 #define glTexBufferEXT _funcptr_glTexBufferEXT
 
 #define GL_COMPRESSED_LUMINANCE_ALPHA_LATC2_EXT 0x8C72
@@ -6798,17 +6798,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETTEXPARAMETERIUIVEXTPROC)(GLenum target, 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXPARAMETERIIVEXTPROC)(GLenum target, GLenum pname, const GLint * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXPARAMETERIUIVEXTPROC)(GLenum target, GLenum pname, const GLuint * params);
 
-extern PFNGLCLEARCOLORIIEXTPROC _funcptr_glClearColorIiEXT;
+CI_API extern PFNGLCLEARCOLORIIEXTPROC _funcptr_glClearColorIiEXT;
 #define glClearColorIiEXT _funcptr_glClearColorIiEXT
-extern PFNGLCLEARCOLORIUIEXTPROC _funcptr_glClearColorIuiEXT;
+CI_API extern PFNGLCLEARCOLORIUIEXTPROC _funcptr_glClearColorIuiEXT;
 #define glClearColorIuiEXT _funcptr_glClearColorIuiEXT
-extern PFNGLGETTEXPARAMETERIIVEXTPROC _funcptr_glGetTexParameterIivEXT;
+CI_API extern PFNGLGETTEXPARAMETERIIVEXTPROC _funcptr_glGetTexParameterIivEXT;
 #define glGetTexParameterIivEXT _funcptr_glGetTexParameterIivEXT
-extern PFNGLGETTEXPARAMETERIUIVEXTPROC _funcptr_glGetTexParameterIuivEXT;
+CI_API extern PFNGLGETTEXPARAMETERIUIVEXTPROC _funcptr_glGetTexParameterIuivEXT;
 #define glGetTexParameterIuivEXT _funcptr_glGetTexParameterIuivEXT
-extern PFNGLTEXPARAMETERIIVEXTPROC _funcptr_glTexParameterIivEXT;
+CI_API extern PFNGLTEXPARAMETERIIVEXTPROC _funcptr_glTexParameterIivEXT;
 #define glTexParameterIivEXT _funcptr_glTexParameterIivEXT
-extern PFNGLTEXPARAMETERIUIVEXTPROC _funcptr_glTexParameterIuivEXT;
+CI_API extern PFNGLTEXPARAMETERIUIVEXTPROC _funcptr_glTexParameterIuivEXT;
 #define glTexParameterIuivEXT _funcptr_glTexParameterIuivEXT
 
 #define GL_MAX_TEXTURE_LOD_BIAS_EXT 0x84FD
@@ -6832,17 +6832,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGENTEXTURESEXTPROC)(GLsizei n, GLuint * tex
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISTEXTUREEXTPROC)(GLuint texture);
 typedef void (CODEGEN_FUNCPTR * PFNGLPRIORITIZETEXTURESEXTPROC)(GLsizei n, const GLuint * textures, const GLclampf * priorities);
 
-extern PFNGLARETEXTURESRESIDENTEXTPROC _funcptr_glAreTexturesResidentEXT;
+CI_API extern PFNGLARETEXTURESRESIDENTEXTPROC _funcptr_glAreTexturesResidentEXT;
 #define glAreTexturesResidentEXT _funcptr_glAreTexturesResidentEXT
-extern PFNGLBINDTEXTUREEXTPROC _funcptr_glBindTextureEXT;
+CI_API extern PFNGLBINDTEXTUREEXTPROC _funcptr_glBindTextureEXT;
 #define glBindTextureEXT _funcptr_glBindTextureEXT
-extern PFNGLDELETETEXTURESEXTPROC _funcptr_glDeleteTexturesEXT;
+CI_API extern PFNGLDELETETEXTURESEXTPROC _funcptr_glDeleteTexturesEXT;
 #define glDeleteTexturesEXT _funcptr_glDeleteTexturesEXT
-extern PFNGLGENTEXTURESEXTPROC _funcptr_glGenTexturesEXT;
+CI_API extern PFNGLGENTEXTURESEXTPROC _funcptr_glGenTexturesEXT;
 #define glGenTexturesEXT _funcptr_glGenTexturesEXT
-extern PFNGLISTEXTUREEXTPROC _funcptr_glIsTextureEXT;
+CI_API extern PFNGLISTEXTUREEXTPROC _funcptr_glIsTextureEXT;
 #define glIsTextureEXT _funcptr_glIsTextureEXT
-extern PFNGLPRIORITIZETEXTURESEXTPROC _funcptr_glPrioritizeTexturesEXT;
+CI_API extern PFNGLPRIORITIZETEXTURESEXTPROC _funcptr_glPrioritizeTexturesEXT;
 #define glPrioritizeTexturesEXT _funcptr_glPrioritizeTexturesEXT
 
 #define GL_PERTURB_EXT 0x85AE
@@ -6850,7 +6850,7 @@ extern PFNGLPRIORITIZETEXTURESEXTPROC _funcptr_glPrioritizeTexturesEXT;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTURENORMALEXTPROC)(GLenum mode);
 
-extern PFNGLTEXTURENORMALEXTPROC _funcptr_glTextureNormalEXT;
+CI_API extern PFNGLTEXTURENORMALEXTPROC _funcptr_glTextureNormalEXT;
 #define glTextureNormalEXT _funcptr_glTextureNormalEXT
 
 #define GL_COMPRESSED_SLUMINANCE_ALPHA_EXT 0x8C4B
@@ -6915,9 +6915,9 @@ extern PFNGLTEXTURENORMALEXTPROC _funcptr_glTextureNormalEXT;
 typedef void (CODEGEN_FUNCPTR * PFNGLGETQUERYOBJECTI64VEXTPROC)(GLuint id, GLenum pname, GLint64 * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETQUERYOBJECTUI64VEXTPROC)(GLuint id, GLenum pname, GLuint64 * params);
 
-extern PFNGLGETQUERYOBJECTI64VEXTPROC _funcptr_glGetQueryObjecti64vEXT;
+CI_API extern PFNGLGETQUERYOBJECTI64VEXTPROC _funcptr_glGetQueryObjecti64vEXT;
 #define glGetQueryObjecti64vEXT _funcptr_glGetQueryObjecti64vEXT
-extern PFNGLGETQUERYOBJECTUI64VEXTPROC _funcptr_glGetQueryObjectui64vEXT;
+CI_API extern PFNGLGETQUERYOBJECTUI64VEXTPROC _funcptr_glGetQueryObjectui64vEXT;
 #define glGetQueryObjectui64vEXT _funcptr_glGetQueryObjectui64vEXT
 
 #define GL_INTERLEAVED_ATTRIBS_EXT 0x8C8C
@@ -6944,19 +6944,19 @@ typedef void (CODEGEN_FUNCPTR * PFNGLENDTRANSFORMFEEDBACKEXTPROC)();
 typedef void (CODEGEN_FUNCPTR * PFNGLGETTRANSFORMFEEDBACKVARYINGEXTPROC)(GLuint program, GLuint index, GLsizei bufSize, GLsizei * length, GLsizei * size, GLenum * type, GLchar * name);
 typedef void (CODEGEN_FUNCPTR * PFNGLTRANSFORMFEEDBACKVARYINGSEXTPROC)(GLuint program, GLsizei count, const GLchar *const* varyings, GLenum bufferMode);
 
-extern PFNGLBEGINTRANSFORMFEEDBACKEXTPROC _funcptr_glBeginTransformFeedbackEXT;
+CI_API extern PFNGLBEGINTRANSFORMFEEDBACKEXTPROC _funcptr_glBeginTransformFeedbackEXT;
 #define glBeginTransformFeedbackEXT _funcptr_glBeginTransformFeedbackEXT
-extern PFNGLBINDBUFFERBASEEXTPROC _funcptr_glBindBufferBaseEXT;
+CI_API extern PFNGLBINDBUFFERBASEEXTPROC _funcptr_glBindBufferBaseEXT;
 #define glBindBufferBaseEXT _funcptr_glBindBufferBaseEXT
-extern PFNGLBINDBUFFEROFFSETEXTPROC _funcptr_glBindBufferOffsetEXT;
+CI_API extern PFNGLBINDBUFFEROFFSETEXTPROC _funcptr_glBindBufferOffsetEXT;
 #define glBindBufferOffsetEXT _funcptr_glBindBufferOffsetEXT
-extern PFNGLBINDBUFFERRANGEEXTPROC _funcptr_glBindBufferRangeEXT;
+CI_API extern PFNGLBINDBUFFERRANGEEXTPROC _funcptr_glBindBufferRangeEXT;
 #define glBindBufferRangeEXT _funcptr_glBindBufferRangeEXT
-extern PFNGLENDTRANSFORMFEEDBACKEXTPROC _funcptr_glEndTransformFeedbackEXT;
+CI_API extern PFNGLENDTRANSFORMFEEDBACKEXTPROC _funcptr_glEndTransformFeedbackEXT;
 #define glEndTransformFeedbackEXT _funcptr_glEndTransformFeedbackEXT
-extern PFNGLGETTRANSFORMFEEDBACKVARYINGEXTPROC _funcptr_glGetTransformFeedbackVaryingEXT;
+CI_API extern PFNGLGETTRANSFORMFEEDBACKVARYINGEXTPROC _funcptr_glGetTransformFeedbackVaryingEXT;
 #define glGetTransformFeedbackVaryingEXT _funcptr_glGetTransformFeedbackVaryingEXT
-extern PFNGLTRANSFORMFEEDBACKVARYINGSEXTPROC _funcptr_glTransformFeedbackVaryingsEXT;
+CI_API extern PFNGLTRANSFORMFEEDBACKVARYINGSEXTPROC _funcptr_glTransformFeedbackVaryingsEXT;
 #define glTransformFeedbackVaryingsEXT _funcptr_glTransformFeedbackVaryingsEXT
 
 #define GL_COLOR_ARRAY_COUNT_EXT 0x8084
@@ -7002,23 +7002,23 @@ typedef void (CODEGEN_FUNCPTR * PFNGLNORMALPOINTEREXTPROC)(GLenum type, GLsizei 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXCOORDPOINTEREXTPROC)(GLint size, GLenum type, GLsizei stride, GLsizei count, const GLvoid * pointer);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXPOINTEREXTPROC)(GLint size, GLenum type, GLsizei stride, GLsizei count, const GLvoid * pointer);
 
-extern PFNGLARRAYELEMENTEXTPROC _funcptr_glArrayElementEXT;
+CI_API extern PFNGLARRAYELEMENTEXTPROC _funcptr_glArrayElementEXT;
 #define glArrayElementEXT _funcptr_glArrayElementEXT
-extern PFNGLCOLORPOINTEREXTPROC _funcptr_glColorPointerEXT;
+CI_API extern PFNGLCOLORPOINTEREXTPROC _funcptr_glColorPointerEXT;
 #define glColorPointerEXT _funcptr_glColorPointerEXT
-extern PFNGLDRAWARRAYSEXTPROC _funcptr_glDrawArraysEXT;
+CI_API extern PFNGLDRAWARRAYSEXTPROC _funcptr_glDrawArraysEXT;
 #define glDrawArraysEXT _funcptr_glDrawArraysEXT
-extern PFNGLEDGEFLAGPOINTEREXTPROC _funcptr_glEdgeFlagPointerEXT;
+CI_API extern PFNGLEDGEFLAGPOINTEREXTPROC _funcptr_glEdgeFlagPointerEXT;
 #define glEdgeFlagPointerEXT _funcptr_glEdgeFlagPointerEXT
-extern PFNGLGETPOINTERVEXTPROC _funcptr_glGetPointervEXT;
+CI_API extern PFNGLGETPOINTERVEXTPROC _funcptr_glGetPointervEXT;
 #define glGetPointervEXT _funcptr_glGetPointervEXT
-extern PFNGLINDEXPOINTEREXTPROC _funcptr_glIndexPointerEXT;
+CI_API extern PFNGLINDEXPOINTEREXTPROC _funcptr_glIndexPointerEXT;
 #define glIndexPointerEXT _funcptr_glIndexPointerEXT
-extern PFNGLNORMALPOINTEREXTPROC _funcptr_glNormalPointerEXT;
+CI_API extern PFNGLNORMALPOINTEREXTPROC _funcptr_glNormalPointerEXT;
 #define glNormalPointerEXT _funcptr_glNormalPointerEXT
-extern PFNGLTEXCOORDPOINTEREXTPROC _funcptr_glTexCoordPointerEXT;
+CI_API extern PFNGLTEXCOORDPOINTEREXTPROC _funcptr_glTexCoordPointerEXT;
 #define glTexCoordPointerEXT _funcptr_glTexCoordPointerEXT
-extern PFNGLVERTEXPOINTEREXTPROC _funcptr_glVertexPointerEXT;
+CI_API extern PFNGLVERTEXPOINTEREXTPROC _funcptr_glVertexPointerEXT;
 #define glVertexPointerEXT _funcptr_glVertexPointerEXT
 
 #define GL_BGRA 0x80E1
@@ -7048,25 +7048,25 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBL4DEXTPROC)(GLuint index, GLdou
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBL4DVEXTPROC)(GLuint index, const GLdouble * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBLPOINTEREXTPROC)(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid * pointer);
 
-extern PFNGLGETVERTEXATTRIBLDVEXTPROC _funcptr_glGetVertexAttribLdvEXT;
+CI_API extern PFNGLGETVERTEXATTRIBLDVEXTPROC _funcptr_glGetVertexAttribLdvEXT;
 #define glGetVertexAttribLdvEXT _funcptr_glGetVertexAttribLdvEXT
-extern PFNGLVERTEXATTRIBL1DEXTPROC _funcptr_glVertexAttribL1dEXT;
+CI_API extern PFNGLVERTEXATTRIBL1DEXTPROC _funcptr_glVertexAttribL1dEXT;
 #define glVertexAttribL1dEXT _funcptr_glVertexAttribL1dEXT
-extern PFNGLVERTEXATTRIBL1DVEXTPROC _funcptr_glVertexAttribL1dvEXT;
+CI_API extern PFNGLVERTEXATTRIBL1DVEXTPROC _funcptr_glVertexAttribL1dvEXT;
 #define glVertexAttribL1dvEXT _funcptr_glVertexAttribL1dvEXT
-extern PFNGLVERTEXATTRIBL2DEXTPROC _funcptr_glVertexAttribL2dEXT;
+CI_API extern PFNGLVERTEXATTRIBL2DEXTPROC _funcptr_glVertexAttribL2dEXT;
 #define glVertexAttribL2dEXT _funcptr_glVertexAttribL2dEXT
-extern PFNGLVERTEXATTRIBL2DVEXTPROC _funcptr_glVertexAttribL2dvEXT;
+CI_API extern PFNGLVERTEXATTRIBL2DVEXTPROC _funcptr_glVertexAttribL2dvEXT;
 #define glVertexAttribL2dvEXT _funcptr_glVertexAttribL2dvEXT
-extern PFNGLVERTEXATTRIBL3DEXTPROC _funcptr_glVertexAttribL3dEXT;
+CI_API extern PFNGLVERTEXATTRIBL3DEXTPROC _funcptr_glVertexAttribL3dEXT;
 #define glVertexAttribL3dEXT _funcptr_glVertexAttribL3dEXT
-extern PFNGLVERTEXATTRIBL3DVEXTPROC _funcptr_glVertexAttribL3dvEXT;
+CI_API extern PFNGLVERTEXATTRIBL3DVEXTPROC _funcptr_glVertexAttribL3dvEXT;
 #define glVertexAttribL3dvEXT _funcptr_glVertexAttribL3dvEXT
-extern PFNGLVERTEXATTRIBL4DEXTPROC _funcptr_glVertexAttribL4dEXT;
+CI_API extern PFNGLVERTEXATTRIBL4DEXTPROC _funcptr_glVertexAttribL4dEXT;
 #define glVertexAttribL4dEXT _funcptr_glVertexAttribL4dEXT
-extern PFNGLVERTEXATTRIBL4DVEXTPROC _funcptr_glVertexAttribL4dvEXT;
+CI_API extern PFNGLVERTEXATTRIBL4DVEXTPROC _funcptr_glVertexAttribL4dvEXT;
 #define glVertexAttribL4dvEXT _funcptr_glVertexAttribL4dvEXT
-extern PFNGLVERTEXATTRIBLPOINTEREXTPROC _funcptr_glVertexAttribLPointerEXT;
+CI_API extern PFNGLVERTEXATTRIBLPOINTEREXTPROC _funcptr_glVertexAttribLPointerEXT;
 #define glVertexAttribLPointerEXT _funcptr_glVertexAttribLPointerEXT
 
 #define GL_CURRENT_VERTEX_EXT 0x87E2
@@ -7223,89 +7223,89 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVARIANTUIVEXTPROC)(GLuint id, const GLuint 
 typedef void (CODEGEN_FUNCPTR * PFNGLVARIANTUSVEXTPROC)(GLuint id, const GLushort * addr);
 typedef void (CODEGEN_FUNCPTR * PFNGLWRITEMASKEXTPROC)(GLuint res, GLuint in, GLenum outX, GLenum outY, GLenum outZ, GLenum outW);
 
-extern PFNGLBEGINVERTEXSHADEREXTPROC _funcptr_glBeginVertexShaderEXT;
+CI_API extern PFNGLBEGINVERTEXSHADEREXTPROC _funcptr_glBeginVertexShaderEXT;
 #define glBeginVertexShaderEXT _funcptr_glBeginVertexShaderEXT
-extern PFNGLBINDLIGHTPARAMETEREXTPROC _funcptr_glBindLightParameterEXT;
+CI_API extern PFNGLBINDLIGHTPARAMETEREXTPROC _funcptr_glBindLightParameterEXT;
 #define glBindLightParameterEXT _funcptr_glBindLightParameterEXT
-extern PFNGLBINDMATERIALPARAMETEREXTPROC _funcptr_glBindMaterialParameterEXT;
+CI_API extern PFNGLBINDMATERIALPARAMETEREXTPROC _funcptr_glBindMaterialParameterEXT;
 #define glBindMaterialParameterEXT _funcptr_glBindMaterialParameterEXT
-extern PFNGLBINDPARAMETEREXTPROC _funcptr_glBindParameterEXT;
+CI_API extern PFNGLBINDPARAMETEREXTPROC _funcptr_glBindParameterEXT;
 #define glBindParameterEXT _funcptr_glBindParameterEXT
-extern PFNGLBINDTEXGENPARAMETEREXTPROC _funcptr_glBindTexGenParameterEXT;
+CI_API extern PFNGLBINDTEXGENPARAMETEREXTPROC _funcptr_glBindTexGenParameterEXT;
 #define glBindTexGenParameterEXT _funcptr_glBindTexGenParameterEXT
-extern PFNGLBINDTEXTUREUNITPARAMETEREXTPROC _funcptr_glBindTextureUnitParameterEXT;
+CI_API extern PFNGLBINDTEXTUREUNITPARAMETEREXTPROC _funcptr_glBindTextureUnitParameterEXT;
 #define glBindTextureUnitParameterEXT _funcptr_glBindTextureUnitParameterEXT
-extern PFNGLBINDVERTEXSHADEREXTPROC _funcptr_glBindVertexShaderEXT;
+CI_API extern PFNGLBINDVERTEXSHADEREXTPROC _funcptr_glBindVertexShaderEXT;
 #define glBindVertexShaderEXT _funcptr_glBindVertexShaderEXT
-extern PFNGLDELETEVERTEXSHADEREXTPROC _funcptr_glDeleteVertexShaderEXT;
+CI_API extern PFNGLDELETEVERTEXSHADEREXTPROC _funcptr_glDeleteVertexShaderEXT;
 #define glDeleteVertexShaderEXT _funcptr_glDeleteVertexShaderEXT
-extern PFNGLDISABLEVARIANTCLIENTSTATEEXTPROC _funcptr_glDisableVariantClientStateEXT;
+CI_API extern PFNGLDISABLEVARIANTCLIENTSTATEEXTPROC _funcptr_glDisableVariantClientStateEXT;
 #define glDisableVariantClientStateEXT _funcptr_glDisableVariantClientStateEXT
-extern PFNGLENABLEVARIANTCLIENTSTATEEXTPROC _funcptr_glEnableVariantClientStateEXT;
+CI_API extern PFNGLENABLEVARIANTCLIENTSTATEEXTPROC _funcptr_glEnableVariantClientStateEXT;
 #define glEnableVariantClientStateEXT _funcptr_glEnableVariantClientStateEXT
-extern PFNGLENDVERTEXSHADEREXTPROC _funcptr_glEndVertexShaderEXT;
+CI_API extern PFNGLENDVERTEXSHADEREXTPROC _funcptr_glEndVertexShaderEXT;
 #define glEndVertexShaderEXT _funcptr_glEndVertexShaderEXT
-extern PFNGLEXTRACTCOMPONENTEXTPROC _funcptr_glExtractComponentEXT;
+CI_API extern PFNGLEXTRACTCOMPONENTEXTPROC _funcptr_glExtractComponentEXT;
 #define glExtractComponentEXT _funcptr_glExtractComponentEXT
-extern PFNGLGENSYMBOLSEXTPROC _funcptr_glGenSymbolsEXT;
+CI_API extern PFNGLGENSYMBOLSEXTPROC _funcptr_glGenSymbolsEXT;
 #define glGenSymbolsEXT _funcptr_glGenSymbolsEXT
-extern PFNGLGENVERTEXSHADERSEXTPROC _funcptr_glGenVertexShadersEXT;
+CI_API extern PFNGLGENVERTEXSHADERSEXTPROC _funcptr_glGenVertexShadersEXT;
 #define glGenVertexShadersEXT _funcptr_glGenVertexShadersEXT
-extern PFNGLGETINVARIANTBOOLEANVEXTPROC _funcptr_glGetInvariantBooleanvEXT;
+CI_API extern PFNGLGETINVARIANTBOOLEANVEXTPROC _funcptr_glGetInvariantBooleanvEXT;
 #define glGetInvariantBooleanvEXT _funcptr_glGetInvariantBooleanvEXT
-extern PFNGLGETINVARIANTFLOATVEXTPROC _funcptr_glGetInvariantFloatvEXT;
+CI_API extern PFNGLGETINVARIANTFLOATVEXTPROC _funcptr_glGetInvariantFloatvEXT;
 #define glGetInvariantFloatvEXT _funcptr_glGetInvariantFloatvEXT
-extern PFNGLGETINVARIANTINTEGERVEXTPROC _funcptr_glGetInvariantIntegervEXT;
+CI_API extern PFNGLGETINVARIANTINTEGERVEXTPROC _funcptr_glGetInvariantIntegervEXT;
 #define glGetInvariantIntegervEXT _funcptr_glGetInvariantIntegervEXT
-extern PFNGLGETLOCALCONSTANTBOOLEANVEXTPROC _funcptr_glGetLocalConstantBooleanvEXT;
+CI_API extern PFNGLGETLOCALCONSTANTBOOLEANVEXTPROC _funcptr_glGetLocalConstantBooleanvEXT;
 #define glGetLocalConstantBooleanvEXT _funcptr_glGetLocalConstantBooleanvEXT
-extern PFNGLGETLOCALCONSTANTFLOATVEXTPROC _funcptr_glGetLocalConstantFloatvEXT;
+CI_API extern PFNGLGETLOCALCONSTANTFLOATVEXTPROC _funcptr_glGetLocalConstantFloatvEXT;
 #define glGetLocalConstantFloatvEXT _funcptr_glGetLocalConstantFloatvEXT
-extern PFNGLGETLOCALCONSTANTINTEGERVEXTPROC _funcptr_glGetLocalConstantIntegervEXT;
+CI_API extern PFNGLGETLOCALCONSTANTINTEGERVEXTPROC _funcptr_glGetLocalConstantIntegervEXT;
 #define glGetLocalConstantIntegervEXT _funcptr_glGetLocalConstantIntegervEXT
-extern PFNGLGETVARIANTBOOLEANVEXTPROC _funcptr_glGetVariantBooleanvEXT;
+CI_API extern PFNGLGETVARIANTBOOLEANVEXTPROC _funcptr_glGetVariantBooleanvEXT;
 #define glGetVariantBooleanvEXT _funcptr_glGetVariantBooleanvEXT
-extern PFNGLGETVARIANTFLOATVEXTPROC _funcptr_glGetVariantFloatvEXT;
+CI_API extern PFNGLGETVARIANTFLOATVEXTPROC _funcptr_glGetVariantFloatvEXT;
 #define glGetVariantFloatvEXT _funcptr_glGetVariantFloatvEXT
-extern PFNGLGETVARIANTINTEGERVEXTPROC _funcptr_glGetVariantIntegervEXT;
+CI_API extern PFNGLGETVARIANTINTEGERVEXTPROC _funcptr_glGetVariantIntegervEXT;
 #define glGetVariantIntegervEXT _funcptr_glGetVariantIntegervEXT
-extern PFNGLGETVARIANTPOINTERVEXTPROC _funcptr_glGetVariantPointervEXT;
+CI_API extern PFNGLGETVARIANTPOINTERVEXTPROC _funcptr_glGetVariantPointervEXT;
 #define glGetVariantPointervEXT _funcptr_glGetVariantPointervEXT
-extern PFNGLINSERTCOMPONENTEXTPROC _funcptr_glInsertComponentEXT;
+CI_API extern PFNGLINSERTCOMPONENTEXTPROC _funcptr_glInsertComponentEXT;
 #define glInsertComponentEXT _funcptr_glInsertComponentEXT
-extern PFNGLISVARIANTENABLEDEXTPROC _funcptr_glIsVariantEnabledEXT;
+CI_API extern PFNGLISVARIANTENABLEDEXTPROC _funcptr_glIsVariantEnabledEXT;
 #define glIsVariantEnabledEXT _funcptr_glIsVariantEnabledEXT
-extern PFNGLSETINVARIANTEXTPROC _funcptr_glSetInvariantEXT;
+CI_API extern PFNGLSETINVARIANTEXTPROC _funcptr_glSetInvariantEXT;
 #define glSetInvariantEXT _funcptr_glSetInvariantEXT
-extern PFNGLSETLOCALCONSTANTEXTPROC _funcptr_glSetLocalConstantEXT;
+CI_API extern PFNGLSETLOCALCONSTANTEXTPROC _funcptr_glSetLocalConstantEXT;
 #define glSetLocalConstantEXT _funcptr_glSetLocalConstantEXT
-extern PFNGLSHADEROP1EXTPROC _funcptr_glShaderOp1EXT;
+CI_API extern PFNGLSHADEROP1EXTPROC _funcptr_glShaderOp1EXT;
 #define glShaderOp1EXT _funcptr_glShaderOp1EXT
-extern PFNGLSHADEROP2EXTPROC _funcptr_glShaderOp2EXT;
+CI_API extern PFNGLSHADEROP2EXTPROC _funcptr_glShaderOp2EXT;
 #define glShaderOp2EXT _funcptr_glShaderOp2EXT
-extern PFNGLSHADEROP3EXTPROC _funcptr_glShaderOp3EXT;
+CI_API extern PFNGLSHADEROP3EXTPROC _funcptr_glShaderOp3EXT;
 #define glShaderOp3EXT _funcptr_glShaderOp3EXT
-extern PFNGLSWIZZLEEXTPROC _funcptr_glSwizzleEXT;
+CI_API extern PFNGLSWIZZLEEXTPROC _funcptr_glSwizzleEXT;
 #define glSwizzleEXT _funcptr_glSwizzleEXT
-extern PFNGLVARIANTPOINTEREXTPROC _funcptr_glVariantPointerEXT;
+CI_API extern PFNGLVARIANTPOINTEREXTPROC _funcptr_glVariantPointerEXT;
 #define glVariantPointerEXT _funcptr_glVariantPointerEXT
-extern PFNGLVARIANTBVEXTPROC _funcptr_glVariantbvEXT;
+CI_API extern PFNGLVARIANTBVEXTPROC _funcptr_glVariantbvEXT;
 #define glVariantbvEXT _funcptr_glVariantbvEXT
-extern PFNGLVARIANTDVEXTPROC _funcptr_glVariantdvEXT;
+CI_API extern PFNGLVARIANTDVEXTPROC _funcptr_glVariantdvEXT;
 #define glVariantdvEXT _funcptr_glVariantdvEXT
-extern PFNGLVARIANTFVEXTPROC _funcptr_glVariantfvEXT;
+CI_API extern PFNGLVARIANTFVEXTPROC _funcptr_glVariantfvEXT;
 #define glVariantfvEXT _funcptr_glVariantfvEXT
-extern PFNGLVARIANTIVEXTPROC _funcptr_glVariantivEXT;
+CI_API extern PFNGLVARIANTIVEXTPROC _funcptr_glVariantivEXT;
 #define glVariantivEXT _funcptr_glVariantivEXT
-extern PFNGLVARIANTSVEXTPROC _funcptr_glVariantsvEXT;
+CI_API extern PFNGLVARIANTSVEXTPROC _funcptr_glVariantsvEXT;
 #define glVariantsvEXT _funcptr_glVariantsvEXT
-extern PFNGLVARIANTUBVEXTPROC _funcptr_glVariantubvEXT;
+CI_API extern PFNGLVARIANTUBVEXTPROC _funcptr_glVariantubvEXT;
 #define glVariantubvEXT _funcptr_glVariantubvEXT
-extern PFNGLVARIANTUIVEXTPROC _funcptr_glVariantuivEXT;
+CI_API extern PFNGLVARIANTUIVEXTPROC _funcptr_glVariantuivEXT;
 #define glVariantuivEXT _funcptr_glVariantuivEXT
-extern PFNGLVARIANTUSVEXTPROC _funcptr_glVariantusvEXT;
+CI_API extern PFNGLVARIANTUSVEXTPROC _funcptr_glVariantusvEXT;
 #define glVariantusvEXT _funcptr_glVariantusvEXT
-extern PFNGLWRITEMASKEXTPROC _funcptr_glWriteMaskEXT;
+CI_API extern PFNGLWRITEMASKEXTPROC _funcptr_glWriteMaskEXT;
 #define glWriteMaskEXT _funcptr_glWriteMaskEXT
 
 #define GL_CURRENT_VERTEX_WEIGHT_EXT 0x850B
@@ -7326,28 +7326,28 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXWEIGHTPOINTEREXTPROC)(GLint size, GLe
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXWEIGHTFEXTPROC)(GLfloat weight);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXWEIGHTFVEXTPROC)(const GLfloat * weight);
 
-extern PFNGLVERTEXWEIGHTPOINTEREXTPROC _funcptr_glVertexWeightPointerEXT;
+CI_API extern PFNGLVERTEXWEIGHTPOINTEREXTPROC _funcptr_glVertexWeightPointerEXT;
 #define glVertexWeightPointerEXT _funcptr_glVertexWeightPointerEXT
-extern PFNGLVERTEXWEIGHTFEXTPROC _funcptr_glVertexWeightfEXT;
+CI_API extern PFNGLVERTEXWEIGHTFEXTPROC _funcptr_glVertexWeightfEXT;
 #define glVertexWeightfEXT _funcptr_glVertexWeightfEXT
-extern PFNGLVERTEXWEIGHTFVEXTPROC _funcptr_glVertexWeightfvEXT;
+CI_API extern PFNGLVERTEXWEIGHTFVEXTPROC _funcptr_glVertexWeightfvEXT;
 #define glVertexWeightfvEXT _funcptr_glVertexWeightfvEXT
 
 #define GL_SYNC_X11_FENCE_EXT 0x90E1
 
 typedef GLsync (CODEGEN_FUNCPTR * PFNGLIMPORTSYNCEXTPROC)(GLenum external_sync_type, GLintptr external_sync, GLbitfield flags);
 
-extern PFNGLIMPORTSYNCEXTPROC _funcptr_glImportSyncEXT;
+CI_API extern PFNGLIMPORTSYNCEXTPROC _funcptr_glImportSyncEXT;
 #define glImportSyncEXT _funcptr_glImportSyncEXT
 
 typedef void (CODEGEN_FUNCPTR * PFNGLFRAMETERMINATORGREMEDYPROC)();
 
-extern PFNGLFRAMETERMINATORGREMEDYPROC _funcptr_glFrameTerminatorGREMEDY;
+CI_API extern PFNGLFRAMETERMINATORGREMEDYPROC _funcptr_glFrameTerminatorGREMEDY;
 #define glFrameTerminatorGREMEDY _funcptr_glFrameTerminatorGREMEDY
 
 typedef void (CODEGEN_FUNCPTR * PFNGLSTRINGMARKERGREMEDYPROC)(GLsizei len, const GLvoid * string);
 
-extern PFNGLSTRINGMARKERGREMEDYPROC _funcptr_glStringMarkerGREMEDY;
+CI_API extern PFNGLSTRINGMARKERGREMEDYPROC _funcptr_glStringMarkerGREMEDY;
 #define glStringMarkerGREMEDY _funcptr_glStringMarkerGREMEDY
 
 #define GL_CONSTANT_BORDER_HP 0x8151
@@ -7378,17 +7378,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLIMAGETRANSFORMPARAMETERFVHPPROC)(GLenum tar
 typedef void (CODEGEN_FUNCPTR * PFNGLIMAGETRANSFORMPARAMETERIHPPROC)(GLenum target, GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLIMAGETRANSFORMPARAMETERIVHPPROC)(GLenum target, GLenum pname, const GLint * params);
 
-extern PFNGLGETIMAGETRANSFORMPARAMETERFVHPPROC _funcptr_glGetImageTransformParameterfvHP;
+CI_API extern PFNGLGETIMAGETRANSFORMPARAMETERFVHPPROC _funcptr_glGetImageTransformParameterfvHP;
 #define glGetImageTransformParameterfvHP _funcptr_glGetImageTransformParameterfvHP
-extern PFNGLGETIMAGETRANSFORMPARAMETERIVHPPROC _funcptr_glGetImageTransformParameterivHP;
+CI_API extern PFNGLGETIMAGETRANSFORMPARAMETERIVHPPROC _funcptr_glGetImageTransformParameterivHP;
 #define glGetImageTransformParameterivHP _funcptr_glGetImageTransformParameterivHP
-extern PFNGLIMAGETRANSFORMPARAMETERFHPPROC _funcptr_glImageTransformParameterfHP;
+CI_API extern PFNGLIMAGETRANSFORMPARAMETERFHPPROC _funcptr_glImageTransformParameterfHP;
 #define glImageTransformParameterfHP _funcptr_glImageTransformParameterfHP
-extern PFNGLIMAGETRANSFORMPARAMETERFVHPPROC _funcptr_glImageTransformParameterfvHP;
+CI_API extern PFNGLIMAGETRANSFORMPARAMETERFVHPPROC _funcptr_glImageTransformParameterfvHP;
 #define glImageTransformParameterfvHP _funcptr_glImageTransformParameterfvHP
-extern PFNGLIMAGETRANSFORMPARAMETERIHPPROC _funcptr_glImageTransformParameteriHP;
+CI_API extern PFNGLIMAGETRANSFORMPARAMETERIHPPROC _funcptr_glImageTransformParameteriHP;
 #define glImageTransformParameteriHP _funcptr_glImageTransformParameteriHP
-extern PFNGLIMAGETRANSFORMPARAMETERIVHPPROC _funcptr_glImageTransformParameterivHP;
+CI_API extern PFNGLIMAGETRANSFORMPARAMETERIVHPPROC _funcptr_glImageTransformParameterivHP;
 #define glImageTransformParameterivHP _funcptr_glImageTransformParameterivHP
 
 #define GL_OCCLUSION_TEST_HP 0x8165
@@ -7403,9 +7403,9 @@ extern PFNGLIMAGETRANSFORMPARAMETERIVHPPROC _funcptr_glImageTransformParameteriv
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIMODEDRAWARRAYSIBMPROC)(const GLenum * mode, const GLint * first, const GLsizei * count, GLsizei primcount, GLint modestride);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIMODEDRAWELEMENTSIBMPROC)(const GLenum * mode, const GLsizei * count, GLenum type, const GLvoid *const* indices, GLsizei primcount, GLint modestride);
 
-extern PFNGLMULTIMODEDRAWARRAYSIBMPROC _funcptr_glMultiModeDrawArraysIBM;
+CI_API extern PFNGLMULTIMODEDRAWARRAYSIBMPROC _funcptr_glMultiModeDrawArraysIBM;
 #define glMultiModeDrawArraysIBM _funcptr_glMultiModeDrawArraysIBM
-extern PFNGLMULTIMODEDRAWELEMENTSIBMPROC _funcptr_glMultiModeDrawElementsIBM;
+CI_API extern PFNGLMULTIMODEDRAWELEMENTSIBMPROC _funcptr_glMultiModeDrawElementsIBM;
 #define glMultiModeDrawElementsIBM _funcptr_glMultiModeDrawElementsIBM
 
 #define GL_RASTER_POSITION_UNCLIPPED_IBM 0x19262
@@ -7415,7 +7415,7 @@ extern PFNGLMULTIMODEDRAWELEMENTSIBMPROC _funcptr_glMultiModeDrawElementsIBM;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLFLUSHSTATICDATAIBMPROC)(GLenum target);
 
-extern PFNGLFLUSHSTATICDATAIBMPROC _funcptr_glFlushStaticDataIBM;
+CI_API extern PFNGLFLUSHSTATICDATAIBMPROC _funcptr_glFlushStaticDataIBM;
 #define glFlushStaticDataIBM _funcptr_glFlushStaticDataIBM
 
 #define GL_MIRRORED_REPEAT_IBM 0x8370
@@ -7446,26 +7446,26 @@ typedef void (CODEGEN_FUNCPTR * PFNGLSECONDARYCOLORPOINTERLISTIBMPROC)(GLint siz
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXCOORDPOINTERLISTIBMPROC)(GLint size, GLenum type, GLint stride, const GLvoid ** pointer, GLint ptrstride);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXPOINTERLISTIBMPROC)(GLint size, GLenum type, GLint stride, const GLvoid ** pointer, GLint ptrstride);
 
-extern PFNGLCOLORPOINTERLISTIBMPROC _funcptr_glColorPointerListIBM;
+CI_API extern PFNGLCOLORPOINTERLISTIBMPROC _funcptr_glColorPointerListIBM;
 #define glColorPointerListIBM _funcptr_glColorPointerListIBM
-extern PFNGLEDGEFLAGPOINTERLISTIBMPROC _funcptr_glEdgeFlagPointerListIBM;
+CI_API extern PFNGLEDGEFLAGPOINTERLISTIBMPROC _funcptr_glEdgeFlagPointerListIBM;
 #define glEdgeFlagPointerListIBM _funcptr_glEdgeFlagPointerListIBM
-extern PFNGLFOGCOORDPOINTERLISTIBMPROC _funcptr_glFogCoordPointerListIBM;
+CI_API extern PFNGLFOGCOORDPOINTERLISTIBMPROC _funcptr_glFogCoordPointerListIBM;
 #define glFogCoordPointerListIBM _funcptr_glFogCoordPointerListIBM
-extern PFNGLINDEXPOINTERLISTIBMPROC _funcptr_glIndexPointerListIBM;
+CI_API extern PFNGLINDEXPOINTERLISTIBMPROC _funcptr_glIndexPointerListIBM;
 #define glIndexPointerListIBM _funcptr_glIndexPointerListIBM
-extern PFNGLNORMALPOINTERLISTIBMPROC _funcptr_glNormalPointerListIBM;
+CI_API extern PFNGLNORMALPOINTERLISTIBMPROC _funcptr_glNormalPointerListIBM;
 #define glNormalPointerListIBM _funcptr_glNormalPointerListIBM
-extern PFNGLSECONDARYCOLORPOINTERLISTIBMPROC _funcptr_glSecondaryColorPointerListIBM;
+CI_API extern PFNGLSECONDARYCOLORPOINTERLISTIBMPROC _funcptr_glSecondaryColorPointerListIBM;
 #define glSecondaryColorPointerListIBM _funcptr_glSecondaryColorPointerListIBM
-extern PFNGLTEXCOORDPOINTERLISTIBMPROC _funcptr_glTexCoordPointerListIBM;
+CI_API extern PFNGLTEXCOORDPOINTERLISTIBMPROC _funcptr_glTexCoordPointerListIBM;
 #define glTexCoordPointerListIBM _funcptr_glTexCoordPointerListIBM
-extern PFNGLVERTEXPOINTERLISTIBMPROC _funcptr_glVertexPointerListIBM;
+CI_API extern PFNGLVERTEXPOINTERLISTIBMPROC _funcptr_glVertexPointerListIBM;
 #define glVertexPointerListIBM _funcptr_glVertexPointerListIBM
 
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDFUNCSEPARATEINGRPROC)(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
 
-extern PFNGLBLENDFUNCSEPARATEINGRPROC _funcptr_glBlendFuncSeparateINGR;
+CI_API extern PFNGLBLENDFUNCSEPARATEINGRPROC _funcptr_glBlendFuncSeparateINGR;
 #define glBlendFuncSeparateINGR _funcptr_glBlendFuncSeparateINGR
 
 #define GL_ALPHA_MAX_CLAMP_INGR 0x8567
@@ -7488,11 +7488,11 @@ typedef void * (CODEGEN_FUNCPTR * PFNGLMAPTEXTURE2DINTELPROC)(GLuint texture, GL
 typedef void (CODEGEN_FUNCPTR * PFNGLSYNCTEXTUREINTELPROC)(GLuint texture);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNMAPTEXTURE2DINTELPROC)(GLuint texture, GLint level);
 
-extern PFNGLMAPTEXTURE2DINTELPROC _funcptr_glMapTexture2DINTEL;
+CI_API extern PFNGLMAPTEXTURE2DINTELPROC _funcptr_glMapTexture2DINTEL;
 #define glMapTexture2DINTEL _funcptr_glMapTexture2DINTEL
-extern PFNGLSYNCTEXTUREINTELPROC _funcptr_glSyncTextureINTEL;
+CI_API extern PFNGLSYNCTEXTUREINTELPROC _funcptr_glSyncTextureINTEL;
 #define glSyncTextureINTEL _funcptr_glSyncTextureINTEL
-extern PFNGLUNMAPTEXTURE2DINTELPROC _funcptr_glUnmapTexture2DINTEL;
+CI_API extern PFNGLUNMAPTEXTURE2DINTELPROC _funcptr_glUnmapTexture2DINTEL;
 #define glUnmapTexture2DINTEL _funcptr_glUnmapTexture2DINTEL
 
 #define GL_COLOR_ARRAY_PARALLEL_POINTERS_INTEL 0x83F7
@@ -7506,13 +7506,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLNORMALPOINTERVINTELPROC)(GLenum type, const
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXCOORDPOINTERVINTELPROC)(GLint size, GLenum type, const GLvoid ** pointer);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXPOINTERVINTELPROC)(GLint size, GLenum type, const GLvoid ** pointer);
 
-extern PFNGLCOLORPOINTERVINTELPROC _funcptr_glColorPointervINTEL;
+CI_API extern PFNGLCOLORPOINTERVINTELPROC _funcptr_glColorPointervINTEL;
 #define glColorPointervINTEL _funcptr_glColorPointervINTEL
-extern PFNGLNORMALPOINTERVINTELPROC _funcptr_glNormalPointervINTEL;
+CI_API extern PFNGLNORMALPOINTERVINTELPROC _funcptr_glNormalPointervINTEL;
 #define glNormalPointervINTEL _funcptr_glNormalPointervINTEL
-extern PFNGLTEXCOORDPOINTERVINTELPROC _funcptr_glTexCoordPointervINTEL;
+CI_API extern PFNGLTEXCOORDPOINTERVINTELPROC _funcptr_glTexCoordPointervINTEL;
 #define glTexCoordPointervINTEL _funcptr_glTexCoordPointervINTEL
-extern PFNGLVERTEXPOINTERVINTELPROC _funcptr_glVertexPointervINTEL;
+CI_API extern PFNGLVERTEXPOINTERVINTELPROC _funcptr_glVertexPointervINTEL;
 #define glVertexPointervINTEL _funcptr_glVertexPointervINTEL
 
 #define GL_COMPRESSED_RGBA_ASTC_10x10_KHR 0x93BB
@@ -7555,7 +7555,7 @@ extern PFNGLVERTEXPOINTERVINTELPROC _funcptr_glVertexPointervINTEL;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLRESIZEBUFFERSMESAPROC)();
 
-extern PFNGLRESIZEBUFFERSMESAPROC _funcptr_glResizeBuffersMESA;
+CI_API extern PFNGLRESIZEBUFFERSMESAPROC _funcptr_glResizeBuffersMESA;
 #define glResizeBuffersMESA _funcptr_glResizeBuffersMESA
 
 typedef void (CODEGEN_FUNCPTR * PFNGLWINDOWPOS2DMESAPROC)(GLdouble x, GLdouble y);
@@ -7583,53 +7583,53 @@ typedef void (CODEGEN_FUNCPTR * PFNGLWINDOWPOS4IVMESAPROC)(const GLint * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLWINDOWPOS4SMESAPROC)(GLshort x, GLshort y, GLshort z, GLshort w);
 typedef void (CODEGEN_FUNCPTR * PFNGLWINDOWPOS4SVMESAPROC)(const GLshort * v);
 
-extern PFNGLWINDOWPOS2DMESAPROC _funcptr_glWindowPos2dMESA;
+CI_API extern PFNGLWINDOWPOS2DMESAPROC _funcptr_glWindowPos2dMESA;
 #define glWindowPos2dMESA _funcptr_glWindowPos2dMESA
-extern PFNGLWINDOWPOS2DVMESAPROC _funcptr_glWindowPos2dvMESA;
+CI_API extern PFNGLWINDOWPOS2DVMESAPROC _funcptr_glWindowPos2dvMESA;
 #define glWindowPos2dvMESA _funcptr_glWindowPos2dvMESA
-extern PFNGLWINDOWPOS2FMESAPROC _funcptr_glWindowPos2fMESA;
+CI_API extern PFNGLWINDOWPOS2FMESAPROC _funcptr_glWindowPos2fMESA;
 #define glWindowPos2fMESA _funcptr_glWindowPos2fMESA
-extern PFNGLWINDOWPOS2FVMESAPROC _funcptr_glWindowPos2fvMESA;
+CI_API extern PFNGLWINDOWPOS2FVMESAPROC _funcptr_glWindowPos2fvMESA;
 #define glWindowPos2fvMESA _funcptr_glWindowPos2fvMESA
-extern PFNGLWINDOWPOS2IMESAPROC _funcptr_glWindowPos2iMESA;
+CI_API extern PFNGLWINDOWPOS2IMESAPROC _funcptr_glWindowPos2iMESA;
 #define glWindowPos2iMESA _funcptr_glWindowPos2iMESA
-extern PFNGLWINDOWPOS2IVMESAPROC _funcptr_glWindowPos2ivMESA;
+CI_API extern PFNGLWINDOWPOS2IVMESAPROC _funcptr_glWindowPos2ivMESA;
 #define glWindowPos2ivMESA _funcptr_glWindowPos2ivMESA
-extern PFNGLWINDOWPOS2SMESAPROC _funcptr_glWindowPos2sMESA;
+CI_API extern PFNGLWINDOWPOS2SMESAPROC _funcptr_glWindowPos2sMESA;
 #define glWindowPos2sMESA _funcptr_glWindowPos2sMESA
-extern PFNGLWINDOWPOS2SVMESAPROC _funcptr_glWindowPos2svMESA;
+CI_API extern PFNGLWINDOWPOS2SVMESAPROC _funcptr_glWindowPos2svMESA;
 #define glWindowPos2svMESA _funcptr_glWindowPos2svMESA
-extern PFNGLWINDOWPOS3DMESAPROC _funcptr_glWindowPos3dMESA;
+CI_API extern PFNGLWINDOWPOS3DMESAPROC _funcptr_glWindowPos3dMESA;
 #define glWindowPos3dMESA _funcptr_glWindowPos3dMESA
-extern PFNGLWINDOWPOS3DVMESAPROC _funcptr_glWindowPos3dvMESA;
+CI_API extern PFNGLWINDOWPOS3DVMESAPROC _funcptr_glWindowPos3dvMESA;
 #define glWindowPos3dvMESA _funcptr_glWindowPos3dvMESA
-extern PFNGLWINDOWPOS3FMESAPROC _funcptr_glWindowPos3fMESA;
+CI_API extern PFNGLWINDOWPOS3FMESAPROC _funcptr_glWindowPos3fMESA;
 #define glWindowPos3fMESA _funcptr_glWindowPos3fMESA
-extern PFNGLWINDOWPOS3FVMESAPROC _funcptr_glWindowPos3fvMESA;
+CI_API extern PFNGLWINDOWPOS3FVMESAPROC _funcptr_glWindowPos3fvMESA;
 #define glWindowPos3fvMESA _funcptr_glWindowPos3fvMESA
-extern PFNGLWINDOWPOS3IMESAPROC _funcptr_glWindowPos3iMESA;
+CI_API extern PFNGLWINDOWPOS3IMESAPROC _funcptr_glWindowPos3iMESA;
 #define glWindowPos3iMESA _funcptr_glWindowPos3iMESA
-extern PFNGLWINDOWPOS3IVMESAPROC _funcptr_glWindowPos3ivMESA;
+CI_API extern PFNGLWINDOWPOS3IVMESAPROC _funcptr_glWindowPos3ivMESA;
 #define glWindowPos3ivMESA _funcptr_glWindowPos3ivMESA
-extern PFNGLWINDOWPOS3SMESAPROC _funcptr_glWindowPos3sMESA;
+CI_API extern PFNGLWINDOWPOS3SMESAPROC _funcptr_glWindowPos3sMESA;
 #define glWindowPos3sMESA _funcptr_glWindowPos3sMESA
-extern PFNGLWINDOWPOS3SVMESAPROC _funcptr_glWindowPos3svMESA;
+CI_API extern PFNGLWINDOWPOS3SVMESAPROC _funcptr_glWindowPos3svMESA;
 #define glWindowPos3svMESA _funcptr_glWindowPos3svMESA
-extern PFNGLWINDOWPOS4DMESAPROC _funcptr_glWindowPos4dMESA;
+CI_API extern PFNGLWINDOWPOS4DMESAPROC _funcptr_glWindowPos4dMESA;
 #define glWindowPos4dMESA _funcptr_glWindowPos4dMESA
-extern PFNGLWINDOWPOS4DVMESAPROC _funcptr_glWindowPos4dvMESA;
+CI_API extern PFNGLWINDOWPOS4DVMESAPROC _funcptr_glWindowPos4dvMESA;
 #define glWindowPos4dvMESA _funcptr_glWindowPos4dvMESA
-extern PFNGLWINDOWPOS4FMESAPROC _funcptr_glWindowPos4fMESA;
+CI_API extern PFNGLWINDOWPOS4FMESAPROC _funcptr_glWindowPos4fMESA;
 #define glWindowPos4fMESA _funcptr_glWindowPos4fMESA
-extern PFNGLWINDOWPOS4FVMESAPROC _funcptr_glWindowPos4fvMESA;
+CI_API extern PFNGLWINDOWPOS4FVMESAPROC _funcptr_glWindowPos4fvMESA;
 #define glWindowPos4fvMESA _funcptr_glWindowPos4fvMESA
-extern PFNGLWINDOWPOS4IMESAPROC _funcptr_glWindowPos4iMESA;
+CI_API extern PFNGLWINDOWPOS4IMESAPROC _funcptr_glWindowPos4iMESA;
 #define glWindowPos4iMESA _funcptr_glWindowPos4iMESA
-extern PFNGLWINDOWPOS4IVMESAPROC _funcptr_glWindowPos4ivMESA;
+CI_API extern PFNGLWINDOWPOS4IVMESAPROC _funcptr_glWindowPos4ivMESA;
 #define glWindowPos4ivMESA _funcptr_glWindowPos4ivMESA
-extern PFNGLWINDOWPOS4SMESAPROC _funcptr_glWindowPos4sMESA;
+CI_API extern PFNGLWINDOWPOS4SMESAPROC _funcptr_glWindowPos4sMESA;
 #define glWindowPos4sMESA _funcptr_glWindowPos4sMESA
-extern PFNGLWINDOWPOS4SVMESAPROC _funcptr_glWindowPos4svMESA;
+CI_API extern PFNGLWINDOWPOS4SVMESAPROC _funcptr_glWindowPos4svMESA;
 #define glWindowPos4svMESA _funcptr_glWindowPos4svMESA
 
 #define GL_UNSIGNED_SHORT_8_8_MESA 0x85BA
@@ -7639,17 +7639,17 @@ extern PFNGLWINDOWPOS4SVMESAPROC _funcptr_glWindowPos4svMESA;
 typedef void (CODEGEN_FUNCPTR * PFNGLBEGINCONDITIONALRENDERNVXPROC)(GLuint id);
 typedef void (CODEGEN_FUNCPTR * PFNGLENDCONDITIONALRENDERNVXPROC)();
 
-extern PFNGLBEGINCONDITIONALRENDERNVXPROC _funcptr_glBeginConditionalRenderNVX;
+CI_API extern PFNGLBEGINCONDITIONALRENDERNVXPROC _funcptr_glBeginConditionalRenderNVX;
 #define glBeginConditionalRenderNVX _funcptr_glBeginConditionalRenderNVX
-extern PFNGLENDCONDITIONALRENDERNVXPROC _funcptr_glEndConditionalRenderNVX;
+CI_API extern PFNGLENDCONDITIONALRENDERNVXPROC _funcptr_glEndConditionalRenderNVX;
 #define glEndConditionalRenderNVX _funcptr_glEndConditionalRenderNVX
 
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWARRAYSINDIRECTBINDLESSNVPROC)(GLenum mode, const GLvoid * indirect, GLsizei drawCount, GLsizei stride, GLint vertexBufferCount);
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTIDRAWELEMENTSINDIRECTBINDLESSNVPROC)(GLenum mode, GLenum type, const GLvoid * indirect, GLsizei drawCount, GLsizei stride, GLint vertexBufferCount);
 
-extern PFNGLMULTIDRAWARRAYSINDIRECTBINDLESSNVPROC _funcptr_glMultiDrawArraysIndirectBindlessNV;
+CI_API extern PFNGLMULTIDRAWARRAYSINDIRECTBINDLESSNVPROC _funcptr_glMultiDrawArraysIndirectBindlessNV;
 #define glMultiDrawArraysIndirectBindlessNV _funcptr_glMultiDrawArraysIndirectBindlessNV
-extern PFNGLMULTIDRAWELEMENTSINDIRECTBINDLESSNVPROC _funcptr_glMultiDrawElementsIndirectBindlessNV;
+CI_API extern PFNGLMULTIDRAWELEMENTSINDIRECTBINDLESSNVPROC _funcptr_glMultiDrawElementsIndirectBindlessNV;
 #define glMultiDrawElementsIndirectBindlessNV _funcptr_glMultiDrawElementsIndirectBindlessNV
 
 typedef GLuint64 (CODEGEN_FUNCPTR * PFNGLGETIMAGEHANDLENVPROC)(GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum format);
@@ -7666,31 +7666,31 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMUNIFORMHANDLEUI64VNVPROC)(GLuint pro
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMHANDLEUI64NVPROC)(GLint location, GLuint64 value);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMHANDLEUI64VNVPROC)(GLint location, GLsizei count, const GLuint64 * value);
 
-extern PFNGLGETIMAGEHANDLENVPROC _funcptr_glGetImageHandleNV;
+CI_API extern PFNGLGETIMAGEHANDLENVPROC _funcptr_glGetImageHandleNV;
 #define glGetImageHandleNV _funcptr_glGetImageHandleNV
-extern PFNGLGETTEXTUREHANDLENVPROC _funcptr_glGetTextureHandleNV;
+CI_API extern PFNGLGETTEXTUREHANDLENVPROC _funcptr_glGetTextureHandleNV;
 #define glGetTextureHandleNV _funcptr_glGetTextureHandleNV
-extern PFNGLGETTEXTURESAMPLERHANDLENVPROC _funcptr_glGetTextureSamplerHandleNV;
+CI_API extern PFNGLGETTEXTURESAMPLERHANDLENVPROC _funcptr_glGetTextureSamplerHandleNV;
 #define glGetTextureSamplerHandleNV _funcptr_glGetTextureSamplerHandleNV
-extern PFNGLISIMAGEHANDLERESIDENTNVPROC _funcptr_glIsImageHandleResidentNV;
+CI_API extern PFNGLISIMAGEHANDLERESIDENTNVPROC _funcptr_glIsImageHandleResidentNV;
 #define glIsImageHandleResidentNV _funcptr_glIsImageHandleResidentNV
-extern PFNGLISTEXTUREHANDLERESIDENTNVPROC _funcptr_glIsTextureHandleResidentNV;
+CI_API extern PFNGLISTEXTUREHANDLERESIDENTNVPROC _funcptr_glIsTextureHandleResidentNV;
 #define glIsTextureHandleResidentNV _funcptr_glIsTextureHandleResidentNV
-extern PFNGLMAKEIMAGEHANDLENONRESIDENTNVPROC _funcptr_glMakeImageHandleNonResidentNV;
+CI_API extern PFNGLMAKEIMAGEHANDLENONRESIDENTNVPROC _funcptr_glMakeImageHandleNonResidentNV;
 #define glMakeImageHandleNonResidentNV _funcptr_glMakeImageHandleNonResidentNV
-extern PFNGLMAKEIMAGEHANDLERESIDENTNVPROC _funcptr_glMakeImageHandleResidentNV;
+CI_API extern PFNGLMAKEIMAGEHANDLERESIDENTNVPROC _funcptr_glMakeImageHandleResidentNV;
 #define glMakeImageHandleResidentNV _funcptr_glMakeImageHandleResidentNV
-extern PFNGLMAKETEXTUREHANDLENONRESIDENTNVPROC _funcptr_glMakeTextureHandleNonResidentNV;
+CI_API extern PFNGLMAKETEXTUREHANDLENONRESIDENTNVPROC _funcptr_glMakeTextureHandleNonResidentNV;
 #define glMakeTextureHandleNonResidentNV _funcptr_glMakeTextureHandleNonResidentNV
-extern PFNGLMAKETEXTUREHANDLERESIDENTNVPROC _funcptr_glMakeTextureHandleResidentNV;
+CI_API extern PFNGLMAKETEXTUREHANDLERESIDENTNVPROC _funcptr_glMakeTextureHandleResidentNV;
 #define glMakeTextureHandleResidentNV _funcptr_glMakeTextureHandleResidentNV
-extern PFNGLPROGRAMUNIFORMHANDLEUI64NVPROC _funcptr_glProgramUniformHandleui64NV;
+CI_API extern PFNGLPROGRAMUNIFORMHANDLEUI64NVPROC _funcptr_glProgramUniformHandleui64NV;
 #define glProgramUniformHandleui64NV _funcptr_glProgramUniformHandleui64NV
-extern PFNGLPROGRAMUNIFORMHANDLEUI64VNVPROC _funcptr_glProgramUniformHandleui64vNV;
+CI_API extern PFNGLPROGRAMUNIFORMHANDLEUI64VNVPROC _funcptr_glProgramUniformHandleui64vNV;
 #define glProgramUniformHandleui64vNV _funcptr_glProgramUniformHandleui64vNV
-extern PFNGLUNIFORMHANDLEUI64NVPROC _funcptr_glUniformHandleui64NV;
+CI_API extern PFNGLUNIFORMHANDLEUI64NVPROC _funcptr_glUniformHandleui64NV;
 #define glUniformHandleui64NV _funcptr_glUniformHandleui64NV
-extern PFNGLUNIFORMHANDLEUI64VNVPROC _funcptr_glUniformHandleui64vNV;
+CI_API extern PFNGLUNIFORMHANDLEUI64VNVPROC _funcptr_glUniformHandleui64vNV;
 #define glUniformHandleui64vNV _funcptr_glUniformHandleui64vNV
 
 #define GL_BLEND_ADVANCED_COHERENT_NV 0x9285
@@ -7749,9 +7749,9 @@ extern PFNGLUNIFORMHANDLEUI64VNVPROC _funcptr_glUniformHandleui64vNV;
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDBARRIERNVPROC)();
 typedef void (CODEGEN_FUNCPTR * PFNGLBLENDPARAMETERINVPROC)(GLenum pname, GLint value);
 
-extern PFNGLBLENDBARRIERNVPROC _funcptr_glBlendBarrierNV;
+CI_API extern PFNGLBLENDBARRIERNVPROC _funcptr_glBlendBarrierNV;
 #define glBlendBarrierNV _funcptr_glBlendBarrierNV
-extern PFNGLBLENDPARAMETERINVPROC _funcptr_glBlendParameteriNV;
+CI_API extern PFNGLBLENDPARAMETERINVPROC _funcptr_glBlendParameteriNV;
 #define glBlendParameteriNV _funcptr_glBlendParameteriNV
 
 #define GL_COMPUTE_PROGRAM_NV 0x90FB
@@ -7765,9 +7765,9 @@ extern PFNGLBLENDPARAMETERINVPROC _funcptr_glBlendParameteriNV;
 typedef void (CODEGEN_FUNCPTR * PFNGLBEGINCONDITIONALRENDERNVPROC)(GLuint id, GLenum mode);
 typedef void (CODEGEN_FUNCPTR * PFNGLENDCONDITIONALRENDERNVPROC)();
 
-extern PFNGLBEGINCONDITIONALRENDERNVPROC _funcptr_glBeginConditionalRenderNV;
+CI_API extern PFNGLBEGINCONDITIONALRENDERNVPROC _funcptr_glBeginConditionalRenderNV;
 #define glBeginConditionalRenderNV _funcptr_glBeginConditionalRenderNV
-extern PFNGLENDCONDITIONALRENDERNVPROC _funcptr_glEndConditionalRenderNV;
+CI_API extern PFNGLENDCONDITIONALRENDERNVPROC _funcptr_glEndConditionalRenderNV;
 #define glEndConditionalRenderNV _funcptr_glEndConditionalRenderNV
 
 #define GL_DEPTH_STENCIL_TO_BGRA_NV 0x886F
@@ -7775,7 +7775,7 @@ extern PFNGLENDCONDITIONALRENDERNVPROC _funcptr_glEndConditionalRenderNV;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLCOPYIMAGESUBDATANVPROC)(GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei width, GLsizei height, GLsizei depth);
 
-extern PFNGLCOPYIMAGESUBDATANVPROC _funcptr_glCopyImageSubDataNV;
+CI_API extern PFNGLCOPYIMAGESUBDATANVPROC _funcptr_glCopyImageSubDataNV;
 #define glCopyImageSubDataNV _funcptr_glCopyImageSubDataNV
 
 #define GL_MAX_DEEP_3D_TEXTURE_DEPTH_NV 0x90D1
@@ -7790,18 +7790,18 @@ typedef void (CODEGEN_FUNCPTR * PFNGLCLEARDEPTHDNVPROC)(GLdouble depth);
 typedef void (CODEGEN_FUNCPTR * PFNGLDEPTHBOUNDSDNVPROC)(GLdouble zmin, GLdouble zmax);
 typedef void (CODEGEN_FUNCPTR * PFNGLDEPTHRANGEDNVPROC)(GLdouble zNear, GLdouble zFar);
 
-extern PFNGLCLEARDEPTHDNVPROC _funcptr_glClearDepthdNV;
+CI_API extern PFNGLCLEARDEPTHDNVPROC _funcptr_glClearDepthdNV;
 #define glClearDepthdNV _funcptr_glClearDepthdNV
-extern PFNGLDEPTHBOUNDSDNVPROC _funcptr_glDepthBoundsdNV;
+CI_API extern PFNGLDEPTHBOUNDSDNVPROC _funcptr_glDepthBoundsdNV;
 #define glDepthBoundsdNV _funcptr_glDepthBoundsdNV
-extern PFNGLDEPTHRANGEDNVPROC _funcptr_glDepthRangedNV;
+CI_API extern PFNGLDEPTHRANGEDNVPROC _funcptr_glDepthRangedNV;
 #define glDepthRangedNV _funcptr_glDepthRangedNV
 
 #define GL_DEPTH_CLAMP_NV 0x864F
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWTEXTURENVPROC)(GLuint texture, GLuint sampler, GLfloat x0, GLfloat y0, GLfloat x1, GLfloat y1, GLfloat z, GLfloat s0, GLfloat t0, GLfloat s1, GLfloat t1);
 
-extern PFNGLDRAWTEXTURENVPROC _funcptr_glDrawTextureNV;
+CI_API extern PFNGLDRAWTEXTURENVPROC _funcptr_glDrawTextureNV;
 #define glDrawTextureNV _funcptr_glDrawTextureNV
 
 #define GL_EVAL_2D_NV 0x86C0
@@ -7839,23 +7839,23 @@ typedef void (CODEGEN_FUNCPTR * PFNGLMAPCONTROLPOINTSNVPROC)(GLenum target, GLui
 typedef void (CODEGEN_FUNCPTR * PFNGLMAPPARAMETERFVNVPROC)(GLenum target, GLenum pname, const GLfloat * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLMAPPARAMETERIVNVPROC)(GLenum target, GLenum pname, const GLint * params);
 
-extern PFNGLEVALMAPSNVPROC _funcptr_glEvalMapsNV;
+CI_API extern PFNGLEVALMAPSNVPROC _funcptr_glEvalMapsNV;
 #define glEvalMapsNV _funcptr_glEvalMapsNV
-extern PFNGLGETMAPATTRIBPARAMETERFVNVPROC _funcptr_glGetMapAttribParameterfvNV;
+CI_API extern PFNGLGETMAPATTRIBPARAMETERFVNVPROC _funcptr_glGetMapAttribParameterfvNV;
 #define glGetMapAttribParameterfvNV _funcptr_glGetMapAttribParameterfvNV
-extern PFNGLGETMAPATTRIBPARAMETERIVNVPROC _funcptr_glGetMapAttribParameterivNV;
+CI_API extern PFNGLGETMAPATTRIBPARAMETERIVNVPROC _funcptr_glGetMapAttribParameterivNV;
 #define glGetMapAttribParameterivNV _funcptr_glGetMapAttribParameterivNV
-extern PFNGLGETMAPCONTROLPOINTSNVPROC _funcptr_glGetMapControlPointsNV;
+CI_API extern PFNGLGETMAPCONTROLPOINTSNVPROC _funcptr_glGetMapControlPointsNV;
 #define glGetMapControlPointsNV _funcptr_glGetMapControlPointsNV
-extern PFNGLGETMAPPARAMETERFVNVPROC _funcptr_glGetMapParameterfvNV;
+CI_API extern PFNGLGETMAPPARAMETERFVNVPROC _funcptr_glGetMapParameterfvNV;
 #define glGetMapParameterfvNV _funcptr_glGetMapParameterfvNV
-extern PFNGLGETMAPPARAMETERIVNVPROC _funcptr_glGetMapParameterivNV;
+CI_API extern PFNGLGETMAPPARAMETERIVNVPROC _funcptr_glGetMapParameterivNV;
 #define glGetMapParameterivNV _funcptr_glGetMapParameterivNV
-extern PFNGLMAPCONTROLPOINTSNVPROC _funcptr_glMapControlPointsNV;
+CI_API extern PFNGLMAPCONTROLPOINTSNVPROC _funcptr_glMapControlPointsNV;
 #define glMapControlPointsNV _funcptr_glMapControlPointsNV
-extern PFNGLMAPPARAMETERFVNVPROC _funcptr_glMapParameterfvNV;
+CI_API extern PFNGLMAPPARAMETERFVNVPROC _funcptr_glMapParameterfvNV;
 #define glMapParameterfvNV _funcptr_glMapParameterfvNV
-extern PFNGLMAPPARAMETERIVNVPROC _funcptr_glMapParameterivNV;
+CI_API extern PFNGLMAPPARAMETERIVNVPROC _funcptr_glMapParameterivNV;
 #define glMapParameterivNV _funcptr_glMapParameterivNV
 
 #define GL_INT_SAMPLER_RENDERBUFFER_NV 0x8E57
@@ -7873,11 +7873,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETMULTISAMPLEFVNVPROC)(GLenum pname, GLuin
 typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLEMASKINDEXEDNVPROC)(GLuint index, GLbitfield mask);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXRENDERBUFFERNVPROC)(GLenum target, GLuint renderbuffer);
 
-extern PFNGLGETMULTISAMPLEFVNVPROC _funcptr_glGetMultisamplefvNV;
+CI_API extern PFNGLGETMULTISAMPLEFVNVPROC _funcptr_glGetMultisamplefvNV;
 #define glGetMultisamplefvNV _funcptr_glGetMultisamplefvNV
-extern PFNGLSAMPLEMASKINDEXEDNVPROC _funcptr_glSampleMaskIndexedNV;
+CI_API extern PFNGLSAMPLEMASKINDEXEDNVPROC _funcptr_glSampleMaskIndexedNV;
 #define glSampleMaskIndexedNV _funcptr_glSampleMaskIndexedNV
-extern PFNGLTEXRENDERBUFFERNVPROC _funcptr_glTexRenderbufferNV;
+CI_API extern PFNGLTEXRENDERBUFFERNVPROC _funcptr_glTexRenderbufferNV;
 #define glTexRenderbufferNV _funcptr_glTexRenderbufferNV
 
 #define GL_ALL_COMPLETED_NV 0x84F2
@@ -7892,19 +7892,19 @@ typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISFENCENVPROC)(GLuint fence);
 typedef void (CODEGEN_FUNCPTR * PFNGLSETFENCENVPROC)(GLuint fence, GLenum condition);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLTESTFENCENVPROC)(GLuint fence);
 
-extern PFNGLDELETEFENCESNVPROC _funcptr_glDeleteFencesNV;
+CI_API extern PFNGLDELETEFENCESNVPROC _funcptr_glDeleteFencesNV;
 #define glDeleteFencesNV _funcptr_glDeleteFencesNV
-extern PFNGLFINISHFENCENVPROC _funcptr_glFinishFenceNV;
+CI_API extern PFNGLFINISHFENCENVPROC _funcptr_glFinishFenceNV;
 #define glFinishFenceNV _funcptr_glFinishFenceNV
-extern PFNGLGENFENCESNVPROC _funcptr_glGenFencesNV;
+CI_API extern PFNGLGENFENCESNVPROC _funcptr_glGenFencesNV;
 #define glGenFencesNV _funcptr_glGenFencesNV
-extern PFNGLGETFENCEIVNVPROC _funcptr_glGetFenceivNV;
+CI_API extern PFNGLGETFENCEIVNVPROC _funcptr_glGetFenceivNV;
 #define glGetFenceivNV _funcptr_glGetFenceivNV
-extern PFNGLISFENCENVPROC _funcptr_glIsFenceNV;
+CI_API extern PFNGLISFENCENVPROC _funcptr_glIsFenceNV;
 #define glIsFenceNV _funcptr_glIsFenceNV
-extern PFNGLSETFENCENVPROC _funcptr_glSetFenceNV;
+CI_API extern PFNGLSETFENCENVPROC _funcptr_glSetFenceNV;
 #define glSetFenceNV _funcptr_glSetFenceNV
-extern PFNGLTESTFENCENVPROC _funcptr_glTestFenceNV;
+CI_API extern PFNGLTESTFENCENVPROC _funcptr_glTestFenceNV;
 #define glTestFenceNV _funcptr_glTestFenceNV
 
 #define GL_FLOAT_CLEAR_COLOR_VALUE_NV 0x888D
@@ -7942,17 +7942,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMNAMEDPARAMETER4DVNVPROC)(GLuint id, 
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMNAMEDPARAMETER4FNVPROC)(GLuint id, GLsizei len, const GLubyte * name, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMNAMEDPARAMETER4FVNVPROC)(GLuint id, GLsizei len, const GLubyte * name, const GLfloat * v);
 
-extern PFNGLGETPROGRAMNAMEDPARAMETERDVNVPROC _funcptr_glGetProgramNamedParameterdvNV;
+CI_API extern PFNGLGETPROGRAMNAMEDPARAMETERDVNVPROC _funcptr_glGetProgramNamedParameterdvNV;
 #define glGetProgramNamedParameterdvNV _funcptr_glGetProgramNamedParameterdvNV
-extern PFNGLGETPROGRAMNAMEDPARAMETERFVNVPROC _funcptr_glGetProgramNamedParameterfvNV;
+CI_API extern PFNGLGETPROGRAMNAMEDPARAMETERFVNVPROC _funcptr_glGetProgramNamedParameterfvNV;
 #define glGetProgramNamedParameterfvNV _funcptr_glGetProgramNamedParameterfvNV
-extern PFNGLPROGRAMNAMEDPARAMETER4DNVPROC _funcptr_glProgramNamedParameter4dNV;
+CI_API extern PFNGLPROGRAMNAMEDPARAMETER4DNVPROC _funcptr_glProgramNamedParameter4dNV;
 #define glProgramNamedParameter4dNV _funcptr_glProgramNamedParameter4dNV
-extern PFNGLPROGRAMNAMEDPARAMETER4DVNVPROC _funcptr_glProgramNamedParameter4dvNV;
+CI_API extern PFNGLPROGRAMNAMEDPARAMETER4DVNVPROC _funcptr_glProgramNamedParameter4dvNV;
 #define glProgramNamedParameter4dvNV _funcptr_glProgramNamedParameter4dvNV
-extern PFNGLPROGRAMNAMEDPARAMETER4FNVPROC _funcptr_glProgramNamedParameter4fNV;
+CI_API extern PFNGLPROGRAMNAMEDPARAMETER4FNVPROC _funcptr_glProgramNamedParameter4fNV;
 #define glProgramNamedParameter4fNV _funcptr_glProgramNamedParameter4fNV
-extern PFNGLPROGRAMNAMEDPARAMETER4FVNVPROC _funcptr_glProgramNamedParameter4fvNV;
+CI_API extern PFNGLPROGRAMNAMEDPARAMETER4FVNVPROC _funcptr_glProgramNamedParameter4fvNV;
 #define glProgramNamedParameter4fvNV _funcptr_glProgramNamedParameter4fvNV
 
 #define GL_MAX_PROGRAM_CALL_DEPTH_NV 0x88F5
@@ -7968,7 +7968,7 @@ extern PFNGLPROGRAMNAMEDPARAMETER4FVNVPROC _funcptr_glProgramNamedParameter4fvNV
 
 typedef void (CODEGEN_FUNCPTR * PFNGLRENDERBUFFERSTORAGEMULTISAMPLECOVERAGENVPROC)(GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLenum internalformat, GLsizei width, GLsizei height);
 
-extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLECOVERAGENVPROC _funcptr_glRenderbufferStorageMultisampleCoverageNV;
+CI_API extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLECOVERAGENVPROC _funcptr_glRenderbufferStorageMultisampleCoverageNV;
 #define glRenderbufferStorageMultisampleCoverageNV _funcptr_glRenderbufferStorageMultisampleCoverageNV
 
 #define GL_FRAMEBUFFER_ATTACHMENT_LAYERED_EXT 0x8DA7
@@ -7993,13 +7993,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLFRAMEBUFFERTEXTUREFACEEXTPROC)(GLenum targe
 typedef void (CODEGEN_FUNCPTR * PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC)(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer);
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMVERTEXLIMITNVPROC)(GLenum target, GLint limit);
 
-extern PFNGLFRAMEBUFFERTEXTUREEXTPROC _funcptr_glFramebufferTextureEXT;
+CI_API extern PFNGLFRAMEBUFFERTEXTUREEXTPROC _funcptr_glFramebufferTextureEXT;
 #define glFramebufferTextureEXT _funcptr_glFramebufferTextureEXT
-extern PFNGLFRAMEBUFFERTEXTUREFACEEXTPROC _funcptr_glFramebufferTextureFaceEXT;
+CI_API extern PFNGLFRAMEBUFFERTEXTUREFACEEXTPROC _funcptr_glFramebufferTextureFaceEXT;
 #define glFramebufferTextureFaceEXT _funcptr_glFramebufferTextureFaceEXT
-extern PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC _funcptr_glFramebufferTextureLayerEXT;
+CI_API extern PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC _funcptr_glFramebufferTextureLayerEXT;
 #define glFramebufferTextureLayerEXT _funcptr_glFramebufferTextureLayerEXT
-extern PFNGLPROGRAMVERTEXLIMITNVPROC _funcptr_glProgramVertexLimitNV;
+CI_API extern PFNGLPROGRAMVERTEXLIMITNVPROC _funcptr_glProgramVertexLimitNV;
 #define glProgramVertexLimitNV _funcptr_glProgramVertexLimitNV
 
 #define GL_MAX_PROGRAM_ATTRIB_COMPONENTS_NV 0x8908
@@ -8028,37 +8028,37 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMLOCALPARAMETERI4UIVNVPROC)(GLenum ta
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMLOCALPARAMETERSI4IVNVPROC)(GLenum target, GLuint index, GLsizei count, const GLint * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMLOCALPARAMETERSI4UIVNVPROC)(GLenum target, GLuint index, GLsizei count, const GLuint * params);
 
-extern PFNGLGETPROGRAMENVPARAMETERIIVNVPROC _funcptr_glGetProgramEnvParameterIivNV;
+CI_API extern PFNGLGETPROGRAMENVPARAMETERIIVNVPROC _funcptr_glGetProgramEnvParameterIivNV;
 #define glGetProgramEnvParameterIivNV _funcptr_glGetProgramEnvParameterIivNV
-extern PFNGLGETPROGRAMENVPARAMETERIUIVNVPROC _funcptr_glGetProgramEnvParameterIuivNV;
+CI_API extern PFNGLGETPROGRAMENVPARAMETERIUIVNVPROC _funcptr_glGetProgramEnvParameterIuivNV;
 #define glGetProgramEnvParameterIuivNV _funcptr_glGetProgramEnvParameterIuivNV
-extern PFNGLGETPROGRAMLOCALPARAMETERIIVNVPROC _funcptr_glGetProgramLocalParameterIivNV;
+CI_API extern PFNGLGETPROGRAMLOCALPARAMETERIIVNVPROC _funcptr_glGetProgramLocalParameterIivNV;
 #define glGetProgramLocalParameterIivNV _funcptr_glGetProgramLocalParameterIivNV
-extern PFNGLGETPROGRAMLOCALPARAMETERIUIVNVPROC _funcptr_glGetProgramLocalParameterIuivNV;
+CI_API extern PFNGLGETPROGRAMLOCALPARAMETERIUIVNVPROC _funcptr_glGetProgramLocalParameterIuivNV;
 #define glGetProgramLocalParameterIuivNV _funcptr_glGetProgramLocalParameterIuivNV
-extern PFNGLPROGRAMENVPARAMETERI4INVPROC _funcptr_glProgramEnvParameterI4iNV;
+CI_API extern PFNGLPROGRAMENVPARAMETERI4INVPROC _funcptr_glProgramEnvParameterI4iNV;
 #define glProgramEnvParameterI4iNV _funcptr_glProgramEnvParameterI4iNV
-extern PFNGLPROGRAMENVPARAMETERI4IVNVPROC _funcptr_glProgramEnvParameterI4ivNV;
+CI_API extern PFNGLPROGRAMENVPARAMETERI4IVNVPROC _funcptr_glProgramEnvParameterI4ivNV;
 #define glProgramEnvParameterI4ivNV _funcptr_glProgramEnvParameterI4ivNV
-extern PFNGLPROGRAMENVPARAMETERI4UINVPROC _funcptr_glProgramEnvParameterI4uiNV;
+CI_API extern PFNGLPROGRAMENVPARAMETERI4UINVPROC _funcptr_glProgramEnvParameterI4uiNV;
 #define glProgramEnvParameterI4uiNV _funcptr_glProgramEnvParameterI4uiNV
-extern PFNGLPROGRAMENVPARAMETERI4UIVNVPROC _funcptr_glProgramEnvParameterI4uivNV;
+CI_API extern PFNGLPROGRAMENVPARAMETERI4UIVNVPROC _funcptr_glProgramEnvParameterI4uivNV;
 #define glProgramEnvParameterI4uivNV _funcptr_glProgramEnvParameterI4uivNV
-extern PFNGLPROGRAMENVPARAMETERSI4IVNVPROC _funcptr_glProgramEnvParametersI4ivNV;
+CI_API extern PFNGLPROGRAMENVPARAMETERSI4IVNVPROC _funcptr_glProgramEnvParametersI4ivNV;
 #define glProgramEnvParametersI4ivNV _funcptr_glProgramEnvParametersI4ivNV
-extern PFNGLPROGRAMENVPARAMETERSI4UIVNVPROC _funcptr_glProgramEnvParametersI4uivNV;
+CI_API extern PFNGLPROGRAMENVPARAMETERSI4UIVNVPROC _funcptr_glProgramEnvParametersI4uivNV;
 #define glProgramEnvParametersI4uivNV _funcptr_glProgramEnvParametersI4uivNV
-extern PFNGLPROGRAMLOCALPARAMETERI4INVPROC _funcptr_glProgramLocalParameterI4iNV;
+CI_API extern PFNGLPROGRAMLOCALPARAMETERI4INVPROC _funcptr_glProgramLocalParameterI4iNV;
 #define glProgramLocalParameterI4iNV _funcptr_glProgramLocalParameterI4iNV
-extern PFNGLPROGRAMLOCALPARAMETERI4IVNVPROC _funcptr_glProgramLocalParameterI4ivNV;
+CI_API extern PFNGLPROGRAMLOCALPARAMETERI4IVNVPROC _funcptr_glProgramLocalParameterI4ivNV;
 #define glProgramLocalParameterI4ivNV _funcptr_glProgramLocalParameterI4ivNV
-extern PFNGLPROGRAMLOCALPARAMETERI4UINVPROC _funcptr_glProgramLocalParameterI4uiNV;
+CI_API extern PFNGLPROGRAMLOCALPARAMETERI4UINVPROC _funcptr_glProgramLocalParameterI4uiNV;
 #define glProgramLocalParameterI4uiNV _funcptr_glProgramLocalParameterI4uiNV
-extern PFNGLPROGRAMLOCALPARAMETERI4UIVNVPROC _funcptr_glProgramLocalParameterI4uivNV;
+CI_API extern PFNGLPROGRAMLOCALPARAMETERI4UIVNVPROC _funcptr_glProgramLocalParameterI4uivNV;
 #define glProgramLocalParameterI4uivNV _funcptr_glProgramLocalParameterI4uivNV
-extern PFNGLPROGRAMLOCALPARAMETERSI4IVNVPROC _funcptr_glProgramLocalParametersI4ivNV;
+CI_API extern PFNGLPROGRAMLOCALPARAMETERSI4IVNVPROC _funcptr_glProgramLocalParametersI4ivNV;
 #define glProgramLocalParametersI4ivNV _funcptr_glProgramLocalParametersI4ivNV
-extern PFNGLPROGRAMLOCALPARAMETERSI4UIVNVPROC _funcptr_glProgramLocalParametersI4uivNV;
+CI_API extern PFNGLPROGRAMLOCALPARAMETERSI4UIVNVPROC _funcptr_glProgramLocalParametersI4uivNV;
 #define glProgramLocalParametersI4uivNV _funcptr_glProgramLocalParametersI4uivNV
 
 #define GL_FRAGMENT_PROGRAM_INTERPOLATION_OFFSET_BITS_NV 0x8E5D
@@ -8073,9 +8073,9 @@ extern PFNGLPROGRAMLOCALPARAMETERSI4UIVNVPROC _funcptr_glProgramLocalParametersI
 typedef void (CODEGEN_FUNCPTR * PFNGLGETPROGRAMSUBROUTINEPARAMETERUIVNVPROC)(GLenum target, GLuint index, GLuint * param);
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMSUBROUTINEPARAMETERSUIVNVPROC)(GLenum target, GLsizei count, const GLuint * params);
 
-extern PFNGLGETPROGRAMSUBROUTINEPARAMETERUIVNVPROC _funcptr_glGetProgramSubroutineParameteruivNV;
+CI_API extern PFNGLGETPROGRAMSUBROUTINEPARAMETERUIVNVPROC _funcptr_glGetProgramSubroutineParameteruivNV;
 #define glGetProgramSubroutineParameteruivNV _funcptr_glGetProgramSubroutineParameteruivNV
-extern PFNGLPROGRAMSUBROUTINEPARAMETERSUIVNVPROC _funcptr_glProgramSubroutineParametersuivNV;
+CI_API extern PFNGLPROGRAMSUBROUTINEPARAMETERSUIVNVPROC _funcptr_glProgramSubroutineParametersuivNV;
 #define glProgramSubroutineParametersuivNV _funcptr_glProgramSubroutineParametersuivNV
 
 #define GL_FLOAT16_NV 0x8FF8
@@ -8142,71 +8142,71 @@ typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORM4I64VNVPROC)(GLint location, GLsizei
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORM4UI64NVPROC)(GLint location, GLuint64EXT x, GLuint64EXT y, GLuint64EXT z, GLuint64EXT w);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORM4UI64VNVPROC)(GLint location, GLsizei count, const GLuint64EXT * value);
 
-extern PFNGLGETUNIFORMI64VNVPROC _funcptr_glGetUniformi64vNV;
+CI_API extern PFNGLGETUNIFORMI64VNVPROC _funcptr_glGetUniformi64vNV;
 #define glGetUniformi64vNV _funcptr_glGetUniformi64vNV
-extern PFNGLPROGRAMUNIFORM1I64NVPROC _funcptr_glProgramUniform1i64NV;
+CI_API extern PFNGLPROGRAMUNIFORM1I64NVPROC _funcptr_glProgramUniform1i64NV;
 #define glProgramUniform1i64NV _funcptr_glProgramUniform1i64NV
-extern PFNGLPROGRAMUNIFORM1I64VNVPROC _funcptr_glProgramUniform1i64vNV;
+CI_API extern PFNGLPROGRAMUNIFORM1I64VNVPROC _funcptr_glProgramUniform1i64vNV;
 #define glProgramUniform1i64vNV _funcptr_glProgramUniform1i64vNV
-extern PFNGLPROGRAMUNIFORM1UI64NVPROC _funcptr_glProgramUniform1ui64NV;
+CI_API extern PFNGLPROGRAMUNIFORM1UI64NVPROC _funcptr_glProgramUniform1ui64NV;
 #define glProgramUniform1ui64NV _funcptr_glProgramUniform1ui64NV
-extern PFNGLPROGRAMUNIFORM1UI64VNVPROC _funcptr_glProgramUniform1ui64vNV;
+CI_API extern PFNGLPROGRAMUNIFORM1UI64VNVPROC _funcptr_glProgramUniform1ui64vNV;
 #define glProgramUniform1ui64vNV _funcptr_glProgramUniform1ui64vNV
-extern PFNGLPROGRAMUNIFORM2I64NVPROC _funcptr_glProgramUniform2i64NV;
+CI_API extern PFNGLPROGRAMUNIFORM2I64NVPROC _funcptr_glProgramUniform2i64NV;
 #define glProgramUniform2i64NV _funcptr_glProgramUniform2i64NV
-extern PFNGLPROGRAMUNIFORM2I64VNVPROC _funcptr_glProgramUniform2i64vNV;
+CI_API extern PFNGLPROGRAMUNIFORM2I64VNVPROC _funcptr_glProgramUniform2i64vNV;
 #define glProgramUniform2i64vNV _funcptr_glProgramUniform2i64vNV
-extern PFNGLPROGRAMUNIFORM2UI64NVPROC _funcptr_glProgramUniform2ui64NV;
+CI_API extern PFNGLPROGRAMUNIFORM2UI64NVPROC _funcptr_glProgramUniform2ui64NV;
 #define glProgramUniform2ui64NV _funcptr_glProgramUniform2ui64NV
-extern PFNGLPROGRAMUNIFORM2UI64VNVPROC _funcptr_glProgramUniform2ui64vNV;
+CI_API extern PFNGLPROGRAMUNIFORM2UI64VNVPROC _funcptr_glProgramUniform2ui64vNV;
 #define glProgramUniform2ui64vNV _funcptr_glProgramUniform2ui64vNV
-extern PFNGLPROGRAMUNIFORM3I64NVPROC _funcptr_glProgramUniform3i64NV;
+CI_API extern PFNGLPROGRAMUNIFORM3I64NVPROC _funcptr_glProgramUniform3i64NV;
 #define glProgramUniform3i64NV _funcptr_glProgramUniform3i64NV
-extern PFNGLPROGRAMUNIFORM3I64VNVPROC _funcptr_glProgramUniform3i64vNV;
+CI_API extern PFNGLPROGRAMUNIFORM3I64VNVPROC _funcptr_glProgramUniform3i64vNV;
 #define glProgramUniform3i64vNV _funcptr_glProgramUniform3i64vNV
-extern PFNGLPROGRAMUNIFORM3UI64NVPROC _funcptr_glProgramUniform3ui64NV;
+CI_API extern PFNGLPROGRAMUNIFORM3UI64NVPROC _funcptr_glProgramUniform3ui64NV;
 #define glProgramUniform3ui64NV _funcptr_glProgramUniform3ui64NV
-extern PFNGLPROGRAMUNIFORM3UI64VNVPROC _funcptr_glProgramUniform3ui64vNV;
+CI_API extern PFNGLPROGRAMUNIFORM3UI64VNVPROC _funcptr_glProgramUniform3ui64vNV;
 #define glProgramUniform3ui64vNV _funcptr_glProgramUniform3ui64vNV
-extern PFNGLPROGRAMUNIFORM4I64NVPROC _funcptr_glProgramUniform4i64NV;
+CI_API extern PFNGLPROGRAMUNIFORM4I64NVPROC _funcptr_glProgramUniform4i64NV;
 #define glProgramUniform4i64NV _funcptr_glProgramUniform4i64NV
-extern PFNGLPROGRAMUNIFORM4I64VNVPROC _funcptr_glProgramUniform4i64vNV;
+CI_API extern PFNGLPROGRAMUNIFORM4I64VNVPROC _funcptr_glProgramUniform4i64vNV;
 #define glProgramUniform4i64vNV _funcptr_glProgramUniform4i64vNV
-extern PFNGLPROGRAMUNIFORM4UI64NVPROC _funcptr_glProgramUniform4ui64NV;
+CI_API extern PFNGLPROGRAMUNIFORM4UI64NVPROC _funcptr_glProgramUniform4ui64NV;
 #define glProgramUniform4ui64NV _funcptr_glProgramUniform4ui64NV
-extern PFNGLPROGRAMUNIFORM4UI64VNVPROC _funcptr_glProgramUniform4ui64vNV;
+CI_API extern PFNGLPROGRAMUNIFORM4UI64VNVPROC _funcptr_glProgramUniform4ui64vNV;
 #define glProgramUniform4ui64vNV _funcptr_glProgramUniform4ui64vNV
-extern PFNGLUNIFORM1I64NVPROC _funcptr_glUniform1i64NV;
+CI_API extern PFNGLUNIFORM1I64NVPROC _funcptr_glUniform1i64NV;
 #define glUniform1i64NV _funcptr_glUniform1i64NV
-extern PFNGLUNIFORM1I64VNVPROC _funcptr_glUniform1i64vNV;
+CI_API extern PFNGLUNIFORM1I64VNVPROC _funcptr_glUniform1i64vNV;
 #define glUniform1i64vNV _funcptr_glUniform1i64vNV
-extern PFNGLUNIFORM1UI64NVPROC _funcptr_glUniform1ui64NV;
+CI_API extern PFNGLUNIFORM1UI64NVPROC _funcptr_glUniform1ui64NV;
 #define glUniform1ui64NV _funcptr_glUniform1ui64NV
-extern PFNGLUNIFORM1UI64VNVPROC _funcptr_glUniform1ui64vNV;
+CI_API extern PFNGLUNIFORM1UI64VNVPROC _funcptr_glUniform1ui64vNV;
 #define glUniform1ui64vNV _funcptr_glUniform1ui64vNV
-extern PFNGLUNIFORM2I64NVPROC _funcptr_glUniform2i64NV;
+CI_API extern PFNGLUNIFORM2I64NVPROC _funcptr_glUniform2i64NV;
 #define glUniform2i64NV _funcptr_glUniform2i64NV
-extern PFNGLUNIFORM2I64VNVPROC _funcptr_glUniform2i64vNV;
+CI_API extern PFNGLUNIFORM2I64VNVPROC _funcptr_glUniform2i64vNV;
 #define glUniform2i64vNV _funcptr_glUniform2i64vNV
-extern PFNGLUNIFORM2UI64NVPROC _funcptr_glUniform2ui64NV;
+CI_API extern PFNGLUNIFORM2UI64NVPROC _funcptr_glUniform2ui64NV;
 #define glUniform2ui64NV _funcptr_glUniform2ui64NV
-extern PFNGLUNIFORM2UI64VNVPROC _funcptr_glUniform2ui64vNV;
+CI_API extern PFNGLUNIFORM2UI64VNVPROC _funcptr_glUniform2ui64vNV;
 #define glUniform2ui64vNV _funcptr_glUniform2ui64vNV
-extern PFNGLUNIFORM3I64NVPROC _funcptr_glUniform3i64NV;
+CI_API extern PFNGLUNIFORM3I64NVPROC _funcptr_glUniform3i64NV;
 #define glUniform3i64NV _funcptr_glUniform3i64NV
-extern PFNGLUNIFORM3I64VNVPROC _funcptr_glUniform3i64vNV;
+CI_API extern PFNGLUNIFORM3I64VNVPROC _funcptr_glUniform3i64vNV;
 #define glUniform3i64vNV _funcptr_glUniform3i64vNV
-extern PFNGLUNIFORM3UI64NVPROC _funcptr_glUniform3ui64NV;
+CI_API extern PFNGLUNIFORM3UI64NVPROC _funcptr_glUniform3ui64NV;
 #define glUniform3ui64NV _funcptr_glUniform3ui64NV
-extern PFNGLUNIFORM3UI64VNVPROC _funcptr_glUniform3ui64vNV;
+CI_API extern PFNGLUNIFORM3UI64VNVPROC _funcptr_glUniform3ui64vNV;
 #define glUniform3ui64vNV _funcptr_glUniform3ui64vNV
-extern PFNGLUNIFORM4I64NVPROC _funcptr_glUniform4i64NV;
+CI_API extern PFNGLUNIFORM4I64NVPROC _funcptr_glUniform4i64NV;
 #define glUniform4i64NV _funcptr_glUniform4i64NV
-extern PFNGLUNIFORM4I64VNVPROC _funcptr_glUniform4i64vNV;
+CI_API extern PFNGLUNIFORM4I64VNVPROC _funcptr_glUniform4i64vNV;
 #define glUniform4i64vNV _funcptr_glUniform4i64vNV
-extern PFNGLUNIFORM4UI64NVPROC _funcptr_glUniform4ui64NV;
+CI_API extern PFNGLUNIFORM4UI64NVPROC _funcptr_glUniform4ui64NV;
 #define glUniform4ui64NV _funcptr_glUniform4ui64NV
-extern PFNGLUNIFORM4UI64VNVPROC _funcptr_glUniform4ui64vNV;
+CI_API extern PFNGLUNIFORM4UI64VNVPROC _funcptr_glUniform4ui64vNV;
 #define glUniform4ui64vNV _funcptr_glUniform4ui64vNV
 
 #define GL_HALF_FLOAT_NV 0x140B
@@ -8258,97 +8258,97 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBS4HVNVPROC)(GLuint index, GLsiz
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXWEIGHTHNVPROC)(GLhalfNV weight);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXWEIGHTHVNVPROC)(const GLhalfNV * weight);
 
-extern PFNGLCOLOR3HNVPROC _funcptr_glColor3hNV;
+CI_API extern PFNGLCOLOR3HNVPROC _funcptr_glColor3hNV;
 #define glColor3hNV _funcptr_glColor3hNV
-extern PFNGLCOLOR3HVNVPROC _funcptr_glColor3hvNV;
+CI_API extern PFNGLCOLOR3HVNVPROC _funcptr_glColor3hvNV;
 #define glColor3hvNV _funcptr_glColor3hvNV
-extern PFNGLCOLOR4HNVPROC _funcptr_glColor4hNV;
+CI_API extern PFNGLCOLOR4HNVPROC _funcptr_glColor4hNV;
 #define glColor4hNV _funcptr_glColor4hNV
-extern PFNGLCOLOR4HVNVPROC _funcptr_glColor4hvNV;
+CI_API extern PFNGLCOLOR4HVNVPROC _funcptr_glColor4hvNV;
 #define glColor4hvNV _funcptr_glColor4hvNV
-extern PFNGLFOGCOORDHNVPROC _funcptr_glFogCoordhNV;
+CI_API extern PFNGLFOGCOORDHNVPROC _funcptr_glFogCoordhNV;
 #define glFogCoordhNV _funcptr_glFogCoordhNV
-extern PFNGLFOGCOORDHVNVPROC _funcptr_glFogCoordhvNV;
+CI_API extern PFNGLFOGCOORDHVNVPROC _funcptr_glFogCoordhvNV;
 #define glFogCoordhvNV _funcptr_glFogCoordhvNV
-extern PFNGLMULTITEXCOORD1HNVPROC _funcptr_glMultiTexCoord1hNV;
+CI_API extern PFNGLMULTITEXCOORD1HNVPROC _funcptr_glMultiTexCoord1hNV;
 #define glMultiTexCoord1hNV _funcptr_glMultiTexCoord1hNV
-extern PFNGLMULTITEXCOORD1HVNVPROC _funcptr_glMultiTexCoord1hvNV;
+CI_API extern PFNGLMULTITEXCOORD1HVNVPROC _funcptr_glMultiTexCoord1hvNV;
 #define glMultiTexCoord1hvNV _funcptr_glMultiTexCoord1hvNV
-extern PFNGLMULTITEXCOORD2HNVPROC _funcptr_glMultiTexCoord2hNV;
+CI_API extern PFNGLMULTITEXCOORD2HNVPROC _funcptr_glMultiTexCoord2hNV;
 #define glMultiTexCoord2hNV _funcptr_glMultiTexCoord2hNV
-extern PFNGLMULTITEXCOORD2HVNVPROC _funcptr_glMultiTexCoord2hvNV;
+CI_API extern PFNGLMULTITEXCOORD2HVNVPROC _funcptr_glMultiTexCoord2hvNV;
 #define glMultiTexCoord2hvNV _funcptr_glMultiTexCoord2hvNV
-extern PFNGLMULTITEXCOORD3HNVPROC _funcptr_glMultiTexCoord3hNV;
+CI_API extern PFNGLMULTITEXCOORD3HNVPROC _funcptr_glMultiTexCoord3hNV;
 #define glMultiTexCoord3hNV _funcptr_glMultiTexCoord3hNV
-extern PFNGLMULTITEXCOORD3HVNVPROC _funcptr_glMultiTexCoord3hvNV;
+CI_API extern PFNGLMULTITEXCOORD3HVNVPROC _funcptr_glMultiTexCoord3hvNV;
 #define glMultiTexCoord3hvNV _funcptr_glMultiTexCoord3hvNV
-extern PFNGLMULTITEXCOORD4HNVPROC _funcptr_glMultiTexCoord4hNV;
+CI_API extern PFNGLMULTITEXCOORD4HNVPROC _funcptr_glMultiTexCoord4hNV;
 #define glMultiTexCoord4hNV _funcptr_glMultiTexCoord4hNV
-extern PFNGLMULTITEXCOORD4HVNVPROC _funcptr_glMultiTexCoord4hvNV;
+CI_API extern PFNGLMULTITEXCOORD4HVNVPROC _funcptr_glMultiTexCoord4hvNV;
 #define glMultiTexCoord4hvNV _funcptr_glMultiTexCoord4hvNV
-extern PFNGLNORMAL3HNVPROC _funcptr_glNormal3hNV;
+CI_API extern PFNGLNORMAL3HNVPROC _funcptr_glNormal3hNV;
 #define glNormal3hNV _funcptr_glNormal3hNV
-extern PFNGLNORMAL3HVNVPROC _funcptr_glNormal3hvNV;
+CI_API extern PFNGLNORMAL3HVNVPROC _funcptr_glNormal3hvNV;
 #define glNormal3hvNV _funcptr_glNormal3hvNV
-extern PFNGLSECONDARYCOLOR3HNVPROC _funcptr_glSecondaryColor3hNV;
+CI_API extern PFNGLSECONDARYCOLOR3HNVPROC _funcptr_glSecondaryColor3hNV;
 #define glSecondaryColor3hNV _funcptr_glSecondaryColor3hNV
-extern PFNGLSECONDARYCOLOR3HVNVPROC _funcptr_glSecondaryColor3hvNV;
+CI_API extern PFNGLSECONDARYCOLOR3HVNVPROC _funcptr_glSecondaryColor3hvNV;
 #define glSecondaryColor3hvNV _funcptr_glSecondaryColor3hvNV
-extern PFNGLTEXCOORD1HNVPROC _funcptr_glTexCoord1hNV;
+CI_API extern PFNGLTEXCOORD1HNVPROC _funcptr_glTexCoord1hNV;
 #define glTexCoord1hNV _funcptr_glTexCoord1hNV
-extern PFNGLTEXCOORD1HVNVPROC _funcptr_glTexCoord1hvNV;
+CI_API extern PFNGLTEXCOORD1HVNVPROC _funcptr_glTexCoord1hvNV;
 #define glTexCoord1hvNV _funcptr_glTexCoord1hvNV
-extern PFNGLTEXCOORD2HNVPROC _funcptr_glTexCoord2hNV;
+CI_API extern PFNGLTEXCOORD2HNVPROC _funcptr_glTexCoord2hNV;
 #define glTexCoord2hNV _funcptr_glTexCoord2hNV
-extern PFNGLTEXCOORD2HVNVPROC _funcptr_glTexCoord2hvNV;
+CI_API extern PFNGLTEXCOORD2HVNVPROC _funcptr_glTexCoord2hvNV;
 #define glTexCoord2hvNV _funcptr_glTexCoord2hvNV
-extern PFNGLTEXCOORD3HNVPROC _funcptr_glTexCoord3hNV;
+CI_API extern PFNGLTEXCOORD3HNVPROC _funcptr_glTexCoord3hNV;
 #define glTexCoord3hNV _funcptr_glTexCoord3hNV
-extern PFNGLTEXCOORD3HVNVPROC _funcptr_glTexCoord3hvNV;
+CI_API extern PFNGLTEXCOORD3HVNVPROC _funcptr_glTexCoord3hvNV;
 #define glTexCoord3hvNV _funcptr_glTexCoord3hvNV
-extern PFNGLTEXCOORD4HNVPROC _funcptr_glTexCoord4hNV;
+CI_API extern PFNGLTEXCOORD4HNVPROC _funcptr_glTexCoord4hNV;
 #define glTexCoord4hNV _funcptr_glTexCoord4hNV
-extern PFNGLTEXCOORD4HVNVPROC _funcptr_glTexCoord4hvNV;
+CI_API extern PFNGLTEXCOORD4HVNVPROC _funcptr_glTexCoord4hvNV;
 #define glTexCoord4hvNV _funcptr_glTexCoord4hvNV
-extern PFNGLVERTEX2HNVPROC _funcptr_glVertex2hNV;
+CI_API extern PFNGLVERTEX2HNVPROC _funcptr_glVertex2hNV;
 #define glVertex2hNV _funcptr_glVertex2hNV
-extern PFNGLVERTEX2HVNVPROC _funcptr_glVertex2hvNV;
+CI_API extern PFNGLVERTEX2HVNVPROC _funcptr_glVertex2hvNV;
 #define glVertex2hvNV _funcptr_glVertex2hvNV
-extern PFNGLVERTEX3HNVPROC _funcptr_glVertex3hNV;
+CI_API extern PFNGLVERTEX3HNVPROC _funcptr_glVertex3hNV;
 #define glVertex3hNV _funcptr_glVertex3hNV
-extern PFNGLVERTEX3HVNVPROC _funcptr_glVertex3hvNV;
+CI_API extern PFNGLVERTEX3HVNVPROC _funcptr_glVertex3hvNV;
 #define glVertex3hvNV _funcptr_glVertex3hvNV
-extern PFNGLVERTEX4HNVPROC _funcptr_glVertex4hNV;
+CI_API extern PFNGLVERTEX4HNVPROC _funcptr_glVertex4hNV;
 #define glVertex4hNV _funcptr_glVertex4hNV
-extern PFNGLVERTEX4HVNVPROC _funcptr_glVertex4hvNV;
+CI_API extern PFNGLVERTEX4HVNVPROC _funcptr_glVertex4hvNV;
 #define glVertex4hvNV _funcptr_glVertex4hvNV
-extern PFNGLVERTEXATTRIB1HNVPROC _funcptr_glVertexAttrib1hNV;
+CI_API extern PFNGLVERTEXATTRIB1HNVPROC _funcptr_glVertexAttrib1hNV;
 #define glVertexAttrib1hNV _funcptr_glVertexAttrib1hNV
-extern PFNGLVERTEXATTRIB1HVNVPROC _funcptr_glVertexAttrib1hvNV;
+CI_API extern PFNGLVERTEXATTRIB1HVNVPROC _funcptr_glVertexAttrib1hvNV;
 #define glVertexAttrib1hvNV _funcptr_glVertexAttrib1hvNV
-extern PFNGLVERTEXATTRIB2HNVPROC _funcptr_glVertexAttrib2hNV;
+CI_API extern PFNGLVERTEXATTRIB2HNVPROC _funcptr_glVertexAttrib2hNV;
 #define glVertexAttrib2hNV _funcptr_glVertexAttrib2hNV
-extern PFNGLVERTEXATTRIB2HVNVPROC _funcptr_glVertexAttrib2hvNV;
+CI_API extern PFNGLVERTEXATTRIB2HVNVPROC _funcptr_glVertexAttrib2hvNV;
 #define glVertexAttrib2hvNV _funcptr_glVertexAttrib2hvNV
-extern PFNGLVERTEXATTRIB3HNVPROC _funcptr_glVertexAttrib3hNV;
+CI_API extern PFNGLVERTEXATTRIB3HNVPROC _funcptr_glVertexAttrib3hNV;
 #define glVertexAttrib3hNV _funcptr_glVertexAttrib3hNV
-extern PFNGLVERTEXATTRIB3HVNVPROC _funcptr_glVertexAttrib3hvNV;
+CI_API extern PFNGLVERTEXATTRIB3HVNVPROC _funcptr_glVertexAttrib3hvNV;
 #define glVertexAttrib3hvNV _funcptr_glVertexAttrib3hvNV
-extern PFNGLVERTEXATTRIB4HNVPROC _funcptr_glVertexAttrib4hNV;
+CI_API extern PFNGLVERTEXATTRIB4HNVPROC _funcptr_glVertexAttrib4hNV;
 #define glVertexAttrib4hNV _funcptr_glVertexAttrib4hNV
-extern PFNGLVERTEXATTRIB4HVNVPROC _funcptr_glVertexAttrib4hvNV;
+CI_API extern PFNGLVERTEXATTRIB4HVNVPROC _funcptr_glVertexAttrib4hvNV;
 #define glVertexAttrib4hvNV _funcptr_glVertexAttrib4hvNV
-extern PFNGLVERTEXATTRIBS1HVNVPROC _funcptr_glVertexAttribs1hvNV;
+CI_API extern PFNGLVERTEXATTRIBS1HVNVPROC _funcptr_glVertexAttribs1hvNV;
 #define glVertexAttribs1hvNV _funcptr_glVertexAttribs1hvNV
-extern PFNGLVERTEXATTRIBS2HVNVPROC _funcptr_glVertexAttribs2hvNV;
+CI_API extern PFNGLVERTEXATTRIBS2HVNVPROC _funcptr_glVertexAttribs2hvNV;
 #define glVertexAttribs2hvNV _funcptr_glVertexAttribs2hvNV
-extern PFNGLVERTEXATTRIBS3HVNVPROC _funcptr_glVertexAttribs3hvNV;
+CI_API extern PFNGLVERTEXATTRIBS3HVNVPROC _funcptr_glVertexAttribs3hvNV;
 #define glVertexAttribs3hvNV _funcptr_glVertexAttribs3hvNV
-extern PFNGLVERTEXATTRIBS4HVNVPROC _funcptr_glVertexAttribs4hvNV;
+CI_API extern PFNGLVERTEXATTRIBS4HVNVPROC _funcptr_glVertexAttribs4hvNV;
 #define glVertexAttribs4hvNV _funcptr_glVertexAttribs4hvNV
-extern PFNGLVERTEXWEIGHTHNVPROC _funcptr_glVertexWeighthNV;
+CI_API extern PFNGLVERTEXWEIGHTHNVPROC _funcptr_glVertexWeighthNV;
 #define glVertexWeighthNV _funcptr_glVertexWeighthNV
-extern PFNGLVERTEXWEIGHTHVNVPROC _funcptr_glVertexWeighthvNV;
+CI_API extern PFNGLVERTEXWEIGHTHVNVPROC _funcptr_glVertexWeighthvNV;
 #define glVertexWeighthvNV _funcptr_glVertexWeighthvNV
 
 #define GL_MAX_SHININESS_NV 0x8504
@@ -8372,19 +8372,19 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETOCCLUSIONQUERYIVNVPROC)(GLuint id, GLenu
 typedef void (CODEGEN_FUNCPTR * PFNGLGETOCCLUSIONQUERYUIVNVPROC)(GLuint id, GLenum pname, GLuint * params);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISOCCLUSIONQUERYNVPROC)(GLuint id);
 
-extern PFNGLBEGINOCCLUSIONQUERYNVPROC _funcptr_glBeginOcclusionQueryNV;
+CI_API extern PFNGLBEGINOCCLUSIONQUERYNVPROC _funcptr_glBeginOcclusionQueryNV;
 #define glBeginOcclusionQueryNV _funcptr_glBeginOcclusionQueryNV
-extern PFNGLDELETEOCCLUSIONQUERIESNVPROC _funcptr_glDeleteOcclusionQueriesNV;
+CI_API extern PFNGLDELETEOCCLUSIONQUERIESNVPROC _funcptr_glDeleteOcclusionQueriesNV;
 #define glDeleteOcclusionQueriesNV _funcptr_glDeleteOcclusionQueriesNV
-extern PFNGLENDOCCLUSIONQUERYNVPROC _funcptr_glEndOcclusionQueryNV;
+CI_API extern PFNGLENDOCCLUSIONQUERYNVPROC _funcptr_glEndOcclusionQueryNV;
 #define glEndOcclusionQueryNV _funcptr_glEndOcclusionQueryNV
-extern PFNGLGENOCCLUSIONQUERIESNVPROC _funcptr_glGenOcclusionQueriesNV;
+CI_API extern PFNGLGENOCCLUSIONQUERIESNVPROC _funcptr_glGenOcclusionQueriesNV;
 #define glGenOcclusionQueriesNV _funcptr_glGenOcclusionQueriesNV
-extern PFNGLGETOCCLUSIONQUERYIVNVPROC _funcptr_glGetOcclusionQueryivNV;
+CI_API extern PFNGLGETOCCLUSIONQUERYIVNVPROC _funcptr_glGetOcclusionQueryivNV;
 #define glGetOcclusionQueryivNV _funcptr_glGetOcclusionQueryivNV
-extern PFNGLGETOCCLUSIONQUERYUIVNVPROC _funcptr_glGetOcclusionQueryuivNV;
+CI_API extern PFNGLGETOCCLUSIONQUERYUIVNVPROC _funcptr_glGetOcclusionQueryuivNV;
 #define glGetOcclusionQueryuivNV _funcptr_glGetOcclusionQueryuivNV
-extern PFNGLISOCCLUSIONQUERYNVPROC _funcptr_glIsOcclusionQueryNV;
+CI_API extern PFNGLISOCCLUSIONQUERYNVPROC _funcptr_glIsOcclusionQueryNV;
 #define glIsOcclusionQueryNV _funcptr_glIsOcclusionQueryNV
 
 #define GL_DEPTH_STENCIL_NV 0x84F9
@@ -8400,11 +8400,11 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMBUFFERPARAMETERSIIVNVPROC)(GLenum ta
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMBUFFERPARAMETERSIUIVNVPROC)(GLenum target, GLuint bindingIndex, GLuint wordIndex, GLsizei count, const GLuint * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMBUFFERPARAMETERSFVNVPROC)(GLenum target, GLuint bindingIndex, GLuint wordIndex, GLsizei count, const GLfloat * params);
 
-extern PFNGLPROGRAMBUFFERPARAMETERSIIVNVPROC _funcptr_glProgramBufferParametersIivNV;
+CI_API extern PFNGLPROGRAMBUFFERPARAMETERSIIVNVPROC _funcptr_glProgramBufferParametersIivNV;
 #define glProgramBufferParametersIivNV _funcptr_glProgramBufferParametersIivNV
-extern PFNGLPROGRAMBUFFERPARAMETERSIUIVNVPROC _funcptr_glProgramBufferParametersIuivNV;
+CI_API extern PFNGLPROGRAMBUFFERPARAMETERSIUIVNVPROC _funcptr_glProgramBufferParametersIuivNV;
 #define glProgramBufferParametersIuivNV _funcptr_glProgramBufferParametersIuivNV
-extern PFNGLPROGRAMBUFFERPARAMETERSFVNVPROC _funcptr_glProgramBufferParametersfvNV;
+CI_API extern PFNGLPROGRAMBUFFERPARAMETERSFVNVPROC _funcptr_glProgramBufferParametersfvNV;
 #define glProgramBufferParametersfvNV _funcptr_glProgramBufferParametersfvNV
 
 #define GL_ACCUM_ADJACENT_PAIRS_NV 0x90AD
@@ -8588,103 +8588,103 @@ typedef void (CODEGEN_FUNCPTR * PFNGLSTENCILSTROKEPATHNVPROC)(GLuint path, GLint
 typedef void (CODEGEN_FUNCPTR * PFNGLTRANSFORMPATHNVPROC)(GLuint resultPath, GLuint srcPath, GLenum transformType, const GLfloat * transformValues);
 typedef void (CODEGEN_FUNCPTR * PFNGLWEIGHTPATHSNVPROC)(GLuint resultPath, GLsizei numPaths, const GLuint * paths, const GLfloat * weights);
 
-extern PFNGLCOPYPATHNVPROC _funcptr_glCopyPathNV;
+CI_API extern PFNGLCOPYPATHNVPROC _funcptr_glCopyPathNV;
 #define glCopyPathNV _funcptr_glCopyPathNV
-extern PFNGLCOVERFILLPATHINSTANCEDNVPROC _funcptr_glCoverFillPathInstancedNV;
+CI_API extern PFNGLCOVERFILLPATHINSTANCEDNVPROC _funcptr_glCoverFillPathInstancedNV;
 #define glCoverFillPathInstancedNV _funcptr_glCoverFillPathInstancedNV
-extern PFNGLCOVERFILLPATHNVPROC _funcptr_glCoverFillPathNV;
+CI_API extern PFNGLCOVERFILLPATHNVPROC _funcptr_glCoverFillPathNV;
 #define glCoverFillPathNV _funcptr_glCoverFillPathNV
-extern PFNGLCOVERSTROKEPATHINSTANCEDNVPROC _funcptr_glCoverStrokePathInstancedNV;
+CI_API extern PFNGLCOVERSTROKEPATHINSTANCEDNVPROC _funcptr_glCoverStrokePathInstancedNV;
 #define glCoverStrokePathInstancedNV _funcptr_glCoverStrokePathInstancedNV
-extern PFNGLCOVERSTROKEPATHNVPROC _funcptr_glCoverStrokePathNV;
+CI_API extern PFNGLCOVERSTROKEPATHNVPROC _funcptr_glCoverStrokePathNV;
 #define glCoverStrokePathNV _funcptr_glCoverStrokePathNV
-extern PFNGLDELETEPATHSNVPROC _funcptr_glDeletePathsNV;
+CI_API extern PFNGLDELETEPATHSNVPROC _funcptr_glDeletePathsNV;
 #define glDeletePathsNV _funcptr_glDeletePathsNV
-extern PFNGLGENPATHSNVPROC _funcptr_glGenPathsNV;
+CI_API extern PFNGLGENPATHSNVPROC _funcptr_glGenPathsNV;
 #define glGenPathsNV _funcptr_glGenPathsNV
-extern PFNGLGETPATHCOLORGENFVNVPROC _funcptr_glGetPathColorGenfvNV;
+CI_API extern PFNGLGETPATHCOLORGENFVNVPROC _funcptr_glGetPathColorGenfvNV;
 #define glGetPathColorGenfvNV _funcptr_glGetPathColorGenfvNV
-extern PFNGLGETPATHCOLORGENIVNVPROC _funcptr_glGetPathColorGenivNV;
+CI_API extern PFNGLGETPATHCOLORGENIVNVPROC _funcptr_glGetPathColorGenivNV;
 #define glGetPathColorGenivNV _funcptr_glGetPathColorGenivNV
-extern PFNGLGETPATHCOMMANDSNVPROC _funcptr_glGetPathCommandsNV;
+CI_API extern PFNGLGETPATHCOMMANDSNVPROC _funcptr_glGetPathCommandsNV;
 #define glGetPathCommandsNV _funcptr_glGetPathCommandsNV
-extern PFNGLGETPATHCOORDSNVPROC _funcptr_glGetPathCoordsNV;
+CI_API extern PFNGLGETPATHCOORDSNVPROC _funcptr_glGetPathCoordsNV;
 #define glGetPathCoordsNV _funcptr_glGetPathCoordsNV
-extern PFNGLGETPATHDASHARRAYNVPROC _funcptr_glGetPathDashArrayNV;
+CI_API extern PFNGLGETPATHDASHARRAYNVPROC _funcptr_glGetPathDashArrayNV;
 #define glGetPathDashArrayNV _funcptr_glGetPathDashArrayNV
-extern PFNGLGETPATHLENGTHNVPROC _funcptr_glGetPathLengthNV;
+CI_API extern PFNGLGETPATHLENGTHNVPROC _funcptr_glGetPathLengthNV;
 #define glGetPathLengthNV _funcptr_glGetPathLengthNV
-extern PFNGLGETPATHMETRICRANGENVPROC _funcptr_glGetPathMetricRangeNV;
+CI_API extern PFNGLGETPATHMETRICRANGENVPROC _funcptr_glGetPathMetricRangeNV;
 #define glGetPathMetricRangeNV _funcptr_glGetPathMetricRangeNV
-extern PFNGLGETPATHMETRICSNVPROC _funcptr_glGetPathMetricsNV;
+CI_API extern PFNGLGETPATHMETRICSNVPROC _funcptr_glGetPathMetricsNV;
 #define glGetPathMetricsNV _funcptr_glGetPathMetricsNV
-extern PFNGLGETPATHPARAMETERFVNVPROC _funcptr_glGetPathParameterfvNV;
+CI_API extern PFNGLGETPATHPARAMETERFVNVPROC _funcptr_glGetPathParameterfvNV;
 #define glGetPathParameterfvNV _funcptr_glGetPathParameterfvNV
-extern PFNGLGETPATHPARAMETERIVNVPROC _funcptr_glGetPathParameterivNV;
+CI_API extern PFNGLGETPATHPARAMETERIVNVPROC _funcptr_glGetPathParameterivNV;
 #define glGetPathParameterivNV _funcptr_glGetPathParameterivNV
-extern PFNGLGETPATHSPACINGNVPROC _funcptr_glGetPathSpacingNV;
+CI_API extern PFNGLGETPATHSPACINGNVPROC _funcptr_glGetPathSpacingNV;
 #define glGetPathSpacingNV _funcptr_glGetPathSpacingNV
-extern PFNGLGETPATHTEXGENFVNVPROC _funcptr_glGetPathTexGenfvNV;
+CI_API extern PFNGLGETPATHTEXGENFVNVPROC _funcptr_glGetPathTexGenfvNV;
 #define glGetPathTexGenfvNV _funcptr_glGetPathTexGenfvNV
-extern PFNGLGETPATHTEXGENIVNVPROC _funcptr_glGetPathTexGenivNV;
+CI_API extern PFNGLGETPATHTEXGENIVNVPROC _funcptr_glGetPathTexGenivNV;
 #define glGetPathTexGenivNV _funcptr_glGetPathTexGenivNV
-extern PFNGLINTERPOLATEPATHSNVPROC _funcptr_glInterpolatePathsNV;
+CI_API extern PFNGLINTERPOLATEPATHSNVPROC _funcptr_glInterpolatePathsNV;
 #define glInterpolatePathsNV _funcptr_glInterpolatePathsNV
-extern PFNGLISPATHNVPROC _funcptr_glIsPathNV;
+CI_API extern PFNGLISPATHNVPROC _funcptr_glIsPathNV;
 #define glIsPathNV _funcptr_glIsPathNV
-extern PFNGLISPOINTINFILLPATHNVPROC _funcptr_glIsPointInFillPathNV;
+CI_API extern PFNGLISPOINTINFILLPATHNVPROC _funcptr_glIsPointInFillPathNV;
 #define glIsPointInFillPathNV _funcptr_glIsPointInFillPathNV
-extern PFNGLISPOINTINSTROKEPATHNVPROC _funcptr_glIsPointInStrokePathNV;
+CI_API extern PFNGLISPOINTINSTROKEPATHNVPROC _funcptr_glIsPointInStrokePathNV;
 #define glIsPointInStrokePathNV _funcptr_glIsPointInStrokePathNV
-extern PFNGLPATHCOLORGENNVPROC _funcptr_glPathColorGenNV;
+CI_API extern PFNGLPATHCOLORGENNVPROC _funcptr_glPathColorGenNV;
 #define glPathColorGenNV _funcptr_glPathColorGenNV
-extern PFNGLPATHCOMMANDSNVPROC _funcptr_glPathCommandsNV;
+CI_API extern PFNGLPATHCOMMANDSNVPROC _funcptr_glPathCommandsNV;
 #define glPathCommandsNV _funcptr_glPathCommandsNV
-extern PFNGLPATHCOORDSNVPROC _funcptr_glPathCoordsNV;
+CI_API extern PFNGLPATHCOORDSNVPROC _funcptr_glPathCoordsNV;
 #define glPathCoordsNV _funcptr_glPathCoordsNV
-extern PFNGLPATHCOVERDEPTHFUNCNVPROC _funcptr_glPathCoverDepthFuncNV;
+CI_API extern PFNGLPATHCOVERDEPTHFUNCNVPROC _funcptr_glPathCoverDepthFuncNV;
 #define glPathCoverDepthFuncNV _funcptr_glPathCoverDepthFuncNV
-extern PFNGLPATHDASHARRAYNVPROC _funcptr_glPathDashArrayNV;
+CI_API extern PFNGLPATHDASHARRAYNVPROC _funcptr_glPathDashArrayNV;
 #define glPathDashArrayNV _funcptr_glPathDashArrayNV
-extern PFNGLPATHFOGGENNVPROC _funcptr_glPathFogGenNV;
+CI_API extern PFNGLPATHFOGGENNVPROC _funcptr_glPathFogGenNV;
 #define glPathFogGenNV _funcptr_glPathFogGenNV
-extern PFNGLPATHGLYPHRANGENVPROC _funcptr_glPathGlyphRangeNV;
+CI_API extern PFNGLPATHGLYPHRANGENVPROC _funcptr_glPathGlyphRangeNV;
 #define glPathGlyphRangeNV _funcptr_glPathGlyphRangeNV
-extern PFNGLPATHGLYPHSNVPROC _funcptr_glPathGlyphsNV;
+CI_API extern PFNGLPATHGLYPHSNVPROC _funcptr_glPathGlyphsNV;
 #define glPathGlyphsNV _funcptr_glPathGlyphsNV
-extern PFNGLPATHPARAMETERFNVPROC _funcptr_glPathParameterfNV;
+CI_API extern PFNGLPATHPARAMETERFNVPROC _funcptr_glPathParameterfNV;
 #define glPathParameterfNV _funcptr_glPathParameterfNV
-extern PFNGLPATHPARAMETERFVNVPROC _funcptr_glPathParameterfvNV;
+CI_API extern PFNGLPATHPARAMETERFVNVPROC _funcptr_glPathParameterfvNV;
 #define glPathParameterfvNV _funcptr_glPathParameterfvNV
-extern PFNGLPATHPARAMETERINVPROC _funcptr_glPathParameteriNV;
+CI_API extern PFNGLPATHPARAMETERINVPROC _funcptr_glPathParameteriNV;
 #define glPathParameteriNV _funcptr_glPathParameteriNV
-extern PFNGLPATHPARAMETERIVNVPROC _funcptr_glPathParameterivNV;
+CI_API extern PFNGLPATHPARAMETERIVNVPROC _funcptr_glPathParameterivNV;
 #define glPathParameterivNV _funcptr_glPathParameterivNV
-extern PFNGLPATHSTENCILDEPTHOFFSETNVPROC _funcptr_glPathStencilDepthOffsetNV;
+CI_API extern PFNGLPATHSTENCILDEPTHOFFSETNVPROC _funcptr_glPathStencilDepthOffsetNV;
 #define glPathStencilDepthOffsetNV _funcptr_glPathStencilDepthOffsetNV
-extern PFNGLPATHSTENCILFUNCNVPROC _funcptr_glPathStencilFuncNV;
+CI_API extern PFNGLPATHSTENCILFUNCNVPROC _funcptr_glPathStencilFuncNV;
 #define glPathStencilFuncNV _funcptr_glPathStencilFuncNV
-extern PFNGLPATHSTRINGNVPROC _funcptr_glPathStringNV;
+CI_API extern PFNGLPATHSTRINGNVPROC _funcptr_glPathStringNV;
 #define glPathStringNV _funcptr_glPathStringNV
-extern PFNGLPATHSUBCOMMANDSNVPROC _funcptr_glPathSubCommandsNV;
+CI_API extern PFNGLPATHSUBCOMMANDSNVPROC _funcptr_glPathSubCommandsNV;
 #define glPathSubCommandsNV _funcptr_glPathSubCommandsNV
-extern PFNGLPATHSUBCOORDSNVPROC _funcptr_glPathSubCoordsNV;
+CI_API extern PFNGLPATHSUBCOORDSNVPROC _funcptr_glPathSubCoordsNV;
 #define glPathSubCoordsNV _funcptr_glPathSubCoordsNV
-extern PFNGLPATHTEXGENNVPROC _funcptr_glPathTexGenNV;
+CI_API extern PFNGLPATHTEXGENNVPROC _funcptr_glPathTexGenNV;
 #define glPathTexGenNV _funcptr_glPathTexGenNV
-extern PFNGLPOINTALONGPATHNVPROC _funcptr_glPointAlongPathNV;
+CI_API extern PFNGLPOINTALONGPATHNVPROC _funcptr_glPointAlongPathNV;
 #define glPointAlongPathNV _funcptr_glPointAlongPathNV
-extern PFNGLSTENCILFILLPATHINSTANCEDNVPROC _funcptr_glStencilFillPathInstancedNV;
+CI_API extern PFNGLSTENCILFILLPATHINSTANCEDNVPROC _funcptr_glStencilFillPathInstancedNV;
 #define glStencilFillPathInstancedNV _funcptr_glStencilFillPathInstancedNV
-extern PFNGLSTENCILFILLPATHNVPROC _funcptr_glStencilFillPathNV;
+CI_API extern PFNGLSTENCILFILLPATHNVPROC _funcptr_glStencilFillPathNV;
 #define glStencilFillPathNV _funcptr_glStencilFillPathNV
-extern PFNGLSTENCILSTROKEPATHINSTANCEDNVPROC _funcptr_glStencilStrokePathInstancedNV;
+CI_API extern PFNGLSTENCILSTROKEPATHINSTANCEDNVPROC _funcptr_glStencilStrokePathInstancedNV;
 #define glStencilStrokePathInstancedNV _funcptr_glStencilStrokePathInstancedNV
-extern PFNGLSTENCILSTROKEPATHNVPROC _funcptr_glStencilStrokePathNV;
+CI_API extern PFNGLSTENCILSTROKEPATHNVPROC _funcptr_glStencilStrokePathNV;
 #define glStencilStrokePathNV _funcptr_glStencilStrokePathNV
-extern PFNGLTRANSFORMPATHNVPROC _funcptr_glTransformPathNV;
+CI_API extern PFNGLTRANSFORMPATHNVPROC _funcptr_glTransformPathNV;
 #define glTransformPathNV _funcptr_glTransformPathNV
-extern PFNGLWEIGHTPATHSNVPROC _funcptr_glWeightPathsNV;
+CI_API extern PFNGLWEIGHTPATHSNVPROC _funcptr_glWeightPathsNV;
 #define glWeightPathsNV _funcptr_glWeightPathsNV
 
 #define GL_READ_PIXEL_DATA_RANGE_LENGTH_NV 0x887B
@@ -8697,9 +8697,9 @@ extern PFNGLWEIGHTPATHSNVPROC _funcptr_glWeightPathsNV;
 typedef void (CODEGEN_FUNCPTR * PFNGLFLUSHPIXELDATARANGENVPROC)(GLenum target);
 typedef void (CODEGEN_FUNCPTR * PFNGLPIXELDATARANGENVPROC)(GLenum target, GLsizei length, const GLvoid * pointer);
 
-extern PFNGLFLUSHPIXELDATARANGENVPROC _funcptr_glFlushPixelDataRangeNV;
+CI_API extern PFNGLFLUSHPIXELDATARANGENVPROC _funcptr_glFlushPixelDataRangeNV;
 #define glFlushPixelDataRangeNV _funcptr_glFlushPixelDataRangeNV
-extern PFNGLPIXELDATARANGENVPROC _funcptr_glPixelDataRangeNV;
+CI_API extern PFNGLPIXELDATARANGENVPROC _funcptr_glPixelDataRangeNV;
 #define glPixelDataRangeNV _funcptr_glPixelDataRangeNV
 
 #define GL_COORD_REPLACE_NV 0x8862
@@ -8709,9 +8709,9 @@ extern PFNGLPIXELDATARANGENVPROC _funcptr_glPixelDataRangeNV;
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERINVPROC)(GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERIVNVPROC)(GLenum pname, const GLint * params);
 
-extern PFNGLPOINTPARAMETERINVPROC _funcptr_glPointParameteriNV;
+CI_API extern PFNGLPOINTPARAMETERINVPROC _funcptr_glPointParameteriNV;
 #define glPointParameteriNV _funcptr_glPointParameteriNV
-extern PFNGLPOINTPARAMETERIVNVPROC _funcptr_glPointParameterivNV;
+CI_API extern PFNGLPOINTPARAMETERIVNVPROC _funcptr_glPointParameterivNV;
 #define glPointParameterivNV _funcptr_glPointParameterivNV
 
 #define GL_CURRENT_TIME_NV 0x8E28
@@ -8728,17 +8728,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETVIDEOUIVNVPROC)(GLuint video_slot, GLenu
 typedef void (CODEGEN_FUNCPTR * PFNGLPRESENTFRAMEDUALFILLNVPROC)(GLuint video_slot, GLuint64EXT minPresentTime, GLuint beginPresentTimeId, GLuint presentDurationId, GLenum type, GLenum target0, GLuint fill0, GLenum target1, GLuint fill1, GLenum target2, GLuint fill2, GLenum target3, GLuint fill3);
 typedef void (CODEGEN_FUNCPTR * PFNGLPRESENTFRAMEKEYEDNVPROC)(GLuint video_slot, GLuint64EXT minPresentTime, GLuint beginPresentTimeId, GLuint presentDurationId, GLenum type, GLenum target0, GLuint fill0, GLuint key0, GLenum target1, GLuint fill1, GLuint key1);
 
-extern PFNGLGETVIDEOI64VNVPROC _funcptr_glGetVideoi64vNV;
+CI_API extern PFNGLGETVIDEOI64VNVPROC _funcptr_glGetVideoi64vNV;
 #define glGetVideoi64vNV _funcptr_glGetVideoi64vNV
-extern PFNGLGETVIDEOIVNVPROC _funcptr_glGetVideoivNV;
+CI_API extern PFNGLGETVIDEOIVNVPROC _funcptr_glGetVideoivNV;
 #define glGetVideoivNV _funcptr_glGetVideoivNV
-extern PFNGLGETVIDEOUI64VNVPROC _funcptr_glGetVideoui64vNV;
+CI_API extern PFNGLGETVIDEOUI64VNVPROC _funcptr_glGetVideoui64vNV;
 #define glGetVideoui64vNV _funcptr_glGetVideoui64vNV
-extern PFNGLGETVIDEOUIVNVPROC _funcptr_glGetVideouivNV;
+CI_API extern PFNGLGETVIDEOUIVNVPROC _funcptr_glGetVideouivNV;
 #define glGetVideouivNV _funcptr_glGetVideouivNV
-extern PFNGLPRESENTFRAMEDUALFILLNVPROC _funcptr_glPresentFrameDualFillNV;
+CI_API extern PFNGLPRESENTFRAMEDUALFILLNVPROC _funcptr_glPresentFrameDualFillNV;
 #define glPresentFrameDualFillNV _funcptr_glPresentFrameDualFillNV
-extern PFNGLPRESENTFRAMEKEYEDNVPROC _funcptr_glPresentFrameKeyedNV;
+CI_API extern PFNGLPRESENTFRAMEKEYEDNVPROC _funcptr_glPresentFrameKeyedNV;
 #define glPresentFrameKeyedNV _funcptr_glPresentFrameKeyedNV
 
 #define GL_PRIMITIVE_RESTART_INDEX_NV 0x8559
@@ -8747,9 +8747,9 @@ extern PFNGLPRESENTFRAMEKEYEDNVPROC _funcptr_glPresentFrameKeyedNV;
 typedef void (CODEGEN_FUNCPTR * PFNGLPRIMITIVERESTARTINDEXNVPROC)(GLuint index);
 typedef void (CODEGEN_FUNCPTR * PFNGLPRIMITIVERESTARTNVPROC)();
 
-extern PFNGLPRIMITIVERESTARTINDEXNVPROC _funcptr_glPrimitiveRestartIndexNV;
+CI_API extern PFNGLPRIMITIVERESTARTINDEXNVPROC _funcptr_glPrimitiveRestartIndexNV;
 #define glPrimitiveRestartIndexNV _funcptr_glPrimitiveRestartIndexNV
-extern PFNGLPRIMITIVERESTARTNVPROC _funcptr_glPrimitiveRestartNV;
+CI_API extern PFNGLPRIMITIVERESTARTNVPROC _funcptr_glPrimitiveRestartNV;
 #define glPrimitiveRestartNV _funcptr_glPrimitiveRestartNV
 
 #define GL_BIAS_BY_NEGATIVE_ONE_HALF_NV 0x8541
@@ -8823,31 +8823,31 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC)(GLenum 
 typedef void (CODEGEN_FUNCPTR * PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC)(GLenum variable, GLenum pname, GLfloat * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC)(GLenum variable, GLenum pname, GLint * params);
 
-extern PFNGLCOMBINERINPUTNVPROC _funcptr_glCombinerInputNV;
+CI_API extern PFNGLCOMBINERINPUTNVPROC _funcptr_glCombinerInputNV;
 #define glCombinerInputNV _funcptr_glCombinerInputNV
-extern PFNGLCOMBINEROUTPUTNVPROC _funcptr_glCombinerOutputNV;
+CI_API extern PFNGLCOMBINEROUTPUTNVPROC _funcptr_glCombinerOutputNV;
 #define glCombinerOutputNV _funcptr_glCombinerOutputNV
-extern PFNGLCOMBINERPARAMETERFNVPROC _funcptr_glCombinerParameterfNV;
+CI_API extern PFNGLCOMBINERPARAMETERFNVPROC _funcptr_glCombinerParameterfNV;
 #define glCombinerParameterfNV _funcptr_glCombinerParameterfNV
-extern PFNGLCOMBINERPARAMETERFVNVPROC _funcptr_glCombinerParameterfvNV;
+CI_API extern PFNGLCOMBINERPARAMETERFVNVPROC _funcptr_glCombinerParameterfvNV;
 #define glCombinerParameterfvNV _funcptr_glCombinerParameterfvNV
-extern PFNGLCOMBINERPARAMETERINVPROC _funcptr_glCombinerParameteriNV;
+CI_API extern PFNGLCOMBINERPARAMETERINVPROC _funcptr_glCombinerParameteriNV;
 #define glCombinerParameteriNV _funcptr_glCombinerParameteriNV
-extern PFNGLCOMBINERPARAMETERIVNVPROC _funcptr_glCombinerParameterivNV;
+CI_API extern PFNGLCOMBINERPARAMETERIVNVPROC _funcptr_glCombinerParameterivNV;
 #define glCombinerParameterivNV _funcptr_glCombinerParameterivNV
-extern PFNGLFINALCOMBINERINPUTNVPROC _funcptr_glFinalCombinerInputNV;
+CI_API extern PFNGLFINALCOMBINERINPUTNVPROC _funcptr_glFinalCombinerInputNV;
 #define glFinalCombinerInputNV _funcptr_glFinalCombinerInputNV
-extern PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC _funcptr_glGetCombinerInputParameterfvNV;
+CI_API extern PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC _funcptr_glGetCombinerInputParameterfvNV;
 #define glGetCombinerInputParameterfvNV _funcptr_glGetCombinerInputParameterfvNV
-extern PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC _funcptr_glGetCombinerInputParameterivNV;
+CI_API extern PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC _funcptr_glGetCombinerInputParameterivNV;
 #define glGetCombinerInputParameterivNV _funcptr_glGetCombinerInputParameterivNV
-extern PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC _funcptr_glGetCombinerOutputParameterfvNV;
+CI_API extern PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC _funcptr_glGetCombinerOutputParameterfvNV;
 #define glGetCombinerOutputParameterfvNV _funcptr_glGetCombinerOutputParameterfvNV
-extern PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC _funcptr_glGetCombinerOutputParameterivNV;
+CI_API extern PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC _funcptr_glGetCombinerOutputParameterivNV;
 #define glGetCombinerOutputParameterivNV _funcptr_glGetCombinerOutputParameterivNV
-extern PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC _funcptr_glGetFinalCombinerInputParameterfvNV;
+CI_API extern PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC _funcptr_glGetFinalCombinerInputParameterfvNV;
 #define glGetFinalCombinerInputParameterfvNV _funcptr_glGetFinalCombinerInputParameterfvNV
-extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC _funcptr_glGetFinalCombinerInputParameterivNV;
+CI_API extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC _funcptr_glGetFinalCombinerInputParameterivNV;
 #define glGetFinalCombinerInputParameterivNV _funcptr_glGetFinalCombinerInputParameterivNV
 
 #define GL_PER_STAGE_CONSTANTS_NV 0x8535
@@ -8855,9 +8855,9 @@ extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC _funcptr_glGetFinalCombinerIn
 typedef void (CODEGEN_FUNCPTR * PFNGLCOMBINERSTAGEPARAMETERFVNVPROC)(GLenum stage, GLenum pname, const GLfloat * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC)(GLenum stage, GLenum pname, GLfloat * params);
 
-extern PFNGLCOMBINERSTAGEPARAMETERFVNVPROC _funcptr_glCombinerStageParameterfvNV;
+CI_API extern PFNGLCOMBINERSTAGEPARAMETERFVNVPROC _funcptr_glCombinerStageParameterfvNV;
 #define glCombinerStageParameterfvNV _funcptr_glCombinerStageParameterfvNV
-extern PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC _funcptr_glGetCombinerStageParameterfvNV;
+CI_API extern PFNGLGETCOMBINERSTAGEPARAMETERFVNVPROC _funcptr_glGetCombinerStageParameterfvNV;
 #define glGetCombinerStageParameterfvNV _funcptr_glGetCombinerStageParameterfvNV
 
 #define GL_BUFFER_GPU_ADDRESS_NV 0x8F1D
@@ -8879,33 +8879,33 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPROGRAMUNIFORMUI64VNVPROC)(GLuint program, 
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMUI64NVPROC)(GLint location, GLuint64EXT value);
 typedef void (CODEGEN_FUNCPTR * PFNGLUNIFORMUI64VNVPROC)(GLint location, GLsizei count, const GLuint64EXT * value);
 
-extern PFNGLGETBUFFERPARAMETERUI64VNVPROC _funcptr_glGetBufferParameterui64vNV;
+CI_API extern PFNGLGETBUFFERPARAMETERUI64VNVPROC _funcptr_glGetBufferParameterui64vNV;
 #define glGetBufferParameterui64vNV _funcptr_glGetBufferParameterui64vNV
-extern PFNGLGETINTEGERUI64VNVPROC _funcptr_glGetIntegerui64vNV;
+CI_API extern PFNGLGETINTEGERUI64VNVPROC _funcptr_glGetIntegerui64vNV;
 #define glGetIntegerui64vNV _funcptr_glGetIntegerui64vNV
-extern PFNGLGETNAMEDBUFFERPARAMETERUI64VNVPROC _funcptr_glGetNamedBufferParameterui64vNV;
+CI_API extern PFNGLGETNAMEDBUFFERPARAMETERUI64VNVPROC _funcptr_glGetNamedBufferParameterui64vNV;
 #define glGetNamedBufferParameterui64vNV _funcptr_glGetNamedBufferParameterui64vNV
-extern PFNGLGETUNIFORMUI64VNVPROC _funcptr_glGetUniformui64vNV;
+CI_API extern PFNGLGETUNIFORMUI64VNVPROC _funcptr_glGetUniformui64vNV;
 #define glGetUniformui64vNV _funcptr_glGetUniformui64vNV
-extern PFNGLISBUFFERRESIDENTNVPROC _funcptr_glIsBufferResidentNV;
+CI_API extern PFNGLISBUFFERRESIDENTNVPROC _funcptr_glIsBufferResidentNV;
 #define glIsBufferResidentNV _funcptr_glIsBufferResidentNV
-extern PFNGLISNAMEDBUFFERRESIDENTNVPROC _funcptr_glIsNamedBufferResidentNV;
+CI_API extern PFNGLISNAMEDBUFFERRESIDENTNVPROC _funcptr_glIsNamedBufferResidentNV;
 #define glIsNamedBufferResidentNV _funcptr_glIsNamedBufferResidentNV
-extern PFNGLMAKEBUFFERNONRESIDENTNVPROC _funcptr_glMakeBufferNonResidentNV;
+CI_API extern PFNGLMAKEBUFFERNONRESIDENTNVPROC _funcptr_glMakeBufferNonResidentNV;
 #define glMakeBufferNonResidentNV _funcptr_glMakeBufferNonResidentNV
-extern PFNGLMAKEBUFFERRESIDENTNVPROC _funcptr_glMakeBufferResidentNV;
+CI_API extern PFNGLMAKEBUFFERRESIDENTNVPROC _funcptr_glMakeBufferResidentNV;
 #define glMakeBufferResidentNV _funcptr_glMakeBufferResidentNV
-extern PFNGLMAKENAMEDBUFFERNONRESIDENTNVPROC _funcptr_glMakeNamedBufferNonResidentNV;
+CI_API extern PFNGLMAKENAMEDBUFFERNONRESIDENTNVPROC _funcptr_glMakeNamedBufferNonResidentNV;
 #define glMakeNamedBufferNonResidentNV _funcptr_glMakeNamedBufferNonResidentNV
-extern PFNGLMAKENAMEDBUFFERRESIDENTNVPROC _funcptr_glMakeNamedBufferResidentNV;
+CI_API extern PFNGLMAKENAMEDBUFFERRESIDENTNVPROC _funcptr_glMakeNamedBufferResidentNV;
 #define glMakeNamedBufferResidentNV _funcptr_glMakeNamedBufferResidentNV
-extern PFNGLPROGRAMUNIFORMUI64NVPROC _funcptr_glProgramUniformui64NV;
+CI_API extern PFNGLPROGRAMUNIFORMUI64NVPROC _funcptr_glProgramUniformui64NV;
 #define glProgramUniformui64NV _funcptr_glProgramUniformui64NV
-extern PFNGLPROGRAMUNIFORMUI64VNVPROC _funcptr_glProgramUniformui64vNV;
+CI_API extern PFNGLPROGRAMUNIFORMUI64VNVPROC _funcptr_glProgramUniformui64vNV;
 #define glProgramUniformui64vNV _funcptr_glProgramUniformui64vNV
-extern PFNGLUNIFORMUI64NVPROC _funcptr_glUniformui64NV;
+CI_API extern PFNGLUNIFORMUI64NVPROC _funcptr_glUniformui64NV;
 #define glUniformui64NV _funcptr_glUniformui64NV
-extern PFNGLUNIFORMUI64VNVPROC _funcptr_glUniformui64vNV;
+CI_API extern PFNGLUNIFORMUI64VNVPROC _funcptr_glUniformui64vNV;
 #define glUniformui64vNV _funcptr_glUniformui64vNV
 
 #define GL_READ_WRITE 0x88BA
@@ -8927,7 +8927,7 @@ extern PFNGLUNIFORMUI64VNVPROC _funcptr_glUniformui64vNV;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTUREBARRIERNVPROC)();
 
-extern PFNGLTEXTUREBARRIERNVPROC _funcptr_glTextureBarrierNV;
+CI_API extern PFNGLTEXTUREBARRIERNVPROC _funcptr_glTextureBarrierNV;
 #define glTextureBarrierNV _funcptr_glTextureBarrierNV
 
 #define GL_COMBINE4_NV 0x8503
@@ -8948,17 +8948,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLTEXTUREIMAGE2DMULTISAMPLENVPROC)(GLuint tex
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTUREIMAGE3DMULTISAMPLECOVERAGENVPROC)(GLuint texture, GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedSampleLocations);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTUREIMAGE3DMULTISAMPLENVPROC)(GLuint texture, GLenum target, GLsizei samples, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedSampleLocations);
 
-extern PFNGLTEXIMAGE2DMULTISAMPLECOVERAGENVPROC _funcptr_glTexImage2DMultisampleCoverageNV;
+CI_API extern PFNGLTEXIMAGE2DMULTISAMPLECOVERAGENVPROC _funcptr_glTexImage2DMultisampleCoverageNV;
 #define glTexImage2DMultisampleCoverageNV _funcptr_glTexImage2DMultisampleCoverageNV
-extern PFNGLTEXIMAGE3DMULTISAMPLECOVERAGENVPROC _funcptr_glTexImage3DMultisampleCoverageNV;
+CI_API extern PFNGLTEXIMAGE3DMULTISAMPLECOVERAGENVPROC _funcptr_glTexImage3DMultisampleCoverageNV;
 #define glTexImage3DMultisampleCoverageNV _funcptr_glTexImage3DMultisampleCoverageNV
-extern PFNGLTEXTUREIMAGE2DMULTISAMPLECOVERAGENVPROC _funcptr_glTextureImage2DMultisampleCoverageNV;
+CI_API extern PFNGLTEXTUREIMAGE2DMULTISAMPLECOVERAGENVPROC _funcptr_glTextureImage2DMultisampleCoverageNV;
 #define glTextureImage2DMultisampleCoverageNV _funcptr_glTextureImage2DMultisampleCoverageNV
-extern PFNGLTEXTUREIMAGE2DMULTISAMPLENVPROC _funcptr_glTextureImage2DMultisampleNV;
+CI_API extern PFNGLTEXTUREIMAGE2DMULTISAMPLENVPROC _funcptr_glTextureImage2DMultisampleNV;
 #define glTextureImage2DMultisampleNV _funcptr_glTextureImage2DMultisampleNV
-extern PFNGLTEXTUREIMAGE3DMULTISAMPLECOVERAGENVPROC _funcptr_glTextureImage3DMultisampleCoverageNV;
+CI_API extern PFNGLTEXTUREIMAGE3DMULTISAMPLECOVERAGENVPROC _funcptr_glTextureImage3DMultisampleCoverageNV;
 #define glTextureImage3DMultisampleCoverageNV _funcptr_glTextureImage3DMultisampleCoverageNV
-extern PFNGLTEXTUREIMAGE3DMULTISAMPLENVPROC _funcptr_glTextureImage3DMultisampleNV;
+CI_API extern PFNGLTEXTUREIMAGE3DMULTISAMPLENVPROC _funcptr_glTextureImage3DMultisampleNV;
 #define glTextureImage3DMultisampleNV _funcptr_glTextureImage3DMultisampleNV
 
 #define GL_MAX_RECTANGLE_TEXTURE_SIZE_NV 0x84F8
@@ -9105,29 +9105,29 @@ typedef void (CODEGEN_FUNCPTR * PFNGLTRANSFORMFEEDBACKATTRIBSNVPROC)(GLuint coun
 typedef void (CODEGEN_FUNCPTR * PFNGLTRANSFORMFEEDBACKSTREAMATTRIBSNVPROC)(GLsizei count, const GLint * attribs, GLsizei nbuffers, const GLint * bufstreams, GLenum bufferMode);
 typedef void (CODEGEN_FUNCPTR * PFNGLTRANSFORMFEEDBACKVARYINGSNVPROC)(GLuint program, GLsizei count, const GLint * locations, GLenum bufferMode);
 
-extern PFNGLACTIVEVARYINGNVPROC _funcptr_glActiveVaryingNV;
+CI_API extern PFNGLACTIVEVARYINGNVPROC _funcptr_glActiveVaryingNV;
 #define glActiveVaryingNV _funcptr_glActiveVaryingNV
-extern PFNGLBEGINTRANSFORMFEEDBACKNVPROC _funcptr_glBeginTransformFeedbackNV;
+CI_API extern PFNGLBEGINTRANSFORMFEEDBACKNVPROC _funcptr_glBeginTransformFeedbackNV;
 #define glBeginTransformFeedbackNV _funcptr_glBeginTransformFeedbackNV
-extern PFNGLBINDBUFFERBASENVPROC _funcptr_glBindBufferBaseNV;
+CI_API extern PFNGLBINDBUFFERBASENVPROC _funcptr_glBindBufferBaseNV;
 #define glBindBufferBaseNV _funcptr_glBindBufferBaseNV
-extern PFNGLBINDBUFFEROFFSETNVPROC _funcptr_glBindBufferOffsetNV;
+CI_API extern PFNGLBINDBUFFEROFFSETNVPROC _funcptr_glBindBufferOffsetNV;
 #define glBindBufferOffsetNV _funcptr_glBindBufferOffsetNV
-extern PFNGLBINDBUFFERRANGENVPROC _funcptr_glBindBufferRangeNV;
+CI_API extern PFNGLBINDBUFFERRANGENVPROC _funcptr_glBindBufferRangeNV;
 #define glBindBufferRangeNV _funcptr_glBindBufferRangeNV
-extern PFNGLENDTRANSFORMFEEDBACKNVPROC _funcptr_glEndTransformFeedbackNV;
+CI_API extern PFNGLENDTRANSFORMFEEDBACKNVPROC _funcptr_glEndTransformFeedbackNV;
 #define glEndTransformFeedbackNV _funcptr_glEndTransformFeedbackNV
-extern PFNGLGETACTIVEVARYINGNVPROC _funcptr_glGetActiveVaryingNV;
+CI_API extern PFNGLGETACTIVEVARYINGNVPROC _funcptr_glGetActiveVaryingNV;
 #define glGetActiveVaryingNV _funcptr_glGetActiveVaryingNV
-extern PFNGLGETTRANSFORMFEEDBACKVARYINGNVPROC _funcptr_glGetTransformFeedbackVaryingNV;
+CI_API extern PFNGLGETTRANSFORMFEEDBACKVARYINGNVPROC _funcptr_glGetTransformFeedbackVaryingNV;
 #define glGetTransformFeedbackVaryingNV _funcptr_glGetTransformFeedbackVaryingNV
-extern PFNGLGETVARYINGLOCATIONNVPROC _funcptr_glGetVaryingLocationNV;
+CI_API extern PFNGLGETVARYINGLOCATIONNVPROC _funcptr_glGetVaryingLocationNV;
 #define glGetVaryingLocationNV _funcptr_glGetVaryingLocationNV
-extern PFNGLTRANSFORMFEEDBACKATTRIBSNVPROC _funcptr_glTransformFeedbackAttribsNV;
+CI_API extern PFNGLTRANSFORMFEEDBACKATTRIBSNVPROC _funcptr_glTransformFeedbackAttribsNV;
 #define glTransformFeedbackAttribsNV _funcptr_glTransformFeedbackAttribsNV
-extern PFNGLTRANSFORMFEEDBACKSTREAMATTRIBSNVPROC _funcptr_glTransformFeedbackStreamAttribsNV;
+CI_API extern PFNGLTRANSFORMFEEDBACKSTREAMATTRIBSNVPROC _funcptr_glTransformFeedbackStreamAttribsNV;
 #define glTransformFeedbackStreamAttribsNV _funcptr_glTransformFeedbackStreamAttribsNV
-extern PFNGLTRANSFORMFEEDBACKVARYINGSNVPROC _funcptr_glTransformFeedbackVaryingsNV;
+CI_API extern PFNGLTRANSFORMFEEDBACKVARYINGSNVPROC _funcptr_glTransformFeedbackVaryingsNV;
 #define glTransformFeedbackVaryingsNV _funcptr_glTransformFeedbackVaryingsNV
 
 #define GL_TRANSFORM_FEEDBACK_BINDING_NV 0x8E25
@@ -9143,19 +9143,19 @@ typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISTRANSFORMFEEDBACKNVPROC)(GLuint id);
 typedef void (CODEGEN_FUNCPTR * PFNGLPAUSETRANSFORMFEEDBACKNVPROC)();
 typedef void (CODEGEN_FUNCPTR * PFNGLRESUMETRANSFORMFEEDBACKNVPROC)();
 
-extern PFNGLBINDTRANSFORMFEEDBACKNVPROC _funcptr_glBindTransformFeedbackNV;
+CI_API extern PFNGLBINDTRANSFORMFEEDBACKNVPROC _funcptr_glBindTransformFeedbackNV;
 #define glBindTransformFeedbackNV _funcptr_glBindTransformFeedbackNV
-extern PFNGLDELETETRANSFORMFEEDBACKSNVPROC _funcptr_glDeleteTransformFeedbacksNV;
+CI_API extern PFNGLDELETETRANSFORMFEEDBACKSNVPROC _funcptr_glDeleteTransformFeedbacksNV;
 #define glDeleteTransformFeedbacksNV _funcptr_glDeleteTransformFeedbacksNV
-extern PFNGLDRAWTRANSFORMFEEDBACKNVPROC _funcptr_glDrawTransformFeedbackNV;
+CI_API extern PFNGLDRAWTRANSFORMFEEDBACKNVPROC _funcptr_glDrawTransformFeedbackNV;
 #define glDrawTransformFeedbackNV _funcptr_glDrawTransformFeedbackNV
-extern PFNGLGENTRANSFORMFEEDBACKSNVPROC _funcptr_glGenTransformFeedbacksNV;
+CI_API extern PFNGLGENTRANSFORMFEEDBACKSNVPROC _funcptr_glGenTransformFeedbacksNV;
 #define glGenTransformFeedbacksNV _funcptr_glGenTransformFeedbacksNV
-extern PFNGLISTRANSFORMFEEDBACKNVPROC _funcptr_glIsTransformFeedbackNV;
+CI_API extern PFNGLISTRANSFORMFEEDBACKNVPROC _funcptr_glIsTransformFeedbackNV;
 #define glIsTransformFeedbackNV _funcptr_glIsTransformFeedbackNV
-extern PFNGLPAUSETRANSFORMFEEDBACKNVPROC _funcptr_glPauseTransformFeedbackNV;
+CI_API extern PFNGLPAUSETRANSFORMFEEDBACKNVPROC _funcptr_glPauseTransformFeedbackNV;
 #define glPauseTransformFeedbackNV _funcptr_glPauseTransformFeedbackNV
-extern PFNGLRESUMETRANSFORMFEEDBACKNVPROC _funcptr_glResumeTransformFeedbackNV;
+CI_API extern PFNGLRESUMETRANSFORMFEEDBACKNVPROC _funcptr_glResumeTransformFeedbackNV;
 #define glResumeTransformFeedbackNV _funcptr_glResumeTransformFeedbackNV
 
 #define GL_SURFACE_MAPPED_NV 0x8700
@@ -9174,25 +9174,25 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVDPAUSURFACEACCESSNVPROC)(GLvdpauSurfaceNV 
 typedef void (CODEGEN_FUNCPTR * PFNGLVDPAUUNMAPSURFACESNVPROC)(GLsizei numSurface, const GLvdpauSurfaceNV * surfaces);
 typedef void (CODEGEN_FUNCPTR * PFNGLVDPAUUNREGISTERSURFACENVPROC)(GLvdpauSurfaceNV surface);
 
-extern PFNGLVDPAUFININVPROC _funcptr_glVDPAUFiniNV;
+CI_API extern PFNGLVDPAUFININVPROC _funcptr_glVDPAUFiniNV;
 #define glVDPAUFiniNV _funcptr_glVDPAUFiniNV
-extern PFNGLVDPAUGETSURFACEIVNVPROC _funcptr_glVDPAUGetSurfaceivNV;
+CI_API extern PFNGLVDPAUGETSURFACEIVNVPROC _funcptr_glVDPAUGetSurfaceivNV;
 #define glVDPAUGetSurfaceivNV _funcptr_glVDPAUGetSurfaceivNV
-extern PFNGLVDPAUINITNVPROC _funcptr_glVDPAUInitNV;
+CI_API extern PFNGLVDPAUINITNVPROC _funcptr_glVDPAUInitNV;
 #define glVDPAUInitNV _funcptr_glVDPAUInitNV
-extern PFNGLVDPAUISSURFACENVPROC _funcptr_glVDPAUIsSurfaceNV;
+CI_API extern PFNGLVDPAUISSURFACENVPROC _funcptr_glVDPAUIsSurfaceNV;
 #define glVDPAUIsSurfaceNV _funcptr_glVDPAUIsSurfaceNV
-extern PFNGLVDPAUMAPSURFACESNVPROC _funcptr_glVDPAUMapSurfacesNV;
+CI_API extern PFNGLVDPAUMAPSURFACESNVPROC _funcptr_glVDPAUMapSurfacesNV;
 #define glVDPAUMapSurfacesNV _funcptr_glVDPAUMapSurfacesNV
-extern PFNGLVDPAUREGISTEROUTPUTSURFACENVPROC _funcptr_glVDPAURegisterOutputSurfaceNV;
+CI_API extern PFNGLVDPAUREGISTEROUTPUTSURFACENVPROC _funcptr_glVDPAURegisterOutputSurfaceNV;
 #define glVDPAURegisterOutputSurfaceNV _funcptr_glVDPAURegisterOutputSurfaceNV
-extern PFNGLVDPAUREGISTERVIDEOSURFACENVPROC _funcptr_glVDPAURegisterVideoSurfaceNV;
+CI_API extern PFNGLVDPAUREGISTERVIDEOSURFACENVPROC _funcptr_glVDPAURegisterVideoSurfaceNV;
 #define glVDPAURegisterVideoSurfaceNV _funcptr_glVDPAURegisterVideoSurfaceNV
-extern PFNGLVDPAUSURFACEACCESSNVPROC _funcptr_glVDPAUSurfaceAccessNV;
+CI_API extern PFNGLVDPAUSURFACEACCESSNVPROC _funcptr_glVDPAUSurfaceAccessNV;
 #define glVDPAUSurfaceAccessNV _funcptr_glVDPAUSurfaceAccessNV
-extern PFNGLVDPAUUNMAPSURFACESNVPROC _funcptr_glVDPAUUnmapSurfacesNV;
+CI_API extern PFNGLVDPAUUNMAPSURFACESNVPROC _funcptr_glVDPAUUnmapSurfacesNV;
 #define glVDPAUUnmapSurfacesNV _funcptr_glVDPAUUnmapSurfacesNV
-extern PFNGLVDPAUUNREGISTERSURFACENVPROC _funcptr_glVDPAUUnregisterSurfaceNV;
+CI_API extern PFNGLVDPAUUNREGISTERSURFACENVPROC _funcptr_glVDPAUUnregisterSurfaceNV;
 #define glVDPAUUnregisterSurfaceNV _funcptr_glVDPAUUnregisterSurfaceNV
 
 #define GL_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV 0x8520
@@ -9204,9 +9204,9 @@ extern PFNGLVDPAUUNREGISTERSURFACENVPROC _funcptr_glVDPAUUnregisterSurfaceNV;
 typedef void (CODEGEN_FUNCPTR * PFNGLFLUSHVERTEXARRAYRANGENVPROC)();
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXARRAYRANGENVPROC)(GLsizei length, const GLvoid * pointer);
 
-extern PFNGLFLUSHVERTEXARRAYRANGENVPROC _funcptr_glFlushVertexArrayRangeNV;
+CI_API extern PFNGLFLUSHVERTEXARRAYRANGENVPROC _funcptr_glFlushVertexArrayRangeNV;
 #define glFlushVertexArrayRangeNV _funcptr_glFlushVertexArrayRangeNV
-extern PFNGLVERTEXARRAYRANGENVPROC _funcptr_glVertexArrayRangeNV;
+CI_API extern PFNGLVERTEXARRAYRANGENVPROC _funcptr_glVertexArrayRangeNV;
 #define glVertexArrayRangeNV _funcptr_glVertexArrayRangeNV
 
 #define GL_VERTEX_ARRAY_RANGE_WITHOUT_FLUSH_NV 0x8533
@@ -9234,43 +9234,43 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBL4UI64NVPROC)(GLuint index, GLu
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBL4UI64VNVPROC)(GLuint index, const GLuint64EXT * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBLFORMATNVPROC)(GLuint index, GLint size, GLenum type, GLsizei stride);
 
-extern PFNGLGETVERTEXATTRIBLI64VNVPROC _funcptr_glGetVertexAttribLi64vNV;
+CI_API extern PFNGLGETVERTEXATTRIBLI64VNVPROC _funcptr_glGetVertexAttribLi64vNV;
 #define glGetVertexAttribLi64vNV _funcptr_glGetVertexAttribLi64vNV
-extern PFNGLGETVERTEXATTRIBLUI64VNVPROC _funcptr_glGetVertexAttribLui64vNV;
+CI_API extern PFNGLGETVERTEXATTRIBLUI64VNVPROC _funcptr_glGetVertexAttribLui64vNV;
 #define glGetVertexAttribLui64vNV _funcptr_glGetVertexAttribLui64vNV
-extern PFNGLVERTEXATTRIBL1I64NVPROC _funcptr_glVertexAttribL1i64NV;
+CI_API extern PFNGLVERTEXATTRIBL1I64NVPROC _funcptr_glVertexAttribL1i64NV;
 #define glVertexAttribL1i64NV _funcptr_glVertexAttribL1i64NV
-extern PFNGLVERTEXATTRIBL1I64VNVPROC _funcptr_glVertexAttribL1i64vNV;
+CI_API extern PFNGLVERTEXATTRIBL1I64VNVPROC _funcptr_glVertexAttribL1i64vNV;
 #define glVertexAttribL1i64vNV _funcptr_glVertexAttribL1i64vNV
-extern PFNGLVERTEXATTRIBL1UI64NVPROC _funcptr_glVertexAttribL1ui64NV;
+CI_API extern PFNGLVERTEXATTRIBL1UI64NVPROC _funcptr_glVertexAttribL1ui64NV;
 #define glVertexAttribL1ui64NV _funcptr_glVertexAttribL1ui64NV
-extern PFNGLVERTEXATTRIBL1UI64VNVPROC _funcptr_glVertexAttribL1ui64vNV;
+CI_API extern PFNGLVERTEXATTRIBL1UI64VNVPROC _funcptr_glVertexAttribL1ui64vNV;
 #define glVertexAttribL1ui64vNV _funcptr_glVertexAttribL1ui64vNV
-extern PFNGLVERTEXATTRIBL2I64NVPROC _funcptr_glVertexAttribL2i64NV;
+CI_API extern PFNGLVERTEXATTRIBL2I64NVPROC _funcptr_glVertexAttribL2i64NV;
 #define glVertexAttribL2i64NV _funcptr_glVertexAttribL2i64NV
-extern PFNGLVERTEXATTRIBL2I64VNVPROC _funcptr_glVertexAttribL2i64vNV;
+CI_API extern PFNGLVERTEXATTRIBL2I64VNVPROC _funcptr_glVertexAttribL2i64vNV;
 #define glVertexAttribL2i64vNV _funcptr_glVertexAttribL2i64vNV
-extern PFNGLVERTEXATTRIBL2UI64NVPROC _funcptr_glVertexAttribL2ui64NV;
+CI_API extern PFNGLVERTEXATTRIBL2UI64NVPROC _funcptr_glVertexAttribL2ui64NV;
 #define glVertexAttribL2ui64NV _funcptr_glVertexAttribL2ui64NV
-extern PFNGLVERTEXATTRIBL2UI64VNVPROC _funcptr_glVertexAttribL2ui64vNV;
+CI_API extern PFNGLVERTEXATTRIBL2UI64VNVPROC _funcptr_glVertexAttribL2ui64vNV;
 #define glVertexAttribL2ui64vNV _funcptr_glVertexAttribL2ui64vNV
-extern PFNGLVERTEXATTRIBL3I64NVPROC _funcptr_glVertexAttribL3i64NV;
+CI_API extern PFNGLVERTEXATTRIBL3I64NVPROC _funcptr_glVertexAttribL3i64NV;
 #define glVertexAttribL3i64NV _funcptr_glVertexAttribL3i64NV
-extern PFNGLVERTEXATTRIBL3I64VNVPROC _funcptr_glVertexAttribL3i64vNV;
+CI_API extern PFNGLVERTEXATTRIBL3I64VNVPROC _funcptr_glVertexAttribL3i64vNV;
 #define glVertexAttribL3i64vNV _funcptr_glVertexAttribL3i64vNV
-extern PFNGLVERTEXATTRIBL3UI64NVPROC _funcptr_glVertexAttribL3ui64NV;
+CI_API extern PFNGLVERTEXATTRIBL3UI64NVPROC _funcptr_glVertexAttribL3ui64NV;
 #define glVertexAttribL3ui64NV _funcptr_glVertexAttribL3ui64NV
-extern PFNGLVERTEXATTRIBL3UI64VNVPROC _funcptr_glVertexAttribL3ui64vNV;
+CI_API extern PFNGLVERTEXATTRIBL3UI64VNVPROC _funcptr_glVertexAttribL3ui64vNV;
 #define glVertexAttribL3ui64vNV _funcptr_glVertexAttribL3ui64vNV
-extern PFNGLVERTEXATTRIBL4I64NVPROC _funcptr_glVertexAttribL4i64NV;
+CI_API extern PFNGLVERTEXATTRIBL4I64NVPROC _funcptr_glVertexAttribL4i64NV;
 #define glVertexAttribL4i64NV _funcptr_glVertexAttribL4i64NV
-extern PFNGLVERTEXATTRIBL4I64VNVPROC _funcptr_glVertexAttribL4i64vNV;
+CI_API extern PFNGLVERTEXATTRIBL4I64VNVPROC _funcptr_glVertexAttribL4i64vNV;
 #define glVertexAttribL4i64vNV _funcptr_glVertexAttribL4i64vNV
-extern PFNGLVERTEXATTRIBL4UI64NVPROC _funcptr_glVertexAttribL4ui64NV;
+CI_API extern PFNGLVERTEXATTRIBL4UI64NVPROC _funcptr_glVertexAttribL4ui64NV;
 #define glVertexAttribL4ui64NV _funcptr_glVertexAttribL4ui64NV
-extern PFNGLVERTEXATTRIBL4UI64VNVPROC _funcptr_glVertexAttribL4ui64vNV;
+CI_API extern PFNGLVERTEXATTRIBL4UI64VNVPROC _funcptr_glVertexAttribL4ui64vNV;
 #define glVertexAttribL4ui64vNV _funcptr_glVertexAttribL4ui64vNV
-extern PFNGLVERTEXATTRIBLFORMATNVPROC _funcptr_glVertexAttribLFormatNV;
+CI_API extern PFNGLVERTEXATTRIBLFORMATNVPROC _funcptr_glVertexAttribLFormatNV;
 #define glVertexAttribLFormatNV _funcptr_glVertexAttribLFormatNV
 
 #define GL_COLOR_ARRAY_ADDRESS_NV 0x8F23
@@ -9312,29 +9312,29 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBFORMATNVPROC)(GLuint index, GLi
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBIFORMATNVPROC)(GLuint index, GLint size, GLenum type, GLsizei stride);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXFORMATNVPROC)(GLint size, GLenum type, GLsizei stride);
 
-extern PFNGLBUFFERADDRESSRANGENVPROC _funcptr_glBufferAddressRangeNV;
+CI_API extern PFNGLBUFFERADDRESSRANGENVPROC _funcptr_glBufferAddressRangeNV;
 #define glBufferAddressRangeNV _funcptr_glBufferAddressRangeNV
-extern PFNGLCOLORFORMATNVPROC _funcptr_glColorFormatNV;
+CI_API extern PFNGLCOLORFORMATNVPROC _funcptr_glColorFormatNV;
 #define glColorFormatNV _funcptr_glColorFormatNV
-extern PFNGLEDGEFLAGFORMATNVPROC _funcptr_glEdgeFlagFormatNV;
+CI_API extern PFNGLEDGEFLAGFORMATNVPROC _funcptr_glEdgeFlagFormatNV;
 #define glEdgeFlagFormatNV _funcptr_glEdgeFlagFormatNV
-extern PFNGLFOGCOORDFORMATNVPROC _funcptr_glFogCoordFormatNV;
+CI_API extern PFNGLFOGCOORDFORMATNVPROC _funcptr_glFogCoordFormatNV;
 #define glFogCoordFormatNV _funcptr_glFogCoordFormatNV
-extern PFNGLGETINTEGERUI64I_VNVPROC _funcptr_glGetIntegerui64i_vNV;
+CI_API extern PFNGLGETINTEGERUI64I_VNVPROC _funcptr_glGetIntegerui64i_vNV;
 #define glGetIntegerui64i_vNV _funcptr_glGetIntegerui64i_vNV
-extern PFNGLINDEXFORMATNVPROC _funcptr_glIndexFormatNV;
+CI_API extern PFNGLINDEXFORMATNVPROC _funcptr_glIndexFormatNV;
 #define glIndexFormatNV _funcptr_glIndexFormatNV
-extern PFNGLNORMALFORMATNVPROC _funcptr_glNormalFormatNV;
+CI_API extern PFNGLNORMALFORMATNVPROC _funcptr_glNormalFormatNV;
 #define glNormalFormatNV _funcptr_glNormalFormatNV
-extern PFNGLSECONDARYCOLORFORMATNVPROC _funcptr_glSecondaryColorFormatNV;
+CI_API extern PFNGLSECONDARYCOLORFORMATNVPROC _funcptr_glSecondaryColorFormatNV;
 #define glSecondaryColorFormatNV _funcptr_glSecondaryColorFormatNV
-extern PFNGLTEXCOORDFORMATNVPROC _funcptr_glTexCoordFormatNV;
+CI_API extern PFNGLTEXCOORDFORMATNVPROC _funcptr_glTexCoordFormatNV;
 #define glTexCoordFormatNV _funcptr_glTexCoordFormatNV
-extern PFNGLVERTEXATTRIBFORMATNVPROC _funcptr_glVertexAttribFormatNV;
+CI_API extern PFNGLVERTEXATTRIBFORMATNVPROC _funcptr_glVertexAttribFormatNV;
 #define glVertexAttribFormatNV _funcptr_glVertexAttribFormatNV
-extern PFNGLVERTEXATTRIBIFORMATNVPROC _funcptr_glVertexAttribIFormatNV;
+CI_API extern PFNGLVERTEXATTRIBIFORMATNVPROC _funcptr_glVertexAttribIFormatNV;
 #define glVertexAttribIFormatNV _funcptr_glVertexAttribIFormatNV
-extern PFNGLVERTEXFORMATNVPROC _funcptr_glVertexFormatNV;
+CI_API extern PFNGLVERTEXFORMATNVPROC _funcptr_glVertexFormatNV;
 #define glVertexFormatNV _funcptr_glVertexFormatNV
 
 #define GL_ATTRIB_ARRAY_POINTER_NV 0x8645
@@ -9486,133 +9486,133 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBS4FVNVPROC)(GLuint index, GLsiz
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBS4SVNVPROC)(GLuint index, GLsizei count, const GLshort * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBS4UBVNVPROC)(GLuint index, GLsizei count, const GLubyte * v);
 
-extern PFNGLAREPROGRAMSRESIDENTNVPROC _funcptr_glAreProgramsResidentNV;
+CI_API extern PFNGLAREPROGRAMSRESIDENTNVPROC _funcptr_glAreProgramsResidentNV;
 #define glAreProgramsResidentNV _funcptr_glAreProgramsResidentNV
-extern PFNGLBINDPROGRAMNVPROC _funcptr_glBindProgramNV;
+CI_API extern PFNGLBINDPROGRAMNVPROC _funcptr_glBindProgramNV;
 #define glBindProgramNV _funcptr_glBindProgramNV
-extern PFNGLDELETEPROGRAMSNVPROC _funcptr_glDeleteProgramsNV;
+CI_API extern PFNGLDELETEPROGRAMSNVPROC _funcptr_glDeleteProgramsNV;
 #define glDeleteProgramsNV _funcptr_glDeleteProgramsNV
-extern PFNGLEXECUTEPROGRAMNVPROC _funcptr_glExecuteProgramNV;
+CI_API extern PFNGLEXECUTEPROGRAMNVPROC _funcptr_glExecuteProgramNV;
 #define glExecuteProgramNV _funcptr_glExecuteProgramNV
-extern PFNGLGENPROGRAMSNVPROC _funcptr_glGenProgramsNV;
+CI_API extern PFNGLGENPROGRAMSNVPROC _funcptr_glGenProgramsNV;
 #define glGenProgramsNV _funcptr_glGenProgramsNV
-extern PFNGLGETPROGRAMPARAMETERDVNVPROC _funcptr_glGetProgramParameterdvNV;
+CI_API extern PFNGLGETPROGRAMPARAMETERDVNVPROC _funcptr_glGetProgramParameterdvNV;
 #define glGetProgramParameterdvNV _funcptr_glGetProgramParameterdvNV
-extern PFNGLGETPROGRAMPARAMETERFVNVPROC _funcptr_glGetProgramParameterfvNV;
+CI_API extern PFNGLGETPROGRAMPARAMETERFVNVPROC _funcptr_glGetProgramParameterfvNV;
 #define glGetProgramParameterfvNV _funcptr_glGetProgramParameterfvNV
-extern PFNGLGETPROGRAMSTRINGNVPROC _funcptr_glGetProgramStringNV;
+CI_API extern PFNGLGETPROGRAMSTRINGNVPROC _funcptr_glGetProgramStringNV;
 #define glGetProgramStringNV _funcptr_glGetProgramStringNV
-extern PFNGLGETPROGRAMIVNVPROC _funcptr_glGetProgramivNV;
+CI_API extern PFNGLGETPROGRAMIVNVPROC _funcptr_glGetProgramivNV;
 #define glGetProgramivNV _funcptr_glGetProgramivNV
-extern PFNGLGETTRACKMATRIXIVNVPROC _funcptr_glGetTrackMatrixivNV;
+CI_API extern PFNGLGETTRACKMATRIXIVNVPROC _funcptr_glGetTrackMatrixivNV;
 #define glGetTrackMatrixivNV _funcptr_glGetTrackMatrixivNV
-extern PFNGLGETVERTEXATTRIBPOINTERVNVPROC _funcptr_glGetVertexAttribPointervNV;
+CI_API extern PFNGLGETVERTEXATTRIBPOINTERVNVPROC _funcptr_glGetVertexAttribPointervNV;
 #define glGetVertexAttribPointervNV _funcptr_glGetVertexAttribPointervNV
-extern PFNGLGETVERTEXATTRIBDVNVPROC _funcptr_glGetVertexAttribdvNV;
+CI_API extern PFNGLGETVERTEXATTRIBDVNVPROC _funcptr_glGetVertexAttribdvNV;
 #define glGetVertexAttribdvNV _funcptr_glGetVertexAttribdvNV
-extern PFNGLGETVERTEXATTRIBFVNVPROC _funcptr_glGetVertexAttribfvNV;
+CI_API extern PFNGLGETVERTEXATTRIBFVNVPROC _funcptr_glGetVertexAttribfvNV;
 #define glGetVertexAttribfvNV _funcptr_glGetVertexAttribfvNV
-extern PFNGLGETVERTEXATTRIBIVNVPROC _funcptr_glGetVertexAttribivNV;
+CI_API extern PFNGLGETVERTEXATTRIBIVNVPROC _funcptr_glGetVertexAttribivNV;
 #define glGetVertexAttribivNV _funcptr_glGetVertexAttribivNV
-extern PFNGLISPROGRAMNVPROC _funcptr_glIsProgramNV;
+CI_API extern PFNGLISPROGRAMNVPROC _funcptr_glIsProgramNV;
 #define glIsProgramNV _funcptr_glIsProgramNV
-extern PFNGLLOADPROGRAMNVPROC _funcptr_glLoadProgramNV;
+CI_API extern PFNGLLOADPROGRAMNVPROC _funcptr_glLoadProgramNV;
 #define glLoadProgramNV _funcptr_glLoadProgramNV
-extern PFNGLPROGRAMPARAMETER4DNVPROC _funcptr_glProgramParameter4dNV;
+CI_API extern PFNGLPROGRAMPARAMETER4DNVPROC _funcptr_glProgramParameter4dNV;
 #define glProgramParameter4dNV _funcptr_glProgramParameter4dNV
-extern PFNGLPROGRAMPARAMETER4DVNVPROC _funcptr_glProgramParameter4dvNV;
+CI_API extern PFNGLPROGRAMPARAMETER4DVNVPROC _funcptr_glProgramParameter4dvNV;
 #define glProgramParameter4dvNV _funcptr_glProgramParameter4dvNV
-extern PFNGLPROGRAMPARAMETER4FNVPROC _funcptr_glProgramParameter4fNV;
+CI_API extern PFNGLPROGRAMPARAMETER4FNVPROC _funcptr_glProgramParameter4fNV;
 #define glProgramParameter4fNV _funcptr_glProgramParameter4fNV
-extern PFNGLPROGRAMPARAMETER4FVNVPROC _funcptr_glProgramParameter4fvNV;
+CI_API extern PFNGLPROGRAMPARAMETER4FVNVPROC _funcptr_glProgramParameter4fvNV;
 #define glProgramParameter4fvNV _funcptr_glProgramParameter4fvNV
-extern PFNGLPROGRAMPARAMETERS4DVNVPROC _funcptr_glProgramParameters4dvNV;
+CI_API extern PFNGLPROGRAMPARAMETERS4DVNVPROC _funcptr_glProgramParameters4dvNV;
 #define glProgramParameters4dvNV _funcptr_glProgramParameters4dvNV
-extern PFNGLPROGRAMPARAMETERS4FVNVPROC _funcptr_glProgramParameters4fvNV;
+CI_API extern PFNGLPROGRAMPARAMETERS4FVNVPROC _funcptr_glProgramParameters4fvNV;
 #define glProgramParameters4fvNV _funcptr_glProgramParameters4fvNV
-extern PFNGLREQUESTRESIDENTPROGRAMSNVPROC _funcptr_glRequestResidentProgramsNV;
+CI_API extern PFNGLREQUESTRESIDENTPROGRAMSNVPROC _funcptr_glRequestResidentProgramsNV;
 #define glRequestResidentProgramsNV _funcptr_glRequestResidentProgramsNV
-extern PFNGLTRACKMATRIXNVPROC _funcptr_glTrackMatrixNV;
+CI_API extern PFNGLTRACKMATRIXNVPROC _funcptr_glTrackMatrixNV;
 #define glTrackMatrixNV _funcptr_glTrackMatrixNV
-extern PFNGLVERTEXATTRIB1DNVPROC _funcptr_glVertexAttrib1dNV;
+CI_API extern PFNGLVERTEXATTRIB1DNVPROC _funcptr_glVertexAttrib1dNV;
 #define glVertexAttrib1dNV _funcptr_glVertexAttrib1dNV
-extern PFNGLVERTEXATTRIB1DVNVPROC _funcptr_glVertexAttrib1dvNV;
+CI_API extern PFNGLVERTEXATTRIB1DVNVPROC _funcptr_glVertexAttrib1dvNV;
 #define glVertexAttrib1dvNV _funcptr_glVertexAttrib1dvNV
-extern PFNGLVERTEXATTRIB1FNVPROC _funcptr_glVertexAttrib1fNV;
+CI_API extern PFNGLVERTEXATTRIB1FNVPROC _funcptr_glVertexAttrib1fNV;
 #define glVertexAttrib1fNV _funcptr_glVertexAttrib1fNV
-extern PFNGLVERTEXATTRIB1FVNVPROC _funcptr_glVertexAttrib1fvNV;
+CI_API extern PFNGLVERTEXATTRIB1FVNVPROC _funcptr_glVertexAttrib1fvNV;
 #define glVertexAttrib1fvNV _funcptr_glVertexAttrib1fvNV
-extern PFNGLVERTEXATTRIB1SNVPROC _funcptr_glVertexAttrib1sNV;
+CI_API extern PFNGLVERTEXATTRIB1SNVPROC _funcptr_glVertexAttrib1sNV;
 #define glVertexAttrib1sNV _funcptr_glVertexAttrib1sNV
-extern PFNGLVERTEXATTRIB1SVNVPROC _funcptr_glVertexAttrib1svNV;
+CI_API extern PFNGLVERTEXATTRIB1SVNVPROC _funcptr_glVertexAttrib1svNV;
 #define glVertexAttrib1svNV _funcptr_glVertexAttrib1svNV
-extern PFNGLVERTEXATTRIB2DNVPROC _funcptr_glVertexAttrib2dNV;
+CI_API extern PFNGLVERTEXATTRIB2DNVPROC _funcptr_glVertexAttrib2dNV;
 #define glVertexAttrib2dNV _funcptr_glVertexAttrib2dNV
-extern PFNGLVERTEXATTRIB2DVNVPROC _funcptr_glVertexAttrib2dvNV;
+CI_API extern PFNGLVERTEXATTRIB2DVNVPROC _funcptr_glVertexAttrib2dvNV;
 #define glVertexAttrib2dvNV _funcptr_glVertexAttrib2dvNV
-extern PFNGLVERTEXATTRIB2FNVPROC _funcptr_glVertexAttrib2fNV;
+CI_API extern PFNGLVERTEXATTRIB2FNVPROC _funcptr_glVertexAttrib2fNV;
 #define glVertexAttrib2fNV _funcptr_glVertexAttrib2fNV
-extern PFNGLVERTEXATTRIB2FVNVPROC _funcptr_glVertexAttrib2fvNV;
+CI_API extern PFNGLVERTEXATTRIB2FVNVPROC _funcptr_glVertexAttrib2fvNV;
 #define glVertexAttrib2fvNV _funcptr_glVertexAttrib2fvNV
-extern PFNGLVERTEXATTRIB2SNVPROC _funcptr_glVertexAttrib2sNV;
+CI_API extern PFNGLVERTEXATTRIB2SNVPROC _funcptr_glVertexAttrib2sNV;
 #define glVertexAttrib2sNV _funcptr_glVertexAttrib2sNV
-extern PFNGLVERTEXATTRIB2SVNVPROC _funcptr_glVertexAttrib2svNV;
+CI_API extern PFNGLVERTEXATTRIB2SVNVPROC _funcptr_glVertexAttrib2svNV;
 #define glVertexAttrib2svNV _funcptr_glVertexAttrib2svNV
-extern PFNGLVERTEXATTRIB3DNVPROC _funcptr_glVertexAttrib3dNV;
+CI_API extern PFNGLVERTEXATTRIB3DNVPROC _funcptr_glVertexAttrib3dNV;
 #define glVertexAttrib3dNV _funcptr_glVertexAttrib3dNV
-extern PFNGLVERTEXATTRIB3DVNVPROC _funcptr_glVertexAttrib3dvNV;
+CI_API extern PFNGLVERTEXATTRIB3DVNVPROC _funcptr_glVertexAttrib3dvNV;
 #define glVertexAttrib3dvNV _funcptr_glVertexAttrib3dvNV
-extern PFNGLVERTEXATTRIB3FNVPROC _funcptr_glVertexAttrib3fNV;
+CI_API extern PFNGLVERTEXATTRIB3FNVPROC _funcptr_glVertexAttrib3fNV;
 #define glVertexAttrib3fNV _funcptr_glVertexAttrib3fNV
-extern PFNGLVERTEXATTRIB3FVNVPROC _funcptr_glVertexAttrib3fvNV;
+CI_API extern PFNGLVERTEXATTRIB3FVNVPROC _funcptr_glVertexAttrib3fvNV;
 #define glVertexAttrib3fvNV _funcptr_glVertexAttrib3fvNV
-extern PFNGLVERTEXATTRIB3SNVPROC _funcptr_glVertexAttrib3sNV;
+CI_API extern PFNGLVERTEXATTRIB3SNVPROC _funcptr_glVertexAttrib3sNV;
 #define glVertexAttrib3sNV _funcptr_glVertexAttrib3sNV
-extern PFNGLVERTEXATTRIB3SVNVPROC _funcptr_glVertexAttrib3svNV;
+CI_API extern PFNGLVERTEXATTRIB3SVNVPROC _funcptr_glVertexAttrib3svNV;
 #define glVertexAttrib3svNV _funcptr_glVertexAttrib3svNV
-extern PFNGLVERTEXATTRIB4DNVPROC _funcptr_glVertexAttrib4dNV;
+CI_API extern PFNGLVERTEXATTRIB4DNVPROC _funcptr_glVertexAttrib4dNV;
 #define glVertexAttrib4dNV _funcptr_glVertexAttrib4dNV
-extern PFNGLVERTEXATTRIB4DVNVPROC _funcptr_glVertexAttrib4dvNV;
+CI_API extern PFNGLVERTEXATTRIB4DVNVPROC _funcptr_glVertexAttrib4dvNV;
 #define glVertexAttrib4dvNV _funcptr_glVertexAttrib4dvNV
-extern PFNGLVERTEXATTRIB4FNVPROC _funcptr_glVertexAttrib4fNV;
+CI_API extern PFNGLVERTEXATTRIB4FNVPROC _funcptr_glVertexAttrib4fNV;
 #define glVertexAttrib4fNV _funcptr_glVertexAttrib4fNV
-extern PFNGLVERTEXATTRIB4FVNVPROC _funcptr_glVertexAttrib4fvNV;
+CI_API extern PFNGLVERTEXATTRIB4FVNVPROC _funcptr_glVertexAttrib4fvNV;
 #define glVertexAttrib4fvNV _funcptr_glVertexAttrib4fvNV
-extern PFNGLVERTEXATTRIB4SNVPROC _funcptr_glVertexAttrib4sNV;
+CI_API extern PFNGLVERTEXATTRIB4SNVPROC _funcptr_glVertexAttrib4sNV;
 #define glVertexAttrib4sNV _funcptr_glVertexAttrib4sNV
-extern PFNGLVERTEXATTRIB4SVNVPROC _funcptr_glVertexAttrib4svNV;
+CI_API extern PFNGLVERTEXATTRIB4SVNVPROC _funcptr_glVertexAttrib4svNV;
 #define glVertexAttrib4svNV _funcptr_glVertexAttrib4svNV
-extern PFNGLVERTEXATTRIB4UBNVPROC _funcptr_glVertexAttrib4ubNV;
+CI_API extern PFNGLVERTEXATTRIB4UBNVPROC _funcptr_glVertexAttrib4ubNV;
 #define glVertexAttrib4ubNV _funcptr_glVertexAttrib4ubNV
-extern PFNGLVERTEXATTRIB4UBVNVPROC _funcptr_glVertexAttrib4ubvNV;
+CI_API extern PFNGLVERTEXATTRIB4UBVNVPROC _funcptr_glVertexAttrib4ubvNV;
 #define glVertexAttrib4ubvNV _funcptr_glVertexAttrib4ubvNV
-extern PFNGLVERTEXATTRIBPOINTERNVPROC _funcptr_glVertexAttribPointerNV;
+CI_API extern PFNGLVERTEXATTRIBPOINTERNVPROC _funcptr_glVertexAttribPointerNV;
 #define glVertexAttribPointerNV _funcptr_glVertexAttribPointerNV
-extern PFNGLVERTEXATTRIBS1DVNVPROC _funcptr_glVertexAttribs1dvNV;
+CI_API extern PFNGLVERTEXATTRIBS1DVNVPROC _funcptr_glVertexAttribs1dvNV;
 #define glVertexAttribs1dvNV _funcptr_glVertexAttribs1dvNV
-extern PFNGLVERTEXATTRIBS1FVNVPROC _funcptr_glVertexAttribs1fvNV;
+CI_API extern PFNGLVERTEXATTRIBS1FVNVPROC _funcptr_glVertexAttribs1fvNV;
 #define glVertexAttribs1fvNV _funcptr_glVertexAttribs1fvNV
-extern PFNGLVERTEXATTRIBS1SVNVPROC _funcptr_glVertexAttribs1svNV;
+CI_API extern PFNGLVERTEXATTRIBS1SVNVPROC _funcptr_glVertexAttribs1svNV;
 #define glVertexAttribs1svNV _funcptr_glVertexAttribs1svNV
-extern PFNGLVERTEXATTRIBS2DVNVPROC _funcptr_glVertexAttribs2dvNV;
+CI_API extern PFNGLVERTEXATTRIBS2DVNVPROC _funcptr_glVertexAttribs2dvNV;
 #define glVertexAttribs2dvNV _funcptr_glVertexAttribs2dvNV
-extern PFNGLVERTEXATTRIBS2FVNVPROC _funcptr_glVertexAttribs2fvNV;
+CI_API extern PFNGLVERTEXATTRIBS2FVNVPROC _funcptr_glVertexAttribs2fvNV;
 #define glVertexAttribs2fvNV _funcptr_glVertexAttribs2fvNV
-extern PFNGLVERTEXATTRIBS2SVNVPROC _funcptr_glVertexAttribs2svNV;
+CI_API extern PFNGLVERTEXATTRIBS2SVNVPROC _funcptr_glVertexAttribs2svNV;
 #define glVertexAttribs2svNV _funcptr_glVertexAttribs2svNV
-extern PFNGLVERTEXATTRIBS3DVNVPROC _funcptr_glVertexAttribs3dvNV;
+CI_API extern PFNGLVERTEXATTRIBS3DVNVPROC _funcptr_glVertexAttribs3dvNV;
 #define glVertexAttribs3dvNV _funcptr_glVertexAttribs3dvNV
-extern PFNGLVERTEXATTRIBS3FVNVPROC _funcptr_glVertexAttribs3fvNV;
+CI_API extern PFNGLVERTEXATTRIBS3FVNVPROC _funcptr_glVertexAttribs3fvNV;
 #define glVertexAttribs3fvNV _funcptr_glVertexAttribs3fvNV
-extern PFNGLVERTEXATTRIBS3SVNVPROC _funcptr_glVertexAttribs3svNV;
+CI_API extern PFNGLVERTEXATTRIBS3SVNVPROC _funcptr_glVertexAttribs3svNV;
 #define glVertexAttribs3svNV _funcptr_glVertexAttribs3svNV
-extern PFNGLVERTEXATTRIBS4DVNVPROC _funcptr_glVertexAttribs4dvNV;
+CI_API extern PFNGLVERTEXATTRIBS4DVNVPROC _funcptr_glVertexAttribs4dvNV;
 #define glVertexAttribs4dvNV _funcptr_glVertexAttribs4dvNV
-extern PFNGLVERTEXATTRIBS4FVNVPROC _funcptr_glVertexAttribs4fvNV;
+CI_API extern PFNGLVERTEXATTRIBS4FVNVPROC _funcptr_glVertexAttribs4fvNV;
 #define glVertexAttribs4fvNV _funcptr_glVertexAttribs4fvNV
-extern PFNGLVERTEXATTRIBS4SVNVPROC _funcptr_glVertexAttribs4svNV;
+CI_API extern PFNGLVERTEXATTRIBS4SVNVPROC _funcptr_glVertexAttribs4svNV;
 #define glVertexAttribs4svNV _funcptr_glVertexAttribs4svNV
-extern PFNGLVERTEXATTRIBS4UBVNVPROC _funcptr_glVertexAttribs4ubvNV;
+CI_API extern PFNGLVERTEXATTRIBS4UBVNVPROC _funcptr_glVertexAttribs4ubvNV;
 #define glVertexAttribs4ubvNV _funcptr_glVertexAttribs4ubvNV
 
 #define GL_MAX_PROGRAM_CALL_DEPTH_NV 0x88F5
@@ -9646,51 +9646,51 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBI4UIVEXTPROC)(GLuint index, con
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBI4USVEXTPROC)(GLuint index, const GLushort * v);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEXATTRIBIPOINTEREXTPROC)(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid * pointer);
 
-extern PFNGLGETVERTEXATTRIBIIVEXTPROC _funcptr_glGetVertexAttribIivEXT;
+CI_API extern PFNGLGETVERTEXATTRIBIIVEXTPROC _funcptr_glGetVertexAttribIivEXT;
 #define glGetVertexAttribIivEXT _funcptr_glGetVertexAttribIivEXT
-extern PFNGLGETVERTEXATTRIBIUIVEXTPROC _funcptr_glGetVertexAttribIuivEXT;
+CI_API extern PFNGLGETVERTEXATTRIBIUIVEXTPROC _funcptr_glGetVertexAttribIuivEXT;
 #define glGetVertexAttribIuivEXT _funcptr_glGetVertexAttribIuivEXT
-extern PFNGLVERTEXATTRIBI1IEXTPROC _funcptr_glVertexAttribI1iEXT;
+CI_API extern PFNGLVERTEXATTRIBI1IEXTPROC _funcptr_glVertexAttribI1iEXT;
 #define glVertexAttribI1iEXT _funcptr_glVertexAttribI1iEXT
-extern PFNGLVERTEXATTRIBI1IVEXTPROC _funcptr_glVertexAttribI1ivEXT;
+CI_API extern PFNGLVERTEXATTRIBI1IVEXTPROC _funcptr_glVertexAttribI1ivEXT;
 #define glVertexAttribI1ivEXT _funcptr_glVertexAttribI1ivEXT
-extern PFNGLVERTEXATTRIBI1UIEXTPROC _funcptr_glVertexAttribI1uiEXT;
+CI_API extern PFNGLVERTEXATTRIBI1UIEXTPROC _funcptr_glVertexAttribI1uiEXT;
 #define glVertexAttribI1uiEXT _funcptr_glVertexAttribI1uiEXT
-extern PFNGLVERTEXATTRIBI1UIVEXTPROC _funcptr_glVertexAttribI1uivEXT;
+CI_API extern PFNGLVERTEXATTRIBI1UIVEXTPROC _funcptr_glVertexAttribI1uivEXT;
 #define glVertexAttribI1uivEXT _funcptr_glVertexAttribI1uivEXT
-extern PFNGLVERTEXATTRIBI2IEXTPROC _funcptr_glVertexAttribI2iEXT;
+CI_API extern PFNGLVERTEXATTRIBI2IEXTPROC _funcptr_glVertexAttribI2iEXT;
 #define glVertexAttribI2iEXT _funcptr_glVertexAttribI2iEXT
-extern PFNGLVERTEXATTRIBI2IVEXTPROC _funcptr_glVertexAttribI2ivEXT;
+CI_API extern PFNGLVERTEXATTRIBI2IVEXTPROC _funcptr_glVertexAttribI2ivEXT;
 #define glVertexAttribI2ivEXT _funcptr_glVertexAttribI2ivEXT
-extern PFNGLVERTEXATTRIBI2UIEXTPROC _funcptr_glVertexAttribI2uiEXT;
+CI_API extern PFNGLVERTEXATTRIBI2UIEXTPROC _funcptr_glVertexAttribI2uiEXT;
 #define glVertexAttribI2uiEXT _funcptr_glVertexAttribI2uiEXT
-extern PFNGLVERTEXATTRIBI2UIVEXTPROC _funcptr_glVertexAttribI2uivEXT;
+CI_API extern PFNGLVERTEXATTRIBI2UIVEXTPROC _funcptr_glVertexAttribI2uivEXT;
 #define glVertexAttribI2uivEXT _funcptr_glVertexAttribI2uivEXT
-extern PFNGLVERTEXATTRIBI3IEXTPROC _funcptr_glVertexAttribI3iEXT;
+CI_API extern PFNGLVERTEXATTRIBI3IEXTPROC _funcptr_glVertexAttribI3iEXT;
 #define glVertexAttribI3iEXT _funcptr_glVertexAttribI3iEXT
-extern PFNGLVERTEXATTRIBI3IVEXTPROC _funcptr_glVertexAttribI3ivEXT;
+CI_API extern PFNGLVERTEXATTRIBI3IVEXTPROC _funcptr_glVertexAttribI3ivEXT;
 #define glVertexAttribI3ivEXT _funcptr_glVertexAttribI3ivEXT
-extern PFNGLVERTEXATTRIBI3UIEXTPROC _funcptr_glVertexAttribI3uiEXT;
+CI_API extern PFNGLVERTEXATTRIBI3UIEXTPROC _funcptr_glVertexAttribI3uiEXT;
 #define glVertexAttribI3uiEXT _funcptr_glVertexAttribI3uiEXT
-extern PFNGLVERTEXATTRIBI3UIVEXTPROC _funcptr_glVertexAttribI3uivEXT;
+CI_API extern PFNGLVERTEXATTRIBI3UIVEXTPROC _funcptr_glVertexAttribI3uivEXT;
 #define glVertexAttribI3uivEXT _funcptr_glVertexAttribI3uivEXT
-extern PFNGLVERTEXATTRIBI4BVEXTPROC _funcptr_glVertexAttribI4bvEXT;
+CI_API extern PFNGLVERTEXATTRIBI4BVEXTPROC _funcptr_glVertexAttribI4bvEXT;
 #define glVertexAttribI4bvEXT _funcptr_glVertexAttribI4bvEXT
-extern PFNGLVERTEXATTRIBI4IEXTPROC _funcptr_glVertexAttribI4iEXT;
+CI_API extern PFNGLVERTEXATTRIBI4IEXTPROC _funcptr_glVertexAttribI4iEXT;
 #define glVertexAttribI4iEXT _funcptr_glVertexAttribI4iEXT
-extern PFNGLVERTEXATTRIBI4IVEXTPROC _funcptr_glVertexAttribI4ivEXT;
+CI_API extern PFNGLVERTEXATTRIBI4IVEXTPROC _funcptr_glVertexAttribI4ivEXT;
 #define glVertexAttribI4ivEXT _funcptr_glVertexAttribI4ivEXT
-extern PFNGLVERTEXATTRIBI4SVEXTPROC _funcptr_glVertexAttribI4svEXT;
+CI_API extern PFNGLVERTEXATTRIBI4SVEXTPROC _funcptr_glVertexAttribI4svEXT;
 #define glVertexAttribI4svEXT _funcptr_glVertexAttribI4svEXT
-extern PFNGLVERTEXATTRIBI4UBVEXTPROC _funcptr_glVertexAttribI4ubvEXT;
+CI_API extern PFNGLVERTEXATTRIBI4UBVEXTPROC _funcptr_glVertexAttribI4ubvEXT;
 #define glVertexAttribI4ubvEXT _funcptr_glVertexAttribI4ubvEXT
-extern PFNGLVERTEXATTRIBI4UIEXTPROC _funcptr_glVertexAttribI4uiEXT;
+CI_API extern PFNGLVERTEXATTRIBI4UIEXTPROC _funcptr_glVertexAttribI4uiEXT;
 #define glVertexAttribI4uiEXT _funcptr_glVertexAttribI4uiEXT
-extern PFNGLVERTEXATTRIBI4UIVEXTPROC _funcptr_glVertexAttribI4uivEXT;
+CI_API extern PFNGLVERTEXATTRIBI4UIVEXTPROC _funcptr_glVertexAttribI4uivEXT;
 #define glVertexAttribI4uivEXT _funcptr_glVertexAttribI4uivEXT
-extern PFNGLVERTEXATTRIBI4USVEXTPROC _funcptr_glVertexAttribI4usvEXT;
+CI_API extern PFNGLVERTEXATTRIBI4USVEXTPROC _funcptr_glVertexAttribI4usvEXT;
 #define glVertexAttribI4usvEXT _funcptr_glVertexAttribI4usvEXT
-extern PFNGLVERTEXATTRIBIPOINTEREXTPROC _funcptr_glVertexAttribIPointerEXT;
+CI_API extern PFNGLVERTEXATTRIBIPOINTEREXTPROC _funcptr_glVertexAttribIPointerEXT;
 #define glVertexAttribIPointerEXT _funcptr_glVertexAttribIPointerEXT
 
 #define GL_FAILURE_NV 0x9030
@@ -9736,29 +9736,29 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVIDEOCAPTURESTREAMPARAMETERDVNVPROC)(GLuint
 typedef void (CODEGEN_FUNCPTR * PFNGLVIDEOCAPTURESTREAMPARAMETERFVNVPROC)(GLuint video_capture_slot, GLuint stream, GLenum pname, const GLfloat * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLVIDEOCAPTURESTREAMPARAMETERIVNVPROC)(GLuint video_capture_slot, GLuint stream, GLenum pname, const GLint * params);
 
-extern PFNGLBEGINVIDEOCAPTURENVPROC _funcptr_glBeginVideoCaptureNV;
+CI_API extern PFNGLBEGINVIDEOCAPTURENVPROC _funcptr_glBeginVideoCaptureNV;
 #define glBeginVideoCaptureNV _funcptr_glBeginVideoCaptureNV
-extern PFNGLBINDVIDEOCAPTURESTREAMBUFFERNVPROC _funcptr_glBindVideoCaptureStreamBufferNV;
+CI_API extern PFNGLBINDVIDEOCAPTURESTREAMBUFFERNVPROC _funcptr_glBindVideoCaptureStreamBufferNV;
 #define glBindVideoCaptureStreamBufferNV _funcptr_glBindVideoCaptureStreamBufferNV
-extern PFNGLBINDVIDEOCAPTURESTREAMTEXTURENVPROC _funcptr_glBindVideoCaptureStreamTextureNV;
+CI_API extern PFNGLBINDVIDEOCAPTURESTREAMTEXTURENVPROC _funcptr_glBindVideoCaptureStreamTextureNV;
 #define glBindVideoCaptureStreamTextureNV _funcptr_glBindVideoCaptureStreamTextureNV
-extern PFNGLENDVIDEOCAPTURENVPROC _funcptr_glEndVideoCaptureNV;
+CI_API extern PFNGLENDVIDEOCAPTURENVPROC _funcptr_glEndVideoCaptureNV;
 #define glEndVideoCaptureNV _funcptr_glEndVideoCaptureNV
-extern PFNGLGETVIDEOCAPTURESTREAMDVNVPROC _funcptr_glGetVideoCaptureStreamdvNV;
+CI_API extern PFNGLGETVIDEOCAPTURESTREAMDVNVPROC _funcptr_glGetVideoCaptureStreamdvNV;
 #define glGetVideoCaptureStreamdvNV _funcptr_glGetVideoCaptureStreamdvNV
-extern PFNGLGETVIDEOCAPTURESTREAMFVNVPROC _funcptr_glGetVideoCaptureStreamfvNV;
+CI_API extern PFNGLGETVIDEOCAPTURESTREAMFVNVPROC _funcptr_glGetVideoCaptureStreamfvNV;
 #define glGetVideoCaptureStreamfvNV _funcptr_glGetVideoCaptureStreamfvNV
-extern PFNGLGETVIDEOCAPTURESTREAMIVNVPROC _funcptr_glGetVideoCaptureStreamivNV;
+CI_API extern PFNGLGETVIDEOCAPTURESTREAMIVNVPROC _funcptr_glGetVideoCaptureStreamivNV;
 #define glGetVideoCaptureStreamivNV _funcptr_glGetVideoCaptureStreamivNV
-extern PFNGLGETVIDEOCAPTUREIVNVPROC _funcptr_glGetVideoCaptureivNV;
+CI_API extern PFNGLGETVIDEOCAPTUREIVNVPROC _funcptr_glGetVideoCaptureivNV;
 #define glGetVideoCaptureivNV _funcptr_glGetVideoCaptureivNV
-extern PFNGLVIDEOCAPTURENVPROC _funcptr_glVideoCaptureNV;
+CI_API extern PFNGLVIDEOCAPTURENVPROC _funcptr_glVideoCaptureNV;
 #define glVideoCaptureNV _funcptr_glVideoCaptureNV
-extern PFNGLVIDEOCAPTURESTREAMPARAMETERDVNVPROC _funcptr_glVideoCaptureStreamParameterdvNV;
+CI_API extern PFNGLVIDEOCAPTURESTREAMPARAMETERDVNVPROC _funcptr_glVideoCaptureStreamParameterdvNV;
 #define glVideoCaptureStreamParameterdvNV _funcptr_glVideoCaptureStreamParameterdvNV
-extern PFNGLVIDEOCAPTURESTREAMPARAMETERFVNVPROC _funcptr_glVideoCaptureStreamParameterfvNV;
+CI_API extern PFNGLVIDEOCAPTURESTREAMPARAMETERFVNVPROC _funcptr_glVideoCaptureStreamParameterfvNV;
 #define glVideoCaptureStreamParameterfvNV _funcptr_glVideoCaptureStreamParameterfvNV
-extern PFNGLVIDEOCAPTURESTREAMPARAMETERIVNVPROC _funcptr_glVideoCaptureStreamParameterivNV;
+CI_API extern PFNGLVIDEOCAPTURESTREAMPARAMETERIVNVPROC _funcptr_glVideoCaptureStreamParameterivNV;
 #define glVideoCaptureStreamParameterivNV _funcptr_glVideoCaptureStreamParameterivNV
 
 typedef void (CODEGEN_FUNCPTR * PFNGLMULTITEXCOORD1BOESPROC)(GLenum texture, GLbyte s);
@@ -9784,49 +9784,49 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEX3BVOESPROC)(const GLbyte * coords);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEX4BOESPROC)(GLbyte x, GLbyte y, GLbyte z);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEX4BVOESPROC)(const GLbyte * coords);
 
-extern PFNGLMULTITEXCOORD1BOESPROC _funcptr_glMultiTexCoord1bOES;
+CI_API extern PFNGLMULTITEXCOORD1BOESPROC _funcptr_glMultiTexCoord1bOES;
 #define glMultiTexCoord1bOES _funcptr_glMultiTexCoord1bOES
-extern PFNGLMULTITEXCOORD1BVOESPROC _funcptr_glMultiTexCoord1bvOES;
+CI_API extern PFNGLMULTITEXCOORD1BVOESPROC _funcptr_glMultiTexCoord1bvOES;
 #define glMultiTexCoord1bvOES _funcptr_glMultiTexCoord1bvOES
-extern PFNGLMULTITEXCOORD2BOESPROC _funcptr_glMultiTexCoord2bOES;
+CI_API extern PFNGLMULTITEXCOORD2BOESPROC _funcptr_glMultiTexCoord2bOES;
 #define glMultiTexCoord2bOES _funcptr_glMultiTexCoord2bOES
-extern PFNGLMULTITEXCOORD2BVOESPROC _funcptr_glMultiTexCoord2bvOES;
+CI_API extern PFNGLMULTITEXCOORD2BVOESPROC _funcptr_glMultiTexCoord2bvOES;
 #define glMultiTexCoord2bvOES _funcptr_glMultiTexCoord2bvOES
-extern PFNGLMULTITEXCOORD3BOESPROC _funcptr_glMultiTexCoord3bOES;
+CI_API extern PFNGLMULTITEXCOORD3BOESPROC _funcptr_glMultiTexCoord3bOES;
 #define glMultiTexCoord3bOES _funcptr_glMultiTexCoord3bOES
-extern PFNGLMULTITEXCOORD3BVOESPROC _funcptr_glMultiTexCoord3bvOES;
+CI_API extern PFNGLMULTITEXCOORD3BVOESPROC _funcptr_glMultiTexCoord3bvOES;
 #define glMultiTexCoord3bvOES _funcptr_glMultiTexCoord3bvOES
-extern PFNGLMULTITEXCOORD4BOESPROC _funcptr_glMultiTexCoord4bOES;
+CI_API extern PFNGLMULTITEXCOORD4BOESPROC _funcptr_glMultiTexCoord4bOES;
 #define glMultiTexCoord4bOES _funcptr_glMultiTexCoord4bOES
-extern PFNGLMULTITEXCOORD4BVOESPROC _funcptr_glMultiTexCoord4bvOES;
+CI_API extern PFNGLMULTITEXCOORD4BVOESPROC _funcptr_glMultiTexCoord4bvOES;
 #define glMultiTexCoord4bvOES _funcptr_glMultiTexCoord4bvOES
-extern PFNGLTEXCOORD1BOESPROC _funcptr_glTexCoord1bOES;
+CI_API extern PFNGLTEXCOORD1BOESPROC _funcptr_glTexCoord1bOES;
 #define glTexCoord1bOES _funcptr_glTexCoord1bOES
-extern PFNGLTEXCOORD1BVOESPROC _funcptr_glTexCoord1bvOES;
+CI_API extern PFNGLTEXCOORD1BVOESPROC _funcptr_glTexCoord1bvOES;
 #define glTexCoord1bvOES _funcptr_glTexCoord1bvOES
-extern PFNGLTEXCOORD2BOESPROC _funcptr_glTexCoord2bOES;
+CI_API extern PFNGLTEXCOORD2BOESPROC _funcptr_glTexCoord2bOES;
 #define glTexCoord2bOES _funcptr_glTexCoord2bOES
-extern PFNGLTEXCOORD2BVOESPROC _funcptr_glTexCoord2bvOES;
+CI_API extern PFNGLTEXCOORD2BVOESPROC _funcptr_glTexCoord2bvOES;
 #define glTexCoord2bvOES _funcptr_glTexCoord2bvOES
-extern PFNGLTEXCOORD3BOESPROC _funcptr_glTexCoord3bOES;
+CI_API extern PFNGLTEXCOORD3BOESPROC _funcptr_glTexCoord3bOES;
 #define glTexCoord3bOES _funcptr_glTexCoord3bOES
-extern PFNGLTEXCOORD3BVOESPROC _funcptr_glTexCoord3bvOES;
+CI_API extern PFNGLTEXCOORD3BVOESPROC _funcptr_glTexCoord3bvOES;
 #define glTexCoord3bvOES _funcptr_glTexCoord3bvOES
-extern PFNGLTEXCOORD4BOESPROC _funcptr_glTexCoord4bOES;
+CI_API extern PFNGLTEXCOORD4BOESPROC _funcptr_glTexCoord4bOES;
 #define glTexCoord4bOES _funcptr_glTexCoord4bOES
-extern PFNGLTEXCOORD4BVOESPROC _funcptr_glTexCoord4bvOES;
+CI_API extern PFNGLTEXCOORD4BVOESPROC _funcptr_glTexCoord4bvOES;
 #define glTexCoord4bvOES _funcptr_glTexCoord4bvOES
-extern PFNGLVERTEX2BOESPROC _funcptr_glVertex2bOES;
+CI_API extern PFNGLVERTEX2BOESPROC _funcptr_glVertex2bOES;
 #define glVertex2bOES _funcptr_glVertex2bOES
-extern PFNGLVERTEX2BVOESPROC _funcptr_glVertex2bvOES;
+CI_API extern PFNGLVERTEX2BVOESPROC _funcptr_glVertex2bvOES;
 #define glVertex2bvOES _funcptr_glVertex2bvOES
-extern PFNGLVERTEX3BOESPROC _funcptr_glVertex3bOES;
+CI_API extern PFNGLVERTEX3BOESPROC _funcptr_glVertex3bOES;
 #define glVertex3bOES _funcptr_glVertex3bOES
-extern PFNGLVERTEX3BVOESPROC _funcptr_glVertex3bvOES;
+CI_API extern PFNGLVERTEX3BVOESPROC _funcptr_glVertex3bvOES;
 #define glVertex3bvOES _funcptr_glVertex3bvOES
-extern PFNGLVERTEX4BOESPROC _funcptr_glVertex4bOES;
+CI_API extern PFNGLVERTEX4BOESPROC _funcptr_glVertex4bOES;
 #define glVertex4bOES _funcptr_glVertex4bOES
-extern PFNGLVERTEX4BVOESPROC _funcptr_glVertex4bvOES;
+CI_API extern PFNGLVERTEX4BVOESPROC _funcptr_glVertex4bvOES;
 #define glVertex4bvOES _funcptr_glVertex4bvOES
 
 #define GL_PALETTE4_R5_G6_B5_OES 0x8B92
@@ -9947,218 +9947,218 @@ typedef void (CODEGEN_FUNCPTR * PFNGLVERTEX3XVOESPROC)(const GLfixed * coords);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEX4XOESPROC)(GLfixed x, GLfixed y, GLfixed z);
 typedef void (CODEGEN_FUNCPTR * PFNGLVERTEX4XVOESPROC)(const GLfixed * coords);
 
-extern PFNGLACCUMXOESPROC _funcptr_glAccumxOES;
+CI_API extern PFNGLACCUMXOESPROC _funcptr_glAccumxOES;
 #define glAccumxOES _funcptr_glAccumxOES
-extern PFNGLALPHAFUNCXOESPROC _funcptr_glAlphaFuncxOES;
+CI_API extern PFNGLALPHAFUNCXOESPROC _funcptr_glAlphaFuncxOES;
 #define glAlphaFuncxOES _funcptr_glAlphaFuncxOES
-extern PFNGLBITMAPXOESPROC _funcptr_glBitmapxOES;
+CI_API extern PFNGLBITMAPXOESPROC _funcptr_glBitmapxOES;
 #define glBitmapxOES _funcptr_glBitmapxOES
-extern PFNGLBLENDCOLORXOESPROC _funcptr_glBlendColorxOES;
+CI_API extern PFNGLBLENDCOLORXOESPROC _funcptr_glBlendColorxOES;
 #define glBlendColorxOES _funcptr_glBlendColorxOES
-extern PFNGLCLEARACCUMXOESPROC _funcptr_glClearAccumxOES;
+CI_API extern PFNGLCLEARACCUMXOESPROC _funcptr_glClearAccumxOES;
 #define glClearAccumxOES _funcptr_glClearAccumxOES
-extern PFNGLCLEARCOLORXOESPROC _funcptr_glClearColorxOES;
+CI_API extern PFNGLCLEARCOLORXOESPROC _funcptr_glClearColorxOES;
 #define glClearColorxOES _funcptr_glClearColorxOES
-extern PFNGLCLEARDEPTHXOESPROC _funcptr_glClearDepthxOES;
+CI_API extern PFNGLCLEARDEPTHXOESPROC _funcptr_glClearDepthxOES;
 #define glClearDepthxOES _funcptr_glClearDepthxOES
-extern PFNGLCLIPPLANEXOESPROC _funcptr_glClipPlanexOES;
+CI_API extern PFNGLCLIPPLANEXOESPROC _funcptr_glClipPlanexOES;
 #define glClipPlanexOES _funcptr_glClipPlanexOES
-extern PFNGLCOLOR3XOESPROC _funcptr_glColor3xOES;
+CI_API extern PFNGLCOLOR3XOESPROC _funcptr_glColor3xOES;
 #define glColor3xOES _funcptr_glColor3xOES
-extern PFNGLCOLOR3XVOESPROC _funcptr_glColor3xvOES;
+CI_API extern PFNGLCOLOR3XVOESPROC _funcptr_glColor3xvOES;
 #define glColor3xvOES _funcptr_glColor3xvOES
-extern PFNGLCOLOR4XOESPROC _funcptr_glColor4xOES;
+CI_API extern PFNGLCOLOR4XOESPROC _funcptr_glColor4xOES;
 #define glColor4xOES _funcptr_glColor4xOES
-extern PFNGLCOLOR4XVOESPROC _funcptr_glColor4xvOES;
+CI_API extern PFNGLCOLOR4XVOESPROC _funcptr_glColor4xvOES;
 #define glColor4xvOES _funcptr_glColor4xvOES
-extern PFNGLCONVOLUTIONPARAMETERXOESPROC _funcptr_glConvolutionParameterxOES;
+CI_API extern PFNGLCONVOLUTIONPARAMETERXOESPROC _funcptr_glConvolutionParameterxOES;
 #define glConvolutionParameterxOES _funcptr_glConvolutionParameterxOES
-extern PFNGLCONVOLUTIONPARAMETERXVOESPROC _funcptr_glConvolutionParameterxvOES;
+CI_API extern PFNGLCONVOLUTIONPARAMETERXVOESPROC _funcptr_glConvolutionParameterxvOES;
 #define glConvolutionParameterxvOES _funcptr_glConvolutionParameterxvOES
-extern PFNGLDEPTHRANGEXOESPROC _funcptr_glDepthRangexOES;
+CI_API extern PFNGLDEPTHRANGEXOESPROC _funcptr_glDepthRangexOES;
 #define glDepthRangexOES _funcptr_glDepthRangexOES
-extern PFNGLEVALCOORD1XOESPROC _funcptr_glEvalCoord1xOES;
+CI_API extern PFNGLEVALCOORD1XOESPROC _funcptr_glEvalCoord1xOES;
 #define glEvalCoord1xOES _funcptr_glEvalCoord1xOES
-extern PFNGLEVALCOORD1XVOESPROC _funcptr_glEvalCoord1xvOES;
+CI_API extern PFNGLEVALCOORD1XVOESPROC _funcptr_glEvalCoord1xvOES;
 #define glEvalCoord1xvOES _funcptr_glEvalCoord1xvOES
-extern PFNGLEVALCOORD2XOESPROC _funcptr_glEvalCoord2xOES;
+CI_API extern PFNGLEVALCOORD2XOESPROC _funcptr_glEvalCoord2xOES;
 #define glEvalCoord2xOES _funcptr_glEvalCoord2xOES
-extern PFNGLEVALCOORD2XVOESPROC _funcptr_glEvalCoord2xvOES;
+CI_API extern PFNGLEVALCOORD2XVOESPROC _funcptr_glEvalCoord2xvOES;
 #define glEvalCoord2xvOES _funcptr_glEvalCoord2xvOES
-extern PFNGLFEEDBACKBUFFERXOESPROC _funcptr_glFeedbackBufferxOES;
+CI_API extern PFNGLFEEDBACKBUFFERXOESPROC _funcptr_glFeedbackBufferxOES;
 #define glFeedbackBufferxOES _funcptr_glFeedbackBufferxOES
-extern PFNGLFOGXOESPROC _funcptr_glFogxOES;
+CI_API extern PFNGLFOGXOESPROC _funcptr_glFogxOES;
 #define glFogxOES _funcptr_glFogxOES
-extern PFNGLFOGXVOESPROC _funcptr_glFogxvOES;
+CI_API extern PFNGLFOGXVOESPROC _funcptr_glFogxvOES;
 #define glFogxvOES _funcptr_glFogxvOES
-extern PFNGLFRUSTUMXOESPROC _funcptr_glFrustumxOES;
+CI_API extern PFNGLFRUSTUMXOESPROC _funcptr_glFrustumxOES;
 #define glFrustumxOES _funcptr_glFrustumxOES
-extern PFNGLGETCLIPPLANEXOESPROC _funcptr_glGetClipPlanexOES;
+CI_API extern PFNGLGETCLIPPLANEXOESPROC _funcptr_glGetClipPlanexOES;
 #define glGetClipPlanexOES _funcptr_glGetClipPlanexOES
-extern PFNGLGETCONVOLUTIONPARAMETERXVOESPROC _funcptr_glGetConvolutionParameterxvOES;
+CI_API extern PFNGLGETCONVOLUTIONPARAMETERXVOESPROC _funcptr_glGetConvolutionParameterxvOES;
 #define glGetConvolutionParameterxvOES _funcptr_glGetConvolutionParameterxvOES
-extern PFNGLGETFIXEDVOESPROC _funcptr_glGetFixedvOES;
+CI_API extern PFNGLGETFIXEDVOESPROC _funcptr_glGetFixedvOES;
 #define glGetFixedvOES _funcptr_glGetFixedvOES
-extern PFNGLGETHISTOGRAMPARAMETERXVOESPROC _funcptr_glGetHistogramParameterxvOES;
+CI_API extern PFNGLGETHISTOGRAMPARAMETERXVOESPROC _funcptr_glGetHistogramParameterxvOES;
 #define glGetHistogramParameterxvOES _funcptr_glGetHistogramParameterxvOES
-extern PFNGLGETLIGHTXOESPROC _funcptr_glGetLightxOES;
+CI_API extern PFNGLGETLIGHTXOESPROC _funcptr_glGetLightxOES;
 #define glGetLightxOES _funcptr_glGetLightxOES
-extern PFNGLGETMAPXVOESPROC _funcptr_glGetMapxvOES;
+CI_API extern PFNGLGETMAPXVOESPROC _funcptr_glGetMapxvOES;
 #define glGetMapxvOES _funcptr_glGetMapxvOES
-extern PFNGLGETMATERIALXOESPROC _funcptr_glGetMaterialxOES;
+CI_API extern PFNGLGETMATERIALXOESPROC _funcptr_glGetMaterialxOES;
 #define glGetMaterialxOES _funcptr_glGetMaterialxOES
-extern PFNGLGETPIXELMAPXVPROC _funcptr_glGetPixelMapxv;
+CI_API extern PFNGLGETPIXELMAPXVPROC _funcptr_glGetPixelMapxv;
 #define glGetPixelMapxv _funcptr_glGetPixelMapxv
-extern PFNGLGETTEXENVXVOESPROC _funcptr_glGetTexEnvxvOES;
+CI_API extern PFNGLGETTEXENVXVOESPROC _funcptr_glGetTexEnvxvOES;
 #define glGetTexEnvxvOES _funcptr_glGetTexEnvxvOES
-extern PFNGLGETTEXGENXVOESPROC _funcptr_glGetTexGenxvOES;
+CI_API extern PFNGLGETTEXGENXVOESPROC _funcptr_glGetTexGenxvOES;
 #define glGetTexGenxvOES _funcptr_glGetTexGenxvOES
-extern PFNGLGETTEXLEVELPARAMETERXVOESPROC _funcptr_glGetTexLevelParameterxvOES;
+CI_API extern PFNGLGETTEXLEVELPARAMETERXVOESPROC _funcptr_glGetTexLevelParameterxvOES;
 #define glGetTexLevelParameterxvOES _funcptr_glGetTexLevelParameterxvOES
-extern PFNGLGETTEXPARAMETERXVOESPROC _funcptr_glGetTexParameterxvOES;
+CI_API extern PFNGLGETTEXPARAMETERXVOESPROC _funcptr_glGetTexParameterxvOES;
 #define glGetTexParameterxvOES _funcptr_glGetTexParameterxvOES
-extern PFNGLINDEXXOESPROC _funcptr_glIndexxOES;
+CI_API extern PFNGLINDEXXOESPROC _funcptr_glIndexxOES;
 #define glIndexxOES _funcptr_glIndexxOES
-extern PFNGLINDEXXVOESPROC _funcptr_glIndexxvOES;
+CI_API extern PFNGLINDEXXVOESPROC _funcptr_glIndexxvOES;
 #define glIndexxvOES _funcptr_glIndexxvOES
-extern PFNGLLIGHTMODELXOESPROC _funcptr_glLightModelxOES;
+CI_API extern PFNGLLIGHTMODELXOESPROC _funcptr_glLightModelxOES;
 #define glLightModelxOES _funcptr_glLightModelxOES
-extern PFNGLLIGHTMODELXVOESPROC _funcptr_glLightModelxvOES;
+CI_API extern PFNGLLIGHTMODELXVOESPROC _funcptr_glLightModelxvOES;
 #define glLightModelxvOES _funcptr_glLightModelxvOES
-extern PFNGLLIGHTXOESPROC _funcptr_glLightxOES;
+CI_API extern PFNGLLIGHTXOESPROC _funcptr_glLightxOES;
 #define glLightxOES _funcptr_glLightxOES
-extern PFNGLLIGHTXVOESPROC _funcptr_glLightxvOES;
+CI_API extern PFNGLLIGHTXVOESPROC _funcptr_glLightxvOES;
 #define glLightxvOES _funcptr_glLightxvOES
-extern PFNGLLINEWIDTHXOESPROC _funcptr_glLineWidthxOES;
+CI_API extern PFNGLLINEWIDTHXOESPROC _funcptr_glLineWidthxOES;
 #define glLineWidthxOES _funcptr_glLineWidthxOES
-extern PFNGLLOADMATRIXXOESPROC _funcptr_glLoadMatrixxOES;
+CI_API extern PFNGLLOADMATRIXXOESPROC _funcptr_glLoadMatrixxOES;
 #define glLoadMatrixxOES _funcptr_glLoadMatrixxOES
-extern PFNGLLOADTRANSPOSEMATRIXXOESPROC _funcptr_glLoadTransposeMatrixxOES;
+CI_API extern PFNGLLOADTRANSPOSEMATRIXXOESPROC _funcptr_glLoadTransposeMatrixxOES;
 #define glLoadTransposeMatrixxOES _funcptr_glLoadTransposeMatrixxOES
-extern PFNGLMAP1XOESPROC _funcptr_glMap1xOES;
+CI_API extern PFNGLMAP1XOESPROC _funcptr_glMap1xOES;
 #define glMap1xOES _funcptr_glMap1xOES
-extern PFNGLMAP2XOESPROC _funcptr_glMap2xOES;
+CI_API extern PFNGLMAP2XOESPROC _funcptr_glMap2xOES;
 #define glMap2xOES _funcptr_glMap2xOES
-extern PFNGLMAPGRID1XOESPROC _funcptr_glMapGrid1xOES;
+CI_API extern PFNGLMAPGRID1XOESPROC _funcptr_glMapGrid1xOES;
 #define glMapGrid1xOES _funcptr_glMapGrid1xOES
-extern PFNGLMAPGRID2XOESPROC _funcptr_glMapGrid2xOES;
+CI_API extern PFNGLMAPGRID2XOESPROC _funcptr_glMapGrid2xOES;
 #define glMapGrid2xOES _funcptr_glMapGrid2xOES
-extern PFNGLMATERIALXOESPROC _funcptr_glMaterialxOES;
+CI_API extern PFNGLMATERIALXOESPROC _funcptr_glMaterialxOES;
 #define glMaterialxOES _funcptr_glMaterialxOES
-extern PFNGLMATERIALXVOESPROC _funcptr_glMaterialxvOES;
+CI_API extern PFNGLMATERIALXVOESPROC _funcptr_glMaterialxvOES;
 #define glMaterialxvOES _funcptr_glMaterialxvOES
-extern PFNGLMULTMATRIXXOESPROC _funcptr_glMultMatrixxOES;
+CI_API extern PFNGLMULTMATRIXXOESPROC _funcptr_glMultMatrixxOES;
 #define glMultMatrixxOES _funcptr_glMultMatrixxOES
-extern PFNGLMULTTRANSPOSEMATRIXXOESPROC _funcptr_glMultTransposeMatrixxOES;
+CI_API extern PFNGLMULTTRANSPOSEMATRIXXOESPROC _funcptr_glMultTransposeMatrixxOES;
 #define glMultTransposeMatrixxOES _funcptr_glMultTransposeMatrixxOES
-extern PFNGLMULTITEXCOORD1XOESPROC _funcptr_glMultiTexCoord1xOES;
+CI_API extern PFNGLMULTITEXCOORD1XOESPROC _funcptr_glMultiTexCoord1xOES;
 #define glMultiTexCoord1xOES _funcptr_glMultiTexCoord1xOES
-extern PFNGLMULTITEXCOORD1XVOESPROC _funcptr_glMultiTexCoord1xvOES;
+CI_API extern PFNGLMULTITEXCOORD1XVOESPROC _funcptr_glMultiTexCoord1xvOES;
 #define glMultiTexCoord1xvOES _funcptr_glMultiTexCoord1xvOES
-extern PFNGLMULTITEXCOORD2XOESPROC _funcptr_glMultiTexCoord2xOES;
+CI_API extern PFNGLMULTITEXCOORD2XOESPROC _funcptr_glMultiTexCoord2xOES;
 #define glMultiTexCoord2xOES _funcptr_glMultiTexCoord2xOES
-extern PFNGLMULTITEXCOORD2XVOESPROC _funcptr_glMultiTexCoord2xvOES;
+CI_API extern PFNGLMULTITEXCOORD2XVOESPROC _funcptr_glMultiTexCoord2xvOES;
 #define glMultiTexCoord2xvOES _funcptr_glMultiTexCoord2xvOES
-extern PFNGLMULTITEXCOORD3XOESPROC _funcptr_glMultiTexCoord3xOES;
+CI_API extern PFNGLMULTITEXCOORD3XOESPROC _funcptr_glMultiTexCoord3xOES;
 #define glMultiTexCoord3xOES _funcptr_glMultiTexCoord3xOES
-extern PFNGLMULTITEXCOORD3XVOESPROC _funcptr_glMultiTexCoord3xvOES;
+CI_API extern PFNGLMULTITEXCOORD3XVOESPROC _funcptr_glMultiTexCoord3xvOES;
 #define glMultiTexCoord3xvOES _funcptr_glMultiTexCoord3xvOES
-extern PFNGLMULTITEXCOORD4XOESPROC _funcptr_glMultiTexCoord4xOES;
+CI_API extern PFNGLMULTITEXCOORD4XOESPROC _funcptr_glMultiTexCoord4xOES;
 #define glMultiTexCoord4xOES _funcptr_glMultiTexCoord4xOES
-extern PFNGLMULTITEXCOORD4XVOESPROC _funcptr_glMultiTexCoord4xvOES;
+CI_API extern PFNGLMULTITEXCOORD4XVOESPROC _funcptr_glMultiTexCoord4xvOES;
 #define glMultiTexCoord4xvOES _funcptr_glMultiTexCoord4xvOES
-extern PFNGLNORMAL3XOESPROC _funcptr_glNormal3xOES;
+CI_API extern PFNGLNORMAL3XOESPROC _funcptr_glNormal3xOES;
 #define glNormal3xOES _funcptr_glNormal3xOES
-extern PFNGLNORMAL3XVOESPROC _funcptr_glNormal3xvOES;
+CI_API extern PFNGLNORMAL3XVOESPROC _funcptr_glNormal3xvOES;
 #define glNormal3xvOES _funcptr_glNormal3xvOES
-extern PFNGLORTHOXOESPROC _funcptr_glOrthoxOES;
+CI_API extern PFNGLORTHOXOESPROC _funcptr_glOrthoxOES;
 #define glOrthoxOES _funcptr_glOrthoxOES
-extern PFNGLPASSTHROUGHXOESPROC _funcptr_glPassThroughxOES;
+CI_API extern PFNGLPASSTHROUGHXOESPROC _funcptr_glPassThroughxOES;
 #define glPassThroughxOES _funcptr_glPassThroughxOES
-extern PFNGLPIXELMAPXPROC _funcptr_glPixelMapx;
+CI_API extern PFNGLPIXELMAPXPROC _funcptr_glPixelMapx;
 #define glPixelMapx _funcptr_glPixelMapx
-extern PFNGLPIXELSTOREXPROC _funcptr_glPixelStorex;
+CI_API extern PFNGLPIXELSTOREXPROC _funcptr_glPixelStorex;
 #define glPixelStorex _funcptr_glPixelStorex
-extern PFNGLPIXELTRANSFERXOESPROC _funcptr_glPixelTransferxOES;
+CI_API extern PFNGLPIXELTRANSFERXOESPROC _funcptr_glPixelTransferxOES;
 #define glPixelTransferxOES _funcptr_glPixelTransferxOES
-extern PFNGLPIXELZOOMXOESPROC _funcptr_glPixelZoomxOES;
+CI_API extern PFNGLPIXELZOOMXOESPROC _funcptr_glPixelZoomxOES;
 #define glPixelZoomxOES _funcptr_glPixelZoomxOES
-extern PFNGLPOINTPARAMETERXVOESPROC _funcptr_glPointParameterxvOES;
+CI_API extern PFNGLPOINTPARAMETERXVOESPROC _funcptr_glPointParameterxvOES;
 #define glPointParameterxvOES _funcptr_glPointParameterxvOES
-extern PFNGLPOINTSIZEXOESPROC _funcptr_glPointSizexOES;
+CI_API extern PFNGLPOINTSIZEXOESPROC _funcptr_glPointSizexOES;
 #define glPointSizexOES _funcptr_glPointSizexOES
-extern PFNGLPOLYGONOFFSETXOESPROC _funcptr_glPolygonOffsetxOES;
+CI_API extern PFNGLPOLYGONOFFSETXOESPROC _funcptr_glPolygonOffsetxOES;
 #define glPolygonOffsetxOES _funcptr_glPolygonOffsetxOES
-extern PFNGLPRIORITIZETEXTURESXOESPROC _funcptr_glPrioritizeTexturesxOES;
+CI_API extern PFNGLPRIORITIZETEXTURESXOESPROC _funcptr_glPrioritizeTexturesxOES;
 #define glPrioritizeTexturesxOES _funcptr_glPrioritizeTexturesxOES
-extern PFNGLRASTERPOS2XOESPROC _funcptr_glRasterPos2xOES;
+CI_API extern PFNGLRASTERPOS2XOESPROC _funcptr_glRasterPos2xOES;
 #define glRasterPos2xOES _funcptr_glRasterPos2xOES
-extern PFNGLRASTERPOS2XVOESPROC _funcptr_glRasterPos2xvOES;
+CI_API extern PFNGLRASTERPOS2XVOESPROC _funcptr_glRasterPos2xvOES;
 #define glRasterPos2xvOES _funcptr_glRasterPos2xvOES
-extern PFNGLRASTERPOS3XOESPROC _funcptr_glRasterPos3xOES;
+CI_API extern PFNGLRASTERPOS3XOESPROC _funcptr_glRasterPos3xOES;
 #define glRasterPos3xOES _funcptr_glRasterPos3xOES
-extern PFNGLRASTERPOS3XVOESPROC _funcptr_glRasterPos3xvOES;
+CI_API extern PFNGLRASTERPOS3XVOESPROC _funcptr_glRasterPos3xvOES;
 #define glRasterPos3xvOES _funcptr_glRasterPos3xvOES
-extern PFNGLRASTERPOS4XOESPROC _funcptr_glRasterPos4xOES;
+CI_API extern PFNGLRASTERPOS4XOESPROC _funcptr_glRasterPos4xOES;
 #define glRasterPos4xOES _funcptr_glRasterPos4xOES
-extern PFNGLRASTERPOS4XVOESPROC _funcptr_glRasterPos4xvOES;
+CI_API extern PFNGLRASTERPOS4XVOESPROC _funcptr_glRasterPos4xvOES;
 #define glRasterPos4xvOES _funcptr_glRasterPos4xvOES
-extern PFNGLRECTXOESPROC _funcptr_glRectxOES;
+CI_API extern PFNGLRECTXOESPROC _funcptr_glRectxOES;
 #define glRectxOES _funcptr_glRectxOES
-extern PFNGLRECTXVOESPROC _funcptr_glRectxvOES;
+CI_API extern PFNGLRECTXVOESPROC _funcptr_glRectxvOES;
 #define glRectxvOES _funcptr_glRectxvOES
-extern PFNGLROTATEXOESPROC _funcptr_glRotatexOES;
+CI_API extern PFNGLROTATEXOESPROC _funcptr_glRotatexOES;
 #define glRotatexOES _funcptr_glRotatexOES
-extern PFNGLSAMPLECOVERAGEOESPROC _funcptr_glSampleCoverageOES;
+CI_API extern PFNGLSAMPLECOVERAGEOESPROC _funcptr_glSampleCoverageOES;
 #define glSampleCoverageOES _funcptr_glSampleCoverageOES
-extern PFNGLSCALEXOESPROC _funcptr_glScalexOES;
+CI_API extern PFNGLSCALEXOESPROC _funcptr_glScalexOES;
 #define glScalexOES _funcptr_glScalexOES
-extern PFNGLTEXCOORD1XOESPROC _funcptr_glTexCoord1xOES;
+CI_API extern PFNGLTEXCOORD1XOESPROC _funcptr_glTexCoord1xOES;
 #define glTexCoord1xOES _funcptr_glTexCoord1xOES
-extern PFNGLTEXCOORD1XVOESPROC _funcptr_glTexCoord1xvOES;
+CI_API extern PFNGLTEXCOORD1XVOESPROC _funcptr_glTexCoord1xvOES;
 #define glTexCoord1xvOES _funcptr_glTexCoord1xvOES
-extern PFNGLTEXCOORD2XOESPROC _funcptr_glTexCoord2xOES;
+CI_API extern PFNGLTEXCOORD2XOESPROC _funcptr_glTexCoord2xOES;
 #define glTexCoord2xOES _funcptr_glTexCoord2xOES
-extern PFNGLTEXCOORD2XVOESPROC _funcptr_glTexCoord2xvOES;
+CI_API extern PFNGLTEXCOORD2XVOESPROC _funcptr_glTexCoord2xvOES;
 #define glTexCoord2xvOES _funcptr_glTexCoord2xvOES
-extern PFNGLTEXCOORD3XOESPROC _funcptr_glTexCoord3xOES;
+CI_API extern PFNGLTEXCOORD3XOESPROC _funcptr_glTexCoord3xOES;
 #define glTexCoord3xOES _funcptr_glTexCoord3xOES
-extern PFNGLTEXCOORD3XVOESPROC _funcptr_glTexCoord3xvOES;
+CI_API extern PFNGLTEXCOORD3XVOESPROC _funcptr_glTexCoord3xvOES;
 #define glTexCoord3xvOES _funcptr_glTexCoord3xvOES
-extern PFNGLTEXCOORD4XOESPROC _funcptr_glTexCoord4xOES;
+CI_API extern PFNGLTEXCOORD4XOESPROC _funcptr_glTexCoord4xOES;
 #define glTexCoord4xOES _funcptr_glTexCoord4xOES
-extern PFNGLTEXCOORD4XVOESPROC _funcptr_glTexCoord4xvOES;
+CI_API extern PFNGLTEXCOORD4XVOESPROC _funcptr_glTexCoord4xvOES;
 #define glTexCoord4xvOES _funcptr_glTexCoord4xvOES
-extern PFNGLTEXENVXOESPROC _funcptr_glTexEnvxOES;
+CI_API extern PFNGLTEXENVXOESPROC _funcptr_glTexEnvxOES;
 #define glTexEnvxOES _funcptr_glTexEnvxOES
-extern PFNGLTEXENVXVOESPROC _funcptr_glTexEnvxvOES;
+CI_API extern PFNGLTEXENVXVOESPROC _funcptr_glTexEnvxvOES;
 #define glTexEnvxvOES _funcptr_glTexEnvxvOES
-extern PFNGLTEXGENXOESPROC _funcptr_glTexGenxOES;
+CI_API extern PFNGLTEXGENXOESPROC _funcptr_glTexGenxOES;
 #define glTexGenxOES _funcptr_glTexGenxOES
-extern PFNGLTEXGENXVOESPROC _funcptr_glTexGenxvOES;
+CI_API extern PFNGLTEXGENXVOESPROC _funcptr_glTexGenxvOES;
 #define glTexGenxvOES _funcptr_glTexGenxvOES
-extern PFNGLTEXPARAMETERXOESPROC _funcptr_glTexParameterxOES;
+CI_API extern PFNGLTEXPARAMETERXOESPROC _funcptr_glTexParameterxOES;
 #define glTexParameterxOES _funcptr_glTexParameterxOES
-extern PFNGLTEXPARAMETERXVOESPROC _funcptr_glTexParameterxvOES;
+CI_API extern PFNGLTEXPARAMETERXVOESPROC _funcptr_glTexParameterxvOES;
 #define glTexParameterxvOES _funcptr_glTexParameterxvOES
-extern PFNGLTRANSLATEXOESPROC _funcptr_glTranslatexOES;
+CI_API extern PFNGLTRANSLATEXOESPROC _funcptr_glTranslatexOES;
 #define glTranslatexOES _funcptr_glTranslatexOES
-extern PFNGLVERTEX2XOESPROC _funcptr_glVertex2xOES;
+CI_API extern PFNGLVERTEX2XOESPROC _funcptr_glVertex2xOES;
 #define glVertex2xOES _funcptr_glVertex2xOES
-extern PFNGLVERTEX2XVOESPROC _funcptr_glVertex2xvOES;
+CI_API extern PFNGLVERTEX2XVOESPROC _funcptr_glVertex2xvOES;
 #define glVertex2xvOES _funcptr_glVertex2xvOES
-extern PFNGLVERTEX3XOESPROC _funcptr_glVertex3xOES;
+CI_API extern PFNGLVERTEX3XOESPROC _funcptr_glVertex3xOES;
 #define glVertex3xOES _funcptr_glVertex3xOES
-extern PFNGLVERTEX3XVOESPROC _funcptr_glVertex3xvOES;
+CI_API extern PFNGLVERTEX3XVOESPROC _funcptr_glVertex3xvOES;
 #define glVertex3xvOES _funcptr_glVertex3xvOES
-extern PFNGLVERTEX4XOESPROC _funcptr_glVertex4xOES;
+CI_API extern PFNGLVERTEX4XOESPROC _funcptr_glVertex4xOES;
 #define glVertex4xOES _funcptr_glVertex4xOES
-extern PFNGLVERTEX4XVOESPROC _funcptr_glVertex4xvOES;
+CI_API extern PFNGLVERTEX4XVOESPROC _funcptr_glVertex4xvOES;
 #define glVertex4xvOES _funcptr_glVertex4xvOES
 
 typedef GLbitfield (CODEGEN_FUNCPTR * PFNGLQUERYMATRIXXOESPROC)(GLfixed * mantissa, GLint * exponent);
 
-extern PFNGLQUERYMATRIXXOESPROC _funcptr_glQueryMatrixxOES;
+CI_API extern PFNGLQUERYMATRIXXOESPROC _funcptr_glQueryMatrixxOES;
 #define glQueryMatrixxOES _funcptr_glQueryMatrixxOES
 
 #define GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES 0x8B9B
@@ -10171,17 +10171,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLFRUSTUMFOESPROC)(GLfloat l, GLfloat r, GLfl
 typedef void (CODEGEN_FUNCPTR * PFNGLGETCLIPPLANEFOESPROC)(GLenum plane, GLfloat * equation);
 typedef void (CODEGEN_FUNCPTR * PFNGLORTHOFOESPROC)(GLfloat l, GLfloat r, GLfloat b, GLfloat t, GLfloat n, GLfloat f);
 
-extern PFNGLCLEARDEPTHFOESPROC _funcptr_glClearDepthfOES;
+CI_API extern PFNGLCLEARDEPTHFOESPROC _funcptr_glClearDepthfOES;
 #define glClearDepthfOES _funcptr_glClearDepthfOES
-extern PFNGLCLIPPLANEFOESPROC _funcptr_glClipPlanefOES;
+CI_API extern PFNGLCLIPPLANEFOESPROC _funcptr_glClipPlanefOES;
 #define glClipPlanefOES _funcptr_glClipPlanefOES
-extern PFNGLDEPTHRANGEFOESPROC _funcptr_glDepthRangefOES;
+CI_API extern PFNGLDEPTHRANGEFOESPROC _funcptr_glDepthRangefOES;
 #define glDepthRangefOES _funcptr_glDepthRangefOES
-extern PFNGLFRUSTUMFOESPROC _funcptr_glFrustumfOES;
+CI_API extern PFNGLFRUSTUMFOESPROC _funcptr_glFrustumfOES;
 #define glFrustumfOES _funcptr_glFrustumfOES
-extern PFNGLGETCLIPPLANEFOESPROC _funcptr_glGetClipPlanefOES;
+CI_API extern PFNGLGETCLIPPLANEFOESPROC _funcptr_glGetClipPlanefOES;
 #define glGetClipPlanefOES _funcptr_glGetClipPlanefOES
-extern PFNGLORTHOFOESPROC _funcptr_glOrthofOES;
+CI_API extern PFNGLORTHOFOESPROC _funcptr_glOrthofOES;
 #define glOrthofOES _funcptr_glOrthofOES
 
 #define GL_INTERLACE_OML 0x8980
@@ -10220,7 +10220,7 @@ extern PFNGLORTHOFOESPROC _funcptr_glOrthofOES;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLHINTPGIPROC)(GLenum target, GLint mode);
 
-extern PFNGLHINTPGIPROC _funcptr_glHintPGI;
+CI_API extern PFNGLHINTPGIPROC _funcptr_glHintPGI;
 #define glHintPGI _funcptr_glHintPGI
 
 #define GL_COLOR3_BIT_PGI 0x00010000
@@ -10268,9 +10268,9 @@ extern PFNGLHINTPGIPROC _funcptr_glHintPGI;
 typedef void (CODEGEN_FUNCPTR * PFNGLDETAILTEXFUNCSGISPROC)(GLenum target, GLsizei n, const GLfloat * points);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETDETAILTEXFUNCSGISPROC)(GLenum target, GLfloat * points);
 
-extern PFNGLDETAILTEXFUNCSGISPROC _funcptr_glDetailTexFuncSGIS;
+CI_API extern PFNGLDETAILTEXFUNCSGISPROC _funcptr_glDetailTexFuncSGIS;
 #define glDetailTexFuncSGIS _funcptr_glDetailTexFuncSGIS
-extern PFNGLGETDETAILTEXFUNCSGISPROC _funcptr_glGetDetailTexFuncSGIS;
+CI_API extern PFNGLGETDETAILTEXFUNCSGISPROC _funcptr_glGetDetailTexFuncSGIS;
 #define glGetDetailTexFuncSGIS _funcptr_glGetDetailTexFuncSGIS
 
 #define GL_FOG_FUNC_POINTS_SGIS 0x812B
@@ -10280,9 +10280,9 @@ extern PFNGLGETDETAILTEXFUNCSGISPROC _funcptr_glGetDetailTexFuncSGIS;
 typedef void (CODEGEN_FUNCPTR * PFNGLFOGFUNCSGISPROC)(GLsizei n, const GLfloat * points);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETFOGFUNCSGISPROC)(GLfloat * points);
 
-extern PFNGLFOGFUNCSGISPROC _funcptr_glFogFuncSGIS;
+CI_API extern PFNGLFOGFUNCSGISPROC _funcptr_glFogFuncSGIS;
 #define glFogFuncSGIS _funcptr_glFogFuncSGIS
-extern PFNGLGETFOGFUNCSGISPROC _funcptr_glGetFogFuncSGIS;
+CI_API extern PFNGLGETFOGFUNCSGISPROC _funcptr_glGetFogFuncSGIS;
 #define glGetFogFuncSGIS _funcptr_glGetFogFuncSGIS
 
 #define GL_GENERATE_MIPMAP_HINT_SGIS 0x8192
@@ -10308,9 +10308,9 @@ extern PFNGLGETFOGFUNCSGISPROC _funcptr_glGetFogFuncSGIS;
 typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLEMASKSGISPROC)(GLclampf value, GLboolean invert);
 typedef void (CODEGEN_FUNCPTR * PFNGLSAMPLEPATTERNSGISPROC)(GLenum pattern);
 
-extern PFNGLSAMPLEMASKSGISPROC _funcptr_glSampleMaskSGIS;
+CI_API extern PFNGLSAMPLEMASKSGISPROC _funcptr_glSampleMaskSGIS;
 #define glSampleMaskSGIS _funcptr_glSampleMaskSGIS
-extern PFNGLSAMPLEPATTERNSGISPROC _funcptr_glSamplePatternSGIS;
+CI_API extern PFNGLSAMPLEPATTERNSGISPROC _funcptr_glSamplePatternSGIS;
 #define glSamplePatternSGIS _funcptr_glSamplePatternSGIS
 
 #define GL_PIXEL_FRAGMENT_ALPHA_SOURCE_SGIS 0x8355
@@ -10325,17 +10325,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLPIXELTEXGENPARAMETERFVSGISPROC)(GLenum pnam
 typedef void (CODEGEN_FUNCPTR * PFNGLPIXELTEXGENPARAMETERISGISPROC)(GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLPIXELTEXGENPARAMETERIVSGISPROC)(GLenum pname, const GLint * params);
 
-extern PFNGLGETPIXELTEXGENPARAMETERFVSGISPROC _funcptr_glGetPixelTexGenParameterfvSGIS;
+CI_API extern PFNGLGETPIXELTEXGENPARAMETERFVSGISPROC _funcptr_glGetPixelTexGenParameterfvSGIS;
 #define glGetPixelTexGenParameterfvSGIS _funcptr_glGetPixelTexGenParameterfvSGIS
-extern PFNGLGETPIXELTEXGENPARAMETERIVSGISPROC _funcptr_glGetPixelTexGenParameterivSGIS;
+CI_API extern PFNGLGETPIXELTEXGENPARAMETERIVSGISPROC _funcptr_glGetPixelTexGenParameterivSGIS;
 #define glGetPixelTexGenParameterivSGIS _funcptr_glGetPixelTexGenParameterivSGIS
-extern PFNGLPIXELTEXGENPARAMETERFSGISPROC _funcptr_glPixelTexGenParameterfSGIS;
+CI_API extern PFNGLPIXELTEXGENPARAMETERFSGISPROC _funcptr_glPixelTexGenParameterfSGIS;
 #define glPixelTexGenParameterfSGIS _funcptr_glPixelTexGenParameterfSGIS
-extern PFNGLPIXELTEXGENPARAMETERFVSGISPROC _funcptr_glPixelTexGenParameterfvSGIS;
+CI_API extern PFNGLPIXELTEXGENPARAMETERFVSGISPROC _funcptr_glPixelTexGenParameterfvSGIS;
 #define glPixelTexGenParameterfvSGIS _funcptr_glPixelTexGenParameterfvSGIS
-extern PFNGLPIXELTEXGENPARAMETERISGISPROC _funcptr_glPixelTexGenParameteriSGIS;
+CI_API extern PFNGLPIXELTEXGENPARAMETERISGISPROC _funcptr_glPixelTexGenParameteriSGIS;
 #define glPixelTexGenParameteriSGIS _funcptr_glPixelTexGenParameteriSGIS
-extern PFNGLPIXELTEXGENPARAMETERIVSGISPROC _funcptr_glPixelTexGenParameterivSGIS;
+CI_API extern PFNGLPIXELTEXGENPARAMETERIVSGISPROC _funcptr_glPixelTexGenParameterivSGIS;
 #define glPixelTexGenParameterivSGIS _funcptr_glPixelTexGenParameterivSGIS
 
 #define GL_EYE_DISTANCE_TO_LINE_SGIS 0x81F2
@@ -10355,9 +10355,9 @@ extern PFNGLPIXELTEXGENPARAMETERIVSGISPROC _funcptr_glPixelTexGenParameterivSGIS
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERFSGISPROC)(GLenum pname, GLfloat param);
 typedef void (CODEGEN_FUNCPTR * PFNGLPOINTPARAMETERFVSGISPROC)(GLenum pname, const GLfloat * params);
 
-extern PFNGLPOINTPARAMETERFSGISPROC _funcptr_glPointParameterfSGIS;
+CI_API extern PFNGLPOINTPARAMETERFSGISPROC _funcptr_glPointParameterfSGIS;
 #define glPointParameterfSGIS _funcptr_glPointParameterfSGIS
-extern PFNGLPOINTPARAMETERFVSGISPROC _funcptr_glPointParameterfvSGIS;
+CI_API extern PFNGLPOINTPARAMETERFVSGISPROC _funcptr_glPointParameterfvSGIS;
 #define glPointParameterfvSGIS _funcptr_glPointParameterfvSGIS
 
 #define GL_LINEAR_SHARPEN_ALPHA_SGIS 0x80AE
@@ -10368,9 +10368,9 @@ extern PFNGLPOINTPARAMETERFVSGISPROC _funcptr_glPointParameterfvSGIS;
 typedef void (CODEGEN_FUNCPTR * PFNGLGETSHARPENTEXFUNCSGISPROC)(GLenum target, GLfloat * points);
 typedef void (CODEGEN_FUNCPTR * PFNGLSHARPENTEXFUNCSGISPROC)(GLenum target, GLsizei n, const GLfloat * points);
 
-extern PFNGLGETSHARPENTEXFUNCSGISPROC _funcptr_glGetSharpenTexFuncSGIS;
+CI_API extern PFNGLGETSHARPENTEXFUNCSGISPROC _funcptr_glGetSharpenTexFuncSGIS;
 #define glGetSharpenTexFuncSGIS _funcptr_glGetSharpenTexFuncSGIS
-extern PFNGLSHARPENTEXFUNCSGISPROC _funcptr_glSharpenTexFuncSGIS;
+CI_API extern PFNGLSHARPENTEXFUNCSGISPROC _funcptr_glSharpenTexFuncSGIS;
 #define glSharpenTexFuncSGIS _funcptr_glSharpenTexFuncSGIS
 
 #define GL_MAX_4D_TEXTURE_SIZE_SGIS 0x8138
@@ -10387,9 +10387,9 @@ extern PFNGLSHARPENTEXFUNCSGISPROC _funcptr_glSharpenTexFuncSGIS;
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXIMAGE4DSGISPROC)(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLsizei size4d, GLint border, GLenum format, GLenum type, const GLvoid * pixels);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXSUBIMAGE4DSGISPROC)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint woffset, GLsizei width, GLsizei height, GLsizei depth, GLsizei size4d, GLenum format, GLenum type, const GLvoid * pixels);
 
-extern PFNGLTEXIMAGE4DSGISPROC _funcptr_glTexImage4DSGIS;
+CI_API extern PFNGLTEXIMAGE4DSGISPROC _funcptr_glTexImage4DSGIS;
 #define glTexImage4DSGIS _funcptr_glTexImage4DSGIS
-extern PFNGLTEXSUBIMAGE4DSGISPROC _funcptr_glTexSubImage4DSGIS;
+CI_API extern PFNGLTEXSUBIMAGE4DSGISPROC _funcptr_glTexSubImage4DSGIS;
 #define glTexSubImage4DSGIS _funcptr_glTexSubImage4DSGIS
 
 #define GL_CLAMP_TO_BORDER_SGIS 0x812D
@@ -10398,7 +10398,7 @@ extern PFNGLTEXSUBIMAGE4DSGISPROC _funcptr_glTexSubImage4DSGIS;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXTURECOLORMASKSGISPROC)(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
 
-extern PFNGLTEXTURECOLORMASKSGISPROC _funcptr_glTextureColorMaskSGIS;
+CI_API extern PFNGLTEXTURECOLORMASKSGISPROC _funcptr_glTextureColorMaskSGIS;
 #define glTextureColorMaskSGIS _funcptr_glTextureColorMaskSGIS
 
 #define GL_CLAMP_TO_EDGE_SGIS 0x812F
@@ -10409,9 +10409,9 @@ extern PFNGLTEXTURECOLORMASKSGISPROC _funcptr_glTextureColorMaskSGIS;
 typedef void (CODEGEN_FUNCPTR * PFNGLGETTEXFILTERFUNCSGISPROC)(GLenum target, GLenum filter, GLfloat * weights);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXFILTERFUNCSGISPROC)(GLenum target, GLenum filter, GLsizei n, const GLfloat * weights);
 
-extern PFNGLGETTEXFILTERFUNCSGISPROC _funcptr_glGetTexFilterFuncSGIS;
+CI_API extern PFNGLGETTEXFILTERFUNCSGISPROC _funcptr_glGetTexFilterFuncSGIS;
 #define glGetTexFilterFuncSGIS _funcptr_glGetTexFilterFuncSGIS
-extern PFNGLTEXFILTERFUNCSGISPROC _funcptr_glTexFilterFuncSGIS;
+CI_API extern PFNGLTEXFILTERFUNCSGISPROC _funcptr_glTexFilterFuncSGIS;
 #define glTexFilterFuncSGIS _funcptr_glTexFilterFuncSGIS
 
 #define GL_TEXTURE_BASE_LEVEL_SGIS 0x813C
@@ -10451,17 +10451,17 @@ typedef GLuint (CODEGEN_FUNCPTR * PFNGLGENASYNCMARKERSSGIXPROC)(GLsizei range);
 typedef GLboolean (CODEGEN_FUNCPTR * PFNGLISASYNCMARKERSGIXPROC)(GLuint marker);
 typedef GLint (CODEGEN_FUNCPTR * PFNGLPOLLASYNCSGIXPROC)(GLuint * markerp);
 
-extern PFNGLASYNCMARKERSGIXPROC _funcptr_glAsyncMarkerSGIX;
+CI_API extern PFNGLASYNCMARKERSGIXPROC _funcptr_glAsyncMarkerSGIX;
 #define glAsyncMarkerSGIX _funcptr_glAsyncMarkerSGIX
-extern PFNGLDELETEASYNCMARKERSSGIXPROC _funcptr_glDeleteAsyncMarkersSGIX;
+CI_API extern PFNGLDELETEASYNCMARKERSSGIXPROC _funcptr_glDeleteAsyncMarkersSGIX;
 #define glDeleteAsyncMarkersSGIX _funcptr_glDeleteAsyncMarkersSGIX
-extern PFNGLFINISHASYNCSGIXPROC _funcptr_glFinishAsyncSGIX;
+CI_API extern PFNGLFINISHASYNCSGIXPROC _funcptr_glFinishAsyncSGIX;
 #define glFinishAsyncSGIX _funcptr_glFinishAsyncSGIX
-extern PFNGLGENASYNCMARKERSSGIXPROC _funcptr_glGenAsyncMarkersSGIX;
+CI_API extern PFNGLGENASYNCMARKERSSGIXPROC _funcptr_glGenAsyncMarkersSGIX;
 #define glGenAsyncMarkersSGIX _funcptr_glGenAsyncMarkersSGIX
-extern PFNGLISASYNCMARKERSGIXPROC _funcptr_glIsAsyncMarkerSGIX;
+CI_API extern PFNGLISASYNCMARKERSGIXPROC _funcptr_glIsAsyncMarkerSGIX;
 #define glIsAsyncMarkerSGIX _funcptr_glIsAsyncMarkerSGIX
-extern PFNGLPOLLASYNCSGIXPROC _funcptr_glPollAsyncSGIX;
+CI_API extern PFNGLPOLLASYNCSGIXPROC _funcptr_glPollAsyncSGIX;
 #define glPollAsyncSGIX _funcptr_glPollAsyncSGIX
 
 #define GL_ASYNC_HISTOGRAM_SGIX 0x832C
@@ -10500,7 +10500,7 @@ extern PFNGLPOLLASYNCSGIXPROC _funcptr_glPollAsyncSGIX;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLFLUSHRASTERSGIXPROC)();
 
-extern PFNGLFLUSHRASTERSGIXPROC _funcptr_glFlushRasterSGIX;
+CI_API extern PFNGLFLUSHRASTERSGIXPROC _funcptr_glFlushRasterSGIX;
 #define glFlushRasterSGIX _funcptr_glFlushRasterSGIX
 
 #define GL_FOG_OFFSET_SGIX 0x8198
@@ -10546,41 +10546,41 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETFRAGMENTMATERIALFVSGIXPROC)(GLenum face,
 typedef void (CODEGEN_FUNCPTR * PFNGLGETFRAGMENTMATERIALIVSGIXPROC)(GLenum face, GLenum pname, GLint * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLLIGHTENVISGIXPROC)(GLenum pname, GLint param);
 
-extern PFNGLFRAGMENTCOLORMATERIALSGIXPROC _funcptr_glFragmentColorMaterialSGIX;
+CI_API extern PFNGLFRAGMENTCOLORMATERIALSGIXPROC _funcptr_glFragmentColorMaterialSGIX;
 #define glFragmentColorMaterialSGIX _funcptr_glFragmentColorMaterialSGIX
-extern PFNGLFRAGMENTLIGHTMODELFSGIXPROC _funcptr_glFragmentLightModelfSGIX;
+CI_API extern PFNGLFRAGMENTLIGHTMODELFSGIXPROC _funcptr_glFragmentLightModelfSGIX;
 #define glFragmentLightModelfSGIX _funcptr_glFragmentLightModelfSGIX
-extern PFNGLFRAGMENTLIGHTMODELFVSGIXPROC _funcptr_glFragmentLightModelfvSGIX;
+CI_API extern PFNGLFRAGMENTLIGHTMODELFVSGIXPROC _funcptr_glFragmentLightModelfvSGIX;
 #define glFragmentLightModelfvSGIX _funcptr_glFragmentLightModelfvSGIX
-extern PFNGLFRAGMENTLIGHTMODELISGIXPROC _funcptr_glFragmentLightModeliSGIX;
+CI_API extern PFNGLFRAGMENTLIGHTMODELISGIXPROC _funcptr_glFragmentLightModeliSGIX;
 #define glFragmentLightModeliSGIX _funcptr_glFragmentLightModeliSGIX
-extern PFNGLFRAGMENTLIGHTMODELIVSGIXPROC _funcptr_glFragmentLightModelivSGIX;
+CI_API extern PFNGLFRAGMENTLIGHTMODELIVSGIXPROC _funcptr_glFragmentLightModelivSGIX;
 #define glFragmentLightModelivSGIX _funcptr_glFragmentLightModelivSGIX
-extern PFNGLFRAGMENTLIGHTFSGIXPROC _funcptr_glFragmentLightfSGIX;
+CI_API extern PFNGLFRAGMENTLIGHTFSGIXPROC _funcptr_glFragmentLightfSGIX;
 #define glFragmentLightfSGIX _funcptr_glFragmentLightfSGIX
-extern PFNGLFRAGMENTLIGHTFVSGIXPROC _funcptr_glFragmentLightfvSGIX;
+CI_API extern PFNGLFRAGMENTLIGHTFVSGIXPROC _funcptr_glFragmentLightfvSGIX;
 #define glFragmentLightfvSGIX _funcptr_glFragmentLightfvSGIX
-extern PFNGLFRAGMENTLIGHTISGIXPROC _funcptr_glFragmentLightiSGIX;
+CI_API extern PFNGLFRAGMENTLIGHTISGIXPROC _funcptr_glFragmentLightiSGIX;
 #define glFragmentLightiSGIX _funcptr_glFragmentLightiSGIX
-extern PFNGLFRAGMENTLIGHTIVSGIXPROC _funcptr_glFragmentLightivSGIX;
+CI_API extern PFNGLFRAGMENTLIGHTIVSGIXPROC _funcptr_glFragmentLightivSGIX;
 #define glFragmentLightivSGIX _funcptr_glFragmentLightivSGIX
-extern PFNGLFRAGMENTMATERIALFSGIXPROC _funcptr_glFragmentMaterialfSGIX;
+CI_API extern PFNGLFRAGMENTMATERIALFSGIXPROC _funcptr_glFragmentMaterialfSGIX;
 #define glFragmentMaterialfSGIX _funcptr_glFragmentMaterialfSGIX
-extern PFNGLFRAGMENTMATERIALFVSGIXPROC _funcptr_glFragmentMaterialfvSGIX;
+CI_API extern PFNGLFRAGMENTMATERIALFVSGIXPROC _funcptr_glFragmentMaterialfvSGIX;
 #define glFragmentMaterialfvSGIX _funcptr_glFragmentMaterialfvSGIX
-extern PFNGLFRAGMENTMATERIALISGIXPROC _funcptr_glFragmentMaterialiSGIX;
+CI_API extern PFNGLFRAGMENTMATERIALISGIXPROC _funcptr_glFragmentMaterialiSGIX;
 #define glFragmentMaterialiSGIX _funcptr_glFragmentMaterialiSGIX
-extern PFNGLFRAGMENTMATERIALIVSGIXPROC _funcptr_glFragmentMaterialivSGIX;
+CI_API extern PFNGLFRAGMENTMATERIALIVSGIXPROC _funcptr_glFragmentMaterialivSGIX;
 #define glFragmentMaterialivSGIX _funcptr_glFragmentMaterialivSGIX
-extern PFNGLGETFRAGMENTLIGHTFVSGIXPROC _funcptr_glGetFragmentLightfvSGIX;
+CI_API extern PFNGLGETFRAGMENTLIGHTFVSGIXPROC _funcptr_glGetFragmentLightfvSGIX;
 #define glGetFragmentLightfvSGIX _funcptr_glGetFragmentLightfvSGIX
-extern PFNGLGETFRAGMENTLIGHTIVSGIXPROC _funcptr_glGetFragmentLightivSGIX;
+CI_API extern PFNGLGETFRAGMENTLIGHTIVSGIXPROC _funcptr_glGetFragmentLightivSGIX;
 #define glGetFragmentLightivSGIX _funcptr_glGetFragmentLightivSGIX
-extern PFNGLGETFRAGMENTMATERIALFVSGIXPROC _funcptr_glGetFragmentMaterialfvSGIX;
+CI_API extern PFNGLGETFRAGMENTMATERIALFVSGIXPROC _funcptr_glGetFragmentMaterialfvSGIX;
 #define glGetFragmentMaterialfvSGIX _funcptr_glGetFragmentMaterialfvSGIX
-extern PFNGLGETFRAGMENTMATERIALIVSGIXPROC _funcptr_glGetFragmentMaterialivSGIX;
+CI_API extern PFNGLGETFRAGMENTMATERIALIVSGIXPROC _funcptr_glGetFragmentMaterialivSGIX;
 #define glGetFragmentMaterialivSGIX _funcptr_glGetFragmentMaterialivSGIX
-extern PFNGLLIGHTENVISGIXPROC _funcptr_glLightEnviSGIX;
+CI_API extern PFNGLLIGHTENVISGIXPROC _funcptr_glLightEnviSGIX;
 #define glLightEnviSGIX _funcptr_glLightEnviSGIX
 
 #define GL_FRAMEZOOM_FACTOR_SGIX 0x818C
@@ -10589,12 +10589,12 @@ extern PFNGLLIGHTENVISGIXPROC _funcptr_glLightEnviSGIX;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLFRAMEZOOMSGIXPROC)(GLint factor);
 
-extern PFNGLFRAMEZOOMSGIXPROC _funcptr_glFrameZoomSGIX;
+CI_API extern PFNGLFRAMEZOOMSGIXPROC _funcptr_glFrameZoomSGIX;
 #define glFrameZoomSGIX _funcptr_glFrameZoomSGIX
 
 typedef void (CODEGEN_FUNCPTR * PFNGLIGLOOINTERFACESGIXPROC)(GLenum pname, const GLvoid * params);
 
-extern PFNGLIGLOOINTERFACESGIXPROC _funcptr_glIglooInterfaceSGIX;
+CI_API extern PFNGLIGLOOINTERFACESGIXPROC _funcptr_glIglooInterfaceSGIX;
 #define glIglooInterfaceSGIX _funcptr_glIglooInterfaceSGIX
 
 #define GL_INSTRUMENT_BUFFER_POINTER_SGIX 0x8180
@@ -10607,17 +10607,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLREADINSTRUMENTSSGIXPROC)(GLint marker);
 typedef void (CODEGEN_FUNCPTR * PFNGLSTARTINSTRUMENTSSGIXPROC)();
 typedef void (CODEGEN_FUNCPTR * PFNGLSTOPINSTRUMENTSSGIXPROC)(GLint marker);
 
-extern PFNGLGETINSTRUMENTSSGIXPROC _funcptr_glGetInstrumentsSGIX;
+CI_API extern PFNGLGETINSTRUMENTSSGIXPROC _funcptr_glGetInstrumentsSGIX;
 #define glGetInstrumentsSGIX _funcptr_glGetInstrumentsSGIX
-extern PFNGLINSTRUMENTSBUFFERSGIXPROC _funcptr_glInstrumentsBufferSGIX;
+CI_API extern PFNGLINSTRUMENTSBUFFERSGIXPROC _funcptr_glInstrumentsBufferSGIX;
 #define glInstrumentsBufferSGIX _funcptr_glInstrumentsBufferSGIX
-extern PFNGLPOLLINSTRUMENTSSGIXPROC _funcptr_glPollInstrumentsSGIX;
+CI_API extern PFNGLPOLLINSTRUMENTSSGIXPROC _funcptr_glPollInstrumentsSGIX;
 #define glPollInstrumentsSGIX _funcptr_glPollInstrumentsSGIX
-extern PFNGLREADINSTRUMENTSSGIXPROC _funcptr_glReadInstrumentsSGIX;
+CI_API extern PFNGLREADINSTRUMENTSSGIXPROC _funcptr_glReadInstrumentsSGIX;
 #define glReadInstrumentsSGIX _funcptr_glReadInstrumentsSGIX
-extern PFNGLSTARTINSTRUMENTSSGIXPROC _funcptr_glStartInstrumentsSGIX;
+CI_API extern PFNGLSTARTINSTRUMENTSSGIXPROC _funcptr_glStartInstrumentsSGIX;
 #define glStartInstrumentsSGIX _funcptr_glStartInstrumentsSGIX
-extern PFNGLSTOPINSTRUMENTSSGIXPROC _funcptr_glStopInstrumentsSGIX;
+CI_API extern PFNGLSTOPINSTRUMENTSSGIXPROC _funcptr_glStopInstrumentsSGIX;
 #define glStopInstrumentsSGIX _funcptr_glStopInstrumentsSGIX
 
 #define GL_INTERLACE_SGIX 0x8094
@@ -10633,17 +10633,17 @@ typedef void (CODEGEN_FUNCPTR * PFNGLLISTPARAMETERFVSGIXPROC)(GLuint list, GLenu
 typedef void (CODEGEN_FUNCPTR * PFNGLLISTPARAMETERISGIXPROC)(GLuint list, GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLLISTPARAMETERIVSGIXPROC)(GLuint list, GLenum pname, const GLint * params);
 
-extern PFNGLGETLISTPARAMETERFVSGIXPROC _funcptr_glGetListParameterfvSGIX;
+CI_API extern PFNGLGETLISTPARAMETERFVSGIXPROC _funcptr_glGetListParameterfvSGIX;
 #define glGetListParameterfvSGIX _funcptr_glGetListParameterfvSGIX
-extern PFNGLGETLISTPARAMETERIVSGIXPROC _funcptr_glGetListParameterivSGIX;
+CI_API extern PFNGLGETLISTPARAMETERIVSGIXPROC _funcptr_glGetListParameterivSGIX;
 #define glGetListParameterivSGIX _funcptr_glGetListParameterivSGIX
-extern PFNGLLISTPARAMETERFSGIXPROC _funcptr_glListParameterfSGIX;
+CI_API extern PFNGLLISTPARAMETERFSGIXPROC _funcptr_glListParameterfSGIX;
 #define glListParameterfSGIX _funcptr_glListParameterfSGIX
-extern PFNGLLISTPARAMETERFVSGIXPROC _funcptr_glListParameterfvSGIX;
+CI_API extern PFNGLLISTPARAMETERFVSGIXPROC _funcptr_glListParameterfvSGIX;
 #define glListParameterfvSGIX _funcptr_glListParameterfvSGIX
-extern PFNGLLISTPARAMETERISGIXPROC _funcptr_glListParameteriSGIX;
+CI_API extern PFNGLLISTPARAMETERISGIXPROC _funcptr_glListParameteriSGIX;
 #define glListParameteriSGIX _funcptr_glListParameteriSGIX
-extern PFNGLLISTPARAMETERIVSGIXPROC _funcptr_glListParameterivSGIX;
+CI_API extern PFNGLLISTPARAMETERIVSGIXPROC _funcptr_glListParameterivSGIX;
 #define glListParameterivSGIX _funcptr_glListParameterivSGIX
 
 #define GL_PIXEL_TEX_GEN_MODE_SGIX 0x832B
@@ -10651,7 +10651,7 @@ extern PFNGLLISTPARAMETERIVSGIXPROC _funcptr_glListParameterivSGIX;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLPIXELTEXGENSGIXPROC)(GLenum mode);
 
-extern PFNGLPIXELTEXGENSGIXPROC _funcptr_glPixelTexGenSGIX;
+CI_API extern PFNGLPIXELTEXGENSGIXPROC _funcptr_glPixelTexGenSGIX;
 #define glPixelTexGenSGIX _funcptr_glPixelTexGenSGIX
 
 #define GL_PIXEL_TILE_BEST_ALIGNMENT_SGIX 0x813E
@@ -10675,13 +10675,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLDEFORMATIONMAP3DSGIXPROC)(GLenum target, GL
 typedef void (CODEGEN_FUNCPTR * PFNGLDEFORMATIONMAP3FSGIXPROC)(GLenum target, GLfloat u1, GLfloat u2, GLint ustride, GLint uorder, GLfloat v1, GLfloat v2, GLint vstride, GLint vorder, GLfloat w1, GLfloat w2, GLint wstride, GLint worder, const GLfloat * points);
 typedef void (CODEGEN_FUNCPTR * PFNGLLOADIDENTITYDEFORMATIONMAPSGIXPROC)(GLbitfield mask);
 
-extern PFNGLDEFORMSGIXPROC _funcptr_glDeformSGIX;
+CI_API extern PFNGLDEFORMSGIXPROC _funcptr_glDeformSGIX;
 #define glDeformSGIX _funcptr_glDeformSGIX
-extern PFNGLDEFORMATIONMAP3DSGIXPROC _funcptr_glDeformationMap3dSGIX;
+CI_API extern PFNGLDEFORMATIONMAP3DSGIXPROC _funcptr_glDeformationMap3dSGIX;
 #define glDeformationMap3dSGIX _funcptr_glDeformationMap3dSGIX
-extern PFNGLDEFORMATIONMAP3FSGIXPROC _funcptr_glDeformationMap3fSGIX;
+CI_API extern PFNGLDEFORMATIONMAP3FSGIXPROC _funcptr_glDeformationMap3fSGIX;
 #define glDeformationMap3fSGIX _funcptr_glDeformationMap3fSGIX
-extern PFNGLLOADIDENTITYDEFORMATIONMAPSGIXPROC _funcptr_glLoadIdentityDeformationMapSGIX;
+CI_API extern PFNGLLOADIDENTITYDEFORMATIONMAPSGIXPROC _funcptr_glLoadIdentityDeformationMapSGIX;
 #define glLoadIdentityDeformationMapSGIX _funcptr_glLoadIdentityDeformationMapSGIX
 
 #define GL_REFERENCE_PLANE_EQUATION_SGIX 0x817E
@@ -10689,7 +10689,7 @@ extern PFNGLLOADIDENTITYDEFORMATIONMAPSGIXPROC _funcptr_glLoadIdentityDeformatio
 
 typedef void (CODEGEN_FUNCPTR * PFNGLREFERENCEPLANESGIXPROC)(const GLdouble * equation);
 
-extern PFNGLREFERENCEPLANESGIXPROC _funcptr_glReferencePlaneSGIX;
+CI_API extern PFNGLREFERENCEPLANESGIXPROC _funcptr_glReferencePlaneSGIX;
 #define glReferencePlaneSGIX _funcptr_glReferencePlaneSGIX
 
 #define GL_PACK_RESAMPLE_SGIX 0x842C
@@ -10720,13 +10720,13 @@ typedef void (CODEGEN_FUNCPTR * PFNGLSPRITEPARAMETERFVSGIXPROC)(GLenum pname, co
 typedef void (CODEGEN_FUNCPTR * PFNGLSPRITEPARAMETERISGIXPROC)(GLenum pname, GLint param);
 typedef void (CODEGEN_FUNCPTR * PFNGLSPRITEPARAMETERIVSGIXPROC)(GLenum pname, const GLint * params);
 
-extern PFNGLSPRITEPARAMETERFSGIXPROC _funcptr_glSpriteParameterfSGIX;
+CI_API extern PFNGLSPRITEPARAMETERFSGIXPROC _funcptr_glSpriteParameterfSGIX;
 #define glSpriteParameterfSGIX _funcptr_glSpriteParameterfSGIX
-extern PFNGLSPRITEPARAMETERFVSGIXPROC _funcptr_glSpriteParameterfvSGIX;
+CI_API extern PFNGLSPRITEPARAMETERFVSGIXPROC _funcptr_glSpriteParameterfvSGIX;
 #define glSpriteParameterfvSGIX _funcptr_glSpriteParameterfvSGIX
-extern PFNGLSPRITEPARAMETERISGIXPROC _funcptr_glSpriteParameteriSGIX;
+CI_API extern PFNGLSPRITEPARAMETERISGIXPROC _funcptr_glSpriteParameteriSGIX;
 #define glSpriteParameteriSGIX _funcptr_glSpriteParameteriSGIX
-extern PFNGLSPRITEPARAMETERIVSGIXPROC _funcptr_glSpriteParameterivSGIX;
+CI_API extern PFNGLSPRITEPARAMETERIVSGIXPROC _funcptr_glSpriteParameterivSGIX;
 #define glSpriteParameterivSGIX _funcptr_glSpriteParameterivSGIX
 
 #define GL_PACK_SUBSAMPLE_RATE_SGIX 0x85A0
@@ -10737,7 +10737,7 @@ extern PFNGLSPRITEPARAMETERIVSGIXPROC _funcptr_glSpriteParameterivSGIX;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLTAGSAMPLEBUFFERSGIXPROC)();
 
-extern PFNGLTAGSAMPLEBUFFERSGIXPROC _funcptr_glTagSampleBufferSGIX;
+CI_API extern PFNGLTAGSAMPLEBUFFERSGIXPROC _funcptr_glTagSampleBufferSGIX;
 #define glTagSampleBufferSGIX _funcptr_glTagSampleBufferSGIX
 
 #define GL_TEXTURE_ENV_BIAS_SGIX 0x80BE
@@ -10803,19 +10803,19 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGETCOLORTABLEPARAMETERFVSGIPROC)(GLenum tar
 typedef void (CODEGEN_FUNCPTR * PFNGLGETCOLORTABLEPARAMETERIVSGIPROC)(GLenum target, GLenum pname, GLint * params);
 typedef void (CODEGEN_FUNCPTR * PFNGLGETCOLORTABLESGIPROC)(GLenum target, GLenum format, GLenum type, GLvoid * table);
 
-extern PFNGLCOLORTABLEPARAMETERFVSGIPROC _funcptr_glColorTableParameterfvSGI;
+CI_API extern PFNGLCOLORTABLEPARAMETERFVSGIPROC _funcptr_glColorTableParameterfvSGI;
 #define glColorTableParameterfvSGI _funcptr_glColorTableParameterfvSGI
-extern PFNGLCOLORTABLEPARAMETERIVSGIPROC _funcptr_glColorTableParameterivSGI;
+CI_API extern PFNGLCOLORTABLEPARAMETERIVSGIPROC _funcptr_glColorTableParameterivSGI;
 #define glColorTableParameterivSGI _funcptr_glColorTableParameterivSGI
-extern PFNGLCOLORTABLESGIPROC _funcptr_glColorTableSGI;
+CI_API extern PFNGLCOLORTABLESGIPROC _funcptr_glColorTableSGI;
 #define glColorTableSGI _funcptr_glColorTableSGI
-extern PFNGLCOPYCOLORTABLESGIPROC _funcptr_glCopyColorTableSGI;
+CI_API extern PFNGLCOPYCOLORTABLESGIPROC _funcptr_glCopyColorTableSGI;
 #define glCopyColorTableSGI _funcptr_glCopyColorTableSGI
-extern PFNGLGETCOLORTABLEPARAMETERFVSGIPROC _funcptr_glGetColorTableParameterfvSGI;
+CI_API extern PFNGLGETCOLORTABLEPARAMETERFVSGIPROC _funcptr_glGetColorTableParameterfvSGI;
 #define glGetColorTableParameterfvSGI _funcptr_glGetColorTableParameterfvSGI
-extern PFNGLGETCOLORTABLEPARAMETERIVSGIPROC _funcptr_glGetColorTableParameterivSGI;
+CI_API extern PFNGLGETCOLORTABLEPARAMETERIVSGIPROC _funcptr_glGetColorTableParameterivSGI;
 #define glGetColorTableParameterivSGI _funcptr_glGetColorTableParameterivSGI
-extern PFNGLGETCOLORTABLESGIPROC _funcptr_glGetColorTableSGI;
+CI_API extern PFNGLGETCOLORTABLESGIPROC _funcptr_glGetColorTableSGI;
 #define glGetColorTableSGI _funcptr_glGetColorTableSGI
 
 #define GL_PROXY_TEXTURE_COLOR_TABLE_SGI 0x80BD
@@ -10826,7 +10826,7 @@ extern PFNGLGETCOLORTABLESGIPROC _funcptr_glGetColorTableSGI;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLFINISHTEXTURESUNXPROC)();
 
-extern PFNGLFINISHTEXTURESUNXPROC _funcptr_glFinishTextureSUNX;
+CI_API extern PFNGLFINISHTEXTURESUNXPROC _funcptr_glFinishTextureSUNX;
 #define glFinishTextureSUNX _funcptr_glFinishTextureSUNX
 
 #define GL_WRAP_BORDER_SUN 0x81D4
@@ -10843,21 +10843,21 @@ typedef void (CODEGEN_FUNCPTR * PFNGLGLOBALALPHAFACTORUBSUNPROC)(GLubyte factor)
 typedef void (CODEGEN_FUNCPTR * PFNGLGLOBALALPHAFACTORUISUNPROC)(GLuint factor);
 typedef void (CODEGEN_FUNCPTR * PFNGLGLOBALALPHAFACTORUSSUNPROC)(GLushort factor);
 
-extern PFNGLGLOBALALPHAFACTORBSUNPROC _funcptr_glGlobalAlphaFactorbSUN;
+CI_API extern PFNGLGLOBALALPHAFACTORBSUNPROC _funcptr_glGlobalAlphaFactorbSUN;
 #define glGlobalAlphaFactorbSUN _funcptr_glGlobalAlphaFactorbSUN
-extern PFNGLGLOBALALPHAFACTORDSUNPROC _funcptr_glGlobalAlphaFactordSUN;
+CI_API extern PFNGLGLOBALALPHAFACTORDSUNPROC _funcptr_glGlobalAlphaFactordSUN;
 #define glGlobalAlphaFactordSUN _funcptr_glGlobalAlphaFactordSUN
-extern PFNGLGLOBALALPHAFACTORFSUNPROC _funcptr_glGlobalAlphaFactorfSUN;
+CI_API extern PFNGLGLOBALALPHAFACTORFSUNPROC _funcptr_glGlobalAlphaFactorfSUN;
 #define glGlobalAlphaFactorfSUN _funcptr_glGlobalAlphaFactorfSUN
-extern PFNGLGLOBALALPHAFACTORISUNPROC _funcptr_glGlobalAlphaFactoriSUN;
+CI_API extern PFNGLGLOBALALPHAFACTORISUNPROC _funcptr_glGlobalAlphaFactoriSUN;
 #define glGlobalAlphaFactoriSUN _funcptr_glGlobalAlphaFactoriSUN
-extern PFNGLGLOBALALPHAFACTORSSUNPROC _funcptr_glGlobalAlphaFactorsSUN;
+CI_API extern PFNGLGLOBALALPHAFACTORSSUNPROC _funcptr_glGlobalAlphaFactorsSUN;
 #define glGlobalAlphaFactorsSUN _funcptr_glGlobalAlphaFactorsSUN
-extern PFNGLGLOBALALPHAFACTORUBSUNPROC _funcptr_glGlobalAlphaFactorubSUN;
+CI_API extern PFNGLGLOBALALPHAFACTORUBSUNPROC _funcptr_glGlobalAlphaFactorubSUN;
 #define glGlobalAlphaFactorubSUN _funcptr_glGlobalAlphaFactorubSUN
-extern PFNGLGLOBALALPHAFACTORUISUNPROC _funcptr_glGlobalAlphaFactoruiSUN;
+CI_API extern PFNGLGLOBALALPHAFACTORUISUNPROC _funcptr_glGlobalAlphaFactoruiSUN;
 #define glGlobalAlphaFactoruiSUN _funcptr_glGlobalAlphaFactoruiSUN
-extern PFNGLGLOBALALPHAFACTORUSSUNPROC _funcptr_glGlobalAlphaFactorusSUN;
+CI_API extern PFNGLGLOBALALPHAFACTORUSSUNPROC _funcptr_glGlobalAlphaFactorusSUN;
 #define glGlobalAlphaFactorusSUN _funcptr_glGlobalAlphaFactorusSUN
 
 #define GL_QUAD_MESH_SUN 0x8614
@@ -10865,7 +10865,7 @@ extern PFNGLGLOBALALPHAFACTORUSSUNPROC _funcptr_glGlobalAlphaFactorusSUN;
 
 typedef void (CODEGEN_FUNCPTR * PFNGLDRAWMESHARRAYSSUNPROC)(GLenum mode, GLint first, GLsizei count, GLsizei width);
 
-extern PFNGLDRAWMESHARRAYSSUNPROC _funcptr_glDrawMeshArraysSUN;
+CI_API extern PFNGLDRAWMESHARRAYSSUNPROC _funcptr_glDrawMeshArraysSUN;
 #define glDrawMeshArraysSUN _funcptr_glDrawMeshArraysSUN
 
 #define GL_SLICE_ACCUM_SUN 0x85CC
@@ -10896,19 +10896,19 @@ typedef void (CODEGEN_FUNCPTR * PFNGLREPLACEMENTCODEUIVSUNPROC)(const GLuint * c
 typedef void (CODEGEN_FUNCPTR * PFNGLREPLACEMENTCODEUSSUNPROC)(GLushort code);
 typedef void (CODEGEN_FUNCPTR * PFNGLREPLACEMENTCODEUSVSUNPROC)(const GLushort * code);
 
-extern PFNGLREPLACEMENTCODEPOINTERSUNPROC _funcptr_glReplacementCodePointerSUN;
+CI_API extern PFNGLREPLACEMENTCODEPOINTERSUNPROC _funcptr_glReplacementCodePointerSUN;
 #define glReplacementCodePointerSUN _funcptr_glReplacementCodePointerSUN
-extern PFNGLREPLACEMENTCODEUBSUNPROC _funcptr_glReplacementCodeubSUN;
+CI_API extern PFNGLREPLACEMENTCODEUBSUNPROC _funcptr_glReplacementCodeubSUN;
 #define glReplacementCodeubSUN _funcptr_glReplacementCodeubSUN
-extern PFNGLREPLACEMENTCODEUBVSUNPROC _funcptr_glReplacementCodeubvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUBVSUNPROC _funcptr_glReplacementCodeubvSUN;
 #define glReplacementCodeubvSUN _funcptr_glReplacementCodeubvSUN
-extern PFNGLREPLACEMENTCODEUISUNPROC _funcptr_glReplacementCodeuiSUN;
+CI_API extern PFNGLREPLACEMENTCODEUISUNPROC _funcptr_glReplacementCodeuiSUN;
 #define glReplacementCodeuiSUN _funcptr_glReplacementCodeuiSUN
-extern PFNGLREPLACEMENTCODEUIVSUNPROC _funcptr_glReplacementCodeuivSUN;
+CI_API extern PFNGLREPLACEMENTCODEUIVSUNPROC _funcptr_glReplacementCodeuivSUN;
 #define glReplacementCodeuivSUN _funcptr_glReplacementCodeuivSUN
-extern PFNGLREPLACEMENTCODEUSSUNPROC _funcptr_glReplacementCodeusSUN;
+CI_API extern PFNGLREPLACEMENTCODEUSSUNPROC _funcptr_glReplacementCodeusSUN;
 #define glReplacementCodeusSUN _funcptr_glReplacementCodeusSUN
-extern PFNGLREPLACEMENTCODEUSVSUNPROC _funcptr_glReplacementCodeusvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUSVSUNPROC _funcptr_glReplacementCodeusvSUN;
 #define glReplacementCodeusvSUN _funcptr_glReplacementCodeusvSUN
 
 typedef void (CODEGEN_FUNCPTR * PFNGLCOLOR3FVERTEX3FSUNPROC)(GLfloat r, GLfloat g, GLfloat b, GLfloat x, GLfloat y, GLfloat z);
@@ -10952,85 +10952,85 @@ typedef void (CODEGEN_FUNCPTR * PFNGLTEXCOORD4FCOLOR4FNORMAL3FVERTEX4FVSUNPROC)(
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXCOORD4FVERTEX4FSUNPROC)(GLfloat s, GLfloat t, GLfloat p, GLfloat q, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
 typedef void (CODEGEN_FUNCPTR * PFNGLTEXCOORD4FVERTEX4FVSUNPROC)(const GLfloat * tc, const GLfloat * v);
 
-extern PFNGLCOLOR3FVERTEX3FSUNPROC _funcptr_glColor3fVertex3fSUN;
+CI_API extern PFNGLCOLOR3FVERTEX3FSUNPROC _funcptr_glColor3fVertex3fSUN;
 #define glColor3fVertex3fSUN _funcptr_glColor3fVertex3fSUN
-extern PFNGLCOLOR3FVERTEX3FVSUNPROC _funcptr_glColor3fVertex3fvSUN;
+CI_API extern PFNGLCOLOR3FVERTEX3FVSUNPROC _funcptr_glColor3fVertex3fvSUN;
 #define glColor3fVertex3fvSUN _funcptr_glColor3fVertex3fvSUN
-extern PFNGLCOLOR4FNORMAL3FVERTEX3FSUNPROC _funcptr_glColor4fNormal3fVertex3fSUN;
+CI_API extern PFNGLCOLOR4FNORMAL3FVERTEX3FSUNPROC _funcptr_glColor4fNormal3fVertex3fSUN;
 #define glColor4fNormal3fVertex3fSUN _funcptr_glColor4fNormal3fVertex3fSUN
-extern PFNGLCOLOR4FNORMAL3FVERTEX3FVSUNPROC _funcptr_glColor4fNormal3fVertex3fvSUN;
+CI_API extern PFNGLCOLOR4FNORMAL3FVERTEX3FVSUNPROC _funcptr_glColor4fNormal3fVertex3fvSUN;
 #define glColor4fNormal3fVertex3fvSUN _funcptr_glColor4fNormal3fVertex3fvSUN
-extern PFNGLCOLOR4UBVERTEX2FSUNPROC _funcptr_glColor4ubVertex2fSUN;
+CI_API extern PFNGLCOLOR4UBVERTEX2FSUNPROC _funcptr_glColor4ubVertex2fSUN;
 #define glColor4ubVertex2fSUN _funcptr_glColor4ubVertex2fSUN
-extern PFNGLCOLOR4UBVERTEX2FVSUNPROC _funcptr_glColor4ubVertex2fvSUN;
+CI_API extern PFNGLCOLOR4UBVERTEX2FVSUNPROC _funcptr_glColor4ubVertex2fvSUN;
 #define glColor4ubVertex2fvSUN _funcptr_glColor4ubVertex2fvSUN
-extern PFNGLCOLOR4UBVERTEX3FSUNPROC _funcptr_glColor4ubVertex3fSUN;
+CI_API extern PFNGLCOLOR4UBVERTEX3FSUNPROC _funcptr_glColor4ubVertex3fSUN;
 #define glColor4ubVertex3fSUN _funcptr_glColor4ubVertex3fSUN
-extern PFNGLCOLOR4UBVERTEX3FVSUNPROC _funcptr_glColor4ubVertex3fvSUN;
+CI_API extern PFNGLCOLOR4UBVERTEX3FVSUNPROC _funcptr_glColor4ubVertex3fvSUN;
 #define glColor4ubVertex3fvSUN _funcptr_glColor4ubVertex3fvSUN
-extern PFNGLNORMAL3FVERTEX3FSUNPROC _funcptr_glNormal3fVertex3fSUN;
+CI_API extern PFNGLNORMAL3FVERTEX3FSUNPROC _funcptr_glNormal3fVertex3fSUN;
 #define glNormal3fVertex3fSUN _funcptr_glNormal3fVertex3fSUN
-extern PFNGLNORMAL3FVERTEX3FVSUNPROC _funcptr_glNormal3fVertex3fvSUN;
+CI_API extern PFNGLNORMAL3FVERTEX3FVSUNPROC _funcptr_glNormal3fVertex3fvSUN;
 #define glNormal3fVertex3fvSUN _funcptr_glNormal3fVertex3fvSUN
-extern PFNGLREPLACEMENTCODEUICOLOR3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiColor3fVertex3fSUN;
+CI_API extern PFNGLREPLACEMENTCODEUICOLOR3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiColor3fVertex3fSUN;
 #define glReplacementCodeuiColor3fVertex3fSUN _funcptr_glReplacementCodeuiColor3fVertex3fSUN
-extern PFNGLREPLACEMENTCODEUICOLOR3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiColor3fVertex3fvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUICOLOR3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiColor3fVertex3fvSUN;
 #define glReplacementCodeuiColor3fVertex3fvSUN _funcptr_glReplacementCodeuiColor3fVertex3fvSUN
-extern PFNGLREPLACEMENTCODEUICOLOR4FNORMAL3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiColor4fNormal3fVertex3fSUN;
+CI_API extern PFNGLREPLACEMENTCODEUICOLOR4FNORMAL3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiColor4fNormal3fVertex3fSUN;
 #define glReplacementCodeuiColor4fNormal3fVertex3fSUN _funcptr_glReplacementCodeuiColor4fNormal3fVertex3fSUN
-extern PFNGLREPLACEMENTCODEUICOLOR4FNORMAL3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiColor4fNormal3fVertex3fvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUICOLOR4FNORMAL3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiColor4fNormal3fVertex3fvSUN;
 #define glReplacementCodeuiColor4fNormal3fVertex3fvSUN _funcptr_glReplacementCodeuiColor4fNormal3fVertex3fvSUN
-extern PFNGLREPLACEMENTCODEUICOLOR4UBVERTEX3FSUNPROC _funcptr_glReplacementCodeuiColor4ubVertex3fSUN;
+CI_API extern PFNGLREPLACEMENTCODEUICOLOR4UBVERTEX3FSUNPROC _funcptr_glReplacementCodeuiColor4ubVertex3fSUN;
 #define glReplacementCodeuiColor4ubVertex3fSUN _funcptr_glReplacementCodeuiColor4ubVertex3fSUN
-extern PFNGLREPLACEMENTCODEUICOLOR4UBVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiColor4ubVertex3fvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUICOLOR4UBVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiColor4ubVertex3fvSUN;
 #define glReplacementCodeuiColor4ubVertex3fvSUN _funcptr_glReplacementCodeuiColor4ubVertex3fvSUN
-extern PFNGLREPLACEMENTCODEUINORMAL3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiNormal3fVertex3fSUN;
+CI_API extern PFNGLREPLACEMENTCODEUINORMAL3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiNormal3fVertex3fSUN;
 #define glReplacementCodeuiNormal3fVertex3fSUN _funcptr_glReplacementCodeuiNormal3fVertex3fSUN
-extern PFNGLREPLACEMENTCODEUINORMAL3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiNormal3fVertex3fvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUINORMAL3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiNormal3fVertex3fvSUN;
 #define glReplacementCodeuiNormal3fVertex3fvSUN _funcptr_glReplacementCodeuiNormal3fVertex3fvSUN
-extern PFNGLREPLACEMENTCODEUITEXCOORD2FCOLOR4FNORMAL3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN;
+CI_API extern PFNGLREPLACEMENTCODEUITEXCOORD2FCOLOR4FNORMAL3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN;
 #define glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN _funcptr_glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN
-extern PFNGLREPLACEMENTCODEUITEXCOORD2FCOLOR4FNORMAL3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUITEXCOORD2FCOLOR4FNORMAL3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN;
 #define glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN _funcptr_glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN
-extern PFNGLREPLACEMENTCODEUITEXCOORD2FNORMAL3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN;
+CI_API extern PFNGLREPLACEMENTCODEUITEXCOORD2FNORMAL3FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN;
 #define glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN _funcptr_glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN
-extern PFNGLREPLACEMENTCODEUITEXCOORD2FNORMAL3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUITEXCOORD2FNORMAL3FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN;
 #define glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN _funcptr_glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN
-extern PFNGLREPLACEMENTCODEUITEXCOORD2FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiTexCoord2fVertex3fSUN;
+CI_API extern PFNGLREPLACEMENTCODEUITEXCOORD2FVERTEX3FSUNPROC _funcptr_glReplacementCodeuiTexCoord2fVertex3fSUN;
 #define glReplacementCodeuiTexCoord2fVertex3fSUN _funcptr_glReplacementCodeuiTexCoord2fVertex3fSUN
-extern PFNGLREPLACEMENTCODEUITEXCOORD2FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiTexCoord2fVertex3fvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUITEXCOORD2FVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiTexCoord2fVertex3fvSUN;
 #define glReplacementCodeuiTexCoord2fVertex3fvSUN _funcptr_glReplacementCodeuiTexCoord2fVertex3fvSUN
-extern PFNGLREPLACEMENTCODEUIVERTEX3FSUNPROC _funcptr_glReplacementCodeuiVertex3fSUN;
+CI_API extern PFNGLREPLACEMENTCODEUIVERTEX3FSUNPROC _funcptr_glReplacementCodeuiVertex3fSUN;
 #define glReplacementCodeuiVertex3fSUN _funcptr_glReplacementCodeuiVertex3fSUN
-extern PFNGLREPLACEMENTCODEUIVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiVertex3fvSUN;
+CI_API extern PFNGLREPLACEMENTCODEUIVERTEX3FVSUNPROC _funcptr_glReplacementCodeuiVertex3fvSUN;
 #define glReplacementCodeuiVertex3fvSUN _funcptr_glReplacementCodeuiVertex3fvSUN
-extern PFNGLTEXCOORD2FCOLOR3FVERTEX3FSUNPROC _funcptr_glTexCoord2fColor3fVertex3fSUN;
+CI_API extern PFNGLTEXCOORD2FCOLOR3FVERTEX3FSUNPROC _funcptr_glTexCoord2fColor3fVertex3fSUN;
 #define glTexCoord2fColor3fVertex3fSUN _funcptr_glTexCoord2fColor3fVertex3fSUN
-extern PFNGLTEXCOORD2FCOLOR3FVERTEX3FVSUNPROC _funcptr_glTexCoord2fColor3fVertex3fvSUN;
+CI_API extern PFNGLTEXCOORD2FCOLOR3FVERTEX3FVSUNPROC _funcptr_glTexCoord2fColor3fVertex3fvSUN;
 #define glTexCoord2fColor3fVertex3fvSUN _funcptr_glTexCoord2fColor3fVertex3fvSUN
-extern PFNGLTEXCOORD2FCOLOR4FNORMAL3FVERTEX3FSUNPROC _funcptr_glTexCoord2fColor4fNormal3fVertex3fSUN;
+CI_API extern PFNGLTEXCOORD2FCOLOR4FNORMAL3FVERTEX3FSUNPROC _funcptr_glTexCoord2fColor4fNormal3fVertex3fSUN;
 #define glTexCoord2fColor4fNormal3fVertex3fSUN _funcptr_glTexCoord2fColor4fNormal3fVertex3fSUN
-extern PFNGLTEXCOORD2FCOLOR4FNORMAL3FVERTEX3FVSUNPROC _funcptr_glTexCoord2fColor4fNormal3fVertex3fvSUN;
+CI_API extern PFNGLTEXCOORD2FCOLOR4FNORMAL3FVERTEX3FVSUNPROC _funcptr_glTexCoord2fColor4fNormal3fVertex3fvSUN;
 #define glTexCoord2fColor4fNormal3fVertex3fvSUN _funcptr_glTexCoord2fColor4fNormal3fVertex3fvSUN
-extern PFNGLTEXCOORD2FCOLOR4UBVERTEX3FSUNPROC _funcptr_glTexCoord2fColor4ubVertex3fSUN;
+CI_API extern PFNGLTEXCOORD2FCOLOR4UBVERTEX3FSUNPROC _funcptr_glTexCoord2fColor4ubVertex3fSUN;
 #define glTexCoord2fColor4ubVertex3fSUN _funcptr_glTexCoord2fColor4ubVertex3fSUN
-extern PFNGLTEXCOORD2FCOLOR4UBVERTEX3FVSUNPROC _funcptr_glTexCoord2fColor4ubVertex3fvSUN;
+CI_API extern PFNGLTEXCOORD2FCOLOR4UBVERTEX3FVSUNPROC _funcptr_glTexCoord2fColor4ubVertex3fvSUN;
 #define glTexCoord2fColor4ubVertex3fvSUN _funcptr_glTexCoord2fColor4ubVertex3fvSUN
-extern PFNGLTEXCOORD2FNORMAL3FVERTEX3FSUNPROC _funcptr_glTexCoord2fNormal3fVertex3fSUN;
+CI_API extern PFNGLTEXCOORD2FNORMAL3FVERTEX3FSUNPROC _funcptr_glTexCoord2fNormal3fVertex3fSUN;
 #define glTexCoord2fNormal3fVertex3fSUN _funcptr_glTexCoord2fNormal3fVertex3fSUN
-extern PFNGLTEXCOORD2FNORMAL3FVERTEX3FVSUNPROC _funcptr_glTexCoord2fNormal3fVertex3fvSUN;
+CI_API extern PFNGLTEXCOORD2FNORMAL3FVERTEX3FVSUNPROC _funcptr_glTexCoord2fNormal3fVertex3fvSUN;
 #define glTexCoord2fNormal3fVertex3fvSUN _funcptr_glTexCoord2fNormal3fVertex3fvSUN
-extern PFNGLTEXCOORD2FVERTEX3FSUNPROC _funcptr_glTexCoord2fVertex3fSUN;
+CI_API extern PFNGLTEXCOORD2FVERTEX3FSUNPROC _funcptr_glTexCoord2fVertex3fSUN;
 #define glTexCoord2fVertex3fSUN _funcptr_glTexCoord2fVertex3fSUN
-extern PFNGLTEXCOORD2FVERTEX3FVSUNPROC _funcptr_glTexCoord2fVertex3fvSUN;
+CI_API extern PFNGLTEXCOORD2FVERTEX3FVSUNPROC _funcptr_glTexCoord2fVertex3fvSUN;
 #define glTexCoord2fVertex3fvSUN _funcptr_glTexCoord2fVertex3fvSUN
-extern PFNGLTEXCOORD4FCOLOR4FNORMAL3FVERTEX4FSUNPROC _funcptr_glTexCoord4fColor4fNormal3fVertex4fSUN;
+CI_API extern PFNGLTEXCOORD4FCOLOR4FNORMAL3FVERTEX4FSUNPROC _funcptr_glTexCoord4fColor4fNormal3fVertex4fSUN;
 #define glTexCoord4fColor4fNormal3fVertex4fSUN _funcptr_glTexCoord4fColor4fNormal3fVertex4fSUN
-extern PFNGLTEXCOORD4FCOLOR4FNORMAL3FVERTEX4FVSUNPROC _funcptr_glTexCoord4fColor4fNormal3fVertex4fvSUN;
+CI_API extern PFNGLTEXCOORD4FCOLOR4FNORMAL3FVERTEX4FVSUNPROC _funcptr_glTexCoord4fColor4fNormal3fVertex4fvSUN;
 #define glTexCoord4fColor4fNormal3fVertex4fvSUN _funcptr_glTexCoord4fColor4fNormal3fVertex4fvSUN
-extern PFNGLTEXCOORD4FVERTEX4FSUNPROC _funcptr_glTexCoord4fVertex4fSUN;
+CI_API extern PFNGLTEXCOORD4FVERTEX4FSUNPROC _funcptr_glTexCoord4fVertex4fSUN;
 #define glTexCoord4fVertex4fSUN _funcptr_glTexCoord4fVertex4fSUN
-extern PFNGLTEXCOORD4FVERTEX4FVSUNPROC _funcptr_glTexCoord4fVertex4fvSUN;
+CI_API extern PFNGLTEXCOORD4FVERTEX4FVSUNPROC _funcptr_glTexCoord4fVertex4fvSUN;
 #define glTexCoord4fVertex4fvSUN _funcptr_glTexCoord4fVertex4fvSUN
 
 #define GL_PHONG_HINT_WIN 0x80EB
