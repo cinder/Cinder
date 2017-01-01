@@ -237,8 +237,12 @@ class BufferDynamicT : public BufferTT {
 	//! Shrinks the allocated size to match the specified size, freeing any extra memory.
 	void shrinkToFit()
 	{
-		mAllocatedSize = this->getSize();
-		this->mData.resize( mAllocatedSize );
+		size_t size = this->getSize();
+		if ( mAllocatedSize > size ) {
+			mAllocatedSize = size;
+			this->mData.resize( mAllocatedSize );
+			this->mData.shrink_to_fit();
+		}
 	}
 
 	//! Returns the number of samples allocated in this buffer (may be larger than getSize()).
