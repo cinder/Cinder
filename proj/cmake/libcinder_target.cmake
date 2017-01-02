@@ -70,7 +70,6 @@ elseif( CINDER_MAC )
 	)
 elseif( CINDER_COCOA_TOUCH )
 elseif( CINDER_LINUX )
-    set( CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wabi-tag ) 
 endif()
 
 # Check compiler support for enabling c++11 or c++14.
