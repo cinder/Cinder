@@ -112,6 +112,16 @@ class Path2d {
 	//! Returns whether the point \a pt is contained within the boundaries of the path
 	bool	contains( const vec2 &pt ) const;
 
+	//! Returns the minimum distance from point \a pt to the path
+	float	calcDistance( const vec2 &pt ) const;
+	//! Returns the minimum distance from point \a pt to segment \a segment
+	float	calcDistance( const vec2 &pt, size_t segment ) const { return calcDistance( pt, segment, 0 ); }
+
+	//! Returns the point on the path closest to point \a pt.
+	vec2	calcClosestPoint( const vec2 &pt ) const;
+	//! Returns the point on segment \a segment that is closest to point \a pt
+	vec2	calcClosestPoint( const vec2 &pt, size_t segment ) const { return calcClosestPoint( pt, segment, 0 ); }
+
 	//! Calculates the length of the Path2d
 	float	calcLength() const;
 	//! Calculates the length of a specific segment in the range [\a minT,\a maxT], where \a minT and \a maxT range from 0 to 1 and are relative to the segment
@@ -140,6 +150,12 @@ class Path2d {
   private:
 	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
+	
+	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
+	float	calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const;
+
+	//! Returns the point on segment \a segment that is closest to \a pt. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
+	vec2	calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint ) const;
 	
 	std::vector<vec2>			mPoints;
 	std::vector<SegmentType>	mSegments;

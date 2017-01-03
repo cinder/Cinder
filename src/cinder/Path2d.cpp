@@ -23,6 +23,7 @@
 */
 
 
+#include "cinder/CinderMath.h"
 #include "cinder/Path2d.h"
 
 #include <algorithm>
@@ -974,6 +975,64 @@ bool Path2d::contains( const vec2 &pt ) const
 	crossings += linearCrossings( &(temp[0]), pt );
 	
 	return (crossings & 1) == 1;
+}
+
+float Path2d::calcDistance( const vec2 &pt ) const
+{
+	float distance = FLT_MAX;
+
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		distance = glm::min( calcDistance( pt, s, firstPoint ), distance );
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+
+	return distance;
+}
+
+float Path2d::calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const
+{
+	return glm::distance( pt, calcClosestPoint( pt, segment, firstPoint ) );
+}
+
+vec2 Path2d::calcClosestPoint( const vec2 &pt ) const
+{
+	vec2 result;
+	float distance2 = FLT_MAX;
+
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		vec2 p = calcClosestPoint( pt, s, firstPoint );
+		float d = glm::distance2( pt, p );
+		if( d < distance2 ) {
+			result = p;
+			distance2 = d;
+		}
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+
+	return result;
+}
+
+vec2 Path2d::calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint ) const
+{
+	if( firstPoint == 0 ) {
+		for( size_t s = 0; s < segment; ++s )
+			firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+
+	switch( mSegments[segment] ) {
+		case CUBICTO:
+			return getClosestPointCubic( &mPoints[firstPoint], pt );
+		case QUADTO:
+			return getClosestPointQuadratic( &mPoints[firstPoint], pt );
+		case LINETO:
+			return getClosestPointLinear( &mPoints[firstPoint], pt );
+		case CLOSE:
+			return getClosestPointLinear( mPoints[firstPoint], mPoints[0], pt );
+		default:
+			return vec2();
+	}
 }
 
 float Path2d::calcLength() const

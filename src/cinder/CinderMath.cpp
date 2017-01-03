@@ -49,6 +49,7 @@
 
 #include "cinder/CinderMath.h"
 #include <algorithm>
+#include <vector>
 
 using namespace glm;
 
@@ -63,8 +64,10 @@ int solveCubic( T a, T b, T c, T d, T result[3] )
 	if( a == 0 )
 		return solveQuadratic( b, c, d, result );
 
-	T f = ((3 * c / a) - ((b * b) / (a * a))) / 3;
-	T g = ((2 * b * b * b) / (a * a * a) - (9 * b * c) / (a * a) + (27 * d) / (a)) / 27;
+	T a2 = a * a;
+	T b2 = b * b;
+	T f = ((3 * c / a) - (b2 / a2)) / 3;
+	T g = ((2 * b2 * b) / (a2 * a) - (9 * b * c) / a2 + (27 * d) / a) / 27;
 	T h = g * g / 4 + f * f * f / 27;
 
 	if( f == 0 && g == 0 && h == 0 ) {
@@ -73,9 +76,10 @@ int solveCubic( T a, T b, T c, T d, T result[3] )
 	}
 	else if( h > 0 ) {
 		// 1 root
-		T r = -( g / 2 ) + math<T>::sqrt( h );
+		T hr = math<T>::sqrt( h );
+		T r = -( g / 2 ) + hr;
 		T s = math<T>::cbrt( r );
-		T t = -(g / 2) - math<T>::sqrt( h );
+		T t = -(g / 2) - hr;
 		T u = math<T>::cbrt( t );
 
 		result[0] = (s + u) - (b / (3 * a));
@@ -89,7 +93,7 @@ int solveCubic( T a, T b, T c, T d, T result[3] )
 		T m = math<T>::cos( k / 3 );
 		T n = math<T>::sqrt(3) * math<T>::sin( k / 3 );
 		T p = -b / (3 * a);
-		result[0] = 2 * j * math<T>::cos(k / 3) - (b / (3 * a));
+		result[0] = 2 * j * m - (b / (3 * a));
 		result[1] = l * (m + n) + p;
 		result[2] = l * (m - n) + p;
 		return 3;
@@ -314,6 +318,287 @@ vec2 getClosestPointEllipse( const vec2& center, const vec2& axisA, const vec2& 
 
 	return result;
 }
+
+namespace {
+
+//! Given a point and a Bezier curve, generate a 5th-degree Bezier - format equation whose solution finds the point on the curve nearest the user - defined point.
+template<typename T>
+void convertToBezierForm( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint, glm::tvec2<T, glm::defaultp> *w )
+{
+	static const T z[3][4] = { { T(1.0), T(0.6), T(0.3), T(0.1) },{ T(0.4), T(0.6), T(0.6), T(0.4) },{ T(0.1), T(0.3), T(0.6), T(1.0) } };
+
+	// Determine the c's -- these are vectors created by subtracting point P from each of the control points.
+	glm::tvec2<T, glm::defaultp> c[4];
+	c[0] = controlPoints[0] - testPoint;
+	c[1] = controlPoints[1] - testPoint;
+	c[2] = controlPoints[2] - testPoint;
+	c[3] = controlPoints[3] - testPoint;
+
+	// Determine the d's -- these are vectors created by subtracting each control point from the next.
+	glm::tvec2<T, glm::defaultp> d[3];
+	d[0] = ( controlPoints[1] - controlPoints[0] ) * T{3};
+	d[1] = ( controlPoints[2] - controlPoints[1] ) * T{3};
+	d[2] = ( controlPoints[3] - controlPoints[2] ) * T{3};
+
+	// Create the c,d table -- this is a table of dot products of the c's and d's.
+	T cdTable[3][4];
+	for( int row = 0; row <= 2; row++ ) {
+		for( int column = 0; column <= 3; column++ ) {
+			cdTable[row][column] = glm::dot( d[row], c[column] );
+		}
+	}
+
+	// Now, apply the z's to the dot products, on the skew diagonal. Also, set up the x-values, making these "points".
+	for( int i = 0; i <= 5; i++ ) {
+		w[i].y = 0.0;
+		w[i].x = (T)( i ) / 5;
+	}
+
+	const int n = 3;
+	const int m = 2;
+	for( int k = 0; k <= n + m; k++ ) {
+		int lb = glm::max( 0, k - m );
+		int ub = glm::min( k, n );
+		for( int i = lb; i <= ub; i++ ) {
+			int j = k - i;
+			w[k].y += cdTable[j][i] * z[j][i];
+		}
+	}
+}
+
+//! Returns the sign of the value (-1 if < 0, 0 if == 0, 1 if > 0). Faster than using glm::sign()!
+template <typename T> 
+int sgn( T val )
+{
+	return ( T( 0 ) < val ) - ( val < T( 0 ) );
+}
+
+//! Count the number of times a Bezier control polygon crosses the x-axis. This number is >= the number of roots.
+template<typename T>
+int crossingCount( const glm::tvec2<T, glm::defaultp> *controlPoints, int degree )
+{
+	int n = 0;
+
+	int sign = sgn( controlPoints[0].y );
+	for( int i = 1; i <= degree; i++ ) {
+		int s = sgn( controlPoints[i].y );
+		if( sign != s )
+			n++;
+		sign = s;
+	}
+
+	return n;
+}
+
+//! Check if the control polygon of a Bezier curve is flat enough for recursive subdivision to bottom out.
+template<typename T>
+int controlPolygonFlatEnough( const glm::tvec2<T, glm::defaultp> *controlPoints, int degree )
+{
+	// Derive the implicit equation for line connecting first and last control points.
+	T a = controlPoints[0].y - controlPoints[degree].y;
+	T b = controlPoints[degree].x - controlPoints[0].x;
+	T c = controlPoints[0].x * controlPoints[degree].y - controlPoints[degree].x * controlPoints[0].y;
+
+	T max_distance_above{0};
+	T max_distance_below{0};
+
+	T value;
+	for( int i = 1; i < degree; i++ ) {
+		value = a * controlPoints[i].x + b * controlPoints[i].y + c;
+		max_distance_above = glm::max( max_distance_above, value );
+		max_distance_below = glm::min( max_distance_below, value );
+	}
+
+	// Compute intercepts of bounding box.
+	T error = glm::abs( ( max_distance_above - max_distance_below ) / a );
+
+	static const T kEpsilon = std::numeric_limits<T>::epsilon();
+	return ( error < kEpsilon ) ? 1 : 0;
+}
+
+//! Compute intersection of chord from first control point to last with x-axis.
+template<typename T>
+T computeXIntercept( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T, glm::defaultp> &p3 )
+{
+	glm::tvec2<T, glm::defaultp> d = p3 - p0;
+	return ( d.x * p0.y - d.y * p0.x ) / ( -d.y );
+}
+
+
+// Evaluate a Bezier curve at a particular parameter value. Assumes the curve is cubic (degree == 3).
+template<typename T>
+glm::tvec2<T, glm::defaultp> bezier( const glm::tvec2<T, glm::defaultp> *controlPoints, T t )
+{
+	T u = T{ 1 } -t;
+	return u * u * ( u * controlPoints[0] + T{ 3 } * t * controlPoints[1] ) + t * t * ( T{ 3 } * u * controlPoints[2] + t * controlPoints[3] );
+}
+
+// Evaluate a Bezier curve at a particular parameter value. Fill in control points for resulting sub-curves in \a left and \a right.
+template<typename T>
+glm::tvec2<T, glm::defaultp> bezier( const glm::tvec2<T, glm::defaultp> *controlPoints, int degree, T t, glm::tvec2<T, glm::defaultp> *left, glm::tvec2<T, glm::defaultp> *right )
+{
+	assert( nullptr != left );
+	assert( nullptr != right );
+	assert( degree <= 5 );
+
+	glm::tvec2<T, glm::defaultp> value[6];
+
+	// Copy control points.
+	memcpy( value, controlPoints, sizeof( value ) );
+
+	// Initialize the first sub-curve.
+	left[0] = controlPoints[0];
+
+	// Triangle computation.
+	for( int i = 1; i <= degree; i++ ) {
+		for( int j = 0; j <= degree - i; j++ ) {
+			value[j] += t * ( value[j + 1] - value[j] );
+		}
+
+		// Copy parameters for the first sub-curve.
+		left[i] = value[0];
+	}
+
+	// Copy parameters for the second sub-curve.
+	memcpy( right, value, sizeof( value ) );
+
+	return value[degree];
+}
+
+//! Given a 5th-degree equation in Bernstein-Bezier form, find all of the roots in the interval[0, 1]. Return the number of roots found.
+template<typename T>
+int findRoots( const glm::tvec2<T, glm::defaultp> *controlPoints, int degree, T *t, int depth )
+{
+	switch( crossingCount( controlPoints, degree ) ) {
+		case 0: { // No solutions here.
+			return 0;
+		}
+		case 1: { // Unique solution
+			// Stop recursion when the tree is deep enough. If deep enough, return 1 solution at midpoint.
+			const int kMaxDepth = 64;
+			if( depth >= kMaxDepth ) {
+				t[0] = ( controlPoints[0].x + controlPoints[5].x ) / T{2};
+				return 1;
+			}
+			if( controlPolygonFlatEnough<T>( controlPoints, degree ) ) {
+				t[0] = computeXIntercept<T>( controlPoints[0], controlPoints[degree] );
+				return 1;
+			}
+			break;
+		}
+	}
+
+	// Otherwise, solve recursively after subdividing control polygon.
+	glm::tvec2<T, glm::defaultp> left[6], right[6];
+	bezier<T>( controlPoints, degree, 0.5f, left, right );
+	
+	T left_t[6], right_t[6];
+	int left_count = findRoots<T>( left, degree, left_t, depth + 1 );
+	int right_count = findRoots<T>( right, degree, right_t, depth + 1 );
+
+	// Gather solutions together.
+	for( int i = 0; i < left_count; i++ ) {
+		t[i] = left_t[i];
+	}
+	for( int i = 0; i < right_count; i++ ) {
+		t[i + left_count] = right_t[i];
+	}
+
+	// Send back total number of solutions.
+	return ( left_count + right_count );
+}
+
+} // anonymous namespace for closestPointCubic
+
+template<typename T>
+glm::tvec2<T, glm::defaultp> getClosestPointLinear( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> & testPoint )
+{
+	T d = glm::distance2( controlPoints[1], controlPoints[0] );
+	if( d > T{0} ) {
+		T t = glm::clamp( glm::dot( testPoint - controlPoints[0], controlPoints[1] - controlPoints[0] ) / d, T{0}, T{1} );
+		return controlPoints[0] + t * ( controlPoints[1] - controlPoints[0] );
+	}
+	else {
+		return controlPoints[0];
+	}
+}
+template glm::tvec2<float, glm::defaultp> getClosestPointLinear( const glm::tvec2<float, glm::defaultp> *controlPoints, const glm::tvec2<float, glm::defaultp> & testPoint );
+template glm::tvec2<double, glm::defaultp> getClosestPointLinear( const glm::tvec2<double, glm::defaultp> *controlPoints, const glm::tvec2<double, glm::defaultp> & testPoint );
+
+template<typename T>
+glm::tvec2<T, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> & testPoint )
+{
+	glm::tvec2<T, glm::defaultp> closest;
+
+	glm::tvec2<T, glm::defaultp> M = controlPoints[0] - testPoint;
+	glm::tvec2<T, glm::defaultp> A = controlPoints[1] - controlPoints[0];
+	glm::tvec2<T, glm::defaultp> B = controlPoints[2] - controlPoints[1] - A;
+	T a = glm::dot( B, B );
+	T b = 3 * glm::dot( A, B );
+	T c = 2 * glm::dot( A, A ) + glm::dot( M, B );
+	T d = glm::dot( M, A );
+	T t[3];
+	int solutions = solveCubic<T>( a, b, c, d, t );
+
+	T distance2 = std::numeric_limits<T>::max();
+	for( int i = 0; i < 3; ++i ) {
+		T u = glm::clamp( t[i], T{0}, T{1} );
+		T v = T{1} - u;
+		glm::tvec2<T, glm::defaultp> p = controlPoints[0] * ( v*v ) + controlPoints[1] * ( T{2} * u*v ) + controlPoints[2] * ( u*u );
+
+		T d = glm::distance2( testPoint, p );
+		if( d < distance2 ) {
+			closest = p;
+			distance2 = d;
+		}
+	}
+
+	return closest;
+}
+template glm::tvec2<float, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<float, glm::defaultp> *controlPoints, const glm::tvec2<float, glm::defaultp> & testPoint );
+template glm::tvec2<double, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<double, glm::defaultp> *controlPoints, const glm::tvec2<double, glm::defaultp> & testPoint );
+
+template<typename T>
+glm::tvec2<T, glm::defaultp> getClosestPointCubic( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> & testPoint )
+{
+	// Convert problem to 5th-degree Bezier form.
+	glm::tvec2<T, glm::defaultp> w[6];
+	convertToBezierForm<T>( controlPoints, testPoint, w );
+
+	// Find all possible roots of 5th-degree equation.
+	T t_candidate[5];
+	int n_solutions = findRoots<T>( w, 5, t_candidate, 0 );
+
+	// Compare distances of P to all candidates, and to t=0, and t=1.
+	T t{ 0 };
+	{
+		// Check distance to beginning of curve, where t = 0.
+		T dist = glm::distance2( testPoint, controlPoints[0] );
+
+		// Find distances for candidate points.
+		glm::tvec2<T, glm::defaultp> p;
+		for( int i = 0; i < n_solutions; i++ ) {
+			p = bezier<T>( controlPoints, t_candidate[i] );
+			T new_dist = glm::distance2( testPoint, p );
+			if( new_dist < dist ) {
+				dist = new_dist;
+				t = t_candidate[i];
+			}
+		}
+
+		// Finally, look at distance to end point, where t = 1.0.
+		T new_dist = glm::distance2( testPoint, controlPoints[3] );
+		if( new_dist < dist ) {
+			dist = new_dist;
+			t = T{ 1 };
+		}
+	}
+
+	// Return the point on the curve at parameter value t.
+	return ( bezier<T>( controlPoints, t ) );
+}
+template glm::tvec2<float, glm::defaultp> getClosestPointCubic<float>( const glm::tvec2<float, glm::defaultp> *controlPoints, const glm::tvec2<float, glm::defaultp> & testPoint );
+template glm::tvec2<double, glm::defaultp> getClosestPointCubic<double>( const glm::tvec2<double, glm::defaultp> *controlPoints, const glm::tvec2<double, glm::defaultp> & testPoint );
 
 union float32_t
 {
