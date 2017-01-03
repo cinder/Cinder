@@ -23,6 +23,8 @@
 
 #include "cinder/Signals.h"
 
+using namespace std;
+
 namespace cinder { namespace signals {
 
 Connection::Connection()
@@ -33,6 +35,24 @@ Connection::Connection()
 Connection::Connection( const std::shared_ptr<detail::Disconnector> &disconnector, detail::SignalLinkBase *link, int priority )
 	: mDisconnector( disconnector ), mLink( link ), mPriority( priority )
 {
+}
+
+Connection::Connection( Connection &&other )
+	: mDisconnector( move( other.mDisconnector ) ), mLink( move( other.mLink ) ), mPriority( move( other.mPriority ) )
+{
+}
+
+Connection& Connection::operator=( Connection &&rhs )
+{	
+	mDisconnector = move( rhs.mDisconnector );
+	mLink = move( rhs.mLink );
+	mPriority = move( rhs.mPriority );
+
+	// Note: on pre-C++14 compilers, we still need to reset the rhs' weak_ptr<Disconnector>, as it doesn't yet support move semantics
+	// TODO: remove once all compilers support C++14
+	rhs.mDisconnector.reset();
+
+	return *this;
 }
 
 bool Connection::disconnect()
@@ -80,8 +100,7 @@ ScopedConnection::ScopedConnection()
 
 ScopedConnection::~ScopedConnection()
 {
-	if( mShouldDisconnect )
-		disconnect();
+	disconnect();
 }
 
 ScopedConnection::ScopedConnection( ScopedConnection &&other )
@@ -97,8 +116,6 @@ ScopedConnection::ScopedConnection( Connection &&other )
 ScopedConnection& ScopedConnection::operator=( ScopedConnection &&rhs )
 {
 	disconnect(); // first disconnect from existing
-	rhs.mShouldDisconnect = false; // mark that rhs shouldn't disconnect as it is about to be moved to this
-
 	Connection::operator=( std::move( rhs ) );
 	return *this;
 }

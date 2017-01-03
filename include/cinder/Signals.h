@@ -121,6 +121,8 @@ class Connection {
   public:
 	Connection();
 	Connection( const std::shared_ptr<detail::Disconnector> &disconnector, detail::SignalLinkBase *link, int priority );
+	Connection( Connection &&other );
+	Connection& operator=( Connection &&rhs );
 
 	//! Disconnects this Connection from the callback chain. \a return true if a disconnection was made, false otherwise.
 	bool disconnect();
@@ -148,9 +150,6 @@ class ScopedConnection : public Connection, private Noncopyable {
 	ScopedConnection( ScopedConnection &&other );
 	ScopedConnection( Connection &&other );
 	ScopedConnection& operator=( ScopedConnection &&rhs );
-
-  private:
-	bool	mShouldDisconnect = true; // only set to false when move assignment operator is invoked.
 };
 
 // ----------------------------------------------------------------------------------------------------
