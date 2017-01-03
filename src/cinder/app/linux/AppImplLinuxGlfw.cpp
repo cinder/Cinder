@@ -394,10 +394,20 @@ void AppImplLinux::run()
         // Sleep until the next frame
         sleepUntilNextFrame();  
 
-        // Check to see if we need to exit
-        if( ::glfwWindowShouldClose( mMainWindow->getImpl()->getNative() ) ) {
-            mShouldQuit = true;
-        }
+        // Check if a window should be closed / destroyed or if we should exit.
+        auto shouldCloseWindow = [ this ] ( WindowImplLinux* window ) {
+           if( ::glfwWindowShouldClose( window->getNative() ) ) {
+               window->getWindow()->emitClose();
+               if( window->getNative() == mMainWindow->getImpl()->getNative() ) {
+                   mShouldQuit = true;
+               }
+               ::glfwDestroyWindow( window->getNative() );
+               return true;
+           }
+           return false;
+        };
+
+        mWindows.remove_if( shouldCloseWindow );
     }
 
   terminate:
