@@ -9,8 +9,8 @@ using namespace std;
 
 class ShapeTestApp : public App {
   public:
-	void setup();
-	void draw();
+	void setup() override;
+	void draw() override;
 
 	void mouseMove( MouseEvent event ) override;
 	void mouseDown( MouseEvent event ) override;
@@ -182,14 +182,17 @@ void ShapeTestApp::mouseWheel( MouseEvent event )
 void ShapeTestApp::keyDown( KeyEvent event )
 {
 	switch( event.getCode() ) {
-	case KeyEvent::KEY_ESCAPE:
-		quit();
+		case KeyEvent::KEY_ESCAPE:
+			quit();
 		break;
-	case KeyEvent::KEY_s:
-		generateSDF();
+		case KeyEvent::KEY_s:
+			generateSDF();
 		break;
-	default:
-		setRandomGlyph();
+		case KeyEvent::KEY_f:
+			setRandomFont();
+		break;
+		case KeyEvent::KEY_g:
+			setRandomGlyph();
 		break;
 	}
 }
