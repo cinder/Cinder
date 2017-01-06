@@ -12,6 +12,8 @@ class ShapeTestApp : public App {
 	void setup() override;
 	void draw() override;
 
+	void drawDebugShape( const Shape2d &s, float radius ) const;
+
 	void mouseMove( MouseEvent event ) override;
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
@@ -111,6 +113,50 @@ void ShapeTestApp::generateSDF()
 	mTexture = gl::Texture2d::create( mChannel, gl::Texture2d::Format().magFilter( GL_NEAREST ) );
 }
 
+void ShapeTestApp::drawDebugShape( const Shape2d &s, float radius ) const
+{
+	for( int c = 0; c < s.getNumContours(); ++c ) {
+		Path2d p = s.getContour( c);
+
+		size_t firstPoint = 0;
+		for( size_t s = 0; s < p.getNumSegments(); ++s ) {
+			switch( p.getSegmentType( s ) ) {
+				case Path2d::CUBICTO:
+					gl::color( 0, 1, 1 );
+					gl::drawSolidCircle( p.getPoint(firstPoint+0), radius, 3 );
+					gl::color( 1, 0, 1 );
+					gl::drawSolidCircle( p.getPoint(firstPoint+1), radius ); 
+					gl::color( 1, 0, 1 );
+					gl::drawSolidCircle( p.getPoint(firstPoint+2), radius );
+					gl::color( 0, 1, 1 );
+					gl::drawSolidCircle( p.getPoint(firstPoint+3), radius, 3 );
+				break;
+				case Path2d::QUADTO:
+					gl::color( 1, 0.5, 0.25f, 0.5f );
+					gl::drawSolidCircle( p.getPoint(firstPoint+0), radius );
+					gl::color( 0.25, 0.5, 1.0f );
+					gl::drawStrokedRect( Rectf( p.getPoint(firstPoint+1) - vec2( radius ), p.getPoint(firstPoint+1) + vec2( radius ) ) ); 
+					gl::color( 1, 0.5, 0.25f, 0.5f );
+					gl::drawSolidCircle( p.getPoint(firstPoint+2), radius );
+				break;
+				case Path2d::LINETO:
+					gl::color( 0, 1, 0 );
+					gl::drawStrokedCircle( p.getPoint(firstPoint+0), radius );
+					gl::drawStrokedCircle( p.getPoint(firstPoint+1), radius );
+				break;
+				case Path2d::CLOSE: // ignore - we always assume closed
+					gl::color( 0.9, 0.1, 0.1 );
+					gl::drawStrokedCircle( p.getPoint(firstPoint+0), radius );
+				break;
+				default:
+					;//throw Path2dExc();
+			}
+			
+			firstPoint += Path2d::sSegmentTypePointCounts[p.getSegmentType(s)];
+		}
+	}
+}
+
 void ShapeTestApp::draw()
 {
 	gl::clear();
@@ -128,6 +174,8 @@ void ShapeTestApp::draw()
 
 		gl::popModelMatrix();
 	}
+
+	drawDebugShape( mShape, 3.0f );
 
 	// Draw shape outlines.
 	gl::color( mIsInside ? Color( 0.4f, 0.8f, 0.0f ) : Color( 0.8f, 0.4f, 0.0f ) );
