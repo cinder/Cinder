@@ -161,12 +161,18 @@ EAGLContext* RendererGl::getEaglContext() const
 
 void RendererGl::startDraw()
 {
-	[mImpl makeCurrentContext:false];
+	if( mStartDrawFn )
+		mStartDrawFn( this );
+	else
+		[mImpl makeCurrentContext:false];
 }
 
 void RendererGl::finishDraw()
 {
-	[mImpl flushBuffer];
+	if( mFinishDrawFn )
+		mFinishDrawFn( this );
+	else
+		[mImpl flushBuffer];
 }
 
 void RendererGl::setFrameSize( int width, int height )
