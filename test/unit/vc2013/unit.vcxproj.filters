@@ -42,6 +42,12 @@
     <ClCompile Include="..\src\UnicodeTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\PolyLineTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Path2dTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\signals\SignalsTest.cpp">
       <Filter>Source Files\signals</Filter>
     </ClCompile>
@@ -53,9 +59,6 @@
     </ClCompile>
     <ClCompile Include="..\src\audio\RingBufferUnit.cpp">
       <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Utilities.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
