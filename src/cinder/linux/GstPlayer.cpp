@@ -121,8 +121,48 @@ void GstData::updateState( const GstState& current )
     }
 }
 
+GstBusSyncReply checkBusMessagesSync( GstBus* bus, GstMessage* message, gpointer userData )
+{
+    if( ! userData ) {
+        return GST_BUS_DROP;
+    }
 
-gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userData )
+    GstData& data = *( static_cast<GstData*>( userData ) );
+
+    switch( GST_MESSAGE_TYPE( message ) ) 
+    {
+#if defined( CINDER_GST_HAS_GL )
+        case GST_MESSAGE_NEED_CONTEXT: {
+            const gchar *context_type = nullptr;
+            gst_message_parse_context_type( message, &context_type );
+
+            g_print( "Need context %s from element %s\n", context_type, GST_ELEMENT_NAME( GST_MESSAGE_SRC( message ) ) );
+
+            GstContext* context = nullptr;
+            if( g_strcmp0( context_type, GST_GL_DISPLAY_CONTEXT_TYPE ) == 0 ) {
+                context = gst_context_new( GST_GL_DISPLAY_CONTEXT_TYPE, TRUE );
+                gst_context_set_gl_display( context, sGstGLDisplay );
+                gst_element_set_context( GST_ELEMENT( message->src ), context );
+            }
+            else if( g_strcmp0( context_type, "gst.gl.app_context" ) == 0 ) {
+                context = gst_context_new( "gst.gl.app_context", TRUE );
+                GstStructure *s = gst_context_writable_structure( context );
+                gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, data.context, nullptr );
+                gst_element_set_context( GST_ELEMENT( message->src ), context );
+            }
+
+            if( context ) {
+                gst_context_unref( context );
+            }
+            break;
+        }
+        default: break;
+#endif
+    }
+    return GST_BUS_PASS;
+}
+
+gboolean checkBusMessagesAsync( GstBus* bus, GstMessage* message, gpointer userData )
 {
     if( ! userData ){
         return true;
@@ -163,33 +203,6 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userData )
             }
             break;
         }
-
-#if defined( CINDER_GST_HAS_GL )
-        case GST_MESSAGE_NEED_CONTEXT: {
-            const gchar *context_type = nullptr;
-            gst_message_parse_context_type( message, &context_type );
-
-            g_print( "Need context %s from element %s\n", context_type, GST_ELEMENT_NAME( GST_MESSAGE_SRC( message ) ) );
-
-            GstContext* context = nullptr;
-            if( g_strcmp0( context_type, GST_GL_DISPLAY_CONTEXT_TYPE ) == 0 ) {
-                context = gst_context_new( GST_GL_DISPLAY_CONTEXT_TYPE, TRUE );
-                gst_context_set_gl_display( context, sGstGLDisplay );
-                gst_element_set_context( GST_ELEMENT( message->src ), context );
-            }
-            else if( g_strcmp0( context_type, "gst.gl.app_context" ) == 0 ) {
-                context = gst_context_new( "gst.gl.app_context", TRUE );
-                GstStructure *s = gst_context_writable_structure( context );
-                gst_structure_set( s, "context", GST_GL_TYPE_CONTEXT, data.context, nullptr );
-                gst_element_set_context( GST_ELEMENT( message->src ), context );
-            }
-
-            if( context ) {
-                gst_context_unref( context );
-            }
-            break;
-        }
-#endif
 
         case GST_MESSAGE_BUFFERING: {
             if( data.isLive ) break; // No buffering for live sources.
@@ -455,7 +468,8 @@ void GstPlayer::setCustomPipeline( const GstCustomPipelineData &customPipeline )
 void GstPlayer::addBusWatch( GstElement* pipeline )
 {
     mGstBus = gst_pipeline_get_bus( GST_PIPELINE( pipeline ) );
-    mBusId  = gst_bus_add_watch( mGstBus, checkBusMessages, &mGstData );
+    mBusId  = gst_bus_add_watch( mGstBus, checkBusMessagesAsync, &mGstData );
+    gst_bus_set_sync_handler( mGstBus, checkBusMessagesSync, &mGstData, nullptr );
     gst_object_unref( mGstBus );
 }
 
