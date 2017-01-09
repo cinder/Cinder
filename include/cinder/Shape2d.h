@@ -78,13 +78,7 @@ class Shape2d {
 	//! Returns the minimum distance from the shape to point \a pt.
 	float	calcDistance( const vec2 &pt ) const;
 	//! Returns the minimum distance from the Shape2d to point \a pt. For points inside the Shape2d, the distance is negative. If \a evenOddFill is \c true (the default) then Even-Odd fill rule is used, otherwise the Winding fill rule is applied.
-	float	calcSignedDistance( const vec2 &pt, bool evenOddFill = true ) const
-	{
-		if( contains( pt, evenOddFill ) )
-			return -calcDistance( pt );
-		else
-			return calcDistance( pt );
-	}
+	float	calcSignedDistance( const vec2 &pt, bool evenOddFill = true ) const;
 	//! Returns the point on the Shape2d that is closest to point \a pt.
 	vec2	calcClosestPoint( const vec2 &pt ) const;
 

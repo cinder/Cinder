@@ -142,6 +142,15 @@ float Shape2d::calcDistance( const vec2 &pt ) const
 	return distance;
 }
 
+float Shape2d::calcSignedDistance( const vec2 &pt, bool evenOddFill ) const
+{
+	if( contains( pt, evenOddFill ) )
+		return -calcDistance( pt );
+	else
+		return calcDistance( pt );
+}
+
+
 vec2 Shape2d::calcClosestPoint( const vec2 &pt ) const
 {
 	vec2 result;

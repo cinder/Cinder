@@ -115,16 +115,9 @@ class Path2d {
 	//! Returns the minimum distance from point \a pt to the Path2d
 	float	calcDistance( const vec2 &pt ) const;
 	//! Returns the minimum distance from point \a pt to segment \a segment
-	float	calcDistance( const vec2 &pt, size_t segment ) const { return calcDistance( pt, segment, 0 ); }
+	float	calcDistance( const vec2 &pt, size_t segment ) const;
 	//! Returns the minimum distance from the Shape2d to point \a pt. For points inside the Shape2d, the distance is negative.
-	float	calcSignedDistance( const vec2 &pt ) const
-	{
-		if( contains( pt ) )
-			return -calcDistance( pt );
-		else
-			return calcDistance( pt );
-	}
-
+	float	calcSignedDistance( const vec2 &pt ) const;
 
 	//! Returns the point on the Path2d closest to point \a pt.
 	vec2	calcClosestPoint( const vec2 &pt ) const;
@@ -163,7 +156,8 @@ class Path2d {
 	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
 	float	calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const;
 
-	int calcWinding( const ci::vec2 &pt, int *onCurveCount ) const;
+	//! Calculates the winding number of \a pt, representing the total number of times the Path2d travels around \a pt
+	int		calcWinding( const ci::vec2 &pt, int *onCurveCount ) const;
 
 	//! Returns the point on segment \a segment that is closest to \a pt. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
 	vec2	calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint ) const;

@@ -1411,6 +1411,20 @@ float Path2d::calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) 
 	return glm::distance( pt, calcClosestPoint( pt, segment, firstPoint ) );
 }
 
+float Path2d::calcDistance( const vec2 &pt, size_t segment ) const
+{
+	return calcDistance( pt, segment, 0 );
+}
+
+float Path2d::calcSignedDistance( const vec2 &pt ) const
+{
+	if( contains( pt ) )
+		return -calcDistance( pt );
+	else
+		return calcDistance( pt );
+}
+
+
 vec2 Path2d::calcClosestPoint( const vec2 &pt ) const
 {
 	vec2 result;
