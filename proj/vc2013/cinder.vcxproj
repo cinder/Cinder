@@ -114,12 +114,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IncludePath);$(DXSDK_DIR)\include</IncludePath>
@@ -136,20 +136,20 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <OutDir>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <IntDir>$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">
-    <OutDir>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <OutDir>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <IntDir>$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <OutDir>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
     <IntDir>$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">
-    <OutDir>..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
+    <OutDir>$(ProjectDir)..\..\lib\msw\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
     <IntDir>$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\$(PlatformToolset)\intermediate\</IntDir>
   </PropertyGroup>
