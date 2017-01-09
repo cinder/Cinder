@@ -170,7 +170,7 @@ static bool sIsEaglLayer;
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() ) {
-			TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
+			TouchEvent touchEvent( [mDelegate getWindowRef], touchList, event );
 			[mDelegate touchesBegan:&touchEvent];
 		}
 	}
@@ -196,7 +196,7 @@ static bool sIsEaglLayer;
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() ) {
-			TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
+			TouchEvent touchEvent( [mDelegate getWindowRef], touchList, event );
 			[mDelegate touchesMoved:&touchEvent];
 		}
 	}
@@ -223,7 +223,7 @@ static bool sIsEaglLayer;
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() ) {
-			TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
+			TouchEvent touchEvent( [mDelegate getWindowRef], touchList, event );
 			[mDelegate touchesEnded:&touchEvent];
 		}
 	}
