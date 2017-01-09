@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project, All rights reserved.
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -109,8 +109,20 @@ class Path2d {
 	//! Returns the precise bounding box around the curve itself. Slower to calculate than calcBoundingBox().
 	Rectf	calcPreciseBoundingBox() const;	
 
-	//! Returns whether the point \a pt is contained within the boundaries of the path
-	bool	contains( const vec2 &pt ) const;
+	//! Returns whether the point \a pt is contained within the boundaries of the Path2d. If \a evenOddFill is \c true (the default) then Even-Odd fill rule is used, otherwise, the Winding fill rule is applied.
+	bool	contains( const vec2 &pt, bool evenOddFill = true ) const;
+
+	//! Returns the minimum distance from point \a pt to the Path2d
+	float	calcDistance( const vec2 &pt ) const;
+	//! Returns the minimum distance from point \a pt to segment \a segment
+	float	calcDistance( const vec2 &pt, size_t segment ) const;
+	//! Returns the minimum distance from the Shape2d to point \a pt. For points inside the Shape2d, the distance is negative.
+	float	calcSignedDistance( const vec2 &pt ) const;
+
+	//! Returns the point on the Path2d closest to point \a pt.
+	vec2	calcClosestPoint( const vec2 &pt ) const;
+	//! Returns the point on segment \a segment that is closest to point \a pt
+	vec2	calcClosestPoint( const vec2 &pt, size_t segment ) const { return calcClosestPoint( pt, segment, 0 ); }
 
 	//! Calculates the length of the Path2d
 	float	calcLength() const;
@@ -140,6 +152,15 @@ class Path2d {
   private:
 	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
+	
+	//! Returns the minimum distance from point \a pt to segment \a segment. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
+	float	calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const;
+
+	//! Calculates the winding number of \a pt, representing the total number of times the Path2d travels around \a pt
+	int		calcWinding( const ci::vec2 &pt, int *onCurveCount ) const;
+
+	//! Returns the point on segment \a segment that is closest to \a pt. The \a firstPoint parameter can be used as an optimization if known, otherwise pass 0.
+	vec2	calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint ) const;
 	
 	std::vector<vec2>			mPoints;
 	std::vector<SegmentType>	mSegments;

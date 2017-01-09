@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -58,7 +58,7 @@ class Shape2d {
 	
 	const vec2&	getCurrentPoint() const { return mContours.back().getCurrentPoint(); }
 	
-	//! Appends the contours of \a shape to this shape
+	//! Appends the contours of \a shape to this Shape2d
 	void			append( const Shape2d &shape );
     void			appendContour( const Path2d &contour ) { mContours.push_back( contour ); }
 	void			removeContour( size_t i ) { mContours.erase( mContours.begin() + i ); }
@@ -75,9 +75,15 @@ class Shape2d {
 	Rectf	calcBoundingBox() const;
 	//! Returns the precise bounding box of the Shape's curves. Slower to calculate than calcBoundingBox().
 	Rectf	calcPreciseBoundingBox() const;
+	//! Returns the minimum distance from the shape to point \a pt.
+	float	calcDistance( const vec2 &pt ) const;
+	//! Returns the minimum distance from the Shape2d to point \a pt. For points inside the Shape2d, the distance is negative. If \a evenOddFill is \c true (the default) then Even-Odd fill rule is used, otherwise the Winding fill rule is applied.
+	float	calcSignedDistance( const vec2 &pt, bool evenOddFill = true ) const;
+	//! Returns the point on the Shape2d that is closest to point \a pt.
+	vec2	calcClosestPoint( const vec2 &pt ) const;
 
-	//! Returns whether the point \a pt is contained within the boundaries of the shape
-	bool	contains( const vec2 &pt ) const;
+	//! Returns whether the point \a pt is contained within the boundaries of the Shape2d. If \a evenOddFill is \c true (the default) then Even-Odd fill rule is used, otherwise the Winding fill rule is applied.
+	bool	contains( const vec2 &pt, bool evenOddFill = true ) const;
 
 	//! Iterates all of the contours and points of a Shape2d.
 	/** Expects a template parameter that implements
