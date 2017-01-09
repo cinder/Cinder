@@ -77,7 +77,7 @@ class TouchEvent : public Event {
 		: Event()
 	{}
 	TouchEvent( const WindowRef &win, const std::vector<Touch> &touches )
-	: Event( win ), mTouches( touches ), mNative( nullptr )
+		: Event( win ), mTouches( touches ), mNative( nullptr )
 	{}
 	TouchEvent( const WindowRef &win, const std::vector<Touch> &touches, void *native )
 		: Event( win ), mTouches( touches ), mNative( native )
@@ -92,7 +92,7 @@ class TouchEvent : public Event {
   private:
 	std::vector<Touch>		mTouches;
 	bool					mHandled;
-	void		            *mNative;
+	void					*mNative;
 };
 
 inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )
