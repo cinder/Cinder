@@ -88,7 +88,8 @@ struct GstData {
     std::atomic<bool>               isDone;
     std::atomic<bool>               isLoaded;
     std::atomic<bool>               isPlayable;
-    std::atomic<gint64>             requestedSeekTime;
+    std::atomic<float>              requestedSeekTime;
+    std::atomic<bool>               isSeeking;
     std::atomic<bool>               requestedSeek;
     std::atomic<bool>               loop;
     std::atomic<bool>               palindrome;
@@ -169,7 +170,7 @@ class GstPlayer {
 
         GstElement*                         getPipeline();
 
-        void                                seekToTime( float seconds );
+        void                                seekToTime( float seconds, bool forceSeek = false );
         void                                seekToFrame( int frame );
 
         bool                                isStream() const;

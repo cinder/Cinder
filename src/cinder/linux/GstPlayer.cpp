@@ -43,8 +43,9 @@ GstData::GstData()
 , isDone( false )
 , isLoaded( false )
 , isPlayable( false )
-, requestedSeekTime( -1 )
+, requestedSeekTime( 0.0f )
 , requestedSeek( false )
+, isSeeking( false )
 , loop( false )
 , palindrome( false )
 , rate( 1.0f )
@@ -79,6 +80,10 @@ void GstData::prepareForNewVideo()
     position            = -1;
     isPrerolled         = false;
     isBuffering         = false;
+    requestedSeekTime   = 0.0f;
+    isSeeking           = false;
+    requestedSeek       = false;
+    isDone              = false;
     position            = 0;
     width               = -1;
     height              = -1;
@@ -106,6 +111,7 @@ void GstData::updateState( const GstState& current )
             break;
         }
         case GST_STATE_PAUSED: {
+            isPrerolled     = true;
             isPaused        = true;
             isLoaded        = true;
             isPlayable      = true;
@@ -235,22 +241,31 @@ gboolean checkBusMessages( GstBus* bus, GstMessage* message, gpointer userData )
                 }
 
                 data.updateState(  current );
+
+                if( data.targetState != data.currentState && pending == GST_STATE_VOID_PENDING ) {
+                    if( data.targetState == GST_STATE_PAUSED )
+                        data.player->stop();
+                    else if( data.targetState == GST_STATE_PLAYING )
+                        data.player->play();
+                }
             }
             break;
         }
         case GST_MESSAGE_ASYNC_DONE: {
-
-            if( data.player ) data.position = data.player->getPositionNanos();
-
             switch( data.currentState ) {
-                    case GST_STATE_PAUSED: {
-                            if( data.requestedSeek  ) {
-                                if( data.player ) data.player->seekToTime( data.requestedSeekTime );
-                                    data.requestedSeek = false;
-                                }
-                            break;
+                case GST_STATE_PAUSED: {
+                    if( data.isSeeking ) {
+                        if( data.requestedSeek  ) {
+                            data.position = data.requestedSeekTime * GST_SECOND;
+                            if( data.player ) data.player->seekToTime( data.requestedSeekTime, true );
+                            data.requestedSeek = false;
+                        }
+                        else {
+                            data.isSeeking = false;
+                        }
                     }
-                    default: break;
+                }
+                default: break;
             }
             break;
         }
@@ -730,15 +745,11 @@ gint64 GstPlayer::getDurationNanos()
     if( ! mGstData.pipeline )
         return -1;
 
-    if( ! sEnableAsyncStateChange ) {
-        gst_element_get_state( mGstData.pipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE );
-    }
-
-    gint64 duration;
+    gint64 duration = 0;
     if( isPrerolled() ) {
         if( ! gst_element_query_duration( mGstData.pipeline, GST_FORMAT_TIME, &duration ) ) {
             g_warning( "Cannot query duration." );
-            return -1.0;
+            return -1;
         }
         mGstData.duration = duration;
     }
@@ -771,21 +782,25 @@ gint64 GstPlayer::getPositionNanos()
     if( ! mGstData.pipeline )
         return -1;
 
-    if( ! sEnableAsyncStateChange ) {
-        gst_element_get_state( mGstData.pipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE );
-    }
-
-    gint64 pos = 0;
     if( isPrerolled() ) {
+        gint64 pos = 0;
         if( ! gst_element_query_position( mGstData.pipeline, GST_FORMAT_TIME, &pos ) ) {
-            g_warning( "Cannot query position ! " );
-            return -1.0;
+            // Prerolled and we cannot query position we are hitting an async state change
+            // most probably from a pending seek. This may happen when scrubbing extremely fast.
+            // If that is the case fallback to the requested seek time as new position.
+            if( mGstData.requestedSeek ) {
+                pos = mGstData.requestedSeekTime * GST_SECOND;
+            }
+            else {
+                g_warning( "Cannot query position ! " );
+                pos = -1;
+            }
         }
         mGstData.position = pos;
     }
     else {
-        mGstData.position = -1.0f;
-        g_warning("Cannot query duration ! Pipeline is not prerolled.. ");
+        mGstData.position = -1;
+        g_warning("Cannot query position ! Pipeline is not prerolled.. ");
     }
     return mGstData.position;
 }
@@ -819,28 +834,25 @@ bool GstPlayer::isDone() const
     return mGstData.isDone;
 }
 
-void GstPlayer::seekToTime( float seconds )
+void GstPlayer::seekToTime( float seconds, bool forceSeek )
 {
     if( ! mGstData.pipeline )
         return;
 
+    mGstData.isSeeking  = true;
+    mGstData.isDone     = false;
+    // When doing flushing seeks the pipeline will pre-roll
+    // which means that we might be in a GST_STATE_CHANGE_ASYNC when we request the seek ( ..when fast-seeking ).
+    // If thats the case then we should wait for GST_MESSAGE_ASYNC_DONE before executing the
+    // next seek.
+    if( ( getStateChange() == GST_STATE_CHANGE_ASYNC || isBuffering() ) && ! forceSeek ) {
+        mGstData.requestedSeek = true;
+        mGstData.requestedSeekTime = seconds;
+        return;
+    }
+
     auto timeToSeek = seconds*GST_SECOND;
 
-    // If we are not async wait for any previous state change to finish before proceeding..
-    if( ! sEnableAsyncStateChange ) {
-        gst_element_get_state( mGstData.pipeline, nullptr, nullptr, GST_CLOCK_TIME_NONE );
-    }
-    else {
-        // When doing flushing seeks the pipeline will pre-roll
-        // which means that we might be in a GST_STATE_CHANGE_ASYNC when we request the seek ( ..when fast-seeking ).
-        // If thats the case then we should wait for GST_MESSAGE_ASYNC_DONE before executing the
-        // next seek.
-        if( getStateChange() == GST_STATE_CHANGE_ASYNC || isBuffering() ) {
-            mGstData.requestedSeek = true;
-            mGstData.requestedSeekTime = timeToSeek; // convert to nanos.
-            return;
-        }
-    }
     sendSeekEvent( timeToSeek );
 }
 
@@ -920,6 +932,7 @@ bool GstPlayer::sendSeekEvent( gint64 seekTime )
         g_warning("seek failed");
         return false;
     }
+
     return successSeek;
 }
 
@@ -959,10 +972,10 @@ bool GstPlayer::setPipelineState( GstState targetState )
     GstState current, pending;
     gst_element_get_state( mGstData.pipeline, &current, &pending, 0 );
 
+    mGstData.targetState = targetState;
+
     if( current == targetState || pending == targetState )
         return true; // Avoid unnecessary state changes.
-
-    mGstData.targetState = targetState;
 
     GstStateChangeReturn stateChangeResult = gst_element_set_state( mGstData.pipeline, mGstData.targetState );
     g_print( "Pipeline state about to change from : %s to %s\n", gst_element_state_get_name( current ), gst_element_state_get_name( targetState ) );
