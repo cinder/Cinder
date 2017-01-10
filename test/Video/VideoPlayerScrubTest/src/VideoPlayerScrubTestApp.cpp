@@ -1,11 +1,9 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/qtime/QuickTimeGl.h"
 #include "cinder/Log.h"
-#include "cinder/Rand.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -181,7 +179,7 @@ void VideoPlayerScrubTestApp::keyDown( KeyEvent event )
 void VideoPlayerScrubTestApp::loadMovieFile( const fs::path &moviePath )
 {
     try {
-        // load up the movie, set it to loop, and begin playing
+        // load up the movie, and begin playing
         mMovie = qtime::MovieGl::create( moviePath );
         mMovie->play();
         console() << "Playing: " << mMovie->isPlaying() << std::endl;
