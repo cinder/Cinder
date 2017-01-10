@@ -76,10 +76,7 @@ class TouchEvent : public Event {
 	TouchEvent()
 		: Event()
 	{}
-	TouchEvent( const WindowRef &win, const std::vector<Touch> &touches )
-		: Event( win ), mTouches( touches ), mNative( nullptr )
-	{}
-	TouchEvent( const WindowRef &win, const std::vector<Touch> &touches, void *native )
+	TouchEvent( const WindowRef &win, const std::vector<Touch> &touches, void *native = nullptr )
 		: Event( win ), mTouches( touches ), mNative( native )
 	{}
 	
