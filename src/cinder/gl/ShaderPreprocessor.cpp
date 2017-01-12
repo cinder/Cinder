@@ -176,8 +176,6 @@ string ShaderPreprocessor::parse( const fs::path &sourcePath, std::set<fs::path>
 
 string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourcePath, set<fs::path> *includedFiles )
 {
-	CI_ASSERT( ! fs::is_directory( sourcePath ) );
-
 	set<fs::path> localIncludeTree;
 	if( ! includedFiles )
 		includedFiles = &localIncludeTree;
