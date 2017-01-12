@@ -201,14 +201,14 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	// go through each line and find the #version directive
 	string line;
 	string versionLine;
-	size_t lineNumber = 1;
+	size_t lineNumber = 0;
 	size_t lineStatementNumber = 0;
 	bool hasVersionLine = false;
 	while( getline( input, line ) ) {
 		if( findVersionStatement( line, nullptr ) ) {
 			hasVersionLine = true;
-			versionLine = line;
-			lineStatementNumber = lineNumber - 1;
+			versionLine = line + "\n";
+			lineStatementNumber = lineNumber;
 		}
 		else {
 			output << line << "\n";
@@ -224,10 +224,6 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 #else
 		versionLine = "#version " + to_string( mVersion ) + "\n";
 #endif
-		lineStatementNumber = 1;
-	}
-	else if( ! mDefineDirectives.empty() ) {
-		versionLine += "\n"; // TODO: document why this is necessary
 	}
 
 	// copy the preprocessor directives to a string, starting with the version which has to be first.
@@ -237,7 +233,13 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	}
 
 	// if we've made any modifications, add a #line directive to ensure debug error statements are correct.
+	// - if no version line but we have directives, lineStatementNumber should be 0
+	// - if no version line and no directives, line number should be the one parsed
+	// - if both, line statement number should be the original version line + 1
 	if( ! mDefineDirectives.empty() || ! hasVersionLine ) {
+		if( ! mDefineDirectives.empty() && hasVersionLine )
+			lineStatementNumber += 1;
+
 		directivesString += "#line " + to_string( lineStatementNumber ) + "\n";
 	}
 	
