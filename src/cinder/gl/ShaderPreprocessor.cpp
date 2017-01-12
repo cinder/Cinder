@@ -170,13 +170,8 @@ ShaderPreprocessor::ShaderPreprocessor()
 
 string ShaderPreprocessor::parse( const fs::path &sourcePath, std::set<fs::path> *includedFiles )
 {
-	set<fs::path> localIncludeTree;
-	if( ! includedFiles )
-		includedFiles = &localIncludeTree;
-	else
-		includedFiles->clear();
-
-	return parseDirectives( parseRecursive( sourcePath, fs::path(), *includedFiles ) );
+	string source = parseDirectives( loadString( loadFile( sourcePath ) ) );
+	return parse( source, fs::path(), includedFiles );
 }
 
 string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourcePath, set<fs::path> *includedFiles )
@@ -189,8 +184,7 @@ string ShaderPreprocessor::parse( const std::string &source, const fs::path &sou
 	else
 		includedFiles->clear();
 
-
-	return parseDirectives( parseTopLevel( source, sourcePath.parent_path(), *includedFiles ) );
+	return parseTopLevel( parseDirectives( source ), sourcePath.parent_path(), *includedFiles );
 }
 
 std::string ShaderPreprocessor::parseDirectives( const std::string &source )
