@@ -197,35 +197,48 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 {
 	stringstream output;
 	istringstream input( source );
-	
-	string versionLine;
-	
+		
 	// go through each line and find the #version directive
 	string line;
+	string versionLine;
+	size_t lineNumber = 1;
+	size_t lineStatementNumber = 0;
+	bool hasVersionLine = false;
 	while( getline( input, line ) ) {
-		if( findVersionStatement( line, nullptr ) )
+		if( findVersionStatement( line, nullptr ) ) {
+			hasVersionLine = true;
 			versionLine = line;
-		else
-			output << line;
-		output << endl;
+			lineStatementNumber = lineNumber - 1;
+		}
+		else {
+			output << line << "\n";
+		}
+
+		lineNumber++;
 	}
-	
+
 	// if we don't have a version yet, add the default one
-	if( versionLine.empty() ) {
+	if( ! hasVersionLine ) {
 #if defined( CINDER_GL_ES_3 )
 		versionLine = "#version " + to_string( mVersion ) + " es\n";
 #else
 		versionLine = "#version " + to_string( mVersion ) + "\n";
 #endif
+		lineStatementNumber = 1;
 	}
 	else if( ! mDefineDirectives.empty() ) {
-		versionLine += "\n";
+		versionLine += "\n"; // TODO: document why this is necessary
 	}
 
-	// copy the preprocessor directives to a string starting with the version
-	std::string directivesString = versionLine;
-	for( auto define : mDefineDirectives ) {
+	// copy the preprocessor directives to a string, starting with the version which has to be first.
+	std::string directivesString = versionLine; // TODO: set this in while loop above
+	for( const auto &define : mDefineDirectives ) {
 		directivesString += "#define " + define + "\n";
+	}
+
+	// if we've made any modifications, add a #line directive to ensure debug error statements are correct.
+	if( ! mDefineDirectives.empty() || ! hasVersionLine ) {
+		directivesString += "#line " + to_string( lineStatementNumber ) + "\n";
 	}
 	
 	return directivesString + output.str();
