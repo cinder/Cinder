@@ -288,7 +288,7 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 		std::string includeFilePath;
 		if( findIncludeStatement( line, &includeFilePath ) ) {
 			output << parseRecursive( includeFilePath, currentDirectory, includedFiles );
-			output << getLineDirective( includeFilePath, lineNumber );
+			output << getLineDirective( sourcePath, lineNumber );
 		}
 		else
 			output << line;
@@ -304,6 +304,9 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 {	
 	string output;
 	string signalIncludeResult;
+
+	output = getLineDirective( path, 0 );
+
 	if( mSignalInclude.emit( path, &signalIncludeResult ) ) {
 
 		if( includeTree.count( path ) ) {
@@ -313,7 +316,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 
 		includeTree.insert( path );
 		istringstream input( signalIncludeResult );
-		output = readStream( input, path, includeTree );
+		output += readStream( input, path, includeTree );
 	}
 	else {
 		const fs::path fullPath = findFullPath( path, currentDirectory );
@@ -328,7 +331,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 		ifstream input( fullPath.string().c_str() );
 		if( ! input.is_open() )
 			throw ShaderPreprocessorExc( "Failed to open file at path: " + fullPath.string() );
-		output = readStream( input, fullPath, includeTree );
+		output += readStream( input, fullPath, includeTree );
 		input.close();
 	}
 
@@ -341,12 +344,13 @@ std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path 
 	string line;
 	size_t lineNumber = 1;
 	stringstream output;
+
 	while( getline( input, line ) ) {
 		std::string includeFilePath;
 		if( findIncludeStatement( line, &includeFilePath ) ) {
 			output << parseRecursive( includeFilePath, path.parent_path(), includeTree );
 			//output << "#line " << lineNumber << endl;
-			output << getLineDirective( includeFilePath, lineNumber );
+			output << getLineDirective( path, lineNumber );
 		}
 		else
 			output << line;
