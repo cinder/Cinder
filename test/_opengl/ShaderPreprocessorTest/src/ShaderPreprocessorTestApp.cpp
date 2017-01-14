@@ -87,11 +87,12 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 {
 	try {
 		auto vert = loadAsset( "passthrough.vert" );
-		//string fragSource = mPreprocessor.parse( getAssetPath( "shaderWithInclude.frag" ) );
-		string fragSourceRaw = loadString( loadAsset( "shaderWithInclude.frag" ) );
-		string fragSource = mPreprocessor.parse( fragSourceRaw, fs::path() );
+		const fs::path &fragPath = "simple.frag";
+		//string fragSource = mPreprocessor.parse( getAssetPath( fragPath ) );
+		string fragSourceRaw = loadString( loadAsset( fragPath ) );
+		string fragSource = mPreprocessor.parse( fragSourceRaw, fragPath );
 
-		writeString( "shaderWithInclude_preprocessed.frag", fragSource );
+		writeString( "build/shaderWithInclude_preprocessed.frag", fragSource );
 
 		auto format = gl::GlslProg::Format()
 							.preprocess( false )
