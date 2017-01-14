@@ -51,7 +51,8 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect );
 void draw( const Texture2dRef &texture, const Area &srcArea, const Rectf &dstRect );
 void draw( const Texture2dRef &texture, const vec2 &dstOffset = vec2() );
 void draw( const PolyLine2 &polyLine );
-void draw( const PolyLine3 &polyLine );
+//! Draws a line connecting \a points \a isClosed will connect the first and last points if they are not equal.
+void draw( const std::vector<vec3> &points, bool isClosed = false );
 //! Draws a Path2d \a pathd using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
 void draw( const Path2d &path, float approximationScale = 1.0f );
 //! Draws a Shaped2d \a shaped using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc

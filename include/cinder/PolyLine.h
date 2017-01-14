@@ -99,8 +99,5 @@ class PolyLineT {
 typedef PolyLineT<vec2>		PolyLine2;
 typedef PolyLineT<vec2>		PolyLine2f;
 typedef PolyLineT<dvec2>	PolyLine2d;
-typedef PolyLineT<vec3>		PolyLine3;
-typedef PolyLineT<vec3>		PolyLine3f;
-typedef PolyLineT<dvec3>	PolyLine3d;
 
 } // namespace cinder

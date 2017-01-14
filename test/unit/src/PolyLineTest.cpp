@@ -179,3 +179,4 @@ TEST_CASE("PolyLine2f")
 		CHECK( poly.calcCentroid() == vec2( 0.5, 0.5 ) );
 	}
 }
+
