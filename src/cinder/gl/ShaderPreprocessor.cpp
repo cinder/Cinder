@@ -176,53 +176,86 @@ string ShaderPreprocessor::parse( const fs::path &sourcePath, std::set<fs::path>
 
 string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourcePath, set<fs::path> *includedFiles )
 {
-	set<fs::path> localIncludeTree;
+	set<fs::path> localIncludeTree; // even if user didn't ask for includedFiles, keep track of them to detect recursion
 	if( ! includedFiles )
 		includedFiles = &localIncludeTree;
 	else
 		includedFiles->clear();
 
 	size_t lineNumberStart = 0;
-	return parseTopLevel( parseDirectives( source, &lineNumberStart ), sourcePath.parent_path(), lineNumberStart, *includedFiles );
+	fs::path sourceParentPath = sourcePath.parent_path();
+	string directives;
+	string sourceBody;
+	
+	parseDirectives( source, &directives, &sourceBody, &lineNumberStart );
+	if( directives.empty() ) {
+		// There were no directives added, parse original source for includes
+		return parseTopLevel( source, sourceParentPath, lineNumberStart, *includedFiles );
+	}
+	else {
+		// Parse the remaining source and then append it to the directives string
+		string result = parseTopLevel( sourceBody, sourceParentPath, lineNumberStart, *includedFiles );
+		return directives + result;
+	}
 }
 
-std::string ShaderPreprocessor::parseDirectives( const std::string &source, size_t *lineNumberStart )
+void printString( const std::string &str )
 {
-	stringstream output;
-	istringstream input( source );
-		
+	ci::app::Platform::get()->console() << str << endl;
+}
+
+// - returns directives string and remaining source separately, so that parseTopLevel can start after the directives we've added
+// - lineNumberStart indicates what value a #line directive should have after parsing #include statements
+void ShaderPreprocessor::parseDirectives( const std::string &source, std::string *directives, std::string *sourceBody, size_t *lineNumberStart )
+{		
 	// go through each line and find the #version directive
 	string line;
-	string versionLine;
 	size_t lineNumber = 0;
 	size_t lineStatementNumber = 0;
 	bool hasVersionLine = false;
-	while( getline( input, line ) ) {
+
+	size_t lineStart = 0;
+	while( lineStart < source.size() ) {
+		size_t lineEnd = source.find( '\n', lineStart );
+		if( lineEnd == std::string::npos )
+			break;
+
+		// TODO: we don't need to copy out each line, just pass in a const char* to the correct starting position in the line to findVersionStatement
+		// - also remove extra argument that isn't used for anything
+		string line = source.substr( lineStart, lineEnd - lineStart );
+
+		// TODO: break if we hit anything other than a #version, comment or whitespace
 		if( findVersionStatement( line, nullptr ) ) {
-			hasVersionLine = true;
-			versionLine = line + "\n";
+			// if no defines, return leaving the directive and sourceBody strings empty,
+			// thereby indicating to use the original source without modification;
+			if( mDefineDirectives.empty() )
+				return;
+
+			// Copy #version line and everything before it to the directives string, the rest to sourceBody
+			*directives = source.substr( 0, lineEnd + 1 );
+			*sourceBody = source.substr( lineEnd + 1, source.size() - lineEnd );
 			lineStatementNumber = lineNumber;
-		}
-		else {
-			output << line << "\n";
+			hasVersionLine = true;
+
+			break;
 		}
 
 		lineNumber++;
+		lineStart = lineEnd + 1;		
 	}
 
-	// if we don't have a version yet, add the default one
+	// if we don't have a version yet, add a default one that will be at the top
 	if( ! hasVersionLine ) {
 #if defined( CINDER_GL_ES_3 )
-		versionLine = "#version " + to_string( mVersion ) + " es\n";
+		*directives += "#version " + to_string( mVersion ) + " es\n";
 #else
-		versionLine = "#version " + to_string( mVersion ) + "\n";
+		*directives += "#version " + to_string( mVersion ) + "\n";
 #endif
 	}
 
-	// copy the preprocessor directives to a string, starting with the version which has to be first.
-	std::string directivesString = versionLine; // TODO: set this in while loop above
+	// append any #defines to the directives string
 	for( const auto &define : mDefineDirectives ) {
-		directivesString += "#define " + define + "\n";
+		*directives += "#define " + define + "\n";
 		*lineNumberStart++;
 	}
 
@@ -234,11 +267,9 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source, size
 		if( ! mDefineDirectives.empty() && hasVersionLine )
 			lineStatementNumber += 1;
 
-		directivesString += "#line " + to_string( lineStatementNumber ) + "\n";
+		*directives += "#line " + to_string( lineStatementNumber ) + "\n";
 		*lineNumberStart++;
 	}
-	
-	return directivesString + output.str();
 }
 
 string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory, size_t lineNumberStart, set<fs::path> &includedFiles )
