@@ -66,6 +66,8 @@ class ShaderPreprocessor {
 	void	addDefine( const std::string &define, const std::string &value );
 	//! Specifies a series of define directives to add to the shader sources
 	void	setDefineDirectives( const std::vector<std::string> &defines );
+	//! Clears all define directives
+	void	clearDefineDirectives();
 	//! Specifies the #version directive to add to the shader sources
 	void	setVersion( int version )	{ mVersion = version; }
 	//! Returns the version used for #version directives that was added with setVersion().

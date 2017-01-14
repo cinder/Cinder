@@ -389,7 +389,12 @@ void ShaderPreprocessor::setDefineDirectives( const std::vector<std::string> &de
 {
 	mDefineDirectives = defines;
 }
-	
+
+void ShaderPreprocessor::clearDefineDirectives()
+{
+	mDefineDirectives.clear();
+}
+
 fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs::path &currentDirectory )
 {
 	auto fullPath = currentDirectory / includePath;

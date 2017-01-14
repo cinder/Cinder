@@ -5,6 +5,7 @@
 #include "cinder/gl/ShaderPreprocessor.h"
 #include "cinder/Log.h"
 #include "cinder/System.h"
+#include "cinder/Utilities.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -16,26 +17,48 @@ class ShaderPreprocessorTestApp : public App {
 	void update() override;
 	void draw() override;
 
+	void reload();
 	void testGlslProgInclude();
 	void testSeparateShaderPreprocessor();
 	void testIncludeHandler();
 
 	gl::GlslProgRef			mGlslProg;
 	gl::ShaderPreprocessor  mPreprocessor;
+	bool					mAddDefineDirective = false;
+	const std::string		mWrongHashDefineDirective = "WRONG_HASH";
 };
 
 void ShaderPreprocessorTestApp::setup()
 {
+	if( mAddDefineDirective )
+		mPreprocessor.addDefine( mWrongHashDefineDirective );
+
+	reload();
+}
+
+void ShaderPreprocessorTestApp::reload()
+{
 //	testGlslProgInclude();
-//	testSeparateShaderPreprocessor();
-	testIncludeHandler();
+	testSeparateShaderPreprocessor();
+//	testIncludeHandler();
+
 }
 
 void ShaderPreprocessorTestApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'r' ) {
-		CI_LOG_V( "reload" );
-		setup();
+		CI_LOG_I( "reload" );
+		reload();
+	}
+	else if( event.getChar() == 'd' ) {
+		mAddDefineDirective = ! mAddDefineDirective;
+		CI_LOG_I( "mAddDefineDirectives: " << mAddDefineDirective );
+		if( mAddDefineDirective ) {
+			mPreprocessor.addDefine( mWrongHashDefineDirective );
+		}
+		else {
+			mPreprocessor.clearDefineDirectives();
+		}
 	}
 }
 
@@ -45,14 +68,17 @@ void ShaderPreprocessorTestApp::testGlslProgInclude()
 		auto format = gl::GlslProg::Format()
 							.vertex(  loadAsset( "passthrough.vert" ) )
 							.fragment( loadAsset( "shaderWithInclude.frag" ) )
-                            .define( "COLOR_RED", "vec4( 0, 0, 1, 1 )" )
-                            .define( "WRONG_HASH" )
+//                            .define( "COLOR_RED", "vec4( 0, 0, 1, 1 )" )
         ;
+
+		if( mAddDefineDirective ) {
+			format.define( mWrongHashDefineDirective );
+		}
 
 		mGlslProg = gl::GlslProg::create( format );
 	}
 	catch( std::exception &exc ) {
-		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
+		CI_LOG_EXCEPTION( "exception caught.", exc );
 	}
 
 }
@@ -61,7 +87,11 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 {
 	try {
 		auto vert = loadAsset( "passthrough.vert" );
-        string fragSource = mPreprocessor.parse( getAssetPath( "shaderWithInclude.frag" ) );
+		//string fragSource = mPreprocessor.parse( getAssetPath( "shaderWithInclude.frag" ) );
+		string fragSourceRaw = loadString( loadAsset( "shaderWithInclude.frag" ) );
+		string fragSource = mPreprocessor.parse( fragSourceRaw, fs::path() );
+
+		writeString( "shaderWithInclude_preprocessed.frag", fragSource );
 
 		auto format = gl::GlslProg::Format()
 							.preprocess( false )
@@ -72,7 +102,7 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 		mGlslProg = gl::GlslProg::create( format );
 	}
 	catch( std::exception &exc ) {
-		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
+		CI_LOG_EXCEPTION( "exception caught.", exc );
 	}
 
 }
@@ -105,7 +135,7 @@ void ShaderPreprocessorTestApp::testIncludeHandler()
 		mGlslProg = gl::GlslProg::create( format );
 	}
 	catch( std::exception &exc ) {
-		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
+		CI_LOG_EXCEPTION( "exception caught.", exc );
 	}
 }
 
@@ -123,4 +153,10 @@ void ShaderPreprocessorTestApp::draw()
 	}
 }
 
-CINDER_APP( ShaderPreprocessorTestApp, RendererGl )
+void prepareSettings( app::App::Settings *settings )
+{
+	if( Display::getDisplays().size() > 1 )
+		settings->setDisplay( Display::getDisplays()[1] );
+}
+
+CINDER_APP( ShaderPreprocessorTestApp, RendererGl, prepareSettings )
