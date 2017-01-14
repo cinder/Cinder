@@ -170,7 +170,7 @@ ShaderPreprocessor::ShaderPreprocessor()
 
 string ShaderPreprocessor::parse( const fs::path &sourcePath, std::set<fs::path> *includedFiles )
 {
-	string source = parseDirectives( loadString( loadFile( sourcePath ) ) );
+	string source = loadString( loadFile( sourcePath ) );
 	return parse( source, fs::path(), includedFiles );
 }
 
@@ -182,10 +182,11 @@ string ShaderPreprocessor::parse( const std::string &source, const fs::path &sou
 	else
 		includedFiles->clear();
 
-	return parseTopLevel( parseDirectives( source ), sourcePath.parent_path(), *includedFiles );
+	size_t lineNumberStart = 0;
+	return parseTopLevel( parseDirectives( source, &lineNumberStart ), sourcePath.parent_path(), lineNumberStart, *includedFiles );
 }
 
-std::string ShaderPreprocessor::parseDirectives( const std::string &source )
+std::string ShaderPreprocessor::parseDirectives( const std::string &source, size_t *lineNumberStart )
 {
 	stringstream output;
 	istringstream input( source );
@@ -222,6 +223,7 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	std::string directivesString = versionLine; // TODO: set this in while loop above
 	for( const auto &define : mDefineDirectives ) {
 		directivesString += "#define " + define + "\n";
+		*lineNumberStart++;
 	}
 
 	// if we've made any modifications, add a #line directive to ensure debug error statements are correct.
@@ -233,12 +235,13 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 			lineStatementNumber += 1;
 
 		directivesString += "#line " + to_string( lineStatementNumber ) + "\n";
+		*lineNumberStart++;
 	}
 	
 	return directivesString + output.str();
 }
 
-string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory, set<fs::path> &includedFiles )
+string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory, size_t lineNumberStart, set<fs::path> &includedFiles )
 {
 	stringstream output;
 	istringstream input( source );
@@ -246,7 +249,8 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 	// go through each line and process includes
 	string line;
 
-	size_t lineNumber = 1;
+	// TODO NEXT: skip initial lines from the directive string
+	size_t lineNumber = lineNumberStart;
 
 	while( getline( input, line ) ) {
 		std::string includeFilePath;
