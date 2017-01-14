@@ -77,10 +77,11 @@ class ShaderPreprocessor {
 	SignalIncludeHandler& getSignalInclude()	{ return mSignalInclude; }
 	
   private:
-	void			parseDirectives( const std::string &source, std::string *directives, std::string *sourceBody, size_t *lineNumberStart );
+	void			parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, size_t *lineNumberStart );
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, size_t lineNumberStart, std::set<fs::path> &includeTree );
 	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
 	std::string		readStream( std::istream &stream, const fs::path &path, std::set<fs::path> &includeTree );
+	std::string		getLineDirective( const fs::path &path, size_t lineNumber ) const;
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
 	
 	int								mVersion;

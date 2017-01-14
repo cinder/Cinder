@@ -182,19 +182,18 @@ string ShaderPreprocessor::parse( const std::string &source, const fs::path &sou
 	else
 		includedFiles->clear();
 
-	size_t lineNumberStart = 0;
-	fs::path sourceParentPath = sourcePath.parent_path();
 	string directives;
 	string sourceBody;
-	
-	parseDirectives( source, &directives, &sourceBody, &lineNumberStart );
+	size_t lineNumberStart;
+
+	parseDirectives( source, sourcePath, &directives, &sourceBody, &lineNumberStart );
 	if( directives.empty() ) {
 		// There were no directives added, parse original source for includes
-		return parseTopLevel( source, sourceParentPath, lineNumberStart, *includedFiles );
+		return parseTopLevel( source, sourcePath, lineNumberStart, *includedFiles );
 	}
 	else {
 		// Parse the remaining source and then append it to the directives string
-		string result = parseTopLevel( sourceBody, sourceParentPath, lineNumberStart, *includedFiles );
+		string result = parseTopLevel( sourceBody, sourcePath, lineNumberStart, *includedFiles );
 		return directives + result;
 	}
 }
@@ -206,42 +205,43 @@ void printString( const std::string &str )
 
 // - returns directives string and remaining source separately, so that parseTopLevel can start after the directives we've added
 // - lineNumberStart indicates what value a #line directive should have after parsing #include statements
-void ShaderPreprocessor::parseDirectives( const std::string &source, std::string *directives, std::string *sourceBody, size_t *lineNumberStart )
+void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, size_t *lineNumberStart )
 {		
 	// go through each line and find the #version directive
 	string line;
 	size_t lineNumber = 0;
-	size_t lineStatementNumber = 0;
 	bool hasVersionLine = false;
 
-	size_t lineStart = 0;
-	while( lineStart < source.size() ) {
-		size_t lineEnd = source.find( '\n', lineStart );
-		if( lineEnd == std::string::npos )
+	size_t lineStartPos = 0;
+	while( lineStartPos < source.size() ) {
+		size_t lineEndPos = source.find( '\n', lineStartPos );
+		if( lineEndPos == std::string::npos )
 			break;
+
 
 		// TODO: we don't need to copy out each line, just pass in a const char* to the correct starting position in the line to findVersionStatement
 		// - also remove extra argument that isn't used for anything
-		string line = source.substr( lineStart, lineEnd - lineStart );
+		string line = source.substr( lineStartPos, lineEndPos - lineStartPos );
 
-		// TODO: break if we hit anything other than a #version, comment or whitespace
 		if( findVersionStatement( line, nullptr ) ) {
 			// if no defines, return leaving the directive and sourceBody strings empty,
 			// thereby indicating to use the original source without modification;
-			if( mDefineDirectives.empty() )
+			if( mDefineDirectives.empty() ) {
+				*lineNumberStart = 0;
 				return;
+			}
 
 			// Copy #version line and everything before it to the directives string, the rest to sourceBody
-			*directives = source.substr( 0, lineEnd + 1 );
-			*sourceBody = source.substr( lineEnd + 1, source.size() - lineEnd );
-			lineStatementNumber = lineNumber;
+			*directives = source.substr( 0, lineEndPos + 1 );
+			*sourceBody = source.substr( lineEndPos + 1, source.size() - lineEndPos );
+			*lineNumberStart = lineNumber + 1;
 			hasVersionLine = true;
 
 			break;
 		}
 
+		lineStartPos = lineEndPos + 1;
 		lineNumber++;
-		lineStart = lineEnd + 1;		
 	}
 
 	// if we don't have a version yet, add a default one that will be at the top
@@ -251,43 +251,44 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, std::string
 #else
 		*directives += "#version " + to_string( mVersion ) + "\n";
 #endif
+
+		*sourceBody = source; // sourceBody is the entire source
+		*lineNumberStart = lineNumber;
+
 	}
 
 	// append any #defines to the directives string
 	for( const auto &define : mDefineDirectives ) {
 		*directives += "#define " + define + "\n";
-		*lineNumberStart++;
+		*lineNumberStart += 1;
 	}
 
+	// TODO: update this comment
 	// if we've made any modifications, add a #line directive to ensure debug error statements are correct.
 	// - if no version line but we have directives, lineStatementNumber should be 0
 	// - if no version line and no directives, line number should be the one parsed
 	// - if both, line statement number should be the original version line + 1
 	if( ! mDefineDirectives.empty() || ! hasVersionLine ) {
-		if( ! mDefineDirectives.empty() && hasVersionLine )
-			lineStatementNumber += 1;
-
-		*directives += "#line " + to_string( lineStatementNumber ) + "\n";
-		*lineNumberStart++;
+		*directives += getLineDirective( sourcePath, *lineNumberStart );
+		*lineNumberStart += 1;
 	}
 }
 
-string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory, size_t lineNumberStart, set<fs::path> &includedFiles )
+string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &sourcePath, size_t lineNumberStart, set<fs::path> &includedFiles )
 {
 	stringstream output;
 	istringstream input( source );
 
 	// go through each line and process includes
 	string line;
-
-	// TODO NEXT: skip initial lines from the directive string
+	fs::path currentDirectory = sourcePath.parent_path();
 	size_t lineNumber = lineNumberStart;
 
 	while( getline( input, line ) ) {
 		std::string includeFilePath;
 		if( findIncludeStatement( line, &includeFilePath ) ) {
 			output << parseRecursive( includeFilePath, currentDirectory, includedFiles );
-			output << "#line " << lineNumber << endl;
+			output << getLineDirective( includeFilePath, lineNumber );
 		}
 		else
 			output << line;
@@ -299,38 +300,17 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 	return output.str();
 }
 
-std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path &path, set<fs::path> &includeTree )
-{
-	// go through each line and process includes
-	string line;
-	size_t lineNumber = 1;
-	stringstream output;
-	while( getline( input, line ) ) {
-		std::string includeFilePath;
-		if( findIncludeStatement( line, &includeFilePath ) ) {
-			output << parseRecursive( includeFilePath, path.parent_path(), includeTree );
-			output << "#line " << lineNumber << endl;
-		}
-		else
-			output << line;
-
-		output << endl;
-		lineNumber++;
-	}
-
-	return output.str();
-}
 string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path &currentDirectory, set<fs::path> &includeTree )
 {	
 	string output;
 	string signalIncludeResult;
 	if( mSignalInclude.emit( path, &signalIncludeResult ) ) {
-		
+
 		if( includeTree.count( path ) ) {
 			// circular include, skip it as it has already been appended.
 			return "";
 		}
-	
+
 		includeTree.insert( path );
 		istringstream input( signalIncludeResult );
 		output = readStream( input, path, includeTree );
@@ -351,10 +331,37 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 		output = readStream( input, fullPath, includeTree );
 		input.close();
 	}
-	
+
 	return output;
 }
 
+std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path &path, set<fs::path> &includeTree )
+{
+	// go through each line and process includes
+	string line;
+	size_t lineNumber = 1;
+	stringstream output;
+	while( getline( input, line ) ) {
+		std::string includeFilePath;
+		if( findIncludeStatement( line, &includeFilePath ) ) {
+			output << parseRecursive( includeFilePath, path.parent_path(), includeTree );
+			//output << "#line " << lineNumber << endl;
+			output << getLineDirective( includeFilePath, lineNumber );
+		}
+		else
+			output << line;
+
+		output << endl;
+		lineNumber++;
+	}
+
+	return output.str();
+}
+
+std::string ShaderPreprocessor::getLineDirective( const fs::path &path, size_t lineNumber ) const
+{
+	return "#line " + to_string( lineNumber ) + " \"" + path.string() + "\"\n";
+}
 
 void ShaderPreprocessor::addSearchDirectory( const fs::path &directory )
 {
