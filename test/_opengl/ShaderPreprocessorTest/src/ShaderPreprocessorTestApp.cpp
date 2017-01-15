@@ -92,7 +92,7 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 		string fragSourceRaw = loadString( loadAsset( fragPath ) );
 		string fragSource = mPreprocessor.parse( fragSourceRaw, fragPath );
 
-		writeString( "build/shaderWithInclude_preprocessed.frag", fragSource );
+		writeString( fs::path( "build" ) / ( fragPath.stem().string() + "_preprocessed.frag" ), fragSource );
 
 		auto format = gl::GlslProg::Format()
 							.preprocess( false )
@@ -103,7 +103,7 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 		mGlslProg = gl::GlslProg::create( format );
 	}
 	catch( std::exception &exc ) {
-		CI_LOG_EXCEPTION( "exception caught.", exc );
+		CI_LOG_EXCEPTION( "exception caught", exc );
 	}
 
 }
@@ -136,7 +136,7 @@ void ShaderPreprocessorTestApp::testIncludeHandler()
 		mGlslProg = gl::GlslProg::create( format );
 	}
 	catch( std::exception &exc ) {
-		CI_LOG_EXCEPTION( "exception caught.", exc );
+		CI_LOG_EXCEPTION( "exception caught", exc );
 	}
 }
 
