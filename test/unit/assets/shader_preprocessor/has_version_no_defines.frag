@@ -1,0 +1,10 @@
+#version 400
+
+in vec2			vTexCoord0;
+out vec4		oFragColor;
+
+void main( void )
+{
+	float x = 0.4;
+	oFragColor = vec4( 0, x, 0, 1 );
+}

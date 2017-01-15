@@ -266,6 +266,7 @@
     <ClCompile Include="..\src\JsonTest.cpp" />
     <ClCompile Include="..\src\ObjLoaderTest.cpp" />
     <ClCompile Include="..\src\RandTest.cpp" />
+    <ClCompile Include="..\src\ShaderProprocessorTest.cpp" />
     <ClCompile Include="..\src\signals\SignalsTest.cpp" />
     <ClCompile Include="..\src\SystemTest.cpp" />
     <ClCompile Include="..\src\TestMain.cpp" />
