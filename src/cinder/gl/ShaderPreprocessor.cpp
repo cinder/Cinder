@@ -170,7 +170,9 @@ ShaderPreprocessor::ShaderPreprocessor()
 
 string ShaderPreprocessor::parse( const fs::path &sourcePath, std::set<fs::path> *includedFiles )
 {
-	string source = loadString( loadFile( sourcePath ) );
+	const fs::path fullPath = findFullPath( sourcePath, "" );
+	string source = loadString( loadFile( fullPath ) );
+
 	return parse( source, fs::path(), includedFiles );
 }
 
