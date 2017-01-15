@@ -72,6 +72,10 @@ class ShaderPreprocessor {
 	void	setVersion( int version )	{ mVersion = version; }
 	//! Returns the version used for #version directives that was added with setVersion().
 	int		getVersion() const			{ return mVersion; }
+	//!
+	void	setUseFilenameInLineDirectiveEnabled( bool enable )	{ mUseFilenameInLineDirective = enable; }
+	//!
+	bool	setUseFilenameInLineDirectiveEnabled() const		{ return mUseFilenameInLineDirective; }
 
 	//! Returns a Signal that the user can connect to in order to handle custom includes.
 	SignalIncludeHandler& getSignalInclude()	{ return mSignalInclude; }
@@ -81,13 +85,15 @@ class ShaderPreprocessor {
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, size_t lineNumberStart, std::set<fs::path> &includeTree );
 	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
 	std::string		readStream( std::istream &stream, const fs::path &path, std::set<fs::path> &includeTree );
-	std::string		getLineDirective( const fs::path &sourcePath, size_t lineNumber ) const;
+	std::string		getLineDirective( const fs::path &sourcePath, size_t lineNumber, size_t sourceStringNumber ) const;
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
 	
 	int								mVersion;
 	std::vector<std::string>		mDefineDirectives;
 	std::vector<fs::path>			mSearchDirectories;
 	SignalIncludeHandler			mSignalInclude;
+
+	bool mUseFilenameInLineDirective;
 };
 
 //! Exception thrown when there is an error preprocessing the shader source in `ShaderPreprocessor`.

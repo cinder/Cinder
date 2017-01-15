@@ -155,6 +155,7 @@ bool findVersionStatement( const std::string &line, std::string *out )
 } // anonymous namespace
 
 ShaderPreprocessor::ShaderPreprocessor()
+	: mUseFilenameInLineDirective( false )
 {
 	mSearchDirectories.push_back( app::Platform::get()->getAssetPath( "" ) );
 
@@ -230,7 +231,7 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 			// if no defines, return leaving the directive and sourceBody strings empty,
 			// thereby indicating to use the original source without modification;
 			if( mDefineDirectives.empty() ) {
-				*lineNumberStart = 0;
+				*lineNumberStart = 1;
 				return;
 			}
 
@@ -271,7 +272,7 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 	// - if no version line and no directives, line number should be the one parsed
 	// - if both, line statement number should be the original version line + 1
 	if( ! mDefineDirectives.empty() || ! hasVersionLine ) {
-		*directives += getLineDirective( sourcePath, *lineNumberStart );
+		*directives += getLineDirective( sourcePath, *lineNumberStart, 0 );
 		*lineNumberStart += 1;
 	}
 }
@@ -290,12 +291,11 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 		std::string includeFilePath;
 		if( findIncludeStatement( line, &includeFilePath ) ) {
 			output << parseRecursive( includeFilePath, currentDirectory, includedFiles );
-			output << getLineDirective( sourcePath, lineNumber );
+			output << getLineDirective( sourcePath, lineNumber, 0 );
 		}
 		else
-			output << line;
+			output << line << "\n";
 
-		output << endl;
 		lineNumber++;
 	}
 
@@ -307,7 +307,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 	string output;
 	string signalIncludeResult;
 
-	output = getLineDirective( path, 0 );
+	output = getLineDirective( path, 1, includeTree.size() + 1 );
 
 	if( mSignalInclude.emit( path, &signalIncludeResult ) ) {
 
@@ -351,22 +351,21 @@ std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path 
 		std::string includeFilePath;
 		if( findIncludeStatement( line, &includeFilePath ) ) {
 			output << parseRecursive( includeFilePath, path.parent_path(), includeTree );
-			//output << "#line " << lineNumber << endl;
-			output << getLineDirective( path, lineNumber );
+			output << getLineDirective( path, lineNumber, includeTree.size() );
 		}
 		else
-			output << line;
+			output << line << "\n";
 
-		output << endl;
 		lineNumber++;
 	}
 
 	return output.str();
 }
 
-std::string ShaderPreprocessor::getLineDirective( const fs::path &sourcePath, size_t lineNumber ) const
+std::string ShaderPreprocessor::getLineDirective( const fs::path &sourcePath, size_t lineNumber, size_t sourceStringNumber ) const
 {
-	return "#line " + to_string( lineNumber ) + " \"" + sourcePath.filename().string() + "\"\n";
+	string fileId = mUseFilenameInLineDirective ? "\"" + sourcePath.filename().string() + "\"" : to_string( sourceStringNumber ); 
+	return "#line " + to_string( lineNumber ) + " " + fileId + "\n";
 }
 
 void ShaderPreprocessor::addSearchDirectory( const fs::path &directory )
