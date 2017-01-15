@@ -200,7 +200,8 @@ string ShaderPreprocessor::parse( const std::string &source, const fs::path &sou
 	}
 }
 
-void printString( const std::string &str )
+// TODO: remove this, it is only used for debug pretty printing in VS Immediate Window
+void print( const std::string &str )
 {
 	ci::app::Platform::get()->console() << str << endl;
 }
@@ -211,7 +212,7 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 {		
 	// go through each line and find the #version directive
 	string line;
-	size_t lineNumber = 0;
+	size_t lineNumber = 1;
 	bool hasVersionLine = false;
 
 	size_t lineStartPos = 0;
@@ -255,14 +256,13 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 #endif
 
 		*sourceBody = source; // sourceBody is the entire source
-		*lineNumberStart = lineNumber;
-
+		*lineNumberStart = 0;
 	}
 
 	// append any #defines to the directives string
 	for( const auto &define : mDefineDirectives ) {
 		*directives += "#define " + define + "\n";
-		*lineNumberStart += 1;
+		//*lineNumberStart += 1;
 	}
 
 	// TODO: update this comment
@@ -364,9 +364,9 @@ std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path 
 	return output.str();
 }
 
-std::string ShaderPreprocessor::getLineDirective( const fs::path &path, size_t lineNumber ) const
+std::string ShaderPreprocessor::getLineDirective( const fs::path &sourcePath, size_t lineNumber ) const
 {
-	return "#line " + to_string( lineNumber ) + " \"" + path.string() + "\"\n";
+	return "#line " + to_string( lineNumber ) + " \"" + sourcePath.filename().string() + "\"\n";
 }
 
 void ShaderPreprocessor::addSearchDirectory( const fs::path &directory )
