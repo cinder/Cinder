@@ -391,7 +391,7 @@ void draw( const PolyLine2 &polyLine )
 	ctx->popVao();
 }
 
-void draw( const PolyLine3 &polyLine )
+void draw( const std::vector<vec3> &points, bool isClosed )
 {
 	auto ctx = context();
 	const GlslProg* curGlslProg = ctx->getGlslProg();
@@ -400,7 +400,6 @@ void draw( const PolyLine3 &polyLine )
 		return;
 	}
 	
-	const vector<vec3> &points = polyLine.getPoints();
 	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(vec3) * points.size() );
 	arrayVbo->bufferSubData( 0, sizeof(vec3) * points.size(), points.data() );
 
@@ -415,7 +414,7 @@ void draw( const PolyLine3 &polyLine )
 
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, (GLsizei)points.size() );
+	ctx->drawArrays( ( isClosed ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, (GLsizei)points.size() );
 	ctx->popVao();
 }
 
