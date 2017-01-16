@@ -60,6 +60,14 @@ void ShaderPreprocessorTestApp::keyDown( KeyEvent event )
 			mPreprocessor.clearDefineDirectives();
 		}
 	}
+	else if( event.getChar() == 'v' ) {
+		mPreprocessor.setVersion( mPreprocessor.getVersion() == 150 ? 330 : 150 );
+		CI_LOG_I( "set #version to: " << mPreprocessor.getVersion() );
+	}
+	else if( event.getChar() == 'n' ) {
+		mPreprocessor.setUseFilenameInLineDirectiveEnabled( ! mPreprocessor.isUseFilenameInLineDirectiveEnabled() );
+		CI_LOG_I( "using filename in #line directive: " << boolalpha << mPreprocessor.isUseFilenameInLineDirectiveEnabled() << dec );
+	}
 }
 
 void ShaderPreprocessorTestApp::testGlslProgInclude()

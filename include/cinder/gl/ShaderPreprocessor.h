@@ -68,24 +68,24 @@ class ShaderPreprocessor {
 	void	setDefineDirectives( const std::vector<std::string> &defines );
 	//! Clears all define directives
 	void	clearDefineDirectives();
-	//! Specifies the #version directive to add to the shader sources
+	//! Specifies the #version directive to add to the shader sources (if it doesn't explicitly contain a `#version` directive).
 	void	setVersion( int version )	{ mVersion = version; }
 	//! Returns the version used for #version directives that was added with setVersion().
 	int		getVersion() const			{ return mVersion; }
 	//!
 	void	setUseFilenameInLineDirectiveEnabled( bool enable )	{ mUseFilenameInLineDirective = enable; }
 	//!
-	bool	setUseFilenameInLineDirectiveEnabled() const		{ return mUseFilenameInLineDirective; }
+	bool	isUseFilenameInLineDirectiveEnabled() const		{ return mUseFilenameInLineDirective; }
 
 	//! Returns a Signal that the user can connect to in order to handle custom includes.
 	SignalIncludeHandler& getSignalInclude()	{ return mSignalInclude; }
 	
   private:
-	void			parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, size_t *lineNumberStart );
-	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, size_t lineNumberStart, std::set<fs::path> &includeTree );
-	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
-	std::string		readStream( std::istream &stream, const fs::path &path, std::set<fs::path> &includeTree );
-	std::string		getLineDirective( const fs::path &sourcePath, size_t lineNumber, size_t sourceStringNumber ) const;
+	void			parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, int *versionNumber, size_t *lineNumberStart );
+	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, size_t lineNumberStart, int versionNumber, std::set<fs::path> &includeTree );
+	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, int versionNumber, std::set<fs::path> &includeTree );
+	std::string		readStream( std::istream &stream, const fs::path &path, int versionNumber, std::set<fs::path> &includeTree );
+	std::string		getLineDirective( const fs::path &sourcePath, size_t lineNumber, size_t sourceStringNumber, int versionNumber ) const;
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
 	
 	int								mVersion;
