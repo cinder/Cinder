@@ -402,12 +402,12 @@ void ShaderPreprocessor::addDefine( const std::string &define, const std::string
 {
 	mDefineDirectives.push_back( define + " " + value );
 }
-void ShaderPreprocessor::setDefineDirectives( const std::vector<std::string> &defines )
+void ShaderPreprocessor::setDefines( const std::vector<std::string> &defines )
 {
 	mDefineDirectives = defines;
 }
 
-void ShaderPreprocessor::clearDefineDirectives()
+void ShaderPreprocessor::clearDefines()
 {
 	mDefineDirectives.clear();
 }

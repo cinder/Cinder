@@ -64,17 +64,23 @@ class ShaderPreprocessor {
 	void	addDefine( const std::string &define );
 	//! Adds a define directive
 	void	addDefine( const std::string &define, const std::string &value );
-	//! Specifies a series of define directives to add to the shader sources
-	void	setDefineDirectives( const std::vector<std::string> &defines );
+	//! Specifies all define directives to add to the shader sources, overwriting any existing defines.
+	void	setDefines( const std::vector<std::string> &defines );
+	//! Returns all of the define directives to add to the shader sources.
+	const std::vector<std::string>&	getDefines() const	{ return mDefineDirectives; }
+	//! Returns all of the define directives to add to the shader sources, modifiable version.
+	std::vector<std::string>&		getDefines()		{ return mDefineDirectives; }
 	//! Clears all define directives
-	void	clearDefineDirectives();
+	void	clearDefines();
+
 	//! Specifies the #version directive to add to the shader sources (if it doesn't explicitly contain a `#version` directive).
 	void	setVersion( int version )	{ mVersion = version; }
 	//! Returns the version used for #version directives that was added with setVersion().
 	int		getVersion() const			{ return mVersion; }
-	//!
+
+	//! If set to true, the name of the currently processed file will be used in `#line` directives. Not to glsl spec, but works on some graphics cards like NVidia.
 	void	setUseFilenameInLineDirectiveEnabled( bool enable )	{ mUseFilenameInLineDirective = enable; }
-	//!
+	//! If true, the name of the currently processed file will be used in `#line` directives. Not to glsl spec, but works on some graphics cards like NVidia.
 	bool	isUseFilenameInLineDirectiveEnabled() const		{ return mUseFilenameInLineDirective; }
 
 	//! Returns a Signal that the user can connect to in order to handle custom includes.
