@@ -478,25 +478,23 @@ GlslProg::GlslProg( const Format &format )
 {
 	mHandle = glCreateProgram();
 
-	auto preprocessor = format.getShaderPreprocessor();
-
 	if( ! format.getVertex().empty() )
-		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER, preprocessor );
+		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER, format.getPreprocessor() );
 	if( ! format.getFragment().empty() )
-		loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER, preprocessor );
+		loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER, format.getPreprocessor() );
 #if defined( CINDER_GL_HAS_GEOM_SHADER )
 	if( ! format.getGeometry().empty() )
-		loadShader( format.getGeometry(), format.mGeometryShaderPath, GL_GEOMETRY_SHADER, preprocessor );
+		loadShader( format.getGeometry(), format.mGeometryShaderPath, GL_GEOMETRY_SHADER, format.getPreprocessor() );
 #endif
 #if defined( CINDER_GL_HAS_TESS_SHADER )
 	if( ! format.getTessellationCtrl().empty() )
-		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER, preprocessor );
+		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER, format.getPreprocessor() );
 	if( ! format.getTessellationEval().empty() )
-		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER, preprocessor );
+		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER, format.getPreprocessor() );
 #endif
 #if defined( CINDER_GL_HAS_COMPUTE_SHADER )
 	if( ! format.getCompute().empty() )
-		loadShader( format.getCompute(), format.mComputeShaderPath, GL_COMPUTE_SHADER, preprocessor );
+		loadShader( format.getCompute(), format.mComputeShaderPath, GL_COMPUTE_SHADER, format.getPreprocessor() );
 #endif    
     auto & userDefinedAttribs = format.getAttributes();
 	

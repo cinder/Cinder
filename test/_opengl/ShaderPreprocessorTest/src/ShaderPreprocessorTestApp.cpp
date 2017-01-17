@@ -75,7 +75,6 @@ void ShaderPreprocessorTestApp::reload()
 //	testGlslProgInclude();
 	testSeparateShaderPreprocessor();
 //	testIncludeHandler();
-
 }
 
 void ShaderPreprocessorTestApp::keyDown( KeyEvent event )
@@ -174,7 +173,7 @@ void ShaderPreprocessorTestApp::testIncludeHandler()
 			.fragment( loadAsset( "shaderWithInclude.frag" ) )
 		;
 
-		format.getShaderPreprocessor()->getSignalInclude().connect( includeCustomHash );
+		format.getPreprocessor()->getSignalInclude().connect( includeCustomHash );
 
 		mGlslProg = gl::GlslProg::create( format );
 	}

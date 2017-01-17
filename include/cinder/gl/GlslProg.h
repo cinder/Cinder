@@ -254,14 +254,14 @@ class GlslProg {
 
 		//! Returns whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
 		bool		isPreprocessingEnabled() const;
-		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
 		void		setPreprocessingEnabled( bool enable );
-		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
 		Format&		preprocess( bool enable )					{ setPreprocessingEnabled( enable );; return *this; }
+		//! Sets the ShaderPreprocessor that will be used when loading shader sources and enables preprocessing. Any preprocessing settings that were previously set on this Format will be ignored.
+		Format&		preprocessor( const gl::ShaderPreprocessorRef &preprocessor )	{ mPreprocessor = preprocessor; return *this; }
 		//! Returns a shared pointer to the ShaderPreprocessor that will be used when loading shader sources, if preprocessing is enabled (or a null pointer otherwise).
-		const ShaderPreprocessorRef&	getShaderPreprocessor() const	{ return mPreprocessor; }
-		//! Sets the ShaderPreprocessor that will be used when loading shader sources. Any preprocessing settings that were previously set on this Format will be ignored.
-		void	setShaderPreprocessor( const gl::ShaderPreprocessorRef &preprocessor )	{ mPreprocessor = preprocessor; }
+		const ShaderPreprocessorRef&	getPreprocessor() const	{ return mPreprocessor; }
 		//! Adds a define directive to the ShaderPreprocessor, which will be prepended to the shader sources
 		Format&		define( const std::string &define );
 		//! Adds a define directive to the ShaderPreprocessor, which will be prepended to the shader sources
