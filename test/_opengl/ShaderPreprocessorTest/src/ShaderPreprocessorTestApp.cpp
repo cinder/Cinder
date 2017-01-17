@@ -1,3 +1,35 @@
+/*
+
+
+* [X] check all cases:
+* 
+* [X] version, no defines
+* 
+* original matches output
+
+* [X] no version, no defines case
+* [X] version, with defines case
+* [X] no version, with defines case
+* [X] version with a comment before it, no defines
+* [X] version with comment before it, defines
+* [X] no version, with defines and comment before it
+* [X] no version, no defines, comment before it
+* [X] version, no defines, with include
+* [X] version, no defines, with include, comment on top
+* [X] no version, no defines, with include
+* [X] no version, no defines, with include, comment at top
+* [X] version, defines, include
+* [X] original more complicated shader
+* 
+* [X] test that the source-string-number is correct here, should go up to 2
+
+* variations:
+* 
+* [X] versions 150 and 330+ handle #lines differently
+* [X] check #version 300 es that it is parsed correctly
+
+*/
+
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -22,16 +54,18 @@ class ShaderPreprocessorTestApp : public App {
 	void testSeparateShaderPreprocessor();
 	void testIncludeHandler();
 
-	gl::GlslProgRef			mGlslProg;
-	gl::ShaderPreprocessor  mPreprocessor;
-	bool					mAddDefineDirective = false;
-	const std::string		mWrongHashDefineDirective = "WRONG_HASH";
+	gl::GlslProgRef				mGlslProg;
+	gl::ShaderPreprocessorRef  mPreprocessor;
+	bool						mAddDefineDirective = false;
+	const std::string			mWrongHashDefineDirective = "WRONG_HASH";
 };
 
 void ShaderPreprocessorTestApp::setup()
 {
+	mPreprocessor = make_shared<gl::ShaderPreprocessor>();
+
 	if( mAddDefineDirective )
-		mPreprocessor.addDefine( mWrongHashDefineDirective );
+		mPreprocessor->addDefine( mWrongHashDefineDirective );
 
 	reload();
 }
@@ -54,19 +88,19 @@ void ShaderPreprocessorTestApp::keyDown( KeyEvent event )
 		mAddDefineDirective = ! mAddDefineDirective;
 		CI_LOG_I( "mAddDefineDirectives: " << mAddDefineDirective );
 		if( mAddDefineDirective ) {
-			mPreprocessor.addDefine( mWrongHashDefineDirective );
+			mPreprocessor->addDefine( mWrongHashDefineDirective );
 		}
 		else {
-			mPreprocessor.clearDefineDirectives();
+			mPreprocessor->clearDefines();
 		}
 	}
 	else if( event.getChar() == 'v' ) {
-		mPreprocessor.setVersion( mPreprocessor.getVersion() == 150 ? 330 : 150 );
-		CI_LOG_I( "set #version to: " << mPreprocessor.getVersion() );
+		mPreprocessor->setVersion( mPreprocessor->getVersion() == 150 ? 330 : 150 );
+		CI_LOG_I( "set #version to: " << mPreprocessor->getVersion() );
 	}
 	else if( event.getChar() == 'n' ) {
-		mPreprocessor.setUseFilenameInLineDirectiveEnabled( ! mPreprocessor.isUseFilenameInLineDirectiveEnabled() );
-		CI_LOG_I( "using filename in #line directive: " << boolalpha << mPreprocessor.isUseFilenameInLineDirectiveEnabled() << dec );
+		mPreprocessor->setUseFilenameInLineDirectiveEnabled( ! mPreprocessor->isUseFilenameInLineDirectiveEnabled() );
+		CI_LOG_I( "using filename in #line directive: " << boolalpha << mPreprocessor->isUseFilenameInLineDirectiveEnabled() << dec );
 	}
 }
 
@@ -95,10 +129,10 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 {
 	try {
 		auto vert = loadAsset( "passthrough.vert" );
-		const fs::path &fragPath = "simple.frag";
-		//string fragSource = mPreprocessor.parse( getAssetPath( fragPath ) );
+		//const fs::path &fragPath = "simple.frag";
+		const fs::path &fragPath = "shaderWithInclude.frag";
 		string fragSourceRaw = loadString( loadAsset( fragPath ) );
-		string fragSource = mPreprocessor.parse( fragSourceRaw, fragPath );
+		string fragSource = mPreprocessor->parse( fragSourceRaw, fragPath );
 
 		writeString( fs::path( "build" ) / ( fragPath.stem().string() + "_preprocessed.frag" ), fragSource );
 
@@ -136,10 +170,11 @@ void ShaderPreprocessorTestApp::testIncludeHandler()
 
 	try {
 		auto format = gl::GlslProg::Format()
-			.vertex(  loadAsset( "passthrough.vert" ) )
+			.vertex( loadAsset( "passthrough.vert" ) )
 			.fragment( loadAsset( "shaderWithInclude.frag" ) )
-			.addPreprocessorIncludeHandler( includeCustomHash )
 		;
+
+		format.getShaderPreprocessor()->getSignalInclude().connect( includeCustomHash );
 
 		mGlslProg = gl::GlslProg::create( format );
 	}

@@ -32,6 +32,8 @@
 
 namespace cinder { namespace gl {
 
+typedef std::shared_ptr<class ShaderPreprocessor>	ShaderPreprocessorRef;
+
 //! The Signal type used for for ShaderPreprocessor::getSignalInclude().
 //! The Connection interprets a path and, if it can handle the file then sets the contents of the string and returns true. Returns false if it cannot handle the specified path.
 typedef signals::Signal<bool ( const fs::path &,std::string * )>	SignalIncludeHandler;
