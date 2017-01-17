@@ -20,6 +20,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
+
 #include "cinder/Surface.h"
 #include "cinder/Color.h"
 
