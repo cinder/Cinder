@@ -63,7 +63,7 @@
     <ClCompile Include="..\src\Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ShaderProprocessorTest.cpp">
+    <ClCompile Include="..\src\ShaderPreprocessorTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
