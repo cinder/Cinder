@@ -69,6 +69,7 @@ elseif( CINDER_MAC )
 		STATIC_LIBRARY_FLAGS					"${CINDER_STATIC_LIBS_DEPENDS}" 
 	)
 elseif( CINDER_COCOA_TOUCH )
+elseif( CINDER_LINUX )
 endif()
 
 # Check compiler support for enabling c++11 or c++14.
@@ -105,7 +106,7 @@ endif()
 
 # TODO: it would be nice to the following, but we can't until min required cmake is 3.3
 #target_compile_options( cinder PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${CINDER_CXX_FLAGS}> )
-set( CMAKE_CXX_FLAGS ${CINDER_CXX_FLAGS} ${CMAKE_CXX_FLAGS} )
+set( CMAKE_CXX_FLAGS "${CINDER_CXX_FLAGS} ${CMAKE_CXX_FLAGS}" )
 target_compile_options( cinder INTERFACE ${CINDER_CXX_FLAGS} )
 
 # This file will contain all dependencies, includes, definition, compiler flags and so on..

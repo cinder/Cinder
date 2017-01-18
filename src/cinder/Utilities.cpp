@@ -32,6 +32,7 @@
 #endif
 
 #include <vector>
+#include <fstream>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -75,7 +76,7 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 {
 	vector<string> result;
 
-	boost::algorithm::split( result, str, boost::is_any_of(separators), 
+	boost::algorithm::split( result, str, boost::is_any_of(separators),
 		compress ? boost::token_compress_on : boost::token_compress_off );
 
 	return result;
@@ -83,10 +84,27 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 
 string loadString( const DataSourceRef &dataSource )
 {
-	Buffer buffer( dataSource );
-	const char *data = static_cast<const char *>( buffer.getData() );
+	auto buffer = dataSource->getBuffer();
+	const char *data = static_cast<const char *>( buffer->getData() );
 
-	return string( data, data + buffer.getSize() );
+	return string( data, data + buffer->getSize() );
+}
+
+void writeString( const fs::path &path, const std::string &str )
+{
+	writeString( (DataTargetRef)writeFile( path ), str );
+}
+
+void writeString( const DataTargetRef &dataTarget, const std::string &str )
+{
+	fs::path outPath = dataTarget->getFilePath();
+	if( outPath.empty() ) {
+		throw ci::Exception( "writeString can only write to file." );
+	}
+
+	std::ofstream ofs( outPath.string(), std::ofstream::binary );
+	ofs << str;
+	ofs.close();
 }
 
 void sleep( float milliseconds )
@@ -99,39 +117,45 @@ vector<string> stackTrace()
 	return app::Platform::get()->stackTrace();
 }
 
-int16_t swapEndian( int16_t val ) { 
-	return (int16_t) (	(((uint16_t) (val) & (uint16_t) 0x00ffU) << 8) | 
+int16_t swapEndian( int16_t val )
+{
+	return (int16_t) (	(((uint16_t) (val) & (uint16_t) 0x00ffU) << 8) |
 						(((uint16_t) (val) & (uint16_t) 0xff00U) >> 8) );
 }
 
-uint16_t swapEndian( uint16_t val ) { 
-	return (uint16_t) (	(((uint16_t) (val) & (uint16_t) 0x00ffU) << 8) | 
+uint16_t swapEndian( uint16_t val )
+{
+	return (uint16_t) (	(((uint16_t) (val) & (uint16_t) 0x00ffU) << 8) |
 						(((uint16_t) (val) & (uint16_t) 0xff00U) >> 8) );
 }
 
-int32_t swapEndian( int32_t val ) { 
+int32_t swapEndian( int32_t val )
+{
 	return (int32_t)((((uint32_t) (val) & (uint32_t) 0x000000FFU) << 24) |
 					 (((uint32_t) (val) & (uint32_t) 0x0000FF00U) <<  8) |
 					 (((uint32_t) (val) & (uint32_t) 0x00FF0000U) >>  8) |
 					 (((uint32_t) (val) & (uint32_t) 0xFF000000U) >> 24));
 }
 
-uint32_t swapEndian( uint32_t val ) { 
+uint32_t swapEndian( uint32_t val )
+{
 	return (uint32_t)((((uint32_t) (val) & (uint32_t) 0x000000FFU) << 24) |
 					 (((uint32_t) (val) & (uint32_t) 0x0000FF00U) <<  8) |
 					 (((uint32_t) (val) & (uint32_t) 0x00FF0000U) >>  8) |
 					 (((uint32_t) (val) & (uint32_t) 0xFF000000U) >> 24));
 }
 
-float swapEndian( float val ) { 
+float swapEndian( float val )
+{
 	uint32_t temp = swapEndian( * reinterpret_cast<uint32_t*>( &val ) );
 	return *(reinterpret_cast<float*>( &temp ) );
 }
 
-double swapEndian( double val ) {
+double swapEndian( double val )
+{
 	union {
 		double d;
-		struct {  
+		struct {
 			uint32_t a;
 			uint32_t b;
 		} i;

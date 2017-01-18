@@ -540,7 +540,7 @@ void Target::generateIndicesForceLines( Primitive primitive, size_t numInputIndi
 
 void Target::copyIndexData( const uint32_t *source, size_t numIndices, uint32_t *target )
 {
-	memcpy( target, source, numIndices * sizeof(float) );
+	memcpy( target, source, numIndices * sizeof(uint32_t) );
 }
 
 void Target::copyIndexData( const uint32_t *source, size_t numIndices, uint16_t *target )

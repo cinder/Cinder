@@ -23,6 +23,8 @@
 
 #include "cinder/Signals.h"
 
+using namespace std;
+
 namespace cinder { namespace signals {
 
 Connection::Connection()
@@ -33,6 +35,24 @@ Connection::Connection()
 Connection::Connection( const std::shared_ptr<detail::Disconnector> &disconnector, detail::SignalLinkBase *link, int priority )
 	: mDisconnector( disconnector ), mLink( link ), mPriority( priority )
 {
+}
+
+Connection::Connection( Connection &&other )
+	: mDisconnector( move( other.mDisconnector ) ), mLink( move( other.mLink ) ), mPriority( move( other.mPriority ) )
+{
+}
+
+Connection& Connection::operator=( Connection &&rhs )
+{	
+	mDisconnector = move( rhs.mDisconnector );
+	mLink = move( rhs.mLink );
+	mPriority = move( rhs.mPriority );
+
+	// Note: on pre-C++14 compilers, we still need to reset the rhs' weak_ptr<Disconnector>, as it doesn't yet support move semantics
+	// TODO: remove once all compilers support C++14
+	rhs.mDisconnector.reset();
+
+	return *this;
 }
 
 bool Connection::disconnect()
@@ -83,11 +103,6 @@ ScopedConnection::~ScopedConnection()
 	disconnect();
 }
 
-ScopedConnection::ScopedConnection( const Connection &other )
-	: Connection( other )
-{
-}
-
 ScopedConnection::ScopedConnection( ScopedConnection &&other )
 	: Connection( std::move( other ) )
 {
@@ -98,17 +113,29 @@ ScopedConnection::ScopedConnection( Connection &&other )
 {
 }
 
-ScopedConnection& ScopedConnection::operator=( const Connection &rhs )
+ScopedConnection& ScopedConnection::operator=( ScopedConnection &&rhs )
 {
-	disconnect();
-	Connection::operator=( rhs );
+	disconnect(); // first disconnect from existing
+	Connection::operator=( std::move( rhs ) );
 	return *this;
 }
 
-ScopedConnection& ScopedConnection::operator=( ScopedConnection &&rhs )
+ConnectionList::~ConnectionList()
 {
-	Connection::operator=( std::move( rhs ) );
-	return *this;
+	clear();
+}
+
+void ConnectionList::add( Connection &&target )
+{
+	mConnections.emplace_back( std::move( target ) );
+}
+
+void ConnectionList::clear()
+{
+	for( auto &conn : mConnections )
+		conn.disconnect();
+
+	mConnections.clear();
 }
 
 namespace detail {

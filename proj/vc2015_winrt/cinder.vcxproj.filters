@@ -107,6 +107,9 @@
     <Filter Include="Source Files\r8brain">
       <UniqueIdentifier>{11f14c99-8ad6-4415-bdd9-822ab7aa82da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\freetype\bdf">
+      <UniqueIdentifier>{79c3006e-ce56-4a78-bfa1-e8c2193f61dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\cinder\Arcball.h">
@@ -1326,9 +1329,11 @@
     <ClCompile Include="..\..\src\cinder\msw\CinderMsw.cpp">
       <Filter>Source Files\msw</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\freetype\bdf\bdflib.c" />
     <ClCompile Include="..\..\src\r8brain\r8bbase.cpp">
       <Filter>Source Files\r8brain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\freetype\bdf\bdflib.c">
+      <Filter>Source Files\freetype\bdf</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -290,13 +290,14 @@ AppImplLinux::AppImplLinux( AppLinux *aApp, const AppLinux::Settings &settings )
 	::glfwSetErrorCallback( GlfwCallbacks::onError );
 
 	// Must be called before we can do anything with GLFW
-    if( ! ::glfwInit() ) {
-    	std::cerr << std::string( "::glfwInit failed!" ) << std::endl;
-    	std::exit( 1 );
+ 	if( ! ::glfwInit() ) {
+  		std::cerr << std::string( "::glfwInit failed!" ) << std::endl;
+		std::exit( 1 );
 	}
 
 	mFrameRate = settings.getFrameRate();
 	mFrameRateEnabled = settings.isFrameRateEnabled();
+	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled();
 	
 	auto formats = settings.getWindowFormats();
 	if( formats.empty() ) {
@@ -394,10 +395,19 @@ void AppImplLinux::run()
 		// Sleep until the next frame
 		sleepUntilNextFrame();	
 
-		// Check to see if we need to exit
-		if( ::glfwWindowShouldClose( mMainWindow->getImpl()->getNative() ) ) {
+		// Check if a window should be closed / destroyed or if we should exit.
+		auto shouldCloseWindow = [ this ] ( WindowImplLinux* window ) {
+			if( ::glfwWindowShouldClose( window->getNative() ) ) {
+				window->getWindow()->emitClose();
+				::glfwDestroyWindow( window->getNative() );
+				return true;
+			}
+			return false;
+		};
+
+        	mWindows.remove_if( shouldCloseWindow );
+		if( mWindows.empty() && mQuitOnLastWindowClosed )
 			mShouldQuit = true;
-		}
 	}
 
   terminate:
