@@ -124,11 +124,11 @@ bool findIncludeStatement( const std::string &line, std::string *out )
 	return true;
 }
 
-bool findVersionStatement( const std::string &line, int *versionNumberOut )
+bool findVersionStatement( const char *lineStart, int *versionNumberOut )
 {
 	const int VERSION_KEYWORD_LEN = 7;
 	const char *resultStart = nullptr;
-	const char *c = line.c_str();
+	const char *c = lineStart;
 	consumeWhiteSpace( &c );
 	// leading '#'
 	if( isTerminated( c ) || ( *c != '#' ) )
@@ -217,11 +217,7 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 		if( lineEndPos == std::string::npos )
 			break;
 
-
-		// TODO: we don't need to copy out each line, just pass in a const char* to the correct starting position in the line to findVersionStatement
-		string line = source.substr( lineStartPos, lineEndPos - lineStartPos );
-
-		if( findVersionStatement( line, versionNumber ) ) {
+		if( findVersionStatement( source.c_str() + lineStartPos, versionNumber ) ) {
 			// if no defines, return leaving the directive and sourceBody strings empty,
 			// thereby indicating to use the original source without modification;
 			if( mDefineDirectives.empty() ) {
