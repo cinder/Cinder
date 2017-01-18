@@ -260,12 +260,7 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 		*directives += "#define " + define + "\n";
 	}
 
-	// TODO: update this comment
-	// - is lineNumberStart still needed? we don't process the directives portion in parseTopLevel()
 	// if we've made any modifications, add a #line directive to ensure debug error statements are correct.
-	// - if no version line but we have directives, lineStatementNumber should be 0
-	// - if no version line and no directives, line number should be the one parsed
-	// - if both, line statement number should be the original version line + 1
 	if( ! mDefineDirectives.empty() || ! hasVersionLine ) {
 		*directives += getLineDirective( sourcePath, *lineNumberStart, 0, *versionNumber );
 		*lineNumberStart += 1;
@@ -274,33 +269,15 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 
 string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &sourcePath, int lineNumberStart, int versionNumber, set<fs::path> &includedFiles )
 {
-	stringstream output;
 	istringstream input( source );
-
-	// go through each line and process includes
-	string line;
-	fs::path currentDirectory = sourcePath.parent_path();
-	int lineNumber = lineNumberStart;
-
-	while( getline( input, line ) ) {
-		std::string includeFilePath;
-		if( findIncludeStatement( line, &includeFilePath ) ) {
-			output << parseRecursive( includeFilePath, currentDirectory, versionNumber, includedFiles );
-			output << getLineDirective( sourcePath, lineNumber, 0, versionNumber );
-		}
-		else
-			output << line << "\n";
-
-		lineNumber++;
-	}
-
-	return output.str();
+	return readStream( input, sourcePath, lineNumberStart, versionNumber, includedFiles );
 }
 
 string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path &currentDirectory, int versionNumber, set<fs::path> &includeTree )
 {	
 	string output;
 	string signalIncludeResult;
+	const int lineNumberStart = 1;
 
 	output = getLineDirective( path, 0, (int)includeTree.size() + 1, versionNumber );
 
@@ -313,7 +290,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 
 		includeTree.insert( path );
 		istringstream input( signalIncludeResult );
-		output += readStream( input, path, versionNumber, includeTree );
+		output += readStream( input, path, lineNumberStart, versionNumber, includeTree );
 	}
 	else {
 		const fs::path fullPath = findFullPath( path, currentDirectory );
@@ -328,25 +305,25 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 		ifstream input( fullPath.string().c_str() );
 		if( ! input.is_open() )
 			throw ShaderPreprocessorExc( "Failed to open file at path: " + fullPath.string() );
-		output += readStream( input, fullPath, versionNumber, includeTree );
+		output += readStream( input, fullPath, lineNumberStart, versionNumber, includeTree );
 		input.close();
 	}
 
 	return output;
 }
 
-std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path &path, int versionNumber, set<fs::path> &includeTree )
+std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path &sourcePath, int lineNumberStart, int versionNumber, set<fs::path> &includeTree )
 {
 	// go through each line and process includes
 	string line;
-	int lineNumber = 1;
+	int lineNumber = lineNumberStart;
 	stringstream output;
 
 	while( getline( input, line ) ) {
 		std::string includeFilePath;
 		if( findIncludeStatement( line, &includeFilePath ) ) {
-			output << parseRecursive( includeFilePath, path.parent_path(), versionNumber, includeTree );
-			output << getLineDirective( path, lineNumber, (int)includeTree.size(), versionNumber );
+			output << parseRecursive( includeFilePath, sourcePath.parent_path(), versionNumber, includeTree );
+			output << getLineDirective( sourcePath, lineNumber, (int)includeTree.size(), versionNumber );
 		}
 		else
 			output << line << "\n";

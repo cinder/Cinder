@@ -92,7 +92,7 @@ class ShaderPreprocessor {
 	void			parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, int *versionNumber, int *lineNumberStart );
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, int lineNumberStart, int versionNumber, std::set<fs::path> &includeTree );
 	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, int versionNumber, std::set<fs::path> &includeTree );
-	std::string		readStream( std::istream &stream, const fs::path &path, int versionNumber, std::set<fs::path> &includeTree );
+	std::string		readStream( std::istream &stream, const fs::path &sourcePath, int lineNumberStart, int versionNumber, std::set<fs::path> &includeTree );
 	std::string		getLineDirective( const fs::path &sourcePath, int lineNumber, int sourceStringNumber, int versionNumber ) const;
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
 	

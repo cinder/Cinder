@@ -4,9 +4,6 @@
 * [X] check all cases:
 * 
 * [X] version, no defines
-* 
-* original matches output
-
 * [X] no version, no defines case
 * [X] version, with defines case
 * [X] no version, with defines case
@@ -128,8 +125,8 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 {
 	try {
 		auto vert = loadAsset( "passthrough.vert" );
-		//const fs::path &fragPath = "simple.frag";
-		const fs::path &fragPath = "shaderWithInclude.frag";
+		const fs::path &fragPath = "simple.frag";
+		//const fs::path &fragPath = "shaderWithInclude.frag";
 		string fragSourceRaw = loadString( loadAsset( fragPath ) );
 		string fragSource = mPreprocessor->parse( fragSourceRaw, fragPath );
 
