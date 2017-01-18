@@ -273,27 +273,27 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 	return readStream( input, sourcePath, lineNumberStart, versionNumber, includedFiles );
 }
 
-string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path &currentDirectory, int versionNumber, set<fs::path> &includeTree )
+string ShaderPreprocessor::parseRecursive( const fs::path &includePath, const fs::path &currentDirectory, int versionNumber, set<fs::path> &includeTree )
 {	
 	string output;
 	string signalIncludeResult;
 	const int lineNumberStart = 1;
 
-	output = getLineDirective( path, 0, (int)includeTree.size() + 1, versionNumber );
+	output = getLineDirective( includePath, 0, (int)includeTree.size() + 1, versionNumber );
 
-	if( mSignalInclude.emit( path, &signalIncludeResult ) ) {
+	if( mSignalInclude.emit( includePath, &signalIncludeResult ) ) {
 
-		if( includeTree.count( path ) ) {
+		if( includeTree.count( includePath ) ) {
 			// circular include, skip it as it has already been appended.
 			return "";
 		}
 
-		includeTree.insert( path );
+		includeTree.insert( includePath );
 		istringstream input( signalIncludeResult );
-		output += readStream( input, path, lineNumberStart, versionNumber, includeTree );
+		output += readStream( input, includePath, lineNumberStart, versionNumber, includeTree );
 	}
 	else {
-		const fs::path fullPath = findFullPath( path, currentDirectory );
+		const fs::path fullPath = findFullPath( includePath, currentDirectory );
 
 		if( includeTree.count( fullPath ) ) {
 			// circular include, skip it as it has already been appended.
@@ -304,7 +304,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 
 		ifstream input( fullPath.string().c_str() );
 		if( ! input.is_open() )
-			throw ShaderPreprocessorExc( "Failed to open file at path: " + fullPath.string() );
+			throw ShaderPreprocessorExc( "Failed to open file at include path: " + fullPath.string() );
 		output += readStream( input, fullPath, lineNumberStart, versionNumber, includeTree );
 		input.close();
 	}
