@@ -188,7 +188,7 @@ string ShaderPreprocessor::parse( const std::string &source, const fs::path &sou
 	string directives;
 	string sourceBody;
 	int versionNumber = -1;
-	size_t lineNumberStart;
+	int lineNumberStart;
 
 	parseDirectives( source, sourcePath, &directives, &sourceBody, &versionNumber, &lineNumberStart );
 	if( directives.empty() ) {
@@ -204,11 +204,11 @@ string ShaderPreprocessor::parse( const std::string &source, const fs::path &sou
 
 // - returns directives string and remaining source separately, so that parseTopLevel can start after the directives we've added
 // - lineNumberStart indicates what value a #line directive should have after parsing #include statements
-void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, int *versionNumber, size_t *lineNumberStart )
+void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, int *versionNumber, int *lineNumberStart )
 {		
 	// go through each line and find the #version directive
 	string line;
-	size_t lineNumber = 1;
+	int lineNumber = 1;
 	bool hasVersionLine = false;
 
 	size_t lineStartPos = 0;
@@ -272,7 +272,7 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 	}
 }
 
-string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &sourcePath, size_t lineNumberStart, int versionNumber, set<fs::path> &includedFiles )
+string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &sourcePath, int lineNumberStart, int versionNumber, set<fs::path> &includedFiles )
 {
 	stringstream output;
 	istringstream input( source );
@@ -280,7 +280,7 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 	// go through each line and process includes
 	string line;
 	fs::path currentDirectory = sourcePath.parent_path();
-	size_t lineNumber = lineNumberStart;
+	int lineNumber = lineNumberStart;
 
 	while( getline( input, line ) ) {
 		std::string includeFilePath;
@@ -302,7 +302,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 	string output;
 	string signalIncludeResult;
 
-	output = getLineDirective( path, 0, includeTree.size() + 1, versionNumber );
+	output = getLineDirective( path, 0, (int)includeTree.size() + 1, versionNumber );
 
 	if( mSignalInclude.emit( path, &signalIncludeResult ) ) {
 
@@ -339,14 +339,14 @@ std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path 
 {
 	// go through each line and process includes
 	string line;
-	size_t lineNumber = 1;
+	int lineNumber = 1;
 	stringstream output;
 
 	while( getline( input, line ) ) {
 		std::string includeFilePath;
 		if( findIncludeStatement( line, &includeFilePath ) ) {
 			output << parseRecursive( includeFilePath, path.parent_path(), versionNumber, includeTree );
-			output << getLineDirective( path, lineNumber, includeTree.size(), versionNumber );
+			output << getLineDirective( path, lineNumber, (int)includeTree.size(), versionNumber );
 		}
 		else
 			output << line << "\n";
@@ -357,7 +357,7 @@ std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path 
 	return output.str();
 }
 
-std::string ShaderPreprocessor::getLineDirective( const fs::path &sourcePath, size_t lineNumber, size_t sourceStringNumber, int versionNumber ) const
+std::string ShaderPreprocessor::getLineDirective( const fs::path &sourcePath, int lineNumber, int sourceStringNumber, int versionNumber ) const
 {
 	// in glsl 330 and up, the #line directive indicates what the next line should be. Before that, it is the current line.
 	if( versionNumber >= 330 )
