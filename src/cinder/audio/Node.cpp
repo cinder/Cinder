@@ -435,6 +435,10 @@ void Node::pullInputs( Buffer *inPlaceBuffer )
 	}
 }
 
+void Node::process( Buffer * /*buffer*/ )
+{
+}
+
 void Node::sumInputs()
 {
 	// Pull all inputs, summing the results from the buffer that input used for processing.
