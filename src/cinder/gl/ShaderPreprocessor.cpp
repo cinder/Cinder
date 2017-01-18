@@ -174,7 +174,7 @@ string ShaderPreprocessor::parse( const fs::path &sourcePath, std::set<fs::path>
 	const fs::path fullPath = findFullPath( sourcePath, "" );
 	string source = loadString( loadFile( fullPath ) );
 
-	return parse( source, fs::path(), includedFiles );
+	return parse( source, sourcePath, includedFiles );
 }
 
 string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourcePath, set<fs::path> *includedFiles )
@@ -200,12 +200,6 @@ string ShaderPreprocessor::parse( const std::string &source, const fs::path &sou
 		string result = parseTopLevel( sourceBody, sourcePath, lineNumberStart, versionNumber, *includedFiles );
 		return directives + result;
 	}
-}
-
-// TODO: remove this, it is only used for debug pretty printing in VS Immediate Window
-void print( const std::string &str )
-{
-	ci::app::Platform::get()->console() << str << endl;
 }
 
 // - returns directives string and remaining source separately, so that parseTopLevel can start after the directives we've added
