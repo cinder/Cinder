@@ -76,4 +76,39 @@ TEST_CASE( "ShaderPreprocessor" )
 		REQUIRE( includedFiles.count( commonPath ) == 1 );
 		REQUIRE( includedFiles.count( hashPath ) == 1 );
 	}
+
+	SECTION( "test include handler" )
+	{
+		// this string should be loaded into result instead of the simpleCommon.glsl on file
+
+		const std::string commonGlsl = R"(
+		float hash( float n )
+		{
+			return 0.5f;
+		}
+		)";
+
+		gl::ShaderPreprocessor preprocessor;
+			
+		preprocessor.getSignalInclude().connect(
+			[&commonGlsl]( const fs::path &path, std::string *source ) {
+				if( path == fs::path( "commonSimple.glsl" ) ) {
+					*source = commonGlsl;
+					return true;
+				}
+
+				return false;
+			}
+		);
+
+		fs::path sourcePath = app::getAssetPath( "shader_preprocessor/simple.frag" );
+
+		std::set<fs::path> includedFiles;
+		const string result = preprocessor.parse( sourcePath, &includedFiles );
+
+		REQUIRE( result.find( "return 0.5f;" ) != string::npos );
+
+		REQUIRE( includedFiles.size() == 1 );
+		REQUIRE( includedFiles.count( "commonSimple.glsl" ) == 1 );
+	}
 }
