@@ -340,8 +340,13 @@ bool GlslProg::Format::isPreprocessingEnabled() const
 
 void GlslProg::Format::setPreprocessingEnabled( bool enable )
 { 
-	if( ! mPreprocessor )
-		mPreprocessor = make_shared<ShaderPreprocessor>();
+	if( enable ) {
+		if( ! mPreprocessor )
+			mPreprocessor = make_shared<ShaderPreprocessor>();
+	}
+	else {
+		mPreprocessor = nullptr;
+	}
 }
 
 GlslProg::Format& GlslProg::Format::version( int version )
