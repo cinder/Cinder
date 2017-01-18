@@ -318,8 +318,9 @@ std::string ShaderPreprocessor::readStream( std::istream &input, const fs::path 
 	while( getline( input, line ) ) {
 		std::string includeFilePath;
 		if( findIncludeStatement( line, &includeFilePath ) ) {
+			int numIncludesBefore = (int)includeTree.size();
 			output << parseRecursive( includeFilePath, sourcePath.parent_path(), versionNumber, includeTree );
-			output << getLineDirective( sourcePath, lineNumber, (int)includeTree.size(), versionNumber );
+			output << getLineDirective( sourcePath, lineNumber, numIncludesBefore, versionNumber );
 		}
 		else
 			output << line << "\n";
