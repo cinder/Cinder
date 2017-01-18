@@ -130,7 +130,12 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 		string fragSourceRaw = loadString( loadAsset( fragPath ) );
 		string fragSource = mPreprocessor->parse( fragSourceRaw, fragPath );
 
+		// write the preprocessed string out to file within the build folder for comparison
+#if defined( CINDER_MAC )
+		writeString( fs::path( fragPath.stem().string() + "_preprocessed.frag" ), fragSource );
+#else
 		writeString( fs::path( "build" ) / ( fragPath.stem().string() + "_preprocessed.frag" ), fragSource );
+#endif
 
 		auto format = gl::GlslProg::Format()
 							.preprocess( false )
