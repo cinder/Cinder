@@ -34,7 +34,10 @@ function( ci_make_app )
 		message( STATUS "CINDER_TARGET: ${CINDER_TARGET}" )
 		message( STATUS "CINDER_LIB_DIRECTORY: ${CINDER_LIB_DIRECTORY}" )
 	endif()
-
+    
+    # This ensures that the application will link with the correct version of Cinder
+    # based on the current build type without the need to remove the entire build folder
+    # when switching build type after an initial configuration. See PR #1518 for more info. 
 	if( cinder_DIR )
 		unset( cinder_DIR CACHE )
 	endif()
