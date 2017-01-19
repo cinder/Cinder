@@ -140,13 +140,13 @@ install:
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       tools/ci/cmake_test.sh;
+    elif  [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
+      tools/ci/cmake_test.sh;
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode-osx" ]]; then
       tools/ci/xcode_osx_test.sh;
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode-ios" ]]; then
-      tools/ci/xcode_ios.sh;
+      proj/xcode/ios-build-xcpretty.sh;
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode-ios-sim" ]]; then
-      tools/ci/xcode_ios_sim.sh;
-    elif  [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
-      tools/ci/cmake_test.sh;
+      proj/xcode/iossim-build-xcpretty.sh;
     fi
     
