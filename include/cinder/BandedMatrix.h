@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
+#include "cinder/CinderExports.h"
 
 namespace cinder {
 

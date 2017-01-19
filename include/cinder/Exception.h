@@ -24,7 +24,7 @@
 
 #include <exception>
 #include <string>
-#include "cinder/Cinder.h"
+#include "cinder/CinderExports.h"
 
 namespace cinder {
 

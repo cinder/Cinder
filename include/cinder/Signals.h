@@ -28,7 +28,7 @@
 
 #include "cinder/CinderAssert.h"
 #include "cinder/Noncopyable.h"
-#include "cinder/Cinder.h"
+#include "cinder/CinderExports.h"
 
 #include <functional>
 #include <memory>
