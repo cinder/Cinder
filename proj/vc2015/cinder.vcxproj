@@ -1086,6 +1086,7 @@
     <ClInclude Include="..\..\include\cinder\CameraUi.h" />
     <ClInclude Include="..\..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\..\include\cinder\CinderAssert.h" />
+    <ClInclude Include="..\..\include\cinder\CinderExports.h" />
     <ClInclude Include="..\..\include\cinder\CinderGlm.h" />
     <ClInclude Include="..\..\include\cinder\Clipboard.h" />
     <ClInclude Include="..\..\include\cinder\CurrentFunction.h" />

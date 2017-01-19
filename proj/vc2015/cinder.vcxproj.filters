@@ -2231,5 +2231,8 @@
     <ClInclude Include="..\..\include\freetype\config\ftstdlib.h">
       <Filter>Header Files\freetype\config</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\cinder\CinderExports.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
