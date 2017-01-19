@@ -213,7 +213,7 @@ class CI_API Modifier {
 	virtual void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const = 0;
 };
 
-class Rect : public Source {
+class CI_API Rect : public Source {
   public:
 	//! Equivalent to Rectf( -0.5, -0.5, 0.5, 0.5 )
 	Rect();
@@ -241,7 +241,6 @@ class Rect : public Source {
 	std::array<vec2,4>		mPositions, mTexCoords;
 	std::array<ColorAf,4>	mColors;
 	bool					mHasColors;
-	static const float		sNormals[4*3], sTangents[4*3];
 };
 	
 class CI_API RoundedRect : public Source {
