@@ -106,9 +106,9 @@ class CI_API BufferObj {
 	GLenum				mUsage;
 	std::string			mLabel; // debug label
 	
-	friend std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
 };
 
-std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
+CI_API std::ostream& operator<<( std::ostream &os, const BufferObj &rhs );
 	
 } }

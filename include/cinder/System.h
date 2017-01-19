@@ -116,7 +116,7 @@ class CI_API System {
 #endif 
 };
 
-inline std::ostream& operator<<( std::ostream &outp, const System::NetworkAdapter &adapter )
+CI_API inline std::ostream& operator<<( std::ostream &outp, const System::NetworkAdapter &adapter )
 {
 	outp << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress() << " Subnet: " << adapter.getSubnetMask();
 	return outp;

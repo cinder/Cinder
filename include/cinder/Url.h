@@ -48,13 +48,13 @@ class CI_API Url {
 	std::string		mStr;
 };
 
-inline std::ostream& operator<<( std::ostream &out, const Url &url )
+CI_API inline std::ostream& operator<<( std::ostream &out, const Url &url )
 {
 	out << url.str();
 	return out;
 }
 
-inline std::istream& operator>>( std::istream &is, Url &url )
+CI_API inline std::istream& operator>>( std::istream &is, Url &url )
 {
 	std::string temp;
 	is >> temp;

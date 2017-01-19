@@ -148,7 +148,7 @@ class CI_API Path2d {
 	friend class Shape2d;
 	friend class Path2dCalcCache;
 	
-	friend std::ostream& operator<<( std::ostream &out, const Path2d &p );
+	friend CI_API std::ostream& operator<<( std::ostream &out, const Path2d &p );
   private:
 	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
@@ -166,7 +166,7 @@ class CI_API Path2d {
 	std::vector<SegmentType>	mSegments;
 };
 
-inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
+CI_API inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 {
 	if( p.mPoints.empty() )
 		return out;

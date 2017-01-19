@@ -361,7 +361,7 @@ class CI_API XmlTree {
 	void						setDocType( const std::string &docType ) { mDocType = docType; }
 
 	/** Streams the XmlTree \a xml to std::ostream \a out with standard formatting. **/
-	friend std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
+	friend CI_API std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
 	/** Writes this XmlTree to \a target with standard formatting. If \a createDocument is true then an implicit parent NODE_DOCUMENT is created when necessary and \a this is treated as the root element. **/
 	void						write( DataTargetRef target, bool createDocument = true );
 
@@ -415,7 +415,7 @@ class CI_API XmlTree {
 	static void		loadFromDataSource( DataSourceRef dataSource, XmlTree *result, const ParseOptions &parseOptions );
 };
 
-std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
+CI_API std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
 
 } // namespace cinder
 

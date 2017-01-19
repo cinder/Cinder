@@ -470,10 +470,10 @@ inline ColorAT<uint8_t> ColorAT<uint8_t>::lerp( uint8_t fact, const ColorAT<uint
 }
 
 
-extern std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs );
-extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs );
-extern std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs );
-extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs );
+CI_API extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs );
 
 typedef ColorT<float>		Colorf;
 typedef Colorf				Color;

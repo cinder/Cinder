@@ -83,7 +83,7 @@ class CI_API PolyLineT {
 	//! Calculates the boolean difference of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
 	static std::vector<PolyLineT> 	calcDifference( const std::vector<PolyLineT> &a, std::vector<PolyLineT> &b );
 
-	friend std::ostream& operator<<( std::ostream& lhs, const PolyLineT& rhs )
+	friend CI_API std::ostream& operator<<( std::ostream& lhs, const PolyLineT& rhs )
 	{
 		lhs << "(";
 		for( const auto &it : rhs.mPoints )

@@ -124,7 +124,7 @@ class CI_API Area {
 	static	Area zero()				{ return Area( 0, 0, 0, 0 ); }
 	static Area	proportionalFit( const Area &srcArea, const Area &dstArea, bool center, bool expand = false );
 
-	friend std::ostream& operator<<( std::ostream &o, const Area &area )
+	friend CI_API std::ostream& operator<<( std::ostream &o, const Area &area )
 	{
 		return o << "(" << area.x1 << ", " << area.y1 << ")-(" << area.x2 << ", " << area.y2 << ")";
 	}	

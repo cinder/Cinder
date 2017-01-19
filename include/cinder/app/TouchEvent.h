@@ -92,13 +92,13 @@ class CI_API TouchEvent : public Event {
 	void					*mNative;
 };
 
-inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )
+CI_API inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )
 {
 	out << touch.getId() << ": " << touch.getPos() << " @ " << touch.getTime() << "s";
 	return out;
 }
 
-inline std::ostream& operator<<( std::ostream &out, const TouchEvent &event )
+CI_API inline std::ostream& operator<<( std::ostream &out, const TouchEvent &event )
 {
 	out << "{" << std::endl;
 	for( const auto &touch : event.getTouches() ) {

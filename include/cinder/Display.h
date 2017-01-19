@@ -76,7 +76,7 @@ class CI_API Display {
 	//! Returns the Area which spans all Displays
 	static Area								getSpanningArea();
 	
-	friend std::ostream& operator<<( std::ostream &o, const Display &display )
+	friend CI_API std::ostream& operator<<( std::ostream &o, const Display &display )
 	{
 		return o << display.mArea << " @ " << display.mBitsPerPixel << "bpp @ scale " << display.mContentScale;
 	}	

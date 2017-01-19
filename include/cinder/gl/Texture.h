@@ -313,10 +313,10 @@ class CI_API TextureBase {
 	std::array<GLint,4>	mSwizzleMask;
 	std::string			mLabel; // debugging label
 	
-	friend std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
 };
 
-std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
+CI_API std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
 
 class CI_API TextureData {
   public:

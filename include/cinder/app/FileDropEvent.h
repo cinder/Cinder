@@ -60,7 +60,7 @@ class CI_API FileDropEvent : public Event {
 	std::vector<fs::path>		mFiles;
 };
 
-inline std::ostream& operator<<( std::ostream &os, const FileDropEvent &event )
+CI_API inline std::ostream& operator<<( std::ostream &os, const FileDropEvent &event )
 {
 //	os << event.getPos() << ": ";
 	os << "{" << std::endl;

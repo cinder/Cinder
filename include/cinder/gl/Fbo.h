@@ -90,10 +90,10 @@ class CI_API Renderbuffer {
 	int					mSamples, mCoverageSamples;
 	std::string			mLabel; // debug label
 	
-	friend std::ostream& operator<<( std::ostream &os, const Renderbuffer &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &os, const Renderbuffer &rhs );
 };
 
-std::ostream& operator<<( std::ostream &os, const Renderbuffer &rhs );
+CI_API std::ostream& operator<<( std::ostream &os, const Renderbuffer &rhs );
 
 //! Represents an OpenGL Framebuffer Object.
 class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
@@ -298,9 +298,10 @@ class CI_API Fbo : public std::enable_shared_from_this<Fbo> {
 
 	mutable bool		mNeedsResolve, mNeedsMipmapUpdate;
 	
-	friend std::ostream& operator<<( std::ostream &os, const Fbo &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &os, const Fbo &rhs );
 };
 
+CI_API std::ostream& operator<<( std::ostream &os, const Fbo &rhs );
 
 //! Helper class for implementing dynamic cube mapping
 class CI_API FboCubeMap : public Fbo {

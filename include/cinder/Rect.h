@@ -139,7 +139,7 @@ class CI_API RectT {
 
 	T			x1, y1, x2, y2;
 	
-	friend std::ostream& operator<<( std::ostream &o, const RectT &rect )
+	friend CI_API std::ostream& operator<<( std::ostream &o, const RectT &rect )
 	{
 		return o << "(" << rect.x1 << ", " << rect.y1 << ")-(" << rect.x2 << ", " << rect.y2 << ")";
 	}	

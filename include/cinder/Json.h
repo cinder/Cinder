@@ -154,7 +154,7 @@ class CI_API JsonTree {
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
 	const JsonTree&					operator[]( size_t index ) const;
 	//! Streams the JsonTree \a json to std::ostream \a out with standard formatting.
-	friend std::ostream&			operator<<( std::ostream &out, const JsonTree &json );
+	friend CI_API std::ostream&		operator<<( std::ostream &out, const JsonTree &json );
 	
 	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
 		<br><tt>JsonTree node = myNode.getChild( "path.to.child" );</tt> **/
@@ -324,6 +324,6 @@ private:
 
 };
 
-std::ostream& operator<<( std::ostream &out, const JsonTree &json );
+CI_API std::ostream& operator<<( std::ostream &out, const JsonTree &json );
 
 } // namespace cinder

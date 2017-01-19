@@ -571,8 +571,10 @@ class CI_API GlslProg {
 	std::vector<fs::path>					mShaderPreprocessorIncludedFiles;
 
 	friend class Context;
-	friend std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
+	friend CI_API std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
 };
+
+CI_API std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
 
 class CI_API GlslProgExc : public cinder::gl::Exception {
   public:
