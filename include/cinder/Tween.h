@@ -139,7 +139,7 @@ class CI_API TweenBase : public TimelineItem {
 };
 
 template<typename T>
-class CI_API TweenRef : public std::shared_ptr<Tween<T> > {
+class TweenRef : public std::shared_ptr<Tween<T> > {
   public:
 	TweenRef( const std::shared_ptr<Tween<T> > &sp )
 		: std::shared_ptr<Tween<T> >( sp )
@@ -153,7 +153,7 @@ class CI_API TweenRef : public std::shared_ptr<Tween<T> > {
 };
 		
 template<typename T>
-class CI_API Tween : public TweenBase {
+class Tween : public TweenBase {
   public:
 	typedef std::function<T (const T&, const T&, float)>	LerpFn;
 
@@ -186,7 +186,7 @@ class CI_API Tween : public TweenBase {
 	TweenRef<T>		getThisRef(){ return TweenRef<T>( std::static_pointer_cast<Tween<T> >( shared_from_this() ) ); }
 
 
-	class CI_API Options : public TweenBase::Options {
+	class Options : public TweenBase::Options {
 	  public:
 		Options&	startFn( const TweenBase::StartFn &startFn ) { mTweenRef->setStartFn( startFn ); return *this; }
 		Options&	reverseStartFn( const TweenBase::StartFn &reverseStartFn ) { mTweenRef->setReverseStartFn( reverseStartFn ); return *this; }
@@ -264,7 +264,7 @@ class CI_API Tween : public TweenBase {
 };
 
 template<typename T>
-class CI_API FnTween : public Tween<T> {
+class FnTween : public Tween<T> {
   public:
 	FnTween( std::function<void (T)> fn, T startValue, T endValue, float startTime, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> )
 		: Tween<T>( &mValue, startValue, endValue, startTime, duration, easeFunction, lerpFunction ), mFn( fn ), mValue( startValue )
@@ -283,7 +283,7 @@ class CI_API FnTween : public Tween<T> {
 };
 
 template<typename T>
-class CI_API FnTweenRef : public TweenRef<T> {
+class FnTweenRef : public TweenRef<T> {
   public:
 	FnTweenRef( const std::shared_ptr<FnTween<T> > &sp )
 		: TweenRef<T>( sp )
@@ -322,7 +322,7 @@ class CI_API AnimBase {
 };
 
 template<typename T>
-class CI_API Anim : public AnimBase {
+class Anim : public AnimBase {
   public:
 	Anim()
 		: AnimBase( &mValue )
