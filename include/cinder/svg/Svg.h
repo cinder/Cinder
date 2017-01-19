@@ -180,7 +180,7 @@ class CI_API Paint {
 };
 
 //! SVG Style for a node. Corresponds to SVG Styling: http://www.w3.org/TR/SVG/styling.html
-class Style {
+class CI_API Style {
   public:
 	Style();
 	Style( const XmlTree &xml, const Node *parent );
@@ -194,13 +194,13 @@ class Style {
 	void				unspecifyFill() { mSpecifiesFill = false; }
 	const Paint&		getFill() const { return mFill; }
 	void				setFill( const Paint &fill ) { mSpecifiesFill = true; mFill = fill; }
-	static const Paint&	getFillDefault() { return sPaintBlack; }
+	static const Paint&	getFillDefault();
 
 	bool				specifiesStroke() const { return mSpecifiesStroke; }
 	void				unspecifyStroke() { mSpecifiesStroke = false; }
 	const Paint&		getStroke() const { return mStroke; }
 	void				setStroke( const Paint &stroke ) { mSpecifiesStroke = true; mStroke = stroke; }
-	static const Paint&	getStrokeDefault() { return sPaintNone; }
+	static const Paint&	getStrokeDefault();
 
 	bool			specifiesOpacity() const { return mSpecifiesOpacity; }
 	void			unspecifyOpacity() { mSpecifiesOpacity = false; }
@@ -304,9 +304,6 @@ class Style {
 	
 	// visibility
 	bool			mSpecifiesVisible, mVisible, mDisplayNone;
-	
-  private:
-  	static Paint	sPaintNone, sPaintBlack;
 };
 
 //! Base class for an element of an SVG Document
