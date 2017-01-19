@@ -3,6 +3,8 @@
 #include "cinder/gl/gl.h"
 #include "cinder/CameraUi.h"
 #include "cinder/Rand.h"
+#include "cinder/Json.h"
+#include "jsoncpp/json.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -23,6 +25,18 @@ class CinderDLLApp : public App {
 
 void CinderDLLApp::setup()
 {
+	const RectT<float> rect = getWindowBounds();
+	RectT<float> rect2 = RectT<float>( rect );
+
+	JsonTree json = JsonTree( " { \"test\":123 } " );
+	auto jsonTest = json.getChild( "test" );
+	auto jsonTestValue = jsonTest.getValue();
+	app::console() << jsonTestValue << endl;
+
+	Json::Value value;
+
+	auto rectGeom = geom::Rect().colors().rect( Rectf( vec2(0), vec2(10) ) );
+
 	mCamera = CameraPersp( getWindowWidth(), getWindowHeight(), 50.0f, 0.01f, 10.0f );
 	mCameraUi = CameraUi( &mCamera, getWindow() );
 	mCamera.lookAt( vec3( 1.0f ), vec3( 0.0f ) );
