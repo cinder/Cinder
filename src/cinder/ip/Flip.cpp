@@ -190,7 +190,7 @@ void flipHorizontal( SurfaceT<T> *surface )
 	const int32_t width = surface->getWidth();
 	const int32_t halfWidth = width / 2;
 	
-	if( surface->hasAlpha() ) {
+	if( surface->getPixelInc() == 4 ) {
 		for( int32_t y = 0; y < height; ++y ) {
 			T *rowPtr = surface->getData( ivec2( 0, y ) );
 			for( int32_t x = 0; x < halfWidth; ++x ) {
@@ -202,7 +202,7 @@ void flipHorizontal( SurfaceT<T> *surface )
 			}
 		}
 	}
-	else {
+	else { // pixel inc of 3
 		for( int32_t y = 0; y < height; ++y ) {
 			T *rowPtr = surface->getData( ivec2( 0, y ) );
 			for( int32_t x = 0; x < halfWidth; ++x ) {

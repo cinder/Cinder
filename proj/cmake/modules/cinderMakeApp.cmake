@@ -53,6 +53,13 @@ function( ci_make_app )
 	ci_log_v( "CINDER BLOCKS: ${ARG_BLOCKS}" )
 	ci_log_v( "ASSETS_PATH: ${ARG_ASSETS_PATH}" )
 
+	# This ensures that the application will link with the correct version of Cinder
+	# based on the current build type without the need to remove the entire build folder
+	# when switching build type after an initial configuration. See PR #1518 for more info. 
+	if( cinder_DIR )
+		unset( cinder_DIR CACHE )
+	endif()
+
 	# pull in cinder's exported configuration
 	if( NOT TARGET cinder )
 		find_package( cinder REQUIRED PATHS

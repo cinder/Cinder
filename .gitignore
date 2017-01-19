@@ -35,6 +35,7 @@ Release_ANGLE/
 Debug_DLL/
 Release_DLL/
 ipch/
+**/vc2013/enc_temp_folder/**
 
 # doxygen generated files
 docs/html

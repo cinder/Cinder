@@ -305,7 +305,7 @@ TEST_CASE( "signals/Signals" )
 		}
 	}
 
-	SECTION( "Scoped connections" )
+	SECTION( "ScopedConnection" )
 	{
 		Signal<void ()> sig;
 		int accum = 0;
@@ -313,9 +313,77 @@ TEST_CASE( "signals/Signals" )
 
 		sig.connect( slot );
 		ScopedConnection conn1 = sig.connect( slot );
+		sig.emit();
+
+		REQUIRE( sig.getNumSlots() == 2 );
+		REQUIRE( accum == 2 );
+		accum = 0;
 
 		{
 			ScopedConnection conn2 = sig.connect( slot );
+			sig.emit();
+
+			REQUIRE( sig.getNumSlots() == 3 );
+			REQUIRE( accum == 3 );
+			accum = 0;
+		}
+
+		sig.emit();
+
+		REQUIRE( sig.getNumSlots() == 2 );
+		REQUIRE( accum == 2 );
+
+	}
+
+	SECTION( "ScopedConnection member variable" )
+	{
+		Signal<void ()>		sig;
+
+		struct Object {
+			ScopedConnection	mScopedConnection;
+
+			Object( Signal<void ()> &sig )
+			{
+				int accum = 0;
+				auto slot = [&] { accum++; };
+
+				mScopedConnection = sig.connect( slot );
+				sig.emit();
+
+				REQUIRE( sig.getNumSlots() == 1 );
+				REQUIRE( accum == 1 );
+			}
+		};
+
+		{
+			Object obj( sig );
+		}
+		// obj now destroyed..
+
+		int accum = 0;
+		sig.emit();
+
+		REQUIRE( sig.getNumSlots() == 0 );
+		REQUIRE( accum == 0 );
+	}
+
+	SECTION( "ConnectionList" )
+	{
+		Signal<void ()> sig;
+		ConnectionList connections;
+
+		int accum = 0;
+		auto slot = [&] { accum++; };
+
+		connections += sig.connect( slot );
+		REQUIRE( sig.getNumSlots() == 1 );
+
+		{
+			ConnectionList connections2;
+
+			connections += sig.connect( slot );
+			connections2 += sig.connect( slot );
+
 			REQUIRE( sig.getNumSlots() == 3 );
 		}
 
@@ -323,11 +391,18 @@ TEST_CASE( "signals/Signals" )
 
 		sig.emit();
 		REQUIRE( accum == 2 );
+
+		connections.clear();
+		REQUIRE( sig.getNumSlots() == 0 );
+
+		accum = 0;
+		sig.emit();
+		REQUIRE( accum == 0 );
 	}
 
-	SECTION("Signal result collection")
+	SECTION( "Signal result collection" )
 	{
-		SECTION("TestCollectorVector")
+		SECTION( "TestCollectorVector" )
 		{
 			auto handler1 = [] { return 1; };
 			auto handler42 = []  { return 42; };
@@ -528,4 +603,5 @@ TEST_CASE( "signals/Signals" )
 			REQUIRE( sum == 10 );
 		}
 	}
+
 } // Signals

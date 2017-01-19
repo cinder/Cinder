@@ -55,7 +55,7 @@ bool PolyLineT<T>::isClockwise( bool *isColinear ) const
 	// ...then get the next and previous point
 	size_t prev = ( smallest == 0 )    ? last : ( smallest - 1 );
 	size_t next = ( smallest == last ) ? 0    : ( smallest + 1 );
-	vec2 a = mPoints[next], b = mPoints[smallest], c = mPoints[prev];
+	T a = mPoints[next], b = mPoints[smallest], c = mPoints[prev];
 
 	// The sign of the determinate indicates the orientation:
 	//   positive is clockwise
@@ -175,7 +175,7 @@ bool PolyLineT<T>::contains( const vec2 &pt ) const
 		crossings += linearCrossings( &(mPoints[s]), pt );
 	}
 
-	vec2 temp[2];
+	T temp[2];
 	temp[0] = mPoints[mPoints.size()-1];
 	temp[1] = mPoints[0];
 	crossings += linearCrossings( &(temp[0]), pt );
@@ -200,7 +200,7 @@ double PolyLineT<T>::calcArea() const
 template<typename T>
 T PolyLineT<T>::calcCentroid() const
 {
-	dvec2 result( 0 );
+	T result( 0 );
 
 	const size_t numPoints = mPoints.size();
 	double area = 0;

@@ -4,6 +4,8 @@
 
  Portions Copyright (c) 2004, Laminar Research.
 
+ Portions Copyright (c) 2011 Google Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -11,6 +13,9 @@
 	the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
+	* Neither the name of Google Inc. nor the names of its
+	contributors may be used to endorse or promote products derived from
+	this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -23,6 +28,7 @@
 */
 
 
+#include "cinder/CinderMath.h"
 #include "cinder/Path2d.h"
 
 #include <algorithm>
@@ -859,76 +865,7 @@ Rectf Path2d::calcPreciseBoundingBox() const
 	return result;
 }
 
-// contains() helper routines
 namespace {
-float linearYatX( const vec2 p[2], float x )
-{
-	if( p[0].x == p[1].x ) 	return p[0].y;
-	return p[0].y + (p[1].y - p[0].y) * (x - p[0].x) / (p[1].x - p[0].x);
-}
-
-size_t linearCrossings( const vec2 p[2], const vec2 &pt )
-{
-	if( (p[0].x < pt.x && pt.x <= p[1].x ) ||
-		(p[1].x < pt.x && pt.x <= p[0].x )) {
-		if( pt.y > linearYatX( p, pt.x ) )
-			return 1;
-	}
-	return 0;
-}
-
-size_t cubicBezierCrossings( const vec2 p[4], const vec2 &pt )
-{
-	double Ax =     -p[0].x + 3 * p[1].x - 3 * p[2].x + p[3].x;
-	double Bx =  3 * p[0].x - 6 * p[1].x + 3 * p[2].x;
-	double Cx = -3 * p[0].x + 3 * p[1].x;
-	double Dx =		p[0].x - pt.x;
-
-	double Ay =     -p[0].y + 3 * p[1].y - 3 * p[2].y + p[3].y;
-	double By =  3 * p[0].y - 6 * p[1].y + 3 * p[2].y;
-	double Cy = -3 * p[0].y + 3 * p[1].y;
-	double Dy =		p[0].y;
-
-	double roots[3];
-	int numRoots = solveCubic<double>( Ax, Bx, Cx, Dx, roots );
-
-	if( numRoots < 1)
-		return 0;
-
-	int result = 0;
-	for( int n = 0; n < numRoots; ++n )
-		if( roots[n] > 0 && roots[n] < 1 )
-			if( Ay * roots[n] * roots[n] * roots[n] + By * roots[n] * roots[n] + Cy * roots[n] + Dy < pt.y )
-				++result;
-	
-	return result;
-}
-
-size_t quadraticBezierCrossings( const vec2 p[3], const vec2 &pt )
-{
-	float Ax = 1.0f * p[0].x - 2.0f * p[1].x + 1.0f * p[2].x;
-	float Bx = -2.0f * p[0].x + 2.0f * p[1].x;
-	float Cx = 1.0f * p[0].x - pt.x;
-
-	float Ay = 1.0f * p[0].y - 2.0f * p[1].y + 1.0f * p[2].y;
-	float By = -2.0f * p[0].y + 2.0f * p[1].y;
-	float Cy = 1.0f * p[0].y;
-
-	float roots[2];
-	int numRoots = solveQuadratic( Ax, Bx, Cx, roots );
-
-	if( numRoots < 1)
-		return 0;
-
-	int result = 0;
-	for( int n = 0; n < numRoots; ++n )
-		if (roots[n] > 0 && roots[n] < 1 )
-			if( Ay * roots[n] * roots[n] + By * roots[n] + Cy < pt.y )
-				++result;
-	
-	return result;
-}
-
 float calcCubicBezierSpeed( const vec2 p[3], float t )
 {
 	return length( Path2d::calcCubicBezierDerivative( p, t ) );
@@ -940,40 +877,592 @@ float calcQuadraticBezierSpeed( const vec2 p[3], float t )
 }
 } // anonymous namespace
 
-
-bool Path2d::contains( const vec2 &pt ) const
+namespace { // Path2d::contains() helpers
+int signAsInt( float x ) { return x < 0 ? -1 : (x > 0); }
+bool between( float a, float b, float c ) { return (a - b) * (c - b) <= 0; }
+bool isMonoQuad( float y0, float y1, float y2 )
 {
-	if( mPoints.size() <= 2 )
-		return false;
+	if( y0 == y1 )
+		return true;
+	if( y0 < y1 )
+		return y1 <= y2;
+	else
+		return y1 >= y2;
+}
 
+int isNotMonotonic( float a, float b, float c )
+{
+    float ab = a - b;
+    float bc = b - c;
+    if( ab < 0 )
+        bc = -bc;
+
+    return ab == 0 || bc < 0;
+}
+
+int validUnitDivide( float numer, float denom, float* ratio )
+{
+    if( numer < 0 ) {
+        numer = -numer;
+        denom = -denom;
+    }
+
+    if( denom == 0 || numer == 0 || numer >= denom )
+        return 0;
+
+    float r = numer / denom;
+    if( std::isnan( r ) )
+        return 0;
+    if( r == 0 ) // catch underflow if numer <<<< denom
+        return 0;
+
+	*ratio = r;
+    return 1;
+}
+
+void chopQuadAt( const vec2 src[3], vec2 dst[5], float t )
+{
+	vec2 p0 = src[0];
+	vec2 p1 = src[1];
+	vec2 p2 = src[2];
+	vec2 tt(t);
+
+	vec2 p01 = lerp( p0, p1, tt );
+	vec2 p12 = lerp( p1, p2, tt );
+
+	dst[0] = p0;
+	dst[1] = p01;
+	dst[2] = lerp( p01, p12, tt );
+	dst[3] = p12;
+	dst[4] = p2;
+}
+
+//Q = -1/2 (B + sign(B) sqrt[B*B - 4*A*C])
+//x1 = Q / A
+//x2 = C / Q
+int findUnitQuadRoots( float A, float B, float C, float roots[2] )
+{
+    if( A == 0 ) {
+        return validUnitDivide( -C, B, roots );
+    }
+
+    float* r = roots;
+
+    float R = B*B - 4*A*C;
+    if( R < 0 || ! std::isfinite( R ) ) {  // complex roots
+        // if R is infinite, it's possible that it may still produce
+        // useful results if the operation was repeated in doubles
+        // the flipside is determining if the more precise answer
+        // isn't useful because surrounding machinery (e.g., subtracting
+        // the axis offset from C) already discards the extra precision
+        // more investigation and unit tests required...
+        return 0;
+    }
+    R = sqrtf( R );
+
+    float Q = (B < 0) ? -(B-R)/2 : -(B+R)/2;
+    r += validUnitDivide(Q, A, r);
+    r += validUnitDivide(C, Q, r);
+    if( r - roots == 2 ) {
+        if( roots[0] > roots[1] )
+            std::swap( roots[0], roots[1] );
+        else if( roots[0] == roots[1] )  // nearly-equal?
+            r -= 1; // skip the double root
+    }
+    return (int)(r - roots);
+}
+
+void flattenDoubleQuadExtrema( float coords[14] )
+{
+    coords[2] = coords[6] = coords[4];
+}
+
+void flattenDoubleCubicExtrema( float coords[14] )
+{
+    coords[4] = coords[8] = coords[6];
+}
+
+template<size_t N>
+void findMinMaxX( const vec2 pts[], float* minPtr, float* maxPtr) {
+    float minX, maxX;
+    minX = maxX = pts[0].x;
+    for( size_t i = 1; i < N; ++i ) {
+        minX = std::min( minX, pts[i].x );
+        maxX = std::max( maxX, pts[i].x );
+    }
+    *minPtr = minX;
+    *maxPtr = maxX;
+}
+
+void chopCubicAt( const vec2 src[4], vec2 dst[7], float t )
+{
+	vec2    p0 = src[0];
+	vec2    p1 = src[1];
+	vec2    p2 = src[2];
+	vec2    p3 = src[3];
+	vec2    tt( t );
+
+	vec2    ab = lerp( p0, p1, tt );
+	vec2    bc = lerp( p1, p2, tt );
+	vec2    cd = lerp( p2, p3, tt );
+	vec2    abc = lerp( ab, bc, tt );
+	vec2    bcd = lerp( bc, cd, tt );
+	vec2    abcd = lerp( abc, bcd, tt );
+
+	dst[0] = src[0];
+	dst[1] = ab;
+	dst[2] = abc;
+	dst[3] = abcd;
+	dst[4] = bcd;
+	dst[5] = cd;
+	dst[6] = src[3];
+}
+
+void chopCubicAt( const vec2 src[4], vec2 dst[], const float tValues[], int roots )
+{
+	if( roots == 0 ) { // nothing to chop
+		memcpy(dst, src, 4*sizeof(vec2));
+	}
+	else {
+		float t = tValues[0];
+		vec2 tmp[4];
+
+		for( int i = 0; i < roots; i++ ) {
+			chopCubicAt( src, dst, t );
+			if( i == roots - 1 ) {
+				break;
+			}
+
+			dst += 3;
+			// have src point to the remaining cubic (after the chop)
+			memcpy( tmp, dst, 4 * sizeof(vec2) );
+			src = tmp;
+
+			// watch out in case the renormalized t isn't in range
+			if( ! validUnitDivide( tValues[i+1] - tValues[i], 1.0f - tValues[i], &t ) ) {
+				// if we can't, just create a degenerate cubic
+				dst[4] = dst[5] = dst[6] = src[3];
+				break;
+			}
+		}
+	}
+}
+
+bool chopMonoAtY( const vec2 pts[4], float y, float* t )
+{
+	float ycrv[4];
+	ycrv[0] = pts[0].y - y;
+	ycrv[1] = pts[1].y - y;
+	ycrv[2] = pts[2].y - y;
+	ycrv[3] = pts[3].y - y;
+
+    // Check that the endpoints straddle zero.
+	float tNeg, tPos;	// Negative and positive function parameters.
+	if( ycrv[0] < 0 ) {
+		if( ycrv[3] < 0 )
+			return false;
+		tNeg = 0;
+		tPos = 1.0f;
+	}
+	else if( ycrv[0] > 0 ) {
+		if( ycrv[3] > 0 )
+			return false;
+		tNeg = 1.0f;
+		tPos = 0;
+	}
+	else {
+		*t = 0;
+		return true;
+	}
+
+	const float tol = 1.0f / 65536;  // 1 for fixed, 1e-5 for float.
+	int iters = 0;
+	do {
+		float tMid = (tPos + tNeg) / 2;
+		float y01   = lerp( ycrv[0], ycrv[1], tMid );
+		float y12   = lerp( ycrv[1], ycrv[2], tMid );
+		float y23   = lerp( ycrv[2], ycrv[3], tMid );
+		float y012  = lerp( y01, y12, tMid );
+		float y123  = lerp( y12, y23, tMid );
+		float y0123 = lerp( y012, y123, tMid );
+		if( y0123 == 0 ) {
+			*t = tMid;
+			return true;
+		}
+		if (y0123 < 0)	tNeg = tMid;
+		else			tPos = tMid;
+		++iters;
+	} while( ! (fabsf(tPos - tNeg) <= tol) );
+
+	*t = (tNeg + tPos) / 2;
+	return true;
+}
+
+// Cubic'(t) = At^2 + Bt + C, where
+// A = 3(-a + 3(b - c) + d)
+// B = 6(a - 2b + c)
+// C = 3(b - a)
+// Solve for t, keeping only those that fit betwee 0 < t < 1
+int findCubicExtrema( float a, float b, float c, float d, float tValues[2] )
+{
+    // we divide A,B,C by 3 to simplify
+	float A = d - a + 3*(b - c);
+	float B = 2*(a - b - b + c);
+	float C = b - a;
+
+    return findUnitQuadRoots( A, B, C, tValues );
+}
+
+// Given 4 points on a cubic bezier, chop it into 1, 2, 3 beziers such that
+// the resulting beziers are monotonic in Y. This is called by the scan
+// converter.  Depending on what is returned, dst[] is treated as follows:
+// 0   dst[0..3] is the original cubic
+// 1   dst[0..3] and dst[3..6] are the two new cubics
+// 2   dst[0..3], dst[3..6], dst[6..9] are the three new cubics
+// If dst == null, it is ignored and only the count is returned.
+int chopCubicAtYExtrema( const vec2 src[4], vec2 dst[10] )
+{
+	float tValues[2];
+	int roots = findCubicExtrema( src[0].y, src[1].y, src[2].y, src[3].y, tValues );
+
+	chopCubicAt( src, dst, tValues, roots );
+	if( dst && roots > 0 ) {
+		// we do some cleanup to ensure our Y extrema are flat
+		flattenDoubleCubicExtrema( &dst[0].y );
+		if( roots == 2 ) {
+			flattenDoubleCubicExtrema( &dst[3].y );
+		}
+	}
+	return roots;
+}
+
+// Returns 0 for 1 quad, and 1 for two quads, either way the answer is stored in dst[].
+// Guarantees that the 1/2 quads will be monotonic.
+int chopQuadAtYExtrema( const vec2 src[3], vec2 dst[5] )
+{
+	float a = src[0].y;
+	float b = src[1].y;
+	float c = src[2].y;
+
+	if( isNotMonotonic( a, b, c ) ) {
+		float tValue;
+		if( validUnitDivide( a - b, a - b - b + c, &tValue ) ) {
+			chopQuadAt( src, dst, tValue );
+			flattenDoubleQuadExtrema( &dst[0].y );
+			return 1;
+		}
+		// if we get here, we need to force dst to be monotonic, even though
+		// we couldn't compute a unit_divide value (probably underflow).
+		b = fabsf(a - b) < fabsf(b - c) ? a : c;
+	}
+	
+	dst[0] = { src[0].x, a };
+	dst[1] = { src[1].x, b };
+	dst[2] = { src[2].x, c };
+	return 0;
+}
+
+float evalCubicPts( float c0, float c1, float c2, float c3, float t )
+{
+	float A = c3 + 3*(c1 - c2) - c0;
+	float B = 3*(c2 - c1 - c1 + c0);
+	float C = 3*(c1 - c0);
+	float D = c0;
+	return ((A * t + B) * t + C) * t + D;//evalCubicCoeff( A, B, C, D, t );
+}
+
+bool checkOnCurve( const vec2 &test, const vec2& start, const vec2& end )
+{
+    if( start.y == end.y )
+        return between( start.x, test.x, end.x ) && test.x != end.x;
+	else
+        return test.x == start.x && test.y == start.y;
+}
+
+int windingLine( const vec2 points[2], const vec2 &test, int *onCurveCount )
+{
+	float x0 = points[0].x;
+	float y0 = points[0].y;
+	float x1 = points[1].x;
+	float y1 = points[1].y;
+
+	float dy = y1 - y0;
+
+	int dir = 1;
+	if( y0 > y1 ) {
+		std::swap( y0, y1 );
+		dir = -1;
+	}
+	if( test.y < y0 || test.y > y1 ) {
+		return 0;
+	}
+	if( checkOnCurve( test, points[0], points[1] ) ) {
+		*onCurveCount += 1;
+		return 0;
+	}
+	if( test.y == y1 ) {
+		return 0;
+	}
+	float cross = (x1 - x0) * (test.y - points[0].y) - dy * ( test.x - x0 );
+
+	if( ! cross ) {
+		// zero cross means the point is on the line, and since the case where
+		// y of the query point is at the end point is handled above, we can be
+		// sure that we're on the line (excluding the end point) here
+		if( test.x != x1 || test.y != points[1].y ) {
+			*onCurveCount += 1;
+		}
+		dir = 0;
+	}
+	else if( signAsInt(cross) == dir ) {
+		dir = 0;
+	}
+
+	return dir;
+}
+
+int windingMonoQuad( const vec2 pts[], const vec2 &test, int* onCurveCount )
+{
+	float y0 = pts[0].y;
+	float y2 = pts[2].y;
+
+	int dir = 1;
+	if( y0 > y2 ) {
+		std::swap( y0, y2 );
+		dir = -1;
+	}
+	if( test.y < y0 || test.y > y2 ) {
+		return 0;
+	}
+	if( checkOnCurve( test, pts[0], pts[2] ) ) {
+		*onCurveCount += 1;
+		return 0;
+	}
+	if( test.y == y2 ) {
+		return 0;
+	}
+
+	float roots[2];
+	int n = findUnitQuadRoots( pts[0].y - 2 * pts[1].y + pts[2].y,
+				2 * (pts[1].y - pts[0].y),
+				pts[0].y - test.y,
+				roots);
+	
+	float xt;
+	if( 0 == n ) {
+		// zero roots are returned only when y0 == y
+		// Need [0] if dir == 1
+		// and  [2] if dir == -1
+		xt = pts[1 - dir].x;
+	}
+	else {
+		float t = roots[0];
+		float C = pts[0].x;
+		float A = pts[2].x - 2 * pts[1].x + C;
+		float B = 2 * (pts[1].x - C);
+		xt = (A * t + B) * t + C;
+	}
+	if( fabs( xt - test.x ) < ( 1.0f / ( 1 << 12 ) ) ) {
+		if( test.x != pts[2].x || test.y != pts[2].y ) {  // don't test end points; they're start points
+			*onCurveCount += 1;
+			return 0;
+		}
+	}
+	return xt < test.x ? dir : 0;
+}
+
+int windingQuad( const vec2 points[], const vec2 &test, int *onCurveCount )
+{
+	vec2 dst[5];
+	int n = 0;
+
+	if( ! isMonoQuad( points[0].y, points[1].y, points[2].y ) ) {
+		n = chopQuadAtYExtrema( points, dst );
+		points = dst;
+	}
+	int w = windingMonoQuad( points, test, onCurveCount );
+	if( n > 0 ) {
+		w += windingMonoQuad( &points[2], test, onCurveCount );
+	}
+
+	return w;
+}
+
+int windingMonoCubic( const vec2 pts[], const vec2 &test, int *onCurveCount )
+{
+	float y0 = pts[0].y;
+	float y3 = pts[3].y;
+
+	int dir = 1;
+	if( y0 > y3 ) {
+		std::swap( y0, y3 );
+		dir = -1;
+	}
+	if( test.y < y0 || test.y > y3 ) {
+		return 0;
+	}
+	if( checkOnCurve( test, pts[0], pts[3] ) ) {
+		*onCurveCount += 1;
+		return 0;
+	}
+	if( test.y == y3 ) {
+		return 0;
+	}
+
+	// quickreject or quickaccept
+	float minX, maxX;
+	findMinMaxX<4>( pts, &minX, &maxX );
+	if( test.x < minX ) {
+		return 0;
+	}
+	if( test.x > maxX ) {
+		return dir;
+	}
+
+	// compute the actual x(t) value
+	float t;
+	if( ! chopMonoAtY( pts, test.y, &t ) ) {
+		return 0;
+	}
+	float xt = evalCubicPts( pts[0].x, pts[1].x, pts[2].x, pts[3].x, t );
+	if( fabsf( xt - test.x ) < ( 1.0f / ( 1 << 12 ) ) ) {
+		if( test.x != pts[3].x || test.y != pts[3].y ) {  // don't test end points; they're start points
+			*onCurveCount += 1;
+			return 0;
+		}
+	}
+	return xt < test.x ? dir : 0;
+}
+
+int windingCubic( const vec2 pts[], const vec2 &test, int *onCurveCount )
+{
+	vec2 dst[10];
+	int n = chopCubicAtYExtrema( pts, dst );
+	int w = 0;
+	for( int i = 0; i <= n; ++i )
+		w += windingMonoCubic( &dst[i * 3], test, onCurveCount );
+
+	return w;
+}
+} // anonymous namespace Path2d::contains() helpers 
+
+int Path2d::calcWinding( const ci::vec2 &pt, int *onCurveCount ) const
+{
+	int w = 0;
 	size_t firstPoint = 0;
-	size_t crossings = 0;
-	for( size_t s = 0; s < mSegments.size(); ++s ) {
-		switch( mSegments[s] ) {
-			case CUBICTO:
-				crossings += cubicBezierCrossings( &(mPoints[firstPoint]), pt );
+	for( size_t s = 0; s < getSegments().size(); ++s ) {
+		switch( getSegmentType( s ) ) {
+			case Path2d::LINETO:
+				w += windingLine( &mPoints[firstPoint], pt, onCurveCount );
 			break;
-			case QUADTO:
-				crossings += quadraticBezierCrossings( &(mPoints[firstPoint]), pt );
+			case Path2d::QUADTO:
+				w += windingQuad( &mPoints[firstPoint], pt, onCurveCount );
 			break;
-			case LINETO:
-				crossings += linearCrossings( &(mPoints[firstPoint]), pt );
-			break;
-			case CLOSE: // ignore - we always assume closed
+			case Path2d::CUBICTO:
+				w += windingCubic( &(mPoints[firstPoint]), pt, onCurveCount );
 			break;
 			default:
-				;//throw Path2dExc();
+			break;
 		}
-		
+
+		firstPoint += sSegmentTypePointCounts[getSegments()[s]];
+	}
+
+	// handle close
+	vec2 temp[2] = { mPoints[getNumPoints() - 1], mPoints[0] };
+	w += windingLine( temp, pt, onCurveCount );
+
+	return w;
+}
+
+bool Path2d::contains( const vec2 &pt, bool evenOddFill ) const
+{
+	int onCurveCount = 0;
+	int w = calcWinding( pt, &onCurveCount );
+
+	if( evenOddFill )
+		w &= 1;
+	if( w )
+		return true;
+
+	if( onCurveCount <= 1 )
+		return onCurveCount > 0;
+	if( (onCurveCount & 1) || evenOddFill )
+		return (onCurveCount & 1) > 0;
+
+	return false;
+}
+
+float Path2d::calcDistance( const vec2 &pt ) const
+{
+	float distance = FLT_MAX;
+
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		distance = glm::min( calcDistance( pt, s, firstPoint ), distance );
 		firstPoint += sSegmentTypePointCounts[mSegments[s]];
 	}
 
-	vec2 temp[2];
-	temp[0] = mPoints[mPoints.size()-1];
-	temp[1] = mPoints[0];
-	crossings += linearCrossings( &(temp[0]), pt );
-	
-	return (crossings & 1) == 1;
+	return distance;
+}
+
+float Path2d::calcDistance( const vec2 &pt, size_t segment, size_t firstPoint ) const
+{
+	return glm::distance( pt, calcClosestPoint( pt, segment, firstPoint ) );
+}
+
+float Path2d::calcDistance( const vec2 &pt, size_t segment ) const
+{
+	return calcDistance( pt, segment, 0 );
+}
+
+float Path2d::calcSignedDistance( const vec2 &pt ) const
+{
+	if( contains( pt ) )
+		return -calcDistance( pt );
+	else
+		return calcDistance( pt );
+}
+
+
+vec2 Path2d::calcClosestPoint( const vec2 &pt ) const
+{
+	vec2 result;
+	float distance2 = FLT_MAX;
+
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		vec2 p = calcClosestPoint( pt, s, firstPoint );
+		float d = glm::distance2( pt, p );
+		if( d < distance2 ) {
+			result = p;
+			distance2 = d;
+		}
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+
+	return result;
+}
+
+vec2 Path2d::calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint ) const
+{
+	if( firstPoint == 0 ) {
+		for( size_t s = 0; s < segment; ++s )
+			firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+
+	switch( mSegments[segment] ) {
+		case CUBICTO:
+			return getClosestPointCubic( &mPoints[firstPoint], pt );
+		case QUADTO:
+			return getClosestPointQuadratic( &mPoints[firstPoint], pt );
+		case LINETO:
+			return getClosestPointLinear( &mPoints[firstPoint], pt );
+		case CLOSE:
+			return getClosestPointLinear( mPoints[firstPoint], mPoints[0], pt );
+		default:
+			return vec2();
+	}
 }
 
 float Path2d::calcLength() const
@@ -998,7 +1487,7 @@ float Path2d::calcLength() const
 			default:
 				;
 		}
-		
+
 		firstPoint += Path2d::sSegmentTypePointCounts[mSegments[s]];
 	}
 	
