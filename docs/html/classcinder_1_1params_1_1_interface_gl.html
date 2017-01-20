@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>params::InterfaceGl</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>InterfaceGl</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+          		<li><a href="#protected-functions">Protected Member Functions</a></li>
+
+          		<li><a href="#protected-attrs">Protected Attributes</a></li>
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+ <p>
+  Interface for adding params to your window. Wraps AntTweakBar.
+ </p>
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/params/Params.h">Params.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="_params_8h.html#a0787c409b768312e18787133e6e619da">TwBar</a></li>
+                        <li><a href="namespacecinder_1_1params.html#a7ce98af0bd691ab4aa7bb949b35857f2">InterfaceGlRef</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Classes:</label>
+                        <li><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">Options</a></li>
+                        <li><a href="classcinder_1_1params_1_1_interface_gl_1_1_options_base.html">OptionsBase</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acc081f6c2bbc8da9ea2583f336e7d8d6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>InterfaceGl</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     { use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#adbe9cbfd37b82e3bb75be33edd6bf4db">
+      create()
+     </a>
+     }
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a02df2da9528dd78602724a466ec83e79"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>InterfaceGl</strong> (const std::string &amp;title, const ivec2 &amp;size, const ColorA &amp;color=ColorA(0.3f, 0.3f, 0.3f, 0.4f))</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     { use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#adbe9cbfd37b82e3bb75be33edd6bf4db">
+      create()
+     </a>
+     }
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abed27def0aea5669f6c9c4269d86ae58"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>InterfaceGl</strong> (const cinder::app::WindowRef &amp;window, const std::string &amp;title, const ivec2 &amp;size, const ColorA &amp;color=ColorA(0.3f, 0.3f, 0.3f, 0.4f))</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     { use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#adbe9cbfd37b82e3bb75be33edd6bf4db">
+      create()
+     </a>
+     }
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a54559d22db098333653b7bd9b0ce148e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>draw</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Draw the interface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abcc4e0058778d552c7d29cdf48ad6a10"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>show</strong> (bool visible=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Shows the interface. If
+   <em>
+    visible
+   </em>
+   is
+   <code>
+    false
+   </code>
+   , hides the interface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="addb100718c4662a03fd8d4fef9a8c8b1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hide</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Hides the interface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa5bcbad1be242c6846957462b3666343"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isVisible</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the interface is visible or not.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    <a href="classcinder_1_1params_1_1_interface_gl.html#abcc4e0058778d552c7d29cdf48ad6a10">
+     show()
+    </a>
+    ,
+    <a href="classcinder_1_1params_1_1_interface_gl.html#addb100718c4662a03fd8d4fef9a8c8b1">
+     hide()
+    </a>
+    .
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aad8b1f1820c5fa00cd271a7a46444126"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>maximize</strong> (bool maximized=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Maximizes the interface, making it visible in its default presentation mode. If
+   <em>
+    maximized
+   </em>
+   is
+   <code>
+    false
+   </code>
+   , minimizes the interface.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    <a href="classcinder_1_1params_1_1_interface_gl.html#a9223911a8d5f977ef06ad5756ee3db9e">
+     minimize()
+    </a>
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9223911a8d5f977ef06ad5756ee3db9e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>minimize</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Minimizes the interface face to the bottom left corner of the window.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6e626d6a26999527a56cae39dfbe681b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isMaximized</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the interface is maximized or not.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    <a href="classcinder_1_1params_1_1_interface_gl.html#aad8b1f1820c5fa00cd271a7a46444126">
+     maximize()
+    </a>
+    ,
+    <a href="classcinder_1_1params_1_1_interface_gl.html#a9223911a8d5f977ef06ad5756ee3db9e">
+     minimize()
+    </a>
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa5a8af382aa1c1f7ccc0e2c0999413bb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setPosition</strong> (const ci::ivec2 &amp;pos)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the position of this interface instance.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a52568832b90e3b95cc26d10ac73b2d12"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">Options</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, T *target, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds
+   <em>
+    target
+   </em>
+   as a param to the interface, referring to it with
+   <em>
+    name
+   </em>
+   .
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Options&lt;T&gt; for chaining options to the param.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a30957045faff6ba3bf17aa6e133b2d12"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">Options</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, const std::function&lt; void(T)&gt; &amp;setterFn, const std::function&lt; T()&gt; &amp;getterFn)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds a param to the interface with no target, but is instead accessed with
+   <em>
+    setterFn
+   </em>
+   and
+   <em>
+    getterFn
+   </em>
+   .
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Options&lt;T&gt; for chaining options to the param.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="affe6a411661d27f34e7968865d209328"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">Options</a>&lt; int &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, const std::vector&lt; std::string &gt; &amp;enumNames, int *param, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds enumerated parameter. The value corresponds to the indices of
+   <em>
+    enumNames
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0df03fb7de9fd26101aa025fac55b3fb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">Options</a>&lt; int &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, const std::vector&lt; std::string &gt; &amp;enumNames, const std::function&lt; void(int)&gt; &amp;setterFn, const std::function&lt; int()&gt; &amp;getterFn)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds an enumerated param to the interface with no target, but is instead accessed with
+   <em>
+    setterFn
+   </em>
+   and
+   <em>
+    getterFn
+   </em>
+   . The input parameter of
+   <em>
+    setterFn
+   </em>
+   and the return value of
+   <em>
+    getterFn
+   </em>
+   correspond to the indices of
+   <em>
+    enumNames
+   </em>
+   .
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Options&lt;T&gt; for chaining options to the param.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a427ef88221133833c4b3921fddbb01c5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addSeparator</strong> (const std::string &amp;name="", const std::string &amp;optionsStr="")</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds a separator to the interface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9dca3ac8540b8eeb1239534414b91d25"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addText</strong> (const std::string &amp;name="", const std::string &amp;optionsStr="")</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds text to the interface.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a11b191912b4167d53dd9bd36eaed68ee"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addButton</strong> (const std::string &amp;name, const std::function&lt; void()&gt; &amp;callback, const std::string &amp;optionsStr="")</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds a button that fires
+   <em>
+    callback
+   </em>
+   when clicked.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8b36ffc37bf63ca9937b7126f3c13021"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>removeParam</strong> (const std::string &amp;name)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Removes the param referred to by
+   <em>
+    name
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7c561780a5705aea75d7e0bc07d87fab"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setOptions</strong> (const std::string &amp;name="", const std::string &amp;optionsStr="")</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets runtime options on the param referred to by
+   <em>
+    name
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa317bc2c0e07d773808459ca06240325"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>clear</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Removes all the variables, buttons and separators previously added.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a76de66f7820ce608693d308b0f1bd006"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, bool *boolParam, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5f1083c3cc376b8c4fec2018995a4edf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, bool *boolParam, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa3fd95286421f04c3d30095b786c4768"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, float *floatParam, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa2008e7228f2da4a52ebffe10f6eb98c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, float *floatParam, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6f3962bc986ccf340b9a39922d03ad93"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, double *doubleParam, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad5aed704b32486c20dbecb2b5dea1ac9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, double *doubleParam, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a415162706bebe26a9206fadf63f96d82"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, int32_t *intParam, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ada9a75c1455570e5dbcc1f625e53ddbb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, int32_t *intParam, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8d33f0d2c111a80db047efb234cda075"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, vec3 *vectorParam, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aff46d3df7533d610abe79af16cb181d9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, vec3 *vectorParam, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab9b95ca17b64c38e4c1f3c5033266381"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, quat *quatParam, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aae68d74cf50ab2ca791c7eb52f8e1021"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, quat *quatParam, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afcab3b4ce607147bea8f34100c04b88e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, Color *colorParam, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5ec4867723fce6f09278733b1f9d59a3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, Color *colorParam, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2ef03a6ef2dc7819a9734689e07a3373"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, ColorA *colorParam, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a937ce8cffda36f7bce6c0b4ca0653801"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, ColorA *colorParam, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5ea3532236c0d2fc5bfc05a3e1b327c9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, std::string *strParam, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8224bbe9a267ead48d088e1a4b611e94"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, std::string *strParam, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam&lt;T&gt;()
+     </a>
+     instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a51afad62c5abc7cba82e4ef11adc0627"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, const std::vector&lt; std::string &gt; &amp;enumNames, int *param, const std::string &amp;optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam()
+     </a>
+     variant that returns Options&lt;int&gt; instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3c7f59e41716b2d7d957032eec046614"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, const std::vector&lt; std::string &gt; &amp;enumNames, int *param, const char *optionsStr, bool readOnly=false)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+  </p>
+  <div class="xrefsect">
+   <div class="xreftitle">
+    Deprecated
+   </div>
+   <div class="xrefdescription">
+    <p>
+     use
+     <a href="classcinder_1_1params_1_1_interface_gl.html#a52568832b90e3b95cc26d10ac73b2d12">
+      addParam()
+     </a>
+     variant that returns Options&lt;int&gt; instead.
+    </p>
+   </div>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af1c3907baae1cd6ca94bf7919b85dc72"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParamCallbackImpl</strong> (const function&lt; void(T)&gt; &amp;setter, const function&lt; T()&gt; &amp;getter, const Options&lt; T &gt; &amp;options)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5135da2489bd59ef7d7747e6f0f09854"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; bool &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, bool *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8c5b2cf9b66fdb105fcb9bec88af4198"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; char &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, char *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a1c16aa41b9445d5a6bc59f20493b9838"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; int8_t &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, int8_t *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7b072ae003799636e3b835e76a7a594b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; uint8_t &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, uint8_t *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a852e472489cf3877fbc2d805662f86a6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; int16_t &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, int16_t *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a055feff520bb04177edfafcd6317bf9f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; uint16_t &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, uint16_t *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a1606c16ddd0a7cd6efe1fa1904314078"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; int32_t &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, int32_t *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a53b47b58864f693ffaf18f5d9fc0422b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; uint32_t &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, uint32_t *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab65e6dfb283b32ea782e9d29026302df"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; float &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, float *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a98cc88c2eb0c3388d573addb8eadee91"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; double &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, double *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa314f058f107329b025d4ad16d0e67cc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; string &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, string *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac2e8e9a6f4776d17eb89e4501e8a2c28"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; <a href="namespacecinder.html#a99fcf0ceceb13eafb61f180d94a24631">Color</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, Color *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3415d1e6778e4d7bf0893cd79e584899"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; <a href="namespacecinder.html#a13f71c63cea5bb08f5d971d72fbf6a09">ColorA</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, ColorA *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a85d1b7cc739db1ead2999465c8231cfc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; quat &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, quat *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a63ba1f39270a63d36031a41d9312bd31"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; dquat &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, dquat *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a1cdf17a37ce18759bcc0c163cedcb766"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; vec3 &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, vec3 *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab48e56cca96ff310a40080c0fd24073b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">InterfaceGl::Options</a>&lt; dvec3 &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParam</strong> (const std::string &amp;name, dvec3 *param, bool readOnly)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adbe9cbfd37b82e3bb75be33edd6bf4db"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1params.html#a7ce98af0bd691ab4aa7bb949b35857f2">InterfaceGlRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (const std::string &amp;title, const ivec2 &amp;size, const ColorA &amp;color=ColorA(0.3f, 0.3f, 0.3f, 0.4f))</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates and returns an
+   <a href="classcinder_1_1params_1_1_interface_gl.html">
+    InterfaceGl
+   </a>
+   referenced by
+   <em>
+    title
+   </em>
+   and with
+   <em>
+    size
+   </em>
+   dimensions. Optionally takes
+   <em>
+    color
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7e74d40084a79b413dc32bac8c0e28e7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1params.html#a7ce98af0bd691ab4aa7bb949b35857f2">InterfaceGlRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (const cinder::app::WindowRef &amp;window, const std::string &amp;title, const ivec2 &amp;size, const ColorA &amp;color=ColorA(0.3f, 0.3f, 0.3f, 0.4f))</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates and returns an
+   <a href="classcinder_1_1params_1_1_interface_gl.html">
+    InterfaceGl
+   </a>
+   referenced by
+   <em>
+    title
+   </em>
+   that belongs to
+   <em>
+    window
+   </em>
+   , and with
+   <em>
+    size
+   </em>
+   dimensions. Optionally takes
+   <em>
+    color
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+            <a name="protected-functions"></a>
+            <section>
+                <h2>Protected Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a0002b56badf1be2938e06a1177cf7e18"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>init</strong> (app::WindowRef window, const std::string &amp;title, const ivec2 &amp;size, const ColorA color)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abbe3b0544541651e6a75887032010dae"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>implAddParamDeprecated</strong> (const std::string &amp;name, void *param, int type, const std::string &amp;optionsStr, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a13b6c6a066d0e809309c2e18c1276fb4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1params_1_1_interface_gl_1_1_options.html">Options</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParamImpl</strong> (const std::string &amp;name, T *param, int type, bool readOnly)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad8ed8258476118e088f472bcd5725d47"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addParamCallbackImpl</strong> (const std::function&lt; void(T)&gt; &amp;setter, const std::function&lt; T()&gt; &amp;getter, const Options&lt; T &gt; &amp;options)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected attributes -->
+            <a name="protected-attrs"></a>
+            <section>
+                <h2>Protected Attributes</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="aa5a009c53b86bc607fa8987ac770328e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::weak_ptr&lt; <a href="classcinder_1_1app_1_1_window.html">app::Window</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mWindow</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a02f0240f2f61ebab67f113861799c7e3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="_params_8h.html#a0787c409b768312e18787133e6e619da">TwBar</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mBar</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a224bd2601d2b2667f77e9fb8c6473e53"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mTwWindowId</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a4072b56bce22eff3f954892d70c8fdde"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::map&lt; std::string, std::shared_ptr&lt; void &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mStoredCallbacks</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

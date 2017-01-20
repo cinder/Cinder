@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>Windows Setup</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="../../_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="../../_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+<link href="../_common/js/jquery.lightbox-0.5.css" media="screen" rel="stylesheet" type="text/css"/></head>
+<body class="guide language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="../../index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="../../search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="../../reference/geometry.html">Reference</a></li>
+                              <li class="active" id="nav_guides">
+                                <a href="../index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="../../namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="../../classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="../../reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="../index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="../../namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="../../classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content content-row" id="container">
+    <div class="columns large-3">
+
+    </div>
+
+    <div class="columns large-9 content" data-equalizer-watch="content">
+
+
+    
+        <div class="contents">
+            <h1>Welcome to Cinder on Windows</h1>
+            <p>This guide will help you get started using Cinder on Windows. Start by downloading Cinder itself from the site's <a href="http://libcinder.org/download/">Download Page</a> if you haven't already. Choose the Visual C++ 2013 version if you don't already have Visual C++ installed.<br/>
+                <br/>
+            </p><h2>Microsoft Visual C++</h2>
+            <p>
+                Cinder is designed for Visual Studio 2012 and Visual Studio 2013, and works with both the
+                commercial versions and the freely available <em>Express</em> editions. If you don't already have one of those versions installed, 
+                we'll walk you through setting up the free 2013 edition.<br/>
+            </p>
+            <br/>
+            <p>
+                The first step is of course to download Visual C++ itself - you want the succinctly named <em>Visual Studio Express 2013 for Windows Desktop</em>, <a href="http://www.microsoft.com/en-us/download/details.aspx?id=40787">available here</a>. Next, lauch the installer. You can leave the settings at their defaults and simply click the <em>Install</em> button.
+            </p>
+            <br/>
+            <center>
+                <div id="msvc_image">
+                    <a href="images/msvc/step1.png" title="Begin by downloading Visual C++ 2013 from Microsoft's website.">
+                    <img src="images/msvc/step1_thumb.png"/></a>
+                </div>
+            </center>
+            <br/>
+            <p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you should be all set. If you're working from github you'll want to follow the build instructions in our <a href="GitSetup.html">Cinder + Git</a> guide.</p>
+            <br/>
+            <p>Let's try opening and building one of the samples. From Windows Explorer, navigate to the <em>cinder\samples\QuickTimeBasic\vc2012</em> folder and open <em>quickTimeSample.sln</em>.</p>
+            <br/>
+            <p>Under the <em>Debug</em> menu select <em>Start Debugging</em> and click <em>Yes</em>
+                when prompted to build the project. The QuickTime sample will launch
+                and present you with an Open dialog. Select a QuickTime movie on your
+                hard drive, and you should see something about like this:
+            </p>
+            <br/>
+            <center><img alt="QuickTime sample" src="images/quicktimesample.jpg"/></center>
+            <br/>
+            <h2>Creating New Projects</h2>
+            <p><a href="TinderBox.html">TinderBox</a> is Cinder's GUI tool for creating new projects quickly and easily. A guide to creating projects using TinderBox is <a href="TinderBox.html">available here</a>.</p>
+            <h2>Cinder + Git</h2>
+            <p>If you would like to keep up with the latest Cinder development, the project is <a href="http://github.com/cinder">hosted on github</a>. A guide for setting up Cinder using git is <a href="GitSetup.html">available here</a>.</p>
+            <h2>Additional Notes</h2>
+            <p>Additional notes specific to the Windows implementation of Cinder are <a href="MSWNotes.html">available here</a>.</p>
+        </div>
+        <script type="text/javascript">
+            $(function() {
+            	$('#msvc_image a').lightBox({imageBtnPrev:"images/prev.png", imageBtnNext:"images/next.png", imageBtnClose:"images/close.png", containerResizeSpeed: 150});
+            	$('#sdk_image a').lightBox({imageBtnPrev:"images/prev.png", imageBtnNext:"images/next.png", imageBtnClose:"images/close.png", containerResizeSpeed: 150});
+            	$('#dxsdk_image a').lightBox({imageBtnPrev:"images/prev.png", imageBtnNext:"images/next.png", imageBtnClose:"images/close.png", containerResizeSpeed: 150});	
+            	$('#qtime_image a').lightBox({imageBtnPrev:"images/prev.png", imageBtnNext:"images/next.png", imageBtnClose:"images/close.png", containerResizeSpeed: 150});	
+            });
+        </script>
+    
+
+  
+  </div>
+
+</div> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="../../_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="../../_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../search_index.js" type="text/javascript"></script>
+    <script src="../../_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+<script src="../_common/js/jquery-1.4.2.min.js" type="text/javascript"></script><script src="../_common/js/jquery.lightbox-0.5.pack.js" type="text/javascript"></script><script type="text/javascript">
+            $(function() {
+            	$('#msvc_image a').lightBox({imageBtnPrev:"images/prev.png", imageBtnNext:"images/next.png", imageBtnClose:"images/close.png", containerResizeSpeed: 150});
+            	$('#sdk_image a').lightBox({imageBtnPrev:"images/prev.png", imageBtnNext:"images/next.png", imageBtnClose:"images/close.png", containerResizeSpeed: 150});
+            	$('#dxsdk_image a').lightBox({imageBtnPrev:"images/prev.png", imageBtnNext:"images/next.png", imageBtnClose:"images/close.png", containerResizeSpeed: 150});	
+            	$('#qtime_image a').lightBox({imageBtnPrev:"images/prev.png", imageBtnNext:"images/next.png", imageBtnClose:"images/close.png", containerResizeSpeed: 150});	
+            });
+        </script></body></html>

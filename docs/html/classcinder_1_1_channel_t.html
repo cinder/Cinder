@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>ChannelT</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>ChannelT &lt;typename&gt; </strong> 
+            Class Template Reference
+
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+          		<li><a href="#public-static-functions">Static Public Member Functions</a></li>
+
+
+          		<li><a href="#protected-attrs">Protected Attributes</a></li>
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+ <p>
+  A single channel of image data, either a color channel of a Surface or a grayscale image. Implicitly shared object.
+ </p>
+</div>
+</body></html>
+            
+		<p>A Channel can be thought of as a grayscale image, and frequently is simply that. Its name comes from the most common use case, which is to represent a single color channel of an image, such as the red, green, blue or alpha channel of a <a href="classcinder_1_1_surface_t.html">Surface</a>. To acquire one of these color channels from a Surface, use <a href="classcinder_1_1_surface_t.html#ad18dfcdd556a475d3141cdba45602eec">getChannelRed()</a>, <a href="classcinder_1_1_surface_t.html#ae36bbf0e559edbca50c03e4d44790ae0">getChannelBlue()</a>, <a href="classcinder_1_1_surface_t.html#a958b48daeefd05e0ff2c7c33e9c21aca">getChannelGreen()</a> or <a href="classcinder_1_1_surface_t.html#a822adcec9d90e990d7a4d8d6b79d8485">getChannelAlpha()</a>.
+
+			</p><pre class="language-cpp"><code>Channel rChan = surf.getChannelRed(); // references just the red values of surf's pixels</code></pre>
+		<p></p>
+		<br/>
+		
+		<p>The code below constructs a Channel which is a grayscale image independent of a Surface that is 640x480 pixels:</p>
+		<pre class="language-cpp"><code>Channel chan( 640, 480 );</code></pre>
+		<br/>
+
+		<p>You can also construct a Channel using an ImageSource, such as the result of loadImage(). In the code below, \a myImage will hold a grayscale version of the PNG file stored at the relative path "myImage.png":</p>
+		<pre class="language-cpp"><code>Channel myImage = loadImage( "myImage.png" );</code></pre>
+		<br/>
+		<p>Channels come in two primary configurations, the traditional 8-bits unsigned integer represented by <a href="classcinder_1_1_channel_t.html">Channel8u</a>, and a 32-bit float version suitable for high dynamic range images, represented by  <a href="classcinder_1_1_channel_t.html">Channel32f</a>. <em>Channel</em> is a short-hand synonym for <em>Channel8u</em>. </p>
+	
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/Channel.h">Channel.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder.html#aca11590d504e68de86f3a57444c2eb70">ImageSourceRef</a></li>
+                        <li><a href="namespacecinder.html#a01a19731f74d719ca973b24d0567373f">Channel</a></li>
+                        <li><a href="namespacecinder.html#a1870220d9d40c02c4cf4ff135b22f3ae">Channel8u</a></li>
+                        <li><a href="namespacecinder.html#a2e02e1be2de4a184b91d492c1a96d247">Channel8uRef</a></li>
+                        <li><a href="namespacecinder.html#a06d8642aa368d0d29bb121c23c9e48ab">ChannelRef</a></li>
+                        <li><a href="namespacecinder.html#a91dd9a6adc754492cb14be54f49d589f">Channel16u</a></li>
+                        <li><a href="namespacecinder.html#aa503d2f5432d8d7f1a421bb097bd7a79">Channel16uRef</a></li>
+                        <li><a href="namespacecinder.html#a55542066ef5e4df2176ef692419aa2dd">Channel32f</a></li>
+                        <li><a href="namespacecinder.html#ab896c44bf324da3ebb506781582a58ff">Channel32fRef</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Classes:</label>
+                        <li><a href="classcinder_1_1_channel_t_1_1_const_iter.html">ConstIter</a></li>
+                        <li><a href="classcinder_1_1_channel_t_1_1_iter.html">Iter</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Related Links:</label>
+                        <li><a href="guides/cinder-images/index.html">Images in Cinder</a></li>
+                      </ul>
+                    </div>
+                </div>
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afd8608346e1ab48fe00f1e142f8fb97c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ChannelT</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   An null Channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0f89c7395b62f2d7f10aca0d7ee1234a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ChannelT</strong> (int32_t width, int32_t height)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Allocates and owns a contiguous block of memory that is sizeof(T) * width * height.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9db2ee9afad2d3048e071f6bcfe0425e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ChannelT</strong> (int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Does not allocate or own memory pointed to by
+   <em>
+    data
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae980c51d73364500da1ffe1e3a619831"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ChannelT</strong> (int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data, const std::shared_ptr&lt; T &gt; &amp;dataStore)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Does not allocate memory pointed to by
+   <em>
+    data
+   </em>
+   but holds a reference to
+   <em>
+    dataStore
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5fbe206b2fe002df2ee6dd179975adbd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ChannelT</strong> (const ChannelT &amp;rhs)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates a clone of
+   <em>
+    rhs
+   </em>
+   . Data is always stored planar regardless of the increment of
+   <em>
+    rhs
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1094579dcda4a0545664c8573a0c3932"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ChannelT</strong> (ChannelT &amp;&amp;rhs)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Move constructor. Receives data store of
+   <em>
+    rhs
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9e1091b300ba5c3751f59c9886391f84"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ChannelT</strong> (const ImageSourceRef &amp;imageSource)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates a
+   <a href="classcinder_1_1_channel_t.html">
+    ChannelT
+   </a>
+   by loading from an
+   <a href="classcinder_1_1_image_source.html">
+    ImageSource
+   </a>
+   <em>
+    imageSource
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a386ada17774d9f0b2b8bcb18f3acfadc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t.html">ChannelT</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator=</strong> (const ChannelT &amp;rhs)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad8b8dc9fc69ca05969cb4c60f29efb15"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t.html">ChannelT</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator=</strong> (ChannelT &amp;&amp;rhs)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a2fa8758ab2ef1e69800aeb5155ed2ca8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator ImageSourceRef</strong> () const </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aba6edbad5e41ddf4d745cce78640d230"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t.html">ChannelT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>clone</strong> (bool copyPixels=true) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a new Channel which is a duplicate. If
+   <em>
+    copyPixels
+   </em>
+   the pixel values are copied, otherwise the clone's pixels remain uninitialized.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa3febf748dd97eeb3ba755b34a4b64da"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t.html">ChannelT</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>clone</strong> (const Area &amp;area, bool copyPixels=true) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a new Channel which is a duplicate of an
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    area
+   </em>
+   . If
+   <em>
+    copyPixels
+   </em>
+   the pixel values are copied, otherwise the clone's pixels remain uninitialized.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab03e08cf40192896d3ea36b7df21781a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWidth</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the width of the Channel in pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a652331bf591fb49dfef8fea296398a00"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getHeight</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the height of the Channel in pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a92b838382d068c5607d5b5284ec37bb3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSize</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the size of the Channel in pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a30e11a0b533df39f38b1ba98662ac510"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAspectRatio</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the Channel aspect ratio, which is its width / height.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa38b68f7e017dc8cb2099bc71e34e2a4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getBounds</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the bounding
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   of the Channel in pixels: [0,0]-(width,height)
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9f8c0620f4a23c80e791f1274318c110"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getRowBytes</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the width of a row of the Channel measured in bytes, which is not necessarily
+   <a href="classcinder_1_1_channel_t.html#ab03e08cf40192896d3ea36b7df21781a">
+    getWidth()
+   </a>
+   * getPixelInc()
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acd9ddb5325dadb0f27013185483e49b6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint8_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getIncrement</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the amount to increment a T* to increment by a pixel. For a planar channel this is
+   <code>
+    1
+   </code>
+   , but for a Channel of a Surface this might be
+   <code>
+    3
+   </code>
+   or
+   <code>
+    4
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aee9204c0214166b5dbcf687d2083430a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isPlanar</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the Channel represents a tightly packed array of values. This will be
+   <code>
+    false
+   </code>
+   if the Channel is a member of a Surface. Analogous to
+   <code>
+    &lt;a href="classcinder_1_1_channel_t.html#acd9ddb5325dadb0f27013185483e49b6"&gt;
+     getIncrement()
+    &lt;/a&gt;
+    == 1
+   </code>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac7662186238dd10bf2b9f9f393d0294f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a pointer to the data of the Channel's first pixel. Result is a uint8_t* for Channel8u and a float* for Channel32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a76732666c067e9f2fefc18f0780de3bc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a const pointer to the data of the Channel's first pixel. Result is a uint8_t* for Channel8u and a float* for Channel32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a114e2958abf9bc3bdecfcafdeb5e9a46"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> (const ivec2 &amp;offset)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a pointer to the data of the Channel's pixel at
+   <em>
+    offset
+   </em>
+   . Result is a uint8_t* for Channel8u and a float* for Channel32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad314ef4eab9f570fbf7493fb1c250ccf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> (const ivec2 &amp;offset) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a const pointer to the data of the Channel's pixel at
+   <em>
+    offset
+   </em>
+   . Result is a uint8_t* for Channel8u and a float* for Channel32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7c092e26e161b5926d971e214fe56a64"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> (int32_t x, int32_t y)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a pointer to the data of the Channel's pixel at (
+   <em>
+    x
+   </em>
+   ,
+   <em>
+    y
+   </em>
+   ). Result is a uint8_t* for Channel8u and a float* for Channel32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a17b902eb1544a53316b975cfdf91c07d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getData</strong> (int32_t x, int32_t y) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a const pointer to the data of the Channel's pixel at (
+   <em>
+    x
+   </em>
+   ,
+   <em>
+    y
+   </em>
+   ). Result is a uint8_t* for Channel8u and a float* for Channel32f.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a127fb67dc93c323c8e652aa3153e7ec7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getValue</strong> (ivec2 pos) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Convenience method for getting a single value at pixel
+   <em>
+    pos
+   </em>
+   . For performance-sensitive code consider
+   <a href="classcinder_1_1_channel_t_1_1_iter.html">
+    Channel::Iter
+   </a>
+   instead. Exhibits clamping behavior when outside Channel boundaries.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a46d53357e3070de07cd2582d44a80414"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setValue</strong> (ivec2 pos, T v)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Convenience method for setting a single value
+   <em>
+    v
+   </em>
+   at pixel
+   <em>
+    pos
+   </em>
+   . For performance-sensitive code consider
+   <a href="classcinder_1_1_channel_t_1_1_iter.html">
+    Channel::Iter
+   </a>
+   instead. Exhibits clamping behavior when outside Channel boundaries.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9a4d52db40dfaca8172bc021c15231a5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>copyFrom</strong> (const ChannelT&lt; T &gt; &amp;srcChannel, const Area &amp;srcArea, const ivec2 &amp;relativeOffset=ivec2())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Copies the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    srcArea
+   </em>
+   of the Channel
+   <em>
+    srcChannel
+   </em>
+   to
+   <em>
+    this
+   </em>
+   Channel. The destination
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   is
+   <em>
+    srcArea
+   </em>
+   offset by
+   <em>
+    relativeOffset
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a19fa832c056927a3abe7e8a64521eee8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>areaAverage</strong> (const Area &amp;area) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an averaged value for the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   defined by
+   <em>
+    area
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2889077169fc76b53c6223ddc5fd7f92"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getDataStore</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the shared_ptr used to store the Channel's data. In general prefer
+   <a href="classcinder_1_1_channel_t.html#ac7662186238dd10bf2b9f9f393d0294f">
+    getData()
+   </a>
+   instead.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aef3ef67df3b3f06db3f005cf8b0e2b02"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t_1_1_iter.html">Iter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getIter</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_channel_t_1_1_iter.html">
+    Iter
+   </a>
+   which iterates the entire Channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2295c0f79bfa157714763944a0e8c338"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t_1_1_iter.html">Iter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getIter</strong> (const Area &amp;area)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_channel_t_1_1_iter.html">
+    Iter
+   </a>
+   which iterates the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    area
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a17d00cfa0f89bea0590527ccdb3cb1a0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t_1_1_const_iter.html">ConstIter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getIter</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a
+   <a href="classcinder_1_1_channel_t_1_1_const_iter.html">
+    ConstIter
+   </a>
+   which iterates the entire Channel.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab1ee47ec44377b4c5a3ce2452c028464"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_channel_t_1_1_const_iter.html">ConstIter</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getIter</strong> (const Area &amp;area) const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a
+   <a href="classcinder_1_1_channel_t_1_1_const_iter.html">
+    ConstIter
+   </a>
+   which iterates the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    area
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+            <a name="public-static-functions"></a>
+            <section>
+                <h2>Static Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3869559114cf86137c28cd208741ecae"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (int32_t width, int32_t height)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Allocates and owns a contiguous block of memory that is sizeof(T) * width * height.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab9d7879a5255f60081f1e2cab5376f8c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Does not allocate or own memory pointed to by
+   <em>
+    data
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4d6609dd6b723d3fea9d903685e60847"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data, const std::shared_ptr&lt; T &gt; &amp;dataStore)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Does not allocate memory pointed to by
+   <em>
+    data
+   </em>
+   but holds a reference to
+   <em>
+    dataStore
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6a7423c94a5ff0bf4863a76f014bff43"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (const ChannelT &amp;rhs)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates a clone of
+   <em>
+    rhs
+   </em>
+   . Data is always stored planar regardless of the increment of
+   <em>
+    rhs
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2a24d1c096a417945d851448531fbeae"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1_channel_t.html">ChannelT</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>create</strong> (const ImageSourceRef &amp;imageSource)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Creates a
+   <a href="classcinder_1_1_channel_t.html">
+    ChannelT
+   </a>
+   by loading from an
+   <a href="classcinder_1_1_image_source.html">
+    ImageSource
+   </a>
+   <em>
+    imageSource
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected member functions -->
+
+            <!-- protected attributes -->
+            <a name="protected-attrs"></a>
+            <section>
+                <h2>Protected Attributes</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="ae6713dda44c55216543775dc8b39448c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mWidth</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8ca512deb74c9f622ab28da658d2d3a2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mHeight</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7b891badf397ae9942f68fc9cc6af612"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mRowBytes</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a502e008dde04c0cae89c7309836491ae"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint8_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mIncrement</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a36df2fe30d76f56e1f5a4f8adf28e613"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">T *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mData</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7180aedee98d0e205b4be933c757a4a0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mDataStore</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

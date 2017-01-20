@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title></title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="../../_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="../../_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="guide language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="../../index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="../../search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="../../reference/geometry.html">Reference</a></li>
+                              <li class="active" id="nav_guides">
+                                <a href="../index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="../../namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="../../classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="../../reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="../index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="../../namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="../../classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content content-row" id="container">
+    <div class="columns large-3">
+
+    </div>
+
+    <div class="columns large-9 content" data-equalizer-watch="content">
+
+
+    <ci dox="cinder::XmlTree" seealso=""></ci>
+   
+   
+      <div class="textblock">
+         <h3>Introduction</h3>
+         <p>Cinder provides the <a href="../../classcinder_1_1_xml_tree.html">XmlTree</a> class for processing XML. This class is recursive, meaning an XmlTree can contain other XmlTrees as its children. This design is similar to XML itself, which is a hierarchical format where an element can contain children elements. <br/>
+            <br/>
+            For some of the example code in this document, we'll refer to this very basic XML document: 
+         </p>
+         <pre><code class="language-markup">
+&lt;?xml version="1.0"?&gt;
+&lt;library&gt;
+	&lt;owner&gt;
+		&lt;name&gt;Andrew Bell&lt;/name&gt;
+		&lt;city&gt;New York&lt;/city&gt;
+	&lt;/owner&gt;
+	&lt;album musician="John Coltrane" year="1989"&gt;
+		&lt;title&gt;Ole Coltrane&lt;/title&gt;
+		&lt;track id="0"&gt;&lt;/track&gt;Ole
+		&lt;track id="1"&gt;&lt;/track&gt;Dahomey Dance
+		&lt;track id="2"&gt;&lt;/track&gt;Aisha
+		&lt;track id="3"&gt;&lt;/track&gt;To Her Ladyship
+	&lt;/album&gt;
+	&lt;album musician="Burial + Four Tet" year="2009"&gt;
+		&lt;title&gt;Moth/Wolf Club&lt;/title&gt;
+		&lt;track id="0"&gt;&lt;/track&gt;Moth
+		&lt;track id="1"&gt;&lt;/track&gt;Wolf
+	&lt;/album&gt;
+&lt;/library&gt;
+		</code></pre>
+     	        
+         <!-- fragment -->
+         <p> <br/>
+         </p>
+         <h3>Parsing</h3>
+         <p>To parse a block of XML, construct an XmlTree using a <a href="../../classcinder_1_1_data_source.html">DataSource</a>. For example, to parse an XML file on your disk, use <a href="../../namespacecinder.html#a5914d1dcf8a37d479ed1186326a8eae7">loadFile()</a>: </p>
+         
+         <pre><code class="language-cpp">XmlTree doc( loadFile( "/Users/andrewfb/music.xml" ) );</code></pre>
+         
+         <!-- fragment -->
+         <p> <br/>
+            To parse XML on an http server, use <a href="../../namespacecinder.html#ac585fce4c1e96b04a400b5858b607909">loadUrl()</a>: 
+         </p>
+         <pre><code class="language-cpp">XmlTree doc( loadUrl( "http://rss.news.yahoo.com/rss/tech" ) );</code></pre>
+         
+         <!-- fragment -->
+         <p> <br/>
+            To parse XML contained in a resource (discussed in <a class="el" href="_cinder_resources.html">more depth here</a>), use <a href="../../namespacecinder_1_1app.html#a46a32d7c136a4946b464f6e65701ec46">loadResource()</a>: 
+         </p>
+         <pre><code class="language-cpp">XmlTree doc( loadResource( RES_MUSIC_LIBRARY ) );</code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            To parse XML contained in a string: 
+         </p>
+         <pre><code class="language-cpp">
+std::string myXmlStr( "&lt;?xml version=\"1.0\"?&gt;\n&lt;library&gt;\n&lt;owne..."
+XmlTree doc( myXmlStr );</code></pre>
+         <!-- fragment -->
+         <p> <br/>
+         </p>
+         <h3>Iterating XmlTrees</h3>
+         <p>To grab a particular child of a node by name, use the <a href="../../classcinder_1_1_xml_tree.html#a0330c31f8c01d342779c0d2f6da26ab5">XmlTree::getChild()</a> method: </p>
+         <pre><code class="language-cpp">
+XmlTree doc( loadFile( "/Users/andrewfb/music.xml" ) );
+XmlTree musicLibrary = doc.getChild( "library" );</code></pre>
+         <!-- fragment -->
+         <p> <br/>
+            If the child does not exist, a <a href="../../classcinder_1_1_xml_tree_1_1_exc_child_not_found.html">XmlTree::ExcChildNotFound</a> exception is thrown. To test for the existence of a child use <a href="../../classcinder_1_1_xml_tree.html#af2e92b166037a51b1513810537cf6331">XmlTree::hasChild()</a>: 
+         </p>
+         
+         <pre><code class="language-cpp">
+std::string myXmlStr( '&lt;?xml version="1.0"?&gt; &lt;library&gt;&lt;owne...' );
+XmlTree doc( myXmlStr );</code></pre>
+
+         <!-- fragment -->
+         <p>
+            XmlTree also supports finding children by path, where each component of the path is separated by the <code>/</code> character. For example: 
+         </p>
+         <pre><code class="language-cpp">
+   console() &lt;&lt; musicLibrary.getChild( "owner/city" ) &lt;&lt; std::endl;</code></pre>
+
+         <!-- fragment -->
+         <p><em>Output:</em></p>
+         <pre><code class="language-cpp">&lt;city&gt;New York&lt;/city&gt;</code></pre>
+         <!-- fragment -->
+         <p> <br/>
+            The example above shows a convenient way to examine an XML node, which is to pass it to a std::ostream like <a class="el" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe" title="Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW. ">console()</a>. Another convenient function is <a href="../../classcinder_1_1_xml_tree.html#a30b692af881ada011cf94668774ec7a9">XmlTree::getPath()</a>, which returns the path up to and including a given node: 
+         </p>
+         <pre><code class="language-cpp">
+XmlTree ownerCity = doc.getChild( "library/owner/city" );
+console() &lt;&lt; "Path: " &lt;&lt; ownerCity.getPath() &lt;&lt; "  Value: " &lt;&lt; ownerCity.getValue() &lt;&lt; std::endl;
+         </code></pre>
+
+         <!-- fragment -->
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-cpp">Path: library/owner/city  Value: New York</code></pre>
+         <!-- fragment -->
+         <p> <br/>
+            To iterate the children of an XML node, use the <a href="../../classcinder_1_1_xml_tree_1_1_iter.html">XmlTree::Iter</a> class. 
+         </p>
+
+         <pre><code class="language-cpp">
+XmlTree firstAlbum = doc.getChild( "library/album" );
+for( XmlTree::Iter child = firstAlbum.begin(); child != firstAlbum.end(); ++child )
+console() &lt;&lt; "Tag: " &lt;&lt; child-&gt;getTag() &lt;&lt;"  Value: " &lt;&lt; child-&gt;getValue() &lt;&lt; endl;</code></pre>
+
+         <!-- fragment -->
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-cpp">
+Path: library/owner/city  Value: New York
+Tag: title  Value: Ole Coltrane
+Tag: track  Value: Ole
+Tag: track  Value: Dahomey Dance
+Tag: track  Value: Aisha
+Tag: track  Value: To Her Ladyship\endcode
+         </code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            You can also iterate the children of a node with the path syntax. For example, to iterate all the tracks of the music library, we can do something like the code below. Notice that the XmlTree::Iter is smart about finding all the nodes which match the path - there are tracks from both albums, not just the first. 
+         </p>
+         <pre><code class="language-cpp">
+for( XmlTree::Iter track = doc.begin("library/album/track"); track != doc.end(); ++track )
+   console() &lt;&lt; track-&gt;getValue() &lt;&lt; endl;</code></pre>
+         <!-- fragment -->
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-cpp">
+Ole
+Dahomey Dance
+Aisha
+To Her Ladyship
+Moth
+Wolf</code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            By default paths for the XmlTree are case insensitive. An optional boolean following the path allows you to force case sensitivity. Also for the uncommon case in which your node tags contain the '/' character, you can supply an alternate separator - we use the '.' below: 
+         </p>
+         <pre><code class="language-cpp">std::string ownerCity = xmlNode.getChild( "library.owner.city", true, '.' );</code></pre>
+
+         <!-- fragment -->
+         <h3>Values &amp; Attributes</h3>
+         <p>As we've already seen, you can get the tag (or name) of a node by calling <a href="../../classcinder_1_1_xml_tree.html#a045c5762e7c1d007b99994435975f11a">getTag()</a>. To get the value of a node as a string use <a href="../../classcinder_1_1_xml_tree.html#acc7f1501311af5db881eaada1512bb17">getValue()</a>. As an additional convenience, you can have XmlTree parse a string for you for any type which supports the istream&gt;&gt; operator. For example, if you know the nodes' values are floats, you might do this: </p>
+         <pre><code class="language-cpp">
+vector&lt;float&gt; myFloats;
+for( XmlTree::Iter item = xml.begin(); item != xml.end(); ++item )
+    myFloats.push_back( item-&amp;gt;getValue&lt;float&gt;() );&lt;/float&gt;&lt;/float&gt;</code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            The XmlTree also offers facility for walking a node's attributes. To get the value of an attribute as a string, you can call <a class="el" href="classcinder_1_1_xml_tree.html#a2a35e96659494390cc83dda18a280da7">getAttributeValue()</a>: 
+         </p>
+         <pre><code class="language-cpp">
+XmlTree firstAlbum = doc.getChild( "library/album" );
+console() &lt;&lt; "the musician is: " &lt;&lt; firstAlbum.getAttributeValue( "musician" ) &lt;&lt; endl;</code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            There is also a variant which supports automatic type conversion: 
+         </p>
+         <pre><code class="language-cpp">
+XmlTree firstTrack = doc.getChild( "library/album/track" );
+int firstTrackId = myNode.getAttributeValue&lt;int&gt;( "id" );
+         &lt;/int&gt;</code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            As an additional convenience, you can supply a default value in the case that a node does not have a particular attribute. If we wanted our default size to be 1 for nodes which do not posses a size attribute, we would do this: 
+         </p>
+         <pre><code class="language-cpp">
+float mySize = myNode.getAttributeValue&lt;float&gt;( "size", 1.0f );&lt;/float&gt;</code></pre>
+
+         <!-- fragment -->
+         <p> <br/></p>
+         <h3>Writing XML</h3>
+         <p>The XmlTree class can be used to build and write XML documents as well. The example below creates a music library with one album and prints it to the <a href="../../namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console()</a>: </p>
+         <pre><code class="language-cpp">
+XmlTree library( "library", "" );
+XmlTree album( "album", "" );
+album.setAttribute( "musician", "Sufjan Stevens" );
+album.setAttribute( "year", "2004" );
+album.push_back( XmlTree( "title", "Seven Swans" ) );
+album.push_back( XmlTree( "track", "All the Trees of the Field Will Clap Their Hands" ) );
+album.push_back( XmlTree( "track", "The Dress Looks Nice on You" ) );
+album.push_back( XmlTree( "track", "In the Devil's Territory" ) );
+album.push_back( XmlTree( "track", "To Be Alone With You" ) );
+library.push_back( album );
+console() &lt;&lt; library &lt;&lt; std::endl;</code></pre>
+
+         <!-- fragment -->
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-markup">
+&lt;library&gt;
+   &lt;album musician="Sufjan Stevens" year="2004"&gt;
+      &lt;title&gt;Seven Swans&lt;/title&gt;
+      &lt;track&gt;&lt;/track&gt;All the Trees of the Field Will Clap Their Hands
+      &lt;track&gt;&lt;/track&gt;The Dress Looks Nice on You
+      &lt;track&gt;&lt;/track&gt;In the Devil's Territory
+      &lt;track&gt;&lt;/track&gt;To Be Alone With You
+   &lt;/album&gt;
+&lt;/library&gt;</code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            Notice that the node echoed to the console was not treated as an XML document - it lacks the <code>&lt;?xml&gt;</code> declaration of a true XML document. There are a couple of ways of achieving this. The simplest is to use <a class="el" href="classcinder_1_1_xml_tree.html#a33392d8f768b5bfc9fa23890ca4deea0">XmlTree::write()</a>, which by default assumes you want a full XML document: 
+         </p>
+         <pre><code class="language-cpp">
+library.write( writeFile( "~/musicOutput.xml" ) );</code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            This routine has an optional second boolean parameter which will create the <code>&lt;?xml&gt;</code> declaration when true, its default value. Another option would be to create a document node ourselves and append the <code>&lt;library&gt;</code> to that: 
+         </p>
+         <pre><code class="language-cpp">
+XmlTree doc = XmlTree::createDoc();
+XmlTree library( "library", "" );
+...
+doc.push_back( library );
+console() &lt;&lt; doc &lt;&lt; std::endl;</code></pre>
+
+         <!-- fragment -->
+         <p> <br/></p>
+         <h3>Const-Correctness and References</h3>
+         <p>The XmlTree is designed to be const-correct, and supports a <a class="el" href="classcinder_1_1_xml_tree_1_1_const_iter.html">ConstIter</a> which mimicks the <code>const_iterator</code> of STL containers: </p>
+         <pre><code class="language-cpp">
+// Finds the track named \a searchTrack in the music library \a library.
+// Throws XmlTree::ExcChildNotFound() if none is found.
+const XmlTree&amp; findTrackNamed( const XmlTree &amp;library, const std::string &amp;searchTrack )
+{
+   for( XmlTree::ConstIter trackIt = library.begin("album/track"); trackIt != library.end(); ++trackIt ) {
+      if( trackIt-&gt;getValue() == searchTrack )
+         return *trackIt;
+   }
+   
+   // failed to find a track named 'searchTrack'
+   throw XmlTree::ExcChildNotFound( library, searchTrack );
+}
+
+...
+XmlTree doc( loadFile( "/Users/andrewfb/library.xml" ) );
+console() &lt;&lt; findTrackNamed( doc.getChild( "library" ), "Wolf" ) &lt;&lt; std::endl;</code></pre>
+
+         <!-- fragment -->
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-cpp">&lt;track id="1"&gt;&lt;/track&gt;Wolf</code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            It's also worth noting the value of passing XmlTrees by reference whenever possible. XmlTrees create a full copy of the XML data tree whenever they are copied, so passing by reference can improve performance significantly. Furthermore, assigning by copy will prevent us from modifying the "original" node of an XmlTree should we so desire. For example: 
+         </p>
+         <pre><code class="language-cpp">
+// Whoops - assignment by value doesn't modifying the original XmlTree
+XmlTree firstTrackCopy = doc.getChild( "/library/album/track" );
+firstTrackCopy.setValue( "Replacement name" );
+console() &lt;&lt; doc.getChild( "/library/album/track" ) &lt;&lt; std::endl;</code></pre>
+
+         <!-- fragment -->
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-markup">&lt;track id="0"&gt;&lt;/track&gt;Ole</code></pre>
+
+         <!-- fragment -->
+         <p> <br/>
+            Instead, use a reference in order to modify the XmlTree: 
+         </p>
+         <pre><code class="language-cpp">
+XmlTree &amp;firstTrackRef = doc.getChild( "/library/album/track" ); // notice the reference
+firstTrackRef.setValue( "Replacement name" );
+console() &lt;&lt; doc.getChild( "/library/album/track" ) &lt;&lt; std::endl;</code></pre>
+
+         <!-- fragment -->
+         <p> <em>Output:</em> </p>
+         <pre><code class="language-markup">&lt;track id="0"&gt;&lt;/track&gt;Replacement name</code></pre>
+
+         <!-- fragment -->
+         <p> <br/></p>
+         <h3>Implementation Notes</h3>
+         <p>The XmlTree::Iter and XmlTree::ConstIter are designed to be STL-compatible iterators. For example, if you are using a lambdas-aware C++ compiler (currently only VC2010 at the time of this writing) the following code prints the names of the albums in the music library: </p>
+         <pre><code class="language-cpp">
+std::for_each( doc.begin( "library/album" ), doc.end(), []( const XmlTree &amp;child ) {
+   app::console() &lt;&lt; child.getChild( "title" ).getValue() &lt;&lt; std::endl;
+} );</code></pre>
+         <!-- fragment -->
+         <p> <br/>
+            XmlTree is implemented using the <a href="http://rapidxml.sourceforge.net/">RapidXML</a> library. For unusually performance-conscious use cases, it is worth considering using RapidXML directly, as the XmlTree is designed to be convenient more than it is fast. The necessary header files are in <em>cinder/include/rapidxml</em> and can be <code>#include</code>d like so: 
+         </p>
+         <pre><code class="language-cpp">
+#include "rapidxml/rapidxml.hpp"
+#include "rapidxml/rapidxml_print.hpp"</code></pre>
+         <!-- fragment --> 
+      </div>
+   
+
+
+  
+  </div>
+
+</div> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="../../_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="../../_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../search_index.js" type="text/javascript"></script>
+    <script src="../../_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

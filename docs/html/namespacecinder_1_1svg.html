@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>cinder::svg</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="namespaces language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="active" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    <div class="row content-row content">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>cinder::svg</strong> Namespace Reference
+        </h1>
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#classes">Classes</a></li>
+          		
+          		<li><a href="#typedefs">Typedefs</a></li>
+
+          		<li><a href="#enumerations">Enumerations</a></li>
+
+
+          		<li><a href="#functions">Functions</a></li>
+
+          	</ul>
+        </div>        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- namespaces -->
+
+            <!-- classes -->
+            <a name="classes"></a>
+            <section>
+                <h2>Classes</h2>
+                <ul>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_circle.html">cinder::svg::Circle</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_doc.html">cinder::svg::Doc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_ellipse.html">cinder::svg::Ellipse</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_exc.html">cinder::svg::Exc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_exc_child_not_found.html">cinder::svg::ExcChildNotFound</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_float_parse_exc.html">cinder::svg::FloatParseExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_gradient.html">cinder::svg::Gradient</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_group.html">cinder::svg::Group</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_image.html">cinder::svg::Image</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_line.html">cinder::svg::Line</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_linear_gradient.html">cinder::svg::LinearGradient</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_node.html">cinder::svg::Node</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_paint.html">cinder::svg::Paint</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_path.html">cinder::svg::Path</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_path_parse_exc.html">cinder::svg::PathParseExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_polygon.html">cinder::svg::Polygon</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_polyline.html">cinder::svg::Polyline</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_radial_gradient.html">cinder::svg::RadialGradient</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_rect.html">cinder::svg::Rect</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_renderer.html">cinder::svg::Renderer</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_style.html">cinder::svg::Style</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_text.html">cinder::svg::Text</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_text_span.html">cinder::svg::TextSpan</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_transform_parse_exc.html">cinder::svg::TransformParseExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_use.html">cinder::svg::Use</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_value.html">cinder::svg::Value</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1svg_1_1_value_exc.html">cinder::svg::ValueExc</a>
+                            </div>
+                        </li>
+                </ul>
+            </section>
+            <hr/>
+
+            <!-- typedefs -->
+            <a name="typedefs"></a>
+            <section>
+                <h2>Typedefs</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="afe12e333736854f15e38036db034cedf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::function&lt; bool(const <a href="classcinder_1_1svg_1_1_node.html">Node</a> &amp;, <a href="classcinder_1_1svg_1_1_style.html">svg::Style</a> *)&gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RenderVisitor</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a382056ff45060d1b6b42b5605120c4b8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1svg_1_1_text_span.html">TextSpan</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>TextSpanRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af002e73e44dd222738515e38a7f9cbaf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1svg_1_1_doc.html">Doc</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>DocRef</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- enumerations -->
+            <a name="enumerations"></a>
+            <section>
+                <h2>Enumerations</h2>
+                <ul>
+                    <li class="row expandable enumDef">
+                        <a class="anchor" name="aac326690dec1e2bf20e8dbf0072197f3"></a>
+                        <div class="definitionCol columns large-3"></div>
+                        <div class="definitionCol columns large-9">
+                            <div class="definition"><strong>FillRule</strong></div>
+                            <html><head></head><body><div class="description content">
+ {
+ <ul>
+  <li>
+   FILL_RULE_NONZERO
+  </li>
+  <li>
+   FILL_RULE_EVENODD
+  </li>
+ </ul>
+ }
+</div>
+</body></html>
+                        </div>
+                    </li>                    <li class="row expandable enumDef">
+                        <a class="anchor" name="a3584e121924b34f82dade5b191620eb5"></a>
+                        <div class="definitionCol columns large-3"></div>
+                        <div class="definitionCol columns large-9">
+                            <div class="definition"><strong>LineCap</strong></div>
+                            <html><head></head><body><div class="description content">
+ {
+ <ul>
+  <li>
+   LINE_CAP_BUTT
+  </li>
+  <li>
+   LINE_CAP_ROUND
+  </li>
+  <li>
+   LINE_CAP_SQUARE
+  </li>
+ </ul>
+ }
+</div>
+</body></html>
+                        </div>
+                    </li>                    <li class="row expandable enumDef">
+                        <a class="anchor" name="afb945f112425694fe967574754a9e867"></a>
+                        <div class="definitionCol columns large-3"></div>
+                        <div class="definitionCol columns large-9">
+                            <div class="definition"><strong>LineJoin</strong></div>
+                            <html><head></head><body><div class="description content">
+ {
+ <ul>
+  <li>
+   LINE_JOIN_MITER
+  </li>
+  <li>
+   LINE_JOIN_ROUND
+  </li>
+  <li>
+   LINE_JOIN_BEVEL
+  </li>
+ </ul>
+ }
+</div>
+</body></html>
+                        </div>
+                    </li>                    <li class="row expandable enumDef">
+                        <a class="anchor" name="ae1e64d03db1807d7fd4773b09040fd16"></a>
+                        <div class="definitionCol columns large-3"></div>
+                        <div class="definitionCol columns large-9">
+                            <div class="definition"><strong>FontWeight</strong></div>
+                            <html><head></head><body><div class="description content">
+ {
+ <ul>
+  <li>
+   WEIGHT_100
+  </li>
+  <li>
+   WEIGHT_200
+  </li>
+  <li>
+   WEIGHT_300
+  </li>
+  <li>
+   WEIGHT_400
+  </li>
+  <li>
+   WEIGHT_NORMAL
+  </li>
+  <li>
+   WEIGHT_500
+  </li>
+  <li>
+   WEIGHT_600
+  </li>
+  <li>
+   WEIGHT_700
+  </li>
+  <li>
+   WEIGHT_BOLD
+  </li>
+  <li>
+   WEIGHT_800
+  </li>
+  <li>
+   WEIGHT_900
+  </li>
+ </ul>
+ }
+</div>
+</body></html>
+                        </div>
+                    </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- free functions -->
+            
+            <!-- functions -->
+            <a name="functions"></a>
+            <section>
+                <h2>Functions</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a9df806a8b1002e827edbb84852fef1bb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ellipticalArc</strong> (Shape2d &amp;path, float x1, float y1, float x2, float y2, float rx, float ry, float xAxisRotation, bool largeArcFlag, bool sweepFlag)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a560209eeae20c89931fedc888e79c2ce"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const char *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getNextPathItem</strong> (const char *s, char it[64])</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="acab60cb4e6eabc0a1c5e689cb8481e4d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">char</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>readNextCommand</strong> (const char **sInOut)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a835e846fa0dd7dfe6b03f128a4b81340"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>readFlag</strong> (const char **sInOut)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af64a73b970503922157bb5f92ed0fc1d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>nextItemIsFloat</strong> (const char *s)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a4142d36d11cd515da4036f1878a8e020"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_shape2d.html">Shape2d</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>parsePath</strong> (const std::string &amp;p)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aec6ba89000cfa233e5948b2f0456a77a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">vector&lt; vec2 &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>parsePointList</strong> (const std::string &amp;p)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- variables -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

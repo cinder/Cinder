@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>cinder::app</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="namespaces language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="active" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    <div class="row content-row content">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>cinder::app</strong> Namespace Reference
+        </h1>
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#classes">Classes</a></li>
+          		
+          		<li><a href="#typedefs">Typedefs</a></li>
+
+          		<li><a href="#enumerations">Enumerations</a></li>
+
+              <li><a href="#free_functions">Free Functions</a></li>
+
+          		<li><a href="#functions">Functions</a></li>
+
+          		<li><a href="#variables">Variables</a></li>
+          	</ul>
+        </div>        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- namespaces -->
+
+            <!-- classes -->
+            <a name="classes"></a>
+            <section>
+                <h2>Classes</h2>
+                <ul>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_base.html">cinder::app::AppBase</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_cocoa_touch.html">cinder::app::AppCocoaTouch</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_cocoa_view.html">cinder::app::AppCocoaView</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_impl_msw.html">cinder::app::AppImplMsw</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_impl_msw_basic.html">cinder::app::AppImplMswBasic</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_impl_msw_screen_saver.html">cinder::app::AppImplMswScreenSaver</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_impl_win_r_t.html">cinder::app::AppImplWinRT</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_impl_win_r_t_basic.html">cinder::app::AppImplWinRTBasic</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_mac.html">cinder::app::AppMac</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_msw.html">cinder::app::AppMsw</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_screen_saver.html">cinder::app::AppScreenSaver</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_app_win_rt.html">cinder::app::AppWinRt</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_asset_load_exc.html">cinder::app::AssetLoadExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_blanking_window.html">cinder::app::BlankingWindow</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1app_1_1_collector_event.html">cinder::app::CollectorEvent</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_event.html">cinder::app::Event</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_exc_invalid_window.html">cinder::app::ExcInvalidWindow</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_exc_renderer.html">cinder::app::ExcRenderer</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_exc_renderer_allocation.html">cinder::app::ExcRendererAllocation</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_file_drop_event.html">cinder::app::FileDropEvent</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1app_1_1_full_screen_options.html">cinder::app::FullScreenOptions</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_key_event.html">cinder::app::KeyEvent</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_mouse_event.html">cinder::app::MouseEvent</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_platform.html">cinder::app::Platform</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_platform_cocoa.html">cinder::app::PlatformCocoa</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_platform_msw.html">cinder::app::PlatformMsw</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_platform_win_rt.html">cinder::app::PlatformWinRt</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_renderer.html">cinder::app::Renderer</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_renderer_dx.html">cinder::app::RendererDx</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_renderer_gl.html">cinder::app::RendererGl</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_renderer_impl2d_gdi.html">cinder::app::RendererImpl2dGdi</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_renderer_impl_dx.html">cinder::app::RendererImplDx</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_renderer_impl_gl_angle.html">cinder::app::RendererImplGlAngle</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_renderer_impl_gl_msw.html">cinder::app::RendererImplGlMsw</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_renderer_impl_msw.html">cinder::app::RendererImplMsw</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_resource_load_exc.html">cinder::app::ResourceLoadExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_resource_load_exc_msw.html">cinder::app::ResourceLoadExcMsw</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_touch_event.html">cinder::app::TouchEvent</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_window.html">cinder::app::Window</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_window_impl_msw.html">cinder::app::WindowImplMsw</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_window_impl_msw_basic.html">cinder::app::WindowImplMswBasic</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_window_impl_msw_screen_saver.html">cinder::app::WindowImplMswScreenSaver</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_window_impl_win_rt.html">cinder::app::WindowImplWinRt</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_window_impl_win_r_t.html">cinder::app::WindowImplWinRT</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1app_1_1_window_impl_win_r_t_basic.html">cinder::app::WindowImplWinRTBasic</a>
+                            </div>
+                        </li>
+                </ul>
+            </section>
+            <hr/>
+
+            <!-- typedefs -->
+            <a name="typedefs"></a>
+            <section>
+                <h2>Typedefs</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a174fc1a532214ee1c6709836e30dfb55"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1app_1_1_window.html">Window</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>WindowRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a97fd1ac1b2206c380778a9a8185532a3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1app_1_1_blanking_window.html">BlankingWindow</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BlankingWindowRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac0853b8cebb1960f1e447a9ee702e6e8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1app_1_1_renderer.html">Renderer</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RendererRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ace4802e277a86155143634c0cb42ac2e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class Renderer2d &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Renderer2dRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab488a389e21b5264ee335e23eef02c64"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1app_1_1_renderer_dx.html">RendererDx</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RendererDxRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab93a6c43656f0e9b6c073d9af543123b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1app_1_1_renderer_gl.html">RendererGl</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RendererGlRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a53e78763993ea861c2aaff5ad13bfb2f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1app.html#aad64aef26e4deff420f14ccc2b561ad5">HGLRC</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hShareContext</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab3c0c743c8f9462fbf8d3965d9519ce0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1app.html#aad64aef26e4deff420f14ccc2b561ad5">HGLRC</a> const int *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>attribList</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a66c41a9bd901e45a568b2d3cdfbc9049"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="_cinder_windows_fwd_8h.html#a050c65e107f0c828f856a231f4b4e788">BOOL</a>(__stdcall *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>PFNWGLCHOOSEPIXELFORMATARBPROC</strong> )(HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- enumerations -->
+            <a name="enumerations"></a>
+            <section>
+                <h2>Enumerations</h2>
+                <ul>
+                    <li class="row expandable enumDef">
+                        <a class="anchor" name="a1e19beaf18c41d11111186e34c5c9588"></a>
+                        <div class="definitionCol columns large-3"></div>
+                        <div class="definitionCol columns large-9">
+                            <div class="definition"><strong>InterfaceOrientation</strong></div>
+                            <html><head></head><body><div class="description content">
+ {
+ <ul>
+  <li>
+   Unknown
+  </li>
+  <li>
+   Portrait
+  </li>
+  <li>
+   PortraitUpsideDown
+  </li>
+  <li>
+   LandscapeLeft
+  </li>
+  <li>
+   LandscapeRight
+  </li>
+  <li>
+   PortraitAll
+  </li>
+  <li>
+   LandscapeAll
+  </li>
+  <li>
+   All
+  </li>
+ </ul>
+ }
+</div>
+</body></html>
+                        </div>
+                    </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- free functions -->
+            <a name="free_functions"></a>
+            <section>
+                <h2>Free Functions</h2>
+                <ul>
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afeb2e43e06158272354e1e40acd5933e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1app.html#a174fc1a532214ee1c6709836e30dfb55">WindowRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindow</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number of
+   <a href="namespace_windows.html">
+    Windows
+   </a>
+   the app has open.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af3276cc127972aae95821bb8040fcd5b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">size_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getNumWindows</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number of
+   <a href="namespace_windows.html">
+    Windows
+   </a>
+   the app has open.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2985ea6574830fd79e5495fdd1bb0c40"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1app.html#a174fc1a532214ee1c6709836e30dfb55">WindowRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindowIndex</strong> (size_t index)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Gets a
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   by index, in the range [0,
+   <a href="namespacecinder_1_1app.html#af3276cc127972aae95821bb8040fcd5b">
+    getNumWindows()
+   </a>
+   ).
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac8c6ecaf9d91c5eedfd6b127a60e939d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindowWidth</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the width of the active App's window measured in points, or of the screen when in full-screen mode.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a147232990caf19ab32971b9d3c3f45ed"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setWindowPos</strong> (const ivec2 &amp;windowPos)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the position of the active App's window measured in points. Ignored in full-screen mode.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9652f82dd8d8dce8604f00ad64b29fe7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setWindowPos</strong> (int x, int y)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the position of the active App's window measured in points. Ignored in full-screen mode.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a71d6248e05c9a15ad660a5243da38a70"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindowHeight</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the height of the active App's window measured in points, or the screen when in full-screen mode.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a12cf84549630953c203adf54fd1f0e1e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setWindowSize</strong> (ivec2 size)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the size of the active App's window in points. Ignored in full-screen mode.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abf9b05d3717b3ccb33870dd164522352"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setWindowSize</strong> (int windowSizeX, int windowSizeY)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the size of the active App's window in points. Ignored in full-screen mode.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3e805f6321e9dc0fdcb0a395ceaa83d0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">vec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindowCenter</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the center of the active App's window in pixels or of the screen in full-screen mode.
+  </p>
+  <p>
+   Equivalent to
+   <code>
+    vec2(
+    &lt;a href="namespacecinder_1_1app.html#ac8c6ecaf9d91c5eedfd6b127a60e939d"&gt;
+     getWindowWidth()
+    &lt;/a&gt;
+    * 0.5,
+    &lt;a href="namespacecinder_1_1app.html#a71d6248e05c9a15ad660a5243da38a70"&gt;
+     getWindowHeight()
+    &lt;/a&gt;
+    * 0.5 )
+   </code>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af1b1a776ad64ef734b2a3faf7b30f9b4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindowSize</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the size of the active App's window or the screen in full-screen mode measured in points.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a12b73d1a1ee900938a121fe832270def"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindowPos</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the position of the active App's window measured in points.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a78b0039ce9950289e91d23e0bed2c2af"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindowAspectRatio</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the aspect ratio of the active App's window or the screen in full-screen mode.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae1eacebf2877007904c42db342bd477d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindowBounds</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the bounding area of the active App's window or the screen in full-screen mode measured in points.
+  </p>
+  <p>
+   Equivalent to
+  </p>
+  <div class="programlisting">
+   <pre><code class="language-cpp">Area( 0, 0, getWindowWidth(), getWindowHeight() ); 
+</code></pre>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa2c52f58d6e1cfdc8aa8287edc8bb7db"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getWindowContentScale</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the contentScale of the active App's window, which is the multiplier that maps points to pixels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acfee5b85b698f272b32dc85f15482356"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getFrameRate</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the maximum frame-rate the active App will attempt to maintain.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ace1f4b40afd89750f01fbf25591e16c4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setFrameRate</strong> (float frameRate)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the maximum frame-rate the active App will attempt to maintain.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af1b267bb5cad7c3272dcdc9541dfe093"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>isFullScreen</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns whether the active App is in full-screen mode or not.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a07621a24f0d0b240fbf4e467df04366d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setFullScreen</strong> (bool fullScreen=true)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets whether the active App is in full-screen mode based on
+   <em>
+    fullScreen
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aedc49f198938fb4f0da65cfda2fb9494"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPixels</strong> (float s)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a scalar mapped from points to pixels for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad0f17de95a46df4e1f6545f1f1a6ea09"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">vec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPixels</strong> (vec2 s)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a vec2 mapped from points to pixels for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa61362776697f637f0286ab0c4cca72f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPixels</strong> (ivec2 s)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a ivec2 mapped from points to pixels for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac762ce1e231202d6b0fa525087c8a11a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPixels</strong> (const Area &amp;a)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   mapped from points to pixels for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4a7c6f5716bea18ac663eea197c8885b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPixels</strong> (const Rectf &amp;a)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a Rectf mapped from points to pixels for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a933264ecfd9cf6ca8ce9424502900dad"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPoints</strong> (float s)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a scalar mapped from pixels to points for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5eba0281e56588c6c9df5394cf70b567"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">vec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPoints</strong> (vec2 s)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a vec2 mapped from pixels to points for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a872328e4ebf966a4efb8fcdba0af9a8c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">ivec2</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPoints</strong> (ivec2 s)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a ivec2 mapped from pixels to points for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4c2e698e5a3290da8ab743d08849fd77"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPoints</strong> (const Area &amp;a)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   mapped from pixels to points for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac6ae91fbfc6d841ec21d4d9c0f626b37"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ac60c086a9aa8f5320c96da74cbf20f8b">Rectf</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>toPoints</strong> (const Rectf &amp;a)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a Rectf mapped from pixels to points for the current
+   <a href="classcinder_1_1app_1_1_window.html">
+    Window
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac9ac93a362ec7149815a860c0770b302"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">double</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getElapsedSeconds</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number seconds which have elapsed since the active App launched.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af76ee9ed608078551bf9e7bc1c1cb950"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getElapsedFrames</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number of animation frames which have elapsed since the active App launched.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a46a32d7c136a4946b464f6e65701ec46"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#aac2835d5c35983a70212a77c278feeba">DataSourceRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>loadResource</strong> (const fs::path &amp;resourcePath)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a
+   <a href="classcinder_1_1_data_source.html">
+    DataSource
+   </a>
+   to an application resource.
+   <em>
+    resourcePath
+   </em>
+   is defined on a per-platform basis.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    CinderResources
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2adb4a8655beb1e2df15ea2900603fb2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#aac2835d5c35983a70212a77c278feeba">DataSourceRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>loadAsset</strong> (const fs::path &amp;relativePath)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a DataSourceRef to the active App's's asset. Throws a
+   <a href="classcinder_1_1app_1_1_asset_load_exc.html">
+    AssetLoadExc
+   </a>
+   on failure.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a172adb53b949b130909739d61330f9e7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAssetPath</strong> (const fs::path &amp;relativePath)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a fs::path to the active App's asset. Returns an empty path on failure.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afefc7fb3a33191c56945b1535931ba82"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addAssetDirectory</strong> (const fs::path &amp;dirPath)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Adds an absolute path
+   <em>
+    dirPath
+   </em>
+   to the active App's list of directories which are searched for assets.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2b411898e892e349e5b7277a8e66d3ed"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const std::vector&lt; fs::path &gt; &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAssetDirectories</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a vector of directories that are searched when looking up an asset path.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adbcd2288c588c616e9c99a9d2fa1fba0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getAppPath</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the path to the active App on disk.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa7d13faa3ac54255fa610d06ffa7e16e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getOpenFilePath</strong> (const fs::path &amp;initialPath=fs::path(), std::vector&lt; std::string &gt; extensions=std::vector&lt; std::string &gt;())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Presents the user with a file-open dialog and returns the selected file path.
+  </p>
+  <p>
+   The dialog optionally begins at the path
+   <em>
+    initialPath
+   </em>
+   and can be limited to allow selection of files ending in the extensions enumerated in
+   <em>
+    extensions
+   </em>
+   . If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    the selected file path or an empty string if the user cancelled.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab3fa641f6fedaf05df5df09a4598cfb5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">fs::path</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getSaveFilePath</strong> (const fs::path &amp;initialPath=fs::path(), std::vector&lt; std::string &gt; extensions=std::vector&lt; std::string &gt;())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Presents the user with a file-save dialog and returns the selected file path.
+  </p>
+  <p>
+   The dialog optionally begins at the path
+   <em>
+    initialPath
+   </em>
+   and can be limited to allow selection of files ending in the extensions enumerated in
+   <em>
+    extensions
+   </em>
+   . If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    the selected file path or an empty string if the user cancelled.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a72f7349e12a6766075862ed953868abe"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::ostream &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>console</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW.
+  </p>
+  <p>
+   On Mac OS X all output is echoed either to the Debugger Console in XCode or the system console On
+   <a href="namespace_windows.html">
+    Windows
+   </a>
+   output is echoed using OutputDebugString, echoed to the Output window of the debugger or to a stream viewable with Dbgview
+  </p>
+  <div class="programlisting">
+   <pre><code class="language-cpp">console() &lt;&lt; "This line will be echoed" &lt;&lt; std::endl; 
+</code></pre>
+  </div>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adbceabeac84eb6a43f1f4bbcce29f64c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_timeline.html">Timeline</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>timeline</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a reference to the active App's
+   <a href="classcinder_1_1_timeline.html">
+    Timeline
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a60fd3454189e7d6f8fc697a77978094b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a7f62055e4cb811edb9868b32595a1d64">Surface</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>copyWindowSurface</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a copy of the current window's contents as a Surface8u.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a98849c9bd18d5a5c5910718ec297e279"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a7f62055e4cb811edb9868b32595a1d64">Surface</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>copyWindowSurface</strong> (const Area &amp;area)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a copy of the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    area
+   </em>
+   from the current window's contents as a Surface8u.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a16565c79ea1b892e783f5ba69070a272"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>restoreWindowContext</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Restores the current rendering context to be the App's window or the screen in full-screen mode. Generally this is only necessary if the app has display a dialog box or some other external window.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+            
+            <!-- functions -->
+            <a name="functions"></a>
+            <section>
+                <h2>Functions</h2>
+                <ul>
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a07e75f498743758e2c8a79dd6d7fc3ff"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::ostream &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator&lt;&lt;</strong> (std::ostream &amp;lhs, const InterfaceOrientation &amp;rhs)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Stream  InterfacefaceOrientation enum to std::ostream.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7f6f1b4a7dbb7d44d141daa1bc5c6857"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getOrientationDegrees</strong> (InterfaceOrientation orientation)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   returns the degrees rotation from Portrait for the provided
+   <em>
+    orientation
+   </em>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a70c28e5d3c88add5aa70782c6899d6ec"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::ostream &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator&lt;&lt;</strong> (std::ostream &amp;os, const FileDropEvent &amp;event)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7733cfd3230445d90fcfab2eecedec0e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">LRESULT <a href="_cinder_windows_fwd_8h.html#ad48a1ae177f90ad8a0ccc92481c664a7">CALLBACK</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>WndProc</strong> (HWND mWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="afa87fcce557e3c5f25da30aabcce6687"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">LRESULT <a href="_cinder_windows_fwd_8h.html#ad48a1ae177f90ad8a0ccc92481c664a7">CALLBACK</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BlankingWndProc</strong> (HWND mWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9ab147cf8e4e9c68ce51220589640e21"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">unsigned int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>prepMouseEventModifiers</strong> (WPARAM wParam)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a55c7705fae9716e7b1aa90fc304eae2d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>prepNativeKeyCode</strong> (WPARAM wParam)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa7dfe197bd1574f1f9fb269c576bdf72"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">WCHAR</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mapVirtualKey</strong> (WPARAM wParam)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab2f2c166b60e78d83bbb212b95ae476a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">unsigned int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>prepKeyEventModifiers</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aad64aef26e4deff420f14ccc2b561ad5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">typedef</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>HGLRC</strong> (__stdcall *PFNWGLCREATECONTEXTATTRIBSARB)(HDC hDC</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a46355c366492a1073377c859c26729d6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">unsigned int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>prepPointerEventModifiers</strong> (PointerEventArgs^args)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- variables -->
+            <a name="variables"></a>
+            <section>
+                <h2>Variables</h2>
+                <ul>
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3aaa20e3953abddfe255492f45082fba"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>__pad0__</strong> </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Signal used for retrieving the supported orientations.  BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8cfe450355148a0afdaeac62db7c0e5c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>__pad1__</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aff2c3dc9627aef00b2a970d528142847"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1app_1_1_collector_event.html">CollectorEvent</a>&lt; <a href="classcinder_1_1app_1_1_mouse_event.html">MouseEvent</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>EventSignalMouse</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae1acb063a16af8c09907622c23538074"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1app_1_1_collector_event.html">CollectorEvent</a>&lt; <a href="classcinder_1_1app_1_1_touch_event.html">TouchEvent</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>EventSignalTouch</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae6f74488fb7130c0de5c1bc4f87ab894"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>__pad2__</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a2a89dc3350bec38d30400454a3e69990"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1app_1_1_collector_event.html">CollectorEvent</a>&lt; <a href="classcinder_1_1app_1_1_key_event.html">KeyEvent</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>EventSignalKey</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a73fbc38f0cd8b63c675d7e2d87f59722"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>__pad3__</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5be7d1c92cfc36157186e36330e8ed98"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="structcinder_1_1app_1_1_collector_event.html">CollectorEvent</a>&lt; <a href="classcinder_1_1app_1_1_file_drop_event.html">FileDropEvent</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>EventSignalFileDrop</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="afb4ef5aa5770e3d273623448ffb9b265"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>__pad4__</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7ef0b0bcc3d5c313014e97e3f4c3f938"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::thread::id</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sPrimaryThreadId</strong> = std::this_thread::get_id()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9fc1399795df9f626572c0661e4fa927"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const wchar_t *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>WINDOWED_WIN_CLASS_NAME</strong> = TEXT("CinderWinClass")</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab602ce866f56e40bc109f7ea96b7afa7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const wchar_t *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BLANKING_WINDOW_CLASS_NAME</strong> = TEXT("CinderBlankingWindow")</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a04ecf7d946cb80146021e6281adc7498"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>TIMER_ID</strong> = 1</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8b4be73eff97f9d62184412ef5c2a46c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sMultisampleSupported</strong> = false</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="adad8aba92f227df5cd28fc7b28666ced"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sArbMultisampleFormat</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

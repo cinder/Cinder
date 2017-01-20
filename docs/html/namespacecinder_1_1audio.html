@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>cinder::audio</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="namespaces language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="active" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    <div class="row content-row content">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>cinder::audio</strong> Namespace Reference
+        </h1>
+        <div id="sub-nav">
+          	<ul>
+          		<li><a href="#namespaces">Namespaces</a></li>
+
+          		<li><a href="#classes">Classes</a></li>
+          		
+          		<li><a href="#typedefs">Typedefs</a></li>
+
+          		<li><a href="#enumerations">Enumerations</a></li>
+
+
+          		<li><a href="#functions">Functions</a></li>
+
+          		<li><a href="#variables">Variables</a></li>
+          	</ul>
+        </div>        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- namespaces -->
+            <a name="namespaces"></a>
+            <section>
+                <h2>Namespaces</h2>
+                <ul>
+                        <li class="row">
+                            <div class="definitionCol columns large-9">
+                                <a href="namespacecinder_1_1audio_1_1cocoa.html">cinder::audio::cocoa</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="definitionCol columns large-9">
+                                <a href="namespacecinder_1_1audio_1_1dsp.html">cinder::audio::dsp</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="definitionCol columns large-9">
+                                <a href="namespacecinder_1_1audio_1_1msw.html">cinder::audio::msw</a>
+                            </div>
+                        </li>
+                </ul>
+            </section>
+            <hr/>
+
+            <!-- classes -->
+            <a name="classes"></a>
+            <section>
+                <h2>Classes</h2>
+                <ul>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_add_node.html">cinder::audio::AddNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_audio_context_exc.html">cinder::audio::AudioContextExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_audio_device_exc.html">cinder::audio::AudioDeviceExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_audio_exc.html">cinder::audio::AudioExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_audio_file_exc.html">cinder::audio::AudioFileExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_audio_format_exc.html">cinder::audio::AudioFormatExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_buffer_base_t.html">cinder::audio::BufferBaseT</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_buffer_dynamic_t.html">cinder::audio::BufferDynamicT</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_buffer_interleaved_t.html">cinder::audio::BufferInterleavedT</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_buffer_player_node.html">cinder::audio::BufferPlayerNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_buffer_recorder_node.html">cinder::audio::BufferRecorderNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_buffer_spectral_t.html">cinder::audio::BufferSpectralT</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_buffer_t.html">cinder::audio::BufferT</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_callback_processor_node.html">cinder::audio::CallbackProcessorNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_channel_router_node.html">cinder::audio::ChannelRouterNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_context.html">cinder::audio::Context</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_delay_node.html">cinder::audio::DelayNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_device.html">cinder::audio::Device</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_device_manager.html">cinder::audio::DeviceManager</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_divide_node.html">cinder::audio::DivideNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_event.html">cinder::audio::Event</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_file_player_node.html">cinder::audio::FilePlayerNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_filter_band_pass_node.html">cinder::audio::FilterBandPassNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_filter_biquad_node.html">cinder::audio::FilterBiquadNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_filter_high_pass_node.html">cinder::audio::FilterHighPassNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_filter_low_pass_node.html">cinder::audio::FilterLowPassNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1audio_1_1_free_deleter.html">cinder::audio::FreeDeleter</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_gain_node.html">cinder::audio::GainNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_gen_node.html">cinder::audio::GenNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_gen_noise_node.html">cinder::audio::GenNoiseNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_gen_osc_node.html">cinder::audio::GenOscNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_gen_phasor_node.html">cinder::audio::GenPhasorNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_gen_pulse_node.html">cinder::audio::GenPulseNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_gen_sine_node.html">cinder::audio::GenSineNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_gen_table_node.html">cinder::audio::GenTableNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_gen_triangle_node.html">cinder::audio::GenTriangleNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_input_device_node.html">cinder::audio::InputDeviceNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_input_node.html">cinder::audio::InputNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_math_node.html">cinder::audio::MathNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_mixer_impl.html">cinder::audio::MixerImpl</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_monitor_node.html">cinder::audio::MonitorNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_monitor_spectral_node.html">cinder::audio::MonitorSpectralNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_multiply_node.html">cinder::audio::MultiplyNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_node.html">cinder::audio::Node</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_node_auto_pullable.html">cinder::audio::NodeAutoPullable</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_node_cycle_exc.html">cinder::audio::NodeCycleExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_output_device_node.html">cinder::audio::OutputDeviceNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_output_node.html">cinder::audio::OutputNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_pan2d_node.html">cinder::audio::Pan2dNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_param.html">cinder::audio::Param</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_sample_player_node.html">cinder::audio::SamplePlayerNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_sample_recorder_node.html">cinder::audio::SampleRecorderNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1audio_1_1_scoped_enable_context.html">cinder::audio::ScopedEnableContext</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1audio_1_1_scoped_enable_node.html">cinder::audio::ScopedEnableNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_source.html">cinder::audio::Source</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_source_file.html">cinder::audio::SourceFile</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_source_file_ogg_vorbis.html">cinder::audio::SourceFileOggVorbis</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_subtract_node.html">cinder::audio::SubtractNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_target_file.html">cinder::audio::TargetFile</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_voice.html">cinder::audio::Voice</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_voice_callback_processor.html">cinder::audio::VoiceCallbackProcessor</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_voice_sample_player_node.html">cinder::audio::VoiceSamplePlayerNode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_wave_table.html">cinder::audio::WaveTable</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1_wave_table2d.html">cinder::audio::WaveTable2d</a>
+                            </div>
+                        </li>
+                </ul>
+            </section>
+            <hr/>
+
+            <!-- typedefs -->
+            <a name="typedefs"></a>
+            <section>
+                <h2>Typedefs</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a80c0774f2f1099049255ba4c388076dc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::unique_ptr&lt; float, <a href="structcinder_1_1audio_1_1_free_deleter.html">FreeDeleter</a>&lt; float &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>AlignedArrayPtr</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a1f5642001ebb1500b739ae0c10cd6eab"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::unique_ptr&lt; double, <a href="structcinder_1_1audio_1_1_free_deleter.html">FreeDeleter</a>&lt; double &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>AlignedArrayPtrd</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abf7875e0dd229073cb02276e29bf0cbd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_buffer_t.html">BufferT</a>&lt; float &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Buffer</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab3ccc22673855809ea74b6b899d21ef0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_buffer_interleaved_t.html">BufferInterleavedT</a>&lt; float &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferInterleaved</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="adaee4a2aba6dac7ef03cad240f917414"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_buffer_spectral_t.html">BufferSpectralT</a>&lt; float &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferSpectral</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a818a04db7cb98124c21d5f6927aa2685"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_buffer_dynamic_t.html">BufferDynamicT</a>&lt; <a href="namespacecinder_1_1audio.html#abf7875e0dd229073cb02276e29bf0cbd">Buffer</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferDynamic</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad8d4fa1702c7d38ebca5f5fc1f5574de"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_buffer_dynamic_t.html">BufferDynamicT</a>&lt; <a href="namespacecinder_1_1audio.html#ab3ccc22673855809ea74b6b899d21ef0">BufferInterleaved</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferDynamicInterleaved</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7b45a54e86918250f6ef698f3695498c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_buffer_dynamic_t.html">BufferDynamicT</a>&lt; <a href="namespacecinder_1_1audio.html#adaee4a2aba6dac7ef03cad240f917414">BufferSpectral</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferDynamicSpectral</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a73567e7f124adb4274a2446503e02405"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="namespacecinder_1_1audio.html#abf7875e0dd229073cb02276e29bf0cbd">Buffer</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aae3a9fdb50b9bacab367dd59ec093ab9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="namespacecinder_1_1audio.html#ab3ccc22673855809ea74b6b899d21ef0">BufferInterleaved</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferInterleavedRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a886efabc255a42c3da6feb1ae98f6374"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="namespacecinder_1_1audio.html#adaee4a2aba6dac7ef03cad240f917414">BufferSpectral</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferSpectralRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af0ea53ebef06b8f84b0d2a948ff564d5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="namespacecinder_1_1audio.html#a818a04db7cb98124c21d5f6927aa2685">BufferDynamic</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferDynamicRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa187e88e7a7696c2138e8aae4d9ee8bf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="namespacecinder_1_1audio.html#ad8d4fa1702c7d38ebca5f5fc1f5574de">BufferDynamicInterleaved</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferDynamicInterleavedRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aeb854d4b0357d28a48e5b5ea4fd9f44c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="namespacecinder_1_1audio.html#a7b45a54e86918250f6ef698f3695498c">BufferDynamicSpectral</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferDynamicSpectralRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae556dd7c04139b9dc9f5075b789e5ffb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_channel_router_node.html">ChannelRouterNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ChannelRouterNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab52418041e1cb022e98246dee42746d5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_delay_node.html">DelayNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>DelayNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a323c9aa03e55da3dcd3649ddf77009c7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_device.html">Device</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>DeviceRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af67a31938ed0bc6e11048a39fc968705"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_filter_low_pass_node.html">FilterLowPassNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FilterLowPassNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac9a0e0a656844ed170146f9b4fe9b8f5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_filter_high_pass_node.html">FilterHighPassNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FilterHighPassNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a58af808445c768b6344bdd962cb1cbf0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_filter_band_pass_node.html">FilterBandPassNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FilterBandPassNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae39423e322f8d660875f2e7df29c42cc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_gain_node.html">GainNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>GainNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af2041ddd513f0637e0ff9205a4396c23"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_gen_node.html">GenNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>GenNodeRef</strong> </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Typedef for a shared_ptr to the base
+   <a href="classcinder_1_1audio_1_1_gen_node.html">
+    GenNode
+   </a>
+   . If all you need to set on the
+   <a href="classcinder_1_1audio_1_1_gen_node.html">
+    GenNode
+   </a>
+   is the frequency, you can reference the
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   with this.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a43d8c4085662927f304bb2505561948c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_gen_noise_node.html">GenNoiseNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>GenNoiseNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a2a341cdbe0e5e7754432bcc816d00e2f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_gen_phasor_node.html">GenPhasorNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>GenPhasorNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad0af61a3f62644049865b9345684e6ce"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_gen_sine_node.html">GenSineNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>GenSineNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a52c75feeea5c47f5afa29a3e2e359984"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_gen_triangle_node.html">GenTriangleNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>GenTriangleNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a382fba68307bd274c96ea0379849b26f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_gen_table_node.html">GenTableNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>GenTableNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abb0027fb86e6850dce9b9daa41ad2c58"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_gen_osc_node.html">GenOscNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>GenOscNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aac56ded762870a27b3cca9411d93565c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_gen_pulse_node.html">GenPulseNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>GenPulseNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a94621308338aadae44d85df516000b60"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_input_node.html">InputNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>InputNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a6c77fa5265c8d4d34321aecdd80c6a75"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_input_device_node.html">InputDeviceNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>InputDeviceNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aefbab72d0bbc5399ffbe4c94607a3865"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_callback_processor_node.html">CallbackProcessorNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>CallbackProcessorNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a923d5102150356378f606d108e84606f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::function&lt; void(<a href="namespacecinder_1_1audio.html#abf7875e0dd229073cb02276e29bf0cbd">Buffer</a> *, size_t)&gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>CallbackProcessorFn</strong> </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Callback used to allow simple audio processing without subclassing a
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   . First parameter is the
+   <a href="classcinder_1_1_buffer.html">
+    Buffer
+   </a>
+   to which to write samples, second parameter is the samplerate.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a23fabbf8b16489fa8e1b99a5b03673b7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_monitor_node.html">MonitorNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>MonitorNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aaadb07d0a247c346a7f2b916c770962d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_monitor_spectral_node.html">MonitorSpectralNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>MonitorSpectralNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa3329e4ea17975566898242b2ebeccb2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_context.html">Context</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ContextRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a446fde4facb673f7db564439d63adda6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_node.html">Node</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>NodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a45aa00699081d1ba7ade8bc5d5c6ebe2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_math_node.html">MathNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>MathNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a600403f548426a2d933e632ce4a27a70"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_add_node.html">AddNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>AddNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae9a4bd0ca390922936881096ee3aaddf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_subtract_node.html">SubtractNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SubtractNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5d43659a8a602463c5d87652a88356de"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_multiply_node.html">MultiplyNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>MultiplyNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0e3d2d256f4b529c4b001df2911469e4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_divide_node.html">DivideNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>DivideNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a79f7e4bfee0c9c5024b6fcce466e888c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_output_node.html">OutputNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>OutputNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac730cc4775cdfafd50e9552f4dd3f36b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_output_device_node.html">OutputDeviceNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>OutputDeviceNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a2adb12ad64f6737ec50e366826b8d0c5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_pan2d_node.html">Pan2dNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Pan2dNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a03e3eb8da93c3bb4842f30c29a7dd677"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_event.html">Event</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>EventRef</strong> </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   A Reference to
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   's returned by the ramping methods.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    applyRamp()
+   </p>
+  </dl>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    appendRamp()
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a12b0e76a423f522b83acd865d1363ce9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::function&lt; void(float *, size_t, double, double, float, float)&gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RampFn</strong> </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Ramping function that determines the curvature of a ramp.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9dc49faf9572b5d24db8b631f67ebd59"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_sample_player_node.html">SamplePlayerNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SamplePlayerNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="acd998b592ffca365532503e40665f9e3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_buffer_player_node.html">BufferPlayerNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferPlayerNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aef65243d64cb4cabc6edf8e09d55e30a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_file_player_node.html">FilePlayerNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FilePlayerNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5de2ebc56b0ac8b4072a3feb735f5c72"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_sample_recorder_node.html">SampleRecorderNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SampleRecorderNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab9a8989d11876f54becc32339d7dcbff"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_buffer_recorder_node.html">BufferRecorderNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>BufferRecorderNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab7d4b1fe91a68a0c2c940dd7c23ae02a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_source.html">Source</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SourceRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abe5b8ef165f01d450f1dfd17f186c483"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_source_file.html">SourceFile</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SourceFileRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a497c7bd0959c33cd38dc2f50ed2261fc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_target_file.html">TargetFile</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>TargetFileRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a059ce7d2537d13a63e7af5d035cab4c1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_voice.html">Voice</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>VoiceRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a072cbd393ea0e81dba105b4d00bd839f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_voice_sample_player_node.html">VoiceSamplePlayerNode</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>VoiceSamplePlayerNodeRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a30d2d7103e23487483921f9c6ccf53d9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_wave_table.html">WaveTable</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>WaveTableRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a466db0e9de6fac7eebaded3cfe8192b0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1audio_1_1_wave_table2d.html">WaveTable2d</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>WaveTable2dRef</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- enumerations -->
+            <a name="enumerations"></a>
+            <section>
+                <h2>Enumerations</h2>
+                <ul>
+                    <li class="row expandable enumDef">
+                        <a class="anchor" name="a17dbbe02a5b638c6362ce63bb3b7789a"></a>
+                        <div class="definitionCol columns large-3"></div>
+                        <div class="definitionCol columns large-9">
+                            <div class="definition"><strong>SampleType</strong></div>
+                            <html><head></head><body><div class="description content">
+ <p>
+ </p>
+ <div class="description content">
+  <p>
+   Identifiers sample types. Primarily used for encoding audio at different bitrates.
+  </p>
+ </div>
+ <p>
+ </p>
+ {
+ <ul>
+  <li>
+   INT_16
+  </li>
+  <li>
+   INT_24
+  </li>
+  <li>
+   FLOAT_32
+  </li>
+ </ul>
+ }
+</div>
+</body></html>
+                        </div>
+                    </li>                    <li class="row expandable enumDef">
+                        <a class="anchor" name="a5d477a7e47458e797a77640836aef1d6"></a>
+                        <div class="definitionCol columns large-3"></div>
+                        <div class="definitionCol columns large-9">
+                            <div class="definition"><strong>WaveformType</strong></div>
+                            <html><head></head><body><div class="description content">
+ <p>
+ </p>
+ <div class="description content">
+  <p>
+   Identifiers for the classic waveform types.
+  </p>
+ </div>
+ <p>
+ </p>
+ {
+ <ul>
+  <li>
+   SINE
+  </li>
+  <li>
+   SQUARE
+  </li>
+  <li>
+   SAWTOOTH
+  </li>
+  <li>
+   TRIANGLE
+  </li>
+ </ul>
+ }
+</div>
+</body></html>
+                        </div>
+                    </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- free functions -->
+            
+            <!-- functions -->
+            <a name="functions"></a>
+            <section>
+                <h2>Functions</h2>
+                <ul>
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6835d4c41ff57c1144dd086057269938"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::unique_ptr&lt; T, <a href="structcinder_1_1audio_1_1_free_deleter.html">FreeDeleter</a>&lt; T &gt; &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>makeAlignedArray</strong> (size_t size, size_t alignment=16)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an array of
+   <em>
+    size
+   </em>
+   elements of type
+   <em>
+    T
+   </em>
+   , aligned by
+   <em>
+    alignment
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ada4e39ea49856a76d850f5649485e5b4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="namespacecinder_1_1audio.html#ae556dd7c04139b9dc9f5075b789e5ffb">ChannelRouterNodeRef</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator&gt;&gt;</strong> (const NodeRef &amp;input, const ChannelRouterNode::RouteConnector &amp;route)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enable routing connection syntax:
+  </p>
+  <p>
+  </p>
+  <div class="programlisting">
+   <pre><code class="language-cpp">input &gt;&gt; output-&gt;route( inputChannelIndex, outputChannelIndex, numChannels ); 
+</code></pre>
+  </div>
+  .
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    the output
+    <a href="classcinder_1_1audio_1_1_channel_router_node.html">
+     ChannelRouterNode
+    </a>
+    after connection is made.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a664442669c0b5d4fbb2aaab4ba215a52"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_context.html">Context</a> *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>master</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the master
+   <em>
+    <a href="classcinder_1_1audio_1_1_context.html">
+     Context
+    </a>
+   </em>
+   that manages hardware I/O and real-time processing, which is platform specific. If none is available, returns
+   <em>
+    null
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1887045653dd5f14d16cde28433d6608"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const <a href="namespacecinder_1_1audio.html#a446fde4facb673f7db564439d63adda6">NodeRef</a> &amp;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>operator&gt;&gt;</strong> (const NodeRef &amp;input, const NodeRef &amp;output)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Enable connection syntax:
+   <code>
+    input &gt;&gt; output
+   </code>
+   , which is equivelant to
+   <code>
+    input-&gt;connect( output )
+   </code>
+   . Enables chaining.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    the connected
+    <em>
+     output
+    </em>
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a330a618458625f87f1bd642a1685e16e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>rampLinear</strong> (float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Array-based linear ramping function.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9eb62355a20d4735cdefbe428f44a6c9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>rampInQuad</strong> (float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Array-based quadradic (t^2) ease-in ramping function.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afe0763f32ecb73c573bec48303495a85"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>rampOutQuad</strong> (float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Array-based quadradic (t^2) ease-out ramping function.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac2e5c9ebd3ff830bcebaef49326d9dab"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#abe5b8ef165f01d450f1dfd17f186c483">SourceFileRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>load</strong> (const DataSourceRef &amp;dataSource, size_t sampleRate=0)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Convenience method for loading a
+   <a href="classcinder_1_1audio_1_1_source_file.html">
+    SourceFile
+   </a>
+   from
+   <em>
+    dataSource
+   </em>
+   .
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    SourceFileRef.
+   </p>
+  </dl>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    <a href="classcinder_1_1audio_1_1_source_file.html#ab2894e2e137fbbbe63729377598f3fb7">
+     SourceFile::create()
+    </a>
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a9e1425cdbe51e164f99627dba87acdf2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>linearToDecibel</strong> (float gainLinear)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Scale
+   <em>
+    gainLinear
+   </em>
+   from linear (0-1) to decibel (0-100) scale.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7db5ed624c2481cc887984e11ce620c9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>linearToDecibel</strong> (float *array, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Scale
+   <em>
+    array
+   </em>
+   of length
+   <em>
+    length
+   </em>
+   from linear (0-1) to decibel (0-100) scale.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a44d0b3d3dd70350f2950ce44e74f8579"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>decibelToLinear</strong> (float gainDecibels)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Scale
+   <em>
+    gainLinear
+   </em>
+   from decibel (0-100) to linear (0-1) scale.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa3db7f11cbe90a8b0990774a47dd821d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>decibelToLinear</strong> (float *array, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Scale
+   <em>
+    array
+   </em>
+   of length
+   <em>
+    length
+   </em>
+   from decibel (0-100) to linear (0-1) scale.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2b7bdccddf3828402df067183c1417cb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>freqToMidi</strong> (float freq)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Scale
+   <em>
+    freq
+   </em>
+   from frequency (hertz) to MIDI note values, so as one can refer to pitches using the equal temperament scale.
+  </p>
+  <p>
+   For example, 'middle C' equals 261.6 hertz and has a midi value of 60. Adapted from Pure Data's ftom function.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4fb98f3eea7e90118ababf37e4162de1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>midiToFreq</strong> (float midi)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Scale
+   <em>
+    midi
+   </em>
+   from MIDI note values to frequency (hertz). Adapted from Pure Data's mtof function.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    <a href="namespacecinder_1_1audio.html#a2b7bdccddf3828402df067183c1417cb">
+     freqToMidi()
+    </a>
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4bd53b7ed386ca586e6c281846b516a3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">uint64_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>timeToFrame</strong> (double timeSeconds, double sampleRate)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Convert
+   <em>
+    timeSeconds
+   </em>
+   to frames running at
+   <em>
+    sampleRate
+   </em>
+   , rounding to the nearest integral frame.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7490118158b45301663a020d74171b6a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>thresholdBuffer</strong> (const Buffer &amp;buffer, float threshold, size_t *recordFrame=nullptr)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Checks if the absolute value of any sample in
+   <em>
+    buffer
+   </em>
+   is over
+   <em>
+    threshold
+   </em>
+   . Optionally provide
+   <em>
+    recordFrame
+   </em>
+   to record the frame index.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    true if one is found, false otherwise.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- variables -->
+            <a name="variables"></a>
+            <section>
+                <h2>Variables</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="ad59e6bba6505f7073831b03793462f6e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sIsRegisteredForCleanup</strong> = false</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad100a625cdad8b509f440b0a51617118"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>kGainNegative100Decibels</strong> = 0.00001f</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af1c256801d8ea0314c8f07fd4f29c593"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>kGainNegative100DecibelsInverse</strong> = 1.0f / kGainNegative100Decibels</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

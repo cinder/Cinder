@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>cinder::cairo</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="namespaces language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="active" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    <div class="row content-row content">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>cinder::cairo</strong> Namespace Reference
+        </h1>
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#classes">Classes</a></li>
+          		
+
+
+
+
+          		<li><a href="#variables">Variables</a></li>
+          	</ul>
+        </div>        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- namespaces -->
+
+            <!-- classes -->
+            <a name="classes"></a>
+            <section>
+                <h2>Classes</h2>
+                <ul>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_context.html">cinder::cairo::Context</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_font_extents.html">cinder::cairo::FontExtents</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_font_face.html">cinder::cairo::FontFace</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_font_options.html">cinder::cairo::FontOptions</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_gradient.html">cinder::cairo::Gradient</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_gradient_linear.html">cinder::cairo::GradientLinear</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_gradient_radial.html">cinder::cairo::GradientRadial</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_matrix.html">cinder::cairo::Matrix</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_pattern.html">cinder::cairo::Pattern</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_pattern_solid.html">cinder::cairo::PatternSolid</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_pattern_surface.html">cinder::cairo::PatternSurface</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_scaled_font.html">cinder::cairo::ScaledFont</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_surface_base.html">cinder::cairo::SurfaceBase</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_surface_eps.html">cinder::cairo::SurfaceEps</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_surface_image.html">cinder::cairo::SurfaceImage</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_surface_pdf.html">cinder::cairo::SurfacePdf</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_surface_ps.html">cinder::cairo::SurfacePs</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_surface_svg.html">cinder::cairo::SurfaceSvg</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1cairo_1_1_text_extents.html">cinder::cairo::TextExtents</a>
+                            </div>
+                        </li>
+                </ul>
+            </section>
+            <hr/>
+
+            <!-- typedefs -->
+
+            <!-- enumerations -->
+
+            <!-- free functions -->
+            
+            <!-- functions -->
+
+            <!-- variables -->
+            <a name="variables"></a>
+            <section>
+                <h2>Variables</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="abdc5482a487cbbbb8cf6171c9e855a02"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FONT_SLANT_NORMAL</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a777d874f26546366d01a3d62257e02ea"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FONT_SLANT_ITALIC</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab728fc4df9299ae483750239fd0163f1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FONT_SLANT_OBLIQUE</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="afa59dc7cfdc862d26683c0863b0baf6b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FONT_WEIGHT_NORMAL</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a646859120d205ad5b5183f500f6f082f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FONT_WEIGHT_BOLD</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="adbcff11a1e9ea8705f109ded596324ef"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FILL_RULE_WINDING</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5b1e7fba33268193f66cfbfffaf8b662"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>FILL_RULE_EVEN_ODD</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abd3ac112e204971f0cca6f89a04a1cd7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>EXTEND_NONE</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8c121e8134257d3b0416b6e2074d8af9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>EXTEND_REPEAT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a003f7788db6ae336812022fafee0d835"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>EXTEND_REFLECT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7cfb70999ff226ca7b50e1663f438c69"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>EXTEND_PAD</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a1fd9aa9994a72f90fe0f883268b9848c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>LINE_CAP_BUTT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a408e532b0d2996f9b0cb7bfbc2b30027"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>LINE_CAP_ROUND</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8d49db52e746a04c860a5e7eac0dce83"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>LINE_CAP_SQUARE</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a77097e346a634e7e879df7cf9aae2a36"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>LINE_JOIN_MITER</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a6153ee12400aedf11a98cbc028de9e60"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>LINE_JOIN_ROUND</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aef04eefd43e74f5f7490261d9dfefaf2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>LINE_JOIN_BEVEL</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af77e31003c52ba01476113446aa08476"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>HINT_METRICS_DEFAULT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="acae5b5ce897c643bff566a6701062d90"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>HINT_METRICS_OFF</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a2430aa406d76a0a87ad02a758e431ce2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>HINT_METRICS_ON</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac10273907571a15827993a64b78ac6c0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>HINT_STYLE_DEFAULT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a22051bbe57af52702b0007df633b01e5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>HINT_STYLE_NONE</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a780fe5806c77696ab572dcbe265f6d25"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>HINT_STYLE_SLIGHT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="add2269f536f324e2b38e7447dfa48a96"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>HINT_STYLE_MEDIUM</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7222665f36d7001cf7cb51093f46e237"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>HINT_STYLE_FULL</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a2d9ec33474a237f6e95f77a1882dbbc2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ANTIALIAS_DEFAULT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abdebf02f82e3b0e54bec5c7a2e52df80"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ANTIALIAS_NONE</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab382e3fcc193c3cb73f855fa52f0307a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ANTIALIAS_GRAY</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5af0a0707b0801af1c3c04e08d6cec9a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>ANTIALIAS_SUBPIXEL</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aeaf3f36fdd068843c2cd2d744e985b56"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SUBPIXEL_ORDER_DEFAULT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a33d7727f02b8abcc323477206af1015d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SUBPIXEL_ORDER_RGB</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae79e642c1455c2498744a44971e5abce"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SUBPIXEL_ORDER_BGR</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a7140086a09bab1d7de5d19d298217958"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SUBPIXEL_ORDER_VRGB</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9a467a176d65611170e9fc5edd792cb4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>SUBPIXEL_ORDER_VBGR</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9096e07bd965a8435ddc080e72d77bdf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_SUCCESS</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aac5645eada99d2fbab629eb37d21ebcd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_NO_AVAILABLE_MEMORY</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa7b321224f0b96fcc3987ede0ac3126a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_RESTORE</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af93f5f5238f23d2ed918b4857b95ca28"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_POP_GROUP</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5e3f4b8de853d2129af5a08c5ebea103"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_NO_CURRENT_POINT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a940808fcc89750b237197291480f038a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_MATRIX</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0b7820f7702b39daef2741e4b9dc99de"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_STATUS</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a71480046fc037f7937309a8d7f0aae98"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_NULL_POINTER</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a6de0d16441a2e8ef8008b94d32419ab6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_STRING</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="adc652a3425736224a049e95cb3e7bddd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_PATH_DATA</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abbbc62d0cefae4ad20b5331fe2e4b1fa"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_READ_ERROR</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a98795e494bd191777188203077c72847"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_WRITE_ERROR</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a26119e583d8d96e7dd90e9f3fc3b3743"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_SURFACE_FINISHED</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae49f28b0965a5b8a627d979d76a19ffc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_SURFACE_TYPE_MISMATCH</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aba0ea73e0fba2ed3f5da81da399de140"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_PATTERN_TYPE_MISMATCH</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5135c48e73916f8e4bfe9b84330a2408"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_CONTENT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a528166fd448c575ce32c35a22c1a47bd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_FORMAT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa51a1681697d1c40c1ba33677d5f1e42"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_VISUAL</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ade1a9f05d6c6a6b9cc66ea51d5aafdec"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_FILE_NOT_FOUND</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5bdb91f48ee3530e66a0bdbc0e6d83dc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_DASH</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a986e9351b092b6aec0fb50b11ce1bb7c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_DSC_COMMENT</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab1d74509677b7b9591fc36a569de13c5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_INVALID_INDEX</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a3a296962a06d79cd728864f9595ae0c4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>STATUS_CLIP_NOT_REPRESENTABLE</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

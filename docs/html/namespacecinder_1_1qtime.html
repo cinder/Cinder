@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>cinder::qtime</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="namespaces language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="active" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    <div class="row content-row content">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>cinder::qtime</strong> Namespace Reference
+        </h1>
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#classes">Classes</a></li>
+          		
+          		<li><a href="#typedefs">Typedefs</a></li>
+
+
+
+          		<li><a href="#functions">Functions</a></li>
+
+          	</ul>
+        </div>        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- namespaces -->
+
+            <!-- classes -->
+            <a name="classes"></a>
+            <section>
+                <h2>Classes</h2>
+                <ul>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_avf_error_loading_exc.html">cinder::qtime::AvfErrorLoadingExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_avf_exc.html">cinder::qtime::AvfExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_avf_file_invalid_exc.html">cinder::qtime::AvfFileInvalidExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_avf_path_invalid_exc.html">cinder::qtime::AvfPathInvalidExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_avf_texture_error_exc.html">cinder::qtime::AvfTextureErrorExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_avf_url_invalid_exc.html">cinder::qtime::AvfUrlInvalidExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_base.html">cinder::qtime::MovieBase</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_gl.html">cinder::qtime::MovieGl</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_loader.html">cinder::qtime::MovieLoader</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_responder.html">cinder::qtime::MovieResponder</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_surface.html">cinder::qtime::MovieSurface</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_writer.html">cinder::qtime::MovieWriter</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_writer_exc.html">cinder::qtime::MovieWriterExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_writer_exc_already_finished.html">cinder::qtime::MovieWriterExcAlreadyFinished</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_writer_exc_frame_encode.html">cinder::qtime::MovieWriterExcFrameEncode</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_movie_writer_exc_invalid_path.html">cinder::qtime::MovieWriterExcInvalidPath</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_quick_time_error_loading_exc.html">cinder::qtime::QuickTimeErrorLoadingExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_quick_time_exc.html">cinder::qtime::QuickTimeExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_quick_time_exc_fft.html">cinder::qtime::QuickTimeExcFft</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_quick_time_exc_url_invalid.html">cinder::qtime::QuickTimeExcUrlInvalid</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_quick_time_file_invalid_exc.html">cinder::qtime::QuickTimeFileInvalidExc</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1qtime_1_1_quick_time_path_invalid_exc.html">cinder::qtime::QuickTimePathInvalidExc</a>
+                            </div>
+                        </li>
+                </ul>
+            </section>
+            <hr/>
+
+            <!-- typedefs -->
+            <a name="typedefs"></a>
+            <section>
+                <h2>Typedefs</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="aa7b8abc1c1726ab6ee69a93d8b7a7a7d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1qtime_1_1_movie_writer.html">MovieWriter</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>MovieWriterRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0618cf9a2d3cbe0f82fc9813fc6774fa"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1qtime_1_1_movie_gl.html">MovieGl</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>MovieGlRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="afb15ee3777b1c424fbdff94d980994e6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; <a href="classcinder_1_1qtime_1_1_movie_loader.html">MovieLoader</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>MovieLoaderRef</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="afe1712831b5576b8a11d5f0a453567dc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::shared_ptr&lt; class <a href="classcinder_1_1qtime_1_1_movie_surface.html">MovieSurface</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>MovieSurfaceRef</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- enumerations -->
+
+            <!-- free functions -->
+            
+            <!-- functions -->
+            <a name="functions"></a>
+            <section>
+                <h2>Functions</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a739fad0dd49fcc2a300d077f25aa6421"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>floatToFixed</strong> (float fl)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4a8216e6a310f79e904a08818d846eac"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>startQuickTime</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Initializes QuickTime system-wide. Safe to call multiple times.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae9b4d6b136b59de1ae3e1d82a4bf4d13"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">int32_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getQuickTimeVersion</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns 0 if QuickTime is not available, otherwise an integer encoding of the QuickTime version. QuickTime 6.4 returns
+   <code>
+    0x06408000
+   </code>
+   , (
+   <code>
+    0x00008000
+   </code>
+   suffix denotes a shipping release of QuickTime)
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a683d1761480a9d2399b1f8c9865b46ef"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::string</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getQuickTimeVersionString</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an empty string if QuickTime is not available, otherwise a human readable string of the QuickTime version. QuickTime 6.4 returns
+   <code>
+    "6.4"
+   </code>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab497ea551ed6a6163489fffa92b2e660"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>quickTimeTask</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Gives QuickTime an opportunity to update all playing movies by calling
+   <code>
+    ::MoviesTask
+   </code>
+   . Generally only necessary when playing audio-only movies on
+   <a href="namespace_windows.html">
+    Windows
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- variables -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

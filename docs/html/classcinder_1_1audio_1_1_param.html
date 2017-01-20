@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>audio::Param</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="classes language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="active" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content-row">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+
+            <strong>Param</strong> 
+            Class Reference
+        </h1>
+        
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+
+          		<li><a href="#protected-functions">Protected Member Functions</a></li>
+
+          		<li><a href="#protected-attrs">Protected Attributes</a></li>
+
+          	</ul>
+        </div>                    
+        <!-- description and side bar -->
+        <div class="row" id="description">
+          <div class="prose columns large-9" id="description-prose">
+            <html><head></head><body><div class="description content">
+ <p>
+  Allows an audio parameter to be controlled over time with sample accurate curves.
+ </p>
+ <p>
+  The
+  <a href="classcinder_1_1audio_1_1_param.html">
+   Param
+  </a>
+  class enables expressive control over variables that control
+  <a href="classcinder_1_1audio_1_1_node.html">
+   audio::Node
+  </a>
+  's with a Timeline-esque API. It supports appending 'ramps' (audio animations) and maintains these in an internal timeline that is evaluated from the audio thread. You can also set a
+  <a href="classcinder_1_1audio_1_1_node.html">
+   Node
+  </a>
+  as the 'processor' with
+  <a href="classcinder_1_1audio_1_1_param.html#a6a7425c52f92a5ef8db5150860f6997b">
+   Param::setProcessor()
+  </a>
+  , enabling you to control it with an arbitrary signal.
+ </p>
+</div>
+</body></html>
+            
+          </div>
+
+          <div class="side columns large-3">
+                <div class="row side">
+                    <label>#include</label>
+                    <div class="content">
+                      <a href="http://github.com/cinder/Cinder/tree/master/include/cinder/audio/Param.h">Param.h</a>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Typedefs:</label>
+                        <li><a href="namespacecinder_1_1audio.html#a03e3eb8da93c3bb4842f30c29a7dd677">EventRef</a></li>
+                        <li><a href="namespacecinder_1_1audio.html#a12b0e76a423f522b83acd865d1363ce9">RampFn</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Classes:</label>
+                        <li><a href="structcinder_1_1audio_1_1_param_1_1_options.html">Options</a></li>
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="row side expandable">
+                    <div class="content">
+                      <ul>
+                        <label>Related Links:</label>
+                        <li><a href="guides/audio/index.html">Audio in Cinder</a></li>
+                      </ul>
+                    </div>
+                </div>
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- public types -->
+
+            <!-- enumerations -->
+
+            <!-- public member functions -->
+            <a name="public-member-functions"></a>
+            <section>
+                <h2>Public Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2379200ef2e02552416dd9e1ef93a532"></a>
+                                
+                            <div class="returnCol columns large-3">
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>Param</strong> (Node *parentNode, float initialValue=0)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Constructs a
+   <a href="classcinder_1_1audio_1_1_param.html">
+    Param
+   </a>
+   with a pointer (weak reference) to the owning parent
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   and an optional
+   <em>
+    initialValue
+   </em>
+   (default = 0).
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afd740f2caeed3fd5edd976d3d07e19d6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setValue</strong> (float value)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets the value of the
+   <a href="classcinder_1_1audio_1_1_param.html">
+    Param
+   </a>
+   , blowing away any scheduled
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   's or processing
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   .
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Must be called from a non-audio thread.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af1815d8f61e2912f992f1ce523721e6c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getValue</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the current value of the
+   <a href="classcinder_1_1audio_1_1_param.html">
+    Param
+   </a>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adf43e45c880a8ad9c7e4b8969051fe1d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">const float *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getValueArray</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns an array of values, time varying if
+   <code>
+    &lt;a href="classcinder_1_1audio_1_1_event.html"&gt;
+     Event
+    &lt;/a&gt;
+   </code>
+   s were processed, or filled with the a constant value if there were no
+   <code>
+    &lt;a href="classcinder_1_1audio_1_1_event.html"&gt;
+     Event
+    &lt;/a&gt;
+   </code>
+   s this block.
+  </p>
+  <p>
+   Returns a pointer to the buffer used when evaluating a
+   <a href="classcinder_1_1audio_1_1_param.html">
+    Param
+   </a>
+   that is varying over the current processing block, of equal size to the owning
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   's frames per block.
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    If not varying (
+    <a href="classcinder_1_1audio_1_1_param.html#ace4a768a6aab47c9e0ebd8a2bcdcdedb">
+     eval()
+    </a>
+    returns false), the returned pointer will be invalid.
+   </p>
+  </dl>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Must call
+    <a href="classcinder_1_1audio_1_1_param.html#ace4a768a6aab47c9e0ebd8a2bcdcdedb">
+     eval()
+    </a>
+    once per block before using this method.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a725be2d0b221dc2f4834dadd2a42488d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#a03e3eb8da93c3bb4842f30c29a7dd677">EventRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>applyRamp</strong> (float valueEnd, double rampSeconds, const Options &amp;options=Options())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Apply a ramp
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   from the current value to
+   <em>
+    valueEnd
+   </em>
+   over
+   <em>
+    rampSeconds
+   </em>
+   , replacing any existing Events when this one begins. Any existing processing
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   is disconnected.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    <a href="structcinder_1_1audio_1_1_param_1_1_options.html">
+     Options
+    </a>
+    .
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a06d281492003d98b0575f189b7a95e33"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#a03e3eb8da93c3bb4842f30c29a7dd677">EventRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>applyRamp</strong> (float valueBegin, float valueEnd, double rampSeconds, const Options &amp;options=Options())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Apply a ramp
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   from t
+   <em>
+    valueBegin
+   </em>
+   to
+   <em>
+    valueEnd
+   </em>
+   over
+   <em>
+    rampSeconds
+   </em>
+   , replacing any existing Events when this one begins. Any existing processing
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   is disconnected.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section see">
+    See Also
+   </dt>
+   <p>
+    <a href="structcinder_1_1audio_1_1_param_1_1_options.html">
+     Options
+    </a>
+    .
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0ca06b373756ed5fe72e02966b0da2a2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#a03e3eb8da93c3bb4842f30c29a7dd677">EventRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>appendRamp</strong> (float valueEnd, double rampSeconds, const Options &amp;options=Options())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Appends a ramp
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   onto the end of the last scheduled
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   (or the current time) to
+   <em>
+    valueEnd
+   </em>
+   over
+   <em>
+    rampSeconds
+   </em>
+   , according to
+   <em>
+    options
+   </em>
+   . Any existing processing
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   is disconnected.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a708bb83ccc2f735b6319d1b2660473bb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#a03e3eb8da93c3bb4842f30c29a7dd677">EventRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>appendRamp</strong> (float valueBegin, float valueEnd, double rampSeconds, const Options &amp;options=Options())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Appends an ramp
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   onto the end of the last scheduled
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   (or the current time), from
+   <em>
+    valueBegin
+   </em>
+   to
+   <em>
+    valueEnd
+   </em>
+   over
+   <em>
+    rampSeconds
+   </em>
+   , according to
+   <em>
+    options
+   </em>
+   . Any existing processing
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   is disconnected.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6a7425c52f92a5ef8db5150860f6997b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>setProcessor</strong> (const NodeRef &amp;node)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sets this
+   <a href="classcinder_1_1audio_1_1_param.html">
+    Param
+   </a>
+   's input to be the processing performed by
+   <em>
+    node
+   </em>
+   . Any existing
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   's are discarded.
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Forces
+    <em>
+     node
+    </em>
+    to be mono.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aee99c5bc53f84340ce6fc70a3c7891ba"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#a446fde4facb673f7db564439d63adda6">NodeRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getProcessor</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns this
+   <a href="classcinder_1_1audio_1_1_param.html">
+    Param
+   </a>
+   's processing
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   , or an empty NodeRef if none is set.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac49b40b65c89bb9f1c4e6c57077df681"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>reset</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Resets
+   <a href="classcinder_1_1audio_1_1_param.html">
+    Param
+   </a>
+   , blowing away any
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   's or processing
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   .
+  </p>
+  <p>
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Must be called from a non-audio thread.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af0d2c86bc22f0f687496c563a29745d6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">size_t</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getNumEvents</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the number of
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   's that are currently scheduled.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ace4a768a6aab47c9e0ebd8a2bcdcdedb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>eval</strong> ()</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Evaluates the
+   <a href="classcinder_1_1audio_1_1_param.html">
+    Param
+   </a>
+   for the current processing block, with current time determined from the parent
+   <a href="classcinder_1_1audio_1_1_node.html">
+    Node
+   </a>
+   's
+   <a href="classcinder_1_1audio_1_1_context.html">
+    Context
+   </a>
+   .
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    true if the
+    <a href="classcinder_1_1audio_1_1_param.html">
+     Param
+    </a>
+    is varying this block (there are
+    <a href="classcinder_1_1audio_1_1_event.html">
+     Event
+    </a>
+    's or a processing
+    <a href="classcinder_1_1audio_1_1_node.html">
+     Node
+    </a>
+    ) and
+    <a href="classcinder_1_1audio_1_1_param.html#adf43e45c880a8ad9c7e4b8969051fe1d">
+     getValueArray()
+    </a>
+    should be used, or false if the
+    <a href="classcinder_1_1audio_1_1_param.html">
+     Param
+    </a>
+    's value is constant for this block (use
+    <a href="classcinder_1_1audio_1_1_param.html#af1815d8f61e2912f992f1ce523721e6c">
+     getValue()
+    </a>
+    ).
+   </p>
+  </dl>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Safe to call on the audio thread.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a06c9f1e71eb40e7802d519e712ce52a1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>eval</strong> (double timeBegin, float *array, size_t arrayLength, size_t sampleRate)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Evaluates the
+   <a href="classcinder_1_1audio_1_1_param.html">
+    Param
+   </a>
+   from
+   <em>
+    timeBegin
+   </em>
+   for
+   <em>
+    arrayLength
+   </em>
+   samples at
+   <em>
+    sampleRate
+   </em>
+   .
+  </p>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    true if the
+    <a href="classcinder_1_1audio_1_1_param.html">
+     Param
+    </a>
+    is varying this block (there are
+    <a href="classcinder_1_1audio_1_1_event.html">
+     Event
+    </a>
+    's or a processing
+    <a href="classcinder_1_1audio_1_1_node.html">
+     Node
+    </a>
+    ) and
+    <a href="classcinder_1_1audio_1_1_param.html#adf43e45c880a8ad9c7e4b8969051fe1d">
+     getValueArray()
+    </a>
+    should be used, or false if the
+    <a href="classcinder_1_1audio_1_1_param.html">
+     Param
+    </a>
+    's value is constant for this block (use
+    <a href="classcinder_1_1audio_1_1_param.html#af1815d8f61e2912f992f1ce523721e6c">
+     getValue()
+    </a>
+    ).
+   </p>
+  </dl>
+  <dl>
+   <dt class="section">
+   </dt>
+   <p>
+    Safe to call on the audio thread.
+   </p>
+  </dl>
+  <p>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="abfb368c8bb966531321c06e4019f7421"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>findDuration</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the total duration of any scheduled
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   's, including delay, or 0 if none are scheduled.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa740bfaf51fb17d235f5fde20a881314"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::pair&lt; double, float &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>findEndTimeAndValue</strong> () const </div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the end time and value of the latest scheduled
+   <a href="classcinder_1_1audio_1_1_event.html">
+    Event
+   </a>
+   , or [0,
+   <a href="classcinder_1_1audio_1_1_param.html#af1815d8f61e2912f992f1ce523721e6c">
+    getValue()
+   </a>
+   ] if none are scheduled.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- public member functions -->
+
+            <!-- protected member functions -->
+            <a name="protected-functions"></a>
+            <section>
+                <h2>Protected Member Functions</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="aa01c4d096dd2ab22d07b140faa27af02"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>initInternalBuffer</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a20d658aad18c4591553d9ed3ff5d80b9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>resetImpl</strong> ()</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af943f56b4281f341475b012236ed3383"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>removeEventsAt</strong> (double time)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a54620e0745d89168349f7434f1503e5d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#aa3329e4ea17975566898242b2ebeccb2">ContextRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getContext</strong> () const </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- protected attributes -->
+            <a name="protected-attrs"></a>
+            <section>
+                <h2>Protected Attributes</h2>
+                <ul class="rows">
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a06168c25ff9428649198e5f814f30443"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::list&lt; <a href="namespacecinder_1_1audio.html#a03e3eb8da93c3bb4842f30c29a7dd677">EventRef</a> &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mEvents</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af2ba96ab83ee8d09ee35030f97eef69b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">std::atomic&lt; float &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mValue</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aad9c5d9957cf283d23452025b073dcbf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mIsVaryingThisBlock</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9f4dfb1bd840649233d33d919ca1260b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1_node.html">Node</a> *</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mParentNode</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad404f1c59ac2a9cd023da6ecac25b844"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#a446fde4facb673f7db564439d63adda6">NodeRef</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mProcessor</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a42ccebdc9ebb80a1c5b2659303973a67"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder_1_1audio.html#a818a04db7cb98124c21d5f6927aa2685">BufferDynamic</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mInternalBuffer</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- friends -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

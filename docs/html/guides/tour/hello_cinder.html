@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title></title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="../../_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="../../_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="guide language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="../../index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="../../search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="../../reference/geometry.html">Reference</a></li>
+                              <li class="active" id="nav_guides">
+                                <a href="../index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="../../namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="../../classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="../../reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="../index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="../../namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="../../classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content content-row" id="container">
+    <div class="columns large-3">
+
+    </div>
+
+    <div class="columns large-9 content" data-equalizer-watch="content">
+
+
+    
+      <div class="contents">
+         <div class="textblock">
+            <h1><a class="anchor" id="tourIntro"></a>
+               Introduction
+            </h1>
+            <p><br/>
+               Hi. My name is <a href="http://www.roberthodgin.com/">Robert Hodgin</a>, and I am the author of this tutorial (with helpful input from <a href="http://www.drawnline.net/">Andrew Bell</a>, <a href="http://www.todaycreate.com/">Mike Creighton</a>, and <a href="http://www.digitalnoah.com">Noah King</a>). I want to help others get started with Cinder because learning a new framework can be intimidating.<br/>
+               <br/>
+               Things are going to be pretty informal. Think of this as a quick-start guide. Instead of exhaustively covering a topic before moving on to the next, I am going to meander around a bit and sample some of Cinder's many features along the way. Hopefully, this tutorial will inspire you to continue to explore Cinder and learn to love it as much as I do.<br/>
+               <br/>
+               In Section One, I will show you how to go from a brand new Cinder project to a particle engine with both local and global forces, and then use it to achieve some artistic effects. Along the way, I will point out a few of Cinder's features as well as explaining a bit about my personal coding practices. If you wish to see what you will be working towards, check the final video at the end of Chapter 5.<br/>
+               <br/>
+               In Section Two, I will tweak the particle engine from Section One and use it as a basis for a flocking simulation. Over five chapters, I will show how to create and control a 3D camera system and show how to set up a graphical interface for controlling variables in runtime. Then I will explain and implement four rules for a robust flocking simulation. By the end of Section Two, you will have a fully functioning 3D flocking simulation complete with predators and collision avoidance.<br/>
+               <br/>
+               Below you will find some brief chapter descriptions. Each chapter has a corresponding project, which you can find in the <em>cinder/tour</em> directory. If you don't already have the Hello Cinder tour, you can download it <a href="http://libcinder.org/docs/hello_cinder/tour.zip">here</a>.<br/>
+               <br/>
+            </p>
+            <div class="image">
+               <img alt="tutorial_tour_location_shot.png" src="images/tutorial_tour_location_shot.png"/>
+            </div>
+            <p> <br/>
+            </p>
+            <h1><a class="anchor" id="section1"></a>
+               Section One: Introduction and Particle Engine
+            </h1>
+            <p><br/>
+               <a class="el" href="hello_cinder_chapter1.html">Chapter 1: Getting Started</a><br/>
+               In the first chapter, we will set up a new project and learn how to load and display images. We go on to show how to draw simple shapes and we even set up a basic Particle engine. <br/>
+               <br/>
+               <a class="el" href="hello_cinder_chapter2.html">Chapter 2: Personality and diversity</a><br/>
+               We continue to expand our Particle engine. We also learn how to pull color data from images and put that information to good use. <br/>
+               <br/>
+               <a class="el" href="hello_cinder_chapter3.html">Chapter 3: Influence</a><br/>
+               In chapter 3, we show how to use keyboard and mouse input to control our Particle engine. <br/>
+               <br/>
+               <a class="el" href="hello_cinder_chapter4.html">Chapter 4: Fine tuning</a><br/>
+               A birth/death cycle is added to our Particle class and Perlin noise is introduced. <br/>
+               <br/>
+               <a class="el" href="hello_cinder_chapter5.html">Chapter 5: External Forces</a><br/>
+               We show you how to use nested iterators to allow the Particles to interact with each other. We then tie everything together and marvel at how far we have come. <br/>
+            </p>
+            <h1><a class="anchor" id="section2"></a>
+               Section Two: Flocking Simulation
+            </h1>
+            <p><br/>
+               <a class="el" href="flocking_chapter1.html">Chapter 1: Camera and Parameters</a><br/>
+               We will learn about the Cinder Camera class and use it to create a 3D environment for the Particle engine we made in Section One. Then we will show how to setup a Params class for controlling variables during runtime.<br/>
+               <br/>
+               <a class="el" href="flocking_chapter2.html">Chapter 2: Rule One - Separation</a><br/>
+               The first rule of flocking is described and implemented. This rule states that all flocking objects should avoid getting too close to each other. This helps to mitigate overcrowding and collisions.<br/>
+               <br/>
+               <a class="el" href="flocking_chapter3.html">Chapter 3: Rule Two - Cohesion</a><br/>
+               The second rule is one of attraction. Flocking objects will move towards each other in order to prevent any individual from becoming isolated and exposed.<br/>
+               <br/>
+               <a class="el" href="flocking_chapter4.html">Chapter 4: Rule Three - Alignment</a><br/>
+               The third rule is arguably the most important. Alignment, or orientation, states that flocking objects will try to move in the general direction of the nearest neighbors. This inevitably leads to characteristic group behavior that is witnessed in large groups of birds and fish.<br/>
+               <br/>
+               <a class="el" href="flocking_chapter5.html">Chapter 5: Rule Four - Evasion</a><br/>
+               In this final chapter, we will add a few predators to the simulation and show how to add personality and behavioral diversity to the flock in order to produce a more organic result. <br/>
+               <br/>
+               <br/>
+               Okay, enough with the introduction. <a class="el" href="hello_cinder_chapter1.html">Let's dive right in</a>. 
+            </p>
+         </div>
+      </div>
+   
+
+  
+  </div>
+
+</div> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="../../_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="../../_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/prism.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../../search_index.js" type="text/javascript"></script>
+    <script src="../../_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>cinder::ip</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="namespaces language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="active" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    <div class="row content-row content">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>cinder::ip</strong> Namespace Reference
+        </h1>
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#classes">Classes</a></li>
+          		
+          		<li><a href="#typedefs">Typedefs</a></li>
+
+
+
+          		<li><a href="#functions">Functions</a></li>
+
+          	</ul>
+        </div>        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- namespaces -->
+
+            <!-- classes -->
+            <a name="classes"></a>
+            <section>
+                <h2>Classes</h2>
+                <ul>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1ip_1_1_adaptive_threshold_t.html">cinder::ip::AdaptiveThresholdT</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1ip_1_1_filter_params.html">cinder::ip::FilterParams</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1ip_1_1_mapping.html">cinder::ip::Mapping</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1ip_1_1_s_c_a_l_e_t_r_a_i_t.html">cinder::ip::SCALETRAIT</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1ip_1_1_s_c_a_l_e_t_r_a_i_t_3_01float_01_4.html">cinder::ip::SCALETRAIT&lt; float &gt;</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                struct
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="structcinder_1_1ip_1_1_s_c_a_l_e_t_r_a_i_t_3_01uint8__t_01_4.html">cinder::ip::SCALETRAIT&lt; uint8_t &gt;</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1ip_1_1_weight_table.html">cinder::ip::WeightTable</a>
+                            </div>
+                        </li>
+                </ul>
+            </section>
+            <hr/>
+
+            <!-- typedefs -->
+            <a name="typedefs"></a>
+            <section>
+                <h2>Typedefs</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="af9d1d2fcc9fe3c8ff8f665f685ddd3be"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1ip_1_1_adaptive_threshold_t.html">AdaptiveThresholdT</a>&lt; uint8_t &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>AdaptiveThreshold</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae7594852b0a8b2bdba815fdf36cb6287"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1ip_1_1_adaptive_threshold_t.html">AdaptiveThresholdT</a>&lt; uint8_t &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>AdaptiveThreshold8u</strong> </div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8640195bda9d5e73379af686d1fbb37f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1ip_1_1_adaptive_threshold_t.html">AdaptiveThresholdT</a>&lt; float &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>AdaptiveThreshold32f</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- enumerations -->
+
+            <!-- free functions -->
+            
+            <!-- functions -->
+            <a name="functions"></a>
+            <section>
+                <h2>Functions</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="a9c44640f4d91149239ad81838a41e80d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>blend</strong> (Surface *background, const Surface &amp;foreground, const Area &amp;srcArea, const ivec2 &amp;dstRelativeOffset=ivec2())</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a6867bbe9e05065dfa82322c2af612578"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>blend</strong> (Surface *background, const Surface &amp;foreground)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a013218d486844b5136d0cd3c0cdb0321"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>blend</strong> (Surface32f *background, const Surface32f &amp;foreground, const Area &amp;srcArea, const ivec2 &amp;dstRelativeOffset=ivec2())</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a4d080b09cfa51917a6f330fcc656b09d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>blend</strong> (Surface32f *background, const Surface32f &amp;foreground)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad5d6f0c5e17ca834cb60cca2328da87a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Surface8u *surface, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    surface
+   </em>
+   in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6626f4a93bdc0c400bd1fe16fe411e48"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Surface8u *surface, const Area &amp;area, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    surface
+   </em>
+   in-place in
+   <em>
+    area
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad45665c3994f8ae4d1048b2895ae68f6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ad8b046fa928d58861b60465ceda392c5">Surface8u</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlurCopy</strong> (const Surface8u &amp;surface, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Create a blurred copy of
+   <em>
+    surface
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0373ec5486387466eec66960ac95d168"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Channel8u *channel, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    channel
+   </em>
+   in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a016a3d6c98369dc0332e9b0c2633f63e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Channel8u *channel, const Area &amp;area, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    channel
+   </em>
+   in-place in
+   <em>
+    area
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a02717f6400c1ae0af5be99a028d78dfe"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a1870220d9d40c02c4cf4ff135b22f3ae">Channel8u</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlurCopy</strong> (const Channel8u &amp;channel, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Create a blurred copy of
+   <em>
+    channel
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a56e08898affe94aecfe8936957a0475f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Surface16u *surface, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    surface
+   </em>
+   in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae5c95531c91b0084c446a16d9ee85205"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Surface16u *surface, const Area &amp;area, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    surface
+   </em>
+   in-place in
+   <em>
+    area
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a033b34bf5615df76cf2b7d27c6951f47"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a8d12457845cf49dfabd567551dabf2d9">Surface16u</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlurCopy</strong> (const Surface16u &amp;surface, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Create a blurred copy of
+   <em>
+    surface
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa49c276b6be1f842e2632d4f95fe66b9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Channel16u *channel, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    channel
+   </em>
+   in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4aada4a334ac57c7b4f9600692b98465"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Channel16u *channel, const Area &amp;area, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    channel
+   </em>
+   in-place in
+   <em>
+    area
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad0484cdd8d378ccaca050547834b7d57"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a91dd9a6adc754492cb14be54f49d589f">Channel16u</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlurCopy</strong> (const Channel16u &amp;channel, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Create a blurred copy of
+   <em>
+    channel
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a53c8024c487c68303af3c210cab0e301"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Surface32f *surface, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    surface
+   </em>
+   in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4a478247f6fd1da18806efc42f08314d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Surface32f *surface, const Area &amp;area, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    surface
+   </em>
+   in-place in
+   <em>
+    area
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a2d1855ac63f7ba32b000970200d5c5c5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a69465422e6011583c33994f0280dcd29">Surface32f</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlurCopy</strong> (const Surface32f &amp;surface, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Create a blurred copy of
+   <em>
+    surface
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a57981a2ad67d7a133cb61af4f7e05672"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Channel32f *channel, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    channel
+   </em>
+   in-place using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a75c2a31152287b83030d52989c861d37"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlur</strong> (Channel32f *channel, const Area &amp;area, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Blur
+   <em>
+    channel
+   </em>
+   in-place in
+   <em>
+    area
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4dc194ef5b59e9eaa59cb628671487c9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a55542066ef5e4df2176ef692419aa2dd">Channel32f</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>stackBlurCopy</strong> (const Channel32f &amp;channel, int radius)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Create a blurred copy of
+   <em>
+    channel
+   </em>
+   using "stackBlur", a Gaussian-approximating algorithm by Mario Klingemann.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a4f682ffe224d2d92dfea54127a0e662f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#ad8b046fa928d58861b60465ceda392c5">Surface8u</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>checkerboard</strong> (int32_t width, int32_t height, int32_t tileSize=16, const Color8u &amp;evenColor=Color8u(0, 0, 0), const Color8u &amp;oddColor=Color8u(255, 255, 255))</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad6daaa777851e7721ff4a886b21c3346"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a8d12457845cf49dfabd567551dabf2d9">Surface16u</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>checkerboard16u</strong> (int32_t width, int32_t height, int32_t tileSize=16, const ColorT&lt; uint16_t &gt; &amp;evenColor=ColorT&lt; uint16_t &gt;(0, 0, 0), const ColorT&lt; uint16_t &gt; &amp;oddColor=ColorT&lt; uint16_t &gt;(65535, 65535, 65535))</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a29b977c2a58e0922eda74bf155840a8c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="namespacecinder.html#a69465422e6011583c33994f0280dcd29">Surface32f</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>checkerboard32f</strong> (int32_t width, int32_t height, int32_t tileSize=16, const Colorf &amp;evenColor=Colorf(0, 0, 0), const Colorf &amp;oddColor=Colorf(1, 1, 1))</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab10e85ddf4efc26af52f6b334dcca603"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>checkerboard</strong> (Surface8u *surface, const Area &amp;area, int32_t tileSize=16, const ColorA8u &amp;evenColor=ColorA8u(0, 0, 0, 255), const ColorA8u &amp;oddColor=ColorA8u(255, 255, 255, 255))</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a511379ee2911ef8a35ff8b02e14d8c57"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>checkerboard</strong> (Surface16u *surface, const Area &amp;area, int32_t tileSize=16, const ColorAT&lt; uint16_t &gt; &amp;evenColor=ColorAT&lt; uint16_t &gt;(0, 0, 0, 65535), const ColorAT&lt; uint16_t &gt; &amp;oddColor=ColorAT&lt; uint16_t &gt;(65535, 65535, 65535, 65535))</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5ebe8f23a916ad88149f40c70958b29c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>checkerboard</strong> (Surface32f *surface, const Area &amp;area, int32_t tileSize=16, const ColorAf &amp;evenColor=ColorAf(0, 0, 0, 1), const ColorAf &amp;oddColor=ColorAf(1, 1, 1, 1))</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa3f16ff049ad2994b06838d12c3f5ab0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>edgeDetectSobel</strong> (const ChannelT&lt; T &gt; &amp;srcChannel, const Area &amp;srcArea, const ivec2 &amp;dstOffset, ChannelT&lt; T &gt; *dstChannel)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af81f6c7322440aa5c6eda3d0c03bd998"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>edgeDetectSobel</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, const Area &amp;srcArea, const ivec2 &amp;dstOffset, SurfaceT&lt; T &gt; *dstSuface)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a423d62f1230aa9c9ecd4009025398ded"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>edgeDetectSobel</strong> (const ChannelT&lt; T &gt; &amp;srcChannel, ChannelT&lt; T &gt; *dstChannel)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0f98a9c55148e4242eee7d67c36f9541"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>edgeDetectSobel</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, SurfaceT&lt; T &gt; *dstSuface)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a42640fcd5c146acee137a7a17a429b0b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>fill</strong> (SurfaceT&lt; T &gt; *surface, const ColorT&lt; Y &gt; &amp;color)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae54e2982f99dab546b74722c4caabb4d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>fill</strong> (SurfaceT&lt; T &gt; *surface, const ColorT&lt; Y &gt; &amp;color, const Area &amp;area)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5fd6e80a839c27829a7a57f0776d5ebc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>fill</strong> (SurfaceT&lt; T &gt; *surface, const ColorAT&lt; Y &gt; &amp;color)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a05bb74fbdc9679de3bdad5e611878905"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>fill</strong> (SurfaceT&lt; T &gt; *surface, const ColorAT&lt; Y &gt; &amp;color, const Area &amp;area)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a5214b75d677736cc4fe03a715a64e25d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>fill</strong> (ChannelT&lt; T &gt; *channel, T value, const Area &amp;area)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab58741abc47c307a9bb45a95b098a716"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>fill</strong> (ChannelT&lt; T &gt; *channel, T value)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a854e44fc952a20333240bf01f7945bae"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>flipVertical</strong> (SurfaceT&lt; T &gt; *surface)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Flips the contents of
+   <em>
+    surface
+   </em>
+   vertically.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a7a4c0672e54f01dc055f14e56302d79a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>flipVertical</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, SurfaceT&lt; T &gt; *destSurface)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Copies the contents of
+   <em>
+    srcSurface
+   </em>
+   into
+   <em>
+    destSurface
+   </em>
+   , flipping them vertically.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa7f01a2bf6286468b17a74631a44c705"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>flipVertical</strong> (const ChannelT&lt; T &gt; &amp;srcChannel, ChannelT&lt; T &gt; *destChannel)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Copies the contents of
+   <em>
+    srcChannel
+   </em>
+   into
+   <em>
+    destChannel
+   </em>
+   , flipping them vertically.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="af8aa1575a86b86d3a3a6514e3a25780c"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>grayscale</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, SurfaceT&lt; T &gt; *dstSurface)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts Surface
+   <em>
+    srcSurface
+   </em>
+   to grayscale and stores the result in Surface
+   <em>
+    dstSurface
+   </em>
+   . Uses primary weights dictated by the Rec. 709 Video Standard.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a29913cc34abf7c0f36900146be2e0f67"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>grayscale</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, ChannelT&lt; T &gt; *dstChannel)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts Surface
+   <em>
+    srcSurface
+   </em>
+   to grayscale and stores the result in Channel
+   <em>
+    dstChannel
+   </em>
+   . Uses primary weights dictated by the Rec. 709 Video Standard.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8b001a0abaaa8ecacf7dbb87a28f870b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hdrNormalize</strong> (Surface32f *surface)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Normalizes
+   <em>
+    surface
+   </em>
+   by scaling the maximum and minimum values to lie in the range
+   <code>
+   </code>
+   [0,1]
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a5b11a3511a558d244845988df195ff53"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>hdrNormalize</strong> (Channel32f *channel)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Normalizes
+   <em>
+    channel
+   </em>
+   by scaling the maximum and minimum values to lie in the range
+   <code>
+   </code>
+   [0,1]
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa3e5f5f8bbdacda8b01954b44c36cfc5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>getMinMax</strong> (const Channel32f &amp;channel, float *resultMin, float *resultMax)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Determines the minimum and maximum values of
+   <em>
+    channel
+   </em>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa7fda293d635e185744ef25a4a443149"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>premultiply</strong> (SurfaceT&lt; T &gt; *surface)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Premultiplies the contents of a Surface using its own alpha channel. Marks the Surface as being premultiplied.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="adc64ba5544d29502945259bf445bd161"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>unpremultiply</strong> (SurfaceT&lt; T &gt; *surface)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Unpremultiplies the contents of a Surface using its own alpha channel. Marks the Surface as being unpremultiplied.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="accc5f40c4880b82e77998494afbbeba4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>resize</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, SurfaceT&lt; T &gt; *dstSurface, const FilterBase &amp;filter=FilterTriangle())</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a47712452379d37e53c195636bb386bcd"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>resize</strong> (const ChannelT&lt; T &gt; &amp;srcChannel, ChannelT&lt; T &gt; *dstChannel, const FilterBase &amp;filter=FilterTriangle())</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a0f49d008cad9fef3fc656f7e518017fc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>resize</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, const Area &amp;srcArea, SurfaceT&lt; T &gt; *dstSurface, const Area &amp;dstArea, const FilterBase &amp;filter=FilterTriangle())</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a941872dcc97479aff2fa37f3cb898343"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_surface_t.html">SurfaceT</a>&lt; T &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>resizeCopy</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, const Area &amp;srcArea, const ivec2 &amp;dstSize, const FilterBase &amp;filter=FilterTriangle())</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns a new Surface which is a copy of
+   <em>
+    srcSurface's
+   </em>
+   area
+   <em>
+    srcArea
+   </em>
+   scaled to size
+   <em>
+    dstSize
+   </em>
+   using filter
+   <em>
+    filter
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af525b96ecb8f3bb239de479520da86ef"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>resize</strong> (const ChannelT&lt; T &gt; &amp;srcChannel, const Area &amp;srcArea, ChannelT&lt; T &gt; *dstChannel, const Area &amp;dstArea, const FilterBase &amp;filter=FilterTriangle())</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aad266a9ef17649fc58118f4232ea699d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>threshold</strong> (SurfaceT&lt; T &gt; *surface, T value, const Area &amp;area)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Thresholds
+   <em>
+    surface
+   </em>
+   setting any values below
+   <em>
+    value
+   </em>
+   to zero and any values above to unity inside the
+   <a href="classcinder_1_1_area.html">
+    Area
+   </a>
+   <em>
+    area
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac6283a4085cd1d3e81bca27dbaf4803f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>threshold</strong> (SurfaceT&lt; T &gt; *surface, T value)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Thresholds
+   <em>
+    surface
+   </em>
+   setting any values below
+   <em>
+    value
+   </em>
+   to zero and any values above to unity.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a41f7406ecce2b029423cbbab9380765b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>threshold</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, T value, SurfaceT&lt; T &gt; *dstSurface)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Thresholds
+   <em>
+    srcSurface
+   </em>
+   setting any values below
+   <em>
+    value
+   </em>
+   to zero and any values above to unity and storing the result in
+   <em>
+    dstSurface
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa5bfaa452ae9955f76d0209a749dbe4b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>threshold</strong> (const ChannelT&lt; T &gt; &amp;srcSurface, T value, ChannelT&lt; T &gt; *dstSurface)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Thresholds
+   <em>
+    srcChannel
+   </em>
+   setting any values below
+   <em>
+    value
+   </em>
+   to zero and any values above to unity and storing the result in
+   <em>
+    dstChannel
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aef4612413e9e141c262ffa0b05043de2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>adaptiveThreshold</strong> (const ChannelT&lt; T &gt; &amp;srcChannel, int32_t windowSize, float percentageDelta, ChannelT&lt; T &gt; *dstChannel)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Thresholds
+   <em>
+    srcChannel
+   </em>
+   using an adaptive thresholding algorithm which considers a window of size
+   <em>
+    windowSize
+   </em>
+   pixels and stores the result in
+   <em>
+    dstChannel
+   </em>
+   .
+  </p>
+  <p>
+   Implements the algorithm described in "Adaptive Thresholding Using the Integral Image" by Bradley &amp; Roth. The srcSurface.getWidth() / 8 is a good default for
+   <em>
+    windowSize
+   </em>
+   and 0.15 is for
+   <em>
+    percentageDelta
+   </em>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3785da48a1d8d4e5d922e27d53170d10"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>adaptiveThreshold</strong> (ChannelT&lt; T &gt; *channel, int32_t windowSize, float percentageDelta)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Thresholds
+   <em>
+    srcChannel
+   </em>
+   using an adaptive thresholding algorithm which considers a window of size
+   <em>
+    windowSize
+   </em>
+   pixels.
+  </p>
+  <p>
+   Implements the algorithm described in "Adaptive Thresholding Using the Integral Image" by Bradley &amp; Roth. The srcSurface.getWidth() / 8 is a good default for
+   <em>
+    windowSize
+   </em>
+   and 0.15 is for
+   <em>
+    percentageDelta
+   </em>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4116c5393f0823d84c0d5669035bda91"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>adaptiveThresholdZero</strong> (ChannelT&lt; T &gt; *channel, int32_t windowSize)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Thresholds
+   <em>
+    srcChannel
+   </em>
+   using an adaptive thresholding algorithm which considers a window of size
+   <em>
+    windowSize
+   </em>
+   pixels. Equivalent to calling adaptiveThreshold with a 0 for percentageDelta.
+  </p>
+  <p>
+   Implements the algorithm described in "Adaptive Thresholding Using the Integral Image" by Bradley &amp; Roth. The srcSurface.getWidth() / 8 is a good default for
+   <em>
+    windowSize
+   </em>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae6b9f9cf2b29b4732970513c5a265b43"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>adaptiveThresholdZero</strong> (const ChannelT&lt; T &gt; &amp;srcChannel, int32_t windowSize, ChannelT&lt; T &gt; *dstChannel)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a99f67846b14a1ec66859dba293219adb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1_area.html">Area</a></div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>findNonTransparentArea</strong> (const SurfaceT&lt; T &gt; &amp;surface, const Area &amp;bounds)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Finds the bounding rectangle of the area
+   <em>
+    bounds
+   </em>
+   inside of
+   <em>
+    surface
+   </em>
+   which contains non-zero alpha
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a88b7d191f0a85382432d4034adc0edb4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>blendImpl_u8</strong> (Surface8u *background, const Surface8u &amp;foreground, const Area &amp;srcArea, ivec2 absOffset)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="aa11d1ffde9e64ca3f4b72e45c11aa3d4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>blendImpl_float</strong> (Surface32f *background, const Surface32f &amp;foreground, const Area &amp;srcArea, ivec2 absOffset)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9124f03d376f3acdf63ebaef5d4cd2cf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>fill_impl</strong> (SurfaceT&lt; T &gt; *surface, const ColorT&lt; T &gt; &amp;color, const Area &amp;area)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a8a82377949d0a2f12114e97dd999b34f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>fill_impl</strong> (SurfaceT&lt; T &gt; *surface, const ColorAT&lt; T &gt; &amp;color, const Area &amp;area)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a431b35bbbc7adbb14e33ecc2e4566646"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>grayscale</strong> (const Surface8u &amp;srcSurface, Channel8u *dstChannel)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a725449a2493df2c5363e50217c36918e"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">template void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>grayscale</strong> (const SurfaceT&lt; float &gt; &amp;srcSurface, ChannelT&lt; float &gt; *dstChannel)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9f98c7b751de0adef7dd2174bd2dddeb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>unpremultiply&lt; uint8_t &gt;</strong> (SurfaceT&lt; uint8_t &gt; *surface)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad811b15b2ef339e47a1bd76e7d8fe12d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>unpremultiply&lt; float &gt;</strong> (SurfaceT&lt; float &gt; *surface)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a9b0b7f7981e5d85cdd38d8efd535cc0a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scanlineAccumulate</strong> (LT weight, LT *lineBuffer, int32_t lineBufferWidth, AT *accum)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ac15a4107eb2db43ae4a9de3b8d85f625"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>makeWeightTable</strong> (int32_t b, float cen, const FilterBase &amp;filter, const FilterParams *params, int32_t len, bool trimzeros, WeightTable&lt; WT &gt; *wtab)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="abdb1d20e2b669fc77fcb6f780e05a696"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scanlineShiftAccumToChannel</strong> (AT *accum, int32_t x1, int32_t y, int32_t width, ChannelT&lt; T &gt; *channel)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a423df24894840d73beeff3e4394085f2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>scanlineFilterChannelToBuffer</strong> (WeightTable&lt; WT &gt; *weights, int32_t x, int32_t y, const ChannelT&lt; T &gt; &amp;channel, AT *lineBuffer, int32_t width)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a4b44eebb83009049ab8efe8da81c5026"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>resample</strong> (const vector&lt; const ChannelT&lt; T &gt; * &gt; &amp;srcChannels, const FilterBase &amp;filter, const Area &amp;srcArea, const Area &amp;dstArea, const vector&lt; ChannelT&lt; T &gt; * &gt; &amp;dstChannels)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ad3a9346851f3d31dfbfa16903593a590"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>thresholdImpl</strong> (SurfaceT&lt; T &gt; *surface, T value, const Area &amp;area)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ab2793a77c5fa01e54e90306660698ad9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>thresholdImpl</strong> (const SurfaceT&lt; T &gt; &amp;srcSurface, T value, const Area &amp;srcArea, const ivec2 &amp;dstLT, SurfaceT&lt; T &gt; *dstSurface)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a081cbba029ecabdbd20e99d1f6486ef2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>thresholdImpl</strong> (const ChannelT&lt; T &gt; &amp;srcChannel, T value, const Area &amp;srcArea, const ivec2 &amp;dstLT, ChannelT&lt; T &gt; *dstChannel)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="af2e1d7c820949c3c16d33a7f4f4df0a5"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calculateAdaptiveThreshold</strong> (const ChannelT&lt; T &gt; *srcChannel, typename CHANTRAIT&lt; T &gt;::Accum *integralImage, int32_t windowSize, float percentageDelta, ChannelT&lt; T &gt; *dstChannel)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a491c2582a29119aa25d0df35d2c3512f"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calculateAdaptiveThresholdZero</strong> (const ChannelT&lt; T &gt; *srcChannel, typename CHANTRAIT&lt; T &gt;::Accum *integralImage, int32_t windowSize, ChannelT&lt; T &gt; *dstChannel)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="ae0953669ec156ceb423b0ad46d3091b6"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>calculateIntegralImage</strong> (const ChannelT&lt; T &gt; &amp;channel, typename CHANTRAIT&lt; T &gt;::Accum *integralImage)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a57cc8a90d3556b81f7233512e8f0eac0"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>transparentHorizontalScanline</strong> (const SurfaceT&lt; T &gt; &amp;surface, int32_t row, int32_t x1, int32_t x2)</div>
+
+                            </div>
+                        </li>                        <li class="row functionDef ">
+                            <a class="anchor" name="a34fb0480b444b5f121410f4efff7f6a8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">bool</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>transparentVerticalScanline</strong> (const SurfaceT&lt; T &gt; &amp;surface, int32_t column, int32_t y1, int32_t y2)</div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- variables -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

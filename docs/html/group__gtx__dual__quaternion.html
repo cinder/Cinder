@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>gtx_dual_quaternion</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="reference language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="active" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+    <div id="top-primary">
+        <!-- main nav -->
+
+        <!-- subnav -->
+        <div id="sub-nav">
+          	<ul>
+
+          		<li><a href="#public-member-functions">Public Member Functions</a></li>
+
+
+
+
+          	</ul>
+        </div>    </div>
+
+    
+    <div class="row content-row" data-equalizer="content">
+
+      <!-- side nav -->
+      <div class="columns large-2" data-equalizer-watch="content" id="side-nav">
+        
+      </div>
+
+
+      <!-- main content area -->
+      <div class="columns large-10" data-equalizer-watch="content">
+
+        <div id="container">
+
+          <div class="content">
+
+            <!-- content -->
+            <h1 id="page-title">
+                <em>gtx_dual_quaternion</em> 
+                Module Reference
+            </h1>
+                        
+            <!-- description and side bar -->
+            <div class="row" id="description">
+              <div class="prose columns large-9" id="description-prose">
+                <html><head></head><body><div class="description content">
+ <p>
+  Defines a templated dual-quaternion type and several dual-quaternion operations.
+ </p>
+ <p>
+  &lt;
+  <a href="https://github.com/g-truc/glm/tree/0.9.6.3/glm/gtx/dual_quaternion.hpp">
+   glm/gtx/dual_quaternion.hpp
+  </a>
+  &gt; need to be included to use these functionalities.
+ </p>
+</div>
+</body></html>
+                
+              </div>
+            </div>
+
+            <hr/>
+
+            <!-- show/hide buttons -->
+            <div id="show-hide">
+              <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+            </div>
+            
+            <!-- contents -->
+            <div class="contents">
+
+                <!-- subgroups -->
+
+                <!-- typedefs -->
+                <a name="typedefs"></a>
+                <section>
+                    <h1>Typedefs</h1>
+                    <ul>
+                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga4888200ed911e4887c2423fed74ad362"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tdualquat&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_dualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of low single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gaa88fe93eb823d1aba8d6df8028572cb5"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tdualquat&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_dualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of medium single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga98557c3577757f2ced8f35b1de7fa234"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tdualquat&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_dualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of high single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga797f6d2679ab6773c1f057b97bf95111"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tdualquat&lt; float, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_fdualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of low single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga93e9def86ffeedd48d9c79a6afacfa6c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tdualquat&lt; float, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_fdualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of medium single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga8c46d61c38b2b6d9c5091c667dd20fe8"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tdualquat&lt; float, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_fdualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of high single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga361a2ea6cce1446a8ab7e7803156c16c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tdualquat&lt; double, lowp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lowp_ddualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of low double-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga5727116ab20b2a1d40387766d723dd6c"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tdualquat&lt; double, mediump &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mediump_ddualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of medium double-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga83e4c5d27c8b0a264a3f3aed24f3f84e"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">tdualquat&lt; double, highp &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>highp_ddualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of high double-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2f6227b5f9dc08a2e7682065a84b3aa9"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">highp_fdualquat</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>dualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga436906129bc69ca5059555cafcbac9fd"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">highp_fdualquat</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>fdualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of single-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga373431ffdd82d5c03c258217a9e1f1a6"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type">highp_ddualquat</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>ddualquat</strong> </div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Dual-quaternion of default double-precision floating-point numbers.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                    </ul>
+                </section>
+                <hr/>
+
+                <!-- public types -->
+
+                <!-- enumerations -->
+
+                <!-- public member functions -->
+                <a name="public-member-functions"></a>
+                <section>
+                    <h1>Public Member Functions</h1>
+                    <ul>
+                            <li class="row functionDef ">
+                                <a class="anchor" name="ga9d7cfca38c6ff90757705600da3c7972"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>operator+</strong> (tdualquat&lt; T, P &gt; const &amp;q, tdualquat&lt; T, P &gt; const &amp;p)</div>
+
+                                </div>
+                            </li>                            <li class="row functionDef ">
+                                <a class="anchor" name="ga2c224f87242fe82e8ebc17f01aa51126"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>operator*</strong> (tdualquat&lt; T, P &gt; const &amp;q, tdualquat&lt; T, P &gt; const &amp;p)</div>
+
+                                </div>
+                            </li>                            <li class="row functionDef ">
+                                <a class="anchor" name="ga5251d67271c42cf52227b6254f3fc8ed"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>operator*</strong> (tdualquat&lt; T, P &gt; const &amp;q, T const &amp;s)</div>
+
+                                </div>
+                            </li>                            <li class="row functionDef ">
+                                <a class="anchor" name="ga0aedf77f3e7d45464501570c28df0ed7"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>operator*</strong> (T const &amp;s, tdualquat&lt; T, P &gt; const &amp;q)</div>
+
+                                </div>
+                            </li>                            <li class="row functionDef ">
+                                <a class="anchor" name="gad27b1d064624dd6ff1ecc205616323ba"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>operator/</strong> (tdualquat&lt; T, P &gt; const &amp;q, T const &amp;s)</div>
+
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga495818aa48c23e9e730f87a3c337d1d5"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>normalize</strong> (tdualquat&lt; T, P &gt; const &amp;q)</div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the normalized quaternion.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga8039b88397ca09275be924a26a806a59"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>lerp</strong> (tdualquat&lt; T, P &gt; const &amp;x, tdualquat&lt; T, P &gt; const &amp;y, T const &amp;a)</div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the linear interpolation of two dual quaternion.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2149d3cb8af04d9530de0cd16aa1aab2"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>inverse</strong> (tdualquat&lt; T, P &gt; const &amp;q)</div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Returns the q inverse.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga2d124748183e12db8288eeaca350298e"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tmat2x4&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mat2x4_cast</strong> (tdualquat&lt; T, P &gt; const &amp;x)</div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts a quaternion to a 2 * 4 matrix.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga576745d979e3c079a64152490c816954"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tmat3x4&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>mat3x4_cast</strong> (tdualquat&lt; T, P &gt; const &amp;x)</div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts a quaternion to a 3 * 4 matrix.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="gada9799afe2b62394dc498534beb5bc78"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>dualquat_cast</strong> (tmat2x4&lt; T, P &gt; const &amp;x)</div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts a 2 * 4 matrix (matrix which holds real and dual parts) to a quaternion.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                            <li class="row functionDef expandable">
+                                <a class="anchor" name="ga20eb5758beb73cc6dbc2d9104f03ec20"></a>
+                                    
+                                <div class="returnCol columns large-3">
+                                    <div class="type"><div class="type"><em>GLM_FUNC_DECL</em> tdualquat&lt; T, P &gt;</div></div>
+                                </div>
+                                
+                                <div class="definitionCol columns large-9">
+                                    <div class="definition"><strong>dualquat_cast</strong> (tmat3x4&lt; T, P &gt; const &amp;x)</div>
+
+                                    <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts a 3 * 4 matrix (augmented matrix rotation + translation) to a quaternion.
+  </p>
+ </div>
+</div>
+</body></html>
+                                </div>
+                            </li>                    </ul>
+                </section>
+                <hr/>
+
+                <!-- public member functions -->
+
+                <!-- protected member functions -->
+
+                <!-- protected attributes -->
+
+                <!-- friends -->
+
+            </div>
+
+            <!-- end content -->
+
+          </div>
+        </div>
+
+      </div>
+    </div> <!--  row -->
+
+
+
+
+ <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>Transitioning to Cinder 0.9</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="../_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="../_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="../_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="../_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+<link href="../../_assets/css/foundation.css" rel="stylesheet"/><link href="../../_assets/css/cinder_docs.css" rel="stylesheet"/><link href="../../_assets/css/prism.css" rel="stylesheet"/></head>
+<body class="guide language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="../index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="../search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="../reference/geometry.html">Reference</a></li>
+                              <li class="active" id="nav_guides">
+                                <a href="index.html">Guides</a></li>
+                              <li class="" id="nav_namespaces">
+                                <a href="../namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="../classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="../reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="../namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="../classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    
+<div class="row content content-row" id="container">
+    <div class="columns large-3">
+
+    </div>
+
+    <div class="columns large-9 content" data-equalizer-watch="content">
+
+
+    
+<h1>Cinder 0.9 Transition Guide</h1>
+<p>
+If you&rsquo;ve been participating in or just tracking Cinder&rsquo;s latest development work, you&rsquo;re already familiar with the glNext branch. It&rsquo;s finally time to merge this branch into master , in anticipation of the next release, which will be labeled 0.9.0. The version discontinuity is meant to signify significant changes to certain parts of Cinder&rsquo;s API. This guide is meant to help get you up to speed on what&rsquo;s new.
+</p>
+
+<p>
+As a quick note, if you have are just joining us on master, you will likely need to do do this after you git pull due to a change in the Boost submodule:
+<code>git submodule update --init</code>
+</p>
+
+<p>
+</p><h3>Highlights:</h3>
+<ul>
+<li>All of Cinder&rsquo;s OpenGL code has been updated to reflect the modern (OpenGL 3.2+) API.</li>
+<li>Cinder&rsquo;s math libraries have been replaced with <a href="http://glm.g-truc.net/">glm</a>.</li>
+<li>Cinder&rsquo; app:: internals have been refactored</li>
+</ul>
+<p></p>
+
+<p>
+</p><h3>OpenGL Changes:</h3>
+OpenGL itself has evolved substantially in recent versions, and Cinder&rsquo;s OpenGL implementation has been completely redesigned to take advantage of these changes. The baseline version requirement has been moved to OpenGL 3.2 Core Profile on desktop, and OpenGL ES 2 elsewhere.
+<p></p>
+
+<p>
+</p><h4>Fundamental Changes:</h4>
+In many ways, the evolution of OpenGL has been as focused on removing features as adding them. Probably the most important change is the removal of the &ldquo;fixed function&rdquo; pipeline. One implication is that a shader is always necessary in order to draw. Furthermore, &ldquo;immediate mode&rdquo; (glBegin(), glVertex(), glEnd(), etc) calls are no longer supported. Instead, any vertex data (positions, normals, etc) must be supplied in blocks of memory called vertex buffers (VBOs). These are just a few of the many changes that Cinder 0.9.0&rsquo;s GL functionality has been designed to respond to. We&rsquo;ve endeavored to keep a relatively straightforward API while still exposing the most recent functionality in OpenGL.
+<p></p>
+
+<p>
+A separate guide provides more in-depth documentation of Cinder&rsquo;s new GL API. In addition, please consult the samples/_opengl directory for useful examples.
+</p>
+
+
+<p>
+</p><h3>Math Changes:</h3>
+Cinder no longer uses its own classes for mathematics, and instead has moved to the popular GLM library. This library is designed to closely match the math primitives and functions in GLSL. Most of glm&rsquo;s functions are promoted into the ci:: namespace, but for less common names you may need to qualify using glm::.
+<p></p>
+
+<p>
+</p><h4>Types:</h4>
+ci::Vec2f, ci::Vec3f, ci::Vec4f -&gt; vec2, vec3, vec4
+ci::Vec2d, ci::Vec3d, ci::Vec4d -&gt; dvec2, dvec3, dvec4
+ci::Vec2i, ci::Vec3i, ci::Vec4i -&gt; ivec2, ivec3, ivec4
+ci::Matrix33f, ci::Matrix44f -&gt; mat3, mat4
+ci::Matrix33d, ci::Matrix44d -&gt; dmat3, dmat4
+ci::Quatf, ci::Quatd -&gt; quat, dquat
+ci::MatrixAffine2f -&gt; mat3 (see below)
+<p></p>
+
+<p>
+One key difference to Cinder&rsquo;s math classes is that these primitives provide default constructors. The vectors default construct to zero, and the matrix and quaternion variants default construct to the identity transformation.
+</p>
+
+<p>
+Functions:
+GLM, like GLSL, uses free functions in places where Cinder&rsquo;s own math classes formerly used member functions:
+myVec2f.length() -&gt; length( myVec2 )
+myVecA.dot( myVecB ) -&gt; dot( myVecA, myVecB )
+For basic transformations, use the built-in scale(), translate() and rotate() methods. These methods have 2 variants. The first takes an existing mat4 and returns a copy of this matrix with the transformation applied. The second one does not take a mat4, simply returning the transformation applied to the identity matrix.
+</p>
+
+<p>
+mat4 ex = rotate( 0.04f, vec3( 0, 1, 0 )  ); // returns a rotation by 0.04 radians around Y axis
+mat4 ex2 = scale( ex, vec3( 2 ) ); // returns &lsquo;ex&rsquo; uniformly scaled by 2
+</p>
+
+<p>
+Quaternions:
+To construct a quaternion that represents the rotation from vec3 &lsquo;vecA&rsquo; to &lsquo;vecB&rsquo;:
+quat myQuat = rotation( vecA, vecB )
+To construct a quaternion that represents a rotation by &lsquo;angle&rsquo; radians around &lsquo;axis&rsquo;:
+quat myQuat = angleAxis( angle, axis );
+Additionally, note that in glm quaternion multiplication order is reversed relative to Cinder&rsquo;s former Quatf class. So myQuatA * myQuatB is now myQuatB * myQuatA .
+</p>
+
+<p>
+MatrixAffine2f: 
+For 2D transformations, Cinder formerly used a custom class MatrixAffine2f that has been replaced by glm::mat3. 2D transformations can be constructed using scale(), translate() and rotate(). Note that these functions all require a mat3() as the first parameter, which represents the matrix to be transformed, and which can be the identity matrix.
+</p>
+
+<p>
+</p><pre><code class="lang-cpp">
+&lt;a href="../group__core__types.html#gadfaff2a7dce5cbf4e77a47ecea42ac5b"&gt;mat3&lt;/a&gt; ex = scale( mat3(), vec2( 2 ) ); // returns a uniform scale by 2
+mat3 ex2 = rotate( ex, 0.04f ); // returns &lsquo;ex&rsquo; rotated by 0.04 radians around the z-axis
+</code></pre>
+<p></p>
+
+<p>
+App-related Changes: 
+A key change is that Cinder applications now derive from app::App rather than app::AppBasic (with the exception of things like screensavers). Additionally, Cinder apps are instantiated with the CINDER_APP() macro now instead of CINDER_APP_BASIC(). Finally, the App::prepareSettings() virtual method has been removed in favor of an optional third parameter to the macro. This change allows the construction of GL objects in app constructors, among other things. This third parameter can be a lambda:
+</p>
+
+<p>
+CINDER_APP( ExampleApp, RendererGl(), [&amp;]( App::Settings *settings ) {
+  settings-&gt;setWindowSize( 1280, 720 );
+})
+</p>
+
+<p>
+or it can be a function pointer:
+CINDER_APP( ExampleApp, RendererGl(), ExampleApp::prepareSettings 
+</p>
+
+<p>
+While the Boost libraries still ship with Cinder, we&rsquo;ve begun the process of deprecating them in this release, as much of the functionality we originally relied on is now part of C++11 and later. Users are obviously welcome to continue using Boost in their own code, but CinderBlock authors are encouraged to remove dependencies where possible. As a first step toward this change, Cinder&rsquo;s Boost directory has moved from $(CINDER)/boost to $(CINDER)/include/boost.
+</p>
+
+<p>
+Mac-specific Changes:
+32-bit Mac apps are still supported but are deprecated. By default Cinder apps are 64-bit on OS X.
+Several OS-level frameworks have been added to all Cinder apps:
+IOSurface, IOKit, AVFoundation, CoreMedia
+</p>
+
+<p>
+And these are no longer necessary:
+QuickTime, QTKit
+</p>
+
+<p>
+MSW-specific Changes: 
+Visual C++ 2015 is supported. Additionally, the ANGLE renderer allows Cinder apps to run without GL drivers. .  
+</p>
+
+<script src="../../_assets/js/prism.js" type="text/javascript"></script>
+
+
+  
+  </div>
+
+</div> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="../_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="../_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="../_assets/js/prism.js" type="text/javascript"></script>
+    <script src="../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="../search_index.js" type="text/javascript"></script>
+    <script src="../_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+<script src="../../_assets/js/prism.js" type="text/javascript"></script></body></html>

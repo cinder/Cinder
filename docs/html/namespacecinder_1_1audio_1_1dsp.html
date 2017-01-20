@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+
+    <title>cinder::audio::dsp</title> <!-- dynamic partial defined in python -->
+    
+
+    <link href="_assets/css/foundation.css" rel="stylesheet"/>
+    <link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+    <link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic" rel="stylesheet" type="text/css"/>
+
+</head>
+<body class="namespaces language-cpp">
+
+    <!-- start offcanvas content for responsive sliding nav -->
+    <div class="off-canvas-wrap wrapper" data-offcanvas="">
+        <main class="inner-wrap">
+
+            <section class="main-section">
+
+                <!-- top section -->
+                <div id="top-primary">
+                    <!-- main nav -->
+                    
+                    <nav class="show-for-medium-up content row top-bar" data-topbar="" id="main-nav" role="navigation">
+                      <div class="branding columns medium-4 large-3">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.9.0</div>
+                        </div>
+                      </div>
+
+                    <div class="columns medium-8 large-9">
+                        <section class="top-bar-section">
+                            <!-- Right Nav Section -->
+                            <ul class="right">
+                              <li class="active">
+                                    </li><li id="nav_search">
+                                    <div id="search">
+                                            <input id="search-input" type="text"/>
+                                            <div id="search-results"></div>
+                                        </div>
+                                        <script src="search_index.js" type="text/javascript"></script>
+                                  </li>
+                              
+                            </ul>
+
+                            <!-- Left Nav Section -->
+                            
+                            <ul class="tablist nav">
+                              <li class="" id="nav_reference">
+                                <a href="reference/geometry.html">Reference</a></li>
+                              <li class="" id="nav_guides">
+                                <a href="guides/index.html">Guides</a></li>
+                              <li class="active" id="nav_namespaces">
+                                <a href="namespaces.html">Namespaces</a></li>
+                              <li class="" id="nav_classes">
+                                <a href="classes.html">
+                                  Classes</a></li>
+                            </ul>
+                        </section>
+                      </div>
+                    </nav>
+
+                    <!-- for any additional content you'd want to put up here -->
+                    
+                </div>
+
+                <!-- mobile nav -->
+                <nav class="tab-bar show-for-small">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+                  </section>
+
+                  <section class="middle tab-bar-section">
+                    <h2 class="title">Cinder</h2>
+                  </section>
+
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>Cinder Documentation</label></li>
+                    <li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+                    <li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+                    <li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+                    <li id="nav_classes"><a href="classes.html">Classes</a></li>
+                    <li><a href="http://libcinder.org/download/">Download</a></li>
+                  </ul>
+                </aside>
+                
+                
+                <div data-equalizer="content" id="main-content">
+
+                    <div class="row content-row content">
+
+  <!-- side nav -->
+  <div class="columns large-3" data-equalizer-watch="content" id="side-nav">
+    <h4>Namespaces:</h4>
+    <div class="css-treeview"><ul><li><input checked="true" id="item-0" type="checkbox"/><label for="item-0"><a href="namespacecinder.html">cinder</a></label><ul><li><a href="namespacecinder_1_1app.html">app</a></li><li><input id="item-0-1" type="checkbox"/><label for="item-0-1"><a href="namespacecinder_1_1audio.html">audio</a></label><ul><li><a href="namespacecinder_1_1audio_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1audio_1_1dsp.html">dsp</a></li><li><a href="namespacecinder_1_1audio_1_1msw.html">msw</a></li></ul></li><li><a href="namespacecinder_1_1cairo.html">cairo</a></li><li><a href="namespacecinder_1_1cocoa.html">cocoa</a></li><li><a href="namespacecinder_1_1dx.html">dx</a></li><li><a href="namespacecinder_1_1geom.html">geom</a></li><li><a href="namespacecinder_1_1gl.html">gl</a></li><li><a href="namespacecinder_1_1ip.html">ip</a></li><li><a href="namespacecinder_1_1log.html">log</a></li><li><a href="namespacecinder_1_1msw.html">msw</a></li><li><a href="namespacecinder_1_1params.html">params</a></li><li><a href="namespacecinder_1_1qtime.html">qtime</a></li><li><a href="namespacecinder_1_1signals.html">signals</a></li><li><a href="namespacecinder_1_1svg.html">svg</a></li><li><a href="namespacecinder_1_1winrt.html">winrt</a></li></ul></li></ul></div>
+  </div>
+
+
+  <!-- main content area -->
+  <div class="columns large-9" data-equalizer-watch="content">
+
+    <div id="container">
+
+      <div class="content">
+
+        <!-- content -->
+        <h1 id="page-title">
+            <strong>cinder::audio::dsp</strong> Namespace Reference
+        </h1>
+        <div id="sub-nav">
+          	<ul>
+          		<li><a href="#namespaces">Namespaces</a></li>
+
+          		<li><a href="#classes">Classes</a></li>
+          		
+          		<li><a href="#typedefs">Typedefs</a></li>
+
+          		<li><a href="#enumerations">Enumerations</a></li>
+
+
+          		<li><a href="#functions">Functions</a></li>
+
+          	</ul>
+        </div>        <hr/>
+
+        <!-- show/hide buttons -->
+        <div id="show-hide">
+          <a class="show-all">Show All</a> | <a class="hide-all">Hide All</a>
+        </div>
+        
+        <!-- contents -->
+        <div class="contents">
+
+            <!-- namespaces -->
+            <a name="namespaces"></a>
+            <section>
+                <h2>Namespaces</h2>
+                <ul>
+                        <li class="row">
+                            <div class="definitionCol columns large-9">
+                                <a href="namespacecinder_1_1audio_1_1dsp_1_1ooura.html">cinder::audio::dsp::ooura</a>
+                            </div>
+                        </li>
+                </ul>
+            </section>
+            <hr/>
+
+            <!-- classes -->
+            <a name="classes"></a>
+            <section>
+                <h2>Classes</h2>
+                <ul>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1dsp_1_1_biquad.html">cinder::audio::dsp::Biquad</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1dsp_1_1_converter.html">cinder::audio::dsp::Converter</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1dsp_1_1_converter_impl_r8brain.html">cinder::audio::dsp::ConverterImplR8brain</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1dsp_1_1_fft.html">cinder::audio::dsp::Fft</a>
+                            </div>
+                        </li>
+                        <li class="row">
+                            <div class="returnCol columns large-1">
+                                class
+                            </div>
+                            <div class="definitionCol columns large-11">
+                                <a href="classcinder_1_1audio_1_1dsp_1_1_ring_buffer_t.html">cinder::audio::dsp::RingBufferT</a>
+                            </div>
+                        </li>
+                </ul>
+            </section>
+            <hr/>
+
+            <!-- typedefs -->
+            <a name="typedefs"></a>
+            <section>
+                <h2>Typedefs</h2>
+                <ul>
+                        <li class="row functionDef ">
+                            <a class="anchor" name="aea6eb08fb35fdf6fa5a61e4fdae3acfb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type"><a href="classcinder_1_1audio_1_1dsp_1_1_ring_buffer_t.html">RingBufferT</a>&lt; float &gt;</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>RingBuffer</strong> </div>
+
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- enumerations -->
+            <a name="enumerations"></a>
+            <section>
+                <h2>Enumerations</h2>
+                <ul>
+                    <li class="row expandable enumDef">
+                        <a class="anchor" name="afc9899d685bdc355edaa2a584e6ace72"></a>
+                        <div class="definitionCol columns large-3"></div>
+                        <div class="definitionCol columns large-9">
+                            <div class="definition"><strong>WindowType</strong></div>
+                            <html><head></head><body><div class="description content">
+ <p>
+ </p>
+ <div class="description content">
+  <p>
+   Describes the avaiable windowing functions.
+  </p>
+ </div>
+ <p>
+ </p>
+ {
+ <ul>
+  <li>
+   BLACKMAN
+  </li>
+  <li>
+   HAMMING
+  </li>
+  <li>
+   HANN
+  </li>
+  <li>
+   RECT
+  </li>
+ </ul>
+ }
+</div>
+</body></html>
+                        </div>
+                    </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- free functions -->
+            
+            <!-- functions -->
+            <a name="functions"></a>
+            <section>
+                <h2>Functions</h2>
+                <ul>
+                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a44193709a629f31928be02ab1335019b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mixBuffers</strong> (const Buffer *sourceBuffer, Buffer *destBuffer, size_t numFrames)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Mixes
+   <em>
+    numFrames
+   </em>
+   frames of
+   <em>
+    sourceBuffer
+   </em>
+   to
+   <em>
+    destBuffer's
+   </em>
+   layout, replacing its content. Channel up or down mixing is applied if necessary.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad654972130d1ca3b333a4d3e14e47829"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mixBuffers</strong> (const Buffer *sourceBuffer, Buffer *destBuffer)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Mixes
+   <em>
+    sourceBuffer
+   </em>
+   to
+   <em>
+    destBuffer's
+   </em>
+   layout, replacing its content. Channel up or down mixing is applied if necessary. Unequal frame counts are permitted (the minimum size will be used).
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a226a0a35df72fc99401be8260d659f09"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sumBuffers</strong> (const Buffer *sourceBuffer, Buffer *destBuffer, size_t numFrames)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sums
+   <em>
+    numFrames
+   </em>
+   frames of
+   <em>
+    sourceBuffer
+   </em>
+   into
+   <em>
+    destBuffer
+   </em>
+   . Channel up or down mixing is applied if necessary.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0d794dd0985d0cb7fcb3f93dcc637fbc"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sumBuffers</strong> (const Buffer *sourceBuffer, Buffer *destBuffer)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Sums
+   <em>
+    sourceBuffer
+   </em>
+   into
+   <em>
+    destBuffer
+   </em>
+   . Channel up or down mixing is applied if necessary. Unequal frame counts are permitted (the minimum size will be used).
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a317d30c197b934096eef21cf405881a9"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>convert</strong> (const SourceT *sourceArray, DestT *destArray, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts between two arrays of different precision (ex. float to double).
+   <em>
+    length
+   </em>
+   samples are converted.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ae4552b975a215a8150f66176f4c87a4a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>convertBuffer</strong> (const BufferT&lt; SourceT &gt; *sourceBuffer, BufferT&lt; DestT &gt; *destBuffer)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts between two
+   <a href="classcinder_1_1audio_1_1_buffer_t.html">
+    BufferT
+   </a>
+   's of different precision (ex. float to double). The number of frames converted is the lesser of the two. The number of channels converted is the lesser of the two.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3a29ebe00455997c599bc47a4369aa83"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>convertInt24ToFloat</strong> (const char *sourceArray, FloatT *destArray, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts the 24-bit int
+   <em>
+    sourceArray
+   </em>
+   to floating point precision, placing the result in
+   <em>
+    destArray
+   </em>
+   .
+   <em>
+    length
+   </em>
+   samples are converted.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab1b74044ba4df050275f52a0e8a83ee1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>convertFloatToInt24</strong> (const FloatT *sourceArray, char *destArray, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Converts the floating point
+   <em>
+    sourceArray
+   </em>
+   to 24-bit int precision, placing the result in
+   <em>
+    destArray
+   </em>
+   .
+   <em>
+    length
+   </em>
+   samples are converted.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8a6e6e5f36894eb3a96925489cbf24bb"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>interleave</strong> (const T *nonInterleavedSourceArray, T *interleavedDestArray, size_t numFramesPerChannel, size_t numChannels, size_t numCopyFrames)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Interleaves
+   <em>
+    numCopyFrames
+   </em>
+   of
+   <em>
+    nonInterleavedSourceArray
+   </em>
+   , placing the result in
+   <em>
+    interleavedDestArray
+   </em>
+   .
+   <em>
+    numFramesPerChannel
+   </em>
+   and
+   <em>
+    numChannels
+   </em>
+   describe the layout of the non-interleaved array.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a43c8b140574d01416c6c3d86bcf83396"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>interleave</strong> (const FloatT *nonInterleavedFloatSourceArray, int16_t *interleavedInt16DestArray, size_t numFramesPerChannel, size_t numChannels, size_t numCopyFrames)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Interleaves
+   <em>
+    numCopyFrames
+   </em>
+   of
+   <em>
+    nonInterleavedSourceArray
+   </em>
+   and converts from floating point to 16-bit int precision at the same time, placing the result in
+   <em>
+    interleavedDestArray
+   </em>
+   .
+   <em>
+    numFramesPerChannel
+   </em>
+   and
+   <em>
+    numChannels
+   </em>
+   describe the layout of the non-interleaved array.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa080a12e2ea79a6f726624221e5dc356"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>deinterleave</strong> (const T *interleavedSourceArray, T *nonInterleavedDestArray, size_t numFramesPerChannel, size_t numChannels, size_t numCopyFrames)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   De-interleaves
+   <em>
+    numCopyFrames
+   </em>
+   of
+   <em>
+    interleavedSourceArray
+   </em>
+   , placing the result in
+   <em>
+    nonInterleavedDestArray
+   </em>
+   .
+   <em>
+    numFramesPerChannel
+   </em>
+   and
+   <em>
+    numChannels
+   </em>
+   describe the layout of the non-interleaved array.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afc38d8aab3a749d1c821924abd8bc4e4"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>deinterleave</strong> (const int16_t *interleavedInt16SourceArray, FloatT *nonInterleavedFloatDestArray, size_t numFramesPerChannel, size_t numChannels, size_t numCopyFrames)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   De-interleaves
+   <em>
+    numCopyFrames
+   </em>
+   of
+   <em>
+    interleavedSourceArray
+   </em>
+   and converts from 16-bit int to floating point precision at the same time, placing the result in
+   <em>
+    nonInterleavedDestArray
+   </em>
+   .
+   <em>
+    numFramesPerChannel
+   </em>
+   and
+   <em>
+    numChannels
+   </em>
+   describe the layout of the non-interleaved array.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1ec2ca96c0858245fc5daa39fb0e3f37"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>interleaveBuffer</strong> (const BufferT&lt; T &gt; *nonInterleavedSource, BufferInterleavedT&lt; T &gt; *interleavedDest)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Interleaves
+   <em>
+    nonInterleavedSource
+   </em>
+   , placing the result in
+   <em>
+    interleavedDest
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="aa4c5bfb0a29fb2f753b006f27d67ed87"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>deinterleaveBuffer</strong> (const BufferInterleavedT&lt; T &gt; *interleavedSource, BufferT&lt; T &gt; *nonInterleavedDest)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   De-interleaves
+   <em>
+    interleavedSource
+   </em>
+   , placing the result in
+   <em>
+    nonInterleavedDest
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afbc162743020c4b3cec4d4fbfa0c262d"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>interleaveStereoBuffer</strong> (const BufferT&lt; T &gt; *nonInterleavedSource, BufferInterleavedT&lt; T &gt; *interleavedDest)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Interleaves
+   <em>
+    nonInterleavedSource
+   </em>
+   , placing the result in
+   <em>
+    interleavedDest
+   </em>
+   . This method is only slightly faster than
+   <a href="namespacecinder_1_1audio_1_1dsp.html#a1ec2ca96c0858245fc5daa39fb0e3f37">
+    interleaveBuffer()
+   </a>
+   , which can handle an arbitrary number of channels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a8c01cb9fe40a6ff30e26bc4d242a8fe8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>deinterleaveStereoBuffer</strong> (const BufferInterleavedT&lt; T &gt; *interleavedSource, BufferT&lt; T &gt; *nonInterleavedDest)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   De-interleaves
+   <em>
+    interleavedSource
+   </em>
+   , placing the result in
+   <em>
+    nonInterleavedDest
+   </em>
+   . This method is only slightly faster than
+   <a href="namespacecinder_1_1audio_1_1dsp.html#a8c01cb9fe40a6ff30e26bc4d242a8fe8">
+    deinterleaveStereoBuffer()
+   </a>
+   , which can handle an arbitrary number of channels.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afd50a33e6343209c8a35a8417d027549"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>generateBlackmanWindow</strong> (float *window, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Fills
+   <em>
+    length
+   </em>
+   samples of
+   <em>
+    window
+   </em>
+   with a Blackmann windowing function.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6b4de650065d51a53eb5be77d2b586c1"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>generateHammingWindow</strong> (float *window, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Fills
+   <em>
+    length
+   </em>
+   samples of
+   <em>
+    window
+   </em>
+   with a Hamming windowing function.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac2a8538b5e0e40d58f6a999e0a60bb23"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>generateHannWindow</strong> (float *window, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   Fills
+   <em>
+    length
+   </em>
+   samples of
+   <em>
+    window
+   </em>
+   with a Hann windowing function.
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a1ace03933c8907929d5452cdda1458a2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>generateWindow</strong> (WindowType windowType, float *window, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   fills
+   <em>
+    window
+   </em>
+   array with a windowing function specified by
+   <em>
+    windowType
+   </em>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ac2d0750018496c6bc8dc7ac40e4ba6b8"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>fill</strong> (float value, float *array, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   fills
+   <em>
+    array
+   </em>
+   with value
+   <em>
+    value
+   </em>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3138b08965413624d6cbfb9c49dd84b2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>add</strong> (const float *array, float scalar, float *result, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   add
+   <em>
+    scalar
+   </em>
+   to
+   <em>
+    array
+   </em>
+   of length
+   <em>
+    length
+   </em>
+   , into
+   <em>
+    result
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="acca0924595b9fb6be4c0b89b05b01a35"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>add</strong> (const float *arrayA, const float *arrayB, float *result, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   add
+   <em>
+    length
+   </em>
+   elements of
+   <em>
+    arrayA
+   </em>
+   and
+   <em>
+    arrayB
+   </em>
+   (element-wise) into
+   <em>
+    result
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="afdb7fc1a15574d269266fdf5dffcabe3"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sub</strong> (const float *array, float scalar, float *result, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   subtract
+   <em>
+    scalar
+   </em>
+   from
+   <em>
+    array
+   </em>
+   of length
+   <em>
+    length
+   </em>
+   , into
+   <em>
+    result
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a3da6d8a76ec118ca08cd350c9f0b3c8b"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sub</strong> (const float *arrayA, const float *arrayB, float *result, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   subtract
+   <em>
+    length
+   </em>
+   elements of
+   <em>
+    arrayB
+   </em>
+   from
+   <em>
+    arrayA
+   </em>
+   (element-wise) into
+   <em>
+    result
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a09a3cffa18ed82da32968cfe3149c4c7"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mul</strong> (const float *array, float scalar, float *result, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   multiplies
+   <em>
+    length
+   </em>
+   elements of
+   <em>
+    array
+   </em>
+   by
+   <em>
+    scalar
+   </em>
+   and places the result at
+   <em>
+    result
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a4f2388e6d7397998aa8d59c38345d221"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>mul</strong> (const float *arrayA, const float *arrayB, float *result, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   multiplies
+   <em>
+    length
+   </em>
+   elements of
+   <em>
+    arrayA
+   </em>
+   by
+   <em>
+    arrayB
+   </em>
+   and places the result at
+   <em>
+    result
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a10e024a7b6fe83aec02e946c0b4b5673"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>divide</strong> (const float *array, float scalar, float *result, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   divides
+   <em>
+    length
+   </em>
+   elements of
+   <em>
+    array
+   </em>
+   by
+   <em>
+    scalar
+   </em>
+   and places the result at
+   <em>
+    result
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a6d1d8c2d5bb87c8222f3d400bb53ec4a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>divide</strong> (const float *arrayA, const float *arrayB, float *result, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   divides
+   <em>
+    length
+   </em>
+   elements of
+   <em>
+    arrayA
+   </em>
+   by
+   <em>
+    arrayB
+   </em>
+   and places the result at
+   <em>
+    result
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a0d3575d48cadec87117e093869e14acf"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>addMul</strong> (const float *arrayA, const float *arrayB, float scalar, float *result, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   sums
+   <em>
+    length
+   </em>
+   elements of
+   <em>
+    arrayA
+   </em>
+   by
+   <em>
+    arrayB
+   </em>
+   (element-wise), then scales by
+   <em>
+    scalar
+   </em>
+   and places the result at
+   <em>
+    result
+   </em>
+   .
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ab10ca5d93466c1ce3fc7d23e4d2faf47"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>sum</strong> (const float *array, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   returns the sum of
+   <em>
+    array
+   </em>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="a51ea31da647581d0de10b5619ab728e2"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">float</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>rms</strong> (const float *array, size_t length)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   returns the Root-Mean-Squared value of
+   <em>
+    array
+   </em>
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                        <li class="row functionDef expandable">
+                            <a class="anchor" name="ad4c4429495c3ca4e20875eaad8cb664a"></a>
+                                
+                            <div class="returnCol columns large-3">
+                                <div class="type"><div class="type">void</div></div>
+                            </div>
+                            
+                            <div class="definitionCol columns large-9">
+                                <div class="definition"><strong>normalize</strong> (float *array, size_t length, float maxValue=1)</div>
+
+                                <html><head></head><body><div class="description content">
+ <div class="description content">
+  <p>
+   normalizes
+   <em>
+    array
+   </em>
+   to
+   <em>
+    maxValue
+   </em>
+   (default = 1)
+  </p>
+ </div>
+</div>
+</body></html>
+                            </div>
+                        </li>                </ul>
+            </section>
+            <hr/>
+
+            <!-- variables -->
+
+        </div>
+
+        <!-- end content -->
+
+      </div>
+    </div>
+
+  </div>
+</div> <!--  row --> <!-- dynamic partial defined in python -->
+                </div> 
+            </section>
+            
+            <a class="exit-off-canvas"></a>
+        </main>
+
+        <footer>
+          <div class="row">&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a></div>
+        </footer>
+
+    </div>
+    
+    
+
+    
+    <script src="_assets/js/jquery.js" type="text/javascript"></script>
+    <script src="_assets/js/foundation.min.js" type="text/javascript"></script>
+    <script src="_assets/js/prism.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="_assets/js/lunr.min.js" type="text/javascript"></script>
+    <script src="search_index.js" type="text/javascript"></script>
+    <script src="_assets/js/cinder.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        // Calling foundation runs through any calls
+        // related to foundation 5.
+        // One such thing is making sure the column sizes stay in sync
+        // $(document).foundation();
+        $(document).foundation('offcanvas', 'reflow');
+    </script>
+
+
+</body></html>
