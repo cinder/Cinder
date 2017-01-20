@@ -174,17 +174,18 @@ class Node : public std::enable_shared_from_this<Node>, private Noncopyable {
 
   protected:
 
-	//! Called before audio buffers need to be used. There is always a valid Context at this point.
+	//! Called before audio buffers need to be used. There is always a valid Context at this point. Default implementation is empty.
 	virtual void initialize()				{}
-	//! Called once the contents of initialize are no longer relevant, i.e. connections have changed. \note Not guaranteed to be called at Node destruction.
+	//! Called once the contents of initialize are no longer relevant, i.e. connections have changed. Default implementation is empty.
+	//! \note Not guaranteed to be called at Node destruction.
 	virtual void uninitialize()				{}
-	//! Callled when this Node should enable processing. Initiated from Node::enable().
+	//! Callled when this Node should enable processing. Initiated from Node::enable(). Default implementation is empty.
 	virtual void enableProcessing()			{}
-	//! Callled when this Node should disable processing. Initiated from Node::disable().
+	//! Callled when this Node should disable processing. Initiated from Node::disable(). Default implementation is empty.
 	virtual void disableProcessing()		{}
-	//! Override to perform audio processing on \t buffer.
-	virtual void process( Buffer *buffer )	{}
-
+	//! Override to perform audio processing on \t buffer. Default implementation is empty.
+	virtual void process( Buffer *buffer );
+	//! Override to customize how input Nodes are summed into the internal summing buffer. You usually don't need to do this.
 	virtual void sumInputs();
 
 	//! Default implementation returns true if numChannels matches our format.

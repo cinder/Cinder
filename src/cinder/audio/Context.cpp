@@ -178,6 +178,10 @@ void Context::setEnabled( bool b )
 		disable();
 }
 
+void Context::connectionsDidChange( const NodeRef & /*node*/ )
+{
+}
+
 void Context::initializeAllNodes()
 {
 	set<NodeRef> traversedNodes;

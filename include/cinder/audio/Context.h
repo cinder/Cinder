@@ -80,8 +80,8 @@ class Context : public std::enable_shared_from_this<Context> {
 	//! Returns whether or not this \a Context is current enabled and processing audio.
 	bool isEnabled() const		{ return mEnabled; }
 
-	//! Called by \a node when it's connections have changed, default implementation is empty.
-	virtual void connectionsDidChange( const NodeRef &node ) {} 
+	//! Called by \a node when it's connections have changed. Default implementation is empty.
+	virtual void connectionsDidChange( const NodeRef &node );
 
 	//! Returns the samplerate of this Context, which is governed by the current OutputNode.
 	size_t		getSampleRate()				{ return getOutput()->getOutputSampleRate(); }
