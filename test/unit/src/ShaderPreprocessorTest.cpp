@@ -22,7 +22,7 @@ TEST_CASE( "ShaderPreprocessor" )
 		REQUIRE( result.find( "#include" ) == string::npos );
 		REQUIRE( result.find( "fract( sin( n ) * 43758.5453 )" ) != string::npos );
 
-		fs::path commonSimplePath = app::getAssetPath( "shader_preprocessor/commonSimple.glsl" );
+		fs::path commonSimplePath = fs::canonical( app::getAssetPath( "shader_preprocessor/commonSimple.glsl" ) );
 		REQUIRE( includedFiles.size() == 1 );
 		REQUIRE( includedFiles.count( commonSimplePath ) == 1 );
 	}
@@ -40,7 +40,7 @@ TEST_CASE( "ShaderPreprocessor" )
 		REQUIRE( result.find( "#include" ) == string::npos );
 		REQUIRE( result.find( "fract( sin( n ) * 43758.5453 )" ) != string::npos );
 
-		fs::path commonSimplePath = app::getAssetPath( "shader_preprocessor/commonSimple.glsl" );
+		fs::path commonSimplePath = fs::canonical( app::getAssetPath( "shader_preprocessor/commonSimple.glsl" ) );
 		REQUIRE( includedFiles.size() == 1 );
 		REQUIRE( includedFiles.count( commonSimplePath ) == 1 );
 	}
@@ -70,8 +70,8 @@ TEST_CASE( "ShaderPreprocessor" )
 		REQUIRE( result.find( "fract( sin( n ) * 43758.5453 )" ) != string::npos );
 		REQUIRE( result.find( "float noise( in vec2 x )" ) != string::npos );
 
-		fs::path commonPath = app::getAssetPath( "shader_preprocessor/common.glsl" );
-		fs::path hashPath = app::getAssetPath( "shader_preprocessor/hash.glsl" );
+		fs::path commonPath = fs::canonical( app::getAssetPath( "shader_preprocessor/common.glsl" ) );
+		fs::path hashPath = fs::canonical( app::getAssetPath( "shader_preprocessor/hash.glsl" ) );
 		REQUIRE( includedFiles.size() == 2 );
 		REQUIRE( includedFiles.count( commonPath ) == 1 );
 		REQUIRE( includedFiles.count( hashPath ) == 1 );
