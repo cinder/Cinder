@@ -158,7 +158,7 @@ class CI_API ScopedConnection : public Connection, private Noncopyable {
 // ----------------------------------------------------------------------------------------------------
 
 //! Maintains a list of Connections and calls disconnect on them when it is destroyed. Non-copyable.
-class ConnectionList : private Noncopyable {
+class CI_API ConnectionList : private Noncopyable {
   public:
 	~ConnectionList();
 
