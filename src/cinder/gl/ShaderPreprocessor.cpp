@@ -127,7 +127,6 @@ bool findIncludeStatement( const std::string &line, std::string *out )
 bool findVersionStatement( const char *lineStart, int *versionNumberOut )
 {
 	const int VERSION_KEYWORD_LEN = 7;
-	const char *resultStart = nullptr;
 	const char *c = lineStart;
 	consumeWhiteSpace( &c );
 	// leading '#'
@@ -145,11 +144,8 @@ bool findVersionStatement( const char *lineStart, int *versionNumberOut )
 	// leading digit
 	if( isTerminated( c ) || (! isdigit( *c )) )
 		return false;
-	resultStart = c;
-	while( ( ! isTerminated( c ) ) && isdigit( *c ) )
-		++c;
 	if( versionNumberOut )
-		*versionNumberOut = (int)std::strtol( resultStart, nullptr, 0 );
+		*versionNumberOut = (int)std::strtol( c, nullptr, 0 );
 	return true;
 }
 } // anonymous namespace
