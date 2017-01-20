@@ -174,9 +174,8 @@ void GlslProg::Attribute::getShaderAttribLayout( GLenum type, uint32_t *numDimsP
 //////////////////////////////////////////////////////////////////////////
 // GlslProg::Format
 GlslProg::Format::Format()
-	: 
 #if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
-	mTransformFormat( -1 )
+	: mTransformFormat( -1 )
 #endif
 {
 	mPreprocessor = make_shared<ShaderPreprocessor>();

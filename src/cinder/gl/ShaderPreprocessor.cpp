@@ -203,12 +203,10 @@ string ShaderPreprocessor::parse( const std::string &source, const fs::path &sou
 void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::path &sourcePath, std::string *directives, std::string *sourceBody, int *versionNumber, int *lineNumberStart )
 {		
 	// go through each line and find the #version directive
-	string line;
 	int lineNumber = 1;
 	bool hasVersionLine = false;
 
-	size_t lineStartPos = 0;
-	while( lineStartPos < source.size() ) {
+	for( size_t lineStartPos = 0; lineStartPos < source.size(); /* */ ) {
 		size_t lineEndPos = source.find( '\n', lineStartPos );
 		if( lineEndPos == std::string::npos )
 			break;
@@ -223,7 +221,7 @@ void ShaderPreprocessor::parseDirectives( const std::string &source, const fs::p
 
 			// Copy #version line and everything before it to the directives string, the rest to sourceBody
 			*directives = source.substr( 0, lineEndPos + 1 );
-			*sourceBody = source.substr( lineEndPos + 1, source.size() - lineEndPos );
+			*sourceBody = source.substr( lineEndPos + 1 );
 			*lineNumberStart = lineNumber;
 			hasVersionLine = true;
 
