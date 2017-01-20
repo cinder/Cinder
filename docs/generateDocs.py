@@ -3776,3 +3776,4 @@ if __name__ == "__main__":
             log("SUCCESSFULLY GENERATED YOUR FILES!", 0, True)
     else:
         log("Unknown usage", 1, True)
+
