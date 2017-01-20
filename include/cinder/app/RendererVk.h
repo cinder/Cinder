@@ -117,7 +117,7 @@ class RendererVk : public Renderer {
 		uint32_t							mSwapchainImageCount = 2;
 		VkSampleCountFlagBits				mSamples = VK_SAMPLE_COUNT_1_BIT;
 		VkFormat							mDepthStencilFormat = VK_FORMAT_D16_UNORM;
-		VkPresentModeKHR					mPresentMode = VK_PRESENT_MODE_MAX_ENUM;
+		VkPresentModeKHR					mPresentMode = VK_PRESENT_MODE_MAX_ENUM_KHR;
 		std::vector<std::string>			mInstanceLayers;
 		std::vector<std::string>			mDeviceLayers;
 		vk::DebugReportCallbackFn			mDebugReportCallbackFn = nullptr;

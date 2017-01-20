@@ -49,6 +49,7 @@ class ComputeBasicApp : public App {
 public:	
 	void	setup() override;
 	void	update() override;
+	void	resize() override;
 	void	draw() override;
 	
 private:
@@ -184,6 +185,11 @@ void ComputeBasicApp::update()
 	}
 }
 
+void ComputeBasicApp::resize()
+{
+	update();
+}
+
 void ComputeBasicApp::draw()
 {
 	// Get next image
@@ -198,7 +204,7 @@ void ComputeBasicApp::draw()
 		// Initial params
 		std::vector<vk::CommandBufferRef> commandBuffers = { cmdBuf };
 		std::vector<VkSemaphore> waitSemaphores = { mImageAcquiredSemaphore, mComputeDoneSemaphore };
-		std::vector<VkPipelineStageFlags> waitDstStageMasks = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT };
+		std::vector<VkPipelineStageFlags> waitDstStageMasks = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT };
 		VkFence nullFence = VK_NULL_HANDLE;
 		std::vector<VkSemaphore> signalSemaphores = { mRenderingCompleteSemaphore };
 
