@@ -291,10 +291,10 @@ CI_API glm::vec2 getClosestPointEllipse( const glm::vec2& center, const glm::vec
 
 //! Returns the closest point to \a testPoint on the line defined by the 2 \a controlPoints.
 template<typename T>
-glm::tvec2<T, glm::defaultp> getClosestPointLinear( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint );
+CI_API glm::tvec2<T, glm::defaultp> getClosestPointLinear( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint );
 //! Returns the closest point to \a testPoint on the line defined by the control points \a p0 and \a p1.
 template<typename T>
-glm::tvec2<T, glm::defaultp> getClosestPointLinear( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T, glm::defaultp> &p1, const glm::tvec2<T, glm::defaultp> &testPoint )
+glm::tvec2<T, glm::defaultp>		getClosestPointLinear( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T, glm::defaultp> &p1, const glm::tvec2<T, glm::defaultp> &testPoint )
 {
 	glm::tvec2<T, glm::defaultp> controlPoints[] = { p0, p1 };
 	return getClosestPointLinear<T>( controlPoints, testPoint );
@@ -302,10 +302,10 @@ glm::tvec2<T, glm::defaultp> getClosestPointLinear( const glm::tvec2<T, glm::def
 
 //! Returns the closest point to \a testPoint on the quadratic curve defined by the 3 \a controlPoints. Algorithm due to Olivier Besson, http://blog.gludion.com/2009/08/distance-to-quadratic-bezier-curve.html
 template<typename T>
-glm::tvec2<T, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint );
+CI_API glm::tvec2<T, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint );
 //! Returns the closest point to \a testPoint on the quadratic curve defined by the control points \a p0, \a p1 and \a p2. Algorithm due to Olivier Besson, http://blog.gludion.com/2009/08/distance-to-quadratic-bezier-curve.html
 template<typename T>
-glm::tvec2<T, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T, glm::defaultp> &p1, const glm::tvec2<T, glm::defaultp> &p2, const glm::tvec2<T, glm::defaultp> &testPoint )
+glm::tvec2<T, glm::defaultp>		getClosestPointQuadratic( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T, glm::defaultp> &p1, const glm::tvec2<T, glm::defaultp> &p2, const glm::tvec2<T, glm::defaultp> &testPoint )
 {
 	glm::tvec2<T, glm::defaultp> controlPoints[] = { p0, p1, p2 };
 	return getClosestPointQuadratic<T>( controlPoints, testPoint );
@@ -313,10 +313,10 @@ glm::tvec2<T, glm::defaultp> getClosestPointQuadratic( const glm::tvec2<T, glm::
 
 //! Returns the closest point to \a testPoint on the cubic curve defined by the 4 \a controlPoints. Algorithm due to Philip J. Schneider, https://github.com/erich666/GraphicsGems/blob/master/gems/NearestPoint.c
 template<typename T>
-glm::tvec2<T, glm::defaultp> getClosestPointCubic( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint );
+CI_API glm::tvec2<T, glm::defaultp> getClosestPointCubic( const glm::tvec2<T, glm::defaultp> *controlPoints, const glm::tvec2<T, glm::defaultp> &testPoint );
 //! Returns the closest point to \a testPoint on the cubic curve defined by the control points \a p0, \a p1, \a p2 and \a p3. Algorithm due to Philip J. Schneider, https://github.com/erich666/GraphicsGems/blob/master/gems/NearestPoint.c
 template<typename T>
-glm::tvec2<T, glm::defaultp> getClosestPointCubic( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T, glm::defaultp> &p1, const glm::tvec2<T, glm::defaultp> &p2, const glm::tvec2<T, glm::defaultp> &p3, const glm::tvec2<T, glm::defaultp> &testPoint )
+glm::tvec2<T, glm::defaultp>		getClosestPointCubic( const glm::tvec2<T, glm::defaultp> &p0, const glm::tvec2<T, glm::defaultp> &p1, const glm::tvec2<T, glm::defaultp> &p2, const glm::tvec2<T, glm::defaultp> &p3, const glm::tvec2<T, glm::defaultp> &testPoint )
 {
 	glm::tvec2<T, glm::defaultp> controlPoints[] = { p0, p1, p2, p3 };
 	return getClosestPointCubic<T>( controlPoints, testPoint );
