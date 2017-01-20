@@ -22,63 +22,131 @@ matrix:
         - TARGET="trusty"
         - DESCRIPTION="Ubuntu Trusty build/test via CMake"
 
-    # OS X cmake
+    # OS X Xcode
     - os: osx
       osx_image: xcode8.2
       env: 
-        - TOOL="xcode"
-        - DESCRIPTION="OS X build/test and iOS build via Xcode"
+        - TOOL="xcode-osx"
+        - DESCRIPTION="OS X build/test via Xcode"
     - os: osx
       osx_image: xcode8.1
       env:
-        - TOOL="xcode"
-        - DESCRIPTION=OS X build/test and iOS build via Xcode"
+        - TOOL="xcode-osx"
+        - DESCRIPTION=OS X build/test via Xcode"
     - os: osx
       osx_image: xcode8
       env:
-        - TOOL="xcode"
-        - DESCRIPTION=OS X build/test and iOS build via Xcode"
+        - TOOL="xcode-osx"
+        - DESCRIPTION=OS X build/test via Xcode"
     - os: osx
       osx_image: xcode7.3
       env:
-        - TOOL="xcode"
-        - DESCRIPTION=OS X build/test and iOS build via Xcode"
+        - TOOL="xcode-osx"
+        - DESCRIPTION=OS X build/test via Xcode"
     - os: osx
       osx_image: xcode6.4
       env:
-        - TOOL="xcode"
-        - DESCRIPTION=OS X build/test and iOS build via Xcode"
+        - TOOL="xcode-osx"
+        - DESCRIPTION=OS X build/test via Xcode"
 
-    # OS X xcode
+    # iOS Xcode
     - os: osx
       osx_image: xcode8.2
-      env: DESCRIPTION="OS X build/test via CMake"
+      env: 
+        - TOOL="xcode-ios"
+        - DESCRIPTION="OS X build/test via Xcode"
     - os: osx
       osx_image: xcode8.1
-      env: DESCRIPTION="OS X build/test via CMake"
+      env:
+        - TOOL="xcode-ios"
+        - DESCRIPTION=OS X build/test via Xcode"
     - os: osx
       osx_image: xcode8
-      env: DESCRIPTION="OS X build/test via CMake"
+      env:
+        - TOOL="xcode-ios"
+        - DESCRIPTION=OS X build/test via Xcode"
     - os: osx
       osx_image: xcode7.3
-      env: DESCRIPTION="OS X build/test via CMake"
+      env:
+        - TOOL="xcode-ios"
+        - DESCRIPTION=OS X build/test via Xcode"
     - os: osx
       osx_image: xcode6.4
-      env: DESCRIPTION="OS X build/test via CMake"
+      env:
+        - TOOL="xcode-ios"
+        - DESCRIPTION=OS X build/test via Xcode"
+
+    # iOS-Sim Xcode
+    - os: osx
+      osx_image: xcode8.2
+      env: 
+        - TOOL="xcode-ios-sim"
+        - DESCRIPTION="OS X build/test via Xcode"
+    - os: osx
+      osx_image: xcode8.1
+      env:
+        - TOOL="xcode-ios-sim"
+        - DESCRIPTION=OS X build/test via Xcode"
+    - os: osx
+      osx_image: xcode8
+      env:
+        - TOOL="xcode-ios-sim"
+        - DESCRIPTION=OS X build/test via Xcode"
+    - os: osx
+      osx_image: xcode7.3
+      env:
+        - TOOL="xcode-ios-sim"
+        - DESCRIPTION=OS X build/test via Xcode"
+    - os: osx
+      osx_image: xcode6.4
+      env:
+        - TOOL="xcode-ios-sim"
+        - DESCRIPTION=OS X build/test via Xcode"
+
+    # OS X CMake
+    - os: osx
+      osx_image: xcode8.2
+      env:
+        - TOOL="cmake" 
+        - DESCRIPTION="OS X build/test via CMake"
+    - os: osx
+      osx_image: xcode8.1
+      env:
+        - TOOL="cmake" 
+        - DESCRIPTION="OS X build/test via CMake"
+    - os: osx
+      osx_image: xcode8
+      env:
+        - TOOL="cmake" 
+        - DESCRIPTION="OS X build/test via CMake"
+    - os: osx
+      osx_image: xcode7.3
+      env:
+        - TOOL="cmake" 
+        - DESCRIPTION="OS X build/test via CMake"
+    - os: osx
+      osx_image: xcode6.4
+      env:
+        - TOOL="cmake" 
+        - DESCRIPTION="OS X build/test via CMake"
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       tools/linux/scripts/"$TARGET"-install-deps.sh;
-    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" != "xcode" ]]; then
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
       tools/osx/scripts/cmake-brew-install.sh;
     fi
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       tools/ci/cmake_test.sh;
-    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode" ]]; then
-      tools/ci/xcode_test.sh;
-    elif  [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    elif  [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "cmake" ]]; then
       tools/ci/cmake_test.sh;
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode-osx" ]]; then
+      tools/ci/xcode_osx_test.sh;
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode-ios" ]]; then
+      proj/xcode/ios-build-xcpretty.sh;
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$TOOL" == "xcode-ios-sim" ]]; then
+      proj/xcode/iossim-build-xcpretty.sh;
     fi
     
