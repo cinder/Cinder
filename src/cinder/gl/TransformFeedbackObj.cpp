@@ -43,12 +43,12 @@ class TransformFeedbackObjImplHardware : public TransformFeedbackObj {
 		glDeleteTransformFeedbacks( 1, &mId );
 	}
 	
-	void bindImpl( Context *context )
+	void bindImpl( Context * /*context*/ )
 	{
 		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mId );
 	}
 
-	void unbindImpl( Context *context )
+	void unbindImpl( Context * /*context*/ )
 	{
 		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
 	}
@@ -72,14 +72,14 @@ class TransformFeedbackObjImplSoftware : public TransformFeedbackObj {
 	{
 	}
 	
-	void bindImpl( class Context *context )
+	void bindImpl( class Context * /*context*/ )
 	{
 		for( auto bufferIt = mBufferBases.begin(); bufferIt != mBufferBases.end(); bufferIt++ ) {
 			glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, bufferIt->first, bufferIt->second->getId() );
 		}
 	}
 	
-	void unbindImpl( class Context *context )
+	void unbindImpl( class Context * /*context*/ )
 	{
 	}
 
