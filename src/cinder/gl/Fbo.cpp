@@ -316,6 +316,7 @@ void Fbo::initMultisamplingSettings( bool *useMsaa, bool *useCsaa, Format *forma
 }
 
 // Iterate the Format's requested attachments and create any we don't already have attachments for
+// TODO: handle multisampling
 void Fbo::prepareAttachments( const Fbo::Format &format, bool /*multisampling*/ )
 {
 	mAttachmentsBuffer = format.mAttachmentsBuffer;
