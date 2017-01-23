@@ -193,6 +193,14 @@
 	#include <pthread.h>
 #endif // R8B_WIN
 
+#if defined( __clang__ ) || defined( __GCC__ )
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter -Wparentheses"
+#elif defined( _MSC_VER )
+	#pragma warning( push )
+	#pragma warning( disable : 4100 4706)
+#endif
+
 /**
  * @brief The "r8brain-free-src" library namespace.
  *
@@ -1155,5 +1163,11 @@ inline double besselI0( const double x )
 }
 
 } // namespace r8b
+
+#if defined( __clang__ ) || defined( __GCC__ )
+	#pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+	#pragma warning(pop)
+#endif
 
 #endif // R8BBASE_INCLUDED
