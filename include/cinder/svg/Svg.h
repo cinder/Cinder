@@ -84,7 +84,7 @@ class Renderer {
 	virtual void	pushMatrix( const mat3 & /*m*/ ) {}
 	virtual void	popMatrix() {}
 	virtual void	pushStyle( const svg::Style & /*style*/ ) {}
-	virtual void	popStyle( const svg::Style & /*style*/ ) {}
+	virtual void	popStyle() {}
 	virtual void	pushFill( const class Paint & /*paint*/ ) {}
 	virtual void	popFill() {}
 	virtual void	pushStroke( const class Paint & /*paint*/ ) {}

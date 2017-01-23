@@ -941,7 +941,7 @@ void Node::finishRender( Renderer &renderer, const Style &style ) const
 {
 	if( mSpecifiesTransform )
 		renderer.popMatrix();
-	renderer.popStyle( style );		
+	renderer.popStyle();		
 	style.finishRender( renderer, this->isDrawable() );
 }
 
