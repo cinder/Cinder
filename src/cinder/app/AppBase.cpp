@@ -64,7 +64,6 @@
  	#if defined( __ANDROID__ )
  		#include "cinder/android/libc_helper.h"
  	#endif
-	#define NOMINMAX
 	#include "asio/asio.hpp"
 #endif
 
