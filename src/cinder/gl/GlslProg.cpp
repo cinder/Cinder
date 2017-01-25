@@ -701,6 +701,7 @@ void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPat
 		throw GlslProgCompileExc( log, shaderType );
 	}
 	glAttachShader( mHandle, handle );
+	glDeleteShader( handle );
 }
 
 void GlslProg::link()
