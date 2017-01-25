@@ -30,6 +30,7 @@ namespace cinder { namespace app {
 WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef sharedRenderer, AppImplLinux *appImpl )
 	: mAppImpl( appImpl )
 {
+	mFullScreen = format.isFullScreen();
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
 
@@ -74,7 +75,12 @@ WindowImplLinux::WindowImplLinux( const Window::Format &format, RendererRef shar
     ::glfwWindowHint( GLFW_SAMPLES, options.getMsaa() );
 
 	auto windowSize = format.getSize();
-	mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
+	if( mFullScreen ) {
+		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), ::glfwGetPrimaryMonitor(), NULL );
+	}
+	else {
+		mGlfwWindow = ::glfwCreateWindow( windowSize.x, windowSize.y, format.getTitle().c_str(), NULL, NULL );
+	}
 
 	mRenderer->setup( mGlfwWindow, sharedRenderer );
 
