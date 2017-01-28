@@ -46,6 +46,9 @@ list( APPEND SRC_SET_CINDER_VIDEO_LINUX
     ${CINDER_SRC_DIR}/cinder/linux/Movie.cpp
 )
 
+# Curl 
+list( APPEND SRC_SET_CINDER_LINUX ${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp )
+
 # Relevant source files depending on target GL.
 if( NOT CINDER_GL_ES_2_RPI )
 	if( CINDER_GL_ES )

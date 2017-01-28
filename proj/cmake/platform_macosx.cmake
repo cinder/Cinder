@@ -145,7 +145,7 @@ if( NOT ( "Xcode" STREQUAL "${CMAKE_GENERATOR}" ) )
 	endif()
 endif()
 
-# These are samples that cannot be built on Mac OS X, indicating they should be skipped with CINDER_BUILD_SAMPLES is on.
+# These are samples that cannot be built on Mac OS X, indicating they should be skipped with CINDER_BUILD_ALL_SAMPLES is on.
 list( APPEND CINDER_SKIP_SAMPLES
 	_opengl/ParticleSphereCS
 	_opengl/NVidiaComputeParticles

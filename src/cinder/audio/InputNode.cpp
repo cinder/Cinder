@@ -46,7 +46,7 @@ InputNode::~InputNode()
 {
 }
 
-void InputNode::connectInput( const NodeRef &input )
+void InputNode::connectInput( const NodeRef & /*input*/ )
 {
 	CI_ASSERT_MSG( 0, "InputNode does not support inputs" );
 }

@@ -388,7 +388,7 @@ uint8_t	VertBatch::getAttribDims( geom::Attrib attr ) const
 	}
 }
 
-void VertBatch::loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const
+void VertBatch::loadInto( geom::Target *target, const geom::AttribSet & /*requestedAttribs*/ ) const
 {
 	if( ! mVertices.empty() )
 		target->copyAttrib( geom::Attrib::POSITION, 4, 0, value_ptr( *mVertices.data() ), mVertices.size() );

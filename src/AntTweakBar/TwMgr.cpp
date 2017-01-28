@@ -36,6 +36,13 @@
 #   define _snprintf snprintf
 #endif  // defined(ANT_WINDOWS)
 
+#if defined(__clang__) || defined(__GCC__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wunused-parameter"
+#elif defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable : 4100)
+#endif
 
 using namespace std;
 
@@ -6767,4 +6774,10 @@ bool CRect::Subtract(const vector<CRect>& _Rects, vector<CRect>& _OutRects) cons
 }
 
 //  ---------------------------------------------------------------------------
+
+#if defined(__clang__) || defined(__GCC__)
+    #pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+    #pragma warning(pop)
+#endif
 

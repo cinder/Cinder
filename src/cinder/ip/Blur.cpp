@@ -47,7 +47,7 @@ uint8_t getPixelDataOffset( const SurfaceT<T> &surface )
 }
 
 template<typename T>
-uint8_t getPixelDataOffset( const ChannelT<T> &surface )
+uint8_t getPixelDataOffset( const ChannelT<T> & /*surface*/ )
 {
 	return 0;
 }

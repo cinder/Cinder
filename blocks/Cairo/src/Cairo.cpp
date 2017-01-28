@@ -2100,7 +2100,7 @@ class SvgRendererCairo : public svg::Renderer {
 	}
 	
 	void	pushStyle( const svg::Style &style ) {}	
-	void	popStyle( const svg::Style &style ) {}
+	void	popStyle() {}
 	
 	void	pushStroke( const svg::Paint &paint ) { mStrokeStack.push_back( paint ); }
 	void	popStroke() { mStrokeStack.pop_back(); }

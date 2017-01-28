@@ -1295,7 +1295,7 @@ void Texture2d::initData( const void *data, GLenum dataFormat, const Format &for
 #if ! defined( CINDER_GL_ES )
 // Called by initData( ImageSourceRef ) when the user has supplied an intermediate PBO via Format
 // We map the PBO after resizing it if necessary, and then use that as a data store for the ImageTargetGlTexture
-void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, GLint dataType, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo )
+void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format & /*format*/, GLint dataFormat, GLint dataType, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo )
 {
 	auto ctx = gl::context();
 
@@ -1335,7 +1335,7 @@ void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSourc
 #endif
 
 // Called by initData( ImageSourceRef ) when the user has NOT supplied an intermediate PBO
-void Texture2d::initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, GLint dataType, ImageIo::ChannelOrder channelOrder, bool isGray )
+void Texture2d::initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format & /*format*/, GLint dataFormat, GLint dataType, ImageIo::ChannelOrder channelOrder, bool isGray )
 {
 	if( imageSource->getDataType() == ImageIo::UINT8 ) {
 		auto target = ImageTargetGlTexture<uint8_t>::create( this, channelOrder, isGray, imageSource->hasAlpha() );

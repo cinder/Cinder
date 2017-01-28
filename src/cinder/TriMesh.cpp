@@ -60,7 +60,7 @@ void TriMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t stri
 	mMesh->copyAttrib( attr, dims, strideBytes, srcData, count );
 }
 
-void TriMeshGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
+void TriMeshGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t /*requiredBytesPerIndex*/ )
 {
 	size_t targetNumIndices = numIndices;
 	switch( primitive ) {
@@ -1050,7 +1050,7 @@ void TriMesh::getAttribPointer( geom::Attrib attr, const float **resultPtr, size
 	}
 }
 
-void TriMesh::copyAttrib( geom::Attrib attr, uint8_t dims, size_t stride, const float *srcData, size_t numVertices )
+void TriMesh::copyAttrib( geom::Attrib attr, uint8_t dims, size_t /*stride*/, const float *srcData, size_t numVertices )
 {
 	if( getAttribDims( attr ) == 0 )
 		return;
