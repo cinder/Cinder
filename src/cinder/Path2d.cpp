@@ -185,11 +185,11 @@ void Path2d::arc( const vec2 &center, float radius, float startRadians, float en
 {
 	if( forward ) {
 		while( endRadians < startRadians )
-			endRadians += 2 * M_PI;
+			endRadians += 2 * static_cast<float>( M_PI );
 	}
 	else {
 		while( endRadians > startRadians )
-			endRadians -= 2 * M_PI;
+			endRadians -= 2 * static_cast<float>( M_PI );
 	}
 
 	if( mPoints.empty() )
@@ -208,7 +208,7 @@ void Path2d::arcHelper( const vec2 &center, float radius, float startRadians, fl
 {
 	// wrap the angle difference around to be in the range [0, 4*pi]
     while( endRadians - startRadians > 4 * M_PI )
-		endRadians -= 2 * M_PI;
+		endRadians -= 2 * static_cast<float>( M_PI );
 
     // Recurse if angle delta is larger than PI
     if( endRadians - startRadians > M_PI ) {
@@ -223,7 +223,7 @@ void Path2d::arcHelper( const vec2 &center, float radius, float startRadians, fl
 		}
     }
 	else if( math<float>::abs( endRadians - startRadians ) > 0.000001f ) {
-		int segments = static_cast<int>( math<float>::ceil( math<float>::abs( endRadians - startRadians ) / ( M_PI / 2.0f ) ) );
+		int segments = static_cast<int>( math<float>::ceil( math<float>::abs( endRadians - startRadians ) / (static_cast<float>( M_PI ) / 2.0f ) ) );
 		float angle;
 		float angleDelta = ( endRadians - startRadians ) / (float)segments;
 		if( forward )
@@ -262,8 +262,8 @@ void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 	if( isClosed() || empty() )
 		throw Path2dExc(); // can only arcTo as non-first point
 
-	const float epsilon = 1e-8;
-	
+	const float epsilon = 1e-8f;
+
 	// Get current point.
 	const vec2& p0 = getCurrentPoint();
 
@@ -321,8 +321,8 @@ void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 		if( math<float>::abs( radiusSquare / b0tSquare ) < epsilon )
 			fraction = 0.0;
 		else
-			fraction = ( 4.0 / 3.0 ) / ( 1.0 + math<float>::sqrt( 1.0 + b0tSquare / radiusSquare ) );
-		
+			fraction = ( 4.0f / 3.0f ) / ( 1.0f + math<float>::sqrt( 1.0f + b0tSquare / radiusSquare ) );
+
 		const vec2 b1 = b0 + fraction * (t - b0);
 		const vec2 b2 = b3 + fraction * (t - b3);
 
@@ -387,7 +387,7 @@ void Path2d::getSegmentRelativeT( float t, size_t *segment, float *relativeT ) c
 	}
 
 	size_t totalSegments = mSegments.size();
-	float segParamLength = 1.0f / totalSegments; 
+	float segParamLength = 1.0f / totalSegments;
 	*segment = t * totalSegments;
 	if( relativeT )
 		*relativeT = ( t - *segment * segParamLength ) / segParamLength;
@@ -1587,7 +1587,7 @@ float Path2d::segmentSolveTimeForDistance( size_t segment, float segmentLength, 
 	// iterate and look for zeros
 	float lastArcLength = 0;
 	float currentT = 0;
-	for( size_t i = 0; i < maxIterations; ++i ) {
+	for( int i = 0; i < maxIterations; ++i ) {
 		// compute function value and test against zero
 		lastArcLength = calcSegmentLength( segment, currentT, currentT + p );
 		float delta = lastArcLength - segmentRelativeDistance;
