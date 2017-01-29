@@ -34,7 +34,7 @@ namespace cinder { namespace audio {
 void rampLinear( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
-		float factor( t );
+		auto factor = float( t );
 		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
@@ -52,7 +52,7 @@ void rampInQuad( float *array, size_t count, double t, double tIncr, float value
 void rampOutQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
-		float factor( -t * ( t - 2 ) );
+		auto factor = float( -t * ( t - 2 ) );
 		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
