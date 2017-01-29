@@ -691,14 +691,14 @@ ivec2 TextureBase::calcMipLevelSize( int mipLevel, GLint width, GLint height )
 {
 	width = std::max<int>( 1, width >> mipLevel );
 	height = std::max<int>( 1, height >> mipLevel );
-	
+
 	return ivec2( width, height );
 }
-	
+
 int TextureBase::requiredMipLevels( GLint width, GLint height, GLint depth )
 {
 	int maxDim = std::max( width, std::max( height, depth ) );
-	return floor( std::log2( maxDim ) ) + 1;
+	return static_cast<int>( floor( std::log2( maxDim ) ) )+ 1;
 }
 
 GLfloat TextureBase::getMaxAnisotropyMax()
