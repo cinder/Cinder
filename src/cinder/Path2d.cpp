@@ -69,7 +69,7 @@ Path2d::Path2d( const BSpline2f &spline, float subdivisionStep )
 				spl2 = spline.getControlPoint( lastPt % numPoints );
 			else
 				spl2 = ( spline.getControlPoint( i % numPoints ) + spline.getControlPoint( ( i + 1 ) % numPoints ) ) * 0.5f;
-			
+
 			quadTo( spl1, spl2 );
 		}
 	}
@@ -80,7 +80,7 @@ Path2d::Path2d( const BSpline2f &spline, float subdivisionStep )
 		int lastPt = ( spline.isLoop() ) ? numPoints : numPoints - 3;
 		for( int i = 0; i < lastPt; ++i ) {
 			vec2 p1 = spline.getControlPoint( ( i + 1 ) % numPoints ), p2 = spline.getControlPoint( ( i + 2 ) % numPoints ), p3 = spline.getControlPoint( ( i + 3 ) % numPoints );
-			
+
 			q1 = p1 * ( 4.0f / 6.0f ) + p2 * ( 2.0f / 6.0f );
 			q2 = p1 * ( 2.0f / 6.0f ) + p2 * ( 4.0f / 6.0f );
 			q3 = p1 * ( 1.0f / 6.0f ) + p2 * ( 4.0f / 6.0f ) + p3 * ( 1.0f / 6.0f );
@@ -140,14 +140,14 @@ Path2d::Path2d( const BSpline2f &spline, float subdivisionStep )
 		moveTo( spline.getPosition( 0 ) );
 		for( float t = subdivisionStep; t <= 1.0f; t += subdivisionStep )
 			lineTo( spline.getPosition( t ) );
-	}	
+	}
 }
 
 void Path2d::moveTo( const vec2 &p )
 {
 	if( ! mPoints.empty() )
 		throw Path2dExc(); // can only moveTo as the first point
-		
+
 	mPoints.push_back( p );
 }
 
@@ -155,7 +155,7 @@ void Path2d::lineTo( const vec2 &p )
 {
 	if( mPoints.empty() )
 		throw Path2dExc(); // can only lineTo as non-first point
-		
+
 	mPoints.push_back( p );
 	mSegments.push_back( LINETO );
 }
@@ -177,7 +177,7 @@ void Path2d::curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 )
 
 	mPoints.push_back( p1 );
 	mPoints.push_back( p2 );
-	mPoints.push_back( p3 );	
+	mPoints.push_back( p3 );
 	mSegments.push_back( CUBICTO );
 }
 
@@ -221,7 +221,7 @@ void Path2d::arcHelper( const vec2 &center, float radius, float startRadians, fl
 			arcHelper( center, radius, midRadians, endRadians, forward );
 			arcHelper( center, radius, startRadians, midRadians, forward );
 		}
-    } 
+    }
 	else if( math<float>::abs( endRadians - startRadians ) > 0.000001f ) {
 		int segments = static_cast<int>( math<float>::ceil( math<float>::abs( endRadians - startRadians ) / ( M_PI / 2.0f ) ) );
 		float angle;
@@ -236,7 +236,7 @@ void Path2d::arcHelper( const vec2 &center, float radius, float startRadians, fl
 		for( int seg = 0; seg < segments; seg++, angle += angleDelta ) {
 			arcSegmentAsCubicBezier( center, radius, angle, angle + angleDelta );
 		}
-    }	
+    }
 }
 
 void Path2d::arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians )
@@ -266,11 +266,11 @@ void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 	
 	// Get current point.
 	const vec2& p0 = getCurrentPoint();
-	
+
 	// Calculate the tangent vectors tangent1 and tangent2.
 	const vec2 p0t = p0 - t;
 	const vec2 p1t = p1 - t;
-	
+
 	// Calculate tangent distance squares.
 	const float p0tSquare = length2( p0t );
 	const float p1tSquare = length2( p1t );
@@ -285,10 +285,10 @@ void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 	// and
 	//
 	// tan(a/2) = sin(a) / ( 1 - cos(a) )
-	
+
 	const float numerator = p0t.y * p1t.x - p1t.y * p0t.x;
 	const float denominator = math<float>::sqrt( p0tSquare * p1tSquare ) - ( p0t.x * p1t.x + p0t.y * p1t.y );
-	
+
 	// The denominator is zero <=> p0 and p1 are colinear.
 	if( math<float>::abs( denominator ) < epsilon ) {
 		lineTo( t );
@@ -296,27 +296,27 @@ void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 	else {
 		// |b0 - t| = |b3 - t| = radius * tan(a/2).
 		const float distanceFromT = math<float>::abs( radius * numerator / denominator );
-		
+
 		// b0 = t + |b0 - t| * (p0 - t)/|p0 - t|.
 		const vec2 b0 = t + distanceFromT * normalize( p0t );
-		
+
 		// If b0 deviates from p0, add a line to it.
 		if( math<float>::abs(b0.x - p0.x) > epsilon || math<float>::abs(b0.y - p0.y) > epsilon ) {
 			lineTo( b0 );
 		}
-		
+
 		// b3 = t + |b3 - t| * (p1 - t)/|p1 - t|.
 		const vec2 b3 = t + distanceFromT * normalize( p1t );
-		
+
 		// The two bezier-control points are located on the tangents at a fraction
 		// of the distance[ tangent points <-> tangent intersection ].
-		// See "Approxmiation of a Cubic Bezier Curve by Circular Arcs and Vice Versa" by Aleksas Riskus 
+		// See "Approxmiation of a Cubic Bezier Curve by Circular Arcs and Vice Versa" by Aleksas Riskus
 		// http://itc.ktu.lt/itc354/Riskus354.pdf
-		
+
 		float b0tSquare = (t.x - b0.x) *  (t.x - b0.x) + (t.y - b0.y) *  (t.y - b0.y);
 		float radiusSquare = radius * radius;
 		float fraction;
-		
+
 		// Assume dist = radius = 0 if the radius is very small.
 		if( math<float>::abs( radiusSquare / b0tSquare ) < epsilon )
 			fraction = 0.0;
@@ -325,20 +325,20 @@ void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 		
 		const vec2 b1 = b0 + fraction * (t - b0);
 		const vec2 b2 = b3 + fraction * (t - b3);
-		
+
 		curveTo( b1, b2, b3 );
 	}
 }
-    
+
 void Path2d::reverse()
 {
     // The path is empty: nothing to do.
     if( empty() )
         return;
-    
+
     // Reverse all points.
     std::reverse( mPoints.begin(), mPoints.end() );
-    
+
     // Reverse the segments, but skip the "moveto" and "close":
 	if( isClosed() ) {
         // There should be at least 4 segments: "moveto", "close" and two other segments.
@@ -361,7 +361,7 @@ void Path2d::removeSegment( size_t segment )
 
 	int pointCount = sSegmentTypePointCounts[mSegments[segment]];
 	mPoints.erase( mPoints.begin() + firstPoint, mPoints.begin() + firstPoint + pointCount );
-	
+
 	mSegments.erase( mSegments.begin() + segment );
 }
 
@@ -385,7 +385,7 @@ void Path2d::getSegmentRelativeT( float t, size_t *segment, float *relativeT ) c
 			*relativeT = 1;
 		return;
 	}
-	
+
 	size_t totalSegments = mSegments.size();
 	float segParamLength = 1.0f / totalSegments; 
 	*segment = t * totalSegments;
@@ -477,8 +477,8 @@ void subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, const vec2 
 {
 	const int recursionLimit = 17;
 	const float collinearEpsilon = 0.0000001f;
-	
-	if( level > recursionLimit ) 
+
+	if( level > recursionLimit )
 		return;
 
 	vec2 p12 = ( p1 + p2 ) * 0.5f;
@@ -489,7 +489,7 @@ void subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, const vec2 
 	float dy = p3.y - p1.y;
 	float d = math<float>::abs(((p2.x - p3.x) * dy - (p2.y - p3.y) * dx));
 
-	if( d > collinearEpsilon ) { 
+	if( d > collinearEpsilon ) {
 		if( d * d <= distanceToleranceSqr * (dx*dx + dy*dy) ) {
 			resultPositions->emplace_back( p123 );
 			if( resultTangents )
@@ -508,7 +508,7 @@ void subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, const vec2 
 				// Simple collinear case, 1---2---3 - We can leave just two endpoints
 				return;
 			}
-			
+
 			if(d <= 0)
 				d = distance2( p2, p1 );
 			else if(d >= 1)
@@ -534,10 +534,10 @@ void subdivideCubic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2,
 {
 	const int recursionLimit = 17;
 	const float collinearEpsilon = 0.0000001f;
-	
-	if( level > recursionLimit ) 
+
+	if( level > recursionLimit )
 		return;
-	
+
 	// Calculate all the mid-points of the line segments
 	//----------------------
 
@@ -622,7 +622,7 @@ void subdivideCubic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2,
 				return;
 			}
 		break;
-		case 3: 
+		case 3:
 			// Regular case
 			if( (d2 + d3)*(d2 + d3) <= distanceToleranceSqr * ( dx*dx + dy*dy ) ) {
 				resultPositions->emplace_back( p23 );
@@ -643,7 +643,7 @@ std::vector<vec2> Path2d::subdivide( float approximationScale ) const
 {
 	std::vector<vec2> result;
 	subdivide( &result, nullptr, approximationScale );
-	
+
 	return result;
 }
 
@@ -654,7 +654,7 @@ void Path2d::subdivide( std::vector<vec2> *resultPositions, std::vector<vec2> *r
 
 	float distanceToleranceSqr = 0.5f / approximationScale;
 	distanceToleranceSqr *= distanceToleranceSqr;
-	
+
 	size_t firstPoint = 0;
 	resultPositions->emplace_back( mPoints[0] );
 	if( resultTangents )
@@ -698,7 +698,7 @@ void Path2d::subdivide( std::vector<vec2> *resultPositions, std::vector<vec2> *r
 			default:
 				throw Path2dExc();
 		}
-		
+
 		firstPoint += sSegmentTypePointCounts[mSegments[s]];
 	}
 }
@@ -730,8 +730,8 @@ Rectf Path2d::calcBoundingBox() const
 		result = Rectf( mPoints[0], mPoints[0] );
 		result.include( mPoints );
 	}
-	
-	return result;	
+
+	return result;
 }
 
 // calcPreciseBoundingBox helper routines
@@ -750,7 +750,7 @@ int	Path2d::calcQuadraticBezierMonotoneRegions( const vec2 p[3], float resultT[2
 		if( t > 0 && t < 1 )
 			resultT[resultIdx++] = t;
 	}
-	
+
 	return resultIdx;
 }
 
@@ -814,7 +814,7 @@ vec2 Path2d::calcCubicBezierDerivative( const vec2 p[4], float t )
 	float w1 = 3 * nt * nt - 6 * t * nt;
 	float w2 = -3 * t * t + 6 * t * nt;
 	float w3 = 3 * t * t;
-	
+
 	return vec2( w0 * p[0].x + w1 * p[1].x + w2 * p[2].x + w3 * p[3].x, w0 * p[0].y + w1 * p[1].y + w2 * p[2].y + w3 * p[3].y );
 }
 
@@ -826,7 +826,7 @@ Rectf Path2d::calcPreciseBoundingBox() const
 		return Rectf( mPoints[0], mPoints[0] );
 	else if( mPoints.size() == 2 )
 		return Rectf( mPoints[0], mPoints[1] );
-	
+
 	Rectf result( mPoints[0], mPoints[0] );
 	size_t firstPoint = 0;
 	for( size_t s = 0; s < mSegments.size(); ++s ) {
@@ -858,10 +858,10 @@ Rectf Path2d::calcPreciseBoundingBox() const
 			default:
 				throw Path2dExc();
 		}
-		
+
 		firstPoint += sSegmentTypePointCounts[mSegments[s]];
 	}
-	
+
 	return result;
 }
 
@@ -1155,7 +1155,7 @@ int chopQuadAtYExtrema( const vec2 src[3], vec2 dst[5] )
 		// we couldn't compute a unit_divide value (probably underflow).
 		b = fabsf(a - b) < fabsf(b - c) ? a : c;
 	}
-	
+
 	dst[0] = { src[0].x, a };
 	dst[1] = { src[1].x, b };
 	dst[2] = { src[2].x, c };
@@ -1247,7 +1247,7 @@ int windingMonoQuad( const vec2 pts[], const vec2 &test, int* onCurveCount )
 				2 * (pts[1].y - pts[0].y),
 				pts[0].y - test.y,
 				roots);
-	
+
 	float xt;
 	if( 0 == n ) {
 		// zero roots are returned only when y0 == y
@@ -1344,7 +1344,7 @@ int windingCubic( const vec2 pts[], const vec2 &test, int *onCurveCount )
 
 	return w;
 }
-} // anonymous namespace Path2d::contains() helpers 
+} // anonymous namespace Path2d::contains() helpers
 
 int Path2d::calcWinding( const ci::vec2 &pt, int *onCurveCount ) const
 {
@@ -1468,7 +1468,7 @@ vec2 Path2d::calcClosestPoint( const vec2 &pt, size_t segment, size_t firstPoint
 float Path2d::calcLength() const
 {
 	float result = 0;
-	
+
 	size_t firstPoint = 0;
 	for( size_t s = 0; s < mSegments.size(); ++s ) {
 		switch( mSegments[s] ) {
@@ -1490,7 +1490,7 @@ float Path2d::calcLength() const
 
 		firstPoint += Path2d::sSegmentTypePointCounts[mSegments[s]];
 	}
-	
+
 	return result;
 }
 
@@ -1498,11 +1498,11 @@ float Path2d::calcSegmentLength( size_t segment, float minT, float maxT ) const
 {
 	if( segment >= mSegments.size() )
 		return 0;
-	
+
 	size_t firstPoint = 0;
 	for( size_t s = 0; s < segment; ++s )
 		firstPoint += sSegmentTypePointCounts[mSegments[s]];
-	
+
 	switch( mSegments[segment] ) {
 		case CUBICTO:
 			return rombergIntegral<float,7>( minT, maxT, std::bind( calcCubicBezierSpeed, &mPoints[firstPoint], std::placeholders::_1 ) );
@@ -1518,7 +1518,7 @@ float Path2d::calcSegmentLength( size_t segment, float minT, float maxT ) const
 		break;
 		default:
 			return 0;
-	}	
+	}
 }
 
 float Path2d::calcNormalizedTime( float relativeTime, bool wrap, float tolerance, int maxIterations ) const
@@ -1541,7 +1541,7 @@ float Path2d::calcNormalizedTime( float relativeTime, bool wrap, float tolerance
 	}
 
 	float targetLength = calcLength() * math<float>::clamp( relativeTime, 0.0f, 1.0f );
-	
+
 	int currentSegment = 0;
 	float currentSegmentLength = calcSegmentLength( 0 );
 	while( targetLength > currentSegmentLength ) {
@@ -1604,14 +1604,14 @@ float Path2d::segmentSolveTimeForDistance( size_t segment, float segmentLength, 
 		// get speed along curve
 		const float speed = length( getSegmentTangent( segment, currentT + p ) );
 
-		// if result will lie outside [a,b] 
+		// if result will lie outside [a,b]
 		if( ((p-a)*speed - delta)*((p-b)*speed - delta) > -tolerance )
 			p = 0.5f*(a+b);	// do bisection
 		else
 			p -= delta/speed; // otherwise Newton-Raphson
 	}
 	// If we failed to converge, hopefully 'p' is close enough
-	
+
 	return ( p + segment ) / (float)mSegments.size();
 }
 
@@ -1645,7 +1645,7 @@ float Path2dCalcCache::calcNormalizedTime( float relativeTime, bool wrap, float 
 
 	// We're looking for a length that is relativeTime * totalPathLength
 	float targetLength = mLength * math<float>::clamp( relativeTime, 0.0f, 1.0f );
-	
+
 	// Iterate the segments to find the segment defining the range containing our targetLength
 	int currentSegment = 0;
 	float currentSegmentLength = mSegmentLengths[0];
