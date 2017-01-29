@@ -201,7 +201,7 @@ float Param::findDuration() const
 		return 0;
 	else {
 		const EventRef &event = mEvents.back();
-		return event->mTimeEnd - (float)ctx->getNumProcessedSeconds();
+		return static_cast<float>(event->mTimeEnd - ctx->getNumProcessedSeconds());
 	}
 }
 
@@ -257,7 +257,7 @@ bool Param::eval( double timeBegin, float *array, size_t arrayLength, size_t sam
 			// if we skipped over the last event, record its end value before erasing.
 			if( mEvents.size() == 1 && ! cancelled )
 				mValue = event.mValueEnd;
-			
+
 			eventIt = mEvents.erase( eventIt );
 			continue;
 		}
