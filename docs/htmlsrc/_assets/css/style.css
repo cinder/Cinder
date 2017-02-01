@@ -988,6 +988,9 @@ button.interactive-guide:focus {
   position: relative;
   z-index: 0;
 }
+#main-content > .content {
+  padding: 40px 0;
+}
 #main-content ul.rows {
   padding: 0;
   text-indent: 0;
