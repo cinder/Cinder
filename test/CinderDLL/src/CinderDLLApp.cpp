@@ -4,6 +4,7 @@
 #include "cinder/CameraUi.h"
 #include "cinder/Rand.h"
 #include "cinder/Json.h"
+#include "cinder/ip/Fill.h"
 #include "jsoncpp/json.h"
 
 using namespace ci;
@@ -51,6 +52,9 @@ void CinderDLLApp::setup()
 	auto path2 = path / stem;
 
 	App::get()->dispatchAsync( []() {} );
+
+	Surface8u surface( 100, 100, false );
+	ip::fill( &surface, Color( 1, 0, 0 ) );
 }
 
 void CinderDLLApp::mouseDown( MouseEvent event )
@@ -74,4 +78,9 @@ void CinderDLLApp::draw()
 	gl::draw( mFbo->getColorTexture(), mFbo->getBounds() );
 }
 
-CINDER_APP( CinderDLLApp, RendererGl( RendererGl::Options().msaa( 8 ) ) )
+void prepareSettings( App::Settings *settings )
+{
+	auto app = app::App::get();
+}
+
+CINDER_APP( CinderDLLApp, RendererGl( RendererGl::Options().msaa( 8 ) ), prepareSettings )
