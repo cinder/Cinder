@@ -1249,8 +1249,8 @@
     <ClInclude Include="..\..\include\freetype\tttables.h" />
     <ClInclude Include="..\..\include\freetype\tttags.h" />
     <ClInclude Include="..\..\include\freetype\ttunpat.h" />
-    <ClInclude Include="..\..\include\jsoncpp\json\json-forwards.h" />
-    <ClInclude Include="..\..\include\jsoncpp\json\json.h" />
+    <ClInclude Include="..\..\include\jsoncpp\json-forwards.h" />
+    <ClInclude Include="..\..\include\jsoncpp\json.h" />
     <ClInclude Include="..\..\include\rapidxml\rapidxml.hpp" />
     <ClInclude Include="..\..\include\rapidxml\rapidxml_print.hpp" />
     <ClInclude Include="..\..\include\tinyexr\tinyexr.h" />
