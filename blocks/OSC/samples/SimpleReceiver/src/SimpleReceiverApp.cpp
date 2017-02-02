@@ -37,7 +37,7 @@ class SimpleReceiverApp : public App {
 };
 
 SimpleReceiverApp::SimpleReceiverApp()
-: mReceiver( 3000 )
+: mReceiver( localPort )
 {
 }
 
