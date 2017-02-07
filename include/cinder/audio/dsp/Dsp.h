@@ -39,11 +39,11 @@ namespace cinder { namespace audio { namespace dsp {
 
 
 //! Fills \a length samples of \a window with a Blackmann windowing function.
-void generateBlackmanWindow( float *window, size_t length );
+CI_API void generateBlackmanWindow( float *window, size_t length );
 //! Fills \a length samples of \a window with a Hamming windowing function.
-void generateHammingWindow( float *window, size_t length );
+CI_API void generateHammingWindow( float *window, size_t length );
 //! Fills \a length samples of \a window with a Hann windowing function.
-void generateHannWindow( float *window, size_t length );
+CI_API void generateHannWindow( float *window, size_t length );
 
 //! Describes the avaiable windowing functions.
 enum class WindowType {
@@ -54,37 +54,37 @@ enum class WindowType {
 };
 
 //! fills \a window array with a windowing function specified by \a windowType
-void generateWindow( WindowType windowType, float *window, size_t length );
+CI_API void generateWindow( WindowType windowType, float *window, size_t length );
 
 // Vector based math routines.
 
 //! fills \a array with value \a value
-void fill( float value, float *array, size_t length );
+CI_API void fill( float value, float *array, size_t length );
 //! add \a scalar to \a array of length \a length, into \a result.
-void add( const float *array, float scalar, float *result, size_t length );
+CI_API void add( const float *array, float scalar, float *result, size_t length );
 //! add \a length elements of \a arrayA and \a arrayB (element-wise) into \a result.
-void add( const float *arrayA, const float *arrayB, float *result, size_t length );
+CI_API void add( const float *arrayA, const float *arrayB, float *result, size_t length );
 //! subtract \a scalar from \a array of length \a length, into \a result.
-void sub( const float *array, float scalar, float *result, size_t length );
+CI_API void sub( const float *array, float scalar, float *result, size_t length );
 //! subtract \a length elements of \a arrayB from \a arrayA (element-wise) into \a result.
-void sub( const float *arrayA, const float *arrayB, float *result, size_t length );
+CI_API void sub( const float *arrayA, const float *arrayB, float *result, size_t length );
 //! multiplies \a length elements of \a array by \a scalar and places the result at \a result.
-void mul( const float *array, float scalar, float *result, size_t length );
+CI_API void mul( const float *array, float scalar, float *result, size_t length );
 //! multiplies \a length elements of \a arrayA by \a arrayB and places the result at \a result.
-void mul( const float *arrayA, const float *arrayB, float *result, size_t length );
+CI_API void mul( const float *arrayA, const float *arrayB, float *result, size_t length );
 //! divides \a length elements of \a array by \a scalar and places the result at \a result.
-void divide( const float *array, float scalar, float *result, size_t length );
+CI_API void divide( const float *array, float scalar, float *result, size_t length );
 //! divides \a length elements of \a arrayA by \a arrayB and places the result at \a result.
-void divide( const float *arrayA, const float *arrayB, float *result, size_t length );
+CI_API void divide( const float *arrayA, const float *arrayB, float *result, size_t length );
 //! sums \a length elements of \a arrayA by \a arrayB (element-wise), then scales by \a scalar and places the result at \a result.
-void addMul( const float *arrayA, const float *arrayB, float scalar, float *result, size_t length );
+CI_API void addMul( const float *arrayA, const float *arrayB, float scalar, float *result, size_t length );
 //! returns the sum of \a array
-float sum( const float *array, size_t length );
+CI_API float sum( const float *array, size_t length );
 //! returns the Root-Mean-Squared value of \a array
-float rms( const float *array, size_t length );
+CI_API float rms( const float *array, size_t length );
 //! normalizes \a array to \a maxValue (default = 1)
-void normalize( float *array, size_t length, float maxValue = 1 );
+CI_API void normalize( float *array, size_t length, float maxValue = 1 );
 //! returns the spectral centroid of the frequency magnitude spectrum in \a magArray, computed the provided \a sampleRate. \a magArrayLength is expected to be half of the FFT size used to compute the magnitude spectrum.
-float spectralCentroid( const float *magArray, size_t magArrayLength, size_t sampleRate );
+CI_API float spectralCentroid( const float *magArray, size_t magArrayLength, size_t sampleRate );
 
 } } } // namespace cinder::audio::dsp
