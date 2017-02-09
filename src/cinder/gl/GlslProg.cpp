@@ -482,25 +482,26 @@ GlslProg::GlslProg( const Format &format )
 {
 	mHandle = glCreateProgram();
 
-	if( ! format.getVertex().empty() )
+	GLuint vertexHandle = format.getVertex().empty() ? 0 :
 		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER, format.getPreprocessor() );
-	if( ! format.getFragment().empty() )
+	GLuint fragmentHandle = format.getFragment().empty() ? 0 :
 		loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER, format.getPreprocessor() );
 #if defined( CINDER_GL_HAS_GEOM_SHADER )
-	if( ! format.getGeometry().empty() )
+	GLuint geometryHandle = format.getGeometry().empty() ? 0 :
 		loadShader( format.getGeometry(), format.mGeometryShaderPath, GL_GEOMETRY_SHADER, format.getPreprocessor() );
 #endif
 #if defined( CINDER_GL_HAS_TESS_SHADER )
-	if( ! format.getTessellationCtrl().empty() )
+	GLuint tessellationCtrlHandle = format.getTessellationCtrl().empty() ? 0 :
 		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER, format.getPreprocessor() );
-	if( ! format.getTessellationEval().empty() )
+	GLuint tessellationEvalHandle = format.getTessellationEval().empty() ? 0 :
 		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER, format.getPreprocessor() );
 #endif
 #if defined( CINDER_GL_HAS_COMPUTE_SHADER )
-	if( ! format.getCompute().empty() )
+	GLuint computeHandle = format.getCompute().empty() ? 0 :
 		loadShader( format.getCompute(), format.mComputeShaderPath, GL_COMPUTE_SHADER, format.getPreprocessor() );
-#endif    
-    auto & userDefinedAttribs = format.getAttributes();
+#endif
+
+	auto &userDefinedAttribs = format.getAttributes();
 	
 	bool foundPositionSemantic = false;
 	// if the user has provided a location make sure to bind that location before we go further
@@ -560,6 +561,26 @@ GlslProg::GlslProg( const Format &format )
 #endif
 
 	link();
+
+	// Detach all shaders, allowing GL to free the associated memory
+	if( vertexHandle )
+		glDetachShader( mHandle, vertexHandle );
+	if( fragmentHandle )
+		glDetachShader( mHandle, fragmentHandle );
+#if defined( CINDER_GL_HAS_GEOM_SHADER )
+	if( geometryHandle )
+		glDetachShader( mHandle, geometryHandle );
+#endif
+#if defined( CINDER_GL_HAS_TESS_SHADER )
+	if( tessellationCtrlHandle )
+		glDetachShader( mHandle, tessellationCtrlHandle );
+	if( tessellationEvalHandle )
+		glDetachShader( mHandle, tessellationEvalHandle );
+#endif
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+	if( computeHandle )
+		glDetachShader( mHandle, computeHandle );	
+#endif
 	
 	cacheActiveAttribs();
 	cacheActiveUniforms();
@@ -666,7 +687,7 @@ GlslProg::AttribSemanticMap& GlslProg::getDefaultAttribNameToSemanticMap()
 	return sDefaultAttribNameToSemanticMap;
 }
 
-void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPath, GLint shaderType, const ShaderPreprocessorRef &preprocessor )
+GLuint GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPath, GLint shaderType, const ShaderPreprocessorRef &preprocessor )
 {
 	GLuint handle = glCreateShader( shaderType );
 	if( preprocessor ) {
@@ -702,6 +723,8 @@ void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPat
 	}
 	glAttachShader( mHandle, handle );
 	glDeleteShader( handle );
+
+	return handle;
 }
 
 void GlslProg::link()
