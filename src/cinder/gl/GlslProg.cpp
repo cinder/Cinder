@@ -718,9 +718,16 @@ GLuint GlslProg::loadShader( const string &shaderSource, const fs::path &shaderP
 			}
 			log += "\n" + ss.str();
 		}
-#endif		
+#endif
+		// Since the GlslProg destructor will not be called after we throw, we must delete all
+		// owned GL objects here to avoid leaking. Any other attached shaders will be cleaned up
+		// when the program is deleted
+		glDeleteShader( handle );
+		glDeleteProgram( mHandle );
+
 		throw GlslProgCompileExc( log, shaderType );
 	}
+
 	glAttachShader( mHandle, handle );
 	glDeleteShader( handle );
 
@@ -745,6 +752,9 @@ void GlslProg::link()
 			glGetProgramInfoLog( mHandle, logLength, &charsWritten, debugLog.get() );
 			log.append( debugLog.get(), 0, logLength );
 		}
+
+		// Delete owned GL objects before throwing to avoid a leak
+		glDeleteProgram( mHandle );
 		
 		throw GlslProgLinkExc( log );
 	}
