@@ -482,23 +482,17 @@ GlslProg::GlslProg( const Format &format )
 {
 	mHandle = glCreateProgram();
 
-	GLuint vertexHandle = format.getVertex().empty() ? 0 :
-		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER, format.getPreprocessor() );
-	GLuint fragmentHandle = format.getFragment().empty() ? 0 :
-		loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER, format.getPreprocessor() );
+	GLuint vertexHandle = loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER, format.getPreprocessor() );
+	GLuint fragmentHandle = loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER, format.getPreprocessor() );
 #if defined( CINDER_GL_HAS_GEOM_SHADER )
-	GLuint geometryHandle = format.getGeometry().empty() ? 0 :
-		loadShader( format.getGeometry(), format.mGeometryShaderPath, GL_GEOMETRY_SHADER, format.getPreprocessor() );
+	GLuint geometryHandle = loadShader( format.getGeometry(), format.mGeometryShaderPath, GL_GEOMETRY_SHADER, format.getPreprocessor() );
 #endif
 #if defined( CINDER_GL_HAS_TESS_SHADER )
-	GLuint tessellationCtrlHandle = format.getTessellationCtrl().empty() ? 0 :
-		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER, format.getPreprocessor() );
-	GLuint tessellationEvalHandle = format.getTessellationEval().empty() ? 0 :
-		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER, format.getPreprocessor() );
+	GLuint tessellationCtrlHandle = loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER, format.getPreprocessor() );
+	GLuint tessellationEvalHandle = loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER, format.getPreprocessor() );
 #endif
 #if defined( CINDER_GL_HAS_COMPUTE_SHADER )
-	GLuint computeHandle = format.getCompute().empty() ? 0 :
-		loadShader( format.getCompute(), format.mComputeShaderPath, GL_COMPUTE_SHADER, format.getPreprocessor() );
+	GLuint computeHandle = loadShader( format.getCompute(), format.mComputeShaderPath, GL_COMPUTE_SHADER, format.getPreprocessor() );
 #endif
 
 	auto &userDefinedAttribs = format.getAttributes();
@@ -689,47 +683,52 @@ GlslProg::AttribSemanticMap& GlslProg::getDefaultAttribNameToSemanticMap()
 
 GLuint GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPath, GLint shaderType, const ShaderPreprocessorRef &preprocessor )
 {
-	GLuint handle = glCreateShader( shaderType );
-	if( preprocessor ) {
-		set<fs::path> includedFiles;
-		string preprocessedSource = preprocessor->parse( shaderSource, shaderPath, &includedFiles );
-		mShaderPreprocessorIncludedFiles.insert( mShaderPreprocessorIncludedFiles.end(), includedFiles.begin(), includedFiles.end() );
+	GLuint handle = 0;
 
-		const char *cStr = preprocessedSource.c_str();
-		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
-	}
-	else {
-		const char *cStr = shaderSource.c_str();
-		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
-	}
+	if( ! shaderSource.empty() ) {
+		handle = glCreateShader( shaderType );
 
-	glCompileShader( handle );
-	
-	GLint status;
-	glGetShaderiv( (GLuint) handle, GL_COMPILE_STATUS, &status );
-	if( status != GL_TRUE ) {
-		std::string log = getShaderLog( (GLuint)handle );
-#if defined( CINDER_ANDROID ) | defined( CINDER_LINUX )
-		std::vector<std::string> lines = ci::split( shaderSource, "\r\n" );
-		if( ! lines.empty() ) {
-			std::stringstream ss;
-			for( size_t i = 0; i < lines.size(); ++i ) {
-				ss << std::setw( (int)std::log( lines.size() ) ) << (i + 1) << ": " << lines[i] << "\n"; 
-			}
-			log += "\n" + ss.str();
+		if( preprocessor ) {
+			set<fs::path> includedFiles;
+			string preprocessedSource = preprocessor->parse( shaderSource, shaderPath, &includedFiles );
+			mShaderPreprocessorIncludedFiles.insert( mShaderPreprocessorIncludedFiles.end(), includedFiles.begin(), includedFiles.end() );
+
+			const char *cStr = preprocessedSource.c_str();
+			glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
 		}
+		else {
+			const char *cStr = shaderSource.c_str();
+			glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
+		}
+
+		glCompileShader( handle );
+
+		GLint status;
+		glGetShaderiv( (GLuint) handle, GL_COMPILE_STATUS, &status );
+		if( status != GL_TRUE ) {
+			std::string log = getShaderLog( (GLuint)handle );
+#if defined( CINDER_ANDROID ) | defined( CINDER_LINUX )
+			std::vector<std::string> lines = ci::split( shaderSource, "\r\n" );
+			if( ! lines.empty() ) {
+				std::stringstream ss;
+				for( size_t i = 0; i < lines.size(); ++i ) {
+					ss << std::setw( (int)std::log( lines.size() ) ) << (i + 1) << ": " << lines[i] << "\n"; 
+				}
+				log += "\n" + ss.str();
+			}
 #endif
-		// Since the GlslProg destructor will not be called after we throw, we must delete all
-		// owned GL objects here to avoid leaking. Any other attached shaders will be cleaned up
-		// when the program is deleted
+			// Since the GlslProg destructor will not be called after we throw, we must delete all
+			// owned GL objects here to avoid leaking. Any other attached shaders will be cleaned up
+			// when the program is deleted
+			glDeleteShader( handle );
+			glDeleteProgram( mHandle );
+
+			throw GlslProgCompileExc( log, shaderType );
+		}
+
+		glAttachShader( mHandle, handle );
 		glDeleteShader( handle );
-		glDeleteProgram( mHandle );
-
-		throw GlslProgCompileExc( log, shaderType );
 	}
-
-	glAttachShader( mHandle, handle );
-	glDeleteShader( handle );
 
 	return handle;
 }
