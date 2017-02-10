@@ -727,6 +727,8 @@ GLuint GlslProg::loadShader( const string &shaderSource, const fs::path &shaderP
 		}
 
 		glAttachShader( mHandle, handle );
+
+		// Scope the shader's lifetime to the program's. It will be cleaned up when later detached.
 		glDeleteShader( handle );
 	}
 
