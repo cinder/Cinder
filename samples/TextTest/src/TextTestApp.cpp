@@ -5,7 +5,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Font.h"
-//#include "Resources.h"
+#include "Resources.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -90,7 +90,7 @@ void TextTestApp::setup()
 
 	try {
 		// Create a custom font by loading it from a resource
-		Font customFont( loadResource( "Saint-Andrews Queen.ttf" ), 72 );
+		Font customFont( loadResource( RES_CUSTOM_FONT ), 72 );
 		console() << "This font is called " << customFont.getFullName() << std::endl;
 
 		TextLayout simple;
