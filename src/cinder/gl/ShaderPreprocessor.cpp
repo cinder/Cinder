@@ -362,11 +362,22 @@ void ShaderPreprocessor::addDefine( const std::string &define )
 
 void ShaderPreprocessor::addDefine( const std::string &define, const std::string &value )
 {
-	mDefineDirectives.push_back( define + " " + value );
+	addDefine( define + " " + value );
 }
+
 void ShaderPreprocessor::setDefines( const std::vector<std::string> &defines )
 {
 	mDefineDirectives = defines;
+}
+
+void ShaderPreprocessor::removeDefine( const std::string &define )
+{
+	mDefineDirectives.erase( remove( mDefineDirectives.begin(), mDefineDirectives.end(), define ), mDefineDirectives.end() );
+}
+
+void ShaderPreprocessor::removeDefine( const std::string &define, const std::string &value )
+{
+	removeDefine( define + " " + value );
 }
 
 void ShaderPreprocessor::clearDefines()

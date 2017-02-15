@@ -64,7 +64,7 @@ class CI_API ShaderPreprocessor {
 
 	//! Adds a define directive
 	void	addDefine( const std::string &define );
-	//! Adds a define directive
+	//! Adds a define directive in the form of `define=value`
 	void	addDefine( const std::string &define, const std::string &value );
 	//! Specifies all define directives to add to the shader sources, overwriting any existing defines.
 	void	setDefines( const std::vector<std::string> &defines );
@@ -72,6 +72,10 @@ class CI_API ShaderPreprocessor {
 	const std::vector<std::string>&	getDefines() const	{ return mDefineDirectives; }
 	//! Returns all of the define directives to add to the shader sources, modifiable version.
 	std::vector<std::string>&		getDefines()		{ return mDefineDirectives; }
+	//! Removes a define directive
+	void	removeDefine( const std::string &define );
+	//! Removes a define directive in the form of `define=value`
+	void	removeDefine( const std::string &define, const std::string &value );
 	//! Clears all define directives
 	void	clearDefines();
 
