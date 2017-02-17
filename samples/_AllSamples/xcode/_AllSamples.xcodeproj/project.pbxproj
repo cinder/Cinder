@@ -13,6 +13,8 @@
 			buildPhases = (
 			);
 			dependencies = (
+				00B44AA71E5676E1009FC466 /* PBXTargetDependency */,
+				00B44AA91E5676E1009FC466 /* PBXTargetDependency */,
 				006425021DBFE790007AAB2A /* PBXTargetDependency */,
 				006425041DBFE790007AAB2A /* PBXTargetDependency */,
 				0043089F1BBCE30C00B72510 /* PBXTargetDependency */,
@@ -1152,6 +1154,34 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = ImageHeightField;
 		};
+		00B44A9E1E5676A9009FC466 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00B44A9A1E5676A8009FC466 /* BezierPath.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = BezierPath;
+		};
+		00B44AA41E5676D2009FC466 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00B44AA01E5676D1009FC466 /* BSpline.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = BSpline;
+		};
+		00B44AA61E5676E1009FC466 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00B44A9A1E5676A8009FC466 /* BezierPath.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = BezierPath;
+		};
+		00B44AA81E5676E1009FC466 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00B44AA01E5676D1009FC466 /* BSpline.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = BSpline;
+		};
 		00D4948319889EBE00A44E4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */;
@@ -1537,6 +1567,8 @@
 		00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EaseGallery.xcodeproj; path = ../../EaseGallery/xcode/EaseGallery.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoronoiGpu.xcodeproj; path = ../../VoronoiGpu/xcode/VoronoiGpu.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeBasic.xcodeproj; path = ../../QuickTimeBasic/xcode/QuickTimeBasic.xcodeproj; sourceTree = "<group>"; };
+		00B44A9A1E5676A8009FC466 /* BezierPath.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BezierPath.xcodeproj; path = ../../BezierPath/xcode/BezierPath.xcodeproj; sourceTree = "<group>"; };
+		00B44AA01E5676D1009FC466 /* BSpline.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BSpline.xcodeproj; path = ../../BSpline/xcode/BSpline.xcodeproj; sourceTree = "<group>"; };
 		00BFB1C31D4EB65E00EE4CA7 /* ArcballDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ArcballDemo.xcodeproj; path = ../../ArcballDemo/xcode/ArcballDemo.xcodeproj; sourceTree = "<group>"; };
 		00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicAppMultiWindow.xcodeproj; path = ../../BasicAppMultiWindow/xcode/BasicAppMultiWindow.xcodeproj; sourceTree = "<group>"; };
 		00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BezierPathIteration.xcodeproj; path = ../../BezierPathIteration/xcode/BezierPathIteration.xcodeproj; sourceTree = "<group>"; };
@@ -1574,7 +1606,9 @@
 				00BFB1C31D4EB65E00EE4CA7 /* ArcballDemo.xcodeproj */,
 				00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */,
 				0005C95510068030004D82BC /* basicApp.xcodeproj */,
+				00B44A9A1E5676A8009FC466 /* BezierPath.xcodeproj */,
 				00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */,
+				00B44AA01E5676D1009FC466 /* BSpline.xcodeproj */,
 				00236D981130E4C7006C991F /* CairoBasic.xcodeproj */,
 				009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */,
 				00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */,
@@ -2266,6 +2300,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00B44A9B1E5676A8009FC466 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00B44A9F1E5676A9009FC466 /* BezierPath.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00B44AA11E5676D1009FC466 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00B44AA51E5676D2009FC466 /* BSpline.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		00BFB1C41D4EB65E00EE4CA7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2508,8 +2558,16 @@
 					ProjectRef = 00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */;
 				},
 				{
+					ProductGroup = 00B44A9B1E5676A8009FC466 /* Products */;
+					ProjectRef = 00B44A9A1E5676A8009FC466 /* BezierPath.xcodeproj */;
+				},
+				{
 					ProductGroup = 00D4948819889EED00A44E4C /* Products */;
 					ProjectRef = 00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */;
+				},
+				{
+					ProductGroup = 00B44AA11E5676D1009FC466 /* Products */;
+					ProjectRef = 00B44AA01E5676D1009FC466 /* BSpline.xcodeproj */;
 				},
 				{
 					ProductGroup = 11754417193596610075AF60 /* Products */;
@@ -3398,6 +3456,20 @@
 			remoteRef = 00AE22CA164C5095007D532C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		00B44A9F1E5676A9009FC466 /* BezierPath.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BezierPath.app;
+			remoteRef = 00B44A9E1E5676A9009FC466 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00B44AA51E5676D2009FC466 /* BSpline.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BSpline.app;
+			remoteRef = 00B44AA41E5676D2009FC466 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		00D4948419889EBE00A44E4C /* BasicAppMultiWindow.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -3924,6 +3996,16 @@
 			isa = PBXTargetDependency;
 			name = ImageHeightField;
 			targetProxy = 00B1021C101A5CDC0078D775 /* PBXContainerItemProxy */;
+		};
+		00B44AA71E5676E1009FC466 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BezierPath;
+			targetProxy = 00B44AA61E5676E1009FC466 /* PBXContainerItemProxy */;
+		};
+		00B44AA91E5676E1009FC466 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BSpline;
+			targetProxy = 00B44AA81E5676E1009FC466 /* PBXContainerItemProxy */;
 		};
 		00D4948619889ED100A44E4C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
