@@ -123,6 +123,7 @@ class IStreamCinder : public virtual StreamBase {
 	void		readFixedString( char *t, size_t maxSize, bool nullTerminate );
 	void		readFixedString( std::string *t, size_t size );
 	std::string	readLine();
+	std::string	readLineWithContinuation( char lineContinuationChar = '\\' );
 	
 	void			readData( void *dest, size_t size );
 	virtual size_t	readDataAvailable( void *dest, size_t maxSize ) = 0;

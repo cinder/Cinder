@@ -142,6 +142,54 @@ std::string IStreamCinder::readLine()
 	return result;
 }
 
+std::string IStreamCinder::readLineWithContinuation( char lineContinuationChar )
+{
+	string result;
+	int8_t ch;
+
+	auto check_newline = [this, &ch] () {
+		if( ch == 0x0A )
+			return true;
+		else if( ch == 0x0D ) {
+			read( &ch );
+			if( ch != 0x0A )
+				seekRelative( -1 );
+			return true;
+		}
+		return false;
+	};
+
+	auto check_continuation = [this, &ch, &check_newline, lineContinuationChar] () {
+		if( ch == lineContinuationChar ) {
+			read( &ch );
+			if( check_newline() ) {
+				return true;
+			}
+			else {
+				seekRelative( -1 );
+			}
+		}
+		return false;
+	};
+
+	while( ! isEof() ) {
+		read( &ch );
+
+		if (check_continuation()) {
+			// skip the newline check
+			continue;
+		}
+
+		if( check_newline() ) {
+			break;
+		}
+		else
+			result += ch;
+	}
+
+	return result;
+}
+
 void IStreamCinder::readData( void *t, size_t size )
 {
 	IORead( t, size );
