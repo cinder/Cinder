@@ -472,8 +472,7 @@ class GlslProg {
 	GlslProg( const Format &format );
 
 	void			bindImpl() const;
-	void			loadShader( const std::string &shaderSource, const fs::path &shaderPath, GLint shaderType, const ShaderPreprocessorRef &preprocessor );
-	void			attachShaders();
+	GLuint			loadShader( const std::string &shaderSource, const fs::path &shaderPath, GLint shaderType, const ShaderPreprocessorRef &preprocessor );
 	void			link();
 	
 	//! Caches all active Attributes after linking.
