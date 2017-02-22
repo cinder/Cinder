@@ -39,7 +39,7 @@
 namespace cinder { namespace audio { namespace dsp {
 
 //! Real Discrete Fourier Transform (DFT).
-class Fft {
+class CI_API Fft {
   public:
 	//! Constructs an Fft object. \a fftSize must be a power of two and greater than two.
 	Fft( size_t fftSize );
