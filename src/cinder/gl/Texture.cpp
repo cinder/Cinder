@@ -2020,6 +2020,15 @@ TextureCubeMap::TextureCubeMap( int32_t width, int32_t height, Format format )
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
 
 	env()->allocateTexStorageCubeMap( mMaxMipmapLevel + 1, mInternalFormat, width, height, format.isImmutableStorage() );	
+
+	if (format.mMipmapping && !format.isImmutableStorage()) {
+#if ! defined( CINDER_GL_ES_2 )
+		if (mMaxMipmapLevel == -1)
+			mMaxMipmapLevel = requiredMipLevels(mWidth, mHeight, 1) - 1;
+		glTexParameteri(mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel);
+#endif
+		glGenerateMipmap(mTarget);
+	}
 }
 
 template<typename T>
