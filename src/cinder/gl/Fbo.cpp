@@ -7,9 +7,9 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	 * Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -523,18 +523,18 @@ Texture2dRef Fbo::getDepthTexture()
 	if( result && ( typeid(*result) == typeid(Texture2d) ) ) {
 		resolveTextures();
 		updateMipmaps( attachedTextureIt->first );
-        return static_pointer_cast<Texture2d>( result );
+		  return static_pointer_cast<Texture2d>( result );
 	}
 	else
 		return Texture2dRef();
 }
 
-Texture2dRef Fbo::getTexture2d( GLenum attachment )
+Texture2dRef Fbo::getTexture2d( GLenum attachment, bool recomputeMipMaps )
 {
-	return dynamic_pointer_cast<Texture2d>( getTextureBase( attachment ) );
+	return dynamic_pointer_cast<Texture2d>( getTextureBase( attachment, recomputeMipMaps ) );
 }
 
-TextureBaseRef Fbo::getTextureBase( GLenum attachment )
+TextureBaseRef Fbo::getTextureBase( GLenum attachment, bool recomputeMipMaps )
 {
 	if( ( (attachment < GL_COLOR_ATTACHMENT0) || (attachment > MAX_COLOR_ATTACHMENT) ) && (attachment != GL_DEPTH_ATTACHMENT)
 #if ! defined( CINDER_GL_ES_2 )
@@ -549,23 +549,25 @@ TextureBaseRef Fbo::getTextureBase( GLenum attachment )
 	auto attachedTextureIt = mAttachmentsTexture.find( attachment );
 	if( attachedTextureIt != mAttachmentsTexture.end() ) {
 		resolveTextures();
-		updateMipmaps( attachment );
+		// In some instances, you may want to bind to specific mipmap levels so recomputing them would undo those changes
+		if ( recomputeMipMaps )
+			updateMipmaps( attachment );
 		return attachedTextureIt->second;
 	}
 	else
 		return TextureBaseRef();
 }
 
-void Fbo::bindTexture( int textureUnit, GLenum attachment )
+void Fbo::bindTexture( int textureUnit, GLenum attachment, bool recomputeMipMaps)
 {
-	auto tex = getTextureBase( attachment );
+	auto tex = getTextureBase( attachment, recomputeMipMaps );
 	if( tex )
 		tex->bind( textureUnit );
 }
 
-void Fbo::unbindTexture( int textureUnit, GLenum attachment )
+void Fbo::unbindTexture( int textureUnit, GLenum attachment, bool recomputeMipMaps)
 {
-	auto tex = getTextureBase( attachment );
+	auto tex = getTextureBase( attachment, recomputeMipMaps );
 	if( tex )
 		tex->unbind( textureUnit );
 }
@@ -600,10 +602,10 @@ void Fbo::resolveTextures() const
 
 		vector<GLenum> drawBuffers;
 		for( GLenum c = GL_COLOR_ATTACHMENT0; c <= MAX_COLOR_ATTACHMENT; ++c ) {
-            auto colorAttachmentIt = mAttachmentsTexture.find( c );
-            if( colorAttachmentIt != mAttachmentsTexture.end() ) {
-                glDrawBuffers( 1, &colorAttachmentIt->first );
-                glReadBuffer( colorAttachmentIt->first );
+				auto colorAttachmentIt = mAttachmentsTexture.find( c );
+				if( colorAttachmentIt != mAttachmentsTexture.end() ) {
+					 glDrawBuffers( 1, &colorAttachmentIt->first );
+					 glReadBuffer( colorAttachmentIt->first );
 #if ! defined( CINDER_GL_ANGLE )
 				// ANGLE appears to error when requested to resolve a depth buffer
 				glBlitFramebuffer( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
@@ -706,9 +708,9 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 		default:
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer invalid: unknown reason" );
 		return false;
-    }
+	 }
 	
-    return true;
+	 return true;
 }
 
 GLint Fbo::getMaxSamples()
@@ -868,9 +870,9 @@ void FboCubeMap::bindFramebufferFace( GLenum faceTarget, GLint level, GLenum tar
 	glFramebufferTexture2D( target, attachment, faceTarget, mTextureCubeMap->getId(), level );
 }
 
-TextureCubeMapRef FboCubeMap::getTextureCubeMap( GLenum attachment )
+TextureCubeMapRef FboCubeMap::getTextureCubeMap( GLenum attachment, bool recomputeMipMaps )
 {
-	return std::dynamic_pointer_cast<gl::TextureCubeMap>( getTextureBase( attachment ) );
+	return std::dynamic_pointer_cast<gl::TextureCubeMap>( getTextureBase( attachment, recomputeMipMaps) );
 }
 
 mat4 FboCubeMap::calcViewMatrix( GLenum face, const vec3 &eyePos )
