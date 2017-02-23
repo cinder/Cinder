@@ -76,8 +76,16 @@ void ImageSourceFileRadiance::loadStream( IStreamRef stream )
 
 	char str[200];
 	stream->readData( str, 10 );
-	if( memcmp( str, "#?RADIANCE", 10 ) )
-		throw ImageSourceFileRadianceException( "Invalid header" );
+	if (memcmp(str, "#?RADIANCE", 10)) {
+		// check RBGE
+		if (memcmp(str, "#?RGBE", 6)) {
+			throw ImageSourceFileRadianceException("Invalid header");
+		}
+		else {
+			// move back the stream and continue parsing
+			stream->seekRelative(-4);
+		}
+	}
 
 	stream->seekRelative( 1 );
 
