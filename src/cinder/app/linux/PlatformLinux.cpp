@@ -478,7 +478,11 @@ void PlatformLinux::removeDisplay( const DisplayRef &display )
 
 std::string DisplayLinux::getName() const
 {
+#if defined( CINDER_LINUX_EGL_ONLY )
+	return std::string();
+#else
 	return glfwGetMonitorName( mMonitor );
+#endif
 }
 
 GLFWmonitor* DisplayLinux::getGlfwMonitor() const
@@ -488,6 +492,9 @@ GLFWmonitor* DisplayLinux::getGlfwMonitor() const
 
 DisplayRef PlatformLinux::findDisplayFromGlfwMonitor( GLFWmonitor *monitor )
 {
+#if defined( CINDER_LINUX_EGL_ONLY )
+	return nullptr;
+#else
 	for( auto &display : mDisplays ) {
 		const auto displayLinux ( dynamic_cast<const DisplayLinux*>( display.get() ) );
 		if( displayLinux->getGlfwMonitor() == monitor )
@@ -495,8 +502,10 @@ DisplayRef PlatformLinux::findDisplayFromGlfwMonitor( GLFWmonitor *monitor )
 	}
 
 	return DisplayRef();
+#endif
 }
 
+#if ! defined( CINDER_LINUX_EGL_ONLY )
 void DisplayLinux::displayReconfiguredCallback( GLFWmonitor* monitor, int event )
 {
 	auto platform = app::PlatformLinux::get();
@@ -570,5 +579,12 @@ const std::vector<DisplayRef>& app::PlatformLinux::getDisplays()
 	
 	return mDisplays;
 }
+#else // EGL
+const std::vector<DisplayRef>& app::PlatformLinux::getDisplays()
+{
+	CI_LOG_W( "getDisplays() is not implemented on EGL" );
+	return mDisplays;
+}
+#endif // #if ! defined( CINDER_LINUX_EGL_ONLY )
 
 }} // namespace cinder::app
