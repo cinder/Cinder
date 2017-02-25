@@ -3897,6 +3897,14 @@ void WireCube::loadInto( Target *target, const AttribSet & /*requestedAttribs*/ 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // WireCylinder
+WireCylinder& WireCylinder::set( const vec3 &from, const vec3 &to )
+{
+	const vec3 axis = ( to - from );
+	mHeight = length( axis );
+	mDirection = normalize( axis );
+	mOrigin = from;
+	return *this;
+}
 size_t WireCylinder::getNumVertices() const
 {
 	int subdivisionAxis = ( mSubdivisionsAxis > 1 ) ? mSubdivisionsAxis : 0;
