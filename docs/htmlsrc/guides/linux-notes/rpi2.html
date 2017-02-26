@@ -93,10 +93,9 @@ make</code></pre>
 		<p>Hit the <code>Esc</code> key to exit the BasicApp. Cinder for Linux on the Raspberry Pi 2 currently has <code>Esc</code> hardcoded to exit an application. Otherwise it's non-trivial to return to the OS. A future version will offer a more graceful way to handle this.</p>
 		<h1 id="troubleshooting">Troubleshooting</h1>
 		<h3 id="audio">Audio</h3>
-		<h4 id="no-output-using-35-jack">No Output Using 3.5 Jack:</h4>
-		<p>Try the following, it will force output to the 3.5 jack:</p>
-		<pre><code>sudo amixer cset numid=3 1
-		</code></pre>
+		<h4 id="no-output-using-35-jack">No Output Using 3.5mm headphone jack</h4>
+		<p>Try the following, it will force output to the 3.5mm jack (<a href="https://www.raspberrypi.org/documentation/configuration/audio-config.md">more information here</a>):</p>
+		<pre><code>sudo amixer cset numid=3 1</code></pre>
 		<!-- END CONTENT -->
 
 		<!-- Scripts -->
