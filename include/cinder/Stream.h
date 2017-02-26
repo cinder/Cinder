@@ -96,7 +96,7 @@ class OStream : public virtual StreamBase {
 	void		writeData( const void *src, size_t size );
 
  protected:
-	OStream() : StreamBase() {}
+	OStream() = default;
  
 	virtual void		IOWrite( const void *t, size_t size ) = 0;
 };
@@ -131,7 +131,7 @@ class IStreamCinder : public virtual StreamBase {
 	virtual bool		isEof() const = 0;
 
  protected:
-	IStreamCinder() : StreamBase() {}
+	IStreamCinder() = default;
 
 	virtual void		IORead( void *t, size_t size ) = 0;
 		
