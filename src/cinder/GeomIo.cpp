@@ -323,8 +323,12 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 namespace { 
 
 template<class T, class U>
-typename std::remove_reference<T>::type narrow( U other ) {
-	return static_cast<typename std::remove_reference<T>::type>( other );
+auto narrow( U other ) -> typename std::remove_reference<T>::type 
+{
+	using Ret = typename std::remove_reference<T>::type;
+	assert( other < std::numeric_limits<Ret>::max() );
+	assert( other > std::numeric_limits<Ret>::min() );
+	return static_cast<Ret>( other );
 }
 
 template<typename T>
