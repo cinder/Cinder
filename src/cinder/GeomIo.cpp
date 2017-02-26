@@ -338,13 +338,8 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 		case Primitive::LINES:
 		case Primitive::LINE_STRIP:
 		case Primitive::TRIANGLES:
-			if( indexOffset == 0 ) {
-				memcpy( target, source, sizeof(uint32_t) * numIndices );
-			}
-			else {
-				for( size_t i = 0; i < numIndices; ++i )
-					target[i] = narrow<T>( source[i] + indexOffset );
-			}
+			//XXX: potentially narrowing
+			std::copy_n( source + indexOffset, numIndices, target );
 		break;
 		case Primitive::TRIANGLE_STRIP: { // ABC, CBD, CDE, EDF, etc
 			if( numIndices < 3 )
