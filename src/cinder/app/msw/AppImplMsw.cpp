@@ -461,8 +461,6 @@ void WindowImplMsw::toggleFullScreen( const app::FullScreenOptions &options )
 {
 	ivec2 newWindowSize;
 	bool prevFullScreen = mFullScreen;
-	HDC oldDC = mDC;
-	HWND oldWnd = mWnd;
 	
 	mFullScreen = ! mFullScreen;
 	setWindowStyleValues();
