@@ -322,8 +322,27 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 
 namespace { 
 template<typename T>
+bool indicesInRange( const uint32_t *indices, size_t numIndices )
+{
+    for( size_t i = 0; i < numIndices; ++i )
+        if( indices[i] > std::numeric_limits<T>::max() )
+            return false;
+
+    return true;
+}
+
+template<>
+bool indicesInRange<uint32_t>( const uint32_t *indices, size_t numIndices )
+{
+	return true;
+}
+
+template<typename T>
 void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *source, size_t numIndices, T indexOffset, T *target )
 {
+	// verify that all indices are within the range expressible by 'T'
+	CI_ASSERT( indicesInRange<T>( source, numIndices ) );
+
 	switch( primitive ) {
 		case Primitive::LINES:
 		case Primitive::LINE_STRIP:
