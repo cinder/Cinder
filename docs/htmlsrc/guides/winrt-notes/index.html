@@ -2,10 +2,10 @@
 <html>
 	<head>
 		<!-- Update title -->
-		<title>Cinder on WinRT</title>
+		<title>Cinder on UWP</title>
 
 		<!-- keywords used for searching -->
-		<meta name="keywords" content="guide, winrt">
+		<meta name="keywords" content="guide, winrt, uwp">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<!-- reference to Cinder classes -->
@@ -25,24 +25,12 @@
 
 		<!-- CONTENT STARTS HERE -->
 
-		<h1>WinRT Notes</h1>
-		<p>These are some general notes on Cinder's implementation on Microsoft's WinRT, also known as Windows Universal. This platform is supported but still considered experimental. In particular there is no audio support yet, nor is there a <ci>ci::Capture</ci> implementation yet. It relies on ANGLE to emulate OpenGL.</p>
+		<h1>Universal Windows Platform (UWP) Notes</h1>
+		<p>These are some general notes on Cinder's implementation on Microsoft's Universal Windows Platform (UWP), formerly known as WinRT. This platform is supported but still considered experimental. In particular there is no audio support yet, nor is there a <ci>ci::Capture</ci> implementation yet. Cinder relies on ANGLE to emulate OpenGL on UWP.</p>
 		
 		<section>
 			<h2>Targeting</h2>
-			<p>Currently Cinder targets WinRT 8.1 or later.</p>
-		</section>
-
-		<section>
-			<h2>Development Requirements</h2>
-			<p>Cinder requires Visual C++ 2013 for WinRT development.</p>
-		</section>
-
-		<section>
-			<h2>Additional Notes</h2>
-			<ul>
-				<li>Cinder will switch to targeting only WinRT for Windows 10 or later in the upcoming release.</li>
-			</ul>
+			<p>Currently Cinder targets UWP on Windows 10. It requires Visual C++ 2015 or later.</p>
 		</section>
 
 		<!-- END CONTENT -->
