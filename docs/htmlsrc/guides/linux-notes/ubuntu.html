@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<!-- Update title -->
-		<title>Cinder on Ubuntu</title>
+		<title>Cinder on Ubuntu 14.04+</title>
 
 		<!-- keywords used for searching -->
 		<meta name="keywords" content="guide, linux, ubuntu">
@@ -26,6 +26,67 @@
 		<!-- CONTENT STARTS HERE -->
 
 		<h1>Ubuntu Notes</h1>
+		<h3 id="cmake">Requirements</h3>
+		<ul>
+			<li>Ubuntu 14.04+</li>
+			<li>CMake 3.0+</li>
+		</ul>
+		<h4 id="cmake">CMake</h4>
+		<p>To install CMake:</p>
+		<pre><code>sudo apt-get install cmake</code></pre>
+
+		<h4 id="clang">Clang</h4>
+		<p>Cinder on Linux supports building both libcinder and Cinder applications with either GCC or Clang, though Clang is recommended, and can be installed using:</p>
+		<pre><code>sudo apt-get install clang</code></pre>
+		<p>To set Clang as the default compiler, select <code>/usr/bin/clang++</code> when prompted by this command:
+		<pre><code>sudo update-alternatives --config c++</code></pre>
+		</p>
+		<h3 id="library-dependencies">Library Dependencies</h3>
+<pre><code>sudo apt-get install libxcursor-dev \
+libxrandr-dev \
+libxinerama-dev \
+libxi-dev \
+libgl1-mesa-dev \
+libglu1-mesa-dev \
+zlib1g-dev \
+libfontconfig1-dev \
+libmpg123-dev \
+libsndfile1 \
+libsndfile1-dev \
+libpulse-dev \
+libasound2-dev \
+libcurl4-gnutls-dev \
+libgstreamer1.0-dev \
+libgstreamer-plugins-bad1.0-dev \
+libgstreamer-plugins-base1.0-dev \
+gstreamer1.0-libav \
+gstreamer1.0-alsa \
+gstreamer1.0-pulseaudio \
+gstreamer1.0-plugins-bad
+</code></pre>
+
+		<h1 id="building-cinder">Building Cinder</h1>
+		<h3 id="fetching-and-building-cinder">Fetching and Building Cinder</h3>
+<pre><code>git clone --recursive https://github.com/cinder/Cinder.git
+cd Cinder
+mkdir build &amp;&amp; cd build
+cmake ..
+make -j 8
+</code></pre>
+
+		<h1 id="building-and-running-basicapp">Building and Running BasicApp</h1>
+		<h3 id="building">Building</h3>
+<pre><code>cd samples/BasicApp/proj/cmake
+mkdir build &amp;&amp; cd build
+cmake ..
+make</code></pre>
+
+		<h3 id="running">Running</h3>
+		<p>Starting from <code>samples/BasicApp/proj/cmake/build</code>:</p>
+		<pre><code>./Debug/BasicApp/BasicApp</code></pre>
+
+		<p>For building in Release mode you just have to add <code>-DCMAKE_BUILD_TYPE=Release</code> in the above cmake commands.<p>
+<pre><code>cmake .. -DCMAKE_BUILD_TYPE=Release</code></pre>
 		<!-- END CONTENT -->
 
 		<!-- Scripts -->

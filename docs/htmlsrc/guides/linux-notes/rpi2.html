@@ -38,7 +38,7 @@
 
 		<h4 id="clang">Clang</h4>
 		<p>Cinder can use the version of Clang (v3.5.0) that ships with Raspbian Jessie. Install it using <code>apt-get</code>:</p>
-		<pre><code>sudo apt-get install cmake</code></pre>
+		<pre><code>sudo apt-get install clang</code></pre>
 		<p>You can also download the binaries for <a href="http://llvm.org/releases/download.html">Clang from here</a>. For the Raspberry Pi 2, download <strong>Clang for armv7a Linux</strong>. Requires version 3.5.0+</p>
 		<p>To set Clang as the default compiler, select <code>/usr/bin/clang++</code> when prompted by this command:
 		<pre><code>sudo update-alternatives --config c++</code></pre>
@@ -77,7 +77,7 @@ make -j3
 
 		<h1 id="building-and-running-basicapp">Building and Running BasicApp</h1>
 		<h3 id="building">Building</h3>
-<pre><code>cd Cinder/samples/BasicApp/proj/cmake
+<pre><code>cd samples/BasicApp/proj/cmake
 mkdir build &amp;&amp; cd build
 cmake .. -DCINDER_TARGET_GL=es2-rpi
 make</code></pre>
