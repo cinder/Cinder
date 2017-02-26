@@ -156,6 +156,10 @@ bool decrunchScanline( RgbePixel *scanline, int len, IStreamCinder *stream )
 {
 	char i;
 
+	// Early out if there's nothing more to read from the stream
+ 	if ( stream->isEof() )
+ 		 return false;
+
 	if( len < MINELEN || len > MAXELEN )
 		return oldStyleDecrunch(scanline, len, stream );
 
@@ -194,7 +198,9 @@ bool decrunchScanline( RgbePixel *scanline, int len, IStreamCinder *stream )
 		}
     }
 
-	return ! stream->isEof();
+	// NOTE: at this point on the **LAST** scanline, the stream
+	// should be EOF, but we still want to process that last scanline!
+	return true;
 }
 
 bool oldStyleDecrunch( RgbePixel *scanline, int len, IStreamCinder *stream )
