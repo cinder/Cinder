@@ -321,6 +321,12 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 
 
 namespace { 
+
+template<class T, class U>
+typename std::remove_reference<T>::type narrow( U other ) {
+	return static_cast<typename std::remove_reference<T>::type>( other );
+}
+
 template<typename T>
 void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *source, size_t numIndices, T indexOffset, T *target )
 {
@@ -333,7 +339,7 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 			}
 			else {
 				for( size_t i = 0; i < numIndices; ++i )
-					target[i] = source[i] + indexOffset;
+					target[i] = narrow<T>( source[i] + indexOffset );
 			}
 		break;
 		case Primitive::TRIANGLE_STRIP: { // ABC, CBD, CDE, EDF, etc
@@ -342,14 +348,14 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 			size_t outIdx = 0; // (012, 213), (234, 435), etc : (odd,even), (odd,even), etc
 			for( size_t i = 0; i < numIndices - 2; ++i ) {
 				if( i & 1 ) { // odd
-					target[outIdx++] = source[i+1];
-					target[outIdx++] = source[i];
-					target[outIdx++] = source[i+2];
+					target[outIdx++] = narrow<T>( source[i+1] );
+					target[outIdx++] = narrow<T>( source[i] );
+					target[outIdx++] = narrow<T>( source[i+2] );
 				}
 				else { // even
-					target[outIdx++] = source[i];
-					target[outIdx++] = source[i+1];
-					target[outIdx++] = source[i+2];
+					target[outIdx++] = narrow<T>( source[i] );
+					target[outIdx++] = narrow<T>( source[i+1] );
+					target[outIdx++] = narrow<T>( source[i+2] );
 				}
 			}
 		}
@@ -359,9 +365,9 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 				return;
 			size_t outIdx = 0;
 			for( size_t i = 0; i < numIndices - 2; ++i ) {
-				target[outIdx++] = source[0];
-				target[outIdx++] = source[i+1];
-				target[outIdx++] = source[i+2];
+				target[outIdx++] = narrow<T>( source[0] );
+				target[outIdx++] = narrow<T>( source[i+1] );
+				target[outIdx++] = narrow<T>( source[i+2] );
 			}
 		}
 		break;
@@ -546,7 +552,7 @@ void Target::copyIndexData( const uint32_t *source, size_t numIndices, uint32_t 
 void Target::copyIndexData( const uint32_t *source, size_t numIndices, uint16_t *target )
 {
 	for( size_t v = 0; v < numIndices; ++v )
-		target[v] = source[v];
+		target[v] = narrow<decltype(*target)>( source[v] );
 }
 
 uint8_t calcIndicesRequiredBytes( size_t numIndices )
@@ -4112,7 +4118,7 @@ void WireSphere::loadInto( Target *target, const AttribSet & /*requestedAttribs*
 
 	vec3 *ptr = positions.data();
 
-	float angle = float( 2.0 * M_PI / mNumSegments );
+	float segment_angle = float( 2.0 * M_PI / mNumSegments );
 	for( int i = 1; i < mSubdivisionsHeight; ++i ) {
 		float f = float( i ) / mSubdivisionsHeight * 2.0f - 1.0f;
 		float radius = mRadius * glm::cos( f * float( M_PI / 2.0 ) );
@@ -4120,7 +4126,7 @@ void WireSphere::loadInto( Target *target, const AttribSet & /*requestedAttribs*
 
 		*ptr++ = center + vec3( 0, 0, 1 ) * radius;
 		for( int j = 1; j < mNumSegments; ++j ) {
-			vec3 v = center + vec3( glm::sin( j * angle ), 0, glm::cos( j * angle ) ) * radius;
+			vec3 v = center + vec3( glm::sin( j * segment_angle ), 0, glm::cos( j * segment_angle ) ) * radius;
 			*ptr++ = v;
 			*ptr++ = v;
 		}
@@ -4268,7 +4274,7 @@ void VertexNormalLines::process( SourceModsContext *ctx, const AttribSet &reques
 	const vec3 *positions = reinterpret_cast<const vec3*>( ctx->getAttribData( Attrib::POSITION ) );
 	const vec3 *attrib = reinterpret_cast<const vec3*>( ctx->getAttribData( mAttrib ) );
 	const float *texCoords = nullptr;
-	size_t texCoordDims = ctx->getAttribDims( Attrib::TEX_COORD_0 );
+	const uint8_t texCoordDims = ctx->getAttribDims( Attrib::TEX_COORD_0 );
 	if( texCoordDims > 0 )
 		texCoords = reinterpret_cast<const float*>( ctx->getAttribData( Attrib::TEX_COORD_0 ) );
 
