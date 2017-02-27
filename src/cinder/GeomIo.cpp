@@ -347,10 +347,8 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 		case Primitive::LINES:
 		case Primitive::LINE_STRIP:
 		case Primitive::TRIANGLES:
-			if( indexOffset == 0 ) {
-				for( size_t i = 0; i < numIndices; ++i )
-					target[i] = static_cast<T>( source[i] );
-			}
+			if( indexOffset == 0 )
+				std::copy_n( source, numIndices, target );
 			else {
 				for( size_t i = 0; i < numIndices; ++i )
 					target[i] = static_cast<T>( source[i] + indexOffset );
