@@ -337,9 +337,7 @@ void videoDevice::NukeDownstream(IBaseFilter *pBF){
 // ---------------------------------------------------------------------- 
 
 void videoDevice::destroyGraph(){
-	HRESULT hr = NULL;
-	int FuncRetval=0;
-	int NumFilters=0;
+	HRESULT hr = NOERROR;
 
 	while (hr == NOERROR)	
 	{
@@ -1548,10 +1546,6 @@ void videoInput::processPixels(unsigned char * src, unsigned char * dst, int wid
 	int numBytes = widthInBytes * height;
 	
 	if(!bRGB){
-		
-		int x = 0;
-		int y = 0;
-	
 		if(bFlip){
 			for(int y = 0; y < height; y++){
 				memcpy(dst + (y * widthInBytes), src + ( (height -y -1) * widthInBytes), widthInBytes);	
@@ -1747,6 +1741,7 @@ static bool setSizeAndSubtype(videoDevice * VD, int attemptWidth, int attemptHei
 	VIDEOINFOHEADER *pVih =  reinterpret_cast<VIDEOINFOHEADER*>(VD->pAmMediaType->pbFormat);
 
 	//store current size
+	//XXX: Should be reset in case of failure?
 	int tmpWidth  = HEADER(pVih)->biWidth;
 	int tmpHeight = HEADER(pVih)->biHeight;	
 	AM_MEDIA_TYPE * tmpType = NULL;
