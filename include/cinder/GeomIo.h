@@ -844,7 +844,7 @@ class BSpline : public Source {
 	template<typename T>
 	void init( const ci::BSpline<4,T> &spline, int subdivisions );
 
-	int						mPositionDims;
+	uint8_t					mPositionDims;
 	size_t					mNumVertices;
 	std::vector<float>		mPositions;
 	std::vector<vec3>		mNormals;
@@ -1306,7 +1306,7 @@ class Constant : public Modifier {
   protected:
 	geom::Attrib	mAttrib;
 	vec4			mValue;
-	int				mDims;
+	uint8_t				mDims;
 };
 
 //! Maps an attribute as a function of another attribute. Valid types are: float, vec2, vec3, vec4
